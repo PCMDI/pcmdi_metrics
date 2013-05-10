@@ -42,7 +42,7 @@ class basic_filetable:
         """filelist is a list of strings, each of which is the path to a file"""
         self._table = []     # will be built from the filelist, see below
         # We have two indices, one by file and one by variable.
-        # the value is always a row of the table.
+        # the value is always a list of rows of the table.
         self._fileindex = {} # will be built as the table is built
         self._varindex = {} # will be built as the table is built
         for filep in filelist:
@@ -64,8 +64,14 @@ class basic_filetable:
             newrow = row( fileid, variableid, timerange, latrange, lonrange,
                           levelrange )
             self._table.append( newrow )
-            self._fileindex[fileid] = newrow
-            self._varindex[variableid] = newrow
+            if self.fileindex.haskey(fileid):
+                self._fileindex[fileid].append(newrow)
+            else:
+                self._fileindex[fileid] = [newrow]
+            if self._varindex.haskey(variableid):
+                self._varindex[variableid].append(newrow)
+            else:
+                self._varindex[variableid] = [newrow]
             
 class basic_support:
     """Children of this class contain methods which support specific file types,
