@@ -16,18 +16,32 @@ class basic_filter:
     def __call__( self, filen ):
         return True
 
+class basic_binary_filter:
+    def __init__( f1, f2 ):
+        _f1 = f1
+        _f2 = f2
+
 # If we were to decide to require that all datafiles functions put nothing but files
 # into the files variable, then the following filter would be pointless:
 class f_isfile(basic_filter):
     def __call__( self, filen ):
         return os.path.isfile(filen)
 
-class f_and(basic_filter):
-    def __init__( f1, f2 ):
-        _f1 = f1
-        _f2 = f2
+class f_nc(basic_filter):
+    """filter for *.nc files"""
+    def __call__( self, filen ):
+        return os.path.splitext(filen).lower()=='nc'
+
+class f_and(basic_binary_filter):
     def __call__( self, filen ):
         return _f1(filen) and _f2(filen)
+
+# Thus a filter for "is a real file, with a .nc extension" is:
+#       f = f_and( f_nc(), f_isfile() )
+# Or we could do that in a class by:
+class f_ncfile(f_and):
+    def __init__():
+        f_and.__init__( f_nc(), f_isfile() )
 
 
 # Datafiles, the core of this module.
