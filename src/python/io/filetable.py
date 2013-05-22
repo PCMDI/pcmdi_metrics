@@ -11,6 +11,15 @@ class drange:
        self.lo = low
        self.hi = high
        self.units = units
+   def overlaps_with( range2 ):
+      if self.units!=range2.units:
+         # >>> TO DO >>>> units conversion
+         return False
+      elif range2==None:
+         # None means everything
+         return True
+      else:
+         return self.hi>range2.lo and self.lo<range2.hi
        
 class row:
     """This class identifies a file and contains the information essential to tell
@@ -47,6 +56,10 @@ class basic_filetable:
         # We have two indices, one by file and one by variable.
         # the value is always a list of rows of the table.
         self._fileindex = {} # will be built as the table is built
+        # The variable index is based on the CF standard name.  Why that?  We have to standardize
+        # the variable in some way in order to have an API to the index, and CF standard names
+        # cover just about anything we'll want to plot.  If something is missing, we'll need our
+        # own standard name list.
         self._varindex = {} # will be built as the table is built
         print "filelist=",filelist,type(filelist)
         for filep in filelist.files:
@@ -78,6 +91,21 @@ class basic_filetable:
                 else:
                     self._varindex[variableid] = [newrow]
         dfile.close()
+    def find_files( variable, time_range=None, lat_range=None, lon_range=None, level_range=None ):
+       """This method is intended for creating a plot.
+       This finds and returns a list of files needed to cover the supplied variable and time and space ranges.
+       The returned list may contain more or less than requested, but will be the best available.
+       The variable is a string, containing as a CF standard name, or equivalent.
+       For ranges, None means you want all values."""
+       candidates = self.varindex( variable_id )
+       found = []
+       for row in candidates:
+          if time_range.overlaps_with( row.timerange ) and\
+                 lat_range.overlaps_with( row.latrange ) and\
+                 lon_range.overlaps_with( row.lonrange ) and\
+                 level_range.overlaps_with( row.levelrange ):
+             found.append( row )
+       return found
             
 class basic_support:
     """Children of this class contain methods which support specific file types,
