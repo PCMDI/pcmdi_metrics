@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/local/uvcdat/bin/python
 
 # The user provides some minimal specification of the data he wants analyzed.
 # Our goal here is to find all the data files which comprise that data.
