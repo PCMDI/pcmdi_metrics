@@ -42,13 +42,13 @@ class row:
              self.timerange.__repr__(), self.latrange.__repr__(), self.lonrange.__repr__() )
 
 
-def get_datafile_support( dfile ):
+def get_datafile_filefmt( dfile ):
     """dfile is an open datafile.  If the file type is recognized,
     then this will return an object with methods needed to support that file type."""
     if hasattr(dfile,'Conventions') and dfile.Conventions[0:2]=='CF':
-       return CF_support( dfile )
+       return CF_filefmt( dfile )
     else:
-       return No_support()
+       return Unknown_filefmt()
 
 class basic_filetable:
     """Conceptually a file table is just a list of rows; but we need to attach some methods,
@@ -82,7 +82,7 @@ class basic_filetable:
         filep should be a string consisting of the path to the file."""
         fileid = filep
         dfile = cdms2.open( fileid )
-        filesupp = get_datafile_support( dfile )
+        filesupp = get_datafile_filefmt( dfile )
         vars = filesupp.interesting_variables()
         print "vars=",vars
         if len(vars)>0:
@@ -120,7 +120,7 @@ class basic_filetable:
              found.append( row )
        return found
             
-class basic_support:
+class basic_filefmt:
     """Children of this class contain methods which support specific file types,
     and are used to build the file table.  Maybe later we'll put here methods
     to support other functionality."""
@@ -130,10 +130,10 @@ class basic_support:
     def get_levelrange(self): return None
     def interesting_variables(self): return []
 
-class No_support(basic_support):
+class Unknown_filefmt(basic_filefmt):
     """Any unsupported file type gets this one."""
 
-class CF_support(basic_support):
+class CF_filefmt(basic_filefmt):
     """NetCDF file conforming to the CF Conventions."""
     def __init__(self,dfile):
         """dfile is an open file"""
