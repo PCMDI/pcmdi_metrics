@@ -19,7 +19,7 @@ import string
 
 def getOurModelData(exp,var):
 
- pathin = '/work/gleckler1/processed_data/' + exp + 'clims/'
+ pathin = '/work/gleckler1/processed_data/cmip5clims/'   #+ exp + 'clims/'
 
  filename_tmp = 'cmip5.NorESM1-M.historical.r1i1p1.mo.atm.Amon.VARNAME.ver-1.1980-1999.AC.nc'
 

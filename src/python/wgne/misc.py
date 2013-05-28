@@ -25,7 +25,7 @@ def get_our_model_clim(experiment,var,targetgrid):
 
 #### GET OBSERVATIONAL DATA 
 
-def get_obs(var,ref,targetgrid):
+def get_obs(var,ref,outdir,targetGrid):
 
   obs_dic = {'rlut':{'ref1':'CERES','ref2':'ERBE'},
            'rsut':{'ref1':'CERES','ref2':'ERBE'},
@@ -44,10 +44,11 @@ def get_obs(var,ref,targetgrid):
            'zg':{'ref1':'ERAINT','ref3':'JRA25','ref2':'rnl_ncep'},
             }
 
-  pathin = '../../data/obs/atm/mo/' + var + '/' + obs_dic[var][ref] + '/ac/' + var + '_' + obs_dic[var][ref] + '_000001-000012_ac.nc' 
-  f = cdms.open(pathin)
+  outdir = '/work/gleckler1/processed_data/metrics_package/obs/atm/mo/' + var + '/' + obs_dic[var][ref] + '/ac/' + var + '_' + obs_dic[var][ref] + '_000001-000012_ac.nc' 
+  f = cdms.open(outdir)
   d = f(var)
   f.close()
+  print '---------- ', outdir
 
 ### REGRID OBS
   obsg = get_target_grid(targetGrid)
