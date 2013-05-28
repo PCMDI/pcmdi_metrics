@@ -88,6 +88,7 @@ class basic_file_conventions:
 # One file, first.  This function/method assumes that the variable fvar, obtainable as f['varname'],
 # has time as its first dimension, the variable's contents are monthly means, that it has time as a
 # cdms2 axis, and that the time interval is a month without gaps.
+# This function would naturally be a method of CF_filefmt:
 def time_averages( filepath, varname ):
     """Computes and returns averages of variable varname over:
     each month, summer (June-July-August), winter (December-January-February), and the whole year.
@@ -141,36 +142,72 @@ def zonal_mean( fil, varvals, latmin, latmax ):
 # and output specifications.  Normally the user will provide just the file specification and we will
 # have standard output specifications and run them all.
 #
-# An output specification will be the object which does output.  Logically it's defined by
-# a list of things such as:
-# output type (an object name - e.g. table, line_plot, or specializations of these as needed),
-# output parameters (e.g. title of horizontal axis), variables (order will be meaningful),
-# and for each variable the time and space domain (including units) to be averaged over,
-# time or space axes to show in plot, and whatever else is needed.
+# An output specification will be the object which specifies, and probably initiates, output.
+#  Logically it's defined by
+# - data sources (filetables, computed from file specifications)
+# - variables and their domains (as in a row object, but without the file)(1-2 at present)
+# - reduction functions (e.g. zonal mean of a variable)
+# - output type (e.g. table, line plot, contour plot)
+# - axes (normally 2 or fewer after reductions)
+# - presentation details (e.g. which axis is horizontal, title of graph, etc.)
+# This calls for several class hierarchies.
+# - the reduction function would be a method of a file format class, i.e. a child of basic_filefmt.
+# - the output type - children of basic_outputter below
+# - variable information - output_variable class below
+
+class reduced_variable(row):
+    """Specifies a 'reduced variable', which is a single-valued part of an output specification.
+    This would be a variable(s) and its domain, a reduction function, and
+    an axis or two describing the domain after applying the reduction function.
+    Output may be based on one or two of these objects"""
+    >>>> TO DO <<<<<
+>>>> besides row information, this will have the reduction function;
+>>>> and it will have a filetable in place of the file in a row object
+>>>> Moreover, this will explicitly have one or two axes
+
+class basic_outputter:
+    """specifies output - e.g. a graph.  This is an abstract class."""
+    def __init__( rv1, rv2=None, title="Basic Graph" ):
+        _reduced_variable_1 = rv1
+        _reduced_variable_2 = rv2
+        _title=title
+    def output():
+        pass
 
 class output_variable(row):
-    """Specifies a variable for output - variable name and domain.
+    """Specifies a variable used (perhaps indirectly) for output - variable name and domain.
     At the moment this is the same as filetable.row, except that we don't care about the file
     (which can be None).  But in the future they can be expected to diverge and maybe have a
     common ancestor."""
 
-class basic_outputter:
-    """Specifies and performs output, e.g. a plot.  This is an abstract class - only its children
-    will have an output() method which actually performs output."""
-    def __init__( outvar1, outvar2=None ):
-        """outvar1, outvar2 should be instances of output_variable"""
-        _outvar1 = outvar1
-        _outvar2 = outvar2
-    def output():
-        pass
+
+
+# TO DO:
+# Given an output_variable, we have to identify the right files, open them and get
+# the data we need, construct a transient variable or other suitable cdms2 variable,
+# which may have missing data, then transform it with something like zonal_mean.
+# The resulting cdms2 variable will be suitable for constructing a basic_outputter object and
+# plotting.
+
+
+# The following class structure is for handling plotting/output.  It feels wrong to
+# me, and I may completely replace it after I get more experience, e.g. expanding it to do
+# 2-3 types of plots with labels etc.
 
 class line_plot(basic_outputter):
-    def __init__( outvar1, outvar2 ):
-        basic_outputter.init( outvar1, outvar2 )
+    def __init__( vcsv, rv1, rv2=None ):
+        """The first argument is the return value of vcs.init().
+        The second and third arguments are cdms2 variables."""
+        basic_outputter.__init__( rv1, rv2 )
         # to do: add other initializations as needed; e.g. to specify the axes and axis titles.
-        # Output target (typically, a png file) could be specified here, or as an argument
-        # of the output() method.<<<< to do <<<<
+        # Eventually the vcsv argument will be generalized to an output target, and typically,
+        # should default to a png file.
+        self._vcsv = vcsv
     def output():
         """writes out the actual line plot"""
-        # >>>> TO DO <<<<
-        pass
+        if len(rv1.shape)!=:
+            raise Exception("line_plot sees wrong shape in rv1")
+        if len(rv2.shape)!=0:
+            raise Exception("line_plot sees wrong shape in rv2")
+        _vcsv.plot( rv1[:], rv2[:] )
+
