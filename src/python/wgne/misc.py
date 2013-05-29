@@ -3,9 +3,9 @@ import string
 import ESMP
 
 ##### TARGET GRID FOR METRICS CALCULATION
-def get_target_grid(tg):
+def get_target_grid(tg,datapath):
  if tg == '2.5x2.5':
-  ftarget = '../../data/obs/atm/mo/tas/ERA40/ac/tas_ERA40_000001-000012_ac.nc'
+  ftarget = datapath + 'obs/atm/mo/tas/ERA40/ac/tas_ERA40_000001-000012_ac.nc'
   ft = cdms.open(ftarget)
   dt = ft('tas')
   obsg = dt.getGrid()
@@ -14,49 +14,49 @@ def get_target_grid(tg):
 
 #### GET INHOUSE DATA THAT HAS BEEN TRANSFORMED/INTERPOLATED
 
-def get_our_model_clim(experiment,var,targetgrid):
-  pathin = '../../data/inhouse_model_clims/' + experiment + '/atm/mo/ac/'
-  file = 'cmip5_' + var + '_' + targetGrid + '.nc' 
-  pathfile = pathin + file
-  f = cdms.open(pathfile)
-  d = f(var)
-  f.close()
-  return d 
+def get_our_model_clim(experiment,var):
 
+# HARDWIRED EXAMPLE ONLY !!!!!!!
+  pd = '/work/gleckler1/processed_data/cmip5clims/' + var + '/' + 'cmip5.HadCM3.historical.r1i1p1.mo.atm.Amon.' + var + '.ver-1.1980-1999.AC.nc'
+  f = cdms.open(pd)
+  dm = f(var + '_ac')
+  f.close()
+  return dm 
+
+########################################################################
 #### GET OBSERVATIONAL DATA 
 
-def get_obs(var,ref,outdir,targetGrid):
+def get_obs(var,ref,outdir):
 
-  obs_dic = {'rlut':{'ref1':'CERES','ref2':'ERBE'},
-           'rsut':{'ref1':'CERES','ref2':'ERBE'},
-           'rlutcs':{'ref1':'CERES','ref2':'ERBE'},
-           'rsutcs':{'ref1':'CERES','ref2':'ERBE'},
-           'rsutcre':{'ref1':'CERES','ref2':'ERBE'},
-           'rlutcre':{'ref1':'CERES','ref2':'ERBE'},
-           'pr':{'ref1':'GPCP','ref2':'CMAP'},
-           'prw':{'ref1':'RSS'},
-           'tas':{'ref1':'ERAINT','ref3':'JRA25','ref2':'rnl_ncep'},
-           'ua':{'ref1':'ERAINT','ref3':'JRA25','ref2':'rnl_ncep'},
-           'va':{'ref1':'ERAINT','ref3':'JRA25','ref2':'rnl_ncep'},
-           'uas':{'ref1':'ERAINT','ref3':'JRA25','ref2':'rnl_ncep'},
-           'vas':{'ref1':'ERAINT','ref3':'JRA25','ref2':'rnl_ncep'},
-           'ta':{'ref1':'ERAINT','ref3':'JRA25','ref2':'rnl_ncep'},
-           'zg':{'ref1':'ERAINT','ref3':'JRA25','ref2':'rnl_ncep'},
+  obs_dic = {'rlut':{'default':'CERES','alternate':'ERBE'},
+           'rsut':{'default':'CERES','alternate':'ERBE'},
+           'rlutcs':{'default':'CERES','alternate':'ERBE'},
+           'rsutcs':{'default':'CERES','alternate':'ERBE'},
+           'rsutcre':{'default':'CERES','alternate':'ERBE'},
+           'rlutcre':{'default':'CERES','alternate':'ERBE'},
+           'pr':{'default':'GPCP','alternate':'CMAP'},
+           'prw':{'default':'RSS'},
+           'tas':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
+           'ua':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
+           'va':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
+           'uas':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
+           'vas':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
+           'ta':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
+           'zg':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
             }
 
-  outdir = '/work/gleckler1/processed_data/metrics_package/obs/atm/mo/' + var + '/' + obs_dic[var][ref] + '/ac/' + var + '_' + obs_dic[var][ref] + '_000001-000012_ac.nc' 
+  datapath = outdir + 'obs/atm/mo/' 
+  outdir = datapath + var + '/' + obs_dic[var][ref] + '/ac/' + var + '_' + obs_dic[var][ref] + '_000001-000012_ac.nc' 
+  print outdir
   f = cdms.open(outdir)
-  d = f(var)
+  do = f(var)
   f.close()
-  print '---------- ', outdir
+  print var,' ---------- ', outdir
+  return do
+###################################################
 
-### REGRID OBS
-  obsg = get_target_grid(targetGrid)
-  dnew = d.regrid(obsg,regridTool='regrid2')
-  dnew.id = var
 
-  return dnew
-
+## SCRATCH FOR NOW
 variable_list = [
 ['long_name','output_variable_name','input_variable_name','units'],
 ['Precipitation','pr','pr','kg m-2 s-1'],
