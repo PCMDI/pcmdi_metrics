@@ -2,7 +2,7 @@ import cdms2 as cdms
 import string
 import ESMP
 
-##### TARGET GRID FOR METRICS CALCULATION
+#### TARGET GRID FOR METRICS CALCULATION
 def get_target_grid(tg,datapath):
  if tg == '2.5x2.5':
   ftarget = datapath + 'obs/atm/mo/tas/ERA40/ac/tas_ERA40_000001-000012_ac.nc'
