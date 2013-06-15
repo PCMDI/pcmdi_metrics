@@ -111,7 +111,7 @@ setup_cdat() {
     cdat_home=$(perl -pe 's/(?<!uv)cdat/uvcdat/' <<<${cdat_home})
     CDAT_HOME=${cdat_home}
     #-----------------------------------------------------
-    ${cdat_home}/bin/python -c \"import cdat_info; print cdat_info.Version\" 
+    ${cdat_home}/bin/python -c "import cdat_info; print cdat_info.Version" 
     local ret=$?
     ((ret == 0)) && (( ! force_install )) && echo " [OK]" && return 0
 
