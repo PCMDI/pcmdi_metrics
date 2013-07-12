@@ -1,5 +1,5 @@
 import cdms2 as cdms
-import string
+import string, os
 import ESMP
 
 #### TARGET GRID FOR METRICS CALCULATION
@@ -12,16 +12,47 @@ def get_target_grid(tg,datapath):
   ft.close()
   return obsg 
 
+#### MAKE DIRECTORY
+def mkdir_fcn(path):
+ try:
+     os.mkdir(path)
+ except:
+     pass
+ return
+
 #### GET INHOUSE DATA THAT HAS BEEN TRANSFORMED/INTERPOLATED
 
-def get_our_model_clim(experiment,var):
+def get_our_model_clim(data_location,var):
 
-# HARDWIRED EXAMPLE ONLY !!!!!!!
-  pd = '/work/gleckler1/processed_data/cmip5clims/' + var + '/' + 'cmip5.HadCM3.historical.r1i1p1.mo.atm.Amon.' + var + '.ver-1.1980-1999.AC.nc'
+  pd = data_location
+# if var in ['tos','sos','zos']: pd = string.replace(pd,'atm.Amon','ocn.Omon')
   f = cdms.open(pd)
-  dm = f(var + '_ac')
+  try:
+   dm = f(var + '_ac')
+  except:
+   dm = f(var)
+
   f.close()
   return dm 
+
+#### GET CMIP5 DATA
+
+def get_cmip5_model_clim(data_location,model_version, var):
+
+  lst = os.popen('ls ' + data_location + '*' + model_version + '*' + var + '.*.nc').readlines()
+
+  pd = lst[0][:-1]   #data_location
+# if var in ['tos','sos','zos']: pd = string.replace(pd,'atm.Amon','ocn.Omon')
+  f = cdms.open(pd)
+  try:
+   dm = f(var + '_ac')
+  except:
+   dm = f(var)
+  f.close()
+  print pd
+  return dm
+
+
 
 ########################################################################
 #### GET OBSERVATIONAL DATA 
@@ -43,36 +74,46 @@ def get_obs(var,ref,outdir):
            'vas':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
            'ta':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
            'zg':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
+           'tos':{'default':'HadISST'},
+           'zos':{'default':'CNES_AVISO'},
+           'sos':{'default':'WOA09'},
             }
 
   datapath = outdir + 'obs/atm/mo/' 
-  outdir = datapath + var + '/' + obs_dic[var][ref] + '/ac/' + var + '_' + obs_dic[var][ref] + '_000001-000012_ac.nc' 
-  print outdir
-  f = cdms.open(outdir)
+  if var in ['tos','sos','zos']: datapath = string.replace(datapath,'atm','ocn')
+ 
+# outdir = datapath + var + '/' + obs_dic[var][ref] + '/ac/' + var + '_' + obs_dic[var][ref] + '_000001-000012_ac.nc' 
+# if var == 'zos': 
+#   outdir = datapath + var + '/' + obs_dic[var][ref] + '/ac/' + 'zos_CNES_AVISO_L4_199201-200512_ac.nc' 
+# if var == 'tos':
+#   outdir = datapath + var + '/' + obs_dic[var][ref] + '/ac/' + 'tos_HadISST_198001-200512_ac.nc'
+
+  outdir = datapath + var + '/' + obs_dic[var][ref] + '/ac/'
+  lst = os.listdir(outdir)
+  fc = outdir + lst[0] 
+
+# print outdir
+  f = cdms.open(fc)
   do = f(var)
   f.close()
-  print var,' ---------- ', outdir
+# print var,' ---------- ', outdir
   return do
 ###################################################
 
+def output_model_clims(dm,var,Tdir,F, model_version, targetGrid):
+ pathout = Tdir() 
+ try:
+  os.mkdir(pathout)
+ except:
+  pass
 
-## SCRATCH FOR NOW
-variable_list = [
-['long_name','output_variable_name','input_variable_name','units'],
-['Precipitation','pr','pr','kg m-2 s-1'],
-['Water Vapor Path','prw','prw','kg m-3'],
-['Surface Upwelling Longwave Radiation','rlus','rlus','W m-2'],
-['TOA Outgoing Longwave Radiation','rlut','rlut','W m-2'],
-['Surface Downwelling Shortwave Radiation','rsds','rsds','W m-2'],
-['Surface Upwelling Shortwave Radiation','rsus','rsus','W m-2'],
-['Net Downward Flux at Top of Model','rtmt','rtmt','W m-2'],
-['Sea Surface Salinity','sos','sos','1e-3'],
-['Air Temperature','ta','ta','K'],
-['Surface Air Temperature','tas','tas','K'],
-['Sea Surface Temperature','tos','tos','K'],
-['Eastward Wind','ua','ua','m s-1'],
-['Northward Wind','ua','ua','m s-1'],
-['Geopotential Height','zg','zg','m'],
-['Sea Surface Height Above Geoid','zos','zos','m'],
-] ;
+ F.variable = var
+ F.model_version = model_version
+ nm = F()
+ nm = string.replace(nm,'.nc','.' + targetGrid + '.nc')
+
+ dm.id = var
+ g = cdms.open(pathout + '/' + nm,'w+') 
+ g.write(dm)
+ g.close()
 
