@@ -1,27 +1,47 @@
 import  genutil
 from input_parameters import *
+import sys, os, string
+import cdms2 as cdms
 
 ################################################################################
 ## OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY: 
-### BEGIN USER INPUT ###  
-### END USER INPUT ###
+### BEGIN USER INPUT  
+### END USER INPUT
 ################################################################################
 
-### BEGIN USER INPUT ###
+### DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
+### BEGIN USER INPUT 
+test_case = 'cmip5_test'   # USER INPUT: DEFINES A SUBDIRECTORY TO METRICS OUTPUT RESULTS SO MULTIPLE CASES CAN BE COMPARED
+mod_data_path = '/work/gleckler1/processed_data/metrics_package/inhouse_model_clims/' # USER INPUT: ROOT PATH FOR OUTPUT DIR OF METRICS RESULTS
+#mod_data_path = '/work/gleckler1/processed_data/cmip5clims-AR5-frozen_1dir/' 
+interpolated_model_output_path = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims/'+ test_case + '/' 
+### END USER INPUT
 
-# DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
-mod_data_path = '/work/gleckler1/processed_data/metrics_package/inhouse_model_clims/'  # USER INPUT: ROOT PATH FOR OUTPUT DIR OF METRICS RESULTS
-
-# MODEL VERSIONS TO BE TESTED
+### MODEL VERSIONS TO BE TESTED
+### BEGIN USER INPUT
 model_versions = ['samplerun1','samplerun2']   # USER INPUT: DIFFERENT MODEL VERSIONS CAN BE INCLUDED HERE
 model_versions = ['GFDL-ESM2G']  #  USER INPUT: LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
-test_case = 'sampletest'   # USER INPUT: DEFINES A SUBDIRECTORY TO METRICS OUTPUT RESULTS SO MULTIPLE CASES CAN BE COMPARED 
+
+test_case = 'sampletest'   # USER INPUT: DEFINES A SUBDIRECTORY TO METRICS OUTPUT RESULTS SO MULTIPLE CASES CAN BE COMPARED
+
+### ALL CMIP5
+#model_versions = []
+#lst = os.popen('ls ' + mod_data_path + test_case + '/' + '*rlut*').readlines()
+#for l in lst:
+#  mod = string.split(l,'.')[1]
+#  if mod not in model_versions: model_versions.append(mod)
+
+#model_versions = ['FGOALS-g2']
+#print model_versions
+#w = sys.stdin.readline()
+
+#model_versions = [model_versions[0]]
+
+### END USER INPUT
 
 ### SAVE INTERPOLATED MODEL CLIMATOLGIES ?
 save_mod_clims = 'y'   # 'y'  or 'n'
 
-
-### END USER INPUT
 
 ########################################################################################################
 ### DATA STRUCTURE OF NEW MODEL CLIMATOLOGIES
@@ -32,35 +52,37 @@ save_mod_clims = 'y'   # 'y'  or 'n'
 data_structure = 'simple' # USER INPUT: SEE ABOVE CHOICES
 ### BEGIN USER INPUT
 
-# EXAMPLE 1: ALL CLIMATOLOGY VARIABLES FOR A GIVEN EXPERIMENT ARE IN SEPERATE FILE
-if data_structure == 'simple':
+def model_output_structure(model_version, variable):
  dir_template = "%(root_modeling_group_clim_directory)/%(test_case)/" 
- file_template = "cmip5.%(model_version).historical.r1i1p1.mo.atm.Amon.%(variable).ver-1.1980-1999.AC.%(ext)" 
- template = dir_template + file_template  
+ file_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-1.%(period).AC.%(ext)" 
 
- T=genutil.StringConstructor(template)
- T.root_modeling_group_clim_directory = mod_data_path
- T.table = 'Amon'
- T.test_case = test_case
- T.ext='nc'
+ ### CONSTRUCT PATH
+ D=genutil.StringConstructor(dir_template)
+ D.root_modeling_group_clim_directory = mod_data_path
+ D.test_case = test_case
+ data_location = D()
 
+ ### CONSTRUCT FILENAME 
  F = genutil.StringConstructor(file_template) 
+ F.model_version = model_version
+ F.table_realm = 'atm.Amon'
+ if variable in ['tos','sos','zos']:  F.table_realm = 'ocn.Omon'
+ F.variable = variable
  F.ext='nc'
+ F.period = '1980-2005'
+ filename = F()
 
-# EXAMPLE 2: CLIMATOLOGY FILENAMES FOLLOW DRS CONVENTION USED IN CMIP5 
-# EXAMPLE FILENAME STRUCTURE: cmip5.GFDL-ESM2G.historical.r1i1p1.mo.atm.Amon.tas.ver-1.1980-1999.AC.nc
-if data_structure == 'simple':
- template = "%(root_modeling_group_clim_directory)/%(test_case)/cmip5.%(model_version).historical.r1i1p1.mo.atm.Amon.%(variable).ver-1.1980-1999.AC.%(ext)"
- T=genutil.StringConstructor(template)
- T.root_modeling_group_clim_directory = mod_data_path 
- T.table = 'Amon'
- T.test_case = test_case
- T.ext='nc'
+ return data_location,filename
 
-if save_mod_clims == 'y':
- Tdir=genutil.StringConstructor(dir_template)
- Tdir.root_modeling_group_clim_directory = model_clims_interpolated_output 
- Tdir.test_case = test_case
+def output_interpolated_model_data(dm, var, targetGrid,regrid_method,model_output_location):
+
+ model_output_location = string.replace(model_output_location,'.nc','.' + regrid_method + '.' + targetGrid + '.nc') 
+
+ g = cdms.open(model_output_location,'w+')
+ dm.id = var
+ g.write(dm)
+ g.close() 
+
 
 #################################################################################
 ### END OPTIONS SET BY USER
