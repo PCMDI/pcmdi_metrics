@@ -8,8 +8,8 @@ import json   # A data-interchange format see http://www.json.org/
 from misc import *
 from mean_climate_metrics_calculations import *
 from input_parameters import *
-from input_model_data import *   # USE FOR INHOUSE VERSIONS
-#from input_cmip5_model_data import *  # USED ONLY BY PCMDI, FOR CALCULATING/ARCHIVING ALL CMIP5 RESULTS
+#from input_model_data import *   # USE FOR INHOUSE VERSIONS
+from input_cmip5_model_data import *  # USED ONLY BY PCMDI, FOR CALCULATING/ARCHIVING ALL CMIP5 RESULTS
 import sys
 
 ######################################################

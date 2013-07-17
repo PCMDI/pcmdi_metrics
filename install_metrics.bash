@@ -173,7 +173,7 @@ setup_cdat() {
         pushd ${uvcdat_build_directory_build}
         #(zlib patch value has to be 3,5,7 - default is 3)
         local zlib_value=$(pkg-config --modversion zlib | sed -n -re 's/(.)*/\1/p' | sed -n -re '/(3|5|7)/p') ; [[ ! ${zlib_value} ]] && zlib_value=3
-        cmake ${pip_string} -DQT_QMAKE_EXECUTABLE=${qmake_executable} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL="${cdat_git_protocol}" ${uvcdat_build_directory}/uvcdat
+        cmake ${pip_string} -DCDAT_ANONYMOUS_LOG=OFF -DQT_QMAKE_EXECUTABLE=${qmake_executable} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL="${cdat_git_protocol}" ${uvcdat_build_directory}/uvcdat
         #[ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (1)" && popd && checked_done 1
         cmake ${pip_string} -DQT_QMAKE_EXECUTABLE=${qmake_executable} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL="${cdat_git_protocol}" ${uvcdat_build_directory}/uvcdat
         [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (2)" && popd && checked_done 1
@@ -237,8 +237,8 @@ main() {
     force_install=0
     cmake_repo="http://cmake.org/cmake.git"
     DEBUG=1
-    cdat_repo=git://github.com/UV-CDAT/uvcdat-devel.git
-    cdat_repo_http=http://github.com/UV-CDAT/uvcdat-devel.git
+    cdat_repo=git://github.com/UV-CDAT/uvcdat.git
+    cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
     metrics_repo=http://github.com/UV-CDAT/wgne-wgcm_metrics.git
     cdat_version="master"
     metrics_checkout="master"
