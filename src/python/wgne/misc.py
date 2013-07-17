@@ -117,3 +117,33 @@ def output_model_clims(dm,var,Tdir,F, model_version, targetGrid):
  g.write(dm)
  g.close()
 
+def model_output_structure(dir_template, file_template, model_version, variable):
+ dir_template = "%(root_modeling_group_clim_directory)/%(test_case)/" 
+ ### CONSTRUCT PATH
+ D=genutil.StringConstructor(dir_template)
+ D.root_modeling_group_clim_directory = mod_data_path
+ D.test_case = test_case
+ data_location = D()
+
+ ### CONSTRUCT FILENAME 
+ F = genutil.StringConstructor(file_template) 
+ F.model_version = model_version
+ F.table_realm = 'atm.Amon'
+ if variable in ['tos','sos','zos']:  F.table_realm = 'ocn.Omon'
+ F.variable = variable
+ F.ext='nc'
+ F.period = '1980-2005'
+ filename = F()
+
+ return data_location,filename
+
+def output_interpolated_model_data(dm, var, targetGrid,regrid_method,model_output_location):
+
+ model_output_location = string.replace(model_output_location,'.nc','.' + regrid_method + '.' + targetGrid + '.nc') 
+
+ g = cdms.open(model_output_location,'w+')
+ dm.id = var
+ g.write(dm)
+ g.close() 
+
+

@@ -10,6 +10,7 @@ setup (name = "metrics",
        packages = ['metrics','metrics.io',],
        package_dir = {'metrics': 'src/python',
                       'metrics.io': 'src/python/io'},
+                      'metrics.wgne': 'src/python/wgne'},
        scripts = [],
        #include_dirs = [numpy.lib.utils.get_include()],
        #       ext_modules = [

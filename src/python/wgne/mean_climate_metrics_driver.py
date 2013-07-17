@@ -7,14 +7,27 @@ import json   # A data-interchange format see http://www.json.org/
 
 from misc import *
 from mean_climate_metrics_calculations import *
-from input_parameters import *
+#from input_parameters import *
 #from input_model_data import *   # USE FOR INHOUSE VERSIONS
 from input_cmip5_model_data import *  # USED ONLY BY PCMDI, FOR CALCULATING/ARCHIVING ALL CMIP5 RESULTS
 import sys
+import argparse
 
+P = argparse.ArgumentParser()
+P.add_argument("--parameters",dest="param",default="input_parameters.py",help="input parameter file containing local settings")
+P.add_argument("-t","--targetGrid",dest="tgrid",choices=["2.5x2.5",],default="2.5x2.5")
+P.add_argument("-r","--regrid",dest="regrid",choices=["regrid2","linear"],default="regrid2")
+P.add_argument("-o","--ocean-regrid",dest="oregrid",choices=["regrid2","linear"],default="linear")
+
+args = P.parse_args(sys.argv[1:])
+
+
+
+interpolated_model_output_path = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims/'+ test_case + '/' 
 ######################################################
 #
 #  USER INPUT IS SET IN FILE "input_parameters.py"
+#  Identified via --parameters key at startup
 #
 ######################################################
 
