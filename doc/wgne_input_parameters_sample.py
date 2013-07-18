@@ -21,9 +21,11 @@ vars = ['tos',]
 ref = 'default' 
 
 # INTERPOLATION OPTIONS
-targetGrid = '2.5x2.5'   # OPTIONS: '2.5x2.5'
-regrid_method = 'regrid2'   # OPTIONS: 'linear','regrid2'
-regrid_method_ocn = 'linear'   # OPTIONS: 'linear', 'regrid2'
+targetGrid        = '2.5x2.5' # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
+regrid_tool       = 'regrid2' # OPTIONS: 'regrid2','esmf'
+regrid_method     = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
+regrid_tool_ocn   = 'esmf'    # OPTIONS: "regrid2","esmf"
+regrid_method_ocn = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
 save_mod_clims = True # True or False
