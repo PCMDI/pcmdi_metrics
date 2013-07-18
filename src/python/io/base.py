@@ -1,16 +1,22 @@
 import json
 import cdms2
+import genutil
+import os
 
-class Base(genutil.StribgConstructor):
+class Base(genutil.StringConstructor):
     def __init__(self,root,file_template):
         genutil.StringConstructor.__init__(self,root+"/"+file_template)
         self.targetGrid = None
-    def get(self,var,*args,**kargs):
-        self.var = var
+
+    def get(self,var,varInFile=None,*args,**kargs):
+        self.variable = var
+        if varInFile is None:
+            varInFile = var
         if self.targetGrid is None:
-            return cdms2.open(self())(var,*args,**kargs)
+            return cdms2.open(self())(varInFile,*args,**kargs)
         else:
-            return cdms2.open(self())(var,*args,**kargs).regrid(self.targetGrid,regridTool=self.regridTool,regridMethod=self.regridMethod, coordSys='deg', diag = {},periodicity=1)
+            return cdms2.open(self())(varInFile,*args,**kargs).regrid(self.targetGrid,regridTool=self.regridTool,regridMethod=self.regridMethod, coordSys='deg', diag = {},periodicity=1)
+
     def setTargetGrid(self,target,regridTool="esmf",regridMethod="linear"):
         self.regridTool = regridTool
         self.regridMethod = regridMethod
@@ -20,6 +26,7 @@ class Base(genutil.StribgConstructor):
             self.targetGrid = target
         else:
             raise RunTimeError,"Unknown grid: %s" % target
+
     def write(self,data,type="json",*args,**kargs):
         fnm = self()+".%s" % type
         try:
@@ -35,7 +42,7 @@ class Base(genutil.StribgConstructor):
             f=open(fnm,"w")
             for k in data.keys():
                 f.write("%s  %s \n" % (k,data[k]))
-        elif type.lower == "nc":
+        elif type.lower() == "nc":
             f=cdms2.open(fnm,"w")
             f.write(data,*args,**kargs)
         else:

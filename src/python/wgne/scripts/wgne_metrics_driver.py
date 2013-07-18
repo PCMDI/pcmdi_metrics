@@ -1,23 +1,26 @@
-import cdms2 as cdms
-import MV2 as MV
-import cdutil
-from genutil import statistics
-import string, os
-import json   # A data-interchange format see http://www.json.org/
-
-from misc import *
+#/usr/bin/env python
+import metrics
 import sys
 import argparse
+import os
 
 P = argparse.ArgumentParser()
-P.add_argument("--parameters",dest="param",default="input_parameters.py",help="input parameter file containing local settings")
-P.add_argument("-t","--targetGrid",dest="tgrid",choices=["2.5x2.5",],default="2.5x2.5")
-P.add_argument("-r","--regrid",dest="regrid",choices=["regrid2","linear"],default="regrid2")
-P.add_argument("-o","--ocean-regrid",dest="oregrid",choices=["regrid2","linear"],default="linear")
+P.add_argument("-p","--parameters",dest="param",default="input_parameters.py",help="input parameter file containing local settings",required=True)
+#P.add_argument("-t","--targetGrid",dest="tgrid",choices=["2.5x2.5",],default="2.5x2.5")
+#P.add_argument("-r","--regrid",dest="regrid",choices=["regrid2","linear"],default="regrid2")
+#P.add_argument("-o","--ocean-regrid",dest="oregrid",choices=["regrid2","linear"],default="linear")
 
 args = P.parse_args(sys.argv[1:])
 
-exec("import %s as parameters" % args.param)
+
+pth,fnm = os.path.split(args.param)
+if pth!="":
+    sys.path.append(pth)
+if fnm.lower()[-3:]==".py":
+    fnm = fnm[:-3]
+exec("import %s as parameters" % fnm)
+if pth!="":
+    sys.path.pop(-1)
 
 ######################################################
 #
@@ -26,44 +29,42 @@ exec("import %s as parameters" % args.param)
 #
 ######################################################
 
-for var in vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
+for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
  metrics_dictionary = {}
  ## REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
 
  if var in ['pr','tas','rlut']: 
      regridMethod = parameters.regrid_method
      regridTool= parameters.regridTool
+     table_realm = 'atm.Amon'
  if var in ['tos','sos','zos']: 
      regridMethod = parameters.regrid_method_ocn
      regridTool = parameters.regrid_tool_ocn
+     table_realm = 'ocn.Omon'
  OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,parameters.ref)
- OBS.setTarget(parameters.targetGrid,regridTool,regridMethod)
+ OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
  do = OBS.get(var)
 
- OUT = metric.io.base(parameters.metrics_output_path+parameters.test_case,"%(var)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
- OUT.setTarget(parameters.targetGrid,regridTool,regridMethod)
+ OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
+ OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
 
- for model_version in model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
+ for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
   success = True
   while success:
     metrics_dictionary[model_version] = {}
 
-    MODEL = metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
+    MODEL = metrics.io.base.Base(parameters.mod_data_path+"/"+parameters.case_id,parameters.filename_template)
     MODEL.model_version = model_version
-    MODEL.setTarget(parameters.targetGrid,regridTool,regridMethod)
+    MODEL.table_realm = table_realm
+    MODEL.period = "1980-1999"
+    MODEL.ext="nc"
+    MODEL.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
     try:
-       dm = MODEL.get(var)
-    except:
+       dm = MODEL.get(var,varInFile=var+"_ac")
+    except Exception,err:
         success = False
-        print 'Failed to get variable %s for version: %s' % ( var, model_version)
+        print 'Failed to get variable %s for version: %s, error:\n%s' % ( var, model_version, err)
         break
-    try:
-#      dm = get_our_model_clim(data_location + filename,var)  ## INHOUSE
-      dm = get_cmip5_model_clim(data_location, model_version,var)   ## CMIP5
-    except:
-      success = False
-      print 'Failed to read model results for ', var, ' ', model_version 
-      break
 
     print var,' ', model_version,' ', dm.shape,' ', do.shape
 ###########################################################################
@@ -83,7 +84,7 @@ for var in vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
 # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
 
-    if save_mod_clims: 
+    if parameters.save_mod_clims: 
         CLIM= metrics.io.base.Base(parameters.model_clims_interpolated_output+"/"+parameters.case_id,parameters.filename_template)
         CLIM.write(dm,type="nc",id="var")
     break
