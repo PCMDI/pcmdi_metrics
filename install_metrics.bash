@@ -229,6 +229,51 @@ setup_metrics() {
     [ $? != 0 ] && echo " Error could not install metrics python package using ${install_prefix}/bin/python" 
 }
 
+_readlinkf() {
+    # This is a portable implementation of GNU's "readlink -f" in
+    # bash/zsh, following symlinks recursively until they end in a
+    # file, and will print the full dereferenced path of the specified
+    # file even if the file isn't a symlink.
+    #
+    # Loop detection exists, but only as an abort after passing a
+    # maximum length.
+
+    local start_dir=$(pwd)
+    local file=${1}
+    cd $(dirname ${file})
+    file=$(basename ${file})
+
+    # Iterate down symlinks.  If we exceed a maximum number symlinks, assume that
+    # we're looped and die horribly.
+    local maxlinks=20
+    local count=0
+    local current_dir
+    while [ -L "${file}" ] ; do
+        file=$(readlink ${file})
+        cd $(dirname ${file})
+        file=$(basename ${file})
+        ((count++))
+        if (( count > maxlinks )) ; then
+            current_dir=$(pwd -P)
+            echo "CRITICAL FAILURE[4]: symlink loop detected on ${current_dir}/${file}"
+            cd ${start_dir}
+            exit ${count}
+        fi
+    done
+    current_dir=$(pwd -P)
+    echo "${current_dir}/${file}"
+    cd ${start_dir}
+}
+
+#----------------------------------------------------------
+# Property reading and writing...
+#----------------------------------------------------------
+#Load properties from a java-style property file
+#providing them as script variables in this context
+#arg 1 - optional property file (default is ${config_file})
+load_properties() {
+    ((DEBUG)) && echo "load properties(): "
+    local property_file=${1:-${config_file}}
 main() {
     ## Generic Build Parameters
     cmake_min_version=2.8.10
@@ -242,8 +287,8 @@ main() {
     metrics_repo=http://github.com/UV-CDAT/wgne-wgcm_metrics.git
     cdat_version="master"
     metrics_checkout="master"
-    install_prefix=`readlink -f ${install_prefix}`
-    build_directory=`readlink -f ${build_directory}`
+    install_prefix=_readlinkf ${install_prefix}
+    build_directory=_readlinkf ${build_directory}
     metrics_build_directory=${build_directory}/metrics
     cmake_build_directory=${build_directory}/cmake
     uvcdat_build_directory=${build_directory}/uvcdat
