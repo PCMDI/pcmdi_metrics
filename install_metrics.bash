@@ -13,6 +13,7 @@ build_directory="tmp"
 ## You can download it from:
 ## if you leave the following blank we will attempt to use your system Qt
 qmake_executable=/usr/local/uvcdat/Qt/4.8.4/bin/qmake
+qmake_executable=/usr/bin/qmake
 
 ## Speed up your build by increasing the following to match your number of processors
 num_cpus=8
@@ -265,15 +266,6 @@ _readlinkf() {
     cd ${start_dir}
 }
 
-#----------------------------------------------------------
-# Property reading and writing...
-#----------------------------------------------------------
-#Load properties from a java-style property file
-#providing them as script variables in this context
-#arg 1 - optional property file (default is ${config_file})
-load_properties() {
-    ((DEBUG)) && echo "load properties(): "
-    local property_file=${1:-${config_file}}
 main() {
     ## Generic Build Parameters
     cmake_min_version=2.8.10
@@ -287,8 +279,8 @@ main() {
     metrics_repo=http://github.com/UV-CDAT/wgne-wgcm_metrics.git
     cdat_version="master"
     metrics_checkout="master"
-    install_prefix=_readlinkf ${install_prefix}
-    build_directory=_readlinkf ${build_directory}
+    install_prefix=$(_readlinkf ${install_prefix})
+    build_directory=$(_readlinkf ${build_directory})
     metrics_build_directory=${build_directory}/metrics
     cmake_build_directory=${build_directory}/cmake
     uvcdat_build_directory=${build_directory}/uvcdat
