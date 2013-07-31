@@ -6,7 +6,7 @@
 install_prefix="WGNE"
 
 ## Temporary build directory
-build_directory="tmp"
+build_directory="WGNE/tmp"
 
 ## Path to your "qmake" executable
 ## Qt is a pre-requisite
@@ -20,7 +20,8 @@ num_cpus=8
 
 ## if you are behing a firewall or need some certificate to get out
 ## specify path to cert bellow, leave blank otherwise
-certificate=${HOME}/ca.llnl.gov.pem.cer
+#certificate=${HOME}/ca.llnl.gov.pem.cer
+certificate=
 
 
 ## DO NOT EDIT AFTER THIS POINT !!!!!
@@ -241,14 +242,20 @@ _readlinkf() {
 
     local start_dir=$(pwd)
     local file=${1}
+    local current_dir
+    current_dir=$(pwd -P)
     cd $(dirname ${file})
+    if [ $? != 0 ]; then
+       echo ${current_dir}/${file}
+       exit 0
+    fi
+
     file=$(basename ${file})
 
     # Iterate down symlinks.  If we exceed a maximum number symlinks, assume that
     # we're looped and die horribly.
     local maxlinks=20
     local count=0
-    local current_dir
     while [ -L "${file}" ] ; do
         file=$(readlink ${file})
         cd $(dirname ${file})
@@ -261,14 +268,13 @@ _readlinkf() {
             exit ${count}
         fi
     done
-    current_dir=$(pwd -P)
     echo "${current_dir}/${file}"
     cd ${start_dir}
 }
 
 main() {
     ## Generic Build Parameters
-    cmake_min_version=2.8.10
+    cmake_min_version=2.8.9
     cmake_max_version=2.10
     cmake_version=2.8.11
     force_install=0
@@ -286,6 +292,9 @@ main() {
     uvcdat_build_directory=${build_directory}/uvcdat
     cmake_install_dir=${install_prefix}/Externals
     cdat_home=${install_prefix}
+
+    echo "Installing into: "${install_prefix}
+    echo "Temporary build directory: "${build_directory}
 
     ## clone wgne repo
     git clone ${metrics_repo} ${metrics_build_directory}
