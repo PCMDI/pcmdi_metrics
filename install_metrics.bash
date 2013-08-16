@@ -26,11 +26,10 @@ certificate=
 
 ## DO NOT EDIT AFTER THIS POINT !!!!!
 
-
 setup_cmake() {
 
     echo -n "Checking for CMake >=  ${cmake_min_version} "
-    check_version_with cmake "cmake --version | awk '{print \$3}' | sed -re 's/([^-]*)-.*/\1/'" ${cmake_min_version} ${cmake_max_version}
+    check_version_with cmake "cmake --version | awk '{print \$3}' | sed -e 's/\([^-]*\)-.*/\1/'" ${cmake_min_version} ${cmake_max_version}
     [ $? == 0 ] && (( ! force_install )) && echo " [OK]" && return 0
 
     echo
@@ -90,7 +89,7 @@ setup_cmake() {
     echo "returning from build subshell with code: [$?]"
     (( $? > 1 )) && echo "ERROR: Could not setup CMake successfully aborting... " && checked_done 1
 
-    cmake_version=$(${cmake_install_dir}/bin/cmake --version | awk '{print $3}' | sed -re 's/([^-]*)-.*/\1/')
+    cmake_version=$(${cmake_install_dir}/bin/cmake --version | awk '{print $3}' | sed -e 's/\([^-]*\)-.*/\1/')
     printf "\ninstalled CMake version = ${cmake_version}\n\n"
 
     checked_done 0
@@ -174,7 +173,7 @@ setup_cdat() {
         mkdir -p ${uvcdat_build_directory_build}
         pushd ${uvcdat_build_directory_build}
         #(zlib patch value has to be 3,5,7 - default is 3)
-        local zlib_value=$(pkg-config --modversion zlib | sed -n -re 's/(.)*/\1/p' | sed -n -re '/(3|5|7)/p') ; [[ ! ${zlib_value} ]] && zlib_value=3
+        local zlib_value=$(pkg-config --modversion zlib | sed -n -e 's/\(.\)*/\1/p' | sed -n -e '/\(3|5|7\)/p') ; [[ ! ${zlib_value} ]] && zlib_value=3
         cmake ${pip_string} -DCDAT_ANONYMOUS_LOG=OFF -DQT_QMAKE_EXECUTABLE=${qmake_executable} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL="${cdat_git_protocol}" ${uvcdat_build_directory}/uvcdat
         #[ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (1)" && popd && checked_done 1
         cmake ${pip_string} -DQT_QMAKE_EXECUTABLE=${qmake_executable} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL="${cdat_git_protocol}" ${uvcdat_build_directory}/uvcdat

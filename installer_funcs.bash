@@ -170,7 +170,7 @@ _version_segment_cmp() {
         VERSIONLENGTH=${#VERSIONB[*]}
     fi
 
-    for index in `seq 1 $VERSIONLENGTH` ; do
+    for ((index=1;index<=VERSIONLENGTH;index++)) ; do
         if ( [ -z ${VERSIONA[$index]##*[!0-9]*} ] ||
                 [ -z ${VERSIONB[$index]##*[!0-9]*} ] ) ; then
             # Non-numeric comparison
