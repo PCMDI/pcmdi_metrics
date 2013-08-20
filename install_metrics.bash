@@ -314,7 +314,8 @@ main() {
     mkdir -p ${install_prefix}/Externals/lib
     mkdir -p ${install_prefix}/Externals/include
     mkdir -p ${install_prefix}/Externals/share
-
+    
+    PATH=${install_prefix}/Externals/bin:${PATH}
     setup_cmake
     setup_cdat
     setup_metrics
