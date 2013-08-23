@@ -22,8 +22,10 @@ class Base(genutil.StringConstructor):
         self.regridMethod = regridMethod
         if target=="2.5x2.5":
             self.targetGrid = cdms2.createUniformGrid(-88.875,72,2.5,0,144,2.5)
+            self.targetGridName = target
         elif cdms2.isGrid(target):
             self.targetGrid = target
+            self.targetGridName = target
         else:
             raise RunTimeError,"Unknown grid: %s" % target
 

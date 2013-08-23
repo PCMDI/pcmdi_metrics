@@ -47,6 +47,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
  OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
  OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
+ OUT.var=var
+
 
  for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
   success = True
