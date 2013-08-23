@@ -13,21 +13,23 @@ build_directory="WGNE/tmp"
 ## You can download it from:
 ## if you leave the following blank we will attempt to use your system Qt
 qmake_executable=/usr/local/uvcdat/Qt/4.8.4/bin/qmake
-qmake_executable=/usr/bin/qmake
+#qmake_executable=/usr/bin/qmake
 
 ## Speed up your build by increasing the following to match your number of processors
-num_cpus=8
+num_cpus=16
 
 ## if you are behing a firewall or need some certificate to get out
 ## specify path to cert bellow, leave blank otherwise
-#certificate=${HOME}/ca.llnl.gov.pem.cer
-certificate=
+certificate=${HOME}/ca.llnl.gov.pem.cer
+#certificate=
 
 
 ## DO NOT EDIT AFTER THIS POINT !!!!!
 
 setup_cmake() {
 
+    ## Source funcs needed by installer
+    . ${metrics_build_directory}/installer_funcs.bash
     echo -n "Checking for CMake >=  ${cmake_min_version} "
     check_version_with cmake "cmake --version | awk '{print \$3}' | sed -e 's/\([^-]*\)-.*/\1/'" ${cmake_min_version} ${cmake_max_version}
     [ $? == 0 ] && (( ! force_install )) && echo " [OK]" && return 0
@@ -116,6 +118,8 @@ setup_cdat() {
     local ret=$?
     ((ret == 0)) && (( ! force_install )) && echo " [OK]" && return 0
 
+    ## Source funcs needed by installer
+    . ${metrics_build_directory}/installer_funcs.bash
     echo
     echo "*******************************"
     echo "Setting up CDAT - (Python + CDMS)... ${cdat_version}"
@@ -306,7 +310,7 @@ main() {
     git checkout ${metrics_checkout}
 
     ## Source funcs needed by installer
-    source ${metrics_build_directory}/installer_funcs.bash
+    . ${metrics_build_directory}/installer_funcs.bash
 
     mkdir -p ${install_prefix}
     mkdir -p ${install_prefix}/Externals
