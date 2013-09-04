@@ -8,20 +8,26 @@ install_prefix="WGNE"
 ## Temporary build directory
 build_directory="WGNE/tmp"
 
+## Do we build graphics
+build_graphics="OFF"
+
+## Do we build UV-CDAT with parallel capabilities (MPI)
+build_parallel="OFF"
+
 ## Path to your "qmake" executable
-## Qt is a pre-requisite
+## Qt is a pre-requisite if you turn graphics on
 ## You can download it from:
 ## if you leave the following blank we will attempt to use your system Qt
-qmake_executable=/usr/local/uvcdat/Qt/4.8.4/bin/qmake
-#qmake_executable=/usr/bin/qmake
+#qmake_executable=/usr/local/uvcdat/Qt/4.8.4/bin/qmake
+qmake_executable=/usr/bin/qmake
 
 ## Speed up your build by increasing the following to match your number of processors
 num_cpus=16
 
 ## if you are behing a firewall or need some certificate to get out
 ## specify path to cert bellow, leave blank otherwise
-certificate=${HOME}/ca.llnl.gov.pem.cer
-#certificate=
+#certificate=${HOME}/ca.llnl.gov.pem.cer
+certificate=
 
 
 ## DO NOT EDIT AFTER THIS POINT !!!!!
@@ -178,11 +184,14 @@ setup_cdat() {
         pushd ${uvcdat_build_directory_build}
         #(zlib patch value has to be 3,5,7 - default is 3)
         local zlib_value=$(pkg-config --modversion zlib | sed -n -e 's/\(.\)*/\1/p' | sed -n -e '/\(3|5|7\)/p') ; [[ ! ${zlib_value} ]] && zlib_value=3
-        cmake ${pip_string} -DCDAT_ANONYMOUS_LOG=OFF -DQT_QMAKE_EXECUTABLE=${qmake_executable} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL="${cdat_git_protocol}" ${uvcdat_build_directory}/uvcdat
-        #[ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (1)" && popd && checked_done 1
-        cmake ${pip_string} -DQT_QMAKE_EXECUTABLE=${qmake_executable} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL="${cdat_git_protocol}" ${uvcdat_build_directory}/uvcdat
+
+        cmake_args="${pip_string} -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value}-DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat -DCDAT_BUILD_GRAPHICS=${build_graphics} $([ "${build_graphics}" = "ON" ] && echo "-DQT_QMAKE_EXECUTABLE=${qmake_executable}")"
+
+        cmake ${cmake_arg}
+        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (1)" && popd && checked_done 1
+        cmake ${cmake_arg}
         [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (2)" && popd && checked_done 1
-        cmake ${pip_string} -DQT_QMAKE_EXECUTABLE=${qmake_executable} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL="${cdat_git_protocol}" ${uvcdat_build_directory}/uvcdat
+        cmake ${cmake_arg}
         [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (3)" && popd && checked_done 1
 
         make -j ${num_cpus}
