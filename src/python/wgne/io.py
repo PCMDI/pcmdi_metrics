@@ -20,13 +20,13 @@ obs_dic = {'rlut':{'default':'CERES','alternate':'ERBE'},
             }
 
 class OBS(metrics.io.base.Base):
-    def __init__(self,root,var,reference="default"):
+    def __init__(self,root,var,reference="default",period="198001-200512"):
         template = "%s/%s/ac/%s_%s_%%(period)_ac.%%(ext)" % (var,obs_dic[var][reference],var,obs_dic[var][reference])
         metrics.io.base.Base.__init__(self,root,template)
         if var in ['tos','sos','zos']:
             self.realm = 'ocn'
         else:
             self.realm = 'atm'
-        self.period = "198001-200512"
+        self.period = period
         self.ext = "nc"
 
