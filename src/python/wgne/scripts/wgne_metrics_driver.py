@@ -35,13 +35,15 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
  if var in ['pr','tas','rlut']: 
      regridMethod = parameters.regrid_method
-     regridTool= parameters.regridTool
+     regridTool= parameters.regrid_tool
      table_realm = 'atm.Amon'
+     period="000001-000012"
  if var in ['tos','sos','zos']: 
      regridMethod = parameters.regrid_method_ocn
      regridTool = parameters.regrid_tool_ocn
      table_realm = 'ocn.Omon'
- OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,parameters.ref)
+     period="198101-200512"
+ OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,parameters.ref,period=period)
  OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
  do = OBS.get(var)
 
@@ -88,6 +90,10 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
     if parameters.save_mod_clims: 
         CLIM= metrics.io.base.Base(parameters.model_clims_interpolated_output+"/"+parameters.case_id,parameters.filename_template)
+	CLIM.model_version = model_version
+	CLIM.table_realm = table_realm
+	CLIM.period = period
+        CLIM.variable = var
         CLIM.write(dm,type="nc",id="var")
     break
 
