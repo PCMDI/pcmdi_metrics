@@ -31,7 +31,7 @@ class Base(genutil.StringConstructor):
 
     def write(self,data,type="json",*args,**kargs):
         fnm = self()+".%s" % type
-	print "FILE NAME IS:",fnm
+	print type," FILE NAME IS:",fnm
         try:
             os.mkdir(os.path.split(fnm)[0])
         except:

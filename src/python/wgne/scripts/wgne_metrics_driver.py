@@ -42,7 +42,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
      regridMethod = parameters.regrid_method_ocn
      regridTool = parameters.regrid_tool_ocn
      table_realm = 'ocn.Omon'
-     period="198101-200512"
+     period="198001-200512"
  OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,parameters.ref,period=period)
  OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
  do = OBS.get(var)
@@ -89,10 +89,11 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
 
     if parameters.save_mod_clims: 
-        CLIM= metrics.io.base.Base(parameters.model_clims_interpolated_output+"/"+parameters.case_id,parameters.filename_template)
+        CLIM= metrics.io.base.Base(parameters.model_clims_interpolated_output+"/"+parameters.case_id,parameters.filename_output_template)
 	CLIM.model_version = model_version
 	CLIM.table_realm = table_realm
 	CLIM.period = period
+        CLIM.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
         CLIM.variable = var
         CLIM.write(dm,type="nc",id="var")
     break
