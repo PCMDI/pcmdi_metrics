@@ -17,7 +17,7 @@ model_versions = ['GFDL-ESM2G',]
 vars = ['zos','pr','rlut','tas']
 vars = ['tas','pr']
 vars = ['pr','tas','tos']
-vars = ['tos']
+vars = ['pr']
 
 # Observations to use at the moment "default" or "alternate"
 ref = 'default' 
