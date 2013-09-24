@@ -19,6 +19,7 @@ def compute_metrics(var,dm,do):
   do_am, dm_am =  metrics.wgne.annual_mean.compute(dm,do)
   ### ANNUAL MEAN BIAS
   bias_am = metrics.wgne.bias.compute(dm_am,do_am) 
+  print 'BIAS IS ' , bias_am, type(bias_am), type(cor_xyt)
 
   ### ANNUAL MEAN RMS
   rms_xy = metrics.wgne.rms_xy.compute(dm_am,do_am)
@@ -29,7 +30,7 @@ def compute_metrics(var,dm,do):
   for m in ['rms_xyt','rms_xy','bias_am','cor_xyt']:
    if m == 'rms_xyt': metrics_dictionary[m] = format(rms_xyt*conv,'.2f') 
    if m == 'rms_xy': metrics_dictionary[m] =  format(rms_xy*conv,'.2f')
-#  if m == 'bias_am': metrics_dictionary[m] = format(bias_am*conv,'.2f')
+   if m == 'bias_am': metrics_dictionary[m] = format(bias_am*conv,'.2f')
    if m == 'cor_xyt': metrics_dictionary[m] = format(cor_xyt,'.2f')
  
   return metrics_dictionary 
