@@ -8,21 +8,9 @@ install_prefix="WGNE"
 ## Temporary build directory
 build_directory="WGNE/tmp"
 
-## Do we build graphics
-build_graphics="OFF"
-
 ## Do we build UV-CDAT with parallel capabilities (MPI)
 build_parallel="OFF"
 
-## Path to your "qmake" executable
-## Qt is a pre-requisite if you turn graphics on
-## You can download it from:
-## if you leave the following blank we will attempt to use your system Qt
-#qmake_executable=/usr/local/uvcdat/Qt/4.8.4/bin/qmake
-qmake_executable=/usr/bin/qmake
-
-## Speed up your build by increasing the following to match your number of processors
-num_cpus=16
 
 ## if you are behing a firewall or need some certificate to get out
 ## specify path to cert bellow, leave blank otherwise
@@ -30,6 +18,19 @@ num_cpus=16
 certificate=
 
 
+## Not needed yet, for future use
+## Do we build graphics
+## build_graphics="OFF"
+
+## Path to your "qmake" executable
+## Qt is a pre-requisite if you turn graphics on
+## You can download it from:
+## if you leave the following blank we will attempt to use your system Qt
+#qmake_executable=/usr/local/uvcdat/Qt/4.8.4/bin/qmake
+#qmake_executable=/usr/bin/qmake
+
+## Speed up your build by increasing the following to match your number of processors
+num_cpus=16
 ## DO NOT EDIT AFTER THIS POINT !!!!!
 
 setup_cmake() {
@@ -76,7 +77,7 @@ setup_cmake() {
 	unset LDFLAGS
 
         ((DEBUG)) && printf "\n-----\n cd ${cmake_build_directory} \n-----\n"
-        cd ${cmake_build_directory}
+        cd ${cmake_build_directory} >& /dev/null
 
         ((DEBUG)) && printf "\n-----\n git checkout v${cmake_version} \n-----\n"
         git checkout v${cmake_version}
@@ -162,7 +163,6 @@ setup_cdat() {
     cd uvcdat >& /dev/null
     git checkout ${cdat_version}
     [ $? != 0 ] && echo " WARNING: Problem with checking out cdat revision [${cdat_version}] from repository :-("
-
     #NOTE:
     #cdms configuration with --enable-esg flag looks for pg_config in
     #$postgress_install_dir/bin.  This location is created and added
@@ -180,22 +180,30 @@ setup_cdat() {
 	unset LDFLAGS
 
         [ -d ${uvcdat_build_directory_build} ] && rm -rf ${uvcdat_build_directory_build}
-        mkdir -p ${uvcdat_build_directory_build}
-        pushd ${uvcdat_build_directory_build}
+        mkdir -p ${uvcdat_build_directory_build} >& /dev/null
+        pushd ${uvcdat_build_directory_build} >& /dev/null
         #(zlib patch value has to be 3,5,7 - default is 3)
         local zlib_value=$(pkg-config --modversion zlib | sed -n -e 's/\(.\)*/\1/p' | sed -n -e '/\(3|5|7\)/p') ; [[ ! ${zlib_value} ]] && zlib_value=3
 
-        cmake_args="${pip_string} -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value}-DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat -DCDAT_BUILD_GRAPHICS=${build_graphics} $([ "${build_graphics}" = "ON" ] && echo "-DQT_QMAKE_EXECUTABLE=${qmake_executable}")"
+        # cmake_args="${pip_string} -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat -DCDAT_BUILD_GRAPHICS=${build_graphics} $([ "${build_graphics}" = "ON" ] && echo "-DQT_QMAKE_EXECUTABLE=${qmake_executable}")"
+        cmake_cmd="cmake ${pip_string} -DCDAT_BUILD_UDUNITS2=ON -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_ESGF=ON -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
 
-        cmake ${cmake_arg}
+        echo "CMAKE ARGS: "${cmake_args}
+        echo "PATH:"${PATH}
+        echo "PWD:"`pwd`
+        ${cmake_cmd}
         [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (1)" && popd && checked_done 1
-        cmake ${cmake_arg}
+        ${cmake_cmd}
         [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (2)" && popd && checked_done 1
-        cmake ${cmake_arg}
+        ${cmake_cmd}
         [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (3)" && popd && checked_done 1
 
+        echo "CMAKE ARGS"${cmake_args}
         make -j ${num_cpus}
         [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (4)" && popd && checked_done 1
+
+        echo "CMAKE ARGS"${cmake_args}
+        echo "UVCDAT BDIR"${uvcdat_build_directory}
 
         popd >& /dev/null
     )
@@ -237,10 +245,40 @@ write_cdat_install_log() {
     return 0
 }
 
+setup_cdat_xtra() {
+    echo "Installing Extra Package ${1}"${uvcdat_build_directory}/uvcdat/Packages/$1
+    cd ${uvcdat_build_directory}/uvcdat/Packages/$1 >& /dev/null
+    env BUILD_DIR="." CFLAGS="-I${install_prefix}/Externals/include" ${install_prefix}/bin/python setup.py install
+    [ $? != 0 ] && echo " Error could not install CDAT extra python package ${1} using ${install_prefix}/bin/python" 
+}
+
 setup_metrics() {
-    cd ${metrics_build_directory}
+    cd ${metrics_build_directory} >& /dev/null
     ${install_prefix}/bin/python setup.py install
     [ $? != 0 ] && echo " Error could not install metrics python package using ${install_prefix}/bin/python" 
+}
+
+_full_path() {
+    # Figure out the full path and resolved symlinks
+    # Saves current dir
+    local DIR=`pwd`
+    if [ ! -d $1 ]; then
+        if [ ${1:0:1} == "/" ]; then
+            local PTH=$1
+        else
+            local PTH=`pwd -P`/$1
+        fi
+    else
+        pushd $1 >& /dev/null
+        local PTH=`pwd -P`
+    fi
+    mkdir -p ${PTH}
+    echo ${PTH}
+    if [ $? != 0 ]; then
+        exit 1
+    fi
+    pushd ${DIR} >& /dev/null
+    exit 0
 }
 
 _readlinkf() {
@@ -256,7 +294,7 @@ _readlinkf() {
     local file=${1}
     local current_dir
     current_dir=$(pwd -P)
-    cd $(dirname ${file})
+    cd $(dirname ${file}) >& /dev/null
     if [ $? != 0 ]; then
        echo ${current_dir}/${file}
        exit 0
@@ -270,18 +308,18 @@ _readlinkf() {
     local count=0
     while [ -L "${file}" ] ; do
         file=$(readlink ${file})
-        cd $(dirname ${file})
+        cd $(dirname ${file}) >& /dev/null
         file=$(basename ${file})
         ((count++))
         if (( count > maxlinks )) ; then
             current_dir=$(pwd -P)
             echo "CRITICAL FAILURE[4]: symlink loop detected on ${current_dir}/${file}"
-            cd ${start_dir}
+            cd ${start_dir} >& /dev/null
             exit ${count}
         fi
     done
     echo "${current_dir}/${file}"
-    cd ${start_dir}
+    cd ${start_dir} >& /dev/null
 }
 
 main() {
@@ -297,17 +335,23 @@ main() {
     metrics_repo=http://github.com/UV-CDAT/wgne-wgcm_metrics.git
     cdat_version="master"
     metrics_checkout="master"
-    install_prefix=$(_readlinkf ${install_prefix})
-    build_directory=$(_readlinkf ${build_directory})
+    install_prefix=$(_full_path ${install_prefix})
+    if [ $? != 0 ]; then
+        echo "Could not create directory ${install_prefix}"
+        exit 1
+    fi
+    build_directory=$(_full_path ${build_directory})
+    if [ $? != 0 ]; then
+        echo "Could not create directory ${build_directory}"
+        exit 1
+    fi
     metrics_build_directory=${build_directory}/metrics
     cmake_build_directory=${build_directory}/cmake
     uvcdat_build_directory=${build_directory}/uvcdat
     cmake_install_dir=${install_prefix}/Externals
     cdat_home=${install_prefix}
-
     echo "Installing into: "${install_prefix}
     echo "Temporary build directory: "${build_directory}
-
     ## clone wgne repo
     git clone ${metrics_repo} ${metrics_build_directory}
     if [ ! -e ${metrics_build_directory}/.git/config ]; then
@@ -315,7 +359,7 @@ main() {
         exit 1
     fi
 
-    cd ${metrics_build_directory}
+    cd ${metrics_build_directory} >& /dev/null
     git checkout ${metrics_checkout}
 
     ## Source funcs needed by installer
@@ -332,6 +376,11 @@ main() {
     setup_cmake
     setup_cdat
     setup_metrics
+    pushd ${uvcdat_build_directory}/uvcdat >& /dev/null
+    patch < ${metrics_build_directory}/src/patch_uvcdat.patch
+    setup_cdat_xtra genutil
+    setup_cdat_xtra xmgrace
+    setup_cdat_xtra cdutil
     echo "SUCCESS"
     echo "Create your customized input_parameters.py (insipre yourself from examples in ${metrics_build_directory}/doc/wgne_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
