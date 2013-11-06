@@ -33,6 +33,8 @@ num_cpus=8
 
 ### DO NOT EDIT AFTER THIS POINT !!!!! ###
 
+export UVCDAT_ANONYMOUS_LOG=no ; # Prevent installer from hanging due to cdms2 logging
+
 setup_cmake() {
 
     ## Source funcs needed by installer
