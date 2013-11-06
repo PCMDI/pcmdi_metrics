@@ -332,7 +332,7 @@ main() {
     DEBUG=1
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
-    metrics_repo=http://github.com/UV-CDAT/wgne-wgcm_metrics.git
+    metrics_repo=git://github.com/UV-CDAT/wgne-wgcm_metrics.git
     cdat_version="master"
     metrics_checkout="master"
     install_prefix=$(_full_path ${install_prefix})
