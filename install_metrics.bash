@@ -382,7 +382,7 @@ main() {
     setup_cdat_xtra xmgrace
     setup_cdat_xtra cdutil
     echo "SUCCESS"
-    echo "Create your customized input_parameters.py (insipre yourself from examples in ${metrics_build_directory}/doc/wgne_input_parameters_sample.py"
+    echo "Create your customized input_parameters.py (inspire yourself from examples in ${metrics_build_directory}/doc/wgne_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
     echo "${install_prefix}/bin/python ${install_prefix}/bin/wgne_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
 
