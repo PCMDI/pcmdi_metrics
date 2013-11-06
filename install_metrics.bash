@@ -11,14 +11,12 @@ build_directory="WGNE/tmp"
 ## Do we build UV-CDAT with parallel capabilities (MPI)
 build_parallel="OFF"
 
-
-## if you are behing a firewall or need some certificate to get out
-## specify path to cert bellow, leave blank otherwise
+## If you are behind a firewall or need a certificate to get out
+## specify path to certificate below, leave blank otherwise
 #certificate=${HOME}/ca.llnl.gov.pem.cer
 certificate=
 
-
-## Not needed yet, for future use
+## Not currently needed, for future use
 ## Do we build graphics
 ## build_graphics="OFF"
 
@@ -30,8 +28,11 @@ certificate=
 #qmake_executable=/usr/bin/qmake
 
 ## Speed up your build by increasing the following to match your number of processors
-num_cpus=16
-## DO NOT EDIT AFTER THIS POINT !!!!!
+num_cpus=8
+
+
+
+### DO NOT EDIT AFTER THIS POINT !!!!! ###
 
 setup_cmake() {
 
