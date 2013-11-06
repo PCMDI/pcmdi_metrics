@@ -16,13 +16,12 @@ build_parallel="OFF"
 #certificate=${HOME}/ca.llnl.gov.pem.cer
 certificate=
 
-## Not currently needed, for future use
-## Do we build graphics
-## build_graphics="OFF"
+## Do we build graphics - Not currently needed, for future use
+#build_graphics="OFF"
 
 ## Path to your "qmake" executable
 ## Qt is a pre-requisite if you turn graphics on
-## You can download it from:
+## You can download it from: http://qt-project.org/downloads
 ## if you leave the following blank we will attempt to use your system Qt
 #qmake_executable=/usr/local/uvcdat/Qt/4.8.4/bin/qmake
 #qmake_executable=/usr/bin/qmake
@@ -90,14 +89,14 @@ setup_cmake() {
 
         ((DEBUG)) && printf "\n-----\n make -j ${num_cpus} \n-----\n"
         make -j ${num_cpus}
-        [ $? != 0 ] && echo "ERROR: Could not make  CMake successfully" && checked_done 4
+        [ $? != 0 ] && echo "ERROR: Could not make CMake successfully" && checked_done 4
 
         ((DEBUG)) && printf "\n-----\n make install \n-----\n"
         make install
-        [ $? != 0 ] && echo "ERROR: Could not install  CMake successfully" && checked_done 5
+        [ $? != 0 ] && echo "ERROR: Could not install CMake successfully" && checked_done 5
     )
     echo "returning from build subshell with code: [$?]"
-    (( $? > 1 )) && echo "ERROR: Could not setup CMake successfully aborting... " && checked_done 1
+    (( $? > 1 )) && echo "ERROR: Could not setup CMake successfully, aborting... " && checked_done 1
 
     cmake_version=$(${cmake_install_dir}/bin/cmake --version | awk '{print $3}' | sed -e 's/\([^-]*\)-.*/\1/')
     printf "\ninstalled CMake version = ${cmake_version}\n\n"
@@ -137,7 +136,7 @@ setup_cdat() {
     local dosetup="N"
     if [ -x ${cdat_home}/bin/cdat ]; then
         echo "Detected an existing CDAT installation..."
-        read -e -p "Do you want to continue with CDAT installation and setup? [y/N] " dosetup
+        read -e -p "Do you want to continue with CDAT installation and setup? [Y/N] " dosetup
         if [ "${dosetup}" != "Y" ] && [ "${dosetup}" != "y" ]; then
             echo "Skipping CDAT installation and setup - will assume CDAT is setup properly"
             return 0
