@@ -217,8 +217,6 @@ setup_cdat() {
     popd >& /dev/null
     echo
 
-    #write_cdat_env
-    #write_cdat_install_log
     checked_done 0
 }
 
@@ -326,16 +324,16 @@ _readlinkf() {
 
 main() {
     ## Generic Build Parameters
+    cmake_repo=git://cmake.org/cmake.git
     cmake_min_version=2.8.9
     cmake_max_version=2.10
     cmake_version=2.8.11
     force_install=0
-    cmake_repo="http://cmake.org/cmake.git"
     DEBUG=1
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
-    metrics_repo=git://github.com/UV-CDAT/wgne-wgcm_metrics.git
     cdat_version="master"
+    metrics_repo=git://github.com/UV-CDAT/wgne-wgcm_metrics.git
     metrics_checkout="master"
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
@@ -383,10 +381,16 @@ main() {
     setup_cdat_xtra genutil
     setup_cdat_xtra xmgrace
     setup_cdat_xtra cdutil
-    echo "SUCCESS"
+
+    echo
+    echo
+    echo "*******************************"
+    echo "UVCDAT - ${cdat_version} - Install Success"
     echo "Create your customized input_parameters.py (inspire yourself from examples in ${metrics_build_directory}/doc/wgne_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
     echo "${install_prefix}/bin/python ${install_prefix}/bin/wgne_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
+    echo "*******************************"
+    echo
 
 }
  main
