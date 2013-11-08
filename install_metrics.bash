@@ -13,8 +13,8 @@ build_parallel="OFF"
 
 ## If you are behind a firewall or need a certificate to get out
 ## specify path to certificate below, leave blank otherwise
-certificate=${HOME}/ca.llnl.gov.pem.cer
-#certificate=
+#certificate=${HOME}/ca.llnl.gov.pem.cer
+certificate=
 
 ## Do we build graphics - Not currently needed, for future use
 #build_graphics="OFF"
