@@ -11,27 +11,29 @@ build_directory="WGNE/tmp"
 ## Do we build UV-CDAT with parallel capabilities (MPI)
 build_parallel="OFF"
 
-
-## if you are behing a firewall or need some certificate to get out
-## specify path to cert bellow, leave blank otherwise
+## If you are behind a firewall or need a certificate to get out
+## specify path to certificate below, leave blank otherwise
 #certificate=${HOME}/ca.llnl.gov.pem.cer
 certificate=
 
-
-## Not needed yet, for future use
-## Do we build graphics
-## build_graphics="OFF"
+## Do we build graphics - Not currently needed, for future use
+#build_graphics="OFF"
 
 ## Path to your "qmake" executable
 ## Qt is a pre-requisite if you turn graphics on
-## You can download it from:
+## You can download it from: http://qt-project.org/downloads
 ## if you leave the following blank we will attempt to use your system Qt
 #qmake_executable=/usr/local/uvcdat/Qt/4.8.4/bin/qmake
 #qmake_executable=/usr/bin/qmake
 
 ## Speed up your build by increasing the following to match your number of processors
-num_cpus=16
-## DO NOT EDIT AFTER THIS POINT !!!!!
+num_cpus=8
+
+
+
+### DO NOT EDIT AFTER THIS POINT !!!!! ###
+
+export UVCDAT_ANONYMOUS_LOG=no ; # Prevent installer from hanging due to cdms2 logging
 
 setup_cmake() {
 
@@ -89,14 +91,14 @@ setup_cmake() {
 
         ((DEBUG)) && printf "\n-----\n make -j ${num_cpus} \n-----\n"
         make -j ${num_cpus}
-        [ $? != 0 ] && echo "ERROR: Could not make  CMake successfully" && checked_done 4
+        [ $? != 0 ] && echo "ERROR: Could not make CMake successfully" && checked_done 4
 
         ((DEBUG)) && printf "\n-----\n make install \n-----\n"
         make install
-        [ $? != 0 ] && echo "ERROR: Could not install  CMake successfully" && checked_done 5
+        [ $? != 0 ] && echo "ERROR: Could not install CMake successfully" && checked_done 5
     )
     echo "returning from build subshell with code: [$?]"
-    (( $? > 1 )) && echo "ERROR: Could not setup CMake successfully aborting... " && checked_done 1
+    (( $? > 1 )) && echo "ERROR: Could not setup CMake successfully, aborting... " && checked_done 1
 
     cmake_version=$(${cmake_install_dir}/bin/cmake --version | awk '{print $3}' | sed -e 's/\([^-]*\)-.*/\1/')
     printf "\ninstalled CMake version = ${cmake_version}\n\n"
@@ -136,7 +138,7 @@ setup_cdat() {
     local dosetup="N"
     if [ -x ${cdat_home}/bin/cdat ]; then
         echo "Detected an existing CDAT installation..."
-        read -e -p "Do you want to continue with CDAT installation and setup? [y/N] " dosetup
+        read -e -p "Do you want to continue with CDAT installation and setup? [Y/N] " dosetup
         if [ "${dosetup}" != "Y" ] && [ "${dosetup}" != "y" ]; then
             echo "Skipping CDAT installation and setup - will assume CDAT is setup properly"
             return 0
@@ -215,8 +217,6 @@ setup_cdat() {
     popd >& /dev/null
     echo
 
-    #write_cdat_env
-    #write_cdat_install_log
     checked_done 0
 }
 
@@ -324,16 +324,16 @@ _readlinkf() {
 
 main() {
     ## Generic Build Parameters
+    cmake_repo=git://cmake.org/cmake.git
     cmake_min_version=2.8.9
     cmake_max_version=2.10
     cmake_version=2.8.11
     force_install=0
-    cmake_repo="http://cmake.org/cmake.git"
     DEBUG=1
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
-    metrics_repo=http://github.com/UV-CDAT/wgne-wgcm_metrics.git
     cdat_version="master"
+    metrics_repo=git://github.com/UV-CDAT/wgne-wgcm_metrics.git
     metrics_checkout="master"
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
@@ -381,10 +381,16 @@ main() {
     setup_cdat_xtra genutil
     setup_cdat_xtra xmgrace
     setup_cdat_xtra cdutil
-    echo "SUCCESS"
-    echo "Create your customized input_parameters.py (insipre yourself from examples in ${metrics_build_directory}/doc/wgne_input_parameters_sample.py"
+
+    echo
+    echo
+    echo "*******************************"
+    echo "UVCDAT - ${cdat_version} - Install Success"
+    echo "Create your customized input_parameters.py (inspire yourself from examples in ${metrics_build_directory}/doc/wgne_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
     echo "${install_prefix}/bin/python ${install_prefix}/bin/wgne_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
+    echo "*******************************"
+    echo
 
 }
  main
