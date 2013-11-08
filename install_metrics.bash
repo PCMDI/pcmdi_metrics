@@ -13,8 +13,8 @@ build_parallel="OFF"
 
 ## If you are behind a firewall or need a certificate to get out
 ## specify path to certificate below, leave blank otherwise
-#certificate=${HOME}/ca.llnl.gov.pem.cer
-certificate=
+certificate=${HOME}/ca.llnl.gov.pem.cer
+#certificate=
 
 ## Do we build graphics - Not currently needed, for future use
 #build_graphics="OFF"
@@ -70,7 +70,14 @@ setup_cmake() {
     if [ ! -d "${cmake_build_directory}" ]; then
         echo "Cloning CMake repository ${cmake_repo}..."
         git clone ${cmake_repo} ${cmake_build_directory}
-        [ $? != 0 ] && echo "ERROR: Could not clone CMake repository" && checked_done 1
+        if [ ! -d ${cmake_build_directory}/cmake/.git ]; then
+            echo "Apparently was not able to fetch from GIT repo using git protocol... trying http protocol..."
+            git clone ${cmake_repo_http} ${cmake_build_directory}
+            if [ ! -d ${cmake_build_directory}/cmake/.git ]; then
+                echo "Apparently was not able to fetch from GIT repo using git protocol... trying http protocol..."
+                exit 1
+            fi
+        fi
     fi
 
     (
@@ -325,6 +332,7 @@ _readlinkf() {
 main() {
     ## Generic Build Parameters
     cmake_repo=git://cmake.org/cmake.git
+    cmake_repo_http=http://cmake.org/cmake.git
     cmake_min_version=2.8.9
     cmake_max_version=2.10
     cmake_version=2.8.11
@@ -334,6 +342,7 @@ main() {
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
     cdat_version="master"
     metrics_repo=git://github.com/UV-CDAT/wgne-wgcm_metrics.git
+    metrics_repo_http=http://github.com/UV-CDAT/wgne-wgcm_metrics.git
     metrics_checkout="master"
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
@@ -355,8 +364,12 @@ main() {
     ## clone wgne repo
     git clone ${metrics_repo} ${metrics_build_directory}
     if [ ! -e ${metrics_build_directory}/.git/config ]; then
-        echo " ERROR: Could not clone metrics repo! Check you are connected to the internet"
-        exit 1
+        echo " WARN: Could not clone metrics repo! Trying http protocol"
+        git clone ${metrics_repo_http} ${metrics_build_directory}
+        if [ ! -e ${metrics_build_directory}/.git/config ]; then
+            echo " ERROR: Could not clone metrics repo! Check you are connected to the internet"
+            exit 1
+        fi
     fi
 
     cd ${metrics_build_directory} >& /dev/null
