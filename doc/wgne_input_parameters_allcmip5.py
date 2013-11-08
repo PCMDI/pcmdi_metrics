@@ -16,10 +16,10 @@ model_versions = ['ACCESS1-0', 'ACCESS1-3', 'bcc-csm1-1', 'bcc-csm1-1-m', 'BNU-E
 
 
 ### VARIABLES AND OBSERVATIONS TO USE
-vars = ['zos','pr','rlut','tas']
-vars = ['tas','pr']
-vars = ['pr','tas','tos']
-vars = ['tas']
+vars = ['zos','pr','rlut','rsut','tas','tos','tauu','tauv']
+#vars = ['tas','pr']
+#vars = ['pr','tas','tos']
+vars = ['uas']
 
 # Observations to use at the moment "default" or "alternate"
 ref = 'default' 
