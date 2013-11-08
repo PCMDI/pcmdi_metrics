@@ -12,7 +12,6 @@ P.add_argument("-p","--parameters",dest="param",default="input_parameters.py",he
 
 args = P.parse_args(sys.argv[1:])
 
-
 pth,fnm = os.path.split(args.param)
 if pth!="":
     sys.path.append(pth)
@@ -33,7 +32,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
  metrics_dictionary = {}
  ## REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
 
- if var in ['pr','tas','rlut']: 
+ if var not in ['tos','sos','zos']:  #['pr','tas','rlut']: 
      regridMethod = parameters.regrid_method
      regridTool= parameters.regrid_tool
      table_realm = 'atm.Amon'
@@ -43,11 +42,22 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
      regridTool = parameters.regrid_tool_ocn
      table_realm = 'ocn.Omon'
      period="198001-200512"
- OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,parameters.ref,period=period)
- OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
- do = OBS.get(var)
 
- OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
+ if len(var.split("_"))>1:
+	level = float(var.split("_")[-1])*100.
+        var=var.split("_")[0]
+        OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,parameters.ref,period=period)
+	OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
+	do = OBS.get(var,level=level)
+
+ else:
+         level=None
+	 OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,parameters.ref,period=period)
+         OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
+	 do = OBS.get(var)
+
+
+ OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
  OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
  OUT.var=var
 
@@ -60,11 +70,17 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     MODEL = metrics.io.base.Base(parameters.mod_data_path+"/"+parameters.case_id,parameters.filename_template)
     MODEL.model_version = model_version
     MODEL.table_realm = table_realm
-    MODEL.period = "1980-1999"
+    MODEL.model_period = parameters.model_period  #"1980-1999"
     MODEL.ext="nc"
     MODEL.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
+    MODEL.realization = parameters.realization
     try:
-       dm = MODEL.get(var,varInFile=var+"_ac")
+       if level is None:
+         OUT.level=""
+         dm = MODEL.get(var,varInFile=var+"_ac")
+       else:
+         OUT.level = "-%i" % (int(level/100.))
+         dm = MODEL.get(var,varInFile=var+"_ac",level=level)
     except Exception,err:
         success = False
         print 'Failed to get variable %s for version: %s, error:\n%s' % ( var, model_version, err)
@@ -73,7 +89,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     print var,' ', model_version,' ', dm.shape,' ', do.shape
 ###########################################################################
 #### METRICS CALCULATIONS
-    metrics_dictionary[model_version] = metrics.wgne.compute_metrics(var,dm,do)
+    metrics_dictionary[model_version] = {}
+    metrics_dictionary[model_version][parameters.realization] = metrics.wgne.compute_metrics(var,dm,do)
 ###########################################################################
 
 ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
@@ -90,6 +107,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
     if parameters.save_mod_clims: 
         CLIM= metrics.io.base.Base(parameters.model_clims_interpolated_output+"/"+parameters.case_id,parameters.filename_output_template)
+        CLIM.level=OUT.level
 	CLIM.model_version = model_version
 	CLIM.table_realm = table_realm
 	CLIM.period = period

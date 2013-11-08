@@ -16,6 +16,7 @@ vars = ['zos','pr','rlut','tas']
 vars = ['tas','pr']
 vars = ['pr','tas','tos']
 vars = ['tos',]
+vars = ['ta_85000']
 
 # Observations to use at the moment "default" or "alternate"
 ref = 'default' 
