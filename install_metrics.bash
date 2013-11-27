@@ -27,7 +27,7 @@ certificate=
 #qmake_executable=/usr/bin/qmake
 
 ## Speed up your build by increasing the following to match your number of processors
-num_cpus=8
+num_cpus=1
 
 
 
@@ -71,10 +71,10 @@ setup_cmake() {
         echo "Cloning CMake repository ${cmake_repo}..."
         git clone ${cmake_repo} ${cmake_build_directory}
         if [ ! -d ${cmake_build_directory}/.git ]; then
-            echo "Apparently was not able to fetch from GIT repo using git protocol... trying http protocol..."
+            echo "Apparently was not able to fetch from cmake repo using git protocol... trying http protocol..."
             git clone ${cmake_repo_http} ${cmake_build_directory}
             if [ ! -d ${cmake_build_directory}/.git ]; then
-                echo "Apparently was not able to fetch from GIT repo using git protocol... trying http protocol..."
+                echo "Could not fetch from cmake repo (with git nor http protocol)"
                 exit 1
             fi
         fi
