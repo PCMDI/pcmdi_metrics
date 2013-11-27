@@ -70,10 +70,10 @@ setup_cmake() {
     if [ ! -d "${cmake_build_directory}" ]; then
         echo "Cloning CMake repository ${cmake_repo}..."
         git clone ${cmake_repo} ${cmake_build_directory}
-        if [ ! -d ${cmake_build_directory}.git ]; then
+        if [ ! -d ${cmake_build_directory}/.git ]; then
             echo "Apparently was not able to fetch from GIT repo using git protocol... trying http protocol..."
             git clone ${cmake_repo_http} ${cmake_build_directory}
-            if [ ! -d ${cmake_build_directory}.git ]; then
+            if [ ! -d ${cmake_build_directory}/.git ]; then
                 echo "Apparently was not able to fetch from GIT repo using git protocol... trying http protocol..."
                 exit 1
             fi
