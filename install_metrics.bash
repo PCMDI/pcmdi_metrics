@@ -338,11 +338,11 @@ main() {
     cmake_version=2.8.11
     force_install=0
     DEBUG=1
-    cdat_repo=git://github.com/UV-CDAT/uvcdat.git
-    cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
-    cdat_version="master"
-    metrics_repo=git://github.com/UV-CDAT/wgne-wgcm_metrics.git
-    metrics_repo_http=http://github.com/UV-CDAT/wgne-wgcm_metrics.git
+    cdat_repo=git://github.com/UV-CDAT/uvcdat-devel.git
+    cdat_repo_http=http://github.com/UV-CDAT/uvcdat-devel.git
+    cdat_version="metrics"
+    metrics_repo=git://github.com/PCMDI/wgne-wgcm_metrics.git
+    metrics_repo_http=http://github.com/PCMDI/wgne-wgcm_metrics.git
     metrics_checkout="master"
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
