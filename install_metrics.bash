@@ -27,13 +27,14 @@ certificate=
 #qmake_executable=/usr/bin/qmake
 
 ## Speed up your build by increasing the following to match your number of processors
-num_cpus=1
+num_cpus=4
 
 
 
 ### DO NOT EDIT AFTER THIS POINT !!!!! ###
 
-export UVCDAT_ANONYMOUS_LOG=no ; # Prevent installer from hanging due to cdms2 logging
+# Prevent installer from hanging due to cdms2 logging
+export UVCDAT_ANONYMOUS_LOG=False
 
 setup_cmake() {
 
@@ -338,9 +339,9 @@ main() {
     cmake_version=2.8.11
     force_install=0
     DEBUG=1
-    cdat_repo=git://github.com/UV-CDAT/uvcdat-devel.git
-    cdat_repo_http=http://github.com/UV-CDAT/uvcdat-devel.git
-    cdat_version="metrics"
+    cdat_repo=git://github.com/UV-CDAT/uvcdat.git
+    cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
+    cdat_version="master"
     metrics_repo=git://github.com/PCMDI/wgne-wgcm_metrics.git
     metrics_repo_http=http://github.com/PCMDI/wgne-wgcm_metrics.git
     metrics_checkout="master"
