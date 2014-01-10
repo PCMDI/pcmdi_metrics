@@ -21,10 +21,15 @@ vars = ['zos','pr','rlut','tos']
 vars = ['tos']
 vars = ['tas']
 vars=['hus_850',]
+vars = ['pr','tas','rlut','rsut','hus_850']
+#vars = ['ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500']
+vars = ['rlutcs','rsutcs','vas','tas']
+vars = ['zg_500']
 
 # Observations to use at the moment "default" or "alternate"
 ref = 'default' 
 ext = '.xml'  #'.nc'
+ext = '.nc'
 
 # INTERPOLATION OPTIONS
 targetGrid        = '2.5x2.5' # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
@@ -45,8 +50,10 @@ save_mod_clims = True # True or False
 ## Templates for climatology files
 ## TEMPLATE EXAMPLE: cmip5.GFDL-ESM2G.historical.r1i1p1.mo.atm.Amon.rlut.ver-1.1980-1999.AC.nc
 filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-1.%(period).AC.%(ext)" 
-filename_template = "cmip5.%(model_version).historical.%(realization).mo.%(table_realm).%(variable).ver-1.%(period).AC.%(ext)"
-filename_template = "%(variable)_MEAN_CLIM_METRICS_%(model_version)_%(realization)_%(model_period)-clim.xml"
+filename_template = "cmip5.%(model_version).historical.%(realization).mo.%(table_realm).%(variable).ver-1.%(model_period).AC.%(ext)"
+#filename_template = "%(variable)_MEAN_CLIM_METRICS_%(model_version)_%(realization)_%(model_period)-clim.xml"
+filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-1.latestX.1980-2005.AC.nc"
+
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
 mod_data_path = '/work/gleckler1/processed_data/metrics_package/inhouse_model_clims/' 

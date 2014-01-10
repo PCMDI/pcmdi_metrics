@@ -77,10 +77,10 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     try:
        if level is None:
          OUT.level=""
-         dm = MODEL.get(var,varInFile=var+"_ac")
+         dm = MODEL.get(var,varInFile=var)  #+"_ac")
        else:
          OUT.level = "-%i" % (int(level/100.))
-         dm = MODEL.get(var,varInFile=var+"_ac",level=level)
+         dm = MODEL.get(var,varInFile=var,level=level)
     except Exception,err:
         success = False
         print 'Failed to get variable %s for version: %s, error:\n%s' % ( var, model_version, err)

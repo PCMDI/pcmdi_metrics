@@ -35,11 +35,11 @@ def compute_metrics(var,dm_glb,do_glb):
     do_am, dm_am =  metrics.wgne.annual_mean.compute(dm,do)
 
   ### ANNUAL MEAN BIAS
-    bias_am = metrics.wgne.bias.compute(dm_am,do_am)
-    print var,'  ', 'annual mean bias is ' , bias_am
+    bias_xy = metrics.wgne.bias.compute(dm_am,do_am)
+    print var,'  ', 'annual mean bias is ' , bias_xy
 
    ### MEAN ABSOLOUTE ERROR 
-    mae_am = metrics.wgne.meanabs_xy.compute(dm_am,do_am)
+    mae_xy = metrics.wgne.meanabs_xy.compute(dm_am,do_am)
 
     ### ANNUAL MEAN RMS
     rms_xy = metrics.wgne.rms_xy.compute(dm_am,do_am)
@@ -47,11 +47,14 @@ def compute_metrics(var,dm_glb,do_glb):
     conv = 1.
     if var == 'pr': conv = 1.e5
 
-    for m in ['rms_xyt','rms_xy','bias_am','cor_xyt','mae_am']:
-     if m == 'rms_xyt': metrics_dictionary[m + '_ann_' + dom] = format(rms_xyt*conv,'.2f') 
-     if m == 'rms_xy': metrics_dictionary[m + '_ann_' + dom] =  format(rms_xy*conv,'.2f')
-     if m == 'bias_am': metrics_dictionary[m + '_ann_' + dom] = format(bias_am*conv,'.2f')
-     if m == 'mae_am': metrics_dictionary[m + '_ann_' + dom] = format(mae_am*conv,'.2f')
+    sig_digits = '.2f'
+    if var in ['hus']: sig_digits = '.5f'
+
+    for m in ['rms_xyt','rms_xy','bias_xy','cor_xyt','mae_am']:
+     if m == 'rms_xyt': metrics_dictionary[m + '_ann_' + dom] = format(rms_xyt*conv,sig_digits) 
+     if m == 'rms_xy': metrics_dictionary[m + '_ann_' + dom] =  format(rms_xy*conv,sig_digits)
+     if m == 'bias_xy': metrics_dictionary[m + '_ann_' + dom] = format(bias_xy*conv,sig_digits)
+     if m == 'mae_xy': metrics_dictionary[m + '_ann_' + dom] = format(mae_xy*conv,sig_digits)
      if m == 'cor_xyt': metrics_dictionary[m + '_ann_' + dom] = format(cor_xyt,'.2f')
 
   #### SEASONAL MEANS ######
@@ -65,9 +68,11 @@ def compute_metrics(var,dm_glb,do_glb):
      rms_sea = metrics.wgne.rms_xy.compute(dm_sea,do_sea)
      cor_sea = metrics.wgne.cor_xy.compute(dm_sea,do_sea) 
      mae_sea = metrics.wgne.meanabs_xy.compute(dm_sea,do_sea)
+     bias_sea = metrics.wgne.bias.compute(dm_sea,do_sea)
 
-     metrics_dictionary['rms_xy_' + sea + '_' + dom] = format(rms_sea*conv,'.2f') 
+     metrics_dictionary['bias_xy_' + sea + '_' + dom] = format(bias_sea*conv,sig_digits)
+     metrics_dictionary['rms_xy_' + sea + '_' + dom] = format(rms_sea*conv,sig_digits) 
      metrics_dictionary['cor_xy_' + sea + '_' + dom] = format(cor_sea,'.2f')
-     metrics_dictionary['mae_xy_' + sea + '_' + dom] = format(mae_sea*conv,'.2f')
+     metrics_dictionary['mae_xy_' + sea + '_' + dom] = format(mae_sea*conv,sig_digits)
  
   return metrics_dictionary 
