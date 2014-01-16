@@ -57,7 +57,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 	 do = OBS.get(var)
 
 
- OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
+ OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)%(level)_%(obsName)%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
  OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
  OUT.var=var
 
@@ -96,6 +96,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
 
 # CREATE OUTPUT AS JSON FILE
+
+    OUT.obsName = wgne.io.obs_dic[var]['default'] 
 
     OUT.write(metrics_dictionary, sort_keys=True, indent=4, separators=(',', ': '))    
 
