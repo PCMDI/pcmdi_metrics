@@ -30,7 +30,9 @@ obs_period = {'ERAINT':{'period':'000001-000012'},
               'RSS':{'period': '000001-000012'},
               'HadISST':{'period':'198001-200512'},
               'WOA09':  {'period':'177201-200812'},
-              'CNES_AVISO_L4':{'period':'199201-200512'}
+              'CNES_AVISO_L4':{'period':'199201-200512'},
+              'JRA25' : {"period":'000001-000012'},
+              'rnl_ncep' : {"period":'000001-000012'},
           }
 
 class OBS(metrics.io.base.Base):

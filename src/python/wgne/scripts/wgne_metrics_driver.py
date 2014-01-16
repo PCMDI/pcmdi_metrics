@@ -3,6 +3,7 @@ import metrics
 import sys
 import argparse
 import os
+from metrics.wgne.io import obs_dic
 
 P = argparse.ArgumentParser()
 P.add_argument("-p","--parameters",dest="param",default="input_parameters.py",help="input parameter file containing local settings",required=True)
@@ -50,16 +51,17 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         period="000001-000012"
 
     #Ok at that stage we need to loop thru obs
+    print 'ref is:',parameters.ref
     if isinstance(parameters.ref,list):
         refs=parameters.ref
     elif isinstance(parameters.ref,str):
         #Is it "all"
         if parameters.ref.lower()=="all":
-            from metrics.wgne.io import obs_dic
             refs = obs_dic[var].keys()
+            print "Refs are:",refs
         else:
             refs=[parameters.ref,]
-    for ref in parameters.ref:
+    for ref in refs:
         OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,ref,period=period)
         OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
         do = OBS.get(var)
