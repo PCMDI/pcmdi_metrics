@@ -61,20 +61,21 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
             print "Refs are:",refs
         else:
             refs=[parameters.ref,]
+
+    OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
+    OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
+    OUT.var=var
+
     for ref in refs:
         OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,ref,period=period)
         OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
         do = OBS.get(var)
 
-        OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)%(level)_%(obsName)%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
-        OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
-        OUT.var=var
-
 
         for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
             success = True
             while success:
-                metrics_dictionary[model_version] = {}
+                metrics_dictionary[model_version] = metrics_dictionary.get(model_version,{})
 
                 MODEL = metrics.io.base.Base(parameters.mod_data_path+"/"+parameters.case_id,parameters.filename_template)
                 MODEL.model_version = model_version
@@ -104,21 +105,10 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                 metrics_dictionary[model_version][ref][parameters.realization] = metrics.wgne.compute_metrics(var,dm,do)
                 ###########################################################################
 
-                ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
-
-                # CREATE OUTPUT AS JSON FILE
-
-                OUT.obsName = onm
-
-                OUT.write(metrics_dictionary, sort_keys=True, indent=4, separators=(',', ': '))    
-
-                # CREATE OUTPUT AS ASCII FILE
-                OUT.write(metrics_dictionary,type="txt") 
-
 
                 # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
-
-                if parameters.save_mod_clims: 
+                # Only the first time thru an obs set (always the same after)
+                if parameters.save_mod_clims and ref==refs[0]: 
                     CLIM= metrics.io.base.Base(parameters.model_clims_interpolated_output+"/"+parameters.case_id,parameters.filename_output_template)
                     CLIM.level=OUT.level
                     CLIM.model_version = model_version
@@ -127,6 +117,9 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     CLIM.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                     CLIM.variable = var
                     CLIM.write(dm,type="nc",id="var")
-                break
 
-
+    ## Done with obs and models loops , let's dum before next var
+    ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
+    OUT.write(metrics_dictionary, sort_keys=True, indent=4, separators=(',', ': '))    
+    # CREATE OUTPUT AS ASCII FILE
+    OUT.write(metrics_dictionary,type="txt") 
