@@ -29,93 +29,102 @@ if pth!="":
 ######################################################
 
 for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
- metrics_dictionary = {}
- ## REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
+    metrics_dictionary = {}
+    ## REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
 
- if var not in ['tos','sos','zos']:  #['pr','tas','rlut']: 
-     regridMethod = parameters.regrid_method
-     regridTool= parameters.regrid_tool
-     table_realm = 'atm.Amon'
-     period="000001-000012"
- if var in ['tos','sos','zos']: 
-     regridMethod = parameters.regrid_method_ocn
-     regridTool = parameters.regrid_tool_ocn
-     table_realm = 'ocn.Omon'
-     period="198001-200512"
-
- if len(var.split("_"))>1:
-	level = float(var.split("_")[-1])*100.
+    if len(var.split("_"))>1:
+        level = float(var.split("_")[-1])*100.
         var=var.split("_")[0]
-        OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,parameters.ref,period=period)
-	OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
-	do = OBS.get(var,level=level)
+    else:
+        level=None
 
- else:
-         level=None
-	 OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,parameters.ref,period=period)
-         OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
-	 do = OBS.get(var)
+    if var in ['tos','sos','zos']: 
+        regridMethod = parameters.regrid_method_ocn
+        regridTool = parameters.regrid_tool_ocn
+        table_realm = 'ocn.Omon'
+        period="198001-200512"
+    else:
+        regridMethod = parameters.regrid_method
+        regridTool= parameters.regrid_tool
+        table_realm = 'atm.Amon'
+        period="000001-000012"
 
+    #Ok at that stage we need to loop thru obs
+    if isinstance(parameters.ref,list):
+        refs=parameters.ref
+    elif isinstance(parameters.ref,str):
+        #Is it "all"
+        if parameters.ref.lower()=="all":
+            from metrics.wgne.io import obs_dic
+            refs = obs_dic[var].keys()
+        else:
+            refs=[parameters.ref,]
+    for ref in parameters.ref:
+        OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,ref,period=period)
+        OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
+        do = OBS.get(var)
 
- OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)%(level)_%(obsName)%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
- OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
- OUT.var=var
-
-
- for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
-  success = True
-  while success:
-    metrics_dictionary[model_version] = {}
-
-    MODEL = metrics.io.base.Base(parameters.mod_data_path+"/"+parameters.case_id,parameters.filename_template)
-    MODEL.model_version = model_version
-    MODEL.table_realm = table_realm
-    MODEL.model_period = parameters.model_period  #"1980-1999"
-    MODEL.ext="nc"
-    MODEL.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
-    MODEL.realization = parameters.realization
-    try:
-       if level is None:
-         OUT.level=""
-         dm = MODEL.get(var,varInFile=var)  #+"_ac")
-       else:
-         OUT.level = "-%i" % (int(level/100.))
-         dm = MODEL.get(var,varInFile=var,level=level)
-    except Exception,err:
-        success = False
-        print 'Failed to get variable %s for version: %s, error:\n%s' % ( var, model_version, err)
-        break
-
-    print var,' ', model_version,' ', dm.shape,' ', do.shape
-###########################################################################
-#### METRICS CALCULATIONS
-    metrics_dictionary[model_version] = {}
-    metrics_dictionary[model_version][parameters.realization] = metrics.wgne.compute_metrics(var,dm,do)
-###########################################################################
-
-### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
-
-# CREATE OUTPUT AS JSON FILE
-
-    OUT.obsName = wgne.io.obs_dic[var]['default'] 
-
-    OUT.write(metrics_dictionary, sort_keys=True, indent=4, separators=(',', ': '))    
-
-# CREATE OUTPUT AS ASCII FILE
-    OUT.write(metrics_dictionary,type="txt") 
+        OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)%(level)_%(obsName)%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
+        OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
+        OUT.var=var
 
 
-# OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
+        for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
+            success = True
+            while success:
+                metrics_dictionary[model_version] = {}
 
-    if parameters.save_mod_clims: 
-        CLIM= metrics.io.base.Base(parameters.model_clims_interpolated_output+"/"+parameters.case_id,parameters.filename_output_template)
-        CLIM.level=OUT.level
-	CLIM.model_version = model_version
-	CLIM.table_realm = table_realm
-	CLIM.period = period
-        CLIM.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
-        CLIM.variable = var
-        CLIM.write(dm,type="nc",id="var")
-    break
+                MODEL = metrics.io.base.Base(parameters.mod_data_path+"/"+parameters.case_id,parameters.filename_template)
+                MODEL.model_version = model_version
+                MODEL.table_realm = table_realm
+                MODEL.model_period = parameters.model_period  #"1980-1999"
+                MODEL.ext="nc"
+                MODEL.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
+                MODEL.realization = parameters.realization
+                try:
+                   if level is None:
+                     OUT.level=""
+                     dm = MODEL.get(var,varInFile=var)  #+"_ac")
+                   else:
+                     OUT.level = "-%i" % (int(level/100.))
+                     dm = MODEL.get(var,varInFile=var,level=level)
+                except Exception,err:
+                    success = False
+                    print 'Failed to get variable %s for version: %s, error:\n%s' % ( var, model_version, err)
+                    break
+
+                print var,' ', model_version,' ', dm.shape,' ', do.shape
+                ###########################################################################
+                #### METRICS CALCULATIONS
+                metrics_dictionary[model_version] = {}
+                onm = obs_dic[var][ref]
+                metrics_dictionary[model_version][ref] = {'source':onm}
+                metrics_dictionary[model_version][ref][parameters.realization] = metrics.wgne.compute_metrics(var,dm,do)
+                ###########################################################################
+
+                ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
+
+                # CREATE OUTPUT AS JSON FILE
+
+                OUT.obsName = onm
+
+                OUT.write(metrics_dictionary, sort_keys=True, indent=4, separators=(',', ': '))    
+
+                # CREATE OUTPUT AS ASCII FILE
+                OUT.write(metrics_dictionary,type="txt") 
+
+
+                # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
+
+                if parameters.save_mod_clims: 
+                    CLIM= metrics.io.base.Base(parameters.model_clims_interpolated_output+"/"+parameters.case_id,parameters.filename_output_template)
+                    CLIM.level=OUT.level
+                    CLIM.model_version = model_version
+                    CLIM.table_realm = table_realm
+                    CLIM.period = period
+                    CLIM.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
+                    CLIM.variable = var
+                    CLIM.write(dm,type="nc",id="var")
+                break
 
 

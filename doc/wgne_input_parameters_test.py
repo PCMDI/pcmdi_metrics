@@ -27,7 +27,7 @@ vars = ['rlutcs','rsutcs','vas','tas']
 vars = ['zg_500']
 
 # Observations to use at the moment "default" or "alternate"
-ref = 'default' 
+ref = 'all'
 ext = '.xml'  #'.nc'
 ext = '.nc'
 
