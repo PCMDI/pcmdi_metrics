@@ -75,7 +75,6 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
             success = True
             while success:
-                metrics_dictionary[model_version] = metrics_dictionary.get(model_version,{})
 
                 MODEL = metrics.io.base.Base(parameters.mod_data_path+"/"+parameters.case_id,parameters.filename_template)
                 MODEL.model_version = model_version
@@ -96,16 +95,15 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     print 'Failed to get variable %s for version: %s, error:\n%s' % ( var, model_version, err)
                     break
 
-                print var,' ', model_version,' ', dm.shape,' ', do.shape
+                print var,' ', model_version,' ', dm.shape,' ', do.shape,'  ', ref
                 ###########################################################################
                 #### METRICS CALCULATIONS
-                metrics_dictionary[model_version] = {}
                 onm = obs_dic[var][ref]
+                metrics_dictionary[model_version] = metrics_dictionary.get(model_version,{})
                 metrics_dictionary[model_version][ref] = {'source':onm}
                 metrics_dictionary[model_version][ref][parameters.realization] = metrics.wgne.compute_metrics(var,dm,do)
                 ###########################################################################
-
-
+           
                 # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
                 # Only the first time thru an obs set (always the same after)
                 if parameters.save_mod_clims and ref==refs[0]: 
@@ -117,6 +115,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     CLIM.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                     CLIM.variable = var
                     CLIM.write(dm,type="nc",id="var")
+
+                break               
 
     ## Done with obs and models loops , let's dum before next var
     ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
