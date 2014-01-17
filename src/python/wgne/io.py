@@ -1,6 +1,9 @@
 import metrics
 obs_dic = {'rlut':{'default':'CERES','alternate':'ERBE'},
            'rsut':{'default':'CERES','alternate':'ERBE'},
+           'rsds':{'default':'CERES','alternate':'ERBE'},
+           'rlus':{'default':'CERES','alternate':'ERBE'},
+           'rsus':{'default':'CERES','alternate':'ERBE'},
            'rlutcs':{'default':'CERES','alternate':'ERBE'},
            'rsutcs':{'default':'CERES','alternate':'ERBE'},
            'rsutcre':{'default':'CERES','alternate':'ERBE'},
@@ -24,21 +27,24 @@ obs_dic = {'rlut':{'default':'CERES','alternate':'ERBE'},
             }
 
 ### ADDED BY PJG
-obs_period = {'ERAINT':{'period':'000001-000012'},
-              'CERES':{'period': '000001-000012'},
-              'GPCP':{'period': '000001-000012'},
+obs_period = {'ERAINT':{'period':'198901-201001'},
+              'CERES':{'period': '200003-201206'},
+              'GPCP':{'period': '197901-200909'},
               'RSS':{'period': '000001-000012'},
               'HadISST':{'period':'198001-200512'},
               'WOA09':  {'period':'177201-200812'},
               'CNES_AVISO_L4':{'period':'199201-200512'},
               'JRA25' : {"period":'000001-000012'},
               'rnl_ncep' : {"period":'000001-000012'},
+              'ERBE': {"period":'000001-000012'}
           }
 
 class OBS(metrics.io.base.Base):
     def __init__(self,root,var,reference="default",period="198001-200512"):
         period = obs_period[obs_dic[var][reference]]['period']  ### ADDED BY PJG
-        template = "%s/%s/ac/%s_%s_%%(period)_ac.%%(ext)" % (var,obs_dic[var][reference],var,obs_dic[var][reference])
+#       template = "%s/%s/ac/%s_%s_%%(period)_ac.%%(ext)" % (var,obs_dic[var][reference],var,obs_dic[var][reference])
+        template = "%s/%s/ac/%s_pcmdi-metrics_Amon_%s_%%(period)-clim.%%(ext)" % (var,obs_dic[var][reference],var,obs_dic[var][reference])
+
         metrics.io.base.Base.__init__(self,root,template)
         if var in ['tos','sos','zos']:
             self.realm = 'ocn'
