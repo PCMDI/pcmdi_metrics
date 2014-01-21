@@ -67,9 +67,13 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     OUT.var=var
 
     for ref in refs:
-        OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,ref,period=period)
-        OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
-        do = OBS.get(var)
+## PJG ADDED try/except/break  TO DEAL WITH ANY MISSING REF BOMBING
+        try:
+         OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,ref,period=period)
+         OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
+         do = OBS.get(var)
+        except:
+          break
 ### PJG ADDING LEVEL CONDITON FOR OBS JAN 21 2014
         try:
          if level is not None:
