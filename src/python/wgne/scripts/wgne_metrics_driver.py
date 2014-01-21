@@ -70,7 +70,13 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,ref,period=period)
         OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
         do = OBS.get(var)
-
+### PJG ADDING LEVEL CONDITON FOR OBS JAN 21 2014
+        try:
+         if level is not None:
+           do = OBS.get(var,varInFile=var,level=level)
+        except:
+           print 'failed with 4D OBS'
+### END PJG EDIT 
 
         for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
             success = True
