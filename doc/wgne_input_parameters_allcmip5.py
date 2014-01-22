@@ -19,7 +19,7 @@ model_versions = ['ACCESS1-0', 'ACCESS1-3', 'bcc-csm1-1', 'bcc-csm1-1-m', 'BNU-E
 vars = ['zos','pr','rlut','rsut','tas','tos','tauu','tauv']
 #vars = ['tas','pr']
 #vars = ['pr','tas','tos']
-vars = ['uas']
+vars = ['rlut']
 
 # Observations to use at the moment "default" or "alternate"
 ref = 'default' 
@@ -39,9 +39,12 @@ save_mod_clims = True  #False   #True # True or False
 ## Templates for climatology files
 filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-1.%(period).AC.%(ext)" 
 filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-1.1980-2005.AC.%(ext)"
+filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-1.latestX.1980-2005.AC.%(ext)"
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
 mod_data_path = '/work/gleckler1/processed_data/metrics_package/inhouse_model_clims/' 
 mod_data_path = '/work/gleckler1/processed_data/cmip5clims-AR5-frozen_1dir/' 
+#mod_data_path = '/work/gleckler1/processed_data/cmip5clims/'
+
 ## ROOT PATH FOR OBSERVATIONS
 obs_data_path = '/work/gleckler1/processed_data/metrics_package/'
 ## DIRECTORY WHERE TO PUT RESULTS

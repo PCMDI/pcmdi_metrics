@@ -2,8 +2,9 @@
 import metrics
 import sys
 import argparse
-import os
+import os, json
 from metrics.wgne.io import obs_dic
+
 
 P = argparse.ArgumentParser()
 P.add_argument("-p","--parameters",dest="param",default="input_parameters.py",help="input parameter file containing local settings",required=True)
@@ -28,6 +29,7 @@ if pth!="":
 #  Identified via --parameters key at startup
 #
 ######################################################
+
 
 for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     metrics_dictionary = {}
@@ -68,12 +70,17 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
     for ref in refs:
 ## PJG ADDED try/except/break  TO DEAL WITH ANY MISSING REF BOMBING
-        try:
-         OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,ref,period=period)
-         OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
-         do = OBS.get(var)
-        except:
-          break
+## AND, TRYING TO GET OBS PERIOD from obs_period_dic which is now in /export/gleckler1/git/wgne-wgcm_metrics/src/python/io/obs_period_dictionary.json
+#       obs_period_dic = json.load(open('/export/gleckler1/git/wgne-wgcm_metrics/src/python/io/obs_period_dictionary.json','r+'))
+#       obsname = obs_dic[var][ref]
+#       obs_period = '198901-200911'  #obs_period_dic[var][obsname]
+#       try:
+        OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,ref,period=period)
+        OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
+        do = OBS.get(var)
+        print 'OBS SHAPE IS ', do.shape
+#       except:
+#         break
 ### PJG ADDING LEVEL CONDITON FOR OBS JAN 21 2014
         try:
          if level is not None:
