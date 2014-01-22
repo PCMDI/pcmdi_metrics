@@ -10,7 +10,7 @@ def compute_metrics(var,dm_glb,do_glb):
   domains = ['GLB','NHEX','TROPICS','SHEX']
 
   ### TEMPORARY UNITS CHANGE
-  if var == 'tos': do_glb = do_glb + 273.13
+  if var == 'tas': do_glb = do_glb + 273.13
 
   for dom in domains: 
 

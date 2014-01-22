@@ -27,8 +27,9 @@ vars = ['ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500','rlut','r
 vars = ['tauu','tauv']
 vars = ['ta_850']
 vars = ['rlut','rsut','rsutcs','pr']
+vars = ['pr']
 vars = ['ta_850']
-vars = ['rlut']
+vars = ['tos']
 
 # Observations to use at the moment "default" or "alternate"
 ref = 'all'
@@ -59,6 +60,7 @@ filename_template = "cmip5.%(model_version).historical.%(realization).mo.%(table
 #filename_template = "%(variable)_MEAN_CLIM_METRICS_%(model_version)_%(realization)_%(model_period)-clim.xml"
 filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-1.latestX.1980-2005.AC.nc"
 
+filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-v20120820.latestX.1980-2005.AC.nc"
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
 mod_data_path = '/work/gleckler1/processed_data/metrics_package/inhouse_model_clims/' 

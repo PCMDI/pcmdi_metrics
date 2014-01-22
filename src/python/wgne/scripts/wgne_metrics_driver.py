@@ -75,7 +75,10 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 #       obsname = obs_dic[var][ref]
 #       obs_period = '198901-200911'  #obs_period_dic[var][obsname]
 #       try:
-        OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(realm)/mo/",var,ref,period=period)
+        print 'table_realm is ', table_realm
+#       OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(table_realm)/mo/",var,ref,period=period)
+        if var not in ['tos','sos','zos']: OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/atm/mo",var,ref,period=period)
+        if var in ['tos','sos','zos']: OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/ocn/mo",var,ref,period=period)
         OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
         do = OBS.get(var)
         print 'OBS SHAPE IS ', do.shape
