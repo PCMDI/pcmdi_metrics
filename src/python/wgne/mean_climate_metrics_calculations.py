@@ -4,7 +4,13 @@ from genutil import statistics
 import cdutil
 import metrics
 
+
+
 def compute_metrics(var,dm_glb,do_glb):
+
+
+  cdms.setAutoBounds('on')
+
   metrics_dictionary = {}
 
   domains = ['GLB','NHEX','TROPICS','SHEX']
