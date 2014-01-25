@@ -24,7 +24,10 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "200408-201012",
             "shape": "(12, 23, 90, 72)"
-        }
+        },
+        "alternate": "rnl_ncep",
+        "default": "ERAINT",
+        "ref3": "JRA25"
     },
     "pr": {
         "GPCP": {
@@ -36,14 +39,17 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "200001-200912",
             "shape": "(12, 400, 1440)"
-        }
+        },
+        "alternate": "TRMM",
+        "default": "GPCP"
     },
     "prw": {
         "RSS": {
             "CMIP_CMOR_TABLE": "Amon",
             "period": "198701-200812",
             "shape": "(12, 72, 144)"
-        }
+        },
+        "default": "RSS"
     },
     "psl": {
         "ERA40": {
@@ -55,7 +61,10 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "198901-200911",
             "shape": "(12, 121, 240)"
-        }
+        },
+        "alternate": "rnl_ncep",
+        "default": "ERAINT",
+        "ref3": "JRA25"
     },
     "rlds": {
         "CERES": {
@@ -76,21 +85,31 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "200003-201209",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "alternate": "ERBE",
+        "default": "CERES"
     },
     "rlut": {
         "CERES": {
             "CMIP_CMOR_TABLE": "Amon",
             "period": "200003-201206",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "alternate": "ERBE",
+        "default": "CERES"
+    },
+    "rlutcre": {
+        "alternate": "ERBE",
+        "default": "CERES"
     },
     "rlutcs": {
         "CERES": {
             "CMIP_CMOR_TABLE": "Amon",
             "period": "200003-201206",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "alternate": "ERBE",
+        "default": "CERES"
     },
     "rlwcrf": {
         "CERES": {
@@ -104,7 +123,9 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "200003-201209",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "alternate": "ERBE",
+        "default": "CERES"
     },
     "rsdscs": {
         "CERES": {
@@ -125,7 +146,9 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "200003-201209",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "alternate": "ERBE",
+        "default": "CERES"
     },
     "rsuscs": {
         "CERES": {
@@ -139,14 +162,22 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "200003-201206",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "alternate": "ERBE",
+        "default": "CERES"
+    },
+    "rsutcre": {
+        "alternate": "ERBE",
+        "default": "CERES"
     },
     "rsutcs": {
         "CERES": {
             "CMIP_CMOR_TABLE": "Amon",
             "period": "200003-201206",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "alternate": "ERBE",
+        "default": "CERES"
     },
     "rswcrf": {
         "CERES": {
@@ -170,7 +201,8 @@
             "CMIP_CMOR_TABLE": "Omon",
             "period": "200401-201212",
             "shape": "(12, 260, 720)"
-        }
+        },
+        "default": "WOA09"
     },
     "ta": {
         "AIRS": {
@@ -197,7 +229,10 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "200408-201012",
             "shape": "(12, 23, 90, 72)"
-        }
+        },
+        "alternate": "rnl_ncep",
+        "default": "ERAINT",
+        "ref3": "JRA25"
     },
     "tas": {
         "ERA40": {
@@ -214,7 +249,20 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "197901-201006",
             "shape": "(12, 145, 288)"
-        }
+        },
+        "alternate": "rnl_ncep",
+        "default": "ERAINT",
+        "ref3": "JRA25"
+    },
+    "tauu": {
+        "alternate": "rnl_ncep",
+        "default": "ERAINT",
+        "ref3": "JRA25"
+    },
+    "tauv": {
+        "alternate": "rnl_ncep",
+        "default": "ERAINT",
+        "ref3": "JRA25"
     },
     "tos": {
         "NOAA-OISST-v2": {
@@ -241,7 +289,8 @@
             "CMIP_CMOR_TABLE": "Omon",
             "period": "198002-200501",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "default": "UKMETOFFICE-HadISST-v1-1"
     },
     "ua": {
         "ERA40": {
@@ -258,7 +307,10 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "197901-201006",
             "shape": "(12, 23, 145, 288)"
-        }
+        },
+        "alternate": "rnl_ncep",
+        "default": "ERAINT",
+        "ref3": "JRA25"
     },
     "uas": {
         "ERA40": {
@@ -275,7 +327,10 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "197901-201006",
             "shape": "(12, 145, 288)"
-        }
+        },
+        "alternate": "rnl_ncep",
+        "default": "ERAINT",
+        "ref3": "JRA25"
     },
     "va": {
         "ERA40": {
@@ -292,7 +347,10 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "197901-201006",
             "shape": "(12, 23, 145, 288)"
-        }
+        },
+        "alternate": "rnl_ncep",
+        "default": "ERAINT",
+        "ref3": "JRA25"
     },
     "vas": {
         "ERA40": {
@@ -309,7 +367,10 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "197901-201006",
             "shape": "(12, 145, 288)"
-        }
+        },
+        "alternate": "rnl_ncep",
+        "default": "ERAINT",
+        "ref3": "JRA25"
     },
     "zg": {
         "ERA40": {
@@ -326,13 +387,17 @@
             "CMIP_CMOR_TABLE": "Amon",
             "period": "197901-201006",
             "shape": "(12, 23, 145, 288)"
-        }
+        },
+        "alternate": "rnl_ncep",
+        "default": "ERAINT",
+        "ref3": "JRA25"
     },
     "zos": {
         "CNES-AVISO-L4": {
             "CMIP_CMOR_TABLE": "Omon",
             "period": "199301-201012",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "default": "CNES_AVISO_L4"
     }
 }

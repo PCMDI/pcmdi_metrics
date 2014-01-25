@@ -27,7 +27,7 @@ certificate=
 #qmake_executable=/usr/bin/qmake
 
 ## Speed up your build by increasing the following to match your number of processors
-num_cpus=4
+num_cpus=8
 
 
 
@@ -334,9 +334,9 @@ main() {
     ## Generic Build Parameters
     cmake_repo=git://cmake.org/cmake.git
     cmake_repo_http=http://cmake.org/cmake.git
-    cmake_min_version=2.8.9
-    cmake_max_version=2.10
-    cmake_version=2.8.11
+    cmake_min_version=2.8.12
+    cmake_max_version=2.9
+    cmake_version=2.8.12
     force_install=0
     DEBUG=1
     cdat_repo=git://github.com/UV-CDAT/uvcdat-devel.git

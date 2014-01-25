@@ -3,8 +3,19 @@ import metrics
 import sys
 import argparse
 import os, json
-from metrics.wgne.io import obs_dic
 
+#Load the obs dictionary
+obs_dic = json.loads(open(os.path.join(sys.prefix,"shared","wgne","obs_info_dictionary.json")).read())
+print obs_dic
+class DUP(object):
+    def __init__(self,outfile):
+        self.outfile = outfile
+    def __call__(self,*args):
+        msg = ""
+        for a in args:
+            msg+=str(a)
+        print msg
+        print>>self.outfile, msg
 
 P = argparse.ArgumentParser()
 P.add_argument("-p","--parameters",dest="param",default="input_parameters.py",help="input parameter file containing local settings",required=True)
@@ -30,6 +41,8 @@ if pth!="":
 #
 ######################################################
 
+Efile = open(parameters.metrics_output_path+parameters.case_id+"/errors_log.txt","w")
+dup=DUP(Efile)
 
 for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     metrics_dictionary = {}
@@ -41,26 +54,28 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     else:
         level=None
 
-    if var in ['tos','sos','zos']: 
+    if var in obs_dic[var][obs_dic[var]["default"]]["CMIP_CMOR_TABLE"]=="Omon":
         regridMethod = parameters.regrid_method_ocn
         regridTool = parameters.regrid_tool_ocn
         table_realm = 'ocn.Omon'
-        period="198001-200512"
     else:
         regridMethod = parameters.regrid_method
         regridTool= parameters.regrid_tool
         table_realm = 'atm.Amon'
-        period="000001-000012"
 
     #Ok at that stage we need to loop thru obs
-    print 'ref is:',parameters.ref
+    dup('ref is:',parameters.ref)
     if isinstance(parameters.ref,list):
         refs=parameters.ref
-    elif isinstance(parameters.ref,str):
+    elif isinstance(parameters.ref,(unicode,str)):
         #Is it "all"
         if parameters.ref.lower()=="all":
-            refs = obs_dic[var].keys()
-            print "Refs are:",refs
+            Refs = obs_dic[var].keys()
+            refs=[]
+            for r in Refs:
+                if isinstance(obs_dic[var][r],(unicode,str)):
+                    refs.append(r)
+            dup( "refs:",refs)
         else:
             refs=[parameters.ref,]
 
@@ -69,27 +84,21 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     OUT.var=var
 
     for ref in refs:
-## PJG ADDED try/except/break  TO DEAL WITH ANY MISSING REF BOMBING
-## AND, TRYING TO GET OBS PERIOD from obs_period_dic which is now in /export/gleckler1/git/wgne-wgcm_metrics/src/python/io/obs_period_dictionary.json
-#       obs_period_dic = json.load(open('/export/gleckler1/git/wgne-wgcm_metrics/src/python/io/obs_period_dictionary.json','r+'))
-#       obsname = obs_dic[var][ref]
-#       obs_period = '198901-200911'  #obs_period_dic[var][obsname]
-#       try:
-        print 'table_realm is ', table_realm
-#       OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/%(table_realm)/mo/",var,ref,period=period)
-        if var not in ['tos','sos','zos']: OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/atm/mo",var,ref,period=period)
-        if var in ['tos','sos','zos']: OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/ocn/mo",var,ref,period=period)
+      try:
+        if obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"]=="Omon":
+            OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/ocn/mo",var,obs_dic,ref)
+        else:
+            OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/atm/mo",var,obs_dic,ref)
         OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
         do = OBS.get(var)
-        print 'OBS SHAPE IS ', do.shape
-#       except:
-#         break
+        dup('OBS SHAPE IS ', do.shape)
 ### PJG ADDING LEVEL CONDITON FOR OBS JAN 21 2014
         try:
          if level is not None:
            do = OBS.get(var,varInFile=var,level=level)
         except:
-           print 'failed with 4D OBS'
+           dup('failed with 4D OBS',var,ref)
+           continue
 ### END PJG EDIT 
 
         for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
@@ -112,10 +121,10 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                      dm = MODEL.get(var,varInFile=var,level=level)
                 except Exception,err:
                     success = False
-                    print 'Failed to get variable %s for version: %s, error:\n%s' % ( var, model_version, err)
+                    dup('Failed to get variable %s for version: %s, error:\n%s' % ( var, model_version, err))
                     break
 
-                print var,' ', model_version,' ', dm.shape,' ', do.shape,'  ', ref
+                dup(var,' ', model_version,' ', dm.shape,' ', do.shape,'  ', ref)
                 ###########################################################################
                 #### METRICS CALCULATIONS
                 onm = obs_dic[var][ref]
@@ -137,7 +146,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     CLIM.write(dm,type="nc",id="var")
 
                 break               
-
+      except Exception,err:
+          dup("Error in processing obs:",var,ref,err)
     ## Done with obs and models loops , let's dum before next var
     ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
     OUT.write(metrics_dictionary, sort_keys=True, indent=4, separators=(',', ': '))    
