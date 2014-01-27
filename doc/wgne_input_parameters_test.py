@@ -25,11 +25,8 @@ vars = ['pr','tas','rlut','rsut','hus_850']
 vars = ['ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500','rlut','rsut','rlutcs','rsutcs','tas']
 #vars = ['rlutcs','rsutcs','vas','tas']
 vars = ['tauu','tauv']
-vars = ['ta_850']
-vars = ['rlut','rsut','rsutcs','pr']
-vars = ['pr']
-vars = ['ta_850']
-vars = ['pr']
+#vars = ['ta_850']
+vars = ['zos']
 
 # Observations to use at the moment "default" or "alternate"
 ref = 'all'

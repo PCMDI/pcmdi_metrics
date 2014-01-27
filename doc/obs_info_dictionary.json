@@ -202,7 +202,7 @@
             "period": "200401-201212",
             "shape": "(12, 260, 720)"
         },
-        "default": "WOA09"
+        "default": "NODC-WOA09"
     },
     "ta": {
         "AIRS": {
@@ -398,6 +398,6 @@
             "period": "199301-201012",
             "shape": "(12, 180, 360)"
         },
-        "default": "CNES_AVISO_L4"
+        "default": "CNES-AVISO-L4"
     }
 }

@@ -32,8 +32,8 @@ obs_dic = {'rlut':{'default':'CERES','alternate':'ERBE'},
            'tauu':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
            'tauv':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
            'tos':{'default':'UKMETOFFICE-HadISST-v1-1'},
-           'zos':{'default':'CNES_AVISO_L4'},
-           'sos':{'default':'WOA09'},
+           'zos':{'default':'CNES-AVISO-L4'},
+           'sos':{'default':'NODC-WOA09'},
             }
 
 
