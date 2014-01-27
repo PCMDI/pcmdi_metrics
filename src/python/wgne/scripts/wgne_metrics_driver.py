@@ -58,13 +58,13 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     if obs_dic[var][obs_dic[var]["default"]]["CMIP_CMOR_TABLE"]=="Omon":
         regridMethod = parameters.regrid_method_ocn
         regridTool = parameters.regrid_tool_ocn
-        table_realm = 'ocn.Omon'
+        table_realm = 'Omon'
         dup("WE SET TABLE REALM TO",table_realm)
     else:
         dup("we came here!!!!!",obs_dic[var][obs_dic[var]["default"]]["CMIP_CMOR_TABLE"])
         regridMethod = parameters.regrid_method
         regridTool= parameters.regrid_tool
-        table_realm = 'atm.Amon'
+        table_realm = 'Amon'
 
     #Ok at that stage we need to loop thru obs
     dup('ref is:',parameters.ref)
@@ -93,7 +93,6 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         else:
             OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/atm/mo",var,obs_dic,ref)
         OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
-        dup('OBS SHAPE IS ', do.shape)
 ### PJG ADDING LEVEL CONDITON FOR OBS JAN 21 2014
         try:
          if level is not None:
@@ -103,13 +102,14 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         except:
            dup('failed with 4D OBS',var,ref)
            continue
+        dup('OBS SHAPE IS ', do.shape)
 ### END PJG EDIT 
 
         for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
             success = True
             while success:
 
-                MODEL = metrics.io.base.Base(parameters.mod_data_path+"/"+parameters.case_id,parameters.filename_template)
+                MODEL = metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
                 MODEL.model_version = model_version
                 dup("SETTING TABLE REALM TO",table_realm)
                 MODEL.table_realm = table_realm

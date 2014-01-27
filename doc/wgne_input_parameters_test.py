@@ -7,7 +7,7 @@ import  genutil
 
 ## RUN IDENTIFICATION
 # DEFINES A SUBDIRECTORY TO METRICS OUTPUT RESULTS SO MULTIPLE CASES CAN BE COMPARED
-case_id = 'sampletest'
+case_id = 'sampletest1'
 #case_id = 'cmip5_test'
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
 model_versions = ['GFDL-ESM2G',]
@@ -29,7 +29,7 @@ vars = ['ta_850']
 vars = ['rlut','rsut','rsutcs','pr']
 vars = ['pr']
 vars = ['ta_850']
-vars = ['rlut']
+vars = ['pr']
 
 # Observations to use at the moment "default" or "alternate"
 ref = 'all'
@@ -59,11 +59,11 @@ filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).
 filename_template = "cmip5.%(model_version).historical.%(realization).mo.%(table_realm).%(variable).ver-1.%(model_period).AC.%(ext)"
 #filename_template = "%(variable)_MEAN_CLIM_METRICS_%(model_version)_%(realization)_%(model_period)-clim.xml"
 filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-1.latestX.1980-2005.AC.nc"
-
-#filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-v20120820.latestX.1980-2005.AC.nc" ## tos 
+filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-v20110601.1980-2005.AC.nc" ## tos 
+filename_template = "%(variable)_%(model_version)_%(table_realm)_historical_r1i1p1_198501-200512-clim.nc"
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
-mod_data_path = '/work/gleckler1/processed_data/metrics_package/inhouse_model_clims/' 
+mod_data_path = '/work/gleckler1/processed_data/cmip5clims_metrics_package/' 
 #mod_data_path = '/work/gleckler1/processed_data/cmip5clims-AR5-frozen_1dir/' 
 ## ROOT PATH FOR OBSERVATIONS
 obs_data_path = '/work/gleckler1/processed_data/metrics_package/'
