@@ -12,7 +12,7 @@ setup (name = "metrics",
                       'metrics.io': 'src/python/io',
                       'metrics.wgne': 'src/python/wgne'},
        scripts = ["src/python/wgne/scripts/wgne_metrics_driver.py",
-                  "Src/python/wgne/scripts/build_obs_meta_dictionary.py"],
+                  "src/python/wgne/scripts/build_obs_meta_dictionary.py"],
        data_files = [('shared/wgne',('doc/obs_info_dictionary.json',))],
        #include_dirs = [numpy.lib.utils.get_include()],
        #       ext_modules = [
