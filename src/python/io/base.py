@@ -2,6 +2,10 @@ import json
 import cdms2
 import genutil
 import os
+value = 0
+cdms2.setNetcdfShuffleFlag(value) ## where value is either 0 or 1
+cdms2.setNetcdfDeflateFlag(value) ## where value is either 0 or 1
+cdms2.setNetcdfDeflateLevelFlag(value) ## where value is a integer between 0 and 9 included
 
 class Base(genutil.StringConstructor):
     def __init__(self,root,file_template):
@@ -31,9 +35,8 @@ class Base(genutil.StringConstructor):
 
     def write(self,data,type="json",*args,**kargs):
         fnm = self()+".%s" % type
-	print type," FILE NAME IS:",fnm
         try:
-            os.mkdir(os.path.split(fnm)[0])
+            os.makedirs(os.path.split(fnm)[0])
         except:
             pass
         if not os.path.exists(os.path.split(fnm)[0]):

@@ -145,7 +145,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     CLIM.level=OUT.level
                     CLIM.model_version = model_version
                     CLIM.table_realm = table_realm
-                    CLIM.period = period
+                    CLIM.period = parameters.model_period
                     CLIM.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                     CLIM.variable = var
                     CLIM.write(dm,type="nc",id="var")
