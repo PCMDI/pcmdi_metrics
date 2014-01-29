@@ -42,7 +42,7 @@ regrid_tool_ocn   = 'esmf'    # OPTIONS: "regrid2","esmf"
 regrid_method_ocn = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
 
 # SIMULATION PARAMETERS
-model_period = '1980-2005'
+model_period = '198501-200512'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
@@ -52,22 +52,22 @@ save_mod_clims = True # True or False
 
 ## Templates for climatology files
 ## TEMPLATE EXAMPLE: cmip5.GFDL-ESM2G.historical.r1i1p1.mo.atm.Amon.rlut.ver-1.1980-1999.AC.nc
-filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-1.%(period).AC.%(ext)" 
-filename_template = "cmip5.%(model_version).historical.%(realization).mo.%(table_realm).%(variable).ver-1.%(model_period).AC.%(ext)"
-#filename_template = "%(variable)_MEAN_CLIM_METRICS_%(model_version)_%(realization)_%(model_period)-clim.xml"
-filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-1.latestX.1980-2005.AC.nc"
-filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-v20110601.1980-2005.AC.nc" ## tos 
-filename_template = "%(variable)_%(model_version)_%(table_realm)_historical_r1i1p1_198501-200512-clim.nc"
+filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(period)-clim.nc"
+
+## dictionary for custom %(keyword) designed by user
+# Driver will match each key to its value defined by a variable name OR all if variable name is not present, OR "" if "all" is not defined
+custom_keys = { "key1": {"all":"key1_value_for_all_var", "tas" : "key1_value_for_tas"},
+    }
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
 mod_data_path = '/work/gleckler1/processed_data/cmip5clims_metrics_package/' 
 #mod_data_path = '/work/gleckler1/processed_data/cmip5clims-AR5-frozen_1dir/' 
 ## ROOT PATH FOR OBSERVATIONS
-obs_data_path = '/work/gleckler1/processed_data/metrics_package/'
+obs_data_path = '/work/gleckler1/processed_data/metrics_package/obs/%{realm}/'
 ## DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = '/work/gleckler1/processed_data/metrics_package/metrics_results/'
 ## DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES
 model_clims_interpolated_output = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims/'
 ## FILENAME FOR INTERPOLATED CLIMATOLGIES OUTPUT
-filename_output_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable)%(level).ver-1.%(period).interpolated.%(regridMethod).%(targetGridName).AC%(ext)"
+filename_output_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table).%(variable)%(level).ver-1.%(period).interpolated.%(regridMethod).%(targetGridName).AC%(ext)"
 

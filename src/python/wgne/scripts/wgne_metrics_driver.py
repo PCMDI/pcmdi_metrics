@@ -1,4 +1,10 @@
 #/usr/bin/env python
+######################################################
+#
+#  USER INPUT IS SET IN FILE "input_parameters.py"
+#  Identified via --parameters key at startup
+#
+######################################################
 import metrics
 import sys
 import argparse
@@ -6,22 +12,23 @@ import os, json
 
 #Load the obs dictionary
 obs_dic = json.loads(open(os.path.join(sys.prefix,"shared","wgne","obs_info_dictionary.json")).read())
-print obs_dic
+
 class DUP(object):
     def __init__(self,outfile):
         self.outfile = outfile
     def __call__(self,*args):
         msg = ""
         for a in args:
-            msg+=str(a)
+            msg+=" "+str(a)
         print msg
         print>>self.outfile, msg
 
+def applyCustomKeys(O,custom_dict,var):
+  for k,v in custom_dict.iteritems():
+    setattr(O,k,custom_dict.get(var,custom_dict.get("all","")))
+
 P = argparse.ArgumentParser()
 P.add_argument("-p","--parameters",dest="param",default="input_parameters.py",help="input parameter file containing local settings",required=True)
-#P.add_argument("-t","--targetGrid",dest="tgrid",choices=["2.5x2.5",],default="2.5x2.5")
-#P.add_argument("-r","--regrid",dest="regrid",choices=["regrid2","linear"],default="regrid2")
-#P.add_argument("-o","--ocean-regrid",dest="oregrid",choices=["regrid2","linear"],default="linear")
 
 args = P.parse_args(sys.argv[1:])
 
@@ -34,12 +41,10 @@ exec("import %s as parameters" % fnm)
 if pth!="":
     sys.path.pop(-1)
 
-######################################################
-#
-#  USER INPUT IS SET IN FILE "input_parameters.py"
-#  Identified via --parameters key at startup
-#
-######################################################
+try:
+  os.makedirs(parameters.metrics_output_path+parameters.case_id)
+except:
+  pass
 
 Efile = open(parameters.metrics_output_path+parameters.case_id+"/errors_log.txt","w")
 dup=DUP(Efile)
@@ -54,20 +59,19 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     else:
         level=None
 
-    dup("ok table thing",obs_dic[var][obs_dic[var]["default"]]["CMIP_CMOR_TABLE"],"---")
     if obs_dic[var][obs_dic[var]["default"]]["CMIP_CMOR_TABLE"]=="Omon":
         regridMethod = parameters.regrid_method_ocn
         regridTool = parameters.regrid_tool_ocn
         table_realm = 'Omon'
-        dup("WE SET TABLE REALM TO",table_realm)
+        realm = "ocn"
     else:
-        dup("we came here!!!!!",obs_dic[var][obs_dic[var]["default"]]["CMIP_CMOR_TABLE"])
         regridMethod = parameters.regrid_method
         regridTool= parameters.regrid_tool
         table_realm = 'Amon'
+        realm = "atm"
 
     #Ok at that stage we need to loop thru obs
-    dup('ref is:',parameters.ref)
+    dup('ref is: ',parameters.ref)
     if isinstance(parameters.ref,list):
         refs=parameters.ref
     elif isinstance(parameters.ref,(unicode,str)):
@@ -85,22 +89,28 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
     OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
     OUT.var=var
+    OUT.realm = realm
+    OUT.table = table_realm
+    applyCustomKeys(OUT,parameters.custom_keys,var)
 
     for ref in refs:
       try:
         if obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"]=="Omon":
-            OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/ocn/mo",var,obs_dic,ref)
+            OBS = metrics.wgne.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
         else:
-            OBS = metrics.wgne.io.OBS(parameters.obs_data_path+"/obs/atm/mo",var,obs_dic,ref)
+            OBS = metrics.wgne.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
         OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
+        OBS.realm = realm
+        OBS.table = table_realm
+        applyCustomKeys(OBS,parameters.custom_keys,var)
 ### PJG ADDING LEVEL CONDITON FOR OBS JAN 21 2014
         try:
          if level is not None:
            do = OBS.get(var,level=level)
          else:
            do = OBS.get(var)
-        except:
-           dup('failed with 4D OBS',var,ref)
+        except Exception,err:
+           dup('failed with 4D OBS',var,ref,err)
            continue
         dup('OBS SHAPE IS ', do.shape)
 ### END PJG EDIT 
@@ -111,12 +121,13 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
                 MODEL = metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
                 MODEL.model_version = model_version
-                dup("SETTING TABLE REALM TO",table_realm)
-                MODEL.table_realm = table_realm
-                MODEL.model_period = parameters.model_period  #"1980-1999"
+                MODEL.table = table_realm
+                MODEL.realm = realm
+                MODEL.period = parameters.model_period  
                 MODEL.ext="nc"
                 MODEL.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                 MODEL.realization = parameters.realization
+                applyCustomKeys(MODEL,parameters.custom_keys,var)
                 try:
                    if level is None:
                      OUT.level=""
@@ -148,6 +159,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     CLIM.period = parameters.model_period
                     CLIM.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                     CLIM.variable = var
+                    applyCustomKeys(CLIM,parameters.custom_keys,var)
                     CLIM.write(dm,type="nc",id="var")
 
                 break               

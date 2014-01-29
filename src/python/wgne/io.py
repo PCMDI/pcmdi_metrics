@@ -18,8 +18,6 @@ class OBS(metrics.io.base.Base):
 #       template = "%s/%s/ac/%s_pcmdi-metrics%%(obs_realm)_%s_%%(period)-clim.%%(ext)" % (var,obs_dic[var][reference],var,obs_dic[var][reference])
 
 
-        print 'template is ', type(template)
-
         metrics.io.base.Base.__init__(self,root,template)
         #if self.obs_realm == u"Omon"
         #    self.realm = 'ocn'

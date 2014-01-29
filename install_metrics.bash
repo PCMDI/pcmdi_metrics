@@ -27,7 +27,7 @@ certificate=
 #qmake_executable=/usr/bin/qmake
 
 ## Speed up your build by increasing the following to match your number of processors
-num_cpus=8
+num_cpus=16
 
 
 
