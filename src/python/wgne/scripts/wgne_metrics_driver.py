@@ -41,6 +41,10 @@ exec("import %s as parameters" % fnm)
 if pth!="":
     sys.path.pop(-1)
 
+#Checking if user has custom_keys
+if not hasattr(parameters,"custom_keys"):
+  parameters.custom_keys={}
+
 try:
   os.makedirs(parameters.metrics_output_path+parameters.case_id)
 except:
