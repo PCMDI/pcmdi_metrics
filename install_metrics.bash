@@ -400,7 +400,7 @@ main() {
     echo
     echo "*******************************"
     echo "UVCDAT - ${cdat_version} - Install Success"
-    echo "Create your customized input_parameters.py (inspire yourself from examples in ${metrics_build_directory}/doc/wgne_input_parameters_sample.py"
+    echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/wgne_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
     echo "${install_prefix}/bin/python ${install_prefix}/bin/wgne_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
     echo "*******************************"
