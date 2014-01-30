@@ -51,7 +51,7 @@ save_mod_clims = True # True or False
 ## DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 
 ## Templates for climatology files
-## TEMPLATE EXAMPLE: tas_GFDL-ESM2G_Amon_historical_r1i1p1_r1i1p1_198001-199912-clim.nc
+## TEMPLATE EXAMPLE: tas_GFDL-ESM2G_Amon_historical_r1i1p1_198001-199912-clim.nc
 filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(period)-clim.nc"
 
 ## dictionary for custom %(keyword) designed by user
