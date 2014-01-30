@@ -13,7 +13,9 @@ setup (name = "metrics",
                       'metrics.wgne': 'src/python/wgne'},
        scripts = ["src/python/wgne/scripts/wgne_metrics_driver.py",
                   "src/python/wgne/scripts/build_obs_meta_dictionary.py"],
-       data_files = [('shared/wgne',('doc/obs_info_dictionary.json',))],
+       data_files = [('share/wgne',('doc/obs_info_dictionary.json',)),
+                     ('doc',('doc/wgne_input_parameters_sample.py',)),
+                     ]
        #include_dirs = [numpy.lib.utils.get_include()],
        #       ext_modules = [
        #    Extension('metrics.exts',

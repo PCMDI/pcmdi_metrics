@@ -11,7 +11,7 @@ import argparse
 import os, json
 
 #Load the obs dictionary
-obs_dic = json.loads(open(os.path.join(sys.prefix,"shared","wgne","obs_info_dictionary.json")).read())
+obs_dic = json.loads(open(os.path.join(sys.prefix,"share","wgne","obs_info_dictionary.json")).read())
 
 class DUP(object):
     def __init__(self,outfile):
