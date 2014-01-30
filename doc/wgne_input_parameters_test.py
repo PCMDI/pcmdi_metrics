@@ -51,13 +51,12 @@ save_mod_clims = True # True or False
 ## DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 
 ## Templates for climatology files
-## TEMPLATE EXAMPLE: cmip5.GFDL-ESM2G.historical.r1i1p1.mo.atm.Amon.rlut.ver-1.1980-1999.AC.nc
+## TEMPLATE EXAMPLE: tas_GFDL-ESM2G_Amon_historical_r1i1p1_r1i1p1_198001-199912-clim.nc
 filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(period)-clim.nc"
 
 ## dictionary for custom %(keyword) designed by user
 # Driver will match each key to its value defined by a variable name OR all if variable name is not present, OR "" if "all" is not defined
-custom_keys = { "key1": {"all":"key1_value_for_all_var", "tas" : "key1_value_for_tas"},
-    }
+custom_keys = { "key1": {"all":"key1_value_for_all_var", "tas" : "key1_value_for_tas"}, }
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
 mod_data_path = '/work/gleckler1/processed_data/cmip5clims_metrics_package/' 
@@ -68,6 +67,6 @@ obs_data_path = '/work/gleckler1/processed_data/metrics_package/obs/%{realm}/'
 metrics_output_path = '/work/gleckler1/processed_data/metrics_package/metrics_results/'
 ## DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES
 model_clims_interpolated_output = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims/'
-## FILENAME FOR INTERPOLATED CLIMATOLGIES OUTPUT
+## FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
 #filename_output_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table).%(variable)%(level).ver-1.%(period).interpolated.%(regridMethod).%(targetGridName).AC%(ext)"
 filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_historical_%(realization)_%(period).interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"
