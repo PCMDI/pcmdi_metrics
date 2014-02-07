@@ -52,7 +52,7 @@ save_mod_clims = True # True or False
 
 ## Templates for climatology files
 ## TEMPLATE EXAMPLE: tas_GFDL-ESM2G_Amon_historical_r1i1p1_198001-199912-clim.nc
-filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(period)-clim.nc"
+filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(model_period)-clim.nc"
 
 ## dictionary for custom %(keyword) designed by user
 # Driver will match each key to its value defined by a variable name OR all if variable name is not present, OR "" if "all" is not defined

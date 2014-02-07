@@ -107,7 +107,6 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         OBS.realm = realm
         OBS.table = table_realm
         applyCustomKeys(OBS,parameters.custom_keys,var)
-### PJG ADDING LEVEL CONDITON FOR OBS JAN 21 2014
         try:
          if level is not None:
            do = OBS.get(var,level=level)
@@ -117,7 +116,6 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
            dup('failed with 4D OBS',var,ref,err)
            continue
         dup('OBS SHAPE IS ', do.shape)
-### END PJG EDIT 
 
         for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
             success = True
@@ -127,7 +125,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                 MODEL.model_version = model_version
                 MODEL.table = table_realm
                 MODEL.realm = realm
-                MODEL.period = parameters.model_period  
+                MODEL.model_period = parameters.model_period  
                 MODEL.ext="nc"
                 MODEL.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                 MODEL.realization = parameters.realization
