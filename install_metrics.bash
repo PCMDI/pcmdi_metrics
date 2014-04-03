@@ -69,16 +69,20 @@ setup_cmake() {
     chmod a+rw ${cmake_build_directory%/*}
 
     if [ ! -d "${cmake_build_directory}" ]; then
-        echo "Cloning CMake repository ${cmake_repo}..."
-        git clone ${cmake_repo} ${cmake_build_directory}
+      echo "Cloning CMake repository ${cmake_repo}..."
+      git clone ${cmake_repo} ${cmake_build_directory}
+      if [ ! -d ${cmake_build_directory}/.git ]; then
+        echo "Apparently was not able to fetch from cmake repo using git protocol (port 9418)... trying https protocol..."
+        git clone ${cmake_repo_https} ${cmake_build_directory}
         if [ ! -d ${cmake_build_directory}/.git ]; then
-            echo "Apparently was not able to fetch from cmake repo using git protocol... trying http protocol..."
-            git clone ${cmake_repo_http} ${cmake_build_directory}
-            if [ ! -d ${cmake_build_directory}/.git ]; then
-                echo "Could not fetch from cmake repo (with git nor http protocol)"
-                exit 1
-            fi
+          echo "Apparently was not able to fetch from cmake repo using https protocol (port 2)... trying http protocol..."
+          git clone ${cmake_repo_http} ${cmake_build_directory}
+          if [ ! -d ${cmake_build_directory}/.git ]; then
+            echo "Could not fetch from cmake repo (with git/https/http protocol). Please check you are online and your firewall settings"
+            exit 1
+          fi
         fi
+      fi
     fi
 
     (
@@ -159,16 +163,22 @@ setup_cdat() {
     pushd ${uvcdat_build_directory} >& /dev/null
     local cdat_git_protocol="git://"
     if [ ! -d ${uvcdat_build_directory}/uvcdat ]; then
-        echo "Fetching the cdat project from GIT Repo..."
-        ((DEBUG)) && echo "${cdat_repo}"
-        git clone ${cdat_repo} uvcdat
+      echo "Fetching the cdat project from GIT Repo..."
+      ((DEBUG)) && echo "${cdat_repo}"
+      git clone ${cdat_repo} uvcdat
+      if [ ! -d ${uvcdat_build_directory}/uvcdat/.git ]; then
+        cdat_git_protocol="https://"
+        echo "Apparently was not able to fetch from GIT repo using git protocol. (port 9418).. trying https protocol..."
+        ((DEBUG)) && echo "${cdat_repo_https}"
+        git clone ${cdat_repo_https} uvcdat
         if [ ! -d ${uvcdat_build_directory}/uvcdat/.git ]; then
-            cdat_git_protocol="http://"
-            echo "Apparently was not able to fetch from GIT repo using git protocol... trying http protocol..."
-            ((DEBUG)) && echo "${cdat_repo_http}"
-            git clone ${cdat_repo_http} uvcdat
-            [ ! -d ${uvcdat_build_directory}/uvcdat/.git ] && echo "Could not fetch from cdat's repo (with git nor http protocol)" && checked_done 1
+          cdat_git_protocol="http://"
+          echo "Was still not able to fetch from GIT repo this time using https protocol... (port 22) trying http protocol..."
+          ((DEBUG)) && echo "${cdat_repo_http}"
+          git clone ${cdat_repo_http} uvcdat
+          [ ! -d ${uvcdat_build_directory}/uvcdat/.git ] && echo "Could not fetch from cdat's repo (with git, https nor http protocol)i please check your internet connection and firewall settings" && checked_done 1
         fi
+      fi
     fi
     cd uvcdat >& /dev/null
     git checkout ${cdat_version}
@@ -334,6 +344,7 @@ main() {
     ## Generic Build Parameters
     cmake_repo=git://cmake.org/cmake.git
     cmake_repo_http=http://cmake.org/cmake.git
+    cmake_repo_https=https://cmake.org/cmake.git
     cmake_min_version=2.8.12
     cmake_max_version=2.9
     cmake_version=2.8.12
@@ -341,9 +352,11 @@ main() {
     DEBUG=1
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
+    cdat_repo_https=https://github.com/UV-CDAT/uvcdat.git
     cdat_version="1.5.0"
     metrics_repo=git://github.com/PCMDI/wgne-wgcm_metrics.git
     metrics_repo_http=http://github.com/PCMDI/wgne-wgcm_metrics.git
+    metrics_repo_https=https://github.com/PCMDI/wgne-wgcm_metrics.git
     metrics_checkout="master"
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
@@ -365,11 +378,15 @@ main() {
     ## clone wgne repo
     git clone ${metrics_repo} ${metrics_build_directory}
     if [ ! -e ${metrics_build_directory}/.git/config ]; then
-        echo " WARN: Could not clone metrics repo! Trying http protocol"
-        git clone ${metrics_repo_http} ${metrics_build_directory}
+      echo " WARN: Could not clone metrics repo via git protocol (port 9418)! Trying https protocol"
+        git clone ${metrics_repo_https} ${metrics_build_directory}
         if [ ! -e ${metrics_build_directory}/.git/config ]; then
-            echo " ERROR: Could not clone metrics repo! Check you are connected to the internet"
-            exit 1
+          echo " WARN: Could not clone metrics repoi via https (port 22)! Trying http protocol (port 80)"
+          git clone ${metrics_repo_http} ${metrics_build_directory}
+          if [ ! -e ${metrics_build_directory}/.git/config ]; then
+              echo " ERROR: Could not clone metrics repo via git/https/http! Check you are connected to the internet or your firewall settings"
+              exit 1
+          fi
         fi
     fi
 
