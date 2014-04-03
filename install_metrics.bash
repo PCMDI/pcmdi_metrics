@@ -353,7 +353,7 @@ main() {
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
     cdat_repo_https=https://github.com/UV-CDAT/uvcdat.git
-    cdat_version="1.5.0"
+    cdat_version="master"
     metrics_repo=git://github.com/PCMDI/wgne-wgcm_metrics.git
     metrics_repo_http=http://github.com/PCMDI/wgne-wgcm_metrics.git
     metrics_repo_https=https://github.com/PCMDI/wgne-wgcm_metrics.git
