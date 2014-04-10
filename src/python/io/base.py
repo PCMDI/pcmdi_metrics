@@ -2,6 +2,8 @@ import json
 import cdms2
 import genutil
 import os
+import metrics
+
 value = 0
 cdms2.setNetcdfShuffleFlag(value) ## where value is either 0 or 1
 cdms2.setNetcdfDeflateFlag(value) ## where value is either 0 or 1
@@ -43,6 +45,7 @@ class Base(genutil.StringConstructor):
             raise RuntimeError, "Could not create output directory: %s" % (os.path.split(fnm)[0])
         if type.lower() == "json":
             f=open(fnm,"w")
+            data["metrics_git_sha1"] = metrics.__git_sha1__
             json.dump(data,f,*args,**kargs)            
         elif type.lower() in ["asc","ascii","txt"]:
             f=open(fnm,"w")
@@ -51,6 +54,7 @@ class Base(genutil.StringConstructor):
         elif type.lower() == "nc":
             f=cdms2.open(fnm,"w")
             f.write(data,*args,**kargs)
+            f.metrics_git_sha1 = metrics.__git_sha1__
         else:
             raise RuntimeError,"Unknown type: %s" % type
         f.close()
