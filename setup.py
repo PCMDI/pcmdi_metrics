@@ -2,11 +2,22 @@ from distutils.core import setup, Extension
 import os,sys
 import numpy
 Version="0.1.0"
+import subprocess
+p = subprocess.Popen(("git","log","-n1","--pretty=short"),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+try:
+  commit = p.stdout.readlines()[0].split()[1]
+except:
+  commit = ""
+f=open("src/python/version.py","w")
+print >>f, "__version__ = '%s'" % Version
+print >>f, "__git_sha1__ = '%s'" % commit
+f.close()
+
 setup (name = "metrics",
        version=Version,
        author='PCMDI',
        description = "model metrics tools",
-       url = "http://uvcdat.llnl.gov",
+       url = "http://github.com/PCMDI/wgne-wgcm_metrics",
        packages = ['metrics','metrics.io','metrics.wgne'],
        package_dir = {'metrics': 'src/python',
                       'metrics.io': 'src/python/io',
