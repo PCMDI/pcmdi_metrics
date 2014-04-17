@@ -23,8 +23,5 @@ class OBS(metrics.io.base.Base):
         self.ext = "nc"
         self.reference=obs_name
         self.variable=var
-        print "TEMPLATE:",template
-        print "OTABLE:",self.obs_table
-        print "REALM:",self.realm
 
 
