@@ -357,7 +357,7 @@ main() {
     metrics_repo=git://github.com/PCMDI/wgne-wgcm_metrics.git
     metrics_repo_http=http://github.com/PCMDI/wgne-wgcm_metrics.git
     metrics_repo_https=https://github.com/PCMDI/wgne-wgcm_metrics.git
-    metrics_checkout="master"
+    metrics_checkout="devel"
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
         echo "Could not create directory ${install_prefix}"
