@@ -143,6 +143,22 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     break
 
                 dup(var,' ', model_version,' ', dm.shape,' ', do.shape,'  ', ref)
+
+                ###########################################################################
+                #### Basic checks
+                ###########################################################################
+                if dm.shape!=do.shape:
+                  raise RuntimeError, "Obs and Model -%s- have different shapes %s vs %s" % (model_version,do.shape,dm.shape)
+                if do.units!=dm.units: # Ok possible issue with units
+                    ## Simply exit for now, the following needs genutil built with udunits, which means udunits, which means a bit more complex build system lets talk about this with Peter and Pul first
+                    raise RuntimeError, "Obs and Model -%s- have different units (%s vs %s) cowardly refusing to proceed" % (model_version,do.units,dm.units)
+                    #u = genutil.udunits(1,dm.units)
+                    #try:
+                    #  scaling,offset = u.how(do.units)
+                    #  dm = dm*scaling + offset
+                    #except:
+                    #  raise RuntimeError, "Could not convert model units (%s) to obs units: (%s)"
+
                 ###########################################################################
                 #### METRICS CALCULATIONS
                 onm = obs_dic[var][ref]
@@ -166,7 +182,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
                 break               
       except Exception,err:
-          dup("Error in processing obs:",var,ref,err)
+        dup("Error while processing observation %s for variable %s:\n\t%s" % (var,ref,err))
     ## Done with obs and models loops , let's dum before next var
     ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
     OUT.write(metrics_dictionary, sort_keys=True, indent=4, separators=(',', ': '))    
