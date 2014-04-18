@@ -37,6 +37,12 @@ if pth!="":
     sys.path.append(pth)
 if fnm.lower()[-3:]==".py":
     fnm = fnm[:-3]
+    ext=".py"
+else:
+    ext=""
+## We need to make sure there is no "dot" in filename or import will fail
+if fnm.find(".")>-1:
+  raise ValueError, "Sorry input parameter file name CANNOT contain 'dots' (.), please rename it (e.g: %s%s)" % (fnm.replace(".","_"),ext)
 exec("import %s as parameters" % fnm)
 if pth!="":
     sys.path.pop(-1)
