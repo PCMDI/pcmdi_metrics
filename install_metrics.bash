@@ -423,7 +423,7 @@ main() {
     echo "source ${install_prefix}/bin/setup_runtime.sh"
     echo "wgne_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
     echo "*******************************"
-    echo "Once everything is ok, you can safely remove the temporay directory: ${build_directory}"
+    echo "Once everything is ok, you can safely remove the temporary directory: ${build_directory}"
     echo "*******************************"
     echo
 
