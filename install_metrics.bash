@@ -417,7 +417,8 @@ main() {
     echo
     echo
     echo "*******************************"
-    echo "UVCDAT - ${cdat_version} - Install Success"
+    echo "UVCDAT  - ${cdat_version} - Install Success"
+    echo "Metrics - ${metrics_checkout} - Install Success"
     echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/wgne_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
     echo "source ${install_prefix}/bin/setup_runtime.sh"
