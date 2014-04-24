@@ -52,7 +52,7 @@ if not hasattr(parameters,"custom_keys"):
   parameters.custom_keys={}
 
 try:
-  os.makedirs(parameters.metrics_output_path+parameters.case_id)
+  os.makedirs(os.path.join(parameters.metrics_output_path,parameters.case_id))
 except:
   pass
 
@@ -96,7 +96,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         else:
             refs=[parameters.ref,]
 
-    OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
+    OUT = metrics.io.base.Base(os.path.join(parameters.metrics_output_path,parameters.case_id),"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
     OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
     OUT.var=var
     OUT.realm = realm
