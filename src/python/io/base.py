@@ -14,16 +14,21 @@ class Base(genutil.StringConstructor):
     def __init__(self,root,file_template):
         genutil.StringConstructor.__init__(self,root+"/"+file_template)
         self.targetGrid = None
+        self.mask = None
 
     def get(self,var,varInFile=None,*args,**kargs):
         self.variable = var
         if varInFile is None:
             varInFile = var
-        if self.targetGrid is None:
-            return cdms2.open(self())(varInFile,*args,**kargs)
-        else:
-            return cdms2.open(self())(varInFile,*args,**kargs).regrid(self.targetGrid,regridTool=self.regridTool,regridMethod=self.regridMethod, coordSys='deg', diag = {},periodicity=1)
+        ## First extract data
+        out = cdms2.open(self())(varInFile,*args,**kargs)
 
+        ## Now are we looking at a region in particular?
+        if self.mask is not None:
+          out = MV2.masked_where(mask,out)
+        if self.targetGrid is not None:
+            out=out.regrid(self.targetGrid,regridTool=self.regridTool,regridMethod=self.regridMethod, coordSys='deg', diag = {},periodicity=1)
+        return out
     def setTargetGrid(self,target,regridTool="esmf",regridMethod="linear"):
         self.regridTool = regridTool
         self.regridMethod = regridMethod

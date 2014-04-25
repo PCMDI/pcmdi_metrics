@@ -59,6 +59,26 @@ except:
 Efile = open(os.path.join(parameters.metrics_output_path,parameters.case_id,"errors_log.txt"),"w")
 dup=DUP(Efile)
 
+
+## First of all attempt to prepare sftlf before/after for all models
+def getsftlf(model_version,table_realm,realm):
+  for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
+    sft = metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
+    sft.model_version = model_version
+    sft.table = "fixed"
+    sft.realm = realm
+    sft.model_period = parameters.model_period
+    stf.ext = "nc"
+    stf.targetGrid = None
+    sft.realization="r0i0p0"
+    try:
+      sftlf[model_version] = {"raw":sft.get("sftlf")}
+    except:
+      #Hum no sftlf...
+      raise RuntimeError,"Could not find landsea mask (sftlf) for model %s" % model_version
+
+    applyCustomKeys(sft,parameters.custom_keys,"sftlf")
+  sft.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
 for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     metrics_dictionary = {}
     ## REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
