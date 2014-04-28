@@ -43,6 +43,7 @@ else:
 ## We need to make sure there is no "dot" in filename or import will fail
 if fnm.find(".")>-1:
   raise ValueError, "Sorry input parameter file name CANNOT contain 'dots' (.), please rename it (e.g: %s%s)" % (fnm.replace(".","_"),ext)
+sys.path.insert(0,os.getcwd())
 exec("import %s as parameters" % fnm)
 if pth!="":
     sys.path.pop(-1)
