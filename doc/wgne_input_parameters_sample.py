@@ -18,6 +18,10 @@ vars = ['pr','tas','tos']
 vars = ['tos',]
 vars = ['ta_85000']
 
+## regions of mask to use when processing variables
+regions = {"tas": ["terre","ocean","global"]}
+regions_values = {"terre":0.,}
+
 # Observations to use at the moment "default" or "alternate"
 ref = 'default' 
 
@@ -36,6 +40,7 @@ save_mod_clims = True # True or False
 
 ## Templates for climatology files
 filename_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-1.%(period).AC.%(ext)" 
+filename_ouput_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable).ver-1.%(period).%{region}.AC.%(ext)" 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
 mod_data_path = '/work/gleckler1/processed_data/metrics_package/inhouse_model_clims/' 
 ## ROOT PATH FOR OBSERVATIONS

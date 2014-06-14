@@ -15,6 +15,7 @@ class Base(genutil.StringConstructor):
         genutil.StringConstructor.__init__(self,root+"/"+file_template)
         self.targetGrid = None
         self.mask = None
+        self.targetMask = None
 
     def get(self,var,varInFile=None,*args,**kargs):
         self.variable = var
@@ -25,10 +26,13 @@ class Base(genutil.StringConstructor):
 
         ## Now are we looking at a region in particular?
         if self.mask is not None:
-          out = MV2.masked_where(mask,out)
+          out = MV2.masked_where(self.mask,out)
         if self.targetGrid is not None:
             out=out.regrid(self.targetGrid,regridTool=self.regridTool,regridMethod=self.regridMethod, coordSys='deg', diag = {},periodicity=1)
+            if self.targetMask is not None:
+              out = MV2.masked_where(self.targetMask,out)
         return out
+
     def setTargetGrid(self,target,regridTool="esmf",regridMethod="linear"):
         self.regridTool = regridTool
         self.regridMethod = regridMethod

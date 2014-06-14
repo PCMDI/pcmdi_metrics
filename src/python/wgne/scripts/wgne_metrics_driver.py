@@ -10,6 +10,8 @@ import sys
 import argparse
 import os, json
 
+regions_values = {"land":100.,"ocean":0.,"lnd":100.,"ocn":0.}
+
 #Load the obs dictionary
 obs_dic = json.loads(open(os.path.join(sys.prefix,"share","wgne","obs_info_dictionary.json")).read())
 
@@ -61,28 +63,54 @@ dup=DUP(Efile)
 
 
 ## First of all attempt to prepare sftlf before/after for all models
-def getsftlf(model_version,table_realm,realm):
-  for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
-    sft = metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
-    sft.model_version = model_version
-    sft.table = "fixed"
-    sft.realm = realm
-    sft.model_period = parameters.model_period
-    stf.ext = "nc"
-    stf.targetGrid = None
-    sft.realization="r0i0p0"
-    try:
-      sftlf[model_version] = {"raw":sft.get("sftlf")}
-    except:
-      #Hum no sftlf...
-      raise RuntimeError,"Could not find landsea mask (sftlf) for model %s" % model_version
+for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
+  sft = metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
+  sft.model_version = model_version
+  sft.table = "fixed"
+  sft.realm = realm
+  sft.model_period = parameters.model_period
+  stf.ext = "nc"
+  stf.targetGrid = None
+  sft.realization="r0i0p0"
+  applyCustomKeys(sft,parameters.custom_keys,"sftlf")
+  try:
+    sftlf[model_version] = {"raw":sft.get("sftlf")}
+  except:
+    #Hum no sftlf...
+    sftlf[model_version] = {"raw":None}
+if parameters.targetGrid == "2.5x2.5":
+  tGrid = cdms2.createUniformGrid(-88.875,72,2.5,0,144,2.5)
+else:
+  tGrid = parameters.targetGrid
 
-    applyCustomKeys(sft,parameters.custom_keys,"sftlf")
-  sft.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
-for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
+sftlf["targetGrid"] = cdutil.generateLandSeaMask(tGrid)*100.
+
+#At this point we need to create the tuples var/region to know if a variable needs to be ran over a specific region or global or both
+regions = getattr(parameters,"regions",{})
+vars = []
+
+#Update/overwrite defsult region_values keys with user ones
+
+regions_values.update(getattr(parameters,"regions_values",{}))
+
+for var in parameters.vars:
+  rg = regions.get(var,[None,])
+  if not isinstance(rg,(list,tuple)):
+    rg = [rg,]
+  for r in rg:
+    vars.append([var,r])
+
+for var,region in vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
+    if isinstance(region,str):
+      region_name = region
+      region = regions_values.get(r,region_values.get(r.lower()))
+    elif region is None:
+      region_name = "global"
+    else:
+      region_name = "%i" % region
+
     metrics_dictionary = {}
     ## REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
-
     if len(var.split("_"))>1:
         level = float(var.split("_")[-1])*100.
         var=var.split("_")[0]
@@ -133,6 +161,11 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         OBS.realm = realm
         OBS.table = table_realm
         applyCustomKeys(OBS,parameters.custom_keys,var)
+        if region is not None:
+          ## Ok we need to apply a mask
+          oMask = metrics.wgne.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,ref).get()
+          OBS.mask = MV2.logical_not(MV2.equal(oMask,region))
+          OBS.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
         try:
          if level is not None:
            do = OBS.get(var,level=level)
@@ -156,6 +189,9 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                 MODEL.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                 MODEL.realization = parameters.realization
                 applyCustomKeys(MODEL,parameters.custom_keys,var)
+                if region is not None:
+                  MODEL.mask = MV2.logical_not(MV2.equal(sftlf[model_version],region))
+                  MODEL.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
                 try:
                    if level is None:
                      OUT.level=""
@@ -190,7 +226,9 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                 onm = obs_dic[var][ref]
                 metrics_dictionary[model_version] = metrics_dictionary.get(model_version,{})
                 metrics_dictionary[model_version][ref] = {'source':onm}
-                metrics_dictionary[model_version][ref][parameters.realization] = metrics.wgne.compute_metrics(var,dm,do)
+                pr = metrics_dictionary[model_version][ref].get(parameters.realization,{})
+                pr[region_name] = metrics.wgne.compute_metrics(var,dm,do)
+                metrics_dictionary[model_version][ref][parameters.realization] = pr
                 ###########################################################################
            
                 # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
@@ -203,6 +241,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     CLIM.period = parameters.model_period
                     CLIM.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                     CLIM.variable = var
+                    CLIM.region = region_name
                     applyCustomKeys(CLIM,parameters.custom_keys,var)
                     CLIM.write(dm,type="nc",id="var")
 
