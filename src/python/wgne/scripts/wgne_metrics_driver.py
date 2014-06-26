@@ -9,6 +9,8 @@ import metrics
 import sys
 import argparse
 import os, json
+import genutil
+import warnings
 
 regions_values = {"land":100.,"ocean":0.,"lnd":100.,"ocn":0.}
 
@@ -45,6 +47,7 @@ else:
 ## We need to make sure there is no "dot" in filename or import will fail
 if fnm.find(".")>-1:
   raise ValueError, "Sorry input parameter file name CANNOT contain 'dots' (.), please rename it (e.g: %s%s)" % (fnm.replace(".","_"),ext)
+sys.path.insert(0,os.getcwd())
 exec("import %s as parameters" % fnm)
 if pth!="":
     sys.path.pop(-1)
@@ -54,7 +57,7 @@ if not hasattr(parameters,"custom_keys"):
   parameters.custom_keys={}
 
 try:
-  os.makedirs(parameters.metrics_output_path+parameters.case_id)
+  os.makedirs(os.path.join(parameters.metrics_output_path,parameters.case_id))
 except:
   pass
 
@@ -144,7 +147,7 @@ for var,region in vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         else:
             refs=[parameters.ref,]
 
-    OUT = metrics.io.base.Base(parameters.metrics_output_path+parameters.case_id,"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
+    OUT = metrics.io.base.Base(os.path.join(parameters.metrics_output_path,parameters.case_id),"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
     OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
     OUT.var=var
     OUT.realm = realm
@@ -212,14 +215,13 @@ for var,region in vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                 if dm.shape!=do.shape:
                   raise RuntimeError, "Obs and Model -%s- have different shapes %s vs %s" % (model_version,do.shape,dm.shape)
                 if do.units!=dm.units: # Ok possible issue with units
-                    ## Simply exit for now, the following needs genutil built with udunits, which means udunits, which means a bit more complex build system lets talk about this with Peter and Pul first
-                    raise RuntimeError, "Obs and Model -%s- have different units (%s vs %s) cowardly refusing to proceed" % (model_version,do.units,dm.units)
-                    #u = genutil.udunits(1,dm.units)
-                    #try:
-                    #  scaling,offset = u.how(do.units)
-                    #  dm = dm*scaling + offset
-                    #except:
-                    #  raise RuntimeError, "Could not convert model units (%s) to obs units: (%s)"
+                    u = genutil.udunits(1,dm.units)
+                    try:
+                      scaling,offset = u.how(do.units)
+                      dm = dm*scaling + offset
+                      warnings.warn("Model and observation units differed, converted model (%s) to observation unit (%s)" % (dm.units,do.units))
+                    except:
+                      raise RuntimeError, "Could not convert model units (%s) to obs units: (%s)" % (dm.units,do.units)
 
                 ###########################################################################
                 #### METRICS CALCULATIONS
