@@ -84,7 +84,7 @@ for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL
     sftlf[model_version] = {"raw":sft.get("sftlf")}
   except:
     #Hum no sftlf...
-    print "No mask for ",sft()
+    dup("No mask for ",sft())
     sftlf[model_version] = {"raw":None}
 if parameters.targetGrid == "2.5x2.5":
   tGrid = cdms2.createUniformGrid(-88.875,72,2.5,0,144,2.5)
@@ -200,7 +200,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   MODEL.realization = parameters.realization
                   applyCustomKeys(MODEL,parameters.custom_keys,var)
                   if region is not None:
-                    MODEL.mask = MV2.logical_not(MV2.equal(sftlf[model_version],region))
+                    MODEL.mask = MV2.logical_not(MV2.equal(sftlf[model_version]["raw"],region))
                     MODEL.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
                   try:
                      if level is None:
