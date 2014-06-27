@@ -128,6 +128,11 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         regridTool= parameters.regrid_tool
         table_realm = 'Amon'
         realm = "atm"
+    grd = {}
+    grd["RegridMethod"] = regridMethod
+    grd["RegridTool"] = regridTool
+    grd["GridName"] = parameters.targetGrid
+
 
     #Ok at that stage we need to loop thru obs
     dup('ref is: ',parameters.ref)
@@ -151,7 +156,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     OUT.realm = realm
     OUT.table = table_realm
     applyCustomKeys(OUT,parameters.custom_keys,var)
-
+    metrics_dictionary["RegionalMasking"] = {}
     for region in regions_dict[var]:
       if isinstance(region,str):
         region_name = region
@@ -160,7 +165,10 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         region_name = "global"
       else:
         region_name = "%i" % region
+      metrics_dictionary["RegionalMasking"][region_name]=region
+      metrics_dictionary["References"]={}
       for ref in refs:
+        metrics_dictionary["References"][ref] = obs_dic[var][obs_dic[var][ref]]
         try:
           if obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"]=="Omon":
               OBS = metrics.wgne.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
@@ -184,6 +192,9 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
           except Exception,err:
              dup('failed with 4D OBS',var,ref,err)
              continue
+          grd["GridResolution"] = do.shape[1:]
+          metrics_dictionary["GridInfo"] = grd
+
           dup('OBS SHAPE IS ', do.shape)
 
           for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
