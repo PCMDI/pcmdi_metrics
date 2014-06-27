@@ -264,6 +264,14 @@
         "default": "ERAINT",
         "ref3": "JRA25"
     },
+    "sftlf": {
+        "UKMETOFFICE-HadISST-v1-1": {
+            "CMIP_CMOR_TABLE": "fx",
+            "period": "198002-200501",
+            "shape": "(180, 360)"
+        },
+        "default": "UKMETOFFICE-HadISST-v1-1"
+    },
     "tos": {
         "NOAA-OISST-v2": {
             "CMIP_CMOR_TABLE": "Omon",

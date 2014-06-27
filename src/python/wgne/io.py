@@ -17,6 +17,8 @@ class OBS(metrics.io.base.Base):
 
         if self.obs_table == u"Omon":
             self.realm = 'ocn'
+        if self.obs_table == u"fx":
+            self.realm = 'fx'
         else:
             self.realm = 'atm'
         self.period = period
