@@ -17,6 +17,11 @@ model_versions = ['GFDL-ESM2G',]
 ### VARIABLES AND OBSERVATIONS TO USE
 vars = ['tos']
 
+## REGIONS ON WHICH WE WANT TO RUN METRICS (var specific)
+regions = {"tos" : [None,"terre","ocean"],}
+## USER CAN CUSTOMIZE REGIONS VALUES NMAES
+regions_values = {"terre":100.}
+
 # Observations to use at the moment "default" or "alternate"
 ref = ['default'] 
 ext = '.nc'

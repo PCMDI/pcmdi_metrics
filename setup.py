@@ -26,8 +26,9 @@ setup (name = "metrics",
                   "src/python/wgne/scripts/build_obs_meta_dictionary.py"],
        data_files = [('share/wgne',('doc/obs_info_dictionary.json',)),
                      ('doc',('doc/wgne_input_parameters_sample.py',)),
-                     ('test/wgne',('test/wgne/basic_test_parameters_file.py','test/wgne/tos_GFDL-ESM2G_Omon_historical_r1i1p1_198501-200512-clim.nc','test/wgne/tos_2.5x2.5_esmf_linear_metrics.json.good')),
+                     ('test/wgne',('test/wgne/basic_test_parameters_file.py','test/wgne/tos_GFDL-ESM2G_Omon_historical_r1i1p1_198501-200512-clim.nc','test/wgne/sftlf_GFDL-ESM2G_fx_historical_r0i0p0_198501-200512-clim.nc','test/wgne/tos_2.5x2.5_esmf_linear_metrics.json.good')),
                      ('test/wgne/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac',('test/wgne/tos_pcmdi-metrics_Omon_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
+                     ('test/wgne/obs/fx/mo/sftlf/UKMETOFFICE-HadISST-v1-1/ac',('test/wgne/sftlf_pcmdi-metrics_fx_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
                      ]
        #include_dirs = [numpy.lib.utils.get_include()],
        #       ext_modules = [
