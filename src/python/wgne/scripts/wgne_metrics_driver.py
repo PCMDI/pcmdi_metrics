@@ -169,7 +169,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
       metrics_dictionary["References"]={}
       for ref in refs:
         metrics_dictionary["References"][ref] = obs_dic[var][obs_dic[var][ref]]
-        try:
+        #try:
+        if 1:
           if obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"]=="Omon":
               OBS = metrics.wgne.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
           else:
@@ -245,6 +246,45 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   #### METRICS CALCULATIONS
                   onm = obs_dic[var][ref]
                   metrics_dictionary[model_version] = metrics_dictionary.get(model_version,{})
+                  ## Stores model's simul descrition
+                  if not metrics_dictionary[model_version].has_key("SimulationDescription"):
+                      descr = {"MIPTable":obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"],
+                              "Model":model_version,
+                              }
+
+                      sim_descr_mapping = {
+                              "ModelActivity":"project_id",
+                              "ModellingGroup":"institute_id",
+                              "Experiment":"experiment",
+                              "ModelFreeSpace":"ModelFreeSpace",
+                              "SimName":"realization",
+                              }
+
+                      sim_descr_mapping.update(getattr(parameters,"simulation_description_mapping",{}))
+                      for att in sim_descr_mapping.keys():
+                            nm = sim_descr_mapping[att]
+                            if not isinstance(nm,(list,tuple)):
+                                nm = ["%s",nm]
+                            fmt = nm[0]
+                            vals = []
+                            for a in nm[1:]:
+                                #First trying from parameter file
+                                if hasattr(parameters,a):
+                                    vals.append(getattr(parameters,a))
+                                # Now fall back on file...
+                                else:
+                                    f = cdms2.open(MODEL())
+                                    if hasattr(f,a):
+                                        try:
+                                            vals.append(float(getattr(f,a)))
+                                        except:
+                                            vals.append(getattr(f,a))
+                                    # Ok couldn't find it anywhere setting to N/A
+                                    else:
+                                        vals.append("N/A")
+                            descr[att] = fmt % tuple(vals)
+                      metrics_dictionary[model_version]["SimulationDescription"] = descr 
+                    
                   if not metrics_dictionary[model_version].has_key(ref):
                     metrics_dictionary[model_version][ref] = {'source':onm}
                   pr = metrics_dictionary[model_version][ref].get(parameters.realization,{})
@@ -267,8 +307,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                       CLIM.write(dm,type="nc",id="var")
 
                   break               
-        except Exception,err:
-          dup("Error while processing observation %s for variable %s:\n\t%s" % (var,ref,err))
+        #except Exception,err:
+        #  dup("Error while processing observation %s for variable %s:\n\t%s" % (var,ref,err))
       ## Done with obs and models loops , let's dum before next var
     ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
     OUT.write(metrics_dictionary, mode="w", sort_keys=True, indent=4, separators=(',', ': '))    
