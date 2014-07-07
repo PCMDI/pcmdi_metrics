@@ -58,6 +58,12 @@ for l in lst:
 
   obs_dic[var][product]['CMIP_CMOR_TABLE'] = realm
   obs_dic[var][product]['period'] = period 
+  obs_dic[var][product]['RefActivity'] = "obs4mips"
+  obs_dic[var][product]['RefName'] = product
+  obs_dic[var][product]['RefType'] = "???"
+  obs_dic[var][product]['RefTrackingDate'] = time.ctime(os.path.getmtime(l.strip())
+  obs_dic[var][product]['RefFreeSpace'] = "???"
+
 
   print var,' ', product,'  ', realm,' ', period
 

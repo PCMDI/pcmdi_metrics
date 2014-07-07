@@ -14,6 +14,8 @@ case_id = 'installationTest'
 model_versions = ['GFDL-ESM2G',]
 #model_versions = ['MRI-CGCM3',]
 
+##dictionary of keywords for simulation description that you want to save or remap
+simulation_description_mapping = {"Login":"Login", "Center":"Center", "SimTrackingDate" : "creation_date"}
 ### VARIABLES AND OBSERVATIONS TO USE
 vars = ['tos']
 
