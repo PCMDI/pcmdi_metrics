@@ -205,22 +205,19 @@ setup_cdat() {
         #(zlib patch value has to be 3,5,7 - default is 3)
         local zlib_value=$(pkg-config --modversion zlib | sed -n -e 's/\(.\)*/\1/p' | sed -n -e '/\(3|5|7\)/p') ; [[ ! ${zlib_value} ]] && zlib_value=3
 
-        # cmake_args="${pip_string} -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat -DCDAT_BUILD_GRAPHICS=${build_graphics} $([ "${build_graphics}" = "ON" ] && echo "-DQT_QMAKE_EXECUTABLE=${qmake_executable}")"
-        cmake_cmd="cmake ${pip_string} -DCDAT_BUILD_UDUNITS2=ON -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_ESGF=ON -DCDAT_BUILD_ESMF_ESMP=ON -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
+        cmake_cmd="cmake ${pip_string} -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GRAPHICS=OFF -DCDAT_BUILD_PYTABLES=OFF -DCDAT_BUILD_ESMF_ESMP=ON -DCDAT_BUILD_SCIPY=OFF -DCDAT_BUILD_SCIENTIFICPYTHON=OFF -DCDAT_BUILD_SCIKITS=OFF -DCDAT_BUILD_PYCLIMATE=OFF -DCDAT_BUILD_PYSPHARM=OFF -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
 
         echo "CMAKE ARGS: "${cmake_args}
         echo "PATH:"${PATH}
         echo "PWD:"`pwd`
         ${cmake_cmd}
-        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (1)" && popd && checked_done 1
+        [ $? != 0 ] && echo " ERROR: Could not configure (cmake) cdat code (1)" && popd && checked_done 1
         ${cmake_cmd}
-        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (2)" && popd && checked_done 1
-        ${cmake_cmd}
-        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (3)" && popd && checked_done 1
+        [ $? != 0 ] && echo " ERROR: Could not configure (cmake) cdat code (2)" && popd && checked_done 1
 
         echo "CMAKE ARGS"${cmake_args}
         make -j ${num_cpus}
-        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (4)" && popd && checked_done 1
+        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code" && popd && checked_done 1
 
         echo "CMAKE ARGS"${cmake_args}
         echo "UVCDAT BDIR"${uvcdat_build_directory}
@@ -345,7 +342,7 @@ main() {
     cmake_repo=git://cmake.org/cmake.git
     cmake_repo_http=http://cmake.org/cmake.git
     cmake_repo_https=https://cmake.org/cmake.git
-    cmake_min_version=2.8.12
+    cmake_min_version=2.8.11
     cmake_max_version=2.9
     cmake_version=2.8.12
     force_install=0
@@ -408,19 +405,29 @@ main() {
     setup_cdat
     setup_metrics
     pushd ${uvcdat_build_directory}/uvcdat >& /dev/null
-    git apply ${metrics_build_directory}/src/patch_uvcdat.patch
-    setup_cdat_xtra genutil
-    setup_cdat_xtra xmgrace
-    setup_cdat_xtra cdutil
+ #   git apply ${metrics_build_directory}/src/patch_uvcdat.patch
+ #   setup_cdat_xtra genutil
+ #   setup_cdat_xtra xmgrace
+ #   setup_cdat_xtra cdutil
     rmdir ${install_prefix}/sample_data
 
     echo
     echo
     echo "*******************************"
-    echo "UVCDAT - ${cdat_version} - Install Success"
+    echo "UVCDAT  - ${cdat_version} - Install Success"
+    echo "Metrics - ${metrics_checkout} - Install Success"
+    echo "*******************************"
+    echo "Please test as follow:"
+    echo "source ${install_prefix}/bin/setup_runtime.sh"
+    echo "wgne_metrics_driver.py -p ${install_prefix}/test/wgne/basic_test_parameters_file.py"
+    echo "compare: ${install_prefix}/test/wgne/tos_2.5x2.5_esmf_linear_metrics.json.good with wgne_install_test_results/metrics_results/installationTest/tos_2.5x2.5_esmf_linear_metrics.json"
+    echo "*******************************"
     echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/wgne_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
-    echo "${install_prefix}/bin/python ${install_prefix}/bin/wgne_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
+    echo "source ${install_prefix}/bin/setup_runtime.sh"
+    echo "wgne_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
+    echo "*******************************"
+    echo "Once everything is ok, you can safely remove the temporary directory: ${build_directory}"
     echo "*******************************"
     echo
 

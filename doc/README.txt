@@ -14,7 +14,7 @@ This file is imported in mean_climate_metrics_driver.py only when PCMDI is compu
 
 input_model_data.py
 -------------------
-USER sets location and structure in in-house data, pointing to various to the versions of there model to be tested
+USER sets location and structure in in-house data, pointing to various to the versions of their model to be tested
 
 mean_climate_metrics_calculations.py
 ------------------------------------

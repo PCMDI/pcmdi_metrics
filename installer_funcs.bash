@@ -1,74 +1,5 @@
 #!/bin/bash
 
-#####
-# esg-functions: ESGF Node Application Stack Functions
-# description: Installer Functions for the ESGF Node application stack
-#
-#****************************************************************************
-#*                                                                          *
-#*  Organization: Lawrence Livermore National Lab (LLNL)                    *
-#*   Directorate: Computation                                               *
-#*    Department: Computing Applications and Research                       *
-#*      Division: S&T Global Security                                       *
-#*        Matrix: Atmospheric, Earth and Energy Division                    *
-#*       Program: PCMDI                                                     *
-#*       Project: Earth Systems Grid Fed (ESGF) Node Software Stack         *
-#*  First Author: Gavin M. Bell (gavin@llnl.gov)                            *
-#*                                                                          *
-#****************************************************************************
-#*                                                                          *
-#*   Copyright (c) 2009, Lawrence Livermore National Security, LLC.         *
-#*   Produced at the Lawrence Livermore National Laboratory                 *
-#*   Written by: Gavin M. Bell (gavin@llnl.gov)                             *
-#*   LLNL-CODE-420962                                                       *
-#*                                                                          *
-#*   All rights reserved. This file is part of the:                         *
-#*   Earth System Grid Fed (ESGF) Node Software Stack, Version 1.0          *
-#*                                                                          *
-#*   For details, see http://esgf.org/                                      *
-#*   Please also read this link                                             *
-#*    http://esgf.org/LICENSE                                               *
-#*                                                                          *
-#*   * Redistribution and use in source and binary forms, with or           *
-#*   without modification, are permitted provided that the following        *
-#*   conditions are met:                                                    *
-#*                                                                          *
-#*   * Redistributions of source code must retain the above copyright       *
-#*   notice, this list of conditions and the disclaimer below.              *
-#*                                                                          *
-#*   * Redistributions in binary form must reproduce the above copyright    *
-#*   notice, this list of conditions and the disclaimer (as noted below)    *
-#*   in the documentation and/or other materials provided with the          *
-#*   distribution.                                                          *
-#*                                                                          *
-#*   Neither the name of the LLNS/LLNL nor the names of its contributors    *
-#*   may be used to endorse or promote products derived from this           *
-#*   software without specific prior written permission.                    *
-#*                                                                          *
-#*   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS    *
-#*   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT      *
-#*   LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS      *
-#*   FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL LAWRENCE    *
-#*   LIVERMORE NATIONAL SECURITY, LLC, THE U.S. DEPARTMENT OF ENERGY OR     *
-#*   CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,           *
-#*   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT       *
-#*   LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF       *
-#*   USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND    *
-#*   ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,     *
-#*   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT     *
-#*   OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF     *
-#*   SUCH DAMAGE.                                                           *
-#*                                                                          *
-#****************************************************************************
-#####
-
-#uses: perl, awk, ifconfig, tar, wget, curl, su, useradd, groupadd,
-#      id, chmod, chown, chgrp, cut, svn, mkdir, killall, java, egrep,
-#      lsof, unlink, ln, pax, keytool, openssl, getent
-
-#note: usage of readlink not macosx friendly :-( usage of useradd /
-#      groupadd is RedHat/CentOS dependent :-(
-
 declare -r _ESG_FUNCTIONS_=1
 
 #Needed to reduce the number of commands when wanting to make a verbose conditional print
@@ -203,10 +134,7 @@ checked_done() {
         echo ""
         echo "Sorry..."
         echo "This action did not complete successfully"
-        echo "Please re-run this task until successful before continuing further"
-        echo ""
-        echo "Also please review the installation FAQ it may assist you"
-        echo "http://esgf.org/wiki/ESGFNode/FAQ"
+        echo "Please try to re-run this task until successful before continuing further"
         echo ""
         exit $1
     fi
@@ -426,68 +354,6 @@ check_module_version() {
     return 1
 }
 
-get_current_esgf_library_version() {
-    # Some ESGF components, such as esgf-security, don't actually
-    # install a webapp or anything that carries an independent
-    # manifest or version command to check, so they must be checked
-    # against the ESGF install manifest instead.
-    [ ! -f "/esg/esgf-install-manifest" ] && return 0
-    local library_name=${1}
-    local v=$(grep library:${1} /esg/esgf-install-manifest | cut -d= -f2)
-    echo $v
-    [ -n "${v}" ] && return 0 || return 1
-}
-
-get_current_webapp_version() {
-    local webapp_name=$1
-    local version_property=${2:-"Version"}
-    local v=$(echo $(sed -n '/^'${version_property}':[ ]*\(.*\)/p' ${tomcat_install_dir}/webapps/${webapp_name}/META-INF/MANIFEST.MF | awk '{print $2}' | xargs 2> /dev/null))
-    echo $v
-    [ -n "${v}" ] && return 0 || return 1
-}
-
-check_webapp_version() {
-    debug_print "\nDEBUG: check_webapp_version  \$1='$1'  \$2='$2'  \$3='$3'"
-    local webapp_name=$1
-    local min_version=$2
-    local version_property=${3:-"Version"}
-
-    [ ! -d "${tomcat_install_dir}/webapps/${webapp_name}" ] && echo " Web Application \"${webapp_name}\" is not present or cannot be detected!" && return 2
-
-    local current_version=$(get_current_webapp_version ${webapp_name} ${version_property})
-    local current_version=$(_trimline ${current_version})
-    [ $? != 0 ] && echo " WARNING:(2) Could not detect version of ${webapp_name}" && return 3
-    [ -z "${current_version}" ] && echo " WARNING:(1) Could not detect version of ${webapp_name}" && return 4
-
-    check_version_helper "${current_version}" "${min_version}"
-    local ret=$?
-    debug_print " The return value from the call to check_version_helper is $ret"
-    [ $ret == 0 ] && return 0
-
-    printf "\nSorry, the detected version of $1 [${current_version}] is older than required minimum version [${min_version}] \n"
-    return 1
-}
-
-#0ne-off version checking mechanism for applications where version number is in the name of the directory
-#of the form "app_dir-<version_num>"
-check_app_version() {
-    debug_print "\nDEBUG: check_app_version  \$1='$1'  \$2='$2'"
-
-    local app_dir=$1
-    local min_version=$2
-
-    local current_version=$(readlink -f ${tomcat_install_dir} | sed -ne 's/.*-\(.*\)$/\1/p')
-    [ $? != 0 ] && echo " WARNING:(2) Could not detect version of ${app_dir##*/}" && return 2
-    [ -z "${current_version}" ] && echo " WARNING:(1) Could not detect version of ${app_dir##*/}" && return 3
-
-    check_version_helper "${current_version}" "${min_version}"
-    local ret=$?
-    debug_print " The return value from the call to helper function check_version_ is $ret"
-    [ $ret == 0 ] && return 0
-
-    printf "\nSorry, the detected version of ${app_dir##*/} [${current_version}] is older than required minimum version [${min_version}] \n"
-    return 1
-}
 
 #----------------------------------------------------------
 # Environment Management Utility Functions
