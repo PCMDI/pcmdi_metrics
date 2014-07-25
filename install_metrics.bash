@@ -41,7 +41,7 @@ setup_cmake() {
     ## Source funcs needed by installer
     . ${metrics_build_directory}/installer_funcs.bash
     echo -n "Checking for CMake >=  ${cmake_min_version} "
-    check_version_with cmake "cmake --version | awk '{print \$3}' | sed -e 's/\([^-]*\)-.*/\1/'" ${cmake_min_version} ${cmake_max_version}
+    check_version_with cmake "cmake --version | head -n1 | awk '{print \$3}' | awk -F . '{print \$1\".\"\$2\".\"\$3}'" ${cmake_min_version} ${cmake_max_version}
     [ $? == 0 ] && (( ! force_install )) && echo " [OK]" && return 0
 
     echo
@@ -187,10 +187,10 @@ setup_cdat() {
     #cdms configuration with --enable-esg flag looks for pg_config in
     #$postgress_install_dir/bin.  This location is created and added
     #to the executable PATH by the 'setup_postgress' function.
-    if [ -n "${certificate}" ]; then
-        pip_string="-DPIP_CERTIFICATE="${certificate}
-        echo "Using user defined certificate path: ${certificate}"
-    fi
+    #if [ -n "${certificate}" ]; then
+    #    pip_string="-DPIP_CERTIFICATE="${certificate}
+    #    echo "Using user defined certificate path: ${certificate}"
+    #fi
 
     local uvcdat_build_directory_build=${uvcdat_build_directory}/uvcdat_build
     (
@@ -205,7 +205,7 @@ setup_cdat() {
         #(zlib patch value has to be 3,5,7 - default is 3)
         local zlib_value=$(pkg-config --modversion zlib | sed -n -e 's/\(.\)*/\1/p' | sed -n -e '/\(3|5|7\)/p') ; [[ ! ${zlib_value} ]] && zlib_value=3
 
-        cmake_cmd="cmake ${pip_string} -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GRAPHICS=OFF -DCDAT_BUILD_PYTABLES=OFF -DCDAT_BUILD_ESMF_ESMP=ON -DCDAT_BUILD_SCIPY=OFF -DCDAT_BUILD_SCIENTIFICPYTHON=OFF -DCDAT_BUILD_SCIKITS=OFF -DCDAT_BUILD_PYCLIMATE=OFF -DCDAT_BUILD_PYSPHARM=OFF -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
+        cmake_cmd="cmake -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_DOWNLOAD_SAMPLE_DATA=OFF -DCDAT_BUILD_MODE=LEAN -DCDAT_BUILD_ESMF_ESMP=ON -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
 
         echo "CMAKE ARGS: "${cmake_args}
         echo "PATH:"${PATH}
