@@ -1,5 +1,6 @@
 import genutil
 import os,sys
+import metrics
 
 ################################################################################
 #  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY: 
@@ -49,10 +50,10 @@ save_mod_clims = True # True or False
 filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(model_period)-clim.nc"
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
-mod_data_path = os.path.join(sys.prefix,'test','wgne',)
+mod_data_path = os.path.join(metrics.__path__[0],"..","..","..","..",'test','wgne',)
 #mod_data_path = '/work/gleckler1/processed_data/cmip5clims-AR5-frozen_1dir/' 
 ## ROOT PATH FOR OBSERVATIONS
-obs_data_path = os.path.join(sys.prefix,'test','wgne','obs')
+obs_data_path = os.path.join(metrics.__path__[0],"..","..","..","..",'test','wgne','obs')
 ## DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join('wgne_install_test_results','metrics_results')
 ## DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES
