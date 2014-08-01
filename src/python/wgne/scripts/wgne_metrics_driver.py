@@ -18,7 +18,7 @@ import cdutil
 regions_values = {"land":100.,"ocean":0.,"lnd":100.,"ocn":0.}
 
 #Load the obs dictionary
-obs_dic = json.loads(open(os.path.join(sys.prefix,"share","wgne","obs_info_dictionary.json")).read())
+obs_dic = json.loads(open(os.path.join(metrics.__path__[0],"..","..","..","..","share","wgne","obs_info_dictionary.json")).read())
 
 class DUP(object):
     def __init__(self,outfile):
