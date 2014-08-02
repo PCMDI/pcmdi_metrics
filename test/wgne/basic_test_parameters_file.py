@@ -60,3 +60,24 @@ model_clims_interpolated_output = os.path.join('wgne_install_test_results','inte
 ## FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
 #filename_output_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table).%(variable)%(level).ver-1.%(period).interpolated.%(regridMethod).%(targetGridName).AC%(ext)"
 filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_historical_%(realization)_%(period).interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"
+
+## Ok do we have custom metrics?
+## The following allow users to plug in a set of custom metrics
+## Function needs to take in var name, model clim, obs clim
+import metrics
+compute_custom_metrics = metrics.wgne.compute_metrics
+#or
+def mymax(slab,nm):
+  return {"custom_%s_max" % nm:float(slab.max())}
+
+def mymin(slab,nm):
+  return {"custom_%s_min" % nm:float(slab.min())}
+
+def my_custom(var,dm,do):
+  out = {}
+  for f in [mymax,mymin]:
+    out.update(f(dm,"model"))
+    out.update(f(dm,"ref"))
+  out["some_custom"]=1.5
+  return out
+compute_custom_metrics = my_custom
