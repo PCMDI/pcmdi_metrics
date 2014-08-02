@@ -298,13 +298,18 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                       CLIM= metrics.io.base.Base(parameters.model_clims_interpolated_output+"/"+parameters.case_id,parameters.filename_output_template)
                       CLIM.level=OUT.level
                       CLIM.model_version = model_version
-                      CLIM.table_realm = table_realm
+                      CLIM.table = table_realm
                       CLIM.period = parameters.model_period
                       CLIM.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
-                      CLIM.variable = var
+                      if level is None:
+                        varid = var
+                      else:
+                        varid = "%s_%s" % (var,level)
+                      CLIM.variable = varid
                       CLIM.region = region_name
+                      CLIM.realization = parameters.realization
                       applyCustomKeys(CLIM,parameters.custom_keys,var)
-                      CLIM.write(dm,type="nc",id="var")
+                      CLIM.write(dm,type="nc",id=varid)
 
                   break               
         except Exception,err:
