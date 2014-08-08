@@ -204,12 +204,13 @@ setup_cdat() {
         unset PYTHONPATH
         unset CFLAGS
         unset LDFLAGS
-
-        if [ ! ${keep_uvcdat_build_dir} ]; then
+        if [  ${keep_uvcdat_build_dir} = false ]; then
             echo "removing UVCDAT build directory"
             [ -d ${uvcdat_build_directory_build} ] && rm -rf ${uvcdat_build_directory_build}
-            mkdir -p ${uvcdat_build_directory_build} >& /dev/null
+        else 
+          echo "You said you wanted to keep uvcdat_build_dir"
         fi
+        mkdir -p ${uvcdat_build_directory_build} >& /dev/null
         pushd ${uvcdat_build_directory_build} >& /dev/null
         #(zlib patch value has to be 3,5,7 - default is 3)
         local zlib_value=$(pkg-config --modversion zlib | sed -n -e 's/\(.\)*/\1/p' | sed -n -e '/\(3|5|7\)/p') ; [[ ! ${zlib_value} ]] && zlib_value=3
