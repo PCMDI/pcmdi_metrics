@@ -205,7 +205,8 @@ setup_cdat() {
         #(zlib patch value has to be 3,5,7 - default is 3)
         local zlib_value=$(pkg-config --modversion zlib | sed -n -e 's/\(.\)*/\1/p' | sed -n -e '/\(3|5|7\)/p') ; [[ ! ${zlib_value} ]] && zlib_value=3
 
-        cmake_cmd="cmake -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_DOWNLOAD_SAMPLE_DATA=OFF -DCDAT_BUILD_MODE=LEAN -DCDAT_BUILD_ESMF_ESMP=ON -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
+        cmake_cmd="cmake -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_DOWNLOAD_SAMPLE_DATA=ON -DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF -DCDAT_BUILD_ESMF_ESMP=ON -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
+        cmake_cmd="cmake -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_DOWNLOAD_SAMPLE_DATA=ON -DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
 
         echo "CMAKE ARGS: "${cmake_cmd}
         echo "PATH:"${PATH}
