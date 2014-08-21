@@ -6,15 +6,13 @@
 install_prefix="WGNE"
 
 ## Temporary build directory
-build_directory="WGNE/tmp"
+build_directory="${install_prefix}/tmp"
+
+## Speed up your build by increasing the following to match your number of processors
+num_cpus=4
 
 ## Do we build UV-CDAT with parallel capabilities (MPI)
 build_parallel="OFF"
-
-## If you are behind a firewall or need a certificate to get out
-## specify path to certificate below, leave blank otherwise
-#certificate=${HOME}/ca.llnl.gov.pem.cer
-certificate=
 
 ## Do we build graphics - Not currently needed, for future use
 #build_graphics="OFF"
@@ -26,10 +24,18 @@ certificate=
 #qmake_executable=/usr/local/uvcdat/Qt/4.8.4/bin/qmake
 #qmake_executable=/usr/bin/qmake
 
-## Speed up your build by increasing the following to match your number of processors
-num_cpus=16
+## More obscure parameters, you probably don't need to edit these
+## unless instructed by developer(s)
 
+## If you are behind a firewall or need a certificate to get out
+## specify path to certificate below, leave blank otherwise
+#certificate=${HOME}/ca.llnl.gov.pem.cer
+#certificate=
 
+## Do we keep or remove uvcdat_build diretory before building UV-CDAT
+## Useful for case where multiple make necessary
+## valid values: true false
+keep_uvcdat_build_dir=false
 
 ### DO NOT EDIT AFTER THIS POINT !!!!! ###
 
@@ -196,10 +202,14 @@ setup_cdat() {
     (
         unset LD_LIBRARY_PATH
         unset PYTHONPATH
-	unset CFLAGS
-	unset LDFLAGS
-
-        [ -d ${uvcdat_build_directory_build} ] && rm -rf ${uvcdat_build_directory_build}
+        unset CFLAGS
+        unset LDFLAGS
+        if [  ${keep_uvcdat_build_dir} = false ]; then
+            echo "removing UVCDAT build directory"
+            [ -d ${uvcdat_build_directory_build} ] && rm -rf ${uvcdat_build_directory_build}
+        else 
+          echo "You said you wanted to keep uvcdat_build_dir"
+        fi
         mkdir -p ${uvcdat_build_directory_build} >& /dev/null
         pushd ${uvcdat_build_directory_build} >& /dev/null
         #(zlib patch value has to be 3,5,7 - default is 3)
