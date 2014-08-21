@@ -104,10 +104,12 @@ regions_values.update(getattr(parameters,"regions_values",{}))
 
 regions_dict = {}
 for var in parameters.vars:
-  rg = regions.get(var,[None,])
+  vr = var.split("_")[0]
+  rg = regions.get(vr,[None,])
   if not isinstance(rg,(list,tuple)):
     rg = [rg,]
-  regions_dict[var] = rg
+  regions_dict[vr] = rg
+print "RGION DICT:",regions_dict
 
 for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
   try:
