@@ -207,7 +207,7 @@ setup_cdat() {
 
         cmake_cmd="cmake -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_DOWNLOAD_SAMPLE_DATA=OFF -DCDAT_BUILD_MODE=LEAN -DCDAT_BUILD_ESMF_ESMP=ON -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
 
-        echo "CMAKE ARGS: "${cmake_args}
+        echo "CMAKE ARGS: "${cmake_cmd}
         echo "PATH:"${PATH}
         echo "PWD:"`pwd`
         ${cmake_cmd}
@@ -405,10 +405,10 @@ main() {
     setup_cdat
     setup_metrics
     pushd ${uvcdat_build_directory}/uvcdat >& /dev/null
- #   git apply ${metrics_build_directory}/src/patch_uvcdat.patch
- #   setup_cdat_xtra genutil
- #   setup_cdat_xtra xmgrace
- #   setup_cdat_xtra cdutil
+    git apply ${metrics_build_directory}/src/patch_uvcdat.patch
+    setup_cdat_xtra genutil
+    setup_cdat_xtra xmgrace
+    setup_cdat_xtra cdutil
     rmdir ${install_prefix}/sample_data
 
     echo

@@ -110,6 +110,7 @@ for var in parameters.vars:
   regions_dict[var] = rg
 
 for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
+  try:
     metrics_dictionary = {}
     ## REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
     if len(var.split("_"))>1:
@@ -169,8 +170,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
       metrics_dictionary["References"]={}
       for ref in refs:
         metrics_dictionary["References"][ref] = obs_dic[var][obs_dic[var][ref]]
-        #try:
-        if 1:
+        try:
           if obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"]=="Omon":
               OBS = metrics.wgne.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
           else:
@@ -244,6 +244,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
                   ###########################################################################
                   #### METRICS CALCULATIONS
+                  ###########################################################################
                   onm = obs_dic[var][ref]
                   metrics_dictionary[model_version] = metrics_dictionary.get(model_version,{})
                   ## Stores model's simul descrition
@@ -289,8 +290,11 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     metrics_dictionary[model_version][ref] = {'source':onm}
                   pr = metrics_dictionary[model_version][ref].get(parameters.realization,{})
                   pr[region_name] = metrics.wgne.compute_metrics(var,dm,do)
+                  ## The follwoing allow users to plug in a set of custom metrics
+                  ## Function needs to take in var name, model clim, obs clim
+                  if hasattr(parameters,"compute_custom_metrics"):
+                    pr[region_name].update(parameters.compute_custom_metrics(var,dm,do))
                   metrics_dictionary[model_version][ref][parameters.realization] = pr
-                  ###########################################################################
              
                   # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
                   # Only the first time thru an obs set (always the same after)
@@ -307,11 +311,13 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                       CLIM.write(dm,type="nc",id="var")
 
                   break               
-        #except Exception,err:
-        #  dup("Error while processing observation %s for variable %s:\n\t%s" % (var,ref,err))
+        except Exception,err:
+          dup("Error while processing observation %s for variable %s:\n\t%s" % (var,ref,err))
       ## Done with obs and models loops , let's dum before next var
     ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
     OUT.write(metrics_dictionary, mode="w", sort_keys=True, indent=4, separators=(',', ': '))    
     # CREATE OUTPUT AS ASCII FILE
     OUT.write(metrics_dictionary, mode="w", type="txt") 
+  except Exception,err:
+    dup("Error while processing variable %s:\n\t%s" % (var,err))
 
