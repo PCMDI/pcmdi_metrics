@@ -24,13 +24,8 @@ build_parallel="OFF"
 #qmake_executable=/usr/local/uvcdat/Qt/4.8.4/bin/qmake
 #qmake_executable=/usr/bin/qmake
 
-## More obscure parameters, you probably don't need to edit these
-## unless instructed by developer(s)
-
-## If you are behind a firewall or need a certificate to get out
-## specify path to certificate below, leave blank otherwise
-#certificate=${HOME}/ca.llnl.gov.pem.cer
-#certificate=
+## Speed up your build by increasing the following to match your number of processors
+num_cpus=4
 
 ## Do we keep or remove uvcdat_build diretory before building UV-CDAT
 ## Useful for case where multiple make necessary
@@ -133,7 +128,7 @@ setup_cdat() {
     F90=gfortran
     CC=gcc
     CXX=g++
-    echo -n "Checking for *UV* CDAT (Python+CDMS) ${cdat_version}"
+    echo -n "Checking for *UV* CDAT (Python+CDMS) ${cdat_version} "
 
     #-----------CDAT -> UVCDAT Migration------------------
     #rewrite cdat_home to new uvcdat location
@@ -144,6 +139,20 @@ setup_cdat() {
     ${cdat_home}/bin/python -c "import cdat_info; print cdat_info.Version" 
     local ret=$?
     ((ret == 0)) && (( ! force_install )) && echo " [OK]" && return 0
+    echo "No python in your install directory, trying your PATH"
+    python -c "import cdat_info; print cdat_info.Version" 
+    if [ $? == 0 ]; then
+       echo "you have a valid cdat in your path"
+       cdat_home=`python -c "import sys; print sys.prefix"`
+       echo "It is located at:" ${cdat_home}
+       cat > ${install_prefix}/bin/setup_runtime.sh  <<  EOF  
+       . ${cdat_home}/bin/setup_runtime.sh
+       export PYTHONPATH=${install_prefix}/lib/python2.7/site-packages:\${PYTHONPATH}
+       export PATH=${PATH}:${install_prefix}/bin
+EOF
+       return 0
+    fi
+
 
     ## Source funcs needed by installer
     . ${metrics_build_directory}/installer_funcs.bash
@@ -154,7 +163,7 @@ setup_cdat() {
     echo
 
     local dosetup="N"
-    if [ -x ${cdat_home}/bin/cdat ]; then
+    if [ -x ${cdat_home}/bin/python ]; then
         echo "Detected an existing CDAT installation..."
         read -e -p "Do you want to continue with CDAT installation and setup? [Y/N] " dosetup
         if [ "${dosetup}" != "Y" ] && [ "${dosetup}" != "y" ]; then
@@ -245,31 +254,6 @@ setup_cdat() {
     checked_done 0
 }
 
-write_cdat_env() {
-    ((show_summary_latch++))
-    echo "export CDAT_HOME=${cdat_home}" >> ${envfile}
-    prefix_to_path PATH ${cdat_home}/bin >> ${envfile}
-    prefix_to_path PATH ${cdat_home}/Externals/bin >> ${envfile}
-    prefix_to_path LD_LIBRARY_PATH ${cdat_home}/Externals/lib >> ${envfile}
-    dedup ${envfile} && source ${envfile}
-    return 0
-}
-
-write_cdat_install_log() {
-    echo "$(date ${date_format}) uvcdat=${cdat_version} ${cdat_home}" >> ${install_manifest}
-
-    #Parse the cdat installation config.log file and entries to the install log
-    local build_log=${uvcdat_build_directory}/uvcdat_build/build_info.txt
-    if [ -e "${build_log}" ]; then
-        awk '{print "'"$(date ${date_format})"' uvcdat->"$1"="$2" '"${cdat_home}"'"}' ${build_log} | sed '$d' >> ${install_manifest}
-    else
-        echo " WARNING: Could not find cdat build logfile [${build_log}], installation log entries could not be generated!"
-    fi
-
-    dedup ${install_manifest}
-    return 0
-}
-
 setup_cdat_xtra() {
     echo "Installing Extra Package ${1}"${uvcdat_build_directory}/uvcdat/Packages/$1
     cd ${uvcdat_build_directory}/uvcdat/Packages/$1 >& /dev/null
@@ -279,8 +263,8 @@ setup_cdat_xtra() {
 
 setup_metrics() {
     cd ${metrics_build_directory} >& /dev/null
-    ${install_prefix}/bin/python setup.py install
-    [ $? != 0 ] && echo " Error could not install metrics python package using ${install_prefix}/bin/python" 
+    ${cdat_home}/bin/python setup.py install --prefix=${install_prefix}
+    [ $? != 0 ] && echo " Error could not install metrics python package using ${cdat_home}/bin/python" 
 }
 
 _full_path() {
@@ -413,6 +397,7 @@ main() {
     PATH=${install_prefix}/Externals/bin:${PATH}
     setup_cmake
     setup_cdat
+    echo "After setup_cdat ${cdat_home}"
     setup_metrics
     pushd ${uvcdat_build_directory}/uvcdat >& /dev/null
     git apply ${metrics_build_directory}/src/patch_uvcdat.patch
@@ -428,7 +413,7 @@ main() {
     echo "Metrics - ${metrics_checkout} - Install Success"
     echo "*******************************"
     echo "Please test as follow:"
-    echo "source ${install_prefix}/bin/setup_runtime.sh"
+    echo "source ${cdat_home}/bin/setup_runtime.sh"
     echo "wgne_metrics_driver.py -p ${install_prefix}/test/wgne/basic_test_parameters_file.py"
     echo "compare: ${install_prefix}/test/wgne/tos_2.5x2.5_esmf_linear_metrics.json.good with wgne_install_test_results/metrics_results/installationTest/tos_2.5x2.5_esmf_linear_metrics.json"
     echo "*******************************"
