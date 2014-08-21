@@ -18,7 +18,7 @@ import cdutil
 regions_values = {"land":100.,"ocean":0.,"lnd":100.,"ocn":0.}
 
 #Load the obs dictionary
-obs_dic = json.loads(open(os.path.join(sys.prefix,"share","wgne","obs_info_dictionary.json")).read())
+obs_dic = json.loads(open(os.path.join(metrics.__path__[0],"..","..","..","..","share","wgne","obs_info_dictionary.json")).read())
 
 class DUP(object):
     def __init__(self,outfile):
@@ -104,12 +104,15 @@ regions_values.update(getattr(parameters,"regions_values",{}))
 
 regions_dict = {}
 for var in parameters.vars:
-  rg = regions.get(var,[None,])
+  vr = var.split("_")[0]
+  rg = regions.get(vr,[None,])
   if not isinstance(rg,(list,tuple)):
     rg = [rg,]
-  regions_dict[var] = rg
+  regions_dict[vr] = rg
+print "RGION DICT:",regions_dict
 
 for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
+  try:
     metrics_dictionary = {}
     ## REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
     if len(var.split("_"))>1:
@@ -168,9 +171,12 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
       metrics_dictionary["RegionalMasking"][region_name]=region
       metrics_dictionary["References"]={}
       for ref in refs:
+        if ref in ["default","alternate"]:
+          refabbv = ref+"Reference"
+        else:
+          refabbv = ref
         metrics_dictionary["References"][ref] = obs_dic[var][obs_dic[var][ref]]
-        #try:
-        if 1:
+        try:
           if obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"]=="Omon":
               OBS = metrics.wgne.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
           else:
@@ -285,11 +291,11 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                             descr[att] = fmt % tuple(vals)
                       metrics_dictionary[model_version]["SimulationDescription"] = descr 
                     
-                  if not metrics_dictionary[model_version].has_key(ref):
-                    metrics_dictionary[model_version][ref] = {'source':onm}
-                  pr = metrics_dictionary[model_version][ref].get(parameters.realization,{})
+                  if not metrics_dictionary[model_version].has_key(refabbv):
+                    metrics_dictionary[model_version][refabbv] = {'source':onm}
+                  pr = metrics_dictionary[model_version][refabbv].get(parameters.realization,{})
                   pr[region_name] = metrics.wgne.compute_metrics(var,dm,do)
-                  metrics_dictionary[model_version][ref][parameters.realization] = pr
+                  metrics_dictionary[model_version][refabbv][parameters.realization] = pr
                   ###########################################################################
              
                   # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
@@ -298,20 +304,27 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                       CLIM= metrics.io.base.Base(parameters.model_clims_interpolated_output+"/"+parameters.case_id,parameters.filename_output_template)
                       CLIM.level=OUT.level
                       CLIM.model_version = model_version
-                      CLIM.table_realm = table_realm
+                      CLIM.table = table_realm
                       CLIM.period = parameters.model_period
                       CLIM.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
-                      CLIM.variable = var
+                      if level is None:
+                        varid = var
+                      else:
+                        varid = "%s_%s" % (var,level)
+                      CLIM.variable = varid
                       CLIM.region = region_name
+                      CLIM.realization = parameters.realization
                       applyCustomKeys(CLIM,parameters.custom_keys,var)
-                      CLIM.write(dm,type="nc",id="var")
+                      CLIM.write(dm,type="nc",id=varid)
 
                   break               
-        #except Exception,err:
-        #  dup("Error while processing observation %s for variable %s:\n\t%s" % (var,ref,err))
+        except Exception,err:
+          dup("Error while processing observation %s for variable %s:\n\t%s" % (var,ref,err))
       ## Done with obs and models loops , let's dum before next var
     ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
     OUT.write(metrics_dictionary, mode="w", sort_keys=True, indent=4, separators=(',', ': '))    
     # CREATE OUTPUT AS ASCII FILE
     OUT.write(metrics_dictionary, mode="w", type="txt") 
+  except Exception,err:
+    dup("Error while processing variable %s:\n\t%s" % (var,err))
 

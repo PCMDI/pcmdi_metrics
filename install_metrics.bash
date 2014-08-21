@@ -6,15 +6,13 @@
 install_prefix="WGNE"
 
 ## Temporary build directory
-build_directory="WGNE/tmp"
+build_directory="${install_prefix}/tmp"
+
+## Speed up your build by increasing the following to match your number of processors
+num_cpus=4
 
 ## Do we build UV-CDAT with parallel capabilities (MPI)
 build_parallel="OFF"
-
-## If you are behind a firewall or need a certificate to get out
-## specify path to certificate below, leave blank otherwise
-#certificate=${HOME}/ca.llnl.gov.pem.cer
-certificate=
 
 ## Do we build graphics - Not currently needed, for future use
 #build_graphics="OFF"
@@ -29,6 +27,10 @@ certificate=
 ## Speed up your build by increasing the following to match your number of processors
 num_cpus=4
 
+## Do we keep or remove uvcdat_build diretory before building UV-CDAT
+## Useful for case where multiple make necessary
+## valid values: true false
+keep_uvcdat_build_dir=false
 
 ### DO NOT EDIT AFTER THIS POINT !!!!! ###
 
@@ -209,10 +211,14 @@ EOF
     (
         unset LD_LIBRARY_PATH
         unset PYTHONPATH
-	unset CFLAGS
-	unset LDFLAGS
-
-        [ -d ${uvcdat_build_directory_build} ] && rm -rf ${uvcdat_build_directory_build}
+        unset CFLAGS
+        unset LDFLAGS
+        if [  ${keep_uvcdat_build_dir} = false ]; then
+            echo "removing UVCDAT build directory"
+            [ -d ${uvcdat_build_directory_build} ] && rm -rf ${uvcdat_build_directory_build}
+        else 
+          echo "You said you wanted to keep uvcdat_build_dir"
+        fi
         mkdir -p ${uvcdat_build_directory_build} >& /dev/null
         pushd ${uvcdat_build_directory_build} >& /dev/null
         #(zlib patch value has to be 3,5,7 - default is 3)
@@ -220,7 +226,7 @@ EOF
 
         cmake_cmd="cmake -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_DOWNLOAD_SAMPLE_DATA=OFF -DCDAT_BUILD_MODE=LEAN -DCDAT_BUILD_ESMF_ESMP=ON -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
 
-        echo "CMAKE ARGS: "${cmake_args}
+        echo "CMAKE ARGS: "${cmake_cmd}
         echo "PATH:"${PATH}
         echo "PWD:"`pwd`
         ${cmake_cmd}
@@ -394,10 +400,10 @@ main() {
     echo "After setup_cdat ${cdat_home}"
     setup_metrics
     pushd ${uvcdat_build_directory}/uvcdat >& /dev/null
- #   git apply ${metrics_build_directory}/src/patch_uvcdat.patch
- #   setup_cdat_xtra genutil
- #   setup_cdat_xtra xmgrace
- #   setup_cdat_xtra cdutil
+    git apply ${metrics_build_directory}/src/patch_uvcdat.patch
+    setup_cdat_xtra genutil
+    setup_cdat_xtra xmgrace
+    setup_cdat_xtra cdutil
     rmdir ${install_prefix}/sample_data
 
     echo

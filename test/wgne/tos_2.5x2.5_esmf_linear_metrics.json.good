@@ -12,7 +12,7 @@
             "SimName": "r1i1p1",
             "SimTrackingDate": "2012-01-10T20:19:59Z"
         },
-        "default": {
+        "defaultReference": {
             "r1i1p1": {
                 "global": {
                     "bias_xy_ann_GLB": "0.03",
@@ -285,6 +285,6 @@
         "ocean": 0.0,
         "terre": 100.0
     },
-    "metrics_git_sha1": "495c7be5da1a114f51e73a1ba30883e0d77f98d0",
-    "uvcdat_version": "esgf-v1.7.0-12-gfb2c39b"
+    "metrics_git_sha1": "162f90a505c9664acc80859471f52f557373a48f",
+    "uvcdat_version": "2.0.beta"
 }
