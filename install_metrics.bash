@@ -3,7 +3,7 @@
 ## SYSTEM SPECIFIC OPTIONS, EDIT THESE TO MATCH YOUR SYSTEM
 
 ## Directory where to install UVCDAT and the METRICS Packages
-install_prefix="WGNE"
+install_prefix="PCMDI_METRICS"
 
 ## Temporary build directory
 build_directory="${install_prefix}/tmp"
@@ -346,9 +346,9 @@ main() {
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
     cdat_repo_https=https://github.com/UV-CDAT/uvcdat.git
     cdat_version="master"
-    metrics_repo=git://github.com/PCMDI/wgne-wgcm_metrics.git
-    metrics_repo_http=http://github.com/PCMDI/wgne-wgcm_metrics.git
-    metrics_repo_https=https://github.com/PCMDI/wgne-wgcm_metrics.git
+    metrics_repo=git://github.com/PCMDI/pcmdi_metrics.git
+    metrics_repo_http=http://github.com/PCMDI/pcmdi_metrics.git
+    metrics_repo_https=https://github.com/PCMDI/pcmdi_metrics.git
     metrics_checkout="master"
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
@@ -367,19 +367,19 @@ main() {
     cdat_home=${install_prefix}
     echo "Installing into: "${install_prefix}
     echo "Temporary build directory: "${build_directory}
-    ## clone wgne repo
+    ## clone pcmdi_metrics repo
     git clone ${metrics_repo} ${metrics_build_directory}
     if [ ! -e ${metrics_build_directory}/.git/config ]; then
       echo " WARN: Could not clone metrics repo via git protocol (port 9418)! Trying https protocol"
-        git clone ${metrics_repo_https} ${metrics_build_directory}
+      git clone ${metrics_repo_https} ${metrics_build_directory}
+      if [ ! -e ${metrics_build_directory}/.git/config ]; then
+        echo " WARN: Could not clone metrics repo via https (port 22)! Trying http protocol (port 80)"
+        git clone ${metrics_repo_http} ${metrics_build_directory}
         if [ ! -e ${metrics_build_directory}/.git/config ]; then
-          echo " WARN: Could not clone metrics repoi via https (port 22)! Trying http protocol (port 80)"
-          git clone ${metrics_repo_http} ${metrics_build_directory}
-          if [ ! -e ${metrics_build_directory}/.git/config ]; then
-              echo " ERROR: Could not clone metrics repo via git/https/http! Check you are connected to the internet or your firewall settings"
-              exit 1
-          fi
+            echo " ERROR: Could not clone metrics repo via git/https/http! Check you are connected to the internet or your firewall settings"
+            exit 1
         fi
+      fi
     fi
 
     cd ${metrics_build_directory} >& /dev/null
@@ -415,13 +415,13 @@ main() {
     echo "*******************************"
     echo "Please test as follow:"
     echo "source ${cdat_home}/bin/setup_runtime.sh"
-    echo "wgne_metrics_driver.py -p ${install_prefix}/test/wgne/basic_test_parameters_file.py"
-    echo "compare: ${install_prefix}/test/wgne/tos_2.5x2.5_esmf_linear_metrics.json.good with wgne_install_test_results/metrics_results/installationTest/tos_2.5x2.5_esmf_linear_metrics.json"
+    echo "pcmdi_metrics_driver.py -p ${install_prefix}/test/pcmdi/basic_test_parameters_file.py"
+    echo "compare: diff ${install_prefix}/test/pcmdi/tos_2.5x2.5_esmf_linear_metrics.json.good pcmdi_install_test_results/metrics_results/installationTest/tos_2.5x2.5_esmf_linear_metrics.json"
     echo "*******************************"
-    echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/wgne_input_parameters_sample.py"
+    echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/pcmdi_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
     echo "source ${install_prefix}/bin/setup_runtime.sh"
-    echo "wgne_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
+    echo "pcmdi_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
     echo "*******************************"
     echo "Once everything is ok, you can safely remove the temporary directory: ${build_directory}"
     echo "*******************************"

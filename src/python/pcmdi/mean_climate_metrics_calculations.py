@@ -2,7 +2,7 @@ import MV2 as MV
 import cdms2 as cdms
 from genutil import statistics
 import cdutil
-import metrics
+import pcmdi_metrics
 
 
 
@@ -35,21 +35,21 @@ def compute_metrics(var,dm_glb,do_glb):
 
     ### ANNUAL CYCLE SPACE-TIME RMS AND CORRELATION
     print '---- shapes ', dm.shape,' ', do.shape
-    rms_xyt = metrics.wgne.rms_xyt.compute(dm,do)
-    cor_xyt = metrics.wgne.cor_xyt.compute(dm,do)
+    rms_xyt = pcmdi_metrics.pcmdi.rms_xyt.compute(dm,do)
+    cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm,do)
 
     ### CALCUALTE ANNUAL MEANS OF DATA
-    do_am, dm_am =  metrics.wgne.annual_mean.compute(dm,do)
+    do_am, dm_am =  pcmdi_metrics.pcmdi.annual_mean.compute(dm,do)
 
   ### ANNUAL MEAN BIAS
-    bias_xy = metrics.wgne.bias.compute(dm_am,do_am)
+    bias_xy = pcmdi_metrics.pcmdi.bias.compute(dm_am,do_am)
     print var,'  ', 'annual mean bias is ' , bias_xy
 
    ### MEAN ABSOLOUTE ERROR 
-    mae_xy = metrics.wgne.meanabs_xy.compute(dm_am,do_am)
+    mae_xy = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_am,do_am)
 
     ### ANNUAL MEAN RMS
-    rms_xy = metrics.wgne.rms_xy.compute(dm_am,do_am)
+    rms_xy = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am,do_am)
 
     conv = 1.
     if var == 'pr': conv = 1.e5
@@ -68,14 +68,14 @@ def compute_metrics(var,dm_glb,do_glb):
 
     for sea in ['djf','mam','jja','son']:
 
-     dm_sea = metrics.wgne.seasonal_mean.compute(dm,sea)  
-     do_sea = metrics.wgne.seasonal_mean.compute(do,sea)
+     dm_sea = pcmdi_metrics.pcmdi.seasonal_mean.compute(dm,sea)  
+     do_sea = pcmdi_metrics.pcmdi.seasonal_mean.compute(do,sea)
 
    ### SEASONAL RMS AND CORRELATION
-     rms_sea = metrics.wgne.rms_xy.compute(dm_sea,do_sea)
-     cor_sea = metrics.wgne.cor_xy.compute(dm_sea,do_sea) 
-     mae_sea = metrics.wgne.meanabs_xy.compute(dm_sea,do_sea)
-     bias_sea = metrics.wgne.bias.compute(dm_sea,do_sea)
+     rms_sea = pcmdi_metrics.pcmdi.rms_xy.compute(dm_sea,do_sea)
+     cor_sea = pcmdi_metrics.pcmdi.cor_xy.compute(dm_sea,do_sea) 
+     mae_sea = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_sea,do_sea)
+     bias_sea = pcmdi_metrics.pcmdi.bias.compute(dm_sea,do_sea)
 
      metrics_dictionary['bias_xy_' + sea + '_' + dom] = format(bias_sea*conv,sig_digits)
      metrics_dictionary['rms_xy_' + sea + '_' + dom] = format(rms_sea*conv,sig_digits) 
