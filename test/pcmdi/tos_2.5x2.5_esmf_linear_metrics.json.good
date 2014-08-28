@@ -55,6 +55,10 @@
                     "cor_xyt_ann_NHEX": "0.98",
                     "cor_xyt_ann_SHEX": "0.98",
                     "cor_xyt_ann_TROPICS": "0.92",
+                    "custom_model_max": 304.95272638750384,
+                    "custom_model_min": 271.27384426614753,
+                    "custom_ref_max": 304.95272638750384,
+                    "custom_ref_min": 271.27384426614753,
                     "mae_xy_djf_GLB": "1.53",
                     "mae_xy_djf_NHEX": "1.30",
                     "mae_xy_djf_SHEX": "2.31",
@@ -94,7 +98,8 @@
                     "rms_xyt_ann_GLB": "1.63",
                     "rms_xyt_ann_NHEX": "2.05",
                     "rms_xyt_ann_SHEX": "1.86",
-                    "rms_xyt_ann_TROPICS": "1.30"
+                    "rms_xyt_ann_TROPICS": "1.30",
+                    "some_custom": 1.5
                 },
                 "ocean": {
                     "bias_xy_ann_GLB": "0.03",
@@ -137,6 +142,10 @@
                     "cor_xyt_ann_NHEX": "0.98",
                     "cor_xyt_ann_SHEX": "0.98",
                     "cor_xyt_ann_TROPICS": "0.92",
+                    "custom_model_max": 304.95272638750384,
+                    "custom_model_min": 271.27384426614753,
+                    "custom_ref_max": 304.95272638750384,
+                    "custom_ref_min": 271.27384426614753,
                     "mae_xy_djf_GLB": "1.53",
                     "mae_xy_djf_NHEX": "1.30",
                     "mae_xy_djf_SHEX": "2.31",
@@ -176,7 +185,8 @@
                     "rms_xyt_ann_GLB": "1.63",
                     "rms_xyt_ann_NHEX": "2.05",
                     "rms_xyt_ann_SHEX": "1.86",
-                    "rms_xyt_ann_TROPICS": "1.30"
+                    "rms_xyt_ann_TROPICS": "1.30",
+                    "some_custom": 1.5
                 },
                 "terre": {
                     "bias_xy_ann_GLB": "nan",
@@ -219,6 +229,10 @@
                     "cor_xyt_ann_NHEX": "nan",
                     "cor_xyt_ann_SHEX": "nan",
                     "cor_xyt_ann_TROPICS": "nan",
+                    "custom_model_max": NaN,
+                    "custom_model_min": NaN,
+                    "custom_ref_max": NaN,
+                    "custom_ref_min": NaN,
                     "mae_xy_djf_GLB": "nan",
                     "mae_xy_djf_NHEX": "nan",
                     "mae_xy_djf_SHEX": "nan",
@@ -258,7 +272,8 @@
                     "rms_xyt_ann_GLB": "nan",
                     "rms_xyt_ann_NHEX": "nan",
                     "rms_xyt_ann_SHEX": "nan",
-                    "rms_xyt_ann_TROPICS": "nan"
+                    "rms_xyt_ann_TROPICS": "nan",
+                    "some_custom": 1.5
                 }
             },
             "source": "UKMETOFFICE-HadISST-v1-1"
@@ -285,6 +300,6 @@
         "ocean": 0.0,
         "terre": 100.0
     },
-    "metrics_git_sha1": "162f90a505c9664acc80859471f52f557373a48f",
-    "uvcdat_version": "2.0.beta"
+    "metrics_git_sha1": "f7b528618c444917439c700b19f3ebbf68872d76",
+    "uvcdat_version": "2.0.beta-173-g14ca532"
 }
