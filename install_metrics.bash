@@ -3,18 +3,16 @@
 ## SYSTEM SPECIFIC OPTIONS, EDIT THESE TO MATCH YOUR SYSTEM
 
 ## Directory where to install UVCDAT and the METRICS Packages
-install_prefix="WGNE"
+install_prefix="PCMDI_METRICS"
 
 ## Temporary build directory
-build_directory="WGNE/tmp"
+build_directory="${install_prefix}/tmp"
+
+## Speed up your build by increasing the following to match your number of processors
+num_cpus=4
 
 ## Do we build UV-CDAT with parallel capabilities (MPI)
 build_parallel="OFF"
-
-## If you are behind a firewall or need a certificate to get out
-## specify path to certificate below, leave blank otherwise
-#certificate=${HOME}/ca.llnl.gov.pem.cer
-certificate=
 
 ## Do we build graphics - Not currently needed, for future use
 #build_graphics="OFF"
@@ -27,9 +25,12 @@ certificate=
 #qmake_executable=/usr/bin/qmake
 
 ## Speed up your build by increasing the following to match your number of processors
-num_cpus=16
+num_cpus=4
 
-
+## Do we keep or remove uvcdat_build diretory before building UV-CDAT
+## Useful for case where multiple make necessary
+## valid values: true false
+keep_uvcdat_build_dir=false
 
 ### DO NOT EDIT AFTER THIS POINT !!!!! ###
 
@@ -41,7 +42,7 @@ setup_cmake() {
     ## Source funcs needed by installer
     . ${metrics_build_directory}/installer_funcs.bash
     echo -n "Checking for CMake >=  ${cmake_min_version} "
-    check_version_with cmake "cmake --version | awk '{print \$3}' | sed -e 's/\([^-]*\)-.*/\1/'" ${cmake_min_version} ${cmake_max_version}
+    check_version_with cmake "cmake --version | head -n1 | awk '{print \$3}' | awk -F . '{print \$1\".\"\$2\".\"\$3}'" ${cmake_min_version} ${cmake_max_version}
     [ $? == 0 ] && (( ! force_install )) && echo " [OK]" && return 0
 
     echo
@@ -127,7 +128,7 @@ setup_cdat() {
     F90=gfortran
     CC=gcc
     CXX=g++
-    echo -n "Checking for *UV* CDAT (Python+CDMS) ${cdat_version}"
+    echo -n "Checking for *UV* CDAT (Python+CDMS) ${cdat_version} "
 
     #-----------CDAT -> UVCDAT Migration------------------
     #rewrite cdat_home to new uvcdat location
@@ -138,6 +139,20 @@ setup_cdat() {
     ${cdat_home}/bin/python -c "import cdat_info; print cdat_info.Version" 
     local ret=$?
     ((ret == 0)) && (( ! force_install )) && echo " [OK]" && return 0
+    echo "No python in your install directory, trying your PATH"
+    python -c "import cdat_info; print cdat_info.Version" 
+    if [ $? == 0 ]; then
+       echo "you have a valid cdat in your path"
+       cdat_home=`python -c "import sys; print sys.prefix"`
+       echo "It is located at:" ${cdat_home}
+       cat > ${install_prefix}/bin/setup_runtime.sh  <<  EOF  
+       . ${cdat_home}/bin/setup_runtime.sh
+       export PYTHONPATH=${install_prefix}/lib/python2.7/site-packages:\${PYTHONPATH}
+       export PATH=${PATH}:${install_prefix}/bin
+EOF
+       return 0
+    fi
+
 
     ## Source funcs needed by installer
     . ${metrics_build_directory}/installer_funcs.bash
@@ -148,7 +163,7 @@ setup_cdat() {
     echo
 
     local dosetup="N"
-    if [ -x ${cdat_home}/bin/cdat ]; then
+    if [ -x ${cdat_home}/bin/python ]; then
         echo "Detected an existing CDAT installation..."
         read -e -p "Do you want to continue with CDAT installation and setup? [Y/N] " dosetup
         if [ "${dosetup}" != "Y" ] && [ "${dosetup}" != "y" ]; then
@@ -187,40 +202,42 @@ setup_cdat() {
     #cdms configuration with --enable-esg flag looks for pg_config in
     #$postgress_install_dir/bin.  This location is created and added
     #to the executable PATH by the 'setup_postgress' function.
-    if [ -n "${certificate}" ]; then
-        pip_string="-DPIP_CERTIFICATE="${certificate}
-        echo "Using user defined certificate path: ${certificate}"
-    fi
+    #if [ -n "${certificate}" ]; then
+    #    pip_string="-DPIP_CERTIFICATE="${certificate}
+    #    echo "Using user defined certificate path: ${certificate}"
+    #fi
 
     local uvcdat_build_directory_build=${uvcdat_build_directory}/uvcdat_build
     (
         unset LD_LIBRARY_PATH
         unset PYTHONPATH
-	unset CFLAGS
-	unset LDFLAGS
-
-        [ -d ${uvcdat_build_directory_build} ] && rm -rf ${uvcdat_build_directory_build}
+        unset CFLAGS
+        unset LDFLAGS
+        if [  ${keep_uvcdat_build_dir} = false ]; then
+            echo "removing UVCDAT build directory"
+            [ -d ${uvcdat_build_directory_build} ] && rm -rf ${uvcdat_build_directory_build}
+        else 
+          echo "You said you wanted to keep uvcdat_build_dir"
+        fi
         mkdir -p ${uvcdat_build_directory_build} >& /dev/null
         pushd ${uvcdat_build_directory_build} >& /dev/null
         #(zlib patch value has to be 3,5,7 - default is 3)
         local zlib_value=$(pkg-config --modversion zlib | sed -n -e 's/\(.\)*/\1/p' | sed -n -e '/\(3|5|7\)/p') ; [[ ! ${zlib_value} ]] && zlib_value=3
 
-        # cmake_args="${pip_string} -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat -DCDAT_BUILD_GRAPHICS=${build_graphics} $([ "${build_graphics}" = "ON" ] && echo "-DQT_QMAKE_EXECUTABLE=${qmake_executable}")"
-        cmake_cmd="cmake ${pip_string} -DCDAT_BUILD_UDUNITS2=ON -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_BUILD_ESGF=ON -DCDAT_BUILD_ESMF_ESMP=ON -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
+        cmake_cmd="cmake -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_DOWNLOAD_SAMPLE_DATA=ON -DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF -DCDAT_BUILD_ESMF_ESMP=ON -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
+        cmake_cmd="cmake -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_DOWNLOAD_SAMPLE_DATA=ON -DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
 
-        echo "CMAKE ARGS: "${cmake_args}
+        echo "CMAKE ARGS: "${cmake_cmd}
         echo "PATH:"${PATH}
         echo "PWD:"`pwd`
         ${cmake_cmd}
-        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (1)" && popd && checked_done 1
+        [ $? != 0 ] && echo " ERROR: Could not configure (cmake) cdat code (1)" && popd && checked_done 1
         ${cmake_cmd}
-        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (2)" && popd && checked_done 1
-        ${cmake_cmd}
-        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (3)" && popd && checked_done 1
+        [ $? != 0 ] && echo " ERROR: Could not configure (cmake) cdat code (2)" && popd && checked_done 1
 
         echo "CMAKE ARGS"${cmake_args}
         make -j ${num_cpus}
-        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code (4)" && popd && checked_done 1
+        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code" && popd && checked_done 1
 
         echo "CMAKE ARGS"${cmake_args}
         echo "UVCDAT BDIR"${uvcdat_build_directory}
@@ -238,31 +255,6 @@ setup_cdat() {
     checked_done 0
 }
 
-write_cdat_env() {
-    ((show_summary_latch++))
-    echo "export CDAT_HOME=${cdat_home}" >> ${envfile}
-    prefix_to_path PATH ${cdat_home}/bin >> ${envfile}
-    prefix_to_path PATH ${cdat_home}/Externals/bin >> ${envfile}
-    prefix_to_path LD_LIBRARY_PATH ${cdat_home}/Externals/lib >> ${envfile}
-    dedup ${envfile} && source ${envfile}
-    return 0
-}
-
-write_cdat_install_log() {
-    echo "$(date ${date_format}) uvcdat=${cdat_version} ${cdat_home}" >> ${install_manifest}
-
-    #Parse the cdat installation config.log file and entries to the install log
-    local build_log=${uvcdat_build_directory}/uvcdat_build/build_info.txt
-    if [ -e "${build_log}" ]; then
-        awk '{print "'"$(date ${date_format})"' uvcdat->"$1"="$2" '"${cdat_home}"'"}' ${build_log} | sed '$d' >> ${install_manifest}
-    else
-        echo " WARNING: Could not find cdat build logfile [${build_log}], installation log entries could not be generated!"
-    fi
-
-    dedup ${install_manifest}
-    return 0
-}
-
 setup_cdat_xtra() {
     echo "Installing Extra Package ${1}"${uvcdat_build_directory}/uvcdat/Packages/$1
     cd ${uvcdat_build_directory}/uvcdat/Packages/$1 >& /dev/null
@@ -272,8 +264,8 @@ setup_cdat_xtra() {
 
 setup_metrics() {
     cd ${metrics_build_directory} >& /dev/null
-    ${install_prefix}/bin/python setup.py install
-    [ $? != 0 ] && echo " Error could not install metrics python package using ${install_prefix}/bin/python" 
+    ${cdat_home}/bin/python setup.py install --prefix=${install_prefix}
+    [ $? != 0 ] && echo " Error could not install metrics python package using ${cdat_home}/bin/python" 
 }
 
 _full_path() {
@@ -345,7 +337,7 @@ main() {
     cmake_repo=git://cmake.org/cmake.git
     cmake_repo_http=http://cmake.org/cmake.git
     cmake_repo_https=https://cmake.org/cmake.git
-    cmake_min_version=2.8.12
+    cmake_min_version=2.8.11
     cmake_max_version=2.9
     cmake_version=2.8.12
     force_install=0
@@ -354,9 +346,9 @@ main() {
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
     cdat_repo_https=https://github.com/UV-CDAT/uvcdat.git
     cdat_version="master"
-    metrics_repo=git://github.com/PCMDI/wgne-wgcm_metrics.git
-    metrics_repo_http=http://github.com/PCMDI/wgne-wgcm_metrics.git
-    metrics_repo_https=https://github.com/PCMDI/wgne-wgcm_metrics.git
+    metrics_repo=git://github.com/PCMDI/pcmdi_metrics.git
+    metrics_repo_http=http://github.com/PCMDI/pcmdi_metrics.git
+    metrics_repo_https=https://github.com/PCMDI/pcmdi_metrics.git
     metrics_checkout="master"
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
@@ -375,19 +367,19 @@ main() {
     cdat_home=${install_prefix}
     echo "Installing into: "${install_prefix}
     echo "Temporary build directory: "${build_directory}
-    ## clone wgne repo
+    ## clone pcmdi_metrics repo
     git clone ${metrics_repo} ${metrics_build_directory}
     if [ ! -e ${metrics_build_directory}/.git/config ]; then
       echo " WARN: Could not clone metrics repo via git protocol (port 9418)! Trying https protocol"
-        git clone ${metrics_repo_https} ${metrics_build_directory}
+      git clone ${metrics_repo_https} ${metrics_build_directory}
+      if [ ! -e ${metrics_build_directory}/.git/config ]; then
+        echo " WARN: Could not clone metrics repo via https (port 22)! Trying http protocol (port 80)"
+        git clone ${metrics_repo_http} ${metrics_build_directory}
         if [ ! -e ${metrics_build_directory}/.git/config ]; then
-          echo " WARN: Could not clone metrics repoi via https (port 22)! Trying http protocol (port 80)"
-          git clone ${metrics_repo_http} ${metrics_build_directory}
-          if [ ! -e ${metrics_build_directory}/.git/config ]; then
-              echo " ERROR: Could not clone metrics repo via git/https/http! Check you are connected to the internet or your firewall settings"
-              exit 1
-          fi
+            echo " ERROR: Could not clone metrics repo via git/https/http! Check you are connected to the internet or your firewall settings"
+            exit 1
         fi
+      fi
     fi
 
     cd ${metrics_build_directory} >& /dev/null
@@ -406,6 +398,7 @@ main() {
     PATH=${install_prefix}/Externals/bin:${PATH}
     setup_cmake
     setup_cdat
+    echo "After setup_cdat ${cdat_home}"
     setup_metrics
     pushd ${uvcdat_build_directory}/uvcdat >& /dev/null
     git apply ${metrics_build_directory}/src/patch_uvcdat.patch
@@ -419,10 +412,16 @@ main() {
     echo "*******************************"
     echo "UVCDAT  - ${cdat_version} - Install Success"
     echo "Metrics - ${metrics_checkout} - Install Success"
-    echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/wgne_input_parameters_sample.py"
+    echo "*******************************"
+    echo "Please test as follow:"
+    echo "source ${cdat_home}/bin/setup_runtime.sh"
+    echo "pcmdi_metrics_driver.py -p ${install_prefix}/test/pcmdi/basic_test_parameters_file.py"
+    echo "compare: diff ${install_prefix}/test/pcmdi/tos_2.5x2.5_esmf_linear_metrics.json.good pcmdi_install_test_results/metrics_results/installationTest/tos_2.5x2.5_esmf_linear_metrics.json"
+    echo "*******************************"
+    echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/pcmdi_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
     echo "source ${install_prefix}/bin/setup_runtime.sh"
-    echo "wgne_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
+    echo "pcmdi_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
     echo "*******************************"
     echo "Once everything is ok, you can safely remove the temporary directory: ${build_directory}"
     echo "*******************************"

@@ -1,4 +1,4 @@
-WGNE/WGCM metrics panel package - alpha v0.1
+PCMDI metrics panel package - alpha v0.1
 
 mean_climate_metrics_driver.py
 ------------------------------
