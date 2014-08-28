@@ -1,6 +1,4 @@
 import cdms2
-import string, os
-import ESMP
 
 ###################################### 
 value = 0 

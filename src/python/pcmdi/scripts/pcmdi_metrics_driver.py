@@ -5,7 +5,7 @@
 #  Identified via --parameters key at startup
 #
 ######################################################
-import metrics
+import pcmdi_metrics
 import sys
 import argparse
 import os, json
@@ -18,7 +18,7 @@ import cdutil
 regions_values = {"land":100.,"ocean":0.,"lnd":100.,"ocn":0.}
 
 #Load the obs dictionary
-obs_dic = json.loads(open(os.path.join(metrics.__path__[0],"..","..","..","..","share","wgne","obs_info_dictionary.json")).read())
+obs_dic = json.loads(open(os.path.join(pcmdi_metrics.__path__[0],"..","..","..","..","share","pcmdi","obs_info_dictionary.json")).read())
 
 class DUP(object):
     def __init__(self,outfile):
@@ -71,7 +71,7 @@ dup=DUP(Efile)
 ## First of all attempt to prepare sftlf before/after for all models
 sftlf={}
 for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
-  sft = metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
+  sft = pcmdi_metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
   sft.model_version = model_version
   sft.table = "fx"
   sft.realm = "atmos"
@@ -153,7 +153,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         else:
             refs=[parameters.ref,]
 
-    OUT = metrics.io.base.Base(os.path.join(parameters.metrics_output_path,parameters.case_id),"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
+    OUT = pcmdi_metrics.io.base.Base(os.path.join(parameters.metrics_output_path,parameters.case_id),"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
     OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
     OUT.var=var
     OUT.realm = realm
@@ -178,16 +178,16 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         metrics_dictionary["References"][ref] = obs_dic[var][obs_dic[var][ref]]
         try:
           if obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"]=="Omon":
-              OBS = metrics.wgne.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
+              OBS = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
           else:
-              OBS = metrics.wgne.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
+              OBS = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
           OBS.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
           OBS.realm = realm
           OBS.table = table_realm
           applyCustomKeys(OBS,parameters.custom_keys,var)
           if region is not None:
             ## Ok we need to apply a mask
-            oMask = metrics.wgne.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,ref)
+            oMask = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,ref)
             oMask = oMask.get("sftlf")
             OBS.mask = MV2.logical_not(MV2.equal(oMask,region))
             OBS.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
@@ -208,7 +208,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
               success = True
               while success:
 
-                  MODEL = metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
+                  MODEL = pcmdi_metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
                   MODEL.model_version = model_version
                   MODEL.table = table_realm
                   MODEL.realm = realm
@@ -295,7 +295,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   if not metrics_dictionary[model_version].has_key(refabbv):
                     metrics_dictionary[model_version][refabbv] = {'source':onm}
                   pr = metrics_dictionary[model_version][refabbv].get(parameters.realization,{})
-                  pr[region_name] = metrics.wgne.compute_metrics(var,dm,do)
+                  pr[region_name] = pcmdi_metrics.pcmdi.compute_metrics(var,dm,do)
                   ###########################################################################
                   ## The follwoing allow users to plug in a set of custom metrics
                   ## Function needs to take in var name, model clim, obs clim
@@ -307,7 +307,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
                   # Only the first time thru an obs set (always the same after)
                   if parameters.save_mod_clims and ref==refs[0]: 
-                      CLIM= metrics.io.base.Base(parameters.model_clims_interpolated_output+"/"+parameters.case_id,parameters.filename_output_template)
+                      CLIM= pcmdi_metrics.io.base.Base(parameters.model_clims_interpolated_output+"/"+parameters.case_id,parameters.filename_output_template)
                       CLIM.level=OUT.level
                       CLIM.model_version = model_version
                       CLIM.table = table_realm

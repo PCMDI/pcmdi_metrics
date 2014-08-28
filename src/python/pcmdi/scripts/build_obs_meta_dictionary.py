@@ -1,6 +1,6 @@
 #!python
-import cdms2 as cdms
-import json, os, sys, string
+import cdms2
+import json, os, sys
 if len(sys.argv)>1:
     data_path = sys.argv[1]
 else:
@@ -39,22 +39,22 @@ obs_dic = {'rlut':{'default':'CERES','alternate':'ERBE'},
 
 
 for l in lst:
-  subp = string.split(l,'obs')[1]
+  subp = l.split('obs')[1]
 # print subp
 
-  var = string.split(subp,'/')[3]
+  var = subp.split('/')[3]
 
   if var not in obs_dic.keys(): obs_dic[var] = {}
 
-  product = string.split(subp,'/')[4]
+  product = subp.split('/')[4]
 
   if product not in obs_dic[var].keys(): obs_dic[var][product] = {}
 
-  partial_filename = string.split(subp,'pcmdi-metrics')[1]
+  partial_filename = subp.split('pcmdi-metrics')[1]
 
-  realm = string.split(partial_filename,'_')[1]
-  period = string.split(partial_filename,'_')[3]
-  period = string.split(period,'-clim.nc')[0]
+  realm = partial_filename.split('_')[1]
+  period = partial_filename.split('_')[3]
+  period = period.split('-clim.nc')[0]
 
   obs_dic[var][product]['CMIP_CMOR_TABLE'] = realm
   obs_dic[var][product]['period'] = period 
@@ -67,7 +67,7 @@ for l in lst:
 
   print var,' ', product,'  ', realm,' ', period
 
-  f = cdms.open(l[:-1])
+  f = cdms2.open(l[:-1])
   d = f(var)
   shape = d.shape
   f.close()

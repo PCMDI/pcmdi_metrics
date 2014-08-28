@@ -1,5 +1,5 @@
 import cdms2
-import string  
+import os
 
 ##############################################################################
 # PJG 20130522
@@ -23,9 +23,9 @@ def getOurModelData(exp,var):
 
  filename_tmp = 'cmip5.NorESM1-M.historical.r1i1p1.mo.atm.Amon.VARNAME.ver-1.1980-1999.AC.nc'
 
- filename_new = string.replace(filename_tmp,'VARNAME',var)
+ filename_new = filename_tmp.replace('VARNAME',var)
 
- f = cdms.open(pathin + var + '/' + filename_new)
+ f = cdms.open(os.path.join(pathin, var, filename_new))
  d = f(var + '_ac')
  f.close()
 

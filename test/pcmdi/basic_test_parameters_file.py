@@ -1,6 +1,6 @@
 import genutil
 import os,sys
-import metrics
+import pcmdi_metrics
 
 ################################################################################
 #  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY: 
@@ -50,23 +50,21 @@ save_mod_clims = True # True or False
 filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(model_period)-clim.nc"
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
-mod_data_path = os.path.join(metrics.__path__[0],"..","..","..","..",'test','wgne',)
-#mod_data_path = '/work/gleckler1/processed_data/cmip5clims-AR5-frozen_1dir/' 
+mod_data_path = os.path.join(pcmdi_metrics.__path__[0],"..","..","..","..",'test','pcmdi',)
 ## ROOT PATH FOR OBSERVATIONS
-obs_data_path = os.path.join(metrics.__path__[0],"..","..","..","..",'test','wgne','obs')
+obs_data_path = os.path.join(pcmdi_metrics.__path__[0],"..","..","..","..",'test','pcmdi','obs')
 ## DIRECTORY WHERE TO PUT RESULTS
-metrics_output_path = os.path.join('wgne_install_test_results','metrics_results')
+metrics_output_path = os.path.join('pcmdi_install_test_results','metrics_results')
 ## DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES
-model_clims_interpolated_output = os.path.join('wgne_install_test_results','interpolated_model_clims')
+model_clims_interpolated_output = os.path.join('pcmdi_install_test_results','interpolated_model_clims')
 ## FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
-#filename_output_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table).%(variable)%(level).ver-1.%(period).interpolated.%(regridMethod).%(targetGridName).AC%(ext)"
 filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_historical_%(realization)_%(period).interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"
 
 ## Ok do we have custom metrics?
 ## The following allow users to plug in a set of custom metrics
 ## Function needs to take in var name, model clim, obs clim
-import metrics
-compute_custom_metrics = metrics.wgne.compute_metrics
+import pcmdi_metrics # Or whatever your custom metrics package name is
+compute_custom_metrics = pcmdi_metrics.pcmdi.compute_metrics
 #or
 def mymax(slab,nm):
   return {"custom_%s_max" % nm:float(slab.max())}

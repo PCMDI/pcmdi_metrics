@@ -3,7 +3,7 @@ import cdms2
 import MV2
 import genutil
 import os
-import metrics
+import pcmdi_metrics
 import cdat_info
 
 value = 0
@@ -64,7 +64,7 @@ class Base(genutil.StringConstructor):
             raise RuntimeError, "Could not create output directory: %s" % (os.path.split(fnm)[0])
         if type.lower() == "json":
             f=open(fnm,mode)
-            data["metrics_git_sha1"] = metrics.__git_sha1__
+            data["metrics_git_sha1"] = pcmdi_metrics.__git_sha1__
             data["uvcdat_version"] = cdat_info.get_version()
             json.dump(data,f,*args,**kargs)            
         elif type.lower() in ["asc","ascii","txt"]:
@@ -74,7 +74,7 @@ class Base(genutil.StringConstructor):
         elif type.lower() == "nc":
             f=cdms2.open(fnm,mode)
             f.write(data,*args,**kargs)
-            f.metrics_git_sha1 = metrics.__git_sha1__
+            f.metrics_git_sha1 = pcmdi_metrics.__git_sha1__
             f.uvcdat_version = cdat_info.get_version()
         else:
             raise RuntimeError,"Unknown type: %s" % type
