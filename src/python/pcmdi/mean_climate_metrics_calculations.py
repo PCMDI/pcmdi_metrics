@@ -1,22 +1,16 @@
-import MV2 as MV
 import cdms2 as cdms
-from genutil import statistics
-import cdutil
 import pcmdi_metrics
-
-
+#import cdutil
+#import MV2 as MV
+#from genutil import statistics
 
 def compute_metrics(var,dm_glb,do_glb):
-
 
   cdms.setAutoBounds('on')
 
   metrics_dictionary = {}
 
   domains = ['GLB','NHEX','TROPICS','SHEX']
-
-  ### TEMPORARY UNITS CHANGE
-  if var == 'tas': do_glb = do_glb + 273.13
 
   for dom in domains: 
 
