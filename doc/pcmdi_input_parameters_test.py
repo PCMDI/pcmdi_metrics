@@ -19,7 +19,7 @@ vars = ['pr','psl','rlut','rlutcs','rsut','rsutcs','ta_200','ta_850','tas','ua_2
 #vars = ['sos','tos','zos'] ; # 2d ocean variables
 #vars = ['rlwcrf','rswcrf'] ; # Non-standard CMIP5 variables (available from obs output)
 
-# Observations to use "default", "alternate" or enumerated climatology e.g. 'ref3'
+# Observations to use 'default', 'alternate' or specific enumerated climatology e.g. 'ref3'
 ref = ['default'] ; #,'all','alternate','ref3']
 
 # INTERPOLATION OPTIONS
@@ -46,6 +46,6 @@ model_clims_interpolated_output = '/export/durack1/140701_metrics/test_new'
 ## FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
 filename_output_template        = "%(variable)%(level)_%(model_version)_%(table)_historical_%(realization)_%(period)_interpolated_%(regridMethod)_%(targetGridName)-clim%(ext)"
 
-## DICTIONARY FOR CUSTOM %(keyword) IMPLEMENTED BY USER
+## DICTIONARY FOR CUSTOM %(keyword) IMPLEMENTED BY USER FOR CUSTOM METRICS
 # Driver will match each key to its value defined by a variable name OR all if variable name is not present, OR "" if "all" is not defined
 custom_keys = { "key1": {"all":"key1_value_for_all_var", "tas" : "key1_value_for_tas"}, }
