@@ -69,4 +69,4 @@ metrics_output_path = '/work/gleckler1/processed_data/metrics_package/metrics_re
 model_clims_interpolated_output = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims/'
 ## FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
 #filename_output_template = "cmip5.%(model_version).historical.r1i1p1.mo.%(table).%(variable)%(level).ver-1.%(period).interpolated.%(regridMethod).%(targetGridName).AC%(ext)"
-filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_historical_%(realization)_%(period).interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"
+filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_historical_%(realization)_%(period)_interpolated_%(regridMethod)_%(targetGridName)-clim%(ext)"
