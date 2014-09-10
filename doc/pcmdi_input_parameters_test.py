@@ -19,15 +19,15 @@ vars = ['pr','psl','rlut','rlutcs','rsut','rsutcs','ta_200','ta_850','tas','ua_2
 #vars = ['sos','tos','zos'] ; # 2d ocean variables
 #vars = ['rlwcrf','rswcrf'] ; # Non-standard CMIP5 variables (available from obs output)
 
-# Observations to use "default" or "alternate"
-ref = ['default']  #,'all','alternate','ref3']
+# Observations to use "default", "alternate" or enumerated climatology e.g. 'ref3'
+ref = ['default'] ; #,'all','alternate','ref3']
 
 # INTERPOLATION OPTIONS
-targetGrid          = '2.5x2.5' # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
-regrid_tool         = 'regrid2' #'regrid2' # OPTIONS: 'regrid2','esmf'
-regrid_method       = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
-regrid_tool_ocn     = 'esmf'    # OPTIONS: "regrid2","esmf"
-regrid_method_ocn   = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
+targetGrid          = '2.5x2.5' # Options: '2.5x2.5' or an actual cdms2 grid object
+regrid_tool         = 'regrid2' # Options: 'regrid2','esmf'
+regrid_method       = 'linear'  # Options: 'linear','conservative', only if tool is esmf
+regrid_tool_ocn     = 'esmf'    # Options: 'regrid2','esmf' - Note regrid2 will fail with non lat/lon grids
+regrid_method_ocn   = 'linear'  # Options: 'linear','conservative', only if tool is esmf
 save_mod_clims      = True      # Options: True or False (Save interpolated model climatologies used in metrics calculations)
 
 ## DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
@@ -46,6 +46,6 @@ model_clims_interpolated_output = '/export/durack1/140701_metrics/test_new'
 ## FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
 filename_output_template        = "%(variable)%(level)_%(model_version)_%(table)_historical_%(realization)_%(period)_interpolated_%(regridMethod)_%(targetGridName)-clim%(ext)"
 
-## dictionary for custom %(keyword) designed by user
+## DICTIONARY FOR CUSTOM %(keyword) IMPLEMENTED BY USER
 # Driver will match each key to its value defined by a variable name OR all if variable name is not present, OR "" if "all" is not defined
 custom_keys = { "key1": {"all":"key1_value_for_all_var", "tas" : "key1_value_for_tas"}, }
