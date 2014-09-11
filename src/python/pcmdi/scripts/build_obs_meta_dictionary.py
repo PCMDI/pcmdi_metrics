@@ -1,5 +1,6 @@
 #!python
 import cdms2
+import time, string
 import json, os, sys
 if len(sys.argv)>1:
     data_path = sys.argv[1]
@@ -36,13 +37,15 @@ obs_dic = {'rlut':{'default':'CERES','alternate':'ERBE'},
            'sos':{'default':'NODC-WOA09'},
             }
 
-
-
 for l in lst:
   subp = l.split('obs')[1]
 # print subp
 
   var = subp.split('/')[3]
+
+### TRAP FILE NAME
+
+  filename = subp.split('/')[len(subp.split('/'))-1][:-1]
 
   if var not in obs_dic.keys(): obs_dic[var] = {}
 
@@ -51,19 +54,24 @@ for l in lst:
   if product not in obs_dic[var].keys(): obs_dic[var][product] = {}
 
   partial_filename = subp.split('pcmdi-metrics')[1]
+# fullfilename = subp.split('pcmdi-metrics')[1]
 
   realm = partial_filename.split('_')[1]
   period = partial_filename.split('_')[3]
   period = period.split('-clim.nc')[0]
 
+  obs_dic[var][product]['filename'] = filename 
   obs_dic[var][product]['CMIP_CMOR_TABLE'] = realm
   obs_dic[var][product]['period'] = period 
-  obs_dic[var][product]['RefActivity'] = "obs4mips"
+# obs_dic[var][product]['RefActivity'] = "obs4mips"
   obs_dic[var][product]['RefName'] = product
-  obs_dic[var][product]['RefType'] = "???"
-  obs_dic[var][product]['RefTrackingDate'] = time.ctime(os.path.getmtime(l.strip())
-  obs_dic[var][product]['RefFreeSpace'] = "???"
+# obs_dic[var][product]['RefType'] = "???"
+  obs_dic[var][product]['RefTrackingDate'] = time.ctime(os.path.getmtime(l.strip()))
+# obs_dic[var][product]['RefFreeSpace'] = "???"
 
+  md5 = string.split(os.popen('md5sum ' + l[:-1]).readlines()[0],' ')[0]
+
+  obs_dic[var][product]['MD5sum'] = md5 
 
   print var,' ', product,'  ', realm,' ', period
 
