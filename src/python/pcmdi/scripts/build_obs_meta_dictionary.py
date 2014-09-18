@@ -10,28 +10,28 @@ else:
 
 lst = os.popen('ls ' + data_path + '/*/mo/*/*/ac/*.nc').readlines()
 
-obs_dic = {'rlut':{'default':'CERES','alternate':'ERBE'},
-           'rsut':{'default':'CERES','alternate':'ERBE'},
-           'rsds':{'default':'CERES','alternate':'ERBE'},
-           'rlus':{'default':'CERES','alternate':'ERBE'},
-           'rsus':{'default':'CERES','alternate':'ERBE'},
-           'rlutcs':{'default':'CERES','alternate':'ERBE'},
-           'rsutcs':{'default':'CERES','alternate':'ERBE'},
-           'rsutcre':{'default':'CERES','alternate':'ERBE'},
-           'rlutcre':{'default':'CERES','alternate':'ERBE'},
+obs_dic = {'rlut':{'default':'CERES'},
+           'rsut':{'default':'CERES'},
+           'rsds':{'default':'CERES',},
+           'rlus':{'default':'CERES',},
+           'rsus':{'default':'CERES',},
+           'rlutcs':{'default':'CERES'},
+           'rsutcs':{'default':'CERES'},
+#          'rsutcre':{'default':'CERES'},
+#          'rlutcre':{'default':'CERES'},
            'pr':{'default':'GPCP','alternate':'TRMM'},
            'prw':{'default':'RSS'},
-           'tas':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
-           'psl':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
-           'ua':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
-           'va':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
-           'uas':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
-           'hus':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
-           'vas':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
-           'ta':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
-           'zg':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
-           'tauu':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
-           'tauv':{'default':'ERAINT','ref3':'JRA25','alternate':'rnl_ncep'},
+           'tas':{'default':'ERAINT','ref3':'JRA25','alternate':'ERA40'},
+           'psl':{'default':'ERAINT','ref3':'JRA25','alternate':'ERA40'},
+           'ua':{'default':'ERAINT','ref3':'JRA25','alternate':'ERA40'},
+           'va':{'default':'ERAINT','ref3':'JRA25','alternate':'ERA40'},
+           'uas':{'default':'ERAINT','ref3':'JRA25','alternate':'ERA40'},
+           'hus':{'default':'ERAINT','ref3':'JRA25','alternate':'ERA40'},
+           'vas':{'default':'ERAINT','ref3':'JRA25','alternate':'ERA40'},
+           'ta':{'default':'ERAINT','ref3':'JRA25','alternate':'ERA40'},
+           'zg':{'default':'ERAINT','ref3':'JRA25','alternate':'ERA40'},
+           'tauu':{'default':'ERAINT','ref3':'JRA25','alternate':'ERA40'},
+           'tauv':{'default':'ERAINT','ref3':'JRA25','alternate':'ERA40'},
            'tos':{'default':'UKMETOFFICE-HadISST-v1-1'},
            'zos':{'default':'CNES-AVISO-L4'},
            'sos':{'default':'NODC-WOA09'},
@@ -46,6 +46,9 @@ for l in lst:
 ### TRAP FILE NAME
 
   filename = subp.split('/')[len(subp.split('/'))-1][:-1]
+
+  print 'FILENAME IS ', filename,'  ', subp.split('/')[4]
+
 
   if var not in obs_dic.keys(): obs_dic[var] = {}
 
@@ -86,8 +89,8 @@ for l in lst:
 
 json_name = 'obs_info_dictionary.json'
 
-json.dump(obs_dic, open(json_name, "wb" ),sort_keys=True, indent=4, separators=(',', ': '))
+#json.dump(obs_dic, open(json_name, "wb" ),sort_keys=True, indent=4, separators=(',', ': '))
 
-
+json.dump(obs_dic, open('../../../../doc/' + json_name, "wb" ),sort_keys=True, indent=4, separators=(',', ': '))
  
 
