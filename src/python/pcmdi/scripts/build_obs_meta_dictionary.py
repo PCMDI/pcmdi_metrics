@@ -1,4 +1,6 @@
-#!python
+#!/bin/env python
+
+
 import cdms2
 import time, string
 import json, os, sys

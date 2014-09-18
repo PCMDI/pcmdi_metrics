@@ -1,4 +1,4 @@
-#!/usr/local/uvcdat/latest/bin/python
+#!/bin/env python
 
 ###############################################
 # PURPOSE: PROVIDE EXAMPLES OF HOW TO READ AND MANIPULATE PYTHON DICTIONARIES 
