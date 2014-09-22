@@ -291,6 +291,10 @@
     "References": {
         "default": {
             "CMIP_CMOR_TABLE": "Omon",
+            "MD5sum": "41833b403cad7052773dd933d1798a14",
+            "RefName": "UKMETOFFICE-HadISST-v1-1",
+            "RefTrackingDate": "Wed Jan 15 10:57:20 2014",
+            "filename": "tos_pcmdi-metrics_Omon_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc",
             "period": "198002-200501",
             "shape": "(12, 180, 360)"
         }
@@ -300,6 +304,6 @@
         "ocean": 0.0,
         "terre": 100.0
     },
-    "metrics_git_sha1": "f7b528618c444917439c700b19f3ebbf68872d76",
-    "uvcdat_version": "2.0.beta-173-g14ca532"
+    "metrics_git_sha1": "3abd808b90377f402fd326e32c6982d43301258e",
+    "uvcdat_version": "2.0.beta-2196-g2fadb4c"
 }
