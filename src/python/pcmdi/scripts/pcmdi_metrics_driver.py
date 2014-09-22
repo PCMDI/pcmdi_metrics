@@ -233,7 +233,6 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                       break
 
                   dup(var,' ', model_version,' ', dm.shape,' ', do.shape,'  ', ref)
-
                   ###########################################################################
                   #### Basic checks
                   ###########################################################################
@@ -248,12 +247,17 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                       except:
                         raise RuntimeError, "Could not convert model units (%s) to obs units: (%s)" % (dm.units,do.units)
 
+
+                  ###########################################################################
+                  #### OBS INFO FOR JSON/ASCII FILES 
+                  ###########################################################################
+                  onm = obs_dic[var][ref]
+
                   ###########################################################################
                   #### METRICS CALCULATIONS
                   ###########################################################################
-                  onm = obs_dic[var][ref]
                   metrics_dictionary[model_version] = metrics_dictionary.get(model_version,{})
-                  ## Stores model's simul descrition
+                  ## Stores model's simul description
                   if not metrics_dictionary[model_version].has_key("SimulationDescription"):
                       descr = {"MIPTable":obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"],
                               "Model":model_version,

@@ -5,3 +5,4 @@ build
 *swp*
 *.o
 test_portrait
+PCMDI_METRICS
