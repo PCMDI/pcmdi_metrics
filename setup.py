@@ -22,7 +22,8 @@ setup (name = "pcmdi_metrics",
        package_dir = {'pcmdi_metrics': 'src/python',
                       'pcmdi_metrics.io': 'src/python/io',
                       'pcmdi_metrics.pcmdi': 'src/python/pcmdi',
-###                     'CMIP_results':'CMIP_results'},
+###                     'CMIP_results':'CMIP_results'
+                     },
        scripts = ["src/python/pcmdi/scripts/pcmdi_metrics_driver.py",
                   "src/python/pcmdi/scripts/build_obs_meta_dictionary.py"],
 
