@@ -11,18 +11,15 @@ build_directory="${install_prefix}/tmp"
 ## Speed up your build by increasing the following to match your number of processors
 num_cpus=4
 
+#### BUILD OPTIONS #####
+## Do we want to build with graphics capabilities
+build_graphics=false
+
+## Do we want to build with CMOR
+build_cmor=false
+
 ## Do we build UV-CDAT with parallel capabilities (MPI)
-build_parallel="OFF"
-
-## Do we build graphics - Not currently needed, for future use
-#build_graphics="OFF"
-
-## Path to your "qmake" executable
-## Qt is a pre-requisite if you turn graphics on
-## You can download it from: http://qt-project.org/downloads
-## if you leave the following blank we will attempt to use your system Qt
-#qmake_executable=/usr/local/uvcdat/Qt/4.8.4/bin/qmake
-#qmake_executable=/usr/bin/qmake
+build_parallel=false
 
 ## Speed up your build by increasing the following to match your number of processors
 num_cpus=4
@@ -224,8 +221,29 @@ EOF
         #(zlib patch value has to be 3,5,7 - default is 3)
         local zlib_value=$(pkg-config --modversion zlib | sed -n -e 's/\(.\)*/\1/p' | sed -n -e '/\(3|5|7\)/p') ; [[ ! ${zlib_value} ]] && zlib_value=3
 
-        cmake_cmd="cmake -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_DOWNLOAD_SAMPLE_DATA=ON -DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF -DCDAT_BUILD_ESMF_ESMP=ON -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
-        cmake_cmd="cmake -DCDAT_BUILD_PARALLEL=${build_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DCDAT_DOWNLOAD_SAMPLE_DATA=ON -DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF -DGIT_PROTOCOL=${cdat_git_protocol} ${uvcdat_build_directory}/uvcdat "
+        if [ ${build_graphics} = false ]; then
+          echo "LEAN MODE will not build graphics"
+          uvcdat_mode="-DCDAT_BUILD_MODE=LEAN -DCDAT_BUILD_ESMF_ESMP=ON"
+        else
+          echo "Turning on graphics this will take sensibly longer to build"
+          uvcdat_mode="-DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF -DCDAT_BUILD_ESMF_ESMP=ON"
+        fi
+
+        if [ ${build_cmor} = false ]; then
+          uvcdat_cmor=""
+        else
+          echo "Turning on CMOR"
+          uvcdat_cmor="-DCDAT_BUILD_CMOR=ON"
+        fi
+
+        if [ ${build_parallel} = false ]; then
+          uvcdat_parallel=""
+        else
+          echo "Turning on build for parallel features, wil ltakes sensibly longer"
+          uvcdat_parallel="-DCDAT_BUILD_PARALLEL=ON"
+        fi
+
+        cmake_cmd="cmake ${uvcdat_build_directory}/uvcdat ${uvcdat_mode} ${uvcdat_cmor} ${uvcdat_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DGIT_PROTOCOL=${cdat_git_protocol} "
 
         echo "CMAKE ARGS: "${cmake_cmd}
         echo "PATH:"${PATH}
