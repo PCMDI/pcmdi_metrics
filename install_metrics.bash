@@ -226,7 +226,7 @@ EOF
           uvcdat_mode="-DCDAT_BUILD_MODE=LEAN -DCDAT_BUILD_ESMF_ESMP=ON"
         else
           echo "Turning on graphics this will take sensibly longer to build"
-          uvcdat_mode="-DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF"
+          uvcdat_mode="-DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF -DCDAT_BUILD_ESMF_ESMP=ON"
         fi
 
         if [ ${build_cmor} = false ]; then
