@@ -15,6 +15,9 @@ num_cpus=4
 ## Do we want to build with graphics capabilities
 build_graphics=false
 
+## Do we want to build with CMOR
+build_cmor=false
+
 ## Do we build UV-CDAT with parallel capabilities (MPI)
 build_parallel=false
 
@@ -219,11 +222,18 @@ EOF
         local zlib_value=$(pkg-config --modversion zlib | sed -n -e 's/\(.\)*/\1/p' | sed -n -e '/\(3|5|7\)/p') ; [[ ! ${zlib_value} ]] && zlib_value=3
 
         if [ ${build_graphics} = false ]; then
-          echo "LEAN MOE will not build graphics"
+          echo "LEAN MODE will not build graphics"
           uvcdat_mode="-DCDAT_BUILD_MODE=LEAN -DCDAT_BUILD_ESMF_ESMP=ON"
         else
           echo "Turning on graphics this will take sensibly longer to build"
           uvcdat_mode="-DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF"
+        fi
+
+        if [ ${build_cmor} = false ]; then
+          uvcdat_cmor=""
+        else
+          echo "Turning on CMOR"
+          uvcdat_cmor="-DCDAT_BUILD_CMOR=ON"
         fi
 
         if [ ${build_parallel} = false ]; then
@@ -233,12 +243,7 @@ EOF
           uvcdat_parallel="-DCDAT_BUILD_PARALLEL=ON"
         fi
 
-        if [ ${build_cmor} = false ]; then
-          uvcdat_cmor=""
-        else
-          uvcdat_cmor="-DCDAT_BUILD_CMOR=ON"
-        fi
-        cmake_cmd="cmake ${uvcdat_build_directory}/uvcdat ${uvcdat_mode} ${uvcdat_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DGIT_PROTOCOL=${cdat_git_protocol} "
+        cmake_cmd="cmake ${uvcdat_build_directory}/uvcdat ${uvcdat_mode} ${uvcdat_cmor} ${uvcdat_parallel} -DCMAKE_INSTALL_PREFIX=${cdat_home} -DZLIB_PATCH_SRC=${zlib_value} -DGIT_PROTOCOL=${cdat_git_protocol} "
 
         echo "CMAKE ARGS: "${cmake_cmd}
         echo "PATH:"${PATH}
