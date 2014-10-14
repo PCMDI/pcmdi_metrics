@@ -77,7 +77,7 @@ class Plot_defaults:
 class Portrait:
     def __init__(self,files_structure=None,exclude=[],**kw):
         ''' initialize the portrait object, from file structure'''
-        self.screenout = 1 # output files looked for to the screen
+        self.verbose = True # output files looked for to the screen
         self.files_structure=files_structure
         self.exclude=exclude
         # First determine the list of parameters on which we can have a portrait
@@ -545,7 +545,7 @@ class Portrait:
             #print 'Search string is:',fnms
             #f=os.popen('ls '+F()).readlines()
             #ip,op,ep=os.popen3('ls '+F())
-            if self.screenout : print 'command line:',F()
+            if self.verbose : print 'command line:',F()
             #f=op.readlines()
             f=glob.glob(F())
             #print 'F is:',f
@@ -556,7 +556,7 @@ class Portrait:
                     if file.find(e)>-1:
                         files.pop(-1)
                         break
-            if self.screenout : print 'files:',files
+            if self.verbose : print 'files:',files
             try:
                 # now we get the one value needed in this file
                 f=cdms2.open(files[0])
@@ -956,7 +956,7 @@ class Portrait:
                 if not p in self.dummies and not p in self.auto_dummies and not p in axes_param:
                     nparam+=1
                     
-            if self.screenout: print 'NPARAM:',nparam
+            if self.verbose: print 'NPARAM:',nparam
             if nparam>0:
                 for i in range(nparam):
                     j=MV2.ceil(float(nparam)/(i+1.))
