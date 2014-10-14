@@ -50,7 +50,7 @@ P.PLOT_SETTINGS.missing_color = 240
 P.PLOT_SETTINGS.logo = None
 P.PLOT_SETTINGS.time_stamp = None
 P.PLOT_SETTINGS.draw_mesh='n'
-P.PLOT_SETTINGS.tictable.font = 3
+#P.PLOT_SETTINGS.tictable.font = 3
 
 x.scriptrun(os.path.join(sys.prefix,"share","graphics",'vcs','portraits.scr'))
 P.PLOT_SETTINGS.colormap = 'bl_rd_12'
