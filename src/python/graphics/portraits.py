@@ -938,11 +938,6 @@ class Portrait:
             meshfill=x.createmeshfill()
 
         if mesh is None:
-            ftmp = cdms2.open("data_portrait.nc","w")
-            ftmp.write(MV2.ravel(data))
-            ftmp.write(M)
-            template.script("tmpl")
-            meshfill.script("meshfill")
             x.plot(MV2.ravel(data),M,template,meshfill,bg=bg)
         else:
             x.plot(MV2.ravel(data),mesh,template,meshfill,bg=bg)
