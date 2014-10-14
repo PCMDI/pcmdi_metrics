@@ -27,7 +27,7 @@ x=vcs.init()
 x.portrait()
 
 ## PARAMETERS STUFF
-P=pcmdi_metrics.graphics.portraits.Portrait('crap')
+P=pcmdi_metrics.graphics.portraits.Portrait()
 
 #P.PLOT_SETTINGS.levels = [0.,.1,.2,.3,.4,.5,.6,.7,.8,.9,1.]
 #P.PLOT_SETTINGS.levels = [-1.e20,-1,-.75,-.5,-.25,0.,.25,.5,.75,1.,1.e20]
