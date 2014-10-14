@@ -312,7 +312,7 @@ class Portrait:
                     if axis in nm.split('___'):
                         axis=i
                 if not axis in [0,1]:raise 'Ranking error, axis can only be 1 or 2 or name'
-        if data.rank()>2:
+        if data.ndim>2:
             raise "Ranking error, array can only be 2D"
 
         if axis==1:
@@ -938,6 +938,11 @@ class Portrait:
             meshfill=x.createmeshfill()
 
         if mesh is None:
+            ftmp = cdms2.open("data_portrait.nc","w")
+            ftmp.write(MV2.ravel(data))
+            ftmp.write(M)
+            template.script("tmpl")
+            meshfill.script("meshfill")
             x.plot(MV2.ravel(data),M,template,meshfill,bg=bg)
         else:
             x.plot(MV2.ravel(data),mesh,template,meshfill,bg=bg)
