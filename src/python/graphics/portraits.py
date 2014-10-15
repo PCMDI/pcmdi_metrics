@@ -1,14 +1,8 @@
 #!/usr/bin/env python
-# Adapted for numpy/ma/cdms2 by convertcdms.py
-import MV2
 
-import string
-import cdms2 as cdms
-import types
-import sys
-import os
+import MV2
+import cdms2
 import vcs
-import numpy.random as RandomArray
 import genutil
 from genutil import StringConstructor
 
@@ -26,55 +20,25 @@ class Plot_defaults:
         self.legend_y1=self.y1
         self.legend_y2=self.y2
         x=vcs.init()
-        i=0
-        cont=1
-        while cont:
-            try:
-                self.xticorientation=x.createtextorientation('Xpor'+str(i))
-                cont=0
-            except:
-                i=RandomArray.randint(1000)
+        #X ticks
+        self.xticorientation=x.createtextorientation()
         self.xticorientation.angle=360-90
         self.xticorientation.halign='right'
         self.xticorientation.height=10
-        i=0
-        cont=1
-        while cont:
-            try:
-                self.yticorientation=x.createtextorientation('Ypor'+str(i))
-                cont=0
-            except:
-                i=RandomArray.randint(1000)
+        #Y ticks
+        self.yticorientation=x.createtextorientation()
         self.yticorientation.angle=0
         self.yticorientation.halign='right'
         self.yticorientation.height=10
-        i=0
-        cont=1
-        while cont:
-            try:
-                self.tictable=x.createtexttable('XYpr'+str(i))
-                cont=0
-            except:
-                i=RandomArray.randint(1000)
-        i=0
-        cont=1
-        while cont:
-            try:
-                self.parameterorientation=x.createtextorientation('Prpt'+str(i))
-                cont=0
-            except:
-                i=RandomArray.randint(1000)
+        # Ticks table
+        self.tictable=x.createtexttable()
+        # parameters text settings
+        self.parameterorientation=x.createtextorientation()
         self.parameterorientation.angle=0
         self.parameterorientation.halign='center'
         self.parameterorientation.height=20
-        i=0
-        cont=1
-        while cont:
-            try:
-                self.parametertable=x.createtexttable('Prprt'+str(i))
-                cont=0
-            except:
-                i=RandomArray.randint(1000)
+        self.parametertable=x.createtexttable()
+        # Defaults
         self.draw_mesh='y'
         self.missing_color=240
         self.xtic1y1=None
@@ -86,14 +50,7 @@ class Plot_defaults:
         self.ytic2x1=None
         self.ytic2x2=None
         # Set the logo textorientation
-        i=0
-        cont=1
-        while cont:
-            try:
-                logo = x.createtext('Ptlogo'+str(i))
-                cont=0
-            except:
-                i=RandomArray.randint(1000)
+        logo = x.createtext()
         logo.height = 20
         logo.halign = 'center'
         logo.path = 'right'
@@ -108,14 +65,7 @@ class Plot_defaults:
         logo.y=[.98]
         self.logo=logo
         # Set the time stamp
-        i=0
-        cont=1
-        while cont:
-            try:
-                time_stamp = x.createtext('PTSP'+str(i))
-                cont=0
-            except:
-                i=RandomArray.randint(1000)
+        time_stamp = x.createtext()
         time_stamp.height = 10
         time_stamp.halign = 'center'
         time_stamp.path = 'right'
@@ -125,13 +75,12 @@ class Plot_defaults:
         self.time_stamp=time_stamp
         
 class Portrait:
-    def __init__(self,files_structure,exclude=[],**kw):
+    def __init__(self,files_structure=None,exclude=[],**kw):
         ''' initialize the portrait object, from file structure'''
-        self.screenout = 1 # output files looked for to the screen
+        self.verbose = True # output files looked for to the screen
         self.files_structure=files_structure
         self.exclude=exclude
         # First determine the list of parameters on which we can have a portrait
-        sp=string.split(files_structure,'%(')
         self.parameters_list=[]
         self.dummies=[]
         self.auto_dummies=[]
@@ -141,12 +90,14 @@ class Portrait:
         self.aliased={}
         self.portrait_types={}
         self.PLOT_SETTINGS=Plot_defaults()
-        for s in sp:
-            i=string.find(s,')')
-            if i>-1: # to avoid the leading path
-                val=s[:i]
-                if not (val in self.parameters_list or val in ['files_structure','exclude']) :
-                    self.parameters_list.append(s[:i])
+        if files_structure is not None:
+            sp=files_structure.split('%(')
+            for s in sp:
+                i=s.find(')')
+                if i>-1: # to avoid the leading path
+                    val=s[:i]
+                    if not (val in self.parameters_list or val in ['files_structure','exclude']) :
+                        self.parameters_list.append(s[:i])
         self.parameters_list.append('component')
         self.parameters_list.append('statistic')
         self.parameters_list.append('time_domain')
@@ -211,42 +162,42 @@ class Portrait:
                 t2=[t+tb for t in t2 for tb in t2b]
         t3=[]
         t1=t1[0]
-        sp=string.split(t1)
+        sp=t1.split()
         n=len(sp)
         for tmp in t2:
-            if type(tmp)==type(9):tmp=str(tmp)
+            if isinstance(tmp,int):tmp=str(tmp)
             t=[]
-            tt=string.split(tmp)
+            tt=tmp.split()
             for i in range(n):
                 t.append(self.makestring(sp[i],tt[i]))
-            t3.append(string.join(t,'%%%'))
+            t3.append("%%%".join(t))
         return t1,t2,t3
 
 
     def set(self,portrait_type,parameter=None,values=None):
-        if string.lower(portrait_type)=='absolute':
-            if 'relative' in self.portrait_types.keys():
-                del(self.portrait_types['relative'])
-        elif string.lower(portrait_type)=='relative':
-            if not type(parameter)==types.StringType:
+        if portrait_type.lower()=='absolute':
+          if 'relative' in self.portrait_types.keys():
+              del(self.portrait_types['relative'])
+        elif portrait_type.lower()=='relative':
+          if not isinstance(parameter,str):
                 raise 'Parameter must be a string'
-            if not type(values) in [types.ListType,types.TupleType]:
+          if not isinstance(values,(list,tuple)):
                 raise 'values must be a list or tuple'
-            self.portrait_types['relative']=[parameter,values]
-        elif string.lower(portrait_type)=='difference':
-            if not type(parameter)==types.StringType:
+          self.portrait_types['relative']=[parameter,values]
+        elif portrait_type.lower()=='difference':
+          if not isinstance(parameter,str):
                 raise 'Parameter must be a string'
-            if not type(values) in [types.ListType,types.TupleType]:
+          if not isinstance(values,(list,tuple)):
                 raise 'values must be a list or tuple'
-            self.portrait_types['difference']=[parameter,values]
-        elif string.lower(portrait_type)in ['mean','average']:
-            if not type(parameter)==types.StringType:
-                raise 'Parameter must be a string'
-            if not type(values) in [types.ListType,types.TupleType]:
-                raise 'values must be a list or tuple'
-            self.portrait_types['mean']=[parameter,values]
+          self.portrait_types['difference']=[parameter,values]
+        elif portrait_type.lower() in ['mean','average']:
+          if not isinstance(parameter,str):
+              raise 'Parameter must be a string'
+          if not isinstance(values,(list,tuple)):
+              raise 'values must be a list or tuple'
+          self.portrait_types['mean']=[parameter,values]
         else:
-            raise 'Error type:"'+portrait_type+'" not supported at this time'
+            raise RuntimeError('Error type:"%s" not supported at this time' % (portrait_type))
         
     def dummy(self,parameter,which_dummy=''):
         ''' Sets a parameter as dummy, i.e. all possible values will be used'''
@@ -285,7 +236,7 @@ class Portrait:
                 
 
     def alias(self,parameter,values):
-        if type(values)==types.DictType:
+        if isinstance(values,dict):
             self.aliased[parameter]=values
         else:
             oldvalue=getattr(self,parameter)
@@ -324,11 +275,11 @@ class Portrait:
         # Now creates the axis names
         t1,t2,t3=self.string_construct(names)
         
-        sp1=string.split(t1)
+        sp1=t1.split()
         axis_names=[]
         for i in range(len(t2)):
             nm=''
-            sp2=string.split(t3[i],'%%%')
+            sp2=t3[i].split('%%%')
             for j in range(len(sp2)):
                 if not sp1[j] in self.dummies and not sp2[j]=='NONE':
                     #print sp2,j
@@ -340,29 +291,28 @@ class Portrait:
         dic={}
         for i in range(len(axis_names)):
             dic[i]=axis_names[i]
-        y=cdms.createAxis(range(axis_length))
+        y=cdms2.createAxis(range(axis_length))
         y.names=repr(dic)
         nm=[]
         for t in sp1:
             if not t in self.dummies:
                 nm.append(t)
-        nm=string.join(nm,'___')
+        nm="___".join(nm)
         y.id=nm
         return y
 
     def rank(self,data,axis=0):
         if not axis in [0,1]:
-            if type(axis)!=type(''):
+            if not isinstance(axis,str):
                 raise 'Ranking error, axis can only be 1 or 2 or name'
             else:
                 nms=data.getAxisIds()
                 for i in range(len(nms)):
                     nm=nms[i]
-                    if axis in string.split(nm,'___'):
+                    if axis in nm.split('___'):
                         axis=i
                 if not axis in [0,1]:raise 'Ranking error, axis can only be 1 or 2 or name'
-        print data.rank(),'axis is:',axis
-        if data.rank()>2:
+        if data.ndim>2:
             raise "Ranking error, array can only be 2D"
 
         if axis==1:
@@ -370,7 +320,6 @@ class Portrait:
         a0=MV2.argsort(data.filled(1.E20),axis=0)
         n=a0.shape[0]
         b=MV2.zeros(a0.shape,MV2.float)
-        print 'loop length:',n
         sh=a0[1].shape
         for i in range(n):
             I=MV2.ones(sh)*i
@@ -384,9 +333,7 @@ class Portrait:
             b=MV2.array(b)
         n=MV2.count(b,0)
         n.setAxis(0,b.getAxis(1))
-        print len(a0.getAxis(1))
         b,n=genutil.grower(b,n)
-        print n,a0.shape,n.shape
         b=100.*b/(n-1)
         b.setAxisList(data.getAxisList())
         if axis==1:
@@ -396,23 +343,21 @@ class Portrait:
     
     def rank_nD(self,data,axis=0):
         if not axis in [0,1]:
-            if type(axis)!=type(''):
+            if not isinstance(axis,str):
                 raise 'Ranking error, axis can only be 1 or 2 or name'
             else:
                 nms=data.getAxisIds()
                 for i in range(len(nms)):
                     nm=nms[i]
-                    if axis in string.split(nm,'___'):
+                    if axis in nm.split('___'):
                         axis=i
                 if not axis in [0,1]:raise 'Ranking error, axis can only be 1 or 2 or name'
-        print data.rank(),'axis is:',axis
 
         if axis!=0:
             data=data(order=(str(axis)+'...'))
         a0=MV2.argsort(data.filled(1.E20),axis=0)
         n=a0.shape[0]
         b=MV2.zeros(a0.shape,MV2.float)
-        print 'loop length:',n
         sh=a0[1].shape
         for i in range(n):
             I=MV2.ones(sh)*i
@@ -503,12 +448,12 @@ class Portrait:
                 v=getattr(self,p)
                 if     v is None \
                        or \
-                       (type(v) in [types.ListType,types.TupleType] and len(v)>1):
+                       (isinstance(v,(list,tuple)) and len(v)>1):
                     already=0
                     for pn in names:
                         if p==pn :
                             already=1
-                        elif type(pn)==type([]):
+                        elif isinstance(pn,list):
                             if p in pn: already=1
                     if already==0:
                         nfree+=1
@@ -525,7 +470,7 @@ class Portrait:
         axes_length=[1,1]
         # First make sure with have 2 list of parameters
         for i in range(2):
-            if type(names[i]) != type([]):
+            if not isinstance(names[i],list):
                 names[i]=[names[i]]
             for n in names[i]:
                 v=getattr(self,n)
@@ -551,7 +496,7 @@ class Portrait:
         for p in self.parameters_list:
             if not p in self.dummies and not p in self.auto_dummies:
                 v=getattr(self,p)
-                if type(v) in [types.ListType,types.TupleType]:
+                if isinstance(v,(list,tuple)):
                     if len(v)==1:
                         v=v[0]
                         if p in self.slaves.keys():
@@ -583,15 +528,15 @@ class Portrait:
 
         t1,t2,t3=self.string_construct(nms)
         output=output.ravel()
-        sp1=string.split(t1)
+        sp1=t1.split()
         n=len(sp1)
         for i in range(len(t2)):
-            sp2=string.split(t2[i])
+            sp2=t2[i].split()
             for j in range(n):
                 v=sp2[j]
                 if sp1[j]=='time_domain':
                     try:
-                        v=string.atoi(v)
+                        v=int(v)
                     except:
                         pass
                 if v == 'NONE':
@@ -599,29 +544,31 @@ class Portrait:
                 setattr(F,sp1[j],v)
             #print 'Search string is:',fnms
             #f=os.popen('ls '+F()).readlines()
-            ip,op,ep=os.popen3('ls '+F())
-            if self.screenout : print 'command line:',F()
-            f=op.readlines()
+            #ip,op,ep=os.popen3('ls '+F())
+            if self.verbose : print 'command line:',F()
+            #f=op.readlines()
+            f=glob.glob(F())
             #print 'F is:',f
             files=[]
             for file in f:
-                files.append(file[:-1])
+                files.append(file)
                 for e in self.exclude:
-                    if string.find(file[:-1],e)>-1:
+                    if file.find(e)>-1:
                         files.pop(-1)
-            if self.screenout : print 'files:',files
+                        break
+            if self.verbose : print 'files:',files
             try:
                 # now we get the one value needed in this file
-                f=cdms.open(files[0])
+                f=cdms2.open(files[0])
                 V=f[F.statistic]
                 component=F.component
                 time_domain=F.time_domain
-                if type(component)==types.StringType:
+                if isinstance(component,str):
                     dic=eval(f.components)
                     for k in dic.keys():
                         if dic[k]==F.component:
                             component=k
-                if type(F.time_domain)==types.StringType:
+                if isinstance(F.time_domain,str):
                     dic=eval(f.time_domain)
                     for k in dic.keys():
                         if dic[k]==F.time_domain:
@@ -647,8 +594,8 @@ class Portrait:
         return output
             
     def decorate(self,output,ynm=None,xnm=None):
-        x=cdms.createAxis(range(len(xnm)))
-        y=cdms.createAxis(range(len(ynm)))
+        x=cdms2.createAxis(range(len(xnm)))
+        y=cdms2.createAxis(range(len(ynm)))
         
         try:
             del(x.name)
@@ -657,13 +604,13 @@ class Portrait:
         except:
             pass
 
-        nm=string.join(xnm,'___')
+        nm='___'.join(xnm)
         x.id=nm
         dic={}
         for i in range(len(xnm)):
             dic[i]=xnm[i]
         x.names=repr(dic)
-        nm=string.join(ynm,'___')
+        nm='___'.join(ynm)
         y.id=nm
         output.setAxis(0,y)
         dic={}
@@ -688,13 +635,7 @@ class Portrait:
 
         # Do we use a predefined template ?
         if template is None:
-            icont = 1
-            while icont:
-                try:
-                    template=x.createtemplate('PT_'+str(RandomArray.randint(1000)))
-                    icont=0
-                except:
-                    pass
+            template=x.createtemplate()
             # Now sets all the things for the template...
             # Sets a bunch of template attributes to off
             for att in [
@@ -771,7 +712,7 @@ class Portrait:
             except:
               tmp = x.gettextorientation('crap22')
             tmp.height = 12
-            tmp.halign = 'center' 
+            #tmp.halign = 'center' 
 #           template.legend.texttable = tmp
             template.legend.textorientation = tmp
  
@@ -783,13 +724,7 @@ class Portrait:
             else:
                 raise 'Error cannot understand what you mean by template='+str(template)
         
-            icont = 1
-            while icont:
-                try:
-                    template=x.createtemplate('PT_'+str(RandomArray.randint(1000)),tid)
-                    icont=0
-                except:
-                    pass
+            template=x.createtemplate()
 
         # Do we use a predefined meshfill ?
         if meshfill is None:
@@ -797,7 +732,7 @@ class Portrait:
             for i in range(100):
                 mtics[i-.5]=''
             icont = 1
-            meshfill=x.createmeshfill('PTb_'+str(RandomArray.randint(1000)))
+            meshfill=x.createmeshfill()
             meshfill.xticlabels1=eval(data.getAxis(1).names)
             meshfill.yticlabels1=eval(data.getAxis(0).names)
             
@@ -1000,16 +935,9 @@ class Portrait:
                 tid=mesh
             else:
                 raise 'Error cannot understand what you mean by meshfill='+str(meshfill)
-            icont = 1
-            while icont:
-                try:
-                    meshfill=x.createmeshfill('PTb_'+str(RandomArray.randint(1000)),tid)
-                    icont=0
-                except:
-                    pass
+            meshfill=x.createmeshfill()
 
         if mesh is None:
-            print "here we go"
             x.plot(MV2.ravel(data),M,template,meshfill,bg=bg)
         else:
             x.plot(MV2.ravel(data),mesh,template,meshfill,bg=bg)
@@ -1019,16 +947,16 @@ class Portrait:
         # but only if n==1
         if n==1:
             axes_param=[]
-            for a in string.split(data.getAxis(0).id,'___'):
+            for a in data.getAxis(0).id.split('___'):
                 axes_param.append(a)
-            for a in string.split(data.getAxis(1).id,'___'):
+            for a in data.getAxis(1).id.split('___'):
                 axes_param.append(a)
             nparam=0
             for p in self.parameters_list:
                 if not p in self.dummies and not p in self.auto_dummies and not p in axes_param:
                     nparam+=1
                     
-            print 'NPARAM:',nparam
+            if self.verbose: print 'NPARAM:',nparam
             if nparam>0:
                 for i in range(nparam):
                     j=MV2.ceil(float(nparam)/(i+1.))
@@ -1045,19 +973,12 @@ class Portrait:
                 npli=0 # counter for lines
                 for p in self.parameters_list:
                     if not p in self.dummies and not p in self.auto_dummies and not p in axes_param:
-                        icount=1
-                        while icount:
-                            try:
-                                rnd=str(RandomArray.randint(1000))
-                                txt=x.createtext('T_'+rnd,self.PLOT_SETTINGS.parametertable.name,'T_'+rnd,self.PLOT_SETTINGS.parameterorientation.name)
-                                icount=0
-                            except Exception,err:
-                                pass
+                        txt=x.createtext(None,self.PLOT_SETTINGS.parametertable.name,None,self.PLOT_SETTINGS.parameterorientation.name)
                         value=getattr(self,p)
-                        if (type(value) in [types.ListType,types.TupleType] and len(value)==1):
+                        if (isinstance(value,(list,tuple)) and len(value)==1):
                             txt.string=p+':'+str(self.makestring(p,value[0]))
                             display=1
-                        elif type(value) in [types.StringType,types.IntType,types.FloatType,types.LongType]:
+                        elif isinstance(value,(str,int,float,long)):
                             txt.string=p+':'+str(self.makestring(p,value))
                             display=1
                         else:
@@ -1086,9 +1007,9 @@ class Portrait:
                 x.plot(self.PLOT_SETTINGS.logo,bg=bg,continents=0)
             if not self.PLOT_SETTINGS.time_stamp is None:
                 import time
-                sp=string.split(time.ctime())
+                sp=time.ctime().split()
                 sp=sp[:3]+[sp[-1]]
-                self.PLOT_SETTINGS.time_stamp.string=string.join(sp)
+                self.PLOT_SETTINGS.time_stamp.string=''.join(sp)
                 x.plot(self.PLOT_SETTINGS.time_stamp,bg=bg,continents=0)
 
     def set_colormap(self,x):

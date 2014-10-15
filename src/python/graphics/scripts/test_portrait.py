@@ -27,16 +27,19 @@ x=vcs.init()
 x.portrait()
 
 ## PARAMETERS STUFF
-P=pcmdi_metrics.graphics.portraits.Portrait('crap')
+P=pcmdi_metrics.graphics.portraits.Portrait()
+
+## Turn off verbosity
+P.verbose = False
 
 #P.PLOT_SETTINGS.levels = [0.,.1,.2,.3,.4,.5,.6,.7,.8,.9,1.]
 #P.PLOT_SETTINGS.levels = [-1.e20,-1,-.75,-.5,-.25,0.,.25,.5,.75,1.,1.e20]
 P.PLOT_SETTINGS.levels = [-1.e20,-.5,-.4,-.3,-.2,-.1,0.,.1,.2,.3,.4,.5,1.e20]
 
 P.PLOT_SETTINGS.x1 = .1
-P.PLOT_SETTINGS.x2 = .8
-P.PLOT_SETTINGS.y1 = .4
-P.PLOT_SETTINGS.y2 = .9
+P.PLOT_SETTINGS.x2 = .85
+P.PLOT_SETTINGS.y1 = .12
+P.PLOT_SETTINGS.y2 = .95
 
 P.PLOT_SETTINGS.xtic2y1=P.PLOT_SETTINGS.y1
 P.PLOT_SETTINGS.xtic2y2=P.PLOT_SETTINGS.y2
@@ -47,7 +50,7 @@ P.PLOT_SETTINGS.missing_color = 240
 P.PLOT_SETTINGS.logo = None
 P.PLOT_SETTINGS.time_stamp = None
 P.PLOT_SETTINGS.draw_mesh='n'
-P.PLOT_SETTINGS.tictable.font = 3
+#P.PLOT_SETTINGS.tictable.font = 3
 
 x.scriptrun(os.path.join(sys.prefix,"share","graphics",'vcs','portraits.scr'))
 P.PLOT_SETTINGS.colormap = 'bl_rd_12'
@@ -88,10 +91,12 @@ for var in vars:  # LOOP OVER VARIABLE
    for mod in mods: # LOOP OVER MODEL
     try:
        rms = var_cmip5_dics[var][mod]["default"]["r1i1p1"]['rms_xyt_ann_GLB']
-       print var,' ', mod,'  ', `rms`, ' WITH global'
+       if P.verbose:
+           print var,' ', mod,'  ', `rms`, ' WITH global'
     except:    
        rms = 1.e20
-       print var,' ', mod,'  ', `rms`, ' missing'
+       if P.verbose:
+           print var,' ', mod,'  ', `rms`, ' missing'
 
     rms = float(rms)
     vals.append(rms)
