@@ -17,7 +17,8 @@ f.close()
 portrait_json = glob.glob("src/python/graphics/share/*.json")
 portrait_files = portrait_json+["src/python/graphics/share/portraits.scr",]
 
-cmip5_json = glob.glob("CMIP_results/*/*/*.json")
+cmip5_amip_json = glob.glob("CMIP_results/CMIP5/amip/*.json")
+cmip5_historical_json = glob.glob("CMIP_results/CMIP5/historical/*.json")
 
 
 setup (name = "pcmdi_metrics",
@@ -36,7 +37,8 @@ setup (name = "pcmdi_metrics",
                   "src/python/pcmdi/scripts/build_obs_meta_dictionary.py"],
 
        data_files = [('share/pcmdi',('doc/obs_info_dictionary.json',)),
-                     ('share',cmip5_json),
+                     ('share/CMIP_results/CMIP5/amip',cmip5_amip_json),
+                     ('share/CMIP_results/CMIP5/historical',cmip5_historical_json),
                      ('share/graphics/vcs',portrait_files),
                      ('doc',('doc/parameter_files/pcmdi_input_parameters_sample.py',)),
                      ('test/pcmdi',('test/pcmdi/basic_test_parameters_file.py','test/pcmdi/tos_GFDL-ESM2G_Omon_historical_r1i1p1_198501-200512-clim.nc','test/pcmdi/sftlf_GFDL-ESM2G_fx_historical_r0i0p0_198501-200512-clim.nc','test/pcmdi/tos_2.5x2.5_esmf_linear_metrics.json.good')),
