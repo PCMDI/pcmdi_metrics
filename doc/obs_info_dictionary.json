@@ -1,4 +1,12 @@
 {
+    "sftlf": {
+        "UKMETOFFICE-HadISST-v1-1": {
+            "CMIP_CMOR_TABLE": "fx",
+            "period": "198002-200501",
+            "shape": "(180, 360)"
+        },
+        "default": "UKMETOFFICE-HadISST-v1-1"
+    },
     "hus": {
         "AIRS": {
             "CMIP_CMOR_TABLE": "Amon",
