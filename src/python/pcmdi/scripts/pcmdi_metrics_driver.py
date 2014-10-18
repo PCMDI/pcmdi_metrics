@@ -71,7 +71,7 @@ dup=DUP(Efile)
 ## First of all attempt to prepare sftlf before/after for all models
 sftlf={}
 for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
-  sft = pcmdi_metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
+  sft = pcmdi_metrics.io.base.Base(parameters.mod_data_path,getattr(parameters,"sftlf_filename_template",parameters.filename_template))
   sft.model_version = model_version
   sft.table = "fx"
   sft.realm = "atmos"

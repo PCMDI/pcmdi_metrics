@@ -48,6 +48,8 @@ save_mod_clims = True # True or False
 ## Templates for climatology files
 ## TEMPLATE EXAMPLE: tas_GFDL-ESM2G_Amon_historical_r1i1p1_198001-199912-clim.nc
 filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(model_period)-clim.nc"
+## filename template for landsea masks ('sftlf')
+sftlf_filename_template = "sftlf_%(model_version).nc"
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
 mod_data_path = os.path.join(pcmdi_metrics.__path__[0],"..","..","..","..",'test','pcmdi',)

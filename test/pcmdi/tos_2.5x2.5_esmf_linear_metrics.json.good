@@ -59,6 +59,10 @@
                     "custom_model_min": 271.27384426614753,
                     "custom_ref_max": 304.95272638750384,
                     "custom_ref_min": 271.27384426614753,
+                    "mae_xy_ann_GLB": "1.15",
+                    "mae_xy_ann_NHEX": "1.14",
+                    "mae_xy_ann_SHEX": "1.46",
+                    "mae_xy_ann_TROPICS": "0.89",
                     "mae_xy_djf_GLB": "1.53",
                     "mae_xy_djf_NHEX": "1.30",
                     "mae_xy_djf_SHEX": "2.31",
@@ -146,6 +150,10 @@
                     "custom_model_min": 271.27384426614753,
                     "custom_ref_max": 304.95272638750384,
                     "custom_ref_min": 271.27384426614753,
+                    "mae_xy_ann_GLB": "1.15",
+                    "mae_xy_ann_NHEX": "1.14",
+                    "mae_xy_ann_SHEX": "1.46",
+                    "mae_xy_ann_TROPICS": "0.89",
                     "mae_xy_djf_GLB": "1.53",
                     "mae_xy_djf_NHEX": "1.30",
                     "mae_xy_djf_SHEX": "2.31",
@@ -233,6 +241,10 @@
                     "custom_model_min": NaN,
                     "custom_ref_max": NaN,
                     "custom_ref_min": NaN,
+                    "mae_xy_ann_GLB": "nan",
+                    "mae_xy_ann_NHEX": "nan",
+                    "mae_xy_ann_SHEX": "nan",
+                    "mae_xy_ann_TROPICS": "nan",
                     "mae_xy_djf_GLB": "nan",
                     "mae_xy_djf_NHEX": "nan",
                     "mae_xy_djf_SHEX": "nan",
@@ -304,6 +316,6 @@
         "ocean": 0.0,
         "terre": 100.0
     },
-    "metrics_git_sha1": "3abd808b90377f402fd326e32c6982d43301258e",
-    "uvcdat_version": "2.0.beta-2196-g2fadb4c"
+    "metrics_git_sha1": "70381f1646ddfdbd853cb6d262852590931e58ec",
+    "uvcdat_version": "v2.0.0-13-g65d545a"
 }
