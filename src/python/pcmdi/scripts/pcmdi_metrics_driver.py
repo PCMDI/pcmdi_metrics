@@ -87,10 +87,14 @@ for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL
   applyCustomKeys(sft,parameters.custom_keys,"sftlf")
   try:
     sftlf[model_version] = {"raw":sft.get("sftlf")}
+    sftlf[model_version]["filename"]=os.path.basename(sft())
+    sftlf[model_version]["md5"]=sft.hash()
   except:
     #Hum no sftlf...
     dup("No mask for ",sft())
     sftlf[model_version] = {"raw":None}
+    sftlf[model_version]["filename"]=None
+    sftlf[model_version]["md5"]=None
 if parameters.targetGrid == "2.5x2.5":
   tGrid = cdms2.createUniformGrid(-88.875,72,2.5,0,144,2.5)
 else:
@@ -114,7 +118,6 @@ for var in parameters.vars:
   if not isinstance(rg,(list,tuple)):
     rg = [rg,]
   regions_dict[vr] = rg
-print "RGION DICT:",regions_dict
 
 for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
   try:
@@ -293,6 +296,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                               "Experiment":"experiment",
                               "ModelFreeSpace":"ModelFreeSpace",
                               "SimName":"realization",
+                              "creation_date":"creation_date",
                               }
 
                       sim_descr_mapping.update(getattr(parameters,"simulation_description_mapping",{}))
@@ -319,6 +323,12 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                                         vals.append("N/A")
                             descr[att] = fmt % tuple(vals)
                       metrics_dictionary[model_version]["SimulationDescription"] = descr 
+                      metrics_dictionary[model_version]["InputClimatologyFileName"] = os.path.basename(MODEL())
+                      metrics_dictionary[model_version]["InputClimatologyMD5"] = MODEL.hash()
+                      if len(regions_dict[var])>1: # Not just global
+                          metrics_dictionary[model_version]["InputRegionFileName"] = sftlf[model_version]["filename"]
+                          metrics_dictionary[model_version]["InputRegionMD5"] = sftlf[model_version]["md5"]
+
                     
                   if not metrics_dictionary[model_version].has_key(refabbv):
                     metrics_dictionary[model_version][refabbv] = {'source':onm}

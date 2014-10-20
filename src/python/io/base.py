@@ -5,6 +5,7 @@ import genutil
 import os
 import pcmdi_metrics
 import cdat_info
+import hashlib
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value) ## where value is either 0 or 1
@@ -80,4 +81,12 @@ class Base(genutil.StringConstructor):
             raise RuntimeError,"Unknown type: %s" % type
         f.close()
 
-    
+    def hash(self, blocksize=65536):
+      afile=open(self())
+      buf = afile.read(blocksize)
+      hasher = hashlib.md5()
+      while len(buf) > 0:
+        hasher.update(buf)
+        buf = afile.read(blocksize)
+      return hasher.hexdigest()
+
