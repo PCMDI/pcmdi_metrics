@@ -59,6 +59,11 @@ if pth!="":
 if not hasattr(parameters,"custom_keys"):
   parameters.custom_keys={}
 
+## See if we have model tweaks for ALL models
+## If not makes it empty dictionary
+if hasattr(parameters,"model_tweaks"):
+    tweaks_all = parameters.model_tweaks.get(None,{})
+
 try:
   os.makedirs(os.path.join(parameters.metrics_output_path,parameters.case_id))
 except:
@@ -215,6 +220,11 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
           for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
               success = True
+              ## See if we have model tweaks for THIS model
+              ## If not makes it empty dictionary
+              if hasattr(parameters,"model_tweaks"):
+                  tweaks = parameters.model_tweaks.get(model_version,{})
+
               while success:
 
                   MODEL = pcmdi_metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
@@ -230,12 +240,17 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     MODEL.mask = MV2.logical_not(MV2.equal(sftlf[model_version]["raw"],region))
                     MODEL.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
                   try:
+                     varInFile = tweaks.get("variable_mapping",{}).get(var,None)
+                     if varInFile is None: # ok no mapping for THIS model
+                         ## Trying to get the "All models" mapping and fallback and var we are using
+                         varInFile=tweaks_all.get("variable_mapping",{}).get(var,var)
                      if level is None:
                        OUT.level=""
-                       dm = MODEL.get(var,varInFile=var)  #+"_ac")
+                       dm = MODEL.get(var,varInFile=varInFile)  #+"_ac")
                      else:
                        OUT.level = "-%i" % (int(level/100.))
-                       dm = MODEL.get(var,varInFile=var,level=level)
+                       #Ok now fetch this
+                       dm = MODEL.get(var,varInFile=varInFile,level=level)
                   except Exception,err:
                       success = False
                       dup('Failed to get variable %s for version: %s, error:\n%s' % ( var, model_version, err))
