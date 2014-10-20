@@ -187,8 +187,17 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
           applyCustomKeys(OBS,parameters.custom_keys,var)
           if region is not None:
             ## Ok we need to apply a mask
-            oMask = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,ref)
-            oMask = oMask.get("sftlf")
+            ## First try to read from obs json file
+            try:
+                oMask = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,ref)
+                oMask = oMask.get("sftlf")
+            except: # ok that failed falling back on autogenerate
+                dup("Could not find obs mask, generating")
+                oGrd = cdms2.open(OBS())(var,time=slice(0,1))
+                oMask = cdutil.generateLandSeaMask(oGrd,regridTool=regridTool).filled(1.)*100.
+                oMask = MV2.array(oMask)
+                oMask.setAxis(-1,oGrd.getLongitude())
+                oMask.setAxis(-2,oGrd.getLatitude())
             OBS.mask = MV2.logical_not(MV2.equal(oMask,region))
             OBS.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
           try:
