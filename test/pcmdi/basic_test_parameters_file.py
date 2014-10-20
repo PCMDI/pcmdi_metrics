@@ -10,15 +10,27 @@ import pcmdi_metrics
 ## RUN IDENTIFICATION
 # DEFINES A SUBDIRECTORY TO METRICS OUTPUT RESULTS SO MULTIPLE CASES CAN BE COMPARED
 case_id = 'installationTest'
-#case_id = 'cmip5_test'
+
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
 model_versions = ['GFDL-ESM2G',]
-#model_versions = ['MRI-CGCM3',]
 
 ##dictionary of keywords for simulation description that you want to save or remap
 simulation_description_mapping = {"Login":"Login", "Center":"Center", "SimTrackingDate" : "creation_date"}
+
 ### VARIABLES AND OBSERVATIONS TO USE
 vars = ['tos']
+
+## MODEL SPECIFC PARAMETERS
+model_tweaks = {
+    ## Keys are model accronym or None which applies to all model entries
+    None : {
+      ## Variables name mapping
+      "variable_mapping" : { "tos" : "tos"},
+      },
+    "GFDL-ESM2G" : {
+      "variable_mapping" : { "tos" : "tos"},
+      },
+    }
 
 ## REGIONS ON WHICH WE WANT TO RUN METRICS (var specific)
 regions = {"tos" : [None,"terre","ocean"],}
