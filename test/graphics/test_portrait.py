@@ -11,12 +11,16 @@
 #  UNABLE TO SAVE PLOT TO VARIOUS FORMATS  
 #################################################################################
 # STANDARD PYTHON 
+try:
+  import vcs
+except:
+  raise RuntimeError("Sorry your python is not build with VCS support cannot geenrate portrait plots")
+
 import string,sys
 import json
 # CDAT MODULES
 import pcmdi_metrics.graphics.portraits
 import MV2
-import vcs
 from genutil import statistics
 import os,sys
 import glob
