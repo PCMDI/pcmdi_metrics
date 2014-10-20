@@ -11,14 +11,19 @@
 #  UNABLE TO SAVE PLOT TO VARIOUS FORMATS  
 #################################################################################
 # STANDARD PYTHON 
+try:
+  import vcs
+except:
+  raise RuntimeError("Sorry your python is not build with VCS support cannot geenrate portrait plots")
+
 import string,sys
 import json
 # CDAT MODULES
 import pcmdi_metrics.graphics.portraits
 import MV2
-import vcs
 from genutil import statistics
 import os,sys
+import glob
 
 #import portrait_test_functions
 
@@ -62,22 +67,27 @@ P.PLOT_SETTINGS.parametertable.expansion = 100
 
 ## LIST OF VARIABLES TO BE USED IN PORTRAIT PLOT
 vars = ['pr', 'rsut','rsutcs','rlutcs','tas','tos','sos','zos','ua-850','ua-200','zg-500']
+vars = []
 
 ### LOAD METRICS DICTIONARIES FROM JSON FILES FOR EACH VAR AND STORE AS A SINGLE DICTIONARY
 var_cmip5_dics = {}
-for var in vars:
-  regrid = 'regrid2'
-  if var in ['tos','sos','zos']: regrid = 'esmf'  # OCEAN SFC METRICS CALCULATED WITH ESMF REGRIDDER
-  d = json.load(open(os.path.join(sys.prefix,"share","graphics","vcs", var + '_2.5x2.5_' + regrid + '_linear_metrics.json'),'rb'))
-  var_cmip5_dics[var] = d
+mods = set()
+json_files = glob.glob(os.path.join(sys.prefix,"share","CMIP_results","CMIP5","amip","*.json"))
+for fnm in json_files:
+  f=open(fnm)
+  d = json.load(f)
+  var = os.path.basename(fnm).split("_")[0]
+  vars.append(var)
+  for m in d.keys():
+      mods.add(m)
+  if var_cmip5_dics.has_key(var):
+      var_cmip5_dics[var].update(d)
+  else:
+      var_cmip5_dics[var]=d
 
-# GET LIST OF MODELS FROM ONE OF THE VARIABLES 
-# tmp = var_cmip5_dics['pr'].keys()
-# mods = []
-  mods = d.keys()
-  mods = var_cmip5_dics['pr'].keys()
-
-mods.sort()   # ALPHEBETICAL SORT
+mods = sorted(list(mods))
+for bad in ["References","RegionalMasking","metrics_git_sha1","uvcdat_version"]:
+    mods.remove(bad)
 
 ###### ORGANIZE METRICS INTO A VARIABLES X MODELS MATRIX 
 
@@ -90,10 +100,10 @@ for var in vars:  # LOOP OVER VARIABLE
    vals = []
    for mod in mods: # LOOP OVER MODEL
     try:
-       rms = var_cmip5_dics[var][mod]["default"]["r1i1p1"]['rms_xyt_ann_GLB']
+       rms = var_cmip5_dics[var][mod]["defaultReference"]["r1i1p1"]["global"]['rms_xyt_ann_GLB']
        if P.verbose:
            print var,' ', mod,'  ', `rms`, ' WITH global'
-    except:    
+    except Exception,err:    
        rms = 1.e20
        if P.verbose:
            print var,' ', mod,'  ', `rms`, ' missing'
@@ -108,7 +118,7 @@ for var in vars:  # LOOP OVER VARIABLE
    for mod in mods: 
      mn = mn + 1
      try:
-       out1_rel[vn,mn] = (float(var_cmip5_dics[var][mod]["default"]["r1i1p1"]['rms_xyt_ann_GLB'])-med_rms)/med_rms # RELATIVE ERROR 
+       out1_rel[vn,mn] = (float(var_cmip5_dics[var][mod]["defaultReference"]["r1i1p1"]["global"]['rms_xyt_ann_GLB'])-med_rms)/med_rms # RELATIVE ERROR 
      except:
        out1_rel[vn,mn] = 1.e20 
 

@@ -14,8 +14,7 @@ print >>f, "__version__ = '%s'" % Version
 print >>f, "__git_sha1__ = '%s'" % commit
 f.close()
 
-portrait_json = glob.glob("src/python/graphics/share/*.json")
-portrait_files = portrait_json+["src/python/graphics/share/portraits.scr",]
+portrait_files = ["src/python/graphics/share/portraits.scr",]
 
 cmip5_amip_json = glob.glob("CMIP_results/CMIP5/amip/*.json")
 cmip5_historical_json = glob.glob("CMIP_results/CMIP5/historical/*.json")
@@ -33,7 +32,6 @@ setup (name = "pcmdi_metrics",
                       'pcmdi_metrics.graphics': 'src/python/graphics',
                      },
        scripts = ["src/python/pcmdi/scripts/pcmdi_metrics_driver.py",
-                  "src/python/graphics/scripts/test_portrait.py",
                   "src/python/pcmdi/scripts/build_obs_meta_dictionary.py"],
 
        data_files = [('share/pcmdi',('doc/obs_info_dictionary.json',)),
@@ -41,6 +39,7 @@ setup (name = "pcmdi_metrics",
                      ('share/CMIP_results/CMIP5/historical',cmip5_historical_json),
                      ('share/graphics/vcs',portrait_files),
                      ('doc',('doc/parameter_files/pcmdi_input_parameters_sample.py',)),
+                     ('test/graphics',("test/graphics/test_portrait.py",)),
                      ('test/pcmdi',('test/pcmdi/basic_test_parameters_file.py','test/pcmdi/tos_GFDL-ESM2G_Omon_historical_r1i1p1_198501-200512-clim.nc','test/pcmdi/sftlf_GFDL-ESM2G.nc','test/pcmdi/tos_2.5x2.5_esmf_linear_metrics.json.good')),
                      ('test/pcmdi/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac',('test/pcmdi/tos_pcmdi-metrics_Omon_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
                      ('test/pcmdi/obs/fx/mo/sftlf/UKMETOFFICE-HadISST-v1-1/ac',('test/pcmdi/sftlf_pcmdi-metrics_fx_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
