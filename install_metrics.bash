@@ -423,7 +423,7 @@ main() {
     setup_cdat_xtra genutil
     setup_cdat_xtra xmgrace
     setup_cdat_xtra cdutil
-    rmdir ${install_prefix}/sample_data
+    rm -rf ${install_prefix}/sample_data
 
     echo
     echo
