@@ -31,7 +31,7 @@ x.portrait()
 P=pcmdi_metrics.graphics.portraits.Portrait()
 
 ## Turn off verbosity
-P.verbose = True
+P.verbose = False
 
 #P.PLOT_SETTINGS.levels = [0.,.1,.2,.3,.4,.5,.6,.7,.8,.9,1.]
 #P.PLOT_SETTINGS.levels = [-1.e20,-1,-.75,-.5,-.25,0.,.25,.5,.75,1.,1.e20]
@@ -73,7 +73,6 @@ for fnm in json_files:
   f=open(fnm)
   d = json.load(f)
   var = os.path.basename(fnm).split("_")[0]
-  print var
   vars.append(var)
   for m in d.keys():
       mods.add(m)
