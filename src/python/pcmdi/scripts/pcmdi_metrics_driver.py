@@ -59,6 +59,11 @@ if pth!="":
 if not hasattr(parameters,"custom_keys"):
   parameters.custom_keys={}
 
+## See if we have model tweaks for ALL models
+## If not makes it empty dictionary
+if hasattr(parameters,"model_tweaks"):
+    tweaks_all = parameters.model_tweaks.get(None,{})
+
 try:
   os.makedirs(os.path.join(parameters.metrics_output_path,parameters.case_id))
 except:
@@ -71,7 +76,7 @@ dup=DUP(Efile)
 ## First of all attempt to prepare sftlf before/after for all models
 sftlf={}
 for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
-  sft = pcmdi_metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
+  sft = pcmdi_metrics.io.base.Base(parameters.mod_data_path,getattr(parameters,"sftlf_filename_template",parameters.filename_template))
   sft.model_version = model_version
   sft.table = "fx"
   sft.realm = "atmos"
@@ -187,8 +192,17 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
           applyCustomKeys(OBS,parameters.custom_keys,var)
           if region is not None:
             ## Ok we need to apply a mask
-            oMask = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,ref)
-            oMask = oMask.get("sftlf")
+            ## First try to read from obs json file
+            try:
+                oMask = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,ref)
+                oMask = oMask.get("sftlf")
+            except: # ok that failed falling back on autogenerate
+                dup("Could not find obs mask, generating")
+                oGrd = cdms2.open(OBS())(var,time=slice(0,1))
+                oMask = cdutil.generateLandSeaMask(oGrd,regridTool=regridTool).filled(1.)*100.
+                oMask = MV2.array(oMask)
+                oMask.setAxis(-1,oGrd.getLongitude())
+                oMask.setAxis(-2,oGrd.getLatitude())
             OBS.mask = MV2.logical_not(MV2.equal(oMask,region))
             OBS.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
           try:
@@ -206,6 +220,11 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
           for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
               success = True
+              ## See if we have model tweaks for THIS model
+              ## If not makes it empty dictionary
+              if hasattr(parameters,"model_tweaks"):
+                  tweaks = parameters.model_tweaks.get(model_version,{})
+
               while success:
 
                   MODEL = pcmdi_metrics.io.base.Base(parameters.mod_data_path,parameters.filename_template)
@@ -221,12 +240,17 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     MODEL.mask = MV2.logical_not(MV2.equal(sftlf[model_version]["raw"],region))
                     MODEL.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
                   try:
+                     varInFile = tweaks.get("variable_mapping",{}).get(var,None)
+                     if varInFile is None: # ok no mapping for THIS model
+                         ## Trying to get the "All models" mapping and fallback and var we are using
+                         varInFile=tweaks_all.get("variable_mapping",{}).get(var,var)
                      if level is None:
                        OUT.level=""
-                       dm = MODEL.get(var,varInFile=var)  #+"_ac")
+                       dm = MODEL.get(var,varInFile=varInFile)  #+"_ac")
                      else:
                        OUT.level = "-%i" % (int(level/100.))
-                       dm = MODEL.get(var,varInFile=var,level=level)
+                       #Ok now fetch this
+                       dm = MODEL.get(var,varInFile=varInFile,level=level)
                   except Exception,err:
                       success = False
                       dup('Failed to get variable %s for version: %s, error:\n%s' % ( var, model_version, err))

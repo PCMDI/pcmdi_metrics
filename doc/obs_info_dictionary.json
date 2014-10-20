@@ -160,6 +160,9 @@
         },
         "default": "CERES"
     },
+    "rlutcre": {
+        "default": "CERES"
+    },
     "rlutcs": {
         "CERES": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -250,6 +253,9 @@
             "period": "200003-201206",
             "shape": "(12, 180, 360)"
         },
+        "default": "CERES"
+    },
+    "rsutcre": {
         "default": "CERES"
     },
     "rsutcs": {
