@@ -72,7 +72,7 @@ vars = []
 ### LOAD METRICS DICTIONARIES FROM JSON FILES FOR EACH VAR AND STORE AS A SINGLE DICTIONARY
 var_cmip5_dics = {}
 mods = set()
-json_files = glob.glob(os.path.join(sys.prefix,"share","CMIP_results","CMIP5","amip","*.json"))
+json_files = glob.glob(os.path.join(sys.prefix,"share","CMIP_metrics_results","CMIP5","amip","*.json"))
 for fnm in json_files:
   f=open(fnm)
   d = json.load(f)
