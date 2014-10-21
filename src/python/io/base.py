@@ -19,12 +19,15 @@ class Base(genutil.StringConstructor):
         self.mask = None
         self.targetMask = None
 
+    def __call__(self):
+      return os.path.abspath(genutil.StringConstructor.__call__(self))
+
     def get(self,var,varInFile=None,*args,**kargs):
         self.variable = var
         if varInFile is None:
             varInFile = var
         ## First extract data
-        out = cdms2.open(self())(varInFile,*args,**kargs)
+        out = cdms2.open(os.path.abspath(self()))(varInFile,*args,**kargs)
 
         ## Now are we looking at a region in particular?
         if self.mask is not None:
@@ -56,7 +59,7 @@ class Base(genutil.StringConstructor):
             raise RunTimeError,"Unknown grid: %s" % target
 
     def write(self,data, type="json", mode="w", *args, **kargs):
-        fnm = self()+".%s" % type
+        fnm = os.path.abspath(self())+".%s" % type
         try:
             os.makedirs(os.path.split(fnm)[0])
         except:

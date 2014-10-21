@@ -69,7 +69,7 @@ try:
 except:
   pass
 
-Efile = open(os.path.join(parameters.metrics_output_path,parameters.case_id,"errors_log.txt"),"w")
+Efile = open(os.path.abspath(os.path.join(parameters.metrics_output_path,parameters.case_id,"errors_log.txt")),"w")
 dup=DUP(Efile)
 
 
