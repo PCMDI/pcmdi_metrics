@@ -1,5 +1,9 @@
 {
     "GFDL-ESM2G": {
+        "InputClimatologyFileName": "tos_GFDL-ESM2G_Omon_historical_r1i1p1_198501-200512-clim.nc",
+        "InputClimatologyMD5": "974a3339d34fcdd6a68d6e135f72cd78",
+        "InputRegionFileName": "sftlf_GFDL-ESM2G.nc",
+        "InputRegionMD5": "10c58303f68677c197f040316c9322ae",
         "SimulationDescription": {
             "Center": "N/A",
             "Experiment": "historical",
@@ -10,7 +14,8 @@
             "ModelFreeSpace": "N/A",
             "ModellingGroup": "NOAA GFDL",
             "SimName": "r1i1p1",
-            "SimTrackingDate": "2012-01-10T20:19:59Z"
+            "SimTrackingDate": "2012-01-10T20:19:59Z",
+            "creation_date": "2012-01-10T20:19:59Z"
         },
         "defaultReference": {
             "r1i1p1": {
@@ -316,6 +321,6 @@
         "ocean": 0.0,
         "terre": 100.0
     },
-    "metrics_git_sha1": "70381f1646ddfdbd853cb6d262852590931e58ec",
-    "uvcdat_version": "v2.0.0-13-g65d545a"
+    "metrics_git_sha1": "50b6f80c267cc1eb948328a88c0a74054cd5123e",
+    "uvcdat_version": "2.0.0"
 }
