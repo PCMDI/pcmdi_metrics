@@ -34,7 +34,7 @@ setup (name = "pcmdi_metrics",
        scripts = ["src/python/pcmdi/scripts/pcmdi_metrics_driver.py",
                   "src/python/pcmdi/scripts/build_obs_meta_dictionary.py"],
 
-       data_files = [('share/pcmdi',('doc/obs_info_dictionary.json',)),
+       data_files = [('share/pcmdi',('src/python/pcmdi/scripts/obs_info_dictionary.json',)),
                      ('share/CMIP_results/CMIP5/amip',cmip5_amip_json),
                      ('share/CMIP_results/CMIP5/historical',cmip5_historical_json),
                      ('share/graphics/vcs',portrait_files),
