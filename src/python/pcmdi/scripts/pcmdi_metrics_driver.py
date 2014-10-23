@@ -63,6 +63,8 @@ if not hasattr(parameters,"custom_keys"):
 ## If not makes it empty dictionary
 if hasattr(parameters,"model_tweaks"):
     tweaks_all = parameters.model_tweaks.get(None,{})
+else:
+    tweaks_all={}
 
 try:
   os.makedirs(os.path.join(parameters.metrics_output_path,parameters.case_id))
@@ -227,6 +229,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
               ## If not makes it empty dictionary
               if hasattr(parameters,"model_tweaks"):
                   tweaks = parameters.model_tweaks.get(model_version,{})
+              else:
+   		  tweaks={}
 
               while success:
 

@@ -16,7 +16,6 @@ try:
 except:
   raise RuntimeError("Sorry your python is not build with VCS support cannot geenrate portrait plots")
 
-import string,sys
 import json
 # CDAT MODULES
 import pcmdi_metrics.graphics.portraits
@@ -147,4 +146,3 @@ P.plot(out1_rel,bg=1,x=x)
 x.postscript('test')
 x.png('test')
 x.pdf('test')
-

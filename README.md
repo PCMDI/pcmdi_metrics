@@ -1,4 +1,24 @@
-PCMDI metrics panel package - alpha v0.1
+PCMDI metrics package [![DOI](https://zenodo.org/badge/6619/UV-CDAT/uvcdat.png)](http://dx.doi.org/10.5281/zenodo.12251)
+======
+
+The PCMDI metrics package has been developed using functionality available from the UV-CDAT package to enabling research centers around the world to routinely benchmark their modeling systems
+against a comprehensive suite of climate metrics. The package will enable modeling groups to compare their development model version(s) against all previous CMIP models. Currently, the package
+is focused on well-established large- to global-scale climatological performance metrics that have been identified by the WGNE/WGCM metrics panel as useful for routine model benchmarking.
+
+
+Package organization:
+
+The package consists of four parts: 1) Analysis software, 2) an observationally-based database of global (or near global) annual cycle climatologies, 3) a database of performance metrics
+computed for CMIP models and 4) documentation.
+
+
+Getting started with the PCMDI metrics package:
+
+The package has been developed to enable..
+
+
+
+--- OLD STUFF ---
 
 mean_climate_metrics_driver.py
 ------------------------------

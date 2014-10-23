@@ -1,12 +1,4 @@
 {
-    "sftlf": {
-        "UKMETOFFICE-HadISST-v1-1": {
-            "CMIP_CMOR_TABLE": "fx",
-            "period": "198002-200501",
-            "shape": "(180, 360)"
-        },
-        "default": "UKMETOFFICE-HadISST-v1-1"
-    },
     "hus": {
         "AIRS": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -279,6 +271,31 @@
             "filename": "rswcrf_pcmdi-metrics_Amon_CERES_200003-200510-clim.nc",
             "period": "200003-200510",
             "shape": "(12, 180, 360)"
+        }
+    },
+    "sftlf": {
+        "ECMWF-ERA40": {
+            "CMIP_CMOR_TABLE": "fx",
+            "MD5sum": "b1e262027dba038c89eb51e6d7c4be17",
+            "filename": "sftlf_pcmdi-metrics_fx_ECMWF-ERA40_195709-200208.nc",
+            "shape": "(73, 144)"
+        },
+        "ECMWF-ERAInterim": {
+            "CMIP_CMOR_TABLE": "fx",
+            "MD5sum": "ba6582ba6c87f00d37c09843602e74e9",
+            "filename": "sftlf_pcmdi-metrics_fx_ECMWF-ERAInterim_197901-201407.nc",
+            "shape": "(121, 240)"
+        },
+        "NCAR-JRA25": {
+            "CMIP_CMOR_TABLE": "fx",
+            "MD5sum": "47530ba8fd46e66656bd52b29d19f41e",
+            "filename": "sftlf_pcmdi-metrics_fx_NCAR-JRA25_197901-201401.nc",
+            "shape": "(145, 288)"
+        },
+        "UKMETOFFICE-HadISST-v1-1": {
+            "CMIP_CMOR_TABLE": "fx",
+            "filename": "sftlf_pcmdi-metrics_fx_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc",
+            "shape": "(180, 360)"
         }
     },
     "sos": {

@@ -1,5 +1,6 @@
 #!/bin/env python
 
+# PJG 10212014 NOW INCLUDES SFTLF FROM /obs AND HARDWIRED TEST CASE WHICH NEEDS FIXIN
 
 import cdms2
 import time, string
@@ -12,6 +13,7 @@ else:
 
 lst = os.popen('ls ' + data_path + '/*/mo/*/*/ac/*.nc').readlines()
 
+## FOR MONTHLY MEAN OBS
 obs_dic = {'rlut':{'default':'CERES'},
            'rsut':{'default':'CERES'},
            'rsds':{'default':'CERES',},
@@ -45,7 +47,7 @@ for l in lst:
 
   var = subp.split('/')[3]
 
-### TRAP FILE NAME
+### TRAP FILE NAME FOR OBS DATA 
 
   filename = subp.split('/')[len(subp.split('/'))-1][:-1]
 
@@ -59,7 +61,6 @@ for l in lst:
   if product not in obs_dic[var].keys(): obs_dic[var][product] = {}
 
   partial_filename = subp.split('pcmdi-metrics')[1]
-# fullfilename = subp.split('pcmdi-metrics')[1]
 
   realm = partial_filename.split('_')[1]
   period = partial_filename.split('_')[3]
@@ -68,11 +69,8 @@ for l in lst:
   obs_dic[var][product]['filename'] = filename 
   obs_dic[var][product]['CMIP_CMOR_TABLE'] = realm
   obs_dic[var][product]['period'] = period 
-# obs_dic[var][product]['RefActivity'] = "obs4mips"
   obs_dic[var][product]['RefName'] = product
-# obs_dic[var][product]['RefType'] = "???"
   obs_dic[var][product]['RefTrackingDate'] = time.ctime(os.path.getmtime(l.strip()))
-# obs_dic[var][product]['RefFreeSpace'] = "???"
 
   md5 = string.split(os.popen('md5sum ' + l[:-1]).readlines()[0],' ')[0]
 
@@ -89,10 +87,52 @@ for l in lst:
 
   obs_dic[var][product]['shape'] = shape
 
+### DONE WITH MONTHLY MEAN OBS
+#### NOW TRAP OBS LAND-SEA MASKS IN OBS/FX/SFTLF 
+
+lstm = os.popen('ls ' + data_path + '/fx/sftlf/*.nc').readlines()
+
+for l in lstm:
+  subp = l.split('obs')[1]
+  var = subp.split('/')[2]
+
+### TRAP FILE NAME FOR SFTLF DATA 
+
+  filename = subp.split('/')[len(subp.split('/'))-1][:-1]
+  print 'FILENAME IS ', filename,'  ', subp.split('/')[3]
+  if var not in obs_dic.keys(): obs_dic[var] = {}
+  partial_filename = subp.split('pcmdi-metrics')[1]
+  product = partial_filename.split('/')[0]
+  product = string.split(product,'_')[2] 
+
+  if product not in obs_dic[var].keys(): obs_dic[var][product] = {}
+
+  obs_dic[var][product]['CMIP_CMOR_TABLE'] = 'fx' 
+  obs_dic[var][product]['filename'] = filename 
+  md5 = string.split(os.popen('md5sum ' + l[:-1]).readlines()[0],' ')[0]
+  obs_dic[var][product]['MD5sum'] = md5
+
+  f = cdms2.open(l[:-1])
+  d = f(var)
+  obs_dic[var][product]['shape'] = `d.shape`
+  f.close()
+
+#### ADD SPECIAL CASE SFTLF FROM TEST DIR 
+
+product = 'UKMETOFFICE-HadISST-v1-1' 
+obs_dic[var][product] = {}
+obs_dic[var][product]['CMIP_CMOR_TABLE'] = 'fx'
+obs_dic[var][product]['shape'] = '(180, 360)'
+obs_dic[var][product]['filename'] = 'sftlf_pcmdi-metrics_fx_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc'
+
+
 json_name = 'obs_info_dictionary.json'
 
-#json.dump(obs_dic, open(json_name, "wb" ),sort_keys=True, indent=4, separators=(',', ': '))
+# SAVE LOCAL AND IN /doc
+json.dump(obs_dic, open(json_name, "wb" ),sort_keys=True, indent=4, separators=(',', ': '))
 
 json.dump(obs_dic, open('../../../../doc/' + json_name, "wb" ),sort_keys=True, indent=4, separators=(',', ': '))
- 
+
+
+
 
