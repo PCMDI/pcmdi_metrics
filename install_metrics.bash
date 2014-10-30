@@ -21,9 +21,6 @@ build_cmor=false
 ## Do we build UV-CDAT with parallel capabilities (MPI)
 build_parallel=false
 
-## Speed up your build by increasing the following to match your number of processors
-num_cpus=4
-
 ## Do we keep or remove uvcdat_build diretory before building UV-CDAT
 ## Useful for case where multiple make necessary
 ## valid values: true false
@@ -428,20 +425,23 @@ main() {
     echo
     echo
     echo "*******************************"
-    echo "UVCDAT  - ${cdat_version} - Install Success"
+    echo "UVCDAT  - ${cdat_version}     - Install Success"
     echo "Metrics - ${metrics_checkout} - Install Success"
     echo "*******************************"
-    echo "Please test as follow:"
+    echo "Please test as follows:"
     echo "source ${cdat_home}/bin/setup_runtime.sh"
     echo "pcmdi_metrics_driver.py -p ${install_prefix}/test/pcmdi/basic_test_parameters_file.py"
-    echo "compare: diff ${install_prefix}/test/pcmdi/tos_2.5x2.5_esmf_linear_metrics.json.good pcmdi_install_test_results/metrics_results/installationTest/tos_2.5x2.5_esmf_linear_metrics.json"
+    echo "compare and validate outputs from the package:"
+    echo "diff ${install_prefix}/test/pcmdi/tos_2.5x2.5_esmf_linear_metrics.json.good pcmdi_install_test_results/metrics_results/installationTest/tos_2.5x2.5_esmf_linear_metrics.json"
     echo "*******************************"
-    echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/pcmdi_input_parameters_sample.py"
+    echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/parameter_files/pcmdi_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
     echo "source ${install_prefix}/bin/setup_runtime.sh"
     echo "pcmdi_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
     echo "*******************************"
     echo "Once everything is ok, you can safely remove the temporary directory: ${build_directory}"
+    echo "*******************************"
+    echo "For further information or suggestions please contact the PCMDI Metrics Team @ pcmdi-metrics@llnl.gov"
     echo "*******************************"
     echo
 
