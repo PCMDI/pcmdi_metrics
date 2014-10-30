@@ -425,7 +425,7 @@ main() {
     echo
     echo
     echo "*******************************"
-    echo "UVCDAT  - ${cdat_version}     - Install Success"
+    echo "UVCDAT  - ${cdat_version} - Install Success"
     echo "Metrics - ${metrics_checkout} - Install Success"
     echo "*******************************"
     echo "Please test as follows:"
