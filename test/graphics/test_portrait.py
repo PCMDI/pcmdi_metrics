@@ -150,8 +150,9 @@ class TestGraphics(unittest.TestCase):
     ### END OF PLOTTING
 
     ### SAVE PLOT
-    x.png('testPortait')
-    src = os.path.dirname(__file__)
+    src = os.path.join(os.path.dirname(__file__),"testPortrait.png")
     print src
-    ret = checkimage.check_result_image("testPortrait",src,checkimage.defaultThreshold)
+    fnm = os.path.join(os.getcwd(),"testPortrait.png")
+    x.png(fnm)
+    ret = checkimage.check_result_image(fnm,src,checkimage.defaultThreshold)
     print ret

@@ -23,7 +23,7 @@ def compute_metrics(var,dm_glb,do_glb):
             do = do_glb(latitude = (-30.,30))
         
         ### CALCULATE ANNUAL CYCLE SPACE-TIME RMS AND CORRELATIONS
-        print '---- shapes ', dm.shape,' ', do.shape
+        print '---- shapes ', dom,'   ', dm.shape,' ', do.shape
         rms_xyt = pcmdi_metrics.pcmdi.rms_xyt.compute(dm,do)
         cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm,do)
         

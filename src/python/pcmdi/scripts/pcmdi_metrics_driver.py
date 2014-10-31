@@ -14,6 +14,7 @@ import warnings
 import cdms2
 import MV2
 import cdutil
+import collections
 
 regions_values = {"land":100.,"ocean":0.,"lnd":100.,"ocn":0.}
 
@@ -63,6 +64,8 @@ if not hasattr(parameters,"custom_keys"):
 ## If not makes it empty dictionary
 if hasattr(parameters,"model_tweaks"):
     tweaks_all = parameters.model_tweaks.get(None,{})
+else:
+    tweaks_all={}
 
 try:
   os.makedirs(os.path.join(parameters.metrics_output_path,parameters.case_id))
@@ -118,10 +121,10 @@ for var in parameters.vars:
   if not isinstance(rg,(list,tuple)):
     rg = [rg,]
   regions_dict[vr] = rg
-
+saved_obs_masks = {}
 for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
   try:
-    metrics_dictionary = {}
+    metrics_dictionary = collections.OrderedDict()
     ## REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
     if len(var.split("_"))>1:
         level = float(var.split("_")[-1])*100.
@@ -167,6 +170,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
     OUT.realm = realm
     OUT.table = table_realm
     applyCustomKeys(OUT,parameters.custom_keys,var)
+    metrics_dictionary["References"]={}
     metrics_dictionary["RegionalMasking"] = {}
     for region in regions_dict[var]:
       if isinstance(region,str):
@@ -177,7 +181,6 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
       else:
         region_name = "%i" % region
       metrics_dictionary["RegionalMasking"][region_name]=region
-      metrics_dictionary["References"]={}
       for ref in refs:
         if ref in ["default","alternate"]:
           refabbv = ref+"Reference"
@@ -197,15 +200,26 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
             ## Ok we need to apply a mask
             ## First try to read from obs json file
             try:
-                oMask = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,ref)
-                oMask = oMask.get("sftlf")
-            except: # ok that failed falling back on autogenerate
-                dup("Could not find obs mask, generating")
-                oGrd = cdms2.open(OBS())(var,time=slice(0,1))
-                oMask = cdutil.generateLandSeaMask(oGrd,regridTool=regridTool).filled(1.)*100.
-                oMask = MV2.array(oMask)
-                oMask.setAxis(-1,oGrd.getLongitude())
-                oMask.setAxis(-2,oGrd.getLatitude())
+                oMask = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,obs_dic[var][ref])
+                oMasknm = oMask()
+            except Exception,err:
+                dup("error retrieving mask for obs: %s, \n%s" % (obs_dic[var][ref],err))
+                oMasknm = "%s_%s" % (var,ref)
+            tmpoMask = saved_obs_masks.get(oMasknm,None)
+            if tmpoMask is not None:
+                # ok we got this one already
+                oMask = tmpoMask
+            else:
+                try:
+                    oMask = oMask.get("sftlf")
+                except: # ok that failed falling back on autogenerate
+                    dup("Could not find obs mask, generating")
+                    oGrd = cdms2.open(OBS())(var,time=slice(0,1))
+                    oMask = cdutil.generateLandSeaMask(oGrd,regridTool=regridTool).filled(1.)*100.
+                    oMask = MV2.array(oMask)
+                    oMask.setAxis(-1,oGrd.getLongitude())
+                    oMask.setAxis(-2,oGrd.getLatitude())
+                saved_obs_masks[oMasknm]=oMask
             OBS.mask = MV2.logical_not(MV2.equal(oMask,region))
             OBS.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
           try:
@@ -227,6 +241,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
               ## If not makes it empty dictionary
               if hasattr(parameters,"model_tweaks"):
                   tweaks = parameters.model_tweaks.get(model_version,{})
+              else:
+   		  tweaks={}
 
               while success:
 
@@ -366,7 +382,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
           dup("Error while processing observation %s for variable %s:\n\t%s" % (var,ref,err))
       ## Done with obs and models loops , let's dum before next var
     ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
-    OUT.write(metrics_dictionary, mode="w", sort_keys=True, indent=4, separators=(',', ': '))    
+    OUT.write(metrics_dictionary, mode="w", indent=4, separators=(',', ': '))
     # CREATE OUTPUT AS ASCII FILE
     OUT.write(metrics_dictionary, mode="w", type="txt") 
   except Exception,err:
