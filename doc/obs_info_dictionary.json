@@ -45,9 +45,9 @@
             "period": "200408-201012",
             "shape": "(12, 23, 90, 72)"
         },
-        "alternate": "ERA40",
-        "default": "ERAINT",
-        "ref3": "JRA25"
+        "alternate1": "ERA40",
+        "alternate2": "JRA25",
+        "default": "ERAINT"
     },
     "pr": {
         "GPCP": {
@@ -68,7 +68,7 @@
             "period": "200001-200912",
             "shape": "(12, 400, 1440)"
         },
-        "alternate": "TRMM",
+        "alternate1": "TRMM",
         "default": "GPCP"
     },
     "prw": {
@@ -102,9 +102,9 @@
             "period": "198901-200911",
             "shape": "(12, 121, 240)"
         },
-        "alternate": "ERA40",
-        "default": "ERAINT",
-        "ref3": "JRA25"
+        "alternate1": "ERA40",
+        "alternate2": "JRA25",
+        "default": "ERAINT"
     },
     "rlds": {
         "CERES": {
@@ -374,9 +374,9 @@
             "period": "200408-201012",
             "shape": "(12, 23, 90, 72)"
         },
-        "alternate": "ERA40",
-        "default": "ERAINT",
-        "ref3": "JRA25"
+        "alternate1": "ERA40",
+        "alternate2": "JRA25",
+        "default": "ERAINT"
     },
     "tas": {
         "ERA40": {
@@ -406,19 +406,19 @@
             "period": "197901-201006",
             "shape": "(12, 145, 288)"
         },
-        "alternate": "ERA40",
-        "default": "ERAINT",
-        "ref3": "JRA25"
+        "alternate1": "ERA40",
+        "alternate2": "JRA25",
+        "default": "ERAINT"
     },
     "tauu": {
-        "alternate": "ERA40",
-        "default": "ERAINT",
-        "ref3": "JRA25"
+        "alternate1": "ERA40",
+        "alternate2": "JRA25",
+        "default": "ERAINT"
     },
     "tauv": {
-        "alternate": "ERA40",
-        "default": "ERAINT",
-        "ref3": "JRA25"
+        "alternate1": "ERA40",
+        "alternate2": "JRA25",
+        "default": "ERAINT"
     },
     "tos": {
         "NOAA-OISST-v2": {
@@ -496,9 +496,9 @@
             "period": "197901-201006",
             "shape": "(12, 23, 145, 288)"
         },
-        "alternate": "ERA40",
-        "default": "ERAINT",
-        "ref3": "JRA25"
+        "alternate1": "ERA40",
+        "alternate2": "JRA25",
+        "default": "ERAINT"
     },
     "uas": {
         "ERA40": {
@@ -528,9 +528,9 @@
             "period": "197901-201006",
             "shape": "(12, 145, 288)"
         },
-        "alternate": "ERA40",
-        "default": "ERAINT",
-        "ref3": "JRA25"
+        "alternate1": "ERA40",
+        "alternate2": "JRA25",
+        "default": "ERAINT"
     },
     "va": {
         "ERA40": {
@@ -560,9 +560,9 @@
             "period": "197901-201006",
             "shape": "(12, 23, 145, 288)"
         },
-        "alternate": "ERA40",
-        "default": "ERAINT",
-        "ref3": "JRA25"
+        "alternate1": "ERA40",
+        "alternate2": "JRA25",
+        "default": "ERAINT"
     },
     "vas": {
         "ERA40": {
@@ -592,9 +592,9 @@
             "period": "197901-201006",
             "shape": "(12, 145, 288)"
         },
-        "alternate": "ERA40",
-        "default": "ERAINT",
-        "ref3": "JRA25"
+        "alternate1": "ERA40",
+        "alternate2": "JRA25",
+        "default": "ERAINT"
     },
     "zg": {
         "ERA40": {
@@ -624,9 +624,9 @@
             "period": "197901-201006",
             "shape": "(12, 23, 145, 288)"
         },
-        "alternate": "ERA40",
-        "default": "ERAINT",
-        "ref3": "JRA25"
+        "alternate1": "ERA40",
+        "alternate2": "JRA25",
+        "default": "ERAINT"
     },
     "zos": {
         "CNES-AVISO-L4": {
