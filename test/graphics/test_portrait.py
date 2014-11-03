@@ -91,6 +91,7 @@ class TestGraphics(unittest.TestCase):
       else:
           var_cmip5_dics[var]=d
 
+    vars.sort()
     mods = sorted(list(mods))
     for bad in ["References","RegionalMasking","metrics_git_sha1","uvcdat_version"]:
         mods.remove(bad)
@@ -155,4 +156,5 @@ class TestGraphics(unittest.TestCase):
     fnm = os.path.join(os.getcwd(),"testPortrait.png")
     x.png(fnm)
     ret = checkimage.check_result_image(fnm,src,checkimage.defaultThreshold)
-    print ret
+    if ret!=0:
+        sys.exit(ret)
