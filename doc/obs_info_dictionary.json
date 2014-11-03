@@ -103,7 +103,6 @@
             "shape": "(12, 121, 240)"
         },
         "alternate1": "ERA40",
-        "alternate2": "JRA25",
         "default": "ERAINT"
     },
     "rlds": {
@@ -115,7 +114,8 @@
             "filename": "rlds_pcmdi-metrics_Amon_CERES_200003-201209-clim.nc",
             "period": "200003-201209",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "default": "CERES"
     },
     "rldscs": {
         "CERES": {
@@ -126,7 +126,8 @@
             "filename": "rldscs_pcmdi-metrics_Amon_CERES_200003-201209-clim.nc",
             "period": "200003-201209",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "default": "CERES"
     },
     "rlus": {
         "CERES": {
@@ -150,9 +151,6 @@
             "period": "200003-201206",
             "shape": "(12, 180, 360)"
         },
-        "default": "CERES"
-    },
-    "rlutcre": {
         "default": "CERES"
     },
     "rlutcs": {
@@ -199,7 +197,8 @@
             "filename": "rsdscs_pcmdi-metrics_Amon_CERES_200003-201209-clim.nc",
             "period": "200003-201209",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "default": "CERES"
     },
     "rsdt": {
         "CERES": {
@@ -245,9 +244,6 @@
             "period": "200003-201206",
             "shape": "(12, 180, 360)"
         },
-        "default": "CERES"
-    },
-    "rsutcre": {
         "default": "CERES"
     },
     "rsutcs": {
@@ -406,16 +402,6 @@
             "period": "197901-201006",
             "shape": "(12, 145, 288)"
         },
-        "alternate1": "ERA40",
-        "alternate2": "JRA25",
-        "default": "ERAINT"
-    },
-    "tauu": {
-        "alternate1": "ERA40",
-        "alternate2": "JRA25",
-        "default": "ERAINT"
-    },
-    "tauv": {
         "alternate1": "ERA40",
         "alternate2": "JRA25",
         "default": "ERAINT"

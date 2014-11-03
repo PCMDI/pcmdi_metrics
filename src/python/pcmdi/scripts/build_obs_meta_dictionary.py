@@ -14,9 +14,12 @@ else:
 lst = os.popen('ls ' + data_path + '/*/mo/*/*/ac/*.nc').readlines()
 
 ## FOR MONTHLY MEAN OBS
-obs_dic = {'rlut':{'default':'CERES'},
+obs_dic_in = {'rlut':{'default':'CERES'},
            'rsut':{'default':'CERES'},
            'rsds':{'default':'CERES',},
+           'rlds':{'default':'CERES',},
+           'rsdscs':{'default':'CERES',},
+           'rldscs':{'default':'CERES',},
            'rlus':{'default':'CERES',},
            'rsus':{'default':'CERES',},
            'rlutcs':{'default':'CERES'},
@@ -41,6 +44,14 @@ obs_dic = {'rlut':{'default':'CERES'},
            'sos':{'default':'NODC-WOA09'},
             }
 
+#obs_dic_in = {
+#          'psl':{'default':'ERAINT','alternate2':'JRA25','alternate1':'ERA40'},
+#           }
+
+
+obs_dic = {}
+
+
 for l in lst:
   subp = l.split('obs')[1]
 # print subp
@@ -58,34 +69,44 @@ for l in lst:
 
   product = subp.split('/')[4]
 
-  if product not in obs_dic[var].keys(): obs_dic[var][product] = {}
+  if product not in obs_dic[var].keys() and os.path.isfile(l[:-1]) !=-1: 
+    obs_dic[var][product] = {}
+    print l[:-1]
+    print os.path.isfile(l[:-1])
 
-  partial_filename = subp.split('pcmdi-metrics')[1]
+    partial_filename = subp.split('pcmdi-metrics')[1]
 
-  realm = partial_filename.split('_')[1]
-  period = partial_filename.split('_')[3]
-  period = period.split('-clim.nc')[0]
+    realm = partial_filename.split('_')[1]
+    period = partial_filename.split('_')[3]
+    period = period.split('-clim.nc')[0]
 
-  obs_dic[var][product]['filename'] = filename 
-  obs_dic[var][product]['CMIP_CMOR_TABLE'] = realm
-  obs_dic[var][product]['period'] = period 
-  obs_dic[var][product]['RefName'] = product
-  obs_dic[var][product]['RefTrackingDate'] = time.ctime(os.path.getmtime(l.strip()))
+    obs_dic[var][product]['filename'] = filename 
+    obs_dic[var][product]['CMIP_CMOR_TABLE'] = realm
+    obs_dic[var][product]['period'] = period 
+    obs_dic[var][product]['RefName'] = product
+    obs_dic[var][product]['RefTrackingDate'] = time.ctime(os.path.getmtime(l.strip()))
 
-  md5 = string.split(os.popen('md5sum ' + l[:-1]).readlines()[0],' ')[0]
+    md5 = string.split(os.popen('md5sum ' + l[:-1]).readlines()[0],' ')[0]
 
-  obs_dic[var][product]['MD5sum'] = md5 
+    obs_dic[var][product]['MD5sum'] = md5 
 
-  print var,' ', product,'  ', realm,' ', period
+    print var,' ', product,'  ', realm,' ', period
 
-  f = cdms2.open(l[:-1])
-  d = f(var)
-  shape = d.shape
-  f.close()
+    f = cdms2.open(l[:-1])
+    d = f(var)
+    shape = d.shape
+    f.close()
 
-  shape = `d.shape`
+    shape = `d.shape`
 
-  obs_dic[var][product]['shape'] = shape
+    obs_dic[var][product]['shape'] = shape
+
+  try:
+    for r in obs_dic_in[var].keys():
+        if obs_dic_in[var][r] == product: obs_dic[var][r] = product
+  except:
+    pass
+
 
 ### DONE WITH MONTHLY MEAN OBS
 #### NOW TRAP OBS LAND-SEA MASKS IN OBS/FX/SFTLF 
