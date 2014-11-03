@@ -156,4 +156,5 @@ class TestGraphics(unittest.TestCase):
     fnm = os.path.join(os.getcwd(),"testPortrait.png")
     x.png(fnm)
     ret = checkimage.check_result_image(fnm,src,checkimage.defaultThreshold)
-    print ret
+    if ret!=0:
+        sys.exit(ret)
