@@ -91,6 +91,7 @@ class TestGraphics(unittest.TestCase):
       else:
           var_cmip5_dics[var]=d
 
+    vars.sort()
     mods = sorted(list(mods))
     for bad in ["References","RegionalMasking","metrics_git_sha1","uvcdat_version"]:
         mods.remove(bad)
