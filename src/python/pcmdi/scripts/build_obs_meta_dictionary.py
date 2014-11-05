@@ -91,7 +91,11 @@ for l in lst:
 #### NOW TRAP OBS LAND-SEA MASKS IN OBS/FX/SFTLF 
 
 lstm = os.popen('ls ' + data_path + '/fx/sftlf/*.nc').readlines()
-
+sftlf_product_remap={
+    "ECMWF-ERAInterim":"ERAINT",
+    "ECMWF-ERA40" :"ERA40",
+    "NCAR-JRA25" :"JRA25",
+    }
 for l in lstm:
   subp = l.split('obs')[1]
   var = subp.split('/')[2]
@@ -104,6 +108,9 @@ for l in lstm:
   partial_filename = subp.split('pcmdi-metrics')[1]
   product = partial_filename.split('/')[0]
   product = string.split(product,'_')[2] 
+  # Ok sftlf filenames do not match official OBS product abbreviation
+  #need to remap
+  product = sftlf_product_remap.get(product,product) 
 
   if product not in obs_dic[var].keys(): obs_dic[var][product] = {}
 

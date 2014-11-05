@@ -281,7 +281,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   ###########################################################################
                   if dm.shape!=do.shape:
                     raise RuntimeError, "Obs and Model -%s- have different shapes %s vs %s" % (model_version,do.shape,dm.shape)
-                  if do.units!=dm.units: # Ok possible issue with units
+                  if hasattr(dm,"units") and do.units!=dm.units: # Ok possible issue with units
                       u = genutil.udunits(1,dm.units)
                       try:
                         scaling,offset = u.how(do.units)

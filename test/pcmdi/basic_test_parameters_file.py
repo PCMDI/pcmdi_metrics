@@ -18,7 +18,7 @@ model_versions = ['GFDL-ESM2G',]
 simulation_description_mapping = {"Login":"Login", "Center":"Center", "SimTrackingDate" : "creation_date"}
 
 ### VARIABLES AND OBSERVATIONS TO USE
-vars = ['tos']
+vars = ['tos','tas']
 
 ## MODEL SPECIFC PARAMETERS
 model_tweaks = {
@@ -28,12 +28,13 @@ model_tweaks = {
       "variable_mapping" : { "tos" : "tos"},
       },
     "GFDL-ESM2G" : {
-      "variable_mapping" : { "tos" : "tos"},
+      "variable_mapping" : { "tas" : "tas_ac"},
       },
     }
 
 ## REGIONS ON WHICH WE WANT TO RUN METRICS (var specific)
-regions = {"tos" : [None,"terre","ocean"],}
+# Here we run glb for both but also terre and ocean for tas (only)
+regions = {"tas" : [None,"terre","ocean"],"tos":[None,]}
 ## USER CAN CUSTOMIZE REGIONS VALUES NMAES
 regions_values = {"terre":100.}
 
@@ -64,9 +65,10 @@ filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realizat
 sftlf_filename_template = "sftlf_%(model_version).nc"
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
-mod_data_path = os.path.abspath(os.path.join(pcmdi_metrics.__path__[0],"..","..","..","..",'test','pcmdi',))
+pth = os.path.dirname(__file__)
+mod_data_path = os.path.abspath(os.apth.join(pth,"data"))
 ## ROOT PATH FOR OBSERVATIONS
-obs_data_path = os.path.abspath(os.path.join(pcmdi_metrics.__path__[0],"..","..","..","..",'test','pcmdi','obs'))
+obs_data_path = os.path.abspath(os.apth.join(pth,"obs"))
 ## DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join('pcmdi_install_test_results','metrics_results')
 ## DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES

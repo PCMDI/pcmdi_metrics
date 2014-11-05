@@ -29,15 +29,19 @@ class TestFromParam(unittest.TestCase):
       ok = True
       for gnm in self.good_files:
         if os.path.basename(gnm)==nm:
-          u = difflib.unified_diff(open(fnm).readlines(),open(gnm).readlines())
+          print "comparing:",fnm,gnm
+          u = difflib.unified_diff(open(gnm).readlines(),open(fnm).readlines())
           for l in u:
             if l[:2]=="- ":
               if l.find("metrics_git_sha1")>-1:
                 continue
+              if l.find("uvcdat_version")>-1:
+                continue
               else:
-                ok = True
+                print "Failing line:",l
+                ok = False
     self.assertTrue(ok)
-    shutil.rmtree(os.path.join(parameters.metrics_output_path,parameters.case_id))
+    #shutil.rmtree(os.path.join(parameters.metrics_output_path,parameters.case_id))
 
 
 

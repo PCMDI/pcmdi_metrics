@@ -274,19 +274,19 @@
         }
     },
     "sftlf": {
-        "ECMWF-ERA40": {
+        "ERA40": {
             "CMIP_CMOR_TABLE": "fx",
             "MD5sum": "b1e262027dba038c89eb51e6d7c4be17",
             "filename": "sftlf_pcmdi-metrics_fx_ECMWF-ERA40_195709-200208.nc",
             "shape": "(73, 144)"
         },
-        "ECMWF-ERAInterim": {
+        "ERAINT": {
             "CMIP_CMOR_TABLE": "fx",
             "MD5sum": "ba6582ba6c87f00d37c09843602e74e9",
             "filename": "sftlf_pcmdi-metrics_fx_ECMWF-ERAInterim_197901-201407.nc",
             "shape": "(121, 240)"
         },
-        "NCAR-JRA25": {
+        "JRA25": {
             "CMIP_CMOR_TABLE": "fx",
             "MD5sum": "47530ba8fd46e66656bd52b29d19f41e",
             "filename": "sftlf_pcmdi-metrics_fx_NCAR-JRA25_197901-201401.nc",
