@@ -29,10 +29,8 @@ class Base(genutil.StringConstructor):
         ## First extract data
         out = cdms2.open(os.path.abspath(self()))(varInFile,*args,**kargs)
 
-        print "From file shape:",out.shape
         ## Now are we looking at a region in particular?
         if self.mask is not None:
-          print "msk shape:",self.mask.shape
           if self.mask.shape != out.shape:
             dum, msk = genutil.grower(out,self.mask)
           else:

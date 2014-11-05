@@ -66,9 +66,9 @@ sftlf_filename_template = "sftlf_%(model_version).nc"
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
 pth = os.path.dirname(__file__)
-mod_data_path = os.path.abspath(os.apth.join(pth,"data"))
+mod_data_path = os.path.abspath(os.path.join(pth,"data"))
 ## ROOT PATH FOR OBSERVATIONS
-obs_data_path = os.path.abspath(os.apth.join(pth,"obs"))
+obs_data_path = os.path.abspath(os.path.join(pth,"obs"))
 ## DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join('pcmdi_install_test_results','metrics_results')
 ## DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES
