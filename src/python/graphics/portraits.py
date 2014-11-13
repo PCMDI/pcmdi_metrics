@@ -40,7 +40,7 @@ class Plot_defaults:
         self.parametertable=x.createtexttable()
         # Defaults
         self.draw_mesh='y'
-        self.missing_color=240
+        self.missing_color=3
         self.xtic1y1=None
         self.xtic1y2=None
         self.xtic2y1=None
@@ -56,7 +56,7 @@ class Plot_defaults:
         logo.path = 'right'
         logo.valign = 'half'
         # Set the logo texttable
-        logo.font = 3
+        logo.font = 2
         logo.spacing = 2
         logo.expansion = 100
         logo.color = 250

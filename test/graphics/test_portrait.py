@@ -26,6 +26,7 @@ class TestGraphics(unittest.TestCase):
     # CDAT MODULES
     import pcmdi_metrics.graphics.portraits
     import MV2
+    import numpy
     from genutil import statistics
     import os,sys
     import glob
@@ -56,8 +57,8 @@ class TestGraphics(unittest.TestCase):
     P.PLOT_SETTINGS.ytic2x1=P.PLOT_SETTINGS.x1
     P.PLOT_SETTINGS.ytic2x2=P.PLOT_SETTINGS.x2
 
-    P.PLOT_SETTINGS.missing_color = 240
-    P.PLOT_SETTINGS.logo = None
+#    P.PLOT_SETTINGS.missing_color = 3
+#    P.PLOT_SETTINGS.logo = None
     P.PLOT_SETTINGS.time_stamp = None
     P.PLOT_SETTINGS.draw_mesh='n'
     #P.PLOT_SETTINGS.tictable.font = 3
@@ -93,7 +94,7 @@ class TestGraphics(unittest.TestCase):
 
     vars.sort()
     mods = sorted(list(mods))
-    for bad in ["References","RegionalMasking","metrics_git_sha1","uvcdat_version"]:
+    for bad in ["GridInfo","References","RegionalMasking","metrics_git_sha1","uvcdat_version"]:
         mods.remove(bad)
 
     ###### ORGANIZE METRICS INTO A VARIABLES X MODELS MATRIX 
@@ -127,7 +128,7 @@ class TestGraphics(unittest.TestCase):
          try:
            out1_rel[vn,mn] = (float(var_cmip5_dics[var][mod]["defaultReference"]["r1i1p1"]["global"]['rms_xyt_ann_GLB'])-med_rms)/med_rms # RELATIVE ERROR 
          except:
-           out1_rel[vn,mn] = 1.e20 
+           out1_rel[vn,mn] = numpy.ma.masked
 
     # ADD SPACES FOR LABELS TO ALIGN AXIS LABELS WITH PLOT
     modsAxis = mods
