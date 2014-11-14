@@ -19,7 +19,9 @@ import collections
 regions_values = {"land":100.,"ocean":0.,"lnd":100.,"ocn":0.}
 
 #Load the obs dictionary
-obs_dic = json.loads(open(os.path.join(pcmdi_metrics.__path__[0],"..","..","..","..","share","pcmdi","obs_info_dictionary.json")).read())
+fjson = open(os.path.join(pcmdi_metrics.__path__[0],"..","..","..","..","share","pcmdi","obs_info_dictionary.json"))
+obs_dic = json.loads(fjson.read())
+fjson.close()
 
 class DUP(object):
     def __init__(self,outfile):
@@ -214,7 +216,9 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     oMask = oMask.get("sftlf")
                 except: # ok that failed falling back on autogenerate
                     dup("Could not find obs mask, generating")
-                    oGrd = cdms2.open(OBS())(var,time=slice(0,1))
+                    foGrd = cdms2.open(OBS())
+                    oGrd = foGrd(var,time=slice(0,1))
+                    foGrd.close()
                     oMask = cdutil.generateLandSeaMask(oGrd,regridTool=regridTool).filled(1.)*100.
                     oMask = MV2.array(oMask)
                     oMask.setAxis(-1,oGrd.getLongitude())
@@ -337,6 +341,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                                     # Ok couldn't find it anywhere setting to N/A
                                     else:
                                         vals.append("N/A")
+                                    f.close()
                             descr[att] = fmt % tuple(vals)
                       metrics_dictionary[model_version]["SimulationDescription"] = descr 
                       metrics_dictionary[model_version]["InputClimatologyFileName"] = os.path.basename(MODEL())
