@@ -417,6 +417,7 @@ main() {
     setup_metrics
     pushd ${uvcdat_build_directory}/uvcdat >& /dev/null
     git apply ${metrics_build_directory}/src/patch_uvcdat.patch
+    setup_cdat_xtra unidata
     setup_cdat_xtra genutil
     setup_cdat_xtra xmgrace
     setup_cdat_xtra cdutil

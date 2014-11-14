@@ -25,7 +25,7 @@ class TestFromParam(unittest.TestCase):
       nm = os.path.basename(fnm)
       # Ok now we are trying to find the same file
       if self.good_files == []:
-        self.good_files = glob.glob("test/pcmdi/*.json")
+        self.good_files = glob.glob("test/pcmdi/%s/*.json" % parameters.case_id)
       ok = True
       for gnm in self.good_files:
         if os.path.basename(gnm)==nm:
