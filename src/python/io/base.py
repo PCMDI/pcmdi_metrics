@@ -27,7 +27,9 @@ class Base(genutil.StringConstructor):
         if varInFile is None:
             varInFile = var
         ## First extract data
-        out = cdms2.open(os.path.abspath(self()))(varInFile,*args,**kargs)
+        f = cdms2.open(os.path.abspath(self()))
+        out = f(varInFile,*args,**kargs)
+        f.close()
 
         ## Now are we looking at a region in particular?
         if self.mask is not None:
@@ -71,18 +73,20 @@ class Base(genutil.StringConstructor):
             data["metrics_git_sha1"] = pcmdi_metrics.__git_sha1__
             data["uvcdat_version"] = cdat_info.get_version()
             json.dump(data,f,*args,**kargs)            
+            f.close()
         elif type.lower() in ["asc","ascii","txt"]:
             f=open(fnm,mode)
             for k in data.keys():
                 f.write("%s  %s \n" % (k,data[k]))
+            f.close()
         elif type.lower() == "nc":
             f=cdms2.open(fnm,mode)
             f.write(data,*args,**kargs)
             f.metrics_git_sha1 = pcmdi_metrics.__git_sha1__
             f.uvcdat_version = cdat_info.get_version()
+            f.close()
         else:
             raise RuntimeError,"Unknown type: %s" % type
-        f.close()
 
     def hash(self, blocksize=65536):
       afile=open(self())
@@ -91,5 +95,6 @@ class Base(genutil.StringConstructor):
       while len(buf) > 0:
         hasher.update(buf)
         buf = afile.read(blocksize)
+      afile.close()
       return hasher.hexdigest()
 
