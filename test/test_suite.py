@@ -5,6 +5,7 @@ sys.path.append(os.path.join(pth,"graphics"))
 
 suite= unittest.TestSuite()
 suite.addTest(test_from_param.TestFromParam(os.path.join(pth,"pcmdi","basic_test_parameters_file.py")))
+suite.addTest(test_from_param.TestFromParam(os.path.join(pth,"pcmdi","units_test.py")))
 try:
     # If we have vcs we can test graphics
     import vcs,test_portrait

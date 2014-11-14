@@ -290,7 +290,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                       try:
                         scaling,offset = u.how(do.units)
                         dm = dm*scaling + offset
-                        warnings.warn("Model and observation units differed, converted model (%s) to observation unit (%s)" % (dm.units,do.units))
+                        warnings.warn("Model and observation units differed, converted model (%s) to observation unit (%s) scaling: %g offset: %g" % (dm.units,do.units,scaling,offset))
                       except:
                         raise RuntimeError, "Could not convert model units (%s) to obs units: (%s)" % (dm.units,do.units)
 

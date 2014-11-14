@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<!DOCTYPE dataset SYSTEM "http://www-pcmdi.llnl.gov/software/cdms/cdml.dtd">
+<dataset
+	comment	="GFDL experiment name = ESM2G-C2_all_historical_HC2. PCMDI experiment name = historical (run1). Initial conditions for this experiment were taken from 1 January of year 1861 of the parent experiment, ESM2G-C2_1700-1860_historical_HC2, which is an unpublished experiment branched from 1 January of year 1 of 1860 control model experiment, ESM2G_pi-control_C2 (piControl). This parent experiment is an extension of piControl except historical transitions of land use are applied from 1700-1860 in order to allow the terrestrial carbon stores to respond to the imposition of land use and produce realistic fluxes by the start of the historical run in 1861. Several forcing agents varied during the 145 year duration of the ESM2G-C2_all_historical_HC2 experiment in a manner based upon observations and reconstructions for the late 19th and 20th centuries. The aerosol concentrations were computed by an off-line model. The time varying forcing agents include the well-mixed greenhouse gases (CO2, CH4, N2O, halons), tropospheric and stratospheric O3, aerosol concentrations (sulfate, black and organic carbon, sea salt, dust), volcanic aerosols, solar irradiance and land use transitions. The direct effect of tropospheric aerosols is calculated by the model, but not the indirect effects."
+	frequency	="mon"
+	calendar	="gregorian"
+	id	="none"
+	institution	="NOAA GFDL(201 Forrestal Rd, Princeton, NJ, 08540)"
+	Conventions	="CF-1.4"
+	cdms_filemap	="[[[lat_bnds,lon_bnds],[[-,-,-,-,-,tas_GFDL-ESM2G_Amon_historical_r1i1p1_198501-200512-clim.nc]]],[[tas_ac,bounds_time],[[0,12,-,-,-,tas_GFDL-ESM2G_Amon_historical_r1i1p1_198501-200512-clim.nc]]]]"
+	directory	=""
+	history	="File was processed by fremetar (GFDL analog of CMOR). TripleID: [exper_id_eDfXZpMNeR,realiz_id_rexsamlwoA,run_id_bSxBCxpGE5] [2013-3-19 4:7:35] /usr/local/uvcdat/latest/bin/cdscan -x /work/cmip5/historical/atm/mo_new/tas/cmip5.GFDL-ESM2G.historical.r1i1p1.mo.atm.Amon.tas.ver-1.xml /cmip5_gdo2/data/cmip5/output1/NOAA-GFDL/GFDL-ESM2G/historical/mon/atmos/Amon/r1i1p1/tas/1/tas_Amon_GFDL-ESM2G_histori ...
+[2014-11-14 20:22:28] /export/doutriaux1/PCMDI_METRICS/bin/cdscan -e tas_ac.units=degK -x tas_GFDL-ESM2G_Amon_piControl_000101-010012-clim01.xml tas_GFDL-ESM2G_Amon_historical_r1i1p1_198501-200512-clim.nc"
+	>
+	<attr datatype="Long" name="initialization_method">1</attr>
+	<attr datatype="String" name="product">output1</attr>
+	<attr datatype="String" name="creation_date">2011-11-19T18:27:04Z</attr>
+	<attr datatype="String" name="references">The GFDL Data Portal (http://nomads.gfdl.noaa.gov/) provides access to NOAA/GFDL&apos;s publicly available model input and output data sets. From this web site one can view and download data sets and documentation, including those related to the GFDL coupled models experiments run for the IPCC&apos;s 5th Assessment Report and the US CCSP.</attr>
+	<attr datatype="String" name="title">NOAA GFDL GFDL-ESM2G, historical (run 1) experiment output for CMIP5 AR5</attr>
+	<attr datatype="String" name="contact">gfdl.climate.model.info@noaa.gov</attr>
+	<attr datatype="String" name="source">GFDL-ESM2G 2010 ocean: TOPAZ (TOPAZ1p2,Tripolar360x210L63); atmosphere: AM2 (AM2p14,M45L24); sea ice: SIS (SISp2,Tripolar360x210L63); land: LM3 (LM3p7_cESM,M45)</attr>
+	<attr datatype="String" name="experiment">historical</attr>
+	<attr datatype="Long" name="realization">1</attr>
+	<attr datatype="String" name="table_id">Table Amon (31 Jan 2011)</attr>
+	<attr datatype="String" name="project_id">CMIP5</attr>
+	<attr datatype="String" name="institute_id">NOAA GFDL</attr>
+	<attr datatype="String" name="model_id">GFDL-ESM2G</attr>
+	<attr datatype="String" name="parent_experiment_id">historicalMisc</attr>
+	<attr datatype="String" name="experiment_id">historical</attr>
+	<attr datatype="String" name="gfdl_experiment_name">ESM2G-C2_all_historical_HC2</attr>
+	<attr datatype="String" name="branch_time">58765</attr>
+	<attr datatype="String" name="forcing">GHG,SD,Oz,LU,Sl,Vl,SS,BC,MD,OC (GHG includes CO2, CH4, N2O, CFC11, CFC12, HCFC22, CFC113)</attr>
+	<attr datatype="Long" name="physics_version">1</attr>
+	<attr datatype="String" name="modeling_realm">atmos</attr>
+	<attr datatype="String" name="tracking_id">1e97a02a-72b0-4c6e-aa2f-6d629cf49e92</attr>
+	<attr datatype="String" name="parent_experiment_rip">r1i1p1</attr>
+	<axis
+		datatype	="Float"
+		units	=""
+		length	="2"
+		id	="bound"
+		>
+		[ 0.  1.]
+		</axis>
+	<axis
+		datatype	="Double"
+		bounds	="lat_bnds"
+		long_name	="latitude"
+		length	="90"
+		units	="degrees_north"
+		id	="lat"
+		axis	="Y"
+		>
+		<attr datatype="String" name="standard_name">latitude</attr>
+		[-89.49438202 -87.97752809 -85.95505618 -83.93258427 -81.91011236
+ -79.88764045 -77.86516854 -75.84269663 -73.82022472 -71.79775281
+ -69.7752809  -67.75280899 -65.73033708 -63.70786517 -61.68539326
+ -59.66292135 -57.64044944 -55.61797753 -53.59550562 -51.57303371
+ -49.5505618  -47.52808989 -45.50561798 -43.48314607 -41.46067416
+ -39.43820225 -37.41573034 -35.39325843 -33.37078652 -31.34831461
+ -29.3258427  -27.30337079 -25.28089888 -23.25842697 -21.23595506
+ -19.21348315 -17.19101124 -15.16853933 -13.14606742 -11.12359551
+  -9.1011236   -7.07865169  -5.05617978  -3.03370787  -1.01123596
+   1.01123596   3.03370787   5.05617978   7.07865169   9.1011236
+  11.12359551  13.14606742  15.16853933  17.19101124  19.21348315
+  21.23595506  23.25842697  25.28089888  27.30337079  29.3258427
+  31.34831461  33.37078652  35.39325843  37.41573034  39.43820225
+  41.46067416  43.48314607  45.50561798  47.52808989  49.5505618
+  51.57303371  53.59550562  55.61797753  57.64044944  59.66292135
+  61.68539326  63.70786517  65.73033708  67.75280899  69.7752809
+  71.79775281  73.82022472  75.84269663  77.86516854  79.88764045
+  81.91011236  83.93258427  85.95505618  87.97752809  89.49438202]
+		</axis>
+	<axis
+		modulo	="360.0"
+		datatype	="Double"
+		bounds	="lon_bnds"
+		long_name	="longitude"
+		length	="144"
+		units	="degrees_east"
+		topology	="circular"
+		id	="lon"
+		axis	="X"
+		>
+		<attr datatype="String" name="standard_name">longitude</attr>
+		[   1.25    3.75    6.25    8.75   11.25   13.75   16.25   18.75   21.25
+   23.75   26.25   28.75   31.25   33.75   36.25   38.75   41.25   43.75
+   46.25   48.75   51.25   53.75   56.25   58.75   61.25   63.75   66.25
+   68.75   71.25   73.75   76.25   78.75   81.25   83.75   86.25   88.75
+   91.25   93.75   96.25   98.75  101.25  103.75  106.25  108.75  111.25
+  113.75  116.25  118.75  121.25  123.75  126.25  128.75  131.25  133.75
+  136.25  138.75  141.25  143.75  146.25  148.75  151.25  153.75  156.25
+  158.75  161.25  163.75  166.25  168.75  171.25  173.75  176.25  178.75
+  181.25  183.75  186.25  188.75  191.25  193.75  196.25  198.75  201.25
+  203.75  206.25  208.75  211.25  213.75  216.25  218.75  221.25  223.75
+  226.25  228.75  231.25  233.75  236.25  238.75  241.25  243.75  246.25
+  248.75  251.25  253.75  256.25  258.75  261.25  263.75  266.25  268.75
+  271.25  273.75  276.25  278.75  281.25  283.75  286.25  288.75  291.25
+  293.75  296.25  298.75  301.25  303.75  306.25  308.75  311.25  313.75
+  316.25  318.75  321.25  323.75  326.25  328.75  331.25  333.75  336.25
+  338.75  341.25  343.75  346.25  348.75  351.25  353.75  356.25  358.75]
+		</axis>
+	<axis
+		name_in_file	="time"
+		datatype	="Double"
+		partition	="[ 0 12]"
+		bounds	="bounds_time"
+		length	="12"
+		units	="days since 0"
+		calendar	="gregorian"
+		id	="time"
+		>
+		[  15.5   45.5   75.5  106.   136.5  167.   197.5  228.5  259.   289.5
+  320.   350.5]
+		</axis>
+	<variable
+		datatype	="Double"
+		id	="bounds_time"
+		>
+		<domain
+			>
+			<domElem start="0" length="12" name="time"/>
+			<domElem start="0" length="2" name="bound"/>
+			</domain>
+		</variable>
+	<variable
+		datatype	="Double"
+		id	="lat_bnds"
+		>
+		<domain
+			>
+			<domElem start="0" length="90" name="lat"/>
+			<domElem start="0" length="2" name="bound"/>
+			</domain>
+		</variable>
+	<variable
+		datatype	="Double"
+		id	="lon_bnds"
+		>
+		<domain
+			>
+			<domElem start="0" length="144" name="lon"/>
+			<domElem start="0" length="2" name="bound"/>
+			</domain>
+		</variable>
+	<variable
+		datatype	="Double"
+		units	="degK"
+		missing_value	="1e+20"
+		id	="tas_ac"
+		>
+		<domain
+			>
+			<domElem start="0" length="12" name="time"/>
+			<domElem start="0" length="90" name="lat"/>
+			<domElem start="0" length="144" name="lon"/>
+			</domain>
+		</variable>
+	</dataset>
