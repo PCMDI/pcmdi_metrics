@@ -260,19 +260,31 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   MODEL.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                   MODEL.realization = parameters.realization
                   applyCustomKeys(MODEL,parameters.custom_keys,var)
+                  varInFile = tweaks.get("variable_mapping",{}).get(var,None)
+                  if varInFile is None: # ok no mapping for THIS model
+                     ## Trying to get the "All models" mapping and fallback and var we are using
+                     varInFile=tweaks_all.get("variable_mapping",{}).get(var,var)
                   if region is not None:
                    if sftlf[model_version]["raw"] is None:
-                     dup("Model %s does not have sftlf, skipping region: %s" % (model_version,region))
-                     success = False
-                     continue
-                   else:
+                    if not hasattr(parameters,"generate_sftlf") or parameters.generate_sftlf is False:
+                       dup("Model %s does not have sftlf, skipping region: %s" % (model_version,region))
+                       success = False
+                       continue
+                    else:
+                       #ok we can try to generate the sftlf
+                       MODEL.variable=varInFile
+                       dup("auto generating sftlf for model %s " % MODEL())
+                       if os.path.exists(MODEL()):
+                         fv=cdms2.open(MODEL())
+                         Vr=fv[varInFile]
+                         ## Need to recover only first time/leve/etc...
+                         N=Vr.rank()-2 # minus lat/lon
+                         sftlf[model_version]["raw"]=cdutil.generateLandSeaMask(Vr(*(slice(0,1),)*N))*100.
+                         f.close()
+                         dup("auto generated sftlf for model %s " % model_version)
                     MODEL.mask = MV2.logical_not(MV2.equal(sftlf[model_version]["raw"],region))
                     MODEL.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
                   try:
-                     varInFile = tweaks.get("variable_mapping",{}).get(var,None)
-                     if varInFile is None: # ok no mapping for THIS model
-                         ## Trying to get the "All models" mapping and fallback and var we are using
-                         varInFile=tweaks_all.get("variable_mapping",{}).get(var,var)
                      if level is None:
                        OUT.level=""
                        dm = MODEL.get(var,varInFile=varInFile)  #+"_ac")
