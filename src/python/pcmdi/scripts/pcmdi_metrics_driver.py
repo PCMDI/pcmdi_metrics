@@ -90,6 +90,7 @@ for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL
   sft.targetGrid = None
   sft.realization="r0i0p0"
   applyCustomKeys(sft,parameters.custom_keys,"sftlf")
+  print "SFT:",sft()
   try:
     sftlf[model_version] = {"raw":sft.get("sftlf")}
     sftlf[model_version]["filename"]=os.path.basename(sft())
@@ -260,6 +261,11 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   MODEL.realization = parameters.realization
                   applyCustomKeys(MODEL,parameters.custom_keys,var)
                   if region is not None:
+                   if sftlf[model_version]["raw"] is None:
+                     dup("Model %s does not have sftlf, skipping region: %s" % (model_version,region))
+                     success = False
+                     continue
+                   else:
                     MODEL.mask = MV2.logical_not(MV2.equal(sftlf[model_version]["raw"],region))
                     MODEL.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
                   try:
