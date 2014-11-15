@@ -272,7 +272,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                        continue
                     else:
                        #ok we can try to generate the sftlf
-                       MODEL.variable=varInFile
+                       MODEL.variable=var
                        dup("auto generating sftlf for model %s " % MODEL())
                        if os.path.exists(MODEL()):
                          fv=cdms2.open(MODEL())
@@ -282,6 +282,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                          sftlf[model_version]["raw"]=cdutil.generateLandSeaMask(Vr(*(slice(0,1),)*N))*100.
                          f.close()
                          dup("auto generated sftlf for model %s " % model_version)
+
                     MODEL.mask = MV2.logical_not(MV2.equal(sftlf[model_version]["raw"],region))
                     MODEL.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
                   try:
