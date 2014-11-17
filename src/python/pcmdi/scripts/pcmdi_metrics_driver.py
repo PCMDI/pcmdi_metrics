@@ -394,7 +394,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                       if level is None:
                         varid = var
                       else:
-                        varid = "%s_%s" % (var,level)
+                        varid = "%s_%i" % (var,int(level))
                       CLIM.variable = varid
                       CLIM.region = region_name
                       CLIM.realization = parameters.realization
