@@ -25,8 +25,11 @@ class TestFromParam(unittest.TestCase):
       nm = os.path.basename(fnm)
       # Ok now we are trying to find the same file
       if self.good_files == []:
-        self.good_files = glob.glob("test/pcmdi/%s/*.json" % parameters.case_id)
+        self.good_files = glob.glob(os.path.dirname(__file__)+"/pcmdi/%s/*.json" % parameters.case_id)
       ok = True
+      if len(self.good_files)==0:
+        ok = False
+        print "could not find good files",__file__
       for gnm in self.good_files:
         if os.path.basename(gnm)==nm:
           print "comparing:",fnm,gnm
@@ -40,7 +43,7 @@ class TestFromParam(unittest.TestCase):
               else:
                 print "Failing line:",l
                 ok = False
-    self.assertTrue(ok)
+      self.assertTrue(ok)
     #shutil.rmtree(os.path.join(parameters.metrics_output_path,parameters.case_id))
 
 
