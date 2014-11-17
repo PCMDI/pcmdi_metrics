@@ -90,7 +90,6 @@ for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL
   sft.targetGrid = None
   sft.realization="r0i0p0"
   applyCustomKeys(sft,parameters.custom_keys,"sftlf")
-  print "SFT:",sft()
   try:
     sftlf[model_version] = {"raw":sft.get("sftlf")}
     sftlf[model_version]["filename"]=os.path.basename(sft())
