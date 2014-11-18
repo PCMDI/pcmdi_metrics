@@ -1,6 +1,16 @@
 from distutils.core import setup
-Version="0.6.0"
 import glob,subprocess
+
+Version="0.6.0"
+p = subprocess.Popen(("git","describe","--tags"),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+try:
+  descr = p.stdout.readlines()[0].strip()
+  Version = "-".join(descr.split("-")[:-2])
+  if Version=="":
+    Version = descr
+except:
+  Version = "0.9.pre-release"
+  descr = Version
 
 p = subprocess.Popen(("git","log","-n1","--pretty=short"),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 try:
@@ -9,6 +19,7 @@ except:
   commit = ""
 f = open("src/python/version.py","w")
 print >>f, "__version__ = '%s'" % Version
+print >>f, "__git_tag_describe__ = '%s'" % descr
 print >>f, "__git_sha1__ = '%s'" % commit
 f.close()
 
@@ -17,7 +28,7 @@ cmip5_amip_json         = glob.glob("data/CMIP_metrics_results/CMIP5/amip/*.json
 cmip5_historical_json   = glob.glob("data/CMIP_metrics_results/CMIP5/historical/*.json")
 
 setup (name         = "pcmdi_metrics",
-       version      = Version,
+       version      = descr,
        author       = "PCMDI",
        description  = "model metrics tools",
        url          = "http://github.com/PCMDI/pcmdi_metrics",
