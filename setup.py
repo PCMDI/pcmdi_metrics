@@ -6,6 +6,8 @@ p = subprocess.Popen(("git","describe","--tags"),stdin=subprocess.PIPE,stdout=su
 try:
   descr = p.stdout.readlines()[0].strip()
   Version = "-".join(descr.split("-")[:-2])
+  if Version=="":
+    Version = descr
 except:
   Version = "0.9.pre-release"
   descr = Version
