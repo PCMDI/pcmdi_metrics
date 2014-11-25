@@ -8,8 +8,8 @@ import os
 case_id = 'sampletest_141125' ; # Defines a subdirectory to output metrics results so multiple runs can be compared
 
 ## LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
-model_versions   = ['NCAR-CAM5_1deg','NCAR-CAM5_0p25deg'] ; # Model identifier
-model_period     = '01-12' ; # Model climatological period (if relevant)
+model_versions  = ['NCAR-CAM5_1deg','NCAR-CAM5_0p25deg'] ; # Model identifier
+model_period    = '01-12' ; # Model climatological period (if relevant)
 realization     = 'r1i1p1' ; # Model run identifier (if relevant)
 
 ## VARIABLES AND OBSERVATIONS TO USE
@@ -34,7 +34,7 @@ regrid_method_ocn   = 'linear'  # Options: 'linear','conservative', only if tool
 save_mod_clims      = True      # Options: True or False (Save interpolated model climatologies used in metrics calculations)
 
 ## DATA LOCATION: MODELS, OBS AND METRICS OUTPUT - AND TEMPLATES FOR MODEL OUTPUT CLIMATOLOGY FILES
-base_dir                         = '/glade/u/home/durack1/141104_metrics/'
+base_dir                        = '/glade/u/home/durack1/141104_metrics/'
 # Template example: tas_GFDL-ESM2G_Amon_historical_r1i1p1_198001-199912-clim.nc
 filename_template               = "%(variable)_%(model_version)_%(table)_%(model_period)-clim.nc"
 # ROOT PATH FOR MODELS CLIMATOLOGIES
