@@ -12,7 +12,9 @@ PJD 24 Nov 2014     - Began script
 PJD 24 Nov 2014     - Updated to include CNAR-CAM5* data
                     - Gary Strand provided variable remapping info: https://proxy.subversion.ucar.edu/CCP_Processing_Suite/CMOR2/Xwalks/
 PJD 24 Nov 2014     - Limited input directories to 2, as running out of disk space with 0.25 deg simulations
-PJD 24 Nov 2014     - Turned on netcdf4 file compression
+PJD 24 Nov 2014     - Turned on netcdf4 file compression: 2 experiments 7.9Gb uncompressed -> 6.3Gb compressed
+                    - TODO:
+                    - Add durolib/globalAttWrite
 
 @author: durack1
 """
@@ -21,11 +23,10 @@ import os,shutil,subprocess #,sys
 import cdms2 as cdm
 
 # Set cdms preferences - no compression, no shuffling, no complaining
-compress=1
-cdm.setNetcdfDeflateFlag(compress)
-cdm.setNetcdfDeflateLevelFlag(9) ; # 1-9, min to max
-cdm.setNetcdfShuffleFlag(compress)
-cdm.setCompressionWarnings(compress)
+cdm.setNetcdfDeflateFlag(1)
+cdm.setNetcdfDeflateLevelFlag(9) ; # 1-9, min to max - Comes at heavy IO (read/write time cost)
+cdm.setNetcdfShuffleFlag(0)
+cdm.setCompressionWarnings(0) ; # Turn off nag messages
 # Set bounds automagically
 #cdm.setAutoBounds(1) ; # Use with caution
 
@@ -47,7 +48,7 @@ varCalc     = [[['Q','PS'],'Q interpolated to standard plevs'],[['PRECC','PRECL'
 inVarsOcn   = ['SALT','TEMP','SSH']
 outVarsOcn  = ['sos','tos','zos']
 '''
-# Test lookup tables
+# Test lookup lists
 for x,var in enumerate(outVarsAtm):
     if inVarsAtm[x] == '':
         index = varMatch.index(var)
