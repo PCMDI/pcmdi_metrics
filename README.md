@@ -38,7 +38,9 @@ This will have produced some test results in tos_2.5x2.5_esmf_linear_metrics.jso
 
 ```> diff {install_prefix}/PCMDI_METRICS/test/pcmdi/tos_2.5x2.5_esmf_linear_metrics.json.good pcmdi_install_test_results/metrics_results/installationTest/tos_2.5x2.5_esmf_linear_metrics.json```
 
-Once everything is ok, you can safely remove the temporary directory {install_prefix}/PCMDI_METRICS/tmp
+Once everything is ok, you can safely remove the temporary directory
+
+```> rm -rf {install_prefix}/PCMDI_METRICS/tmp```
 
 
 USING THE PCMDI METRICS PACKAGE:
