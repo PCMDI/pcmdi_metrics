@@ -22,21 +22,21 @@ Some installation support for modeling groups participating in CMIP is available
 
 Once the package has been successfully installed, the user needs to configure his/her environment to run the package with one of the following two commands, depending on their shell environment:
 
-```>  source {install_prefix}/PCMDI_METRICS/bin/setup_runtime.sh```
+```> source {install_prefix}/PCMDI_METRICS/bin/setup_runtime.sh```
 
 or
 
-```>  source {install_prefix}/PCMDI_METRICS/bin/setup_runtime.csh```
+```> source {install_prefix}/PCMDI_METRICS/bin/setup_runtime.csh```
 
 NOTE:  The environment must be set for every window where the metrics package is executed.
 
 Once the environment is set up, some basic tests of the package can be run to verify everything is properly configured.  
 
-```>  pcmdi_metrics_driver.py -p {install_prefix}/PCMDI_METRICS/test/pcmdi/basic_test_parameters_file.py```
+```> pcmdi_metrics_driver.py -p {install_prefix}/PCMDI_METRICS/test/pcmdi/basic_test_parameters_file.py```
 
 This will have produced some test results in tos_2.5x2.5_esmf_linear_metrics.json which can be compared with expected results: 
 
-```> compare: diff {install_prefix}/PCMDI_METRICS/test/pcmdi/tos_2.5x2.5_esmf_linear_metrics.json.good pcmdi_install_test_results/metrics_results/installationTest/tos_2.5x2.5_esmf_linear_metrics.json```
+```> diff {install_prefix}/PCMDI_METRICS/test/pcmdi/tos_2.5x2.5_esmf_linear_metrics.json.good pcmdi_install_test_results/metrics_results/installationTest/tos_2.5x2.5_esmf_linear_metrics.json```
 
 Once everything is ok, you can safely remove the temporary directory {install_prefix}/PCMDI_METRICS/tmp
 
@@ -50,7 +50,7 @@ OUTLINE - USING THE METRICS PACKAGE
 
 3) The package is executed from the terminal prompt with something like:
 
-```>  pcmdi_metrics_driver.py -p MY_parameter_file.py```   
+```> pcmdi_metrics_driver.py -p MY_parameter_file.py```   
 
 4) Results are output in JSON files which are easy to read and use. The results are organized as nested python dictionaries which are easy to acces and manipulate.  Examples are available in the file {install_prefix}/PCMDI_METRICS/doc/simple_json_test.py    
 
