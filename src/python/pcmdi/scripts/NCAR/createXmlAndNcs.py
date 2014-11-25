@@ -11,11 +11,12 @@ and then using this index file, writes netcdf files for each variable
 PJD 24 Nov 2014     - Began script
 PJD 24 Nov 2014     - Updated to include CNAR-CAM5* data
                     - Gary Strand provided variable remapping info: https://proxy.subversion.ucar.edu/CCP_Processing_Suite/CMOR2/Xwalks/
+PJD 24 Nov 2014     - Limited input directories to 2, as running out of disk space with 0.25 deg simulations
 
 @author: durack1
 """
 
-import os,subprocess,sys
+import os,shutil,subprocess #,sys
 import cdms2 as cdm
 
 # Set cdms preferences - no compression, no shuffling, no complaining
@@ -39,11 +40,11 @@ data =  [
         ['atmos','NCAR-CAM5_0p25deg','FAMIPC5_ne120_79to05_03_omp2_','/glade/p/cgd/amp/people/hannay/amwg/climo/FAMIPC5_ne120_79to05_03_omp2/0.23x0.31/'],
         ['atmos','NCAR-CAM5_0p25deg_interp_1deg','FAMIPC5_ne120_79to05_03_omp2_','/glade/p/cgd/amp/people/hannay/amwg/climo/FAMIPC5_ne120_79to05_03_omp2/0.9x1.25/']
 ]
-inVarsAtm   = ['','QREFHT','','TMQ','PSL','FLDS','FLDSC','','FLUTC','FSDS','FSDSC','SOLIN','','TREFHT','TAUX','TAUY','','','','','']
-outVarsAtm  = ['hus','huss','pr','prw','psl','rlds','rldscs','rlut','rlutcs','rsds','rsdscs','rsdt', \
-               'ta','tas','tauu','tauv','ua','uas','va','vas','zg']
-varMatch    = ['hus','pr','rlut','ta','ua','uas','va','vas','zg']
-varCalc     = [[['Q','PS'],'Q interpolated to standard plevs'],[['PRECC','PRECL'],'PRECC + PRECL and unit conversion'],[['FSNTOA','FSNT','FLNT'],'FSNTOA-FSNT+FLNT'],[['T','PS'],'T interpolated to standard plevs'],[['U','PS'],'U interpolated to standard plevs'],[],[['V','PS'],'V interpolated to standard plevs'],[],[['Z3','PS'],'Z3 interpolated to standard plevs']]
+inVarsAtm   = ['','QREFHT','','TMQ','PSL','FLDS','','FLUTC','FSDS','FSDSC','SOLIN','','TREFHT','TAUX','TAUY','','',''] ; # FLDSC
+outVarsAtm  = ['hus','huss','pr','prw','psl','rlds','rlut','rlutcs','rsds','rsdscs','rsdt', \
+               'ta','tas','tauu','tauv','ua','va','zg'] ; # uas,vas
+varMatch    = ['hus','pr','rlut','ta','ua','va','zg'] ; # uas, vas
+varCalc     = [[['Q','PS'],'Q interpolated to standard plevs'],[['PRECC','PRECL'],'PRECC + PRECL and unit conversion'],[['FSNTOA','FSNT','FLNT'],'FSNTOA-FSNT+FLNT'],[['T','PS'],'T interpolated to standard plevs'],[['U','PS'],'U interpolated to standard plevs'],[['V','PS'],'V interpolated to standard plevs'],[['Z3','PS'],'Z3 interpolated to standard plevs']]
 inVarsOcn   = ['SALT','TEMP','SSH']
 outVarsOcn  = ['sos','tos','zos']
 
@@ -59,12 +60,11 @@ for x,var in enumerate(outVarsAtm):
 '''
 #%%
 # Loop through input data
-for count1,realm in enumerate(data[0]):
+for count1,realm in enumerate(data[0:2]):
     realmId    = realm[0]
     modelId    = realm[1]
     fileId     = realm[2]
     dataPath   = realm[3]
-    #print realmId,modelId,fileId,dataPath
     
     # Create input xml file
     command = "".join([uvcdatInstall,'cdscan -x test_',modelId,'_',realmId,'.xml ',dataPath,fileId,'[0-9]*.nc'])
@@ -73,14 +73,10 @@ for count1,realm in enumerate(data[0]):
     p       = subprocess.call(command,stdout=fnull,shell=True)
     fnull.close() ; # Close dummy
     print 'XML spanning file created for model/realm:',modelId,realmId
-    #sys.exit()
     
     # Open xml file to read
     infile  = ''.join(['test_',modelId,'_',realmId,'.xml'])
     fIn     = cdm.open(infile)
-    print infile,'opened'
-    #print fIn.variables
-    #fIn.close()
     
     # Deal with variables
     inVarList       = inVarsAtm ; # Only atmos variables at this stage
@@ -91,7 +87,7 @@ for count1,realm in enumerate(data[0]):
         #print var
         varRead     = var
         varWrite    = outVarList[count2]
-        print varRead,varWrite
+        #print 'vars:',varRead,varWrite
 
         # Assign valid CMIP tableId
         if realmId == 'atmos':
@@ -102,6 +98,7 @@ for count1,realm in enumerate(data[0]):
         # Test for PR/RLUT which requires multiple variable manipulation
         if varWrite == 'pr':
             # Deal with PR variable, all other variables are vertically interpolated
+            varRead = 'PRECC & PRECL'
             data1   = fIn('PRECC')
             data2   = fIn('PRECL')
             data    = data1+data2 ; #PRECC + PRECL
@@ -109,6 +106,7 @@ for count1,realm in enumerate(data[0]):
             data.units  = data1.units
         elif varWrite == 'rlut':
             # Deal with RLUT variable, all other variables are vertically interpolated
+            varRead = 'FSNTOA & FSNT & FLNT'
             data1   = fIn('FSNTOA')
             data2   = fIn('FSNT')
             data3   = fIn('FLNT')
@@ -117,25 +115,32 @@ for count1,realm in enumerate(data[0]):
             data.units  = data1.units            
         elif varRead == '':
             # Deal with variables requiring interpolation
-            index   = varMatch.index(var)
+            index   = varMatch.index(varWrite)
             varRead = varCalc[index][0][0]
-            print varWrite,varRead
             data    = fIn(varRead)
             data.id = varWrite                
         else:
             data    = fIn(varRead)
             data.id = varWrite
         print "".join(['** Writing variable: ',varRead,' to ',varWrite,' **'])
-        #e.g. outfile = "
-        outfile = "_".join([varWrite,modelId,tableId,'01-12-clim.nc'])
+        #e.g. outfile = 'NCAR-CAM5_0p25deg/tas_NCAR-CAM5_0p25deg_Amon_01-12-clim.nc'
+        outfile = os.path.join(modelId,"_".join([varWrite,modelId,tableId,'01-12-clim.nc']))
         print "".join(['** Writing file:    ',outfile])
+        # Create output directory and purge if exists
+        if not os.path.isdir(modelId) and count2 == 0:
+            os.makedirs(modelId)
+        elif count2 == 0:
+            shutil.rmtree(modelId) ; # shutil removes directory and files
+            os.makedirs(modelId)
+        # Test for existing outfile
         if os.path.isfile(outfile):
             os.remove(outfile) ; # purge existing file
+        # Open file and write data
         fOut = cdm.open(outfile,'w')
         fOut.write(data)
         fOut.close()
 fIn.close()
 
 # Execute shell command
-# source /home/p1d/140922_metrics/PCMDI_METRICS/bin/setup_runtime.csh
+# source /glade/u/home/durack1/141104_metrics/PCMDI_METRICS/bin/setup_runtime.csh
 # > pcmdi_metrics_driver.py -p pcmdi_input_parameters_test.py
