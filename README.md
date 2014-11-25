@@ -1,5 +1,9 @@
-PCMDI metrics package [![DOI](https://zenodo.org/badge/6619/UV-CDAT/uvcdat.png)](http://dx.doi.org/10.5281/zenodo.12251)
+PCMDI metrics package
 ======
+[![stable version](http://img.shields.io/badge/stable version-1.0.0-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/1.0.0)
+![repo size](https://reposs.herokuapp.com/?path=PCMDI/pcmdi_metrics)
+![platforms](http://img.shields.io/badge/platforms-linux | osx-lightgrey.svg)
+[![DOI](http://img.shields.io/badge/DOI-10.5281/zenodo.xxxxx-orange.svg)](http://doi.org/10.5281/zenodo.xxxxx)
 
 SUMMARY
 -------
@@ -16,16 +20,15 @@ Installation requirments and instructions are available at: https://github.com/P
 
 Some installation support for modeling groups participating in CMIP is available via pcmdi-metrics@llnl.gov
 
-Once the package has been successfully installed, the user needs to set up his/her environment to run the package with  
-one of the following two commands, depending on thier shell environment:
+Once the package has been successfully installed, the user needs to configure his/her environment to run the package with one of the following two commands, depending on their shell environment:
 
-   >  source /export/gleckler1/METRICS_PACKAGE/PCMDI_METRICS/bin/setup_runtime.sh
+   >  source {install_prefix}/PCMDI_METRICS/bin/setup_runtime.sh
 or
-   >  source /export/gleckler1/METRICS_PACKAGE/PCMDI_METRICS/bin/setup_runtime.csh
+   >  source {install_prefix}/PCMDI_METRICS/bin/setup_runtime.csh
 
 NOTE:  The environment must be set for every window where the metrics package is executed.
 
-Once the environent is set up, some basic tests of the package can be run to verify everything is properly configured.  
+Once the environment is set up, some basic tests of the package can be run to verify everything is properly configured.  
 
    >  pcmdi_metrics_driver.py -p {install_prefix}/PCMDI_METRICS/test/pcmdi/basic_test_parameters_file.py
 
@@ -33,25 +36,24 @@ This will have produced some test results in tos_2.5x2.5_esmf_linear_metrics.jso
 
 > compare: diff {install_prefix}/PCMDI_METRICS/test/pcmdi/tos_2.5x2.5_esmf_linear_metrics.json.good pcmdi_install_test_results/metrics_results/installationTest/tos_2.5x2.5_esmf_linear_metrics.json
 
-Once everything is ok, you can safely remove the temporary directory {install_prefix}/METRICS_PACKAGE/PCMDI_METRICS/tmp
+Once everything is ok, you can safely remove the temporary directory {install_prefix}/PCMDI_METRICS/tmp
 
 
 OUTLINE - USING THE METRICS PACKAGE
 -----------------------------------
 
-1) The user needs to have their model data conditioned so that it can be read by the metrics package.  A way this can be gaurenteed is by following the CMIP data conventions. It is not necessary to use CMOR, but CF conventions need to followed.  The user can map their variable names to to those used in CMIP (see parameter file below), i.e., their data does not have to use the PCMDI variable names.  At present, PCMDIs metrics package expect climatological annual cycle data (12 months).   
+1) The user needs to prepare their model data so that it can be read by the metrics package.  A way this can be guaranteed is by following the CMIP/CF conventions. It is not necessary to use CMOR, but CF conventions need to followed.  The user can map their variable names to to those used in CMIP (see parameter file below), i.e., their data does not have to use the PCMDI variable names.  At present, PCMDIs metrics package expect climatological annual cycle data (12 months).
 
 2) The user prepares an input parameter file (see below).  
 
-3) The package is executed from the unix command prompt with something like:
+3) The package is executed from the terminal prompt with something like:
 
    >  pcmdi_metrics_driver.py -p MY_parameter_file.py   
 
-4) Results are output in JSON files which are easy to read and use. The results are organized as nested python dictionaries which are easy to acces and manipulate.  Examples are available in the file ~/doc/simple_json_test.py    
+4) Results are output in JSON files which are easy to read and use. The results are organized as nested python dictionaries which are easy to acces and manipulate.  Examples are available in the file {install_prefix}/PCMDI_METRICS/doc/simple_json_test.py    
+
 
 PREPARING THE INPUT PARAMETER FILE
 ----------------------------------
 
 work in progress...
-
-
