@@ -5,11 +5,11 @@ import os
 ################################################################################
 
 ## METRICS RUN IDENTIFICATION
-caseId = 'sampletest_141104' ; # Defines a subdirectory to output metrics results so multiple runs can be compared
+case_id = 'sampletest_141125' ; # Defines a subdirectory to output metrics results so multiple runs can be compared
 
 ## LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
-modelVersions  = ['NCAR-CAM5_1deg','NCAR-CAM5_0p25deg'] ; # Model identifier
-modelPeriod    = '01-12' ; # Model climatological period (if relevant)
+model_versions   = ['NCAR-CAM5_1deg','NCAR-CAM5_0p25deg'] ; # Model identifier
+model_period     = '01-12' ; # Model climatological period (if relevant)
 realization     = 'r1i1p1' ; # Model run identifier (if relevant)
 
 ## VARIABLES AND OBSERVATIONS TO USE
@@ -34,19 +34,19 @@ regrid_method_ocn   = 'linear'  # Options: 'linear','conservative', only if tool
 save_mod_clims      = True      # Options: True or False (Save interpolated model climatologies used in metrics calculations)
 
 ## DATA LOCATION: MODELS, OBS AND METRICS OUTPUT - AND TEMPLATES FOR MODEL OUTPUT CLIMATOLOGY FILES
-baseDir                         = '/glade/u/home/durack1/141104_metrics/'
+base_dir                         = '/glade/u/home/durack1/141104_metrics/'
 # Template example: tas_GFDL-ESM2G_Amon_historical_r1i1p1_198001-199912-clim.nc
-filename_template               = "%(variable)_%(modelVersion)_%(table)_historical_%(realization)_%(modelPeriod)-clim.nc"
+filename_template               = "%(variable)_%(model_version)_%(table)_%(model_period)-clim.nc"
 # ROOT PATH FOR MODELS CLIMATOLOGIES
-mod_data_path                   = os.path.join(baseDir,'test_new')
+mod_data_path                   = os.path.join(base_dir,"%(model_version)")
 # ROOT PATH FOR OBSERVATIONS
 obs_data_path                   = '/glade/u/home/durack1/obs'
 # DIRECTORY WHERE TO PUT RESULTS - will create case_id subdirectory
-metrics_output_path             = os.path.join(baseDir,caseId)
+metrics_output_path             = os.path.join(base_dir,case_id)
 # DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES - will create case_id subdirectory
 model_clims_interpolated_output = metrics_output_path
 # FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
-filename_output_template        = "%(variable)%(level)_%(modelVersion)_%(table)_%(realization)_%(modelPeriod)_interpolated_%(regridMethod)_%(targetGridName)-clim.nc"
+filename_output_template        = "%(variable)%(level)_%(model_version)_%(table)_%(realization)_%(model_period)_interpolated_%(regrid_method)_%(targetGridName)-clim.nc"
 
 ## DICTIONARY FOR CUSTOM %(keyword) IMPLEMENTED BY USER FOR CUSTOM METRICS
 # Driver will match each key to its value defined by a variable name OR all if variable name is not present, OR "" if "all" is not defined
