@@ -14,7 +14,7 @@ PJD 24 Nov 2014     - Updated to include GFDL-CM4 data
 @author: durack1
 """
 
-import os,subprocess
+import os,subprocess,sys
 import cdms2 as cdm
 
 # Set cdms preferences - no compression, no shuffling, no complaining
@@ -33,29 +33,45 @@ buildDate = '141104'
 
 # Create input variable lists 
 uvcdatInstall = ''.join(['/glade/u/home/durack1/',buildDate,'_metrics/PCMDI_METRICS/bin/'])
-data = [
-	['ocean','GFDL-ESM2G','*0001-0100*','/archive/esm2g/fre/postriga_esm_20110506/ESM2G/ESM2G_pi-control_C2/gfdl.default-prod/pp/ocean_z/av/monthly_100yr/'],
-	['ocean','GFDL-CM4','*0001-0005*','/archive/jpk/mdt/20140829/tikal_201403_awgUpdates_mom6_2014.08.29/CM4i_c96L48_am4a1r1_1860forc/gfdl.ncrc2-default-prod-openmp/pp/ocean_z/av/monthly_5yr/'],
-	['atmos','GFDL-ESM2G','*0001-0100*','/archive/esm2g/fre/postriga_esm_20110506/ESM2G/ESM2G_pi-control_C2/gfdl.default-prod/pp/atmos/av/monthly_100yr/'],
-	['atmos','GFDL-CM4','*0001-0005*','/archive/jpk/mdt/20140829/tikal_201403_awgUpdates_mom6_2014.08.29/CM4i_c96L48_am4a1r1_1860forc/gfdl.ncrc2-default-prod-openmp/pp/atmos/av/monthly_5yr/']
+data =  [
+        ['atmos','CAM5_1deg','f.e12.FAMIPC5.ne30_g16.amip.002_*','/glade/p/cgd/amp/people/hannay/amwg/climo/f.e12.FAMIPC5.ne30_g16.amip.002/0.9x1.25/'],
+        ['atmos','CAM5_0p25deg','FAMIPC5_ne120_79to05_03_omp2_*','/glade/p/cgd/amp/people/hannay/amwg/climo/FAMIPC5_ne120_79to05_03_omp2/0.23x0.31/'],
+        ['atmos','CAM5_0p25deg_interp_1deg','FAMIPC5_ne120_79to05_03_omp2_','/glade/p/cgd/amp/people/hannay/amwg/climo/FAMIPC5_ne120_79to05_03_omp2/0.9x1.25/']
 ]
-inVars = [['temp'],['hght','olr','olr_clr','precip','slp','swup_toa','swup_toa_clr','t_ref','temp','u_ref','ucomp','v_ref','vcomp']]
-outVars = [['tos'],['zg','rlut','rlutcs','pr','psl','rsut','rsutcs','tas','ta','uas','ua','vas','va']]
+inVarsAtm   = ['','QREFHT','','TMQ','PSL','FLDS','FLDSC','','FLUTC','FSDS','FSDSC','SOLIN','','TREFHT','TAUX','TAUY','','','','','']
+outVarsAtm  = ['hus','huss','pr','prw','psl','rlds','rldscs','rlut','rlutcs','rsds','rsdscs','rsdt', \
+               'ta','tas','tauu','tauv','ua','uas','va','vas','zg']
+inVarsOcn   = ['SALT','TEMP','SSH']
+outVarsOcn  = ['sos','tos','zos']
+varMatch    = ['hus','pr','rlut','ta','ua','uas','va','vas','zg']
+varCalc     = [[['Q','PS'],'Q interpolated to standard plevs'],[['PRECC','PRECL'],'PRECC + PRECL and unit conversion'],[['FSNTOA','FSNT','FLNT'],'FSNTOA-FSNT+FLNT'],[['T','PS'],'T interpolated to standard plevs'],[['U','PS'],'U interpolated to standard plevs'],[],[['V','PS'],'V interpolated to standard plevs'],[],[['Z3','PS'],'Z3 interpolated to standard plevs']]
 
+#%%
+'''
+for x,var in enumerate(outVarsAtm):
+    if inVarsAtm[x] == '':
+        index = varMatch.index(var)
+        print var.rjust(6),':',varCalc[index]
+    else:
+        print var.rjust(6),':',inVarsAtm[x]
+
+'''
+#%%
+# Loop through input data
 for count1,realm in enumerate(data):
-	realmId 	= realm[0]
-	modelId 	= realm[1]
-	timeAve	= realm[2]
-	dataPath	= realm[3]
-	#print realmId,modelId,dataPath
+	realmId    = realm[0]
+	modelId    = realm[1]
+	fileId     = realm[2]
+	dataPath   = realm[3]
+	print realmId,modelId,dataPath
 	# Create input xml file
-	command = "".join([uvcdatInstall,'cdscan -x test_',modelId,'_',realmId,'.xml ',dataPath,timeAve,'.nc'])
-	#print command
+	command = "".join([uvcdatInstall,'cdscan -x test_',modelId,'_',realmId,'.xml ',dataPath,fileId,'[0-9]*.nc'])
+	print command
 	fnull = open(os.devnull,'w') ; # Create dummy to write stdout output
 	p = subprocess.call(command,stdout=fnull,shell=True)
 	fnull.close() ; # Close dummy
 	print 'XML spanning file created for model/realm:',modelId,realmId
-	#sys.exit()
+	sys.exit()
 
 	# Open xml file to read
 	infile = ''.join(['test_',modelId,'_',realmId,'.xml'])
