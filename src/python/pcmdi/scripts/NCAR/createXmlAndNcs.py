@@ -12,6 +12,7 @@ PJD 24 Nov 2014     - Began script
 PJD 24 Nov 2014     - Updated to include CNAR-CAM5* data
                     - Gary Strand provided variable remapping info: https://proxy.subversion.ucar.edu/CCP_Processing_Suite/CMOR2/Xwalks/
 PJD 24 Nov 2014     - Limited input directories to 2, as running out of disk space with 0.25 deg simulations
+PJD 24 Nov 2014     - Turned on netcdf4 file compression
 
 @author: durack1
 """
@@ -20,13 +21,11 @@ import os,shutil,subprocess #,sys
 import cdms2 as cdm
 
 # Set cdms preferences - no compression, no shuffling, no complaining
-cdm.setNetcdfDeflateFlag(0)
-cdm.setNetcdfDeflateLevelFlag(0)
-cdm.setNetcdfShuffleFlag(0)
-cdm.setCompressionWarnings(0)
-#cdm.axis.level_aliases.append('zt') ; # Add zt to axis list
-#cdm.axis.latitude_aliases.append('yh') ; # Add yh to axis list
-#cdm.axis.longitude_aliases.append('xh') ; # Add xh to axis list
+compress=1
+cdm.setNetcdfDeflateFlag(compress)
+cdm.setNetcdfDeflateLevelFlag(9) ; # 1-9, min to max
+cdm.setNetcdfShuffleFlag(compress)
+cdm.setCompressionWarnings(compress)
 # Set bounds automagically
 #cdm.setAutoBounds(1) ; # Use with caution
 
@@ -47,7 +46,6 @@ varMatch    = ['hus','pr','rlut','ta','ua','va','zg'] ; # uas, vas
 varCalc     = [[['Q','PS'],'Q interpolated to standard plevs'],[['PRECC','PRECL'],'PRECC + PRECL and unit conversion'],[['FSNTOA','FSNT','FLNT'],'FSNTOA-FSNT+FLNT'],[['T','PS'],'T interpolated to standard plevs'],[['U','PS'],'U interpolated to standard plevs'],[['V','PS'],'V interpolated to standard plevs'],[['Z3','PS'],'Z3 interpolated to standard plevs']]
 inVarsOcn   = ['SALT','TEMP','SSH']
 outVarsOcn  = ['sos','tos','zos']
-
 '''
 # Test lookup tables
 for x,var in enumerate(outVarsAtm):
@@ -93,7 +91,7 @@ for count1,realm in enumerate(data[0:2]):
         if realmId == 'atmos':
             	tableId = 'Amon'
         else:
-            	tableId = 'Omon'
+            	tableId = 'Omon' ; # placeholder for ocean vars
         
         # Test for PR/RLUT which requires multiple variable manipulation
         if varWrite == 'pr':
