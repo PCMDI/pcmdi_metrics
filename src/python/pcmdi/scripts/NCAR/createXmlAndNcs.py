@@ -10,6 +10,7 @@ and then using this index file, writes netcdf files for each variable
 
 PJD 24 Nov 2014     - Began script
 PJD 24 Nov 2014     - Updated to include CNAR-CAM5* data
+                    - Gary Strand provided variable remapping info: https://proxy.subversion.ucar.edu/CCP_Processing_Suite/CMOR2/Xwalks/
 
 @author: durack1
 """
