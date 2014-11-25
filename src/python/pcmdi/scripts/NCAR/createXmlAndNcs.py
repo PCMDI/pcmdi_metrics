@@ -47,8 +47,8 @@ varCalc     = [[['Q','PS'],'Q interpolated to standard plevs'],[['PRECC','PRECL'
 inVarsOcn   = ['SALT','TEMP','SSH']
 outVarsOcn  = ['sos','tos','zos']
 
-#%%
 '''
+# Test lookup tables
 for x,var in enumerate(outVarsAtm):
     if inVarsAtm[x] == '':
         index = varMatch.index(var)
@@ -59,7 +59,7 @@ for x,var in enumerate(outVarsAtm):
 '''
 #%%
 # Loop through input data
-for count1,realm in enumerate(data):
+for count1,realm in enumerate(data[0]):
     realmId    = realm[0]
     modelId    = realm[1]
     fileId     = realm[2]
@@ -89,34 +89,51 @@ for count1,realm in enumerate(data):
     # Create output netcdf files
     for count2,var in enumerate(inVarList):
         #print var
-        varRead     = inVarList[count2]
+        varRead     = var
         varWrite    = outVarList[count2]
-        #print varRead,varWrite
+        print varRead,varWrite
+
+        # Assign valid CMIP tableId
         if realmId == 'atmos':
             	tableId = 'Amon'
         else:
             	tableId = 'Omon'
-        data    = fIn(varRead)
-        data.id = varWrite
+        
+        # Test for PR/RLUT which requires multiple variable manipulation
+        if varWrite == 'pr':
+            # Deal with PR variable, all other variables are vertically interpolated
+            data1   = fIn('PRECC')
+            data2   = fIn('PRECL')
+            data    = data1+data2 ; #PRECC + PRECL
+            data.id = varWrite
+            data.units  = data1.units
+        elif varWrite == 'rlut':
+            # Deal with RLUT variable, all other variables are vertically interpolated
+            data1   = fIn('FSNTOA')
+            data2   = fIn('FSNT')
+            data3   = fIn('FLNT')
+            data    = data1-data2+data3 ; #FSNTOA - FSNT + FLNT
+            data.id = varWrite
+            data.units  = data1.units            
+        elif varRead == '':
+            # Deal with variables requiring interpolation
+            index   = varMatch.index(var)
+            varRead = varCalc[index][0][0]
+            print varWrite,varRead
+            data    = fIn(varRead)
+            data.id = varWrite                
+        else:
+            data    = fIn(varRead)
+            data.id = varWrite
         print "".join(['** Writing variable: ',varRead,' to ',varWrite,' **'])
-        #outfile = ".".join(['cmip5.GFDL-ESM2G.piControl.r1i1p1.mo',tableId,varWrite,'ver-1.latestX.000101-010012.AC.nc'])
-        outfile = "_".join([varWrite,modelId,tableId,'historical_r1i1p1_01-12-clim.nc'])
+        #e.g. outfile = "
+        outfile = "_".join([varWrite,modelId,tableId,'01-12-clim.nc'])
         print "".join(['** Writing file:    ',outfile])
         if os.path.isfile(outfile):
             os.remove(outfile) ; # purge existing file
-            fOut = cdm.open(outfile,'w')
-            for ax in data.getAxisList():
-                #print ax,ax.isLevel()
-                if ax.isLevel() and realmId == 'atmos':
-                    ax[:]=ax[:]*100.
-                    ax.units = 'Pa'
-                if ax.isLevel() and realmId == 'ocean':
-                    #print data.shape
-                    data = data[:,0,:,:] ; # Trim to top layer - thetao -> tos
-                    #print data.shape
-                    data.id = 'tos' ; # rename to tos
-            fOut.write(data)
-            fOut.close()
+        fOut = cdm.open(outfile,'w')
+        fOut.write(data)
+        fOut.close()
 fIn.close()
 
 # Execute shell command
