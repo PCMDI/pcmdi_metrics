@@ -23,9 +23,7 @@ Some installation support for modeling groups participating in CMIP is available
 Once the package has been successfully installed, the user needs to configure his/her environment to run the package with one of the following two commands, depending on their shell environment:
 
 ```> source {install_prefix}/PCMDI_METRICS/bin/setup_runtime.sh```
-
 or
-
 ```> source {install_prefix}/PCMDI_METRICS/bin/setup_runtime.csh```
 
 NOTE:  The environment must be set for every window where the metrics package is executed.
@@ -41,7 +39,7 @@ This will have produced some test results in tos_2.5x2.5_esmf_linear_metrics.jso
 Once everything is ok, you can safely remove the temporary directory {install_prefix}/PCMDI_METRICS/tmp
 
 
-USING THE PCMDI METRICS PACKAGE
+USING THE PCMDI METRICS PACKAGE:
 -----------------------------------
 
 1) The user needs to prepare their model data so that it can be read by the metrics package.  A way this can be guaranteed is by following the CMIP/CF conventions. It is not necessary to use CMOR, but CF conventions need to followed.  The user can map their variable names to to those used in CMIP (see parameter file below), i.e., their data does not have to use the PCMDI variable names.  At present, PCMDIs metrics package expect climatological annual cycle data (12 months).
@@ -55,7 +53,7 @@ USING THE PCMDI METRICS PACKAGE
 4) Results are output in JSON files which are easy to read and use. The results are organized as nested python dictionaries which are easy to acces and manipulate.  Examples are available in the file {install_prefix}/PCMDI_METRICS/doc/simple_json_test.py    
 
 
-PREPARING THE INPUT PARAMETER FILE
+PREPARING THE INPUT PARAMETER FILE:
 ----------------------------------
 
 work in progress...
