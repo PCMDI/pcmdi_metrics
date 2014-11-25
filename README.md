@@ -13,7 +13,7 @@ The PCMDI metrics package is used to objectively compare results from climate mo
 The metrics package consists of four parts: 1) Analysis software, 2) an observationally-based database of global (or near global, land or ocean) annual cycle climatologies, 3) a database of performance metrics computed for all CMIP models and 4) package documentation.
 
 
-GETTING STARTED:
+GETTING STARTED
 ----------------
 
 Installation requirments and instructions are available at: https://github.com/PCMDI/pcmdi_metrics/wiki/Install
@@ -43,7 +43,7 @@ Once everything is ok, you can safely remove the temporary directory
 ```> rm -rf {install_prefix}/PCMDI_METRICS/tmp```
 
 
-USING THE PCMDI METRICS PACKAGE:
+USING THE PCMDI METRICS PACKAGE
 -----------------------------------
 
 1) The user needs to prepare their model data so that it can be read by the metrics package.  A way this can be guaranteed is by following the CMIP/CF conventions. It is not necessary to use CMOR, but CF conventions need to followed.  The user can map their variable names to to those used in CMIP (see parameter file below), i.e., their data does not have to use the PCMDI variable names.  At present, PCMDIs metrics package expect climatological annual cycle data (12 months).
@@ -57,7 +57,7 @@ USING THE PCMDI METRICS PACKAGE:
 4) Results are output in JSON files which are easy to read and use. The results are organized as nested python dictionaries which are easy to acces and manipulate.  Examples are available in the file {install_prefix}/PCMDI_METRICS/doc/simple_json_test.py    
 
 
-PREPARING THE INPUT PARAMETER FILE:
+PREPARING THE INPUT PARAMETER FILE
 ----------------------------------
 
 work in progress...
