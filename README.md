@@ -21,10 +21,9 @@ Installation requirments and instructions are available at: https://github.com/P
 Some installation support for modeling groups participating in CMIP is available via pcmdi-metrics@llnl.gov
 
 Once the package has been successfully installed, the user needs to configure his/her environment to run the package with one of the following two commands, depending on their shell environment:
-
-   >  source {install_prefix}/PCMDI_METRICS/bin/setup_runtime.sh
+```>  source {install_prefix}/PCMDI_METRICS/bin/setup_runtime.sh```
 or
-   >  source {install_prefix}/PCMDI_METRICS/bin/setup_runtime.csh
+```>  source {install_prefix}/PCMDI_METRICS/bin/setup_runtime.csh```
 
 NOTE:  The environment must be set for every window where the metrics package is executed.
 
