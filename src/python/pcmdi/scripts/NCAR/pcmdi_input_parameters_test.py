@@ -42,11 +42,11 @@ mod_data_path                   = os.path.join(base_dir,"%(model_version)")
 # ROOT PATH FOR OBSERVATIONS
 obs_data_path                   = '/glade/u/home/durack1/obs'
 # DIRECTORY WHERE TO PUT RESULTS - will create case_id subdirectory
-metrics_output_path             = os.path.join(base_dir,case_id)
+metrics_output_path             = base_dir
 # DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES - will create case_id subdirectory
 model_clims_interpolated_output = metrics_output_path
 # FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
-filename_output_template        = "%(variable)%(level)_%(model_version)_%(table)_%(realization)_%(model_period)_interpolated_%(regrid_method)_%(targetGridName)-clim.nc"
+filename_output_template        = "%(variable)%(level)_%(model_version)_%(table)_%(realization)_%(model_period)interpolated%(regrid_method)_%(targetGridName)-clim"
 
 ## DICTIONARY FOR CUSTOM %(keyword) IMPLEMENTED BY USER FOR CUSTOM METRICS
 # Driver will match each key to its value defined by a variable name OR all if variable name is not present, OR "" if "all" is not defined

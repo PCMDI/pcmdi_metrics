@@ -13,14 +13,21 @@ PJD 24 Nov 2014     - Updated to include CNAR-CAM5* data
                     - Gary Strand provided variable remapping info: https://proxy.subversion.ucar.edu/CCP_Processing_Suite/CMOR2/Xwalks/
 PJD 24 Nov 2014     - Limited input directories to 2, as running out of disk space with 0.25 deg simulations
 PJD 24 Nov 2014     - Turned on netcdf4 file compression: 2 experiments 7.9Gb uncompressed -> 6.3Gb compressed
+PJD 25 Nov 2014     - Added durolib/globalAttWrite
+PJD 25 Nov 2014     - Added history and updated long_name for manipulated variables
                     - TODO:
-                    - Add durolib/globalAttWrite
+                    - Need to confirm PR unit conversion, m/s -> kg m-2 s-1 requires additional inputs
 
 @author: durack1
 """
 
-import os,shutil,subprocess #,sys
+# Python module imports
+import os,shutil,subprocess,sys
 import cdms2 as cdm
+# Add durolib to path
+sys.path.insert(1,'/glade/u/home/durack1')
+from durolib import globalAttWrite
+
 
 # Set cdms preferences - no compression, no shuffling, no complaining
 cdm.setNetcdfDeflateFlag(1)
@@ -102,7 +109,9 @@ for count1,realm in enumerate(data[0:2]):
             data2   = fIn('PRECL')
             data    = data1+data2 ; #PRECC + PRECL
             data.id = varWrite
-            data.units  = data1.units
+            data.long_name = 'precipitation_flux'
+            data.history = 'Converted to PR from PRECC+PRECL; Updated units from m/s -> kg m-2 s-1 - Need to check conversion factor'
+            data.units  = 'kg m-2 s-1'
         elif varWrite == 'rlut':
             # Deal with RLUT variable, all other variables are vertically interpolated
             varRead = 'FSNTOA & FSNT & FLNT'
@@ -111,6 +120,8 @@ for count1,realm in enumerate(data[0:2]):
             data3   = fIn('FLNT')
             data    = data1-data2+data3 ; #FSNTOA - FSNT + FLNT
             data.id = varWrite
+            data.long_name = 'toa_outgoing_longwave_flux'
+            data.history = 'Converted to RLUT from FSNTOA - FSNT + FLNT'            
             data.units  = data1.units            
         elif varRead == '':
             # Deal with variables requiring interpolation
@@ -137,6 +148,7 @@ for count1,realm in enumerate(data[0:2]):
         # Open file and write data
         fOut = cdm.open(outfile,'w')
         fOut.write(data)
+        globalAttWrite(fOut,options=None)
         fOut.close()
 fIn.close()
 
