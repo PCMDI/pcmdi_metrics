@@ -16,7 +16,7 @@ The metrics package consists of four parts: 1) Analysis software, 2) an observat
 GETTING STARTED
 ----------------
 
-Installation requirments and instructions are available at: https://github.com/PCMDI/pcmdi_metrics/wiki/Install
+Installation requirements and instructions are available at: https://github.com/PCMDI/pcmdi_metrics/wiki/Install
 
 Some installation support for modeling groups participating in CMIP is available via pcmdi-metrics@llnl.gov
 
