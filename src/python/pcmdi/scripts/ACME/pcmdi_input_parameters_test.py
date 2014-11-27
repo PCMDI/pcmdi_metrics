@@ -8,7 +8,7 @@ import os
 case_id = 'sampletest_141126' ; # Defines a subdirectory to output metrics results so multiple runs can be compared
 
 ## LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
-model_versions  = ['ACME-CAM5-SE_v0.0.1'] ; # Model identifier
+model_versions  = ['ACME-CAM5-SE_v0pt1'] ; # Model identifier
 model_period    = '01-12' ; # Model climatological period (if relevant)
 realization     = 'r1i1p1' ; # Model run identifier (if relevant)
 
@@ -41,7 +41,7 @@ filename_template               = "%(variable)_%(model_version)_%(table)_%(model
 # ROOT PATH FOR MODELS CLIMATOLOGIES
 mod_data_path                   = os.path.join(base_dir,"%(model_version)")
 # ROOT PATH FOR OBSERVATIONS
-obs_data_path                   = '/work/gleckler1/processed_data/obs'
+obs_data_path                   = '/work/gleckler1/processed_data/metrics_package/obs'
 # DIRECTORY WHERE TO PUT RESULTS - will create case_id subdirectory
 metrics_output_path             = base_dir
 # DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES - will create case_id subdirectory
