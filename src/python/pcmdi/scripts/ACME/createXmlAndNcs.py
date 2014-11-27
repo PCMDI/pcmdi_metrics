@@ -12,6 +12,9 @@ PJD 26 Nov 2014     - Began script
 PJD 26 Nov 2014     - Hit issue with xml creation:
                     - no 'time_bnds' stored in the file
                     - RuntimeError: Variable 'AODVIS' is duplicated, and is a function of lat or lon: files b1850c5_t2_01_climo.nc, b1850c5_t2_02_climo.nc
+                    associated with data: ['atmos','ACME-CAM5-SE_v0.0.1','b1850c5_t2_','/work/gleckler1/processed_data/v0.0.1_cam5-se/']
+                    command = "".join(['python ',uvcdatInstall,'cdscan --time-linear \'0,1,months since 1850,noleap\' -x test_',modelId,'_',realmId,'.xml ',dataPath,fileId,'[0-9]*.nc'])
+PJD 26 Nov 2014     - Updated to use ACME-CAM5-SE_v0pt1 (acmev0pt1.tar) data
                     - TODO:
                     - Need to confirm PR unit conversion, m/s -> kg m-2 s-1 requires additional inputs
 
@@ -42,11 +45,11 @@ uvcdatInstall   = ''.join(['/export/durack1/',buildDate,'_pcmdi_metrics/PCMDI_ME
 # Specify inputs:
 #        Realm   ModelId               InputFiles    SourceDirectory
 data =  [
-        ['atmos','ACME-CAM5-SE_v0.0.1','b1850c5_t2_','/work/gleckler1/processed_data/v0.0.1_cam5-se/'],
+        ['atmos','ACME-CAM5-SE_v0pt1','B1850C5e1_ne30_','/work/durack1/Shared/141126_metrics-acme/'],
         ]
-inVarsAtm   = ['','QREFHT','','TMQ','PSL','FLDS','','FLUTC','FSDS','FSDSC','SOLIN','','TREFHT','TAUX','TAUY','','',''] ; # FLDSC not available
-outVarsAtm  = ['hus','huss','pr','prw','psl','rlds','rlut','rlutcs','rsds','rsdscs','rsdt', \
-               'ta','tas','tauu','tauv','ua','va','zg'] ; # uas,vas not available
+inVarsAtm   = ['','','TMQ','PSL','FLDS','','FLUTC','FSDS','FSDSC','SOLIN','','TREFHT','TAUX','TAUY','','',''] ; # FLDSC, QREFHT not available
+outVarsAtm  = ['hus','pr','prw','psl','rlds','rlut','rlutcs','rsds','rsdscs','rsdt', \
+               'ta','tas','tauu','tauv','ua','va','zg'] ; # huss,uas,vas not available
 varMatch    = ['hus','pr','rlut','ta','ua','va','zg'] ; # uas, vas not available
 varCalc     = [[['Q','PS'],'Q interpolated to standard plevs'],[['PRECC','PRECL'],'PRECC + PRECL and unit conversion'],[['FSNTOA','FSNT','FLNT'],'FSNTOA-FSNT+FLNT'],[['T','PS'],'T interpolated to standard plevs'],[['U','PS'],'U interpolated to standard plevs'],[['V','PS'],'V interpolated to standard plevs'],[['Z3','PS'],'Z3 interpolated to standard plevs']]
 inVarsOcn   = ['SALT','TEMP','SSH']
@@ -70,13 +73,13 @@ for count1,realm in enumerate(data[0:2]):
     dataPath   = realm[3]
     
     # Create input xml file
-    command = "".join([uvcdatInstall,'cdscan --time-linear \'0,1,months since 1850,noleap\' -x test_',modelId,'_',realmId,'.xml ',dataPath,fileId,'[0-9]*.nc'])
-    print command
+    command = "".join([uvcdatInstall,'cdscan -x test_',modelId,'_',realmId,'.xml ',dataPath,fileId,'[0-9]*.nc'])
+    #print command
     fnull   = open(os.devnull,'w') ; # Create dummy to write stdout output
     p       = subprocess.call(command,stdout=fnull,shell=True)
     fnull.close() ; # Close dummy
     print 'XML spanning file created for model/realm:',modelId,realmId
-    sys.exit()
+    #sys.exit()
     
     # Open xml file to read
     infile  = ''.join(['test_',modelId,'_',realmId,'.xml'])
