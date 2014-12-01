@@ -1,2 +1,2 @@
-#init for metrics.io
+#init for pcmdi_metrics.io
 import base

@@ -3,8 +3,9 @@ import cdms2
 import MV2
 import genutil
 import os
-import metrics
+import pcmdi_metrics
 import cdat_info
+import hashlib
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value) ## where value is either 0 or 1
@@ -18,12 +19,17 @@ class Base(genutil.StringConstructor):
         self.mask = None
         self.targetMask = None
 
+    def __call__(self):
+      return os.path.abspath(genutil.StringConstructor.__call__(self))
+
     def get(self,var,varInFile=None,*args,**kargs):
         self.variable = var
         if varInFile is None:
             varInFile = var
         ## First extract data
-        out = cdms2.open(self())(varInFile,*args,**kargs)
+        f = cdms2.open(os.path.abspath(self()))
+        out = f(varInFile,*args,**kargs)
+        f.close()
 
         ## Now are we looking at a region in particular?
         if self.mask is not None:
@@ -55,7 +61,7 @@ class Base(genutil.StringConstructor):
             raise RunTimeError,"Unknown grid: %s" % target
 
     def write(self,data, type="json", mode="w", *args, **kargs):
-        fnm = self()+".%s" % type
+        fnm = os.path.abspath(self())+".%s" % type
         try:
             os.makedirs(os.path.split(fnm)[0])
         except:
@@ -64,20 +70,31 @@ class Base(genutil.StringConstructor):
             raise RuntimeError, "Could not create output directory: %s" % (os.path.split(fnm)[0])
         if type.lower() == "json":
             f=open(fnm,mode)
-            data["metrics_git_sha1"] = metrics.__git_sha1__
+            data["metrics_git_sha1"] = pcmdi_metrics.__git_sha1__
             data["uvcdat_version"] = cdat_info.get_version()
             json.dump(data,f,*args,**kargs)            
+            f.close()
         elif type.lower() in ["asc","ascii","txt"]:
             f=open(fnm,mode)
             for k in data.keys():
                 f.write("%s  %s \n" % (k,data[k]))
+            f.close()
         elif type.lower() == "nc":
             f=cdms2.open(fnm,mode)
             f.write(data,*args,**kargs)
-            f.metrics_git_sha1 = metrics.__git_sha1__
+            f.metrics_git_sha1 = pcmdi_metrics.__git_sha1__
             f.uvcdat_version = cdat_info.get_version()
+            f.close()
         else:
             raise RuntimeError,"Unknown type: %s" % type
-        f.close()
 
-    
+    def hash(self, blocksize=65536):
+      afile=open(self())
+      buf = afile.read(blocksize)
+      hasher = hashlib.md5()
+      while len(buf) > 0:
+        hasher.update(buf)
+        buf = afile.read(blocksize)
+      afile.close()
+      return hasher.hexdigest()
+

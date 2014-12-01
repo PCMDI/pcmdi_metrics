@@ -1,38 +1,53 @@
-from distutils.core import setup, Extension
-import os,sys
-import numpy
-Version="0.1.0"
-import subprocess
+from distutils.core import setup
+import glob,subprocess
+
+Version="0.6.0"
+p = subprocess.Popen(("git","describe","--tags"),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+try:
+  descr = p.stdout.readlines()[0].strip()
+  Version = "-".join(descr.split("-")[:-2])
+  if Version=="":
+    Version = descr
+except:
+  Version = "0.9.pre-release"
+  descr = Version
+
 p = subprocess.Popen(("git","log","-n1","--pretty=short"),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 try:
   commit = p.stdout.readlines()[0].split()[1]
 except:
   commit = ""
-f=open("src/python/version.py","w")
+f = open("src/python/version.py","w")
 print >>f, "__version__ = '%s'" % Version
+print >>f, "__git_tag_describe__ = '%s'" % descr
 print >>f, "__git_sha1__ = '%s'" % commit
 f.close()
 
-setup (name = "metrics",
-       version=Version,
-       author='PCMDI',
-       description = "model metrics tools",
-       url = "http://github.com/PCMDI/wgne-wgcm_metrics",
-       packages = ['metrics','metrics.io','metrics.wgne'],
-       package_dir = {'metrics': 'src/python',
-                      'metrics.io': 'src/python/io',
-                      'metrics.wgne': 'src/python/wgne'},
-       scripts = ["src/python/wgne/scripts/wgne_metrics_driver.py",
-                  "src/python/wgne/scripts/build_obs_meta_dictionary.py"],
-       data_files = [('share/wgne',('doc/obs_info_dictionary.json',)),
-                     ('doc',('doc/wgne_input_parameters_sample.py',)),
-                     ('test/wgne',('test/wgne/basic_test_parameters_file.py','test/wgne/tos_GFDL-ESM2G_Omon_historical_r1i1p1_198501-200512-clim.nc','test/wgne/sftlf_GFDL-ESM2G_fx_historical_r0i0p0_198501-200512-clim.nc','test/wgne/tos_2.5x2.5_esmf_linear_metrics.json.good')),
-                     ('test/wgne/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac',('test/wgne/tos_pcmdi-metrics_Omon_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
-                     ('test/wgne/obs/fx/mo/sftlf/UKMETOFFICE-HadISST-v1-1/ac',('test/wgne/sftlf_pcmdi-metrics_fx_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
-                     ]
+portrait_files          = ["src/python/graphics/share/portraits.scr",]
+cmip5_amip_json         = glob.glob("data/CMIP_metrics_results/CMIP5/amip/*.json")
+cmip5_historical_json   = glob.glob("data/CMIP_metrics_results/CMIP5/historical/*.json")
+
+setup (name         = "pcmdi_metrics",
+       version      = descr,
+       author       = "PCMDI",
+       description  = "model metrics tools",
+       url          = "http://github.com/PCMDI/pcmdi_metrics",
+       packages     = ['pcmdi_metrics','pcmdi_metrics.io','pcmdi_metrics.pcmdi','pcmdi_metrics.graphics'],  
+       package_dir  = {'pcmdi_metrics': 'src/python',
+                       'pcmdi_metrics.io': 'src/python/io',
+                       'pcmdi_metrics.pcmdi': 'src/python/pcmdi',
+                       'pcmdi_metrics.graphics': 'src/python/graphics',
+                       },
+       scripts      = ["src/python/pcmdi/scripts/pcmdi_metrics_driver.py"],
+       data_files   = [('share/pcmdi',('doc/obs_info_dictionary.json',)),
+                       ('share/CMIP_metrics_results/CMIP5/amip',cmip5_amip_json),
+                       ('share/CMIP_metrics_results/CMIP5/historical',cmip5_historical_json),
+                       ('share/graphics/vcs',portrait_files),
+                       ('doc',('doc/parameter_files/pcmdi_input_parameters_sample.py',)),
+                       ]
        #include_dirs = [numpy.lib.utils.get_include()],
        #       ext_modules = [
-       #    Extension('metrics.exts',
+       #    Extension('pcmdi_metrics.exts',
        #              ['src/C/add.c',],
        #              library_dirs = [],
        #              libraries = [],
