@@ -1,0 +1,27 @@
+{
+    "References": {
+        "default": {
+            "RefName": "CERES",
+            "MD5sum": "4090cc00b8f05c019aa107d8d4ac3b4d",
+            "period": "200003-201209",
+            "filename": "rlds_pcmdi-metrics_Amon_CERES_200003-201209-clim.nc",
+            "shape": "(12, 180, 360)",
+            "CMIP_CMOR_TABLE": "Amon",
+            "RefTrackingDate": "Fri Jan 17 11:21:28 2014"
+        }
+    },
+    "RegionalMasking": {
+        "global": null
+    },
+    "GridInfo": {
+        "GridResolution": [
+            72,
+            144
+        ],
+        "GridName": "2.5x2.5",
+        "RegridMethod": "linear",
+        "RegridTool": "esmf"
+    },
+    "metrics_git_sha1": "f7fd787592b0b9e3c3f41eaced5b803d474c5bca",
+    "uvcdat_version": "2.0.0-68-gbf352fd"
+}
