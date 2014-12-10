@@ -1,0 +1,27 @@
+{
+    "References": {
+        "default": {
+            "RefName": "NODC-WOA09",
+            "MD5sum": "c645c6382f41af91019470e9c0bfc3a6",
+            "period": "177201-200812",
+            "filename": "sos_pcmdi-metrics_Omon_NODC-WOA09_177201-200812-clim.nc",
+            "shape": "(12, 180, 360)",
+            "CMIP_CMOR_TABLE": "Omon",
+            "RefTrackingDate": "Wed Jan 15 10:33:04 2014"
+        }
+    },
+    "RegionalMasking": {
+        "global": null
+    },
+    "GridInfo": {
+        "GridResolution": [
+            72,
+            144
+        ],
+        "GridName": "2.5x2.5",
+        "RegridMethod": "linear",
+        "RegridTool": "esmf"
+    },
+    "metrics_git_sha1": "37ddc1ca63fd35c764a0d41294ce1e5061df49ad",
+    "uvcdat_version": "2.0.0-387-gb6f6696"
+}
