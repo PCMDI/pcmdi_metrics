@@ -26,6 +26,8 @@ f.close()
 portrait_files          = ["src/python/graphics/share/portraits.scr",]
 cmip5_amip_json         = glob.glob("data/CMIP_metrics_results/CMIP5/amip/*.json")
 cmip5_historical_json   = glob.glob("data/CMIP_metrics_results/CMIP5/historical/*.json")
+cmip5_piControl_json    = glob.glob("data/CMIP_metrics_results/CMIP5/piControl/*.json")
+param_files             = glob.glob("doc/parameter_files/*.py")
 
 setup (name         = "pcmdi_metrics",
        version      = descr,
@@ -42,7 +44,9 @@ setup (name         = "pcmdi_metrics",
        data_files   = [('share/pcmdi',('doc/obs_info_dictionary.json',)),
                        ('share/CMIP_metrics_results/CMIP5/amip',cmip5_amip_json),
                        ('share/CMIP_metrics_results/CMIP5/historical',cmip5_historical_json),
+                       ('share/CMIP_metrics_results/CMIP5/piControl',cmip5_piControl_json),
                        ('share/graphics/vcs',portrait_files),
+                       ('doc/parameter_files',param_files),
                        ('doc',('doc/parameter_files/pcmdi_input_parameters_sample.py',)),
                        ]
        #include_dirs = [numpy.lib.utils.get_include()],
