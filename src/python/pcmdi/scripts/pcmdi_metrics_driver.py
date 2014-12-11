@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/home/igcmg/PCMDI-MP/devel_install_PCMDI_IPSL/PCMDI_METRICS/bin/python
 ######################################################
 #
 #  USER INPUT IS SET IN FILE "input_parameters.py"
@@ -228,7 +228,19 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
             OBS.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
           try:
            if level is not None:
-             do = OBS.get(var,level=level)
+             # START IPSL Modif
+             tmp_do = OBS.get(var,level=level)
+	     if parameters.extract_from_3DVariables==True:
+	       do = tmp_do
+	     else:
+               lats = tmp_do.getLatitude()
+               lons = tmp_do.getLongitude()
+               time = tmp_do.getTime()
+               do = tmp_do.squeeze(1)
+               do.setAxis(0,time)
+               do.setAxis(1,lats)
+               do.setAxis(2,lons)
+             # END IPSL Modif
            else:
              do = OBS.get(var)
           except Exception,err:
@@ -279,7 +291,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                          ## Need to recover only first time/leve/etc...
                          N=Vr.rank()-2 # minus lat/lon
                          sftlf[model_version]["raw"]=cdutil.generateLandSeaMask(Vr(*(slice(0,1),)*N))*100.
-                         f.close()
+                         fv.close()
                          dup("auto generated sftlf for model %s " % model_version)
 
                     MODEL.mask = MV2.logical_not(MV2.equal(sftlf[model_version]["raw"],region))
@@ -289,9 +301,16 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                        OUT.level=""
                        dm = MODEL.get(var,varInFile=varInFile)  #+"_ac")
                      else:
-                       OUT.level = "-%i" % (int(level/100.))
-                       #Ok now fetch this
-                       dm = MODEL.get(var,varInFile=varInFile,level=level)
+                       if parameters.extract_from_3DVariables==True:
+                         dm = MODEL.get(var,varInFile=varInFile,level=level)
+                       else:
+                         OUT.level = "-%i" % (int(level/100.))
+                         # START IPSL Modi
+                         tmp_level = str(int(level/100))
+                         levelVarInFile = var+'_'+tmp_level
+                         print 'levelVarInFile = ', levelVarInFile
+                         dm = MODEL.get(var,varInFile=levelVarInFile)
+                         # END IPSL Modif
                   except Exception,err:
                       success = False
                       dup('Failed to get variable %s for version: %s, error:\n%s' % ( var, model_version, err))
@@ -361,7 +380,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                                         vals.append("N/A")
                                     f.close()
                             descr[att] = fmt % tuple(vals)
-                      metrics_dictionary[model_version]["SimulationDescription"] = descr 
+                      #metrics_dictionary[model_version]["SimulationDescription"] = descr
+                      metrics_dictionary[model_version]["SimulationDescription"] = sim_descr_mapping
                       metrics_dictionary[model_version]["InputClimatologyFileName"] = os.path.basename(MODEL())
                       metrics_dictionary[model_version]["InputClimatologyMD5"] = MODEL.hash()
                       if len(regions_dict[var])>1: # Not just global
@@ -372,7 +392,12 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   if not metrics_dictionary[model_version].has_key(refabbv):
                     metrics_dictionary[model_version][refabbv] = {'source':onm}
                   pr = metrics_dictionary[model_version][refabbv].get(parameters.realization,{})
-                  pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(var,dm,do)
+                  # START IPSL Modif
+                  if parameters.attributes_provided=='standard':
+                    pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(var,dm,do)
+                  if parameters.attributes_provided=='IPSL_Extended':
+                    pr_rgn = pcmdi_metrics.pcmdi.compute_metrics_ExtInfo(var,dm,do)
+                  # END IPSL Modif
                   ###########################################################################
                   ## The follwoing allow users to plug in a set of custom metrics
                   ## Function needs to take in var name, model clim, obs clim
