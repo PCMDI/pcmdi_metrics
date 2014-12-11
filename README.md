@@ -16,6 +16,6 @@ GETTING STARTED
 
 Installation requirements and instructions are available at: https://github.com/PCMDI/pcmdi_metrics/wiki/Install
 
-An overview for using the package and demonstrations are available at: https://github.com/PCMDI/pcmdi_metrics/wiki/Using-the-package
+An overview for using the package and template demo scripts for use are detailed at: https://github.com/PCMDI/pcmdi_metrics/wiki/Using-the-package
 
 Some installation support for modeling groups participating in CMIP is available via pcmdi-metrics@llnl.gov
