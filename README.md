@@ -14,8 +14,8 @@ The package expects model data to be [CF-compliant](http://cfconventions.org/). 
 GETTING STARTED
 ----------------
 
-Installation requirements and instructions are available at: [Install](https://github.com/PCMDI/pcmdi_metrics/wiki/Install)
+Installation requirements and instructions are available: [Install](https://github.com/PCMDI/pcmdi_metrics/wiki/Install)
 
-An overview for using the package and template demo scripts for use are detailed at: [Using-the-package](https://github.com/PCMDI/pcmdi_metrics/wiki/Using-the-package)
+An overview for using the package and template scripts are detailed: [Using-the-package](https://github.com/PCMDI/pcmdi_metrics/wiki/Using-the-package)
 
-Some installation support for modeling groups participating in CMIP is available via pcmdi-metrics@llnl.gov
+Some installation support for modeling groups participating in CMIP is available: pcmdi-metrics@llnl.gov
