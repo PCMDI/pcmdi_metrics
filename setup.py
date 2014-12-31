@@ -34,18 +34,18 @@ param_files             = glob.glob("doc/parameter_files/*.py")
 test_data_files         = glob.glob("test/pcmdi/data/*.nc")
 test_py_files           = glob.glob("test/pcmdi/*.py")
 
-setup (name         = "pcmdi_metrics",
+setup (name         = 'pcmdi_metrics',
        version      = descr,
-       author       = "PCMDI",
-       description  = "model metrics tools",
-       url          = "http://github.com/PCMDI/pcmdi_metrics",
+       author       = 'PCMDI',
+       description  = 'model metrics tools',
+       url          = 'http://github.com/PCMDI/pcmdi_metrics',
        packages     = ['pcmdi_metrics','pcmdi_metrics.io','pcmdi_metrics.pcmdi','pcmdi_metrics.graphics'],  
        package_dir  = {'pcmdi_metrics': 'src/python',
                        'pcmdi_metrics.io': 'src/python/io',
                        'pcmdi_metrics.pcmdi': 'src/python/pcmdi',
                        'pcmdi_metrics.graphics': 'src/python/graphics',
                       },
-       scripts      = ["src/python/pcmdi/scripts/pcmdi_metrics_driver.py"],
+       scripts      = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py'],
        data_files   = [('demo/ACME',demo_ACME_files),
                        ('demo/GFDL',demo_GFDL_files),
                        ('demo/NCAR',demo_NCAR_files),
