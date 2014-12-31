@@ -1,12 +1,12 @@
 from distutils.core import setup
 import glob,subprocess
 
-Version="0.6.0"
+Version = "0.6.0"
 p = subprocess.Popen(("git","describe","--tags"),stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 try:
   descr = p.stdout.readlines()[0].strip()
   Version = "-".join(descr.split("-")[:-2])
-  if Version=="":
+  if Version == "":
     Version = descr
 except:
   Version = "0.9.pre-release"
@@ -28,6 +28,8 @@ cmip5_amip_json         = glob.glob("data/CMIP_metrics_results/CMIP5/amip/*.json
 cmip5_historical_json   = glob.glob("data/CMIP_metrics_results/CMIP5/historical/*.json")
 cmip5_piControl_json    = glob.glob("data/CMIP_metrics_results/CMIP5/piControl/*.json")
 param_files             = glob.glob("doc/parameter_files/*.py")
+test_py_files           = glob.glob("test/pcmdi/*.py")
+test_data_files         = glob.glob("test/pcmdi/data/*.nc")
 
 setup (name         = "pcmdi_metrics",
        version      = descr,
@@ -48,9 +50,14 @@ setup (name         = "pcmdi_metrics",
                        ('share/graphics/vcs',portrait_files),
                        ('doc/parameter_files',param_files),
                        ('doc',('doc/parameter_files/pcmdi_input_parameters_sample.py',)),
-                       ('test/pcmdi',('test/pcmdi/basic_test_parameters_file.py','test/pcmdi/tos_GFDL-ESM2G_Omon_historical_r1i1p1_198501-200512-clim.nc','test/pcmdi/sftlf_GFDL-ESM2G.nc','test/pcmdi/tos_2.5x2.5_esmf_linear_metrics.json')),
-                       ('test/pcmdi/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac',('test/pcmdi/tos_pcmdi-metrics_Omon_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
-                       ('test/pcmdi/obs/fx/mo/sftlf/UKMETOFFICE-HadISST-v1-1/ac',('test/pcmdi/sftlf_pcmdi-metrics_fx_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
+                       ('test/pcmdi',test_py_files),
+                       ('test/pcmdi/data',test_data_files),
+                       ('test/pcmdi/gensftlfTest',('test/pcmdi/gensftlfTest/tas_2.5x2.5_esmf_linear_metrics.json')),
+                       ('test/pcmdi/installationTest',('test/pcmdi/installationTest/tas_2.5x2.5_esmf_linear_metrics.json','test/pcmdi/installationTest/tos_2.5x2.5_esmf_linear_metrics.json')),
+                       ('test/pcmdi/nosftlfTest',('test/pcmdi/nosftlfTest/tas_2.5x2.5_esmf_linear_metrics.json')),
+                       ('test/pcmdi/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac',('test/pcmdi/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac/tos_pcmdi-metrics_Omon_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
+                       ('test/pcmdi/obs/fx/sftlf/ERAINT',('test/pcmdi/obs/fx/sftlf/ERAINT/sftlf_pcmdi-metrics_fx_ECMWF-ERAInterim_197901-201407.nc',)),
+                       ('test/pcmdi/unitsTest',('test/pcmdi/unitsTest/tas_2.5x2.5_esmf_linear_metrics.json')),
                        ]
        #include_dirs = [numpy.lib.utils.get_include()],
        #       ext_modules = [
@@ -64,4 +71,3 @@ setup (name         = "pcmdi_metrics",
        #              ),
        #    ]
       )
-
