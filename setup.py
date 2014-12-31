@@ -27,12 +27,12 @@ portrait_files          = ["src/python/graphics/share/portraits.scr",]
 cmip5_amip_json         = glob.glob("data/CMIP_metrics_results/CMIP5/amip/*.json")
 cmip5_historical_json   = glob.glob("data/CMIP_metrics_results/CMIP5/historical/*.json")
 cmip5_piControl_json    = glob.glob("data/CMIP_metrics_results/CMIP5/piControl/*.json")
-param_files             = glob.glob("doc/parameter_files/*.py")
-test_py_files           = glob.glob("test/pcmdi/*.py")
-test_data_files         = glob.glob("test/pcmdi/data/*.nc")
 demo_ACME_files         = glob.glob("src/python/pcmdi/scripts/ACME/*.py")
 demo_GFDL_files         = glob.glob("src/python/pcmdi/scripts/GFDL/*.py")
 demo_NCAR_files         = glob.glob("src/python/pcmdi/scripts/NCAR/*.py")
+param_files             = glob.glob("doc/parameter_files/*.py")
+test_data_files         = glob.glob("test/pcmdi/data/*.nc")
+test_py_files           = glob.glob("test/pcmdi/*.py")
 
 setup (name         = "pcmdi_metrics",
        version      = descr,
@@ -46,13 +46,16 @@ setup (name         = "pcmdi_metrics",
                        'pcmdi_metrics.graphics': 'src/python/graphics',
                       },
        scripts      = ["src/python/pcmdi/scripts/pcmdi_metrics_driver.py"],
-       data_files   = [('share/pcmdi',('doc/obs_info_dictionary.json',)),
+       data_files   = [('demo/ACME',demo_ACME_files),
+                       ('demo/GFDL',demo_GFDL_files),
+                       ('demo/NCAR',demo_NCAR_files),
+                       ('doc/parameter_files',param_files),
+                       ('doc',('doc/parameter_files/pcmdi_input_parameters_sample.py',)),
                        ('share/CMIP_metrics_results/CMIP5/amip',cmip5_amip_json),
                        ('share/CMIP_metrics_results/CMIP5/historical',cmip5_historical_json),
                        ('share/CMIP_metrics_results/CMIP5/piControl',cmip5_piControl_json),
                        ('share/graphics/vcs',portrait_files),
-                       ('doc/parameter_files',param_files),
-                       ('doc',('doc/parameter_files/pcmdi_input_parameters_sample.py',)),
+                       ('share/pcmdi',('doc/obs_info_dictionary.json',)),
                        ('test/pcmdi',test_py_files),
                        ('test/pcmdi/data',test_data_files),
                        ('test/pcmdi/gensftlfTest',('test/pcmdi/gensftlfTest/tas_2.5x2.5_esmf_linear_metrics.json')),
@@ -61,10 +64,6 @@ setup (name         = "pcmdi_metrics",
                        ('test/pcmdi/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac',('test/pcmdi/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac/tos_pcmdi-metrics_Omon_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
                        ('test/pcmdi/obs/fx/sftlf/ERAINT',('test/pcmdi/obs/fx/sftlf/ERAINT/sftlf_pcmdi-metrics_fx_ECMWF-ERAInterim_197901-201407.nc',)),
                        ('test/pcmdi/unitsTest',('test/pcmdi/unitsTest/tas_2.5x2.5_esmf_linear_metrics.json')),
-                      ],
-       demo         = [('demo/ACME',demo_ACME_files),
-                       ('demo/GFDL',demo_GFDL_files),
-                       ('demo/NCAR',demo_NCAR_files),
                       ]
        #include_dirs = [numpy.lib.utils.get_include()],
        #       ext_modules = [
