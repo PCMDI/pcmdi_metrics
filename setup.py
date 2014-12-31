@@ -66,14 +66,13 @@ setup (name         = 'pcmdi_metrics',
                        ('test/pcmdi/unitsTest',('test/pcmdi/unitsTest/tas_2.5x2.5_esmf_linear_metrics.json')),
                       ]
        #include_dirs = [numpy.lib.utils.get_include()],
-       #       ext_modules = [
-       #    Extension('pcmdi_metrics.exts',
+       #ext_modules = [
+       #              Extension('pcmdi_metrics.exts',
        #              ['src/C/add.c',],
        #              library_dirs = [],
        #              libraries = [],
        #              define_macros = [],
        #              extra_compile_args = [],
        #              extra_link_args = [],
-       #              ),
-       #    ]
+       #              ]
       )
