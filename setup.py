@@ -30,6 +30,9 @@ cmip5_piControl_json    = glob.glob("data/CMIP_metrics_results/CMIP5/piControl/*
 param_files             = glob.glob("doc/parameter_files/*.py")
 test_py_files           = glob.glob("test/pcmdi/*.py")
 test_data_files         = glob.glob("test/pcmdi/data/*.nc")
+demo_ACME_files         = glob.glob("src/python/pcmdi/scripts/ACME/*.py")
+demo_GFDL_files         = glob.glob("src/python/pcmdi/scripts/GFDL/*.py")
+demo_NCAR_files         = glob.glob("src/python/pcmdi/scripts/NCAR/*.py")
 
 setup (name         = "pcmdi_metrics",
        version      = descr,
@@ -41,7 +44,7 @@ setup (name         = "pcmdi_metrics",
                        'pcmdi_metrics.io': 'src/python/io',
                        'pcmdi_metrics.pcmdi': 'src/python/pcmdi',
                        'pcmdi_metrics.graphics': 'src/python/graphics',
-                       },
+                      },
        scripts      = ["src/python/pcmdi/scripts/pcmdi_metrics_driver.py"],
        data_files   = [('share/pcmdi',('doc/obs_info_dictionary.json',)),
                        ('share/CMIP_metrics_results/CMIP5/amip',cmip5_amip_json),
@@ -58,7 +61,11 @@ setup (name         = "pcmdi_metrics",
                        ('test/pcmdi/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac',('test/pcmdi/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac/tos_pcmdi-metrics_Omon_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
                        ('test/pcmdi/obs/fx/sftlf/ERAINT',('test/pcmdi/obs/fx/sftlf/ERAINT/sftlf_pcmdi-metrics_fx_ECMWF-ERAInterim_197901-201407.nc',)),
                        ('test/pcmdi/unitsTest',('test/pcmdi/unitsTest/tas_2.5x2.5_esmf_linear_metrics.json')),
-                       ]
+                      ],
+       demo         = [('demo/ACME',demo_ACME_files),
+                       ('demo/GFDL',demo_GFDL_files),
+                       ('demo/NCAR',demo_NCAR_files),
+                      ]
        #include_dirs = [numpy.lib.utils.get_include()],
        #       ext_modules = [
        #    Extension('pcmdi_metrics.exts',
