@@ -1,6 +1,4 @@
-import genutil
-import os,sys
-import pcmdi_metrics
+import os
 
 ################################################################################
 #  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY: 
