@@ -431,7 +431,7 @@ main() {
     echo "*******************************"
     echo "Please test as follows:"
     echo "source ${cdat_home}/bin/setup_runtime.sh"
-    echo "python ${build_directory}/metrics/test/test_suite.py"
+    echo "python ${install_prefix}/test/test_suite.py"
     echo "*******************************"
     echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/parameter_files/pcmdi_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
