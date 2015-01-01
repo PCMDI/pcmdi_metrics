@@ -32,7 +32,7 @@ demo_GFDL_files         = glob.glob("src/python/pcmdi/scripts/GFDL/*.py")
 demo_NCAR_files         = glob.glob("src/python/pcmdi/scripts/NCAR/*.py")
 param_files             = glob.glob("doc/parameter_files/*.py")
 test_data_files         = glob.glob("test/pcmdi/data/*.nc")
-test_py_files           = glob.glob("test/pcmdi/*.py")
+test_py_files           = glob.glob("test/pcmdi/*_test.py")
 
 setup (name         = 'pcmdi_metrics',
        version      = descr,
@@ -56,7 +56,7 @@ setup (name         = 'pcmdi_metrics',
                        ('share/CMIP_metrics_results/CMIP5/piControl',cmip5_piControl_json),
                        ('share/graphics/vcs',portrait_files),
                        ('share/pcmdi',('doc/obs_info_dictionary.json',)),
-                       ('test',('test/test_from_param.py','test/test_suite.py',)),
+                       ('test',('test/test_from_param.py','test/test_suite.py','test/pcmdi/basic_test_parameters_file.py',)),
                        ('test/data',test_data_files),
                        ('test/pcmdi',test_py_files),
                        ('test/pcmdi/gensftlfTest',('test/pcmdi/gensftlfTest/tas_2.5x2.5_esmf_linear_metrics.json',)),
