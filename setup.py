@@ -32,7 +32,7 @@ demo_GFDL_files         = glob.glob("src/python/pcmdi/scripts/GFDL/*.py")
 demo_NCAR_files         = glob.glob("src/python/pcmdi/scripts/NCAR/*.py")
 param_files             = glob.glob("doc/parameter_files/*.py")
 test_data_files         = glob.glob("test/pcmdi/data/*.nc")
-test_py_files           = glob.glob("test/pcmdi/*_test.py")
+test_py_files           = glob.glob("test/pcmdi/*.py")
 
 setup (name         = 'pcmdi_metrics',
        version      = descr,
@@ -56,15 +56,15 @@ setup (name         = 'pcmdi_metrics',
                        ('share/CMIP_metrics_results/CMIP5/piControl',cmip5_piControl_json),
                        ('share/graphics/vcs',portrait_files),
                        ('share/pcmdi',('doc/obs_info_dictionary.json',)),
-                       ('test',('test/test_from_param.py','test/test_suite.py','test/pcmdi/basic_test_parameters_file.py',)),
-                       ('test/data',test_data_files),
+                       ('test',('test/test_from_param.py','test/test_suite.py',)),
                        ('test/pcmdi',test_py_files),
+                       ('test/pcmdi/data',test_data_files),
                        ('test/pcmdi/gensftlfTest',('test/pcmdi/gensftlfTest/tas_2.5x2.5_esmf_linear_metrics.json',)),
                        ('test/pcmdi/installationTest',('test/pcmdi/installationTest/tas_2.5x2.5_regrid2_linear_metrics.json','test/pcmdi/installationTest/tos_2.5x2.5_esmf_linear_metrics.json',)),
                        ('test/pcmdi/nosftlfTest',('test/pcmdi/nosftlfTest/tas_2.5x2.5_esmf_linear_metrics.json',)),
-                       ('test/obs/atm/mo/tas/ERAINT/ac',('test/pcmdi/obs/atm/mo/tas/ERAINT/ac/tas_pcmdi-metrics_Amon_ERAINT_198901-200911-clim.nc',)),
-                       ('test/obs/fx/sftlf/ERAINT',('test/pcmdi/obs/fx/sftlf/ERAINT/sftlf_pcmdi-metrics_fx_ECMWF-ERAInterim_197901-201407.nc',)),
-                       ('test/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac',('test/pcmdi/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac/tos_pcmdi-metrics_Omon_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
+                       ('test/pcmdi/obs/atm/mo/tas/ERAINT/ac',('test/pcmdi/obs/atm/mo/tas/ERAINT/ac/tas_pcmdi-metrics_Amon_ERAINT_198901-200911-clim.nc',)),
+                       ('test/pcmdi/obs/fx/sftlf/ERAINT',('test/pcmdi/obs/fx/sftlf/ERAINT/sftlf_pcmdi-metrics_fx_ECMWF-ERAInterim_197901-201407.nc',)),
+                       ('test/pcmdi/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac',('test/pcmdi/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/ac/tos_pcmdi-metrics_Omon_UKMETOFFICE-HadISST-v1-1_198002-200501-clim.nc',)),
                        ('test/pcmdi/unitsTest',('test/pcmdi/unitsTest/tas_2.5x2.5_esmf_linear_metrics.json',)),
                       ]
        #include_dirs = [numpy.lib.utils.get_include()],
