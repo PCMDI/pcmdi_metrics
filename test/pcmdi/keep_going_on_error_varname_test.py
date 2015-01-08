@@ -9,7 +9,7 @@ import pcmdi_metrics
 
 ## RUN IDENTIFICATION
 # DEFINES A SUBDIRECTORY TO METRICS OUTPUT RESULTS SO MULTIPLE CASES CAN BE COMPARED
-case_id = 'installationTest'
+case_id = 'keep_going_on_error_varnameTest'
 #case_id = 'cmip5_test'
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
 model_versions = ['GFDL-ESM2G',]
@@ -50,9 +50,10 @@ save_mod_clims = True # True or False
 filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(model_period)-clim.nc"
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
-mod_data_path = os.path.join(pcmdi_metrics.__path__[0],"..","..","..","..",'test','pcmdi',)
+pth = os.path.dirname(__file__)
+mod_data_path = os.path.abspath(os.path.join(pth,"data"))
 ## ROOT PATH FOR OBSERVATIONS
-obs_data_path = os.path.join(pcmdi_metrics.__path__[0],"..","..","..","..",'test','pcmdi','obs')
+obs_data_path = os.path.abspath(os.path.join(pth,"obs"))
 ## DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join('pcmdi_install_test_results','metrics_results')
 ## DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES
