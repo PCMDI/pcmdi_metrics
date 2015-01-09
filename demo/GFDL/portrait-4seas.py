@@ -190,6 +190,7 @@ P.plot(out4_rel,x=x,multiple=4.4,bg=1)
 ### END OF PLOTTING
 
 ### SAVE PLOT
-x.png('test_portrait-4seas')
-#x.postscript('test_portrait-4seas') ; # Existing VTK quirks need fixing for labelling
-#x.pdf('test_portrait-4seas') ; # Existing VTK quirks need fixing for labelling
+nm = "portrait-4seas"
+x.png(nm)
+#x.postscript(nm) ; # Existing VTK quirks need fixing for labelling
+#x.pdf(nm) ; # Existing VTK quirks need fixing for labelling
