@@ -14,6 +14,9 @@ try:
 except:
   raise RuntimeError("Sorry your python is not build with VCS support and cannot generate portrait plots")
 
+# PATH WHERE METRICS RESULTS FOR GFDL SIT
+gfdl_pth="/work/durack1/Shared/140808_metrics-gfdl/metrics_output_path/sampletest"
+
 # STANDARD PYTHON MODULES
 import glob,json,os,sys
 import numpy as np
@@ -65,10 +68,10 @@ var_cmip5_dics = {}
 mods = set()
 
 # CMIP5 METRICS RESULTS - CURRENTLY USING FOR CONTROL SIMULATIONS
-json_files = glob.glob('../PCMDI_METRICS/share/CMIP_metrics_results/CMIP5/piControl/*.json')
+json_files = glob.glob(os.path.join(sys.prefix,"share","CMIP_metrics_results","CMIP5","piControl","*.json")) 
 # ADD GFDL JSON FILES... 
 # This is pretty hard coded might want to consider more magic
-json_files += glob.glob('metrics_output_path/sampletest/*.json')
+json_files += glob.glob(os.path.join(gfdl_pth,'*.json'))
 
 # CONSTRUCT PYTHON DICTIONARY WITH RESULTS METRICS USED IN PORTRAIT  
 non_mods = ["GridInfo","References","RegionalMasking","metrics_git_sha1","uvcdat_version"]
@@ -91,7 +94,7 @@ for fnm in json_files:
 mods = sorted(list(mods))
 
 # ORGANIZE METRICS INTO A VARIABLES X MODELS MATRIX 
-out1_rel,out2_rel,out3_rel,out4_rel = [numpy.ma.masked_all((len(vars),len(mods)),numpy.float32) for _ in range(4)] ; # Define arrays to fill
+out1_rel,out2_rel,out3_rel,out4_rel = [np.ma.masked_all((len(vars),len(mods)),np.float32) for _ in range(4)] ; # Define arrays to fill
 
 for vn, var in enumerate(vars):
     # LOOP OVER VARIABLE
@@ -100,10 +103,10 @@ for vn, var in enumerate(vars):
     # LOOP OVER MODEL
     for mn,mod in enumerate(mods):
         try:
-            out1_rel[vn,mn] = (float(var_cmip5_dics[var][mod]["defaultReference"]["r1i1p1"]["global"]['rms_xy_djf_GLB'])-med_rms1)/med_rms1 # RELATIVE ERROR
-            out2_rel[vn,mn] = (float(var_cmip5_dics[var][mod]["defaultReference"]["r1i1p1"]["global"]['rms_xy_mam_GLB'])-med_rms2)/med_rms2 # RELATIVE ERROR
-            out3_rel[vn,mn] = (float(var_cmip5_dics[var][mod]["defaultReference"]["r1i1p1"]["global"]['rms_xy_jja_GLB'])-med_rms3)/med_rms3 # RELATIVE ERROR
-            out4_rel[vn,mn] = (float(var_cmip5_dics[var][mod]["defaultReference"]["r1i1p1"]["global"]['rms_xy_son_GLB'])-med_rms4)/med_rms4 # RELATIVE ERROR
+            out1_rel[vn,mn] = float(var_cmip5_dics[var][mod]["defaultReference"]["r1i1p1"]["global"]['rms_xy_djf_GLB'])
+            out2_rel[vn,mn] = float(var_cmip5_dics[var][mod]["defaultReference"]["r1i1p1"]["global"]['rms_xy_mam_GLB'])
+            out3_rel[vn,mn] = float(var_cmip5_dics[var][mod]["defaultReference"]["r1i1p1"]["global"]['rms_xy_jja_GLB'])
+            out4_rel[vn,mn] = float(var_cmip5_dics[var][mod]["defaultReference"]["r1i1p1"]["global"]['rms_xy_son_GLB'])
         except Exception,err:
            pass
     
@@ -118,11 +121,14 @@ for vn, var in enumerate(vars):
     out4_rel[vn,:]=(out4_rel[vn,:]-med_rms4)/med_rms4
 
 # ADD SPACES FOR LABELS TO ALIGN AXIS LABELS WITH PLOT
-mods  = [x+" " for x in mods]
-vars = [x+" " for x in vars]
+yax = [ m.encode('utf-8')+" " for m in mods ]
+xax = [ v+" " for v in vars ]
   
-yax = [s.encode('utf-8') for s in mods]  # CHANGE FROM UNICODE TO BYTE STRINGS 
-xax = vars 
+# Convert to MV so we can decorate
+out1_rel = MV2.array(out1_rel)
+out2_rel = MV2.array(out2_rel)
+out3_rel = MV2.array(out3_rel)
+out4_rel = MV2.array(out4_rel)
 
 # GENERATE PLOT 
 P.decorate(out1_rel,xax,yax)
