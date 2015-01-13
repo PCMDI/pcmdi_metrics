@@ -56,7 +56,7 @@ regrid_tool_ocn   = 'esmf'    # OPTIONS: "regrid2","esmf"
 regrid_method_ocn = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
 
 # SIMULATION PARAMETERS
-model_period = '1980-2005'
+period = '1980-2005'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
@@ -67,8 +67,8 @@ save_mod_clims = True # True or False
 ## Templates for climatology files
 ## TEMPLATE EXAMPLE: cmip5.GFDL-ESM2G.historical.r1i1p1.mo.atm.Amon.rlut.ver-1.1980-1999.AC.nc
 filename_template = "cmip5.%(model_version).amip.r1i1p1.mo.%(table_realm).%(variable).ver-1.%(period).AC.%(ext)" 
-filename_template = "cmip5.%(model_version).amip.%(realization).mo.%(table_realm).%(variable).ver-1.%(model_period).AC.%(ext)"
-#filename_template = "%(variable)_MEAN_CLIM_METRICS_%(model_version)_%(realization)_%(model_period)-clim.xml"
+filename_template = "cmip5.%(model_version).amip.%(realization).mo.%(table_realm).%(variable).ver-1.%(period).AC.%(ext)"
+#filename_template = "%(variable)_MEAN_CLIM_METRICS_%(model_version)_%(realization)_%(period)-clim.xml"
 filename_template = "cmip5.%(model_version).amip.r1i1p1.mo.%(table_realm).%(variable).ver-1.latestX.1980-2005.AC.nc"
 filename_template = "cmip5.%(model_version).amip.r1i1p1.mo.%(table_realm).%(variable).ver-v20110601.1980-2005.AC.nc" ## tos 
 filename_template = "%(variable)_%(model_version)_Amon_amip_r1i1p1_198001-200512-clim.nc"

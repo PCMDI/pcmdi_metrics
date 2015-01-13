@@ -9,7 +9,7 @@ case_id = 'sampletest_141126' ; # Defines a subdirectory to output metrics resul
 
 ## LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
 model_versions  = ['ACME-CAM5-SE_v0pt1'] ; # Model identifier
-model_period    = '01-12' ; # Model climatological period (if relevant)
+period    = '01-12' ; # Model climatological period (if relevant)
 realization     = 'r1i1p1' ; # Model run identifier (if relevant)
 
 ## VARIABLES AND OBSERVATIONS TO USE
@@ -37,7 +37,7 @@ save_mod_clims      = True      # Options: True or False (Save interpolated mode
 ## DATA LOCATION: MODELS, OBS AND METRICS OUTPUT - AND TEMPLATES FOR MODEL OUTPUT CLIMATOLOGY FILES
 base_dir                        = '/work/durack1/Shared/141126_metrics-acme'
 # Template example: tas_GFDL-ESM2G_Amon_historical_r1i1p1_198001-199912-clim.nc
-filename_template               = "%(variable)_%(model_version)_%(table)_%(model_period)-clim.nc"
+filename_template               = "%(variable)_%(model_version)_%(table)_%(period)-clim.nc"
 # ROOT PATH FOR MODELS CLIMATOLOGIES
 mod_data_path                   = os.path.join(base_dir,"%(model_version)")
 # ROOT PATH FOR OBSERVATIONS

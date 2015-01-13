@@ -37,7 +37,7 @@ regrid_tool_ocn   = 'esmf'    # OPTIONS: "regrid2","esmf"
 regrid_method_ocn = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
 
 # SIMULATION PARAMETERS
-model_period = '198501-200512'
+period = '198501-200512'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
@@ -47,7 +47,7 @@ save_mod_clims = True # True or False
 
 ## Templates for climatology files
 ## TEMPLATE EXAMPLE: tas_GFDL-ESM2G_Amon_historical_r1i1p1_198001-199912-clim.nc
-filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(model_period)-clim.nc"
+filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(period)-clim.nc"
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
 pth = os.path.dirname(__file__)
