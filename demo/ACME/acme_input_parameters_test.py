@@ -9,7 +9,7 @@ case_id = 'sampletest_141126' ; # Defines a subdirectory to output metrics resul
 
 ## LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
 model_versions  = ['ACME-CAM5-SE_v0pt1'] ; # Model identifier
-period    = '01-12' ; # Model climatological period (if relevant)
+period          = '01-12' ; # Model climatological period (if relevant)
 realization     = 'r1i1p1' ; # Model run identifier (if relevant)
 
 ## VARIABLES AND OBSERVATIONS TO USE

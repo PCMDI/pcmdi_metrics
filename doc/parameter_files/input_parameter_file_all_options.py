@@ -12,12 +12,11 @@ model_versions  = ['GFDL-CM4',] ; # ['GFDL-ESM2G',] ; # Model identifier
 period    = '000101-000112' ; # Model climatological period (if relevant)
 realization     = 'r1i1p1' ; # Model run identifier (if relevant)
 
-
 ## MODEL SPECIFIC PARAMETERS
 model_tweaks = {
-    ## Keys are model accronym or None which applies to all model entries
+    ## Keys are model acronym or None which applies to all model entries
     None : {
-      ## Variables name mapping to map your local var names to CMIP5 official
+      ## Variable name mapping - map your model var names to CMIP5 official names
       "variable_mapping" : { "tos" : "tos"},
       },
     "GFDL-ESM2G" : {
@@ -25,7 +24,7 @@ model_tweaks = {
       },
     }
 
-## VARIABLES AND OBSERVATIONS TO USE
+## VARIABLES AND OBSERVATIONS AVAILABLE FOR USE
 # Variable acronyms are described in the CMIP5 standard output document - http://cmip-pcmdi.llnl.gov/cmip5/docs/standard_output.pdf
 # 2d atmos variables
 #   vars = ['clt','hfss','pr','prw','psl','rlut','rlutcs','rsdt','rsut','rsutcs','tas','tauu','tauv','ts','uas','vas']
@@ -37,10 +36,10 @@ model_tweaks = {
 #   vars = ['sos','tos','zos']
 # Non-standard CMIP5 variables (available from obs output)
 #   vars = ['rlwcrf','rswcrf']
-# vars you are actually interested in
+# vars for processing
 vars = ['pr','psl','rlut','rlutcs','rsut','rsutcs','ta_200','ta_850','tas','ua_200','ua_850','va_200','va_850','zg_500']
 
-# Observations to use 'default', 'alternate' or specific enumerated climatology e.g. 'ref3'
+# Observations to use 'default', 'alternate', 'all or specific enumerated climatology e.g. 'ref3'
 ref = ['default'] #,'all','alternate','ref3'
 
 ## INTERPOLATION OPTIONS
@@ -57,22 +56,22 @@ save_mod_clims      = True      # Options: True or False (Save interpolated mode
 ## keys are your custom keys, the "value" for this key is actually defined by another dictionary
 ## This second dictionary maps the key value to each specific variable
 ## use None if you want a value to be used for every variables not specifically defined
-custom_keys = { "key1": {None:"key1_value_for_all_var", "tas" : "key1_value_for_tas"}, }
+custom_keys = { "key1": {None:"key1_value_for_all_vars", "tas" : "key1_value_for_tas"}, }
 
 ## By default file names are constructed using the following keys:
-## %(variable) # set by driver
+## %(variable) # set by driver - this loops over all variables specified in vars list above
 ## %(realm)
-## %(table)
-## %(level) # extracted by driver from your var input above (if defined)
-## %(model_version) # set by driver from list model_versions defined above
-## %(realization)
-## %(period)
-## %(ext)
+## %(table) # CMIP standard table id - e.g. Amon (Atmosphere monthly), Omon (Ocean monthly)
+## %(level) # extracted by driver from vars list defined above
+## %(model_version) # set by driver from model_versions list defined above
+## %(realization) # Model realization information - e.g. r1i1p1
+## %(period) # Time period of analysis
+## %(ext) # Output file extension
 
 ## Templates for input climatology files
 ## TEMPLATE EXAMPLE (once constructed) :
 ## tas: tas_GFDL-ESM2G_Amon_historical_r1i1p1_198001-199912_key1_value_for_tas-clim.nc
-## tos: tos_GFDL-ESM2G_Omon_historical_r1i1p1_198001-199912_key1_value_for_all_var-clim.nc
+## tos: tos_GFDL-ESM2G_Omon_historical_r1i1p1_198001-199912_key1_value_for_all_vars-clim.nc
 filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(period)_%(key1)-clim.nc"
 ## filename template for input landsea masks ('sftlf')
 sftlf_filename_template = "sftlf_%(model_version).nc"
@@ -92,9 +91,10 @@ model_clims_interpolated_output = '/export/durack1/140701_metrics/test_new'
 filename_output_template        = "%(variable)%(level)_%(model_version)_%(table)_historical_%(realization)_%(period)_interpolated_%(regridMethod)_%(targetGridName)-clim%(ext)"
 
 ## CUSTOM METRICS
-## The following allow users to plug in a set of custom metrics
-## Function needs to take in var name, model clim, obs clim
-## Function needs to return a dictionary
+## The following examples allow users to plug in a set of custom metrics
+## Function needs:
+## INPUT: var name, model clim, obs clim
+## OUTPUT: dictionary
 ## dict pairs are: { metrics_name:float }
 
 import pcmdi_metrics # Or whatever your custom metrics package name is

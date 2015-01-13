@@ -1,4 +1,3 @@
-import genutil
 import getpass
 
 buildDate = '140922' ; # Must be set to allow correct metrics install to be picked up
@@ -32,7 +31,7 @@ regrid_tool_ocn   = 'esmf'    # OPTIONS: "regrid2","esmf"
 regrid_method_ocn = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
 
 # SIMULATION PARAMETERS
-period = '01-12'
+period      = '01-12'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?

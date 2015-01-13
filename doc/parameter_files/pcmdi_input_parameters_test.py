@@ -7,7 +7,7 @@ case_id = 'sampletest_140910' ; # Defines a subdirectory to output metrics resul
 
 ## LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
 model_versions  = ['GFDL-CM4',] ; # ['GFDL-ESM2G',] ; # Model identifier
-period    = '000101-000112' ; # Model climatological period (if relevant)
+period          = '000101-000112' ; # Model climatological period (if relevant)
 realization     = 'r1i1p1' ; # Model run identifier (if relevant)
 
 ## VARIABLES AND OBSERVATIONS TO USE

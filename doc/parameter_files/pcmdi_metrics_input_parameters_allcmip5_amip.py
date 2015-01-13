@@ -1,5 +1,3 @@
-import  genutil
-
 ################################################################################
 #  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY: 
 #
@@ -11,15 +9,10 @@ case_id = 'sampletest1'
 case_id = 'amip5_test'
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
 model_versions = ['GFDL-ESM2G',]
-
 model_versions = ['ACCESS1-0', 'ACCESS1-3', 'bcc-csm1-1', 'bcc-csm1-1-m', 'BNU-ESM', 'CanCM4', 'CanESM2', 'CCSM4', 'CESM1-BGC', 'CESM1-CAM5-1-FV2', 'CESM1-CAM5', 'CESM1-FASTCHEM', 'CESM1-WACCM', 'CESM1-WSCCM', 'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS', 'CNRM-CM5', 'CSIRO-Mk3-6-0', 'EC-EARTH', 'FGOALS-g2', 'FGOALS-s2', 'FIO-ESM', 'GFDL-CM2p1', 'GFDL-CM3', 'GFDL-ESM2G', 'GFDL-ESM2M', 'GISS-E2-H-CC', 'GISS-E2-H', 'GISS-E2-R-CC', 'GISS-E2-R', 'HadCM3', 'HadGEM2-AO', 'HadGEM2-CC', 'HadGEM2-ES', 'inmcm4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR', 'IPSL-CM5B-LR', 'MIROC4h', 'MIROC5', 'MIROC-ESM-CHEM', 'MIROC-ESM', 'MPI-ESM-LR', 'MPI-ESM-MR', 'MPI-ESM-P', 'MRI-CGCM3', 'NorESM1-ME', 'NorESM1-M']
-
 ### AMIP5 MODELS
 model_versions = ['CNRM-CM5', 'CanAM4', 'ACCESS1-3', 'MRI-CGCM3', 'bcc-csm1-1', 'FGOALS-s2', 'CCSM4', 'NorESM1-M', 'inmcm4', 'IPSL-CM5A-MR', 'CESM1-CAM5', 'bcc-csm1-1-m', 'FGOALS-g2', 'IPSL-CM5A-LR', 'GFDL-HIRAM-C180', 'HadGEM2-A', 'CMCC-CM', 'GISS-E2-R', 'GFDL-HIRAM-C360', 'MPI-ESM-LR', 'MIROC5', 'GFDL-CM3', 'IPSL-CM5B-LR', 'MPI-ESM-MR', 'MRI-AGCM3-2S', 'MRI-AGCM3-2H', 'ACCESS1-0', 'BNU-ESM', 'CSIRO-Mk3-6-0', 'EC-EARTH']
-
-
 #model_versions = ['ACCESS1-0', 'ACCESS1-3', 'bcc-csm1-1' ]
-
 #model_versions = ['MRI-CGCM3',]
 
 ### VARIABLES AND OBSERVATIONS TO USE
@@ -37,7 +30,6 @@ vars = ['ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500','rlut','r
 #vars = ['ta_850']
 #vars = ['rlut', 'rsut','rsutcs','rlutcs','pr','tas','prw','uas','vas','hus'] #,'ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500']
 #vars = ['rlut']
-
 #vars = ['zg_500']
 #vars = ['ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500']
 #vars = ['pr']
@@ -56,7 +48,7 @@ regrid_tool_ocn   = 'esmf'    # OPTIONS: "regrid2","esmf"
 regrid_method_ocn = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
 
 # SIMULATION PARAMETERS
-period = '1980-2005'
+period      = '1980-2005'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
@@ -84,4 +76,3 @@ metrics_output_path = '/work/gleckler1/processed_data/metrics_package/metrics_re
 model_clims_interpolated_output = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims-amip/'
 ## FILENAME FOR INTERPOLATED CLIMATOLGIES OUTPUT
 filename_output_template = "cmip5.%(model_version).amip.r1i1p1.mo.%(table_realm).%(variable)%(level).ver-1.%(period).interpolated.%(regridMethod).%(targetGridName).AC%(ext)"
-

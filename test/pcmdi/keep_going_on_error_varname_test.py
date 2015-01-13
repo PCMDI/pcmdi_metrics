@@ -1,6 +1,4 @@
-import genutil
-import os,sys
-import pcmdi_metrics
+import os
 
 ################################################################################
 #  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY: 
@@ -37,7 +35,7 @@ regrid_tool_ocn   = 'esmf'    # OPTIONS: "regrid2","esmf"
 regrid_method_ocn = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
 
 # SIMULATION PARAMETERS
-period = '198501-200512'
+period      = '198501-200512'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
@@ -50,13 +48,13 @@ save_mod_clims = True # True or False
 filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(period)-clim.nc"
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
-pth = os.path.dirname(__file__)
-mod_data_path = os.path.abspath(os.path.join(pth,"data"))
+pth                                 = os.path.dirname(__file__)
+mod_data_path                       = os.path.abspath(os.path.join(pth,"data"))
 ## ROOT PATH FOR OBSERVATIONS
-obs_data_path = os.path.abspath(os.path.join(pth,"obs"))
+obs_data_path                       = os.path.abspath(os.path.join(pth,"obs"))
 ## DIRECTORY WHERE TO PUT RESULTS
-metrics_output_path = os.path.join('pcmdi_install_test_results','metrics_results')
+metrics_output_path                 = os.path.join('pcmdi_install_test_results','metrics_results')
 ## DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES
-model_clims_interpolated_output = os.path.join('pcmdi_install_test_results','interpolated_model_clims')
+model_clims_interpolated_output     = os.path.join('pcmdi_install_test_results','interpolated_model_clims')
 ## FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
-filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_historical_%(realization)_%(period).interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"
+filename_output_template            = "%(variable)%(level)_%(model_version)_%(table)_historical_%(realization)_%(period).interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"

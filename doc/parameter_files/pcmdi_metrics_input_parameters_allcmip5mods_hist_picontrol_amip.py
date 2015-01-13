@@ -47,7 +47,6 @@ model_tweaks = {
       },
     }
 
-
 ## REGIONS ON WHICH WE WANT TO RUN METRICS (var specific)
 regions = {"tas" : [None,"land","ocean"],
            "uas" : [None,"land","ocean"],
@@ -77,7 +76,7 @@ regrid_tool_ocn   = 'esmf'    # OPTIONS: "regrid2","esmf"
 regrid_method_ocn = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
 
 # SIMULATION PARAMETERS
-period = '1980-2005'
+period      = '1980-2005'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
