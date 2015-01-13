@@ -1,6 +1,4 @@
-import genutil
-import os,sys
-import pcmdi_metrics
+import os
 
 ################################################################################
 #  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY: 
@@ -39,9 +37,9 @@ model_tweaks = {
     }
 
 # SIMULATION PARAMETERS
-model_period = '000101-010012'
-realization="r1i1p1" #mandatory
-regions = {"tas" : [None,"land","ocean"],}
+period      = '000101-010012'
+realization = "r1i1p1" #mandatory
+regions     = {"tas" : [None,"land","ocean"],}
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
 save_mod_clims = False
@@ -50,14 +48,14 @@ save_mod_clims = False
 
 ## Templates for climatology files
 ## TEMPLATE EXAMPLE: tas_GFDL-ESM2G_Amon_historical_r1i1p1_198001-199912-clim.nc
-filename_template = "%(variable)_%(model_version)_%(table)_piControl_%(model_period)-clim01.xml"
+filename_template = "%(variable)_%(model_version)_%(table)_piControl_%(period)-clim01.xml"
 ## filename template for landsea masks ('sftlf')
 sftlf_filename_template = "sftflf_not_here_%(model_version).nc"
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
-pth = os.path.dirname(__file__)
-mod_data_path = os.path.abspath(os.path.join(pth,"data"))
+pth                 = os.path.dirname(__file__)
+mod_data_path       = os.path.abspath(os.path.join(pth,"data"))
 ## ROOT PATH FOR OBSERVATIONS
-obs_data_path = os.path.abspath(os.path.join(pth,"obs"))
+obs_data_path       = os.path.abspath(os.path.join(pth,"obs"))
 ## DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join('pcmdi_install_test_results','metrics_results')

@@ -29,6 +29,7 @@ cmip5_historical_json   = glob.glob("data/CMIP_metrics_results/CMIP5/historical/
 cmip5_piControl_json    = glob.glob("data/CMIP_metrics_results/CMIP5/piControl/*.json")
 demo_ACME_files         = glob.glob("demo/ACME/*.py")
 demo_GFDL_files         = glob.glob("demo/GFDL/*.py")
+demo_GFDL_files        += glob.glob("demo/GFDL/*.png")
 demo_NCAR_files         = glob.glob("demo/NCAR/*.py")
 param_files             = glob.glob("doc/parameter_files/*.py")
 

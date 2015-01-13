@@ -7,7 +7,7 @@ case_id = 'sampletest_140910' ; # Defines a subdirectory to output metrics resul
 
 ## LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
 model_versions  = ['GFDL-CM4',] ; # ['GFDL-ESM2G',] ; # Model identifier
-model_period    = '000101-000112' ; # Model climatological period (if relevant)
+period          = '000101-000112' ; # Model climatological period (if relevant)
 realization     = 'r1i1p1' ; # Model run identifier (if relevant)
 
 ## VARIABLES AND OBSERVATIONS TO USE
@@ -32,7 +32,7 @@ save_mod_clims      = True      # Options: True or False (Save interpolated mode
 
 ## DATA LOCATION: MODELS, OBS AND METRICS OUTPUT - AND TEMPLATES FOR MODEL OUTPUT CLIMATOLOGY FILES
 # Template example: tas_GFDL-ESM2G_Amon_historical_r1i1p1_198001-199912-clim.nc
-filename_template               = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(model_period)-clim.nc"
+filename_template               = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(period)-clim.nc"
 # ROOT PATH FOR MODELS CLIMATOLOGIES
 mod_data_path                   = '/export/durack1/140701_metrics/test_new'
 # ROOT PATH FOR OBSERVATIONS
