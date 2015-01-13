@@ -1,4 +1,3 @@
-import genutil
 import getpass
 
 buildDate = '140922' ; # Must be set to allow correct metrics install to be picked up
@@ -32,7 +31,7 @@ regrid_tool_ocn   = 'esmf'    # OPTIONS: "regrid2","esmf"
 regrid_method_ocn = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
 
 # SIMULATION PARAMETERS
-model_period = '01-12'
+period      = '01-12'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
@@ -42,7 +41,7 @@ save_mod_clims = True # True or False
 
 ## Templates for climatology files
 ## TEMPLATE EXAMPLE: cmip5.GFDL-ESM2G.historical.r1i1p1.mo.atm.Amon.rlut.ver-1.1980-1999.AC.nc
-filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(model_period)-clim.nc"
+filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(period)-clim.nc"
 
 ## dictionary for custom %(keyword) designed by user
 # Driver will match each key to its value defined by a variable name OR all if variable name is not present, OR "" if "all" is not defined
