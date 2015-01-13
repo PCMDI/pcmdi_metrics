@@ -246,8 +246,6 @@ EOF
         echo "PATH:"${PATH}
         echo "PWD:"`pwd`
         ${cmake_cmd}
-        [ $? != 0 ] && echo " ERROR: Could not configure (cmake) cdat code (1)" && popd && checked_done 1
-        ${cmake_cmd}
         [ $? != 0 ] && echo " ERROR: Could not configure (cmake) cdat code (2)" && popd && checked_done 1
 
         echo "CMAKE ARGS"${cmake_args}
@@ -360,11 +358,11 @@ main() {
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
     cdat_repo_https=https://github.com/UV-CDAT/uvcdat.git
-    cdat_version="master"
+    cdat_version="2.1.0"
     metrics_repo=git://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_http=http://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_https=https://github.com/PCMDI/pcmdi_metrics.git
-    metrics_checkout="master"
+    metrics_checkout="v1.0.0"
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
         echo "Could not create directory ${install_prefix}"
@@ -431,7 +429,7 @@ main() {
     echo "*******************************"
     echo "Please test as follows:"
     echo "source ${install_prefix}/bin/setup_runtime.sh"
-    echo "python ${install_prefix}/test/test_suite.py"
+    echo "python ${metrics_build_directory}/test/test_suite.py"
     echo "*******************************"
     echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/pcmdi_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
