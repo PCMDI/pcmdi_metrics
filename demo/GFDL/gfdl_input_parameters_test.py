@@ -1,6 +1,6 @@
 import getpass
 
-buildDate = '140922' ; # Must be set to allow correct metrics install to be picked up
+buildDate = '150113' ; # Must be set to allow correct metrics install to be picked up
 
 ################################################################################
 #  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY: 
@@ -14,13 +14,17 @@ case_id = 'sampletest'
 model_versions = ['GFDL-CM4','GFDL-ESM2G',]
 
 ### VARIABLES AND OBSERVATIONS TO USE
-vars = ['pr','tos']
-#vars = ['pr','tas','rlut','rsut','hus_850']
-#vars = ['ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500','rlut','rsut','rlutcs','rsutcs','tas']
-#vars = ['pr','psl','rlut','rlutcs','rsut','rsutcs','ta_200','ta_850','tas','tauu','tauv','ua_200','ua_850','va_200','va_850','vas','zg_500']
+# Variable acronyms are described in the CMIP5 standard output document - http://cmip-pcmdi.llnl.gov/cmip5/docs/standard_output.pdf
+#vars = ['pr','psl','rlut','rlutcs','rsut','rsutcs','ta_200','ta_850','tas','ua_200','ua_850','va_200','va_850','zg_500'] ; # GFDL atmos test suite
+#vars = ['clt','hfss','pr','prw','psl','rlut','rlutcs','rsdt','rsut','rsutcs','tas','tauu','tauv','ts','uas','vas'] ; # 2d atmos variables
+#vars = ['hur','hus','huss','ta','ua','va','zg'] ; # 3d atmos variables
+#vars = ['hus_850','ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500'] ; # 3d atmos variables - example heights
+#vars = ['sos','tos','zos'] ; # 2d ocean variables
+#vars = ['rlwcrf','rswcrf'] ; # Non-standard CMIP5 variables (available from obs output)
+vars = ['tos','zg_500','rlut','rlutcs','pr','psl','rsut','rsutcs','tas','ta_850','uas','ua_200','ua_850','vas','va_200','va_850'] ; # Full GFDL test suite
 
-# Observations to use at the moment "default" or "alternate"
-ref = 'default'  #'all'
+# Observations to use "default", "alternate" or "all" or a specific obs reference e.g. "ref3"
+ref = 'all' ; # 'default' ; 'all' ; # Selecting 'default' uses a single obs dataset, 'all' processes against all available datasets
 ext = '.nc' ; # '.xml'
 
 # INTERPOLATION OPTIONS
@@ -40,8 +44,8 @@ save_mod_clims = True # True or False
 ## DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 
 ## Templates for climatology files
-## TEMPLATE EXAMPLE: cmip5.GFDL-ESM2G.historical.r1i1p1.mo.atm.Amon.rlut.ver-1.1980-1999.AC.nc
-filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(period)-clim.nc"
+## TEMPLATE EXAMPLE: tas_GFDL-ESM2G_experiment_Amon_r1i1p1_198001-199912-clim.nc
+filename_template = "%(variable)_%(model_version)_experiment_%(table)_%(realization)_%(period)-clim.nc"
 
 ## dictionary for custom %(keyword) designed by user
 # Driver will match each key to its value defined by a variable name OR all if variable name is not present, OR "" if "all" is not defined
@@ -54,9 +58,9 @@ mod_data_path = ''.join(['/home/',getpass.getuser(),'/',buildDate,'_metrics/test
 ## ROOT PATH FOR OBSERVATIONS
 #obs_data_path = '/home/p1d/obs/'
 obs_data_path = ''.join(['/home/',getpass.getuser(),'/obs/'])
-## DIRECTORY WHERE TO PUT RESULTS
+## DIRECTORY WHERE TO PUT RESULTS - case_id will be appended to this path
 metrics_output_path = './metrics_output_path'
-## DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES
+## DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES - case_id will be appended to this path
 model_clims_interpolated_output = './metrics_output_path/Interpolation_Output'
 ## FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
-filename_output_template = "%(model_version).historical.r1i1p1.mo.%(table_realm).%(variable)%(level).ver-1.%(period).interpolated.%(regridMethod).%(targetGridName).AC%(ext)"
+filename_output_template = "%(model_version)_experiment_%(table)_%(realization)_%(variable)%(level)_%(period)_interpolated_%(regridMethod)_%(targetGridName)-AC%(ext)"
