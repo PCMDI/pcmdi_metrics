@@ -13,7 +13,7 @@ num_cpus=4
 
 #### BUILD OPTIONS #####
 ## Do we want to build with graphics capabilities
-build_graphics=true
+build_graphics=false
 
 ## Do we want to build with CMOR
 build_cmor=false
