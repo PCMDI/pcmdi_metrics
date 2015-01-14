@@ -433,7 +433,7 @@ main() {
     echo "*******************************"
     echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/pcmdi_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
-    echo "source ${install_prefix}/bin/setup_runtime.sh"
+    echo "source ${install_prefix}/bin/setup_runtime.sh or .csh"
     echo "pcmdi_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
     echo "*******************************"
     echo "Once everything is ok, you can safely remove the temporary directory: ${install_prefix}/tmp"
