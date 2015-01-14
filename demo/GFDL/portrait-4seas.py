@@ -14,8 +14,8 @@ try:
 except:
   raise RuntimeError("Sorry your python is not build with VCS support and cannot generate portrait plots")
 
-# PATH WHERE METRICS RESULTS FOR GFDL SIT
-gfdl_pth="/work/durack1/Shared/140808_metrics-gfdl/metrics_output_path/sampletest"
+# GFDL PATH FOR METRICS RESULTS
+gfdl_pth = "./metrics_output_path/sampletest"
 
 # STANDARD PYTHON MODULES
 import glob,json,os,sys
@@ -23,7 +23,6 @@ import numpy as np
 # CDAT MODULES
 import pcmdi_metrics.graphics.portraits
 import MV2
-from genutil import statistics
 
 # CREATE VCS OBJECT AS A PORTAIT PLOT AND LOAD PLOT SETTINGS FOR TEST CASE 
 x=vcs.init()
@@ -96,10 +95,9 @@ mods = sorted(list(mods))
 # ORGANIZE METRICS INTO A VARIABLES X MODELS MATRIX 
 out1_rel,out2_rel,out3_rel,out4_rel = [np.ma.masked_all((len(vars),len(mods)),np.float32) for _ in range(4)] ; # Define arrays to fill
 
+# LOOP OVER VARIABLE
 for vn, var in enumerate(vars):
-    # LOOP OVER VARIABLE
     vals1,vals2,vals3,vals4 = [[] for _ in range(4)]
-    
     # LOOP OVER MODEL
     for mn,mod in enumerate(mods):
         try:

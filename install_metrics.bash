@@ -428,7 +428,7 @@ main() {
     echo "Metrics - ${metrics_checkout} - Install Success"
     echo "*******************************"
     echo "Please test as follows:"
-    echo "source ${install_prefix}/bin/setup_runtime.sh"
+    echo "source ${install_prefix}/bin/setup_runtime.sh or .csh"
     echo "python ${metrics_build_directory}/test/test_suite.py"
     echo "*******************************"
     echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/pcmdi_input_parameters_sample.py"
