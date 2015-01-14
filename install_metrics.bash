@@ -358,11 +358,11 @@ main() {
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
     cdat_repo_https=https://github.com/UV-CDAT/uvcdat.git
-    cdat_version="2.1.0"
+    cdat_version="master"
     metrics_repo=git://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_http=http://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_https=https://github.com/PCMDI/pcmdi_metrics.git
-    metrics_checkout="v1.0.0"
+    metrics_checkout="master"
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
         echo "Could not create directory ${install_prefix}"
