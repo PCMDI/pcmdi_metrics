@@ -228,19 +228,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
             OBS.targetMask = MV2.logical_not(MV2.equal(sftlf["targetGrid"],region))
           try:
            if level is not None:
-             # START IPSL Modif
-             tmp_do = OBS.get(var,level=level)
-	     if parameters.extract_from_3DVariables==True:
-	       do = tmp_do
-	     else:
-               lats = tmp_do.getLatitude()
-               lons = tmp_do.getLongitude()
-               time = tmp_do.getTime()
-               do = tmp_do.squeeze(1)
-               do.setAxis(0,time)
-               do.setAxis(1,lats)
-               do.setAxis(2,lons)
-             # END IPSL Modif
+             do = OBS.get(var,level=level)
            else:
              do = OBS.get(var)
           except Exception,err:
@@ -301,16 +289,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                        OUT.level=""
                        dm = MODEL.get(var,varInFile=varInFile)  #+"_ac")
                      else:
-                       if parameters.extract_from_3DVariables==True:
-                         dm = MODEL.get(var,varInFile=varInFile,level=level)
-                       else:
-                         OUT.level = "-%i" % (int(level/100.))
-                         # START IPSL Modi
-                         tmp_level = str(int(level/100))
-                         levelVarInFile = var+'_'+tmp_level
-                         print 'levelVarInFile = ', levelVarInFile
-                         dm = MODEL.get(var,varInFile=levelVarInFile)
-                         # END IPSL Modif
+                       OUT.level = "-%i" % (int(level/100.))
+                       dm = MODEL.get(var,varInFile=varInFile,level=level)
                   except Exception,err:
                       success = False
                       dup('Failed to get variable %s for version: %s, error:\n%s' % ( var, model_version, err))
@@ -381,7 +361,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                                     f.close()
                             descr[att] = fmt % tuple(vals)
                       #metrics_dictionary[model_version]["SimulationDescription"] = descr
-                      metrics_dictionary[model_version]["SimulationDescription"] = sim_descr_mapping
+                      metrics_dictionary[model_version]["SimulationDescription"] = descr
                       metrics_dictionary[model_version]["InputClimatologyFileName"] = os.path.basename(MODEL())
                       metrics_dictionary[model_version]["InputClimatologyMD5"] = MODEL.hash()
                       if len(regions_dict[var])>1: # Not just global

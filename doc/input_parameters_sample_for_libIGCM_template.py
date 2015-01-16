@@ -22,12 +22,12 @@ which_metrics = 'PCMDI_metrics'
 
 # -------------------------------------------------------------------------------------------------------------------
 ## Path/Filename
-path_and_filename = '/path/targetfile.nc'
+path_and_filename = 'targetfile'
 
 ## Amount of attributes provided with the results
 # => Standard = correspond to the standard amount of information that allows using the portrait plot
 # => IPSL_Extended = provides more information (more attributes) with the metrics to store the results in a database
-attributes_provided = 'IPSL_Extended'
+attributes_provided = 'MyAttributes'
 
 ## From this, we get all the information we need
 dum = str.split(path_and_filename,'/')
@@ -70,10 +70,10 @@ creation_date = datetime.fromtimestamp(os.path.getmtime(path_and_filename)).strf
 #SimTrackingDate = datetime.fromtimestamp(os.path.getmtime(path_and_filename)).strftime('%Y-%m-%d')
 
 ## Simulation description map
-if attributes_provided == 'standard':
-  simulation_description_mapping = {}
-else:
-  simulation_description_mapping = {
+#if attributes_provided == 'standard':
+#  simulation_description_mapping = {}
+#else:
+simulation_description_mapping = {
 				    "model_period":"model_period",
 				    "Login":"Login",
 				    "Center":"Center",
@@ -88,19 +88,17 @@ else:
 # DEFINES A SUBDIRECTORY TO METRICS OUTPUT RESULTS SO MULTIPLE CASES CAN BE COMPARED
 #case_id = 'IPSL_rewritten_file'
 #case_id = 'Test_mapping'
-case_id = institute_id+'-'+model_versions[0]+'-'+realization+'-'+model_period+'-'+attributes_provided
+case_id = institute_id+'-'+login+'-'+model_versions[0]+'-'+experiment+'-'+realization+'-'+model_period+'-'+attributes_provided
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
 
 ### VARIABLES AND OBSERVATIONS TO USE
-#vars = ['hfls','hfss','clt','tauu','tauv'] # Missing the obs in the archive ; scientific issue
-#vars=['ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500','hus_850']
-#vars = [ 'rlut','rsut','rlutcs','rsutcs' ]
-#vars=['ua_850']
-#vars = ['pr','prw','tas','huss','uas','vas','psl','rlut','rsut','rlutcs','rsutcs','ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500','hus_850']
-vars = ['pr','prw','tas','uas','vas','psl','rlut','rsut','rlutcs','rsutcs','ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500','hus_850']
-
-### Do we want to extract the variables on the vertical levels from a 3D variable (=True)? Or do we rather have the corresponding 2D variables already existing in the input file (=False)?
-extract_from_3DVariables=False
+vars2D = ['pr','prw','tas','uas','vas','psl','rlut','rsut','rlutcs','rsutcs']
+vars3D = ['ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500','hus_850']
+strfilename = str.split(filename,'_')
+if strfilename[len(strfilename)-1]=='histmth.nc':
+   vars = vars2D
+if strfilename[len(strfilename)-1]=='histmthNMC.nc':
+   vars = vars3D
 
 ## regions of mask to use when processing variables
 regions = {"tas" : ["land","ocean"],
@@ -115,12 +113,12 @@ regions = {"tas" : ["land","ocean"],
 
 #regions_values = {"terre":0.,}
 
-# Observations to use at the moment "default", "alternate1", "alternate2", "alternate3" (last two are not always available)
-ref = ['default','alternate1']
+# Observations to use at the moment "default", "alternate1", "alternate2", "alternate3", or "all" (last two are not always available)
+ref = ['all']
 
 # INTERPOLATION OPTIONS
 targetGrid        = '2.5x2.5' # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
-regrid_tool       = 'regrid2' # OPTIONS: 'regrid2','esmf'
+regrid_tool       = 'esmf' # OPTIONS: 'regrid2','esmf'
 regrid_method     = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
 regrid_tool_ocn   = 'esmf'    # OPTIONS: "regrid2","esmf"
 regrid_method_ocn = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
@@ -145,46 +143,6 @@ save_mod_clims = False # True or False
 model_tweaks = { model_versions[0] :
                     { 'variable_mapping' :
                         {
-                        'tas':'tas',    # Surface Temperature
-                        'pr':'pr',      # Precipitation
-                        'prw':'prw',    # Precipitable Water
-                        'psl':'psl',    # Sea Level Pressure
-                        'hfss':'hfss',  # Sensible heat flux
-                        'hflx':'hflx',  # Latent heat flux
-                        'huss':'huss',  # Near-surface specific humidity
-                        'clt':'clt',    # Total cloud cover
-                        'tauu':'tauu',  # Zonal wind stress
-                        'tauv':'tauv',  # Meridional wind stress
-                        'uas':'uas',    # Near-surface zonal wind speed
-                        'vas':'vas',    # Near-surface meridional wind speed
-                        'zg':'z',       # 3D - Geopotential height (!!! Problem on this one)
-                        'hus':'q',      # 3D - Specific humidity
-                        'ua':'u',       # 3D - Zonal Wind
-                        'va':'v',       # 3D - Meridional Wind
-                        'ta':'t',       # 3D - Temperature
-                        'rlds':'rlds',     # Radiative - Downward longwave at surface
-                        'rldscs':'rldscs', # Radiative - Downward longwave at surface - Clear Sky
-                        'rlus':'rlus',     # Radiative - Upward longwave at surface
-                        'rlut':'rlut',     # Radiative - Upward longwave at TOA
-                        'rlutcs':'rlutcs', # Radiative - Upward longwave at TOA - Clear Sky
-                        'rlwcrf':'',       # Radiative - Longwave Cloud radiative forcing
-                        'rsds':'rsds',     # Radiative - Downward shortwave at surface
-                        'rsdscs':'rsdscs', # Radiative - Downward shortwave at surface - Clear Sky
-                        'rsdt':'rsdt',     # Radiative - Downward shortwave at TOA
-                        'rsus':'rsus',     # Radiative - Upward shortwave at surface
-                        'rsuscs':'rsuscs', # Radiative - Upward shortwave at surface - Clear Sky
-                        'rsut':'rsut',     # Radiative - Upward shortwave at TOA
-                        'rsutcs':'rsutcs', # Radiative - Upward shortwave at TOA - Clea Sky
-                        'rswcrf':''        # Radiative - Shortwave Cloud radiative forcing
-                        }
-                    }
-               }
-
-
-
-model_tmptweaks = { model_versions[0] :
-                    { 'variable_mapping' :
-                        {
                         'tas':'t2m',    # Surface Temperature
                         'pr':'precip',  # Precipitation
                         'prw':'prw',    # Precipitable Water
@@ -197,11 +155,11 @@ model_tmptweaks = { model_versions[0] :
                         'tauv':'tauy',  # Meridional wind stress
                         'uas':'u10m',   # Near-surface zonal wind speed
                         'vas':'u10m',   # Near-surface meridional wind speed
-                        'zg':'z',       # 3D - Geopotential height (!!! Problem on this one)
-                        'hus':'q',      # 3D - Specific humidity
-                        'ua':'u',       # 3D - Zonal Wind
-                        'va':'v',       # 3D - Meridional Wind
-                        'ta':'t',       # 3D - Temperature
+                        'zg':'zg',       # 3D - Geopotential height (!!! Problem on this one)
+                        'hus':'hus',      # 3D - Specific humidity
+                        'ua':'ua',       # 3D - Zonal Wind
+                        'va':'va',       # 3D - Meridional Wind
+                        'ta':'ta',       # 3D - Temperature
                         'rlds':'LWdnSFC',      # Radiative - Downward longwave at surface
                         'rldscs':'LWdnSFCclr', # Radiative - Downward longwave at surface - Clear Sky
                         'rlus':'LWupSFC',      # Radiative - Upward longwave at surface
@@ -233,13 +191,13 @@ filename_template = filename
 mod_data_path = mod_path
 
 ## ROOT PATH FOR OBSERVATIONS
-obs_data_path = '/data/jservon/Evaluation/ReferenceDatasets/PCMDI-MP/obs/'
+obs_data_path = 'my_obs_data_path/'
 
 ## DIRECTORY WHERE TO PUT RESULTS
-metrics_output_path = '/home/igcmg/PCMDI-MP/install_with_VCS/PCMDI_METRICS/results/metrics_results/' 
+metrics_output_path = 'my_metrics_output_path/'
 
 ## DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES
-model_clims_interpolated_output = '/home/igcmg/PCMDI-MP/install_with_VCS/PCMDI_METRICS/results/interpolated_model_clims/'
+model_clims_interpolated_output = ''
 filename_output_template = "Metrics_%(model_version)."+experiment+"."+realization+".mo.%(table).%(variable).ver-1.%(period).%(region).AC.nc"
 
 # -------------------------------------------------------------------------------------------------------------------
