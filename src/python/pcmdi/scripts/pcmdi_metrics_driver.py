@@ -35,7 +35,7 @@ class DUP(object):
 
 def applyCustomKeys(O,custom_dict,var):
   for k,v in custom_dict.iteritems():
-    setattr(O,k,custom_dict.get(var,custom_dict.get("all","")))
+    setattr(O,k,custom_dict.get(var,custom_dict.get(None,"")))
 
 P = argparse.ArgumentParser()
 P.add_argument("-p","--parameters",dest="param",default="input_parameters.py",help="input parameter file containing local settings",required=True)
@@ -85,7 +85,7 @@ for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL
   sft.model_version = model_version
   sft.table = "fx"
   sft.realm = "atmos"
-  sft.model_period = parameters.model_period
+  sft.period = parameters.period
   sft.ext = "nc"
   sft.targetGrid = None
   sft.realization="r0i0p0"
@@ -254,7 +254,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   MODEL.model_version = model_version
                   MODEL.table = table_realm
                   MODEL.realm = realm
-                  MODEL.model_period = parameters.model_period  
+                  MODEL.period = parameters.period  
                   MODEL.ext="nc"
                   MODEL.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                   MODEL.realization = parameters.realization
@@ -394,7 +394,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                       CLIM.level=OUT.level
                       CLIM.model_version = model_version
                       CLIM.table = table_realm
-                      CLIM.period = parameters.model_period
+                      CLIM.period = parameters.period
                       CLIM.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                       if level is None:
                         varid = var

@@ -1,9 +1,9 @@
 PCMDI metrics package
 ======
-[![stable version](http://img.shields.io/badge/stable version-1.0.0-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/1.0.0)
+[![stable version](http://img.shields.io/badge/stable version-1.0-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/1.0)
 ![repo size](https://reposs.herokuapp.com/?path=PCMDI/pcmdi_metrics)
 ![platforms](http://img.shields.io/badge/platforms-linux | osx-lightgrey.svg)
-[![DOI](http://img.shields.io/badge/DOI-10.5281/zenodo.xxxxx-orange.svg)](http://doi.org/10.5281/zenodo.xxxxx)
+[![DOI](http://img.shields.io/badge/DOI-10.5281/zenodo.13952-orange.svg)](http://doi.org/10.5281/zenodo.13952)
 
 The PCMDI metrics package is used to objectively compare results from climate models with observations using well-established statistical tests. Results are produced in the context of all model simulations contributed to CMIP5 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons are focused on large- to global-scale annual cycle performance metrics.
 
