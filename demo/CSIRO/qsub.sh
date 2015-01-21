@@ -11,4 +11,4 @@
 
 # qstat -u pjd599 # ; User queued (brief)
 # nqstat -u pjd599 # ; User detailed queue info
-# > qsub -P v66 qsub.sh # ; Run command line
+# > qsub -P p66 qsub.sh # ; Run command line
