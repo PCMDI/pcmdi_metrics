@@ -105,7 +105,9 @@ if parameters.targetGrid == "2.5x2.5":
 else:
   tGrid = parameters.targetGrid
 
-sftlf["targetGrid"] = cdutil.generateLandSeaMask(tGrid)*100.
+sft = cdutil.generateLandSeaMask(tGrid)
+sft[:]=sft.filled(1.)*100.
+sftlf["targetGrid"] = sft
 
 #At this point we need to create the tuples var/region to know if a variable needs to be ran over a specific region or global or both
 regions = getattr(parameters,"regions",{})
@@ -278,7 +280,9 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                          Vr=fv[varInFile]
                          ## Need to recover only first time/leve/etc...
                          N=Vr.rank()-2 # minus lat/lon
-                         sftlf[model_version]["raw"]=cdutil.generateLandSeaMask(Vr(*(slice(0,1),)*N))*100.
+                         sft = cdutil.generateLandSeaMask(Vr(*(slice(0,1),)*N))*100.
+                         sft[:]=sft.filled(100.)
+                         sftlf[model_version]["raw"]=sft
                          f.close()
                          dup("auto generated sftlf for model %s " % model_version)
 
