@@ -358,11 +358,11 @@ main() {
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
     cdat_repo_https=https://github.com/UV-CDAT/uvcdat.git
-    cdat_version="2.1.0"
+    cdat_version="master"
     metrics_repo=git://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_http=http://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_https=https://github.com/PCMDI/pcmdi_metrics.git
-    metrics_checkout="v1.0.0"
+    metrics_checkout="master"
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
         echo "Could not create directory ${install_prefix}"
@@ -433,7 +433,7 @@ main() {
     echo "*******************************"
     echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/pcmdi_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
-    echo "source ${install_prefix}/bin/setup_runtime.sh"
+    echo "source ${install_prefix}/bin/setup_runtime.sh or .csh"
     echo "pcmdi_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
     echo "*******************************"
     echo "Once everything is ok, you can safely remove the temporary directory: ${install_prefix}/tmp"
