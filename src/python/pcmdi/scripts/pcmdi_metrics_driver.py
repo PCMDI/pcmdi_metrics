@@ -283,7 +283,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                          sft = cdutil.generateLandSeaMask(Vr(*(slice(0,1),)*N))*100.
                          sft[:]=sft.filled(100.)
                          sftlf[model_version]["raw"]=sft
-                         f.close()
+                         fv.close()
                          dup("auto generated sftlf for model %s " % model_version)
 
                     MODEL.mask = MV2.logical_not(MV2.equal(sftlf[model_version]["raw"],region))
