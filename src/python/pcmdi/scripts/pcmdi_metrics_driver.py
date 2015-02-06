@@ -153,12 +153,13 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
 
     #Ok at that stage we need to loop thru obs
-    dup('ref is: ',parameters.ref)
-    if isinstance(parameters.ref,list):
-        refs=parameters.ref
-    elif isinstance(parameters.ref,(unicode,str)):
+    dup('parameter file ref is: ',parameters.ref)
+    refs=parameters.ref
+    if isinstance(refs,list) and "all" in [x.lower() for x in refs]:
+      refs = "all"
+    if isinstance(refs,(unicode,str)):
         #Is it "all"
-        if parameters.ref.lower()=="all":
+        if refs.lower()=="all":
             Refs = obs_dic[var].keys()
             refs=[]
             for r in Refs:
@@ -166,7 +167,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     refs.append(r)
             dup( "refs:",refs)
         else:
-            refs=[parameters.ref,]
+            refs=[refs,]
+    dup('ref is: ',refs)
 
     OUT = pcmdi_metrics.io.base.Base(os.path.join(parameters.metrics_output_path,parameters.case_id),"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
     OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)

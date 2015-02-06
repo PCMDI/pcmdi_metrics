@@ -37,7 +37,7 @@ regions = {"tas" : [None,"terre","ocean"],"tos":[None,]}
 regions_values = {"terre":100.}
 
 # Observations to use at the moment "default" or "alternate"
-ref = ['default'] 
+ref = ['all'] 
 ext = '.nc'
 
 # INTERPOLATION OPTIONS
