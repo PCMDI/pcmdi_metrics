@@ -81,9 +81,6 @@
                     "cor_xyt_ann_NHEX": "0.98",
                     "cor_xyt_ann_SHEX": "0.98",
                     "cor_xyt_ann_TROPICS": "0.92",
-                    "custom_model_max": 304.95272638750384,
-                    "custom_model_min": 271.27384426614753,
-                    "custom_ref_max": 304.95272638750384,
                     "custom_ref_min": 271.27384426614753,
                     "mae_xy_ann_GLB": "1.15",
                     "mae_xy_ann_NHEX": "1.14",
@@ -135,6 +132,6 @@
         },
         "InputClimatologyMD5": "974a3339d34fcdd6a68d6e135f72cd78"
     },
-    "metrics_git_sha1": "5e07aafcc32c39db33b9da4caf8065edf2ec36a7",
-    "uvcdat_version": "2.1.0-10-g2e4ea9e"
+    "metrics_git_sha1": "e03dc3e37b537a2805da87f0b40848893100eb24",
+    "uvcdat_version": "2.1.0-153-g60b5589"
 }
