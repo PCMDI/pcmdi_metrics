@@ -88,9 +88,11 @@ def mymin(slab,nm):
 
 def my_custom(var,dm,do):
   out = {}
-  for f in [mymax,mymin]:
-    out.update(f(dm,"model"))
-    out.update(f(dm,"ref"))
+  if var == "tas":
+    out.update(mymax(dm,"model"))
+  elif var=="tos":
+    out.update(mymin(dm,"ref"))
   out["some_custom"]=1.5
   return out
 compute_custom_metrics = my_custom
+# or for different metrics 
