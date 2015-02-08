@@ -58,6 +58,12 @@ exec("import %s as parameters" % fnm)
 if pth!="":
     sys.path.pop(-1)
 
+#Checking if we have custom obs to add
+if hasattr(parameters,"custom_observations"):
+  fjson2 = open(parameters.custom_observations)
+  obs_dic.update(json.load(fjson2))
+  fjson2.close()
+
 #Checking if user has custom_keys
 if not hasattr(parameters,"custom_keys"):
   parameters.custom_keys={}
