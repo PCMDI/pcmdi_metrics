@@ -339,7 +339,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                               "ModellingGroup":"institute_id",
                               "Experiment":"experiment",
                               "ModelFreeSpace":"ModelFreeSpace",
-                              "SimName":"realization",
+                              "Realization":"realization",
                               "creation_date":"creation_date",
                               }
 
