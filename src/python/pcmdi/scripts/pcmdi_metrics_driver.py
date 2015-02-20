@@ -388,12 +388,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   if not metrics_dictionary[model_version].has_key(refabbv):
                     metrics_dictionary[model_version][refabbv] = {'source':onm}
                   pr = metrics_dictionary[model_version][refabbv].get(parameters.realization,{})
-                  # START IPSL Modif
-                  if parameters.attributes_provided=='standard':
-                    pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(var,dm,do)
-                  if parameters.attributes_provided=='IPSL_Extended':
-                    pr_rgn = pcmdi_metrics.pcmdi.compute_metrics_ExtInfo(var,dm,do)
-                  # END IPSL Modif
+                  pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(var,dm,do)
                   ###########################################################################
                   ## The follwoing allow users to plug in a set of custom metrics
                   ## Function needs to take in var name, model clim, obs clim
