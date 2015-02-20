@@ -58,6 +58,12 @@ exec("import %s as parameters" % fnm)
 if pth!="":
     sys.path.pop(-1)
 
+#Checking if we have custom obs to add
+if hasattr(parameters,"custom_observations"):
+  fjson2 = open(parameters.custom_observations)
+  obs_dic.update(json.load(fjson2))
+  fjson2.close()
+
 #Checking if user has custom_keys
 if not hasattr(parameters,"custom_keys"):
   parameters.custom_keys={}
@@ -105,7 +111,9 @@ if parameters.targetGrid == "2.5x2.5":
 else:
   tGrid = parameters.targetGrid
 
-sftlf["targetGrid"] = cdutil.generateLandSeaMask(tGrid)*100.
+sft = cdutil.generateLandSeaMask(tGrid)
+sft[:]=sft.filled(1.)*100.
+sftlf["targetGrid"] = sft
 
 #At this point we need to create the tuples var/region to know if a variable needs to be ran over a specific region or global or both
 regions = getattr(parameters,"regions",{})
@@ -151,12 +159,13 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
 
     #Ok at that stage we need to loop thru obs
-    dup('ref is: ',parameters.ref)
-    if isinstance(parameters.ref,list):
-        refs=parameters.ref
-    elif isinstance(parameters.ref,(unicode,str)):
+    dup('parameter file ref is: ',parameters.ref)
+    refs=parameters.ref
+    if isinstance(refs,list) and "all" in [x.lower() for x in refs]:
+      refs = "all"
+    if isinstance(refs,(unicode,str)):
         #Is it "all"
-        if parameters.ref.lower()=="all":
+        if refs.lower()=="all":
             Refs = obs_dic[var].keys()
             refs=[]
             for r in Refs:
@@ -164,7 +173,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     refs.append(r)
             dup( "refs:",refs)
         else:
-            refs=[parameters.ref,]
+            refs=[refs,]
+    dup('ref is: ',refs)
 
     OUT = pcmdi_metrics.io.base.Base(os.path.join(parameters.metrics_output_path,parameters.case_id),"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
     OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
@@ -278,7 +288,13 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                          Vr=fv[varInFile]
                          ## Need to recover only first time/leve/etc...
                          N=Vr.rank()-2 # minus lat/lon
+                         #<<<<<<< HEAD
                          sftlf[model_version]["raw"]=cdutil.generateLandSeaMask(Vr(*(slice(0,1),)*N))*100.
+                         #=======
+                         sft = cdutil.generateLandSeaMask(Vr(*(slice(0,1),)*N))*100.
+                         sft[:]=sft.filled(100.)
+                         sftlf[model_version]["raw"]=sft
+                         #>>>>>>> pcmdi_master
                          fv.close()
                          dup("auto generated sftlf for model %s " % model_version)
 
@@ -332,7 +348,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                               "ModellingGroup":"institute_id",
                               "Experiment":"experiment",
                               "ModelFreeSpace":"ModelFreeSpace",
-                              "SimName":"realization",
+                              "Realization":"realization",
                               "creation_date":"creation_date",
                               }
 
