@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/home/igcmg/PCMDI-MP/devel_install_PCMDI_IPSL/PCMDI_METRICS/bin/python
 ######################################################
 #
 #  USER INPUT IS SET IN FILE "input_parameters.py"
@@ -288,9 +288,13 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                          Vr=fv[varInFile]
                          ## Need to recover only first time/leve/etc...
                          N=Vr.rank()-2 # minus lat/lon
+                         #<<<<<<< HEAD
+                         sftlf[model_version]["raw"]=cdutil.generateLandSeaMask(Vr(*(slice(0,1),)*N))*100.
+                         #=======
                          sft = cdutil.generateLandSeaMask(Vr(*(slice(0,1),)*N))*100.
                          sft[:]=sft.filled(100.)
                          sftlf[model_version]["raw"]=sft
+                         #>>>>>>> pcmdi_master
                          fv.close()
                          dup("auto generated sftlf for model %s " % model_version)
 
@@ -302,7 +306,6 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                        dm = MODEL.get(var,varInFile=varInFile)  #+"_ac")
                      else:
                        OUT.level = "-%i" % (int(level/100.))
-                       #Ok now fetch this
                        dm = MODEL.get(var,varInFile=varInFile,level=level)
                   except Exception,err:
                       success = False
@@ -373,7 +376,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                                         vals.append("N/A")
                                     f.close()
                             descr[att] = fmt % tuple(vals)
-                      metrics_dictionary[model_version]["SimulationDescription"] = descr 
+                      #metrics_dictionary[model_version]["SimulationDescription"] = descr
+                      metrics_dictionary[model_version]["SimulationDescription"] = descr
                       metrics_dictionary[model_version]["InputClimatologyFileName"] = os.path.basename(MODEL())
                       metrics_dictionary[model_version]["InputClimatologyMD5"] = MODEL.hash()
                       if len(regions_dict[var])>1: # Not just global
