@@ -148,6 +148,7 @@ saved_obs_masks = {}
 for Var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
   try:
     metrics_dictionary = collections.OrderedDict()
+    metrics_def_dictionary = collections.OrderedDict()
     ## REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
     sp = Var.split("_")
     var=sp[0]
@@ -403,12 +404,20 @@ for Var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     metrics_dictionary[model_version][refabbv] = {'source':onm}
                   pr = metrics_dictionary[model_version][refabbv].get(parameters.realization,{})
                   pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(Var,dm,do)
+                  ## Calling compute metrics with None for model and obs, triggers it to send back the defs.
+                  metrics_def_dictionary.update(pcmdi_metrics.pcmdi.compute_metrics(Var,None,None))
                   ###########################################################################
                   ## The follwoing allow users to plug in a set of custom metrics
                   ## Function needs to take in var name, model clim, obs clim
                   ###########################################################################
                   if hasattr(parameters,"compute_custom_metrics"):
                     pr_rgn.update(parameters.compute_custom_metrics(Var,dm,do))
+                    ## Calling compute metrics with None for model and obs, triggers it to send back the defs.
+                    ## But we are wrapping this in an except/try in case user did not implement
+                    try:
+                      metrics_def_dictionary.update(parameters.compute_custom_metrics(Var,None,None))
+                    except:
+                      pass
                   pr[region_name]=collections.OrderedDict((k,pr_rgn[k]) for k in sorted(pr_rgn.keys()))
                   metrics_dictionary[model_version][refabbv][parameters.realization] = pr
              
@@ -435,6 +444,8 @@ for Var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         except Exception,err:
           dup("Error while processing observation %s for variable %s:\n\t%s" % (var,ref,err))
       ## Done with obs and models loops , let's dum before next var
+    ## Ok at this point we need to add the metrics def in the dictionary so that it is stored
+    metrics_dictionary["METRICS"]=metrics_def_dictionary
     ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
     OUT.write(metrics_dictionary, mode="w", indent=4, separators=(',', ': '))
     # CREATE OUTPUT AS ASCII FILE
