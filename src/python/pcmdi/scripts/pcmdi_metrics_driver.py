@@ -417,7 +417,8 @@ for Var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     try:
                       metrics_def_dictionary.update(parameters.compute_custom_metrics(Var,None,None))
                     except:
-                      pass
+                      ## Better than nothing we will use the doc string
+                      metrics_def_dictionary.update({"custom":parameters.compute_custom_metrics.__doc__})
                   pr[region_name]=collections.OrderedDict((k,pr_rgn[k]) for k in sorted(pr_rgn.keys()))
                   metrics_dictionary[model_version][refabbv][parameters.realization] = pr
              
