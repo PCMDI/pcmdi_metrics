@@ -8,12 +8,28 @@ def compute_metrics(Var,dm_glb,do_glb):
     ## Did we send data? Or do we just want the info?
     if dm_glb is None and do_glb is None:
       metrics_defs = collections.OrderedDict()
-      metrics_def["rms_xyt"] = pcmdi_metrics.pcmdi.rms_xyt.compute(None, None)
-      metrics_def["cor_xyt"] = pcmdi_metrics.pcmdi.cor_xyt.compute(None, None)
-      metrics_def["bias_xy"] = pcmdi_metrics.pcmdi.bias_xy.compute(None, None)
+      metrics_defs["rms_xyt"] = pcmdi_metrics.pcmdi.rms_xyt.compute(None, None)
+      metrics_defs["rms_xy"] = pcmdi_metrics.pcmdi.rms_xy.compute(None, None)
+      metrics_defs["bias_xy"] = pcmdi_metrics.pcmdi.bias.compute(None, None)
+      metrics_defs["mae_xy"] = pcmdi_metrics.pcmdi.meanabs_xy.compute(None, None)
+      metrics_defs["cor_xyt"] = pcmdi_metrics.pcmdi.cor_xyt.compute(None, None)
+      metrics_defs["cor_xy"] = pcmdi_metrics.pcmdi.cor_xy.compute(None, None)
+      metrics_defs["seasonal_mean"] = pcmdi_metrics.pcmdi.seasonal_mean.compute(None, None)
+      metrics_defs["annual_mean"] = pcmdi_metrics.pcmdi.annual_mean.compute(None, None)
       return metrics_defs
     cdms.setAutoBounds('on')
     metrics_dictionary = {}
+    
+    # SET CONDITIONAL ON INPUT VARIABLE
+    if var == 'pr':
+        conv = 1.e5
+    else:
+        conv = 1.
+        
+    if var in ['hus']: 
+      sig_digits = '.5f'
+    else:
+      sig_digits = '.2f'
     
     domains = ['GLB','NHEX','TROPICS','SHEX']
     
@@ -48,21 +64,11 @@ def compute_metrics(Var,dm_glb,do_glb):
         ### CALCULATE ANNUAL MEAN RMS
         rms_xy = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am,do_am)
         
-        # SET CONDITIONAL ON INPUT VARIABLE
-        if var == 'pr':
-            conv = 1.e5
-        else:
-            conv = 1.
-            
-        sig_digits = '.2f'
-        if var in ['hus']: sig_digits = '.5f'
-        
-        for m in ['rms_xyt','rms_xy','bias_xy','cor_xyt','mae_xy']:
-            if m == 'rms_xyt': metrics_dictionary[m + '_ann_' + dom] = format(rms_xyt*conv,sig_digits)
-            if m == 'rms_xy': metrics_dictionary[m + '_ann_' + dom] =  format(rms_xy*conv,sig_digits)
-            if m == 'bias_xy': metrics_dictionary[m + '_ann_' + dom] = format(bias_xy*conv,sig_digits)
-            if m == 'mae_xy': metrics_dictionary[m + '_ann_' + dom] = format(mae_xy*conv,sig_digits)
-            if m == 'cor_xyt': metrics_dictionary[m + '_ann_' + dom] = format(cor_xyt,'.2f')
+        metrics_dictionary['rms_xyt_ann_' + dom] =  format(rms_xyt*conv,sig_digits)
+        metrics_dictionary['rms_xy_ann_' + dom] =  format(rms_xy*conv,sig_digits)
+        metrics_dictionary['bias_xy_ann_' + dom] =  format(bias_xy*conv,sig_digits)
+        metrics_dictionary['cor_xyt_ann_' + dom] =  format(cor_xyt*conv,'.2f')
+        metrics_dictionary['mae_xy_ann_' + dom] =  format(mae_xy*conv,sig_digits)
         
         ### CALCULATE SEASONAL MEANS
         for sea in ['djf','mam','jja','son']:

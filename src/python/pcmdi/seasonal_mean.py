@@ -2,12 +2,12 @@ import cdutil,cdms2
 
 def compute(d,sea):
     """ Computes SEASONAL MEAN"""
-    if dm is None and sea is None: # just want the doc
+    if d is None and sea is None: # just want the doc
       return {
           "Name":"Seasonal Mean",
           "Abstract": "Compute Seasonal Mean",
           "Contact":"Peter Gleckler <gleckler1@llnl.gov>",
-          "Comments" : "Assumes input are 12 mnoths climatology"
+          "Comments" : "Assumes input are 12 months climatology"
           }
 
     djf_ind = [11,0,1]
