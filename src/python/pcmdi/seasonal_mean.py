@@ -2,7 +2,7 @@ import cdutil,cdms2
 
 def compute(d,sea):
     """ Computes SEASONAL MEAN"""
-    if dm is None and do is None: # just want the doc
+    if dm is None and sea is None: # just want the doc
       return {
           "Name":"Seasonal Mean",
           "Abstract": "Compute Seasonal Mean",
