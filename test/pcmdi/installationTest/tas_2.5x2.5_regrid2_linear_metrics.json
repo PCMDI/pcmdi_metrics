@@ -8,6 +8,24 @@
             "shape": "(12, 121, 240)",
             "CMIP_CMOR_TABLE": "Amon",
             "RefTrackingDate": "Thu Jan 16 16:11:10 2014"
+        },
+        "alternate1": {
+            "RefName": "ERA40",
+            "MD5sum": "cd563e1c34f20b6aefc5c849cf4d153a",
+            "period": "195709-200208",
+            "filename": "tas_pcmdi-metrics_Amon_ERA40_195709-200208-clim.nc",
+            "shape": "(12, 73, 144)",
+            "CMIP_CMOR_TABLE": "Amon",
+            "RefTrackingDate": "Thu Jan 16 16:11:06 2014"
+        },
+        "alternate2": {
+            "RefName": "JRA25",
+            "MD5sum": "77cc9aab998c684e75f1ccea24f42225",
+            "period": "197901-201006",
+            "filename": "tas_pcmdi-metrics_Amon_JRA25_197901-201006-clim.nc",
+            "shape": "(12, 145, 288)",
+            "CMIP_CMOR_TABLE": "Amon",
+            "RefTrackingDate": "Thu Jan 16 16:11:08 2014"
         }
     },
     "RegionalMasking": {
@@ -312,6 +330,65 @@
         "InputClimatologyMD5": "fe00a043c990b2cfd8ff1e2f9e9c4cc0",
         "InputRegionFileName": "sftlf_GFDL-ESM2G.nc"
     },
-    "metrics_git_sha1": "e03dc3e37b537a2805da87f0b40848893100eb24",
-    "uvcdat_version": "2.1.0-153-g60b5589"
+    "METRICS": {
+        "rms_xyt": {
+            "Abstract": "Compute Spatial and Temporal Root Mean Square",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatio-Temporal Root Mean Square",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "rms_xy": {
+            "Abstract": "Compute Spatial Root Mean Square",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatial Root Mean Square",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "bias_xy": {
+            "Abstract": "Compute Full Average of Model - Observation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Bias"
+        },
+        "mae_xy": {
+            "Abstract": "Compute Full Average of Absolute Difference Between Model And Observation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Mean Absolute Error"
+        },
+        "cor_xyt": {
+            "Abstract": "Compute Spatio-Temporal Correlation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatial and Temporal Correlation",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "cor_xy": {
+            "Abstract": "Compute Spatial Correlation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatial Correlation",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "seasonal_mean": {
+            "Abstract": "Compute Seasonal Mean",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Seasonal Mean",
+            "Comments": "Assumes input are 12 months climatology"
+        },
+        "annual_mean": {
+            "Abstract": "Compute Annual Mean",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Annual Mean",
+            "Comments": "Assumes input are 12 months climatology",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "some_custom": {
+            "Abstract": "For demo purpose really does nothing",
+            "Contact": "doutriaux1@llnl.gov",
+            "Name": "SomeCustom"
+        },
+        "custom_model_max": {
+            "Abstract": "Computes Custom Maximum for demo purposes",
+            "Contact": "doutriaux1@llnl.gov",
+            "Name": "Custom Maximum"
+        }
+    },
+    "metrics_git_sha1": "40e056c9ec4b9ec96eb5c3a93ad89fcd427429f5",
+    "uvcdat_version": "2.1.0-682-g5f296b7"
 }
