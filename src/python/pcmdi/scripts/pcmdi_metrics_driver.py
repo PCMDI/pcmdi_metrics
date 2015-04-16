@@ -194,13 +194,17 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         region_name = "%i" % region
       metrics_dictionary["RegionalMasking"][region_name]=region
       for ref in refs:
-        if ref in ["default","alternate"]:
+        if ref[:9] in ["default","alternate"]:
           refabbv = ref+"Reference"
         else:
           refabbv = ref
-        metrics_dictionary["References"][ref] = obs_dic[var][obs_dic[var][ref]]
+        if isinstance(obs_dic[var][ref],(str,unicode)):
+            obs_var_ref = obs_dic[var][obs_dic[var][ref]]
+        else:
+            obs_var_ref = obs_dic[var][ref]
+        metrics_dictionary["References"][ref] = obs_var_ref
         try:
-          if obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"]=="Omon":
+          if obs_var_ref["CMIP_CMOR_TABLE"]=="Omon":
               OBS = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
           else:
               OBS = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
