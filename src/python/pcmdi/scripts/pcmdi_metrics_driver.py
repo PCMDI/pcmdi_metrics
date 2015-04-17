@@ -29,7 +29,6 @@ unidata.addScaledUnit("psu",.001,"dimless")
 unidata.addScaledUnit("PSS-78",.001,"dimless")
 unidata.addScaledUnit("Practical Salinity Scale 78",.001,"dimless")
 
-
 regions_values = {"land":100.,"ocean":0.,"lnd":100.,"ocn":0.}
 
 #Load the obs dictionary
