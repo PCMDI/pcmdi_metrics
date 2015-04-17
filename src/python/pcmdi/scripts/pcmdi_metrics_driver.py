@@ -71,12 +71,6 @@ exec("import %s as parameters" % fnm)
 if pth!="":
     sys.path.pop(-1)
 
-#Checking if we have custom obs to add
-if hasattr(parameters,"custom_observations"):
-  fjson2 = open(parameters.custom_observations)
-  obs_dic.update(json.load(fjson2))
-  fjson2.close()
-
 #Checking if user has custom_keys
 if not hasattr(parameters,"custom_keys"):
   parameters.custom_keys={}
@@ -121,12 +115,14 @@ for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL
     sftlf[model_version]["md5"]=None
 if parameters.targetGrid == "2.5x2.5":
   tGrid = cdms2.createUniformGrid(-88.875,72,2.5,0,144,2.5)
-else:
+
+if parameters.targetGrid == "1.0x1.0":
+  tGrid = cdms2.createUniformGrid(-89,179,1,0,360,1)
+
+if parameters.targetGrid not in ['2.5x2.5','1.0x1.0']:
   tGrid = parameters.targetGrid
 
-sft = cdutil.generateLandSeaMask(tGrid)
-sft[:]=sft.filled(1.)*100.
-sftlf["targetGrid"] = sft
+sftlf["targetGrid"] = cdutil.generateLandSeaMask(tGrid)*100.
 
 #At this point we need to create the tuples var/region to know if a variable needs to be ran over a specific region or global or both
 regions = getattr(parameters,"regions",{})
@@ -172,13 +168,12 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
 
 
     #Ok at that stage we need to loop thru obs
-    dup('parameter file ref is: ',parameters.ref)
-    refs=parameters.ref
-    if isinstance(refs,list) and "all" in [x.lower() for x in refs]:
-      refs = "all"
-    if isinstance(refs,(unicode,str)):
+    dup('ref is: ',parameters.ref)
+    if isinstance(parameters.ref,list):
+        refs=parameters.ref
+    elif isinstance(parameters.ref,(unicode,str)):
         #Is it "all"
-        if refs.lower()=="all":
+        if parameters.ref.lower()=="all":
             Refs = obs_dic[var].keys()
             refs=[]
             for r in Refs:
@@ -186,9 +181,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     refs.append(r)
             dup( "refs:",refs)
         else:
-            refs=[refs,]
-    dup('ref is: ',refs)
-
+            refs=[parameters.ref,]
     OUT = pcmdi_metrics.io.base.Base(os.path.join(parameters.metrics_output_path,parameters.case_id),"%(var)%(level)_%(targetGridName)_%(regridTool)_%(regridMethod)_metrics")
     OUT.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
     OUT.var=var
@@ -283,10 +276,14 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   MODEL.realm = realm
                   MODEL.period = parameters.period  
                   MODEL.ext="nc"
+		  print 'targetGrid ='
+		  print parameters.targetGrid
+		  print 'regridTool :',regridTool,' regridMethod :',regridMethod
                   MODEL.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                   MODEL.realization = parameters.realization
                   applyCustomKeys(MODEL,parameters.custom_keys,var)
                   varInFile = tweaks.get("variable_mapping",{}).get(var,None)
+		  print 'varInFile :',varInFile
                   if varInFile is None: # ok no mapping for THIS model
                      ## Trying to get the "All models" mapping and fallback and var we are using
                      varInFile=tweaks_all.get("variable_mapping",{}).get(var,var)
@@ -300,14 +297,16 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                        #ok we can try to generate the sftlf
                        MODEL.variable=var
                        dup("auto generating sftlf for model %s " % MODEL())
+		       print 'last check 1'
                        if os.path.exists(MODEL()):
                          fv=cdms2.open(MODEL())
                          Vr=fv[varInFile]
+			 print 'shape Vr'
+			 print Vr.shape
                          ## Need to recover only first time/leve/etc...
                          N=Vr.rank()-2 # minus lat/lon
-                         sft = cdutil.generateLandSeaMask(Vr(*(slice(0,1),)*N))*100.
-                         sft[:]=sft.filled(100.)
-                         sftlf[model_version]["raw"]=sft
+                         sftlf[model_version]["raw"]=cdutil.generateLandSeaMask(Vr(*(slice(0,1),)*N))*100.
+		         print 'last check 2'
                          fv.close()
                          dup("auto generated sftlf for model %s " % model_version)
 
@@ -317,9 +316,9 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                      if level is None:
                        OUT.level=""
                        dm = MODEL.get(var,varInFile=varInFile)  #+"_ac")
+		       print 'last check'
                      else:
                        OUT.level = "-%i" % (int(level/100.))
-                       #Ok now fetch this
                        dm = MODEL.get(var,varInFile=varInFile,level=level)
                   except Exception,err:
                       success = False
@@ -362,7 +361,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                               "ModellingGroup":"institute_id",
                               "Experiment":"experiment",
                               "ModelFreeSpace":"ModelFreeSpace",
-                              "Realization":"realization",
+                              "SimName":"realization",
                               "creation_date":"creation_date",
                               }
 
@@ -390,7 +389,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                                         vals.append("N/A")
                                     f.close()
                             descr[att] = fmt % tuple(vals)
-                      metrics_dictionary[model_version]["SimulationDescription"] = descr 
+                      #metrics_dictionary[model_version]["SimulationDescription"] = descr
+                      metrics_dictionary[model_version]["SimulationDescription"] = descr
                       metrics_dictionary[model_version]["InputClimatologyFileName"] = os.path.basename(MODEL())
                       metrics_dictionary[model_version]["InputClimatologyMD5"] = MODEL.hash()
                       if len(regions_dict[var])>1: # Not just global
@@ -400,14 +400,35 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                     
                   if not metrics_dictionary[model_version].has_key(refabbv):
                     metrics_dictionary[model_version][refabbv] = {'source':onm}
+
                   pr = metrics_dictionary[model_version][refabbv].get(parameters.realization,{})
-                  pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(var,dm,do)
+                  
+                  pr_rgn = {}
+                  if hasattr(parameters,"compute_custom_metrics")==False:
+		     pr_rgn.update(pcmdi_metrics.pcmdi.compute_metrics(var,dm,do))
+		  else:
+                     if hasattr(parameters,"compute_custom_only"):
+                        compute_custom_only = parameters.compute_custom_only
+		     else:
+		        compute_custom_only='false'
+			print "set compute_custom_only='true' in the param file to compute only the custom metrics"
+		     print 'compute_custom_only = ',compute_custom_only
+                     
+		     if compute_custom_only=='false':
+		        pr_rgn.update(pcmdi_metrics.pcmdi.compute_metrics(var,dm,do))
+			pr_rgn.update(parameters.compute_custom_metrics(var,dm,do))
+		     else:
+		        pr_rgn.update(parameters.compute_custom_metrics(var,dm,do))
+		  #
+		  #or (hasattr(parameters,"compute_custom_metrics") and parameters.compute_custom_only=='false'):
+		  #   pr_rgn.update(pcmdi_metrics.pcmdi.compute_metrics(var,dm,do))
+                  #pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(var,dm,do)
                   ###########################################################################
                   ## The follwoing allow users to plug in a set of custom metrics
                   ## Function needs to take in var name, model clim, obs clim
                   ###########################################################################
-                  if hasattr(parameters,"compute_custom_metrics"):
-                    pr_rgn.update(parameters.compute_custom_metrics(var,dm,do))
+                  #if hasattr(parameters,"compute_custom_metrics"):
+                  #  pr_rgn.update(parameters.compute_custom_metrics(var,dm,do))
                   pr[region_name]=collections.OrderedDict((k,pr_rgn[k]) for k in sorted(pr_rgn.keys()))
                   metrics_dictionary[model_version][refabbv][parameters.realization] = pr
              
