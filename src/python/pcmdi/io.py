@@ -4,6 +4,7 @@ class OBS(pcmdi_metrics.io.base.Base):
       
         template = "%(realm)/%(frequency)/%(variable)/%(reference)/%(ac)/%(filename)"
         pcmdi_metrics.io.base.Base.__init__(self,root,template)
+        print "REF:",reference
         obs_name = obs_dic[var][reference]
         ## usually send "default", "alternate", etc
         # but some case (sftlf) we send the actual name
