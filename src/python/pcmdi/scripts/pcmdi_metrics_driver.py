@@ -229,7 +229,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
             ## Ok we need to apply a mask
             ## First try to read from obs json file
             try:
-                oMask = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,obs_dic[var][ref])
+                oMask = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,obs_var_ref["RefName"])
                 oMasknm = oMask()
             except Exception,err:
                 dup("error retrieving mask for obs: %s, \n%s" % (obs_dic[var][ref],err))
@@ -353,7 +353,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   metrics_dictionary[model_version] = metrics_dictionary.get(model_version,{})
                   ## Stores model's simul description
                   if not metrics_dictionary[model_version].has_key("SimulationDescription"):
-                      descr = {"MIPTable":obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"],
+                      descr = {"MIPTable":obs_var_ref["CMIP_CMOR_TABLE"],
                               "Model":model_version,
                               }
 
