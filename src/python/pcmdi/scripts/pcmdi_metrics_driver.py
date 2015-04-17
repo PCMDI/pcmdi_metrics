@@ -16,6 +16,19 @@ import MV2
 import cdutil
 import collections
 
+## Before we do anything else we need to create some units 
+## Salinity Units
+import unidata
+unidata.udunits_wrap.init()
+
+## Create a dimensionless units named dimless
+unidata.addDimensionlessUnit("dimless")
+
+## Created scaled units for dimless
+unidata.addScaledUnit("psu",.001,"dimless")
+unidata.addScaledUnit("PSS-78",.001,"dimless")
+unidata.addScaledUnit("Practical Salinity Scale 78",.001,"dimless")
+
 regions_values = {"land":100.,"ocean":0.,"lnd":100.,"ocn":0.}
 
 #Load the obs dictionary
