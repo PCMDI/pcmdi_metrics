@@ -191,9 +191,11 @@ EOF
     fi
     cd uvcdat >& /dev/null
     git checkout ${cdat_version}
-    # until the branch bellow has been merged
-    # we need to merge ourselves
-    git merge --no-ff --no-commit origin/salinity
+    # The branch bellow has been merged
+    # we do not need to merge ourselves any longer
+    # leaving commented out for others 
+    # so they know how to do it
+    # git merge --no-ff --no-commit origin/salinity
     [ $? != 0 ] && echo " WARNING: Problem with checking out cdat revision [${cdat_version}] from repository :-("
     #NOTE:
     #cdms configuration with --enable-esg flag looks for pg_config in
