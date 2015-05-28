@@ -145,13 +145,14 @@ for var in parameters.vars:
     rg = [rg,]
   regions_dict[vr] = rg
 saved_obs_masks = {}
-for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
+for Var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
   try:
     metrics_dictionary = collections.OrderedDict()
     ## REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
-    if len(var.split("_"))>1:
-        level = float(var.split("_")[-1])*100.
-        var=var.split("_")[0]
+    sp = Var.split("_")
+    var=sp[0]
+    if len(sp)>1:
+        level = float(sp[-1])*100.
     else:
         level=None
 
@@ -401,13 +402,13 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   if not metrics_dictionary[model_version].has_key(refabbv):
                     metrics_dictionary[model_version][refabbv] = {'source':onm}
                   pr = metrics_dictionary[model_version][refabbv].get(parameters.realization,{})
-                  pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(var,dm,do)
+                  pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(Var,dm,do)
                   ###########################################################################
                   ## The follwoing allow users to plug in a set of custom metrics
                   ## Function needs to take in var name, model clim, obs clim
                   ###########################################################################
                   if hasattr(parameters,"compute_custom_metrics"):
-                    pr_rgn.update(parameters.compute_custom_metrics(var,dm,do))
+                    pr_rgn.update(parameters.compute_custom_metrics(Var,dm,do))
                   pr[region_name]=collections.OrderedDict((k,pr_rgn[k]) for k in sorted(pr_rgn.keys()))
                   metrics_dictionary[model_version][refabbv][parameters.realization] = pr
              
