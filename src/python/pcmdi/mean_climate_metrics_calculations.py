@@ -29,7 +29,7 @@ def compute_metrics(Var,dm_glb,do_glb):
         cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm,do)
         
         ### CALCULATE ANNUAL MEANS
-        do_am, dm_am =  pcmdi_metrics.pcmdi.annual_mean.compute(dm,do)
+        dm_am, do_am =  pcmdi_metrics.pcmdi.annual_mean.compute(dm,do)
         
         ### CALCULATE ANNUAL MEAN BIAS
         bias_xy = pcmdi_metrics.pcmdi.bias.compute(dm_am,do_am)
