@@ -1,0 +1,731 @@
+ No mask for  /short/p66/pjd599/test/ncs/sftlf_ACCESS1-0_piControl_fx_r0i0p0_050001-052912-clim.nc
+ No mask for  /short/p66/pjd599/test/ncs/sftlf_ACCESS1-3_piControl_fx_r0i0p0_050001-052912-clim.nc
+ ref is:  all
+ refs: [u'default', u'alternate1']
+ OBS SHAPE IS  (12, 72, 144)
+ pr   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+pr    annual mean bias is  -3.47662932342e-06
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+pr    annual mean bias is  -1.60239744164e-06
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+pr    annual mean bias is  -7.58828829071e-06
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+pr    annual mean bias is  -1.2392022379e-06
+ pr   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+pr    annual mean bias is  -4.40834125102e-06
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+pr    annual mean bias is  -3.15211642998e-06
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+pr    annual mean bias is  -8.51585768099e-06
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+pr    annual mean bias is  -1.55704964209e-06
+ OBS SHAPE IS  (12, 72, 144)
+ pr   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    alternate1
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+pr    annual mean bias is  -6.67785310254e-06
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+pr    annual mean bias is  -1.23125376744e-05
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+pr    annual mean bias is  -5.45937639354e-06
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+pr    annual mean bias is  -2.26164523966e-06
+ pr   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    alternate1
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+pr    annual mean bias is  -7.60956503015e-06
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+pr    annual mean bias is  -1.38622566628e-05
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+pr    annual mean bias is  -6.38694578382e-06
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+pr    annual mean bias is  -2.57949264385e-06
+ ref is:  all
+ refs: [u'default', u'alternate1']
+ OBS SHAPE IS  (12, 72, 144)
+ psl   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+psl    annual mean bias is  14.1924280681
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+psl    annual mean bias is  -142.893347156
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+psl    annual mean bias is  5.42180326844
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+psl    annual mean bias is  180.048828092
+ psl   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+psl    annual mean bias is  -6.27152358647
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+psl    annual mean bias is  -139.391271562
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+psl    annual mean bias is  -37.8007213034
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+psl    annual mean bias is  158.377422106
+ OBS SHAPE IS  (12, 72, 144)
+ psl   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    alternate1
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+psl    annual mean bias is  27.3491088441
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+psl    annual mean bias is  -111.757946688
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+psl    annual mean bias is  -2.9457684914
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+psl    annual mean bias is  196.751041712
+ psl   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    alternate1
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+psl    annual mean bias is  6.88515718946
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+psl    annual mean bias is  -108.255871094
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+psl    annual mean bias is  -46.1682930633
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+psl    annual mean bias is  175.079635726
+ ref is:  all
+ refs: [u'default']
+ OBS SHAPE IS  (12, 72, 144)
+ rlut   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+rlut    annual mean bias is  -2.34968465476
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+rlut    annual mean bias is  1.16349654596
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+rlut    annual mean bias is  -8.19248611802
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+rlut    annual mean bias is  -0.020064392218
+ rlut   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+rlut    annual mean bias is  -3.24561903679
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+rlut    annual mean bias is  -1.40672160022
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+rlut    annual mean bias is  -8.92374533912
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+rlut    annual mean bias is  0.593609828982
+ ref is:  all
+ refs: [u'default']
+ OBS SHAPE IS  (12, 72, 144)
+ rlutcs   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+rlutcs    annual mean bias is  -2.13074101864
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+rlutcs    annual mean bias is  0.916544251092
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+rlutcs    annual mean bias is  -5.68864446116
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+rlutcs    annual mean bias is  -1.62012284585
+ rlutcs   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+rlutcs    annual mean bias is  -4.38238889821
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+rlutcs    annual mean bias is  -3.2881166014
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+rlutcs    annual mean bias is  -9.14025452381
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+rlutcs    annual mean bias is  -0.718795569428
+ ref is:  all
+ refs: [u'default']
+ OBS SHAPE IS  (12, 72, 144)
+ rsut   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+rsut    annual mean bias is  3.01835803022
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+rsut    annual mean bias is  2.95359408022
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+rsut    annual mean bias is  0.075366848067
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+rsut    annual mean bias is  6.02611316239
+ rsut   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+rsut    annual mean bias is  2.64978012068
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+rsut    annual mean bias is  4.08035579225
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+rsut    annual mean bias is  1.28948228736
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+rsut    annual mean bias is  2.57950228242
+ ref is:  all
+ refs: [u'default']
+ OBS SHAPE IS  (12, 72, 144)
+ rsutcs   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+rsutcs    annual mean bias is  -0.527777356408
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+rsutcs    annual mean bias is  0.458016397449
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+rsutcs    annual mean bias is  -1.5610253189
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+rsutcs    annual mean bias is  -0.480323147776
+ rsutcs   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+rsutcs    annual mean bias is  -1.68300395363
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+rsutcs    annual mean bias is  1.87549672798
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+rsutcs    annual mean bias is  -0.131438025716
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+rsutcs    annual mean bias is  -6.79307056315
+ ref is:  all
+ refs: [u'default', u'alternate1', u'alternate2']
+ OBS SHAPE IS  (12, 1, 72, 144)
+ ta   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ta    annual mean bias is  0.603619749853
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  0.589348861961
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  0.997388812442
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  0.112995608446
+ ta   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ta    annual mean bias is  -0.0517225371714
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  -0.396053695826
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  0.0521696526778
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  0.239621025301
+ OBS SHAPE IS  (12, 1, 72, 144)
+ ta   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate1
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ta    annual mean bias is  0.0753114568379
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  0.0236222279272
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  0.736862148755
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  -0.714733547653
+ ta   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate1
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ta    annual mean bias is  -0.580149330148
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  -0.961872341346
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  -0.208222981821
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  -0.588916560195
+ OBS SHAPE IS  (12, 1, 72, 144)
+ ta   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate2
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ta    annual mean bias is  0.412379117903
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  0.437970096521
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  0.735259447936
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  -0.0359772935001
+ ta   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate2
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ta    annual mean bias is  -0.242737934622
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  -0.54698717008
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  -0.210007220963
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ta    annual mean bias is  0.0910131307302
+ ref is:  all
+ refs: [u'default', u'alternate1', u'alternate2']
+ OBS SHAPE IS  (12, 72, 144)
+ tas   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+tas    annual mean bias is  0.945941453229
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  2.08828965209
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  0.539483687494
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  0.210051020104
+ tas   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+tas    annual mean bias is  0.711639247103
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  1.02304029551
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  0.17741840026
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  0.934459045536
+ OBS SHAPE IS  (12, 72, 144)
+ tas   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    alternate1
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+tas    annual mean bias is  0.695514777521
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  1.61802868587
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  0.530709935713
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  -0.0621942890207
+ tas   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    alternate1
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+tas    annual mean bias is  0.461212571395
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  0.552779329295
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  0.168644648479
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  0.662213736411
+ OBS SHAPE IS  (12, 72, 144)
+ tas   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    alternate2
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+tas    annual mean bias is  1.30240231022
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  1.84961754671
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  0.886062826898
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  1.17152655705
+ tas   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    alternate2
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+tas    annual mean bias is  1.06810010409
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  0.78436819013
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  0.523997539664
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+tas    annual mean bias is  1.89593458248
+ ref is:  all
+ refs: [u'default']
+ OBS SHAPE IS  (12, 72, 144)
+ tos   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+tos    annual mean bias is  0.145603500159
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+tos    annual mean bias is  0.118321947518
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+tos    annual mean bias is  0.606671307188
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+tos    annual mean bias is  -0.346161707436
+ tos   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+tos    annual mean bias is  0.0835871745963
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+tos    annual mean bias is  -0.172505051151
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+tos    annual mean bias is  0.38746900489
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+tos    annual mean bias is  -0.0505476530599
+ ref is:  all
+ refs: [u'default', u'alternate1', u'alternate2']
+ OBS SHAPE IS  (12, 1, 72, 144)
+ ua   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ua    annual mean bias is  -0.105637545543
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  1.12124990168
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  -1.94198311644
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.503820578125
+ ua   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ua    annual mean bias is  -0.805280181079
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.343185877307
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  -2.33696679962
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  -0.42205962092
+ OBS SHAPE IS  (12, 1, 72, 144)
+ ua   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate1
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ua    annual mean bias is  -0.12279298984
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.945888502535
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  -1.60548009408
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.291212622024
+ ua   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate1
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ua    annual mean bias is  -0.822435625376
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.16782447816
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  -2.00046377727
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  -0.634667577021
+ OBS SHAPE IS  (12, 1, 72, 144)
+ ua   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate2
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ua    annual mean bias is  -0.168470961608
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.969516875643
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  -1.8065326623
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.33160290183
+ ua   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate2
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ua    annual mean bias is  -0.868113597144
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.191452851268
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  -2.20151634548
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  -0.594277297214
+ ref is:  all
+ refs: [u'default', u'alternate1', u'alternate2']
+ OBS SHAPE IS  (12, 1, 72, 144)
+ ua   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ua    annual mean bias is  0.21149258054
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.335728713634
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.158417294558
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.126563671595
+ ua   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ua    annual mean bias is  0.324094508314
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.137980887096
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.786467220479
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  -0.0433050587276
+ OBS SHAPE IS  (12, 1, 72, 144)
+ ua   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate1
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ua    annual mean bias is  0.184102152726
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.303863219782
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.171495351846
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.052466224956
+ ua   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate1
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ua    annual mean bias is  0.296609911184
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.106544276093
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.799747406282
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  -0.118577115399
+ OBS SHAPE IS  (12, 1, 72, 144)
+ ua   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate2
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ua    annual mean bias is  0.163958560783
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.363876560925
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  -0.0353691683246
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.174332899248
+ ua   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate2
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+ua    annual mean bias is  0.27645115972
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.16650443047
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.592437303725
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+ua    annual mean bias is  0.0040572884964
+ ref is:  all
+ refs: [u'default', u'alternate1', u'alternate2']
+ OBS SHAPE IS  (12, 72, 144)
+ uas   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+uas    annual mean bias is  0.0893801925561
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.252279016089
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.0679321100295
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  -0.0520705484499
+ uas   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+uas    annual mean bias is  0.306309190919
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.164967722932
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.494236716522
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.259723133304
+ OBS SHAPE IS  (12, 72, 144)
+ uas   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    alternate1
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+uas    annual mean bias is  0.0896047007774
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.183770463092
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.183091812489
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  -0.098048173249
+ uas   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    alternate1
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+uas    annual mean bias is  0.306533699141
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.096459169935
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.609396418982
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.213745508505
+ OBS SHAPE IS  (12, 72, 144)
+ uas   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    alternate2
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+uas    annual mean bias is  0.0163996028925
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.0462900495117
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.197742166425
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  -0.194833407259
+ uas   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    alternate2
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+uas    annual mean bias is  0.233328601256
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  -0.0410212436452
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.624046772918
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+uas    annual mean bias is  0.116960274495
+ ref is:  all
+ refs: [u'default', u'alternate1', u'alternate2']
+ OBS SHAPE IS  (12, 1, 72, 144)
+ va   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+va    annual mean bias is  -0.060115385513
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0328966370063
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.131035943239
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0164135762938
+ va   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+va    annual mean bias is  -0.0580671742309
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0272001077809
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.108584080906
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0384173340062
+ OBS SHAPE IS  (12, 1, 72, 144)
+ va   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate1
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+va    annual mean bias is  -0.0802946011714
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.00508823620648
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.187614584021
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0481809832871
+ va   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate1
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+va    annual mean bias is  -0.0782463898894
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.00060829301886
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.165162721688
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0701847409994
+ OBS SHAPE IS  (12, 1, 72, 144)
+ va   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate2
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+va    annual mean bias is  -0.11039736312
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.00730220688712
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.280619439251
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0578748569944
+ va   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate2
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+va    annual mean bias is  -0.108349151837
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.0129987361125
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.258167576918
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0798786147068
+ ref is:  all
+ refs: [u'default', u'alternate1', u'alternate2']
+ OBS SHAPE IS  (12, 1, 72, 144)
+ va   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+va    annual mean bias is  -0.000796400203902
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0296938635211
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.036782105145
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.013610972824
+ va   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+va    annual mean bias is  0.0444768042949
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0487158247462
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.160429959683
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.00983727102781
+ OBS SHAPE IS  (12, 1, 72, 144)
+ va   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate1
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+va    annual mean bias is  0.00893712300733
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0202869878853
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.0591106575796
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0197307978238
+ va   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate1
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+va    annual mean bias is  0.0539789071723
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0397146534583
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.182649909416
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.00352582743576
+ OBS SHAPE IS  (12, 1, 72, 144)
+ va   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate2
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+va    annual mean bias is  0.0182460142115
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0333244139911
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.0489292929581
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.0423329825795
+ va   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate2
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+va    annual mean bias is  0.0632369604789
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  -0.0523477488118
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.172701455265
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+va    annual mean bias is  0.0646572940479
+ ref is:  all
+ refs: [u'default', u'alternate1', u'alternate2']
+ OBS SHAPE IS  (12, 72, 144)
+ vas   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+vas    annual mean bias is  0.0433713235227
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.049598998565
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.0131674582395
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.0673475137636
+ vas   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    default
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+vas    annual mean bias is  0.0247383019178
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.0161924515798
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.0872999720604
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  -0.0292775178867
+ OBS SHAPE IS  (12, 72, 144)
+ vas   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    alternate1
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+vas    annual mean bias is  0.0392447780791
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.0453850153744
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.0292115926965
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.0431377261664
+ vas   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    alternate1
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+vas    annual mean bias is  0.0206117564743
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.0119784683893
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.103344106517
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  -0.0534873054838
+ OBS SHAPE IS  (12, 72, 144)
+ vas   ACCESS1-0   (12, 72, 144)   (12, 72, 144)    alternate2
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+vas    annual mean bias is  -0.0247152137985
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.00494741519031
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.0028115055108
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  -0.0819045620966
+ vas   ACCESS1-3   (12, 72, 144)   (12, 72, 144)    alternate2
+---- shapes  GLB     (12, 72, 144)   (12, 72, 144)
+vas    annual mean bias is  -0.0433482354033
+---- shapes  NHEX     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  -0.0284591317948
+---- shapes  TROPICS     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  0.0769440193316
+---- shapes  SHEX     (12, 24, 144)   (12, 24, 144)
+vas    annual mean bias is  -0.178529593747
+ ref is:  all
+ refs: [u'default', u'alternate1', u'alternate2']
+ OBS SHAPE IS  (12, 1, 72, 144)
+ zg   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+zg    annual mean bias is  15.1869371719
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  8.05444902237
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  27.7728201231
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  9.73354237024
+ zg   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+zg    annual mean bias is  -0.937391438636
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  -12.5075400299
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  3.12515076951
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  6.57021494445
+ OBS SHAPE IS  (12, 1, 72, 144)
+ zg   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate1
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+zg    annual mean bias is  5.59776189048
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  -0.531765247177
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  21.3501462345
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  -4.02509531589
+ zg   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate1
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+zg    annual mean bias is  -10.5265667201
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  -21.0937542994
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  -3.29752311911
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  -7.18842274167
+ OBS SHAPE IS  (12, 1, 72, 144)
+ zg   ACCESS1-0   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate2
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+zg    annual mean bias is  10.5321400562
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  2.08617528607
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  22.5190260024
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  6.9912188801
+ zg   ACCESS1-3   (12, 1, 72, 144)   (12, 1, 72, 144)    alternate2
+---- shapes  GLB     (12, 1, 72, 144)   (12, 1, 72, 144)
+zg    annual mean bias is  -5.59218855435
+---- shapes  NHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  -18.4758137662
+---- shapes  TROPICS     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  -2.12864335119
+---- shapes  SHEX     (12, 1, 24, 144)   (12, 1, 24, 144)
+zg    annual mean bias is  3.82789145432
+======================================================================================
+			Resource Usage on 2015-01-22 05:25:01.351373:
+	JobId: 8869680.r-man2  
+	Project: p66 
+	Exit Status: 0 (Linux Signal 0)
+	Service Units: 0.07
+	NCPUs Requested: 1				NCPUs Used: 1
+							CPU Time Used: 00:03:52
+	Memory Requested: 5gb 				Memory Used: 4gb
+							Vmem Used: 4gb
+	Walltime requested: 01:00:00 			Walltime Used: 00:04:13
+	jobfs request: 100mb				jobfs used: 1mb
+======================================================================================

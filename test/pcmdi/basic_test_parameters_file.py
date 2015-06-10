@@ -1,6 +1,4 @@
-import genutil
-import os,sys
-import pcmdi_metrics
+import os
 
 ################################################################################
 #  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY: 
@@ -39,7 +37,7 @@ regions = {"tas" : [None,"terre","ocean"],"tos":[None,]}
 regions_values = {"terre":100.}
 
 # Observations to use at the moment "default" or "alternate"
-ref = ['default'] 
+ref = ['all'] 
 ext = '.nc'
 
 # INTERPOLATION OPTIONS
@@ -50,7 +48,7 @@ regrid_tool_ocn   = 'esmf'    # OPTIONS: "regrid2","esmf"
 regrid_method_ocn = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
 
 # SIMULATION PARAMETERS
-model_period = '198501-200512'
+period      = '198501-200512'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
@@ -60,7 +58,7 @@ save_mod_clims = True # True or False
 
 ## Templates for climatology files
 ## TEMPLATE EXAMPLE: tas_GFDL-ESM2G_Amon_historical_r1i1p1_198001-199912-clim.nc
-filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(model_period)-clim.nc"
+filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(period)-clim.nc"
 ## filename template for landsea masks ('sftlf')
 sftlf_filename_template = "sftlf_%(model_version).nc"
 
@@ -90,9 +88,11 @@ def mymin(slab,nm):
 
 def my_custom(var,dm,do):
   out = {}
-  for f in [mymax,mymin]:
-    out.update(f(dm,"model"))
-    out.update(f(dm,"ref"))
+  if var == "tas":
+    out.update(mymax(dm,"model"))
+  elif var=="tos":
+    out.update(mymin(dm,"ref"))
   out["some_custom"]=1.5
   return out
 compute_custom_metrics = my_custom
+# or for different metrics 

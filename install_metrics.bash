@@ -191,6 +191,11 @@ EOF
     fi
     cd uvcdat >& /dev/null
     git checkout ${cdat_version}
+    # The branch bellow has been merged
+    # we do not need to merge ourselves any longer
+    # leaving commented out for others 
+    # so they know how to do it
+    # git merge --no-ff --no-commit origin/salinity
     [ $? != 0 ] && echo " WARNING: Problem with checking out cdat revision [${cdat_version}] from repository :-("
     #NOTE:
     #cdms configuration with --enable-esg flag looks for pg_config in
@@ -245,8 +250,6 @@ EOF
         echo "CMAKE ARGS: "${cmake_cmd}
         echo "PATH:"${PATH}
         echo "PWD:"`pwd`
-        ${cmake_cmd}
-        [ $? != 0 ] && echo " ERROR: Could not configure (cmake) cdat code (1)" && popd && checked_done 1
         ${cmake_cmd}
         [ $? != 0 ] && echo " ERROR: Could not configure (cmake) cdat code (2)" && popd && checked_done 1
 
@@ -430,15 +433,15 @@ main() {
     echo "Metrics - ${metrics_checkout} - Install Success"
     echo "*******************************"
     echo "Please test as follows:"
-    echo "source ${cdat_home}/bin/setup_runtime.sh"
-    echo "python ${build_directory}/metrics/test/test_suite.py"
+    echo "source ${install_prefix}/bin/setup_runtime.sh or .csh"
+    echo "python ${metrics_build_directory}/test/test_suite.py"
     echo "*******************************"
-    echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/parameter_files/pcmdi_input_parameters_sample.py"
+    echo "Create your customized input_parameters.py (inspire yourself from examples in ${install_prefix}/doc/pcmdi_input_parameters_sample.py"
     echo "Once you have a parameter file run:"
-    echo "source ${install_prefix}/bin/setup_runtime.sh"
+    echo "source ${install_prefix}/bin/setup_runtime.sh or .csh"
     echo "pcmdi_metrics_driver.py -p /path/to/your/edited/parameter_file.py"
     echo "*******************************"
-    echo "Once everything is ok, you can safely remove the temporary directory: ${build_directory}"
+    echo "Once everything is ok, you can safely remove the temporary directory: ${install_prefix}/tmp"
     echo "*******************************"
     echo "For further information or suggestions please contact the PCMDI Metrics Team @ pcmdi-metrics@llnl.gov"
     echo "*******************************"
