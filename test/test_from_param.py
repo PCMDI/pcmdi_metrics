@@ -29,7 +29,7 @@ class TestFromParam(unittest.TestCase):
       ok = True
       if len(self.good_files)==0:
         ok = False
-        print "could not find good files",__file__
+        print "could not find good files",__file__,os.path.dirname(__file__)+"/pcmdi/%s/*.json" % parameters.case_id
       for gnm in self.good_files:
         if os.path.basename(gnm)==nm:
           print "comparing:",fnm,gnm

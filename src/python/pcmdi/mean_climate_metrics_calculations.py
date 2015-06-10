@@ -1,7 +1,9 @@
 import cdms2 as cdms
 import pcmdi_metrics
 
-def compute_metrics(var,dm_glb,do_glb):
+def compute_metrics(Var,dm_glb,do_glb):
+    # Var is sometimes sent with level associated
+    var = Var.split("_")[0]
     cdms.setAutoBounds('on')
     metrics_dictionary = {}
     
@@ -23,16 +25,14 @@ def compute_metrics(var,dm_glb,do_glb):
             do = do_glb(latitude = (-30.,30))
         
         ### CALCULATE ANNUAL CYCLE SPACE-TIME RMS AND CORRELATIONS
-        print '---- shapes ', dom,'   ', dm.shape,' ', do.shape
         rms_xyt = pcmdi_metrics.pcmdi.rms_xyt.compute(dm,do)
         cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm,do)
         
         ### CALCULATE ANNUAL MEANS
-        do_am, dm_am =  pcmdi_metrics.pcmdi.annual_mean.compute(dm,do)
+        dm_am, do_am =  pcmdi_metrics.pcmdi.annual_mean.compute(dm,do)
         
         ### CALCULATE ANNUAL MEAN BIAS
         bias_xy = pcmdi_metrics.pcmdi.bias.compute(dm_am,do_am)
-        print var,'  ', 'annual mean bias is ' , bias_xy
         
         ### CALCULATE MEAN ABSOLUTE ERROR
         mae_xy = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_am,do_am)
