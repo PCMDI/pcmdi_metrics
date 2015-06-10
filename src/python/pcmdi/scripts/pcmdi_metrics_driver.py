@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/data/igcmg/database/PMP_install/PCMDI_METRICS/bin/python
 ######################################################
 #
 #  USER INPUT IS SET IN FILE "input_parameters.py"
@@ -35,7 +35,7 @@ class DUP(object):
 
 def applyCustomKeys(O,custom_dict,var):
   for k,v in custom_dict.iteritems():
-    setattr(O,k,custom_dict.get(var,custom_dict.get("all","")))
+    setattr(O,k,custom_dict.get(var,custom_dict.get(None,"")))
 
 P = argparse.ArgumentParser()
 P.add_argument("-p","--parameters",dest="param",default="input_parameters.py",help="input parameter file containing local settings",required=True)
@@ -85,7 +85,7 @@ for model_version in parameters.model_versions:   # LOOP THROUGH DIFFERENT MODEL
   sft.model_version = model_version
   sft.table = "fx"
   sft.realm = "atmos"
-  sft.model_period = parameters.model_period
+  sft.period = parameters.period
   sft.ext = "nc"
   sft.targetGrid = None
   sft.realization="r0i0p0"
@@ -254,7 +254,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   MODEL.model_version = model_version
                   MODEL.table = table_realm
                   MODEL.realm = realm
-                  MODEL.model_period = parameters.model_period  
+                  MODEL.period = parameters.period  
                   MODEL.ext="nc"
                   MODEL.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                   MODEL.realization = parameters.realization
@@ -372,13 +372,28 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   if not metrics_dictionary[model_version].has_key(refabbv):
                     metrics_dictionary[model_version][refabbv] = {'source':onm}
                   pr = metrics_dictionary[model_version][refabbv].get(parameters.realization,{})
-                  pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(var,dm,do)
+                  #pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(var,dm,do)
+                  
                   ###########################################################################
                   ## The follwoing allow users to plug in a set of custom metrics
                   ## Function needs to take in var name, model clim, obs clim
                   ###########################################################################
-                  if hasattr(parameters,"compute_custom_metrics"):
-                    pr_rgn.update(parameters.compute_custom_metrics(var,dm,do))
+                  pr_rgn = {}
+                  if hasattr(parameters,"compute_custom_metrics")==False:
+                     pr_rgn.update(pcmdi_metrics.pcmdi.compute_metrics(var,dm,do))
+                  else:
+                     if hasattr(parameters,"compute_custom_only"):
+                        compute_custom_only = parameters.compute_custom_only
+                     else:
+                        compute_custom_only=False
+                     
+                     if compute_custom_only==False:
+                        pr_rgn.update(pcmdi_metrics.pcmdi.compute_metrics(var,dm,do))
+                        pr_rgn.update(parameters.compute_custom_metrics(var,dm,do))
+                     else:
+                        pr_rgn.update(parameters.compute_custom_metrics(var,dm,do))
+			print 'Compute only the custom metrics'
+                  
                   pr[region_name]=collections.OrderedDict((k,pr_rgn[k]) for k in sorted(pr_rgn.keys()))
                   metrics_dictionary[model_version][refabbv][parameters.realization] = pr
              
@@ -389,7 +404,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                       CLIM.level=OUT.level
                       CLIM.model_version = model_version
                       CLIM.table = table_realm
-                      CLIM.period = parameters.model_period
+                      CLIM.period = parameters.period
                       CLIM.setTargetGrid(parameters.targetGrid,regridTool,regridMethod)
                       if level is None:
                         varid = var
