@@ -402,13 +402,26 @@ for Var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   if not metrics_dictionary[model_version].has_key(refabbv):
                     metrics_dictionary[model_version][refabbv] = {'source':onm}
                   pr = metrics_dictionary[model_version][refabbv].get(parameters.realization,{})
-                  pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(Var,dm,do)
                   ###########################################################################
                   ## The follwoing allow users to plug in a set of custom metrics
                   ## Function needs to take in var name, model clim, obs clim
                   ###########################################################################
-                  if hasattr(parameters,"compute_custom_metrics"):
-                    pr_rgn.update(parameters.compute_custom_metrics(Var,dm,do))
+                  pr_rgn = {}
+                  if hasattr(parameters,"compute_custom_metrics")==False:
+                     pr_rgn.update(pcmdi_metrics.pcmdi.compute_metrics(var,dm,do))
+                  else:
+                     if hasattr(parameters,"compute_custom_only"):
+                        compute_custom_only = parameters.compute_custom_only
+                     else:
+                        compute_custom_only=False
+                     
+                     if compute_custom_only==False:
+                        pr_rgn.update(pcmdi_metrics.pcmdi.compute_metrics(var,dm,do))
+                        pr_rgn.update(parameters.compute_custom_metrics(var,dm,do))
+                     else:
+                        pr_rgn.update(parameters.compute_custom_metrics(var,dm,do))
+			print 'Compute only the custom metrics'
+                  
                   pr[region_name]=collections.OrderedDict((k,pr_rgn[k]) for k in sorted(pr_rgn.keys()))
                   metrics_dictionary[model_version][refabbv][parameters.realization] = pr
              
