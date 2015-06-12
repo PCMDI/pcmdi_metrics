@@ -1,4 +1,4 @@
-#!/data/igcmg/database/PMP_install/PCMDI_METRICS/bin/python
+#!/usr/bin/env python
 ######################################################
 #
 #  USER INPUT IS SET IN FILE "input_parameters.py"
