@@ -16,6 +16,19 @@ import MV2
 import cdutil
 import collections
 
+## Before we do anything else we need to create some units 
+## Salinity Units
+import unidata
+unidata.udunits_wrap.init()
+
+## Create a dimensionless units named dimless
+unidata.addDimensionlessUnit("dimless")
+
+## Created scaled units for dimless
+unidata.addScaledUnit("psu",.001,"dimless")
+unidata.addScaledUnit("PSS-78",.001,"dimless")
+unidata.addScaledUnit("Practical Salinity Scale 78",.001,"dimless")
+
 regions_values = {"land":100.,"ocean":0.,"lnd":100.,"ocn":0.}
 
 #Load the obs dictionary
@@ -132,13 +145,15 @@ for var in parameters.vars:
     rg = [rg,]
   regions_dict[vr] = rg
 saved_obs_masks = {}
-for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
+for Var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
   try:
     metrics_dictionary = collections.OrderedDict()
+    metrics_def_dictionary = collections.OrderedDict()
     ## REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
-    if len(var.split("_"))>1:
-        level = float(var.split("_")[-1])*100.
-        var=var.split("_")[0]
+    sp = Var.split("_")
+    var=sp[0]
+    if len(sp)>1:
+        level = float(sp[-1])*100.
     else:
         level=None
 
@@ -194,13 +209,17 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         region_name = "%i" % region
       metrics_dictionary["RegionalMasking"][region_name]=region
       for ref in refs:
-        if ref in ["default","alternate"]:
+        if ref[:9] in ["default","alternate"]:
           refabbv = ref+"Reference"
         else:
           refabbv = ref
-        metrics_dictionary["References"][ref] = obs_dic[var][obs_dic[var][ref]]
+        if isinstance(obs_dic[var][ref],(str,unicode)):
+            obs_var_ref = obs_dic[var][obs_dic[var][ref]]
+        else:
+            obs_var_ref = obs_dic[var][ref]
+        metrics_dictionary["References"][ref] = obs_var_ref
         try:
-          if obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"]=="Omon":
+          if obs_var_ref["CMIP_CMOR_TABLE"]=="Omon":
               OBS = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
           else:
               OBS = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,var,obs_dic,ref)
@@ -212,7 +231,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
             ## Ok we need to apply a mask
             ## First try to read from obs json file
             try:
-                oMask = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,obs_dic[var][ref])
+                oMask = pcmdi_metrics.pcmdi.io.OBS(parameters.obs_data_path,"sftlf",obs_dic,obs_var_ref["RefName"])
                 oMasknm = oMask()
             except Exception,err:
                 dup("error retrieving mask for obs: %s, \n%s" % (obs_dic[var][ref],err))
@@ -336,7 +355,7 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   metrics_dictionary[model_version] = metrics_dictionary.get(model_version,{})
                   ## Stores model's simul description
                   if not metrics_dictionary[model_version].has_key("SimulationDescription"):
-                      descr = {"MIPTable":obs_dic[var][obs_dic[var][ref]]["CMIP_CMOR_TABLE"],
+                      descr = {"MIPTable":obs_var_ref["CMIP_CMOR_TABLE"],
                               "Model":model_version,
                               }
 
@@ -384,13 +403,22 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
                   if not metrics_dictionary[model_version].has_key(refabbv):
                     metrics_dictionary[model_version][refabbv] = {'source':onm}
                   pr = metrics_dictionary[model_version][refabbv].get(parameters.realization,{})
-                  pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(var,dm,do)
+                  pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(Var,dm,do)
+                  ## Calling compute metrics with None for model and obs, triggers it to send back the defs.
+                  metrics_def_dictionary.update(pcmdi_metrics.pcmdi.compute_metrics(Var,None,None))
                   ###########################################################################
                   ## The follwoing allow users to plug in a set of custom metrics
                   ## Function needs to take in var name, model clim, obs clim
                   ###########################################################################
                   if hasattr(parameters,"compute_custom_metrics"):
-                    pr_rgn.update(parameters.compute_custom_metrics(var,dm,do))
+                    pr_rgn.update(parameters.compute_custom_metrics(Var,dm,do))
+                    ## Calling compute metrics with None for model and obs, triggers it to send back the defs.
+                    ## But we are wrapping this in an except/try in case user did not implement
+                    try:
+                      metrics_def_dictionary.update(parameters.compute_custom_metrics(Var,None,None))
+                    except:
+                      ## Better than nothing we will use the doc string
+                      metrics_def_dictionary.update({"custom":parameters.compute_custom_metrics.__doc__})
                   pr[region_name]=collections.OrderedDict((k,pr_rgn[k]) for k in sorted(pr_rgn.keys()))
                   metrics_dictionary[model_version][refabbv][parameters.realization] = pr
              
@@ -417,6 +445,8 @@ for var in parameters.vars:   #### CALCULATE METRICS FOR ALL VARIABLES IN vars
         except Exception,err:
           dup("Error while processing observation %s for variable %s:\n\t%s" % (var,ref,err))
       ## Done with obs and models loops , let's dum before next var
+    ## Ok at this point we need to add the metrics def in the dictionary so that it is stored
+    metrics_dictionary["METRICS"]=metrics_def_dictionary
     ### OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
     OUT.write(metrics_dictionary, mode="w", indent=4, separators=(',', ': '))
     # CREATE OUTPUT AS ASCII FILE
