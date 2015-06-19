@@ -101,16 +101,38 @@ import pcmdi_metrics # Or whatever your custom metrics package name is
 compute_custom_metrics = pcmdi_metrics.pcmdi.compute_metrics
 #or
 def mymax(slab,nm):
-  return {"custom_%s_max" % nm:float(slab.max())}
+  if slab is None:
+    return {"custom_%s_max" % nm: 
+        {"Abstract":"Computes Custom Maximum for demo purposes",
+          "Name":"Custom Maximum",
+          "Contact":"doutriaux1@llnl.gov"},
+        }
+  else:
+    return {"custom_%s_max" % nm:float(slab.max())}
 
 def mymin(slab,nm):
-  return {"custom_%s_min" % nm:float(slab.min())}
+  if slab is None:
+    return {"custom_%s_min" % nm : 
+        {"Abstract":"Computes Custom Minimum for demo purposes",
+          "Name":"Custom Minimum",
+          "Contact":"doutriaux1@llnl.gov"},
+        }
+  else:
+    return {"custom_%s_min" % nm:float(slab.min())}
 
 def my_custom(var,dm,do):
   out = {}
-  for f in [mymax,mymin]:
-    out.update(f(dm,"model"))
-    out.update(f(dm,"ref"))
-  out["some_custom"]=1.5
+  if var == "tas":
+    out.update(mymax(dm,"model"))
+  elif var=="tos":
+    out.update(mymin(dm,"ref"))
+  if dm is None and do is None:
+    out["some_custom"] = {
+        "Name":"SomeCustom",
+        "Abstract":"For demo purpose really does nothing",
+        "Contact":"doutriaux1@llnl.gov",
+        }
+  else:
+    out["some_custom"]=1.5
   return out
 compute_custom_metrics = my_custom

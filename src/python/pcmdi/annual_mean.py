@@ -2,5 +2,13 @@ import cdutil,cdms2
 
 def compute(dm,do):
     """ Computes ANNUAL MEAN"""
+    if dm is None and do is None: # just want the doc
+      return {
+          "Name":"Annual Mean",
+          "Abstract": "Compute Annual Mean",
+          "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html",
+          "Contact":"Peter Gleckler <gleckler1@llnl.gov>",
+          "Comments" : "Assumes input are 12 months climatology"
+          }
     cdms2.setAutoBounds('on') # Do we really want this? Wouldn't it better to let it fails
     return cdutil.averager(dm,axis='t'),cdutil.averager(do,axis='t')
