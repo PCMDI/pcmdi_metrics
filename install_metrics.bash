@@ -14,6 +14,8 @@ num_cpus=4
 #### BUILD OPTIONS #####
 ## Do we want to build with graphics capabilities
 build_graphics=false
+## Do we want MESA driver (no interactive mode)
+build_graphics_against_mesa=true
 
 ## Do we want to build with CMOR
 build_cmor=false
@@ -28,6 +30,17 @@ keep_uvcdat_build_dir=false
 
 ### DO NOT EDIT AFTER THIS POINT !!!!! ###
 
+# If Mac no mesa so truning back OFF if on
+case `uname` in
+  Darwin*)
+    if [ ${build_graphics_against_mesa} = true ]; then
+      echo "No MESA on Mac sorry, turning MESA back off"
+      build_graphics_against_mesa=false
+    fi
+    ;;
+  *)
+    ;;
+esac
 # Prevent installer from hanging due to cdms2 logging
 export UVCDAT_ANONYMOUS_LOG=False
 
@@ -228,7 +241,13 @@ EOF
           uvcdat_mode="-DCDAT_BUILD_MODE=LEAN -DCDAT_BUILD_ESMF_ESMP=ON"
         else
           echo "Turning on graphics this will take sensibly longer to build"
-          uvcdat_mode="-DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF -DCDAT_BUILD_ESMF_ESMP=ON"
+          if [ ${build_graphics_against_mesa} = false ]; then
+            echo "Not building against MESA drivers"
+            uvcdat_mode="-DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF -DCDAT_BUILD_ESMF_ESMP=ON"
+          else
+            echo "Building against MESA drivers (offscreen mode), Linux systems only"
+            uvcdat_mode="-DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_OFFSCREEN=ON -DCDAT_BUILD_ESMF_ESMP=ON"
+          fi
         fi
 
         if [ ${build_cmor} = false ]; then
