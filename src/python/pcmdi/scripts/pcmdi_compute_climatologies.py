@@ -15,7 +15,7 @@ p.add_argument("-v", "--vars",
                nargs="*",
                dest="vars",
                default=None,
-               required = True,
+               required=True,
                help="variables to use for climatology")
 p.add_argument("-t", "--threshold",
                dest='threshold',
@@ -50,11 +50,11 @@ p.add_argument("-I", "--indexation-type",
 p.add_argument("files",
                help="Input file",
                nargs="*")
-p.add_argument("-b","--bounds",
-        action = "store_true",
-        dest = "bounds",
-        default=False,
-        help = "reset bounds to monthly")
+p.add_argument("-b", "--bounds",
+               action="store_true",
+               dest="bounds",
+               default=False,
+               help="reset bounds to monthly")
 c = parser.add_argument_group("CMOR options")
 c.add_argument("-d", "--drs",
                action="store_true",
@@ -82,10 +82,15 @@ if len(A.files) == 1:
 for f in A.files:
     if not os.path.exists(f):
         raise RuntimeError("file '%s' doe not exits" % f)
-if len(A.files)>1:
+if len(A.files) > 1:
     print "Multiple files sent, running cdscan on them"
     xml = tempfile.mkstemp(suffix=".xml")[1]
-    P = subprocess.Popen(shlex.split("cdscan -x %s %s" % (xml, " ".join(A.files))))
+    P = subprocess.Popen(
+        shlex.split(
+            "cdscan -x %s %s" %
+            (xml,
+             " ".join(
+                 A.files))))
     P.wait()
     A.files = xml
 else:
@@ -95,6 +100,8 @@ filein = cdms2.open(A.files)
 fvars = filein.variables.keys()
 for v in A.vars:
     if v not in fvars:
-        raise RuntimeError("Variable '%s' is not contained in input file(s)" % v)
-#clean up
+        raise RuntimeError(
+            "Variable '%s' is not contained in input file(s)" %
+            v)
+# clean up
 os.remove(xml)
