@@ -6,6 +6,16 @@ pth = os.path.dirname(__file__)
 sys.path.append(os.path.join(pth, "graphics"))
 
 suite = unittest.TestSuite()
+
+# If we have flake8 then flake8 the code
+try:
+    import flake8  # noqa
+    import test_flake8
+    suite.addTest(
+        test_flake8.TestFlake8()
+    )
+except:
+    pass
 suite.addTest(
     test_from_param.TestFromParam(
         os.path.join(
@@ -56,5 +66,4 @@ try:
 except Exception as err:
     print "ERROR import vcs, skipping graphics test..."
     pass
-
 unittest.TextTestRunner(verbosity=2).run(suite)
