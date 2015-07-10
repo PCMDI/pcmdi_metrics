@@ -8,148 +8,196 @@ Paul J. Durack 26th November 2014
 This script scans netcdf files to create a composite xml spanning file
 and then using this index file, writes netcdf files for each variable
 
-PJD 26 Nov 2014     - Began script
-PJD 26 Nov 2014     - Hit issue with xml creation:
-                    - no 'time_bnds' stored in the file
-                    - RuntimeError: Variable 'AODVIS' is duplicated, and is a function of lat or lon: files b1850c5_t2_01_climo.nc, b1850c5_t2_02_climo.nc
-                    associated with data: ['atmos','ACME-CAM5-SE_v0.0.1','b1850c5_t2_','/work/gleckler1/processed_data/v0.0.1_cam5-se/']
-                    command = "".join(['python ',uvcdatInstall,'cdscan --time-linear \'0,1,months since 1850,noleap\' -x test_',modelId,'_',realmId,'.xml ',dataPath,fileId,'[0-9]*.nc'])
-PJD 26 Nov 2014     - Updated to use ACME-CAM5-SE_v0pt1 (acmev0pt1.tar) data
-                    - TODO:
-                    - Need to confirm PR unit conversion, m/s -> kg m-2 s-1 requires additional inputs
-
 @author: durack1
 """
 
 # Python module imports
-import os,shutil,subprocess,sys
+import os
+import shutil
+import subprocess
+import sys
 import cdms2 as cdm
 # Add durolib to path
-sys.path.insert(1,'/export/durack1/git/pylib') ; # Assumes crunchy/oceanonly
+sys.path.insert(1, '/export/durack1/git/pylib')  # Assumes crunchy/oceanonly
 from durolib import globalAttWrite
 
 
 # Set cdms preferences - no compression, no shuffling, no complaining
 cdm.setNetcdfDeflateFlag(1)
-cdm.setNetcdfDeflateLevelFlag(9) ; # 1-9, min to max - Comes at heavy IO (read/write time cost)
+# 1-9, min to max - Comes at heavy IO (read/write time cost)
+cdm.setNetcdfDeflateLevelFlag(9)
 cdm.setNetcdfShuffleFlag(0)
-cdm.setCompressionWarnings(0) ; # Turn off nag messages
+cdm.setCompressionWarnings(0)  # Turn off nag messages
 # Set bounds automagically
-#cdm.setAutoBounds(1) ; # Use with caution
+# cdm.setAutoBounds(1) ; # Use with caution
 
 # Set build info once
-buildDate       = '141126'
-outPath         = '/work/durack1/Shared/141126_metrics-acme'
-# Create input variable lists 
-uvcdatInstall   = ''.join(['/export/durack1/',buildDate,'_pcmdi_metrics/PCMDI_METRICS/bin/'])
+buildDate = '141126'
+outPath = '/work/durack1/Shared/141126_metrics-acme'
+# Create input variable lists
+uvcdatInstall = ''.join(
+    ['/export/durack1/', buildDate, '_pcmdi_metrics/PCMDI_METRICS/bin/'])
 # Specify inputs:
 #        Realm   ModelId               InputFiles    SourceDirectory
-data =  [
-        ['atmos','ACME-CAM5-SE_v0pt1','B1850C5e1_ne30_','/work/durack1/Shared/141126_metrics-acme/'],
-        ]
-inVarsAtm   = ['','','TMQ','PSL','FLDS','','FLUTC','FSDS','FSDSC','SOLIN','','TREFHT','TAUX','TAUY','','',''] ; # FLDSC, QREFHT not available
-outVarsAtm  = ['hus','pr','prw','psl','rlds','rlut','rlutcs','rsds','rsdscs','rsdt', \
-               'ta','tas','tauu','tauv','ua','va','zg'] ; # huss,uas,vas not available
-varMatch    = ['hus','pr','rlut','ta','ua','va','zg'] ; # uas, vas not available
-varCalc     = [[['Q','PS'],'Q interpolated to standard plevs'],[['PRECC','PRECL'],'PRECC + PRECL and unit conversion'],[['FSNTOA','FSNT','FLNT'],'FSNTOA-FSNT+FLNT'],[['T','PS'],'T interpolated to standard plevs'],[['U','PS'],'U interpolated to standard plevs'],[['V','PS'],'V interpolated to standard plevs'],[['Z3','PS'],'Z3 interpolated to standard plevs']]
-inVarsOcn   = ['SALT','TEMP','SSH']
-outVarsOcn  = ['sos','tos','zos']
-'''
-# Test lookup lists
-for x,var in enumerate(outVarsAtm):
-    if inVarsAtm[x] == '':
-        index = varMatch.index(var)
-        print var.rjust(6),':',varCalc[index]
-    else:
-        print var.rjust(6),':',inVarsAtm[x]
+data = [
+    ['atmos',
+     'ACME-CAM5-SE_v0pt1',
+     'B1850C5e1_ne30_',
+     '/work/durack1/Shared/141126_metrics-acme/'],
+]
+inVarsAtm = [
+    '',
+    '',
+    'TMQ',
+    'PSL',
+    'FLDS',
+    '',
+    'FLUTC',
+    'FSDS',
+    'FSDSC',
+    'SOLIN',
+    '',
+    'TREFHT',
+    'TAUX',
+    'TAUY',
+    '',
+    '',
+    '']  # FLDSC, QREFHT not available
+outVarsAtm = ['hus', 'pr', 'prw', 'psl', 'rlds', 'rlut', 'rlutcs', 'rsds', 'rsdscs', 'rsdt',
+              'ta', 'tas', 'tauu', 'tauv', 'ua', 'va', 'zg']  # huss,uas,vas not available
+varMatch = [
+    'hus',
+    'pr',
+    'rlut',
+    'ta',
+    'ua',
+    'va',
+    'zg']  # uas, vas not available
+varCalc = [[['Q',
+             'PS'],
+            'Q interpolated to standard plevs'],
+           [['PRECC',
+             'PRECL'],
+            'PRECC + PRECL and unit conversion'],
+           [['FSNTOA',
+             'FSNT',
+             'FLNT'],
+            'FSNTOA-FSNT+FLNT'],
+           [['T',
+             'PS'],
+            'T interpolated to standard plevs'],
+           [['U',
+             'PS'],
+            'U interpolated to standard plevs'],
+           [['V',
+             'PS'],
+            'V interpolated to standard plevs'],
+           [['Z3',
+             'PS'],
+            'Z3 interpolated to standard plevs']]
+inVarsOcn = ['SALT', 'TEMP', 'SSH']
+outVarsOcn = ['sos', 'tos', 'zos']
 
-'''
-#%%
 # Loop through input data
-for count1,realm in enumerate(data[0:2]):
-    realmId    = realm[0]
-    modelId    = realm[1]
-    fileId     = realm[2]
-    dataPath   = realm[3]
-    
+for count1, realm in enumerate(data[0:2]):
+    realmId = realm[0]
+    modelId = realm[1]
+    fileId = realm[2]
+    dataPath = realm[3]
+
     # Create input xml file
-    command = "".join([uvcdatInstall,'cdscan -x test_',modelId,'_',realmId,'.xml ',dataPath,fileId,'[0-9]*.nc'])
-    #print command
-    fnull   = open(os.devnull,'w') ; # Create dummy to write stdout output
-    p       = subprocess.call(command,stdout=fnull,shell=True)
-    fnull.close() ; # Close dummy
-    print 'XML spanning file created for model/realm:',modelId,realmId
-    #sys.exit()
-    
+    command = "".join([uvcdatInstall,
+                       'cdscan -x test_',
+                       modelId,
+                       '_',
+                       realmId,
+                       '.xml ',
+                       dataPath,
+                       fileId,
+                       '[0-9]*.nc'])
+    # print command
+    fnull = open(os.devnull, 'w')  # Create dummy to write stdout output
+    p = subprocess.call(command, stdout=fnull, shell=True)
+    fnull.close()  # Close dummy
+    print 'XML spanning file created for model/realm:', modelId, realmId
+    # sys.exit()
+
     # Open xml file to read
-    infile  = ''.join(['test_',modelId,'_',realmId,'.xml'])
-    fIn     = cdm.open(infile)
-    
+    infile = ''.join(['test_', modelId, '_', realmId, '.xml'])
+    fIn = cdm.open(infile)
+
     # Deal with variables
-    inVarList       = inVarsAtm ; # Only atmos variables at this stage
-    outVarList      = outVarsAtm
-    
+    inVarList = inVarsAtm  # Only atmos variables at this stage
+    outVarList = outVarsAtm
+
     # Create output netcdf files
-    for count2,var in enumerate(inVarList):
-        #print var
-        varRead     = var
-        varWrite    = outVarList[count2]
-        #print 'vars:',varRead,varWrite
+    for count2, var in enumerate(inVarList):
+        # print var
+        varRead = var
+        varWrite = outVarList[count2]
+        # print 'vars:',varRead,varWrite
 
         # Assign valid CMIP tableId
         if realmId == 'atmos':
-            	tableId = 'Amon'
+            tableId = 'Amon'
         else:
-            	tableId = 'Omon' ; # placeholder for ocean vars
-        
+            tableId = 'Omon'  # placeholder for ocean vars
+
         # Test for PR/RLUT which requires multiple variable manipulation
         if varWrite == 'pr':
-            # Deal with PR variable, all other variables are vertically interpolated
-            varRead         = 'PRECC & PRECL'
-            data1           = fIn('PRECC')
-            data2           = fIn('PRECL')
-            data            = data1+data2 ; #PRECC + PRECL
-            data.id         = varWrite
-            data.long_name  = 'precipitation_flux'
-            data.history    = 'Converted to PR from PRECC+PRECL; Updated units from m/s -> kg m-2 s-1 - Need to check conversion factor'
-            data.units      = 'kg m-2 s-1'
+            # Deal with PR variable, all other variables are vertically
+            # interpolated
+            varRead = 'PRECC & PRECL'
+            data1 = fIn('PRECC')
+            data2 = fIn('PRECL')
+            data = data1 + data2  # PRECC + PRECL
+            data.id = varWrite
+            data.long_name = 'precipitation_flux'
+            data.history = 'Converted to PR from PRECC+PRECL; Updated units from m/s -> ' +\
+                'kg m-2 s-1 - Need to check conversion factor'
+            data.units = 'kg m-2 s-1'
         elif varWrite == 'rlut':
-            # Deal with RLUT variable, all other variables are vertically interpolated
-            varRead         = 'FSNTOA & FSNT & FLNT'
-            data1           = fIn('FSNTOA')
-            data2           = fIn('FSNT')
-            data3           = fIn('FLNT')
-            data            = data1-data2+data3 ; #FSNTOA - FSNT + FLNT
-            data.id         = varWrite
-            data.long_name  = 'toa_outgoing_longwave_flux'
-            data.history    = 'Converted to RLUT from FSNTOA - FSNT + FLNT'            
-            data.units      = data1.units            
+            # Deal with RLUT variable, all other variables are vertically
+            # interpolated
+            varRead = 'FSNTOA & FSNT & FLNT'
+            data1 = fIn('FSNTOA')
+            data2 = fIn('FSNT')
+            data3 = fIn('FLNT')
+            data = data1 - data2 + data3  # FSNTOA - FSNT + FLNT
+            data.id = varWrite
+            data.long_name = 'toa_outgoing_longwave_flux'
+            data.history = 'Converted to RLUT from FSNTOA - FSNT + FLNT'
+            data.units = data1.units
         elif varRead == '':
             # Deal with variables requiring interpolation
-            index   = varMatch.index(varWrite)
+            index = varMatch.index(varWrite)
             varRead = varCalc[index][0][0]
-            data    = fIn(varRead)
-            data.id = varWrite                
-        else:
-            data    = fIn(varRead)
+            data = fIn(varRead)
             data.id = varWrite
-        print "".join(['** Writing variable: ',varRead,' to ',varWrite,' **'])
-        #e.g. outfile = 'ACME-CAM5-SE_v0.0.1/tas_ACME-CAM5-SE_v0.0.1_Amon_01-12-clim.nc'
-        outfile = os.path.join(outPath,modelId,"_".join([varWrite,modelId,tableId,'01-12-clim.nc']))
-        print "".join(['** Writing file:    ',outfile])
+        else:
+            data = fIn(varRead)
+            data.id = varWrite
+        print "".join(['** Writing variable: ', varRead, ' to ', varWrite, ' **'])
+        # e.g. outfile = 'ACME-CAM5-SE_v0.0.1/tas_ACME-CAM5-SE_v0.0.1_Amon_01-12-clim.nc'
+        outfile = os.path.join(
+            outPath, modelId, "_".join([varWrite, modelId, tableId, '01-12-clim.nc']))
+        print "".join(['** Writing file:    ', outfile])
         # Create output directory and purge if exists
-        if not os.path.isdir(os.path.join(outPath,modelId)) and count2 == 0:
+        if not os.path.isdir(os.path.join(outPath, modelId)) and count2 == 0:
             os.makedirs(modelId)
         elif count2 == 0:
-            shutil.rmtree(os.path.join(outPath,modelId)) ; # shutil removes directory and files
-            os.makedirs(os.path.join(outPath,modelId))
+            shutil.rmtree(
+                os.path.join(
+                    outPath,
+                    modelId))  # shutil removes directory and files
+            os.makedirs(os.path.join(outPath, modelId))
         # Test for existing outfile
         if os.path.isfile(outfile):
-            os.remove(outfile) ; # purge existing file
+            os.remove(outfile)  # purge existing file
         # Open file and write data
-        fOut = cdm.open(outfile,'w')
+        fOut = cdm.open(outfile, 'w')
         fOut.write(data)
-        globalAttWrite(fOut,options=None)
+        globalAttWrite(fOut, options=None)
         fOut.close()
 fIn.close()
 
