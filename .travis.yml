@@ -14,7 +14,7 @@ script:
     - cd ..
     - mkdir _build
     - cd _build
-    - cp ../pcmdi_metrics/install_metrics.bash
+    - cp ../pcmdi_metrics/install_metrics.bash .
     - bash ./install_metrics.bash
     - source ./PCMDI_METRICS/bin/setup_runtime.sh
     - python test/test_suite.py
