@@ -1,6 +1,7 @@
 PCMDI metrics package
 ======
 [![stable version](http://img.shields.io/badge/stable version-1.0-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/1.0)
+[![build status](https://travis-ci.org/OpenGeoscience/geojs.svg?branch=master)](https://travis-ci.org/PCMDI/pcmdi_metrics/builds)
 ![repo size](https://reposs.herokuapp.com/?path=PCMDI/pcmdi_metrics)
 ![platforms](http://img.shields.io/badge/platforms-linux | osx-lightgrey.svg)
 [![DOI](http://img.shields.io/badge/DOI-10.5281/zenodo.13952-orange.svg)](http://doi.org/10.5281/zenodo.13952)
@@ -17,6 +18,5 @@ GETTING STARTED
 Installation requirements and instructions are available on the [Install](https://github.com/PCMDI/pcmdi_metrics/wiki/Install) page
 
 An overview for using the package and template scripts are detailed on the [Using-the-package](https://github.com/PCMDI/pcmdi_metrics/wiki/Using-the-package) page
-
 
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
