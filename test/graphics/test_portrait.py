@@ -39,6 +39,8 @@ class TestGraphics(unittest.TestCase):
         # EXAMPLE
         x = vcs.init()
         x.portrait()
+        # Turn off antialiasing for test suite
+        x.setantialiasing(0)
 
         # PARAMETERS STUFF
         P = pcmdi_metrics.graphics.portraits.Portrait()

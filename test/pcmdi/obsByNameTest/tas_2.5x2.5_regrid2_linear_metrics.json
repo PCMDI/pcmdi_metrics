@@ -53,10 +53,10 @@
             },
             "r1i1p1": {
                 "global": {
-                    "bias_xy_ann_GLB": "0.51",
-                    "bias_xy_ann_NHEX": "2.58",
-                    "bias_xy_ann_SHEX": "-1.94",
-                    "bias_xy_ann_TROPICS": "0.90",
+                    "bias_xy_ann_GLB": "-0.51",
+                    "bias_xy_ann_NHEX": "-2.58",
+                    "bias_xy_ann_SHEX": "1.94",
+                    "bias_xy_ann_TROPICS": "-0.90",
                     "bias_xy_djf_GLB": "-0.80",
                     "bias_xy_djf_NHEX": "-3.58",
                     "bias_xy_djf_SHEX": "2.22",
@@ -139,10 +139,10 @@
                     "rms_xyt_ann_TROPICS": "1.78"
                 },
                 "terre": {
-                    "bias_xy_ann_GLB": "0.01",
-                    "bias_xy_ann_NHEX": "1.34",
-                    "bias_xy_ann_SHEX": "-2.39",
-                    "bias_xy_ann_TROPICS": "0.72",
+                    "bias_xy_ann_GLB": "-0.01",
+                    "bias_xy_ann_NHEX": "-1.34",
+                    "bias_xy_ann_SHEX": "2.39",
+                    "bias_xy_ann_TROPICS": "-0.72",
                     "bias_xy_djf_GLB": "0.23",
                     "bias_xy_djf_NHEX": "-0.61",
                     "bias_xy_djf_SHEX": "2.46",
@@ -227,6 +227,55 @@
             }
         }
     },
-    "metrics_git_sha1": "8aa5ee6270f8e27051b1fb2a35c7ce351f7275ba",
-    "uvcdat_version": "2.1.0-723-g9615770"
+    "METRICS": {
+        "rms_xyt": {
+            "Abstract": "Compute Spatial and Temporal Root Mean Square",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatio-Temporal Root Mean Square",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "rms_xy": {
+            "Abstract": "Compute Spatial Root Mean Square",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatial Root Mean Square",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "bias_xy": {
+            "Abstract": "Compute Full Average of Model - Observation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Bias"
+        },
+        "mae_xy": {
+            "Abstract": "Compute Full Average of Absolute Difference Between Model And Observation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Mean Absolute Error"
+        },
+        "cor_xyt": {
+            "Abstract": "Compute Spatio-Temporal Correlation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatial and Temporal Correlation",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "cor_xy": {
+            "Abstract": "Compute Spatial Correlation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatial Correlation",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "seasonal_mean": {
+            "Abstract": "Compute Seasonal Mean",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Seasonal Mean",
+            "Comments": "Assumes input are 12 months climatology"
+        },
+        "annual_mean": {
+            "Abstract": "Compute Annual Mean",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Annual Mean",
+            "Comments": "Assumes input are 12 months climatology",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        }
+    },
+    "metrics_git_sha1": "e32909ad9f7edd2ca5d171b944faf76710c0103f",
+    "uvcdat_version": "2.2.0-215-gc8c7923"
 }
