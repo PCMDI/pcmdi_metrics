@@ -16,4 +16,5 @@ script:
     - cp ../pcmdi_metrics/install_metrics.bash .
     - bash ./install_metrics.bash
     - source ./PCMDI_METRICS/bin/setup_runtime.sh
+    - cd ./PCMDI_METRICS/tmp/metrics
     - python test/test_suite.py
