@@ -82,29 +82,29 @@ c.add_argument("-V", "--cf-var",
                nargs="*",
                help="variable(s) name in CMOR tables, in same order " +
                "as -v argument")
-c.add_argument("-E","--experiment_id",default=None,
-        help="'experiment id' for this run (will try to get from input file",
-        )
-c.add_argument("-I","--institution",default=None,
-        help="'institution' for this run (will try to get from input file",
-        )
-c.add_argument("-S","--source",default=None,
-        help="'source' for this run (will try to get from input file",
-        )
+c.add_argument("-E", "--experiment_id", default=None,
+               help="'experiment id' for this run (will try to get from input file",
+               )
+c.add_argument("-I", "--institution", default=None,
+               help="'institution' for this run (will try to get from input file",
+               )
+c.add_argument("-S", "--source", default=None,
+               help="'source' for this run (will try to get from input file",
+               )
 
-cmor_xtra_args = ["contact","references","model_id",
-                "institute_id","forcing",
-                "parent_experiment_id",
-                "parent_experiment_rip",
-                "realization","comment","history",
-                "branch_time","physics_version",
-                "initialization_method",
-                ]
+cmor_xtra_args = ["contact", "references", "model_id",
+                  "institute_id", "forcing",
+                  "parent_experiment_id",
+                  "parent_experiment_rip",
+                  "realization", "comment", "history",
+                  "branch_time", "physics_version",
+                  "initialization_method",
+                  ]
 for x in cmor_xtra_args:
-    c.add_argument("--%s" % x,default=None,
-            dest = x,
-            help="'%s' for this run (will try to get from input file" % x
-            )
+    c.add_argument("--%s" % x, default=None,
+                   dest=x,
+                   help="'%s' for this run (will try to get from input file" % x
+                   )
 
 A = parser.parse_args(sys.argv[1:])
 if len(A.files) == 0:
@@ -142,17 +142,19 @@ season_function = {
     "year": cdutil.times.YEAR,
 }
 filein = cdms2.open(A.files)
-def checkCMORAttribute(att,source=filein):
-    res = getattr(A,att)
+
+
+def checkCMORAttribute(att, source=filein):
+    res = getattr(A, att)
     if res is None:
-        if hasattr(source,att):
-            res = getattr(source,att)
+        if hasattr(source, att):
+            res = getattr(source, att)
         else:
             raise RuntimeError("Could not figure out the CMOR '%s'" % att)
     return res
 
 fvars = filein.variables.keys()
-for ivar,v in enumerate(A.vars):
+for ivar, v in enumerate(A.vars):
     if v not in fvars:
         raise RuntimeError(
             "Variable '%s' is not contained in input file(s)" %
@@ -232,7 +234,7 @@ for ivar,v in enumerate(A.vars):
         inst = checkCMORAttribute("institution")
         src = checkCMORAttribute("source")
         exp = checkCMORAttribute("experiment_id")
-        xtra={}
+        xtra = {}
         for x in cmor_xtra_args:
             try:
                 xtra[x] = checkCMORAttribute(x)
@@ -240,20 +242,20 @@ for ivar,v in enumerate(A.vars):
                 pass
         cal = data.getTime().getCalendar()  # cmor understand cdms calendars
         error_flag = cmor.setup(
-                               inpath='.', 
-            netcdf_file_action=cmor.CMOR_REPLACE, 
-            set_verbosity=cmor.CMOR_NORMAL, 
+            inpath='.',
+            netcdf_file_action=cmor.CMOR_REPLACE,
+            set_verbosity=cmor.CMOR_NORMAL,
             exit_control=cmor.CMOR_NORMAL,
             logfile='logfile',
             create_subdirectories=int(A.drs))
         error_flag = cmor.dataset(
-                experiment_id=exp,
-                outpath='Test',
-                institution=inst,
-                source=src,
-                calendar=cal,
-                **xtra
-                )
+            experiment_id=exp,
+            outpath='Test',
+            institution=inst,
+            source=src,
+            calendar=cal,
+            **xtra
+        )
         table = cmor.load_table("pcmdi_metrics")
 
         # Ok CMOR is ready let's create axes
@@ -269,11 +271,11 @@ for ivar,v in enumerate(A.vars):
             elif ax.isLevel():  # Need work here for sigma
                 table_entry = "plevs"
             ax_id = cmor.axis(table_entry=table_entry,
-                    units=ax.units, 
-                    coord_vals=ax[:],
-                    cell_bounds=ax.getBounds()
-                    )
-            print ax.id,ax_id
+                              units=ax.units,
+                              coord_vals=ax[:],
+                              cell_bounds=ax.getBounds()
+                              )
+            print ax.id, ax_id
             cmor_axes.append(ax_id)
         # Now create the variable itself
         if A.cf_var is not None:
@@ -286,23 +288,23 @@ for ivar,v in enumerate(A.vars):
             units = data.units
         else:
             units = units[ivar]
-        print "units:",units,var_entry
-        var_id = cmor.variable(table_entry = var_entry,
-                units = units,
-                axis_ids = cmor_axes,
-                type = s.typecode(),
-                missing_value = s.missing_value)
+        print "units:", units, var_entry
+        var_id = cmor.variable(table_entry=var_entry,
+                               units=units,
+                               axis_ids=cmor_axes,
+                               type=s.typecode(),
+                               missing_value=s.missing_value)
 
         print "writing data?"
         # And finally write the data
         data2 = s.filled(s.missing_value)
         print data2.shape
-        cmor.write(var_id,data2,ntimes_passed=ntimes)
+        cmor.write(var_id, data2, ntimes_passed=ntimes)
         print "Done writing"
 
         # Close cmor
-        path = cmor.close(var_id,file_name = True)
-        print "Saved to:",path
+        path = cmor.close(var_id, file_name=True)
+        print "Saved to:", path
 
         cmor.close()
         print "closed cmor"
