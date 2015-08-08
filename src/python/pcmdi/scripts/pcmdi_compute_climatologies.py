@@ -72,6 +72,11 @@ c.add_argument("-D", "--drs",
 c.add_argument("-T", "--tables",
                dest="tables",
                help="path where CMOR tables reside")
+c.add_argument("-U", "--units",
+               dest="units",
+               nargs="*",
+               help="variable(s) units, in same order " +
+               "as -v argument")
 c.add_argument("-V", "--cf-var",
                dest="cf_var",
                nargs="*",
@@ -147,7 +152,7 @@ def checkCMORAttribute(att,source=filein):
     return res
 
 fvars = filein.variables.keys()
-for v in A.vars:
+for ivar,v in enumerate(A.vars):
     if v not in fvars:
         raise RuntimeError(
             "Variable '%s' is not contained in input file(s)" %
@@ -256,6 +261,7 @@ for v in A.vars:
         for ax in s.getAxisList():
             if ax.isTime():
                 table_entry = "time2"
+                ntimes = len(ax)
             elif ax.isLatitude():
                 table_entry = "latitude"
             elif ax.isLongitude():
@@ -267,8 +273,40 @@ for v in A.vars:
                     coord_vals=ax[:],
                     cell_bounds=ax.getBounds()
                     )
+            print ax.id,ax_id
+            cmor_axes.append(ax_id)
         # Now create the variable itself
-        print "CFVAR:",A.cf_var
+        if A.cf_var is not None:
+            var_entry = A.cf_var[ivar]
+        else:
+            var_entry = data.id
+
+        units = A.units
+        if units is None:
+            units = data.units
+        else:
+            units = units[ivar]
+        print "units:",units,var_entry
+        var_id = cmor.variable(table_entry = var_entry,
+                units = units,
+                axis_ids = cmor_axes,
+                type = s.typecode(),
+                missing_value = s.missing_value)
+
+        print "writing data?"
+        # And finally write the data
+        data2 = s.filled(s.missing_value)
+        print data2.shape
+        cmor.write(var_id,data2,ntimes_passed=ntimes)
+        print "Done writing"
+
+        # Close cmor
+        path = cmor.close(var_id,file_name = True)
+        print "Saved to:",path
+
+        cmor.close()
+        print "closed cmor"
+
 
 # clean up
 if xml is not None:
