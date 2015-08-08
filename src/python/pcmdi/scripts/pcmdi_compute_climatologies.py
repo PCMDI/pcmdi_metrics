@@ -251,7 +251,24 @@ for v in A.vars:
                 )
         table = cmor.load_table("pcmdi_metrics")
 
-
+        # Ok CMOR is ready let's create axes
+        cmor_axes = []
+        for ax in s.getAxisList():
+            if ax.isTime():
+                table_entry = "time2"
+            elif ax.isLatitude():
+                table_entry = "latitude"
+            elif ax.isLongitude():
+                table_entry = "longitude"
+            elif ax.isLevel():  # Need work here for sigma
+                table_entry = "plevs"
+            ax_id = cmor.axis(table_entry=table_entry,
+                    units=ax.units, 
+                    coord_vals=ax[:],
+                    cell_bounds=ax.getBounds()
+                    )
+        # Now create the variable itself
+        print "CFVAR:",A.cf_var
 
 # clean up
 if xml is not None:
