@@ -8,6 +8,10 @@ import subprocess
 import shlex
 import cdms2
 import cdutil
+try:
+    import cmor
+except:
+    raise RuntimeError("Your UV-CDAT is not built with cmor")
 
 parser = argparse.ArgumentParser(
     description='Generates Climatologies from files')
@@ -25,7 +29,7 @@ p.add_argument("-t", "--threshold",
                type=float,
                help="Threshold bellow which a season is considered as " +
                "not having enough data to be computed")
-p.add_argument("-S", "--season",
+p.add_argument("-c", "--climatological_season",
                dest="seasons",
                default=["all"],
                nargs="*",
@@ -38,13 +42,13 @@ p.add_argument("-s", "--start",
                dest="start",
                default=None,
                help="Start for climatology: date, value or index " +
-               "as determined by -I arg")
+               "as determined by -i arg")
 p.add_argument("-e", "--end",
                dest="end",
                default=None,
                help="End for climatology: date, value or index " +
                "as determined by -I arg")
-p.add_argument("-I", "--indexation-type",
+p.add_argument("-i", "--indexation-type",
                dest="index",
                default="date",
                choices=["date", "value", "index"],
@@ -59,7 +63,7 @@ p.add_argument("-b", "--bounds",
                default=False,
                help="reset bounds to monthly")
 c = parser.add_argument_group("CMOR options")
-c.add_argument("-d", "--drs",
+c.add_argument("-D", "--drs",
                action="store_true",
                dest="drs",
                default=False,
@@ -73,9 +77,31 @@ c.add_argument("-V", "--cf-var",
                nargs="*",
                help="variable(s) name in CMOR tables, in same order " +
                "as -v argument")
+c.add_argument("-E","--experiment_id",default=None,
+        help="'experiment id' for this run (will try to get from input file",
+        )
+c.add_argument("-I","--institution",default=None,
+        help="'institution' for this run (will try to get from input file",
+        )
+c.add_argument("-S","--source",default=None,
+        help="'source' for this run (will try to get from input file",
+        )
+
+cmor_xtra_args = ["contact","references","model_id",
+                "institute_id","forcing",
+                "parent_experiment_id",
+                "parent_experiment_rip",
+                "realization","comment","history",
+                "branch_time","physics_version",
+                "initialization_method",
+                ]
+for x in cmor_xtra_args:
+    c.add_argument("--%s" % x,default=None,
+            dest = x,
+            help="'%s' for this run (will try to get from input file" % x
+            )
 
 A = parser.parse_args(sys.argv[1:])
-print A
 if len(A.files) == 0:
     raise RuntimeError("You need to provide at least one file for input")
 
@@ -111,6 +137,15 @@ season_function = {
     "year": cdutil.times.YEAR,
 }
 filein = cdms2.open(A.files)
+def checkCMORAttribute(att,source=filein):
+    res = getattr(A,att)
+    if res is None:
+        if hasattr(source,att):
+            res = getattr(source,att)
+        else:
+            raise RuntimeError("Could not figure out the CMOR '%s'" % att)
+    return res
+
 fvars = filein.variables.keys()
 for v in A.vars:
     if v not in fvars:
@@ -189,6 +224,34 @@ for v in A.vars:
     for season in seasons:
         s = season_function[season].climatology(data)
         print season, s.shape
+        inst = checkCMORAttribute("institution")
+        src = checkCMORAttribute("source")
+        exp = checkCMORAttribute("experiment_id")
+        xtra={}
+        for x in cmor_xtra_args:
+            try:
+                xtra[x] = checkCMORAttribute(x)
+            except:
+                pass
+        cal = data.getTime().getCalendar()  # cmor understand cdms calendars
+        error_flag = cmor.setup(
+                               inpath='.', 
+            netcdf_file_action=cmor.CMOR_REPLACE, 
+            set_verbosity=cmor.CMOR_NORMAL, 
+            exit_control=cmor.CMOR_NORMAL,
+            logfile='logfile',
+            create_subdirectories=int(A.drs))
+        error_flag = cmor.dataset(
+                experiment_id=exp,
+                outpath='Test',
+                institution=inst,
+                source=src,
+                calendar=cal,
+                **xtra
+                )
+        table = cmor.load_table("pcmdi_metrics")
+
+
 
 # clean up
 if xml is not None:
