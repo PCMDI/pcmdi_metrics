@@ -8,6 +8,8 @@ import subprocess
 import shlex
 import cdms2
 import cdutil
+import numpy
+
 try:
     import cmor
 except:
@@ -178,7 +180,7 @@ for ivar, v in enumerate(A.vars):
         elif A.index == "value":  # actual value used for slicing
             v0 = float(A.start)
             try:
-                i0, tmp = tim.mapInterval((v0, v0, 'cob'))
+                i0, tmp = tim.mapInterval((v0, v0), 'cob')
             except:
                 raise RuntimeError(
                     "Could not find value %s for start time for variable %s" %
@@ -186,7 +188,8 @@ for ivar, v in enumerate(A.vars):
         elif A.index == "date":
             v0 = A.start
             try:
-                i0, tmp = tim.mapInterval((v0, v0, 'cob'))
+                print tim[:3],tim.getBounds()[:3]
+                i0, tmp = tim.mapInterval((v0, v0), 'cob')
             except:
                 raise RuntimeError(
                     "Could not find start time %s for variable: %s" %
@@ -205,7 +208,7 @@ for ivar, v in enumerate(A.vars):
         elif A.index == "value":  # actual value used for slicing
             v0 = float(A.end)
             try:
-                tmp, i1 = tim.mapInterval((v0, v0, 'cob'))
+                tmp, i1 = tim.mapInterval((v0, v0), 'cob')
             except:
                 raise RuntimeError(
                     "Could not find value %s for end time for variable %s" %
@@ -213,14 +216,14 @@ for ivar, v in enumerate(A.vars):
         elif A.index == "date":
             v0 = A.end
             try:
-                tmp, i1 = tim.mapInterval((v0, v0, 'cob'))
+                tmp, i1 = tim.mapInterval((v0, v0), 'cob')
             except:
                 raise RuntimeError(
                     "Could not find end time %s for variable: %s" %
                     (A.end, v))
     # Read in data
     data = V(time=slice(i0, i1))
-    print "DATA:", data.shape
+    print "DATA:", data.shape,data.getTime().asComponentTime()[0],data.getTime().asComponentTime()[-1]
     if A.bounds:
         cdutil.times.setTimeBoundsMonthly(data)
     # Now we can actually read and compute the climo
@@ -230,7 +233,41 @@ for ivar, v in enumerate(A.vars):
 
     for season in seasons:
         s = season_function[season].climatology(data)
-        print season, s.shape
+        ## Ok we know we have monthly data
+        ## We want to tweak bounds
+        T = data.getTime()
+        cal = T.getCalendar()
+        Tunits = T.units
+        bnds = T.getBounds()
+        tc = T.asComponentTime()
+        t2 = s.getTime()
+        tc2 = t2.asComponentTime()
+        bnds2 = t2.getBounds()
+
+        y1 = tc[0].year
+        y2 = tc[-1].year
+        y = int((y2+y1)/2)
+
+        values = []
+        bounds = []
+
+        # Loop thru clim month and set value and bounds appropriately
+        import cdtime
+        for ii,t in enumerate(tc2):
+          print "T:",t,t2[ii]
+          t.year = y
+          values.append(t.torel(Tunits,cal).value)
+          b1 = cdtime.reltime(bnds2[ii][0],t2.units).tocomp(cal)
+          if b1.month<tc[0].month or (tc[0].month==1 and b1.month==12):
+            b1.year=y1-1
+          else:
+            b1.year = y1
+          b2 = cdtime.reltime(bnds2[ii][1],t2.units).tocomp(cal)
+          b2.year = y2
+          print "BOUNDS:",b1,b2,bnds2[ii] 
+          print "Y1,Y,Y2:",y1,y,y2
+          bounds.append([b1.torel(Tunits,cal).value,b2.torel(Tunits,cal).value])
+
         inst = checkCMORAttribute("institution")
         src = checkCMORAttribute("source")
         exp = checkCMORAttribute("experiment_id")
@@ -246,7 +283,7 @@ for ivar, v in enumerate(A.vars):
             netcdf_file_action=cmor.CMOR_REPLACE,
             set_verbosity=cmor.CMOR_NORMAL,
             exit_control=cmor.CMOR_NORMAL,
-            logfile='logfile',
+#            logfile='logfile',
             create_subdirectories=int(A.drs))
         error_flag = cmor.dataset(
             experiment_id=exp,
@@ -261,21 +298,29 @@ for ivar, v in enumerate(A.vars):
         # Ok CMOR is ready let's create axes
         cmor_axes = []
         for ax in s.getAxisList():
-            if ax.isTime():
-                table_entry = "time2"
-                ntimes = len(ax)
-            elif ax.isLatitude():
+            if ax.isLatitude():
                 table_entry = "latitude"
             elif ax.isLongitude():
                 table_entry = "longitude"
             elif ax.isLevel():  # Need work here for sigma
                 table_entry = "plevs"
+            if ax.isTime():
+                table_entry = "time2"
+                ntimes = len(ax)
+                axvals = numpy.array(values)
+                axbnds = numpy.array(bounds)
+                axunits = Tunits
+                print axvals.shape,axvals.dtype
+                print axbnds.shape,axbnds.dtype
+            else:
+              axvals = ax[:]
+              axbnds = ax.getBounds()
+              axunits = ax.units
             ax_id = cmor.axis(table_entry=table_entry,
-                              units=ax.units,
-                              coord_vals=ax[:],
-                              cell_bounds=ax.getBounds()
+                              units=axunits,
+                              coord_vals=axvals,
+                              cell_bounds=axbnds
                               )
-            print ax.id, ax_id
             cmor_axes.append(ax_id)
         # Now create the variable itself
         if A.cf_var is not None:
@@ -288,7 +333,6 @@ for ivar, v in enumerate(A.vars):
             units = data.units
         else:
             units = units[ivar]
-        print "units:", units, var_entry
         var_id = cmor.variable(table_entry=var_entry,
                                units=units,
                                axis_ids=cmor_axes,
