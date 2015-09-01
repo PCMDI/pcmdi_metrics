@@ -236,6 +236,7 @@ for ivar, v in enumerate(A.vars):
         ## Ok we know we have monthly data
         ## We want to tweak bounds
         T = data.getTime()
+        print "ORIGINAL:",T.asComponentTime()
         cal = T.getCalendar()
         Tunits = T.units
         bnds = T.getBounds()
@@ -258,12 +259,14 @@ for ivar, v in enumerate(A.vars):
           t.year = y
           values.append(t.torel(Tunits,cal).value)
           b1 = cdtime.reltime(bnds2[ii][0],t2.units).tocomp(cal)
-          if b1.month<tc[0].month or (tc[0].month==1 and b1.month==12):
-            b1.year=y1-1
-          else:
-            b1.year = y1
           b2 = cdtime.reltime(bnds2[ii][1],t2.units).tocomp(cal)
           b2.year = y2
+          print "B1",b1,tc[0],b2
+          if b1.month<tc[0].month or (tc[0].month==1 and b1.month==12 and b2.month!=1):
+            b1.year=y1-1
+            print "DID MAGIC"
+          else:
+            b1.year = y1
           print "BOUNDS:",b1,b2,bnds2[ii] 
           print "Y1,Y,Y2:",y1,y,y2
           bounds.append([b1.torel(Tunits,cal).value,b2.torel(Tunits,cal).value])
@@ -312,6 +315,9 @@ for ivar, v in enumerate(A.vars):
                 axunits = Tunits
                 print axvals.shape,axvals.dtype
                 print axbnds.shape,axbnds.dtype
+                print "AXES BNDS:",axbnds
+                print "AXES VALUES:",axvals 
+                print "COMPOTIME:",ax.asComponentTime()
             else:
               axvals = ax[:]
               axbnds = ax.getBounds()
