@@ -14,23 +14,26 @@ num_cpus=4
 #### BUILD OPTIONS #####
 ## Do we want to build with graphics capabilities
 build_graphics=false
-## Do we want MESA driver (no interactive mode)
+## Do we want MESA driver (non-interactive graphics mode)
 build_graphics_against_mesa=true
+## valid values: true false
 
 ## Do we want to build with CMOR
 build_cmor=false
+## valid values: true false
 
 ## Do we build UV-CDAT with parallel capabilities (MPI)
 build_parallel=false
-
-## Do we keep or remove uvcdat_build diretory before building UV-CDAT
-## Useful for case where multiple make necessary
 ## valid values: true false
+
+## Do we keep or remove uvcdat_build directory before building UV-CDAT
+## Useful for case where multiple builds are necessary
 keep_uvcdat_build_dir=false
+## valid values: true false
 
 ### DO NOT EDIT AFTER THIS POINT !!!!! ###
 
-# If Mac no mesa so truning back OFF if on
+# If Mac no mesa so turning back OFF if on
 case `uname` in
   Darwin*)
     if [ ${build_graphics_against_mesa} = true ]; then
@@ -160,7 +163,6 @@ EOF
        return 0
     fi
 
-
     ## Source funcs needed by installer
     . ${metrics_build_directory}/installer_funcs.bash
     echo
@@ -204,10 +206,9 @@ EOF
     fi
     cd uvcdat >& /dev/null
     git checkout ${cdat_version}
-    # The branch bellow has been merged
+    # The branch below has been merged
     # we do not need to merge ourselves any longer
-    # leaving commented out for others 
-    # so they know how to do it
+    # leaving commented out for others, so they know how to do it
     # git merge --no-ff --no-commit origin/salinity
     [ $? != 0 ] && echo " WARNING: Problem with checking out cdat revision [${cdat_version}] from repository :-("
     #NOTE:
@@ -445,7 +446,6 @@ main() {
     setup_cdat_xtra cdutil
     rm -rf ${install_prefix}/sample_data
 
-    echo
     echo
     echo "*******************************"
     echo "UVCDAT  - ${cdat_version} - Install Success"
