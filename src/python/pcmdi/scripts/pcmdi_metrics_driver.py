@@ -388,9 +388,8 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                     if not hasattr(
                                         parameters, "generate_sftlf") or \
                                             parameters.generate_sftlf is False:
-                                        dup("Model %s does not have sftlf, " +
-                                            "skipping region: %s" % (
-                                                model_version, region))
+                                        dup("Model %s does not have sftlf, " % model_version +
+                                            "skipping region: %s" % region)
                                         success = False
                                         continue
                                     else:
@@ -437,9 +436,9 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                         level=level)
                             except Exception as err:
                                 success = False
-                                dup('Failed to get variable %s ' +
+                                dup('Failed to get variable %s ' % var +
                                     'for version: %s, error:\n%s' % (
-                                        var, model_version, err))
+                                        model_version, err))
                                 break
 
                             dup(var,
@@ -456,27 +455,23 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             ###################################################
                             if dm.shape != do.shape:
                                 raise RuntimeError(
-                                    "Obs and Model -%s- have different" +
+                                    "Obs and Model -%s- have different" % model_version +
                                     "shapes %s vs %s" %
-                                    (model_version, do.shape, dm.shape))
+                                    (do.shape, dm.shape))
                             # Ok possible issue with units
                             if hasattr(dm, "units") and do.units != dm.units:
                                 u = genutil.udunits(1, dm.units)
                                 try:
                                     scaling, offset = u.how(do.units)
                                     dm = dm * scaling + offset
-                                    warnings.warn(
-                                        "Model and observation units " +
-                                        "differed, " +
-                                        "converted model (%s) to " +
-                                        "observation unit" +
-                                        "(%s) scaling: %g offset: %g" %
-                                        (dm.units, do.units, scaling, offset))
+                                    wrn = "Model and observation units differed, converted model" +\
+                                          "(%s) to observation unit (%s) scaling: %g offset: %g" % (
+                                              dm.units, do.units, scaling, offset)
+                                    warnings.warn(wrn)
                                 except:
                                     raise RuntimeError(
-                                        "Could not convert model units (%s) " +
-                                        "to obs units: (%s)" %
-                                        (dm.units, do.units))
+                                        "Could not convert model units (%s) " % dm.units +
+                                        "to obs units: (%s)" % (do.units))
 
                             ###################################################
                             # OBS INFO FOR JSON/ASCII FILES
@@ -644,9 +639,9 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
 
                             break
                 except Exception as err:
-                    dup("Error while processing observation %s" +
+                    dup("Error while processing observation %s" % ref +
                         " for variable %s:\n\t%s" % (
-                            var, ref, err))
+                            var, str(err)))
             # Done with obs and models loops , let's dum before next var
         # Ok at this point we need to add the metrics def in the dictionary so
         # that it is stored

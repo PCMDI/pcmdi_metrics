@@ -42,10 +42,10 @@
             "source": "ERAINT",
             "r1i1p1": {
                 "global": {
-                    "bias_xy_ann_GLB": "0.52",
-                    "bias_xy_ann_NHEX": "2.58",
-                    "bias_xy_ann_SHEX": "-1.94",
-                    "bias_xy_ann_TROPICS": "0.91",
+                    "bias_xy_ann_GLB": "-0.52",
+                    "bias_xy_ann_NHEX": "-2.58",
+                    "bias_xy_ann_SHEX": "1.94",
+                    "bias_xy_ann_TROPICS": "-0.91",
                     "bias_xy_djf_GLB": "-0.80",
                     "bias_xy_djf_NHEX": "-3.58",
                     "bias_xy_djf_SHEX": "2.23",
@@ -183,6 +183,6 @@
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
         }
     },
-    "metrics_git_sha1": "40e056c9ec4b9ec96eb5c3a93ad89fcd427429f5",
-    "uvcdat_version": "2.1.0-682-g5f296b7"
+    "metrics_git_sha1": "3100dca207554bffd8cc9c56b7d3887c47a3f14b",
+    "uvcdat_version": "uvcdat-2.2.0-320-g80914b7"
 }
