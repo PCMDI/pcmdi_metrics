@@ -376,7 +376,7 @@ main() {
     cmake_repo_http=http://cmake.org/cmake.git
     cmake_repo_https=https://cmake.org/cmake.git
     cmake_min_version=2.8.11
-    cmake_max_version=3.2.3
+    cmake_max_version=3.3.2
     cmake_version=3.2.3
     force_install=0
     DEBUG=1
