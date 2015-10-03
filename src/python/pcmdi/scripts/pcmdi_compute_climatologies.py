@@ -9,6 +9,8 @@ import shlex
 import cdms2
 import cdutil
 import numpy
+import cdtime
+
 
 try:
     import cmor
@@ -19,6 +21,8 @@ parser = argparse.ArgumentParser(
     description='Generates Climatologies from files')
 
 p = parser.add_argument_group('processing')
+p.add_argument("--verbose",action="store_true",dest="verbose",help="verbose output",default=True)
+p.add_argument("--quiet",action="store_false",dest="verbose",help="quiet output")
 p.add_argument("-v", "--vars",
                nargs="*",
                dest="vars",
@@ -119,7 +123,8 @@ for f in A.files:
     if not os.path.exists(f):
         raise RuntimeError("file '%s' doe not exits" % f)
 if len(A.files) > 1:
-    print "Multiple files sent, running cdscan on them"
+    if A.verbose:
+        print "Multiple files sent, running cdscan on them"
     xml = tempfile.mkstemp(suffix=".xml")[1]
     P = subprocess.Popen(
         shlex.split(
@@ -188,7 +193,6 @@ for ivar, v in enumerate(A.vars):
         elif A.index == "date":
             v0 = A.start
             try:
-                print tim[:3],tim.getBounds()[:3]
                 i0, tmp = tim.mapInterval((v0, v0), 'cob')
             except:
                 raise RuntimeError(
@@ -223,7 +227,8 @@ for ivar, v in enumerate(A.vars):
                     (A.end, v))
     # Read in data
     data = V(time=slice(i0, i1))
-    print "DATA:", data.shape,data.getTime().asComponentTime()[0],data.getTime().asComponentTime()[-1]
+    if A.verbose: 
+        print "DATA:", data.shape,data.getTime().asComponentTime()[0],data.getTime().asComponentTime()[-1]
     if A.bounds:
         cdutil.times.setTimeBoundsMonthly(data)
     # Now we can actually read and compute the climo
@@ -236,7 +241,8 @@ for ivar, v in enumerate(A.vars):
         ## Ok we know we have monthly data
         ## We want to tweak bounds
         T = data.getTime()
-        print "ORIGINAL:",T.asComponentTime()
+        if A.verbose: 
+            print "SEASON:",season,"ORIGINAL:",T.asComponentTime()
         cal = T.getCalendar()
         Tunits = T.units
         bnds = T.getBounds()
@@ -245,9 +251,16 @@ for ivar, v in enumerate(A.vars):
         tc2 = t2.asComponentTime()
         bnds2 = t2.getBounds()
 
-        y1 = tc[0].year
-        y2 = tc[-1].year
-        y = int((y2+y1)/2)
+        # First and last time points
+        y1 = cdtime.reltime(bnds[ 0][0],T.units)
+        y2 = cdtime.reltime(bnds[-1][1],T.units)
+
+        # Mid year is:
+        y = (y2.value+y1.value)/2.
+        y = cdtime.reltime(y,T.units).tocomp(cal).year
+
+        if A.verbose: 
+            print "We found data from ",y1,"to",y2,"MID YEAR:",y
 
         values = []
         bounds = []
@@ -255,20 +268,16 @@ for ivar, v in enumerate(A.vars):
         # Loop thru clim month and set value and bounds appropriately
         import cdtime
         for ii,t in enumerate(tc2):
-          print "T:",t,t2[ii]
+          if A.verbose: 
+              print "T:",t,t2[ii]
           t.year = y
           values.append(t.torel(Tunits,cal).value)
           b1 = cdtime.reltime(bnds2[ii][0],t2.units).tocomp(cal)
           b2 = cdtime.reltime(bnds2[ii][1],t2.units).tocomp(cal)
-          b2.year = y2
-          print "B1",b1,tc[0],b2
-          if b1.month<tc[0].month or (tc[0].month==1 and b1.month==12 and b2.month!=1):
-            b1.year=y1-1
-            print "DID MAGIC"
-          else:
-            b1.year = y1
-          print "BOUNDS:",b1,b2,bnds2[ii] 
-          print "Y1,Y,Y2:",y1,y,y2
+          b2.year = y
+          b1.year = y
+          if b1.cmp(b2)>0: # ooops
+              b2.year+=1
           bounds.append([b1.torel(Tunits,cal).value,b2.torel(Tunits,cal).value])
 
         inst = checkCMORAttribute("institution")
@@ -281,10 +290,14 @@ for ivar, v in enumerate(A.vars):
             except:
                 pass
         cal = data.getTime().getCalendar()  # cmor understand cdms calendars
+        if A.verbose:
+            cmor_verbose = cmor.CMOR_NORMAL
+        else:
+            cmor_verbose = cmor.CMOR_QUIET
         error_flag = cmor.setup(
             inpath='.',
             netcdf_file_action=cmor.CMOR_REPLACE,
-            set_verbosity=cmor.CMOR_NORMAL,
+            set_verbosity=cmor_verbose,
             exit_control=cmor.CMOR_NORMAL,
 #            logfile='logfile',
             create_subdirectories=int(A.drs))
@@ -313,11 +326,6 @@ for ivar, v in enumerate(A.vars):
                 axvals = numpy.array(values)
                 axbnds = numpy.array(bounds)
                 axunits = Tunits
-                print axvals.shape,axvals.dtype
-                print axbnds.shape,axbnds.dtype
-                print "AXES BNDS:",axbnds
-                print "AXES VALUES:",axvals 
-                print "COMPOTIME:",ax.asComponentTime()
             else:
               axvals = ax[:]
               axbnds = ax.getBounds()
@@ -345,19 +353,18 @@ for ivar, v in enumerate(A.vars):
                                type=s.typecode(),
                                missing_value=s.missing_value)
 
-        print "writing data?"
         # And finally write the data
         data2 = s.filled(s.missing_value)
-        print data2.shape
         cmor.write(var_id, data2, ntimes_passed=ntimes)
-        print "Done writing"
 
         # Close cmor
         path = cmor.close(var_id, file_name=True)
-        print "Saved to:", path
+        if A.verbose:
+            print "Saved to:", path
 
         cmor.close()
-        print "closed cmor"
+        if A.verbose:
+            print "closed cmor"
 
 
 # clean up
