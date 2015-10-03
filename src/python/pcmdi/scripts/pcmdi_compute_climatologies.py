@@ -21,8 +21,17 @@ parser = argparse.ArgumentParser(
     description='Generates Climatologies from files')
 
 p = parser.add_argument_group('processing')
-p.add_argument("--verbose",action="store_true",dest="verbose",help="verbose output",default=True)
-p.add_argument("--quiet",action="store_false",dest="verbose",help="quiet output")
+p.add_argument(
+    "--verbose",
+    action="store_true",
+    dest="verbose",
+    help="verbose output",
+    default=True)
+p.add_argument(
+    "--quiet",
+    action="store_false",
+    dest="verbose",
+    help="quiet output")
 p.add_argument("-v", "--vars",
                nargs="*",
                dest="vars",
@@ -227,8 +236,8 @@ for ivar, v in enumerate(A.vars):
                     (A.end, v))
     # Read in data
     data = V(time=slice(i0, i1))
-    if A.verbose: 
-        print "DATA:", data.shape,data.getTime().asComponentTime()[0],data.getTime().asComponentTime()[-1]
+    if A.verbose:
+        print "DATA:", data.shape, data.getTime().asComponentTime()[0], data.getTime().asComponentTime()[-1]
     if A.bounds:
         cdutil.times.setTimeBoundsMonthly(data)
     # Now we can actually read and compute the climo
@@ -238,11 +247,11 @@ for ivar, v in enumerate(A.vars):
 
     for season in seasons:
         s = season_function[season].climatology(data)
-        ## Ok we know we have monthly data
-        ## We want to tweak bounds
+        # Ok we know we have monthly data
+        # We want to tweak bounds
         T = data.getTime()
-        if A.verbose: 
-            print "SEASON:",season,"ORIGINAL:",T.asComponentTime()
+        if A.verbose:
+            print "SEASON:", season, "ORIGINAL:", T.asComponentTime()
         cal = T.getCalendar()
         Tunits = T.units
         bnds = T.getBounds()
@@ -252,33 +261,34 @@ for ivar, v in enumerate(A.vars):
         bnds2 = t2.getBounds()
 
         # First and last time points
-        y1 = cdtime.reltime(bnds[ 0][0],T.units)
-        y2 = cdtime.reltime(bnds[-1][1],T.units)
+        y1 = cdtime.reltime(bnds[0][0], T.units)
+        y2 = cdtime.reltime(bnds[-1][1], T.units)
 
         # Mid year is:
-        y = (y2.value+y1.value)/2.
-        y = cdtime.reltime(y,T.units).tocomp(cal).year
+        y = (y2.value + y1.value) / 2.
+        y = cdtime.reltime(y, T.units).tocomp(cal).year
 
-        if A.verbose: 
-            print "We found data from ",y1,"to",y2,"MID YEAR:",y
+        if A.verbose:
+            print "We found data from ", y1, "to", y2, "MID YEAR:", y
 
         values = []
         bounds = []
 
         # Loop thru clim month and set value and bounds appropriately
         import cdtime
-        for ii,t in enumerate(tc2):
-          if A.verbose: 
-              print "T:",t,t2[ii]
-          t.year = y
-          values.append(t.torel(Tunits,cal).value)
-          b1 = cdtime.reltime(bnds2[ii][0],t2.units).tocomp(cal)
-          b2 = cdtime.reltime(bnds2[ii][1],t2.units).tocomp(cal)
-          b2.year = y
-          b1.year = y
-          if b1.cmp(b2)>0: # ooops
-              b2.year+=1
-          bounds.append([b1.torel(Tunits,cal).value,b2.torel(Tunits,cal).value])
+        for ii, t in enumerate(tc2):
+            if A.verbose:
+                print "T:", t, t2[ii]
+            t.year = y
+            values.append(t.torel(Tunits, cal).value)
+            b1 = cdtime.reltime(bnds2[ii][0], t2.units).tocomp(cal)
+            b2 = cdtime.reltime(bnds2[ii][1], t2.units).tocomp(cal)
+            b2.year = y
+            b1.year = y
+            if b1.cmp(b2) > 0:  # ooops
+                b2.year += 1
+            bounds.append([b1.torel(Tunits, cal).value,
+                           b2.torel(Tunits, cal).value])
 
         inst = checkCMORAttribute("institution")
         src = checkCMORAttribute("source")
@@ -299,7 +309,7 @@ for ivar, v in enumerate(A.vars):
             netcdf_file_action=cmor.CMOR_REPLACE,
             set_verbosity=cmor_verbose,
             exit_control=cmor.CMOR_NORMAL,
-#            logfile='logfile',
+            #            logfile='logfile',
             create_subdirectories=int(A.drs))
         error_flag = cmor.dataset(
             experiment_id=exp,
@@ -327,9 +337,9 @@ for ivar, v in enumerate(A.vars):
                 axbnds = numpy.array(bounds)
                 axunits = Tunits
             else:
-              axvals = ax[:]
-              axbnds = ax.getBounds()
-              axunits = ax.units
+                axvals = ax[:]
+                axbnds = ax.getBounds()
+                axunits = ax.units
             ax_id = cmor.axis(table_entry=table_entry,
                               units=axunits,
                               coord_vals=axvals,
