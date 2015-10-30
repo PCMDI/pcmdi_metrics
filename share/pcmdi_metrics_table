@@ -1337,7 +1337,7 @@ comment:           at the top of the atmosphere (to be compared with satellite m
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
-dimensions:        longitude latitude time
+dimensions:        longitude latitude time2
 out_name:          rlut
 type:              real
 positive:          up
