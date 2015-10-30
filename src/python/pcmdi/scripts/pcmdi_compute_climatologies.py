@@ -106,6 +106,9 @@ c.add_argument("-I", "--institution", default=None,
 c.add_argument("-S", "--source", default=None,
                help="'source' for this run (will try to get from input file",
                )
+c.add_argument("-X", "--variable_extra_args", default="{}",
+               help="Potential extra args to pass to cmor_variable call",
+               )
 
 cmor_xtra_args = ["contact", "references", "model_id",
                   "institute_id", "forcing",
@@ -286,7 +289,11 @@ for ivar, v in enumerate(A.vars):
             b2.year = y
             b1.year = y
             if b1.cmp(b2) > 0:  # ooops
-                b2.year += 1
+                if b1.month>b2.month:
+                    b1.year -= 1
+                else:
+                    b2.year += 1
+            print "BOUNDS 2:",b1,b2
             bounds.append([b1.torel(Tunits, cal).value,
                            b2.torel(Tunits, cal).value])
 
@@ -357,11 +364,16 @@ for ivar, v in enumerate(A.vars):
             units = data.units
         else:
             units = units[ivar]
+        kw = eval(A.variable_extra_args)
+        if not isinstance(kw,dict):
+            raise RuntimeError("invalid evaled type for -X args, should be evaled as a dict, e.g: -X '{\"positive\":\"up\"}'")
+        print kw
         var_id = cmor.variable(table_entry=var_entry,
                                units=units,
                                axis_ids=cmor_axes,
                                type=s.typecode(),
-                               missing_value=s.missing_value)
+                               missing_value=s.missing_value,
+                               **kw)
 
         # And finally write the data
         data2 = s.filled(s.missing_value)
