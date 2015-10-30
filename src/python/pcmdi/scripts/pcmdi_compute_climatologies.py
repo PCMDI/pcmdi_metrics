@@ -86,7 +86,8 @@ c.add_argument("-D", "--drs",
                )
 c.add_argument("-T", "--tables",
                dest="tables",
-               help="path where CMOR tables reside")
+               help="path where CMOR tables reside (directory or table)",
+               default = os.path.join(sys.prefix,"share","pcmdi","pcmdi_metrics_table"))
 c.add_argument("-U", "--units",
                dest="units",
                nargs="*",
@@ -289,7 +290,7 @@ for ivar, v in enumerate(A.vars):
             b2.year = y
             b1.year = y
             if b1.cmp(b2) > 0:  # ooops
-                if b1.month>b2.month:
+                if b1.month>b2.month and b1.month-b2.month!=11:
                     b1.year -= 1
                 else:
                     b2.year += 1
@@ -326,7 +327,13 @@ for ivar, v in enumerate(A.vars):
             calendar=cal,
             **xtra
         )
-        table = cmor.load_table("pcmdi_metrics")
+        if not os.path.exists(A.tables):
+            raise RuntimeError("No such file or directory for tables: %s" % A.tables)
+        if os.path.isdir(A.tables):
+            table=os.path.join(A.tables,"pcmdi_metrics_table")
+        else:
+            table = A.tables
+        table = cmor.load_table(table)
 
         # Ok CMOR is ready let's create axes
         cmor_axes = []

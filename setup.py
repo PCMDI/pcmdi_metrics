@@ -85,7 +85,7 @@ setup(name='pcmdi_metrics',
                   ('share/CMIP_metrics_results/CMIP5/piControl',
                    cmip5_piControl_json),
                   ('share/graphics/vcs', portrait_files),
-                  ('share/pcmdi', ('doc/obs_info_dictionary.json',)),
+                  ('share/pcmdi', ('doc/obs_info_dictionary.json','share/pcmdi_metrics_table')),
                   ]
       # include_dirs = [numpy.lib.utils.get_include()],
       #  ext_modules = [
