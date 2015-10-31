@@ -2,7 +2,6 @@ import cdms2 as cdms
 import pcmdi_metrics
 import collections
 
-
 def compute_metrics(Var, dm_glb, do_glb):
     # Var is sometimes sent with level associated
     var = Var.split("_")[0]
@@ -21,6 +20,10 @@ def compute_metrics(Var, dm_glb, do_glb):
             None,
             None)
         metrics_defs["cor_xy"] = pcmdi_metrics.pcmdi.cor_xy.compute(None, None)
+
+        metrics_defs["std_xy"] = pcmdi_metrics.pcmdi.std_xy.compute(None)
+        metrics_defs["std_xyt"] = pcmdi_metrics.pcmdi.std_xyt.compute(None)
+
         metrics_defs["seasonal_mean"] = \
             pcmdi_metrics.pcmdi.seasonal_mean.compute(
             None,
@@ -76,6 +79,9 @@ def compute_metrics(Var, dm_glb, do_glb):
         # CALCULATE ANNUAL MEAN RMS
         rms_xy = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am, do_am)
 
+        # CALCULATE ANNUAL OBS STD 
+        std_xy = pcmdi_metrics.pcmdi.std_xy.compute(do_am)
+
         metrics_dictionary[
             'rms_xyt_ann_' +
             dom] = format(
@@ -107,6 +113,14 @@ def compute_metrics(Var, dm_glb, do_glb):
             conv,
             sig_digits)
 
+        metrics_dictionary[
+            'std_xy_ann_' +
+            dom] = format(
+            std_xy *
+            conv,
+            sig_digits)
+
+
         # CALCULATE SEASONAL MEANS
         for sea in ['djf', 'mam', 'jja', 'son']:
 
@@ -118,6 +132,8 @@ def compute_metrics(Var, dm_glb, do_glb):
             cor_sea = pcmdi_metrics.pcmdi.cor_xy.compute(dm_sea, do_sea)
             mae_sea = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_sea, do_sea)
             bias_sea = pcmdi_metrics.pcmdi.bias.compute(dm_sea, do_sea)
+            std_sea = pcmdi_metrics.pcmdi.std_xy.compute(do_sea)
+
 
             metrics_dictionary[
                 'bias_xy_' +
@@ -148,6 +164,15 @@ def compute_metrics(Var, dm_glb, do_glb):
                 '_' +
                 dom] = format(
                 mae_sea *
+                conv,
+                sig_digits)
+
+            metrics_dictionary[
+                'std_xy_' +
+                sea +
+                '_' +
+                dom] = format(
+                std_sea *
                 conv,
                 sig_digits)
 
