@@ -3,7 +3,7 @@ import genutil
 
 def compute(d):
     """ Computes std"""
-    if dm is None and do is None:  # just want the doc
+    if d is None:  # just want the doc
         return {
             "Name": "Spatial Standard Deviation",
             "Abstract": "Compute Spatial Standard Deviation",

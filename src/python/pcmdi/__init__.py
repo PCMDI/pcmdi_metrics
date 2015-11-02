@@ -8,3 +8,5 @@ import annual_mean  # noqa
 import cor_xy  # noqa
 import meanabs_xy  # noqa
 import seasonal_mean  # noqa
+import std_xy  # noqa
+import std_xyt  # noqa

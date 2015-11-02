@@ -644,9 +644,9 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
 
                             break
                 except Exception as err:
-                    dup("Error while processing observation %s" +
+                    dup("Error while processing observation %s" % var +
                         " for variable %s:\n\t%s" % (
-                            var, ref, err))
+                            ref, err))
             # Done with obs and models loops , let's dum before next var
         # Ok at this point we need to add the metrics def in the dictionary so
         # that it is stored
@@ -663,3 +663,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         OUT.write(metrics_dictionary, mode="w", type="txt")
     except Exception as err:
         dup("Error while processing variable %s:\n\t%s" % (var, err))
+        raise err 
+
+
+
