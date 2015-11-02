@@ -66,7 +66,7 @@ def compute_metrics(Var, dm_glb, do_glb):
         # CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STDs
         rms_xyt = pcmdi_metrics.pcmdi.rms_xyt.compute(dm, do)
         cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm, do)
-#       std-obs_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(do_am)
+        stdObs_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(do)
         std_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(dm)
 
         # CALCULATE ANNUAL MEANS
@@ -82,7 +82,7 @@ def compute_metrics(Var, dm_glb, do_glb):
         rms_xy = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am, do_am)
 
         # CALCULATE ANNUAL OBS STD 
-#       std-obs_xy = pcmdi_metrics.pcmdi.std_xy.compute(do_am)
+        stdObs_xy = pcmdi_metrics.pcmdi.std_xy.compute(do_am)
         std_xy = pcmdi_metrics.pcmdi.std_xy.compute(dm_am)
 
         metrics_dictionary[
@@ -116,12 +116,12 @@ def compute_metrics(Var, dm_glb, do_glb):
             conv,
             sig_digits)
 
-#       metrics_dictionary[
-#           'std-obs_xy_ann_' +
-#           dom] = format(
-#           std-obs_xy *
-#           conv,
-#           sig_digits)
+        metrics_dictionary[
+            'std-obs_xy_ann_' +
+            dom] = format(
+            stdObs_xy *
+            conv,
+            sig_digits)
 
         metrics_dictionary[
             'std_xy_ann_' +
@@ -130,12 +130,12 @@ def compute_metrics(Var, dm_glb, do_glb):
             conv,
             sig_digits)
 
-#       metrics_dictionary[
-#           'std-obs_xyt_ann_' +
-#           dom] = format(
-#           std-obs_xyt *
-#           conv,
-#           sig_digits)
+        metrics_dictionary[
+            'std-obs_xyt_ann_' +
+            dom] = format(
+            stdObs_xyt *
+            conv,
+            sig_digits)
 
         metrics_dictionary[
             'std_xyt_ann_' +
@@ -156,7 +156,8 @@ def compute_metrics(Var, dm_glb, do_glb):
             mae_sea = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_sea, do_sea)
             bias_sea = pcmdi_metrics.pcmdi.bias.compute(dm_sea, do_sea)
 
-            std_sea = pcmdi_metrics.pcmdi.std_xy.compute(dm_sea)
+            std_sea =    pcmdi_metrics.pcmdi.std_xy.compute(dm_sea)
+            stdObs_sea = pcmdi_metrics.pcmdi.std_xy.compute(do_sea)
 
             metrics_dictionary[
                 'bias_xy_' +
@@ -199,13 +200,13 @@ def compute_metrics(Var, dm_glb, do_glb):
                 conv,
                 sig_digits)
 
-#           metrics_dictionary[
-#               'std-obs_xy_' +
-#               sea +
-#               '_' +
-#               dom] = format(
-#               std-obs_sea *
-#               conv,
-#               sig_digits)
+            metrics_dictionary[
+                'std-obs_xy_' +
+                sea +
+                '_' +
+                dom] = format(
+                stdObs_sea *
+                conv,
+                sig_digits)
 
     return metrics_dictionary
