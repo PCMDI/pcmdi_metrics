@@ -10,6 +10,7 @@ before_install:
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; brew outdated cmake || brew upgrade cmake ; fi
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; brew outdated python2.7 || brew upgrade python2.7 ; fi
     - cmake --version
+    - python --version
 
 script:
     - cd ..
