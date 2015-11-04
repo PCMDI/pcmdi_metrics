@@ -9,6 +9,10 @@ before_install:
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; brew outdated cmake || brew upgrade cmake ; fi
     - cmake --version
 
+install:
+  - pip install -q pyexpat
+  - python setup.py -q install
+
 script:
     - cd ..
     - mkdir _build
