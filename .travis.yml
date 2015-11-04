@@ -8,7 +8,7 @@ before_install:
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq; sudo apt-get install -y gfortran; fi
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install --reinstall python2.7; fi
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; brew outdated cmake || brew upgrade cmake ; fi
-    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; brew outdated python || brew upgrade python ; fi
+    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; brew outdated python2.7 || brew upgrade python2.7 ; fi
     - cmake --version
 
 script:
