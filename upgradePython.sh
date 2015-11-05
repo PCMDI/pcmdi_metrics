@@ -9,7 +9,7 @@ set -ex
 # Expat
 curl -O http://tcpdiag.dl.sourceforge.net/project/expat/expat/2.1.0/expat-2.1.0.tar.gz
 tar -xzvf expat-2.1.0.tar.gz
-chmod 755 -R expat-2.1.0
+chmod -R 755 -expat-2.1.0
 cd expat-2.1.0 && ./configure --prefix=/usr && make && sudo make install
 
 # Tips: http://docs.travis-ci.com/user/installing-dependencies/#Installing-Projects-from-Source
