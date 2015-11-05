@@ -13,6 +13,7 @@ before_install:
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./upgradePython.sh ; fi
     - cmake --version
     - python --version
+    - ( echo "import pyexpat" ; echo "print pyexpat.EXPAT_VERSION" ) | python
 
 script:
     - cd ..
