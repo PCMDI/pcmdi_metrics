@@ -13,6 +13,7 @@ before_install:
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./upgradePython.sh ; fi
     - cmake --version
     - python --version
+    - echo "ls -al /usr/lib/python2.7/lib-dynload/pyexpat.so"
     - ( echo "import pyexpat" ; echo "print pyexpat.EXPAT_VERSION" ) | python
 
 script:
