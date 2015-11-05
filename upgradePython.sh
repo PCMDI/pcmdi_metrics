@@ -7,8 +7,9 @@ set -ex
 #cd Python-2.7.10 && ./configure --prefix=/usr && make && sudo make install
 
 # Expat
-curl -O http://downloads.sourceforge.net/project/expat/expat/2.1.0/expat-2.1.0.tar.gz?r=http%3A%2F%2Fsourceforge.net%2Fprojects%2Fexpat%2Ffiles%2Fexpat%2F2.1.0%2F&ts=1446690795&use_mirror=iweb
+curl -O http://tcpdiag.dl.sourceforge.net/project/expat/expat/2.1.0/expat-2.1.0.tar.gz
 tar -xzvf expat-2.1.0.tar.gz
+chmod 755 -R expat-2.1.0
 cd expat-2.1.0 && ./configure --prefix=/usr && make && sudo make install
 
 # Tips: http://docs.travis-ci.com/user/installing-dependencies/#Installing-Projects-from-Source
