@@ -9,7 +9,7 @@ before_install:
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install --only-upgrade cmake; fi
 #    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install --reinstall python2.7; fi
     - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; brew outdated cmake || brew upgrade cmake ; fi
-    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew outdated python || brew upgrade python ; fi
+#    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew outdated python || brew upgrade python ; fi
     - cmake --version
     - python --version
 
