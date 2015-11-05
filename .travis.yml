@@ -10,12 +10,15 @@ before_install:
 #    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install --reinstall python2.7; fi
 #    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; brew outdated cmake || brew upgrade cmake ; fi ; #installer_funcs.bash needs version tweaks
 #    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew outdated python || brew upgrade python ; fi ; #installer_funcs.bash needs version tweaks
-    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./upgradePython.sh ; fi
     - cmake --version
+    - ( echo "import sys" ; echo "print sys.executable" ) | python
     - python --version
     - ls -al /usr/lib/python2.7/lib-dynload/pyexpat.so
-    - ( echo "import pyexpat" ; echo "print pyexpat.EXPAT_VERSION" ) | python
-    - ( echo "import sys" ; echo "print sys.executable" ) | python
+    - ( echo "from pyexpat import *" ; echo "print EXPAT_VERSION" ) | python
+    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./upgradePython.sh ; fi
+    - python --version
+    - ls -al /usr/lib/python2.7/lib-dynload/pyexpat.so
+    - ( echo "from pyexpat import *" ; echo "print EXPAT_VERSION" ) | python
 
 script:
     - cd ..
