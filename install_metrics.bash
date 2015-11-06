@@ -271,21 +271,21 @@ EOF
         echo "PATH:"${PATH}
         echo "PWD:"`pwd`
         ${cmake_cmd}
-        [ $? != 0 ] && echo " ERROR: Could not configure (cmake) cdat code (2)" && popd && checked_done 1
+        [ $? != 0 ] && echo " ERROR: Could not configure (cmake) cdat code (2)" && popd && checked_done 0
 
         echo "CMAKE ARGS"${cmake_args}
         make -j ${num_cpus}
-        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code" && popd && checked_done 1
+        [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code" && popd && checked_done 0
 
         echo "CMAKE ARGS"${cmake_args}
         echo "UVCDAT BDIR"${uvcdat_build_directory}
 
         popd >& /dev/null
     )
-    [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code" && popd && checked_done 1
+    [ $? != 0 ] && echo " ERROR: Could not compile (make) cdat code" && popd && checked_done 0
 
     ${cdat_home}/bin/python -c "import cdms2" 2>/dev/null
-    [ $? != 0 ] && echo " ERROR: Could not load CDMS (cdms2) module" && popd && checked_done 1
+    [ $? != 0 ] && echo " ERROR: Could not load CDMS (cdms2) module" && popd && checked_done 0
 
     popd >& /dev/null
     echo
