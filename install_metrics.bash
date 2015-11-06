@@ -9,7 +9,7 @@ install_prefix="PCMDI_METRICS"
 build_directory="${install_prefix}/tmp"
 
 ## Speed up your build by increasing the following to match your number of processors
-num_cpus=1
+num_cpus=8
 
 #### BUILD OPTIONS #####
 ## Do we want to build with graphics capabilities
