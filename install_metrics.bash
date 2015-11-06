@@ -437,10 +437,12 @@ main() {
 #    setup_cmake
     setup_cdat
 
+# Write travis logs to console
     echo "Python build logs"
-    more /Users/travis/build/PCMDI/_build/PCMDI_METRICS/tmp/uvcdat/uvcdat_build/Python-prefix/src/Python-stamp/Python-*.log
+    cat /Users/travis/build/PCMDI/_build/PCMDI_METRICS/tmp/uvcdat/uvcdat_build/Python-prefix/src/Python-stamp/Python-*.log
     echo "Setuptool build logs"
-    more /Users/travis/build/PCMDI/_build/PCMDI_METRICS/tmp/uvcdat/uvcdat_build/setuptools-prefix/src/setuptools-stamp/setuptools-*.log
+    cat /Users/travis/build/PCMDI/_build/PCMDI_METRICS/tmp/uvcdat/uvcdat_build/setuptools-prefix/src/setuptools-stamp/setuptools-*.log
+
 
     echo "After setup_cdat ${cdat_home}"
     setup_metrics
