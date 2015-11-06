@@ -286,7 +286,6 @@ for ivar, v in enumerate(A.vars):
 
         # Loop thru clim month and set value and bounds appropriately
         import cdtime
-        print "t2:",tc2,bnds2,t2
         for ii, t in enumerate(tc2):
             if A.verbose:
                 print "T:", t, t2[ii]
@@ -294,7 +293,6 @@ for ivar, v in enumerate(A.vars):
             values.append(t.torel(Tunits, cal).value)
             b1 = cdtime.reltime(bnds2[ii][0], t2.units).tocomp(cal)
             b2 = cdtime.reltime(bnds2[ii][1], t2.units).tocomp(cal)
-            print "B1, b2",b1,b2
             b2.year = y
             b1.year = y
             if b1.cmp(b2) > 0:  # ooops
@@ -304,7 +302,6 @@ for ivar, v in enumerate(A.vars):
                     b2.year += 1
             if b1.month == b2.month:
                 b2.year = b1.year+1
-            print "BOUNDS 2:",b1,b2
             bounds.append([b1.torel(Tunits, cal).value,
                            b2.torel(Tunits, cal).value])
 
