@@ -1,13 +1,13 @@
 #!/bin/sh
-set -ex
+#set -ex
 
 # Expat
-curl -O http://tcpdiag.dl.sourceforge.net/project/expat/expat/2.1.0/expat-2.1.0.tar.gz
-tar -xzvf expat-2.1.0.tar.gz
-chmod -R 755 expat-2.1.0
+#curl -O http://tcpdiag.dl.sourceforge.net/project/expat/expat/2.1.0/expat-2.1.0.tar.gz
+#tar -xzvf expat-2.1.0.tar.gz
+#chmod -R 755 expat-2.1.0
 #cd expat-2.1.0 && ./configure --prefix=/usr && make && sudo make install
-cd expat-2.1.0 && ./configure --prefix=/Users/travis/build/PCMDI/_build/PCMDI_METRICS/Externals && make && sudo make install
-sudo chmod -R 777 /Users/travis/build/PCMDI
+#cd expat-2.1.0 && ./configure --prefix=/Users/travis/build/PCMDI/_build/PCMDI_METRICS/Externals && make && sudo make install
+#sudo chmod -R 777 /Users/travis/build/PCMDI
 
 # Python
 #curl -O https://www.python.org/ftp/python/2.7.10/Python-2.7.10.tgz
