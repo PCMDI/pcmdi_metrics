@@ -434,7 +434,7 @@ main() {
     mkdir -p ${install_prefix}/Externals/share
     
     PATH=${install_prefix}/Externals/bin:${PATH}
-    setup_cmake
+#    setup_cmake
     setup_cdat
     echo "After setup_cdat ${cdat_home}"
     setup_metrics
