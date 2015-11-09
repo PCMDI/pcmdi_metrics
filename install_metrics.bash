@@ -376,14 +376,14 @@ main() {
     cmake_repo_http=http://cmake.org/cmake.git
     cmake_repo_https=https://cmake.org/cmake.git
     cmake_min_version=2.8.11
-    cmake_max_version=3.2.3
-    cmake_version=3.2.3
+    cmake_max_version=2.9
+    cmake_version=2.8.12
     force_install=0
     DEBUG=1
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
     cdat_repo_https=https://github.com/UV-CDAT/uvcdat.git
-    cdat_version="2.2.0"
+    cdat_version="master"
     metrics_repo=git://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_http=http://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_https=https://github.com/PCMDI/pcmdi_metrics.git
