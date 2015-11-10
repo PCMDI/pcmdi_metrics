@@ -9,7 +9,7 @@ install_prefix="PCMDI_METRICS"
 build_directory="${install_prefix}/tmp"
 
 ## Speed up your build by increasing the following to match your number of processors
-num_cpus=4
+num_cpus=8
 
 #### BUILD OPTIONS #####
 ## Do we want to build with graphics capabilities
@@ -376,14 +376,14 @@ main() {
     cmake_repo_http=http://cmake.org/cmake.git
     cmake_repo_https=https://cmake.org/cmake.git
     cmake_min_version=2.8.11
-    cmake_max_version=3.2.3
-    cmake_version=3.2.3
+    cmake_max_version=2.9
+    cmake_version=2.8.12
     force_install=0
     DEBUG=1
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
     cdat_repo_https=https://github.com/UV-CDAT/uvcdat.git
-    cdat_version="2.2.0"
+    cdat_version="system_expat"
     metrics_repo=git://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_http=http://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_https=https://github.com/PCMDI/pcmdi_metrics.git
@@ -436,6 +436,14 @@ main() {
     PATH=${install_prefix}/Externals/bin:${PATH}
     setup_cmake
     setup_cdat
+
+# Write travis logs to console
+    echo "Python build logs"
+    cat /Users/travis/build/PCMDI/_build/PCMDI_METRICS/tmp/uvcdat/uvcdat_build/Python-prefix/src/Python-stamp/Python-*.log
+    echo "Setuptool build logs"
+    cat /Users/travis/build/PCMDI/_build/PCMDI_METRICS/tmp/uvcdat/uvcdat_build/setuptools-prefix/src/setuptools-stamp/setuptools-*.log
+
+
     echo "After setup_cdat ${cdat_home}"
     setup_metrics
     pushd ${uvcdat_build_directory}/uvcdat >& /dev/null
