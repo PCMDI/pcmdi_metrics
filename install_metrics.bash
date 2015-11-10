@@ -383,7 +383,7 @@ main() {
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
     cdat_repo_http=http://github.com/UV-CDAT/uvcdat.git
     cdat_repo_https=https://github.com/UV-CDAT/uvcdat.git
-    cdat_version="master"
+    cdat_version="system_expat"
     metrics_repo=git://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_http=http://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_https=https://github.com/PCMDI/pcmdi_metrics.git
