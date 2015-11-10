@@ -15,10 +15,10 @@ before_install:
     - python --version
     - ls -al /usr/lib/python2.7/lib-dynload/pyexpat.so
     - ( echo "from pyexpat import *" ; echo "print EXPAT_VERSION" ) | python
-    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./upgradePython.sh ; fi
-    - python --version
-    - ls -al /usr/lib/python2.7/lib-dynload/pyexpat.so
-    - ( echo "from pyexpat import *" ; echo "print EXPAT_VERSION" ) | python
+#    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then ./upgradePython.sh ; fi
+#    - python --version
+#    - ls -al /usr/lib/python2.7/lib-dynload/pyexpat.so
+#    - ( echo "from pyexpat import *" ; echo "print EXPAT_VERSION" ) | python
 
 script:
     - cd ..
