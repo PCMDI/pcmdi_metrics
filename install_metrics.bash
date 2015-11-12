@@ -51,8 +51,10 @@ setup_cmake() {
 
     ## Source funcs needed by installer
     . ${metrics_build_directory}/installer_funcs.bash
-    echo -n "Checking for CMake >=  ${cmake_min_version} "
-    check_version_with cmake "cmake --version | head -n1 | awk '{print \$3}' | awk -F . '{print \$1\".\"\$2\".\"\$3}'" ${cmake_min_version} ${cmake_max_version}
+    echo "Checking for CMake >=  ${cmake_min_version} "
+    your_cmake_version=`cmake --version | head -n1 | awk '{print $3}' | awk -F . '{print $1"."$2"."$3}'`
+    echo "YOUR CMAKE VERSION: ${your_cmake_version}"
+    cmake -DMINVERSION=${cmake_min_version} -DMAXVERSION=${cmake_max_version} -DMYVERSION=${your_cmake_version} -P ${metrics_build_directory}/cmake_check_version.cmake
     [ $? == 0 ] && (( ! force_install )) && echo " [OK]" && return 0
 
     echo
@@ -155,6 +157,7 @@ setup_cdat() {
        echo "you have a valid cdat in your path"
        cdat_home=`python -c "import sys; print sys.prefix"`
        echo "It is located at:" ${cdat_home}
+       mkdir -p ${install_prefix}/bin
        cat > ${install_prefix}/bin/setup_runtime.sh  <<  EOF  
        . ${cdat_home}/bin/setup_runtime.sh
        export PYTHONPATH=${install_prefix}/lib/python2.7/site-packages:\${PYTHONPATH}
@@ -371,10 +374,14 @@ _readlinkf() {
 }
 
 main() {
+    ## Where are we?
+    installer_dir=`dirname $0`
+    git_branch=`cd ${installer_dir};git rev-parse --abbrev-ref HEAD`
+    echo "Installer branch:"${git_branch}
     ## Generic Build Parameters
-    cmake_repo=git://cmake.org/cmake.git
-    cmake_repo_http=http://cmake.org/cmake.git
-    cmake_repo_https=https://cmake.org/cmake.git
+    cmake_repo=git://github.com/kitware/cmake.git
+    cmake_repo_http=http://github.com/kitware/cmake.git
+    cmake_repo_https=https://github.com/kitware/cmake.git
     cmake_min_version=2.8.11
     cmake_max_version=3.3.2
     cmake_version=3.2.3
@@ -387,7 +394,13 @@ main() {
     metrics_repo=git://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_http=http://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_https=https://github.com/PCMDI/pcmdi_metrics.git
-    metrics_checkout="master"
+    if [ "_"${git_branch} == "_" ]; then
+      metrics_checkout="master"
+    else
+      metrics_checkout=${git_branch}
+    fi
+    echo "installing metrics from branch:"${metrics_checkout}
+    exit 0
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
         echo "Could not create directory ${install_prefix}"
@@ -425,6 +438,7 @@ main() {
 
     ## Source funcs needed by installer
     . ${metrics_build_directory}/installer_funcs.bash
+    cp /git/pcmdi_metrics/cmake_check_version.cmake ${metrics_build_directory}
 
     mkdir -p ${install_prefix}
     mkdir -p ${install_prefix}/Externals
