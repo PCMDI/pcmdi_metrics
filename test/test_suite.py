@@ -22,6 +22,7 @@ suite.addTest(
             pth,
             "pcmdi",
             "basic_test_parameters_file.py")))
+"""
 suite.addTest(
     test_from_param.TestFromParam(
         os.path.join(
@@ -66,4 +67,5 @@ try:
 except Exception as err:
     print "ERROR import vcs, skipping graphics test..."
     pass
+"""
 unittest.TextTestRunner(verbosity=2).run(suite)
