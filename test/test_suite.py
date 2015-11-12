@@ -28,13 +28,13 @@ suite.addTest(
             pth,
             "pcmdi",
             "units_test.py")))
-"""
 suite.addTest(
     test_from_param.TestFromParam(
         os.path.join(
             pth,
             "pcmdi",
             "nosftlf_test.py")))
+"""
 suite.addTest(
     test_from_param.TestFromParam(
         os.path.join(
