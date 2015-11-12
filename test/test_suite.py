@@ -22,13 +22,13 @@ suite.addTest(
             pth,
             "pcmdi",
             "basic_test_parameters_file.py")))
-"""
 suite.addTest(
     test_from_param.TestFromParam(
         os.path.join(
             pth,
             "pcmdi",
             "units_test.py")))
+"""
 suite.addTest(
     test_from_param.TestFromParam(
         os.path.join(
