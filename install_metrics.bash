@@ -377,7 +377,7 @@ main() {
     ## Where are we?
     installer_dir=`dirname $0`
     git_branch=`cd ${installer_dir};git rev-parse --abbrev-ref HEAD`
-    echo "Installer branch:"${git_branch}
+    echo "Installer branch: "${git_branch}
     ## Generic Build Parameters
     cmake_repo=git://github.com/kitware/cmake.git
     cmake_repo_http=http://github.com/kitware/cmake.git
@@ -399,8 +399,7 @@ main() {
     else
       metrics_checkout=${git_branch}
     fi
-    echo "installing metrics from branch:"${metrics_checkout}
-    exit 0
+    echo "Installing metrics from branch: "${metrics_checkout}
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
         echo "Could not create directory ${install_prefix}"
@@ -438,7 +437,6 @@ main() {
 
     ## Source funcs needed by installer
     . ${metrics_build_directory}/installer_funcs.bash
-    cp /git/pcmdi_metrics/cmake_check_version.cmake ${metrics_build_directory}
 
     mkdir -p ${install_prefix}
     mkdir -p ${install_prefix}/Externals
