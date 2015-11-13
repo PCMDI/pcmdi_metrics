@@ -46,7 +46,6 @@ suite.addTest(
             pth,
             "pcmdi",
             "keep_going_on_error_varname_test.py")))
-"""
 suite.addTest(
     test_from_param.TestFromParam(
         os.path.join(
@@ -59,6 +58,7 @@ suite.addTest(
             pth,
             "pcmdi",
             "salinity_test.py")))
+"""
 try:
     # If we have vcs we can test graphics
     import vcs  # noqa
