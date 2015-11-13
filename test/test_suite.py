@@ -40,13 +40,13 @@ suite.addTest(
             pth,
             "pcmdi",
             "gensftlf_test.py")))
-"""
 suite.addTest(
     test_from_param.TestFromParam(
         os.path.join(
             pth,
             "pcmdi",
             "keep_going_on_error_varname_test.py")))
+"""
 suite.addTest(
     test_from_param.TestFromParam(
         os.path.join(
