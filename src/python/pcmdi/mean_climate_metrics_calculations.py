@@ -1,7 +1,7 @@
 import cdms2 as cdms
 import pcmdi_metrics
 import collections
-
+import cdutil
 
 def compute_metrics(Var, dm_glb, do_glb):
     # Var is sometimes sent with level associated
