@@ -1,6 +1,7 @@
 #!/bin/env python
 
 # PJG 10212014 NOW INCLUDES SFTLF FROM
+# PJG 02012016 RESURRECTING...
 # /obs AND HARDWIRED TEST CASE WHICH
 # NEEDS FIXIN
 
@@ -13,7 +14,8 @@ import sys
 if len(sys.argv) > 1:
     data_path = sys.argv[1]
 else:
-    data_path = '/work/gleckler1/processed_data/metrics_package/obs'
+#   data_path = '/work/gleckler1/processed_data/metrics_package/obs'
+    data_path = '/work/gleckler1/processed_data/obs'
 
 
 lst = os.popen('ls ' + data_path + '/*/mo/*/*/ac/*.nc').readlines()
@@ -69,6 +71,8 @@ obs_dic_in = {'rlut': {'default': 'CERES'},
               'tos': {'default': 'UKMETOFFICE-HadISST-v1-1'},
               'zos': {'default': 'CNES-AVISO-L4'},
               'sos': {'default': 'NODC-WOA09'},
+              'ts': {'default':'HadISST1'}
+
               }
 
 obs_dic = {}
@@ -84,7 +88,7 @@ for l in lst:
 
     filename = subp.split('/')[len(subp.split('/')) - 1][:-1]
 
-    print 'FILENAME IS ', filename, '  ', subp.split('/')[4]
+    print 'FILENAME IS ', filename, '  ', subp.split('/')[3]
 
     if var not in obs_dic.keys():
         obs_dic[var] = {}
@@ -96,7 +100,7 @@ for l in lst:
         print l[:-1]
         print os.path.isfile(l[:-1])
 
-        partial_filename = subp.split('pcmdi-metrics')[1]
+        partial_filename = subp.split('ac')[1]
 
         realm = partial_filename.split('_')[1]
         period = partial_filename.split('_')[3]
@@ -136,20 +140,22 @@ for l in lst:
 # DONE WITH MONTHLY MEAN OBS
 # NOW TRAP OBS LAND-SEA MASKS IN OBS/FX/SFTLF
 
-lstm = os.popen('ls ' + data_path + '/fx/sftlf/*.nc').readlines()
+data_path_fx = '/clim_obs/obs' 
+
+lstm = os.popen('ls ' + data_path_fx + '/fx/sftlf/*.nc').readlines()
 sftlf_product_remap = {
     "ECMWF-ERAInterim": "ERAINT",
     "ECMWF-ERA40": "ERA40",
     "NCAR-JRA25": "JRA25",
 }
 for l in lstm:
-    subp = l.split('obs')[1]
-    var = subp.split('/')[2]
+    subp = l.split('/fx/sftlf/')[1]
+    var = subp.split('_')[0]
 
 # TRAP FILE NAME FOR SFTLF DATA
 
     filename = subp.split('/')[len(subp.split('/')) - 1][:-1]
-    print 'FILENAME IS ', filename, '  ', subp.split('/')[3]
+    print 'FILENAME IS ', filename  #, '  ', subp.split('/')[3]
     if var not in obs_dic.keys():
         obs_dic[var] = {}
     partial_filename = subp.split('pcmdi-metrics')[1]
