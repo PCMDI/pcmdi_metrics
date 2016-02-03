@@ -2,6 +2,8 @@ import cdms2 as cdms
 import pcmdi_metrics
 import collections
 import cdutil
+import MV2 as MV
+from genutil import grower
 
 def compute_metrics(Var, dm_glb, do_glb):
     # Var is sometimes sent with level associated
@@ -28,6 +30,9 @@ def compute_metrics(Var, dm_glb, do_glb):
         metrics_defs["annual_mean"] = pcmdi_metrics.pcmdi.annual_mean.compute(
             None,
             None)
+        metrics_defs["zonal_mean"] = pcmdi_metrics.pcmdi.zonal_mean.compute(
+            None,
+            None)
         return metrics_defs
     cdms.setAutoBounds('on')
     metrics_dictionary = {}
@@ -46,7 +51,7 @@ def compute_metrics(Var, dm_glb, do_glb):
     domains = ['GLB', 'NHEX', 'TROPICS', 'SHEX']
 
     for dom in domains:
-
+     
         dm = dm_glb
         do = do_glb
 
@@ -75,6 +80,20 @@ def compute_metrics(Var, dm_glb, do_glb):
 
         # CALCULATE ANNUAL MEAN RMS
         rms_xy = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am, do_am)
+
+        # ZONAL MEANS ######
+        # CALCULATE ANNUAL MEANS
+        dm_amzm, do_amzm = pcmdi_metrics.pcmdi.zonal_mean.compute(dm_am, do_am)
+
+        # CALCULATE ANNUAL AND ZONAL MEAN RMS
+        rms_y = pcmdi_metrics.pcmdi.rms_y.compute(dm_amzm, do_amzm)
+
+        # CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN RMS
+        dm_amzm_grown,dummy = grower(dm_amzm,dm_am)
+        dm_am_devzm = MV.subtract(dm_am,dm_amzm_grown)
+        do_amzm_grown,dummy = grower(do_amzm,do_am)
+        do_am_devzm = MV.subtract(do_am,do_amzm_grown)
+        rms_xy_devzm = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am_devzm, do_am_devzm)
 
         metrics_dictionary[
             'rms_xyt_ann_' +
@@ -106,6 +125,20 @@ def compute_metrics(Var, dm_glb, do_glb):
             mae_xy *
             conv,
             sig_digits)
+### ZONAL MEAN CONTRIBUTIONS
+        metrics_dictionary[
+            'rms_y_ann_' +
+            dom] = format(
+            rms_y *
+            conv,
+            sig_digits)
+        metrics_dictionary[
+            'rms_devzm_ann_' +
+            dom] = format(
+            rms_xy_devzm *
+            conv,
+            sig_digits)
+
 
         # CALCULATE SEASONAL MEANS
         for sea in ['djf', 'mam', 'jja', 'son']:

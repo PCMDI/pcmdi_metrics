@@ -6,3 +6,4 @@ build
 *.o
 test_portrait
 PCMDI_METRICS
+obs_info_dictionary.json
