@@ -78,6 +78,10 @@ p.add_argument("-b", "--bounds",
                default=False,
                help="reset bounds to monthly")
 c = parser.add_argument_group("CMOR options")
+c.add_argument("-O","--output-directory",
+               dest="output_directory",
+               default=".",
+               help="output directory")
 c.add_argument("-D", "--drs",
                action="store_true",
                dest="drs",
@@ -275,11 +279,11 @@ for ivar, v in enumerate(A.vars):
         y2 = cdtime.reltime(bnds[-1][1], T.units)
 
         # Mid year is:
-        y = (y2.value + y1.value) / 2.
-        y = cdtime.reltime(y, T.units).tocomp(cal).year
+        yr = (y2.value + y1.value) / 2.
+        y = cdtime.reltime(yr, T.units).tocomp(cal).year
 
         if A.verbose:
-            print "We found data from ", y1, "to", y2, "MID YEAR:", y
+            print "We found data from ", y1.tocomp(cal),"to", y2.tocomp(cal), "MID YEAR:", y
 
         values = []
         bounds = []
@@ -293,15 +297,17 @@ for ivar, v in enumerate(A.vars):
             values.append(t.torel(Tunits, cal).value)
             b1 = cdtime.reltime(bnds2[ii][0], t2.units).tocomp(cal)
             b2 = cdtime.reltime(bnds2[ii][1], t2.units).tocomp(cal)
-            b2.year = y
-            b1.year = y
-            if b1.cmp(b2) > 0:  # ooops
-                if b1.month>b2.month and b1.month-b2.month!=11:
-                    b1.year -= 1
-                else:
-                    b2.year += 1
-            if b1.month == b2.month:
-                b2.year = b1.year+1
+            b1 = y1.tocomp(cal)
+            b2 = y2.tocomp(cal)
+            #b2.year = y
+            #b1.year = y
+            #if b1.cmp(b2) > 0:  # ooops
+            #    if b1.month>b2.month and b1.month-b2.month!=11:
+            #        b1.year -= 1
+            #    else:
+            #        b2.year += 1
+            #if b1.month == b2.month:
+            #    b2.year = b1.year+1
             bounds.append([b1.torel(Tunits, cal).value,
                            b2.torel(Tunits, cal).value])
 
@@ -328,7 +334,7 @@ for ivar, v in enumerate(A.vars):
             create_subdirectories=int(A.drs))
         error_flag = cmor.dataset(
             experiment_id=exp,
-            outpath='Test',
+            outpath=A.output_directory,
             institution=inst,
             source=src,
             calendar=cal,
@@ -395,8 +401,14 @@ for ivar, v in enumerate(A.vars):
 
         # Close cmor
         path = cmor.close(var_id, file_name=True)
+        if season.lower()=="ann":
+            suffix = "ac"
+        else:
+            suffix = season
+        path2 = path.replace("-clim.nc","-clim-%s.nc" % suffix)
+        os.rename(path,path2)
         if A.verbose:
-            print "Saved to:", path
+            print "Saved to:", path2
 
         cmor.close()
         if A.verbose:
