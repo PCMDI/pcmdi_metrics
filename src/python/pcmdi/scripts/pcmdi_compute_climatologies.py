@@ -260,23 +260,39 @@ for ivar, v in enumerate(A.vars):
         seasons = ["djf", "mam", "jja", "son", "year", "ann"]
 
     for season in seasons:
-        s = season_function[season].climatology(data)
+        s = season_function[season].climatology(data,criteriaarg=[A.threshold,None])
+        g = season_function[season].get(data,criteriaarg=[A.threshold,None])
         # Ok we know we have monthly data
         # We want to tweak bounds
         T = data.getTime()
-        if A.verbose:
-            print "SEASON:", season, "ORIGINAL:", T.asComponentTime()
+        Tg = g.getTime()
+        istart = 0
+        while numpy.ma.allequal(g[istart].mask,True):
+            istart+=1
+        iend = -1
+        while numpy.ma.allequal(g[iend].mask,True):
+            iend-=1
+        if iend == -1:
+            iend = None
+        else:
+            iend +=1
+        Tg = Tg.subAxis(istart,iend)
+
         cal = T.getCalendar()
         Tunits = T.units
         bnds = T.getBounds()
         tc = T.asComponentTime()
-        t2 = s.getTime()
-        tc2 = t2.asComponentTime()
-        bnds2 = t2.getBounds()
+
+        if A.verbose:
+            print "TG:",Tg.asComponentTime()[0]
+            print "START END THRESHOLD:",istart,iend,A.threshold,len(Tg)
+            #print "SEASON:", season, "ORIGINAL:", T.asComponentTime()
+        b1 = cdtime.reltime(Tg.getBounds()[0][0],Tg.units)
+        b2 = cdtime.reltime(Tg.getBounds()[-1][1],Tg.units)
 
         # First and last time points
-        y1 = cdtime.reltime(bnds[0][0], T.units)
-        y2 = cdtime.reltime(bnds[-1][1], T.units)
+        y1 = cdtime.reltime(Tg[0], T.units)
+        y2 = cdtime.reltime(Tg[-1], T.units)
 
         # Mid year is:
         yr = (y2.value + y1.value) / 2.
@@ -284,20 +300,23 @@ for ivar, v in enumerate(A.vars):
 
         if A.verbose:
             print "We found data from ", y1.tocomp(cal), "to", y2.tocomp(cal), "MID YEAR:", y
+            print "bounds:",b1.tocomp(cal),b2.tocomp(cal)
 
         values = []
         bounds = []
 
         # Loop thru clim month and set value and bounds appropriately
-        for ii, t in enumerate(tc2):
-            if A.verbose:
-                print "T:", t, t2[ii]
+        ts=s.getTime().asComponentTime()
+        for ii in range(s.shape[0]):
+            t=ts[ii]
             t.year = y
             values.append(t.torel(Tunits, cal).value)
-            b1 = cdtime.reltime(bnds2[ii][0], t2.units).tocomp(cal)
-            b2 = cdtime.reltime(bnds2[ii][1], t2.units).tocomp(cal)
-            b1 = y1.tocomp(cal)
-            b2 = y2.tocomp(cal)
+            if (s.shape[0]>1):
+                B1 = b1.tocomp(cal).add(ii,cdtime.Month)
+                B2 = b2.tocomp(cal).add(ii-s.shape[0]+1,cdtime.Month)
+            else:
+                B1 = b1
+                B2 = b2
             # b2.year = y
             # b1.year = y
             #  if b1.cmp(b2) > 0:  # ooops
@@ -307,8 +326,10 @@ for ivar, v in enumerate(A.vars):
             #        b2.year += 1
             #  if b1.month == b2.month:
             #    b2.year = b1.year+1
-            bounds.append([b1.torel(Tunits, cal).value,
-                           b2.torel(Tunits, cal).value])
+            if A.verbose:
+                print B1.tocomp(cal),"<",t,"<",B2.tocomp(cal)
+            bounds.append([B1.torel(Tunits, cal).value,
+                           B2.torel(Tunits, cal).value])
 
         inst = checkCMORAttribute("institution")
         src = checkCMORAttribute("source")
@@ -387,7 +408,6 @@ for ivar, v in enumerate(A.vars):
         if not isinstance(kw, dict):
             raise RuntimeError(
                 "invalid evaled type for -X args, should be evaled as a dict, e.g: -X '{\"positive\":\"up\"}'")
-        print kw
         var_id = cmor.variable(table_entry=var_entry,
                                units=units,
                                axis_ids=cmor_axes,
