@@ -260,23 +260,23 @@ for ivar, v in enumerate(A.vars):
         seasons = ["djf", "mam", "jja", "son", "year", "ann"]
 
     for season in seasons:
-        s = season_function[season].climatology(data,criteriaarg=[A.threshold,None])
-        g = season_function[season].get(data,criteriaarg=[A.threshold,None])
+        s = season_function[season].climatology(data, criteriaarg=[A.threshold, None])
+        g = season_function[season].get(data, criteriaarg=[A.threshold, None])
         # Ok we know we have monthly data
         # We want to tweak bounds
         T = data.getTime()
         Tg = g.getTime()
         istart = 0
-        while numpy.ma.allequal(g[istart].mask,True):
-            istart+=1
+        while numpy.ma.allequal(g[istart].mask, True):
+            istart += 1
         iend = -1
-        while numpy.ma.allequal(g[iend].mask,True):
-            iend-=1
+        while numpy.ma.allequal(g[iend].mask, True):
+            iend -= 1
         if iend == -1:
             iend = None
         else:
-            iend +=1
-        Tg = Tg.subAxis(istart,iend)
+            iend += 1
+        Tg = Tg.subAxis(istart, iend)
 
         cal = T.getCalendar()
         Tunits = T.units
@@ -284,11 +284,11 @@ for ivar, v in enumerate(A.vars):
         tc = T.asComponentTime()
 
         if A.verbose:
-            print "TG:",Tg.asComponentTime()[0]
-            print "START END THRESHOLD:",istart,iend,A.threshold,len(Tg)
-            #print "SEASON:", season, "ORIGINAL:", T.asComponentTime()
-        b1 = cdtime.reltime(Tg.getBounds()[0][0],Tg.units)
-        b2 = cdtime.reltime(Tg.getBounds()[-1][1],Tg.units)
+            print "TG:", Tg.asComponentTime()[0]
+            print "START END THRESHOLD:", istart, iend, A.threshold, len(Tg)
+            # print "SEASON:", season, "ORIGINAL:", T.asComponentTime()
+        b1 = cdtime.reltime(Tg.getBounds()[0][0], Tg.units)
+        b2 = cdtime.reltime(Tg.getBounds()[-1][1], Tg.units)
 
         # First and last time points
         y1 = cdtime.reltime(Tg[0], T.units)
@@ -300,20 +300,20 @@ for ivar, v in enumerate(A.vars):
 
         if A.verbose:
             print "We found data from ", y1.tocomp(cal), "to", y2.tocomp(cal), "MID YEAR:", y
-            print "bounds:",b1.tocomp(cal),b2.tocomp(cal)
+            print "bounds:", b1.tocomp(cal), b2.tocomp(cal)
 
         values = []
         bounds = []
 
         # Loop thru clim month and set value and bounds appropriately
-        ts=s.getTime().asComponentTime()
+        ts = s.getTime().asComponentTime()
         for ii in range(s.shape[0]):
-            t=ts[ii]
+            t = ts[ii]
             t.year = y
             values.append(t.torel(Tunits, cal).value)
-            if (s.shape[0]>1):
-                B1 = b1.tocomp(cal).add(ii,cdtime.Month)
-                B2 = b2.tocomp(cal).add(ii-s.shape[0]+1,cdtime.Month)
+            if (s.shape[0] > 1):
+                B1 = b1.tocomp(cal).add(ii, cdtime.Month)
+                B2 = b2.tocomp(cal).add(ii - s.shape[0] + 1, cdtime.Month)
             else:
                 B1 = b1
                 B2 = b2
@@ -327,7 +327,7 @@ for ivar, v in enumerate(A.vars):
             #  if b1.month == b2.month:
             #    b2.year = b1.year+1
             if A.verbose:
-                print B1.tocomp(cal),"<",t,"<",B2.tocomp(cal)
+                print B1.tocomp(cal), "<", t, "<", B2.tocomp(cal)
             bounds.append([B1.torel(Tunits, cal).value,
                            B2.torel(Tunits, cal).value])
 
