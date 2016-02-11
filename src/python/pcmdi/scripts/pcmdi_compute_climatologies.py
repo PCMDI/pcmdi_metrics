@@ -78,6 +78,10 @@ p.add_argument("-b", "--bounds",
                default=False,
                help="reset bounds to monthly")
 c = parser.add_argument_group("CMOR options")
+c.add_argument("-O", "--output-directory",
+               dest="output_directory",
+               default=".",
+               help="output directory")
 c.add_argument("-D", "--drs",
                action="store_true",
                dest="drs",
@@ -87,7 +91,7 @@ c.add_argument("-D", "--drs",
 c.add_argument("-T", "--tables",
                dest="tables",
                help="path where CMOR tables reside (directory or table)",
-               default = os.path.join(sys.prefix,"share","pcmdi","pcmdi_metrics_table"))
+               default=os.path.join(sys.prefix, "share", "pcmdi", "pcmdi_metrics_table"))
 c.add_argument("-U", "--units",
                dest="units",
                nargs="*",
@@ -207,7 +211,7 @@ for ivar, v in enumerate(A.vars):
             v0 = A.start
             # When too close from bounds it messes it up, adding a minute seems to help
             v0 = cdtime.s2c(A.start)
-            v0 = v0.add(1,cdtime.Minute)
+            v0 = v0.add(1, cdtime.Minute)
             try:
                 i0, tmp = tim.mapInterval((v0, v0), 'cob')
             except:
@@ -237,7 +241,7 @@ for ivar, v in enumerate(A.vars):
             v0 = A.end
             # When too close from bounds it messes it up, adding a minute seems to help
             v0 = cdtime.s2c(A.end)
-            v0 = v0.add(1,cdtime.Minute)
+            v0 = v0.add(1, cdtime.Minute)
             try:
                 tmp, i1 = tim.mapInterval((v0, v0), 'cob')
             except:
@@ -256,54 +260,76 @@ for ivar, v in enumerate(A.vars):
         seasons = ["djf", "mam", "jja", "son", "year", "ann"]
 
     for season in seasons:
-        s = season_function[season].climatology(data)
+        s = season_function[season].climatology(data, criteriaarg=[A.threshold, None])
+        g = season_function[season].get(data, criteriaarg=[A.threshold, None])
         # Ok we know we have monthly data
         # We want to tweak bounds
         T = data.getTime()
-        if A.verbose:
-            print "SEASON:", season, "ORIGINAL:", T.asComponentTime()
+        Tg = g.getTime()
+        istart = 0
+        while numpy.ma.allequal(g[istart].mask, True):
+            istart += 1
+        iend = -1
+        while numpy.ma.allequal(g[iend].mask, True):
+            iend -= 1
+        if iend == -1:
+            iend = None
+        else:
+            iend += 1
+        Tg = Tg.subAxis(istart, iend)
+
         cal = T.getCalendar()
         Tunits = T.units
         bnds = T.getBounds()
         tc = T.asComponentTime()
-        t2 = s.getTime()
-        tc2 = t2.asComponentTime()
-        bnds2 = t2.getBounds()
-
-        # First and last time points
-        y1 = cdtime.reltime(bnds[0][0], T.units)
-        y2 = cdtime.reltime(bnds[-1][1], T.units)
-
-        # Mid year is:
-        y = (y2.value + y1.value) / 2.
-        y = cdtime.reltime(y, T.units).tocomp(cal).year
 
         if A.verbose:
-            print "We found data from ", y1, "to", y2, "MID YEAR:", y
+            print "TG:", Tg.asComponentTime()[0]
+            print "START END THRESHOLD:", istart, iend, A.threshold, len(Tg)
+            # print "SEASON:", season, "ORIGINAL:", T.asComponentTime()
+        b1 = cdtime.reltime(Tg.getBounds()[0][0], Tg.units)
+        b2 = cdtime.reltime(Tg.getBounds()[-1][1], Tg.units)
+
+        # First and last time points
+        y1 = cdtime.reltime(Tg[0], T.units)
+        y2 = cdtime.reltime(Tg[-1], T.units)
+
+        # Mid year is:
+        yr = (y2.value + y1.value) / 2.
+        y = cdtime.reltime(yr, T.units).tocomp(cal).year
+
+        if A.verbose:
+            print "We found data from ", y1.tocomp(cal), "to", y2.tocomp(cal), "MID YEAR:", y
+            print "bounds:", b1.tocomp(cal), b2.tocomp(cal)
 
         values = []
         bounds = []
 
         # Loop thru clim month and set value and bounds appropriately
-        import cdtime
-        for ii, t in enumerate(tc2):
-            if A.verbose:
-                print "T:", t, t2[ii]
+        ts = s.getTime().asComponentTime()
+        for ii in range(s.shape[0]):
+            t = ts[ii]
             t.year = y
             values.append(t.torel(Tunits, cal).value)
-            b1 = cdtime.reltime(bnds2[ii][0], t2.units).tocomp(cal)
-            b2 = cdtime.reltime(bnds2[ii][1], t2.units).tocomp(cal)
-            b2.year = y
-            b1.year = y
-            if b1.cmp(b2) > 0:  # ooops
-                if b1.month>b2.month and b1.month-b2.month!=11:
-                    b1.year -= 1
-                else:
-                    b2.year += 1
-            if b1.month == b2.month:
-                b2.year = b1.year+1
-            bounds.append([b1.torel(Tunits, cal).value,
-                           b2.torel(Tunits, cal).value])
+            if (s.shape[0] > 1):
+                B1 = b1.tocomp(cal).add(ii, cdtime.Month)
+                B2 = b2.tocomp(cal).add(ii - s.shape[0] + 1, cdtime.Month)
+            else:
+                B1 = b1
+                B2 = b2
+            # b2.year = y
+            # b1.year = y
+            #  if b1.cmp(b2) > 0:  # ooops
+            #    if b1.month>b2.month and b1.month-b2.month!=11:
+            #        b1.year -= 1
+            #    else:
+            #        b2.year += 1
+            #  if b1.month == b2.month:
+            #    b2.year = b1.year+1
+            if A.verbose:
+                print B1.tocomp(cal), "<", t, "<", B2.tocomp(cal)
+            bounds.append([B1.torel(Tunits, cal).value,
+                           B2.torel(Tunits, cal).value])
 
         inst = checkCMORAttribute("institution")
         src = checkCMORAttribute("source")
@@ -328,7 +354,7 @@ for ivar, v in enumerate(A.vars):
             create_subdirectories=int(A.drs))
         error_flag = cmor.dataset(
             experiment_id=exp,
-            outpath='Test',
+            outpath=A.output_directory,
             institution=inst,
             source=src,
             calendar=cal,
@@ -337,7 +363,7 @@ for ivar, v in enumerate(A.vars):
         if not os.path.exists(A.tables):
             raise RuntimeError("No such file or directory for tables: %s" % A.tables)
         if os.path.isdir(A.tables):
-            table=os.path.join(A.tables,"pcmdi_metrics_table")
+            table = os.path.join(A.tables, "pcmdi_metrics_table")
         else:
             table = A.tables
         table = cmor.load_table(table)
@@ -379,9 +405,9 @@ for ivar, v in enumerate(A.vars):
         else:
             units = units[ivar]
         kw = eval(A.variable_extra_args)
-        if not isinstance(kw,dict):
-            raise RuntimeError("invalid evaled type for -X args, should be evaled as a dict, e.g: -X '{\"positive\":\"up\"}'")
-        print kw
+        if not isinstance(kw, dict):
+            raise RuntimeError(
+                "invalid evaled type for -X args, should be evaled as a dict, e.g: -X '{\"positive\":\"up\"}'")
         var_id = cmor.variable(table_entry=var_entry,
                                units=units,
                                axis_ids=cmor_axes,
@@ -395,8 +421,14 @@ for ivar, v in enumerate(A.vars):
 
         # Close cmor
         path = cmor.close(var_id, file_name=True)
+        if season.lower() == "ann":
+            suffix = "ac"
+        else:
+            suffix = season
+        path2 = path.replace("-clim.nc", "-clim-%s.nc" % suffix)
+        os.rename(path, path2)
         if A.verbose:
-            print "Saved to:", path
+            print "Saved to:", path2
 
         cmor.close()
         if A.verbose:
