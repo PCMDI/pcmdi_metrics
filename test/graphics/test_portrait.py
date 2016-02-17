@@ -27,6 +27,7 @@ class TestGraphics(unittest.TestCase):
 
         import json
         # CDAT MODULES
+        import pcmdi_metrics
         import pcmdi_metrics.graphics.portraits
         import MV2
         import numpy
@@ -69,7 +70,11 @@ class TestGraphics(unittest.TestCase):
 
         x.scriptrun(
             os.path.join(
-                sys.prefix,
+                pcmdi_metrics.__path__[0],
+                "..",
+                "..",
+                "..",
+                "..",
                 "share",
                 "graphics",
                 'vcs',
@@ -102,7 +107,11 @@ class TestGraphics(unittest.TestCase):
         mods = set()
         json_files = glob.glob(
             os.path.join(
-                sys.prefix,
+                pcmdi_metrics.__path__[0],
+                "..",
+                "..",
+                "..",
+                "..",
                 "share",
                 "CMIP_metrics_results",
                 "CMIP5",
@@ -123,9 +132,13 @@ class TestGraphics(unittest.TestCase):
 
         vars.sort()
         mods = sorted(list(mods))
+        print "Models:",mods
         for bad in ["GridInfo", "References", "RegionalMasking",
                     "metrics_git_sha1", "uvcdat_version"]:
-            mods.remove(bad)
+            if bad in mods:
+                mods.remove(bad)
+            else:
+                print "Not removing column %s (not present)" % bad
 
         # ORGANIZE METRICS INTO A VARIABLES X MODELS MATRIX
 
