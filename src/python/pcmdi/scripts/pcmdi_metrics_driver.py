@@ -413,14 +413,14 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                                 " for model %s " %
                                                 model_version)
 
-                                    MODEL.mask = MV2.logical_not(
-                                        MV2.equal(
-                                            sftlf[model_version]["raw"],
-                                            region))
-                                    MODEL.targetMask = MV2.logical_not(
-                                        MV2.equal(
-                                            sftlf["targetGrid"],
-                                            region))
+                                MODEL.mask = MV2.logical_not(
+                                    MV2.equal(
+                                        sftlf[model_version]["raw"],
+                                        region))
+                                MODEL.targetMask = MV2.logical_not(
+                                    MV2.equal(
+                                        sftlf["targetGrid"],
+                                        region))
                             try:
                                 if level is None:
                                     OUT.level = ""
