@@ -16,6 +16,10 @@ import cdms2
 import MV2
 import cdutil
 import collections
+import cdat_info
+
+## Statistical tracker
+cdat_info.pingPCMDIdb("pcmdi_metrics","pcmdi_metrics_driver")
 
 # Before we do anything else we need to create some units
 # Salinity Units
