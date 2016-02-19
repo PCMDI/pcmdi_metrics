@@ -2,6 +2,13 @@ from distutils.core import setup
 import glob
 import subprocess
 import os
+import sys
+
+if "--enable-devel" in sys.argv:
+    install_dev = True
+    sys.argv.remove("--enable-devel")
+else:
+    install_dev = False
 
 Version = "0.6.0"
 p = subprocess.Popen(
@@ -53,27 +60,6 @@ demo_GFDL_files += glob.glob("demo/GFDL/*.png")
 demo_NCAR_files = glob.glob("demo/NCAR/*.py")
 param_files = glob.glob("doc/parameter_files/*.py")
 
-dev_packages = glob.glob("src/python/devel/*")
-dev_packages.remove("src/python/devel/example_dev")
-for p in dev_packages:
-    if not os.path.isdir(p):
-        dev_packages.pop(p)
-dev_scripts = []
-for p in dev_packages:
-    scripts = glob.glob(os.path.join(p,"scripts","*"))
-    dev_scripts+=scripts
-dev_pkg = {}
-dev_data = []
-for p in dev_packages:
-    nm = p.replace("/",".")
-    nm = nm.replace("src.python.devel","pcmdi_metrics")
-    pnm = nm.split(".")[-1]
-    pkg_dir = os.path.join(p,"lib")
-    dev_pkg[nm]=pkg_dir
-    data = glob.glob(os.path.join(p,"data","*"))
-    for d in data:
-        dir_nm = os.path.split(d)[-1]
-        dev_data.append([os.path.join(dir_nm,pnm),glob.glob(os.path.join(d,"*"))])
 
 packages={'pcmdi_metrics': 'src/python',
            'pcmdi_metrics.io': 'src/python/io',
@@ -102,9 +88,33 @@ data_files=[('demo/ACME', demo_ACME_files),
           ('share/pcmdi', ('doc/obs_info_dictionary.json','share/pcmdi_metrics_table')),
           ]
 
-packages.update(dev_pkg)
-data_files+=dev_data
-scripts+=dev_scripts
+if install_dev:
+    print "Adding experimental packages"
+    dev_packages = glob.glob("src/python/devel/*")
+    dev_packages.remove("src/python/devel/example_dev")
+    for p in dev_packages:
+        if not os.path.isdir(p):
+            dev_packages.pop(p)
+    dev_scripts = []
+    for p in dev_packages:
+        scripts = glob.glob(os.path.join(p,"scripts","*"))
+        dev_scripts+=scripts
+    dev_pkg = {}
+    dev_data = []
+    for p in dev_packages:
+        nm = p.replace("/",".")
+        nm = nm.replace("src.python.devel","pcmdi_metrics")
+        pnm = nm.split(".")[-1]
+        pkg_dir = os.path.join(p,"lib")
+        dev_pkg[nm]=pkg_dir
+        data = glob.glob(os.path.join(p,"data","*"))
+        for d in data:
+            dir_nm = os.path.split(d)[-1]
+            dev_data.append([os.path.join(dir_nm,pnm),glob.glob(os.path.join(d,"*"))])
+    packages.update(dev_pkg)
+    data_files+=dev_data
+    scripts+=dev_scripts
+
 setup(name='pcmdi_metrics',
       version=descr,
       author='PCMDI',
