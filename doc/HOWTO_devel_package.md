@@ -1,5 +1,7 @@
 # Adding a Python Devel Package
 
+* in order to build the devel packages you need to pass: `--enable-devel` to the `setup.py` command e.g. `python setup.py install --enable-devel`
+
 * create a directory in `src/python/devel` named `YOUR_PACKAGE` (replace with appropriate package name)
 
 * In the above directory create 3 subdirectories:
