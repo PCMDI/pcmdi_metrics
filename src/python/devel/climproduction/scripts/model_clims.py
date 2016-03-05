@@ -1,4 +1,11 @@
-#!/usr/local/uvcdat/latest/bin/python
+#!/usr/bin/env python
+
+#######################################################################################
+### This program uses pcmdi_compute_climatologies.py for mass prodduction of CMORized model climatololgies from data available from PCMDIs CMIP database. 
+
+
+#######################################################################################
+
 
 import cdms2 as cdms
 import os, string
@@ -30,7 +37,7 @@ vars = ['rlut','rsdt','pr','ts','ta']
 
 vars = ['rlut','rsdt','rsut','rsutcs','rlutcs','rsds','rsus','rlus','rlds','rsuscs','rsdscs','rldscs','pr','prw','psl','ts','tas','tauu','tauv','uas','vas','huss', 'ta','ua','va','zg','hus']
 
-vars = ['rlut']
+vars = ['rsdt']
 
 ClimCodePath = '/export/gleckler1/git/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_compute_climatologies.py -f'
 
@@ -45,14 +52,11 @@ try:
 except:
  pass
 
-
-
 outpath = outpath_base + exp
-
 
 for var in vars:
   modruns = os.popen('ls ' + pathin + var + '/*CESM1-CAM5.*r1i1p1*.latestX.xml').readlines()
-  modruns = os.popen('ls ' + pathin + var + '/*r1i1p1*.latestX.xml').readlines()
+# modruns = os.popen('ls ' + pathin + var + '/*r1i1p1*.latestX.xml').readlines()
 
   positive = "" 
   if var in ['rlut','rsut','rsutcs','rlus','rsus','rsuscs','hfls','hfss']: positive = ' -X ' + "'{" + '"positive"' + ':' + '"up"' + "}'"  
@@ -83,7 +87,8 @@ for var in vars:
      print 'JOB COMPLETE ', run
 
      cmd_mv_seas = 'mv ' + outpath_base + exp + '/*djf.nc ' + outpath_base + exp + '/*mam.nc ' + outpath_base + exp + '/*jja.nc ' + outpath_base + exp + '/*son.nc ' + outpath_base + exp + '/*year.nc ' + outpath_base + exp + '/seas'
-     p = Popen(cmd_mv_seas,shell=True)
+
+#    p = Popen(cmd_mv_seas,shell=True)
 
 print 'JOB COMPLETE'
 
