@@ -1944,7 +1944,7 @@ long_name:         Geopotential Height
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
-dimensions:        longitude latitude plevs time
+dimensions:        longitude latitude plevs time2
 out_name:          zg
 type:              real
 valid_min:         -719.7

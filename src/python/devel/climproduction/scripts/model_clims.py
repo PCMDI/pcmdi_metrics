@@ -70,7 +70,7 @@ if vars[0] == 'all':
 ## LOOP THROUGH VARIABLES
 print 'working on ', vars
 for var in vars:
-  modruns = os.popen('ls ' + pathin + var + '/*CESM1-CAM5.*r1i1p1*.latestX.xml').readlines()  #KEEP FOR QUICK TESTING
+  modruns = os.popen('ls ' + pathin + var + '/*NorESM1-M.*r1i1p1*.latestX.xml').readlines()  #KEEP FOR QUICK TESTING
 # modruns = os.popen('ls ' + pathin + var + '/*r1i1p1*.latestX.xml').readlines()
 
   positive = "" 
