@@ -132,6 +132,11 @@ setup_cmake() {
 }
 
 #####
+# Add CMake to path
+export PATH=${PATH}:${cmake_install_dir}/bin
+#####
+
+#####
 # CDAT = Python+CDMS
 #####
 setup_cdat() {
