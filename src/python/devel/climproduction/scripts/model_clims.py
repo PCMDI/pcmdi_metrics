@@ -11,7 +11,7 @@
 ## POSITIVE ATTRIBUTES SHOULD BE STORED EXTERNAL TO THIS PROGRAM 
 ## CMOR TABLES HARDWIRED - PROBABLY SHOULD BE OPTION ON PARAMETER LIST
 
-#Last modified: PJG 03/14/16
+#Last modified: PJG 03/04/16
 #######################################################################################
 import cdms2 as cdms
 import os, string

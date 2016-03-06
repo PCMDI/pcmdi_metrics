@@ -19,6 +19,7 @@ required_global_attributes: creation_date tracking_id forcing model_id parent_ex
 
 forcings:   N/A Nat Ant GHG SD SI SA TO SO Oz LU Sl Vl SS Ds BC MD OC AA
 
+expt_id_ok: 'obs'
 expt_id_ok: '10- or 30-year run initialized in year XXXX' 'decadalXXXX'
 expt_id_ok: 'volcano-free hindcast initialized in year XXXX' 'noVolcXXXX'
 expt_id_ok: 'prediction with 2010 volcano' 'volcIn2010'
