@@ -21,7 +21,7 @@ install:
   - conda update -q conda
   # Useful for debugging any issues with conda
   - conda info -a
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION -c uvcdat uvcdat
+  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION -c doutriaux1 uvcdat
   - source activate test-environment
   - python setup.py install
 
