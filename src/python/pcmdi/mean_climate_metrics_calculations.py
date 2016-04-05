@@ -41,7 +41,7 @@ def compute_metrics(Var, dm_glb, do_glb):
     if var in ['hus']:
         sig_digits = '.5f'
     else:
-        sig_digits = '.2f'
+        sig_digits = '.3f'
 
     domains = ['GLB', 'NHEX', 'TROPICS', 'SHEX']
 
