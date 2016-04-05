@@ -2,9 +2,9 @@ import unittest
 import test_from_param
 import sys
 import os
+import argparse
 pth = os.path.dirname(__file__)
 sys.path.append(os.path.join(pth, "graphics"))
-import argparse
 parser = argparse.ArgumentParser(description="Test suite for pmcdi metrics")
 
 parser.add_argument("-G","--graphics-only",action="store_true",default=False,help="Only run graphics tests")
