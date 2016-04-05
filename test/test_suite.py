@@ -75,4 +75,5 @@ if args.verbose:
 else:
     verbosity = 1
 
-unittest.TextTestRunner(verbosity=verbosity).run(suite)
+res = unittest.TextTestRunner(verbosity=verbosity).run(suite)
+sys.exit(len(res.failures))
