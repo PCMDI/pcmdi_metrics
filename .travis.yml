@@ -19,7 +19,7 @@ before_install:
 
 install:
   - conda install --yes python=2.7 setuptools
-  - conda install --yes -c doutriaux1 uvcdat
+  - conda install --yes -c doutriaux1 cdms2 vcs cdutil genutil
   - python setup.py install
 
 script:
