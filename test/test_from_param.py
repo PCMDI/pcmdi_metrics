@@ -5,6 +5,7 @@ import os
 import sys
 import glob
 import difflib
+import numpy
 
 
 class TestFromParam(unittest.TestCase):
@@ -56,14 +57,19 @@ class TestFromParam(unittest.TestCase):
                     u = difflib.unified_diff(
                         open(gnm).readlines(),
                         open(fnm).readlines())
+                    prev = None
                     for l in u:
-                        if l[:2] == "- ":
+                        if l[:2] == "+ ":
                             if l.find("metrics_git_sha1") > -1:
                                 continue
                             if l.find("uvcdat_version") > -1:
                                 continue
                             else:
-                                print "Failing line:", l
-                                ok = False
+                                good = float(l.split()[-1][1:-2])
+                                bad = float(prev.split()[-1][1:-2])
+                                if not numpy.allclose(good,bad,1.E-3):
+                                    print "Failing line:", prev.strip(),"instead of",good
+                                    ok = False
+                        prev = l
             self.assertTrue(ok)
         # shutil.rmtree(os.path.join(parameters.metrics_output_path,parameters.case_id))
