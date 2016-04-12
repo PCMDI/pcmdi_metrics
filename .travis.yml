@@ -16,7 +16,7 @@ before_install:
   - conda update -q conda
   # Useful for debugging any issues with conda
   - conda install --yes python=2.7 setuptools
-  - conda install --yes -c doutriaux1 cdms2 cdtime vcs cdutil genutil unidata
+  - conda install --yes -c doutriaux1 cdms2 vcs cdutil genutil unidata cdtime vcsaddons
   - conda info -a
 
 install:
