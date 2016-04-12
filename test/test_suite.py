@@ -8,6 +8,7 @@ sys.path.append(os.path.join(pth, "graphics"))
 parser = argparse.ArgumentParser(description="Test suite for pmcdi metrics")
 
 parser.add_argument("-G","--graphics-only",action="store_true",default=False,help="Only run graphics tests")
+parser.add_argument("-g","--no-graphics",action="store_true",default=False,help="Do not run graphics tests")
 parser.add_argument("-l","--list",action="store_true",default=False,help="List available tests")
 parser.add_argument("-t","--test",nargs="*",default=None,help="Run only this test(s)")
 parser.add_argument("-V","--verbose",default=False,action="store_true",help="Verbose output")
@@ -31,7 +32,11 @@ if args.test is not None:
 elif args.graphics_only:
     tests = graphics
 else:
-    tests = others+params+graphics
+    if args.no_graphics:
+        tests = others+params
+    else:
+        tests = others+params+graphics
+
 
 if args.list:
     print "Test that would be run with these options:"
