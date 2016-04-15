@@ -57,19 +57,24 @@ class TestFromParam(unittest.TestCase):
                     u = difflib.unified_diff(
                         open(gnm).readlines(),
                         open(fnm).readlines())
-                    prev = None
+                    lines = []
                     for l in u:
-                        if l[:2] == "+ ":
+                        lines.append(l)
+                    for i,l in enumerate(lines):
+                        if l[:2] == "- ":
                             if l.find("metrics_git_sha1") > -1:
                                 continue
                             if l.find("uvcdat_version") > -1:
                                 continue
                             else:
-                                good = float(l.split()[-1][1:-2])
-                                bad = float(prev.split()[-1][1:-2])
-                                if not numpy.allclose(good,bad,1.E-3):
-                                    print "Failing line:", prev.strip(),"instead of",good
-                                    ok = False
-                        prev = l
+                                for j in range(100):
+                                    sp = lines[i+j].split()
+                                    if sp[0]=="+" and sp[1]==l.split()[1]:
+                                        bad = float(l.split()[-1][1:-2])
+                                        good = float(sp[-1][1:-2])
+                                        if not numpy.allclose(good,bad,atol=1.E-2):
+                                            print "Failing line:", l.strip(),"instead of",good,"(we read:",bad,")"
+                                            ok = False
+                                        break
             self.assertTrue(ok)
         # shutil.rmtree(os.path.join(parameters.metrics_output_path,parameters.case_id))
