@@ -50,6 +50,8 @@ for mod in mods:
 
     enso_stats_dic[mod][reg]['std'] = std
 
+  f.close()
+
 #except:
 #   print 'failed for model ', mod
 
