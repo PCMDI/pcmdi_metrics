@@ -7,7 +7,7 @@ language: python
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq; sudo apt-get install -y gfortran xvfb; wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; wget https://repo.continuum.io/miniconda/Miniconda-latest-MacOSX-x86_64.sh -O miniconda.sh; wget https://github.com/UV-CDAT/uvcdat/releases/download/v2.4.0/gfortran-4.9.2-Mac.tar.gz -O ~/gfortran-4.9.2-Mac.tar.gz ; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; wget https://repo.continuum.io/miniconda/Miniconda-latest-MacOSX-x86_64.sh -O miniconda.sh; wget https://github.com/UV-CDAT/uvcdat/releases/download/v2.4.1/gfortran-4.9.2-Mac.tar.gz -O ~/gfortran-4.9.2-Mac.tar.gz ; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then pushd / ; sudo tar xzvf ~/gfortran-4.9.2-Mac.tar.gz ; pushd ; fi 
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
@@ -16,7 +16,7 @@ before_install:
   - conda update -q conda
   # Useful for debugging any issues with conda
   - conda install --yes python=2.7 setuptools
-  - conda install --yes -c doutriaux1/label/dev uvcdat #cdms2 cdutil genutil unidata cdtime vcs vcsaddons
+  - conda install --yes --channel uvcdat     cdms2 cdutil genutil unidata cdtime vcs
   - conda info -a
 
 install:
