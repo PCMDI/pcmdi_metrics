@@ -9,20 +9,28 @@ import time
 import json
 
 execfile('/export/durack1/git/pylib/durolib.py')
-execfile('get_pcmdi_data.py')
-execfile('PMP_rectangular_domains.py')
-execfile('monthly_variability_statistics.py')
+execfile('../lib/get_pcmdi_data.py')
+execfile('../lib/PMP_rectangular_domains.py')
+execfile('../lib/monthly_variability_statistics.py')
+
+##############
+### Controls for parameter file
 
 mip = 'cmip5'
 exp = 'piControl'
-mod = 'IPSL-CM5B-LR'
+mods = ['IPSL-CM5B-LR']
 fq = 'mo'
 realm = 'atm'
 var = 'ts'
 run = 'r1i1p1'
 
-#mods = ['IPSL-CM5B-LR']  # Test just one model
-mods = get_all_mip_mods(mip,exp,fq,realm,var)
+json_path = '.'  # CURRENTLY REQUIRES DIRECTORY TO ALREADY EXIST
+json_filename = 'all_cmip5_piControl_test.json'
+
+
+###############
+
+if mods[0] == 'all':mods = get_all_mip_mods(mip,exp,fq,realm,var)
 
 
 enso_stats_dic = {}  # Dictionary to be output to JSON file
@@ -58,8 +66,8 @@ for mod in mods:
 
 # Write dictionary to json file
 
-json_filename = 'test_ENSO_' + mip + '_' + exp
-json.dump(enso_stats_dic, open(json_filename + '.json','w'),sort_keys=True, indent=4, separators=(',', ': '))
+
+json.dump(enso_stats_dic, open(json_path + '/' + json_filename,'w'),sort_keys=True, indent=4, separators=(',', ': '))
 
 print 'all done'
 
