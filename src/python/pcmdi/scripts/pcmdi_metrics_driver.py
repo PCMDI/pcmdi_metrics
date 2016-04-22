@@ -76,6 +76,12 @@ P.add_argument(
     default="input_parameters.py",
     help="input parameter file containing local settings",
     required=True)
+P.add_argument(
+        "-d",
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="Do not run calculations, but check that everything should go smoothly")
 
 args = P.parse_args(sys.argv[1:])
 
@@ -337,7 +343,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                         else:
                             do = OBS.get(var)
                     except Exception as err:
-                        dup('failed with 4D OBS', var, ref, err)
+                        dup('failed reading OBS', var, ref, err)
                         continue
                     grd["GridResolution"] = do.shape[1:]
                     metrics_dictionary["GridInfo"] = grd
@@ -563,46 +569,47 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                 get(
                                 parameters.realization,
                                 {})
-                            pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(
-                                Var,
-                                dm,
-                                do)
-                            # Calling compute metrics with None for model and
-                            # obs, triggers it to send back the defs.
-                            metrics_def_dictionary.update(
-                                pcmdi_metrics.pcmdi.compute_metrics(
-                                    Var,
-                                    None,
-                                    None))
-                            ###################################################
-                            # The follwoing allow users to plug in a set of
-                            # custom metrics
-                            # Function needs to take in var name,
-                            # model clim, obs clim
-                            ###################################################
-                            if hasattr(parameters, "compute_custom_metrics"):
-                                pr_rgn.update(
-                                    parameters.compute_custom_metrics(
+                            if not args.dry_run:
+                                    pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(
                                         Var,
                                         dm,
-                                        do))
-                                # Calling compute metrics with None
-                                # for model and
-                                # obs, triggers it to send back the defs.
-                                # But we are wrapping this in an except/try in
-                                # case user did not implement
-                                try:
+                                        do)
+                                    # Calling compute metrics with None for model and
+                                    # obs, triggers it to send back the defs.
                                     metrics_def_dictionary.update(
-                                        parameters.compute_custom_metrics(
+                                        pcmdi_metrics.pcmdi.compute_metrics(
                                             Var,
                                             None,
                                             None))
-                                except:
-                                    # Better than nothing we will use the doc
-                                    # string
-                                    metrics_def_dictionary.update(
-                                        {"custom": parameters.
-                                         compute_custom_metrics.__doc__})
+                                    ###################################################
+                                    # The follwoing allow users to plug in a set of
+                                    # custom metrics
+                                    # Function needs to take in var name,
+                                    # model clim, obs clim
+                                    ###################################################
+                                    if hasattr(parameters, "compute_custom_metrics"):
+                                        pr_rgn.update(
+                                            parameters.compute_custom_metrics(
+                                                Var,
+                                                dm,
+                                                do))
+                                        # Calling compute metrics with None
+                                        # for model and
+                                        # obs, triggers it to send back the defs.
+                                        # But we are wrapping this in an except/try in
+                                        # case user did not implement
+                                        try:
+                                            metrics_def_dictionary.update(
+                                                parameters.compute_custom_metrics(
+                                                    Var,
+                                                    None,
+                                                    None))
+                                        except:
+                                            # Better than nothing we will use the doc
+                                            # string
+                                            metrics_def_dictionary.update(
+                                                {"custom": parameters.
+                                                 compute_custom_metrics.__doc__})
                             pr[region_name] = collections.OrderedDict(
                                 (k,
                                  pr_rgn[k]) for k in sorted(
@@ -613,7 +620,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
                             # Only the first time thru an obs set (always the
                             # same after)
-                            if parameters.save_mod_clims and ref == refs[0]:
+                            if not args.dry_run and parameters.save_mod_clims and ref == refs[0]:
                                 CLIM = pcmdi_metrics.io.base.Base(
                                     parameters.
                                     model_clims_interpolated_output +
@@ -651,14 +658,17 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         # that it is stored
         metrics_dictionary["METRICS"] = metrics_def_dictionary
         # OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
-        OUT.write(
-            metrics_dictionary,
-            mode="w",
-            indent=4,
-            separators=(
-                ',',
-                ': '))
-        # CREATE OUTPUT AS ASCII FILE
-        OUT.write(metrics_dictionary, mode="w", type="txt")
+        if not args.dry_run:
+            OUT.write(
+                metrics_dictionary,
+                mode="w",
+                indent=4,
+                separators=(
+                    ',',
+                    ': '))
+            # CREATE OUTPUT AS ASCII FILE
+            OUT.write(metrics_dictionary, mode="w", type="txt")
     except Exception as err:
         dup("Error while processing variable %s:\n\t%s" % (var, err))
+
+print "Done. Check log at: ",Efile.name
