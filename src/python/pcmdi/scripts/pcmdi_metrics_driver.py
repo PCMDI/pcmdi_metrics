@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-######################################################
+#
 #
 #  USER INPUT IS SET IN FILE "input_parameters.py"
 #  Identified via --parameters key at startup
 #
-######################################################
+#
 import pcmdi_metrics
 import sys
 import argparse
@@ -18,8 +18,8 @@ import cdutil
 import collections
 import cdat_info
 
-## Statistical tracker
-cdat_info.pingPCMDIdb("pcmdi_metrics","pcmdi_metrics_driver")
+# Statistical tracker
+cdat_info.pingPCMDIdb("pcmdi_metrics", "pcmdi_metrics_driver")
 
 # Before we do anything else we need to create some units
 # Salinity Units
@@ -77,7 +77,7 @@ P.add_argument(
     help="input parameter file containing local settings",
     required=True)
 P.add_argument(
-        "-d",
+    "-d",
         "--dry-run",
         action="store_true",
         default=False,
@@ -460,9 +460,9 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                 do.shape,
                                 '  ',
                                 ref)
-                            ###################################################
+                            #
                             # Basic checks
-                            ###################################################
+                            #
                             if dm.shape != do.shape:
                                 raise RuntimeError(
                                     "Obs and Model -%s- have different" % model_version +
@@ -483,14 +483,14 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                         "Could not convert model units (%s) " % dm.units +
                                         "to obs units: (%s)" % (do.units))
 
-                            ###################################################
+                            #
                             # OBS INFO FOR JSON/ASCII FILES
-                            ###################################################
+                            #
                             onm = obs_dic[var][ref]
 
-                            ###################################################
+                            #
                             # METRICS CALCULATIONS
-                            ###################################################
+                            #
                             metrics_dictionary[model_version] = \
                                 metrics_dictionary.get(
                                 model_version,
@@ -581,12 +581,12 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                             Var,
                                             None,
                                             None))
-                                    ###################################################
+                                    #
                                     # The follwoing allow users to plug in a set of
                                     # custom metrics
                                     # Function needs to take in var name,
                                     # model clim, obs clim
-                                    ###################################################
+                                    #
                                     if hasattr(parameters, "compute_custom_metrics"):
                                         pr_rgn.update(
                                             parameters.compute_custom_metrics(
@@ -671,4 +671,4 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
     except Exception as err:
         dup("Error while processing variable %s:\n\t%s" % (var, err))
 
-print "Done. Check log at: ",Efile.name
+print "Done. Check log at: ", Efile.name
