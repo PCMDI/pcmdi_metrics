@@ -5,18 +5,25 @@ os:
 language: python
     - "2.7"
 
+cache:
+    directories:
+      - /usr/local/gfortran
+      - ${HOME}/miniconda
+
 before_install:
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq; sudo apt-get install -y gfortran xvfb; wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; wget https://repo.continuum.io/miniconda/Miniconda-latest-MacOSX-x86_64.sh -O miniconda.sh; wget https://github.com/UV-CDAT/uvcdat/releases/download/v2.4.1/gfortran-4.9.2-Mac.tar.gz -O ~/gfortran-4.9.2-Mac.tar.gz ; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then pushd / ; sudo tar xzvf ~/gfortran-4.9.2-Mac.tar.gz ; pushd ; fi 
-  - bash miniconda.sh -b -p $HOME/miniconda
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq; sudo apt-get install -y gfortran xvfb; fi
+  - if [ [ "$TRAVIS_OS_NAME" = "linux" ] && ! [ -d ${HOME}/miniconda] ]; then wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; fi 
+  - if [ [ "$TRAVIS_OS_NAME" = "osx" ] && ! [ -d ${HOME}/miniconda ] ]; then wget https://repo.continuum.io/miniconda/Miniconda-latest-MacOSX-x86_64.sh -O miniconda.sh; fi
+  - if [ [ "$TRAVIS_OS_NAME" = "osx" ] && ! [ -d /usr/local/gfortran ] ]; then wget https://github.com/UV-CDAT/uvcdat/releases/download/v2.4.1/gfortran-4.9.2-Mac.tar.gz -O ~/gfortran-4.9.2-Mac.tar.gz ; pushd / ; sudo tar xzvf ~/gfortran-4.9.2-Mac.tar.gz ; pushd ; fi
+  - if [ ! -d ${HOME}/miniconda ] then bash miniconda.sh -b -p $HOME/miniconda ; fi
   - export PATH="$HOME/miniconda/bin:$PATH"
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   # Useful for debugging any issues with conda
   - conda install --yes python=2.7 setuptools
-  - conda install --yes --channel uvcdat     cdms2 cdutil genutil unidata cdtime vcs
+  - conda install --yes --channel uvcdat cdms2 cdutil genutil unidata cdtime vcs
   - conda info -a
 
 install:
