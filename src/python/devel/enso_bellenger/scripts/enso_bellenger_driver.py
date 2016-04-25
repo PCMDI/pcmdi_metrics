@@ -16,7 +16,7 @@ libfiles = ['durolib.py',
 for lib in libfiles:
   execfile(os.path.join('../lib/',lib))
 
-os.system('ln -sf ../lib/durolib.py .')  ## This should be a temporary solution...
+os.system('ln -sf ../lib/durolib.py .')
 
 """
 execfile('durolib.py')
