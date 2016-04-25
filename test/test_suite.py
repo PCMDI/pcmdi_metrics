@@ -2,13 +2,12 @@ import unittest
 import test_from_param
 import sys
 import os
-import argparse
 pth = os.path.dirname(__file__)
 sys.path.append(os.path.join(pth, "graphics"))
+import argparse
 parser = argparse.ArgumentParser(description="Test suite for pmcdi metrics")
 
 parser.add_argument("-G","--graphics-only",action="store_true",default=False,help="Only run graphics tests")
-parser.add_argument("-g","--no-graphics",action="store_true",default=False,help="Do not run graphics tests")
 parser.add_argument("-l","--list",action="store_true",default=False,help="List available tests")
 parser.add_argument("-t","--test",nargs="*",default=None,help="Run only this test(s)")
 parser.add_argument("-V","--verbose",default=False,action="store_true",help="Verbose output")
@@ -32,11 +31,7 @@ if args.test is not None:
 elif args.graphics_only:
     tests = graphics
 else:
-    if args.no_graphics:
-        tests = others+params
-    else:
-        tests = others+params+graphics
-
+    tests = others+params+graphics
 
 if args.list:
     print "Test that would be run with these options:"
@@ -80,5 +75,9 @@ if args.verbose:
 else:
     verbosity = 1
 
-res = unittest.TextTestRunner(verbosity=verbosity).run(suite)
-sys.exit(len(res.failures))
+results = unittest.TextTestRunner(verbosity=verbosity).run(suite)
+print dir(results)
+if results.wasSuccessful():
+    sys.exit()
+else:
+    sys.exit(1)
