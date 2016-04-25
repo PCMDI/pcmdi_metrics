@@ -16,14 +16,7 @@ libfiles = ['durolib.py',
 for lib in libfiles:
   execfile(os.path.join('../lib/',lib))
 
-os.system('ln -sf ../lib/durolib.py .')
-
-"""
-execfile('durolib.py')
-execfile('get_pcmdi_data.py')
-execfile('PMP_rectangular_domains.py')
-execfile('monthly_variability_statistics.py')
-"""
+os.system('ln -sf ../lib/durolib.py .') ## This should be a temporary solution...
 
 mip = 'cmip5'
 exp = 'piControl'
@@ -49,11 +42,9 @@ for mod in mods:
 
   f = cdms.open(mod_ts_path)
 
-#  for reg in ['Nino34', 'Nino3', 'Nino4', 'Nino12','TSA','TNA','IO']:
+##  for reg in ['Nino34', 'Nino3', 'Nino4', 'Nino12','TSA','TNA','IO']:
   for reg in ['Nino34', 'Nino3']:
     enso_stats_dic[mod][reg] = {}   # create a dictionary within main dictionary
-    #if reg == 'Nino3': reg_selector = regionNino3 
-    #if reg == 'Nino4': reg_selector = regionNino4 
     reg_selector = get_reg_selector(reg)
     print reg, reg_selector
     reg_timeseries = f('ts',reg_selector,time = slice(0,60))   # RUN CODE FAST ON 5 YEARS OF DATA
