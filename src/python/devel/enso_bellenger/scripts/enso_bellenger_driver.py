@@ -8,10 +8,22 @@ import genutil
 import time
 import json
 
-execfile('/export/durack1/git/pylib/durolib.py')
+libfiles = ['durolib.py',
+            'get_pcmdi_data.py',
+            'PMP_rectangular_domains.py',
+            'monthly_variability_statistics.py']
+
+for lib in libfiles:
+  execfile(os.path.join('../lib/',lib))
+
+os.system('ln -sf ../lib/durolib.py .')  ## This should be a temporary solution...
+
+"""
+execfile('durolib.py')
 execfile('get_pcmdi_data.py')
 execfile('PMP_rectangular_domains.py')
 execfile('monthly_variability_statistics.py')
+"""
 
 mip = 'cmip5'
 exp = 'piControl'
@@ -21,9 +33,8 @@ realm = 'atm'
 var = 'ts'
 run = 'r1i1p1'
 
-#mods = ['IPSL-CM5B-LR']  # Test just one model
-mods = get_all_mip_mods(mip,exp,fq,realm,var)
-
+mods = ['IPSL-CM5B-LR']  # Test just one model
+#mods = get_all_mip_mods(mip,exp,fq,realm,var)
 
 enso_stats_dic = {}  # Dictionary to be output to JSON file
 
@@ -38,18 +49,22 @@ for mod in mods:
 
   f = cdms.open(mod_ts_path)
 
-  for reg in ['Nino3','Nino4']:
+#  for reg in ['Nino34', 'Nino3', 'Nino4', 'Nino12','TSA','TNA','IO']:
+  for reg in ['Nino34', 'Nino3']:
     enso_stats_dic[mod][reg] = {}   # create a dictionary within main dictionary
-    if reg == 'Nino3': reg_selector = regionNino3 
-    if reg == 'Nino4': reg_selector = regionNino4 
+    #if reg == 'Nino3': reg_selector = regionNino3 
+    #if reg == 'Nino4': reg_selector = regionNino4 
+    reg_selector = get_reg_selector(reg)
+    print reg, reg_selector
     reg_timeseries = f('ts',reg_selector,time = slice(0,60))   # RUN CODE FAST ON 5 YEARS OF DATA
-#   reg_timeseries = f('ts',reg_selector)  
+#    reg_timeseries = f('ts',reg_selector)  
     std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries) 
 
     print mod, ' ', reg,'  ', std
 
     enso_stats_dic[mod][reg]['std'] = std
 
+  enso_stats_dic[mod]['reg_time'] = len(reg_timeseries)
   f.close()
 
 #except:
