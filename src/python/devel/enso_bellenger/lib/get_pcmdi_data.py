@@ -1,6 +1,5 @@
 def get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,var,run):
-#  execfile('/export/durack1/git/pylib/durolib.py')
-#  from durolib import trimModelList
+   #from durolib import trimModelList
    if realm == 'atm': Realm = 'Amon'
    if mip == 'cmip5': pin = '/work/' + mip + '/' + exp + '/' + realm + '/' + fq + '/' + var + '/' + mip + '.' + mod + '.' + exp + '.' + run + '.' + fq + '.' + realm + '.' + Realm + '.' + var + '*.xml' 
 #  print pin
