@@ -16,8 +16,6 @@ libfiles = ['durolib.py',
 for lib in libfiles:
   execfile(os.path.join('../lib/',lib))
 
-#os.system('ln -sf ../lib/durolib.py .') ## This should be a temporary solution...
-
 mip = 'cmip5'
 exp = 'piControl'
 mod = 'IPSL-CM5B-LR'
@@ -27,8 +25,14 @@ var = 'ts'
 #var = 'pr'
 run = 'r1i1p1'
 
-mods = ['IPSL-CM5B-LR']  # Test just one model
-#mods = get_all_mip_mods(mip,exp,fq,realm,var)
+test = True
+
+if test:
+  mods = ['IPSL-CM5B-LR']  # Test just one model
+  regs = ['Nino34'] # Test just one region
+else:
+  mods = get_all_mip_mods(mip,exp,fq,realm,var)
+  regs = ['Nino34', 'Nino3', 'Nino4', 'Nino12','TSA','TNA','IO']
 
 enso_stats_dic = {}  # Dictionary to be output to JSON file
 
@@ -42,19 +46,22 @@ for mod in mods:
 
   f = cdms.open(mod_path)
 
-##  for reg in ['Nino34', 'Nino3', 'Nino4', 'Nino12','TSA','TNA','IO']:
-  for reg in ['Nino34']:
+  for reg in regs:
     enso_stats_dic[mod][reg] = {}   # create a dictionary within main dictionary
     reg_selector = get_reg_selector(reg)
     print reg, reg_selector
-    reg_timeseries = f(var,reg_selector,time = slice(0,60))   # RUN CODE FAST ON 5 YEARS OF DATA
-#    reg_timeseries = f(var,reg_selector)  
-    std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries) 
 
+    if test:
+      reg_timeseries = f(var,reg_selector,time = slice(0,60))   # RUN CODE FAST ON 5 YEARS OF DATA
+    else:
+      reg_timeseries = f(var,reg_selector)  
+
+    std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries) 
     std_NDJ = interannual_variability_seasonal_std_mean_removed(reg_timeseries,'NDJ')
     std_MAM = interannual_variability_seasonal_std_mean_removed(reg_timeseries,'MAM')
 
-    print mod, ' ', reg,'  ', std
+    print mod, ' ', reg
+    print 'std = ', std
     print 'std_NDJ = ', std_NDJ
     print 'std_MAM = ', std_MAM
 
@@ -68,12 +75,8 @@ for mod in mods:
 #except:
 #   print 'failed for model ', mod
 
-
 # Write dictionary to json file
-
 json_filename = 'test_ENSO_' + mip + '_' + exp + '_' + var
 json.dump(enso_stats_dic, open(json_filename + '.json','w'),sort_keys=True, indent=4, separators=(',', ': '))
 
-print 'all done'
-
-
+print 'all done for', var
