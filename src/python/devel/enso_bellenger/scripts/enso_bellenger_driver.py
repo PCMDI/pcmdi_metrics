@@ -26,6 +26,7 @@ var = 'ts'
 run = 'r1i1p1'
 
 test = True
+#test = False
 
 if test:
   mods = ['IPSL-CM5B-LR']  # Test just one model
