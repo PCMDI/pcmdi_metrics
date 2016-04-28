@@ -1,4 +1,4 @@
-PCMDI metrics package
+PCMDI metrics package (PMP)
 ======
 [![stable version](http://img.shields.io/badge/stable version-1.0-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/1.0)
 [![build status](https://travis-ci.org/PCMDI/pcmdi_metrics.svg?branch=master)](https://travis-ci.org/PCMDI/pcmdi_metrics/builds)
