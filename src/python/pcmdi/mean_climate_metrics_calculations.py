@@ -1,9 +1,9 @@
 import cdms2 as cdms
 import pcmdi_metrics
 import collections
-import cdutil
 import MV2 as MV
 from genutil import grower
+
 
 def compute_metrics(Var, dm_glb, do_glb):
     # Var is sometimes sent with level associated
@@ -51,7 +51,7 @@ def compute_metrics(Var, dm_glb, do_glb):
     domains = ['GLB', 'NHEX', 'TROPICS', 'SHEX']
 
     for dom in domains:
-     
+
         dm = dm_glb
         do = do_glb
 
@@ -89,11 +89,12 @@ def compute_metrics(Var, dm_glb, do_glb):
         rms_y = pcmdi_metrics.pcmdi.rms_0.compute(dm_amzm, do_amzm)
 
         # CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN RMS
-        dm_amzm_grown,dummy = grower(dm_amzm,dm_am)
-        dm_am_devzm = MV.subtract(dm_am,dm_amzm_grown)
-        do_amzm_grown,dummy = grower(do_amzm,do_am)
-        do_am_devzm = MV.subtract(do_am,do_amzm_grown)
-        rms_xy_devzm = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am_devzm, do_am_devzm)
+        dm_amzm_grown, dummy = grower(dm_amzm, dm_am)
+        dm_am_devzm = MV.subtract(dm_am, dm_amzm_grown)
+        do_amzm_grown, dummy = grower(do_amzm, do_am)
+        do_am_devzm = MV.subtract(do_am, do_amzm_grown)
+        rms_xy_devzm = pcmdi_metrics.pcmdi.rms_xy.compute(
+            dm_am_devzm, do_am_devzm)
 
         metrics_dictionary[
             'rms_xyt_ann_' +
@@ -125,7 +126,7 @@ def compute_metrics(Var, dm_glb, do_glb):
             mae_xy *
             conv,
             sig_digits)
-### ZONAL MEAN CONTRIBUTIONS
+# ZONAL MEAN CONTRIBUTIONS
         metrics_dictionary[
             'rms_y_ann_' +
             dom] = format(
@@ -138,7 +139,6 @@ def compute_metrics(Var, dm_glb, do_glb):
             rms_xy_devzm *
             conv,
             sig_digits)
-
 
         # CALCULATE SEASONAL MEANS
         for sea in ['djf', 'mam', 'jja', 'son']:
@@ -154,7 +154,8 @@ def compute_metrics(Var, dm_glb, do_glb):
 
         # ZONAL MEANS ######
         # CALCULATE SEASONAL MEANS
-#           dm_smzm, do_smzm = pcmdi_metrics.pcmdi.zonal_mean.compute(dm_sea, do_sea)
+# dm_smzm, do_smzm = pcmdi_metrics.pcmdi.zonal_mean.compute(dm_sea,
+# do_sea)
 
         # CALCULATE SEASONAL AND ZONAL MEAN RMS
 #           rms_y = pcmdi_metrics.pcmdi.rms_y.compute(dm_smzm, do_smzm)
@@ -164,7 +165,8 @@ def compute_metrics(Var, dm_glb, do_glb):
 #           dm_sea_devzm = MV.subtract(dm_sea,dm_smzm_grown)
 #           do_smzm_grown,dummy = grower(do_smzm,do_sea)
 #           do_sm_devzm = MV.subtract(do_sea,do_smzm_grown)
-#           rms_xy_devzm = pcmdi_metrics.pcmdi.rms_xy.compute(dm_sm_devzm, do_sm_devzm)
+# rms_xy_devzm = pcmdi_metrics.pcmdi.rms_xy.compute(dm_sm_devzm,
+# do_sm_devzm)
 
             print 'SEASONAL ZM HERE>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 
@@ -200,7 +202,7 @@ def compute_metrics(Var, dm_glb, do_glb):
                 conv,
                 sig_digits)
 
-### ZONAL AND SEASONAL MEAN CONTRIBUTIONS
+# ZONAL AND SEASONAL MEAN CONTRIBUTIONS
 #           metrics_dictionary[
 #              'rms_y_' + sea + '_' +
 #              dom] = format(

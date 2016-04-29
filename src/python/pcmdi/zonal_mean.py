@@ -1,5 +1,4 @@
 import cdutil
-import cdms2
 
 
 def compute(dm, do):
