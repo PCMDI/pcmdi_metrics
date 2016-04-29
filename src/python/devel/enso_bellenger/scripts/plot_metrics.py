@@ -41,7 +41,7 @@ def plot_metrics(reg,mods):
       for t in t_keys:
         if t != 'entire':
           if debug:
-            print i, mod, t, d[mods[i]][reg]['std'][t]
+            print i, mods[i], t, d[mods[i]][reg]['std'][t]
           ax.plot(i,d[mods[i]][reg]['std'][t],'x',c='red')
 
   ax.plot(x,y,'o',c='red')
