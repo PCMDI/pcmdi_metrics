@@ -3,7 +3,7 @@ import cdms2
 
 
 def compute(dm, do):
-    """ Computes ZONAL MEAN"""
+    """ Computes ZONAL MEAN assumes rectilinear/regular grid"""
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Zonal Mean",
