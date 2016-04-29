@@ -1,9 +1,9 @@
 package:
     name: pcmdi_metrics
-    version: 1.0
+    version: 1.0.5
 
 source:
-    git_rev: 1.0
+    git_rev: master
     git_url: git://github.com/PCMDI/pcmdi_metrics
 
 build:
