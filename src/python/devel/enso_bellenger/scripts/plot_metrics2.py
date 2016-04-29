@@ -87,4 +87,5 @@ def plot_metrics2(reg,mods):
   #
   plt.tight_layout()
   plt.show()
-  fig.savefig('test_enso_'+reg+'_'+var+'.png',dpi=300)
+  #fig.savefig('test_enso_'+reg+'_'+var+'.png',dpi=300)
+  fig.savefig('test_enso_'+reg+'_'+var+'_season.png',dpi=300)
