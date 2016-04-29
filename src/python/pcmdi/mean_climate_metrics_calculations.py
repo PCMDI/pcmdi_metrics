@@ -168,7 +168,7 @@ def compute_metrics(Var, dm_glb, do_glb):
 # rms_xy_devzm = pcmdi_metrics.pcmdi.rms_xy.compute(dm_sm_devzm,
 # do_sm_devzm)
 
-            print 'SEASONAL ZM HERE>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+#           print 'SEASONAL ZM HERE>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 
             metrics_dictionary[
                 'bias_xy_' +
