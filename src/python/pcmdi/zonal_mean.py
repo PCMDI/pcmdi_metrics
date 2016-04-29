@@ -14,6 +14,4 @@ def compute(dm, do):
             "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
             "Comments": ""
         }
-    # Do we really want this? Wouldn't it better to let it fails
-    cdms2.setAutoBounds('on')
     return cdutil.averager(dm, axis='x'), cdutil.averager(do, axis='x')

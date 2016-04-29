@@ -86,7 +86,7 @@ def compute_metrics(Var, dm_glb, do_glb):
         dm_amzm, do_amzm = pcmdi_metrics.pcmdi.zonal_mean.compute(dm_am, do_am)
 
         # CALCULATE ANNUAL AND ZONAL MEAN RMS
-        rms_y = pcmdi_metrics.pcmdi.rms_y.compute(dm_amzm, do_amzm)
+        rms_y = pcmdi_metrics.pcmdi.rms_0.compute(dm_amzm, do_amzm)
 
         # CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN RMS
         dm_amzm_grown,dummy = grower(dm_amzm,dm_am)
