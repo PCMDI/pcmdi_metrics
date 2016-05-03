@@ -2,7 +2,7 @@ import json
 import string
 
 execfile('./plot_metrics.py')
-execfile('./plot_metrics2.py')
+execfile('./plot_metrics_seasonality.py')
 
 test = True
 
@@ -65,4 +65,4 @@ for reg in regs:
   for mod in mods:
     tmp.append(float(d[mod][reg]['std_NDJ']['entire'])/float(d[mod][reg]['std_MAM']['entire']))
   stdv[reg] = tmp[:]
-  plot_metrics2(reg,mods)
+  plot_metrics_seasonality(reg,mods)
