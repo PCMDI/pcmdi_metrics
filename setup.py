@@ -85,7 +85,9 @@ data_files=[('demo/ACME', demo_ACME_files),
           ('share/CMIP_metrics_results/CMIP5/piControl',
            cmip5_piControl_json),
           ('share/graphics/vcs', portrait_files),
-          ('share/pcmdi', ('doc/obs_info_dictionary.json','share/pcmdi_metrics_table')),
+          ('share/pcmdi', ('doc/obs_info_dictionary.json',
+              'share/pcmdi_metrics_table',
+              'share/disclaimer.txt')),
           ]
 
 if install_dev:

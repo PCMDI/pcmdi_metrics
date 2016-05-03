@@ -192,10 +192,13 @@ for var in parameters.vars:
         rg = [rg, ]
     regions_dict[vr] = rg
 saved_obs_masks = {}
+
+disclaimer = open(os.path.join(sys.prefix,"share","pcmdi","disclaimer.txt")).read()
 for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
     try:
         metrics_dictionary = collections.OrderedDict()
         metrics_def_dictionary = collections.OrderedDict()
+        metrics_dictionary["DISCLAIMER"] = disclaimer
         # REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
         sp = Var.split("_")
         var = sp[0]
