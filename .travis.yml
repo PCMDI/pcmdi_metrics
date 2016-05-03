@@ -5,11 +5,6 @@ os:
 language: python
     - "2.7"
 
-cache:
-    directories:
-      - /usr/local/gfortran
-      - ${HOME}/miniconda
-
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq; sudo apt-get install -y gfortran xvfb; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ] && ! [ -d ${HOME}/miniconda] ; then wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh; fi
@@ -22,6 +17,8 @@ before_install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
   - conda update -q cdms2 cdutil genutil unidata cdtime vcs -c uvcdat
+  - conda install openssl=1.0.2d
+  - conda update -f -c doutriaux1/label/doutriaux1 -c uvcdat --show-channel-urls -q -y vtk
   # Useful for debugging any issues with conda
   - conda info -a
 
