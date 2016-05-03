@@ -18,7 +18,7 @@ before_install:
   - conda update -q conda
   - conda update -q cdms2 cdutil genutil unidata cdtime vcs -c uvcdat
   - conda install openssl=1.0.2d
-  - conda update -f -c doutriaux1/label/doutriaux1 -c uvcdat --show-channel-urls -q -y vtk
+  - conda update -f -c doutriaux1/label/doutriaux1 -c cdoutrix -c uvcdat --show-channel-urls -q -y vtk
   # Useful for debugging any issues with conda
   - conda info -a
 
