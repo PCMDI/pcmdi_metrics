@@ -1,4 +1,5 @@
 {
+    "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference Gleckler et al. (2016), EOS May 2016. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
     "References": {
         "default": {
             "RefName": "ERAINT",
@@ -102,6 +103,10 @@
                     "mae_xy_son_NHEX": "2.862",
                     "mae_xy_son_SHEX": "1.634",
                     "mae_xy_son_TROPICS": "1.540",
+                    "rms_devzm_ann_GLB": "1.456",
+                    "rms_devzm_ann_NHEX": "2.014",
+                    "rms_devzm_ann_SHEX": "1.294",
+                    "rms_devzm_ann_TROPICS": "1.169",
                     "rms_xy_ann_GLB": "2.154",
                     "rms_xy_ann_NHEX": "3.012",
                     "rms_xy_ann_SHEX": "2.181",
@@ -125,7 +130,11 @@
                     "rms_xyt_ann_GLB": "2.507",
                     "rms_xyt_ann_NHEX": "3.526",
                     "rms_xyt_ann_SHEX": "2.455",
-                    "rms_xyt_ann_TROPICS": "1.825"
+                    "rms_xyt_ann_TROPICS": "1.825",
+                    "rms_y_ann_GLB": "2.118",
+                    "rms_y_ann_NHEX": "2.760",
+                    "rms_y_ann_SHEX": "2.194",
+                    "rms_y_ann_TROPICS": "1.011"
                 },
                 "ocean": {
                     "bias_xy_ann_GLB": "-0.585",
@@ -188,6 +197,10 @@
                     "mae_xy_son_NHEX": "3.604",
                     "mae_xy_son_SHEX": "1.452",
                     "mae_xy_son_TROPICS": "1.283",
+                    "rms_devzm_ann_GLB": "0.885",
+                    "rms_devzm_ann_NHEX": "1.208",
+                    "rms_devzm_ann_SHEX": "0.889",
+                    "rms_devzm_ann_TROPICS": "0.774",
                     "rms_xy_ann_GLB": "1.924",
                     "rms_xy_ann_NHEX": "3.286",
                     "rms_xy_ann_SHEX": "2.000",
@@ -211,7 +224,11 @@
                     "rms_xyt_ann_GLB": "2.149",
                     "rms_xyt_ann_NHEX": "3.666",
                     "rms_xyt_ann_SHEX": "2.214",
-                    "rms_xyt_ann_TROPICS": "1.444"
+                    "rms_xyt_ann_TROPICS": "1.444",
+                    "rms_y_ann_GLB": "3.422",
+                    "rms_y_ann_NHEX": "5.271",
+                    "rms_y_ann_SHEX": "2.327",
+                    "rms_y_ann_TROPICS": "0.942"
                 },
                 "land": {
                     "bias_xy_ann_GLB": "-0.047",
@@ -274,6 +291,10 @@
                     "mae_xy_son_NHEX": "1.796",
                     "mae_xy_son_SHEX": "1.963",
                     "mae_xy_son_TROPICS": "2.360",
+                    "rms_devzm_ann_GLB": "1.975",
+                    "rms_devzm_ann_NHEX": "2.033",
+                    "rms_devzm_ann_SHEX": "2.957",
+                    "rms_devzm_ann_TROPICS": "1.552",
                     "rms_xy_ann_GLB": "2.341",
                     "rms_xy_ann_NHEX": "2.491",
                     "rms_xy_ann_SHEX": "2.941",
@@ -297,7 +318,11 @@
                     "rms_xyt_ann_GLB": "2.872",
                     "rms_xyt_ann_NHEX": "3.060",
                     "rms_xyt_ann_SHEX": "3.347",
-                    "rms_xyt_ann_TROPICS": "2.526"
+                    "rms_xyt_ann_TROPICS": "2.526",
+                    "rms_y_ann_GLB": "1.933",
+                    "rms_y_ann_NHEX": "2.620",
+                    "rms_y_ann_SHEX": "1.717",
+                    "rms_y_ann_TROPICS": "1.261"
                 }
             }
         },
@@ -353,8 +378,15 @@
             "Name": "Annual Mean",
             "Comments": "Assumes input are 12 months climatology",
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "zonal_mean": {
+            "Abstract": "Compute Zonal Mean",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Zonal Mean",
+            "Comments": "",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
         }
     },
-    "metrics_git_sha1": "e6966f2039f60fa19d57f75202513565bedc154f",
-    "uvcdat_version": "v2.5.0-253-g3b8caf5"
+    "metrics_git_sha1": "36939c0e4b883db33cc02476120e7d80849fdbb4",
+    "uvcdat_version": "2.4.1"
 }

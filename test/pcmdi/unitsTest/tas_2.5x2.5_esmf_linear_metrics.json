@@ -1,4 +1,5 @@
 {
+    "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference Gleckler et al. (2016), EOS May 2016. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
     "References": {
         "default": {
             "RefName": "ERAINT",
@@ -101,6 +102,10 @@
                     "mae_xy_son_NHEX": "2.862",
                     "mae_xy_son_SHEX": "1.634",
                     "mae_xy_son_TROPICS": "1.540",
+                    "rms_devzm_ann_GLB": "1.456",
+                    "rms_devzm_ann_NHEX": "2.014",
+                    "rms_devzm_ann_SHEX": "1.294",
+                    "rms_devzm_ann_TROPICS": "1.169",
                     "rms_xy_ann_GLB": "2.154",
                     "rms_xy_ann_NHEX": "3.012",
                     "rms_xy_ann_SHEX": "2.181",
@@ -124,7 +129,11 @@
                     "rms_xyt_ann_GLB": "2.507",
                     "rms_xyt_ann_NHEX": "3.526",
                     "rms_xyt_ann_SHEX": "2.455",
-                    "rms_xyt_ann_TROPICS": "1.825"
+                    "rms_xyt_ann_TROPICS": "1.825",
+                    "rms_y_ann_GLB": "2.118",
+                    "rms_y_ann_NHEX": "2.760",
+                    "rms_y_ann_SHEX": "2.194",
+                    "rms_y_ann_TROPICS": "1.011"
                 }
             }
         },
@@ -177,8 +186,15 @@
             "Name": "Annual Mean",
             "Comments": "Assumes input are 12 months climatology",
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "zonal_mean": {
+            "Abstract": "Compute Zonal Mean",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Zonal Mean",
+            "Comments": "",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
         }
     },
-    "metrics_git_sha1": "feb97cf6ef96a4e01c25081f492e51874d46485e",
-    "uvcdat_version": "v2.5.0-53-g6522555"
+    "metrics_git_sha1": "36939c0e4b883db33cc02476120e7d80849fdbb4",
+    "uvcdat_version": "2.4.1"
 }
