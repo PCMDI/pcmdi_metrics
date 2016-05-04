@@ -75,4 +75,9 @@ if args.verbose:
 else:
     verbosity = 1
 
-unittest.TextTestRunner(verbosity=verbosity).run(suite)
+results = unittest.TextTestRunner(verbosity=verbosity).run(suite)
+print dir(results)
+if results.wasSuccessful():
+    sys.exit()
+else:
+    sys.exit(1)

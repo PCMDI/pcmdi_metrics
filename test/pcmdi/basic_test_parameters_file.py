@@ -70,11 +70,13 @@ filename_template = "%(variable)_%(model_version)_%(table)_historical_%(realizat
 # filename template for landsea masks ('sftlf')
 sftlf_filename_template = "sftlf_%(model_version).nc"
 
-# ROOT PATH FOR MODELS CLIMATOLOGIES
 pth = os.path.dirname(__file__)
+# ROOT PATH FOR MODELS CLIMATOLOGIES
 mod_data_path = os.path.abspath(os.path.join(pth, "data"))
 # ROOT PATH FOR OBSERVATIONS
 obs_data_path = os.path.abspath(os.path.join(pth, "obs"))
+# Custom obs dictionary file (one we use for tests)
+custom_observations = os.path.abspath(os.path.join(obs_data_path,"obs_info_dictionary.json"))
 # DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join(
     'pcmdi_install_test_results',

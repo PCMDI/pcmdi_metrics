@@ -71,6 +71,8 @@ pth = os.path.dirname(__file__)
 mod_data_path = os.path.abspath(os.path.join(pth, "data"))
 # ROOT PATH FOR OBSERVATIONS
 obs_data_path = os.path.abspath(os.path.join(pth, "obs"))
+# Custom obs dictionary file (one we use for tests)
+custom_observations = os.path.abspath(os.path.join(obs_data_path,"obs_info_dictionary.json"))
 # DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join(
     'pcmdi_install_test_results',

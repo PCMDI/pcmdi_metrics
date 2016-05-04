@@ -4,6 +4,11 @@ PCMDI metrics package (PMP)
 ![repo size](https://reposs.herokuapp.com/?path=PCMDI/pcmdi_metrics)
 ![platforms](http://img.shields.io/badge/platforms-linux | osx-lightgrey.svg)
 [![DOI](http://img.shields.io/badge/DOI-10.5281/zenodo.13952-orange.svg)](http://doi.org/10.5281/zenodo.13952)
+[![Anaconda-Server
+Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/installer/conda.svg)](https://conda.anaconda.org/pcmdi)
+[![Anaconda-Server
+Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
+
 
 The PCMDI metrics package is used to objectively compare results from climate models with observations using well-established statistical tests. Results are produced in the context of all model simulations contributed to CMIP5 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons are focused on large- to global-scale annual cycle performance metrics.
 
