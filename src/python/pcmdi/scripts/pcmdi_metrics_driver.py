@@ -68,7 +68,10 @@ def applyCustomKeys(O, custom_dict, var):
     for k, v in custom_dict.iteritems():
         setattr(O, k, custom_dict.get(var, custom_dict.get(None, "")))
 
-P = argparse.ArgumentParser()
+P = argparse.ArgumentParser(
+        description='Runs PCMDI Metrics Computations',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
 P.add_argument(
     "-p",
     "--parameters",

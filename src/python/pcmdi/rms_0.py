@@ -11,4 +11,9 @@ def compute(dm, do):
             "utilities/utilities-2.html",
             "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
         }
+    if 1 in [x.isLevel() for x in dm.getAxisList()]:
+        print dm.shape,"B4"
+        dm=dm(squeeze=1)
+        do=do(squeeze=1)
+        print dm.shape,"AF"
     return float(genutil.statistics.rms(dm, do))
