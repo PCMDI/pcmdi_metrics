@@ -20,16 +20,24 @@ print mip, exp, run, fq, realm, var
 with open(json_filename+'.json') as json_data:
   d = json.load(json_data)
 
-stdv={}
 mods=[]
-
 mods = d.keys()
 mods.sort()
 
 reg_time = []
-tmp = []
-for mod in mods:
-  reg_time.append(d[mod]['reg_time'])
-  tmp.append(d[mod]['slope'])
-  stdv = tmp[:]
-plot_metrics_AtmFeedback(mods)
+fdbs = d[mods[0]]['feedback'].keys()
+
+for fdb in fdbs:
+  print fdb
+  data = [] 
+  mods_fdb = []
+  for mod in mods:
+    if fdb == fdb[0]:
+      reg_time.append(d[mod]['reg_time'])
+    try:
+      data.append(d[mod]['feedback'][fdb])
+      mods_fdb.append(mod)
+    except:
+      print "No data for ", mod, fdb
+      continue 
+  plot_metrics_AtmFeedback(mods_fdb,data)
