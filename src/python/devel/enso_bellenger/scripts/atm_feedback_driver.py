@@ -15,8 +15,7 @@ libfiles = ['durolib.py',
             'slice_tstep.py']
 
 for lib in libfiles:
-  #execfile(os.path.join('../lib/',lib))
-  execfile(os.path.join('../../lib/',lib))
+  execfile(os.path.join('../lib/',lib))
 
 mip = 'cmip5'
 exp = 'piControl'
