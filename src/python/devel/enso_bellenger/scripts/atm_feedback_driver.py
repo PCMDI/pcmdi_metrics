@@ -15,7 +15,8 @@ libfiles = ['durolib.py',
             'slice_tstep.py']
 
 for lib in libfiles:
-  execfile(os.path.join('../lib/',lib))
+  #execfile(os.path.join('../lib/',lib))
+  execfile(os.path.join('../../lib/',lib))
 
 mip = 'cmip5'
 exp = 'piControl'
@@ -33,8 +34,7 @@ if test:
   fdbs = ['AtmBjerk'] # Test just one region
 else:
   mods = get_all_mip_mods(mip,exp,fq,realm,var)
-  #fdbs = ['AtmBjk','SfcFlx','SrtWav','LthFlx']
-  fdbs = ['AtmBjk','SrtWav','LthFlx']
+  fdbs = ['AtmBjk','SfcFlx','SrtWav','LthFlx']
 
 enso_stats_dic = {}  # Dictionary to be output to JSON file
 
@@ -68,22 +68,26 @@ for mod in mods:
       else:
         sys.exit(fdb+" is not defined")
 
-      reg_timeseries_y_area_avg_anom = get_axis_base_dataset(yvar,yregion)
+      try:
+        reg_timeseries_y_area_avg_anom = get_axis_base_dataset(yvar,yregion)
 
-      if fdb == 'SfcFlx':
-        reg_timeseries_y2_area_avg_anom = get_axis_base_dataset(yvar2,yregion)
-        reg_timeseries_y_area_avg_anom = sum(reg_timeseries_y_area_avg_anom,reg_timeseries_y2_area_avg_anom)
+        if fdb == 'SfcFlx':
+          reg_timeseries_y2_area_avg_anom = get_axis_base_dataset(yvar2,yregion)
+          reg_timeseries_y_area_avg_anom = sum(reg_timeseries_y_area_avg_anom,reg_timeseries_y2_area_avg_anom)
 
-      # Simple quality control
-      if len(reg_timeseries_x_area_avg_anom) == len(reg_timeseries_y_area_avg_anom):
-        ntstep = len(reg_timeseries_x_area_avg_anom)
-      else:
-        print xvar+" and "+yvar+" tstep not match"
-        break
+        # Simple quality control
+        if len(reg_timeseries_x_area_avg_anom) == len(reg_timeseries_y_area_avg_anom):
+          ntstep = len(reg_timeseries_x_area_avg_anom)
+        else:
+          print xvar+" and "+yvar+" tstep not match"
+          break
 
-      slope = get_slope_linear_regression(reg_timeseries_y_area_avg_anom,reg_timeseries_x_area_avg_anom)
-      print mod, fdb, 'slope =', slope
-      enso_stats_dic[mod]['feedback'][fdb] = slope
+        slope = get_slope_linear_regression(reg_timeseries_y_area_avg_anom,reg_timeseries_x_area_avg_anom)
+        print mod, fdb, 'slope =', slope
+        enso_stats_dic[mod]['feedback'][fdb] = slope
+
+      except:
+        print mod, fdb, "cannot be calculated"
 
     print 'reg_time =', ntstep
     enso_stats_dic[mod]['reg_time'] = ntstep
