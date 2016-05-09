@@ -34,14 +34,20 @@ if test:
   #stats = ['SST_AMP'] # Test just one reg
   #stats = ['TAUU_RMSE'] # Test just one reg
   stats = ['PR_RMSE'] # Test just one reg
+  stats = ['SST_RMSE','PR_RMSE'] # Test just one reg
 else:
   mods = get_all_mip_mods(mip,exp,fq,realm,var)
   stats = ['SST_RMSE','SST_AMP','TAUU_RMSE','PR_RMSE']
 
+# Prepare dictionary frame
 enso_stats_dic = {}  # Dictionary to be output to JSON file
+for mod in mods:
+  enso_stats_dic[mod] = {}   # create a dictionary within main dictionary
+  enso_stats_dic[mod]['mean_stat'] = {}   # create an additional level of dictionary
 
+# Start loop
 for stat in stats:
-
+  print ' ----- ', stat,' ---------------------'
   # Too messy below.. should be a better way....
   if stat == 'SST_RMSE':
     mod_var = 'ts'
@@ -81,9 +87,9 @@ for stat in stats:
   obs_grid = obs_clim.getGrid()
 
   for mod in mods:
-    print ' ----- ', mod,' ---------------------'
-    enso_stats_dic[mod] = {}   # create a dictionary within main dictionary
-    enso_stats_dic[mod]['mean_stat'] = {}   # create an additional level of dictionary
+    #print ' ----- ', mod,' ---------------------'
+    #enso_stats_dic[mod] = {}   # create a dictionary within main dictionary
+    #enso_stats_dic[mod]['mean_stat'] = {}   # create an additional level of dictionary
 
     mod_var_path = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,mod_var,run)
     fm = cdms.open(mod_var_path)
@@ -105,7 +111,9 @@ for stat in stats:
       mod_ann_cycle = cdutil.ANNUALCYCLE.climatology(reg_timeseries_m)
       #obs_ann_cycle = cdutil.ANNUALCYCLE.climatology(reg_timeseries_o)
       mod_ann_cycle_area_avg = cdutil.averager(mod_ann_cycle,axis='xy')
-      result = np.amax(mod_ann_cycle_area_avg)-np.amin(mod_ann_cycle_area_avg) 
+      # Is below a right way to get amplitude??
+      #result = (np.amax(mod_ann_cycle_area_avg)-np.amin(mod_ann_cycle_area_avg))/2.
+      result = np.amax(mod_ann_cycle_area_avg)-np.mean(mod_ann_cycle_area_avg)
 
     print mod, stat, 'stat =', result
     enso_stats_dic[mod]['mean_stat'][stat] = result
@@ -115,7 +123,7 @@ for stat in stats:
       fo.close()
 
 # Write dictionary to json file
-json_filename = 'ENSO_mean_stat_' + mip + '_' + exp + '_' + run + '_' + fq + '_' +realm + '_' + var
+json_filename = 'ENSO_mean_stat_' + mip + '_' + exp + '_' + run + '_' + fq + '_' +realm
 json.dump(enso_stats_dic, open(json_filename + '.json','w'),sort_keys=True, indent=4, separators=(',', ': '))
 
 print 'all done'
