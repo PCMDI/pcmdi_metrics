@@ -6,7 +6,9 @@ import cdutil
 import regrid2
 import json
 
-execfile('/export_backup/gleckler1/git/pcmdi_metrics/src/python/devel/monsoon_wang/lib/PMP_rectangular_domains.py')
+#execfile('/export_backup/gleckler1/git/pcmdi_metrics/src/python/devel/monsoon_wang/lib/PMP_rectangular_domains.py')
+
+execfile('/export/gleckler1/git/pcmdi_metrics/src/python/devel/monsoon_wang/lib/PMP_rectangular_domains.py')
 
 
 conv = 1 
