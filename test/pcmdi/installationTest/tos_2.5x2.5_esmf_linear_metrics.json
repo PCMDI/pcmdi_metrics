@@ -1,4 +1,5 @@
 {
+    "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference Gleckler et al. (2016), EOS May 2016. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
     "References": {
         "default": {
             "RefName": "UKMETOFFICE-HadISST-v1-1",
@@ -102,6 +103,10 @@
                     "mae_xy_son_NHEX": "1.332",
                     "mae_xy_son_SHEX": "1.006",
                     "mae_xy_son_TROPICS": "1.021",
+                    "rms_devzm_ann_GLB": "0.912",
+                    "rms_devzm_ann_NHEX": "1.171",
+                    "rms_devzm_ann_SHEX": "0.809",
+                    "rms_devzm_ann_TROPICS": "0.876",
                     "rms_xy_ann_GLB": "1.417",
                     "rms_xy_ann_NHEX": "1.864",
                     "rms_xy_ann_SHEX": "1.615",
@@ -126,6 +131,10 @@
                     "rms_xyt_ann_NHEX": "2.041",
                     "rms_xyt_ann_SHEX": "1.858",
                     "rms_xyt_ann_TROPICS": "1.307",
+                    "rms_y_ann_GLB": "1.267",
+                    "rms_y_ann_NHEX": "1.541",
+                    "rms_y_ann_SHEX": "1.440",
+                    "rms_y_ann_TROPICS": "0.697",
                     "some_custom": 1.5
                 }
             }
@@ -180,6 +189,13 @@
             "Comments": "Assumes input are 12 months climatology",
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
         },
+        "zonal_mean": {
+            "Abstract": "Compute Zonal Mean",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Zonal Mean",
+            "Comments": "",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
         "some_custom": {
             "Abstract": "For demo purpose really does nothing",
             "Contact": "doutriaux1@llnl.gov",
@@ -191,6 +207,6 @@
             "Name": "Custom Minimum"
         }
     },
-    "metrics_git_sha1": "feb97cf6ef96a4e01c25081f492e51874d46485e",
-    "uvcdat_version": "v2.5.0-53-g6522555"
+    "metrics_git_sha1": "36939c0e4b883db33cc02476120e7d80849fdbb4",
+    "uvcdat_version": "2.4.1"
 }

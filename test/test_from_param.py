@@ -60,7 +60,7 @@ class TestFromParam(unittest.TestCase):
                     lines = []
                     for l in u:
                         lines.append(l)
-                    for i,l in enumerate(lines):
+                    for i, l in enumerate(lines):
                         if l[:2] == "- ":
                             if l.find("metrics_git_sha1") > -1:
                                 continue
@@ -68,12 +68,13 @@ class TestFromParam(unittest.TestCase):
                                 continue
                             else:
                                 for j in range(100):
-                                    sp = lines[i+j].split()
-                                    if sp[0]=="+" and sp[1]==l.split()[1]:
+                                    sp = lines[i + j].split()
+                                    if sp[0] == "+" and sp[1] == l.split()[1]:
                                         bad = float(l.split()[-1][1:-2])
                                         good = float(sp[-1][1:-2])
-                                        if not numpy.allclose(good,bad,atol=1.E-2):
-                                            print "Failing line:", l.strip(),"instead of",good,"(we read:",bad,")"
+                                        if not numpy.allclose(
+                                                good, bad, atol=1.E-2):
+                                            print "Failing line:", l.strip(), "instead of", good, "(we read:", bad, ")"
                                             ok = False
                                         break
             self.assertTrue(ok)

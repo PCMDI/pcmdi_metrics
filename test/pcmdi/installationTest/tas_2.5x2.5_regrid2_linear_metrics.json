@@ -1,4 +1,5 @@
 {
+    "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference Gleckler et al. (2016), EOS May 2016. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
     "References": {
         "default": {
             "RefName": "ERAINT",
@@ -103,6 +104,10 @@
                     "mae_xy_son_NHEX": "2.842",
                     "mae_xy_son_SHEX": "1.621",
                     "mae_xy_son_TROPICS": "1.511",
+                    "rms_devzm_ann_GLB": "1.394",
+                    "rms_devzm_ann_NHEX": "1.935",
+                    "rms_devzm_ann_SHEX": "1.244",
+                    "rms_devzm_ann_TROPICS": "1.112",
                     "rms_xy_ann_GLB": "2.116",
                     "rms_xy_ann_NHEX": "2.970",
                     "rms_xy_ann_SHEX": "2.154",
@@ -127,6 +132,10 @@
                     "rms_xyt_ann_NHEX": "3.475",
                     "rms_xyt_ann_SHEX": "2.426",
                     "rms_xyt_ann_TROPICS": "1.781",
+                    "rms_y_ann_GLB": "2.103",
+                    "rms_y_ann_NHEX": "2.725",
+                    "rms_y_ann_SHEX": "2.200",
+                    "rms_y_ann_TROPICS": "0.999",
                     "some_custom": 1.5
                 },
                 "terre": {
@@ -191,6 +200,10 @@
                     "mae_xy_son_NHEX": "1.926",
                     "mae_xy_son_SHEX": "2.056",
                     "mae_xy_son_TROPICS": "2.435",
+                    "rms_devzm_ann_GLB": "1.806",
+                    "rms_devzm_ann_NHEX": "1.903",
+                    "rms_devzm_ann_SHEX": "2.249",
+                    "rms_devzm_ann_TROPICS": "1.558",
                     "rms_xy_ann_GLB": "2.364",
                     "rms_xy_ann_NHEX": "2.519",
                     "rms_xy_ann_SHEX": "2.756",
@@ -215,6 +228,10 @@
                     "rms_xyt_ann_NHEX": "3.079",
                     "rms_xyt_ann_SHEX": "3.175",
                     "rms_xyt_ann_TROPICS": "2.629",
+                    "rms_y_ann_GLB": "1.676",
+                    "rms_y_ann_NHEX": "1.970",
+                    "rms_y_ann_SHEX": "1.778",
+                    "rms_y_ann_TROPICS": "1.245",
                     "some_custom": 1.5
                 },
                 "ocean": {
@@ -279,6 +296,10 @@
                     "mae_xy_son_NHEX": "3.619",
                     "mae_xy_son_SHEX": "1.435",
                     "mae_xy_son_TROPICS": "1.285",
+                    "rms_devzm_ann_GLB": "1.028",
+                    "rms_devzm_ann_NHEX": "1.514",
+                    "rms_devzm_ann_SHEX": "0.890",
+                    "rms_devzm_ann_TROPICS": "0.902",
                     "rms_xy_ann_GLB": "2.056",
                     "rms_xy_ann_NHEX": "3.461",
                     "rms_xy_ann_SHEX": "2.032",
@@ -303,6 +324,10 @@
                     "rms_xyt_ann_NHEX": "3.912",
                     "rms_xyt_ann_SHEX": "2.267",
                     "rms_xyt_ann_TROPICS": "1.517",
+                    "rms_y_ann_GLB": "2.452",
+                    "rms_y_ann_NHEX": "3.425",
+                    "rms_y_ann_SHEX": "2.216",
+                    "rms_y_ann_TROPICS": "1.056",
                     "some_custom": 1.5
                 }
             }
@@ -360,6 +385,13 @@
             "Comments": "Assumes input are 12 months climatology",
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
         },
+        "zonal_mean": {
+            "Abstract": "Compute Zonal Mean",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Zonal Mean",
+            "Comments": "",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
         "some_custom": {
             "Abstract": "For demo purpose really does nothing",
             "Contact": "doutriaux1@llnl.gov",
@@ -371,6 +403,6 @@
             "Name": "Custom Maximum"
         }
     },
-    "metrics_git_sha1": "feb97cf6ef96a4e01c25081f492e51874d46485e",
-    "uvcdat_version": "v2.5.0-53-g6522555"
+    "metrics_git_sha1": "36939c0e4b883db33cc02476120e7d80849fdbb4",
+    "uvcdat_version": "2.4.1"
 }

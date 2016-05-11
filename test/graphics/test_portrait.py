@@ -132,7 +132,7 @@ class TestGraphics(unittest.TestCase):
 
         vars.sort()
         mods = sorted(list(mods))
-        print "Models:",mods
+        print "Models:", mods
         for bad in ["GridInfo", "References", "RegionalMasking",
                     "metrics_git_sha1", "uvcdat_version"]:
             if bad in mods:

@@ -18,8 +18,8 @@ import cdutil
 import collections
 import cdat_info
 
-## Statistical tracker
-cdat_info.pingPCMDIdb("pcmdi_metrics","pcmdi_metrics_driver")
+# Statistical tracker
+cdat_info.pingPCMDIdb("pcmdi_metrics", "pcmdi_metrics_driver")
 
 # Before we do anything else we need to create some units
 # Salinity Units
@@ -68,7 +68,10 @@ def applyCustomKeys(O, custom_dict, var):
     for k, v in custom_dict.iteritems():
         setattr(O, k, custom_dict.get(var, custom_dict.get(None, "")))
 
-P = argparse.ArgumentParser()
+P = argparse.ArgumentParser(
+    description='Runs PCMDI Metrics Computations',
+    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
 P.add_argument(
     "-p",
     "--parameters",
@@ -193,7 +196,12 @@ for var in parameters.vars:
     regions_dict[vr] = rg
 saved_obs_masks = {}
 
-disclaimer = open(os.path.join(sys.prefix,"share","pcmdi","disclaimer.txt")).read()
+disclaimer = open(
+    os.path.join(
+        sys.prefix,
+        "share",
+        "pcmdi",
+        "disclaimer.txt")).read()
 for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
     try:
         metrics_dictionary = collections.OrderedDict()

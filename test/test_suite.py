@@ -7,10 +7,30 @@ sys.path.append(os.path.join(pth, "graphics"))
 import argparse
 parser = argparse.ArgumentParser(description="Test suite for pmcdi metrics")
 
-parser.add_argument("-G","--graphics-only",action="store_true",default=False,help="Only run graphics tests")
-parser.add_argument("-l","--list",action="store_true",default=False,help="List available tests")
-parser.add_argument("-t","--test",nargs="*",default=None,help="Run only this test(s)")
-parser.add_argument("-V","--verbose",default=False,action="store_true",help="Verbose output")
+parser.add_argument(
+    "-G",
+    "--graphics-only",
+    action="store_true",
+    default=False,
+    help="Only run graphics tests")
+parser.add_argument(
+    "-l",
+    "--list",
+    action="store_true",
+    default=False,
+    help="List available tests")
+parser.add_argument(
+    "-t",
+    "--test",
+    nargs="*",
+    default=None,
+    help="Run only this test(s)")
+parser.add_argument(
+    "-V",
+    "--verbose",
+    default=False,
+    action="store_true",
+    help="Verbose output")
 
 args = parser.parse_args(sys.argv[1:])
 
@@ -23,15 +43,15 @@ params = ["basic_test_parameters_file.py",
           "salinity_test.py",
           ]
 
-others=["flake8",]
-graphics = ["test_portrait",]
+others = ["flake8", ]
+graphics = ["test_portrait", ]
 
 if args.test is not None:
     tests = args.test
 elif args.graphics_only:
     tests = graphics
 else:
-    tests = others+params+graphics
+    tests = others + params + graphics
 
 if args.list:
     print "Test that would be run with these options:"
