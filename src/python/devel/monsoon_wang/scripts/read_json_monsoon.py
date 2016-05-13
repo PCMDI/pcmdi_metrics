@@ -1,10 +1,10 @@
 import json
 import string
 
-execfile('./plot_metrics_monsoon.py')
+execfile('./plot_metrics_unify.py')
 execfile('./plot_scatter_monsoon.py')
 
-#test = True
+test = True
 test = False
 
 json_file = 'MPI_cmip5_historical.json'
@@ -23,6 +23,7 @@ mods = d.keys()
 mods.sort()
 
 regs = d[mods[0]].keys()
+print regs
 
 if test:
   regs = regs[0:1]
@@ -40,6 +41,7 @@ for reg in regs:
     except:
       print "No data for ", mod, reg
       continue 
-  #plot_metrics_monsoon(mods_reg,reg,data1,'cor')
-  #plot_metrics_monsoon(mods_reg,reg,data2,'rmsn')
+  cat1 = 'Monsoon'
+  plot_metrics_unify(cat1,reg+'_cor', mods_reg,data1)
+  plot_metrics_unify(cat1,reg+'_rmsn',mods_reg,data2)
   plot_scatter_monsoon(mods_reg,reg,data1,data2)
