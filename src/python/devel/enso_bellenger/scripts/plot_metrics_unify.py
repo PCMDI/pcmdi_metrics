@@ -7,9 +7,6 @@ def plot_metrics_unify(cat1,cat2,mods,data):
   #
   # Canvas setup
   #
-  if test:
-    plt.ion()
-
   fig, ax = plt.subplots()
   #fig, ax = plt.subplots(figsize=(18,5))
   #fig, ax = plt.subplots(figsize=(12,7))
@@ -99,6 +96,14 @@ def plot_metrics_unify(cat1,cat2,mods,data):
     else:
       sys.exit(cat2+' in '+cat1+' is not defined yet')
 
+  elif cat1 == 'Monsoon':
+    unit_adjust = 1
+    unit = string.split(cat2,'_')[1]
+    ymax = 1
+    ymin = 0
+    yint = 0.5
+    ylstart = 0
+
   else:
     sys.exit(cat1+'is not defined yet')
 
@@ -113,10 +118,9 @@ def plot_metrics_unify(cat1,cat2,mods,data):
   # 
   # Plotting
   #
-  #ax.plot(x,y,'o',c='red')
   ax.scatter(x,y,c='red',s=80)
 
-  ax.set_title(cat1+', '+cat2+'\n'+mip+', '+exp+', '+run)
+  ax.set_title(cat1+', '+cat2+'\n'+mip+', '+exp)
   ax.set_xlabel('Models')
   ax.set_ylabel(unit)
   ax.set_xlim([-1.,len(y)-0.5])
@@ -142,5 +146,5 @@ def plot_metrics_unify(cat1,cat2,mods,data):
   # Save image file
   #
   plt.tight_layout()
-  plt.show()
   fig.savefig('test_'+cat1+'_'+cat2+'.png',dpi=300)
+  plt.close(fig)
