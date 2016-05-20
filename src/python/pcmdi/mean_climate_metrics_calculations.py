@@ -23,6 +23,10 @@ def compute_metrics(Var, dm_glb, do_glb):
             None,
             None)
         metrics_defs["cor_xy"] = pcmdi_metrics.pcmdi.cor_xy.compute(None, None)
+
+        metrics_defs["std_xy"] = pcmdi_metrics.pcmdi.std_xy.compute(None)
+        metrics_defs["std_xyt"] = pcmdi_metrics.pcmdi.std_xyt.compute(None)
+
         metrics_defs["seasonal_mean"] = \
             pcmdi_metrics.pcmdi.seasonal_mean.compute(
             None,
@@ -65,9 +69,11 @@ def compute_metrics(Var, dm_glb, do_glb):
             dm = dm_glb(latitude=(-30., 30))
             do = do_glb(latitude=(-30., 30))
 
-        # CALCULATE ANNUAL CYCLE SPACE-TIME RMS AND CORRELATIONS
+        # CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD
         rms_xyt = pcmdi_metrics.pcmdi.rms_xyt.compute(dm, do)
         cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm, do)
+        stdObs_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(do)
+        std_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(dm)
 
         # CALCULATE ANNUAL MEANS
         dm_am, do_am = pcmdi_metrics.pcmdi.annual_mean.compute(dm, do)
@@ -80,6 +86,10 @@ def compute_metrics(Var, dm_glb, do_glb):
 
         # CALCULATE ANNUAL MEAN RMS
         rms_xy = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am, do_am)
+
+        # CALCULATE ANNUAL OBS STD 
+        stdObs_xy = pcmdi_metrics.pcmdi.std_xy.compute(do_am)
+        std_xy = pcmdi_metrics.pcmdi.std_xy.compute(dm_am)
 
         # ZONAL MEANS ######
         # CALCULATE ANNUAL MEANS
@@ -96,6 +106,48 @@ def compute_metrics(Var, dm_glb, do_glb):
         rms_xy_devzm = pcmdi_metrics.pcmdi.rms_xy.compute(
             dm_am_devzm, do_am_devzm)
 
+        # CALCULATE ANNUAL AND ZONAL MEAN STD 
+
+        # CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN STD  
+        stdObs_xy_devzm = pcmdi_metrics.pcmdi.std_xy.compute(do_am_devzm)
+        std_xy_devzm = pcmdi_metrics.pcmdi.std_xy.compute(dm_am_devzm)
+
+        metrics_dictionary[
+            'std-obs_xy_ann_' +
+            dom] = format(
+            stdObs_xy *
+            conv,
+            sig_digits)
+        metrics_dictionary[
+            'std_xy_ann_' +
+            dom] = format(
+            std_xy *
+            conv,
+            sig_digits)
+        metrics_dictionary[
+            'std-obs_xyt_ann_' +
+            dom] = format(
+            stdObs_xyt *
+            conv,
+            sig_digits)
+        metrics_dictionary[
+            'std_xyt_ann_' +
+            dom] = format(
+            std_xyt *
+            conv,
+            sig_digits)
+        metrics_dictionary[
+            'std-obs_xy_devzm_ann_' +
+            dom] = format(
+            stdObs_xy_devzm *
+            conv,
+            sig_digits)
+        metrics_dictionary[
+            'std_xy_devzm_ann_' +
+            dom] = format(
+            std_xy_devzm *
+            conv,
+            sig_digits)
         metrics_dictionary[
             'rms_xyt_ann_' +
             dom] = format(
