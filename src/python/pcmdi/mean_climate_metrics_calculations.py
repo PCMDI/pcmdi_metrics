@@ -87,7 +87,7 @@ def compute_metrics(Var, dm_glb, do_glb):
         # CALCULATE ANNUAL MEAN RMS
         rms_xy = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am, do_am)
 
-        # CALCULATE ANNUAL OBS STD 
+        # CALCULATE ANNUAL OBS and MOD STD 
         stdObs_xy = pcmdi_metrics.pcmdi.std_xy.compute(do_am)
         std_xy = pcmdi_metrics.pcmdi.std_xy.compute(dm_am)
 
@@ -204,6 +204,11 @@ def compute_metrics(Var, dm_glb, do_glb):
             mae_sea = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_sea, do_sea)
             bias_sea = pcmdi_metrics.pcmdi.bias.compute(dm_sea, do_sea)
 
+            # CALCULATE ANNUAL OBS and MOD STD 
+            stdObs_sea = pcmdi_metrics.pcmdi.std_xy.compute(do_sea)
+            std_sea = pcmdi_metrics.pcmdi.std_xy.compute(dm_sea)
+
+
         # ZONAL MEANS ######
         # CALCULATE SEASONAL MEANS
 # dm_smzm, do_smzm = pcmdi_metrics.pcmdi.zonal_mean.compute(dm_sea,
@@ -251,6 +256,18 @@ def compute_metrics(Var, dm_glb, do_glb):
                 '_' +
                 dom] = format(
                 mae_sea *
+                conv,
+                sig_digits)
+            metrics_dictionary[
+                'std-obs_xy_' + sea + '_' +
+                dom] = format(
+                stdObs_xy *
+                conv,
+                sig_digits)
+            metrics_dictionary[
+                'std_xy_' + sea + '_' + 
+                dom] = format(
+                std_xy *
                 conv,
                 sig_digits)
 
