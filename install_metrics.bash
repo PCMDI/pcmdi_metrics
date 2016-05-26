@@ -132,6 +132,11 @@ setup_cmake() {
 }
 
 #####
+# Add CMake to path
+export PATH=${PATH}:${cmake_install_dir}/bin
+#####
+
+#####
 # CDAT = Python+CDMS
 #####
 setup_cdat() {
@@ -148,17 +153,17 @@ setup_cdat() {
     cdat_home=$(perl -pe 's/(?<!uv)cdat/uvcdat/' <<<${cdat_home})
     CDAT_HOME=${cdat_home}
     #-----------------------------------------------------
-    ${cdat_home}/bin/python -c "import cdat_info; print cdat_info.Version" 
+    ${cdat_home}/bin/python -c "import cdat_info; print cdat_info.Version"
     local ret=$?
     ((ret == 0)) && (( ! force_install )) && echo " [OK]" && return 0
     echo "No python in your install directory, trying your PATH"
-    python -c "import cdat_info; print cdat_info.Version" 
+    python -c "import cdat_info; print cdat_info.Version"
     if [ $? == 0 ]; then
        echo "you have a valid cdat in your path"
        cdat_home=`python -c "import sys; print sys.prefix"`
        echo "It is located at:" ${cdat_home}
        mkdir -p ${install_prefix}/bin
-       cat > ${install_prefix}/bin/setup_runtime.sh  <<  EOF  
+       cat > ${install_prefix}/bin/setup_runtime.sh  <<  EOF
        . ${cdat_home}/bin/setup_runtime.sh
        export PYTHONPATH=${install_prefix}/lib/python2.7/site-packages:\${PYTHONPATH}
        export PATH=${PATH}:${install_prefix}/bin
@@ -232,7 +237,7 @@ EOF
         if [  ${keep_uvcdat_build_dir} = false ]; then
             echo "removing UVCDAT build directory"
             [ -d ${uvcdat_build_directory_build} ] && rm -rf ${uvcdat_build_directory_build}
-        else 
+        else
           echo "You said you wanted to keep uvcdat_build_dir"
         fi
         mkdir -p ${uvcdat_build_directory_build} >& /dev/null
@@ -300,13 +305,13 @@ setup_cdat_xtra() {
     echo "Installing Extra Package ${1}"${uvcdat_build_directory}/uvcdat/Packages/$1
     cd ${uvcdat_build_directory}/uvcdat/Packages/$1 >& /dev/null
     env BUILD_DIR="." CFLAGS="-I${install_prefix}/Externals/include" ${install_prefix}/bin/python setup.py install
-    [ $? != 0 ] && echo " Error could not install CDAT extra python package ${1} using ${install_prefix}/bin/python" 
+    [ $? != 0 ] && echo " Error could not install CDAT extra python package ${1} using ${install_prefix}/bin/python"
 }
 
 setup_metrics() {
     cd ${metrics_build_directory} >& /dev/null
     ${cdat_home}/bin/python setup.py install --prefix=${install_prefix}
-    [ $? != 0 ] && echo " Error could not install metrics python package using ${cdat_home}/bin/python" 
+    [ $? != 0 ] && echo " Error could not install metrics python package using ${cdat_home}/bin/python"
 }
 
 _full_path() {
@@ -383,8 +388,8 @@ main() {
     cmake_repo_http=http://github.com/kitware/cmake.git
     cmake_repo_https=https://github.com/kitware/cmake.git
     cmake_min_version=2.8.11
-    cmake_max_version=3.3.2
-    cmake_version=3.2.3
+    cmake_max_version=3.4.3
+    cmake_version=3.4.3
     force_install=0
     DEBUG=1
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
@@ -444,7 +449,7 @@ main() {
     mkdir -p ${install_prefix}/Externals/lib
     mkdir -p ${install_prefix}/Externals/include
     mkdir -p ${install_prefix}/Externals/share
-    
+
     PATH=${install_prefix}/Externals/bin:${PATH}
     setup_cmake
     setup_cdat
