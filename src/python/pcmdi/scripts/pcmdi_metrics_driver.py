@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-######################################################
+#
 #
 #  USER INPUT IS SET IN FILE "input_parameters.py"
 #  Identified via --parameters key at startup
 #
-######################################################
+#
 import pcmdi_metrics
 import sys
 import argparse
@@ -123,24 +123,24 @@ else:
     tweaks_all = {}
 
 out = pcmdi_metrics.io.base.Base(
-        os.path.abspath(        
-        os.path.join(           
+    os.path.abspath(
+        os.path.join(
             parameters.metrics_output_path)),
             "errors_log.txt")
-case_id = getattr(parameters,"case_id","")
-period = getattr(parameters,"period","")
+case_id = getattr(parameters, "case_id", "")
+period = getattr(parameters, "period", "")
 
 out.case_id = case_id
-out=out()
+out = out()
 
 try:
     os.makedirs(
         os.path.dirname(out)
-        )
+    )
 except:
     pass
 
-Efile = open(out,"w")
+Efile = open(out, "w")
 
 dup = DUP(Efile)
 
@@ -472,9 +472,9 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                 do.shape,
                                 '  ',
                                 ref)
-                            ###################################################
+                            #
                             # Basic checks
-                            ###################################################
+                            #
                             if dm.shape != do.shape:
                                 raise RuntimeError(
                                     "Obs and Model -%s- have different" % model_version +
@@ -495,14 +495,14 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                         "Could not convert model units (%s) " % dm.units +
                                         "to obs units: (%s)" % (do.units))
 
-                            ###################################################
+                            #
                             # OBS INFO FOR JSON/ASCII FILES
-                            ###################################################
+                            #
                             onm = obs_dic[var][ref]
 
-                            ###################################################
+                            #
                             # METRICS CALCULATIONS
-                            ###################################################
+                            #
                             metrics_dictionary[model_version] = \
                                 metrics_dictionary.get(
                                 model_version,
@@ -592,12 +592,12 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                     Var,
                                     None,
                                     None))
-                            ###################################################
+                            #
                             # The follwoing allow users to plug in a set of
                             # custom metrics
                             # Function needs to take in var name,
                             # model clim, obs clim
-                            ###################################################
+                            #
                             if hasattr(parameters, "compute_custom_metrics"):
                                 pr_rgn.update(
                                     parameters.compute_custom_metrics(
