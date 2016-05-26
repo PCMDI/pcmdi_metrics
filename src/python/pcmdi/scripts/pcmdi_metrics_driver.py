@@ -558,6 +558,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                                 vals.append("N/A")
                                             f.close()
                                     descr[att] = fmt % tuple(vals)
+                                metrics_dictionary["RESULTS"][model_version]["units"]=getattr(dm,"units","N/A")
                                 metrics_dictionary["RESULTS"][model_version][
                                     "SimulationDescription"] = descr
                                 metrics_dictionary["RESULTS"][model_version][
