@@ -96,7 +96,6 @@ else:
     verbosity = 1
 
 results = unittest.TextTestRunner(verbosity=verbosity).run(suite)
-print dir(results)
 if results.wasSuccessful():
     sys.exit()
 else:
