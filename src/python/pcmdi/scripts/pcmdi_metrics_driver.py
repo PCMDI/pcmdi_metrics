@@ -122,21 +122,26 @@ if hasattr(parameters, "model_tweaks"):
 else:
     tweaks_all = {}
 
+out = pcmdi_metrics.io.base.Base(
+        os.path.abspath(        
+        os.path.join(           
+            parameters.metrics_output_path)),
+            "errors_log.txt")
+case_id = getattr(parameters,"case_id","")
+period = getattr(parameters,"period","")
+
+out.case_id = case_id
+out=out()
+
 try:
     os.makedirs(
-        os.path.join(
-            parameters.metrics_output_path,
-            parameters.case_id))
+        os.path.dirname(out)
+        )
 except:
     pass
 
-Efile = open(
-    os.path.abspath(
-        os.path.join(
-            parameters.metrics_output_path,
-            parameters.case_id,
-            "errors_log.txt")),
-    "w")
+Efile = open(out,"w")
+
 dup = DUP(Efile)
 
 
@@ -153,8 +158,9 @@ for model_version in parameters.model_versions:
     sft.model_version = model_version
     sft.table = "fx"
     sft.realm = "atmos"
-    sft.period = parameters.period
+    sft.period = period
     sft.ext = "nc"
+    sft.case_id = case_id
     sft.targetGrid = None
     sft.realization = "r0i0p0"
     applyCustomKeys(sft, parameters.custom_keys, "sftlf")
@@ -249,15 +255,14 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         dup('ref is: ', refs)
 
         OUT = pcmdi_metrics.io.base.Base(
-            os.path.join(
-                parameters.metrics_output_path,
-                parameters.case_id),
+            parameters.metrics_output_path,
             "%(var)%(level)_%(targetGridName)_" +
             "%(regridTool)_%(regridMethod)_metrics")
         OUT.setTargetGrid(parameters.targetGrid, regridTool, regridMethod)
         OUT.var = var
         OUT.realm = realm
         OUT.table = table_realm
+        OUT.case_id = case_id
         applyCustomKeys(OUT, parameters.custom_keys, var)
         metrics_dictionary["References"] = {}
         metrics_dictionary["RegionalMasking"] = {}
@@ -302,6 +307,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                         regridMethod)
                     OBS.realm = realm
                     OBS.table = table_realm
+                    OBS.case_id = case_id
                     applyCustomKeys(OBS, parameters.custom_keys, var)
                     if region is not None:
                         # Ok we need to apply a mask
@@ -376,8 +382,9 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             MODEL.model_version = model_version
                             MODEL.table = table_realm
                             MODEL.realm = realm
-                            MODEL.period = parameters.period
+                            MODEL.period = period
                             MODEL.ext = "nc"
+                            MODEL.case_id = case_id
                             MODEL.setTargetGrid(
                                 parameters.targetGrid,
                                 regridTool,
@@ -627,14 +634,13 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             if parameters.save_mod_clims and ref == refs[0]:
                                 CLIM = pcmdi_metrics.io.base.Base(
                                     parameters.
-                                    model_clims_interpolated_output +
-                                    "/" +
-                                    parameters.case_id,
+                                    model_clims_interpolated_output,
                                     parameters.filename_output_template)
                                 CLIM.level = OUT.level
                                 CLIM.model_version = model_version
                                 CLIM.table = table_realm
-                                CLIM.period = parameters.period
+                                CLIM.period = period
+                                CLIM.case_id = case_id
                                 CLIM.setTargetGrid(
                                     parameters.targetGrid,
                                     regridTool,

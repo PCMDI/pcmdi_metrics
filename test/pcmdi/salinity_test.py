@@ -57,4 +57,4 @@ custom_observations = os.path.abspath(
 # DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join(
     'pcmdi_install_test_results',
-    'metrics_results')
+    'metrics_results','%(case_id)')

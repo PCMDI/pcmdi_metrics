@@ -97,6 +97,7 @@ custom_keys = {
 # %(realization) # Model realization information - e.g. r1i1p1
 # %(period) # Time period of analysis
 # %(ext) # Output file extension
+# %(case_id) # Output file extension
 
 # Templates for input climatology files
 # TEMPLATE EXAMPLE (once constructed) :
