@@ -166,12 +166,12 @@ def compute_metrics(Var, dm_glb, do_glb):
             bias_xy *
             conv,
             sig_digits)
-        metrics_dictionary[
-            'cor_xyt_ann_' +
-            dom] = format(
-            cor_xyt *
-            conv,
-            '.2f')
+#       metrics_dictionary[
+#           'cor_xyt_ann_' +
+#           dom] = format(
+#           cor_xyt *
+#           conv,
+#           '.2f')
         metrics_dictionary[
             'mae_xy_ann_' +
             dom] = format(
@@ -205,8 +205,8 @@ def compute_metrics(Var, dm_glb, do_glb):
             bias_sea = pcmdi_metrics.pcmdi.bias.compute(dm_sea, do_sea)
 
             # CALCULATE ANNUAL OBS and MOD STD 
-            stdObs_sea = pcmdi_metrics.pcmdi.std_xy.compute(do_sea)
-            std_sea = pcmdi_metrics.pcmdi.std_xy.compute(dm_sea)
+            stdObs_xy_sea = pcmdi_metrics.pcmdi.std_xy.compute(do_sea)
+            std_xy_sea = pcmdi_metrics.pcmdi.std_xy.compute(dm_sea)
 
 
         # ZONAL MEANS ######
@@ -261,13 +261,13 @@ def compute_metrics(Var, dm_glb, do_glb):
             metrics_dictionary[
                 'std-obs_xy_' + sea + '_' +
                 dom] = format(
-                stdObs_xy *
+                stdObs_xy_sea *
                 conv,
                 sig_digits)
             metrics_dictionary[
                 'std_xy_' + sea + '_' + 
                 dom] = format(
-                std_xy *
+                std_xy_sea *
                 conv,
                 sig_digits)
 
