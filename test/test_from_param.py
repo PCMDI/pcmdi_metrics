@@ -64,7 +64,9 @@ class TestFromParam(unittest.TestCase):
                         if l[:2] == "- ":
                             if l.find("metrics_git_sha1") > -1:
                                 continue
-                            if l.find("uvcdat_version") > -1:
+                            elif l.find("uvcdat_version") > -1:
+                                continue
+                            elif l.find("DISCLAIMER") > -1:
                                 continue
                             else:
                                 for j in range(100):

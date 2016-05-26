@@ -74,7 +74,7 @@ def check_result_image(
     bestDiffImage = None
     for baselineFilename in baselinefnames:
         sys.stdout.write(
-            "Comparing '%s' to '%s'..." %
+                "Comparing: %s %s..." %
             (fname, baselineFilename))
         baselineImage = image_from_file(baselineFilename)
         if baselineImage is None:
