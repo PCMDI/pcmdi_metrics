@@ -6,6 +6,7 @@ import sys
 import glob
 import difflib
 import numpy
+import pcmdi_metrics
 
 
 class TestFromParam(unittest.TestCase):
@@ -32,11 +33,15 @@ class TestFromParam(unittest.TestCase):
         parameters = ""  # so flake8 doesn't complain
         exec("import %s as parameters" % fnm)
         # Ok now let's figure out where the results have been dumped
-        pthout = os.path.join(
-            parameters.metrics_output_path,
-            parameters.case_id,
+        pthout = pcmdi_metrics.io.base.Base(
+                os.path.join(
+            parameters.metrics_output_path),
             "*.json")
-        files = glob.glob(pthout)
+        pthout.case_id = parameters.case_id
+        files = glob.glob(pthout())
+        print "FILES:",pthout,files
+        if len(files)==0:
+            raise Exception("could not find out files!")
         for fnm in files:
             nm = os.path.basename(fnm)
             # Ok now we are trying to find the same file

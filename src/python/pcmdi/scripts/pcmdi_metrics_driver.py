@@ -213,6 +213,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         metrics_dictionary = collections.OrderedDict()
         metrics_def_dictionary = collections.OrderedDict()
         metrics_dictionary["DISCLAIMER"] = disclaimer
+        metrics_dictionary["RESULTS"] = collections.OrderedDict()
         # REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
         sp = Var.split("_")
         var = sp[0]
@@ -503,13 +504,13 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             #
                             # METRICS CALCULATIONS
                             #
-                            metrics_dictionary[model_version] = \
-                                metrics_dictionary.get(
+                            metrics_dictionary["RESULTS"][model_version] = \
+                                metrics_dictionary["RESULTS"].get(
                                 model_version,
                                 {})
                             # Stores model's simul description
                             if "SimulationDescription" not in \
-                                    metrics_dictionary[model_version]:
+                                    metrics_dictionary["RESULTS"][model_version]:
                                 descr = {"MIPTable":
                                          obs_var_ref["CMIP_CMOR_TABLE"],
                                          "Model": model_version,
@@ -557,27 +558,26 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                                 vals.append("N/A")
                                             f.close()
                                     descr[att] = fmt % tuple(vals)
-                                metrics_dictionary[model_version][
+                                metrics_dictionary["RESULTS"][model_version][
                                     "SimulationDescription"] = descr
-                                metrics_dictionary[model_version][
+                                metrics_dictionary["RESULTS"][model_version][
                                     "InputClimatologyFileName"] = \
                                     os.path.basename(MODEL())
-                                metrics_dictionary[model_version][
+                                metrics_dictionary["RESULTS"][model_version][
                                     "InputClimatologyMD5"] = MODEL.hash()
                                 # Not just global
                                 if len(regions_dict[var]) > 1:
-                                    metrics_dictionary[model_version][
+                                    metrics_dictionary["RESULTS"][model_version][
                                         "InputRegionFileName"] = \
                                         sftlf[model_version]["filename"]
-                                    metrics_dictionary[model_version][
+                                    metrics_dictionary["RESULTS"][model_version][
                                         "InputRegionMD5"] = \
                                         sftlf[model_version]["md5"]
 
-                            if refabbv not in metrics_dictionary[
-                                    model_version]:
-                                metrics_dictionary[model_version][
+                            if refabbv not in metrics_dictionary["RESULTS"][model_version]:
+                                metrics_dictionary["RESULTS"][model_version][
                                     refabbv] = {'source': onm}
-                            pr = metrics_dictionary[model_version][refabbv].\
+                            pr = metrics_dictionary["RESULTS"][model_version][refabbv].\
                                 get(
                                 parameters.realization,
                                 {})
@@ -625,7 +625,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                 (k,
                                  pr_rgn[k]) for k in sorted(
                                     pr_rgn.keys()))
-                            metrics_dictionary[model_version][refabbv][
+                            metrics_dictionary["RESULTS"][model_version][refabbv][
                                 parameters.realization] = pr
 
                             # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
