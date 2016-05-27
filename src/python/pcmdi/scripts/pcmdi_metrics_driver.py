@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-######################################################
+#
 #
 #  USER INPUT IS SET IN FILE "input_parameters.py"
 #  Identified via --parameters key at startup
 #
-######################################################
+#
 import pcmdi_metrics
 import sys
 import argparse
@@ -122,21 +122,24 @@ if hasattr(parameters, "model_tweaks"):
 else:
     tweaks_all = {}
 
+out = pcmdi_metrics.io.base.Base(
+    os.path.abspath(os.path.join(parameters.metrics_output_path)),
+    "errors_log.txt")
+case_id = getattr(parameters, "case_id", "")
+period = getattr(parameters, "period", "")
+
+out.case_id = case_id
+out = out()
+
 try:
     os.makedirs(
-        os.path.join(
-            parameters.metrics_output_path,
-            parameters.case_id))
+        os.path.dirname(out)
+    )
 except:
     pass
 
-Efile = open(
-    os.path.abspath(
-        os.path.join(
-            parameters.metrics_output_path,
-            parameters.case_id,
-            "errors_log.txt")),
-    "w")
+Efile = open(out, "w")
+
 dup = DUP(Efile)
 
 
@@ -153,8 +156,9 @@ for model_version in parameters.model_versions:
     sft.model_version = model_version
     sft.table = "fx"
     sft.realm = "atmos"
-    sft.period = parameters.period
+    sft.period = period
     sft.ext = "nc"
+    sft.case_id = case_id
     sft.targetGrid = None
     sft.realization = "r0i0p0"
     applyCustomKeys(sft, parameters.custom_keys, "sftlf")
@@ -207,6 +211,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         metrics_dictionary = collections.OrderedDict()
         metrics_def_dictionary = collections.OrderedDict()
         metrics_dictionary["DISCLAIMER"] = disclaimer
+        metrics_dictionary["RESULTS"] = collections.OrderedDict()
         # REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
         sp = Var.split("_")
         var = sp[0]
@@ -249,15 +254,14 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         dup('ref is: ', refs)
 
         OUT = pcmdi_metrics.io.base.Base(
-            os.path.join(
-                parameters.metrics_output_path,
-                parameters.case_id),
+            parameters.metrics_output_path,
             "%(var)%(level)_%(targetGridName)_" +
             "%(regridTool)_%(regridMethod)_metrics")
         OUT.setTargetGrid(parameters.targetGrid, regridTool, regridMethod)
         OUT.var = var
         OUT.realm = realm
         OUT.table = table_realm
+        OUT.case_id = case_id
         applyCustomKeys(OUT, parameters.custom_keys, var)
         metrics_dictionary["References"] = {}
         metrics_dictionary["RegionalMasking"] = {}
@@ -302,6 +306,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                         regridMethod)
                     OBS.realm = realm
                     OBS.table = table_realm
+                    OBS.case_id = case_id
                     applyCustomKeys(OBS, parameters.custom_keys, var)
                     if region is not None:
                         # Ok we need to apply a mask
@@ -376,8 +381,9 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             MODEL.model_version = model_version
                             MODEL.table = table_realm
                             MODEL.realm = realm
-                            MODEL.period = parameters.period
+                            MODEL.period = period
                             MODEL.ext = "nc"
+                            MODEL.case_id = case_id
                             MODEL.setTargetGrid(
                                 parameters.targetGrid,
                                 regridTool,
@@ -465,9 +471,9 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                 do.shape,
                                 '  ',
                                 ref)
-                            ###################################################
+                            #
                             # Basic checks
-                            ###################################################
+                            #
                             if dm.shape != do.shape:
                                 raise RuntimeError(
                                     "Obs and Model -%s- have different" % model_version +
@@ -488,21 +494,21 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                         "Could not convert model units (%s) " % dm.units +
                                         "to obs units: (%s)" % (do.units))
 
-                            ###################################################
+                            #
                             # OBS INFO FOR JSON/ASCII FILES
-                            ###################################################
+                            #
                             onm = obs_dic[var][ref]
 
-                            ###################################################
+                            #
                             # METRICS CALCULATIONS
-                            ###################################################
-                            metrics_dictionary[model_version] = \
-                                metrics_dictionary.get(
+                            #
+                            metrics_dictionary["RESULTS"][model_version] = \
+                                metrics_dictionary["RESULTS"].get(
                                 model_version,
                                 {})
                             # Stores model's simul description
                             if "SimulationDescription" not in \
-                                    metrics_dictionary[model_version]:
+                                    metrics_dictionary["RESULTS"][model_version]:
                                 descr = {"MIPTable":
                                          obs_var_ref["CMIP_CMOR_TABLE"],
                                          "Model": model_version,
@@ -550,27 +556,33 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                                 vals.append("N/A")
                                             f.close()
                                     descr[att] = fmt % tuple(vals)
-                                metrics_dictionary[model_version][
+                                metrics_dictionary[
+                                    "RESULTS"][
+                                        model_version][
+                                            "units"] = getattr(
+                                                dm,
+                                                "units",
+                                                "N/A")
+                                metrics_dictionary["RESULTS"][model_version][
                                     "SimulationDescription"] = descr
-                                metrics_dictionary[model_version][
+                                metrics_dictionary["RESULTS"][model_version][
                                     "InputClimatologyFileName"] = \
                                     os.path.basename(MODEL())
-                                metrics_dictionary[model_version][
+                                metrics_dictionary["RESULTS"][model_version][
                                     "InputClimatologyMD5"] = MODEL.hash()
                                 # Not just global
                                 if len(regions_dict[var]) > 1:
-                                    metrics_dictionary[model_version][
+                                    metrics_dictionary["RESULTS"][model_version][
                                         "InputRegionFileName"] = \
                                         sftlf[model_version]["filename"]
-                                    metrics_dictionary[model_version][
+                                    metrics_dictionary["RESULTS"][model_version][
                                         "InputRegionMD5"] = \
                                         sftlf[model_version]["md5"]
 
-                            if refabbv not in metrics_dictionary[
-                                    model_version]:
-                                metrics_dictionary[model_version][
+                            if refabbv not in metrics_dictionary["RESULTS"][model_version]:
+                                metrics_dictionary["RESULTS"][model_version][
                                     refabbv] = {'source': onm}
-                            pr = metrics_dictionary[model_version][refabbv].\
+                            pr = metrics_dictionary["RESULTS"][model_version][refabbv].\
                                 get(
                                 parameters.realization,
                                 {})
@@ -585,12 +597,12 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                     Var,
                                     None,
                                     None))
-                            ###################################################
+                            #
                             # The follwoing allow users to plug in a set of
                             # custom metrics
                             # Function needs to take in var name,
                             # model clim, obs clim
-                            ###################################################
+                            #
                             if hasattr(parameters, "compute_custom_metrics"):
                                 pr_rgn.update(
                                     parameters.compute_custom_metrics(
@@ -618,7 +630,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                 (k,
                                  pr_rgn[k]) for k in sorted(
                                     pr_rgn.keys()))
-                            metrics_dictionary[model_version][refabbv][
+                            metrics_dictionary["RESULTS"][model_version][refabbv][
                                 parameters.realization] = pr
 
                             # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
@@ -627,14 +639,13 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             if parameters.save_mod_clims and ref == refs[0]:
                                 CLIM = pcmdi_metrics.io.base.Base(
                                     parameters.
-                                    model_clims_interpolated_output +
-                                    "/" +
-                                    parameters.case_id,
+                                    model_clims_interpolated_output,
                                     parameters.filename_output_template)
                                 CLIM.level = OUT.level
                                 CLIM.model_version = model_version
                                 CLIM.table = table_realm
-                                CLIM.period = parameters.period
+                                CLIM.period = period
+                                CLIM.case_id = case_id
                                 CLIM.setTargetGrid(
                                     parameters.targetGrid,
                                     regridTool,
