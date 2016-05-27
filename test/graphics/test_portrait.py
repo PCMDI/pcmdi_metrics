@@ -108,8 +108,8 @@ class TestGraphics(unittest.TestCase):
         json_files = glob.glob(
             os.path.join(
                 os.path.dirname(__file__),
-                    "json",
-                    "*.json"))
+                "json",
+                "*.json"))
 
         for fnm in json_files:
             f = open(fnm)

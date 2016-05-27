@@ -1,9 +1,9 @@
 import os
 
-##########################################################################
+#
 #  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY:
 #
-##########################################################################
+#
 
 # RUN IDENTIFICATION
 # DEFINES A SUBDIRECTORY TO METRICS OUTPUT RESULTS SO MULTIPLE CASES CAN
@@ -73,4 +73,4 @@ custom_observations = os.path.abspath(
 # DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join(
     'pcmdi_install_test_results',
-    'metrics_results','%(case_id)')
+    'metrics_results', '%(case_id)')

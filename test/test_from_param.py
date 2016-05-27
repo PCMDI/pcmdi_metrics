@@ -34,13 +34,13 @@ class TestFromParam(unittest.TestCase):
         exec("import %s as parameters" % fnm)
         # Ok now let's figure out where the results have been dumped
         pthout = pcmdi_metrics.io.base.Base(
-                os.path.join(
-            parameters.metrics_output_path),
+            os.path.join(
+                parameters.metrics_output_path),
             "*.json")
         pthout.case_id = parameters.case_id
         files = glob.glob(pthout())
-        print "FILES:",pthout,files
-        if len(files)==0:
+        print "FILES:", pthout, files
+        if len(files) == 0:
             raise Exception("could not find out files!")
         for fnm in files:
             nm = os.path.basename(fnm)
