@@ -12,5 +12,3 @@ def compute(d):
             "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
         }
     return float(genutil.statistics.std(d, axis='xy', weights='weighted'))
-
-

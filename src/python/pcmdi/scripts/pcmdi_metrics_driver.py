@@ -123,10 +123,8 @@ else:
     tweaks_all = {}
 
 out = pcmdi_metrics.io.base.Base(
-    os.path.abspath(
-        os.path.join(
-            parameters.metrics_output_path)),
-            "errors_log.txt")
+    os.path.abspath(os.path.join(parameters.metrics_output_path)),
+    "errors_log.txt")
 case_id = getattr(parameters, "case_id", "")
 period = getattr(parameters, "period", "")
 

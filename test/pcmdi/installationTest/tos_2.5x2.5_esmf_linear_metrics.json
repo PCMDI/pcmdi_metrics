@@ -2,6 +2,7 @@
     "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference: Gleckler, P. J., C. Doutriaux, P. J. Durack, K. E. Taylor, Y. Zhang, and D. N. Williams, E. Mason, and J. Servonnat (2016), A more powerful reality test for climate models, Eos, 97, doi:10.1029/2016EO051663. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
     "RESULTS": {
         "GFDL-ESM2G": {
+            "units": "K",
             "InputClimatologyFileName": "tos_GFDL-ESM2G_Omon_historical_r1i1p1_198501-200512-clim.nc",
             "SimulationDescription": {
                 "Center": "N/A",
@@ -56,10 +57,6 @@
                         "cor_xy_son_NHEX": "0.99",
                         "cor_xy_son_SHEX": "0.98",
                         "cor_xy_son_TROPICS": "0.93",
-                        "cor_xyt_ann_GLB": "0.99",
-                        "cor_xyt_ann_NHEX": "0.98",
-                        "cor_xyt_ann_SHEX": "0.98",
-                        "cor_xyt_ann_TROPICS": "0.92",
                         "custom_ref_min": 271.27384426614753,
                         "mae_xy_ann_GLB": "1.152",
                         "mae_xy_ann_NHEX": "1.144",
@@ -113,7 +110,63 @@
                         "rms_y_ann_NHEX": "1.541",
                         "rms_y_ann_SHEX": "1.440",
                         "rms_y_ann_TROPICS": "0.697",
-                        "some_custom": 1.5
+                        "some_custom": 1.5,
+                        "std-obs_xy_ann_GLB": "9.828",
+                        "std-obs_xy_ann_NHEX": "7.981",
+                        "std-obs_xy_ann_SHEX": "7.147",
+                        "std-obs_xy_ann_TROPICS": "2.492",
+                        "std-obs_xy_devzm_ann_GLB": "1.745",
+                        "std-obs_xy_devzm_ann_NHEX": "2.449",
+                        "std-obs_xy_devzm_ann_SHEX": "1.544",
+                        "std-obs_xy_devzm_ann_TROPICS": "1.571",
+                        "std-obs_xy_djf_GLB": "9.806",
+                        "std-obs_xy_djf_NHEX": "7.395",
+                        "std-obs_xy_djf_SHEX": "7.616",
+                        "std-obs_xy_djf_TROPICS": "2.384",
+                        "std-obs_xy_jja_GLB": "9.906",
+                        "std-obs_xy_jja_NHEX": "8.777",
+                        "std-obs_xy_jja_SHEX": "6.692",
+                        "std-obs_xy_jja_TROPICS": "2.998",
+                        "std-obs_xy_mam_GLB": "10.096",
+                        "std-obs_xy_mam_NHEX": "7.370",
+                        "std-obs_xy_mam_SHEX": "7.567",
+                        "std-obs_xy_mam_TROPICS": "2.552",
+                        "std-obs_xy_son_GLB": "10.002",
+                        "std-obs_xy_son_NHEX": "8.650",
+                        "std-obs_xy_son_SHEX": "6.751",
+                        "std-obs_xy_son_TROPICS": "3.052",
+                        "std-obs_xyt_ann_GLB": "9.988",
+                        "std-obs_xyt_ann_NHEX": "8.540",
+                        "std-obs_xyt_ann_SHEX": "7.298",
+                        "std-obs_xyt_ann_TROPICS": "2.834",
+                        "std_xy_ann_GLB": "9.298",
+                        "std_xy_ann_NHEX": "8.184",
+                        "std_xy_ann_SHEX": "6.575",
+                        "std_xy_ann_TROPICS": "2.316",
+                        "std_xy_devzm_ann_GLB": "1.699",
+                        "std_xy_devzm_ann_NHEX": "2.512",
+                        "std_xy_devzm_ann_SHEX": "1.594",
+                        "std_xy_devzm_ann_TROPICS": "1.417",
+                        "std_xy_djf_GLB": "9.143",
+                        "std_xy_djf_NHEX": "7.645",
+                        "std_xy_djf_SHEX": "6.632",
+                        "std_xy_djf_TROPICS": "2.413",
+                        "std_xy_jja_GLB": "9.526",
+                        "std_xy_jja_NHEX": "8.931",
+                        "std_xy_jja_SHEX": "6.413",
+                        "std_xy_jja_TROPICS": "2.955",
+                        "std_xy_mam_GLB": "9.600",
+                        "std_xy_mam_NHEX": "7.588",
+                        "std_xy_mam_SHEX": "6.971",
+                        "std_xy_mam_TROPICS": "2.606",
+                        "std_xy_son_GLB": "9.667",
+                        "std_xy_son_NHEX": "8.854",
+                        "std_xy_son_SHEX": "6.423",
+                        "std_xy_son_TROPICS": "3.072",
+                        "std_xyt_ann_GLB": "9.536",
+                        "std_xyt_ann_NHEX": "8.713",
+                        "std_xyt_ann_SHEX": "6.921",
+                        "std_xyt_ann_TROPICS": "2.889"
                     }
                 }
             },
@@ -166,16 +219,22 @@
             "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
             "Name": "Mean Absolute Error"
         },
-        "cor_xyt": {
-            "Abstract": "Compute Spatio-Temporal Correlation",
-            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
-            "Name": "Spatial and Temporal Correlation",
-            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
-        },
         "cor_xy": {
             "Abstract": "Compute Spatial Correlation",
             "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
             "Name": "Spatial Correlation",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "std_xy": {
+            "Abstract": "Compute Spatial Standard Deviation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatial Standard Deviation",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "std_xyt": {
+            "Abstract": "Compute Space-Time Standard Deviation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatial-temporal Standard Deviation",
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
         },
         "seasonal_mean": {
@@ -209,6 +268,6 @@
             "Name": "Custom Minimum"
         }
     },
-    "metrics_git_sha1": "49badf32f9690f27202fac701137c24ae1ca4fce",
+    "metrics_git_sha1": "a13948240b2ddfa2dafbac7cf53118ff9abf9314",
     "uvcdat_version": "v2.5.0-383-g9593283"
 }
