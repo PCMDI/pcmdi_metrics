@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-##########################################################################
+#
 #  RELIES UPON CDAT MODULES
 #  PRODUCE SIMPLE PORTRAIT PLOT BASED ON RESULTS FROM PCMDI'S METRICS PACKAGE
 #  WRITTEN BY P. GLECKLER, PCMDI/LLNL
@@ -8,7 +8,7 @@
 #  Cleaned up by C. Doutriaux
 # Adapted to unitest format by C. Doutriaux
 # See git for change logs
-##########################################################################
+#
 import unittest
 import checkimage
 
@@ -107,15 +107,8 @@ class TestGraphics(unittest.TestCase):
         mods = set()
         json_files = glob.glob(
             os.path.join(
-                pcmdi_metrics.__path__[0],
-                "..",
-                "..",
-                "..",
-                "..",
-                "share",
-                "CMIP_metrics_results",
-                "CMIP5",
-                "amip",
+                os.path.dirname(__file__),
+                "json",
                 "*.json"))
 
         for fnm in json_files:
