@@ -83,14 +83,7 @@ if var == 'pr':
 else:
     unit_adj = 1.
 
-mods = dd.keys()
-
-for mod in mods:
-   if mod in ['METRICS','GridInfo','RegionalMasking','References','DISCLAIMER', 'metrics_git_sha1','uvcdat_version']:
-    try:
-     mods.remove(mod)
-    except:
-     pass
+mods = dd['RESULTS'].keys()
 
 seasons = [season]
 if season == 'all':
@@ -109,7 +102,7 @@ fig.suptitle(var.title()+', '+(exp+', '+dom).upper(), size='x-large') # Giving t
 for season in seasons:
     all_mods = []
     for mod in mods:
-        bias = float(dd[mod]["defaultReference"]['r1i1p1']['global']['bias_xy_'+season+'_'+dom])*unit_adj
+        bias = float(dd['RESULTS'][mod]["defaultReference"]['r1i1p1']['global']['bias_xy_'+season+'_'+dom])*unit_adj
         all_mods.append(bias)
     dia = BarChart(mods,all_mods,fig=fig, rect=rects[season])
     dia._ax.set_title(season.upper()) # Give title for individual subplot
