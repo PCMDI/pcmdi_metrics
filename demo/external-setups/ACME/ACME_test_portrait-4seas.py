@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-##########################################################################
+########################################################################## 
 #  RELIES UPON CDAT MODULES
 #  PRODUCE SIMPLE PORTRAIT PLOT BASED ON RESULTS FROM PCMDI'S METRICS PACKAGE
 #  WRITTEN BY P. GLECKLER, PCMDI/LLNL
