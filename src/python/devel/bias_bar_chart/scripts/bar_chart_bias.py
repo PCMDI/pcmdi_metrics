@@ -6,28 +6,9 @@ import json
 import sys, os
 import getopt
 import pcmdi_metrics
-from pcmdi_metrics.taylor_diagram_mpl import TaylorDiagram
-from pcmdi_metrics.taylor_diagram_mpl import BarChart
+from pcmdi_metrics.bias_bar_chart import BarChart
 
-test = True
-
-fjson = open(
-    os.path.join(
-        pcmdi_metrics.__path__[0],
-        "..",
-        "..",
-        "..",
-        "..",
-        "share",
-        "CMIP_metrics_results",
-        "CMIP5",
-        "amip",
-        "rlut_2.5x2.5_esmf_linear_metrics.json"))
-        #../../../../share/CMIP_metrics_results//CMIP5/amip
-obs_dic = json.loads(fjson.read())
-fjson.close()
-
-print 'fjson is ', fjson
+test = False
 
 args=sys.argv[1:]
 letters='j:v:s:e:d:o:'
@@ -55,28 +36,9 @@ for o,p in opts:
 print json_path,' ',season,' ', pathout,' ', exp,' ', var , ' ', dom
 print 'after args'
 
-fjson = open(
-    os.path.join(
-        pcmdi_metrics.__path__[0],
-        "..",
-        "..",
-        "..",
-        "..",
-        "share",
-        "CMIP_metrics_results",
-        "CMIP5",
-        "amip",
-        var+"_2.5x2.5_esmf_linear_metrics.json"))
-
-dd = json.loads(fjson.read())
-fjson.close()
-
-if test:
-    ### TEMPORARY UNTIL JSON FILES ARE UPDATED TO INCLUDED STD
-    #pi = '/work/gleckler1/processed_data/metrics_package/metrics_results/cmip5clims_metrics_package-amip/v1.1/pr_2.5x2.5_esmf_linear_metrics.json'
-    pi = '/Users/lee1043/Documents/Research/PMP/pcmdi_metrics/data/CMIP_metrics_results/CMIP5/amip/pr_2.5x2.5_esmf_linear_metrics.json'
-    dd = json.load(open(pi,'rb'))
-    var = 'pr'
+fj = open(json_path)
+dd = json.loads(fj.read())
+fj.close()
 
 if var == 'pr':
     unit_adj = 28.
