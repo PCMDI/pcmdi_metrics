@@ -14,20 +14,36 @@ num_cpus=4
 #### BUILD OPTIONS #####
 ## Do we want to build with graphics capabilities
 build_graphics=false
+## Do we want MESA driver (non-interactive graphics mode)
+build_graphics_against_mesa=true
+## valid values: true false
 
 ## Do we want to build with CMOR
 build_cmor=false
+## valid values: true false
 
 ## Do we build UV-CDAT with parallel capabilities (MPI)
 build_parallel=false
-
-## Do we keep or remove uvcdat_build diretory before building UV-CDAT
-## Useful for case where multiple make necessary
 ## valid values: true false
+
+## Do we keep or remove uvcdat_build directory before building UV-CDAT
+## Useful for case where multiple builds are necessary
 keep_uvcdat_build_dir=false
+## valid values: true false
 
 ### DO NOT EDIT AFTER THIS POINT !!!!! ###
 
+# If Mac no mesa so turning back OFF if on
+case `uname` in
+  Darwin*)
+    if [ ${build_graphics_against_mesa} = true ]; then
+      echo "No MESA on Mac sorry, turning MESA back off"
+      build_graphics_against_mesa=false
+    fi
+    ;;
+  *)
+    ;;
+esac
 # Prevent installer from hanging due to cdms2 logging
 export UVCDAT_ANONYMOUS_LOG=False
 
@@ -35,8 +51,10 @@ setup_cmake() {
 
     ## Source funcs needed by installer
     . ${metrics_build_directory}/installer_funcs.bash
-    echo -n "Checking for CMake >=  ${cmake_min_version} "
-    check_version_with cmake "cmake --version | head -n1 | awk '{print \$3}' | awk -F . '{print \$1\".\"\$2\".\"\$3}'" ${cmake_min_version} ${cmake_max_version}
+    echo "Checking for CMake >=  ${cmake_min_version} "
+    your_cmake_version=`cmake --version | head -n1 | awk '{print $3}' | awk -F . '{print $1"."$2"."$3}'`
+    echo "YOUR CMAKE VERSION: ${your_cmake_version}"
+    cmake -DMINVERSION=${cmake_min_version} -DMAXVERSION=${cmake_max_version} -DMYVERSION=${your_cmake_version} -P ${metrics_build_directory}/cmake_check_version.cmake
     [ $? == 0 ] && (( ! force_install )) && echo " [OK]" && return 0
 
     echo
@@ -139,6 +157,7 @@ setup_cdat() {
        echo "you have a valid cdat in your path"
        cdat_home=`python -c "import sys; print sys.prefix"`
        echo "It is located at:" ${cdat_home}
+       mkdir -p ${install_prefix}/bin
        cat > ${install_prefix}/bin/setup_runtime.sh  <<  EOF  
        . ${cdat_home}/bin/setup_runtime.sh
        export PYTHONPATH=${install_prefix}/lib/python2.7/site-packages:\${PYTHONPATH}
@@ -146,7 +165,6 @@ setup_cdat() {
 EOF
        return 0
     fi
-
 
     ## Source funcs needed by installer
     . ${metrics_build_directory}/installer_funcs.bash
@@ -191,10 +209,9 @@ EOF
     fi
     cd uvcdat >& /dev/null
     git checkout ${cdat_version}
-    # The branch bellow has been merged
+    # The branch below has been merged
     # we do not need to merge ourselves any longer
-    # leaving commented out for others 
-    # so they know how to do it
+    # leaving commented out for others, so they know how to do it
     # git merge --no-ff --no-commit origin/salinity
     [ $? != 0 ] && echo " WARNING: Problem with checking out cdat revision [${cdat_version}] from repository :-("
     #NOTE:
@@ -228,7 +245,13 @@ EOF
           uvcdat_mode="-DCDAT_BUILD_MODE=LEAN -DCDAT_BUILD_ESMF_ESMP=ON"
         else
           echo "Turning on graphics this will take sensibly longer to build"
-          uvcdat_mode="-DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF -DCDAT_BUILD_ESMF_ESMP=ON"
+          if [ ${build_graphics_against_mesa} = false ]; then
+            echo "Not building against MESA drivers"
+            uvcdat_mode="-DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_GUI=OFF -DCDAT_BUILD_ESMF_ESMP=ON"
+          else
+            echo "Building against MESA drivers (offscreen mode), Linux systems only"
+            uvcdat_mode="-DCDAT_BUILD_MODE=DEFAULT -DCDAT_BUILD_OFFSCREEN=ON -DCDAT_BUILD_ESMF_ESMP=ON"
+          fi
         fi
 
         if [ ${build_cmor} = false ]; then
@@ -351,13 +374,17 @@ _readlinkf() {
 }
 
 main() {
+    ## Where are we?
+    installer_dir=`dirname $0`
+    git_branch=`cd ${installer_dir};git rev-parse --abbrev-ref HEAD`
+    echo "Installer branch: "${git_branch}
     ## Generic Build Parameters
-    cmake_repo=git://cmake.org/cmake.git
-    cmake_repo_http=http://cmake.org/cmake.git
-    cmake_repo_https=https://cmake.org/cmake.git
+    cmake_repo=git://github.com/kitware/cmake.git
+    cmake_repo_http=http://github.com/kitware/cmake.git
+    cmake_repo_https=https://github.com/kitware/cmake.git
     cmake_min_version=2.8.11
-    cmake_max_version=2.9
-    cmake_version=2.8.12
+    cmake_max_version=3.3.2
+    cmake_version=3.2.3
     force_install=0
     DEBUG=1
     cdat_repo=git://github.com/UV-CDAT/uvcdat.git
@@ -367,7 +394,12 @@ main() {
     metrics_repo=git://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_http=http://github.com/PCMDI/pcmdi_metrics.git
     metrics_repo_https=https://github.com/PCMDI/pcmdi_metrics.git
-    metrics_checkout="master"
+    if [ "_"${git_branch} == "_" ]; then
+      metrics_checkout="master"
+    else
+      metrics_checkout=${git_branch}
+    fi
+    echo "Installing metrics from branch: "${metrics_checkout}
     install_prefix=$(_full_path ${install_prefix})
     if [ $? != 0 ]; then
         echo "Could not create directory ${install_prefix}"
@@ -426,7 +458,6 @@ main() {
     setup_cdat_xtra cdutil
     rm -rf ${install_prefix}/sample_data
 
-    echo
     echo
     echo "*******************************"
     echo "UVCDAT  - ${cdat_version} - Install Success"
