@@ -1,3 +1,15 @@
+#####
+# CONVERT NCAR CLIMATOLOGIES TO BE CONSISTENT WITH CMIP STRUCTURE FOR PMP USE 
+# PLANNED IMPROVEMENTS:
+#    CURRENTLY ASSUMES cdscan XML FILES HAVE BEEN CREATED IN ADVANCE
+#    CURRENTLY ASSUMES LOCATION OF XML FILES AND PRODUCES CLIMS FOR ALL SIMULATIONS WITH XMLS
+#    CURRENTLY HAS OUTPUT "data" DIRECTORY 
+#    argparse WILL BE USED TO SELECT ALL OF THE ABOVE VIA COMMAND LINE EXECUTION 
+
+#    CMOR WILL BE USED TO WRITE CLIMATOLGIES - Time/bounds CURRENTLY HARDWIRED
+##### LAST UPDATE 6/29/16 PJG
+
+
 import cdms2 as cdms
 import os, string
 import MV2 as MV
@@ -10,24 +22,21 @@ cdms.setNetcdfDeflateLevelFlag(9) ; # 1-9, min to max - Comes at heavy IO (read/
 cdms.setNetcdfShuffleFlag(0)
 cdms.setCompressionWarnings(0) ; # Turn off nag messages
 # Set bounds automagically
-#cdm.setAutoBounds(1) ; # Use with caution
+#cdms.setAutoBounds(1) ; # Use with caution
 
 
-ncar_cmip_direct_name_map = {'psl':'PSL','tas':'TREFHT','huss':'QREFHT','ua':'U','va':'V','ta':'T','pr':'PRECC','rlut':'FSNTOA','rsut':'SOLIN','rlutcs':'FLUTC','rsdtcs':'SOLIN','rsds':'FSDS','rlds':'FLDS','prw':'TMQ','zg':'Z3','tauu':'TAUX','tauv':'TAUY'}  # 2105
-
+### DICTIONARY MAPPING NCAR AND CMIP VARIABLE ID'S
 ncar_cmip_direct_name_map = {'psl':'PSL','tas':'TREFHT','huss':'QREFHT','ua':'U','va':'V','ta':'T','pr':'PRECC','rlut':'FSNTOA','rsut':'SOLIN','rlutcs':'FLUTC','rsutcs':'FSNTOAC','rsds':'FSDS','rlds':'FLDS','prw':'TMQ','zg':'Z3','tauu':'TAUX','tauv':'TAUY','swcre':'swcf'}
 
 
+#  Code currently 
+
 lst1 = os.popen('ls xmls/*.xml').readlines()
-
-#lst1 = os.popen('ls xmls/FAMIPC5_ne120_79to05_03_omp2.xml').readlines()
-
 
 lst = []
 for l in lst1:
 # if string.find(l,'FAMIPC5_ne120_79to05_03_omp2') == -1:
      lst.append(l)
-
 
 #lst = os.popen('ls xmls/f.e11.FAMIPC5.f19_f19.topo_2d_control.001.xml')
 
@@ -162,24 +171,4 @@ for l in lst:
     f.close()
 
 
-
-#           varRead = 'PRECC & PRECL'
-#          data1   = fIn('PRECC')
-#           data2   = fIn('PRECL')
-#           data    = data1+data2 ; #PRECC + PRECL
-#           data.id = varWrite
-#           data.long_name = 'precipitation_flux'
-#           data.history = 'Converted to PR from PRECC+PRECL; Updated units from m/s -> kg m-2 s-1 - Need to check conversion factor'
-#           data.units  = 'kg m-2 s-1'
-#       elif varWrite == 'rlut':
-#           # Deal with RLUT variable, all other variables are vertically interpolated
-#           varRead = 'FSNTOA & FSNT & FLNT'
-#           data1   = fIn('FSNTOA')
-#           data2   = fIn('FSNT')
-#j            data3   = fIn('FLNT')
-#           data    = data1-data2+data3 ; #FSNTOA - FSNT + FLNT
-#           data.id = varWrite
-#           data.long_name = 'toa_outgoing_longwave_flux'
-#           data.history = 'Converted to RLUT from FSNTOA - FSNT + FLNT'
-#           data.units  = data1.units
 
