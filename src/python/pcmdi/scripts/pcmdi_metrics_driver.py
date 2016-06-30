@@ -34,7 +34,8 @@ unidata.addScaledUnit("psu", .001, "dimless")
 unidata.addScaledUnit("PSS-78", .001, "dimless")
 unidata.addScaledUnit("Practical Salinity Scale 78", .001, "dimless")
 
-regions_values = {"land": 100., "ocean": 0., "lnd": 100., "ocn": 0.}
+regions_specs = {"land": {"value":100.}, "ocean": {"value":0.}, "lnd": {"value":100.}, "ocn": {"value":0.}}
+
 
 # Load the obs dictionary
 fjson = open(
@@ -186,10 +187,20 @@ sftlf["targetGrid"] = sft
 regions = getattr(parameters, "regions", {})
 vars = []
 
-# Update/overwrite defsult region_values keys with user ones
-
+# Update/overwrite default region_values keys with user ones
+regions_values = {}
 regions_values.update(getattr(parameters, "regions_values", {}))
 
+# need to convert from old format regions_values to newer region_specs
+for reg in regions_values:
+    dic = {"value":regions_values[reg]}
+    if regions_specs.has_key(reg):
+        regions_specs[reg].update(dic)
+    else:
+        regions_specs[reg]=dic
+
+# Update/overwrite default region_specs keys with user ones
+regions_specs.update(getattr(parameters, "regions_specs", {}))
 
 regions_dict = {}
 for var in parameters.vars:
@@ -206,6 +217,7 @@ disclaimer = open(
         "share",
         "pcmdi",
         "disclaimer.txt")).read()
+
 for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
     try:
         metrics_dictionary = collections.OrderedDict()
@@ -268,15 +280,17 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         for region in regions_dict[var]:
             if isinstance(region, str):
                 region_name = region
-                region = regions_values.get(
+                region = regions_specs.get(
                     region_name,
-                    regions_values.get(
+                    regions_specs.get(
                         region_name.lower()))
             elif region is None:
                 region_name = "global"
             else:
-                region_name = "%i" % region
+                raise Exception,"Unkwon region %s" % region
+
             metrics_dictionary["RegionalMasking"][region_name] = region
+
             for ref in refs:
                 if ref[:9] in ["default", "alternate"]:
                     refabbv = ref + "Reference"
@@ -309,6 +323,11 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                     OBS.case_id = case_id
                     applyCustomKeys(OBS, parameters.custom_keys, var)
                     if region is not None:
+                        # Select a sub region?
+                        area = region.get("area",None)
+                        if area is not None:
+                            area = cdutil.region.domain(latitude=(area["lat1"],area["lat2"],'ccb'),
+                                    longitude=(area["lon1"],area["lon2"],'ccb'))
                         # Ok we need to apply a mask
                         # First try to read from obs json file
                         try:
@@ -357,6 +376,8 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                         continue
                     grd["GridResolution"] = do.shape[1:]
                     metrics_dictionary["GridInfo"] = grd
+                    if area is not None:
+                        do = do(area)
 
                     dup('OBS SHAPE IS ', do.shape)
 
@@ -455,6 +476,8 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                         var,
                                         varInFile=varInFile,
                                         level=level)
+                                if area is not None:
+                                    dm = dm(area)
                             except Exception as err:
                                 success = False
                                 dup('Failed to get variable %s ' % var +
