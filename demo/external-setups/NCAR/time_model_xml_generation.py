@@ -28,9 +28,10 @@ parser.add_argument("-o","--outdir",help="output directory",default=None)
 
 args =parser.parse_args(sys.argv[1:])
 
-pathin = args.basedir # Get string from first index of list - only one directory expected 
+pathin = args.basedir + '/' # Get string from first index of list - only one directory expected 
 
-xmldir = args.outdir
+xmldir = args.outdir + '/'
+
 try:
        os.mkdir(xmldir)
 except:
