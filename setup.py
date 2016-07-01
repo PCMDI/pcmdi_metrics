@@ -51,13 +51,13 @@ cmip5_historical_json = glob.glob(
     "data/CMIP_metrics_results/CMIP5/historical/*.json")
 cmip5_piControl_json = glob.glob(
     "data/CMIP_metrics_results/CMIP5/piControl/*.json")
-demo_ACME_files = glob.glob("demo/ACME/*.py")
-demo_CSIRO_files = glob.glob("demo/CSIRO/*.py")
-demo_CSIRO_files += glob.glob("demo/CSIRO/*.png")
-demo_CSIRO_files += glob.glob("demo/CSIRO/*.sh")
-demo_GFDL_files = glob.glob("demo/GFDL/*.py")
-demo_GFDL_files += glob.glob("demo/GFDL/*.png")
-demo_NCAR_files = glob.glob("demo/NCAR/*.py")
+demo_ACME_files = glob.glob("demo/external-setups/ACME/*.py")
+demo_CSIRO_files = glob.glob("demo/external-setups/CSIRO/*.py")
+demo_CSIRO_files += glob.glob("demo/external-setups/CSIRO/*.png")
+demo_CSIRO_files += glob.glob("demo/external-setups/CSIRO/*.sh")
+demo_GFDL_files = glob.glob("demo/external-setups/GFDL/*.py")
+demo_GFDL_files += glob.glob("demo/external-setups/GFDL/*.png")
+demo_NCAR_files = glob.glob("demo/external-setups/NCAR/*.py")
 param_files = glob.glob("doc/parameter_files/*.py")
 
 
@@ -69,10 +69,10 @@ packages = {'pcmdi_metrics': 'src/python',
 scripts = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
            'src/python/pcmdi/scripts/pcmdi_compute_climatologies.py']
 
-data_files = [('demo/ACME', demo_ACME_files),
-              ('demo/CSIRO', demo_CSIRO_files),
-              ('demo/GFDL', demo_GFDL_files),
-              ('demo/NCAR', demo_NCAR_files),
+data_files = [('demo/external-setups/ACME', demo_ACME_files),
+              ('demo/external-setups/CSIRO', demo_CSIRO_files),
+              ('demo/external-setups/GFDL', demo_GFDL_files),
+              ('demo/external-setups/NCAR', demo_NCAR_files),
               ('doc/parameter_files', param_files),
               ('doc',
                ('doc/parameter_files/pcmdi_input_parameters_sample.py',
