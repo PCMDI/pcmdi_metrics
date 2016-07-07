@@ -51,11 +51,11 @@ fjson = open(
 obs_dic = json.loads(fjson.read())
 fjson.close()
 
-
 class DUP(object):
 
     def __init__(self, outfile):
         self.outfile = outfile
+        self.tb = False
 
     def __call__(self, *args):
         msg = ""
@@ -63,6 +63,16 @@ class DUP(object):
             msg += " " + str(a)
         print msg
         print>>self.outfile, msg
+        if self.tb:
+            import traceback
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print "<<<<<<<<<<<< BEG TRACEBACK >>>>>>>>>>>>>>>>>>"
+            traceback.print_tb(exc_traceback)
+            print "<<<<<<<<<<<< END TRACEBACK >>>>>>>>>>>>>>>>>>"
+            print>>self.outfile, "<<<<<<<<<<<< BEG TRACEBACK >>>>>>>>>>>>>>>>>>"
+            traceback.print_tb(exc_traceback,file=self.outfile)
+            print>>self.outfile, "<<<<<<<<<<<< END TRACEBACK >>>>>>>>>>>>>>>>>>"
+
 
 
 def applyCustomKeys(O, custom_dict, var):
@@ -80,6 +90,12 @@ P.add_argument(
     default="input_parameters.py",
     help="input parameter file containing local settings",
     required=True)
+
+P.add_argument("-t",
+        "--traceback",
+        default=False,
+        action="store_true",
+        help="Print traceback on errors (helps developers to debug)")
 
 args = P.parse_args(sys.argv[1:])
 
@@ -169,7 +185,9 @@ for model_version in parameters.model_versions:
         sftlf[model_version]["md5"] = sft.hash()
     except:
         # Hum no sftlf...
+        dup.tb = args.traceback
         dup("No mask for ", sft())
+        dup.tb = False
         sftlf[model_version] = {"raw": None}
         sftlf[model_version]["filename"] = None
         sftlf[model_version]["md5"] = None
@@ -322,6 +340,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                     OBS.table = table_realm
                     OBS.case_id = case_id
                     applyCustomKeys(OBS, parameters.custom_keys, var)
+                    area = None  # Default no specific area selected
                     if region is not None:
                         # Select a sub region?
                         area = region.get("area",None)
@@ -338,8 +357,10 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                 obs_var_ref["RefName"])
                             oMasknm = oMask()
                         except Exception as err:
+                            dup.tb = args.traceback
                             dup("error retrieving mask for obs: %s, \n%s" %
                                 (obs_dic[var][ref], err))
+                            dup.tb = False
                             oMasknm = "%s_%s" % (var, ref)
                         tmpoMask = saved_obs_masks.get(oMasknm, None)
                         if tmpoMask is not None:
@@ -350,7 +371,9 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                 oMask = oMask.get("sftlf")
                             # ok that failed falling back on autogenerate
                             except:
+                                dup.tb = args.traceback
                                 dup("Could not find obs mask, generating")
+                                dup.tb = False
                                 foGrd = cdms2.open(OBS())
                                 oGrd = foGrd(var, time=slice(0, 1))
                                 foGrd.close()
@@ -372,7 +395,9 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                         else:
                             do = OBS.get(var)
                     except Exception as err:
+                        dup.tb = args.traceback
                         dup('failed with 4D OBS', var, ref, err)
+                        dup.tb = False
                         continue
                     grd["GridResolution"] = do.shape[1:]
                     metrics_dictionary["GridInfo"] = grd
@@ -480,9 +505,11 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                     dm = dm(area)
                             except Exception as err:
                                 success = False
+                                dup.tb = args.traceback
                                 dup('Failed to get variable %s ' % var +
                                     'for version: %s, error:\n%s' % (
                                         model_version, err))
+                                dup.tb = False
                                 break
 
                             dup(var,
@@ -688,9 +715,11 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
 
                             break
                 except Exception as err:
+                    dup.tb = args.traceback
                     dup("Error while processing observation %s" % ref +
                         " for variable %s:\n\t%s" % (
                             var, str(err)))
+                    dup.tb = False
             # Done with obs and models loops , let's dum before next var
         # Ok at this point we need to add the metrics def in the dictionary so
         # that it is stored
@@ -706,4 +735,6 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         # CREATE OUTPUT AS ASCII FILE
         OUT.write(metrics_dictionary, mode="w", type="txt")
     except Exception as err:
+        dup.tb = args.traceback
         dup("Error while processing variable %s:\n\t%s" % (var, err))
+        dup.tb = False
