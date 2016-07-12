@@ -8,13 +8,12 @@ import time
 import json
 from eofs.cdms import Eof
 
-#libfiles = ['durolib.py',
-#            'get_pcmdi_data.py']
-libfiles = ['get_pcmdi_data.py']
+libfiles = ['durolib.py',
+            'get_pcmdi_data.py']
+#libfiles = ['get_pcmdi_data.py']
 
 for lib in libfiles:
-  #execfile(os.path.join('../lib/',lib))
-  execfile(os.path.join('./',lib))
+  execfile(os.path.join('../lib/',lib))
 
 mip = 'cmip5'
 exp = 'piControl'
