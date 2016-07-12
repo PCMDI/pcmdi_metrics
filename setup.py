@@ -54,6 +54,7 @@ demo_GFDL_files = glob.glob("demo/external-setups/GFDL/*.py")
 demo_GFDL_files += glob.glob("demo/external-setups/GFDL/*.png")
 demo_NCAR_files = glob.glob("demo/external-setups/NCAR/*.py")
 param_files_demo = glob.glob("demo/parameter_files/*.py")
+demo_results = glob.glob("demo/results/*.json")
 param_files_doc = glob.glob("doc/parameter_files/input_parameter_file_all_options.py")
 
 packages = {'pcmdi_metrics': 'src/python',
