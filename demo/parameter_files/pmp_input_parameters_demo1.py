@@ -15,14 +15,14 @@ model_versions = ['ACCESS1-0']   # THIS IS A MANDETORY ENTRY FOR DOCUMENTING RES
 ## DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
 #mod_data_path = '/work/metricspackage/mod_clims/cmip5-amip'
-mod_data_path = './demo_obs_model_data/mods/'
-filename_template = "pr_Amon_ACCESS1-0_amip_r1i1p1_197901-198912-clim-ac.nc"
+mod_data_path = './cmip5clims_metrics_package-amip/'
+filename_template = "pr_ACCESS1-0_Amon_amip_r1i1p1_198001-200512-clim.nc"
 ## ROOT PATH FOR OBSERVATIONS
-obs_data_path = './demo_obs_model_data/obs/'
+obs_data_path = './obs/'
 
 ## DIRECTORY WHERE TO SAVE RESULTS
 case_id = 'simple-test1'
-metrics_output_path = './pmp-test/'  # USER CHOOSES, RESULTS STORED IN  metrics_output_path + case_id   
+metrics_output_path = './pmp-test/%(case_id)/'  # USER CHOOSES, RESULTS STORED IN  metrics_output_path + case_id   
 ###############################################################################
 
 # OBSERVATIONS TO USE: CHOICES INCLUDE 'default','alternate1','alternate2',... AND ARE VARIABLE DEPENDENT 
@@ -40,7 +40,7 @@ regrid_method     = 'linear'  # OPTIONS: 'linear','conservative', only if tool i
 period = '1979-1989'  # PERIOD OF CLIMATOLOGY
 realization = 'r1i1p1' # REALIZATION
 
-
+save_mod_clims = False 
 
 
 
