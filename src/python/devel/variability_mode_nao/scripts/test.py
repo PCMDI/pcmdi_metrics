@@ -94,7 +94,7 @@ for model in models:
       eof1.setAxis(0,time)
 
     fout = cdms.open('nao_slp_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)+'_'+region+'.nc','w')
-    fout.write(eof1)
+    fout.write(eof1,id='eof1')
     #fout.write(pc1)
     #fout.write(var_frac1)
     #fout.write(model_timeseries_season)
