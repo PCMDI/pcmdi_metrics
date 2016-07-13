@@ -7,20 +7,38 @@ import glob
 import difflib
 import numpy
 import pcmdi_metrics
+import shutil
 
 
 class TestFromParam(unittest.TestCase):
 
-    def __init__(self, parameter_file=None, good_files=[]):
+    def __init__(self, parameter_file=None, good_files=[], traceback=False, update_files=False):
         super(TestFromParam, self).__init__("test_from_parameter_file")
         self.param = parameter_file
         self.good_files = good_files
+        self.tb = traceback
+        self.update = update_files
 
     def setUp(self):
+        if self.tb:
+            tb = "-t"
+        else:
+            tb=""
+        print
+        print
+        print
+        print
+        print "---------------------------------------------------"
+        print "RUNNING:",self.param
+        print "---------------------------------------------------"
+        print
+        print
+        print
+        print
         subprocess.call(
             shlex.split(
-                "pcmdi_metrics_driver.py -p %s" %
-                self.param))
+                "pcmdi_metrics_driver.py -p %s %s" %
+                (self.param, tb)))
         pass
 
     def test_from_parameter_file(self):
@@ -59,6 +77,8 @@ class TestFromParam(unittest.TestCase):
             for gnm in self.good_files:
                 if os.path.basename(gnm) == nm:
                     print "comparing:", fnm, gnm
+                    if self.update:
+                        shutil.copy(fnm,gnm)
                     u = difflib.unified_diff(
                         open(gnm).readlines(),
                         open(fnm).readlines())
@@ -66,6 +86,11 @@ class TestFromParam(unittest.TestCase):
                     for l in u:
                         lines.append(l)
                     for i, l in enumerate(lines):
+                        if l[:2] == "+ ":
+                            if l.find("{") > -1:
+                                continue
+                            elif l.find("}") > -1:
+                                continue
                         if l[:2] == "- ":
                             if l.find("metrics_git_sha1") > -1:
                                 continue
@@ -75,13 +100,17 @@ class TestFromParam(unittest.TestCase):
                                 continue
                             else:
                                 for j in range(100):
-                                    sp = lines[i + j].split()
+                                    ll = lines[i+j]
+                                    sp = ll.split()
+                                    #print "lines[%i+%i=%i]: %s" % (i,j,i+j,sp)
                                     if sp[0] == "+" and sp[1] == l.split()[1]:
-                                        bad = float(l.split()[-1][1:-2])
-                                        good = float(sp[-1][1:-2])
+                                        if ll.find("{")>-1 or ll.find("}")>-1:
+                                            break
+                                        good = float(l.split()[-1][1:-2])
+                                        bad = float(sp[-1][1:-2])
                                         if not numpy.allclose(
                                                 good, bad, atol=1.E-2):
-                                            print "Failing line:", l.strip(), "instead of", good, "(we read:", bad, ")"
+                                            print "Failing line:", l.strip(), "(we read:", bad, ")"
                                             ok = False
                                         break
             self.assertTrue(ok)

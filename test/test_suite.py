@@ -31,6 +31,18 @@ parser.add_argument(
     default=False,
     action="store_true",
     help="Verbose output")
+parser.add_argument(
+    "-T",
+    "--traceback",
+    default=False,
+    action="store_true",
+    help="output traceback on exceptions")
+parser.add_argument(
+    "-U",
+    "--update",
+    default=False,
+    action="store_true",
+    help="replace correct test files")
 
 args = parser.parse_args(sys.argv[1:])
 
@@ -41,6 +53,7 @@ params = ["basic_test_parameters_file.py",
           "keep_going_on_error_varname_test.py",
           "obs_by_name_test.py",
           "salinity_test.py",
+          "region_specs_test.py"
           ]
 
 others = ["flake8", ]
@@ -79,7 +92,7 @@ for t in tests:
                 os.path.join(
                     pth,
                     "pcmdi",
-                    t)))
+                    t), traceback=args.traceback, update_files=args.update))
     if t in graphics:
         try:
             # If we have vcs we can test graphics

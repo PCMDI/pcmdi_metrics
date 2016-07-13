@@ -8,7 +8,7 @@ import os
 # RUN IDENTIFICATION
 # DEFINES A SUBDIRECTORY TO METRICS OUTPUT RESULTS SO MULTIPLE CASES CAN
 # BE COMPARED
-case_id = 'installationTest'
+case_id = 'customRegions'
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF
 # CLIMATOLOGY FILENAME
@@ -38,13 +38,14 @@ model_tweaks = {
 
 # REGIONS ON WHICH WE WANT TO RUN METRICS (var specific)
 # Here we run glb for both but also terre and ocean for tas (only)
-regions = {"tas": [None, "ocean","Nino34","NAM"], "tos": [None, ]}
+regions = {"tas": [None, "ocean","Nino34","NAM"],"tos":None}
 # USER CAN CUSTOMIZE REGIONS
+import cdutil
 regions_specs = {"Nino34":
         {"value":0.,
-            "domain": {'lat1':-5., 'lat2':5.,  'lon1':190., 'lon2':240.}},
+            "domain":cdutil.region.domain(latitude=(-5.,5.,"ccb"), longitude=(190.,240.,"ccb"))},
         "NAM": { "value":0.,
-            "domain": {'lat1':0.,  'lat2':45.,'lon1':210.,'lon2':310.}
+            "domain": {'latitude':(0.,45.),  'longitude':(210.,310.)},
             }
         }
 
