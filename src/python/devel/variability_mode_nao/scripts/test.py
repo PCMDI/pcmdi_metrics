@@ -67,6 +67,7 @@ for model in models:
     lon1 = -90
     lon2 = 40
   model_timeseries = f(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))/100. # Pa to hPa
+  cdutil.setTimeBoundsMonthly(model_timeseries)
 
   for season in seasons:
     model_timeseries_season = getattr(cdutil,season)(model_timeseries)
@@ -85,12 +86,24 @@ for model in models:
       eof1 = eof1*-1.
       pc1 = pc1*-1.
 
+    ax = model_timeseries_season.getAxis(0)
+    if ax.isTime():
+      time = cdms.createAxis(range(1))
+      time.id = ax.id
+      time.units = ax.units
+      eof1.setAxis(0,time)
+
     fout = cdms.open('nao_slp_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)+'_'+region+'.nc','w')
     fout.write(eof1)
     #fout.write(pc1)
     #fout.write(var_frac1)
     #fout.write(model_timeseries_season)
     fout.close()
+
+    # Below is just for testing....
+    #fout_test = cdms.open('test.nc','w')
+    #fout_test.write(model_timeseries_season)
+    #fout_test.close()
 
     #=================================================
     # PART 2 : GRAPHIC (plotting)
