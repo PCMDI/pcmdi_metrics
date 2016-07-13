@@ -3,21 +3,24 @@ import string
 import subprocess
 import cdms2 as cdms
 import cdutil
+import cdtime
 import genutil
 import time
 import json
 from eofs.cdms import Eof
+import vcs
 
-libfiles = ['durolib.py',
-            'get_pcmdi_data.py']
-#libfiles = ['get_pcmdi_data.py']
+#libfiles = ['durolib.py',
+#            'get_pcmdi_data.py']
+libfiles = ['get_pcmdi_data.py']
 
 for lib in libfiles:
   execfile(os.path.join('../lib/',lib))
 
 mip = 'cmip5'
-exp = 'piControl'
-mod = 'ACCESS1-0'
+#exp = 'piControl'
+exp = 'historical'
+model = 'ACCESS1-0'
 fq = 'mo'
 realm = 'atm'
 var = 'psl'
@@ -26,67 +29,119 @@ run = 'r1i1p1'
 test = True
 #test = False
 
+region = 'NH' # Northern Hemisphere
+region = 'NA' # Northern Atlantic
+
 if test:
-  mods = ['ACCESS1-0']  # Test just one model
+  #models = ['ACCESS1-0']  # Test just one model
+  models = ['ACCESS1-3']  # Test just one model
   seasons = ['DJF']
 else:
-  mods = get_all_mip_mods(mip,exp,fq,realm,var)
+  models = get_all_mip_models(mip,exp,fq,realm,var)
   seasons = ['DJF','MAM','JJA','SON']
 
-for mod in mods:
-  #mod_path = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,var,run)
-  mod_path = '/work/cmip5/piControl/atm/mo/psl/cmip5.ACCESS1-0.piControl.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
+for model in models:
+  #model_path = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,run)
+  #model_path = '/work/cmip5/piControl/atm/mo/psl/cmip5.ACCESS1-0.piControl.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
+  model_path = '/work/cmip5/historical/atm/mo/psl/cmip5.'+model+'.historical.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
 
-  print mod_path
+  #print model_path
 
-  f = cdms.open(mod_path)
+  f = cdms.open(model_path)
 
-  if test:
-    mod_timeseries = f(var,longitude=(-180,180),time = slice(0,60))   # RUN CODE FAST ON 5 YEARS OF DATA
-  else:
-    mod_timeseries = f(var,longitude=(-180,180))
+  syear = 1900
+  eyear = 2005
 
-  ntstep = len(mod_timeseries)
-  print ntstep
+  start_time = cdtime.comptime(syear,1,1)
+  end_time = cdtime.comptime(eyear,12,31) 
+
+  if region == 'NH':
+    lat1 = 0
+    lat1 = 20
+    lat2 = 90
+    lon1 = -180
+    lon2 = 180
+  elif region == 'NA':
+    lat1 = 20
+    lat2 = 80
+    lon1 = -90
+    lon2 = 40
+  model_timeseries = f(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))/100. # Pa to hPa
 
   for season in seasons:
-    mod_timeseries_season = getattr(cdutil,season)(mod_timeseries)
+    model_timeseries_season = getattr(cdutil,season)(model_timeseries)
 
     # EOF
-    #solver = Eof(mod_timeseries_season, weights='coslat')
-    #solver = Eof(mod_timeseries_season(latitude=(20,80),longitude=(-90,40)), weights='coslat')
-    solver = Eof(mod_timeseries_season(latitude=(0,90),longitude=(-180,180)), weights='coslat')
+    solver = Eof(model_timeseries_season, weights='coslat')
+    #solver = Eof(model_timeseries_season(latitude=(0,90),longitude=(-180,180)), weights='coslat')
+    #solver = Eof(model_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2)), weights='coslat')
 
-    adj_sign = 1.
-    sign_reverse = False
-    if sign_reverse == True:
-      adj_sign = -1.
+    eof1 = solver.eofsAsCovariance(neofs=1)
+    pc1 = solver.pcs(npcs=1, pcscaling=1)
+    frac1 = round(solver.varianceFraction()[0]*100.,1)
 
-    eof1 = solver.eofsAsCovariance(neofs=1)*adj_sign
-    #eof1 = solver.eofsAsCorrelation(neofs=1)*adj_sign
-    pc1 = solver.pcs(npcs=1, pcscaling=1)*adj_sign
-    var_frac1 = solver.varianceFraction()[0]
+    # Arbitrary control, attempt to make all plots have the same sign -- 
+    if float(eof1[0][-1][-1]) >= 0:
+      eof1 = eof1*-1.
+      pc1 = pc1*-1.
 
-    fout = cdms.open('nao_eof1_'+mod+'_'+season+'.nc','w')
+    fout = cdms.open('nao_slp_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)+'_'+region+'.nc','w')
     fout.write(eof1)
     #fout.write(pc1)
     #fout.write(var_frac1)
-    #fout.write(mod_timeseries_season)
+    #fout.write(model_timeseries_season)
     fout.close()
 
-    import vcs
-    y=vcs.init()
-    y.setcolormap("blue_to_orange")
-    y.plot(eof1)
+    #=================================================
+    # PART 2 : GRAPHIC (plotting)
+    #-------------------------------------------------
+    # Create canvas
+    canvas = vcs.init(geometry=(900,800))
+    canvas.open()
+    canvas.drawlogooff()
+    template = canvas.createtemplate()
 
-    x=vcs.init()
-    x.setcolormap("blue_to_orange")
-    gm = vcs.createisofill()
+    # Turn off no-needed information -- prevent overlap
+    template.blank(['title','mean','min','max','dataname','crdate','crtime',
+                'units','zvalue','tvalue','xunits','yunits','xname','yname'])
+
+    canvas.setcolormap('bl_to_darkred')
+    iso = canvas.createisofill()
+    iso.levels = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+    iso.ext_1 = 'y' # control colorbar edge (arrow extention on/off)
+    iso.ext_2 = 'y' # control colorbar edge (arrow extention on/off)
+    cols = vcs.getcolors(iso.levels)
+    cols[6] = 139 # Adjsut to light red
+    iso.fillareacolors = cols
     p = vcs.createprojection()
-    ptype = int('-3')
+    if region == 'NH':
+      ptype = int('-3')
+    else:
+      ptype = 'lambert azimuthal'
     p.type = ptype
-    gm.projection = p
+    iso.projection = p
     xtra = {}
-    xtra["latitude"] = (90.0,0.0)
-    eof1=eof1(**xtra)
-    x.plot(eof1,gm)
+    xtra['latitude'] = (90.0,0.0)
+    eof1 = eof1(**xtra) # For NH projection 
+    canvas.plot(eof1,iso,template)
+
+    #-------------------------------------------------
+    # Title
+    #- - - - - - - - - - - - - - - - - - - - - - - - - 
+    plot_title = vcs.createtext()
+    plot_title.x = .5
+    plot_title.y = .97
+    plot_title.height = 23
+    plot_title.halign = 'center'
+    plot_title.valign = 'top'
+    plot_title.color='black'
+    plot_title.string = str.upper(model)+'\n'+str(syear)+'-'+str(eyear)+', '+str(frac1)+'%'
+    canvas.plot(plot_title)
+
+    #-------------------------------------------------
+    # Drop output as image file (--- vector image?)
+    #- - - - - - - - - - - - - - - - - - - - - - - - - 
+    canvas.png('nao_slp_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)+'_'+region+'.png')
+
+    if not test:
+      canvas.close()
