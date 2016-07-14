@@ -75,6 +75,23 @@ regrid_method_ocn = 'linear'
 # metrics calculations)
 save_mod_clims = True
 
+
+# REGIONAL STUDIES
+# USER CAN CREATE CUSTOM REGIONS
+import cdutil
+regions_specs = {"Nino34":
+        {"value":0.,
+            "domain":cdutil.region.domain(latitude=(-5.,5.,"ccb"), longitude=(190.,240.,"ccb"))},
+        "NAM": { "value":0.,
+            "domain": {'latitude':(0.,45.),  'longitude':(210.,310.)},
+            }
+        }
+# REGIONS ON WHICH WE WANT TO RUN METRICS (var specific)
+# Here we run "all" default regions (glb, NHEX, SHEX, TROP) for both
+# but also ocean and user defined Nino34 and NAME for tas (only)
+regions = {"tas": [None, "ocean","Nino34","NAM"],"tos":None}
+
+
 # DATA LOCATION: MODELS, OBS AND METRICS OUTPUT - AND TEMPLATES FOR MODEL OUTPUT CLIMATOLOGY FILES
 # Following are custom keys specific to your local system
 # it is a python dictionary
