@@ -13,6 +13,7 @@ import vcs
 libfiles = ['durolib.py',
             'get_pcmdi_data.py',
             'eof_analysis.py',
+            'write_nc_output.py',
             'plot_map.py']
 
 for lib in libfiles:
@@ -71,6 +72,7 @@ obs_path = '/clim_obs/obs/atm/mo/psl/ERAINT/psl_ERAINT_198901-200911.nc'
 #cdutil.setTimeBoundsMonthly(obs_timeseries)
 
 obs_timeseries_season={}
+  
 
 #=================================================
 # Model
@@ -78,9 +80,8 @@ obs_timeseries_season={}
 for model in models:
   model_path = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,run)
   #model_path = '/work/cmip5/historical/atm/mo/psl/cmip5.'+model+'.historical.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
-  #print model_path
-  f = cdms.open(model_path)
 
+  f = cdms.open(model_path)
   model_timeseries = f(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))/100. # Pa to hPa
   cdutil.setTimeBoundsMonthly(model_timeseries)
 
@@ -101,11 +102,7 @@ for model in models:
     output_file_name = mode+'_slp_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)
 
     # Save in NetCDF output ---
-    fout = cdms.open(output_file_name+'.nc','w')
-    fout.write(eof1,id='eof1')
-    fout.write(pc1,id='pc1')
-    fout.write(frac1,id='frac1')
-    fout.close()
+    write_nc_output(output_file_name,eof1,pc1,frac1)
 
     # OBS statistics (regrid will be needed) output, save as dictionary
 
