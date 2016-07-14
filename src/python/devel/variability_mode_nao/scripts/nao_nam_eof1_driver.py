@@ -29,8 +29,8 @@ run = 'r1i1p1'
 test = True
 #test = False
 
-region = 'NH' # Northern Hemisphere
-region = 'NA' # Northern Atlantic
+mode = 'nam' # Northern Hemisphere
+mode = 'nao' # Northern Atlantic
 
 if test:
   #models = ['ACCESS1-0']  # Test just one model
@@ -40,13 +40,14 @@ else:
   models = get_all_mip_models(mip,exp,fq,realm,var)
   seasons = ['DJF','MAM','JJA','SON']
 
+#=================================================
+# First Tier loop
+#-------------------------------------------------
 for model in models:
   #model_path = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,run)
   #model_path = '/work/cmip5/piControl/atm/mo/psl/cmip5.ACCESS1-0.piControl.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
   model_path = '/work/cmip5/historical/atm/mo/psl/cmip5.'+model+'.historical.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
-
   #print model_path
-
   f = cdms.open(model_path)
 
   syear = 1900
@@ -55,58 +56,58 @@ for model in models:
   start_time = cdtime.comptime(syear,1,1)
   end_time = cdtime.comptime(eyear,12,31) 
 
-  if region == 'NH':
-    lat1 = 0
+  if mode == 'nam':
     lat1 = 20
     lat2 = 90
     lon1 = -180
     lon2 = 180
-  elif region == 'NA':
+  elif mode == 'nao':
     lat1 = 20
     lat2 = 80
     lon1 = -90
     lon2 = 40
+
   model_timeseries = f(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))/100. # Pa to hPa
   cdutil.setTimeBoundsMonthly(model_timeseries)
 
+  #=================================================
+  # Second Tier loop
+  #-------------------------------------------------
   for season in seasons:
     model_timeseries_season = getattr(cdutil,season)(model_timeseries)
 
-    # EOF
+    # EOF (take only first variance mode...) ---
     solver = Eof(model_timeseries_season, weights='coslat')
-    #solver = Eof(model_timeseries_season(latitude=(0,90),longitude=(-180,180)), weights='coslat')
-    #solver = Eof(model_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2)), weights='coslat')
+    eof = solver.eofsAsCovariance(neofs=1)
+    pc = solver.pcs(npcs=1, pcscaling=1) # pcscaling=1: scaled to unit variance (divided by the square-root of their eigenvalue)
+    frac = solver.varianceFraction()
 
-    eof1 = solver.eofsAsCovariance(neofs=1)
-    pc1 = solver.pcs(npcs=1, pcscaling=1)
-    frac1 = round(solver.varianceFraction()[0]*100.,1)
+    # Remove unnessasary dimensions (make sure only taking first variance mode) ---
+    eof1 = eof(squeeze=1) # same as... eof1 = eof[0]
+    pc1 = pc(squeeze=1)   #            pc1 = pc[:,0] 
+    frac1 = cdms.createVariable(frac[0])
 
-    # Arbitrary control, attempt to make all plots have the same sign -- 
-    if float(eof1[0][-1][-1]) >= 0:
+    # Arbitrary control, attempt to make all plots have the same sign ---
+    if float(eof1[-1][-1]) >= 0:
       eof1 = eof1*-1.
       pc1 = pc1*-1.
 
-    ax = model_timeseries_season.getAxis(0)
-    if ax.isTime():
-      time = cdms.createAxis(range(1))
-      time.id = ax.id
-      time.units = ax.units
-      eof1.setAxis(0,time)
+    # Prepare dumping data to NetCDF file ---
+    frac1.units = 'ratio'
+    pc1.comment='Scaled time series for principal component of first variance mode'
 
-    fout = cdms.open('nao_slp_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)+'_'+region+'.nc','w')
+    # Save in NetCDF output ---
+    fout = cdms.open(mode+'_slp_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)+'_'+mode+'.nc','w')
     fout.write(eof1,id='eof1')
-    #fout.write(pc1)
-    #fout.write(var_frac1)
-    #fout.write(model_timeseries_season)
+    fout.write(pc1,id='pc1')
+    fout.write(frac1,id='frac1')
     fout.close()
 
-    # Below is just for testing....
-    #fout_test = cdms.open('test.nc','w')
-    #fout_test.write(model_timeseries_season)
-    #fout_test.close()
+    # Prepare OBS statistics (regrid will be needed) output writing to json file....
+
 
     #=================================================
-    # PART 2 : GRAPHIC (plotting)
+    # GRAPHIC (plotting) PART
     #-------------------------------------------------
     # Create canvas
     canvas = vcs.init(geometry=(900,800))
@@ -127,7 +128,7 @@ for model in models:
     cols[6] = 139 # Adjsut to light red
     iso.fillareacolors = cols
     p = vcs.createprojection()
-    if region == 'NH':
+    if mode == 'NH':
       ptype = int('-3')
     else:
       ptype = 'lambert azimuthal'
@@ -148,13 +149,14 @@ for model in models:
     plot_title.halign = 'center'
     plot_title.valign = 'top'
     plot_title.color='black'
-    plot_title.string = str.upper(model)+'\n'+str(syear)+'-'+str(eyear)+', '+str(frac1)+'%'
+    frac1 = round(float(frac1*100.),1) # % with one floating number
+    plot_title.string = str.upper(mode)+': '+str.upper(model)+'\n'+str(syear)+'-'+str(eyear)+' '+str.upper(season)+', '+str(frac1)+'%'
     canvas.plot(plot_title)
 
     #-------------------------------------------------
     # Drop output as image file (--- vector image?)
     #- - - - - - - - - - - - - - - - - - - - - - - - - 
-    canvas.png('nao_slp_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)+'_'+region+'.png')
+    canvas.png(mode+'_slp_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)+'_'+mode+'.png')
 
     if not test:
       canvas.close()
