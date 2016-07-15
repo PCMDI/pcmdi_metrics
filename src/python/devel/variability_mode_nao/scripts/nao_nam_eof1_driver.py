@@ -35,10 +35,10 @@ test = False
 mode = 'nao' # Northern Atlantic
 
 nc_out = True
-#nc_out = False
+nc_out = False
 
 plot = True
-#plot = False
+plot = False
 
 if test:
   models = ['ACCESS1-0']  # Test just one model
@@ -109,10 +109,12 @@ for season in seasons:
 # Model
 #-------------------------------------------------
 var_mode_stat_dic={}
+var_mode_stat_dic['RESULTS']={}
 
 for model in models:
-  var_mode_stat_dic[model]={}
-  var_mode_stat_dic[model][mode]={}
+  var_mode_stat_dic['RESULTS'][model]={}
+  var_mode_stat_dic['RESULTS'][model]['defaultReference']={}
+  var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode]={}
 
   model_path = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,run)
   #model_path = '/work/cmip5/historical/atm/mo/psl/cmip5.'+model+'.historical.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
@@ -126,7 +128,7 @@ for model in models:
   # Season loop
   #- - - - - - - - - - - - - - - - - - - - - - - - -
   for season in seasons:
-    var_mode_stat_dic[model][mode][season]={}
+    var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]={}
 
     model_timeseries_season = getattr(cdutil,season)(model_timeseries)
 
@@ -153,9 +155,9 @@ for model in models:
     cor = genutil.statistics.correlation(eof1_regrid, eof1_obs['season'], weights='generate', axis='xy')
 
     # Add to dictionary for json output ---
-    var_mode_stat_dic[model][mode][season]['rms'] = float(rms)
-    var_mode_stat_dic[model][mode][season]['cor'] = float(cor)
-    var_mode_stat_dic[model][mode][season]['frac'] = float(frac1)
+    var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['rms'] = float(rms)
+    var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['cor'] = float(cor)
+    var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['frac'] = float(frac1)
 
     #-------------------------------------------------
     # GRAPHIC (plotting) PART
