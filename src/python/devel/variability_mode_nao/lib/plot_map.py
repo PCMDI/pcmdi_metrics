@@ -4,7 +4,11 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   import string
 
   # Create canvas
-  canvas = vcs.init(geometry=(900,800))
+  if test:
+    canvas = vcs.init(geometry=(900,800))
+  if not test:
+    canvas = vcs.init(geometry=(900,800),bg=1)
+
   canvas.open()
   canvas.drawlogooff()
   template = canvas.createtemplate()
