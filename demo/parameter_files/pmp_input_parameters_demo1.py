@@ -17,7 +17,7 @@ model_versions = ['ACCESS1-0']   # THIS IS A MANDETORY ENTRY FOR DOCUMENTING RES
 ###############################################################################
 ## DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
-## THE MODEL AND OBSERVATIONAL DATA USED FOR THIS TEST CAN BE DOWNLOADED FROM: :wq
+## THE MODEL AND OBSERVATIONAL DATA USED FOR THIS TEST CAN BE DOWNLOADED FROM:
 
 #mod_data_path = '/work/metricspackage/mod_clims/cmip5-amip'
 mod_data_path = './cmip5clims_metrics_package-amip/'
