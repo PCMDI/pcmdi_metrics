@@ -119,12 +119,48 @@
         "alternate1": "ERA40",
         "default": "ERAINT"
     },
+    "rlds": {
+        "CERES": {
+            "CMIP_CMOR_TABLE": "CERES",
+            "MD5sum": "e1f5aa61b4501d005731ac6656372b39",
+            "RefName": "CERES",
+            "RefTrackingDate": "Wed Jun  1 14:02:18 2016",
+            "filename": "rlds_CERES_000001-000012_ac.nc",
+            "period": "",
+            "shape": "(12, 180, 360)"
+        },
+        "default": "CERES"
+    },
+    "rltcre": {
+        "CERES": {
+            "CMIP_CMOR_TABLE": "CERES",
+            "MD5sum": "07cb1fbed2fdc51ffafc689b35ac05ce",
+            "RefName": "CERES",
+            "RefTrackingDate": "Wed Jun  1 16:30:44 2016",
+            "filename": "rltcre_CERES_000001-000012_ac.nc",
+            "period": "",
+            "shape": "(12, 180, 360)"
+        },
+        "default": "CERES"
+    },
+    "rlus": {
+        "CERES": {
+            "CMIP_CMOR_TABLE": "CERES",
+            "MD5sum": "741ac684af3ad1e190ca14edf36663d0",
+            "RefName": "CERES",
+            "RefTrackingDate": "Wed Jun  1 14:02:18 2016",
+            "filename": "rlus_CERES_000001-000012_ac.nc",
+            "period": "",
+            "shape": "(12, 180, 360)"
+        },
+        "default": "CERES"
+    },
     "rlut": {
         "CERES": {
             "CMIP_CMOR_TABLE": "CERES",
-            "MD5sum": "b3187fe83b60fc4b8f1368f44963918f",
+            "MD5sum": "146eec5e8a734fedbbdd0909921530f2",
             "RefName": "CERES",
-            "RefTrackingDate": "Tue Jul 12 17:50:39 2011",
+            "RefTrackingDate": "Wed Jun  1 16:30:44 2016",
             "filename": "rlut_CERES_000001-000012_ac.nc",
             "period": "",
             "shape": "(12, 180, 360)"
@@ -134,57 +170,116 @@
     "rlutcs": {
         "CERES": {
             "CMIP_CMOR_TABLE": "CERES",
-            "MD5sum": "52a33a0b4800a8ca670de966a3de5c00",
+            "MD5sum": "7e77061fb5d5399ecad4360779ceb63f",
             "RefName": "CERES",
-            "RefTrackingDate": "Tue Jul 12 17:12:18 2011",
+            "RefTrackingDate": "Wed Jun  1 16:30:44 2016",
             "filename": "rlutcs_CERES_000001-000012_ac.nc",
             "period": "",
             "shape": "(12, 180, 360)"
         },
         "default": "CERES"
     },
-    "rlwcrf": {
+    "rsds": {
         "CERES": {
             "CMIP_CMOR_TABLE": "CERES",
-            "MD5sum": "b41870d37a8e8c420c989b3313fd3c62",
+            "MD5sum": "f5e81fc625b1bce448020cbeb79b1fd1",
             "RefName": "CERES",
-            "RefTrackingDate": "Wed Jul 13 11:56:04 2011",
-            "filename": "rlwcrf_CERES_000001-000012_ac.nc",
-            "period": "",
-            "shape": "(12, 180, 360)"
-        }
-    },
-    "rsut": {
-        "CERES": {
-            "CMIP_CMOR_TABLE": "CERES",
-            "MD5sum": "2818829fb2a8fa8a1e996f13a777869b",
-            "RefName": "CERES",
-            "RefTrackingDate": "Tue Jul 12 17:50:50 2011",
-            "filename": "rsut_CERES_000001-000012_ac.nc",
+            "RefTrackingDate": "Wed Jun  1 14:02:17 2016",
+            "filename": "rsds_CERES_000001-000012_ac.nc",
             "period": "",
             "shape": "(12, 180, 360)"
         },
         "default": "CERES"
     },
+    "rsdscs": {
+        "CERES": {
+            "CMIP_CMOR_TABLE": "CERES",
+            "MD5sum": "8255a25979cacfae6561b31658f49f43",
+            "RefName": "CERES",
+            "RefTrackingDate": "Wed Jun  1 14:02:18 2016",
+            "filename": "rsdscs_CERES_000001-000012_ac.nc",
+            "period": "",
+            "shape": "(12, 180, 360)"
+        },
+        "default": "CERES"
+    },
+    "rsdt": {
+        "CERES": {
+            "CMIP_CMOR_TABLE": "CERES",
+            "MD5sum": "033c05ea6447ec2b3be88016014ac2ef",
+            "RefName": "CERES",
+            "RefTrackingDate": "Wed Jun  1 14:32:40 2016",
+            "filename": "rsdt_CERES_000001-000012_ac.nc",
+            "period": "",
+            "shape": "(12, 180, 360)"
+        },
+        "default": "CERES"
+    },
+    "rst": {
+        "CERES": {
+            "CMIP_CMOR_TABLE": "CERES",
+            "MD5sum": "45ee2704bd9013c4f6589cbcccb4f893",
+            "RefName": "CERES",
+            "RefTrackingDate": "Wed Jun  1 16:30:44 2016",
+            "filename": "rst_CERES_000001-000012_ac.nc",
+            "period": "",
+            "shape": "(12, 180, 360)"
+        },
+        "default": "CERES"
+    },
+    "rstcre": {
+        "CERES": {
+            "CMIP_CMOR_TABLE": "CERES",
+            "MD5sum": "43ae9b34119b1d885a53e087720c1a72",
+            "RefName": "CERES",
+            "RefTrackingDate": "Wed Jun  1 16:30:43 2016",
+            "filename": "rstcre_CERES_000001-000012_ac.nc",
+            "period": "",
+            "shape": "(12, 180, 360)"
+        },
+        "default": "CERES"
+    },
+    "rsuscs": {
+        "CERES": {
+            "CMIP_CMOR_TABLE": "CERES",
+            "MD5sum": "822e5dd388c12b2a520bce79a34b765c",
+            "RefName": "CERES",
+            "RefTrackingDate": "Wed Jun  1 14:02:18 2016",
+            "filename": "rsuscs_CERES_000001-000012_ac.nc",
+            "period": "",
+            "shape": "(12, 180, 360)"
+        }
+    },
     "rsutcs": {
         "CERES": {
             "CMIP_CMOR_TABLE": "CERES",
-            "MD5sum": "b65886360c25ceaa64c9d0dbeb470de3",
+            "MD5sum": "e77f527db0bf303ec35e4df7e2c662fb",
             "RefName": "CERES",
-            "RefTrackingDate": "Tue Jul 12 18:28:02 2011",
+            "RefTrackingDate": "Wed Jun  1 16:30:45 2016",
             "filename": "rsutcs_CERES_000001-000012_ac.nc",
             "period": "",
             "shape": "(12, 180, 360)"
         },
         "default": "CERES"
     },
-    "rswcrf": {
+    "rtnet": {
         "CERES": {
             "CMIP_CMOR_TABLE": "CERES",
-            "MD5sum": "dc61961a641a22149d7f777c607491c4",
+            "MD5sum": "b3b28ee6496fe87a79dad308fc935f78",
             "RefName": "CERES",
-            "RefTrackingDate": "Wed Jul 13 11:52:01 2011",
-            "filename": "rswcrf_CERES_000001-000012_ac.nc",
+            "RefTrackingDate": "Wed Jun  1 16:30:44 2016",
+            "filename": "rtnet_CERES_000001-000012_ac.nc",
+            "period": "",
+            "shape": "(12, 180, 360)"
+        }
+    },
+    "rtnetcre": {
+        "CERES": {
+            "CMIP_CMOR_TABLE": "CERES",
+            "MD5sum": "d9d8973d589548124049d527331d5799",
+            "RefName": "CERES",
+            "RefTrackingDate": "Wed Jun  1 16:30:43 2016",
+            "filename": "rtnetcre_CERES_000001-000012_ac.nc",
             "period": "",
             "shape": "(12, 180, 360)"
         }
