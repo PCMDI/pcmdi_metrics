@@ -51,7 +51,7 @@ class Base(genutil.StringConstructor):
         if value is not None:  # Indeed we are
             if self.mask is None:
                 if isinstance(self.file_mask_template, basestring):
-                    self.file_mask_template = Base(self.root,self.file_mask_template,{"domain":self.region.get("domain",None)})
+                    self.file_mask_template = Base(self.root,self.file_mask_template,{"domain":region.get("domain",None)})
                 try:
                     oMask = self.file_mask_template.get("sftlf")
                 # ok that failed falling back on autogenerate
@@ -132,6 +132,7 @@ class Base(genutil.StringConstructor):
             data["uvcdat_version"] = cdat_info.get_version()
             json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kargs)
             f.close()
+            print "Results saved to JSON file:",fnm
         elif type.lower() in ["asc", "ascii", "txt"]:
             f = open(fnm, mode)
             for k in data.keys():

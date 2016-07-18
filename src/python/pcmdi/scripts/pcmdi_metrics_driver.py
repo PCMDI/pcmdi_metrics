@@ -374,7 +374,10 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             do = OBS.get(var,region=region)
                     except Exception as err:
                         dup.tb = args.traceback
-                        dup('failed with 4D OBS', var, ref, err)
+                        if level is not None:
+                            dup('failed opening 4D OBS', var, ref, err)
+                        else:
+                            dup('failed opening 3D OBS', var, ref, err)
                         dup.tb = False
                         continue
                     grd["GridResolution"] = do.shape[1:]
