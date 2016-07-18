@@ -34,7 +34,8 @@ unidata.addScaledUnit("psu", .001, "dimless")
 unidata.addScaledUnit("PSS-78", .001, "dimless")
 unidata.addScaledUnit("Practical Salinity Scale 78", .001, "dimless")
 
-regions_values = {"land": 100., "ocean": 0., "lnd": 100., "ocn": 0.}
+execfile(sys.prefix+"/share/pcmdi/default_regions.py")
+
 
 # Load the obs dictionary
 fjson = open(
@@ -50,18 +51,28 @@ fjson = open(
 obs_dic = json.loads(fjson.read())
 fjson.close()
 
-
 class DUP(object):
 
     def __init__(self, outfile):
         self.outfile = outfile
+        self.tb = False
 
     def __call__(self, *args):
         msg = ""
         for a in args:
             msg += " " + str(a)
+        if self.tb:
+            import traceback
+            exc_type, exc_value, exc_traceback = sys.exc_info()
+            print "<<<<<<<<<<<< BEG TRACEBACK >>>>>>>>>>>>>>>>>>"
+            traceback.print_tb(exc_traceback)
+            print "<<<<<<<<<<<< END TRACEBACK >>>>>>>>>>>>>>>>>>"
+            print>>self.outfile, "<<<<<<<<<<<< BEG TRACEBACK >>>>>>>>>>>>>>>>>>"
+            traceback.print_tb(exc_traceback,file=self.outfile)
+            print>>self.outfile, "<<<<<<<<<<<< END TRACEBACK >>>>>>>>>>>>>>>>>>"
         print msg
         print>>self.outfile, msg
+
 
 
 def applyCustomKeys(O, custom_dict, var):
@@ -79,6 +90,12 @@ P.add_argument(
     default="input_parameters.py",
     help="input parameter file containing local settings",
     required=True)
+
+P.add_argument("-t",
+        "--traceback",
+        default=False,
+        action="store_true",
+        help="Print traceback on errors (helps developers to debug)")
 
 args = P.parse_args(sys.argv[1:])
 
@@ -168,7 +185,9 @@ for model_version in parameters.model_versions:
         sftlf[model_version]["md5"] = sft.hash()
     except:
         # Hum no sftlf...
+        dup.tb = args.traceback
         dup("No mask for ", sft())
+        dup.tb = False
         sftlf[model_version] = {"raw": None}
         sftlf[model_version]["filename"] = None
         sftlf[model_version]["md5"] = None
@@ -186,18 +205,34 @@ sftlf["targetGrid"] = sft
 regions = getattr(parameters, "regions", {})
 vars = []
 
-# Update/overwrite defsult region_values keys with user ones
-
+# Update/overwrite default region_values keys with user ones
+regions_values = {}
 regions_values.update(getattr(parameters, "regions_values", {}))
 
+# need to convert from old format regions_values to newer region_specs
+for reg in regions_values:
+    dic = {"value":regions_values[reg]}
+    if regions_specs.has_key(reg):
+        regions_specs[reg].update(dic)
+    else:
+        regions_specs[reg]=dic
+
+# Update/overwrite default region_specs keys with user ones
+regions_specs.update(getattr(parameters, "regions_specs", {}))
 
 regions_dict = {}
 for var in parameters.vars:
     vr = var.split("_")[0]
-    rg = regions.get(vr, [None, ])
+    rg = regions.get(vr, default_regions)
     if not isinstance(rg, (list, tuple)):
         rg = [rg, ]
+    # Ok None means use the default regions
+    if None in rg:
+        rg.remove(None)
+        for r in default_regions:
+            rg.insert(0,r)
     regions_dict[vr] = rg
+    
 saved_obs_masks = {}
 
 disclaimer = open(
@@ -206,6 +241,7 @@ disclaimer = open(
         "share",
         "pcmdi",
         "disclaimer.txt")).read()
+
 for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
     try:
         metrics_dictionary = collections.OrderedDict()
@@ -266,17 +302,20 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         metrics_dictionary["References"] = {}
         metrics_dictionary["RegionalMasking"] = {}
         for region in regions_dict[var]:
-            if isinstance(region, str):
+            if isinstance(region, basestring):
                 region_name = region
-                region = regions_values.get(
+                region = regions_specs.get(
                     region_name,
-                    regions_values.get(
+                    regions_specs.get(
                         region_name.lower()))
+                region["id"]=region_name
             elif region is None:
                 region_name = "global"
             else:
-                region_name = "%i" % region
+                raise Exception,"Unknown region %s" % region
+
             metrics_dictionary["RegionalMasking"][region_name] = region
+
             for ref in refs:
                 if ref[:9] in ["default", "alternate"]:
                     refabbv = ref + "Reference"
@@ -288,18 +327,31 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                     obs_var_ref = obs_dic[var][ref]
                 metrics_dictionary["References"][ref] = obs_var_ref
                 try:
+                    try:
+                        oMask = pcmdi_metrics.pcmdi.io.OBS(
+                                parameters.obs_data_path,
+                                "sftlf",
+                                obs_dic,
+                                obs_var_ref["RefName"])
+                        oMasknm = oMask()
+                    except:
+                        dup("couldn't figure out obs mask name from obs json file")
+                        oMasknm = None
+
                     if obs_var_ref["CMIP_CMOR_TABLE"] == "Omon":
                         OBS = pcmdi_metrics.pcmdi.io.OBS(
                             parameters.obs_data_path,
                             var,
                             obs_dic,
-                            ref)
+                            ref,
+                            file_mask_template=oMasknm)
                     else:
                         OBS = pcmdi_metrics.pcmdi.io.OBS(
                             parameters.obs_data_path,
                             var,
                             obs_dic,
-                            ref)
+                            ref,
+                            file_mask_template=oMasknm)
                     OBS.setTargetGrid(
                         parameters.targetGrid,
                         regridTool,
@@ -309,51 +361,24 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                     OBS.case_id = case_id
                     applyCustomKeys(OBS, parameters.custom_keys, var)
                     if region is not None:
-                        # Ok we need to apply a mask
-                        # First try to read from obs json file
-                        try:
-                            oMask = pcmdi_metrics.pcmdi.io.OBS(
-                                parameters.obs_data_path,
-                                "sftlf",
-                                obs_dic,
-                                obs_var_ref["RefName"])
-                            oMasknm = oMask()
-                        except Exception as err:
-                            dup("error retrieving mask for obs: %s, \n%s" %
-                                (obs_dic[var][ref], err))
-                            oMasknm = "%s_%s" % (var, ref)
-                        tmpoMask = saved_obs_masks.get(oMasknm, None)
-                        if tmpoMask is not None:
-                            # ok we got this one already
-                            oMask = tmpoMask
-                        else:
-                            try:
-                                oMask = oMask.get("sftlf")
-                            # ok that failed falling back on autogenerate
-                            except:
-                                dup("Could not find obs mask, generating")
-                                foGrd = cdms2.open(OBS())
-                                oGrd = foGrd(var, time=slice(0, 1))
-                                foGrd.close()
-                                oMask = cdutil.generateLandSeaMask(
-                                    oGrd,
-                                    regridTool=regridTool).filled(1.) * 100.
-                                oMask = MV2.array(oMask)
-                                oMask.setAxis(-1, oGrd.getLongitude())
-                                oMask.setAxis(-2, oGrd.getLatitude())
-                            saved_obs_masks[oMasknm] = oMask
-                        OBS.mask = MV2.logical_not(MV2.equal(oMask, region))
-                        OBS.targetMask = MV2.logical_not(
-                            MV2.equal(
-                                sftlf["targetGrid"],
-                                region))
+                            dup("REGION: %s" % region)
+                            region_value = region.get("value",None)
+                            if region_value is not None:
+                                OBS.targetMask = MV2.not_equal(
+                                        sftlf["targetGrid"],
+                                        region_value)
                     try:
                         if level is not None:
-                            do = OBS.get(var, level=level)
+                            do = OBS.get(var, level=level, region=region)
                         else:
-                            do = OBS.get(var)
+                            do = OBS.get(var,region=region)
                     except Exception as err:
-                        dup('failed with 4D OBS', var, ref, err)
+                        dup.tb = args.traceback
+                        if level is not None:
+                            dup('failed opening 4D OBS', var, ref, err)
+                        else:
+                            dup('failed opening 3D OBS', var, ref, err)
+                        dup.tb = False
                         continue
                     grd["GridResolution"] = do.shape[1:]
                     metrics_dictionary["GridInfo"] = grd
@@ -405,61 +430,63 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                     var,
                                     var)
                             if region is not None:
-                                if sftlf[model_version]["raw"] is None:
-                                    if not hasattr(
-                                        parameters, "generate_sftlf") or \
-                                            parameters.generate_sftlf is False:
-                                        dup("Model %s does not have sftlf, " % model_version +
-                                            "skipping region: %s" % region)
-                                        success = False
-                                        continue
-                                    else:
-                                        # ok we can try to generate the sftlf
-                                        MODEL.variable = var
-                                        dup("auto generating sftlf " +
-                                            "for model %s " %
-                                            MODEL())
-                                        if os.path.exists(MODEL()):
-                                            fv = cdms2.open(MODEL())
-                                            Vr = fv[varInFile]
-                                            # Need to recover only first
-                                            # time/leve/etc...
-                                            N = Vr.rank() - 2  # minus lat/lon
-                                            sft = cdutil.generateLandSeaMask(
-                                                Vr(*(slice(0, 1),) * N)) * 100.
-                                            sft[:] = sft.filled(100.)
-                                            sftlf[model_version]["raw"] = sft
-                                            fv.close()
-                                            dup("auto generated sftlf" +
-                                                " for model %s " %
-                                                model_version)
+                                region_value = region.get("value",None)
+                                if region_value is not None:
+                                    if sftlf[model_version]["raw"] is None:
+                                        if not hasattr(
+                                            parameters, "generate_sftlf") or \
+                                                parameters.generate_sftlf is False:
+                                            dup("Model %s does not have sftlf, " % model_version +
+                                                "skipping region: %s" % region)
+                                            success = False
+                                            continue
+                                        else:
+                                            # ok we can try to generate the sftlf
+                                            MODEL.variable = var
+                                            dup("auto generating sftlf " +
+                                                "for model %s " %
+                                                MODEL())
+                                            if os.path.exists(MODEL()):
+                                                fv = cdms2.open(MODEL())
+                                                Vr = fv[varInFile]
+                                                # Need to recover only first
+                                                # time/leve/etc...
+                                                N = Vr.rank() - 2  # minus lat/lon
+                                                sft = cdutil.generateLandSeaMask(
+                                                    Vr(*(slice(0, 1),) * N)) * 100.
+                                                sft[:] = sft.filled(100.)
+                                                sftlf[model_version]["raw"] = sft
+                                                fv.close()
+                                                dup("auto generated sftlf" +
+                                                    " for model %s " %
+                                                    model_version)
 
-                                MODEL.mask = MV2.logical_not(
-                                    MV2.equal(
-                                        sftlf[model_version]["raw"],
-                                        region))
-                                MODEL.targetMask = MV2.logical_not(
-                                    MV2.equal(
-                                        sftlf["targetGrid"],
-                                        region))
+                                    MODEL.mask = sftlf[model_version]["raw"]
+                                    MODEL.targetMask = MV2.not_equal(
+                                            sftlf["targetGrid"],
+                                            region_value)
                             try:
                                 if level is None:
                                     OUT.level = ""
                                     dm = MODEL.get(
                                         var,
-                                        varInFile=varInFile)  # +"_ac")
+                                        varInFile=varInFile,
+                                        region=region)
                                 else:
                                     OUT.level = "-%i" % (int(level / 100.))
                                     # Ok now fetch this
                                     dm = MODEL.get(
                                         var,
                                         varInFile=varInFile,
-                                        level=level)
+                                        level=level,
+                                        region=region)
                             except Exception as err:
                                 success = False
+                                dup.tb = args.traceback
                                 dup('Failed to get variable %s ' % var +
                                     'for version: %s, error:\n%s' % (
                                         model_version, err))
+                                dup.tb = False
                                 break
 
                             dup(var,
@@ -636,10 +663,10 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
                             # Only the first time thru an obs set (always the
                             # same after)
-                            if parameters.save_mod_clims and ref == refs[0]:
+                            if hasattr(parameters,"save_mod_clims") and parameters.save_mod_clims is True  and ref == refs[0]:
                                 CLIM = pcmdi_metrics.io.base.Base(
-                                    parameters.
-                                    model_clims_interpolated_output,
+                                    os.path.join(parameters.
+                                    model_clims_interpolated_output,region_name),
                                     parameters.filename_output_template)
                                 CLIM.level = OUT.level
                                 CLIM.model_version = model_version
@@ -665,9 +692,11 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
 
                             break
                 except Exception as err:
+                    dup.tb = args.traceback
                     dup("Error while processing observation %s" % ref +
                         " for variable %s:\n\t%s" % (
                             var, str(err)))
+                    dup.tb = False
             # Done with obs and models loops , let's dum before next var
         # Ok at this point we need to add the metrics def in the dictionary so
         # that it is stored
@@ -683,4 +712,6 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         # CREATE OUTPUT AS ASCII FILE
         OUT.write(metrics_dictionary, mode="w", type="txt")
     except Exception as err:
+        dup.tb = args.traceback
         dup("Error while processing variable %s:\n\t%s" % (var, err))
+        dup.tb = False

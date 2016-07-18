@@ -87,7 +87,8 @@ data_files = [('demo/ACME', demo_ACME_files),
               ('share/graphics/vcs', portrait_files),
               ('share/pcmdi', ('doc/obs_info_dictionary.json',
                                'share/pcmdi_metrics_table',
-                               'share/disclaimer.txt')),
+                               'share/disclaimer.txt',
+                               'share/default_regions.py')),
               ]
 
 if install_dev:
