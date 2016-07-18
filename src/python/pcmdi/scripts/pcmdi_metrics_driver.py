@@ -663,7 +663,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
                             # Only the first time thru an obs set (always the
                             # same after)
-                            if parameters.save_mod_clims and ref == refs[0]:
+                            if hasattr(parameters,"save_mod_clims") and parameters.save_mod_clims is True  and ref == refs[0]:
                                 CLIM = pcmdi_metrics.io.base.Base(
                                     os.path.join(parameters.
                                     model_clims_interpolated_output,region_name),
