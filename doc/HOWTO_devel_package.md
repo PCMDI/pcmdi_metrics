@@ -23,7 +23,7 @@ now you can access `foo` via:
 # `scripts` directory
 any scripts to be called by user should go in here
 
-# data directory
+# `data` directory
 
 create as many subdirectories in here as you need to files in the subdirectories will be mapped to your package distribution as follow (example `share` directory
 

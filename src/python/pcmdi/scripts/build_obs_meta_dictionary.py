@@ -14,7 +14,7 @@ import sys
 if len(sys.argv) > 1:
     data_path = sys.argv[1]
 else:
-#   data_path = '/work/gleckler1/processed_data/metrics_package/obs'
+    # data_path = '/work/gleckler1/processed_data/metrics_package/obs'
     data_path = '/work/gleckler1/processed_data/obs'
 
 
@@ -22,17 +22,19 @@ lst = os.popen('ls ' + data_path + '/*/mo/*/*/ac/*.nc').readlines()
 
 # FOR MONTHLY MEAN OBS
 obs_dic_in = {'rlut': {'default': 'CERES'},
-              'rsut': {'default': 'CERES'},
+              'rst': {'default': 'CERES'},
+              'rsut':{'default':'CERES'},
               'rsds': {'default': 'CERES', },
               'rlds': {'default': 'CERES', },
+              'rsdt': {'default': 'CERES', },
               'rsdscs': {'default': 'CERES', },
               'rldscs': {'default': 'CERES', },
               'rlus': {'default': 'CERES', },
               'rsus': {'default': 'CERES', },
               'rlutcs': {'default': 'CERES'},
               'rsutcs': {'default': 'CERES'},
-              'rsutcre': {'default': 'CERES'},
-              'rlutcre': {'default': 'CERES'},
+              'rstcre': {'default': 'CERES'},
+              'rltcre': {'default': 'CERES'},
               'pr': {'default': 'GPCP', 'alternate1': 'TRMM'},
               'prw': {'default': 'RSS'},
               'tas': {'default': 'ERAINT',
@@ -71,7 +73,7 @@ obs_dic_in = {'rlut': {'default': 'CERES'},
               'tos': {'default': 'UKMETOFFICE-HadISST-v1-1'},
               'zos': {'default': 'CNES-AVISO-L4'},
               'sos': {'default': 'NODC-WOA09'},
-              'ts': {'default':'HadISST1'}
+              'ts': {'default': 'HadISST1'}
 
               }
 
@@ -140,7 +142,7 @@ for l in lst:
 # DONE WITH MONTHLY MEAN OBS
 # NOW TRAP OBS LAND-SEA MASKS IN OBS/FX/SFTLF
 
-data_path_fx = '/clim_obs/obs' 
+data_path_fx = '/clim_obs/obs'
 
 lstm = os.popen('ls ' + data_path_fx + '/fx/sftlf/*.nc').readlines()
 sftlf_product_remap = {
@@ -155,7 +157,7 @@ for l in lstm:
 # TRAP FILE NAME FOR SFTLF DATA
 
     filename = subp.split('/')[len(subp.split('/')) - 1][:-1]
-    print 'FILENAME IS ', filename  #, '  ', subp.split('/')[3]
+    print 'FILENAME IS ', filename  # , '  ', subp.split('/')[3]
     if var not in obs_dic.keys():
         obs_dic[var] = {}
     partial_filename = subp.split('pcmdi-metrics')[1]
