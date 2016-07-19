@@ -55,6 +55,8 @@ demo_GFDL_files += glob.glob("demo/external-setups/GFDL/*.png")
 demo_NCAR_files = glob.glob("demo/external-setups/NCAR/*.py")
 param_files_demo = glob.glob("demo/parameter_files/*.py")
 demo_results = glob.glob("demo/results/*.json")
+sample_plotting = glob.glob("demo/graphics/*.py")
+
 param_files_doc = glob.glob("doc/parameter_files/input_parameter_file_all_options.py")
 
 packages = {'pcmdi_metrics': 'src/python',
@@ -71,10 +73,11 @@ data_files = [('demo/external-setups/ACME', demo_ACME_files),
               ('demo/external-setups/NCAR', demo_NCAR_files),
               ('demo/parameter_files', param_files_demo),
               ('demo/results',demo_results),
+              ('demo/graphics',sample_plotting),
               ('doc/parameter_files', param_files_doc),
               ('doc',
                ('doc/parameter_files/pcmdi_input_parameters_sample.py',
-                'doc/simple_json_test.py',
+                'doc/using_json_example.py',
                 )),
               ('share/graphics/vcs', portrait_files),
               ('share/pcmdi', ('doc/obs_info_dictionary.json',
