@@ -61,7 +61,6 @@ vars = [
 # Observations to use 'default', 'alternate', 'all or specific enumerated
 # climatology e.g. 'ref3'
 ref = ['default']  # ,'all','alternate','ref3'
-
 # INTERPOLATION OPTIONS
 targetGrid = '2.5x2.5'  # Options: '2.5x2.5' or an actual cdms2 grid object
 regrid_tool = 'regrid2'  # Options: 'regrid2','esmf'
@@ -74,6 +73,23 @@ regrid_method_ocn = 'linear'
 # Options: True or False (Save interpolated model climatologies used in
 # metrics calculations)
 save_mod_clims = True
+
+
+# REGIONAL STUDIES
+# USER CAN CREATE CUSTOM REGIONS
+import cdutil
+regions_specs = {"Nino34":
+                 {"value": 0.,
+                  "domain": cdutil.region.domain(latitude=(-5., 5., "ccb"), longitude=(190., 240., "ccb"))},
+                 "NAM": {"value": 0.,
+                         "domain": {'latitude': (0., 45.), 'longitude': (210., 310.)},
+                         }
+                 }
+# REGIONS ON WHICH WE WANT TO RUN METRICS (var specific)
+# Here we run "all" default regions (glb, NHEX, SHEX, TROP) for both
+# but also ocean and user defined Nino34 and NAME for tas (only)
+regions = {"tas": [None, "ocean", "Nino34", "NAM"], "tos": None}
+
 
 # DATA LOCATION: MODELS, OBS AND METRICS OUTPUT - AND TEMPLATES FOR MODEL OUTPUT CLIMATOLOGY FILES
 # Following are custom keys specific to your local system
@@ -123,6 +139,13 @@ model_clims_interpolated_output = '/export/durack1/140701_metrics/test_new'
 # FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
 filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_historical_" +\
     "%(realization)_%(period)_interpolated_%(regridMethod)_%(targetGridName)-clim%(ext)"
+
+# Observation json file can be customized and overwritten as follow:
+# Custom obs dictionary file
+custom_observations = os.path.abspath(
+    os.path.join(
+        obs_data_path,
+        "obs_info_dictionary.json"))
 
 # CUSTOM METRICS
 # The following examples allow users to plug in a set of custom metrics

@@ -18,45 +18,45 @@
             "defaultReference": {
                 "source": "ERAINT",
                 "r1i1p1": {
-                    "global": {
-                        "bias_xy_ann": "-0.514",
-                        "bias_xy_djf": "-0.805",
-                        "bias_xy_jja": "-0.252",
-                        "bias_xy_mam": "-0.115",
-                        "bias_xy_son": "-0.868",
-                        "cor_xy_djf": "0.99",
-                        "cor_xy_jja": "0.99",
-                        "cor_xy_mam": "0.99",
-                        "cor_xy_son": "0.99",
-                        "custom_model_max": 312.8986511230469,
-                        "mae_xy_ann": "2.075",
-                        "mae_xy_djf": "2.625",
-                        "mae_xy_jja": "1.800",
-                        "mae_xy_mam": "2.421",
-                        "mae_xy_son": "1.991",
-                        "rms_devzm_ann": "1.394",
-                        "rms_xy_ann": "2.116",
-                        "rms_xy_djf": "2.766",
-                        "rms_xy_jja": "1.997",
-                        "rms_xy_mam": "2.467",
-                        "rms_xy_son": "2.181",
-                        "rms_xyt_ann": "2.466",
-                        "rms_y_ann": "2.103",
+                    "Nino34": {
+                        "bias_xy_ann": "-1.582",
+                        "bias_xy_djf": "-1.128",
+                        "bias_xy_jja": "-1.541",
+                        "bias_xy_mam": "-1.461",
+                        "bias_xy_son": "-2.189",
+                        "cor_xy_djf": "0.88",
+                        "cor_xy_jja": "0.94",
+                        "cor_xy_mam": "0.75",
+                        "cor_xy_son": "0.98",
+                        "custom_model_max": 300.16387939453125,
+                        "mae_xy_ann": "1.582",
+                        "mae_xy_djf": "1.158",
+                        "mae_xy_jja": "1.541",
+                        "mae_xy_mam": "1.461",
+                        "mae_xy_son": "2.189",
+                        "rms_devzm_ann": "0.088",
+                        "rms_xy_ann": "1.814",
+                        "rms_xy_djf": "1.430",
+                        "rms_xy_jja": "1.745",
+                        "rms_xy_mam": "1.729",
+                        "rms_xy_son": "2.414",
+                        "rms_xyt_ann": "1.882",
+                        "rms_y_ann": "1.655",
                         "some_custom": 1.5,
-                        "std-obs_xy_ann": "14.079",
-                        "std-obs_xy_devzm_ann": "3.712",
-                        "std-obs_xy_djf": "15.868",
-                        "std-obs_xy_jja": "14.216",
-                        "std-obs_xy_mam": "14.972",
-                        "std-obs_xy_son": "14.132",
-                        "std-obs_xyt_ann": "15.028",
-                        "std_xy_ann": "13.756",
-                        "std_xy_devzm_ann": "3.652",
-                        "std_xy_djf": "16.022",
-                        "std_xy_jja": "13.593",
-                        "std_xy_mam": "14.453",
-                        "std_xy_son": "14.028",
-                        "std_xyt_ann": "14.789"
+                        "std-obs_xy_ann": "0.730",
+                        "std-obs_xy_devzm_ann": "0.699",
+                        "std-obs_xy_djf": "0.727",
+                        "std-obs_xy_jja": "0.801",
+                        "std-obs_xy_mam": "0.401",
+                        "std-obs_xy_son": "1.033",
+                        "std-obs_xyt_ann": "0.880",
+                        "std_xy_ann": "0.815",
+                        "std_xy_devzm_ann": "0.704",
+                        "std_xy_djf": "0.688",
+                        "std_xy_jja": "0.919",
+                        "std_xy_mam": "0.627",
+                        "std_xy_son": "1.134",
+                        "std_xyt_ann": "1.079"
                     },
                     "TROPICS": {
                         "bias_xy_ann": "-0.937",
@@ -98,45 +98,45 @@
                         "std_xy_son": "3.459",
                         "std_xyt_ann": "3.937"
                     },
-                    "terre": {
-                        "bias_xy_ann": "-0.215",
-                        "bias_xy_djf": "0.035",
-                        "bias_xy_jja": "-0.464",
-                        "bias_xy_mam": "0.323",
-                        "bias_xy_son": "-0.742",
+                    "global": {
+                        "bias_xy_ann": "-0.514",
+                        "bias_xy_djf": "-0.805",
+                        "bias_xy_jja": "-0.252",
+                        "bias_xy_mam": "-0.115",
+                        "bias_xy_son": "-0.868",
                         "cor_xy_djf": "0.99",
                         "cor_xy_jja": "0.99",
                         "cor_xy_mam": "0.99",
                         "cor_xy_son": "0.99",
-                        "custom_model_max": 313.48736572265625,
-                        "mae_xy_ann": "2.159",
-                        "mae_xy_djf": "2.293",
-                        "mae_xy_jja": "2.455",
-                        "mae_xy_mam": "2.933",
-                        "mae_xy_son": "2.100",
-                        "rms_devzm_ann": "1.806",
-                        "rms_xy_ann": "2.364",
-                        "rms_xy_djf": "2.710",
-                        "rms_xy_jja": "2.596",
-                        "rms_xy_mam": "2.949",
-                        "rms_xy_son": "2.722",
-                        "rms_xyt_ann": "2.899",
-                        "rms_y_ann": "1.676",
+                        "custom_model_max": 312.8986511230469,
+                        "mae_xy_ann": "2.075",
+                        "mae_xy_djf": "2.625",
+                        "mae_xy_jja": "1.800",
+                        "mae_xy_mam": "2.421",
+                        "mae_xy_son": "1.991",
+                        "rms_devzm_ann": "1.394",
+                        "rms_xy_ann": "2.116",
+                        "rms_xy_djf": "2.766",
+                        "rms_xy_jja": "1.997",
+                        "rms_xy_mam": "2.467",
+                        "rms_xy_son": "2.181",
+                        "rms_xyt_ann": "2.466",
+                        "rms_y_ann": "2.103",
                         "some_custom": 1.5,
-                        "std-obs_xy_ann": "18.263",
-                        "std-obs_xy_devzm_ann": "4.780",
-                        "std-obs_xy_djf": "20.035",
-                        "std-obs_xy_jja": "19.435",
-                        "std-obs_xy_mam": "19.780",
-                        "std-obs_xy_son": "18.455",
-                        "std-obs_xyt_ann": "20.131",
-                        "std_xy_ann": "18.015",
-                        "std_xy_devzm_ann": "5.025",
-                        "std_xy_djf": "19.415",
-                        "std_xy_jja": "19.435",
-                        "std_xy_mam": "19.042",
-                        "std_xy_son": "18.795",
-                        "std_xyt_ann": "19.834"
+                        "std-obs_xy_ann": "14.079",
+                        "std-obs_xy_devzm_ann": "3.712",
+                        "std-obs_xy_djf": "15.868",
+                        "std-obs_xy_jja": "14.216",
+                        "std-obs_xy_mam": "14.972",
+                        "std-obs_xy_son": "14.132",
+                        "std-obs_xyt_ann": "15.028",
+                        "std_xy_ann": "13.756",
+                        "std_xy_devzm_ann": "3.652",
+                        "std_xy_djf": "16.022",
+                        "std_xy_jja": "13.593",
+                        "std_xy_mam": "14.453",
+                        "std_xy_son": "14.028",
+                        "std_xyt_ann": "14.789"
                     },
                     "ocean": {
                         "bias_xy_ann": "-0.737",
@@ -218,6 +218,46 @@
                         "std_xy_son": "11.403",
                         "std_xyt_ann": "14.443"
                     },
+                    "NAM": {
+                        "bias_xy_ann": "-1.166",
+                        "bias_xy_djf": "-1.436",
+                        "bias_xy_jja": "-0.780",
+                        "bias_xy_mam": "-1.704",
+                        "bias_xy_son": "-0.742",
+                        "cor_xy_djf": "0.98",
+                        "cor_xy_jja": "0.91",
+                        "cor_xy_mam": "0.97",
+                        "cor_xy_son": "0.92",
+                        "custom_model_max": 301.6520690917969,
+                        "mae_xy_ann": "1.429",
+                        "mae_xy_djf": "1.580",
+                        "mae_xy_jja": "1.452",
+                        "mae_xy_mam": "1.842",
+                        "mae_xy_son": "1.413",
+                        "rms_devzm_ann": "1.119",
+                        "rms_xy_ann": "1.634",
+                        "rms_xy_djf": "1.794",
+                        "rms_xy_jja": "1.695",
+                        "rms_xy_mam": "2.069",
+                        "rms_xy_son": "1.627",
+                        "rms_xyt_ann": "1.862",
+                        "rms_y_ann": "1.256",
+                        "some_custom": 1.5,
+                        "std-obs_xy_ann": "4.307",
+                        "std-obs_xy_devzm_ann": "1.743",
+                        "std-obs_xy_djf": "5.399",
+                        "std-obs_xy_jja": "3.559",
+                        "std-obs_xy_mam": "5.275",
+                        "std-obs_xy_son": "3.604",
+                        "std-obs_xyt_ann": "4.778",
+                        "std_xy_ann": "4.324",
+                        "std_xy_devzm_ann": "1.353",
+                        "std_xy_djf": "5.536",
+                        "std_xy_jja": "3.323",
+                        "std_xy_mam": "5.259",
+                        "std_xy_son": "3.792",
+                        "std_xyt_ann": "4.944"
+                    },
                     "SHEX": {
                         "bias_xy_ann": "1.854",
                         "bias_xy_djf": "2.138",
@@ -282,8 +322,12 @@
         }
     },
     "RegionalMasking": {
-        "global": {
-            "id": "global"
+        "Nino34": {
+            "domain": {
+                "Nino34": "cdutil.region.domain(latitude=(-5.0, 5.0, 'ccb'),longitude=(190.0, 240.0, 'ccb'))"
+            },
+            "id": "Nino34",
+            "value": 0.0
         },
         "TROPICS": {
             "domain": {
@@ -291,9 +335,8 @@
             },
             "id": "TROPICS"
         },
-        "terre": {
-            "id": "terre",
-            "value": 100.0
+        "global": {
+            "id": "global"
         },
         "ocean": {
             "id": "ocean",
@@ -305,6 +348,20 @@
             },
             "id": "NHEX"
         },
+        "NAM": {
+            "domain": {
+                "latitude": [
+                    0.0,
+                    45.0
+                ],
+                "longitude": [
+                    210.0,
+                    310.0
+                ]
+            },
+            "id": "NAM",
+            "value": 0.0
+        },
         "SHEX": {
             "domain": {
                 "SHEX": "cdutil.region.domain(latitude=(-90.0, -30, 'ccb'))"
@@ -314,8 +371,8 @@
     },
     "GridInfo": {
         "GridResolution": [
-            72,
-            144
+            18,
+            41
         ],
         "GridName": "2.5x2.5",
         "RegridMethod": "linear",
