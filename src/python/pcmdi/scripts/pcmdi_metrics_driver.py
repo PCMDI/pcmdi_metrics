@@ -77,7 +77,8 @@ class DUP(object):
 
 def applyCustomKeys(O, custom_dict, var):
     for k, v in custom_dict.iteritems():
-        setattr(O, k, custom_dict.get(var, custom_dict.get(None, "")))
+        key = custom_dict[k]
+        setattr(O, k, key.get(var, key.get(None, "")))
 
 P = argparse.ArgumentParser(
     description='Runs PCMDI Metrics Computations',
@@ -251,8 +252,8 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         # REGRID OBSERVATIONS AND MODEL DATA TO TARGET GRID (ATM OR OCN GRID)
         sp = Var.split("_")
         var = sp[0]
-        if len(sp) > 1:
-            level = float(sp[-1]) * 100.
+        if len(sp) > 1:  # User specified a level (in hPa) to read in
+            level = float(sp[-1]) * 100.  # Converts level to Pa
         else:
             level = None
 
@@ -299,6 +300,11 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         OUT.table = table_realm
         OUT.case_id = case_id
         applyCustomKeys(OUT, parameters.custom_keys, var)
+        metrics_dictionary["Variable"] = {}
+        metrics_dictionary["Variable"]["id"] = var
+        if level is not None:
+            metrics_dictionary["Variable"]["level"] = level
+
         metrics_dictionary["References"] = {}
         metrics_dictionary["RegionalMasking"] = {}
         for region in regions_dict[var]:
