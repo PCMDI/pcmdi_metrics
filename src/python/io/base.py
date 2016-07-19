@@ -63,9 +63,6 @@ class Base(genutil.StringConstructor):
                     oMask = self.file_mask_template.get("sftlf")
                 # ok that failed falling back on autogenerate
                 except:
-                    #dup.tb = args.traceback
-                    #dup("Could not find obs mask, generating")
-                    #dup.tb = False
                     oMask = cdutil.generateLandSeaMask(
                         out,
                         regridTool=self.regridTool).filled(1.) * 100.
