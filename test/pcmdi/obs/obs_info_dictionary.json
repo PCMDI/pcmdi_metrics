@@ -54,6 +54,17 @@
         },
         "default": "NODC-WOA09"
     },
+    "ta": {
+        "ERA40": {
+            "CMIP_CMOR_TABLE": "ERA40",
+            "RefName": "ERA40",
+            "RefTrackingDate": "Tue Jul 12 18:08:51 2011",
+            "filename": "ta_ERA40_000001-000012_ac.nc",
+            "period": "",
+            "shape": "(3, 23, 73, 144)"
+        },
+        "default": "ERA40"
+    },
     "tas": {
         "ERAINT": {
             "CMIP_CMOR_TABLE": "Amon",
