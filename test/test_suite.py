@@ -53,7 +53,8 @@ params = ["basic_test_parameters_file.py",
           "keep_going_on_error_varname_test.py",
           "obs_by_name_test.py",
           "salinity_test.py",
-          "region_specs_test.py"
+          "region_specs_test.py",
+          "level_data_test.py",
           ]
 
 others = ["flake8", ]
