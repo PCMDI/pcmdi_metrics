@@ -36,7 +36,6 @@ unidata.addScaledUnit("Practical Salinity Scale 78", .001, "dimless")
 
 execfile(sys.prefix+"/share/pcmdi/default_regions.py")
 
-
 # Load the obs dictionary
 fjson = open(
     os.path.join(
@@ -123,6 +122,10 @@ exec("import %s as parameters" % fnm)
 if pth != "":
     sys.path.pop(-1)
 
+# Checks a few things on the parameter file
+if not hasattr(parameters,"metrics_output_path"):
+    raise RuntimeError("Your parameter file does not define the output_path, please define 'metrics_output_path'")
+
 # Checking if we have custom obs to add
 if hasattr(parameters, "custom_observations"):
     fjson2 = open(parameters.custom_observations)
@@ -159,6 +162,23 @@ except:
 Efile = open(out, "w")
 
 dup = DUP(Efile)
+
+# Loads a few default, that "should" be overwritten by parameter file
+# But in case they're not defined in parameter file then
+# The code will keep running happily
+if getattr(parameters,"save_mod_clims",False):
+    if not hasattr(parameters,"model_clims_interpolated_output"):
+        parameters.model_clims_interpolated_output = model_clims_interpolated_output = os.path.join(
+                parameters.metrics_output_path,
+                'interpolated_model_clims')
+        dup("WARNING: Your parameter file asks to save interpolated model climatologies, but did not define a path for this\n"+\
+        "We set 'model_clims_interpolated_output' to %s for you" % parameters.model_clims_interpolated_output)
+    if not hasattr(parameters,"filename_output_template"):
+        parameters.filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_" +\
+                "%(realization)_%(period).interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"
+        dup("WARNING: Your parameter file asks to save interpolated model climatologies, but did not define a name template for this\n"+\
+        "We set 'filename_output_template' to %s for you" % parameters.filename_output_template)
+
 
 
 # First of all attempt to prepare sftlf before/after for all models
