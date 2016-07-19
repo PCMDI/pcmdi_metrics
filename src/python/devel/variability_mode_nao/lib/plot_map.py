@@ -26,14 +26,17 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   cols[6] = 139 # Adjsut to light red
   iso.fillareacolors = cols
   p = vcs.createprojection()
-  if mode == 'nam':
+  if mode == 'nam' or mode == 'sam':
     ptype = int('-3')
   elif mode == 'nao':
     ptype = 'lambert azimuthal'
   p.type = ptype
   iso.projection = p
   xtra = {}
-  xtra['latitude'] = (90.0,0.0)
+  if mode != 'sam':
+    xtra['latitude'] = (90.0,0.0)
+  else:
+    xtra['latitude'] = (-90.0,0.0)
   eof1 = eof1(**xtra) # For NH projection 
   canvas.plot(eof1,iso,template)
 
