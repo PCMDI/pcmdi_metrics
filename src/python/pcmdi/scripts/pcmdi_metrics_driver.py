@@ -683,18 +683,14 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                     parameters.targetGrid,
                                     regridTool,
                                     regridMethod)
-                                if level is None:
-                                    varid = var
-                                else:
-                                    varid = "%s_%i" % (var, int(level))
-                                CLIM.variable = varid
+                                CLIM.variable = var
                                 CLIM.region = region_name
                                 CLIM.realization = parameters.realization
                                 applyCustomKeys(
                                     CLIM,
                                     parameters.custom_keys,
                                     var)
-                                CLIM.write(dm, type="nc", id=varid)
+                                CLIM.write(dm, type="nc", id=var)
 
                             break
                 except Exception as err:

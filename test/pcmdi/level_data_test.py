@@ -38,7 +38,6 @@ regrid_tool_ocn = 'esmf'    # OPTIONS: "regrid2","esmf"
 regrid_method_ocn = 'linear'
 
 # SIMULATION PARAMETERS
-period = '198501-200512'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
@@ -74,5 +73,5 @@ model_clims_interpolated_output = os.path.join(
     'pcmdi_install_test_results',
     'interpolated_model_clims')
 # FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
-filename_output_template = "%(variable)_%(model_version)_%(table)_" +\
+filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_" +\
     "%(experiment)_%(realization)_%(period).interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"
