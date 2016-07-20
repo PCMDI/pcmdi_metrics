@@ -14,12 +14,16 @@ cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
 # where value is a integer between 0 and 9 included
 cdms2.setNetcdfDeflateLevelFlag(value)
 
-#cdutil region object need a serializer
+# cdutil region object need a serializer
+
+
 class CDMSDomainsEncoder(json.JSONEncoder):
+
     def default(self, o):
         cmp = o.components()[0].kargs
-        args=",".join(["%s=%s" % (k,v) for k,v in cmp.iteritems()])
-        return {o.id:"cdutil.region.domain(%s)"%args}
+        args = ",".join(["%s=%s" % (k, v) for k, v in cmp.iteritems()])
+        return {o.id: "cdutil.region.domain(%s)" % args}
+
 
 class Base(genutil.StringConstructor):
 
@@ -47,18 +51,18 @@ class Base(genutil.StringConstructor):
         f.close()
 
         # Now are we masking anything?
-        value = region.get("value",None)
+        value = region.get("value", None)
         if value is not None:  # Indeed we are
             if self.mask is None:
                 if isinstance(self.file_mask_template, basestring):
-                    self.file_mask_template = Base(self.root,self.file_mask_template,{"domain":region.get("domain",None)})
+                    self.file_mask_template = Base(
+                        self.root, self.file_mask_template, {
+                            "domain": region.get(
+                                "domain", None)})
                 try:
                     oMask = self.file_mask_template.get("sftlf")
                 # ok that failed falling back on autogenerate
                 except:
-                    #dup.tb = args.traceback
-                    #dup("Could not find obs mask, generating")
-                    #dup.tb = False
                     oMask = cdutil.generateLandSeaMask(
                         out,
                         regridTool=self.regridTool).filled(1.) * 100.
@@ -70,7 +74,7 @@ class Base(genutil.StringConstructor):
                 dum, msk = genutil.grower(out, self.mask)
             else:
                 msk = self.mask
-            msk = MV2.not_equal(msk,value)
+            msk = MV2.not_equal(msk, value)
             out = MV2.masked_where(msk, out)
         if self.targetGrid is not None:
             out = out.regrid(
@@ -87,15 +91,15 @@ class Base(genutil.StringConstructor):
                     msk = self.targetMask
                 out = MV2.masked_where(msk, out)
         # Now are we looking at a region in particular?
-        domain = region.get("domain",None)
-        if domain is not None:  # Ok we are subsetting 
-            if isinstance(domain,dict):
-                out=out(**domain)
-            elif isinstance(domain,(list,tuple)):
-                out=out(*domain)
-            elif isinstance(domain,cdms2.selectors.Selector):
-                domain.id=region.get("id","region")
-                out=out(*[domain])
+        domain = region.get("domain", None)
+        if domain is not None:  # Ok we are subsetting
+            if isinstance(domain, dict):
+                out = out(**domain)
+            elif isinstance(domain, (list, tuple)):
+                out = out(*domain)
+            elif isinstance(domain, cdms2.selectors.Selector):
+                domain.id = region.get("id", "region")
+                out = out(*[domain])
         return out
 
     def setTargetGrid(self, target, regridTool="esmf", regridMethod="linear"):
@@ -132,7 +136,7 @@ class Base(genutil.StringConstructor):
             data["uvcdat_version"] = cdat_info.get_version()
             json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kargs)
             f.close()
-            print "Results saved to JSON file:",fnm
+            print "Results saved to JSON file:", fnm
         elif type.lower() in ["asc", "ascii", "txt"]:
             f = open(fnm, mode)
             for k in data.keys():

@@ -17,13 +17,13 @@ import MV2
 import cdutil
 import collections
 import cdat_info
+import unidata
 
 # Statistical tracker
 cdat_info.pingPCMDIdb("pcmdi_metrics", "pcmdi_metrics_driver")
 
 # Before we do anything else we need to create some units
 # Salinity Units
-import unidata
 unidata.udunits_wrap.init()
 
 # Create a dimensionless units named dimless
@@ -34,7 +34,10 @@ unidata.addScaledUnit("psu", .001, "dimless")
 unidata.addScaledUnit("PSS-78", .001, "dimless")
 unidata.addScaledUnit("Practical Salinity Scale 78", .001, "dimless")
 
-execfile(sys.prefix+"/share/pcmdi/default_regions.py")
+# Following are actually created in excfile bit, this is to make flae8 happy
+regions_specs = {}
+default_regions = []
+execfile(sys.prefix + "/share/pcmdi/default_regions.py")
 
 # Load the obs dictionary
 fjson = open(
@@ -49,6 +52,7 @@ fjson = open(
         "obs_info_dictionary.json"))
 obs_dic = json.loads(fjson.read())
 fjson.close()
+
 
 class DUP(object):
 
@@ -67,11 +71,10 @@ class DUP(object):
             traceback.print_tb(exc_traceback)
             print "<<<<<<<<<<<< END TRACEBACK >>>>>>>>>>>>>>>>>>"
             print>>self.outfile, "<<<<<<<<<<<< BEG TRACEBACK >>>>>>>>>>>>>>>>>>"
-            traceback.print_tb(exc_traceback,file=self.outfile)
+            traceback.print_tb(exc_traceback, file=self.outfile)
             print>>self.outfile, "<<<<<<<<<<<< END TRACEBACK >>>>>>>>>>>>>>>>>>"
         print msg
         print>>self.outfile, msg
-
 
 
 def applyCustomKeys(O, custom_dict, var):
@@ -90,12 +93,18 @@ P.add_argument(
     default="input_parameters.py",
     help="input parameter file containing local settings",
     required=True)
+P.add_argument(
+    "-d",
+    "--dry-run",
+    action="store_true",
+    default=False,
+    help="Do not run calculations, but check that everything should go smoothly")
 
 P.add_argument("-t",
-        "--traceback",
-        default=False,
-        action="store_true",
-        help="Print traceback on errors (helps developers to debug)")
+               "--traceback",
+               default=False,
+               action="store_true",
+               help="Print traceback on errors (helps developers to debug)")
 
 args = P.parse_args(sys.argv[1:])
 
@@ -123,7 +132,7 @@ if pth != "":
     sys.path.pop(-1)
 
 # Checks a few things on the parameter file
-if not hasattr(parameters,"metrics_output_path"):
+if not hasattr(parameters, "metrics_output_path"):
     raise RuntimeError("Your parameter file does not define the output_path, please define 'metrics_output_path'")
 
 # Checking if we have custom obs to add
@@ -166,19 +175,20 @@ dup = DUP(Efile)
 # Loads a few default, that "should" be overwritten by parameter file
 # But in case they're not defined in parameter file then
 # The code will keep running happily
-if getattr(parameters,"save_mod_clims",False):
-    if not hasattr(parameters,"model_clims_interpolated_output"):
+if getattr(parameters, "save_mod_clims", False):
+    if not hasattr(parameters, "model_clims_interpolated_output"):
         parameters.model_clims_interpolated_output = model_clims_interpolated_output = os.path.join(
-                parameters.metrics_output_path,
-                'interpolated_model_clims')
-        dup("WARNING: Your parameter file asks to save interpolated model climatologies, but did not define a path for this\n"+\
-        "We set 'model_clims_interpolated_output' to %s for you" % parameters.model_clims_interpolated_output)
-    if not hasattr(parameters,"filename_output_template"):
+            parameters.metrics_output_path,
+            'interpolated_model_clims')
+        dup("WARNING: Your parameter file asks to save interpolated model climatologies," +
+            " but did not define a path for this\n" +
+            "We set 'model_clims_interpolated_output' to %s for you" % parameters.model_clims_interpolated_output)
+    if not hasattr(parameters, "filename_output_template"):
         parameters.filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_" +\
-                "%(realization)_%(period).interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"
-        dup("WARNING: Your parameter file asks to save interpolated model climatologies, but did not define a name template for this\n"+\
-        "We set 'filename_output_template' to %s for you" % parameters.filename_output_template)
-
+            "%(realization)_%(period).interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"
+        dup("WARNING: Your parameter file asks to save interpolated model climatologies, " +
+            "but did not define a name template for this\n" +
+            "We set 'filename_output_template' to %s for you" % parameters.filename_output_template)
 
 
 # First of all attempt to prepare sftlf before/after for all models
@@ -232,11 +242,11 @@ regions_values.update(getattr(parameters, "regions_values", {}))
 
 # need to convert from old format regions_values to newer region_specs
 for reg in regions_values:
-    dic = {"value":regions_values[reg]}
-    if regions_specs.has_key(reg):
+    dic = {"value": regions_values[reg]}
+    if reg in regions_specs:
         regions_specs[reg].update(dic)
     else:
-        regions_specs[reg]=dic
+        regions_specs[reg] = dic
 
 # Update/overwrite default region_specs keys with user ones
 regions_specs.update(getattr(parameters, "regions_specs", {}))
@@ -251,9 +261,9 @@ for var in parameters.vars:
     if None in rg:
         rg.remove(None)
         for r in default_regions:
-            rg.insert(0,r)
+            rg.insert(0, r)
     regions_dict[vr] = rg
-    
+
 saved_obs_masks = {}
 
 disclaimer = open(
@@ -334,11 +344,11 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                     region_name,
                     regions_specs.get(
                         region_name.lower()))
-                region["id"]=region_name
+                region["id"] = region_name
             elif region is None:
                 region_name = "global"
             else:
-                raise Exception,"Unknown region %s" % region
+                raise Exception("Unknown region %s" % region)
 
             metrics_dictionary["RegionalMasking"][region_name] = region
 
@@ -355,10 +365,10 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                 try:
                     try:
                         oMask = pcmdi_metrics.pcmdi.io.OBS(
-                                parameters.obs_data_path,
-                                "sftlf",
-                                obs_dic,
-                                obs_var_ref["RefName"])
+                            parameters.obs_data_path,
+                            "sftlf",
+                            obs_dic,
+                            obs_var_ref["RefName"])
                         oMasknm = oMask()
                     except:
                         dup("couldn't figure out obs mask name from obs json file")
@@ -387,17 +397,17 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                     OBS.case_id = case_id
                     applyCustomKeys(OBS, parameters.custom_keys, var)
                     if region is not None:
-                            dup("REGION: %s" % region)
-                            region_value = region.get("value",None)
-                            if region_value is not None:
-                                OBS.targetMask = MV2.not_equal(
-                                        sftlf["targetGrid"],
-                                        region_value)
+                        dup("REGION: %s" % region)
+                        region_value = region.get("value", None)
+                        if region_value is not None:
+                            OBS.targetMask = MV2.not_equal(
+                                sftlf["targetGrid"],
+                                region_value)
                     try:
                         if level is not None:
                             do = OBS.get(var, level=level, region=region)
                         else:
-                            do = OBS.get(var,region=region)
+                            do = OBS.get(var, region=region)
                     except Exception as err:
                         dup.tb = args.traceback
                         if level is not None:
@@ -456,7 +466,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                     var,
                                     var)
                             if region is not None:
-                                region_value = region.get("value",None)
+                                region_value = region.get("value", None)
                                 if region_value is not None:
                                     if sftlf[model_version]["raw"] is None:
                                         if not hasattr(
@@ -489,8 +499,8 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
 
                                     MODEL.mask = sftlf[model_version]["raw"]
                                     MODEL.targetMask = MV2.not_equal(
-                                            sftlf["targetGrid"],
-                                            region_value)
+                                        sftlf["targetGrid"],
+                                        region_value)
                             try:
                                 if level is None:
                                     OUT.level = ""
@@ -639,60 +649,62 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                 get(
                                 parameters.realization,
                                 {})
-                            pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(
-                                Var,
-                                dm,
-                                do)
-                            # Calling compute metrics with None for model and
-                            # obs, triggers it to send back the defs.
-                            metrics_def_dictionary.update(
-                                pcmdi_metrics.pcmdi.compute_metrics(
+                            if not args.dry_run:
+                                pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(
                                     Var,
-                                    None,
-                                    None))
-                            #
-                            # The follwoing allow users to plug in a set of
-                            # custom metrics
-                            # Function needs to take in var name,
-                            # model clim, obs clim
-                            #
-                            if hasattr(parameters, "compute_custom_metrics"):
-                                pr_rgn.update(
-                                    parameters.compute_custom_metrics(
-                                        Var,
-                                        dm,
-                                        do))
-                                # Calling compute metrics with None
-                                # for model and
+                                    dm,
+                                    do)
+                                # Calling compute metrics with None for model and
                                 # obs, triggers it to send back the defs.
-                                # But we are wrapping this in an except/try in
-                                # case user did not implement
-                                try:
-                                    metrics_def_dictionary.update(
+                                metrics_def_dictionary.update(
+                                    pcmdi_metrics.pcmdi.compute_metrics(
+                                        Var,
+                                        None,
+                                        None))
+                                #
+                                # The follwoing allow users to plug in a set of
+                                # custom metrics
+                                # Function needs to take in var name,
+                                # model clim, obs clim
+                                #
+                                if hasattr(parameters, "compute_custom_metrics"):
+                                    pr_rgn.update(
                                         parameters.compute_custom_metrics(
                                             Var,
-                                            None,
-                                            None))
-                                except:
-                                    # Better than nothing we will use the doc
-                                    # string
-                                    metrics_def_dictionary.update(
-                                        {"custom": parameters.
-                                         compute_custom_metrics.__doc__})
-                            pr[region_name] = collections.OrderedDict(
-                                (k,
-                                 pr_rgn[k]) for k in sorted(
-                                    pr_rgn.keys()))
+                                            dm,
+                                            do))
+                                    # Calling compute metrics with None
+                                    # for model and
+                                    # obs, triggers it to send back the defs.
+                                    # But we are wrapping this in an except/try in
+                                    # case user did not implement
+                                    try:
+                                        metrics_def_dictionary.update(
+                                            parameters.compute_custom_metrics(
+                                                Var,
+                                                None,
+                                                None))
+                                    except:
+                                        # Better than nothing we will use the doc
+                                        # string
+                                        metrics_def_dictionary.update(
+                                            {"custom": parameters.
+                                             compute_custom_metrics.__doc__})
+                                pr[region_name] = collections.OrderedDict(
+                                    (k,
+                                     pr_rgn[k]) for k in sorted(
+                                        pr_rgn.keys()))
                             metrics_dictionary["RESULTS"][model_version][refabbv][
                                 parameters.realization] = pr
 
                             # OUTPUT INTERPOLATED MODEL CLIMATOLOGIES
                             # Only the first time thru an obs set (always the
                             # same after)
-                            if hasattr(parameters,"save_mod_clims") and parameters.save_mod_clims is True  and ref == refs[0]:
+                            if not args.dry_run and hasattr(parameters, "save_mod_clims") and \
+                                    parameters.save_mod_clims is True and ref == refs[0]:
                                 CLIM = pcmdi_metrics.io.base.Base(
                                     os.path.join(parameters.
-                                    model_clims_interpolated_output,region_name),
+                                                 model_clims_interpolated_output, region_name),
                                     parameters.filename_output_template)
                                 CLIM.level = OUT.level
                                 CLIM.model_version = model_version
@@ -724,16 +736,18 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         # that it is stored
         metrics_dictionary["METRICS"] = metrics_def_dictionary
         # OUTPUT RESULTS IN PYTHON DICTIONARY TO BOTH JSON AND ASCII FILES
-        OUT.write(
-            metrics_dictionary,
-            mode="w",
-            indent=4,
-            separators=(
-                ',',
-                ': '))
-        # CREATE OUTPUT AS ASCII FILE
-        OUT.write(metrics_dictionary, mode="w", type="txt")
+        if not args.dry_run:
+            OUT.write(
+                metrics_dictionary,
+                mode="w",
+                indent=4,
+                separators=(
+                    ',',
+                    ': '))
+            # CREATE OUTPUT AS ASCII FILE
+            OUT.write(metrics_dictionary, mode="w", type="txt")
     except Exception as err:
         dup.tb = args.traceback
         dup("Error while processing variable %s:\n\t%s" % (var, err))
         dup.tb = False
+dup("Done. Check log at: %s" % Efile.name)
