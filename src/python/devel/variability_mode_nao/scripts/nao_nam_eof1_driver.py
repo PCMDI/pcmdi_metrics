@@ -33,10 +33,11 @@ test = True
 
 #mode = 'nam' # Northern Annular Mode
 #mode = 'nao' # Northern Atlantic Oscillation
-mode = 'sam' # Southern Annular Mode
+#mode = 'sam' # Southern Annular Mode
+mode = 'pna' # Pacific North American Pattern
 
 obs_compare = True
-#obs_compare = False
+obs_compare = False
 
 nc_out = True
 #nc_out = False
@@ -53,8 +54,8 @@ else:
   models = get_all_mip_mods(mip,exp,fq,realm,var)
   seasons = ['DJF','MAM','JJA','SON']
 
-#syear = 1900
-syear = 1990 # To match with ERAINT...
+syear = 1900
+#syear = 1990 # To match with ERAINT...
 eyear = 2005
 
 start_time = cdtime.comptime(syear,1,1)
@@ -75,6 +76,11 @@ elif mode == 'sam':
   lat2 = -90
   lon1 = 0
   lon2 = 360
+elif mode == 'pna':
+  lat1 = 20
+  lat2 = 85
+  lon1 = 120
+  lon2 = 240
 
 #=================================================
 # Observation
