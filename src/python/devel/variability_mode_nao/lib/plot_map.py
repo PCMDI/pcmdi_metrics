@@ -5,9 +5,9 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
 
   # Create canvas
   if test:
-    canvas = vcs.init(geometry=(900,800))
+    canvas = vcs.init(geometry=(900,800)) # Show canvas
   if not test:
-    canvas = vcs.init(geometry=(900,800),bg=1)
+    canvas = vcs.init(geometry=(900,800),bg=1) # Plotting in background mode
 
   canvas.open()
   canvas.drawlogooff()
