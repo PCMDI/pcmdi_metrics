@@ -1,54 +1,61 @@
 ################################################################################
-#  THIS IS A DEMO INPUT PARAMETER FILE FOR THE PCMDI METRICS PACKAGE (PMP V1.1)
 #  THIS IS A VERY SIMPLE EXAMPLE, ONLY COMPUTING STATISTICS FOR ONE MODEL VERSION AND ONE VARIABLE 
-#  SAMPLE MODEL AND OBSERVATIONAL DATA TO RUN THIS CODE ARE AVAILABLE FROM: 
-#  http://oceanonly.llnl.gov/gleckler1/pmp-demo-data/pmpv1.1_demodata.tar
-#  Download this demo data and untar in the directory you plan to run the tests.  
 #  For more info, see https://github.com/PCMDI/pcmdi_metrics/wiki/Using-the-package
-
+#
 # NOTES FOR PYTHON NEWBIES: ON ANY GIVEN LINE, ANTHING TO THE RIGHT OF A "#" IS CONSIDERED A COMMENT IN PYTHON  
 # IN THIS SIMPLE EXAMPLE WE DEFINE CHARACTER STRINGS, BUT ALSO ONE OF THE MOST BASIC AND POWERFUL PYTHON OBJECTS KNOWN AS A LIST.  
 # PYTHON LISTS ARE DEFINED WITH SQUARE BRACKETS [] ... FOR MORE INFO SEE: https://docs.python.org/2/tutorial/datastructures.html
 ################################################################################
+#
+# First of all we define the 'template' used by our system to construct file names and paths
+# keywords in between %() will be automatically filled by PMP
+# in this example we only use four of the 'official' keys: 'variable', 'model_version', 'realization' and 'period'
+# some of these are defined later in the parameter file
+filename_template = "%(variable)_%(model_version)_Amon_amip_%(realization)_%(period)-clim.nc"
+# First lets define an case id to help us differentiate between many se of parameter files
+# The python 'case_id' variable is optional in the parameter file
+# non the less it is still a 'reserved' variable for the PMP
+case_id = 'simple-test1'
+# Now we will defined the list of models to use
+# For this we use the 'reserved' python variable: model_versions
+# THIS IS A MANDATORY ENTRY
+# This is our first list of a python list, in this case there is only one entry
+model_versions = ['ACCESS1-0']   
 
-## FIRST USE OF A PYTHON LIST, IN THIS CASE IT HAS ONLY ONE ENTRY 
-model_versions = ['ACCESS1-0']   # THIS IS A MANDETORY ENTRY FOR DOCUMENTING RESULTS
-
-###############################################################################
-## DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
-## ROOT PATH FOR MODELS CLIMATOLOGIES
-## THE MODEL AND OBSERVATIONAL DATA USED FOR THIS TEST CAN BE DOWNLOADED FROM:
-
-#mod_data_path = '/work/metricspackage/mod_clims/cmip5-amip'
-mod_data_path = './cmip5clims_metrics_package-amip/'
-filename_template = "pr_ACCESS1-0_Amon_amip_r1i1p1_198001-200512-clim.nc"
+# The following lines will tell PMP where the data reside on your system
+# Note that we could use the 'templating' filename system here as well
+# Also note that these path are 'relative' to our current working path
+# But one could use absolute paths as well
+## MODELS DATA LOCATION
+mod_data_path = 'pmp_demo/cmip5clims_metrics_package-amip/'
 ## ROOT PATH FOR OBSERVATIONS
-obs_data_path = './obs/'
+obs_data_path = 'pmp_demo/obs/'
 
 ## DIRECTORY WHERE TO SAVE RESULTS
-case_id = 'simple-test1'
-metrics_output_path = './pmp-test/%(case_id)/'  # USER CHOOSES, RESULTS STORED IN  metrics_output_path + case_id   
-###############################################################################
+# USER CHOOSES, RESULTS STORED IN  metrics_output_path + case_id   
+metrics_output_path = './pmp_demo/%(case_id)/'  
 
 # OBSERVATIONS TO USE: CHOICES INCLUDE 'default','alternate1','alternate2',... AND ARE VARIABLE DEPENDENT 
 ref = ['default']  #,'alternate1','alternate2']
 
 ## A PYTHON LIST OF VARIABLES TO COMPUTE STATISTICS
-vars = ['pr']  # THIS EXAMPLE ONLY INCLUDES ONE FIELD, PRECIPICATION
+# THIS EXAMPLE ONLY INCLUDES ONE FIELD, PRECIPICATION
+vars = ['pr']  
 
-# INTERPOLATION OPTIONS
-targetGrid        = '2.5x2.5' # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
-regrid_tool       = 'esmf' #'regrid2' # OPTIONS: 'regrid2','esmf'
-regrid_method     = 'linear'  # OPTIONS: 'linear','conservative', only if tool is esmf
+# INTERPOLATION (REGRIDDING) OPTIONS
+# First our target grid, i.e the final grid onto which both model and obs will be put
+# OPTIONS: '2.5x2.5' or an actual cdms2 grid object
+targetGrid        = '2.5x2.5' 
+# Now let's select which cdms2 regrid tool we will use
+regrid_tool       = 'esmf' 
+# Some regrid tools also require to specify which method of regriding to use
+# OPTIONS: 'linear','conservative', only if tool is esmf
+regrid_method     = 'linear'
 
 # SIMULATION PARAMETERS (required in PMP v1.1)
-period = '1979-1989'  # PERIOD OF CLIMATOLOGY
-realization = 'r1i1p1' # REALIZATION
-
-save_mod_clims = False 
-
-
-
-
-
-
+# These are manadatory in any PMP parameter file
+# Beside remember that these are actually using in our templating system defined above
+# PERIOD OF CLIMATOLOGY
+period = '198001-200512'
+# MODEL REALIZATION
+realization = 'r1i1p1'
