@@ -109,7 +109,7 @@ if obs_compare:
     eof1_obs['season'], pc1_obs['season'], frac1_obs['season'] = eof_analysis_get_first_variance_mode(obs_timeseries_season['season'])
 
     # Set output file name for NetCDF and plot ---
-    output_file_name_obs = mode+'_slp_eof1_'+season+'_obs_'+str(syear)+'-'+str(eyear)
+    output_file_name_obs = mode+'_psl_eof1_'+season+'_obs_'+str(syear)+'-'+str(eyear)
 
     # Save in NetCDF output ---
     if nc_out:
@@ -152,7 +152,7 @@ for model in models:
     eof1, pc1, frac1 = eof_analysis_get_first_variance_mode(model_timeseries_season)
 
     # Set output file name for NetCDF and plot ---
-    output_file_name = mode+'_slp_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)
+    output_file_name = mode+'_psl_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)
 
     # Save in NetCDF output ---
     if nc_out:
