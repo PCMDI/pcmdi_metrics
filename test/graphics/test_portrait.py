@@ -72,6 +72,7 @@ class TestGraphics(unittest.TestCase):
             os.path.join(
                 sys.prefix,
                 "share",
+                "pmp",
                 "graphics",
                 'vcs',
                 'portraits.scr'))
