@@ -36,6 +36,17 @@ class TestGraphics(unittest.TestCase):
         import sys
         import glob
 
+        print
+        print
+        print
+        print
+        print "---------------------------------------------------"
+        print "RUNNING: Portrait test"
+        print "---------------------------------------------------"
+        print
+        print
+        print
+        print
         # CREATES VCS OBJECT AS A PORTAIT PLOT AND LOADS PLOT SETTINGS FOR
         # EXAMPLE
         x = vcs.init()
