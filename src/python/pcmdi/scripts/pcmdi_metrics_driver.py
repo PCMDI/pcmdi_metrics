@@ -34,19 +34,15 @@ unidata.addScaledUnit("psu", .001, "dimless")
 unidata.addScaledUnit("PSS-78", .001, "dimless")
 unidata.addScaledUnit("Practical Salinity Scale 78", .001, "dimless")
 
-execfile(sys.prefix+"/share/pcmdi/default_regions.py")
+execfile(sys.prefix+"/share/pmp/default_regions.py")
 
 # Load the obs dictionary
 fjson = open(
-    os.path.join(
-        pcmdi_metrics.__path__[0],
-        "..",
-        "..",
-        "..",
-        "..",
-        "share",
-        "pcmdi",
-        "obs_info_dictionary.json"))
+        os.path.join(
+            sys.prefix,
+            "share",
+            "pmp",
+            "obs_info_dictionary.json"))
 obs_dic = json.loads(fjson.read())
 fjson.close()
 
@@ -260,7 +256,7 @@ disclaimer = open(
     os.path.join(
         sys.prefix,
         "share",
-        "pcmdi",
+        "pmp",
         "disclaimer.txt")).read()
 
 for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars

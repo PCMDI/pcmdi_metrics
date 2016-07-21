@@ -70,11 +70,7 @@ class TestGraphics(unittest.TestCase):
 
         x.scriptrun(
             os.path.join(
-                pcmdi_metrics.__path__[0],
-                "..",
-                "..",
-                "..",
-                "..",
+                sys.prefix,
                 "share",
                 "graphics",
                 'vcs',
