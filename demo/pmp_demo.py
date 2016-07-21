@@ -125,5 +125,5 @@ def demo(demo_file,title,colorized=True):
     for att in ["case_id","model_version","period","realization","period"]:
         if hasattr(pmp_param,att):
             setattr(loc,att,getattr(pmp_param,att))
-    comment("You can now look at the results in: %s%s%s" % (bgcolor.HEADER+bgcolor.BOLD,loc(),bgcolor.ENDC)
+    comment("You can now look at the results in: %s%s%s" % (bgcolor.HEADER+bgcolor.BOLD,loc(),bgcolor.ENDC))
 
