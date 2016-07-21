@@ -1,16 +1,20 @@
 ################################################################################
-#  THIS IS A VERY SIMPLE EXAMPLE, ONLY COMPUTING STATISTICS FOR ONE MODEL VERSION AND ONE VARIABLE 
+#  THIS IS A SIMPLE EXAMPLE mean climate "parameter file" USED IN A DEMO EXECUTION OF THE PMP
+
 #  For more info, see https://github.com/PCMDI/pcmdi_metrics/wiki/Using-the-package
 #
+# THIS PARAMETER FILE IS USED TO COMPUTE STATISTICS FOR ONE MODEL VERSION AND ONE VARIABLE ONLY
+
 # NOTES FOR PYTHON NEWBIES: ON ANY GIVEN LINE, ANTHING TO THE RIGHT OF A "#" IS CONSIDERED A COMMENT IN PYTHON  
 # IN THIS SIMPLE EXAMPLE WE DEFINE CHARACTER STRINGS, BUT ALSO ONE OF THE MOST BASIC AND POWERFUL PYTHON OBJECTS KNOWN AS A LIST.  
 # PYTHON LISTS ARE DEFINED WITH SQUARE BRACKETS [] ... FOR MORE INFO SEE: https://docs.python.org/2/tutorial/datastructures.html
 ################################################################################
 #
-# First of all we define the 'template' used by our system to construct file names and paths
-# keywords in between %() will be automatically filled by PMP
-# in this example we only use four of the 'official' keys: 'variable', 'model_version', 'realization' and 'period'
+# First, we define the 'template' used by the PMP to construct file names and paths that correspond to the location of the model and observatinal data.
+# Keywords in between %() will be automatically filled by PMP
+# In this example we only use four of the 'official' keys: 'variable', 'model_version', 'realization' and 'period'
 # some of these are defined later in the parameter file
+# For a complete list of official keys see: 
 filename_template = "%(variable)_%(model_version)_Amon_amip_%(realization)_%(period)-clim.nc"
 # First lets define an case id to help us differentiate between many se of parameter files
 # The python 'case_id' variable is optional in the parameter file
