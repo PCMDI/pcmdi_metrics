@@ -63,3 +63,11 @@ regrid_method     = 'linear'
 period = '198001-200512'
 # MODEL REALIZATION
 realization = 'r1i1p1'
+
+### DONE!
+
+# THIS DEMO PARAMETER FILE IS AVAILABLE AT: https://github.com/PCMDI/pcmdi_metrics/blob/master/demo/parameter_files/pmp_input_parameters_demo1.py  
+# FOR A COMPLETE LISTING OF ALL AVAILABLE KEYS IN THE PMP PARAMETER FILES SEE: https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/parameter_files/input_parameter_file_all_options.py
+
+ 
+
