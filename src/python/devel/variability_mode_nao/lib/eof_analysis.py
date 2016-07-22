@@ -6,7 +6,7 @@ def eof_analysis_get_first_variance_mode(timeseries):
   from eofs.cdms import Eof
 
   # EOF (take only first variance mode...) ---
-  solver = Eof(timeseries, weights='coslat')
+  solver = Eof(timeseries, weights='area')
   eof = solver.eofsAsCovariance(neofs=1)
   pc = solver.pcs(npcs=1, pcscaling=1) # pcscaling=1: scaled to unit variance 
                                        # (divided by the square-root of their eigenvalue)
