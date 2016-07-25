@@ -48,7 +48,7 @@ mode = 'nao'
 
 stat = 'rms'
 stat = 'cor'
-
+stat = 'frac'
 
 seasons = [season]
 if season == 'all':
@@ -77,6 +77,8 @@ for season in seasons:
       dia._ax.set_ylim(0,3.5)
     elif stat == 'cor':
       dia._ax.set_ylim(-1,1)
+    elif stat == 'frac':
+      dia._ax.set_ylim(0,1)
 
     if season != seasons[-1]: # Hide x-axis labels for upper panels if plotting multiple panels
       dia._ax.axes.xaxis.set_ticklabels([])

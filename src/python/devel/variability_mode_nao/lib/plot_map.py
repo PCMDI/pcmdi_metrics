@@ -28,7 +28,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   p = vcs.createprojection()
   if mode == 'nam' or mode == 'sam':
     ptype = int('-3')
-  elif mode == 'nao' or mode == 'pna':
+  elif mode == 'nao' or mode == 'pna' or mode == 'pdo':
     ptype = 'lambert azimuthal'
   p.type = ptype
   iso.projection = p
