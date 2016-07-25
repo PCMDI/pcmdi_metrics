@@ -18,7 +18,8 @@ libfiles = ['durolib.py',
             'plot_map.py']
 
 for lib in libfiles:
-  execfile(os.path.join('../lib/',lib))
+  #execfile(os.path.join('../lib/',lib))
+  execfile(os.path.join('../../lib/',lib))
 
 mip = 'cmip5'
 #exp = 'piControl'
@@ -34,11 +35,11 @@ test = True
 #mode = 'nam' # Northern Annular Mode
 #mode = 'nao' # Northern Atlantic Oscillation
 #mode = 'sam' # Southern Annular Mode
-mode = 'pna' # Pacific North American Pattern
+#mode = 'pna' # Pacific North American Pattern
 mode = 'pdo'
 
 obs_compare = True
-obs_compare = False
+#obs_compare = False
 
 nc_out = True
 #nc_out = False
@@ -103,40 +104,41 @@ else:
 # Observation
 #-------------------------------------------------
 if obs_compare:
-  obs_path = '/clim_obs/obs/atm/mo/'+var+'/ERAINT/'+var+'_ERAINT_198901-200911.nc' # ts_ERAINT is already masked out, only SST, while model ts includes land area
+  #obs_path = '/clim_obs/obs/atm/mo/'+var+'/ERAINT/'+var+'_ERAINT_198901-200911.nc' # ts_ERAINT is already masked out, only SST, while model ts includes land area
+  obs_path = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
   fo = cdms.open(obs_path)
-  obs_timeseries = fo(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))*unit_adj 
+  #obs_timeseries = fo(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))*unit_adj 
+  obs_timeseries = fo('sst',latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))*unit_adj 
   cdutil.setTimeBoundsMonthly(obs_timeseries)
+
+  # reomove annual cycle
+  obs_timeseries = cdutil.ANNUALCYCLE.departures(obs_timeseries)
 
   ref_grid = obs_timeseries.getGrid() # Extract grid information for Regrid below
 
-  obs_timeseries_season={}
   eof1_obs={}
   pc1_obs={}
   frac1_obs={}
   
   #-------------------------------------------------
-  # Season loop
+  # EOF analysis
   #- - - - - - - - - - - - - - - - - - - - - - - - -
-  for season in seasons:
+  eof1_obs, pc1_obs, frac1_obs = eof_analysis_get_first_variance_mode(obs_timeseries)
 
-    obs_timeseries_season['season'] = getattr(cdutil,season)(obs_timeseries)
+  #-------------------------------------------------
+  # Record results
+  #- - - - - - - - - - - - - - - - - - - - - - - - -
+  # Set output file name for both NetCDF and plot ---
+  output_file_name_obs = mode+'_'+var+'_eof1_obs_'+str(syear)+'-'+str(eyear)
 
-    # EOF analysis ---
-    eof1_obs['season'], pc1_obs['season'], frac1_obs['season'] = eof_analysis_get_first_variance_mode(obs_timeseries_season['season'])
+  # Save in NetCDF output ---
+  if nc_out:
+    write_nc_output(output_file_name_obs, eof1_obs, pc1_obs, frac1_obs)
 
-    # Set output file name for NetCDF and plot ---
-    output_file_name_obs = mode+'_psl_eof1_'+season+'_obs_'+str(syear)+'-'+str(eyear)
-
-    # Save in NetCDF output ---
-    if nc_out:
-      write_nc_output(output_file_name_obs, eof1_obs['season'], pc1_obs['season'], frac1_obs['season'])
-
-    #-------------------------------------------------
-    # GRAPHIC (plotting) PART
-    #- - - - - - - - - - - - - - - - - - - - - - - - -
-    if plot:
-      plot_map(mode, 'obs', syear, eyear, season, eof1_obs['season'], frac1_obs['season'], output_file_name_obs)
+  # Plot map --- 
+  if plot:
+    #plot_map(mode, 'obs', syear, eyear, '', eof1_obs, frac1_obs, output_file_name_obs)
+    plot_map(mode, 'obs (HadISST)', syear, eyear, '', eof1_obs, frac1_obs, output_file_name_obs)
 
 #=================================================
 # Model
@@ -155,9 +157,16 @@ for model in models:
   print model
 
   f = cdms.open(model_path)
-  model_timeseries = f(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))*unit_adj
+  #model_timeseries = f(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))*unit_adj
+  model_timeseries = f(var,time=(start_time,end_time))*unit_adj
   cdutil.setTimeBoundsMonthly(model_timeseries)
 
+  # Remove annual cycle
+  #model_timeseries = cdutil.ANNUALCYCLE.departures(model_timeseries)
+
+  #-------------------------------------------------
+  # Mask out: extract SST only..
+  #- - - - - - - - - - - - - - - - - - - - - - - - -
   if mode == 'pdo':
     # model land fraction
     #model_lf_path = '/work/cmip5/fx/fx/sftlf/cmip5.'+model+'.historical.r0i0p0.fx.atm.fx.sftlf.ver-1.latestX.xml'
@@ -165,56 +174,95 @@ for model in models:
     print model_lf_path
     
     f_lf = cdms.open(model_lf_path)
+    #lf = f_lf('sftlf',latitude=(lat1,lat2),longitude=(lon1,lon2))
     lf = f_lf('sftlf')
 
     model_timeseries,lf = genutil.grower(model_timeseries,lf) # Matching dimension
 
-    model_timeseries = NP.ma.masked_where(lf>0, model_timeseries) # mask out land only (include only pure ocean)
+    #opt1 = True
+    opt1 = False
+
+    if opt1:
+      model_timeseries_masked = NP.ma.masked_where(lf>0, model_timeseries) # mask out land (include only 100% ocean grid)
+    else: 
+      lf2 = (100.-lf)/100.
+      model_timeseries_masked = model_timeseries * lf2 # mask out land considering fraction
+
+    time = model_timeseries.getTime()
+    model_timeseries_masked.setAxis(0,time)
+
+    lat = model_timeseries.getLatitude()
+    model_timeseries_masked.setAxis(1,lat)
+
+    lon = model_timeseries.getLongitude()
+    model_timeseries_masked.setAxis(2,lon)
+
+    model_timeseries = model_timeseries_masked
 
   #-------------------------------------------------
-  # Season loop
+  # Get SST anomaly
+  # Monthly index timeseries defined as the leading principal component (PC) of North Pacific (20:70N, 110E:100W) area-weighted SST* anomalies, where SST* denotes that the global mean SST has been removed at each timestep. Pattern created by regressing global SST anomalies onto normalized PC timeseries. Low pass-filtered timeseries (black curve) is based on a a 61-month running mean. 
   #- - - - - - - - - - - - - - - - - - - - - - - - -
-  for season in seasons:
-    var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]={}
 
-    model_timeseries_season = getattr(cdutil,season)(model_timeseries)
+  model_timeseries_subDomain = model_timeseries(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
-    # EOF analysis ---
-    eof1, pc1, frac1 = eof_analysis_get_first_variance_mode(model_timeseries_season)
+  #opt2 = True
+  opt2 = False
 
-    # Set output file name for NetCDF and plot ---
-    output_file_name = mode+'_psl_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)
+  if opt2:
+    #model_global_mean_timeseries = cdutil.averager(model_timeseries, axis='xy', weights='weighted')
+    model_global_mean_timeseries = cdutil.averager(model_timeseries(latitude=(-60,70)), axis='xy', weights='weighted')
 
-    # Save in NetCDF output ---
-    if nc_out:
-      write_nc_output(output_file_name,eof1,pc1,frac1)
+    model_timeseries_subDomain, model_global_mean_timeseries = genutil.grower(model_timeseries_subDomain, model_global_mean_timeseries) # Matching dimension
+    model_timeseries_subDomain_anom = model_timeseries_subDomain - model_global_mean_timeseries 
+  else:
+    model_timeseries_subDomain_anom = cdutil.ANNUALCYCLE.departures(model_timeseries_subDomain)
+
+  #-------------------------------------------------
+  # EOF analysis
+  #- - - - - - - - - - - - - - - - - - - - - - - - -
+  eof1, pc1, frac1 = eof_analysis_get_first_variance_mode(model_timeseries_subDomain_anom)
+
+  if not opt1:
+    eof1 = eof1 / lf2(latitude=(lat1,lat2),longitude=(lon1,lon2))
+
+  #-------------------------------------------------
+  # Record results
+  #- - - - - - - - - - - - - - - - - - - - - - - - -
+  # Set output file name for both NetCDF and plot ---
+  output_file_name = mode+'_psl_eof1_'+model+'_'+str(syear)+'-'+str(eyear)
+
+  # Save in NetCDF output ---
+  if nc_out:
+    write_nc_output(output_file_name,eof1,pc1,frac1)
     
-    #-------------------------------------------------
-    # OBS statistics (regrid will be needed) output, save as dictionary
-    #- - - - - - - - - - - - - - - - - - - - - - - - -
-    if obs_compare:
+  # Plot map --- 
+  if plot:
+    #plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name)
+    plot_map(mode, model, syear, eyear, '', eof1, frac1, output_file_name)
 
-      # Regrid (interpolation, model grid to ref grid) ---
-      eof1_regrid = eof1.regrid(ref_grid,regredTool='regrid2') # regrid location test 1
+  #-------------------------------------------------
+  # OBS statistics (regrid will be needed) output, save as dictionary
+  #- - - - - - - - - - - - - - - - - - - - - - - - -
+  if obs_compare:
 
-      # RMS difference ---
-      rms = genutil.statistics.rms(eof1_regrid, eof1_obs['season'], axis='xy')
+    # Regrid (interpolation, model grid to ref grid) ---
+    eof1_regrid = eof1.regrid(ref_grid,regredTool='regrid2') # regrid location test 1
 
-      # Spatial correlation weighted by area ('generate' option for weights) ---
-      cor = genutil.statistics.correlation(eof1_regrid, eof1_obs['season'], weights='generate', axis='xy')
+    # RMS difference ---
+    rms = genutil.statistics.rms(eof1_regrid, eof1_obs, axis='xy')
 
-      # Add to dictionary for json output ---
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['rms'] = float(rms)
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['cor'] = float(cor)
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['frac'] = float(frac1)
+    # Spatial correlation weighted by area ('generate' option for weights) ---
+    cor = genutil.statistics.correlation(eof1_regrid, eof1_obs, weights='generate', axis='xy')
 
-    #-------------------------------------------------
-    # GRAPHIC (plotting) PART
-    #- - - - - - - - - - - - - - - - - - - - - - - - -
-    if plot:
-      plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name)
+    # Add to dictionary for json output ---
+    var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode]['rms'] = float(rms)
+    var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode]['cor'] = float(cor)
+    var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode]['frac'] = float(frac1)
 
-# Write dictionary to json file
+#=================================================
+# OBS statistics -- Write dictionary to json file
+#-------------------------------------------------
 if obs_compare:
   json_filename = 'var_mode_'+mode+'_eof1_stat_' + mip + '_' + exp + '_' + run + '_' + fq + '_' + realm + '_' + str(syear) + '-' + str(eyear)
   json.dump(var_mode_stat_dic, open(json_filename + '.json','w'),sort_keys=True, indent=4, separators=(',', ': '))
