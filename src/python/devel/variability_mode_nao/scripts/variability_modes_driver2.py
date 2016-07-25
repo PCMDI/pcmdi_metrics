@@ -32,11 +32,7 @@ run = 'r1i1p1'
 test = True
 #test = False
 
-#mode = 'nam' # Northern Annular Mode
-#mode = 'nao' # Northern Atlantic Oscillation
-#mode = 'sam' # Southern Annular Mode
-#mode = 'pna' # Pacific North American Pattern
-mode = 'pdo'
+mode = 'pdo' # Pacific Decadal Oscillation
 
 obs_compare = True
 #obs_compare = False
@@ -63,31 +59,7 @@ eyear = 2005
 start_time = cdtime.comptime(syear,1,1)
 end_time = cdtime.comptime(eyear,12,31)
 
-if mode == 'nam':
-  var = 'psl'
-  lat1 = 20
-  lat2 = 90
-  lon1 = -180
-  lon2 = 180
-elif mode == 'nao':
-  var = 'psl'
-  lat1 = 20
-  lat2 = 80
-  lon1 = -90
-  lon2 = 40
-elif mode == 'sam':
-  var = 'psl'
-  lat1 = -20
-  lat2 = -90
-  lon1 = 0
-  lon2 = 360
-elif mode == 'pna':
-  var = 'psl'
-  lat1 = 20
-  lat2 = 85
-  lon1 = 120
-  lon2 = 240
-elif mode == 'pdo':
+if mode == 'pdo':
   var = 'ts'
   lat1 = 20
   lat2 = 70
@@ -162,7 +134,7 @@ for model in models:
   cdutil.setTimeBoundsMonthly(model_timeseries)
 
   # Remove annual cycle
-  #model_timeseries = cdutil.ANNUALCYCLE.departures(model_timeseries)
+  model_timeseries = cdutil.ANNUALCYCLE.departures(model_timeseries)
 
   #-------------------------------------------------
   # Mask out: extract SST only..
@@ -177,16 +149,17 @@ for model in models:
     #lf = f_lf('sftlf',latitude=(lat1,lat2),longitude=(lon1,lon2))
     lf = f_lf('sftlf')
 
-    model_timeseries,lf = genutil.grower(model_timeseries,lf) # Matching dimension
+    model_timeseries,lf_timeConst = genutil.grower(model_timeseries,lf) # Matching dimension
 
     #opt1 = True
     opt1 = False
 
     if opt1:
-      model_timeseries_masked = NP.ma.masked_where(lf>0, model_timeseries) # mask out land (include only 100% ocean grid)
+      model_timeseries_masked = NP.ma.masked_where(lf_time>0, model_timeseries) # mask out land (include only 100% ocean grid)
     else: 
       lf2 = (100.-lf)/100.
-      model_timeseries_masked = model_timeseries * lf2 # mask out land considering fraction
+      model_timeseries,lf2_timeConst = genutil.grower(model_timeseries,lf2) # Matching dimension
+      model_timeseries_masked = model_timeseries * lf2_timeConst # mask out land considering fraction
 
     time = model_timeseries.getTime()
     model_timeseries_masked.setAxis(0,time)
