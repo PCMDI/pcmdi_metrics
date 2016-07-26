@@ -19,7 +19,10 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
 
   canvas.setcolormap('bl_to_darkred')
   iso = canvas.createisofill()
-  iso.levels = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+  if mode == 'pdo':
+    iso.levels = [-0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5]
+  else:
+    iso.levels = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
   iso.ext_1 = 'y' # control colorbar edge (arrow extention on/off)
   iso.ext_2 = 'y' # control colorbar edge (arrow extention on/off)
   cols = vcs.getcolors(iso.levels)
@@ -28,8 +31,10 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   p = vcs.createprojection()
   if mode == 'nam' or mode == 'sam':
     ptype = int('-3')
-  elif mode == 'nao' or mode == 'pna' or mode == 'pdo':
+  elif mode == 'nao' or mode == 'pna':
     ptype = 'lambert azimuthal'
+  elif mode == 'pdo':
+    ptype = 'lambert'
   p.type = ptype
   iso.projection = p
   xtra = {}
