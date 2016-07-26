@@ -97,7 +97,7 @@ if obs_compare:
   # Extract subDomain ---
   obs_timeseries_subDomain = obs_timeseries(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
-  # Take out globla mean ---
+  # Take out global mean ---
   obs_global_mean_timeseries = cdutil.averager(obs_timeseries(latitude=(-60,70)), axis='xy', weights='weighted')
   obs_timeseries_subDomain, obs_global_mean_timeseries = genutil.grower(obs_timeseries_subDomain, obs_global_mean_timeseries) # Matching dimension
   obs_timeseries_subDomain = obs_timeseries_subDomain - obs_global_mean_timeseries
@@ -184,11 +184,11 @@ for model in models:
     if opt1: # Masking out partial land grids as well
       model_timeseries_masked = NP.ma.masked_where(lf_timeConst>0, model_timeseries) # mask out land (include only 100% ocean grid)
     else: # Masking out only full land grid but use weighting for partial land grids
-      #model_timeseries_masked = NP.ma.masked_where(lf_timeConst==100, model_timeseries) # mask out land (include only 100% ocean grid)
+      model_timeseries_masked = NP.ma.masked_where(lf_timeConst==100, model_timeseries) # mask out land (include only 100% ocean grid)
       lf2 = (100.-lf)/100.
       model_timeseries,lf2_timeConst = genutil.grower(model_timeseries,lf2) # Matching dimension
-      model_timeseries_masked = model_timeseries * lf2_timeConst # mask out land considering fraction
-      #model_timeseries_masked = model_timeseries_masked * lf2_timeConst # mask out land considering fraction
+      #model_timeseries_masked = model_timeseries * lf2_timeConst # mask out land considering fraction
+      model_timeseries_masked = model_timeseries_masked * lf2_timeConst # mask out land considering fraction
 
     # Dimension setup ---
 
@@ -210,23 +210,21 @@ for model in models:
   """
   #- - - - - - - - - - - - - - - - - - - - - - - - -
 
+  # Extract sub domain ---
   model_timeseries_subDomain = model_timeseries(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
-  opt2 = True
-  #opt2 = False
-
-  if opt2:
-    model_global_mean_timeseries = cdutil.averager(model_timeseries(latitude=(-60,70)), axis='xy', weights='weighted')
-    model_timeseries_subDomain, model_global_mean_timeseries = genutil.grower(model_timeseries_subDomain, model_global_mean_timeseries) # Matching dimension
-    model_timeseries_subDomain = model_timeseries_subDomain - model_global_mean_timeseries 
+  # Take global mean out ---
+  model_global_mean_timeseries = cdutil.averager(model_timeseries(latitude=(-60,70)), axis='xy', weights='weighted')
+  model_timeseries_subDomain, model_global_mean_timeseries = genutil.grower(model_timeseries_subDomain, model_global_mean_timeseries) # Matching dimension
+  model_timeseries_subDomain = model_timeseries_subDomain - model_global_mean_timeseries 
 
   #-------------------------------------------------
   # EOF analysis
   #- - - - - - - - - - - - - - - - - - - - - - - - -
   eof1, pc1, frac1 = eof_analysis_get_first_variance_mode(model_timeseries_subDomain)
 
-  if not opt1:
-    eof1 = eof1 / lf2(latitude=(lat1,lat2),longitude=(lon1,lon2))
+  #if not opt1:
+  #  eof1 = eof1 / lf2(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
   #-------------------------------------------------
   # Record results
