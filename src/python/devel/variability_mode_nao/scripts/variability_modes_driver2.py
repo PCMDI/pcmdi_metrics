@@ -46,11 +46,8 @@ plot = True
 if test:
   models = ['ACCESS1-0']  # Test just one model
   #models = ['ACCESS1-3']  # Test just one model
-  seasons = ['DJF']
-  #seasons = ['MAM']
 else:
   models = get_all_mip_mods(mip,exp,fq,realm,var)
-  seasons = ['DJF','MAM','JJA','SON']
 
 syear = 1900
 eyear = 2005
@@ -65,12 +62,6 @@ if mode == 'pdo':
   lon1 = 110
   lon2 = 260
 
-# Unit adjustment
-if var == 'psl':
-  unit_adj = 0.01 # Pa to hPa
-else:
-  unit_adj = 1.
-
 #=================================================
 # Observation
 #-------------------------------------------------
@@ -83,9 +74,7 @@ if obs_compare:
   #obs_path = '/clim_obs/obs/atm/mo/'+var+'/ERAINT/'+var+'_ERAINT_198901-200911.nc' # ts_ERAINT is already masked out, only SST, while model ts includes land area
   obs_path = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
   fo = cdms.open(obs_path)
-  #obs_timeseries = fo(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))*unit_adj 
-  #obs_timeseries = fo('sst',latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))*unit_adj 
-  obs_timeseries = fo('sst',time=(start_time,end_time))*unit_adj 
+  obs_timeseries = fo('sst',time=(start_time,end_time))
   cdutil.setTimeBoundsMonthly(obs_timeseries)
 
   # Replace area where temperature below -1.8 C to -1.8 C ---
@@ -238,7 +227,6 @@ for model in models:
     
   # Plot map --- 
   if plot:
-    #plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name)
     plot_map(mode, model, syear, eyear, '', eof1, frac1, output_file_name)
 
   #-------------------------------------------------

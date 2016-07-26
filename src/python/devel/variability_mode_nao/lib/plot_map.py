@@ -28,6 +28,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   cols = vcs.getcolors(iso.levels)
   cols[6] = 139 # Adjsut to light red
   iso.fillareacolors = cols
+  iso.missing = 0
   p = vcs.createprojection()
   if mode == 'nam' or mode == 'sam':
     ptype = int('-3')
