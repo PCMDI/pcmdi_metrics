@@ -29,10 +29,17 @@ fq = 'mo'
 realm = 'atm'
 run = 'r1i1p1'
 
-test = True
-#test = False
+#test = True
+test = False
 
 mode = 'pdo' # Pacific Decadal Oscillation
+
+if mode == 'pdo':
+  var = 'ts'
+  lat1 = 20
+  lat2 = 70
+  lon1 = 110
+  lon2 = 260
 
 obs_compare = True
 #obs_compare = False
@@ -48,6 +55,9 @@ if test:
   #models = ['ACCESS1-3']  # Test just one model
 else:
   models = get_all_mip_mods(mip,exp,fq,realm,var)
+  models_lf = get_all_mip_mods_lf(mip,'sftlf')
+  models = list(set(models).intersection(models_lf)) # Select models when land fraction is existing
+  models = sorted(models, key=lambda s:s.lower()) # Sort list alphabetically, case-insensitive
 
 syear = 1900
 eyear = 2005
@@ -55,20 +65,14 @@ eyear = 2005
 start_time = cdtime.comptime(syear,1,1)
 end_time = cdtime.comptime(eyear,12,31)
 
-if mode == 'pdo':
-  var = 'ts'
-  lat1 = 20
-  lat2 = 70
-  lon1 = 110
-  lon2 = 260
-
 #=================================================
 # Observation
 #-------------------------------------------------
-syear = 1979
-eyear = 2005
-start_time = cdtime.comptime(syear,1,1)
-end_time = cdtime.comptime(eyear,12,31)
+# Below is temporary time fix
+#syear = 1979
+#eyear = 2005
+#start_time = cdtime.comptime(syear,1,1)
+#end_time = cdtime.comptime(eyear,12,31)
 
 if obs_compare:
   #obs_path = '/clim_obs/obs/atm/mo/'+var+'/ERAINT/'+var+'_ERAINT_198901-200911.nc' # ts_ERAINT is already masked out, only SST, while model ts includes land area
@@ -122,10 +126,11 @@ if obs_compare:
 #=================================================
 # Model
 #-------------------------------------------------
-syear = 1900
-eyear = 2005
-start_time = cdtime.comptime(syear,1,1)
-end_time = cdtime.comptime(eyear,12,31)
+# Below is temporary time fix
+#syear = 1900
+#eyear = 2005
+#start_time = cdtime.comptime(syear,1,1)
+#end_time = cdtime.comptime(eyear,12,31)
 
 var_mode_stat_dic={}
 var_mode_stat_dic['RESULTS']={}
@@ -137,7 +142,7 @@ for model in models:
 
   model_path = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,run)
   #model_path = '/work/cmip5/historical/atm/mo/psl/cmip5.'+model+'.historical.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
-  print model_path
+  #print model_path
   print model
 
   f = cdms.open(model_path)
@@ -158,7 +163,7 @@ for model in models:
   if mode == 'pdo':
     # model land fraction
     #model_lf_path = '/work/cmip5/fx/fx/sftlf/cmip5.'+model+'.historical.r0i0p0.fx.atm.fx.sftlf.ver-1.latestX.xml'
-    model_lf_path = '/work/cmip5/fx/fx/sftlf/cmip5.ACCESS1-0.historical.r0i0p0.fx.atm.fx.sftlf.ver-1.latestX.xml'
+    model_lf_path = get_latest_pcmdi_mip_lf_data_path(mip,model,'sftlf')
     print model_lf_path
     
     f_lf = cdms.open(model_lf_path)
