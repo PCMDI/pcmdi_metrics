@@ -14,11 +14,11 @@ regions_specs = {
         'ocean_TROPICS': {'value':0, 'domain':cdutil.region.domain(latitude=(30.,30,'ccb'))},
         "ocean" : {'value':0, },
         # Below is for modes of variability
-        "nam" : {'domian':cdutil.region.domain(latitude=(20.,90,'ccb'),longitude=(-180,180,'ccb'))},
-        "nao" : {'domian':cdutil.region.domain(latitude=(20.,80,'ccb'),longitude=(-90,40,'ccb'))},
-        "sam" : {'domian':cdutil.region.domain(latitude=(-20.,-90,'ccb'),longitude=(0,360,'ccb'))},
-        "pna" : {'domian':cdutil.region.domain(latitude=(20.,85,'ccb'),longitude=(120,240,'ccb'))},
-        "pdo" : {'domian':cdutil.region.domain(latitude=(20.,70,'ccb'),longitude=(110,260,'ccb'))},
+        "NAM" : {'domain':cdutil.region.domain(latitude=(20.,90,'ccb'),longitude=(-180,180,'ccb'))},
+        "NAO" : {'domain':cdutil.region.domain(latitude=(20.,80,'ccb'),longitude=(-90,40,'ccb'))},
+        "SAM" : {'domain':cdutil.region.domain(latitude=(-20.,-90,'ccb'),longitude=(0,360,'ccb'))},
+        "PNA" : {'domain':cdutil.region.domain(latitude=(20.,85,'ccb'),longitude=(120,240,'ccb'))},
+        "PDO" : {'domain':cdutil.region.domain(latitude=(20.,70,'ccb'),longitude=(110,260,'ccb'))},
         }
 
 default_regions = ['global','NHEX','SHEX','TROPICS']
