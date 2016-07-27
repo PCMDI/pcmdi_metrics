@@ -29,9 +29,7 @@ fq = 'mo'
 realm = 'atm'
 run = 'r1i1p1'
 
-#test = True
-test = False
-
+# Mode of variability
 mode = 'pdo' # Pacific Decadal Oscillation
 
 if mode == 'pdo':
@@ -40,6 +38,9 @@ if mode == 'pdo':
   lat2 = 70
   lon1 = 110
   lon2 = 260
+
+test = True
+#test = False
 
 obs_compare = True
 #obs_compare = False
@@ -53,6 +54,7 @@ plot = True
 if test:
   models = ['ACCESS1-0']  # Test just one model
   #models = ['ACCESS1-3']  # Test just one model
+  models = ['fio-esm']
 else:
   models = get_all_mip_mods(mip,exp,fq,realm,var)
   models_lf = get_all_mip_mods_lf(mip,'sftlf')
@@ -146,7 +148,6 @@ for model in models:
   print model
 
   f = cdms.open(model_path)
-  #model_timeseries = f(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))-273.15
   model_timeseries = f(var,time=(start_time,end_time))-273.15 # K to C degree
   model_timeseries.units = 'degC'
   cdutil.setTimeBoundsMonthly(model_timeseries)
@@ -167,8 +168,12 @@ for model in models:
     print model_lf_path
     
     f_lf = cdms.open(model_lf_path)
-    #lf = f_lf('sftlf',latitude=(lat1,lat2),longitude=(lon1,lon2))
     lf = f_lf('sftlf')
+
+    # Check land fraction variable to see if it meets criteria (0 for ocean, 100 for land, no missing value)
+    lf[ lf == lf.missing_value ] = 0
+    if NP.max(lf) == 1.:
+      lf = lf * 100 
 
     model_timeseries,lf_timeConst = genutil.grower(model_timeseries,lf) # Matching dimension
 
@@ -176,13 +181,12 @@ for model in models:
     opt1 = False
 
     if opt1: # Masking out partial land grids as well
-      model_timeseries_masked = NP.ma.masked_where(lf_timeConst>0, model_timeseries) # mask out land (include only 100% ocean grid)
+      model_timeseries_masked = NP.ma.masked_where(lf_timeConst>0, model_timeseries) # mask out land even fractional (leave only pure ocean grid)
     else: # Masking out only full land grid but use weighting for partial land grids
-      model_timeseries_masked = NP.ma.masked_where(lf_timeConst==100, model_timeseries) # mask out land (include only 100% ocean grid)
+      model_timeseries_masked = NP.ma.masked_where(lf_timeConst==100, model_timeseries) # mask out pure land grids
       lf2 = (100.-lf)/100.
       model_timeseries,lf2_timeConst = genutil.grower(model_timeseries,lf2) # Matching dimension
-      #model_timeseries_masked = model_timeseries * lf2_timeConst # mask out land considering fraction
-      model_timeseries_masked = model_timeseries_masked * lf2_timeConst # mask out land considering fraction
+      model_timeseries_masked = model_timeseries_masked * lf2_timeConst # consider land fraction like as weighting
 
     # Dimension setup ---
 

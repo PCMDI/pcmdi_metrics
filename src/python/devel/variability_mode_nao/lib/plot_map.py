@@ -57,7 +57,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   plot_title.valign = 'top'
   plot_title.color='black'
   frac1 = round(float(frac1*100.),1) # % with one floating number
-  plot_title.string = str.upper(mode)+': '+str.upper(model)+'\n'+str(syear)+'-'+str(eyear)+' '+str.upper(season)+', '+str(frac1)+'%'
+  plot_title.string = str.upper(mode)+': '+model+'\n'+str(syear)+'-'+str(eyear)+' '+str.upper(season)+', '+str(frac1)+'%'
   canvas.plot(plot_title)
 
   #-------------------------------------------------
