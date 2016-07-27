@@ -18,8 +18,7 @@ libfiles = ['durolib.py',
             'plot_map.py']
 
 for lib in libfiles:
-  #execfile(os.path.join('../lib/',lib))
-  execfile(os.path.join('../../lib/',lib))
+  execfile(os.path.join('../lib/',lib))
 
 mip = 'cmip5'
 #exp = 'piControl'
@@ -53,8 +52,6 @@ plot = True
 
 if test:
   models = ['ACCESS1-0']  # Test just one model
-  #models = ['ACCESS1-3']  # Test just one model
-  models = ['fio-esm']
 else:
   models = get_all_mip_mods(mip,exp,fq,realm,var)
   models_lf = get_all_mip_mods_lf(mip,'sftlf')
@@ -100,14 +97,13 @@ if obs_compare:
   #ref_grid = obs_timeseries.getGrid() # Extract grid information for Regrid below
   ref_grid = obs_timeseries_subDomain.getGrid() # Extract grid information for Regrid below
 
-  eof1_obs={}
-  pc1_obs={}
-  frac1_obs={}
-  
   #-------------------------------------------------
   # EOF analysis
   #- - - - - - - - - - - - - - - - - - - - - - - - -
-  #eof1_obs, pc1_obs, frac1_obs = eof_analysis_get_first_variance_mode(obs_timeseries)
+  eof1_obs={}
+  pc1_obs={}
+  frac1_obs={}
+
   eof1_obs, pc1_obs, frac1_obs = eof_analysis_get_first_variance_mode(obs_timeseries_subDomain)
 
   #-------------------------------------------------
@@ -144,7 +140,6 @@ for model in models:
 
   model_path = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,run)
   #model_path = '/work/cmip5/historical/atm/mo/psl/cmip5.'+model+'.historical.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
-  #print model_path
   print model
 
   f = cdms.open(model_path)
@@ -161,45 +156,43 @@ for model in models:
   #-------------------------------------------------
   # Extract SST (mask out land region)
   #- - - - - - - - - - - - - - - - - - - - - - - - -
-  if mode == 'pdo':
-    # model land fraction
-    #model_lf_path = '/work/cmip5/fx/fx/sftlf/cmip5.'+model+'.historical.r0i0p0.fx.atm.fx.sftlf.ver-1.latestX.xml'
-    model_lf_path = get_latest_pcmdi_mip_lf_data_path(mip,model,'sftlf')
-    print model_lf_path
+  # model land fraction
+  model_lf_path = get_latest_pcmdi_mip_lf_data_path(mip,model,'sftlf')
+  #model_lf_path = '/work/cmip5/fx/fx/sftlf/cmip5.'+model+'.historical.r0i0p0.fx.atm.fx.sftlf.ver-1.latestX.xml'
+  #print model_lf_path
     
-    f_lf = cdms.open(model_lf_path)
-    lf = f_lf('sftlf')
+  f_lf = cdms.open(model_lf_path)
+  lf = f_lf('sftlf')
 
-    # Check land fraction variable to see if it meets criteria (0 for ocean, 100 for land, no missing value)
-    lf[ lf == lf.missing_value ] = 0
-    if NP.max(lf) == 1.:
-      lf = lf * 100 
+  # Check land fraction variable to see if it meets criteria (0 for ocean, 100 for land, no missing value)
+  lf[ lf == lf.missing_value ] = 0
+  if NP.max(lf) == 1.:
+    lf = lf * 100 
 
-    model_timeseries,lf_timeConst = genutil.grower(model_timeseries,lf) # Matching dimension
+  model_timeseries,lf_timeConst = genutil.grower(model_timeseries,lf) # Matching dimension
 
-    #opt1 = True
-    opt1 = False
+  #opt1 = True
+  opt1 = False
 
-    if opt1: # Masking out partial land grids as well
-      model_timeseries_masked = NP.ma.masked_where(lf_timeConst>0, model_timeseries) # mask out land even fractional (leave only pure ocean grid)
-    else: # Masking out only full land grid but use weighting for partial land grids
-      model_timeseries_masked = NP.ma.masked_where(lf_timeConst==100, model_timeseries) # mask out pure land grids
-      lf2 = (100.-lf)/100.
-      model_timeseries,lf2_timeConst = genutil.grower(model_timeseries,lf2) # Matching dimension
-      model_timeseries_masked = model_timeseries_masked * lf2_timeConst # consider land fraction like as weighting
+  if opt1: # Masking out partial land grids as well
+    model_timeseries_masked = NP.ma.masked_where(lf_timeConst>0, model_timeseries) # mask out land even fractional (leave only pure ocean grid)
+  else: # Masking out only full land grid but use weighting for partial land grids
+    model_timeseries_masked = NP.ma.masked_where(lf_timeConst==100, model_timeseries) # mask out pure land grids
+    lf2 = (100.-lf)/100.
+    model_timeseries,lf2_timeConst = genutil.grower(model_timeseries,lf2) # Matching dimension
+    model_timeseries_masked = model_timeseries_masked * lf2_timeConst # consider land fraction like as weighting
 
-    # Dimension setup ---
+  # Dimension setup ---
 
-    time = model_timeseries.getTime()
-    model_timeseries_masked.setAxis(0,time)
+  time = model_timeseries.getTime()
+  lat = model_timeseries.getLatitude()
+  lon = model_timeseries.getLongitude()
 
-    lat = model_timeseries.getLatitude()
-    model_timeseries_masked.setAxis(1,lat)
+  model_timeseries_masked.setAxis(0,time)
+  model_timeseries_masked.setAxis(1,lat)
+  model_timeseries_masked.setAxis(2,lon)
 
-    lon = model_timeseries.getLongitude()
-    model_timeseries_masked.setAxis(2,lon)
-
-    model_timeseries = model_timeseries_masked
+  model_timeseries = model_timeseries_masked
 
   #-------------------------------------------------
   # Get SST anomaly
@@ -220,9 +213,6 @@ for model in models:
   # EOF analysis
   #- - - - - - - - - - - - - - - - - - - - - - - - -
   eof1, pc1, frac1 = eof_analysis_get_first_variance_mode(model_timeseries_subDomain)
-
-  #if not opt1:
-  #  eof1 = eof1 / lf2(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
   #-------------------------------------------------
   # Record results
