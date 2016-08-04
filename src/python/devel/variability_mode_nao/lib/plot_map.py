@@ -19,7 +19,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
 
   canvas.setcolormap('bl_to_darkred')
   iso = canvas.createisofill()
-  if mode == 'pdo':
+  if mode == 'PDO':
     iso.levels = [-0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5]
   else:
     iso.levels = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
@@ -30,16 +30,17 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   iso.fillareacolors = cols
   iso.missing = 0
   p = vcs.createprojection()
-  if mode == 'nam' or mode == 'sam':
+  if mode == 'NAM' or mode == 'SAM':
     ptype = int('-3')
-  elif mode == 'nao' or mode == 'pna':
-    ptype = 'lambert azimuthal'
-  elif mode == 'pdo':
+  elif mode == 'NAO' or mode == 'PNA' or mode == 'PDO' or mode == 'AMO':
     ptype = 'lambert'
+  else:
+    #ptype = 'lambert'
+    ptype = int('-3')
   p.type = ptype
   iso.projection = p
   xtra = {}
-  if mode != 'sam':
+  if mode != 'SAM':
     xtra['latitude'] = (90.0,0.0)
   else:
     xtra['latitude'] = (-90.0,0.0)
@@ -57,7 +58,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   plot_title.valign = 'top'
   plot_title.color='black'
   frac1 = round(float(frac1*100.),1) # % with one floating number
-  plot_title.string = str.upper(mode)+': '+model+'\n'+str(syear)+'-'+str(eyear)+' '+str.upper(season)+', '+str(frac1)+'%'
+  plot_title.string = mode+': '+model+'\n'+str(syear)+'-'+str(eyear)+' '+str.upper(season)+', '+str(frac1)+'%'
   canvas.plot(plot_title)
 
   #-------------------------------------------------

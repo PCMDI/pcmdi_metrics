@@ -17,7 +17,8 @@ libfiles = ['durolib.py',
             'plot_map.py']
 
 for lib in libfiles:
-  execfile(os.path.join('../lib/',lib))
+  #execfile(os.path.join('../lib/',lib))
+  execfile(os.path.join('../../lib/',lib))
 
 mip = 'cmip5'
 #exp = 'piControl'
@@ -31,13 +32,13 @@ run = 'r1i1p1'
 test = True
 #test = False
 
-#mode = 'nam' # Northern Annular Mode
-#mode = 'nao' # Northern Atlantic Oscillation
-#mode = 'sam' # Southern Annular Mode
-mode = 'pna' # Pacific North American Pattern
+#mode = 'NAM' # Northern Annular Mode
+mode = 'NAO' # Northern Atlantic Oscillation
+#mode = 'SAM' # Southern Annular Mode
+#mode = 'PNA' # Pacific North American Pattern
 
 obs_compare = True
-obs_compare = False
+#obs_compare = False
 
 nc_out = True
 #nc_out = False
@@ -61,22 +62,22 @@ eyear = 2005
 start_time = cdtime.comptime(syear,1,1)
 end_time = cdtime.comptime(eyear,12,31)
 
-if mode == 'nam':
+if mode == 'NAM':
   lat1 = 20
   lat2 = 90
   lon1 = -180
   lon2 = 180
-elif mode == 'nao':
+elif mode == 'NAO':
   lat1 = 20
   lat2 = 80
   lon1 = -90
   lon2 = 40
-elif mode == 'sam':
+elif mode == 'SAM':
   lat1 = -20
   lat2 = -90
   lon1 = 0
   lon2 = 360
-elif mode == 'pna':
+elif mode == 'PNA':
   lat1 = 20
   lat2 = 85
   lon1 = 120
@@ -88,12 +89,12 @@ elif mode == 'pna':
 if obs_compare:
   obs_path = '/clim_obs/obs/atm/mo/psl/ERAINT/psl_ERAINT_198901-200911.nc'
   fo = cdms.open(obs_path)
-  obs_timeseries = fo(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))/100. # Pa to hPa
+  #obs_timeseries = fo(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))/100. # Pa to hPa
+  obs_timeseries = fo(var,time=(start_time,end_time))/100. # Pa to hPa
   cdutil.setTimeBoundsMonthly(obs_timeseries)
 
-  ref_grid = obs_timeseries.getGrid() # Extract grid information for Regrid below
+  #ref_grid = obs_timeseries.getGrid() # Extract grid information for Regrid below
 
-  obs_timeseries_season={}
   eof1_obs={}
   pc1_obs={}
   frac1_obs={}
@@ -103,10 +104,13 @@ if obs_compare:
   #- - - - - - - - - - - - - - - - - - - - - - - - -
   for season in seasons:
 
-    obs_timeseries_season['season'] = getattr(cdutil,season)(obs_timeseries)
+    obs_timeseries_season = getattr(cdutil,season)(obs_timeseries)
+    obs_timeseries_season_subdomain = obs_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2))
+
+    ref_grid = obs_timeseries_season_subdomain.getGrid() # Extract grid information for Regrid below
 
     # EOF analysis ---
-    eof1_obs['season'], pc1_obs['season'], frac1_obs['season'] = eof_analysis_get_first_variance_mode(obs_timeseries_season['season'])
+    eof1_obs['season'], pc1_obs['season'], frac1_obs['season'] = eof_analysis_get_first_variance_mode(obs_timeseries_season_subdomain)
 
     # Set output file name for NetCDF and plot ---
     output_file_name_obs = mode+'_psl_eof1_'+season+'_obs_'+str(syear)+'-'+str(eyear)
@@ -115,11 +119,20 @@ if obs_compare:
     if nc_out:
       write_nc_output(output_file_name_obs, eof1_obs['season'], pc1_obs['season'], frac1_obs['season'])
 
-    #-------------------------------------------------
-    # GRAPHIC (plotting) PART
-    #- - - - - - - - - - - - - - - - - - - - - - - - -
+    # Plotting ---
     if plot:
       plot_map(mode, 'obs', syear, eyear, season, eof1_obs['season'], frac1_obs['season'], output_file_name_obs)
+
+    ###### TEST: Linear regression to have extended map; teleconnection ---
+    eof1_lr_obs = linear_regression(pc1_obs['season'],obs_timeseries_season)
+
+    # Test plotting ---
+    if plot:
+      plot_map(mode, 'obs-2', syear, eyear, season, eof1_lr_obs(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs['season'], output_file_name_obs+'_lr')
+
+    # Plotting ---
+    if plot:
+      plot_map(mode+'_teleconnection', 'obs-2', syear, eyear, season, eof1_lr_obs, frac1_obs['season'], output_file_name_obs+'_lr')
 
 #=================================================
 # Model
