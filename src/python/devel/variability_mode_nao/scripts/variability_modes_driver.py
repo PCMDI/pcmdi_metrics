@@ -62,6 +62,7 @@ eyear = 2005
 start_time = cdtime.comptime(syear,1,1)
 end_time = cdtime.comptime(eyear,12,31)
 
+# Below part will be replaced by PMP's region selector.. 
 if mode == 'NAM':
   lat1 = 20
   lat2 = 90
@@ -89,7 +90,6 @@ elif mode == 'PNA':
 if obs_compare:
   obs_path = '/clim_obs/obs/atm/mo/psl/ERAINT/psl_ERAINT_198901-200911.nc'
   fo = cdms.open(obs_path)
-  #obs_timeseries = fo(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))/100. # Pa to hPa
   obs_timeseries = fo(var,time=(start_time,end_time))/100. # Pa to hPa
   cdutil.setTimeBoundsMonthly(obs_timeseries)
 
@@ -104,6 +104,7 @@ if obs_compare:
   #- - - - - - - - - - - - - - - - - - - - - - - - -
   for season in seasons:
 
+    # Get seasonal mean time series ---
     obs_timeseries_season = getattr(cdutil,season)(obs_timeseries)
     obs_timeseries_season_subdomain = obs_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
@@ -112,26 +113,15 @@ if obs_compare:
     # EOF analysis ---
     eof1_obs[season], pc1_obs[season], frac1_obs[season] = eof_analysis_get_first_variance_mode(obs_timeseries_season_subdomain)
 
+    # Linear regression to have extended global map; teleconnection purpose ---
+    eof1_lr_obs = linear_regression(pc1_obs[season],obs_timeseries_season)
+
     # Set output file name for NetCDF and plot ---
     output_file_name_obs = mode+'_psl_eof1_'+season+'_obs_'+str(syear)+'-'+str(eyear)
-
-    # Save in NetCDF output ---
-    #if nc_out:
-    #  write_nc_output(output_file_name_obs, eof1_obs[season], pc1_obs[season], frac1_obs[season])
 
     # Plotting ---
     if plot:
       plot_map(mode, 'obs', syear, eyear, season, eof1_obs[season], frac1_obs[season], output_file_name_obs)
-
-    ###### TEST: Linear regression to have extended map; teleconnection ---
-    eof1_lr_obs = linear_regression(pc1_obs[season],obs_timeseries_season)
-
-    # Test plotting ---
-    if plot:
-      plot_map(mode, 'obs-2', syear, eyear, season, eof1_lr_obs(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs[season], output_file_name_obs+'_lr')
-
-    # Plotting ---
-    if plot:
       plot_map(mode+'_teleconnection', 'obs-2', syear, eyear, season, eof1_lr_obs, frac1_obs[season], output_file_name_obs+'_lr')
 
     # Save global map, pc timeseries, and fraction in NetCDF output ---
@@ -154,7 +144,7 @@ for model in models:
   print model
 
   f = cdms.open(model_path)
-  model_timeseries = f(var,latitude=(lat1,lat2),longitude=(lon1,lon2),time=(start_time,end_time))/100. # Pa to hPa
+  model_timeseries = f(var,time=(start_time,end_time))/100. # Pa to hPa
   cdutil.setTimeBoundsMonthly(model_timeseries)
 
   #-------------------------------------------------
@@ -163,20 +153,25 @@ for model in models:
   for season in seasons:
     var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]={}
 
+    # Get seasonal mean time series ---
     model_timeseries_season = getattr(cdutil,season)(model_timeseries)
+    model_timeseries_season_subdomain = model_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
     # EOF analysis ---
-    eof1, pc1, frac1 = eof_analysis_get_first_variance_mode(model_timeseries_season)
+    eof1, pc1, frac1 = eof_analysis_get_first_variance_mode(model_timeseries_season_subdomain)
+
+    # Linear regression to have extended global map; teleconnection purpose ---
+    eof1_lr = linear_regression(pc1,model_timeseries_season)
 
     # Set output file name for NetCDF and plot ---
     output_file_name = mode+'_psl_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)
 
-    # Save in NetCDF output ---
+    # Save global map, pc timeseries, and fraction in NetCDF output ---
     if nc_out:
-      write_nc_output(output_file_name,eof1,pc1,frac1)
+      write_nc_output(output_file_name, eof1_lr, pc1, frac1)
     
     #-------------------------------------------------
-    # OBS statistics (regrid will be needed) output, save as dictionary
+    # OBS statistics (only over EOF domain), save as dictionary
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     if obs_compare:
 
@@ -199,6 +194,7 @@ for model in models:
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     if plot:
       plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name)
+      plot_map(mode+'_teleconnection', model, syear, eyear, season, eof1_lr, frac1, output_file_name+'_lr')
 
 # Write dictionary to json file
 if obs_compare:
