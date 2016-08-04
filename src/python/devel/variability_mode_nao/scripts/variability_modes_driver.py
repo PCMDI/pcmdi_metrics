@@ -108,13 +108,14 @@ if obs_compare:
     obs_timeseries_season = getattr(cdutil,season)(obs_timeseries)
     obs_timeseries_season_subdomain = obs_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
-    ref_grid = obs_timeseries_season_subdomain.getGrid() # Extract grid information for Regrid below
+    # Save subdomain's grid information for regrid below ---
+    ref_grid = obs_timeseries_season_subdomain.getGrid()
 
     # EOF analysis ---
     eof1_obs[season], pc1_obs[season], frac1_obs[season] = eof_analysis_get_first_variance_mode(obs_timeseries_season_subdomain)
 
     # Linear regression to have extended global map; teleconnection purpose ---
-    eof1_lr_obs = linear_regression(pc1_obs[season],obs_timeseries_season)
+    eof1_lr_obs = linear_regression(pc1_obs[season], obs_timeseries_season)
 
     # Set output file name for NetCDF and plot ---
     output_file_name_obs = mode+'_psl_eof1_'+season+'_obs_'+str(syear)+'-'+str(eyear)
@@ -161,7 +162,7 @@ for model in models:
     eof1, pc1, frac1 = eof_analysis_get_first_variance_mode(model_timeseries_season_subdomain)
 
     # Linear regression to have extended global map; teleconnection purpose ---
-    eof1_lr = linear_regression(pc1,model_timeseries_season)
+    eof1_lr = linear_regression(pc1, model_timeseries_season)
 
     # Set output file name for NetCDF and plot ---
     output_file_name = mode+'_psl_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)
