@@ -91,7 +91,7 @@ c.add_argument("-D", "--drs",
 c.add_argument("-T", "--tables",
                dest="tables",
                help="path where CMOR tables reside (directory or table)",
-               default=os.path.join(sys.prefix, "share", "pcmdi", "pcmdi_metrics_table"))
+               default=os.path.join(sys.prefix, "share", "pmp", "pcmdi_metrics_table"))
 c.add_argument("-U", "--units",
                dest="units",
                nargs="*",
