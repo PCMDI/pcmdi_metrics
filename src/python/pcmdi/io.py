@@ -1,5 +1,7 @@
 import pcmdi_metrics
 import json
+import os
+import cdms2
 
 class OBS(pcmdi_metrics.io.base.Base):
 
@@ -44,9 +46,9 @@ class JSONs(object):
                 # Json format not stored, trying to guess
                 R = tmp_dict["RESULTS"]
                 out = R[R.keys()[0]]  # get first available model
-                out=out[out.keys()[0]]  # get first set of obs
+                out=out["defaultReference"]  # get first set of obs
                 k = out.keys()
-                k.pop("source")
+                k.pop(k.index("source"))
                 out = out[k[0]] # first realization
                 # Ok at this point we need to see if it is json std 1 or 2
                 # version 1 had NHEX in every region
@@ -76,7 +78,7 @@ class JSONs(object):
                                 areal2[region2+"global"]={}
                                 areal2[region2+"NHEX"]={}
                                 areal2[region2+"SHEX"]={}
-                                areal2[region2+"TROPICS"]{}
+                                areal2[region2+"TROPICS"]={}
                                 key_stats = reg.keys()
                                 for k in key_stats:
                                     if k[:7]=="custom_":
@@ -104,9 +106,46 @@ class JSONs(object):
                 varnm = var["id"]
                 if hasattr(var,"level"):
                     varnm+="-"+int(var["level"]/100.)
-            if data.has_key(varnm):
+            if self.data.has_key(varnm):
                 self.data[varnm].update(R)
             else:
                 self.data[varnm]=R
-    def getDimensions(self):
-        self.bla = pass
+    def getAxisList(self):
+        dimensions = ["variable","model","observation","rip","region","statistic","season"]
+        variables = self.data.keys()
+        models = set()
+        observations=set()
+        rips=set()
+        regions=set()
+        stats=set()
+        seasons = set(['ann','djf','mam','jja','son'])
+        for v in variables:
+            print "Variable:",v
+            V = self.data[v]
+            models.update(V.keys())
+            for m in V:
+                print "\tModel:",m
+                M=V[m]
+                for o in M:
+                    O=M[o]
+                    if isinstance(O,dict) and O.has_key("source"):  # ok it is indeed an obs key
+                        print "\t\tObs:",o
+                        observations.update([o,])
+                        for r in O:
+                            if r == "source":  #skip that one
+                                continue
+                            print "\t\t\trip:",r
+                            R=O[r]
+                            rips.update(R.keys())
+                            for rg in R:
+                                print "\t\t\tregion:",rg
+                                Rg = R[rg]
+                                regions.update(Rg.keys())
+                                for s in Rg:
+                                    stats.update([s[:-4],])
+                    else:
+                        pass
+        variables = cdms2.createAxis(sorted(variables),id="variables")
+        models = cdms2.createAxis(sorted(models),id="models")
+        print models
+
