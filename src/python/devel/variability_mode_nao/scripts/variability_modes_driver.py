@@ -110,29 +110,33 @@ if obs_compare:
     ref_grid = obs_timeseries_season_subdomain.getGrid() # Extract grid information for Regrid below
 
     # EOF analysis ---
-    eof1_obs['season'], pc1_obs['season'], frac1_obs['season'] = eof_analysis_get_first_variance_mode(obs_timeseries_season_subdomain)
+    eof1_obs[season], pc1_obs[season], frac1_obs[season] = eof_analysis_get_first_variance_mode(obs_timeseries_season_subdomain)
 
     # Set output file name for NetCDF and plot ---
     output_file_name_obs = mode+'_psl_eof1_'+season+'_obs_'+str(syear)+'-'+str(eyear)
 
     # Save in NetCDF output ---
-    if nc_out:
-      write_nc_output(output_file_name_obs, eof1_obs['season'], pc1_obs['season'], frac1_obs['season'])
+    #if nc_out:
+    #  write_nc_output(output_file_name_obs, eof1_obs[season], pc1_obs[season], frac1_obs[season])
 
     # Plotting ---
     if plot:
-      plot_map(mode, 'obs', syear, eyear, season, eof1_obs['season'], frac1_obs['season'], output_file_name_obs)
+      plot_map(mode, 'obs', syear, eyear, season, eof1_obs[season], frac1_obs[season], output_file_name_obs)
 
     ###### TEST: Linear regression to have extended map; teleconnection ---
-    eof1_lr_obs = linear_regression(pc1_obs['season'],obs_timeseries_season)
+    eof1_lr_obs = linear_regression(pc1_obs[season],obs_timeseries_season)
 
     # Test plotting ---
     if plot:
-      plot_map(mode, 'obs-2', syear, eyear, season, eof1_lr_obs(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs['season'], output_file_name_obs+'_lr')
+      plot_map(mode, 'obs-2', syear, eyear, season, eof1_lr_obs(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs[season], output_file_name_obs+'_lr')
 
     # Plotting ---
     if plot:
-      plot_map(mode+'_teleconnection', 'obs-2', syear, eyear, season, eof1_lr_obs, frac1_obs['season'], output_file_name_obs+'_lr')
+      plot_map(mode+'_teleconnection', 'obs-2', syear, eyear, season, eof1_lr_obs, frac1_obs[season], output_file_name_obs+'_lr')
+
+    # Save global map, pc timeseries, and fraction in NetCDF output ---
+    if nc_out:
+      write_nc_output(output_file_name_obs, eof1_lr_obs, pc1_obs[season], frac1_obs[season])
 
 #=================================================
 # Model
@@ -180,10 +184,10 @@ for model in models:
       eof1_regrid = eof1.regrid(ref_grid,regredTool='regrid2') # regrid location test 1
 
       # RMS difference ---
-      rms = genutil.statistics.rms(eof1_regrid, eof1_obs['season'], axis='xy')
+      rms = genutil.statistics.rms(eof1_regrid, eof1_obs[season], axis='xy')
 
       # Spatial correlation weighted by area ('generate' option for weights) ---
-      cor = genutil.statistics.correlation(eof1_regrid, eof1_obs['season'], weights='generate', axis='xy')
+      cor = genutil.statistics.correlation(eof1_regrid, eof1_obs[season], weights='generate', axis='xy')
 
       # Add to dictionary for json output ---
       var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['rms'] = float(rms)

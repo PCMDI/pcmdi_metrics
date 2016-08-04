@@ -50,11 +50,14 @@ def linear_regression(x,y):
   # Linear regression
   z = NP.polyfit(x,y_2d,1)
 
-  # Retreive to 3d (time, lat, lon)
+  # Retreive to 3d (index, lat, lon), index 0: coefficient (i.e. slope), 1: intercept
   zz = MV.array(z.reshape(z.shape[0],jm_y,im_y))
 
   # Set lat/lon coordinates
   zz.setAxis(1,lat)
   zz.setAxis(2,lon)
+
+  # Take only coefficient, not intercept
+  zz = zz[0,:,:]
  
   return(zz)
