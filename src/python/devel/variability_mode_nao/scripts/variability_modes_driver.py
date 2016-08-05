@@ -123,7 +123,8 @@ if obs_compare:
     # Plotting ---
     if plot:
       plot_map(mode, 'obs', syear, eyear, season, eof1_obs[season], frac1_obs[season], output_file_name_obs)
-      plot_map(mode+'_teleconnection', 'obs-2', syear, eyear, season, eof1_lr_obs, frac1_obs[season], output_file_name_obs+'_lr')
+      plot_map(mode, 'obs-lr', syear, eyear, season, eof1_lr_obs(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs[season], output_file_name_obs+'_lr')
+      plot_map(mode+'_teleconnection', 'obs-lr', syear, eyear, season, eof1_lr_obs(longitude=(-180,180)), frac1_obs[season], output_file_name_obs+'_lr')
 
     # Save global map, pc timeseries, and fraction in NetCDF output ---
     if nc_out:
@@ -195,7 +196,8 @@ for model in models:
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     if plot:
       plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name)
-      plot_map(mode+'_teleconnection', model, syear, eyear, season, eof1_lr, frac1, output_file_name+'_lr')
+      plot_map(mode, model+'-lr', syear, eyear, season, eof1_lr(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name+'_lr')
+      plot_map(mode+'_teleconnection', model, syear, eyear, season, eof1_lr(longitude=(-180,180)), frac1, output_file_name+'_lr')
 
 # Write dictionary to json file
 if obs_compare:
