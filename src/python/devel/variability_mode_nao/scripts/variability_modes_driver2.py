@@ -126,7 +126,7 @@ if obs_compare:
   if plot:
     plot_map(mode, 'obs (HadISST)', syear, eyear, '', eof1_obs, frac1_obs, output_file_name_obs)
     plot_map(mode, 'obs (HadISST)-lr', syear, eyear, '', eof1_lr_obs(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs, output_file_name_obs+'_lr')
-    plot_map(mode+'_teleconnection', 'obs (HadISST)-lr', syear, eyear, '', eof1_lr_obs, frac1_obs, output_file_name_obs+'_lr')
+    plot_map(mode+'_teleconnection', 'obs (HadISST)-lr', syear, eyear, '', eof1_lr_obs(longitude=(-180,180)), frac1_obs, output_file_name_obs+'_lr')
 
 #=================================================
 # Model
