@@ -2,6 +2,8 @@ import pcmdi_metrics
 import json
 import os
 import cdms2
+import numpy
+import MV2
 
 class OBS(pcmdi_metrics.io.base.Base):
 
@@ -39,6 +41,7 @@ class JSONs(object):
         self.data = {}
         self.json_version = "2.0"
         for fnm in files:
+            # print fnm
             f=open(fnm)
             tmp_dict=json.load(f)
             json_version=tmp_dict.get("json_version",None)
@@ -53,20 +56,24 @@ class JSONs(object):
                 # Ok at this point we need to see if it is json std 1 or 2
                 # version 1 had NHEX in every region
                 # version 2 does not
-                if "bias_xy_djf_NHEX" in out.keys():
+                if "bias_xy_djf_NHEX" in out[out.keys()[0]].keys():
                     json_version = "1.0"
                 else:
                     json_version = "2.0"
+            # print "\tv%s" % json_version
             if json_version == "1.0":  # ok old way we need to convert to 2.0
                 for model in R.keys():  # loop through models
                     m = R[model]
                     refs = m.keys()
-                    refs.pop("SimulationDescription")
                     for ref in m.keys():
                         aref = m[ref]
+                        if not(isinstance(aref,dict) and aref.has_key("source")):  #not an obs key
+                            continue
+                        # print aref.keys()
                         reals = aref.keys()
-                        src = reals.pop("source")
+                        src = reals.pop(reals.index("source"))
                         for real in reals:
+                            # print real
                             areal = aref[real]
                             areal2={"source":src}
                             for region in areal.keys():
@@ -79,6 +86,7 @@ class JSONs(object):
                                 areal2[region2+"NHEX"]={}
                                 areal2[region2+"SHEX"]={}
                                 areal2[region2+"TROPICS"]={}
+                                # print "OK HERE REGIONS:",areal2.keys()
                                 key_stats = reg.keys()
                                 for k in key_stats:
                                     if k[:7]=="custom_":
@@ -91,11 +99,11 @@ class JSONs(object):
                                             domain = "global"
                                         areal2[region2+domain][new_key]=reg[k]
                             # Now we can replace the realization with the correctly formatted one
-                            aref[areal] = areal2
+                            aref[real] = areal2
                         # restore ref into model
                         m[ref]=aref
                     # restore model into results
-                    R[m]=m
+                    R[model]=m
             # Now update our stored results
             # First we need to figure out the variable read in
             var = tmp_dict.get("Variable",None)
@@ -118,34 +126,97 @@ class JSONs(object):
         rips=set()
         regions=set()
         stats=set()
-        seasons = set(['ann','djf','mam','jja','son'])
+        seasons = ['ann','mam','jja','son','djf']
         for v in variables:
-            print "Variable:",v
+            #print "Variable:",v
             V = self.data[v]
             models.update(V.keys())
             for m in V:
-                print "\tModel:",m
+                #print "\tModel:",m
                 M=V[m]
                 for o in M:
                     O=M[o]
                     if isinstance(O,dict) and O.has_key("source"):  # ok it is indeed an obs key
-                        print "\t\tObs:",o
+                        #print "\t\tObs:",o
                         observations.update([o,])
                         for r in O:
+                            k = O.keys()
+                            k.remove("source")
                             if r == "source":  #skip that one
                                 continue
-                            print "\t\t\trip:",r
+                            #print "\t\t\trip:",r
+                            rips.update(k)
                             R=O[r]
-                            rips.update(R.keys())
                             for rg in R:
-                                print "\t\t\tregion:",rg
+                                #print "\t\t\tregion:",rg
                                 Rg = R[rg]
-                                regions.update(Rg.keys())
+                                regions.update(R.keys())
                                 for s in Rg:
                                     stats.update([s[:-4],])
                     else:
                         pass
-        variables = cdms2.createAxis(sorted(variables),id="variables")
-        models = cdms2.createAxis(sorted(models),id="models")
-        print models
+        variable = cdms2.createAxis(sorted(variables),id="variable")
+        model = cdms2.createAxis(sorted(models),id="model")
+        observation = cdms2.createAxis(sorted(observations),id="observation")
+        rip = cdms2.createAxis(sorted(rips),id="rip")
+        region = cdms2.createAxis(sorted(regions),id="region")
+        stat = cdms2.createAxis(sorted(stats),id="statistic")
+        season = cdms2.createAxis(seasons,id="season")
+        return [variable,model,observation,rip,region,stat,season]
+
+    def __call__(self,**kargs):
+        """ Returns the array of values"""
+        axes = self.getAxisList()
+        sh=[]
+        ids = []
+        for a in axes:
+            sh.append(len(a)) # store length to construct array shape
+            ids.append(a.id)  # store ids
+
+        # first let's see which vars are actually asked for
+        # for now assume all keys means restriction on dims
+        for axis_id in kargs:
+            if not axis_id in ids:
+                raise ValueError("Invalid axis '%s'" % axis_id)
+            index = ids.index(axis_id)
+            value = kargs[axis_id]
+            if isinstance(value,basestring):
+                value = [value]
+            if not isinstance(value,(list,tuple,slice)):
+                raise TypeError("Invalid subsetting type for axis '%s', axes can only be subsetted by string,list or slice"%s)
+            if isinstance(value,slice):
+                axes[index]=axes[index].subAxis(value.start,value.stop,value.step)
+                sh[index]=len(axes[index])
+            else:  # ok it's a list
+                for v in value:
+                    if not v in axes[index][:]:
+                        raise ValueError("Unkwown value '%s' for axis '%s'" % (v,axis_id))
+                axis = cdms2.createAxis(value,id=axes[index].id)
+                axes[index] = axis
+                sh[index] = len(axis)
+
+        array = numpy.ma.ones(sh,dtype=numpy.float)
+
+        # Now let's fill this array
+        for i in range(sh[0]):
+            val = self.data[axes[0][i]]  # select var
+            for j in range(sh[1]):
+                val2=val[axes[1][j]] # select model
+                for k in range(sh[2]):
+                    val3=val2[axes[2][k]]  # select obs
+                    for l in range(sh[3]):
+                        val4=val3[axes[3][l]]  # select rip
+                        for m in range(sh[4]):
+                            val5=val4[axes[4][m]]  # select region
+                            for n in range(sh[5]):
+                                print axes[5]
+                                stat_dic=val5[axes[5][n]]
+                                for o in range(sh[6]):
+                                    val = stat_dic[n+"_"+axes[6][o]]
+                                    array[(i,j,k,l,m,n,o)] = float(val)
+
+        array = MV2.array(array,id="pmp")
+        array.setAxisList(axes)
+        return array
+
 
