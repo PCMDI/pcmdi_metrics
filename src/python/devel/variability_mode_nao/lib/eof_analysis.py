@@ -56,6 +56,7 @@ def linear_regression(x,y):
   # Set lat/lon coordinates
   zz.setAxis(1,lat)
   zz.setAxis(2,lon)
+  zz.mask = y.mask
 
   # Take only coefficient, not intercept
   zz = zz[0,:,:]

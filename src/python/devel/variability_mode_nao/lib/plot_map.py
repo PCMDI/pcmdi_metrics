@@ -19,7 +19,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
 
   canvas.setcolormap('bl_to_darkred')
   iso = canvas.createisofill()
-  if mode == 'PDO':
+  if mode == 'PDO' or 'PDO_teleconnection':
     iso.levels = [-0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5]
   else:
     iso.levels = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
@@ -34,9 +34,12 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
     ptype = int('-3')
   elif mode == 'NAO' or mode == 'PNA' or mode == 'PDO' or mode == 'AMO':
     ptype = 'lambert'
+  elif mode == 'PDO_teleconnection':
+    ptype = 
   else:
     #ptype = 'lambert'
     ptype = int('-3')
+    #ptype = 'linear'
   p.type = ptype
   iso.projection = p
   xtra = {}

@@ -18,7 +18,8 @@ libfiles = ['durolib.py',
             'plot_map.py']
 
 for lib in libfiles:
-  execfile(os.path.join('../lib/',lib))
+  #execfile(os.path.join('../lib/',lib))
+  execfile(os.path.join('../../lib/',lib))
 
 mip = 'cmip5'
 #exp = 'piControl'
@@ -29,9 +30,9 @@ realm = 'atm'
 run = 'r1i1p1'
 
 # Mode of variability
-mode = 'pdo' # Pacific Decadal Oscillation
+mode = 'PDO' # Pacific Decadal Oscillation
 
-if mode == 'pdo':
+if mode == 'PDO':
   var = 'ts'
   lat1 = 20
   lat2 = 70
@@ -81,21 +82,23 @@ if obs_compare:
   cdutil.setTimeBoundsMonthly(obs_timeseries)
 
   # Replace area where temperature below -1.8 C to -1.8 C ---
-  #obs_timeseries[obs_timeseries<-1.8] = -1.8
+  obs_mask = obs_timeseries.mask
+  obs_timeseries[obs_timeseries<-1.8] = -1.8
+  obs_timeseries.mask = obs_mask
 
   # Reomove annual cycle ---
   obs_timeseries = cdutil.ANNUALCYCLE.departures(obs_timeseries)
 
-  # Extract subDomain ---
-  obs_timeseries_subDomain = obs_timeseries(latitude=(lat1,lat2),longitude=(lon1,lon2))
-
-  # Take out global mean ---
+  # Subtract global mean ---
   obs_global_mean_timeseries = cdutil.averager(obs_timeseries(latitude=(-60,70)), axis='xy', weights='weighted')
-  obs_timeseries_subDomain, obs_global_mean_timeseries = genutil.grower(obs_timeseries_subDomain, obs_global_mean_timeseries) # Matching dimension
-  obs_timeseries_subDomain = obs_timeseries_subDomain - obs_global_mean_timeseries
+  obs_timeseries, obs_global_mean_timeseries = genutil.grower(obs_timeseries, obs_global_mean_timeseries) # Matching dimension
+  obs_timeseries = obs_timeseries - obs_global_mean_timeseries
 
-  #ref_grid = obs_timeseries.getGrid() # Extract grid information for Regrid below
-  ref_grid = obs_timeseries_subDomain.getGrid() # Extract grid information for Regrid below
+  # Extract subdomain ---
+  obs_timeseries_subdomain = obs_timeseries(latitude=(lat1,lat2),longitude=(lon1,lon2))
+
+  # Save subdomain's grid information for regrid below ---
+  ref_grid = obs_timeseries_subdomain.getGrid()
 
   #-------------------------------------------------
   # EOF analysis
@@ -104,7 +107,10 @@ if obs_compare:
   pc1_obs={}
   frac1_obs={}
 
-  eof1_obs, pc1_obs, frac1_obs = eof_analysis_get_first_variance_mode(obs_timeseries_subDomain)
+  eof1_obs, pc1_obs, frac1_obs = eof_analysis_get_first_variance_mode(obs_timeseries_subdomain)
+
+  # Linear regression to have extended global map; teleconnection purpose ---
+  eof1_lr_obs = linear_regression(pc1_obs, obs_timeseries)
 
   #-------------------------------------------------
   # Record results
@@ -114,12 +120,13 @@ if obs_compare:
 
   # Save in NetCDF output ---
   if nc_out:
-    write_nc_output(output_file_name_obs, eof1_obs, pc1_obs, frac1_obs)
+    write_nc_output(output_file_name_obs, eof1_lr_obs, pc1_obs, frac1_obs)
 
   # Plot map --- 
   if plot:
-    #plot_map(mode, 'obs', syear, eyear, '', eof1_obs, frac1_obs, output_file_name_obs)
     plot_map(mode, 'obs (HadISST)', syear, eyear, '', eof1_obs, frac1_obs, output_file_name_obs)
+    plot_map(mode, 'obs (HadISST)-lr', syear, eyear, '', eof1_lr_obs(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs, output_file_name_obs+'_lr')
+    plot_map(mode+'_teleconnection', 'obs (HadISST)-lr', syear, eyear, '', eof1_lr_obs, frac1_obs, output_file_name_obs+'_lr')
 
 #=================================================
 # Model
@@ -156,11 +163,9 @@ for model in models:
   #-------------------------------------------------
   # Extract SST (mask out land region)
   #- - - - - - - - - - - - - - - - - - - - - - - - -
-  # model land fraction
+  # Read model's land fraction
   model_lf_path = get_latest_pcmdi_mip_lf_data_path(mip,model,'sftlf')
   #model_lf_path = '/work/cmip5/fx/fx/sftlf/cmip5.'+model+'.historical.r0i0p0.fx.atm.fx.sftlf.ver-1.latestX.xml'
-  #print model_lf_path
-    
   f_lf = cdms.open(model_lf_path)
   lf = f_lf('sftlf')
 
@@ -169,7 +174,8 @@ for model in models:
   if NP.max(lf) == 1.:
     lf = lf * 100 
 
-  model_timeseries,lf_timeConst = genutil.grower(model_timeseries,lf) # Matching dimension
+  # Matching dimension
+  model_timeseries, lf_timeConst = genutil.grower(model_timeseries, lf)
 
   #opt1 = True
   opt1 = False
@@ -182,7 +188,7 @@ for model in models:
     model_timeseries,lf2_timeConst = genutil.grower(model_timeseries,lf2) # Matching dimension
     model_timeseries_masked = model_timeseries_masked * lf2_timeConst # consider land fraction like as weighting
 
-  # Dimension setup ---
+  # Retrive dimension coordinate ---
 
   time = model_timeseries.getTime()
   lat = model_timeseries.getLatitude()
@@ -198,21 +204,25 @@ for model in models:
   # Get SST anomaly
   """
   Monthly index timeseries defined as the leading principal component (PC) of North Pacific (20:70N, 110E:100W) area-weighted SST* anomalies, where SST* denotes that the global mean SST has been removed at each timestep. Pattern created by regressing global SST anomalies onto normalized PC timeseries. Low pass-filtered timeseries (black curve) is based on a a 61-month running mean. 
+  -- NCAR's CVDP methodalogy description at [http://webext.cgd.ucar.edu/Multi-Case/CVDP_ex/CMIP5-Historical/methodology.html]
   """
   #- - - - - - - - - - - - - - - - - - - - - - - - -
 
-  # Extract sub domain ---
-  model_timeseries_subDomain = model_timeseries(latitude=(lat1,lat2),longitude=(lon1,lon2))
-
   # Take global mean out ---
   model_global_mean_timeseries = cdutil.averager(model_timeseries(latitude=(-60,70)), axis='xy', weights='weighted')
-  model_timeseries_subDomain, model_global_mean_timeseries = genutil.grower(model_timeseries_subDomain, model_global_mean_timeseries) # Matching dimension
-  model_timeseries_subDomain = model_timeseries_subDomain - model_global_mean_timeseries 
+  model_timeseries, model_global_mean_timeseries = genutil.grower(model_timeseries, model_global_mean_timeseries) # Matching dimension
+  model_timeseries = model_timeseries - model_global_mean_timeseries 
+
+  # Extract sub domain ---
+  model_timeseries_subdomain = model_timeseries(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
   #-------------------------------------------------
   # EOF analysis
   #- - - - - - - - - - - - - - - - - - - - - - - - -
-  eof1, pc1, frac1 = eof_analysis_get_first_variance_mode(model_timeseries_subDomain)
+  eof1, pc1, frac1 = eof_analysis_get_first_variance_mode(model_timeseries_subdomain)
+
+  # Linear regression to have extended global map; teleconnection purpose ---
+  eof1_lr = linear_regression(pc1, model_timeseries)
 
   #-------------------------------------------------
   # Record results
@@ -222,11 +232,13 @@ for model in models:
 
   # Save in NetCDF output ---
   if nc_out:
-    write_nc_output(output_file_name,eof1,pc1,frac1)
+    write_nc_output(output_file_name, eof1_lr, pc1, frac1)
     
   # Plot map --- 
   if plot:
     plot_map(mode, model, syear, eyear, '', eof1, frac1, output_file_name)
+    plot_map(mode, model+'-lr', syear, eyear, '', eof1_lr(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name+'_lr')
+    plot_map(mode+'_teleconnection', model+'-lr', syear, eyear, '', eof1_lr(longitude=(-180,180)), frac1, output_file_name+'_lr')
 
   #-------------------------------------------------
   # OBS statistics (regrid will be needed) output, save as dictionary
