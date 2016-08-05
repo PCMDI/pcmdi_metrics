@@ -107,6 +107,7 @@ if obs_compare:
   pc1_obs={}
   frac1_obs={}
 
+  # EOF analysis to have 1st variance mode, PC timeseries, and coverage fraction percentage
   eof1_obs, pc1_obs, frac1_obs = eof_analysis_get_first_variance_mode(obs_timeseries_subdomain)
 
   # Linear regression to have extended global map; teleconnection purpose ---
@@ -126,7 +127,7 @@ if obs_compare:
   if plot:
     plot_map(mode, 'obs (HadISST)', syear, eyear, '', eof1_obs, frac1_obs, output_file_name_obs)
     plot_map(mode, 'obs (HadISST)-lr', syear, eyear, '', eof1_lr_obs(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs, output_file_name_obs+'_lr')
-    plot_map(mode+'_teleconnection', 'obs (HadISST)-lr', syear, eyear, '', eof1_lr_obs(longitude=(-180,180)), frac1_obs, output_file_name_obs+'_lr')
+    plot_map(mode+'_teleconnection', 'obs (HadISST)-lr', syear, eyear, '', eof1_lr_obs(longitude=(0,360)), frac1_obs, output_file_name_obs+'_lr')
 
 #=================================================
 # Model
@@ -238,7 +239,7 @@ for model in models:
   if plot:
     plot_map(mode, model, syear, eyear, '', eof1, frac1, output_file_name)
     plot_map(mode, model+'-lr', syear, eyear, '', eof1_lr(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name+'_lr')
-    plot_map(mode+'_teleconnection', model+'-lr', syear, eyear, '', eof1_lr(longitude=(-180,180)), frac1, output_file_name+'_lr')
+    plot_map(mode+'_teleconnection', model+'-lr', syear, eyear, '', eof1_lr(longitude=(0,360)), frac1, output_file_name+'_lr')
 
   #-------------------------------------------------
   # OBS statistics (regrid will be needed) output, save as dictionary
