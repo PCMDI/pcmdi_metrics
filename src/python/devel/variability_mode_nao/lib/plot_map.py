@@ -19,7 +19,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
 
   canvas.setcolormap('bl_to_darkred')
   iso = canvas.createisofill()
-  if mode == 'PDO' or 'PDO_teleconnection':
+  if mode == 'PDO' or mode == 'PDO_teleconnection':
     iso.levels = [-0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5]
   else:
     iso.levels = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
@@ -31,23 +31,22 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   iso.missing = 0
   p = vcs.createprojection()
   if mode == 'NAM' or mode == 'SAM':
-    ptype = int('-3')
+    p.type = int('-3')
   elif mode == 'NAO' or mode == 'PNA' or mode == 'PDO' or mode == 'AMO':
-    ptype = 'lambert'
+    p.type = 'lambert'
   elif mode == 'PDO_teleconnection':
-    ptype = 
+    p.type = 'robinson' 
   else:
-    #ptype = 'lambert'
-    ptype = int('-3')
-    #ptype = 'linear'
-  p.type = ptype
+    p.type = int('-3')
   iso.projection = p
   xtra = {}
   if mode != 'SAM':
-    xtra['latitude'] = (90.0,0.0)
-  else:
-    xtra['latitude'] = (-90.0,0.0)
-  eof1 = eof1(**xtra) # For NH projection 
+    xtra['latitude'] = (90.0,0.0) # For Northern Hemisphere
+  else: 
+    xtra['latitude'] = (-90.0,0.0) # For Southern Hemisphere
+  if mode == 'PDO_teleconnection':
+    xtra = {}
+  eof1 = eof1(**xtra)
   canvas.plot(eof1,iso,template)
 
   #-------------------------------------------------
