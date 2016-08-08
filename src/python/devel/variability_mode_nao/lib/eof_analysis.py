@@ -34,7 +34,6 @@ def linear_regression(x,y):
   # input x: 1d timeseries (time)
   #       y: 2d timeseries (time, lat, lon)
 
-  from scipy import stats
   import numpy as NP
   import MV2 as MV
 
