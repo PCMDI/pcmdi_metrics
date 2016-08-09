@@ -69,10 +69,10 @@ end_time = cdtime.comptime(eyear,12,31)
 # Observation
 #-------------------------------------------------
 # Below is temporary time fix
-#syear = 1979
-#eyear = 2005
-#start_time = cdtime.comptime(syear,1,1)
-#end_time = cdtime.comptime(eyear,12,31)
+syear = 1979
+eyear = 2005
+start_time = cdtime.comptime(syear,1,1)
+end_time = cdtime.comptime(eyear,12,31)
 
 if obs_compare:
   #obs_path = '/clim_obs/obs/atm/mo/'+var+'/ERAINT/'+var+'_ERAINT_198901-200911.nc' # ts_ERAINT is already masked out, only SST, while model ts includes land area
@@ -247,7 +247,7 @@ for model in models:
   if obs_compare:
 
     # Regrid (interpolation, model grid to ref grid) ---
-    eof1_regrid = eof1.regrid(ref_grid,regredTool='regrid2') # regrid location test 1
+    eof1_regrid = eof1.regrid(ref_grid,regridTool='regrid2')
 
     # RMS difference ---
     rms = genutil.statistics.rms(eof1_regrid, eof1_obs, axis='xy')

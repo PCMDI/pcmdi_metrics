@@ -178,7 +178,7 @@ for model in models:
     if obs_compare:
 
       # Regrid (interpolation, model grid to ref grid) ---
-      eof1_regrid = eof1.regrid(ref_grid,regredTool='regrid2') # regrid location test 1
+      eof1_regrid = eof1.regrid(ref_grid,regridTool='regrid2')
 
       # RMS difference ---
       rms = genutil.statistics.rms(eof1_regrid, eof1_obs[season], axis='xy')
