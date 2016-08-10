@@ -5,10 +5,8 @@ PCMDI metrics package (PMP)
 ![platforms](http://img.shields.io/badge/platforms-linux | osx-lightgrey.svg)
 [![DOI](http://img.shields.io/badge/DOI-10.5281/zenodo.58439-orange.svg)](http://doi.org/10.5281/zenodo.58439)
 <!---[![DOI](https://zenodo.org/badge/23150/PCMDI/pcmdi_metrics.svg)](https://zenodo.org/badge/latestdoi/23150/PCMDI/pcmdi_metrics)--->
-[![Anaconda-Server
-Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/installer/conda.svg)](https://conda.anaconda.org/pcmdi)
-[![Anaconda-Server
-Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
+[![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/installer/conda.svg)](https://conda.anaconda.org/pcmdi)
+[![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
 
 
 The PCMDI metrics package is used to objectively compare results from climate models with observations using well-established statistical tests. Results are produced in the context of all model simulations contributed to CMIP5 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons emphasize large- to global-scale annual cycle performance metrics. Current work in v1.x development branches include established statistics for ENSO, regional monsoon precipitation, and the diurnal cycle of preciptation, and these diagnostics will be included in a future PMP release.
