@@ -42,7 +42,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   xtra = {}
   if mode == 'PDO_teleconnection' or mode == 'PDO_teleconnection_pseudo':
     xtra = {}
-  elif mode == 'SAM' or mode == 'SAM_teleconnection' or 'SAM_teleconnection_pseudo':
+  elif mode == 'SAM' or mode == 'SAM_teleconnection' or mode == 'SAM_teleconnection_pseudo':
     xtra['latitude'] = (-90.0,0.0) # For Southern Hemisphere
   else: 
     xtra['latitude'] = (90.0,0.0) # For Northern Hemisphere
