@@ -116,7 +116,7 @@ else:
 lon1g = -180
 lon2g = 180
 
-if mode == 'PDO'
+if mode == 'PDO':
   seasons = ['monthly']
   lon1g = 0
   lon2g = 360
