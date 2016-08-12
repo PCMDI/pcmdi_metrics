@@ -19,8 +19,7 @@ libfiles = ['durolib.py',
             'plot_map.py']
 
 for lib in libfiles:
-  #execfile(os.path.join('../lib/',lib))
-  execfile(os.path.join('./lib/',lib))
+  execfile(os.path.join('../lib/',lib))
 
 ##################################################
 # User defining options  --- argparse will replace below..
@@ -113,7 +112,14 @@ else:
     models = list(set(models).intersection(models_lf)) # Select models when land fraction is existing
     models = sorted(models, key=lambda s:s.lower()) # Sort list alphabetically, case-insensitive
 
-if mode == 'PDO': seasons = ['monthly']
+# lon1g and lon2g is for global map plotting
+lon1g = -180
+lon2g = 180
+
+if mode == 'PDO'
+  seasons = ['monthly']
+  lon1g = 0
+  lon2g = 360
 
 start_time = cdtime.comptime(syear,1,1)
 end_time = cdtime.comptime(eyear,12,31)
@@ -216,10 +222,7 @@ if obs_compare:
     if plot:
       plot_map(mode, 'obs', syear, eyear, season, eof1_obs[season], frac1_obs[season], output_file_name_obs)
       #plot_map(mode, 'obs-lr', syear, eyear, season, eof1_lr_obs[season](latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs[season], output_file_name_obs+'_lr')
-      if mode == 'PDO':
-        plot_map(mode+'_teleconnection', 'obs-lr', syear, eyear, season, eof1_lr_obs[season](longitude=(0,360)), frac1_obs[season], output_file_name_obs+'_lr')
-      else:
-        plot_map(mode+'_teleconnection', 'obs-lr', syear, eyear, season, eof1_lr_obs[season](longitude=(-180,180)), frac1_obs[season], output_file_name_obs+'_lr')
+      plot_map(mode+'_teleconnection', 'obs-lr', syear, eyear, season, eof1_lr_obs[season](longitude=(lon1g,lon2g)), frac1_obs[season], output_file_name_obs+'_lr')
 
     # Save stdv of PC time series in dictionary ---
     var_mode_stat_dic['REF']['obs']['defaultReference'][mode][season]['pc1_stdv'] = float(pc1_obs_stdv[season])
@@ -277,7 +280,6 @@ for model in models:
     else:
       # Get seasonal mean time series ---
       model_timeseries_season = getattr(cdutil,season)(model_timeseries)
-      if debug: print 'seasonal mean'
 
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     # Extract subdomain ---
@@ -317,8 +319,6 @@ for model in models:
       var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['cor'] = float(cor)
       var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['frac'] = float(frac1)
 
-    print 'usual eof end'
-
     #-------------------------------------------------
     # Pesudo model PC timeseries and teleconnection 
     #- - - - - - - - - - - - - - - - - - - - - - - - -
@@ -333,8 +333,6 @@ for model in models:
       missing_value = model_timeseries_season_regrid_subdomain.missing
       model_timeseries_season_regrid_subdomain[ model_timeseries_season_regrid_subdomain == missing_value ] = 0
       model_timeseries_season_regrid_subdomain.mask = model_timeseries_season_regrid_subdomain.mask + eof1_obs[season].mask
-      # Combine two masks (obs and model)
-      #model_timeseries_season_regrid_subdomain.mask = NP.ma.mask_or(model_timeseries_season_regrid_subdomain.mask,eof1_obs[season].mask,shrink=False)
 
       # Pseudo model PC time series ---
       pesudo_pcs = solver_obs[season].projectField(model_timeseries_season_regrid_subdomain,neofs=1,eofscaling=1)
@@ -367,7 +365,7 @@ for model in models:
       var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['pesudo_pcs_stdv'] = float(pesudo_pcs_stdv)
       var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['tc_btw_pesudo_and_model_pcs'] = float(tc)
 
-      print 'pesudo pcs end'
+      if debug: print 'pesudo pcs end'
 
     #-------------------------------------------------
     # Record results
@@ -383,15 +381,9 @@ for model in models:
     if plot:
       plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name)
       #plot_map(mode, model+'-lr', syear, eyear, season, eof1_lr(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name+'_lr')
-      if mode == 'PDO':
-        plot_map(mode+'_teleconnection', model, syear, eyear, season, eof1_lr(longitude=(0,360)), frac1, output_file_name+'_lr')
-        if pesudo: 
-          plot_map(mode+'_teleconnection_pseudo', model, syear, eyear, season, eof1_lr_pesudo(longitude=(0,360)), frac1, output_file_name+'_lr_pesudo')
-      else:
-        plot_map(mode+'_teleconnection', model, syear, eyear, season, eof1_lr(longitude=(-180,180)), frac1, output_file_name+'_lr')
-        if pesudo:
-          plot_map(mode+'_teleconnection_pseudo', model, syear, eyear, season, eof1_lr_pesudo(longitude=(-180,180)), frac1, output_file_name+'_lr_pesudo')
+      plot_map(mode+'_teleconnection', model, syear, eyear, season, eof1_lr(longitude=(lon1g,lon2g)), frac1, output_file_name+'_lr')
       if pesudo: 
+        plot_map(mode+'_teleconnection_pseudo', model, syear, eyear, season, eof1_lr_pesudo(longitude=(lon1g,lon2g)), frac1, output_file_name+'_lr_pesudo')
         plot_map(mode, model+'_pseudo', syear, eyear, season, eof1_lr_pesudo(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name+'_pesudo')
 
 #=================================================
