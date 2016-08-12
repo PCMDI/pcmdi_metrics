@@ -16,24 +16,28 @@ def eof_analysis_get_first_variance_mode(timeseries):
   pc1 = pc(squeeze=1)   #      pc1 = pc[:,0] 
   frac1 = cdms.createVariable(frac[0])
 
-  # Arbitrary control, attempt to make all plots have the same sign ---
+  # Arbitrary sign control, attempt to make all plots have the same sign ---
+  reverse_sign = False
   if float(eof1[-1][-1]) is not eof1.missing and float(eof1[-1][-1]) >= 0:
     eof1 = eof1*-1.
     pc1 = pc1*-1.
+    reverse_sign = True
   elif float(eof1[eof1.shape[0]//2][eof1.shape[1]//2]) >= 0:
     eof1 = eof1*-1.
     pc1 = pc1*-1.
+    reverse_sign = True
 
   # Supplement NetCDF attributes 
   frac1.units = 'ratio'
   pc1.comment='Scaled time series for principal component of first variance mode'
 
-  return(eof1, pc1, frac1)
+  return(eof1, pc1, frac1, solver, reverse_sign)
 
 def linear_regression(x,y):
   # input x: 1d timeseries (time)
-  #       y: 2d timeseries (time, lat, lon)
+  #       y: time varying 2d field (time, lat, lon)
 
+  from scipy import stats
   import numpy as NP
   import MV2 as MV
 
