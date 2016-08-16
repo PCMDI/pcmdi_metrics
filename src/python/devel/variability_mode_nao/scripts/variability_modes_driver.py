@@ -33,11 +33,11 @@ realm = 'atm'
 run = 'r1i1p1'
 
 # Mode of variability --
-#mode = 'NAM' # Northern Annular Mode ## Error
+mode = 'NAM' # Northern Annular Mode ## Error
 #mode = 'NAO' # Northern Atlantic Oscillation ## Working OK
 #mode = 'SAM' # Southern Annular Mode ## Error
 #mode = 'PNA' # Pacific North American Pattern ## Working OK, bur arbitrary check needed for model field
-mode = 'PDO' # Pacific Decadal Oscillation ## Working OK
+#mode = 'PDO' # Pacific Decadal Oscillation ## Working OK
 
 syear = 1900
 #syear = 1990 # To match with ERAINT...
@@ -99,11 +99,17 @@ elif mode == 'PDO':
 
 if debug:
   #models = ['ACCESS1-0']  # Test just one model
-  models = ['ACCESS1-3']  # Test just one model
+  #models = ['ACCESS1-3']  # Test just one model
   #models = ['ACCESS1-0', 'ACCESS1-3']  # Test just two models
   #models = ['CESM1-CAM5']  # Test just one model
+  #models = ['bcc-csm1-1-m']
+  #models = ['CNRM-CM5-2', 'GISS-E2-H', 'IPSL-CM5B-LR']
+  #models = ['inmcm4']
+  models = ['HadGEM2-AO']
+  models = ['MIROC4h']
   seasons = ['DJF']
   #seasons = ['MAM']
+  seasons = ['SON']
 else:
   models = get_all_mip_mods(mip,exp,fq,realm,var)
   seasons = ['DJF','MAM','JJA','SON']
@@ -142,12 +148,12 @@ if obs_compare:
   if var == 'psl':
     obs_path = '/clim_obs/obs/atm/mo/psl/ERAINT/psl_ERAINT_198901-200911.nc'
     fo = cdms.open(obs_path)
-    obs_timeseries = fo(var,time=(start_time,end_time))/100. # Pa to hPa
+    obs_timeseries = fo(var,time=(start_time,end_time),latitude=(-90,90))/100. # Pa to hPa
 
   elif var == 'ts':
     obs_path = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
     fo = cdms.open(obs_path)
-    obs_timeseries = fo('sst',time=(start_time,end_time))
+    obs_timeseries = fo('sst',time=(start_time,end_time),latitude=(-90,90))
 
     # Replace area where temperature below -1.8 C to -1.8 C ---
     obs_mask = obs_timeseries.mask
@@ -200,7 +206,8 @@ if obs_compare:
     ref_grid_subdomain = obs_timeseries_season_subdomain.getGrid()
 
     # EOF analysis ---
-    eof1_obs[season], pc1_obs[season], frac1_obs[season], solver_obs[season], reverse_sign_obs[season] = eof_analysis_get_first_variance_mode(obs_timeseries_season_subdomain)
+    eof1_obs[season], pc1_obs[season], frac1_obs[season], solver_obs[season], reverse_sign_obs[season] = \
+           eof_analysis_get_first_variance_mode(mode, obs_timeseries_season_subdomain)
 
     # Calculate stdv of pc time series
     pc1_obs_stdv[season] = genutil.statistics.std(pc1_obs[season])
@@ -227,7 +234,7 @@ if obs_compare:
     # Save stdv of PC time series in dictionary ---
     var_mode_stat_dic['REF']['obs']['defaultReference'][mode][season]['pc1_stdv'] = float(pc1_obs_stdv[season])
 
-    print 'obs plotting end'
+    if debug: print 'obs plotting end'
 
 #=================================================
 # Model
@@ -243,10 +250,10 @@ for model in models:
   f = cdms.open(model_path)
 
   if var == 'psl':
-    model_timeseries = f(var,time=(start_time,end_time))/100. # Pa to hPa
+    model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90))/100. # Pa to hPa
 
   elif var == 'ts':
-    model_timeseries = f(var,time=(start_time,end_time))-273.15 # K to C degree
+    model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90))-273.15 # K to C degree
     model_timeseries.units = 'degC'
 
     # Replace area where temperature below -1.8 C to -1.8 C ---
@@ -289,7 +296,9 @@ for model in models:
     # Usual EOF approach
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     # EOF analysis ---
-    eof1, pc1, frac1, solver, reverse_sign = eof_analysis_get_first_variance_mode(model_timeseries_season_subdomain)
+    eof1, pc1, frac1, solver, reverse_sign = \
+          eof_analysis_get_first_variance_mode(mode, model_timeseries_season_subdomain)
+
     if debug: print 'eof analysis'
 
     # Linear regression to have extended global map; teleconnection purpose ---
@@ -376,6 +385,8 @@ for model in models:
     # Save global map, pc timeseries, and fraction in NetCDF output ---
     if nc_out:
       write_nc_output(output_file_name, eof1_lr, pc1, frac1)
+      if pesudo and obs_compare: 
+        write_nc_output(output_file_name+'_pesudo', eof1_lr_pesudo, pc1, frac1)
 
     # Plot map ---
     if plot:

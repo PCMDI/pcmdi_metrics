@@ -1,5 +1,7 @@
-def eof_analysis_get_first_variance_mode(timeseries):
-  # input, timeseries: time varying 2d array
+def eof_analysis_get_first_variance_mode(mode, timeseries):
+  # Input required:
+  # - mode : mode of variability is needed for arbitrary sign control, which is characteristics of EOF analysis
+  # - timeseries: time varying 2d array, so 3d array (time, lat, lon)
 
   import cdms2 as cdms
   from eofs.cdms import Eof
@@ -18,14 +20,22 @@ def eof_analysis_get_first_variance_mode(timeseries):
 
   # Arbitrary sign control, attempt to make all plots have the same sign ---
   reverse_sign = False
-  if float(eof1[-1][-1]) is not eof1.missing and float(eof1[-1][-1]) >= 0:
+
+  if mode == 'PDO':
+    #if float(eof1[eof1.shape[0]//2][eof1.shape[1]//2]) >= 0:
+    if float(eof1[eof1.shape[0]//3][eof1.shape[1]//3]) >= 0:
+      reverse_sign = True
+  else:
+    if float(eof1[-1][-1]) is not eof1.missing: 
+      if float(eof1[-1][-1]) >= 0:
+        reverse_sign = True
+    elif float(eof1[-2][-2]) is not eof1.missing:
+      if float(eof1[-2][-2]) >= 0: # Double check in case pole has missing value
+        reverse_sign = True
+
+  if reverse_sign:
     eof1 = eof1*-1.
     pc1 = pc1*-1.
-    reverse_sign = True
-  elif float(eof1[eof1.shape[0]//2][eof1.shape[1]//2]) >= 0:
-    eof1 = eof1*-1.
-    pc1 = pc1*-1.
-    reverse_sign = True
 
   # Supplement NetCDF attributes 
   frac1.units = 'ratio'
