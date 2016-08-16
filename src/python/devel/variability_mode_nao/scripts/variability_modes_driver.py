@@ -333,7 +333,8 @@ for model in models:
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     if pesudo and obs_compare:
       # Regrid (interpolation, model grid to ref grid) ---
-      model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid,regridTool='regrid2')
+      #model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid,regridTool='regrid2')
+      model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid,regridTool='esmf')
       model_timeseries_season_regrid_subdomain = model_timeseries_season_regrid(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
       # Matching model's missing value location to that of observation ---
