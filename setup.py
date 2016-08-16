@@ -46,20 +46,6 @@ print >>f, "__git_sha1__ = '%s'" % commit
 f.close()
 
 portrait_files = ["src/python/graphics/share/portraits.scr", ]
-cmip5_amip_json = glob.glob("data/CMIP_metrics_results/CMIP5/amip/*.json")
-cmip5_historical_json = glob.glob(
-    "data/CMIP_metrics_results/CMIP5/historical/*.json")
-cmip5_piControl_json = glob.glob(
-    "data/CMIP_metrics_results/CMIP5/piControl/*.json")
-demo_ACME_files = glob.glob("demo/ACME/*.py")
-demo_CSIRO_files = glob.glob("demo/CSIRO/*.py")
-demo_CSIRO_files += glob.glob("demo/CSIRO/*.png")
-demo_CSIRO_files += glob.glob("demo/CSIRO/*.sh")
-demo_GFDL_files = glob.glob("demo/GFDL/*.py")
-demo_GFDL_files += glob.glob("demo/GFDL/*.png")
-demo_NCAR_files = glob.glob("demo/NCAR/*.py")
-param_files = glob.glob("doc/parameter_files/*.py")
-
 
 packages = {'pcmdi_metrics': 'src/python',
             'pcmdi_metrics.io': 'src/python/io',
@@ -67,27 +53,19 @@ packages = {'pcmdi_metrics': 'src/python',
             'pcmdi_metrics.graphics': 'src/python/graphics',
             }
 scripts = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
-           'src/python/pcmdi/scripts/pcmdi_compute_climatologies.py']
-
-data_files = [('demo/ACME', demo_ACME_files),
-              ('demo/CSIRO', demo_CSIRO_files),
-              ('demo/GFDL', demo_GFDL_files),
-              ('demo/NCAR', demo_NCAR_files),
-              ('doc/parameter_files', param_files),
-              ('doc',
-               ('doc/parameter_files/pcmdi_input_parameters_sample.py',
-                'doc/simple_json_test.py',
-                )),
-              ('share/CMIP_metrics_results/CMIP5/amip',
-               cmip5_amip_json),
-              ('share/CMIP_metrics_results/CMIP5/historical',
-               cmip5_historical_json),
-              ('share/CMIP_metrics_results/CMIP5/piControl',
-               cmip5_piControl_json),
-              ('share/graphics/vcs', portrait_files),
-              ('share/pcmdi', ('doc/obs_info_dictionary.json',
+           'src/python/pcmdi/scripts/pcmdi_compute_climatologies.py',
+           'demo/pmp_demo_1.py',
+           'demo/pmp_demo.py',
+           ]
+demo_files = glob.glob("demo/*/*")
+print "demo files"
+data_files = [
+              ('share/pmp/graphics/vcs', portrait_files),
+              ('share/pmp', ('doc/obs_info_dictionary.json',
                                'share/pcmdi_metrics_table',
-                               'share/disclaimer.txt')),
+                               'share/disclaimer.txt',
+                               'share/default_regions.py')),
+              ('share/pmp/demo',demo_files),
               ]
 
 if install_dev:

@@ -1025,8 +1025,7 @@ class Portrait:
                             None,
                             self.PLOT_SETTINGS.parameterorientation.name)
                         value = getattr(self, p)
-                        if (isinstance(value, (list, tuple))
-                                and len(value) == 1):
+                        if (isinstance(value, (list, tuple)) and len(value) == 1):
                             txt.string = p + ':' + \
                                 str(self.makestring(p, value[0]))
                             display = 1

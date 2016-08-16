@@ -36,6 +36,17 @@ class TestGraphics(unittest.TestCase):
         import sys
         import glob
 
+        print
+        print
+        print
+        print
+        print "---------------------------------------------------"
+        print "RUNNING: Portrait test"
+        print "---------------------------------------------------"
+        print
+        print
+        print
+        print
         # CREATES VCS OBJECT AS A PORTAIT PLOT AND LOADS PLOT SETTINGS FOR
         # EXAMPLE
         x = vcs.init()
@@ -70,12 +81,9 @@ class TestGraphics(unittest.TestCase):
 
         x.scriptrun(
             os.path.join(
-                pcmdi_metrics.__path__[0],
-                "..",
-                "..",
-                "..",
-                "..",
+                sys.prefix,
                 "share",
+                "pmp",
                 "graphics",
                 'vcs',
                 'portraits.scr'))

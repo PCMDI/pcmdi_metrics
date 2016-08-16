@@ -1,9 +1,9 @@
 package:
     name: pcmdi_metrics
-    version: 1.0.5
+    version: 1.1
 
 source:
-    git_rev: master
+    git_rev: 1.1
     git_url: git://github.com/PCMDI/pcmdi_metrics
 
 build:
@@ -16,9 +16,9 @@ requirements:
     - setuptools
     - numpy <=1.9.2
   run:
-    - vcs
+    - vcs >=2.6
     - vcsaddons
-    - cdms2
+    - cdms2 >=2.6
     - genutil
     - cdutil
     - unidata

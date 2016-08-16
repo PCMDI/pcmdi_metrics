@@ -3,11 +3,11 @@ import pcmdi_metrics
 
 class OBS(pcmdi_metrics.io.base.Base):
 
-    def __init__(self, root, var, obs_dic, reference="default"):
+    def __init__(self, root, var, obs_dic, reference="default", file_mask_template=None):
 
         template = "%(realm)/%(frequency)/%(variable)/" +\
             "%(reference)/%(ac)/%(filename)"
-        pcmdi_metrics.io.base.Base.__init__(self, root, template)
+        pcmdi_metrics.io.base.Base.__init__(self, root, template, file_mask_template)
         obs_name = obs_dic[var][reference]
         # usually send "default", "alternate", etc
         # but some case (sftlf) we send the actual name
