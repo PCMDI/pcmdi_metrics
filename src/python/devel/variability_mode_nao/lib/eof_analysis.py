@@ -5,6 +5,7 @@ def eof_analysis_get_first_variance_mode(mode, timeseries):
 
   import cdms2 as cdms
   from eofs.cdms import Eof
+  import cdutil
 
   # EOF (take only first variance mode...) ---
   solver = Eof(timeseries, weights='area')
@@ -21,13 +22,16 @@ def eof_analysis_get_first_variance_mode(mode, timeseries):
   # Arbitrary sign control, attempt to make all plots have the same sign ---
   reverse_sign = False
 
-  if mode == 'PDO':
-    if float(eof1[eof1.shape[0]//3][eof1.shape[1]//3]) >= 0:
+  if mode == 'PDO': # Explicitly check average of geographical region for each mode
+    if float(cdutil.averager(eof1(latitude=(30,40),longitude=(150,180)), axis='xy', weights='weighted')) >= 0:
       reverse_sign = True
-  elif mode == 'PNA':
-    if float(eof1[eof1.shape[0]//4*3][eof1.shape[1]//2]) >= 0:
+  elif mode == 'PNA' or mode == 'NAM' or  mode == 'NAO':
+    if float(cdutil.averager(eof1(latitude=(60,80)), axis='xy', weights='weighted')) >= 0:
       reverse_sign = True
-  else:
+  elif mode == 'SAM':
+    if float(cdutil.averager(eof1(latitude=(-60,-90)), axis='xy', weights='weighted')) >= 0:
+      reverse_sign = True
+  else: # Minimum sign control part was left behind for any future usage..
     if float(eof1[-1][-1]) is not eof1.missing: 
       if float(eof1[-1][-1]) >= 0:
         reverse_sign = True
