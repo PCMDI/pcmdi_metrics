@@ -22,8 +22,10 @@ def eof_analysis_get_first_variance_mode(mode, timeseries):
   reverse_sign = False
 
   if mode == 'PDO':
-    #if float(eof1[eof1.shape[0]//2][eof1.shape[1]//2]) >= 0:
     if float(eof1[eof1.shape[0]//3][eof1.shape[1]//3]) >= 0:
+      reverse_sign = True
+  elif mode == 'PNA':
+    if float(eof1[eof1.shape[0]//4*3][eof1.shape[1]//2]) >= 0:
       reverse_sign = True
   else:
     if float(eof1[-1][-1]) is not eof1.missing: 
