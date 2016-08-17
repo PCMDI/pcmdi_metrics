@@ -57,7 +57,7 @@ def linear_regression(x,y):
   # Convert 3d (time, lat, lon) to 2d (time, lat*lon) for polyfit applying
   im_y = y.shape[2]
   jm_y = y.shape[1]
-  y_2d = y.reshape(y.shape[0],im_y*jm_y)
+  y_2d = y.reshape(y.shape[0],jm_y*im_y)
 
   # Linear regression
   z = NP.polyfit(x,y_2d,1)
