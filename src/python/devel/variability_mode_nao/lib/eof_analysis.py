@@ -25,7 +25,10 @@ def eof_analysis_get_first_variance_mode(mode, timeseries):
   if mode == 'PDO': # Explicitly check average of geographical region for each mode
     if float(cdutil.averager(eof1(latitude=(30,40),longitude=(150,180)), axis='xy', weights='weighted')) >= 0:
       reverse_sign = True
-  elif mode == 'PNA' or mode == 'NAM' or  mode == 'NAO':
+  elif mode == 'PNA': 
+    if float(cdutil.averager(eof1(latitude=(80,90)), axis='xy', weights='weighted')) >= 0:
+      reverse_sign = True
+  elif mode == 'NAM' or  mode == 'NAO':
     if float(cdutil.averager(eof1(latitude=(60,80)), axis='xy', weights='weighted')) >= 0:
       reverse_sign = True
   elif mode == 'SAM':
