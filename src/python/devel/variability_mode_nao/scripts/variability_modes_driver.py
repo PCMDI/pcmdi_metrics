@@ -33,19 +33,19 @@ realm = 'atm'
 run = 'r1i1p1'
 
 # Mode of variability --
-#mode = 'NAM' # Northern Annular Mode ## Error
-#mode = 'NAO' # Northern Atlantic Oscillation ## Working OK
-#mode = 'SAM' # Southern Annular Mode ## Error
-#mode = 'PNA' # Pacific North American Pattern ## Working OK, bur arbitrary check needed for model field
-mode = 'PDO' # Pacific Decadal Oscillation ## Working OK
+#mode = 'NAM' # Northern Annular Mode
+#mode = 'NAO' # Northern Atlantic Oscillation
+mode = 'SAM' # Southern Annular Mode
+#mode = 'PNA' # Pacific North American Pattern
+#mode = 'PDO' # Pacific Decadal Oscillation
 
 syear = 1900
 #syear = 1990 # To match with ERAINT...
 eyear = 2005
 
 # Debugging test --
-#debug = True
-debug = False
+debug = True
+#debug = False
 
 # Statistics against observation --
 obs_compare = True
@@ -115,7 +115,7 @@ else:
   seasons = ['DJF','MAM','JJA','SON']
   if mode == 'PDO':
     models_lf = get_all_mip_mods_lf(mip,'sftlf')
-    models = list(set(models).intersection(models_lf)) # Select models when land fraction is existing
+    models = list(set(models).intersection(models_lf)) # Select models when land fraction exists as well
     models = sorted(models, key=lambda s:s.lower()) # Sort list alphabetically, case-insensitive
 
 # lon1g and lon2g is for global map plotting
@@ -148,12 +148,12 @@ if obs_compare:
   if var == 'psl':
     obs_path = '/clim_obs/obs/atm/mo/psl/ERAINT/psl_ERAINT_198901-200911.nc'
     fo = cdms.open(obs_path)
-    obs_timeseries = fo(var,time=(start_time,end_time),latitude=(-90,90))/100. # Pa to hPa
+    obs_timeseries = fo(var,time=(start_time,end_time))/100. # Pa to hPa
 
   elif var == 'ts':
     obs_path = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
     fo = cdms.open(obs_path)
-    obs_timeseries = fo('sst',time=(start_time,end_time),latitude=(-90,90))
+    obs_timeseries = fo('sst',time=(start_time,end_time))
 
     # Replace area where temperature below -1.8 C to -1.8 C ---
     obs_mask = obs_timeseries.mask
@@ -250,10 +250,12 @@ for model in models:
   f = cdms.open(model_path)
 
   if var == 'psl':
-    model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90))/100. # Pa to hPa
+    #model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90),longitude=(lon1g,lon2g))/100. # Pa to hPa
+    model_timeseries = f(var,time=(start_time,end_time))/100. # Pa to hPa
 
   elif var == 'ts':
-    model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90))-273.15 # K to C degree
+    #model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90),longitude=(lon1g,lon2g))-273.15 # K to C degree
+    model_timeseries = f(var,time=(start_time,end_time))-273.15 # K to C degree
     model_timeseries.units = 'degC'
 
     # Replace area where temperature below -1.8 C to -1.8 C ---
@@ -315,9 +317,12 @@ for model in models:
     if obs_compare:
 
       # Regrid (interpolation, model grid to ref grid) ---
-      eof1_regrid = eof1.regrid(ref_grid_subdomain, regridTool='esmf', regridMethod='linear') 
-      eof1_lr_regrid_global = eof1_lr.regrid(ref_grid_global, regridTool='esmf', regridMethod='linear')
+      if debug: print 'regrid (global) start'
+      eof1_lr_regrid_global = eof1_lr.regrid(ref_grid_global, regridTool='regrid2', mkCyclic=True)
       if debug: print 'regrid end'
+
+      # Extract subdomain ---
+      eof1_regrid = eof1_lr_regrid_global(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
       # RMS difference ---
       rms = genutil.statistics.rms(eof1_regrid, eof1_obs[season], axis='xy')
@@ -342,7 +347,8 @@ for model in models:
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     if pseudo and obs_compare:
       # Regrid (interpolation, model grid to ref grid) ---
-      model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid_global, regridTool='esmf', regridMethod='linear')
+      #model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid_global, regridTool='regrid2')
+      model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid_global, regridTool='regrid2', mkCyclic=True)
       model_timeseries_season_regrid_subdomain = model_timeseries_season_regrid(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
       # Matching model's missing value location to that of observation ---
