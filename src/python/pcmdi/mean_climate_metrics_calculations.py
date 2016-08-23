@@ -43,7 +43,7 @@ def compute_metrics(Var, dm, do):
 
     # SET CONDITIONAL ON INPUT VARIABLE
     if var == 'pr':
-        conv = 1.e5
+        conv = 86400. 
     else:
         conv = 1.
 
