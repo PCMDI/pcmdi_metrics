@@ -106,7 +106,7 @@ elif mode == 'PDO':
   var = 'ts'
 
 if debug:
-  models = ['ACCESS1-0']  # Test just one model
+  #models = ['ACCESS1-0']  # Test just one model
   #models = ['ACCESS1-3']  # Test just one model
   #models = ['ACCESS1-0', 'ACCESS1-3']  # Test just two models
   #models = ['CESM1-CAM5']  # Test just one model
@@ -115,6 +115,7 @@ if debug:
   #models = ['inmcm4']
   #models = ['HadGEM2-AO']
   #models = ['MIROC4h']
+  models = ['CSIRO-Mk3-6-0']
   seasons = ['DJF']
   #seasons = ['MAM']
   #seasons = ['SON']
@@ -197,7 +198,8 @@ if obs_compare:
 
       # Subtract global mean ---
       obs_global_mean_timeseries = cdutil.averager(obs_timeseries(latitude=(-60,70)), axis='xy', weights='weighted')
-      obs_timeseries, obs_global_mean_timeseries = genutil.grower(obs_timeseries, obs_global_mean_timeseries) # Match dimension
+      obs_timeseries, obs_global_mean_timeseries = \
+                                 genutil.grower(obs_timeseries, obs_global_mean_timeseries) # Match dimension
       obs_timeseries = obs_timeseries - obs_global_mean_timeseries     
 
       obs_timeseries_season = obs_timeseries
@@ -252,13 +254,13 @@ for model in models:
 
   print model
   #model_path = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,run)
-  model_path_list = get_latest_pcmdi_mip_data_path_as_list(mip,exp,model,fq,realm,var,runs)
-  #model_path_list = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,'*')
   #model_path = '/work/cmip5/historical/atm/mo/psl/cmip5.'+model+'.historical.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
+  model_path_list = get_latest_pcmdi_mip_data_path_as_list(mip,exp,model,fq,realm,var,runs)
 
   for model_path in model_path_list:
 
     run = string.split((string.split(model_path,'/')[-1]),'.')[3]
+    print run
 
     var_mode_stat_dic['RESULTS'][model][run]={}
     var_mode_stat_dic['RESULTS'][model][run]['defaultReference']={}
@@ -267,11 +269,9 @@ for model in models:
     f = cdms.open(model_path)
   
     if var == 'psl':
-      #model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90),longitude=(lon1g,lon2g))/100. # Pa to hPa
       model_timeseries = f(var,time=(start_time,end_time))/100. # Pa to hPa
   
     elif var == 'ts':
-      #model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90),longitude=(lon1g,lon2g))-273.15 # K to C degree
       model_timeseries = f(var,time=(start_time,end_time))-273.15 # K to C degree
       model_timeseries.units = 'degC'
   
@@ -298,7 +298,8 @@ for model in models:
   
         # Take global mean out ---
         model_global_mean_timeseries = cdutil.averager(model_timeseries(latitude=(-60,70)), axis='xy', weights='weighted')
-        model_timeseries, model_global_mean_timeseries = genutil.grower(model_timeseries, model_global_mean_timeseries) # Matching dimension
+        model_timeseries, model_global_mean_timeseries = \
+                                  genutil.grower(model_timeseries, model_global_mean_timeseries) # Matching dimension
         model_timeseries = model_timeseries - model_global_mean_timeseries 
   
         model_timeseries_season = model_timeseries
@@ -364,7 +365,6 @@ for model in models:
       #- - - - - - - - - - - - - - - - - - - - - - - - -
       if pseudo and obs_compare:
         # Regrid (interpolation, model grid to ref grid) ---
-        #model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid_global, regridTool='regrid2')
         model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid_global, regridTool='regrid2', mkCyclic=True)
         model_timeseries_season_regrid_subdomain = model_timeseries_season_regrid(latitude=(lat1,lat2),longitude=(lon1,lon2))
   
