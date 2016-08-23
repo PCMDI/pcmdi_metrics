@@ -30,12 +30,11 @@ mip = 'cmip5'
 exp = 'historical'
 fq = 'mo'
 realm = 'atm'
-run = 'r1i1p1'
 
 # Mode of variability --
-#mode = 'NAM' # Northern Annular Mode
+mode = 'NAM' # Northern Annular Mode
 #mode = 'NAO' # Northern Atlantic Oscillation
-mode = 'SAM' # Southern Annular Mode
+#mode = 'SAM' # Southern Annular Mode
 #mode = 'PNA' # Pacific North American Pattern
 #mode = 'PDO' # Pacific Decadal Oscillation
 
@@ -63,7 +62,16 @@ nc_out = True
 plot = True
 #plot = False
 
+# Conside all ensemble member (multiple realization) --
+multi_run = True
+#multi_run = False ## Consider only r1i1p1
+
 ##################################################
+
+if multi_run: 
+  runs = '*'
+else: 
+  runs = 'r1i1p1'
 
 # Below part will be replaced by PMP's region selector.. 
 if mode == 'NAM':
@@ -241,187 +249,196 @@ if obs_compare:
 #-------------------------------------------------
 for model in models:
   var_mode_stat_dic['RESULTS'][model]={}
-  var_mode_stat_dic['RESULTS'][model]['defaultReference']={}
-  var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode]={}
 
   print model
-  model_path = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,run)
+  #model_path = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,run)
+  model_path_list = get_latest_pcmdi_mip_data_path_as_list(mip,exp,model,fq,realm,var,runs)
+  #model_path_list = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,'*')
   #model_path = '/work/cmip5/historical/atm/mo/psl/cmip5.'+model+'.historical.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
-  f = cdms.open(model_path)
 
-  if var == 'psl':
-    #model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90),longitude=(lon1g,lon2g))/100. # Pa to hPa
-    model_timeseries = f(var,time=(start_time,end_time))/100. # Pa to hPa
+  for model_path in model_path_list:
 
-  elif var == 'ts':
-    #model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90),longitude=(lon1g,lon2g))-273.15 # K to C degree
-    model_timeseries = f(var,time=(start_time,end_time))-273.15 # K to C degree
-    model_timeseries.units = 'degC'
+    run = string.split((string.split(model_path,'/')[-1]),'.')[3]
 
-    # Replace area where temperature below -1.8 C to -1.8 C ---
-    model_timeseries[model_timeseries<-1.8] = -1.8
+    var_mode_stat_dic['RESULTS'][model][run]={}
+    var_mode_stat_dic['RESULTS'][model][run]['defaultReference']={}
+    var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode]={}
 
-  cdutil.setTimeBoundsMonthly(model_timeseries)
-
-  #-------------------------------------------------
-  # Season loop
-  #- - - - - - - - - - - - - - - - - - - - - - - - -
-  for season in seasons:
-    var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]={}
-
-    #- - - - - - - - - - - - - - - - - - - - - - - - -
-    # Time series adjustment
-    #. . . . . . . . . . . . . . . . . . . . . . . . .
-    if mode == 'PDO' and season == 'monthly':
-      # Remove annual cycle ---
-      model_timeseries = cdutil.ANNUALCYCLE.departures(model_timeseries)
-
-      # Extract SST (land region mask out) ---
-      model_timeseries = model_land_mask_out(mip,model,model_timeseries)
-
-      # Take global mean out ---
-      model_global_mean_timeseries = cdutil.averager(model_timeseries(latitude=(-60,70)), axis='xy', weights='weighted')
-      model_timeseries, model_global_mean_timeseries = genutil.grower(model_timeseries, model_global_mean_timeseries) # Matching dimension
-      model_timeseries = model_timeseries - model_global_mean_timeseries 
-
-      model_timeseries_season = model_timeseries
-
-    else:
-      # Get seasonal mean time series ---
-      model_timeseries_season = getattr(cdutil,season)(model_timeseries)
-
-    #- - - - - - - - - - - - - - - - - - - - - - - - -
-    # Extract subdomain ---
-    #. . . . . . . . . . . . . . . . . . . . . . . . .
-    model_timeseries_season_subdomain = model_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2))
-
+    f = cdms.open(model_path)
+  
+    if var == 'psl':
+      #model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90),longitude=(lon1g,lon2g))/100. # Pa to hPa
+      model_timeseries = f(var,time=(start_time,end_time))/100. # Pa to hPa
+  
+    elif var == 'ts':
+      #model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90),longitude=(lon1g,lon2g))-273.15 # K to C degree
+      model_timeseries = f(var,time=(start_time,end_time))-273.15 # K to C degree
+      model_timeseries.units = 'degC'
+  
+      # Replace area where temperature below -1.8 C to -1.8 C ---
+      model_timeseries[model_timeseries<-1.8] = -1.8
+  
+    cdutil.setTimeBoundsMonthly(model_timeseries)
+  
     #-------------------------------------------------
-    # Usual EOF approach
+    # Season loop
     #- - - - - - - - - - - - - - - - - - - - - - - - -
-    # EOF analysis ---
-    eof1, pc1, frac1, solver, reverse_sign = \
-          eof_analysis_get_first_variance_mode(mode, model_timeseries_season_subdomain)
-
-    if debug: print 'eof analysis'
-
-    # Linear regression to have extended global map; teleconnection purpose ---
-    eof1_lr = linear_regression(pc1, model_timeseries_season)
-    if debug: print 'linear regression'
-
-    # Calculate stdv of pc time series
-    model_pcs_stdv = genutil.statistics.std(pc1)
-
-    #- - - - - - - - - - - - - - - - - - - - - - - - -
-    # OBS statistics (only over EOF domain), save as dictionary ---
-    #. . . . . . . . . . . . . . . . . . . . . . . . .
-    if obs_compare:
-
-      # Regrid (interpolation, model grid to ref grid) ---
-      if debug: print 'regrid (global) start'
-      eof1_lr_regrid_global = eof1_lr.regrid(ref_grid_global, regridTool='regrid2', mkCyclic=True)
-      if debug: print 'regrid end'
-
-      # Extract subdomain ---
-      eof1_regrid = eof1_lr_regrid_global(latitude=(lat1,lat2),longitude=(lon1,lon2))
-
-      # RMS difference ---
-      rms = genutil.statistics.rms(eof1_regrid, eof1_obs[season], axis='xy')
-      rms_glo = genutil.statistics.rms(eof1_lr_regrid_global, eof1_lr_obs[season], axis='xy')
-      if debug: print 'rms end'
-
-      # Spatial correlation weighted by area ('generate' option for weights) ---
-      cor = genutil.statistics.correlation(eof1_regrid, eof1_obs[season], weights='generate', axis='xy')
-      cor_glo = genutil.statistics.correlation(eof1_lr_regrid_global, eof1_lr_obs[season], weights='generate', axis='xy')
-      if debug: print 'cor end'
-
-      # Add to dictionary for json output ---
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['rms'] = float(rms)
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['rms_glo'] = float(rms_glo)
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['cor'] = float(cor)
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['cor_glo'] = float(cor_glo)
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['frac'] = float(frac1)
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['std_model_pcs'] = float(model_pcs_stdv)
-
-    #-------------------------------------------------
-    # pseudo model PC timeseries and teleconnection 
-    #- - - - - - - - - - - - - - - - - - - - - - - - -
-    if pseudo and obs_compare:
-      # Regrid (interpolation, model grid to ref grid) ---
-      #model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid_global, regridTool='regrid2')
-      model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid_global, regridTool='regrid2', mkCyclic=True)
-      model_timeseries_season_regrid_subdomain = model_timeseries_season_regrid(latitude=(lat1,lat2),longitude=(lon1,lon2))
-
-      # Matching model's missing value location to that of observation ---
-      # 1) Replace model's masked grid to 0, so theoritically won't affect to result
-      # 2) Give obs's mask to model field, so enable projecField functionality below 
-      missing_value = model_timeseries_season_regrid_subdomain.missing
-      model_timeseries_season_regrid_subdomain[ model_timeseries_season_regrid_subdomain == missing_value ] = 0
-      model_timeseries_season_regrid_subdomain.mask = model_timeseries_season_regrid_subdomain.mask + eof1_obs[season].mask
-
-      # Pseudo model PC time series ---
-      pseudo_pcs = solver_obs[season].projectField(model_timeseries_season_regrid_subdomain,neofs=1,eofscaling=1)
-      pseudo_pcs = pseudo_pcs(squeeze=1)
-
-      # Arbitrary sign control, attempt to make all plots have the same sign ---
-      if reverse_sign_obs[season]: pseudo_pcs = pseudo_pcs * -1.
-    
-      # Calculate stdv of pc time series
-      pseudo_pcs_stdv = genutil.statistics.std(pseudo_pcs)
-
-      # Linear regression to have extended global map; teleconnection purpose ---
-      eof1_lr_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid)
-
-      # Extract subdomain for statistics
-      eof1_lr_pseudo_subdomain = eof1_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2))
-
+    for season in seasons:
+      var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]={}
+  
       #- - - - - - - - - - - - - - - - - - - - - - - - -
-      # OBS statistics (over global domain), save as dictionary, alternative approach -- pseudo PC analysis
+      # Time series adjustment
       #. . . . . . . . . . . . . . . . . . . . . . . . .
-      # RMS difference ---
-      rms_alt = genutil.statistics.rms(eof1_lr_pseudo_subdomain, eof1_obs[season], axis='xy')
-      rms_alt_glo = genutil.statistics.rms(eof1_lr_pseudo, eof1_lr_obs[season], axis='xy')
-
-      # Spatial correlation weighted by area ('generate' option for weights) ---
-      cor_alt = genutil.statistics.correlation(eof1_lr_pseudo_subdomain, eof1_obs[season], weights='generate', axis='xy')
-      cor_alt_glo = genutil.statistics.correlation(eof1_lr_pseudo, eof1_lr_obs[season], weights='generate', axis='xy')
-
-      # Temporal correlation between pseudo PC timeseries and usual model PC timeseries
-      tc = genutil.statistics.correlation(pseudo_pcs, pc1)
-
-      # Add to dictionary for json output ---
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['rms_alt'] = float(rms_alt)
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['rms_alt_glo'] = float(rms_alt_glo)
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['cor_alt'] = float(cor_alt)
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['cor_alt_glo'] = float(cor_alt_glo)
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['std_pseudo_pcs'] = float(pseudo_pcs_stdv)
-      var_mode_stat_dic['RESULTS'][model]['defaultReference'][mode][season]['tcor_pseudo_vs_model_pcs'] = float(tc)
-
-      if debug: print 'pseudo pcs end'
-
-    #-------------------------------------------------
-    # Record results
-    #- - - - - - - - - - - - - - - - - - - - - - - - -
-    # Set output file name for NetCDF and plot ---
-    output_file_name = mode+'_'+var+'_eof1_'+season+'_'+model+'_'+str(syear)+'-'+str(eyear)
-
-    # Save global map, pc timeseries, and fraction in NetCDF output ---
-    if nc_out:
-      write_nc_output(output_file_name, eof1_lr, pc1, frac1)
-      if pseudo and obs_compare: 
-        write_nc_output(output_file_name+'_pseudo', eof1_lr_pseudo, pc1, frac1)
-
-    # Plot map ---
-    if plot:
-      plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name)
-      #plot_map(mode, model+'-lr', syear, eyear, season, eof1_lr(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name+'_lr')
-      plot_map(mode+'_teleconnection', model, syear, eyear, season, eof1_lr(longitude=(lon1g,lon2g)), frac1, output_file_name+'_lr')
-      if pseudo: 
-        plot_map(mode+'_teleconnection_pseudo', model, syear, eyear, season, eof1_lr_pseudo(longitude=(lon1g,lon2g)), frac1, output_file_name+'_lr_pseudo')
-        plot_map(mode, model+'_pseudo', syear, eyear, season, eof1_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name+'_pseudo')
-
+      if mode == 'PDO' and season == 'monthly':
+        # Remove annual cycle ---
+        model_timeseries = cdutil.ANNUALCYCLE.departures(model_timeseries)
+  
+        # Extract SST (land region mask out) ---
+        model_timeseries = model_land_mask_out(mip,model,model_timeseries)
+  
+        # Take global mean out ---
+        model_global_mean_timeseries = cdutil.averager(model_timeseries(latitude=(-60,70)), axis='xy', weights='weighted')
+        model_timeseries, model_global_mean_timeseries = genutil.grower(model_timeseries, model_global_mean_timeseries) # Matching dimension
+        model_timeseries = model_timeseries - model_global_mean_timeseries 
+  
+        model_timeseries_season = model_timeseries
+  
+      else:
+        # Get seasonal mean time series ---
+        model_timeseries_season = getattr(cdutil,season)(model_timeseries)
+  
+      #- - - - - - - - - - - - - - - - - - - - - - - - -
+      # Extract subdomain ---
+      #. . . . . . . . . . . . . . . . . . . . . . . . .
+      model_timeseries_season_subdomain = model_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2))
+  
+      #-------------------------------------------------
+      # Usual EOF approach
+      #- - - - - - - - - - - - - - - - - - - - - - - - -
+      # EOF analysis ---
+      eof1, pc1, frac1, solver, reverse_sign = \
+            eof_analysis_get_first_variance_mode(mode, model_timeseries_season_subdomain)
+  
+      if debug: print 'eof analysis'
+  
+      # Linear regression to have extended global map; teleconnection purpose ---
+      eof1_lr = linear_regression(pc1, model_timeseries_season)
+      if debug: print 'linear regression'
+  
+      # Calculate stdv of pc time series
+      model_pcs_stdv = genutil.statistics.std(pc1)
+  
+      #- - - - - - - - - - - - - - - - - - - - - - - - -
+      # OBS statistics (only over EOF domain), save as dictionary ---
+      #. . . . . . . . . . . . . . . . . . . . . . . . .
+      if obs_compare:
+  
+        # Regrid (interpolation, model grid to ref grid) ---
+        if debug: print 'regrid (global) start'
+        eof1_lr_regrid_global = eof1_lr.regrid(ref_grid_global, regridTool='regrid2', mkCyclic=True)
+        if debug: print 'regrid end'
+  
+        # Extract subdomain ---
+        eof1_regrid = eof1_lr_regrid_global(latitude=(lat1,lat2),longitude=(lon1,lon2))
+  
+        # RMS difference ---
+        rms = genutil.statistics.rms(eof1_regrid, eof1_obs[season], axis='xy')
+        rms_glo = genutil.statistics.rms(eof1_lr_regrid_global, eof1_lr_obs[season], axis='xy')
+        if debug: print 'rms end'
+  
+        # Spatial correlation weighted by area ('generate' option for weights) ---
+        cor = genutil.statistics.correlation(eof1_regrid, eof1_obs[season], weights='generate', axis='xy')
+        cor_glo = genutil.statistics.correlation(eof1_lr_regrid_global, eof1_lr_obs[season], weights='generate', axis='xy')
+        if debug: print 'cor end'
+  
+        # Add to dictionary for json output ---
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rms'] = float(rms)
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rms_glo'] = float(rms_glo)
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['cor'] = float(cor)
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['cor_glo'] = float(cor_glo)
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['frac'] = float(frac1)
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['std_model_pcs'] = float(model_pcs_stdv)
+  
+      #-------------------------------------------------
+      # pseudo model PC timeseries and teleconnection 
+      #- - - - - - - - - - - - - - - - - - - - - - - - -
+      if pseudo and obs_compare:
+        # Regrid (interpolation, model grid to ref grid) ---
+        #model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid_global, regridTool='regrid2')
+        model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid_global, regridTool='regrid2', mkCyclic=True)
+        model_timeseries_season_regrid_subdomain = model_timeseries_season_regrid(latitude=(lat1,lat2),longitude=(lon1,lon2))
+  
+        # Matching model's missing value location to that of observation ---
+        # 1) Replace model's masked grid to 0, so theoritically won't affect to result
+        # 2) Give obs's mask to model field, so enable projecField functionality below 
+        missing_value = model_timeseries_season_regrid_subdomain.missing
+        model_timeseries_season_regrid_subdomain[ model_timeseries_season_regrid_subdomain == missing_value ] = 0
+        model_timeseries_season_regrid_subdomain.mask = model_timeseries_season_regrid_subdomain.mask + eof1_obs[season].mask
+  
+        # Pseudo model PC time series ---
+        pseudo_pcs = solver_obs[season].projectField(model_timeseries_season_regrid_subdomain,neofs=1,eofscaling=1)
+        pseudo_pcs = pseudo_pcs(squeeze=1)
+  
+        # Arbitrary sign control, attempt to make all plots have the same sign ---
+        if reverse_sign_obs[season]: pseudo_pcs = pseudo_pcs * -1.
+      
+        # Calculate stdv of pc time series
+        pseudo_pcs_stdv = genutil.statistics.std(pseudo_pcs)
+  
+        # Linear regression to have extended global map; teleconnection purpose ---
+        eof1_lr_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid)
+  
+        # Extract subdomain for statistics
+        eof1_lr_pseudo_subdomain = eof1_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2))
+  
+        #- - - - - - - - - - - - - - - - - - - - - - - - -
+        # OBS statistics (over global domain), save as dictionary, alternative approach -- pseudo PC analysis
+        #. . . . . . . . . . . . . . . . . . . . . . . . .
+        # RMS difference ---
+        rms_alt = genutil.statistics.rms(eof1_lr_pseudo_subdomain, eof1_obs[season], axis='xy')
+        rms_alt_glo = genutil.statistics.rms(eof1_lr_pseudo, eof1_lr_obs[season], axis='xy')
+  
+        # Spatial correlation weighted by area ('generate' option for weights) ---
+        cor_alt = genutil.statistics.correlation(eof1_lr_pseudo_subdomain, eof1_obs[season], weights='generate', axis='xy')
+        cor_alt_glo = genutil.statistics.correlation(eof1_lr_pseudo, eof1_lr_obs[season], weights='generate', axis='xy')
+  
+        # Temporal correlation between pseudo PC timeseries and usual model PC timeseries
+        tc = genutil.statistics.correlation(pseudo_pcs, pc1)
+  
+        # Add to dictionary for json output ---
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rms_alt'] = float(rms_alt)
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rms_alt_glo'] = float(rms_alt_glo)
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['cor_alt'] = float(cor_alt)
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['cor_alt_glo'] = float(cor_alt_glo)
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['std_pseudo_pcs'] = float(pseudo_pcs_stdv)
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['tcor_pseudo_vs_model_pcs'] = float(tc)
+  
+        if debug: print 'pseudo pcs end'
+  
+      #-------------------------------------------------
+      # Record results
+      #- - - - - - - - - - - - - - - - - - - - - - - - -
+      # Set output file name for NetCDF and plot ---
+      output_file_name = mode+'_'+var+'_eof1_'+season+'_'+model+'_'+run+'_'+str(syear)+'-'+str(eyear)
+  
+      # Save global map, pc timeseries, and fraction in NetCDF output ---
+      if nc_out:
+        write_nc_output(output_file_name, eof1_lr, pc1, frac1)
+        if pseudo and obs_compare: 
+          write_nc_output(output_file_name+'_pseudo', eof1_lr_pseudo, pc1, frac1)
+  
+      # Plot map ---
+      if plot:
+        plot_map(mode, model+'_'+run, syear, eyear, season, eof1, frac1, output_file_name)
+        #plot_map(mode, model+'_'+run+'-lr', syear, eyear, season, eof1_lr(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name+'_lr')
+        plot_map(mode+'_teleconnection', model+'_'+run, syear, eyear, season, eof1_lr(longitude=(lon1g,lon2g)), frac1, output_file_name+'_lr')
+        if pseudo: 
+          plot_map(mode+'_teleconnection_pseudo', model+'_'+run, syear, eyear, season, eof1_lr_pseudo(longitude=(lon1g,lon2g)), frac1, output_file_name+'_lr_pseudo')
+          plot_map(mode, model+'_'+run+'_pseudo', syear, eyear, season, eof1_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name+'_pseudo')
+  
 #=================================================
 # Write dictionary to json file
 #-------------------------------------------------
 if obs_compare:
-  json_filename = 'var_mode_'+mode+'_eof1_stat_' + mip + '_' + exp + '_' + run + '_' + fq + '_' + realm + '_' + str(syear) + '-' + str(eyear)
+  json_filename = 'var_mode_'+mode+'_eof1_stat_' + mip + '_' + exp + '_' + fq + '_' + realm + '_' + str(syear) + '-' + str(eyear)
   json.dump(var_mode_stat_dic, open(json_filename + '.json','w'), sort_keys=True, indent=4, separators=(',', ': '))
