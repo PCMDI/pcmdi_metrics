@@ -11,7 +11,7 @@ def compute(dm, do):
             "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
         }
     absdif = MV.absolute(MV.subtract(dm, do))
-    mae = cdutil.averger(absdif,axis='xy',weights='weighted')
+    mae = cdutil.averager(absdif,axis='xy',weights='weighted')
 
 #   mae = MV.average(MV.absolute(MV.subtract(dm, do))) - depricated ... did not include area weights
     return float(mae)
