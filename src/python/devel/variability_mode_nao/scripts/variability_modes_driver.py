@@ -66,14 +66,23 @@ plot = True
 multi_run = True
 #multi_run = False ## Consider only r1i1p1
 
+# Output directory --
+out_dir = './result'
+
 ##################################################
 
+# Create output directory ---
+out_dir = out_dir + '/' + mode
+if not os.path.exists(out_dir): os.makedirs(out_dir)
+
+# Multiple realization ---
 if multi_run: 
   runs = '*'
 else: 
   runs = 'r1i1p1'
 
-# Below part will be replaced by PMP's region selector.. 
+# Region selector ---
+# Below part will be replaced by PMP's region selector ---
 if mode == 'NAM':
   lat1 = 20
   lat2 = 90
@@ -105,6 +114,7 @@ elif mode == 'PDO':
   lon2 = 260
   var = 'ts'
 
+# Debug option ---
 if debug:
   models = ['ACCESS1-0']  # Test just one model
   #models = ['ACCESS1-3']  # Test just one model
@@ -127,7 +137,7 @@ else:
     models = list(set(models).intersection(models_lf)) # Select models when land fraction exists as well
     models = sorted(models, key=lambda s:s.lower()) # Sort list alphabetically, case-insensitive
 
-# lon1g and lon2g is for global map plotting
+# lon1g and lon2g is for global map plotting ---
 lon1g = -180
 lon2g = 180
 
@@ -243,7 +253,7 @@ if obs_compare:
     # Record results 
     #. . . . . . . . . . . . . . . . . . . . . . . . .
     # Set output file name for NetCDF and plot ---
-    output_file_name_obs = mode+'_'+var+'_eof1_'+season+'_obs_'+str(osyear)+'-'+str(oeyear)
+    output_file_name_obs = out_dir + '/' + mode+'_'+var+'_eof1_'+season+'_obs_'+str(osyear)+'-'+str(oeyear)
 
     # Save global map, pc timeseries, and fraction in NetCDF output ---
     if nc_out:
@@ -437,7 +447,7 @@ for model in models:
       # Record results
       #- - - - - - - - - - - - - - - - - - - - - - - - -
       # Set output file name for NetCDF and plot ---
-      output_file_name = mode+'_'+var+'_eof1_'+season+'_'+model+'_'+run+'_'+str(syear)+'-'+str(eyear)
+      output_file_name = out_dir + '/' + mode+'_'+var+'_eof1_'+season+'_'+model+'_'+run+'_'+str(syear)+'-'+str(eyear)
   
       # Save global map, pc timeseries, and fraction in NetCDF output ---
       if nc_out:
@@ -462,5 +472,5 @@ for model in models:
 # Write dictionary to json file
 #-------------------------------------------------
 if obs_compare:
-  json_filename = 'var_mode_'+mode+'_eof1_stat_' + mip + '_' + exp + '_' + fq + '_' + realm + '_' + str(syear) + '-' + str(eyear)
+  json_filename = out_dir + '/' + 'var_mode_'+mode+'_eof1_stat_' + mip + '_' + exp + '_' + fq + '_' + realm + '_' + str(syear) + '-' + str(eyear)
   json.dump(var_mode_stat_dic, open(json_filename + '.json','w'), sort_keys=True, indent=4, separators=(',', ': '))
