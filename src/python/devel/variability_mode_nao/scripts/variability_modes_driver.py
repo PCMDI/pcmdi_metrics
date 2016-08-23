@@ -32,11 +32,11 @@ fq = 'mo'
 realm = 'atm'
 
 # Mode of variability --
-#mode = 'NAM' # Northern Annular Mode
+mode = 'NAM' # Northern Annular Mode
 #mode = 'NAO' # Northern Atlantic Oscillation
 #mode = 'SAM' # Southern Annular Mode
 #mode = 'PNA' # Pacific North American Pattern
-mode = 'PDO' # Pacific Decadal Oscillation
+#mode = 'PDO' # Pacific Decadal Oscillation
 
 syear = 1900
 #syear = 1990 # To match with ERAINT...
@@ -150,10 +150,8 @@ var_mode_stat_dic['RESULTS']={}
 # Observation
 #-------------------------------------------------
 if obs_compare:
-  var_mode_stat_dic['REF']['obs']={}
-  var_mode_stat_dic['REF']['obs']['defaultReference']={}
-  var_mode_stat_dic['REF']['obs']['defaultReference'][mode]={}
 
+  # Load variable ---
   if var == 'psl':
     obs_path = '/clim_obs/obs/atm/mo/psl/ERAINT/psl_ERAINT_198901-200911.nc'
     fo = cdms.open(obs_path)
@@ -171,6 +169,15 @@ if obs_compare:
 
   cdutil.setTimeBoundsMonthly(obs_timeseries)
 
+  # Check available time window and adjust if needed ---
+  osyear = obs_timeseries.getTime().asComponentTime()[0].year
+  oeyear = obs_timeseries.getTime().asComponentTime()[-1].year
+
+  osyear = max(syear, osyear)
+  oeyear = min(eyear, oeyear)
+
+  if debug: print 'osyear:', osyear, 'oeyear:', oeyear
+
   # Save global grid information for regrid below ---
   ref_grid_global = obs_timeseries.getGrid()
 
@@ -182,6 +189,13 @@ if obs_compare:
   reverse_sign_obs={}
   eof1_lr_obs={}
   pc1_obs_stdv={}
+
+  # Dictonary for json archive ---
+  var_mode_stat_dic['REF']['obs']={}
+  var_mode_stat_dic['REF']['obs']['defaultReference']={}
+  var_mode_stat_dic['REF']['obs']['defaultReference']['source'] = {}
+  var_mode_stat_dic['REF']['obs']['defaultReference']['source'] = obs_path
+  var_mode_stat_dic['REF']['obs']['defaultReference'][mode]={}
   
   #-------------------------------------------------
   # Season loop
@@ -229,7 +243,7 @@ if obs_compare:
     # Record results 
     #. . . . . . . . . . . . . . . . . . . . . . . . .
     # Set output file name for NetCDF and plot ---
-    output_file_name_obs = mode+'_'+var+'_eof1_'+season+'_obs_'+str(syear)+'-'+str(eyear)
+    output_file_name_obs = mode+'_'+var+'_eof1_'+season+'_obs_'+str(osyear)+'-'+str(oeyear)
 
     # Save global map, pc timeseries, and fraction in NetCDF output ---
     if nc_out:
@@ -237,9 +251,11 @@ if obs_compare:
 
     # Plotting ---
     if plot:
-      plot_map(mode, 'obs', syear, eyear, season, eof1_obs[season], frac1_obs[season], output_file_name_obs)
-      #plot_map(mode, 'obs-lr', syear, eyear, season, eof1_lr_obs[season](latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs[season], output_file_name_obs+'_lr')
-      plot_map(mode+'_teleconnection', 'obs-lr', syear, eyear, season, eof1_lr_obs[season](longitude=(lon1g,lon2g)), frac1_obs[season], output_file_name_obs+'_lr')
+      #plot_map(mode, 'obs', osyear, oeyear, season, eof1_obs[season], frac1_obs[season], output_file_name_obs)
+      plot_map(mode, 'obs', osyear, oeyear, season, 
+               eof1_lr_obs[season](latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs[season], output_file_name_obs)
+      plot_map(mode+'_teleconnection', 'obs-lr', osyear, oeyear, season, 
+               eof1_lr_obs[season](longitude=(lon1g,lon2g)), frac1_obs[season], output_file_name_obs+'_teleconnection')
 
     # Save stdv of PC time series in dictionary ---
     var_mode_stat_dic['REF']['obs']['defaultReference'][mode][season]['pc1_stdv'] = float(pc1_obs_stdv[season])
@@ -277,9 +293,9 @@ for model in models:
   
       # Replace area where temperature below -1.8 C to -1.8 C ---
       model_timeseries[model_timeseries<-1.8] = -1.8
-  
+
     cdutil.setTimeBoundsMonthly(model_timeseries)
-  
+
     #-------------------------------------------------
     # Season loop
     #- - - - - - - - - - - - - - - - - - - - - - - - -
