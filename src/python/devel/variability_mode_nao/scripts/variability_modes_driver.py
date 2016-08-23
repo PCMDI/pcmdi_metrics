@@ -32,11 +32,11 @@ fq = 'mo'
 realm = 'atm'
 
 # Mode of variability --
-mode = 'NAM' # Northern Annular Mode
+#mode = 'NAM' # Northern Annular Mode
 #mode = 'NAO' # Northern Atlantic Oscillation
 #mode = 'SAM' # Southern Annular Mode
 #mode = 'PNA' # Pacific North American Pattern
-#mode = 'PDO' # Pacific Decadal Oscillation
+mode = 'PDO' # Pacific Decadal Oscillation
 
 syear = 1900
 #syear = 1990 # To match with ERAINT...
@@ -106,7 +106,7 @@ elif mode == 'PDO':
   var = 'ts'
 
 if debug:
-  #models = ['ACCESS1-0']  # Test just one model
+  models = ['ACCESS1-0']  # Test just one model
   #models = ['ACCESS1-3']  # Test just one model
   #models = ['ACCESS1-0', 'ACCESS1-3']  # Test just two models
   #models = ['CESM1-CAM5']  # Test just one model
@@ -115,7 +115,7 @@ if debug:
   #models = ['inmcm4']
   #models = ['HadGEM2-AO']
   #models = ['MIROC4h']
-  models = ['CSIRO-Mk3-6-0']
+  #models = ['CSIRO-Mk3-6-0']
   seasons = ['DJF']
   #seasons = ['MAM']
   #seasons = ['SON']
@@ -322,7 +322,9 @@ for model in models:
   
       if debug: print 'eof analysis'
   
-      # Linear regression to have extended global map; teleconnection purpose ---
+      # Linear regression to have extended global map:
+      # -- Reconstruct EOF fist mode including teleconnection purpose as well
+      # -- Have confirmed that "eof1_lr" is identical to "eof1" over EOF domain (i.e., "subdomain") ---
       eof1_lr = linear_regression(pc1, model_timeseries_season)
       if debug: print 'linear regression'
   
@@ -429,12 +431,16 @@ for model in models:
   
       # Plot map ---
       if plot:
-        plot_map(mode, model+'_'+run, syear, eyear, season, eof1, frac1, output_file_name)
-        #plot_map(mode, model+'_'+run+'-lr', syear, eyear, season, eof1_lr(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name+'_lr')
-        plot_map(mode+'_teleconnection', model+'_'+run, syear, eyear, season, eof1_lr(longitude=(lon1g,lon2g)), frac1, output_file_name+'_lr')
+        #plot_map(mode, model+'_'+run, syear, eyear, season, eof1, frac1, output_file_name)
+        plot_map(mode, model+'_'+run, syear, eyear, season, 
+                 eof1_lr(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name)
+        plot_map(mode+'_teleconnection', model+'_'+run, syear, eyear, season, 
+                 eof1_lr(longitude=(lon1g,lon2g)), frac1, output_file_name+'_teleconnection')
         if pseudo: 
-          plot_map(mode+'_teleconnection_pseudo', model+'_'+run, syear, eyear, season, eof1_lr_pseudo(longitude=(lon1g,lon2g)), frac1, output_file_name+'_lr_pseudo')
-          plot_map(mode, model+'_'+run+'_pseudo', syear, eyear, season, eof1_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name+'_pseudo')
+          plot_map(mode, model+'_'+run+'_pseudo', syear, eyear, season, 
+                   eof1_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name+'_pseudo')
+          plot_map(mode+'_pseudo_teleconnection', model+'_'+run, syear, eyear, season, 
+                   eof1_lr_pseudo(longitude=(lon1g,lon2g)), frac1, output_file_name+'_pseudo_teleconnection')
   
 #=================================================
 # Write dictionary to json file

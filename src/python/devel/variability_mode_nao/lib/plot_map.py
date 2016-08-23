@@ -34,15 +34,15 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
     p.type = int('-3')
   elif mode == 'NAO' or mode == 'PNA' or mode == 'PDO' or mode == 'AMO':
     p.type = 'lambert'
-  elif mode == 'PDO_teleconnection' or mode == 'PDO_teleconnection_pseudo':
+  elif mode == 'PDO_teleconnection' or mode == 'PDO_pseudo_teleconnection':
     p.type = 'robinson' 
   else:
     p.type = int('-3')
   iso.projection = p
   xtra = {}
-  if mode == 'PDO_teleconnection' or mode == 'PDO_teleconnection_pseudo':
+  if mode == 'PDO_teleconnection' or mode == 'PDO_pseudo_teleconnection':
     xtra = {}
-  elif mode == 'SAM' or mode == 'SAM_teleconnection' or mode == 'SAM_teleconnection_pseudo':
+  elif mode == 'SAM' or mode == 'SAM_teleconnection' or mode == 'SAM_pseudo_teleconnection':
     xtra['latitude'] = (-90.0,0.0) # For Southern Hemisphere
   else: 
     xtra['latitude'] = (90.0,0.0) # For Northern Hemisphere
