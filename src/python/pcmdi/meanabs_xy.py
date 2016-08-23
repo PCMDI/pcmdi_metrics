@@ -1,4 +1,4 @@
-import MV2 as MV
+import MV2
 import cdutil
 
 def compute(dm, do):
@@ -10,7 +10,7 @@ def compute(dm, do):
             "Absolute Difference Between Model And Observation",
             "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
         }
-    absdif = MV.absolute(MV.subtract(dm, do))
+    absdif = MV2.absolute(MV2.subtract(dm, do))
     mae = cdutil.averager(absdif,axis='xy',weights='weighted')
 
 #   mae = MV.average(MV.absolute(MV.subtract(dm, do))) - depricated ... did not include area weights
