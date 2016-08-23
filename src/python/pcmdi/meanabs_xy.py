@@ -1,5 +1,5 @@
 import MV2 as MV
-
+import cdutil
 
 def compute(dm, do):
     """ Computes Mean Absolute Error"""
@@ -10,5 +10,8 @@ def compute(dm, do):
             "Absolute Difference Between Model And Observation",
             "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
         }
-    mae = MV.average(MV.absolute(MV.subtract(dm, do)))
+    absdif = MV.absolute(MV.subtract(dm, do))
+    mae = cdutil.averger(absdif,axis='xy',weights='weighted')
+
+#   mae = MV.average(MV.absolute(MV.subtract(dm, do))) - depricated ... did not include area weights
     return float(mae)
