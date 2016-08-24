@@ -43,8 +43,8 @@ syear = 1900
 eyear = 2005
 
 # Debugging test --
-#debug = True
-debug = False
+debug = True
+#debug = False
 
 # Statistics against observation --
 obs_compare = True
@@ -67,7 +67,7 @@ multi_run = True
 #multi_run = False ## Consider only r1i1p1
 
 # Output directory --
-out_dir = './result'
+out_dir = './results'
 
 ##################################################
 
@@ -483,3 +483,4 @@ for model in models:
 
     except:
       print 'faild for ', model, run
+      pass
