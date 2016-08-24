@@ -10,5 +10,5 @@ def compute(dm, do):
             "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
         }
     dif = MV2.subtract(dm, do)
-    return MV2.float(cdutil.averager(dif,axis='xy',weights='weighted'))
+    return MV2.float(cdutil.averager(dif,axis='xyt',weights='weighted'))
 #   return MV2.float(MV2.average(MV2.subtract(dm, do))) deprecated - does not use area weights

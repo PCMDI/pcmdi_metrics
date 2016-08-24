@@ -1,7 +1,7 @@
 import cdms2 as cdms
 import pcmdi_metrics
 import collections
-import MV2 as MV
+import MV2
 from genutil import grower
 
 
@@ -15,7 +15,7 @@ def compute_metrics(Var, dm, do):
             None,
             None)
         metrics_defs["rms_xy"] = pcmdi_metrics.pcmdi.rms_xy.compute(None, None)
-        metrics_defs["bias_xy"] = pcmdi_metrics.pcmdi.bias.compute(None, None)
+        metrics_defs["bias_xy"] = pcmdi_metrics.pcmdi.bias_xy.compute(None, None)
         metrics_defs["mae_xy"] = pcmdi_metrics.pcmdi.meanabs_xy.compute(
             None,
             None)
@@ -62,7 +62,7 @@ def compute_metrics(Var, dm, do):
     dm_am, do_am = pcmdi_metrics.pcmdi.annual_mean.compute(dm, do)
 
     # CALCULATE ANNUAL MEAN BIAS
-    bias_xy = pcmdi_metrics.pcmdi.bias.compute(dm_am, do_am)
+    bias_xy = pcmdi_metrics.pcmdi.bias_xy.compute(dm_am, do_am)
 
     # CALCULATE MEAN ABSOLUTE ERROR
     mae_xy = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_am, do_am)
@@ -83,9 +83,9 @@ def compute_metrics(Var, dm, do):
 
     # CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN RMS
     dm_amzm_grown, dummy = grower(dm_amzm, dm_am)
-    dm_am_devzm = MV.subtract(dm_am, dm_amzm_grown)
+    dm_am_devzm = MV2.subtract(dm_am, dm_amzm_grown)
     do_amzm_grown, dummy = grower(do_amzm, do_am)
-    do_am_devzm = MV.subtract(do_am, do_amzm_grown)
+    do_am_devzm = MV2.subtract(do_am, do_amzm_grown)
     rms_xy_devzm = pcmdi_metrics.pcmdi.rms_xy.compute(
         dm_am_devzm, do_am_devzm)
 
@@ -167,7 +167,7 @@ def compute_metrics(Var, dm, do):
         rms_sea = pcmdi_metrics.pcmdi.rms_xy.compute(dm_sea, do_sea)
         cor_sea = pcmdi_metrics.pcmdi.cor_xy.compute(dm_sea, do_sea)
         mae_sea = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_sea, do_sea)
-        bias_sea = pcmdi_metrics.pcmdi.bias.compute(dm_sea, do_sea)
+        bias_sea = pcmdi_metrics.pcmdi.bias_xy.compute(dm_sea, do_sea)
 
         # CALCULATE ANNUAL OBS and MOD STD
         stdObs_xy_sea = pcmdi_metrics.pcmdi.std_xy.compute(do_sea)
