@@ -59,8 +59,9 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   plot_title.halign = 'center'
   plot_title.valign = 'top'
   plot_title.color='black'
-  frac1 = round(float(frac1*100.),1) # % with one floating number
-  plot_title.string = mode+': '+model+'\n'+str(syear)+'-'+str(eyear)+' '+season+', '+str(frac1)+'%'
+  if frac1 != -999: percentage = str(round(float(frac1*100.),1)) + '%' # % with one floating number
+  else: percentage = ''
+  plot_title.string = mode+': '+model+'\n'+str(syear)+'-'+str(eyear)+' '+season+' '+percentage
   canvas.plot(plot_title)
 
   #-------------------------------------------------
