@@ -225,7 +225,6 @@ if obs_compare:
       obs_timeseries, obs_global_mean_timeseries = \
                                  genutil.grower(obs_timeseries, obs_global_mean_timeseries) # Match dimension
       obs_timeseries = obs_timeseries - obs_global_mean_timeseries     
-
       obs_timeseries_season = obs_timeseries
 
     else:
@@ -279,7 +278,6 @@ for model in models:
   print ' ----- ', model,' ---------------------'
   var_mode_stat_dic['RESULTS'][model]={}
   
-  print model
   #model_path = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,run)
   #model_path = '/work/cmip5/historical/atm/mo/psl/cmip5.'+model+'.historical.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
   model_path_list = get_latest_pcmdi_mip_data_path_as_list(mip,exp,model,fq,realm,var,runs)
@@ -287,9 +285,8 @@ for model in models:
   for model_path in model_path_list:
 
     try:
-  
       run = string.split((string.split(model_path,'/')[-1]),'.')[3]
-      print run
+      print ' --- ', run,' ---'
   
       var_mode_stat_dic['RESULTS'][model][run]={}
       var_mode_stat_dic['RESULTS'][model][run]['defaultReference']={}
@@ -304,7 +301,7 @@ for model in models:
         model_timeseries = f(var,time=(start_time,end_time))-273.15 # K to C degree
         model_timeseries.units = 'degC'
     
-        # Replace area where temperature below -1.8 C to -1.8 C ---
+        # Replace area where temperature below -1.8 C to -1.8 C (sea ice) ---
         model_timeseries[model_timeseries<-1.8] = -1.8
   
       cdutil.setTimeBoundsMonthly(model_timeseries)
@@ -330,7 +327,6 @@ for model in models:
           model_timeseries, model_global_mean_timeseries = \
                                     genutil.grower(model_timeseries, model_global_mean_timeseries) # Matching dimension
           model_timeseries = model_timeseries - model_global_mean_timeseries 
-    
           model_timeseries_season = model_timeseries
     
         else:
@@ -463,14 +459,14 @@ for model in models:
         # Plot map ---
         if plot:
           #plot_map(mode, model+'_'+run, syear, eyear, season, eof1, frac1, output_file_name)
-          plot_map(mode, model+'_'+run, syear, eyear, season, 
+          plot_map(mode, model+' ('+run+')', syear, eyear, season, 
                    eof1_lr(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name)
-          plot_map(mode+'_teleconnection', model+'_'+run, syear, eyear, season, 
+          plot_map(mode+'_teleconnection', model+' ('+run+')', syear, eyear, season, 
                    eof1_lr(longitude=(lon1g,lon2g)), frac1, output_file_name+'_teleconnection')
           if pseudo: 
-            plot_map(mode, model+'_'+run+'_pseudo', syear, eyear, season, 
+            plot_map(mode, model+' ('+run+')'+' - pseudo', syear, eyear, season, 
                      eof1_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2)), -999, output_file_name+'_pseudo')
-            plot_map(mode+'_pseudo_teleconnection', model+'_'+run, syear, eyear, season, 
+            plot_map(mode+'_pseudo_teleconnection', model+' ('+run+')', syear, eyear, season, 
                      eof1_lr_pseudo(longitude=(lon1g,lon2g)), -999, output_file_name+'_pseudo_teleconnection')
     
       #=================================================
