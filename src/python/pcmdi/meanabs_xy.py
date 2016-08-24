@@ -8,7 +8,7 @@ def compute(dm, do):
             "Name": "Mean Absolute Error",
             "Abstract": "Compute Full Average of " +
             "Absolute Difference Between Model And Observation",
-            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Contact": "pcmdi-metrics@llnl.gov",
         }
     absdif = MV2.absolute(MV2.subtract(dm, do))
     mae = cdutil.averager(absdif,axis='xy',weights='weighted')
