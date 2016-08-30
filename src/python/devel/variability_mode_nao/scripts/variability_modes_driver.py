@@ -33,9 +33,9 @@ realm = 'atm'
 
 # Mode of variability --
 mode = 'NAM' # Northern Annular Mode
-#mode = 'NAO' # Northern Atlantic Oscillation
-#mode = 'SAM' # Southern Annular Mode
-#mode = 'PNA' # Pacific North American Pattern
+mode = 'NAO' # Northern Atlantic Oscillation
+mode = 'SAM' # Southern Annular Mode
+mode = 'PNA' # Pacific North American Pattern
 #mode = 'PDO' # Pacific Decadal Oscillation
 
 syear = 1900
@@ -43,8 +43,8 @@ syear = 1900
 eyear = 2005
 
 # Debugging test --
-debug = True
-#debug = False
+#debug = True
+debug = False
 
 # Statistics against observation --
 obs_compare = True
@@ -252,7 +252,7 @@ if obs_compare:
     # Record results 
     #. . . . . . . . . . . . . . . . . . . . . . . . .
     # Set output file name for NetCDF and plot ---
-    output_file_name_obs = out_dir + '/' + mode+'_'+var+'_eof1_'+season+'_obs_'+str(osyear)+'-'+str(oeyear)
+    output_file_name_obs = out_dir + '/' + mode+'_'+var+'_EOF1_'+season+'_obs_'+str(osyear)+'-'+str(oeyear)
 
     # Save global map, pc timeseries, and fraction in NetCDF output ---
     if nc_out:
@@ -344,7 +344,6 @@ for model in models:
         # EOF analysis ---
         eof1, pc1, frac1, solver, reverse_sign = \
               eof_analysis_get_first_variance_mode(mode, model_timeseries_season_subdomain)
-    
         if debug: print 'eof analysis'
     
         # Linear regression to have extended global map:
@@ -353,7 +352,7 @@ for model in models:
         eof1_lr = linear_regression(pc1, model_timeseries_season)
         if debug: print 'linear regression'
     
-        # Calculate stdv of pc time series
+        # Calculate stdv of pc time series ---
         model_pcs_stdv = genutil.statistics.std(pc1)
     
         #- - - - - - - - - - - - - - - - - - - - - - - - -
@@ -368,16 +367,27 @@ for model in models:
     
           # Extract subdomain ---
           eof1_regrid = eof1_lr_regrid_global(latitude=(lat1,lat2),longitude=(lon1,lon2))
+
+          # Spatial correlation weighted by area ('generate' option for weights) ---
+          cor = genutil.statistics.correlation(eof1_regrid, eof1_obs[season], weights='generate', axis='xy')
+          cor_glo = genutil.statistics.correlation(eof1_lr_regrid_global, eof1_lr_obs[season], weights='generate', axis='xy')
+          if debug: print 'cor end'
+
+          # Double check for arbitrary sign control --- 
+          if cor < 0: 
+            eof1 = eof1 * -1
+            pc1 = pc1 * -1
+            eof1_lr = eof1_lr * -1
+            eof1_lr_regrid_global = eof1_lr_regrid_global * -1
+            eof1_regrid = eof1_regrid * -1
+            # Calc cor again ---
+            cor = genutil.statistics.correlation(eof1_regrid, eof1_obs[season], weights='generate', axis='xy')
+            cor_glo = genutil.statistics.correlation(eof1_lr_regrid_global, eof1_lr_obs[season], weights='generate', axis='xy')
     
           # RMS difference ---
           rms = genutil.statistics.rms(eof1_regrid, eof1_obs[season], axis='xy')
           rms_glo = genutil.statistics.rms(eof1_lr_regrid_global, eof1_lr_obs[season], axis='xy')
           if debug: print 'rms end'
-    
-          # Spatial correlation weighted by area ('generate' option for weights) ---
-          cor = genutil.statistics.correlation(eof1_regrid, eof1_obs[season], weights='generate', axis='xy')
-          cor_glo = genutil.statistics.correlation(eof1_lr_regrid_global, eof1_lr_obs[season], weights='generate', axis='xy')
-          if debug: print 'cor end'
     
           # Add to dictionary for json output ---
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rms'] = float(rms)
@@ -480,3 +490,5 @@ for model in models:
     except:
       print 'faild for ', model, run
       pass
+
+sys.exit('done')
