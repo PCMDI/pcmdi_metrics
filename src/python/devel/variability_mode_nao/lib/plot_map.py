@@ -55,7 +55,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   plot_title = vcs.createtext()
   plot_title.x = .5
   plot_title.y = .97
-  plot_title.height = 23
+  plot_title.height = 30
   plot_title.halign = 'center'
   plot_title.valign = 'top'
   plot_title.color='black'
