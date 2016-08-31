@@ -7,7 +7,7 @@ def compute(dm, do):
         return {
             "Name": "Bias",
             "Abstract": "Compute Full Average of Model - Observation",
-            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Contact": "pcmdi-metrics@llnl.gov",
         }
     dif = MV2.subtract(dm, do)
     return MV2.float(cdutil.averager(dif,axis='xyt',weights='weighted'))
