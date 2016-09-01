@@ -283,7 +283,8 @@
             "filename": "rt_CERES_000001-000012_ac.nc",
             "period": "",
             "shape": "(12, 180, 360)"
-        }
+        },
+        "default": "CERES"
     },
     "rtnetcre": {
         "CERES": {
