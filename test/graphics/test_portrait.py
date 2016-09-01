@@ -12,6 +12,7 @@
 import unittest
 import checkimage
 
+bg = False
 
 class TestGraphics(unittest.TestCase):
 
@@ -138,9 +139,9 @@ class TestGraphics(unittest.TestCase):
 
         # GENERATE PLOT
         P.decorate(out1_rel, variables, yax)
-        # P.plot(out1_rel,x=x,multiple=1.1,bg=0)  # FOR PLOTTING TRIANGLES WHEN
+        # P.plot(out1_rel,x=x,multiple=1.1,bg=bg)  # FOR PLOTTING TRIANGLES WHEN
         # USING TWO OR MORE REFERENCE DATA SETS
-        P.plot(out1_rel, bg=1, x=x)
+        P.plot(out1_rel, bg=bg, x=x)
         # x.backend.renWin.Render()
 
         # END OF PLOTTING

@@ -220,11 +220,11 @@ class JSONs(object):
 
         # Now let's fill this array
         for i in range(sh[0]):
-            #print "VAR:",axes[0][i]
+            print "VAR:",axes[0][i],"----------------------------------------------------------------______"
             try:
                 val = self.data[axes[0][i]]  # select var
                 for j in range(sh[1]):
-                    #print "Model:",axes[1][j],type(val)
+                    print "Model:",axes[1][j],type(val)
                     try:
                         val2=val[axes[1][j]] # select model
                         for k in range(sh[2]):
@@ -245,6 +245,7 @@ class JSONs(object):
                                                             val6 = val5[axes[5][n]+"_"+axes[6][o]]
                                                         except:
                                                             val6 = 1.e20
+                                                        print val6
                                                         array[(i,j,k,l,m,n,o)] = float(val6)
                                             except: # Region not available?
                                                 #print "NO REG"
@@ -262,7 +263,8 @@ class JSONs(object):
                 #print "NO VAR!"
                 array[(i)]=1.e20
 
-        array = MV2.array(array,id="pmp")
+        array = MV2.masked_greater(array,9.e19)
+        array.id = "pmp"
         array.setAxisList(axes)
         return array
 
