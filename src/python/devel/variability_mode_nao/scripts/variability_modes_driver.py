@@ -9,7 +9,6 @@ PDO: Pacific Decadal Oscillation
 
 Ji-Woo Lee
 """
-
 import argparse
 from argparse import RawTextHelpFormatter
 import sys, os
@@ -28,6 +27,7 @@ libfiles = ['argparse_functions.py',
             'durolib.py',
             'get_pcmdi_data.py',
             'eof_analysis.py',
+            'calc_stat.py',
             'landmask.py',
             'write_nc_output.py',
             'plot_map.py']
@@ -263,7 +263,7 @@ if obs_compare:
            eof_analysis_get_first_variance_mode(mode, obs_timeseries_season_subdomain)
 
     # Calculate stdv of pc time series
-    pc1_obs_stdv[season] = genutil.statistics.std(pc1_obs[season])
+    pc1_obs_stdv[season] = calcSTD(pc1_obs[season])
 
     # Linear regression to have extended global map; teleconnection purpose ---
     eof1_lr_obs[season] = linear_regression(pc1_obs[season], obs_timeseries_season)
@@ -340,7 +340,6 @@ for model in models:
           model_timeseries = cdutil.ANNUALCYCLE.departures(model_timeseries)
     
           # Extract SST (land region mask out) ---
-          # Individual land fraction from each model is used 
           model_timeseries = model_land_mask_out(mip,model,model_timeseries)
     
           # Take global mean out ---
@@ -348,6 +347,8 @@ for model in models:
           model_timeseries, model_global_mean_timeseries = \
                                     genutil.grower(model_timeseries, model_global_mean_timeseries) # Matching dimension
           model_timeseries = model_timeseries - model_global_mean_timeseries 
+
+          # Assign same variable name as other modes of variability ---
           model_timeseries_season = model_timeseries
     
         else:
@@ -375,7 +376,7 @@ for model in models:
         if debug: print 'linear regression'
     
         # Calculate stdv of pc time series ---
-        model_pcs_stdv = genutil.statistics.std(pc1)
+        model_pcs_stdv = calcSTD(pc1)
     
         #- - - - - - - - - - - - - - - - - - - - - - - - -
         # OBS statistics (only over EOF domain), save as dictionary ---
@@ -391,8 +392,8 @@ for model in models:
           eof1_regrid = eof1_lr_regrid_global(latitude=(lat1,lat2),longitude=(lon1,lon2))
 
           # Spatial correlation weighted by area ('generate' option for weights) ---
-          cor = genutil.statistics.correlation(eof1_regrid, eof1_obs[season], weights='generate', axis='xy')
-          cor_glo = genutil.statistics.correlation(eof1_lr_regrid_global, eof1_lr_obs[season], weights='generate', axis='xy')
+          cor = calcSCOR(eof1_regrid, eof1_obs[season])
+          cor_glo = calcSCOR(eof1_lr_regrid_global, eof1_lr_obs[season])
           if debug: print 'cor end'
 
           # Double check for arbitrary sign control --- 
@@ -403,19 +404,33 @@ for model in models:
             eof1_lr_regrid_global = eof1_lr_regrid_global * -1
             eof1_regrid = eof1_regrid * -1
             # Calc cor again ---
-            cor = genutil.statistics.correlation(eof1_regrid, eof1_obs[season], weights='generate', axis='xy')
-            cor_glo = genutil.statistics.correlation(eof1_lr_regrid_global, eof1_lr_obs[season], weights='generate', axis='xy')
+            cor = calcSCOR(eof1_regrid, eof1_obs[season])
+            cor_glo = calcSCOR(eof1_lr_regrid_global, eof1_lr_obs[season])
     
-          # RMS difference ---
-          rms = genutil.statistics.rms(eof1_regrid, eof1_obs[season], axis='xy')
-          rms_glo = genutil.statistics.rms(eof1_lr_regrid_global, eof1_lr_obs[season], axis='xy')
+          # RMS (uncentered) difference ---
+          rms = calcRMS(eof1_regrid, eof1_obs[season])
+          rms_glo = calcRMS(eof1_lr_regrid_global, eof1_lr_obs[season])
           if debug: print 'rms end'
+
+          # RMS (centered) difference ---
+          rmsc = calcRMSc(eof1_regrid, eof1_obs[season])
+          rmsc_glo = calcRMSc(eof1_lr_regrid_global, eof1_lr_obs[season])
+          if debug: print 'rmsc end'
+
+          # Bias ---
+          bias = calcBias(eof1_regrid, eof1_obs[season])
+          bias_glo = calcBias(eof1_lr_regrid_global, eof1_lr_obs[season])
+          if debug: print 'bias end'
     
           # Add to dictionary for json output ---
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rms'] = float(rms)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rms_glo'] = float(rms_glo)
+          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rmsc'] = float(rmsc)
+          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rmsc_glo'] = float(rmsc_glo)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['cor'] = float(cor)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['cor_glo'] = float(cor_glo)
+          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['bias'] = float(bias)
+          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['bias_glo'] = float(bias_glo)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['frac'] = float(frac1)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['std_model_pcs'] = float(model_pcs_stdv)
     
@@ -442,7 +457,7 @@ for model in models:
           if reverse_sign_obs[season]: pseudo_pcs = pseudo_pcs * -1.
         
           # Calculate stdv of pc time series
-          pseudo_pcs_stdv = genutil.statistics.std(pseudo_pcs)
+          pseudo_pcs_stdv = calcSTD(pseudo_pcs)
     
           # Linear regression to have extended global map; teleconnection purpose ---
           eof1_lr_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid)
@@ -453,22 +468,39 @@ for model in models:
           #- - - - - - - - - - - - - - - - - - - - - - - - -
           # OBS statistics (over global domain), save as dictionary, alternative approach -- pseudo PC analysis
           #. . . . . . . . . . . . . . . . . . . . . . . . .
-          # RMS difference ---
-          rms_alt = genutil.statistics.rms(eof1_lr_pseudo_subdomain, eof1_obs[season], axis='xy')
-          rms_alt_glo = genutil.statistics.rms(eof1_lr_pseudo, eof1_lr_obs[season], axis='xy')
-    
           # Spatial correlation weighted by area ('generate' option for weights) ---
-          cor_alt = genutil.statistics.correlation(eof1_lr_pseudo_subdomain, eof1_obs[season], weights='generate', axis='xy')
-          cor_alt_glo = genutil.statistics.correlation(eof1_lr_pseudo, eof1_lr_obs[season], weights='generate', axis='xy')
+          cor_alt = calcSCOR(eof1_lr_pseudo_subdomain, eof1_obs[season])
+          cor_alt_glo = calcSCOR(eof1_lr_pseudo, eof1_lr_obs[season])
+          if debug: print 'pseudo cor end'
+
+          # RMS (uncentered) difference ---
+          rms_alt = calcRMS(eof1_lr_pseudo_subdomain, eof1_obs[season])
+          rms_alt_glo = calcRMS(eof1_lr_pseudo, eof1_lr_obs[season])
+          if debug: print 'pseudo rms end'
     
+          # RMS (centered) difference ---
+          rmsc_alt = calcRMSc(eof1_lr_pseudo_subdomain, eof1_obs[season])
+          rmsc_alt_glo = calcRMSc(eof1_lr_pseudo, eof1_lr_obs[season])
+          if debug: print 'pseudo rmsc end'
+
           # Temporal correlation between pseudo PC timeseries and usual model PC timeseries
-          tc = genutil.statistics.correlation(pseudo_pcs, pc1)
+          tc = calcTCOR(pseudo_pcs, pc1)
+          if debug: print 'pseudo tc end'
     
+          # Bias ---
+          bias_alt = calcBias(eof1_lr_pseudo_subdomain, eof1_obs[season])
+          bias_alt_glo = calcBias(eof1_lr_pseudo, eof1_lr_obs[season])
+          if debug: print 'pseudo bias end'
+
           # Add to dictionary for json output ---
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rms_alt'] = float(rms_alt)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rms_alt_glo'] = float(rms_alt_glo)
+          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rmsc_alt'] = float(rmsc_alt)
+          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['rmsc_alt_glo'] = float(rmsc_alt_glo)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['cor_alt'] = float(cor_alt)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['cor_alt_glo'] = float(cor_alt_glo)
+          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['bias_alt'] = float(bias_alt)
+          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['bias_alt_glo'] = float(bias_alt_glo)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['std_pseudo_pcs'] = float(pseudo_pcs_stdv)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['tcor_pseudo_vs_model_pcs'] = float(tc)
     
