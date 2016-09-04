@@ -20,9 +20,9 @@ def AddParserArgument(parser):
                              "(Case Insensitive)")
   parser.add_argument("-s", "--season",
                       type = str,
-                      default = 'all',
+                      default = 'DJF',
                       help = "Season for mode of variability\n"
-                             "- Available options: DJF, MAM, JJA, SON or all (default)\n"
+                             "- Available options: DJF (default), MAM, JJA, SON or all\n"
                              "- Variability mode PDO's definition is not based on season,\n"
                              "  thus season will be corrected to 'monthly' automatically\n"
                              "(Case Insensitive)")
