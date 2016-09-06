@@ -54,7 +54,7 @@ def compute_metrics(Var, dm, do):
 
     # CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD
     rms_xyt = pcmdi_metrics.pcmdi.rms_xyt.compute(dm, do)
-    # cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm, do)
+#   cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm, do)   
     stdObs_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(do)
     std_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(dm)
 
@@ -69,6 +69,9 @@ def compute_metrics(Var, dm, do):
 
     # CALCULATE ANNUAL MEAN RMS
     rms_xy = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am, do_am)
+
+    # CALCULATE ANNUAL MEAN CORRELATION 
+    cor_xy = pcmdi_metrics.pcmdi.cor_xy.compute(dm_am, do_am)   
 
     # CALCULATE ANNUAL OBS and MOD STD
     stdObs_xy = pcmdi_metrics.pcmdi.std_xy.compute(do_am)
@@ -133,6 +136,11 @@ def compute_metrics(Var, dm, do):
     metrics_dictionary[
         'rms_xy_ann'] = format(
         rms_xy *
+        conv,
+        sig_digits)
+    metrics_dictionary[
+        'cor_xy_ann'] = format(
+        cor_xy *
         conv,
         sig_digits)
     metrics_dictionary[
