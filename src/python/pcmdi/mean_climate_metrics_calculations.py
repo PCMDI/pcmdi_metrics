@@ -140,8 +140,7 @@ def compute_metrics(Var, dm, do):
         sig_digits)
     metrics_dictionary[
         'cor_xy_ann'] = format(
-        cor_xy *
-        conv,
+        cor_xy,
         sig_digits)
     metrics_dictionary[
         'bias_xy_ann'] = format(
