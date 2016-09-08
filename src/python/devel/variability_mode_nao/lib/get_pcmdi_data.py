@@ -13,7 +13,6 @@ def get_latest_pcmdi_mip_data_path_as_list(mip,exp,mod,fq,realm,var,run):
    if mip == 'cmip5': pin = '/work/' + mip + '/' + exp + '/' + realm + '/' + fq + '/' + var + '/' + mip + '.' + mod + '.' + exp + '.' + run + '.' + fq + '.' + realm + '.' + Realm + '.' + var + '*.xml'
    lst0 = os.popen('ls ' + pin).readlines()
    modelFileListTrimmed = trimModelList(lst0)
-   #latest = modelFileListTrimmed[0][:-1]
    latest = map(str.rstrip, modelFileListTrimmed)
    return(latest)
 
