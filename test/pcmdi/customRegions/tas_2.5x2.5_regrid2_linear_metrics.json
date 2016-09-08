@@ -24,6 +24,7 @@
                         "bias_xy_jja": "-1.717",
                         "bias_xy_mam": "-1.678",
                         "bias_xy_son": "-2.401",
+                        "cor_xy_ann": "0.956",
                         "cor_xy_djf": "0.88",
                         "cor_xy_jja": "0.94",
                         "cor_xy_mam": "0.75",
@@ -64,6 +65,7 @@
                         "bias_xy_jja": "-0.794",
                         "bias_xy_mam": "-0.864",
                         "bias_xy_son": "-0.862",
+                        "cor_xy_ann": "0.917",
                         "cor_xy_djf": "0.94",
                         "cor_xy_jja": "0.95",
                         "cor_xy_mam": "0.91",
@@ -104,6 +106,7 @@
                         "bias_xy_jja": "-0.526",
                         "bias_xy_mam": "-0.490",
                         "bias_xy_son": "-0.789",
+                        "cor_xy_ann": "0.990",
                         "cor_xy_djf": "0.99",
                         "cor_xy_jja": "0.99",
                         "cor_xy_mam": "0.99",
@@ -144,6 +147,7 @@
                         "bias_xy_jja": "-0.398",
                         "bias_xy_mam": "-0.383",
                         "bias_xy_son": "-0.723",
+                        "cor_xy_ann": "0.984",
                         "cor_xy_djf": "0.98",
                         "cor_xy_jja": "0.99",
                         "cor_xy_mam": "0.98",
@@ -184,6 +188,7 @@
                         "bias_xy_jja": "-1.578",
                         "bias_xy_mam": "-2.243",
                         "bias_xy_son": "-2.252",
+                        "cor_xy_ann": "0.983",
                         "cor_xy_djf": "0.97",
                         "cor_xy_jja": "0.98",
                         "cor_xy_mam": "0.97",
@@ -224,6 +229,7 @@
                         "bias_xy_jja": "-0.780",
                         "bias_xy_mam": "-1.695",
                         "bias_xy_son": "-0.718",
+                        "cor_xy_ann": "0.964",
                         "cor_xy_djf": "0.98",
                         "cor_xy_jja": "0.91",
                         "cor_xy_mam": "0.97",
@@ -264,6 +270,7 @@
                         "bias_xy_jja": "1.063",
                         "bias_xy_mam": "2.012",
                         "bias_xy_son": "0.819",
+                        "cor_xy_ann": "0.995",
                         "cor_xy_djf": "0.99",
                         "cor_xy_jja": "0.99",
                         "cor_xy_mam": "1.00",
@@ -450,6 +457,6 @@
             "Name": "Custom Maximum"
         }
     },
-    "metrics_git_sha1": "8647d77228c4a11fb98b2733a2f645b62c7a2273",
-    "uvcdat_version": "2.4.1"
+    "metrics_git_sha1": "effb36efa514d161d749782b66cd577eed460d66",
+    "uvcdat_version": "v2.5.0-572-ga06818f"
 }

@@ -24,6 +24,7 @@
                         "bias_xy_jja": "-0.571",
                         "bias_xy_mam": "-0.552",
                         "bias_xy_son": "-0.638",
+                        "cor_xy_ann": "0.928",
                         "cor_xy_djf": "0.90",
                         "cor_xy_jja": "0.94",
                         "cor_xy_mam": "0.90",
@@ -62,6 +63,7 @@
                         "bias_xy_jja": "-0.277",
                         "bias_xy_mam": "-0.009",
                         "bias_xy_son": "-0.407",
+                        "cor_xy_ann": "0.991",
                         "cor_xy_djf": "0.98",
                         "cor_xy_jja": "0.99",
                         "cor_xy_mam": "0.99",
@@ -100,6 +102,7 @@
                         "bias_xy_jja": "-1.054",
                         "bias_xy_mam": "-1.242",
                         "bias_xy_son": "-1.538",
+                        "cor_xy_ann": "0.986",
                         "cor_xy_djf": "0.97",
                         "cor_xy_jja": "0.99",
                         "cor_xy_mam": "0.98",
@@ -138,6 +141,7 @@
                         "bias_xy_jja": "0.651",
                         "bias_xy_mam": "1.596",
                         "bias_xy_son": "0.603",
+                        "cor_xy_ann": "0.991",
                         "cor_xy_djf": "0.99",
                         "cor_xy_jja": "0.98",
                         "cor_xy_mam": "0.99",
@@ -295,6 +299,6 @@
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
         }
     },
-    "metrics_git_sha1": "8647d77228c4a11fb98b2733a2f645b62c7a2273",
-    "uvcdat_version": "2.4.1"
+    "metrics_git_sha1": "effb36efa514d161d749782b66cd577eed460d66",
+    "uvcdat_version": "v2.5.0-572-ga06818f"
 }
