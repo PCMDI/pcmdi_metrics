@@ -2,7 +2,7 @@ import io  # noqa
 from mean_climate_metrics_calculations import compute_metrics  # noqa
 import rms_xyt  # noqa
 import cor_xyt  # noqa
-import bias  # noqa
+import bias_xy  # noqa
 import rms_xy  # noqa
 import rms_0  # noqa
 import annual_mean  # noqa
