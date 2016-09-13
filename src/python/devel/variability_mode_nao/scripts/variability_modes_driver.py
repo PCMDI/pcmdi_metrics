@@ -32,8 +32,13 @@ libfiles = ['argparse_functions.py',
             'write_nc_output.py',
             'plot_map.py']
 
+libfiles_share = ['default_regions.py']
+
 for lib in libfiles:
   execfile(os.path.join('../lib/',lib))
+
+for lib in libfiles_share:
+  execfile(os.path.join('../../../../../share/',lib))
 
 ##################################################
 # Pre-defined options
@@ -45,7 +50,26 @@ fq = 'mo'
 realm = 'atm'
 
 #=================================================
-# User defining options 
+# Additional options
+#=================================================
+# Statistics against observation --
+obs_compare = True
+#obs_compare = False
+
+# pseudo model PC time series analysis --
+pseudo = True
+#pseudo = False
+
+# NetCDF output --
+nc_out = True
+#nc_out = False
+
+# Plot figures --
+plot = True
+#plot = False
+
+#=================================================
+# User defining options (argparse)
 #=================================================
 parser = argparse.ArgumentParser(description='Mode of variablility based on EOF analysis',
                                  formatter_class=RawTextHelpFormatter)
@@ -87,24 +111,6 @@ print 'outdir: ', out_dir
 debug = args.debug
 print 'debug: ', debug
 
-#=================================================
-# Additional options
-#=================================================
-# Statistics against observation --
-obs_compare = True
-#obs_compare = False
-
-# pseudo model PC time series analysis --
-pseudo = True
-#pseudo = False
-
-# NetCDF output --
-nc_out = True
-#nc_out = False
-
-# Plot figures --
-plot = True
-#plot = False
 ##################################################
 
 # Create output directory ---
@@ -117,40 +123,45 @@ if multi_run:
 else: 
   runs = 'r1i1p1'
 
-if debug: runs = 'r1i1p1'
+if debug: print 'runs: ', runs
 
-# Region selector ---
 # Below part will be replaced by PMP's region selector ---
 if mode == 'NAM':
   lat1 = 20
   lat2 = 90
   lon1 = -180
   lon2 = 180
-  var = 'psl'
 elif mode == 'NAO':
   lat1 = 20
   lat2 = 80
   lon1 = -90
   lon2 = 40
-  var = 'psl'
 elif mode == 'SAM':
   lat1 = -20
   lat2 = -90
   lon1 = 0
   lon2 = 360
-  var = 'psl'
 elif mode == 'PNA':
   lat1 = 20
   lat2 = 85
   lon1 = 120
   lon2 = 240
-  var = 'psl'
 elif mode == 'PDO':
   lat1 = 20
   lat2 = 70
   lon1 = 110
   lon2 = 260
+
+# Variables ---
+if mode == 'NAM' or mode == 'NAO' or mode == 'SAM' or mode == 'PNA':
+  var = 'psl'
+elif mode == 'PDO':
   var = 'ts'
+
+# Model list ---
+if models == [ 'all' ]:
+  models = get_all_mip_mods(mip,exp,fq,realm,var)
+  if debug: print models, len(models)
 
 # lon1g and lon2g is for global map plotting ---
 lon1g = -180
@@ -253,7 +264,8 @@ if obs_compare:
 
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     # Extract subdomain ---
-    obs_timeseries_season_subdomain = obs_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2))
+    #obs_timeseries_season_subdomain = obs_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2))
+    obs_timeseries_season_subdomain = obs_timeseries_season(regions_specs[mode]['domain'])
 
     # Save subdomain's grid information for regrid below ---
     ref_grid_subdomain = obs_timeseries_season_subdomain.getGrid()
@@ -282,7 +294,8 @@ if obs_compare:
     if plot:
       #plot_map(mode, 'obs', osyear, oeyear, season, eof1_obs[season], frac1_obs[season], output_file_name_obs)
       plot_map(mode, 'obs', osyear, oeyear, season, 
-               eof1_lr_obs[season](latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs[season], output_file_name_obs)
+               eof1_lr_obs[season](regions_specs[mode]['domain']), frac1_obs[season], output_file_name_obs)
+               #eof1_lr_obs[season](latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs[season], output_file_name_obs)
       plot_map(mode+'_teleconnection', 'obs-lr', osyear, oeyear, season, 
                eof1_lr_obs[season](longitude=(lon1g,lon2g)), frac1_obs[season], output_file_name_obs+'_teleconnection')
 
@@ -358,7 +371,8 @@ for model in models:
         #- - - - - - - - - - - - - - - - - - - - - - - - -
         # Extract subdomain ---
         #. . . . . . . . . . . . . . . . . . . . . . . . .
-        model_timeseries_season_subdomain = model_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2))
+        #model_timeseries_season_subdomain = model_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2))
+        model_timeseries_season_subdomain = model_timeseries_season(regions_specs[mode]['domain'])
     
         #-------------------------------------------------
         # Usual EOF approach
@@ -389,7 +403,7 @@ for model in models:
           if debug: print 'regrid end'
     
           # Extract subdomain ---
-          eof1_regrid = eof1_lr_regrid_global(latitude=(lat1,lat2),longitude=(lon1,lon2))
+          eof1_regrid = eof1_lr_regrid_global(regions_specs[mode]['domain'])
 
           # Spatial correlation weighted by area ('generate' option for weights) ---
           cor = calcSCOR(eof1_regrid, eof1_obs[season])
@@ -440,7 +454,8 @@ for model in models:
         if pseudo and obs_compare:
           # Regrid (interpolation, model grid to ref grid) ---
           model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid_global, regridTool='regrid2', mkCyclic=True)
-          model_timeseries_season_regrid_subdomain = model_timeseries_season_regrid(latitude=(lat1,lat2),longitude=(lon1,lon2))
+          #model_timeseries_season_regrid_subdomain = model_timeseries_season_regrid(latitude=(lat1,lat2),longitude=(lon1,lon2))
+          model_timeseries_season_regrid_subdomain = model_timeseries_season_regrid(regions_specs[mode]['domain'])
     
           # Matching model's missing value location to that of observation ---
           # 1) Replace model's masked grid to 0, so theoritically won't affect to result
@@ -463,7 +478,8 @@ for model in models:
           eof1_lr_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid)
     
           # Extract subdomain for statistics
-          eof1_lr_pseudo_subdomain = eof1_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2))
+          #eof1_lr_pseudo_subdomain = eof1_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2))
+          eof1_lr_pseudo_subdomain = eof1_lr_pseudo(regions_specs[mode]['domain'])
     
           #- - - - - - - - - - - - - - - - - - - - - - - - -
           # OBS statistics (over global domain), save as dictionary, alternative approach -- pseudo PC analysis
@@ -524,12 +540,14 @@ for model in models:
         if plot:
           #plot_map(mode, model+'_'+run, syear, eyear, season, eof1, frac1, output_file_name)
           plot_map(mode, model+' ('+run+')', syear, eyear, season, 
-                   eof1_lr(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name)
+                   eof1_lr(regions_specs[mode]['domain']), frac1, output_file_name)
+                   #eof1_lr(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_file_name)
           plot_map(mode+'_teleconnection', model+' ('+run+')', syear, eyear, season, 
                    eof1_lr(longitude=(lon1g,lon2g)), frac1, output_file_name+'_teleconnection')
           if pseudo: 
             plot_map(mode, model+' ('+run+')'+' - pseudo', syear, eyear, season, 
-                     eof1_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2)), -999, output_file_name+'_pseudo')
+                     eof1_lr_pseudo(regions_specs[mode]['domain']), -999, output_file_name+'_pseudo')
+                     #eof1_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2)), -999, output_file_name+'_pseudo')
             plot_map(mode+'_pseudo_teleconnection', model+' ('+run+')', syear, eyear, season, 
                      eof1_lr_pseudo(longitude=(lon1g,lon2g)), -999, output_file_name+'_pseudo_teleconnection')
     
