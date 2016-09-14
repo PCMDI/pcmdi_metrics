@@ -75,9 +75,9 @@ execute_cmd("conda clean --lock")
 execute_cmd("conda remove -n %s -y --all" % args.env)
 
 if args.no_mesa:
-    pname = "-nox"
-else:
     pname = ""
+else:
+    pname = "-nox"
 
 if args.no_nightly:
     nightly = ""
