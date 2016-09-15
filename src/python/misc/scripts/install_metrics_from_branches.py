@@ -97,8 +97,8 @@ if not os.path.exists(args.git):
     os.makedirs(args.git)
 
 # Loop through vcs branches
-execute_cmd("git clone git://github.com/UV-CDAT/uvcdat", path=args.git)
-vcs_pth = os.path.join(args.git, "uvcdat")
+execute_cmd("git clone git://github.com/UV-CDAT/vcs", path=args.git)
+vcs_pth = os.path.join(args.git, "vcs")
 merge_branches(vcs_pth, args.vcs)
 
 # Loop through cdms branches
@@ -115,7 +115,7 @@ f = open("install_in_env.bash", "w")
 print >> f, "#!/usr/bin/env bash"
 print >>f, "source activate %s" % args.env
 print >>f, "conda uninstall -y openblas"
-print >>f, "cd %s" % os.path.join(vcs_pth, "Packages", "vcs")
+print >>f, "cd %s" % vcs_pth
 print >>f, "rm -rf build"
 print >>f, "python setup.py install --old-and-unmanageable"
 print >>f, "cd %s" % cdms_pth
