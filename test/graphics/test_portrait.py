@@ -12,7 +12,7 @@
 import unittest
 import checkimage
 
-bg = False
+bg = True
 
 class TestGraphics(unittest.TestCase):
 
@@ -101,28 +101,29 @@ class TestGraphics(unittest.TestCase):
         json_files = glob.glob(
             os.path.join(
                 os.path.dirname(__file__),
-                "..",
-                "..",
-                "examples",
-                "results",
+                "json",
+                "v1.0",
                 "*.json"))
 
+        json_files += glob.glob(
+            os.path.join(
+                os.path.dirname(__file__),
+                "json",
+                "v2.0",
+                "*.json"))
 
         print "JFILES:",json_files
         J = pcmdi_metrics.pcmdi.io.JSONs(json_files)
-        print J.getAxisList()
         mods = sorted(J.getAxis("model")[:])
         variables = sorted(J.getAxis("variable")[:])
-        print "MODELS:",mods
-        print "VARS:",variables
+        print "MODELS:",len(mods),mods
+        print "VARS:",len(variables),variables
         # Get what we need
         out1_rel = J(statistic=["rms_xyt"],season=["ann"],region="global")(squeeze=1)
-        print out1_rel
 
         out1_rel, med = genutil.grower(out1_rel,genutil.statistics.median(out1_rel,axis=1)[0])
-        #print med
 
-        out1_rel[:] = out1_rel.asma() / med.asma()
+        out1_rel[:] = (out1_rel.asma() - med.asma())/ med.asma()
 
         # ADD SPACES FOR LABELS TO ALIGN AXIS LABELS WITH PLOT
         modsAxis = mods

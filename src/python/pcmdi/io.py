@@ -105,7 +105,7 @@ class JSONs(object):
                                         domain = sp[-1]
                                         if domain == "GLB":
                                             domain = "global"
-                                        if new_key.find("rms_xyt")>-1: print "\t\t\t\tregion, stats:",region2+domain,new_key,reg[k]
+                                        #if new_key.find("rms_xyt")>-1: print "\t\t\t\tregion, stats:",region2+domain,new_key,reg[k]
                                         areal2[region2+domain][new_key]=reg[k]
                             # Now we can replace the realization with the correctly formatted one
                             #print "AREAL@:",areal2
@@ -123,8 +123,8 @@ class JSONs(object):
                 varnm = fnm.split("_")[0]
             else:
                 varnm = var["id"]
-                if hasattr(var,"level"):
-                    varnm+="-"+int(var["level"]/100.)
+                if var.has_key("level"):
+                    varnm+="-%i" % int(var["level"]/100.)
             if self.data.has_key(varnm):
                 self.data[varnm].update(R)
             else:
@@ -220,11 +220,11 @@ class JSONs(object):
 
         # Now let's fill this array
         for i in range(sh[0]):
-            print "VAR:",axes[0][i],"----------------------------------------------------------------______"
+            # print "VAR:",axes[0][i],"----------------------------------------------------------------______"
             try:
                 val = self.data[axes[0][i]]  # select var
                 for j in range(sh[1]):
-                    print "Model:",axes[1][j],type(val)
+                    # print "Model:",axes[1][j],type(val)
                     try:
                         val2=val[axes[1][j]] # select model
                         for k in range(sh[2]):
@@ -245,7 +245,7 @@ class JSONs(object):
                                                             val6 = val5[axes[5][n]+"_"+axes[6][o]]
                                                         except:
                                                             val6 = 1.e20
-                                                        print val6
+                                                        #print val6
                                                         array[(i,j,k,l,m,n,o)] = float(val6)
                                             except: # Region not available?
                                                 #print "NO REG"
