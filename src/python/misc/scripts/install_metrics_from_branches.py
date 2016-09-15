@@ -115,12 +115,14 @@ f = open("install_in_env.bash", "w")
 print >> f, "#!/usr/bin/env bash"
 print >>f, "source activate %s" % args.env
 print >>f, "conda uninstall -y openblas"
-print >>f, "cd %s" % vcs_pth
-print >>f, "rm -rf build"
-print >>f, "python setup.py install --old-and-unmanageable"
-print >>f, "cd %s" % cdms_pth
-print >>f, "rm -rf build"
-print >>f, "python setup.py install"
+if args.vcs != ["master"]:
+    print >>f, "cd %s" % vcs_pth
+    print >>f, "rm -rf build"
+    print >>f, "python setup.py install --old-and-unmanageable"
+if args.cdms != ["master"]:
+    print >>f, "cd %s" % cdms_pth
+    print >>f, "rm -rf build"
+    print >>f, "python setup.py install"
 print >>f, "cd %s" % metrics_pth
 print >>f, "rm -rf build"
 print >>f, "python setup.py install"
