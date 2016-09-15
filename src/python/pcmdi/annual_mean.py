@@ -11,7 +11,7 @@ def compute(dm, do):
             "URI":
                     "http://uvcdat.llnl.gov/documentation/" +
                     "utilities/utilities-2.html",
-            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Contact": "pcmdi-metrics@llnl.gov",
             "Comments": "Assumes input are 12 months climatology"
         }
     # Do we really want this? Wouldn't it better to let it fails

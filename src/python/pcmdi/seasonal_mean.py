@@ -4,7 +4,7 @@ def compute(d, sea):
         return {
             "Name": "Seasonal Mean",
             "Abstract": "Compute Seasonal Mean",
-            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Contact": "pcmdi-metrics@llnl.gov",
             "Comments": "Assumes input are 12 months climatology"
         }
 
