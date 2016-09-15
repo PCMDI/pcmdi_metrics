@@ -6,8 +6,6 @@ import os
 import sys
 import shlex
 
-metrics_name = "pcmdi_metrics"
-metrics_repo = "PCMDI/%s" % metrics_name
 
 l = time.localtime()
 today = "%s.%s.%s" % (l.tm_year, l.tm_mon, l.tm_mday)
@@ -18,6 +16,7 @@ P = argparse.ArgumentParser(
 
 c = P.add_argument_group('CONDA')
 c.add_argument("-e", "--env", default=today, help="conda env to install into")
+c.add_argument("-x", "--extra", default="", help="extra packages and channels you need")
 c.add_argument(
     "-M",
     "--no-mesa",
@@ -32,6 +31,14 @@ c.add_argument(
     help="turn on/off mesa")
 b = P.add_argument_group('Repositories')
 b.add_argument(
+    "-m",
+    "--metrics",
+    default=["master"],
+    nargs="*",
+    help="metrics branches to merge in")
+b.add_argument("-r","--repo",default="PCMDI/pcmdi_metrics",
+    help="metrics repo to use")
+b.add_argument(
     "-v",
     "--vcs",
     default=["master"],
@@ -43,18 +50,15 @@ b.add_argument(
     default=["master"],
     nargs="*",
     help="cdms branches to merge")
-b.add_argument(
-    "-m",
-    "--metrics",
-    default=["master"],
-    nargs="*",
-    help="metrics branches to merge in")
 l = P.add_argument_group('Local Setup')
 l.add_argument("-g", "--git", default=os.path.expanduser("~/git"),
                help="top directory where you will clone your git repos")
 
 args = P.parse_args(sys.argv[1:])
 
+sp = args.repo.split("/")
+metrics_repo = sp[0]
+metrics_name = "/".join(sp[1:])
 
 def execute_cmd(cmd, path=os.getcwd()):
     print("Executing: %s in: %s" % (cmd, path))
@@ -85,8 +89,8 @@ else:
     nightly = "-c uvcdat/label/nightly"
 # Create conda env
 execute_cmd(
-    "conda create -y -n %s %s -c uvcdat eztemplate vcsaddons%s cdms2 vcs%s hdf5=1.8.16 " %
-    (args.env, nightly, pname, pname))
+    "conda create -y -n %s %s -c uvcdat %s ipython output_viewer eztemplate vcsaddons%s cdms2 vcs%s hdf5=1.8.16 " %
+    (args.env, nightly, args.extra, pname, pname))
 
 # Setup GIT
 if not os.path.exists(args.git):
