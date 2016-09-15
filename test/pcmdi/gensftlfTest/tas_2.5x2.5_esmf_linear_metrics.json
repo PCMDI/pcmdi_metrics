@@ -24,6 +24,7 @@
                         "bias_xy_jja": "-0.976",
                         "bias_xy_mam": "-0.950",
                         "bias_xy_son": "-0.852",
+                        "cor_xy_ann": "0.994",
                         "cor_xy_djf": "0.99",
                         "cor_xy_jja": "0.99",
                         "cor_xy_mam": "0.99",
@@ -62,6 +63,7 @@
                         "bias_xy_jja": "-0.800",
                         "bias_xy_mam": "-0.874",
                         "bias_xy_son": "-0.866",
+                        "cor_xy_ann": "0.912",
                         "cor_xy_djf": "0.94",
                         "cor_xy_jja": "0.94",
                         "cor_xy_mam": "0.91",
@@ -100,6 +102,7 @@
                         "bias_xy_jja": "-0.526",
                         "bias_xy_mam": "-0.490",
                         "bias_xy_son": "-0.786",
+                        "cor_xy_ann": "0.989",
                         "cor_xy_djf": "0.99",
                         "cor_xy_jja": "0.99",
                         "cor_xy_mam": "0.99",
@@ -138,6 +141,7 @@
                         "bias_xy_jja": "-0.369",
                         "bias_xy_mam": "-0.281",
                         "bias_xy_son": "-0.657",
+                        "cor_xy_ann": "0.985",
                         "cor_xy_djf": "0.97",
                         "cor_xy_jja": "0.99",
                         "cor_xy_mam": "0.98",
@@ -176,6 +180,7 @@
                         "bias_xy_jja": "-1.560",
                         "bias_xy_mam": "-2.223",
                         "bias_xy_son": "-2.234",
+                        "cor_xy_ann": "0.982",
                         "cor_xy_djf": "0.97",
                         "cor_xy_jja": "0.97",
                         "cor_xy_mam": "0.97",
@@ -214,6 +219,7 @@
                         "bias_xy_jja": "1.056",
                         "bias_xy_mam": "2.012",
                         "bias_xy_son": "0.821",
+                        "cor_xy_ann": "0.995",
                         "cor_xy_djf": "0.99",
                         "cor_xy_jja": "0.99",
                         "cor_xy_mam": "0.99",
@@ -371,6 +377,6 @@
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
         }
     },
-    "metrics_git_sha1": "8647d77228c4a11fb98b2733a2f645b62c7a2273",
-    "uvcdat_version": "2.4.1"
+    "metrics_git_sha1": "effb36efa514d161d749782b66cd577eed460d66",
+    "uvcdat_version": "v2.5.0-572-ga06818f"
 }
