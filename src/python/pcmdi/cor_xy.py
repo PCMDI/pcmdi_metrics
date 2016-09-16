@@ -9,7 +9,7 @@ def compute(dm, do):
             "Abstract": "Compute Spatial Correlation",
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/" +
             "utilities-2.html",
-            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Contact": "pcmdi-metrics@llnl.gov",
         }
     return float(genutil.statistics.correlation(
         dm, do, axis='xy', weights='weighted'))

@@ -54,6 +54,7 @@ packages = {'pcmdi_metrics': 'src/python',
             }
 scripts = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
            'src/python/pcmdi/scripts/pcmdi_compute_climatologies.py',
+           'src/python/misc/scripts/install_metrics_from_branches.py',
            'demo/pmp_demo_1.py',
            'demo/pmp_demo.py',
            ]

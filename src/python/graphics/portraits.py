@@ -62,7 +62,7 @@ class Plot_defaults:
         logo.font = 2
         logo.spacing = 2
         logo.expansion = 100
-        logo.color = 250
+        logo.color = [5, 10, 67, 100.0]
         logo.string = 'PCMDI'
         logo.x = [.9]
         logo.y = [.98]
