@@ -67,9 +67,9 @@ filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_histor
 
 # DICTIONARY FOR CUSTOM %(keyword) IMPLEMENTED BY USER FOR CUSTOM METRICS
 # Driver will match each key to its value defined by a variable name OR
-# all if variable name is not present, OR "" if "all" is not defined
+# None if variable name is not present, OR "" if None is not defined
 custom_keys = {
     "key1": {
-        "all": "key1_value_for_all_var",
+        None: "key1_value_for_all_var",
         "tas": "key1_value_for_tas"},
 }

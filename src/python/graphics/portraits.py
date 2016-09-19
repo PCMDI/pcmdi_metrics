@@ -62,7 +62,7 @@ class Plot_defaults:
         logo.font = 2
         logo.spacing = 2
         logo.expansion = 100
-        logo.color = 250
+        logo.color = [5, 10, 67, 100.0]
         logo.string = 'PCMDI'
         logo.x = [.9]
         logo.y = [.98]
@@ -1025,8 +1025,7 @@ class Portrait:
                             None,
                             self.PLOT_SETTINGS.parameterorientation.name)
                         value = getattr(self, p)
-                        if (isinstance(value, (list, tuple))
-                                and len(value) == 1):
+                        if (isinstance(value, (list, tuple)) and len(value) == 1):
                             txt.string = p + ':' + \
                                 str(self.makestring(p, value[0]))
                             display = 1
