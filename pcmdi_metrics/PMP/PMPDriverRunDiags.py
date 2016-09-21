@@ -3,8 +3,8 @@ import os
 import sys
 import json
 import collections
-from pcmdi_metrics.PMP.PMPDriver import *
 from pcmdi_metrics.PMP.PMPParameter import *
+import pcmdi_metrics.PMP.OutputMetrics
 
 
 class PMPDriverRunDiags(object):
@@ -28,7 +28,11 @@ class PMPDriverRunDiags(object):
                     self.table_realm = 'Amon'
                     self.realm = 'atm'
 
-        def load_obs_dic(self):
+            self.output_metric =\
+                pcmdi_metrics.PMP.OutputMetrics.OutputMetrics\
+                    (self.parameter, self.var_name_long)
+
+        def load_obs_dict(self):
             obs_file_name = 'obs_info_dictionary.json'
             obs_json_file = self.load_path_as_file_obj(obs_file_name)
             obs_dic = json.loads(obs_json_file.read())
@@ -56,3 +60,11 @@ class PMPDriverRunDiags(object):
                 obs_dict[var][obs_dict[var]["default"]]["CMIP_CMOR_TABLE"] ==\
                 'Omon'
 
+        @staticmethod
+        def calculate_level_from_var(var):
+            var_split_name = var.split('_')
+            if len(var_split_name) > 1:
+                level = float(var_split_name[-1]) * 100
+            else:
+                level = None
+            return level

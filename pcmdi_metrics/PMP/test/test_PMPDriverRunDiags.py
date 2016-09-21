@@ -1,5 +1,4 @@
 import unittest
-from pcmdi_metrics.PMP.PMPParameter import *
 from pcmdi_metrics.PMP.PMPDriverRunDiags import *
 
 class testPMPDriverRunDiags(unittest.TestCase):
@@ -8,11 +7,11 @@ class testPMPDriverRunDiags(unittest.TestCase):
         self.pmp_parameter = PMPParameter()
         self.pmp_driver_run_diags = PMPDriverRunDiags(self.pmp_parameter)
 
-    def test_load_obs_dic(self):
+    def test_load_obs_dict(self):
         try:
-            self.pmp_driver_run_diags.load_obs_dic()
+            self.pmp_driver_run_diags.load_obs_dict()
         except:
-            self.fail('Cannot run load_obs_dic(). Test failed.')
+            self.fail('Cannot run load_obs_dict(). Test failed.')
 
     def test_loading_of_obs_info_dic(self):
         try:
@@ -55,12 +54,22 @@ class testPMPDriverRunDiags(unittest.TestCase):
             f.close()
 
     def test_use_omon(self):
-        obs_dict = self.pmp_driver_run_diags.load_obs_dic()
+        obs_dict = self.pmp_driver_run_diags.load_obs_dict()
         var = 'tos'
         if not self.pmp_driver_run_diags.use_omon(obs_dict, var):
             msg = 'use_omon() returns the wrong answer '\
                   + 'or the obs_dict has changed'
             self.fail(msg)
+
+    def test_calculate_level_with_height(self):
+        var = 'hus_850'
+        level = self.pmp_driver_run_diags.calculate_level_from_var(var)
+        self.assertEquals(level, 850*100)
+
+    def test_calculate_level_with_no_height(self):
+        var = 'hus'
+        level = self.pmp_driver_run_diags.calculate_level_from_var(var)
+        self.assertEquals(level, None)
 
 if __name__ == '__main__':
     unittest.main()
