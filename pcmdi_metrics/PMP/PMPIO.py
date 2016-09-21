@@ -7,7 +7,7 @@ import cdutil
 import MV2
 import cdms2
 import hashlib
-from CDP.base.CDPIO import *
+from pcmdi_metrics.base.CDPIO import *
 
 
 class CDMSDomainsEncoder(json.JSONEncoder):
@@ -89,7 +89,7 @@ class PMPIO(CDPIO, genutil.StringConstructor):
         if self.region is None:
             self.region = {}
         self.value = self.region.get('value', None)
-        if self.is_masking(self.value):
+        if self.is_masking():
             self.var_from_file = self.mask_var(self.var_from_file)
 
         self.var_from_file = \
@@ -107,8 +107,8 @@ class PMPIO(CDPIO, genutil.StringConstructor):
         var_file.close()
         return extracted_var
 
-    def is_masking(value):
-        if value is not None:
+    def is_masking(self):
+        if self.value is not None:
             return True
         else:
             return False

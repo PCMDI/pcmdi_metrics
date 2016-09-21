@@ -4,7 +4,7 @@ import sys
 import shutil
 import MV2
 import cdms2
-from CDP.PMP.PMPIO import *
+from pcmdi_metrics.PMP.PMPIO import *
 
 
 class testPMPIO(unittest.TestCase):
@@ -138,8 +138,8 @@ class testPMPIO(unittest.TestCase):
             stuff_to_write = cdms2.open(self.path + 'test_file.nc')['sftlf']
             self.pmp_io.write(stuff_to_write, extension='nc')
             self.pmp_io.get_var_from_netcdf('sftlf')
-        except:
-            self.fail('Error executing get_var_from_netcdf(). Test failed.')
+        #except:
+            #self.fail('Error executing get_var_from_netcdf(). Test failed.')
         finally:
             os.remove(self.path + self.filename + '.nc')
 

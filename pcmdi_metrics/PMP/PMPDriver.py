@@ -1,6 +1,6 @@
-from CDP.base.CDPDriver import *
-from CDP.PMP.PMPDriverCheckParameter import *
-from CDP.PMP.PMPDriverRunDiags import *
+from pcmdi_metrics.base.CDPDriver import *
+from pcmdi_metrics.PMP.PMPDriverCheckParameter import *
+from pcmdi_metrics.PMP.PMPDriverRunDiags import *
 
 
 class PMPDriver(CDPDriver):

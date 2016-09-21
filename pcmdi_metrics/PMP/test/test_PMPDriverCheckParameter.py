@@ -1,6 +1,6 @@
 import unittest
-from CDP.PMP.PMPParameter import *
-from CDP.PMP.PMPDriverCheckParameter import *
+from pcmdi_metrics.PMP.PMPParameter import *
+from pcmdi_metrics.PMP.PMPDriverCheckParameter import *
 
 class testPMPDriverCheckParameter(unittest.TestCase):
 

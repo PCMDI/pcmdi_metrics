@@ -1,5 +1,5 @@
 import logging
-from CDP.base.CDPParameter import *
+from pcmdi_metrics.base.CDPParameter import *
 
 
 class PMPParameter(CDPParameter):
