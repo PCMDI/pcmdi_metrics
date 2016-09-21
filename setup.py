@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="pcmdi_metrics",
-    version="0.1a",
+    version="2.0",
     author="PCMDI",
     author_email="shaheen2@llnl.gov",
     url='http://github.com/PCMDI/pcmdi_metrics',
