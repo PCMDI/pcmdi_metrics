@@ -1,6 +1,0 @@
-/short/p66/pjd599/PCMDI_METRICS/v1p0/lib/python2.7/site-packages/ESMP/src/ESMP_API.py:1241: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
-  if (srcMaskValues != None):
-/short/p66/pjd599/PCMDI_METRICS/v1p0/lib/python2.7/site-packages/ESMP/src/ESMP_API.py:1248: FutureWarning: comparison to `None` will result in an elementwise object comparison in the future.
-  if (dstMaskValues != None):
-/short/p66/pjd599/PCMDI_METRICS/v1p0/lib/python2.7/site-packages/numpy/ma/core.py:935: RuntimeWarning: overflow encountered in multiply
-  result = self.f(da, db, *args, **kwargs)
