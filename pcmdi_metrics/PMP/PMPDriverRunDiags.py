@@ -17,6 +17,17 @@ class PMPDriverRunDiags(object):
                 self.var = self.var_name_long
                 self.obs_dict = self.load_obs_dict()
 
+                if self.use_omon(self.obs_dict, self.var):
+                    self.regrid_method = self.parameter.regrid_method_ocn
+                    self.regrid_tool = self.regrid_tool_ocn.regrid_tool
+                    self.table_realm = 'Omon'
+                    self.realm = 'ocn'
+                else:
+                    self.regrid_method = self.parameter.regrid_method
+                    self.regrid_tool = self.parameter.regrid_tool
+                    self.table_realm = 'Amon'
+                    self.realm = 'atm'
+
         def load_obs_dic(self):
             obs_file_name = 'obs_info_dictionary.json'
             obs_json_file = self.load_path_as_file_obj(obs_file_name)
@@ -38,3 +49,10 @@ class PMPDriverRunDiags(object):
                 print ('Unexpected error while opening file: '
                        + sys.exc_info()[0])
             return opened_file
+
+        @staticmethod
+        def use_omon(obs_dict, var):
+            return \
+                obs_dict[var][obs_dict[var]["default"]]["CMIP_CMOR_TABLE"] ==\
+                'Omon'
+

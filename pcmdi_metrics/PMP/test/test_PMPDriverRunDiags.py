@@ -54,6 +54,13 @@ class testPMPDriverRunDiags(unittest.TestCase):
         finally:
             f.close()
 
+    def test_use_omon(self):
+        obs_dict = self.pmp_driver_run_diags.load_obs_dic()
+        var = 'tos'
+        if not self.pmp_driver_run_diags.use_omon(obs_dict, var):
+            msg = 'use_omon() returns the wrong answer '\
+                  + 'or the obs_dict has changed'
+            self.fail(msg)
 
 if __name__ == '__main__':
     unittest.main()
