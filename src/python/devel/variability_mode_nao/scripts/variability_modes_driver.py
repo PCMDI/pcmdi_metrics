@@ -126,33 +126,6 @@ else:
 
 if debug: print 'runs: ', runs
 
-# Below part will be replaced by PMP's region selector ---
-if mode == 'NAM':
-  lat1 = 20
-  lat2 = 90
-  lon1 = -180
-  lon2 = 180
-elif mode == 'NAO':
-  lat1 = 20
-  lat2 = 80
-  lon1 = -90
-  lon2 = 40
-elif mode == 'SAM':
-  lat1 = -20
-  lat2 = -90
-  lon1 = 0
-  lon2 = 360
-elif mode == 'PNA':
-  lat1 = 20
-  lat2 = 85
-  lon1 = 120
-  lon2 = 240
-elif mode == 'PDO':
-  lat1 = 20
-  lat2 = 70
-  lon1 = 110
-  lon2 = 260
-
 # Variables ---
 if mode == 'NAM' or mode == 'NAO' or mode == 'SAM' or mode == 'PNA':
   var = 'psl'
@@ -266,7 +239,6 @@ if obs_compare:
 
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     # Extract subdomain ---
-    #obs_timeseries_season_subdomain = obs_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2))
     obs_timeseries_season_subdomain = obs_timeseries_season(regions_specs[mode]['domain'])
 
     # Save subdomain's grid information for regrid below ---
@@ -297,7 +269,6 @@ if obs_compare:
       #plot_map(mode, 'obs', osyear, oeyear, season, eof_obs[season], frac1_obs[season], output_filename_obs)
       plot_map(mode, 'obs', osyear, oeyear, season, 
                eof_lr_obs[season](regions_specs[mode]['domain']), frac1_obs[season], output_filename_obs)
-               #eof_lr_obs[season](latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1_obs[season], output_filename_obs)
       plot_map(mode+'_teleconnection', 'obs-lr', osyear, oeyear, season, 
                eof_lr_obs[season](longitude=(lon1g,lon2g)), frac1_obs[season], output_filename_obs+'_teleconnection')
 
@@ -373,7 +344,6 @@ for model in models:
         #- - - - - - - - - - - - - - - - - - - - - - - - -
         # Extract subdomain ---
         #. . . . . . . . . . . . . . . . . . . . . . . . .
-        #model_timeseries_season_subdomain = model_timeseries_season(latitude=(lat1,lat2),longitude=(lon1,lon2))
         model_timeseries_season_subdomain = model_timeseries_season(regions_specs[mode]['domain'])
     
         #-------------------------------------------------
@@ -456,7 +426,6 @@ for model in models:
         if pseudo and obs_compare:
           # Regrid (interpolation, model grid to ref grid) ---
           model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid_global, regridTool='regrid2', mkCyclic=True)
-          #model_timeseries_season_regrid_subdomain = model_timeseries_season_regrid(latitude=(lat1,lat2),longitude=(lon1,lon2))
           model_timeseries_season_regrid_subdomain = model_timeseries_season_regrid(regions_specs[mode]['domain'])
     
           # Matching model's missing value location to that of observation ---
@@ -480,7 +449,6 @@ for model in models:
           eof_lr_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid)
     
           # Extract subdomain for statistics
-          #eof_lr_pseudo_subdomain = eof_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2))
           eof_lr_pseudo_subdomain = eof_lr_pseudo(regions_specs[mode]['domain'])
     
           #- - - - - - - - - - - - - - - - - - - - - - - - -
@@ -543,13 +511,11 @@ for model in models:
           #plot_map(mode, model+'_'+run, syear, eyear, season, eof, frac1, output_filename)
           plot_map(mode, model+' ('+run+')', syear, eyear, season, 
                    eof_lr(regions_specs[mode]['domain']), frac1, output_filename)
-                   #eof_lr(latitude=(lat1,lat2),longitude=(lon1,lon2)), frac1, output_filename)
           plot_map(mode+'_teleconnection', model+' ('+run+')', syear, eyear, season, 
                    eof_lr(longitude=(lon1g,lon2g)), frac1, output_filename+'_teleconnection')
           if pseudo: 
             plot_map(mode, model+' ('+run+')'+' - pseudo', syear, eyear, season, 
                      eof_lr_pseudo(regions_specs[mode]['domain']), -999, output_filename+'_pseudo')
-                     #eof_lr_pseudo(latitude=(lat1,lat2),longitude=(lon1,lon2)), -999, output_filename+'_pseudo')
             plot_map(mode+'_pseudo_teleconnection', model+' ('+run+')', syear, eyear, season, 
                      eof_lr_pseudo(longitude=(lon1g,lon2g)), -999, output_filename+'_pseudo_teleconnection')
     
