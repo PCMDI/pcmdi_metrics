@@ -37,6 +37,16 @@ def AddParserArgument(parser):
                       help = "Consider all accessible realizations as idividual\n"
                              "- 0: off (default, consider only one member which is 'r1i1p1')\n"
                              "- 1: on")
+  parser.add_argument("-eofn_o", "--eof_ordinal_number_for_observation",
+                      type = int,
+                      default = '1',
+                      help = "EOF mode from observation as reference\n"
+                             "Default is 1, which takes first variance mode of EOF")
+  parser.add_argument("-eofn_m", "--eof_ordinal_number_for_model",
+                      type = int,
+                      default = '1',
+                      help = "EOF mode from model\n"
+                             "Default is 1, which takes first variance mode of EOF")
   parser.add_argument("-b", "--basedir",
                       type = str,
                       help = "Root directory below which subdirectories of individual simulations are expected")
@@ -57,8 +67,7 @@ def ModelCheck(model):
   else:
     if model.upper() == 'ALL':
       print 'consider entire models'
-      #models = [ 'all' ] # need to catch all available models here....
-      models = get_all_mip_mods(mip,exp,fq,realm,var)
+      models = [ 'all' ] # need to catch all available models here....
     else:
       models = [ args.model ]
     return models
