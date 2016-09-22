@@ -27,11 +27,15 @@ libfiles = ['argparse_functions.py',
             'calc_stat.py',
             'landmask.py',
             'write_nc_output.py',
-            'plot_map.py',
-            'default_regions.py']
+            'plot_map.py']
+
+libfiles_share = ['default_regions.py']
 
 for lib in libfiles:
   execfile(os.path.join('../lib/',lib))
+
+for lib in libfiles_share:
+  execfile(os.path.join('../../../../../share/',lib))
 
 ##################################################
 # Pre-defined options
