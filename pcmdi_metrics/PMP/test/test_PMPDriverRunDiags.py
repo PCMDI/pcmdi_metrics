@@ -1,11 +1,17 @@
 import unittest
 from pcmdi_metrics.PMP.PMPDriverRunDiags import *
+from pcmdi_metrics.PMP.OutputMetrics import *
 
 class testPMPDriverRunDiags(unittest.TestCase):
 
     def setUp(self):
         self.pmp_parameter = PMPParameter()
+        self.pmp_parameter.metrics_output_path = '.'
+        self.pmp_parameter.target_grid = '2.5x2.5'
         self.pmp_driver_run_diags = PMPDriverRunDiags(self.pmp_parameter)
+        # Usually var is loaded from the parameter.
+        self.pmp_driver_run_diags.var = 'tos'
+
 
     def test_load_obs_dict(self):
         try:
@@ -70,6 +76,13 @@ class testPMPDriverRunDiags(unittest.TestCase):
         var = 'hus'
         level = self.pmp_driver_run_diags.calculate_level_from_var(var)
         self.assertEquals(level, None)
+
+    def test_setup_obs_or_metric_or_output_file(self):
+        #try:
+        om = OutputMetrics(self.pmp_parameter, 'var')
+        self.pmp_driver_run_diags.setup_obs_or_metric_or_output_file(om)
+        #except:
+            #self.fail('Error while running setup_obs_or_metric_or_output_file.')
 
 if __name__ == '__main__':
     unittest.main()

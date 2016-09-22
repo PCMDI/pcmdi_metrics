@@ -6,11 +6,20 @@ import collections
 from pcmdi_metrics.PMP.PMPParameter import *
 import pcmdi_metrics.PMP.OutputMetrics
 
+def THINGTHINGTHING():
+    return 'nothign'
 
 class PMPDriverRunDiags(object):
 
         def __init__(self, parameter):
             self.parameter = parameter
+            self.regrid_method = ''
+            self.regrid_tool = ''
+            self.table_realm = ''
+            self.realm = ''
+
+        def __call__(self, *args, **kwargs):
+            self.run_diags()
 
         def run_diags(self):
             for self.var_name_long in self.parameter.vars:
@@ -68,3 +77,10 @@ class PMPDriverRunDiags(object):
             else:
                 level = None
             return level
+
+        def setup_obs_or_metric_or_output_file(self, io_file):
+            io_file.set_target_grid(self.regrid_tool, self.regrid_method)
+            io_file.set_var(self.var)
+            io_file.set_realm(self.realm)
+            io_file.set_table(self.table_realm)
+

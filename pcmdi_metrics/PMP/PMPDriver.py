@@ -11,7 +11,7 @@ class PMPDriver(CDPDriver):
 
     def run_diags(self):
         run = PMPDriverRunDiags(self.parameter)
-        run.run_diags()
+        run()
 
     def export(self):
         pass
