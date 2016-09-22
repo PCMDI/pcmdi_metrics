@@ -331,6 +331,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         if level is not None:
             metrics_dictionary["Variable"]["level"] = level
 
+        metrics_dictionary["json_version"] = "2.0"
         metrics_dictionary["References"] = {}
         metrics_dictionary["RegionalMasking"] = {}
         for region in regions_dict[var]:
