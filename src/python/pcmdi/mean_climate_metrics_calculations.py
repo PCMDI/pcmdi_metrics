@@ -15,7 +15,8 @@ def compute_metrics(Var, dm, do):
             None,
             None)
         metrics_defs["rms_xy"] = pcmdi_metrics.pcmdi.rms_xy.compute(None, None)
-        metrics_defs["bias_xy"] = pcmdi_metrics.pcmdi.bias_xy.compute(None, None)
+        metrics_defs["bias_xy"] = pcmdi_metrics.pcmdi.bias_xy.compute(
+            None, None)
         metrics_defs["mae_xy"] = pcmdi_metrics.pcmdi.meanabs_xy.compute(
             None,
             None)
@@ -43,7 +44,7 @@ def compute_metrics(Var, dm, do):
 
     # SET CONDITIONAL ON INPUT VARIABLE
     if var == 'pr':
-        conv = 86400. 
+        conv = 86400.
     else:
         conv = 1.
 
@@ -54,7 +55,7 @@ def compute_metrics(Var, dm, do):
 
     # CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD
     rms_xyt = pcmdi_metrics.pcmdi.rms_xyt.compute(dm, do)
-#   cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm, do)   
+#   cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm, do)
     stdObs_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(do)
     std_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(dm)
 
@@ -70,8 +71,8 @@ def compute_metrics(Var, dm, do):
     # CALCULATE ANNUAL MEAN RMS
     rms_xy = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am, do_am)
 
-    # CALCULATE ANNUAL MEAN CORRELATION 
-    cor_xy = pcmdi_metrics.pcmdi.cor_xy.compute(dm_am, do_am)   
+    # CALCULATE ANNUAL MEAN CORRELATION
+    cor_xy = pcmdi_metrics.pcmdi.cor_xy.compute(dm_am, do_am)
 
     # CALCULATE ANNUAL OBS and MOD STD
     stdObs_xy = pcmdi_metrics.pcmdi.std_xy.compute(do_am)
@@ -201,27 +202,27 @@ def compute_metrics(Var, dm, do):
         metrics_dictionary[
             'bias_xy_' +
             sea
-            ] = format(
+        ] = format(
             bias_sea *
             conv,
             sig_digits)
         metrics_dictionary[
             'rms_xy_' +
             sea
-            ] = format(
+        ] = format(
             rms_sea *
             conv,
             sig_digits)
         metrics_dictionary[
             'cor_xy_' +
             sea
-            ] = format(
+        ] = format(
             cor_sea,
             '.2f')
         metrics_dictionary[
             'mae_xy_' +
             sea
-            ] = format(
+        ] = format(
             mae_sea *
             conv,
             sig_digits)

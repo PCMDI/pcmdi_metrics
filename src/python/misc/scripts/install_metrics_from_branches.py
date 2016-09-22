@@ -36,8 +36,8 @@ b.add_argument(
     default=["master"],
     nargs="*",
     help="metrics branches to merge in")
-b.add_argument("-r","--repo",default="PCMDI/pcmdi_metrics",
-    help="metrics repo to use")
+b.add_argument("-r", "--repo", default="PCMDI/pcmdi_metrics",
+               help="metrics repo to use")
 b.add_argument(
     "-v",
     "--vcs",
@@ -59,6 +59,7 @@ args = P.parse_args(sys.argv[1:])
 sp = args.repo.split("/")
 metrics_repo = sp[0]
 metrics_name = "/".join(sp[1:])
+
 
 def execute_cmd(cmd, path=os.getcwd()):
     print("Executing: %s in: %s" % (cmd, path))
@@ -131,7 +132,8 @@ execute_cmd("bash install_in_env.bash")
 
 
 print(
-    "You should be good to go, we merged vcs branches: '%s' cdms branches: '%s' and metrics branches '%s' into conda env: '%s'" %
+    "You should be good to go, we merged vcs branches:" +
+    "'%s' cdms branches: '%s' and metrics branches '%s' into conda env: '%s'" %
     (" ".join(
         args.vcs), " ".join(
             args.cdms), " ".join(
