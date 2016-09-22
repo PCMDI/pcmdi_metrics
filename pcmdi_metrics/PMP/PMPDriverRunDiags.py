@@ -23,7 +23,7 @@ class PMPDriverRunDiags(object):
 
         def run_diags(self):
             for self.var_name_long in self.parameter.vars:
-                self.var = self.var_name_long
+                self.var = self.var_name_long.split('_')[0]
                 self.obs_dict = self.load_obs_dict()
 
                 if self.use_omon(self.obs_dict, self.var):
@@ -37,9 +37,13 @@ class PMPDriverRunDiags(object):
                     self.table_realm = 'Amon'
                     self.realm = 'atm'
 
-            self.output_metric =\
-                pcmdi_metrics.PMP.OutputMetrics.OutputMetrics\
-                    (self.parameter, self.var_name_long)
+                self.output_metric =\
+                    pcmdi_metrics.PMP.OutputMetrics.OutputMetrics\
+                        (self.parameter, self.var_name_long)
+
+                # Runs obs vs obs, obs vs model, or model vs model
+                self.run_data_a_and_data_b_comparison(self.obs_dict)
+
 
         def load_obs_dict(self):
             obs_file_name = 'obs_info_dictionary.json'
@@ -78,9 +82,44 @@ class PMPDriverRunDiags(object):
                 level = None
             return level
 
-        def setup_obs_or_metric_or_output_file(self, io_file):
+        def setup_obs_or_model_or_output_file(self, io_file):
             io_file.set_target_grid(self.regrid_tool, self.regrid_method)
             io_file.set_var(self.var)
             io_file.set_realm(self.realm)
             io_file.set_table(self.table_realm)
 
+        def run_data_a_and_data_b_comparison(self):
+            data_set_a = self.parameter.data_set_a
+            data_set_b = self.parameter.data_set_b
+
+            # Member variables are used so when it's obs_vs_model, we know
+            # which is which.
+            self.data_set_a_is_obs = self.is_data_set_obs(data_set_a)
+            self.data_set_b_is_obs = self.is_data_set_obs(data_set_b)
+
+            if self.data_set_a_is_obs and self.data_set_b_is_obs:
+                logging.info('Running obs vs obs.')
+                self.obs_vs_obs()
+
+            if not self.data_set_a_is_obs and not self.data_set_b_is_obs:
+                logging.info('Running model vs model.')
+                self.model_vs_model()
+
+            if (not self.data_set_a_is_obs and self.data_set_b_is_obs) or \
+               (self.data_set_a_is_obs and not self.data_set_b_is_obs):
+                logging.info('Running obs vs obs.')
+                self.obs_vs_model()
+
+        def is_data_set_obs(self, data_set, obs_dict):
+            data_set_is_obs = True
+
+            # If an element of data_a is not in the obs_dict, then data_a is
+            # a model.
+            for obs in data_set:
+                if obs not in obs_dict[self.var]:
+                    data_set_is_obs = False
+
+            return data_set_is_obs
+
+        def obs_vs_model(self):
+            pass

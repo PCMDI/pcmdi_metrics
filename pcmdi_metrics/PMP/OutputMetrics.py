@@ -39,7 +39,7 @@ class OutputMetrics(object):
 
     def set_target_grid(self, regrid_tool, regrid_method):
         self.out_file.set_target_grid(self.parameter.target_grid,
-                                        regrid_tool, regrid_method)
+                                      regrid_tool, regrid_method)
 
     def set_var(self, var):
         self.out_file.var = var
@@ -52,7 +52,6 @@ class OutputMetrics(object):
 
     def set_case_id(self, case_id):
         self.out_file.case_id = case_id
-
 
     def set_simulation_desc(self, model, obs_dict):
         # lines 564 - 617

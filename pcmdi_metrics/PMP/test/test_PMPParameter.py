@@ -6,16 +6,20 @@ class testPMPParameter(unittest.TestCase):
     def setUp(self):
         self.pmp_parameter = PMPParameter()
 
-
     def test_check_case_id_with_nonstr_value(self):
         self.pmp_parameter.case_id = ['sampletest_140910']
         with self.assertRaises(TypeError):
             self.pmp_parameter.check_case_id()
 
-    def test_check_model_versions_with_nonlist_value(self):
-        self.pmp_parameter.model_versions = 'GFDL-CM4'
+    def test_check_data_set_a_with_nonlist_value(self):
+        self.pmp_parameter.data_set_a = 'GFDL-CM4'
         with self.assertRaises(TypeError):
-            self.pmp_parameter.check_model_versions()
+            self.pmp_parameter.check_data_set_a()
+
+    def test_check_data_set_b_with_nonlist_value(self):
+        self.pmp_parameter.data_set_b = 'GFDL-CM4'
+        with self.assertRaises(TypeError):
+            self.pmp_parameter.check_data_set_b()
 
     def test_check_period_with_nonstr_value(self):
         self.pmp_parameter.period = ['000101-000112']

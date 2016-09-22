@@ -6,12 +6,12 @@ class PMPParameter(CDPParameter):
     def __init__(self):
         # Metrics run identification
         self.case_id = ''
-        self.model_versions = []
         self.period = ''
         self.realization = ''
+        self.data_set_a = []
+        self.data_set_b = []
 
         self.vars = []
-        self.ref = []
         self.target_grid = ''
 
         self.regrid_tool = ''
@@ -19,7 +19,6 @@ class PMPParameter(CDPParameter):
         self.regrid_tool_ocn = ''
         self.regrid_method_ocn = ''
 
-        self.save_mod_clims = None
         self.regions_specs = {}
         self.regions = {}
         self.regions_values = {}
@@ -31,11 +30,13 @@ class PMPParameter(CDPParameter):
 
         self.mod_data_path = ''
         self.obs_data_path = ''
-        self.metrics_output_path = ''
+        self.custom_observations_path = ''
+        self.save_mod_clims = None
         self.model_clims_interpolated_output = ''
+
+        self.metrics_output_path = ''
         self.filename_output_template = ''
 
-        self.custom_observations_path = ''
 
     def check_str(self, str_var, str_var_name):
         if type(str_var) is not str:
@@ -76,15 +77,25 @@ class PMPParameter(CDPParameter):
     def check_case_id(self):
         self.check_str(self.case_id, 'case_id')
 
-    def check_model_versions(self):
-        if type(self.model_versions) is not list \
-                and type(self.model_versions) is not tuple:
+    def check_data_set_a(self):
+        if type(self.data_set_a) is not list \
+                and type(self.data_set_a) is not tuple:
             raise TypeError(
-                "model_versions is the wrong type. It must be a list or tuple."
+                "data_a is the wrong type. It must be a list or tuple."
             )
 
-        if self.model_versions == [] or self.model_versions == ():
-            logging.warning("model_versions is blank.")
+        if self.data_set_a == [] or self.data_set_a == ():
+            logging.error("data_a is blank.")
+
+    def check_data_set_b(self):
+        if type(self.data_set_b) is not list \
+                and type(self.data_set_b) is not tuple:
+            raise TypeError(
+                "data_set_b is the wrong type. It must be a list or tuple."
+            )
+
+        if self.data_set_b == [] or self.data_set_b == ():
+            logging.error("data_set_b is blank.")
 
     def check_period(self):
         self.check_str(self.period, 'period')
@@ -203,7 +214,8 @@ class PMPParameter(CDPParameter):
     def check_values(self):
         # Check that all of the variables in __init__() have a valid value
         self.check_case_id()
-        self.check_model_versions()
+        self.check_data_set_a()
+        self.check_data_set_b()
         self.check_period()
         self.check_realization()
         self.check_vars()
