@@ -5,10 +5,121 @@ import cdms2
 import vcs
 import genutil
 import glob
+import struct
 from genutil import StringConstructor
 
+def get_png_dims(fnm):
+    """given the path to a png, return width, height"""
+    try:
+        data = open(fnm,"rb").read()
+        print "Read data"
+        w, h = struct.unpack('>LL', data[16:24])
+        print "w,h",w,h
+        width = int(w)
+        height = int(h)
+    except Exception,err:
+        print "PNG ERROR:",err
+        width = None
+        height= None
+    return width, height
 
-class Plot_defaults:
+
+class Logo(object):
+    def __init__(self,source=None,x=.9,y=.98,width=None,height=None):
+        if source is None:
+            self.source = None
+        elif vcs.queries.istext(source):
+            self.source = source
+        elif isinstance(source, basestring):
+            self.source_width, self.source_height = get_png_dims(source)
+            if self.source_width is not None:
+                self.source = source
+            else:
+                self.source = vcs.createtext()
+                if height is None:
+                    self.source.height = 20
+                else:
+                    self.source.height = height
+                self.source.halign = 'center'
+                self.source.path = 'right'
+                self.source.valign = 'half'
+                # Set the texttable
+                self.source.font = 2
+                self.source.color = [5, 10, 67, 100.0]
+                self.source.string = source
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def plot(self,canvas,bg=True):
+        if isinstance(self.source, basestring):
+            cnv_info = canvas.canvasinfo()
+            xoff = .5-self.x
+            yoff = .5-self.y
+            if self.width is not None:
+                scale = float(self.width) / self.source_width
+            elif self.height is not None:
+                scale = float(self.height) / self.source_height
+            else:
+                xdist  = cnv_info["width"] - self.x*cnv_info["width"]
+                xscale = xdist / self.source_width 
+                ydist  = cnv_info["height"] - self.y*cnv_info["height"]
+                yscale = ydist / self.source_height
+                scale = min(xscale,yscale)
+            scale = scale / 2.
+
+            print "xoff,width,cwidth,src_width:",xoff,self.width,cnv_info["width"],self.source_width
+            print "Scale:",scale
+            print "CANAVS INFO:",cnv_info
+            xoff = -(cnv_info["width"]*self.x)/(self.source_width)
+            xoff = 0
+            yoff = -(cnv_info["height"]*self.y)/(self.source_height)
+            print "XOFF:",xoff,yoff
+            canvas.put_png_on_canvas(self.source,zoom=scale,xOffset=50*xoff,yOffset=20*yoff)
+        elif vcs.queries.istext(self.source):
+            self.source.x = [self.x]
+            self.source.y = [self.y]
+            if self.height is not None:
+                self.source.height = self.height
+            canvas.plot(self.source,bg=bg)
+
+class Xs(object):
+    __slots__ = ("x1","x2")
+    def __init__(self,x1,x2):
+        self.x1 = x1
+        self.x2 = x2
+class Ys(object):
+    __slots__ = ("y1","y2")
+    def __init__(self,y1,y2):
+        self.y1 = y1
+        self.y2 = y2
+class XYs(object):
+    __slots__ = ("x1","x2","y1","y2")
+    def __init__(self,x1,x2,y1,y2):
+        self.x1 = x1
+        self.x2 = x2
+        self.y1 = y1
+        self.y2 = y2
+
+
+class Plot_defaults(object):
+    __slots__ = [ "x1","x2","y1","y2","levels","colormap",
+            "fillareacolors","legend","logo","_logo",
+            "xticorientation","yticorientation",
+            "parameterorientation","tictable",
+            "parametertable","draw_mesh",
+            "missing_color","xtic1","xtic2","ytic1","ytic2",
+            "time_stamp"]
+
+    def getlogo(self):
+        return self._logo
+
+    def setlogo(self,value):
+        if value is None or isinstance(value, basestring):
+            self._logo = Logo(value)
+
+    logo = property(getlogo,setlogo)
 
     def __init__(self):
         self.x1 = .12
@@ -18,57 +129,36 @@ class Plot_defaults:
         self.levels = None
         self.colormap = None
         self.fillareacolors = None
-        self.legend_x1 = .89
-        self.legend_x2 = .91
-        self.legend_y1 = self.y1
-        self.legend_y2 = self.y2
-        x = vcs.init()
+        self.legend = XYs(.89,.91,self.y1,self.y2)
         # X ticks
-        self.xticorientation = x.createtextorientation()
+        self.xticorientation = vcs.createtextorientation()
         self.xticorientation.angle = 360 - 90
         self.xticorientation.halign = 'right'
         self.xticorientation.height = 10
         # Y ticks
-        self.yticorientation = x.createtextorientation()
+        self.yticorientation = vcs.createtextorientation()
         self.yticorientation.angle = 0
         self.yticorientation.halign = 'right'
         self.yticorientation.height = 10
         # Ticks table
-        self.tictable = x.createtexttable()
+        self.tictable = vcs.createtexttable()
         # parameters text settings
-        self.parameterorientation = x.createtextorientation()
+        self.parameterorientation = vcs.createtextorientation()
         self.parameterorientation.angle = 0
         self.parameterorientation.halign = 'center'
         self.parameterorientation.height = 20
-        self.parametertable = x.createtexttable()
+        self.parametertable = vcs.createtexttable()
         # Defaults
         self.draw_mesh = 'y'
         self.missing_color = 3
-        self.xtic1y1 = None
-        self.xtic1y2 = None
-        self.xtic2y1 = None
-        self.xtic2y2 = None
-        self.ytic1x1 = None
-        self.ytic1x2 = None
-        self.ytic2x1 = None
-        self.ytic2x2 = None
+        self.xtic1 = Ys(None,None)
+        self.xtic2 = Ys(None,None)
+        self.ytic1 = Xs(None,None)
+        self.ytic2 = Xs(None,None)
         # Set the logo textorientation
-        logo = x.createtext()
-        logo.height = 20
-        logo.halign = 'center'
-        logo.path = 'right'
-        logo.valign = 'half'
-        # Set the logo texttable
-        logo.font = 2
-        logo.spacing = 2
-        logo.expansion = 100
-        logo.color = [5, 10, 67, 100.0]
-        logo.string = 'PCMDI'
-        logo.x = [.9]
-        logo.y = [.98]
-        self.logo = logo
+        self.logo = None
         # Set the time stamp
-        time_stamp = x.createtext()
+        time_stamp = vcs.createtext()
         time_stamp.height = 10
         time_stamp.halign = 'center'
         time_stamp.path = 'right'
@@ -78,7 +168,15 @@ class Plot_defaults:
         self.time_stamp = time_stamp
 
 
-class Portrait:
+class Portrait(object):
+    __slots_ = [
+            "verbose","files_structure",
+            "exclude", "parameters_list",
+            "dummies","auto_dummies","grouped",
+            "slaves","altered","aliased",
+            "portrait_types","PLOT_SETTINGS",
+            ]
+
 
     def __init__(self, files_structure=None, exclude=[], **kw):
         ''' initialize the portrait object, from file structure'''
@@ -719,34 +817,34 @@ class Portrait:
             template.ylabel2.textorientation = \
                 self.PLOT_SETTINGS.yticorientation
 
-            if self.PLOT_SETTINGS.xtic1y1 is not None:
-                template.xtic1.y1 = self.PLOT_SETTINGS.xtic1y1
+            if self.PLOT_SETTINGS.xtic1.y1 is not None:
+                template.xtic1.y1 = self.PLOT_SETTINGS.xtic1.y1
                 template.xtic1.priority = 1
-            if self.PLOT_SETTINGS.xtic1y2 is not None:
-                template.xtic1.y2 = self.PLOT_SETTINGS.xtic1y2
+            if self.PLOT_SETTINGS.xtic1.y2 is not None:
+                template.xtic1.y2 = self.PLOT_SETTINGS.xtic1.y2
                 template.xtic1.priority = 1
-            if self.PLOT_SETTINGS.xtic2y1 is not None:
-                template.xtic2.y1 = self.PLOT_SETTINGS.xtic2y1
+            if self.PLOT_SETTINGS.xtic2.y1 is not None:
+                template.xtic2.y1 = self.PLOT_SETTINGS.xtic2.y1
                 template.xtic2.priority = 1
-            if self.PLOT_SETTINGS.xtic2y2 is not None:
-                template.xtic2.y2 = self.PLOT_SETTINGS.xtic2y2
+            if self.PLOT_SETTINGS.xtic2.y2 is not None:
+                template.xtic2.y2 = self.PLOT_SETTINGS.xtic2.y2
                 template.xtic2.priority = 1
-            if self.PLOT_SETTINGS.ytic1x1 is not None:
-                template.ytic1.x1 = self.PLOT_SETTINGS.ytic1x1
+            if self.PLOT_SETTINGS.ytic1.x1 is not None:
+                template.ytic1.x1 = self.PLOT_SETTINGS.ytic1.x1
                 template.ytic1.priority = 1
-            if self.PLOT_SETTINGS.ytic1x2 is not None:
-                template.ytic1.x2 = self.PLOT_SETTINGS.ytic1x2
+            if self.PLOT_SETTINGS.ytic1.x2 is not None:
+                template.ytic1.x2 = self.PLOT_SETTINGS.ytic1.x2
                 template.ytic1.priority = 1
-            if self.PLOT_SETTINGS.ytic2x1 is not None:
+            if self.PLOT_SETTINGS.ytic2.x1 is not None:
                 template.ytic2.priority = 1
-                template.ytic2.x1 = self.PLOT_SETTINGS.ytic2x1
-            if self.PLOT_SETTINGS.ytic2x2 is not None:
+                template.ytic2.x1 = self.PLOT_SETTINGS.ytic2.x1
+            if self.PLOT_SETTINGS.ytic2.x2 is not None:
                 template.ytic2.priority = 1
-                template.ytic2.x2 = self.PLOT_SETTINGS.ytic2x2
-            template.legend.x1 = self.PLOT_SETTINGS.legend_x1
-            template.legend.x2 = self.PLOT_SETTINGS.legend_x2
-            template.legend.y1 = self.PLOT_SETTINGS.legend_y1
-            template.legend.y2 = self.PLOT_SETTINGS.legend_y2
+                template.ytic2.x2 = self.PLOT_SETTINGS.ytic2.x2
+            template.legend.x1 = self.PLOT_SETTINGS.legend.x1
+            template.legend.x2 = self.PLOT_SETTINGS.legend.x2
+            template.legend.y1 = self.PLOT_SETTINGS.legend.y1
+            template.legend.y2 = self.PLOT_SETTINGS.legend.y2
             try:
                 tmp = x.createtextorientation('crap22')
             except:
@@ -1056,7 +1154,7 @@ class Portrait:
                                     txt.y = dic['y']
                             x.plot(txt, bg=bg, continents=0)
             if self.PLOT_SETTINGS.logo is not None:
-                x.plot(self.PLOT_SETTINGS.logo, bg=bg, continents=0)
+                self.PLOT_SETTINGS.logo.plot(x,bg=bg)
             if self.PLOT_SETTINGS.time_stamp is not None:
                 import time
                 sp = time.ctime().split()
