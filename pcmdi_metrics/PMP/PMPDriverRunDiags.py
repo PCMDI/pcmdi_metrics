@@ -6,8 +6,6 @@ import collections
 from pcmdi_metrics.PMP.PMPParameter import *
 import pcmdi_metrics.PMP.OutputMetrics
 
-def THINGTHINGTHING():
-    return 'nothign'
 
 class PMPDriverRunDiags(object):
 
@@ -122,4 +120,16 @@ class PMPDriverRunDiags(object):
             return data_set_is_obs
 
         def obs_vs_model(self):
-            pass
+            # element_a/b is either an obs or model
+            for self.element_a in self.parameter.data_set_a:
+                cls = \
+                    self.determine_obs_or_model_class_instance(self.data_set_a_is_obs)
+                self.data_set_a = cls(self.parameter, self.var, self.element_a)
+
+
+        @staticmethod
+        def determine_obs_or_model_class_instance(is_obs):
+            if is_obs:
+                return Observation
+            else:
+                return Model
