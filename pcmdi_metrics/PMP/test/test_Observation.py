@@ -9,7 +9,7 @@ class testObservation(unittest.TestCase):
     def setUp(self):
         self.parameter = PMPParameter()
         self.parameter.data_set_a = ['all']
-        self.var = 'sftlf'
+        self.var = 'tos'
         self.obs = 'all'
         self.observation = Observation(self.parameter, self.var, self.obs)
         self.obs_dict = PMPDriverRunDiags(self.parameter).load_obs_dict()
@@ -19,7 +19,7 @@ class testObservation(unittest.TestCase):
         result = Observation.setup_obs_list_from_parameter(obs_list,
                                                            self.obs_dict,
                                                            self.var)
-        self.assertEquals(result, [])
+        self.assertEquals(result, [u'default'])
 
     def test_setup_obs_list_from_parameter_without_all(self):
         obs_list = ['default', 'alternate']
@@ -27,6 +27,19 @@ class testObservation(unittest.TestCase):
                                                            self.obs_dict,
                                                            self.var)
         self.assertEquals(result, obs_list)
+
+    def test_OBS(self):
+        root = '.'
+        try:
+            obs = OBS(root, self.var, self.obs_dict)
+        except:
+            self.fail('Error initializing an OBS object.')
+
+    def test_OBS_with_runtime_error(self):
+        root = '.'
+        var = 'sftlf'
+        with self.assertRaises(RuntimeError):
+            obs = OBS(root, var, self.obs_dict)
 
 if __name__ == '__main__':
     unittest.main()
