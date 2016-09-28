@@ -38,18 +38,21 @@ class OBS(PMPIO):
             self.frequency = 'mo'
             self.ac = 'ac'
 
+
 class Observation(object):
-    def __init__(self, parameter, var, obs):
+    def __init__(self, parameter, var, obs, obs_dict):
         self.parameter = parameter
         self.var = var
         self.obs = obs
+        self.obs_dict = obs_dict
 
         string_template = "%(var)%(level)_%(targetGridName)_" +\
-                  "%(regridTool)_%(regridMethod)_metrics"
+                          "%(regridTool)_%(regridMethod)_metrics"
         self.obs_file = PMPIO(self.parameter.metrics_output_path,
                               string_template)
 
     @staticmethod
+    # This must remain static.
     def setup_obs_list_from_parameter(parameter_obs_list, obs_dict, var):
         obs_list = parameter_obs_list
         if 'all' in [x.lower() for x in obs_list]:
@@ -63,3 +66,22 @@ class Observation(object):
             else:
                 obs_list = [obs_list]
         return obs_list
+
+    def something(self):
+        obs_mask_name = self.create_obs_mask_name()
+
+    def create_obs_mask_name(self):
+        try:
+            if isinstance(self.obs_dict[self.var][self.obs], (str, unicode)):
+                obs_from_obs_dict = self.obs_dict[self.var][self.obs_dict[self.var][self.obs]]
+            else:
+                obs_from_obs_dict = self.obs_dict[self.var][self.obs]
+            obs_mask = OBS(self.parameter.obs_data_path, 'sftlf',
+                           self.obs_dict, obs_from_obs_dict['RefName'])
+            obs_mask_name = obs_mask()
+        except:
+            msg = 'Could not figure out obs mask name from obs json file'
+            logging.error(msg)
+            obs_mask_name = None
+        return obs_mask_name
+
