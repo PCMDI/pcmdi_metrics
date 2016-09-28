@@ -373,6 +373,10 @@ for model in models:
     
         # Calculate stdv of pc time series ---
         model_pcs_stdv = calcSTD(pc1)
+
+        # Add to dictionary for json output ---
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['frac'] = float(frac1)
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['std_model_pcs'] = float(model_pcs_stdv)
     
         #- - - - - - - - - - - - - - - - - - - - - - - - -
         # OBS statistics (only over EOF domain), save as dictionary ---
@@ -427,8 +431,6 @@ for model in models:
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['cor_glo'] = float(cor_glo)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['bias'] = float(bias)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['bias_glo'] = float(bias_glo)
-          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['frac'] = float(frac1)
-          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['std_model_pcs'] = float(model_pcs_stdv)
     
         #-------------------------------------------------
         # pseudo model PC timeseries and teleconnection 
