@@ -312,6 +312,15 @@ for model in models:
         model_timeseries[model_timeseries<-1.8] = -1.8
   
       cdutil.setTimeBoundsMonthly(model_timeseries)
+
+      # Check available time window and adjust if needed ---
+      msyear = model_timeseries.getTime().asComponentTime()[0].year
+      meyear = model_timeseries.getTime().asComponentTime()[-1].year
+
+      msyear = max(syear, msyear)
+      meyear = min(eyear, meyear)
+
+  if debug: print 'msyear:', msyear, 'meyear:', meyear
   
       #-------------------------------------------------
       # Season loop
@@ -499,7 +508,7 @@ for model in models:
         # Set output file name for NetCDF and plot ---
         output_filename = out_dir + '/' \
                          + mode+'_'+var+'_EOF'+str(eofn_mod)+'_'+season+'_' \
-                         + mip+'_'+model+'_'+exp+'_'+run+'_'+fq+'_'+realm+'_'+str(syear)+'-'+str(eyear)
+                         + mip+'_'+model+'_'+exp+'_'+run+'_'+fq+'_'+realm+'_'+str(msyear)+'-'+str(meyear)
     
         # Save global map, pc timeseries, and fraction in NetCDF output ---
         if nc_out:
@@ -509,15 +518,15 @@ for model in models:
     
         # Plot map ---
         if plot:
-          #plot_map(mode, model+'_'+run, syear, eyear, season, eof, frac1, output_filename)
-          plot_map(mode, model+' ('+run+')', syear, eyear, season, 
+          #plot_map(mode, model+'_'+run, msyear, meyear, season, eof, frac1, output_filename)
+          plot_map(mode, model+' ('+run+')', msyear, meyear, season, 
                    eof_lr(regions_specs[mode]['domain']), frac1, output_filename)
-          plot_map(mode+'_teleconnection', model+' ('+run+')', syear, eyear, season, 
+          plot_map(mode+'_teleconnection', model+' ('+run+')', msyear, meyear, season, 
                    eof_lr(longitude=(lon1g,lon2g)), frac1, output_filename+'_teleconnection')
           if pseudo: 
-            plot_map(mode, model+' ('+run+')'+' - pseudo', syear, eyear, season, 
+            plot_map(mode, model+' ('+run+')'+' - pseudo', msyear, meyear, season, 
                      eof_lr_pseudo(regions_specs[mode]['domain']), -999, output_filename+'_pseudo')
-            plot_map(mode+'_pseudo_teleconnection', model+' ('+run+')', syear, eyear, season, 
+            plot_map(mode+'_pseudo_teleconnection', model+' ('+run+')', msyear, meyear, season, 
                      eof_lr_pseudo(longitude=(lon1g,lon2g)), -999, output_filename+'_pseudo_teleconnection')
     
       #=================================================
@@ -525,7 +534,7 @@ for model in models:
       #-------------------------------------------------
       if obs_compare:
         json_filename = out_dir + '/' \
-                      + 'var_mode_'+mode+'_EOF'+str(eofn_mod)+'_stat_'+mip+'_'+exp+'_'+fq+'_'+realm+'_'+str(syear)+'-'+str(eyear)
+                      + 'var_mode_'+mode+'_EOF'+str(eofn_mod)+'_stat_'+mip+'_'+exp+'_'+fq+'_'+realm+'_'+str(msyear)+'-'+str(meyear)
         json.dump(var_mode_stat_dic, open(json_filename + '.json','w'), sort_keys=True, indent=4, separators=(',', ': '))
 
     except:
