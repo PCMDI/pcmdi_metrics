@@ -172,7 +172,7 @@ if os.path.isfile(json_file):
 
 update_json = True
 
-if update_json == True: 
+if update_json == True and os.path.isfile(json_file): 
   fj = open(json_file)
   var_mode_stat_dic = json.loads(fj.read())
   fj.close()
