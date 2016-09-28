@@ -8,92 +8,21 @@ import glob
 import struct
 from genutil import StringConstructor
 
-def get_png_dims(fnm):
-    """given the path to a png, return width, height"""
-    try:
-        data = open(fnm,"rb").read()
-        print "Read data"
-        w, h = struct.unpack('>LL', data[16:24])
-        print "w,h",w,h
-        width = int(w)
-        height = int(h)
-    except Exception,err:
-        print "PNG ERROR:",err
-        width = None
-        height= None
-    return width, height
-
-
-class Logo(object):
-    def __init__(self,source=None,x=.9,y=.98,width=None,height=None):
-        if source is None:
-            self.source = None
-        elif vcs.queries.istext(source):
-            self.source = source
-        elif isinstance(source, basestring):
-            self.source_width, self.source_height = get_png_dims(source)
-            if self.source_width is not None:
-                self.source = source
-            else:
-                self.source = vcs.createtext()
-                if height is None:
-                    self.source.height = 20
-                else:
-                    self.source.height = height
-                self.source.halign = 'center'
-                self.source.path = 'right'
-                self.source.valign = 'half'
-                # Set the texttable
-                self.source.font = 2
-                self.source.color = [5, 10, 67, 100.0]
-                self.source.string = source
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-
-    def plot(self,canvas,bg=True):
-        if isinstance(self.source, basestring):
-            cnv_info = canvas.canvasinfo()
-            xoff = .5-self.x
-            yoff = .5-self.y
-            if self.width is not None:
-                scale = float(self.width) / self.source_width
-            elif self.height is not None:
-                scale = float(self.height) / self.source_height
-            else:
-                xdist  = cnv_info["width"] - self.x*cnv_info["width"]
-                xscale = xdist / self.source_width 
-                ydist  = cnv_info["height"] - self.y*cnv_info["height"]
-                yscale = ydist / self.source_height
-                scale = min(xscale,yscale)
-            scale = scale / 2.
-
-            print "xoff,width,cwidth,src_width:",xoff,self.width,cnv_info["width"],self.source_width
-            print "Scale:",scale
-            print "CANAVS INFO:",cnv_info
-            xoff = -(cnv_info["width"]*self.x)/(self.source_width)
-            xoff = 0
-            yoff = -(cnv_info["height"]*self.y)/(self.source_height)
-            print "XOFF:",xoff,yoff
-            canvas.put_png_on_canvas(self.source,zoom=scale,xOffset=50*xoff,yOffset=20*yoff)
-        elif vcs.queries.istext(self.source):
-            self.source.x = [self.x]
-            self.source.y = [self.y]
-            if self.height is not None:
-                self.source.height = self.height
-            canvas.plot(self.source,bg=bg)
 
 class Xs(object):
     __slots__ = ("x1","x2")
     def __init__(self,x1,x2):
         self.x1 = x1
         self.x2 = x2
+
+
 class Ys(object):
     __slots__ = ("y1","y2")
     def __init__(self,y1,y2):
         self.y1 = y1
         self.y2 = y2
+
+
 class XYs(object):
     __slots__ = ("x1","x2","y1","y2")
     def __init__(self,x1,x2,y1,y2):
@@ -117,7 +46,7 @@ class Plot_defaults(object):
 
     def setlogo(self,value):
         if value is None or isinstance(value, basestring):
-            self._logo = Logo(value)
+            self._logo = vcs.utils.Logo(value)
 
     logo = property(getlogo,setlogo)
 
