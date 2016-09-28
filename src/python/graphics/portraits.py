@@ -1082,14 +1082,14 @@ class Portrait(object):
                                 if dic['y'] is not None:
                                     txt.y = dic['y']
                             x.plot(txt, bg=bg, continents=0)
-            if self.PLOT_SETTINGS.logo is not None:
-                self.PLOT_SETTINGS.logo.plot(x,bg=bg)
             if self.PLOT_SETTINGS.time_stamp is not None:
                 import time
                 sp = time.ctime().split()
                 sp = sp[:3] + [sp[-1]]
                 self.PLOT_SETTINGS.time_stamp.string = ''.join(sp)
                 x.plot(self.PLOT_SETTINGS.time_stamp, bg=bg, continents=0)
+            if self.PLOT_SETTINGS.logo is not None:
+                self.PLOT_SETTINGS.logo.plot(x,bg=bg)
 
     def set_colormap(self, x):
         cols = (

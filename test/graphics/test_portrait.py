@@ -10,7 +10,6 @@
 # See git for change logs
 #
 import unittest
-import checkimage
 
 bg = True
 
@@ -156,9 +155,8 @@ class TestGraphics(unittest.TestCase):
         print src
         fnm = os.path.join(os.getcwd(), "testPortrait.png")
         x.png(fnm)
-        ret = checkimage.check_result_image(
+        ret = vcs.testing.regression.check_result_image(
             fnm,
-            src,
-            checkimage.defaultThreshold)
+            src)
         if ret != 0:
             sys.exit(ret)
