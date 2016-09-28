@@ -9,16 +9,17 @@ PDO: Pacific Decadal Oscillation
 
 Ji-Woo Lee
 """
-import argparse
 from argparse import RawTextHelpFormatter
-import sys, os
-import string
-import subprocess
+from shutil import copyfile 
+import argparse
 import cdms2 as cdms
 import cdutil, cdtime
 import genutil
-import time
 import json
+import string
+import subprocess
+import sys, os
+import time
 
 libfiles = ['argparse_functions.py',
             'durolib.py',
@@ -158,8 +159,28 @@ end_time = cdtime.comptime(eyear,12,31)
 # Declare dictionary for .json record 
 #-------------------------------------------------
 var_mode_stat_dic={}
-var_mode_stat_dic['REF']={}
-var_mode_stat_dic['RESULTS']={}
+
+# Define output json file ---
+json_filename = 'var_mode_'+mode+'_EOF'+str(eofn_mod)+'_stat_'+mip+'_'+exp+'_'+fq+'_'+realm+'_'+str(syear)+'-'+str(eyear)
+
+json_file = out_dir + '/' + json_filename + '.json'
+json_file_org = out_dir + '/' + json_filename + '_org.json'
+
+# Keep previous version of json file against overwrite ---
+if os.path.isfile(json_file):
+  copyfile(json_file, json_file_org)
+
+update_json = True
+
+if update_json == True: 
+  fj = open(json_file)
+  var_mode_stat_dic = json.loads(fj.read())
+  fj.close()
+
+if 'REF' not in var_mode_stat_dic.keys():
+  var_mode_stat_dic['REF']={}
+if 'RESULTS' not in var_mode_stat_dic.keys():
+  var_mode_stat_dic['RESULTS']={}
 
 #=================================================
 # Observation
@@ -206,18 +227,25 @@ if obs_compare:
   pc1_obs_stdv={}
 
   # Dictonary for json archive ---
-  var_mode_stat_dic['REF']['obs']={}
-  var_mode_stat_dic['REF']['obs']['defaultReference']={}
-  var_mode_stat_dic['REF']['obs']['defaultReference']['source'] = {}
+  if 'obs' not in var_mode_stat_dic['REF'].keys(): 
+    var_mode_stat_dic['REF']['obs']={}
+  if 'defaultReference' not in var_mode_stat_dic['REF']['obs'].keys(): 
+    var_mode_stat_dic['REF']['obs']['defaultReference']={}
+  if 'source' not in var_mode_stat_dic['REF']['obs']['defaultReference'].keys():
+    var_mode_stat_dic['REF']['obs']['defaultReference']['source'] = {}
+  if mode not in var_mode_stat_dic['REF']['obs']['defaultReference'].keys():
+    var_mode_stat_dic['REF']['obs']['defaultReference'][mode]={}
+
   var_mode_stat_dic['REF']['obs']['defaultReference']['source'] = obs_path
   var_mode_stat_dic['REF']['obs']['defaultReference']['reference_eof_mode'] = eofn_obs
-  var_mode_stat_dic['REF']['obs']['defaultReference'][mode]={}
   
   #-------------------------------------------------
   # Season loop
   #- - - - - - - - - - - - - - - - - - - - - - - - -
   for season in seasons:
-    var_mode_stat_dic['REF']['obs']['defaultReference'][mode][season]={}
+
+    if season not in var_mode_stat_dic['REF']['obs']['defaultReference'][mode].keys():
+      var_mode_stat_dic['REF']['obs']['defaultReference'][mode][season]={}
 
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     # Time series adjustment
@@ -283,7 +311,9 @@ if obs_compare:
 #-------------------------------------------------
 for model in models:
   print ' ----- ', model,' ---------------------'
-  var_mode_stat_dic['RESULTS'][model]={}
+
+  if model not in var_mode_stat_dic['RESULTS'].keys():
+    var_mode_stat_dic['RESULTS'][model]={}
   
   #model_path = get_latest_pcmdi_mip_data_path(mip,exp,model,fq,realm,var,run)
   #model_path = '/work/cmip5/historical/atm/mo/psl/cmip5.'+model+'.historical.r1i1p1.mo.atm.Amon.psl.ver-1.latestX.xml'
@@ -295,9 +325,12 @@ for model in models:
       run = string.split((string.split(model_path,'/')[-1]),'.')[3]
       print ' --- ', run,' ---'
   
-      var_mode_stat_dic['RESULTS'][model][run]={}
-      var_mode_stat_dic['RESULTS'][model][run]['defaultReference']={}
-      var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode]={}
+      if run not in var_mode_stat_dic['RESULTS'][model].keys():
+        var_mode_stat_dic['RESULTS'][model][run]={}
+      if 'defaultReference' not in var_mode_stat_dic['RESULTS'][model][run].keys():
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference']={}
+      if mode not in var_mode_stat_dic['RESULTS'][model][run]['defaultReference'].keys():
+        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode]={}
   
       f = cdms.open(model_path)
     
@@ -320,13 +353,15 @@ for model in models:
       msyear = max(syear, msyear)
       meyear = min(eyear, meyear)
 
-  if debug: print 'msyear:', msyear, 'meyear:', meyear
+      if debug: print 'msyear:', msyear, 'meyear:', meyear
   
       #-------------------------------------------------
       # Season loop
       #- - - - - - - - - - - - - - - - - - - - - - - - -
       for season in seasons:
-        var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]={}
+
+        if season not in var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode].keys():
+          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]={}
     
         #- - - - - - - - - - - - - - - - - - - - - - - - -
         # Time series adjustment
@@ -534,10 +569,7 @@ for model in models:
       #=================================================
       # Write dictionary to json file (let the json keep overwritten in model loop)
       #-------------------------------------------------
-      if obs_compare:
-        json_filename = out_dir + '/' \
-                      + 'var_mode_'+mode+'_EOF'+str(eofn_mod)+'_stat_'+mip+'_'+exp+'_'+fq+'_'+realm+'_'+str(msyear)+'-'+str(meyear)
-        json.dump(var_mode_stat_dic, open(json_filename + '.json','w'), sort_keys=True, indent=4, separators=(',', ': '))
+      json.dump(var_mode_stat_dic, open(json_file,'w'), sort_keys=True, indent=4, separators=(',', ': '))
 
     except:
       print 'faild for ', model, run
