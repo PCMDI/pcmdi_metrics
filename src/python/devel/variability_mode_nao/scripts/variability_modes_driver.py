@@ -274,6 +274,7 @@ if obs_compare:
 
     # Save stdv of PC time series in dictionary ---
     var_mode_stat_dic['REF']['obs']['defaultReference'][mode][season]['pc1_stdv'] = float(pc1_obs_stdv[season])
+    var_mode_stat_dic['REF']['obs']['defaultReference'][mode][season]['frac'] = float(frac1_obs[season])
 
     if debug: print 'obs plotting end'
 
