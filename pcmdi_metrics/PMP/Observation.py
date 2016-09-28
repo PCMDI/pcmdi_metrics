@@ -52,7 +52,7 @@ class Observation(object):
                               string_template)
 
     @staticmethod
-    # This must remain static.
+    # This must remain static b/c used before an Observation obj is created.
     def setup_obs_list_from_parameter(parameter_obs_list, obs_dict, var):
         obs_list = parameter_obs_list
         if 'all' in [x.lower() for x in obs_list]:
@@ -72,10 +72,7 @@ class Observation(object):
 
     def create_obs_mask_name(self):
         try:
-            if isinstance(self.obs_dict[self.var][self.obs], (str, unicode)):
-                obs_from_obs_dict = self.obs_dict[self.var][self.obs_dict[self.var][self.obs]]
-            else:
-                obs_from_obs_dict = self.obs_dict[self.var][self.obs]
+            obs_from_obs_dict = self.get_obs_from_obs_dict()
             obs_mask = OBS(self.parameter.obs_data_path, 'sftlf',
                            self.obs_dict, obs_from_obs_dict['RefName'])
             obs_mask_name = obs_mask()
@@ -84,4 +81,18 @@ class Observation(object):
             logging.error(msg)
             obs_mask_name = None
         return obs_mask_name
+
+    def get_obs_from_obs_dict(self):
+        if self.obs not in self.obs_dict[self.var]:
+           raise KeyError('The selected obs is not in the obs_dict')
+
+        if isinstance(self.obs_dict[self.var][self.obs], (str, unicode)):
+            obs_from_obs_dict = \
+                self.obs_dict[self.var][self.obs_dict[self.var][self.obs]]
+        else:
+            obs_from_obs_dict = self.obs_dict[self.var][self.obs]
+        return obs_from_obs_dict
+
+
+
 

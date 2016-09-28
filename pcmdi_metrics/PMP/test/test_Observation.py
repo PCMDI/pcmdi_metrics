@@ -10,10 +10,17 @@ class testObservation(unittest.TestCase):
         self.parameter = PMPParameter()
         self.parameter.data_set_a = ['all']
         self.var = 'tos'
-        self.obs = 'all'
+        obs_all = 'all'
+        obs_def = 'default'
         self.obs_dict = PMPDriverRunDiags(self.parameter).load_obs_dict()
-        self.observation = Observation(self.parameter, self.var, self.obs,
-                                       self.obs_dict)
+
+        # There are two instances of Observation, cause sometimes some stuff
+        # only works with a specific kind, based on the obs ('all' or something
+        # else)
+        self.observation_all = Observation(self.parameter, self.var, obs_all,
+                                           self.obs_dict)
+        self.observation_def = Observation(self.parameter, self.var, obs_def,
+                                           self.obs_dict)
 
     def test_OBS(self):
         root = '.'
@@ -43,16 +50,25 @@ class testObservation(unittest.TestCase):
         self.assertEquals(result, obs_list)
 
     def test_create_obs_mask_name(self):
-        result = self.observation.create_obs_mask_name()
+        result = self.observation_all.create_obs_mask_name()
         self.assertEquals(result, None)
 
-    def test_create_obs_mask_name_2(self):
-        obs = Observation(self.parameter, self.var, 'default', self.obs_dict)
-        result = obs.create_obs_mask_name()
+    def test_create_obs_mask_name_without_all(self):
+        result = self.observation_def.create_obs_mask_name()
         actual_result = '//fx/sftlf/UKMETOFFICE-HadISST-v1-1/sftlf_pcmdi' +\
                         '-metrics_fx_UKMETOFFICE-HadISST-v1-1_198002-200501' +\
                         '-clim.nc.json'
         self.assertEquals(result, actual_result)
+
+    def test_get_obs_from_obs_dict_with_key_error(self):
+        with self.assertRaises(KeyError):
+            self.observation_all.get_obs_from_obs_dict()
+
+    def test_get_obs_from_obs_dict(self):
+        try:
+            self.observation_def.get_obs_from_obs_dict()
+        except:
+            self.fail('Error while running get_obs_from_obs_dict()')
 
 
 if __name__ == '__main__':
