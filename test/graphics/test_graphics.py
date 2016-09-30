@@ -56,6 +56,10 @@ class TestGraphics(unittest.TestCase):
         to.halign="right"
         t.xlabel1.textorientation = to.name
         t.reset('x',0.05,0.7,t.data.x1,t.data.x2)
+        t.legend.x1 = .71
+        t.legend.x2 = .99
+        t.legend.y1 = t.data.y1
+        t.legend.y2 = t.data.y2
         gm.plot(rms_xyt,template=t,bg=bg)
         raw_input("Pres senter")
 
