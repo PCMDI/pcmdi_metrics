@@ -1,6 +1,6 @@
 import cdutil
 
-self.regions_specs = {
+regions_specs = {
         'NHEX' : {'domain':cdutil.region.domain(latitude=(30.,90,'ccb'))},
         'SHEX' : {'domain':cdutil.region.domain(latitude=(-90.,-30,'ccb'))},
         'TROPICS': {'domain':cdutil.region.domain(latitude=(-30.,30,'ccb'))},
@@ -26,4 +26,4 @@ self.regions_specs = {
         "PDO" : {'domain':cdutil.region.domain(latitude=(20.,70,'ccb'),longitude=(110,260,'ccb'))},
         }
 
-self.default_regions = ['global','NHEX','SHEX','TROPICS']
+default_regions = ['global','NHEX','SHEX','TROPICS']

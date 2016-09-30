@@ -24,6 +24,7 @@ class PMPDriverRunDiags(object):
                 self.var = self.var_name_long.split('_')[0]
                 self.obs_dict = self.load_obs_dict()
 
+
                 if self.use_omon(self.obs_dict, self.var):
                     self.regrid_method = self.parameter.regrid_method_ocn
                     self.regrid_tool = self.regrid_tool_ocn.regrid_tool
@@ -35,12 +36,13 @@ class PMPDriverRunDiags(object):
                     self.table_realm = 'Amon'
                     self.realm = 'atm'
 
+
                 self.output_metric =\
                     pcmdi_metrics.PMP.OutputMetrics.OutputMetrics\
                         (self.parameter, self.var_name_long)
+                self.setup_obs_or_model_or_output_file(self.output_metric)
 
-                # Runs obs vs obs, obs vs model, or model vs model
-                self.run_data_a_and_data_b_comparison(self.obs_dict)
+                self.regions_loop()
 
 
         def load_obs_dict(self):
@@ -71,20 +73,36 @@ class PMPDriverRunDiags(object):
                 obs_dict[var][obs_dict[var]["default"]]["CMIP_CMOR_TABLE"] ==\
                 'Omon'
 
-        @staticmethod
-        def calculate_level_from_var(var):
-            var_split_name = var.split('_')
-            if len(var_split_name) > 1:
-                level = float(var_split_name[-1]) * 100
-            else:
-                level = None
-            return level
+        def regions_loop(self):
+            self.regions_dict = self.create_regions_dict()
 
-        def setup_obs_or_model_or_output_file(self, io_file):
-            io_file.set_target_grid(self.regrid_tool, self.regrid_method)
-            io_file.set_var(self.var)
-            io_file.set_realm(self.realm)
-            io_file.set_table(self.table_realm)
+            for self.region in self.region_dict[self.var]:
+                # Runs obs vs obs, obs vs model, or model vs model
+                self.run_data_a_and_data_b_comparison(self.obs_dict)
+
+        def create_regions_dict(self):
+            default_regions = []
+
+            # This loads the regions_specs and default_regions var into
+            # the namespace of this scope.
+            default_regions_file = \
+                self.load_path_as_file_obj('default_regions.py')
+            execfile(default_regions_file.name)
+
+            regions_dict = {}
+            for var_name_long in self.parameter.vars:
+                var = var_name_long.split('_')[0]
+                regions = self.parameter.regions
+                region = regions.get(var, default_regions)
+                if not isinstance(region, (list, tuple)):
+                    region = [region]
+                if region is None:
+                    region.remove(None)
+                    for r in default_regions:
+                        region.insert(0, r)
+                regions_dict[var] = region
+
+            return regions_dict
 
         def run_data_a_and_data_b_comparison(self):
             data_set_a = self.parameter.data_set_a
@@ -130,6 +148,17 @@ class PMPDriverRunDiags(object):
         @staticmethod
         def determine_obs_or_model_class_instance(is_obs):
             if is_obs:
-                return Observation
+                # return Observation
+                pass
             else:
-                return Model
+                #return Model
+                pass
+
+        @staticmethod
+        def calculate_level_from_var(var):
+            var_split_name = var.split('_')
+            if len(var_split_name) > 1:
+                level = float(var_split_name[-1]) * 100
+            else:
+                level = None
+            return level
