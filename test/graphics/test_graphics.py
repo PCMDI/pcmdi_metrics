@@ -50,7 +50,13 @@ class TestGraphics(unittest.TestCase):
         bg = False
         x=vcs.init(geometry=(800,600),bg=bg)
         gm = vcsaddons.createparallelcoordinates(x=x)
-        gm.plot(rms_xyt,bg=bg)
+        t = vcs.createtemplate()
+        to=x.createtextorientation()
+        to.angle=-45
+        to.halign="right"
+        t.xlabel1.textorientation = to.name
+        t.reset('x',0.05,0.7,t.data.x1,t.data.x2)
+        gm.plot(rms_xyt,template=t,bg=bg)
         raw_input("Pres senter")
 
 
