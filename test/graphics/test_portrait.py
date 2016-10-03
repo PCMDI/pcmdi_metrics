@@ -49,7 +49,7 @@ class TestGraphics(unittest.TestCase):
         print
         # CREATES VCS OBJECT AS A PORTAIT PLOT AND LOADS PLOT SETTINGS FOR
         # EXAMPLE
-        x = vcs.init()
+        x = vcs.init(geometry=(814,606),bg=True)
         x.portrait()
         # Turn off antialiasing for test suite
         x.setantialiasing(0)
