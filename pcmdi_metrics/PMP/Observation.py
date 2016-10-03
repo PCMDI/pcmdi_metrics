@@ -94,22 +94,22 @@ class Observation(object):
         return obs_from_obs_dict
 
 
-    def setup_obs_file(self, obs_file):
+    def setup_obs_file(self):
         regrid_method = ''
         regrid_tool = ''
 
         if self.use_omon():
             regrid_method = self.parameter.regrid_method_ocn
             regrid_tool = self.regrid_tool_ocn.regrid_tool
-            obs_file.table = 'Omon'
-            obs_file.realm = 'ocn'
+            self.obs_file.table = 'Omon'
+            self.obs_file.realm = 'ocn'
         else:
             regrid_method = self.parameter.regrid_method
             regrid_tool = self.parameter.regrid_tool
-            obs_file.table = 'Amon'
-            obs_file.realm = 'atm'
+            self.obs_file.table = 'Amon'
+            self.obs_file.realm = 'atm'
 
-        obs_file.set_target_grid(self.parameter.target_grid,
+        self.obs_file.set_target_grid(self.parameter.target_grid,
                                  regrid_tool,
                                  regrid_method)
         if self.region is not None:
@@ -117,7 +117,7 @@ class Observation(object):
             if region_value is not None:
                 if self.sftlf is None:
                     self.sftlf = self.create_sftlf(self.parameter)
-                obs_file.targetMask = MV2.not_equal(
+                self.obs_file.targetMask = MV2.not_equal(
                     self.sftlf['targetGrid'],
                     region_value
                 )
