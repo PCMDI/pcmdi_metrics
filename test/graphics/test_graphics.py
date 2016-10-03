@@ -48,20 +48,25 @@ class TestGraphics(unittest.TestCase):
         rms_xyt = J(statistic=["rms_xyt"],season=["ann"],region="global")(squeeze=1)
         import vcsaddons
         bg = False
-        x=vcs.init(geometry=(800,600),bg=bg)
+        x=vcs.init(geometry=(1200,600),bg=bg)
         gm = vcsaddons.createparallelcoordinates(x=x)
         t = vcs.createtemplate()
         to=x.createtextorientation()
         to.angle=-45
         to.halign="right"
         t.xlabel1.textorientation = to.name
-        t.reset('x',0.05,0.7,t.data.x1,t.data.x2)
-        t.legend.x1 = .71
+        t.reset('x',0.05,0.9,t.data.x1,t.data.x2)
+        #t.reset('y',0.5,0.9,t.data.y1,t.data.y2)
+        ln = vcs.createline()
+        ln.color = [[0,0,0,0]]
+        t.legend.line = ln
+        t.box1.priority=0
+        t.legend.x1 = .91
         t.legend.x2 = .99
         t.legend.y1 = t.data.y1
         t.legend.y2 = t.data.y2
+        rms_xyt.units = ["mm/day","mm/day","hPa","W/m2","W/m2","W/m2", "K","K","K","m/s","m/s","m/s","m/s","m"]
         gm.plot(rms_xyt,template=t,bg=bg)
-        raw_input("Pres senter")
 
 
     def test_portrait(self):
