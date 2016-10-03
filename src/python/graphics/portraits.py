@@ -5,27 +5,29 @@ import cdms2
 import vcs
 import genutil
 import glob
-import struct
 from genutil import StringConstructor
 
 
 class Xs(object):
-    __slots__ = ("x1","x2")
-    def __init__(self,x1,x2):
+    __slots__ = ("x1", "x2")
+
+    def __init__(self, x1, x2):
         self.x1 = x1
         self.x2 = x2
 
 
 class Ys(object):
-    __slots__ = ("y1","y2")
-    def __init__(self,y1,y2):
+    __slots__ = ("y1", "y2")
+
+    def __init__(self, y1, y2):
         self.y1 = y1
         self.y2 = y2
 
 
 class XYs(object):
-    __slots__ = ("x1","x2","y1","y2")
-    def __init__(self,x1,x2,y1,y2):
+    __slots__ = ("x1", "x2", "y1", "y2")
+
+    def __init__(self, x1, x2, y1, y2):
         self.x1 = x1
         self.x2 = x2
         self.y1 = y1
@@ -33,22 +35,22 @@ class XYs(object):
 
 
 class Plot_defaults(object):
-    __slots__ = [ "x1","x2","y1","y2","levels","colormap",
-            "fillareacolors","legend","logo","_logo",
-            "xticorientation","yticorientation",
-            "parameterorientation","tictable",
-            "parametertable","draw_mesh",
-            "missing_color","xtic1","xtic2","ytic1","ytic2",
-            "time_stamp"]
+    __slots__ = ["x1", "x2", "y1", "y2", "levels", "colormap",
+                 "fillareacolors", "legend", "logo", "_logo",
+                 "xticorientation", "yticorientation",
+                 "parameterorientation", "tictable",
+                 "parametertable", "draw_mesh",
+                 "missing_color", "xtic1", "xtic2", "ytic1", "ytic2",
+                 "time_stamp"]
 
     def getlogo(self):
         return self._logo
 
-    def setlogo(self,value):
+    def setlogo(self, value):
         if value is None or isinstance(value, basestring):
             self._logo = vcs.utils.Logo(value)
 
-    logo = property(getlogo,setlogo)
+    logo = property(getlogo, setlogo)
 
     def __init__(self):
         self.x1 = .12
@@ -58,7 +60,7 @@ class Plot_defaults(object):
         self.levels = None
         self.colormap = None
         self.fillareacolors = None
-        self.legend = XYs(.89,.91,self.y1,self.y2)
+        self.legend = XYs(.89, .91, self.y1, self.y2)
         # X ticks
         self.xticorientation = vcs.createtextorientation()
         self.xticorientation.angle = 360 - 90
@@ -80,10 +82,10 @@ class Plot_defaults(object):
         # Defaults
         self.draw_mesh = 'y'
         self.missing_color = 3
-        self.xtic1 = Ys(None,None)
-        self.xtic2 = Ys(None,None)
-        self.ytic1 = Xs(None,None)
-        self.ytic2 = Xs(None,None)
+        self.xtic1 = Ys(None, None)
+        self.xtic2 = Ys(None, None)
+        self.ytic1 = Xs(None, None)
+        self.ytic2 = Xs(None, None)
         # Set the logo textorientation
         self.logo = None
         # Set the time stamp
@@ -99,13 +101,12 @@ class Plot_defaults(object):
 
 class Portrait(object):
     __slots_ = [
-            "verbose","files_structure",
-            "exclude", "parameters_list",
-            "dummies","auto_dummies","grouped",
-            "slaves","altered","aliased",
-            "portrait_types","PLOT_SETTINGS",
-            ]
-
+        "verbose", "files_structure",
+        "exclude", "parameters_list",
+        "dummies", "auto_dummies", "grouped",
+        "slaves", "altered", "aliased",
+        "portrait_types", "PLOT_SETTINGS",
+    ]
 
     def __init__(self, files_structure=None, exclude=[], **kw):
         ''' initialize the portrait object, from file structure'''
@@ -1052,7 +1053,8 @@ class Portrait(object):
                             None,
                             self.PLOT_SETTINGS.parameterorientation.name)
                         value = getattr(self, p)
-                        if (isinstance(value, (list, tuple)) and len(value) == 1):
+                        if (isinstance(value, (list, tuple)) and
+                                len(value) == 1):
                             txt.string = p + ':' + \
                                 str(self.makestring(p, value[0]))
                             display = 1
@@ -1089,7 +1091,7 @@ class Portrait(object):
                 self.PLOT_SETTINGS.time_stamp.string = ''.join(sp)
                 x.plot(self.PLOT_SETTINGS.time_stamp, bg=bg, continents=0)
             if self.PLOT_SETTINGS.logo is not None:
-                self.PLOT_SETTINGS.logo.plot(x,bg=bg)
+                self.PLOT_SETTINGS.logo.plot(x, bg=bg)
 
     def set_colormap(self, x):
         cols = (
