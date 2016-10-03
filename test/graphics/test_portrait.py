@@ -10,7 +10,6 @@
 # See git for change logs
 #
 import unittest
-import checkimage
 
 bg = True
 
@@ -50,7 +49,7 @@ class TestGraphics(unittest.TestCase):
         print
         # CREATES VCS OBJECT AS A PORTAIT PLOT AND LOADS PLOT SETTINGS FOR
         # EXAMPLE
-        x = vcs.init()
+        x = vcs.init(geometry=(814,606),bg=True)
         x.portrait()
         # Turn off antialiasing for test suite
         x.setantialiasing(0)
@@ -69,13 +68,15 @@ class TestGraphics(unittest.TestCase):
         P.PLOT_SETTINGS.y1 = .12
         P.PLOT_SETTINGS.y2 = .95
 
-        P.PLOT_SETTINGS.xtic2y1 = P.PLOT_SETTINGS.y1
-        P.PLOT_SETTINGS.xtic2y2 = P.PLOT_SETTINGS.y2
-        P.PLOT_SETTINGS.ytic2x1 = P.PLOT_SETTINGS.x1
-        P.PLOT_SETTINGS.ytic2x2 = P.PLOT_SETTINGS.x2
+        P.PLOT_SETTINGS.xtic2.y1 = P.PLOT_SETTINGS.y1
+        P.PLOT_SETTINGS.xtic2.y2 = P.PLOT_SETTINGS.y2
+        P.PLOT_SETTINGS.ytic2.x1 = P.PLOT_SETTINGS.x1
+        P.PLOT_SETTINGS.ytic2.x2 = P.PLOT_SETTINGS.x2
 
         # P.PLOT_SETTINGS.missing_color = 3
-        # P.PLOT_SETTINGS.logo = None
+        P.PLOT_SETTINGS.logo = os.path.join(sys.prefix,"share","pmp","graphics","png","160915_PCMDI_logo_348x300px.png")
+        P.PLOT_SETTINGS.logo.y = .95
+        P.PLOT_SETTINGS.logo.x = .93
         P.PLOT_SETTINGS.time_stamp = None
         P.PLOT_SETTINGS.draw_mesh = 'n'
         # P.PLOT_SETTINGS.tictable.font = 3
@@ -143,6 +144,8 @@ class TestGraphics(unittest.TestCase):
         # P.plot(out1_rel,x=x,multiple=1.1,bg=bg)  # FOR PLOTTING TRIANGLES WHEN
         # USING TWO OR MORE REFERENCE DATA SETS
         P.plot(out1_rel, bg=bg, x=x)
+        if not bg:
+            raw_input("Press enter")
         # x.backend.renWin.Render()
 
         # END OF PLOTTING
@@ -152,9 +155,8 @@ class TestGraphics(unittest.TestCase):
         print src
         fnm = os.path.join(os.getcwd(), "testPortrait.png")
         x.png(fnm)
-        ret = checkimage.check_result_image(
+        ret = vcs.testing.regression.check_result_image(
             fnm,
-            src,
-            checkimage.defaultThreshold)
+            src)
         if ret != 0:
             sys.exit(ret)
