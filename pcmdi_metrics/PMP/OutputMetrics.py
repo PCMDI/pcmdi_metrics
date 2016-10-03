@@ -8,13 +8,13 @@ class OutputMetrics(object):
     def __init__(self, parameter, var_name_long):
         self.parameter = parameter
         self.var_name_long = var_name_long
-
         self.var = var_name_long.split('_')[0]
         self.metrics_dictionary = {}
         string_template = "%(var)%(level)_%(targetGridName)_" +\
                           "%(regridTool)_%(regridMethod)_metrics"
         self.out_file = PMPIO(self.parameter.metrics_output_path,
                               string_template)
+
         self.setup_metrics_dictionary()
 
     def setup_metrics_dictionary(self):
@@ -36,22 +36,6 @@ class OutputMetrics(object):
         contents = f.read()
         f.close()
         return contents
-
-    def set_target_grid(self, regrid_tool, regrid_method):
-        self.out_file.set_target_grid(self.parameter.target_grid,
-                                      regrid_tool, regrid_method)
-
-    def set_var(self, var):
-        self.out_file.var = var
-
-    def set_realm(self, realm):
-        self.out_file.realm = realm
-
-    def set_table(self, table):
-        self.out_file.table = table
-
-    def set_case_id(self, case_id):
-        self.out_file.case_id = case_id
 
     def set_simulation_desc(self, model, obs_dict):
         # lines 564 - 617

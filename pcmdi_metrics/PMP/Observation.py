@@ -51,6 +51,9 @@ class Observation(object):
         self.sftlf = None
         self.create_obs_file()
 
+    def __call__(self, *args, **kwargs):
+        self.get()
+
     @staticmethod
     def calculate_level_from_var(var):
         var_split_name = var.split('_')

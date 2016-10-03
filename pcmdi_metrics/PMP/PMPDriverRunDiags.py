@@ -5,7 +5,8 @@ import json
 import collections
 from pcmdi_metrics.PMP.PMPParameter import *
 import pcmdi_metrics.PMP.OutputMetrics
-
+from pcmdi_metrics.PMP.Observation import *
+from pcmdi_metrics.PMP.Model import *
 
 class PMPDriverRunDiags(object):
 
@@ -20,27 +21,14 @@ class PMPDriverRunDiags(object):
             self.run_diags()
 
         def run_diags(self):
+            self.obs_dict = self.load_obs_dict()
+
             for self.var_name_long in self.parameter.vars:
                 self.var = self.var_name_long.split('_')[0]
-                self.obs_dict = self.load_obs_dict()
-
-
-                if self.use_omon(self.obs_dict, self.var):
-                    self.regrid_method = self.parameter.regrid_method_ocn
-                    self.regrid_tool = self.regrid_tool_ocn.regrid_tool
-                    self.table_realm = 'Omon'
-                    self.realm = 'ocn'
-                else:
-                    self.regrid_method = self.parameter.regrid_method
-                    self.regrid_tool = self.parameter.regrid_tool
-                    self.table_realm = 'Amon'
-                    self.realm = 'atm'
-
 
                 self.output_metric =\
                     pcmdi_metrics.PMP.OutputMetrics.OutputMetrics\
                         (self.parameter, self.var_name_long)
-                self.setup_obs_or_model_or_output_file(self.output_metric)
 
                 self.regions_loop()
 
@@ -67,18 +55,12 @@ class PMPDriverRunDiags(object):
                        + sys.exc_info()[0])
             return opened_file
 
-        @staticmethod
-        def use_omon(obs_dict, var):
-            return \
-                obs_dict[var][obs_dict[var]["default"]]["CMIP_CMOR_TABLE"] ==\
-                'Omon'
-
         def regions_loop(self):
             self.regions_dict = self.create_regions_dict()
 
             for self.region in self.region_dict[self.var]:
                 # Runs obs vs obs, obs vs model, or model vs model
-                self.run_data_a_and_data_b_comparison(self.obs_dict)
+                self.run_data_a_and_data_b_comparison()
 
         def create_regions_dict(self):
             default_regions = []
@@ -113,52 +95,43 @@ class PMPDriverRunDiags(object):
             self.data_set_a_is_obs = self.is_data_set_obs(data_set_a)
             self.data_set_b_is_obs = self.is_data_set_obs(data_set_b)
 
-            if self.data_set_a_is_obs and self.data_set_b_is_obs:
-                logging.info('Running obs vs obs.')
-                self.obs_vs_obs()
+            # element_a/b is either an obs or model
+            for self.element_a in self.parameter.data_set_a:
+                for self.element_b in self.parameter.data_set_b:
+                    if self.data_set_a_is_obs and self.data_set_b_is_obs:
+                        logging.info('Running obs vs obs.')
+                        data_a = Observation(self.parameter, self.var_name_long,
+                                             self.obs_dict, self.element_a)()
+                        data_b = Observation(self.parameter, self.var_name_long,
+                                             self.obs_dict, self.element_b)()
+                    elif self.data_set_a_is_obs and not self.data_set_b_is_obs:
+                        logging.info('Running obs vs model.')
+                    elif not self.data_set_a_is_obs and self.data_set_b_is_obs:
+                        logging.info('Running model vs obs.')
+                        data_a = Model(self.parameter, self.var_name_long,
+                                       self.obs_dict, self.element_a)()
+                        data_b = Observation(self.parameter, self.var_name_long,
+                                             self.obs_dict, self.element_b)()
+                    elif not self.data_set_a_is_obs and \
+                        not self.data_set_b_is_obs:
+                        logging.info('Running model vs model.')
+                        data_a = Model(self.parameter, self.var_name_long,
+                                             self.obs_dict, self.element_a)()
+                        data_b = Model(self.parameter, self.var_name_long,
+                                             self.obs_dict, self.element_b)()
+                    else:
+                         raise RuntimeError('Cannot determine comparison type')
 
-            if not self.data_set_a_is_obs and not self.data_set_b_is_obs:
-                logging.info('Running model vs model.')
-                self.model_vs_model()
+                    self.output_metric.
 
-            if (not self.data_set_a_is_obs and self.data_set_b_is_obs) or \
-               (self.data_set_a_is_obs and not self.data_set_b_is_obs):
-                logging.info('Running obs vs obs.')
-                self.obs_vs_model()
 
         def is_data_set_obs(self, data_set, obs_dict):
             data_set_is_obs = True
-
             # If an element of data_a is not in the obs_dict, then data_a is
             # a model.
             for obs in data_set:
                 if obs not in obs_dict[self.var]:
                     data_set_is_obs = False
-
             return data_set_is_obs
 
-        def obs_vs_model(self):
-            # element_a/b is either an obs or model
-            for self.element_a in self.parameter.data_set_a:
-                cls = \
-                    self.determine_obs_or_model_class_instance(self.data_set_a_is_obs)
-                self.data_set_a = cls(self.parameter, self.var, self.element_a)
 
-
-        @staticmethod
-        def determine_obs_or_model_class_instance(is_obs):
-            if is_obs:
-                # return Observation
-                pass
-            else:
-                #return Model
-                pass
-
-        @staticmethod
-        def calculate_level_from_var(var):
-            var_split_name = var.split('_')
-            if len(var_split_name) > 1:
-                level = float(var_split_name[-1]) * 100
-            else:
-                level = None
-            return level

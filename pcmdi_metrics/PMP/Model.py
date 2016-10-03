@@ -14,6 +14,9 @@ class Model(object):
         self.sftlf = self.create_sftlf(self.parameter)
         self.create_model_file()
 
+    def __call__(self, *args, **kwargs):
+        self.get()
+
     @staticmethod
     def calculate_level_from_var(var):
         var_split_name = var.split('_')
@@ -104,23 +107,7 @@ class Model(object):
             region_value = self.region.get('value', None)
             if region_value is not None:
                 if self.sftlf[self.model]['raw'] is None:
-                    if not hasattr(self.parameter, 'generate_sftlf') or \
-                                    self.parameter.generate_sftlf is False:
-                            logging.info('Model %s does not have sftlf, skipping region: %s' % (self.model, self.region))
-                            # TODO MAKE success a member variable?
-                            success = False
-                    else:
-                        self.model_file.variable = self.var
-                        logging.info('Auto generating sftlf for model %s' % self.model())
-                        if os.path.exists(self.model_file()):
-                            var_file = cdms2.open(self.model_file())
-                            var = var_file[var_in_file]
-                            N = var.rank() - 2  # Minus lat and long
-                            sft = cdutil.generateLandSeaMask(var(*(slice(0, 1),) * N)) * 100.0
-                            sft[:] = sft.filled(100.0)
-                            self.sftlf[self.model]['raw'] = sft
-                            var_file.close()
-                            logging.info('Auto generated sftlf for model %s' % self.model)
+                    self.create_sftlf_model_raw(var_in_file)
 
                 self.model_file.mask = self.sftlf[self.model]['raw']
                 self.model_file.target_mask = MV2.not_equal(self.sftlf['targetGrid'], region_value)
@@ -156,3 +143,22 @@ class Model(object):
                 'variable_mapping', {}).get(self.var, self.var)
 
         return var_in_file
+
+    def create_sftlf_model_raw(self, var_in_file):
+        if not hasattr(self.parameter, 'generate_sftlf') or \
+                        self.parameter.generate_sftlf is False:
+            logging.info('Model %s does not have sftlf, skipping region: %s' % (self.model, self.region))
+            # TODO MAKE success a member variable?
+            success = False
+        else:
+            self.model_file.variable = self.var
+            logging.info('Auto generating sftlf for model %s' % self.model())
+            if os.path.exists(self.model_file()):
+                var_file = cdms2.open(self.model_file())
+                var = var_file[var_in_file]
+                N = var.rank() - 2  # Minus lat and long
+                sft = cdutil.generateLandSeaMask(var(*(slice(0, 1),) * N)) * 100.0
+                sft[:] = sft.filled(100.0)
+                self.sftlf[self.model]['raw'] = sft
+                var_file.close()
+                logging.info('Auto generated sftlf for model %s' % self.model)
