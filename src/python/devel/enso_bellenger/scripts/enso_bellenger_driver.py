@@ -6,13 +6,20 @@ import json
 
 libfiles = ['durolib.py',
             'get_pcmdi_data.py',
-            'PMP_rectangular_domains.py',
             'monthly_variability_statistics.py',
             'slice_tstep.py']
+
+libfiles_share = ['default_regions.py']
 
 for lib in libfiles:
   execfile(os.path.join('../lib/',lib))
 
+for lib in libfiles_share:
+  execfile(os.path.join('../../../../../share/',lib))
+
+##################################################
+# Pre-defined options
+#=================================================
 mip = 'cmip5'
 exp = 'piControl'
 fq = 'mo'
@@ -21,8 +28,14 @@ realm = 'atm'
 var = 'pr'
 run = 'r1i1p1'
 
-#debug = True
-debug = False
+out_dir = './result'
+if not os.path.exists(out_dir): os.makedirs(out_dir)
+
+#=================================================
+# Additional options
+#=================================================
+debug = True
+#debug = False
 
 if debug:
   mods = ['IPSL-CM5B-LR']  # Test just one model
@@ -32,9 +45,31 @@ else:
   #regs = ['Nino3.4', 'Nino3', 'Nino4', 'Nino1.2','TSA','TNA','IO']
   regs = ['Nino3', 'Nino4']
 
+#=================================================
+# Declare dictionary for .json record 
+#-------------------------------------------------
 enso_stat_dic = {}  # Dictionary for JSON output file
-enso_stat_dic['REF'] = {}
-enso_stat_dic['RESULTS'] = {}
+
+json_filename = 'ENSO_' + mip + '_' + exp + '_' + run + '_' + fq + '_' +realm + '_' + var
+
+json_file = out_dir + '/' + json_filename + '.json'
+json_file_org = out_dir + '/' + json_filename + '_org.json'
+
+# Keep previous version of json file against overwrite ---
+if os.path.isfile(json_file):
+  copyfile(json_file, json_file_org)
+
+update_json = True
+
+if update_json == True and os.path.isfile(json_file): 
+  fj = open(json_file)
+  enso_stat_dic = json.loads(fj.read())
+  fj.close()
+
+if 'REF' not in enso_stat_dic.keys():
+  enso_stat_dic['REF']={}
+if 'RESULTS' not in enso_stat_dic.keys():
+  enso_stat_dic['RESULTS']={}
 
 #=================================================
 # Observation
@@ -51,15 +86,16 @@ elif var == 'pr':
 fo = cdms.open(obs_path)
 
 try:
+
   for reg in regs:
-    enso_stat_dic['REF'][reg] = {}
-    reg_selector = get_reg_selector(reg)
-    print reg, reg_selector
-  
+
+    if reg not in enso_stat_dic['REF'].keys():
+      enso_stat_dic['REF'][reg] = {}
+
     if debug:
-      reg_timeseries = fo(var_o, reg_selector, time = slice(0,60)) # RUN CODE FAST ON 5 YEARS OF DATA
+      reg_timeseries = fo(var_o, regions_specs[reg]['domain'], time = slice(0,60)) # RUN CODE FAST ON 5 YEARS OF DATA
     else:
-      reg_timeseries = fo(var_o ,reg_selector) 
+      reg_timeseries = fo(var_o, regions_specs[reg]['domain']) 
 
     std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries) 
     std_NDJ = interannual_variability_seasonal_std_mean_removed(reg_timeseries,'NDJ')
@@ -67,9 +103,13 @@ try:
 
     # Dictionary ---
     enso_stat_dic['REF']['source'] = obs_path
-    enso_stat_dic['REF'][reg]['std'] = {}
-    enso_stat_dic['REF'][reg]['std_NDJ'] = {}
-    enso_stat_dic['REF'][reg]['std_MAM'] = {}
+
+    if 'std' not in enso_stat_dic['REF'][reg].keys():
+      enso_stat_dic['REF'][reg]['std'] = {}
+    if 'std_NDJ' not in enso_stat_dic['REF'][reg].keys():
+      enso_stat_dic['REF'][reg]['std_NDJ'] = {}
+    if 'std_MAM' not in enso_stat_dic['REF'][reg].keys():
+      enso_stat_dic['REF'][reg]['std_MAM'] = {}
 
     # Record Std. dev. from above calculation ---
     enso_stat_dic['REF'][reg]['std']['entire'] = std
@@ -87,21 +127,22 @@ for mod in mods:
   print ' ----- ', mod,' ---------------------'
 
   try:
-    enso_stat_dic['RESULTS'][mod] = {}
+
+    if mod not in enso_stat_dic['RESULTS'].keys():
+      enso_stat_dic['RESULTS'][mod] = {}
 
     mod_path = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,var,run)  
     f = cdms.open(mod_path)
     if debug: print mod_path 
   
     for reg in regs:
-      enso_stat_dic['RESULTS'][mod][reg] = {}
-      reg_selector = get_reg_selector(reg)
-      print reg, reg_selector
+      if reg not in enso_stat_dic['RESULTS'][mod].keys():
+        enso_stat_dic['RESULTS'][mod][reg] = {}
   
       if debug:
-        reg_timeseries = f(var,reg_selector,time = slice(0,60))   # RUN CODE FAST ON 5 YEARS OF DATA
+        reg_timeseries = f(var, regions_specs[reg]['domain'], time = slice(0,60))   # RUN CODE FAST ON 5 YEARS OF DATA
       else:
-        reg_timeseries = f(var,reg_selector)  
+        reg_timeseries = f(var, regions_specs[reg]['domain'])  
   
       std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries) 
       std_NDJ = interannual_variability_seasonal_std_mean_removed(reg_timeseries,'NDJ')
@@ -114,9 +155,12 @@ for mod in mods:
         print 'std_MAM = ', std_MAM
   
       # Dictionary ---
-      enso_stat_dic['RESULTS'][mod][reg]['std'] = {}
-      enso_stat_dic['RESULTS'][mod][reg]['std_NDJ'] = {}
-      enso_stat_dic['RESULTS'][mod][reg]['std_MAM'] = {}
+      if 'std' not in enso_stat_dic['RESULTS'][mod][reg].keys():
+        enso_stat_dic['RESULTS'][mod][reg]['std'] = {}
+      if 'std_NDJ' not in enso_stat_dic['RESULTS'][mod][reg].keys():
+        enso_stat_dic['RESULTS'][mod][reg]['std_NDJ'] = {}
+      if 'std_MAM' not in enso_stat_dic['RESULTS'][mod][reg].keys():
+        enso_stat_dic['RESULTS'][mod][reg]['std_MAM'] = {}
   
       # Record Std. dev. from above calculation ---
       enso_stat_dic['RESULTS'][mod][reg]['std']['entire'] = std
@@ -145,8 +189,7 @@ for mod in mods:
     f.close()
 
     # Write dictionary to json file ---
-    json_filename = 'ENSO_' + mip + '_' + exp + '_' + run + '_' + fq + '_' +realm + '_' + var
-    json.dump(enso_stat_dic, open(json_filename + '.json','w'), sort_keys=True, indent=4, separators=(',', ': '))
+    json.dump(enso_stat_dic, open(json_file,'w'), sort_keys=True, indent=4, separators=(',', ': '))
   
   except:
     print 'failed for model ', mod
