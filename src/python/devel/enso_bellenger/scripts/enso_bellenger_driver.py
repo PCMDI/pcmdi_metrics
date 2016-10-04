@@ -3,6 +3,7 @@ import string
 import cdms2 as cdms
 import time
 import json
+import shutil
 
 libfiles = ['durolib.py',
             'get_pcmdi_data.py',
@@ -24,9 +25,10 @@ mip = 'cmip5'
 exp = 'piControl'
 fq = 'mo'
 realm = 'atm'
+run = 'r1i1p1'
+
 #var = 'ts'
 var = 'pr'
-run = 'r1i1p1'
 
 out_dir = './result'
 if not os.path.exists(out_dir): os.makedirs(out_dir)
@@ -38,8 +40,10 @@ debug = True
 #debug = False
 
 if debug:
-  mods = ['IPSL-CM5B-LR']  # Test just one model
-  regs = ['Nino3.4'] # Test just one region
+  #mods = ['IPSL-CM5B-LR']  # Test just one model
+  #mods = ['ACCESS1-0']  # Test just one model
+  mods = ['ACCESS1-3']  # Test just one model
+  regs = ['Nino1.2'] # Test just one region
 else:
   mods = get_all_mip_mods(mip,exp,fq,realm,var)
   #regs = ['Nino3.4', 'Nino3', 'Nino4', 'Nino1.2','TSA','TNA','IO']
@@ -57,7 +61,7 @@ json_file_org = out_dir + '/' + json_filename + '_org.json'
 
 # Keep previous version of json file against overwrite ---
 if os.path.isfile(json_file):
-  copyfile(json_file, json_file_org)
+  shutil.copyfile(json_file, json_file_org)
 
 update_json = True
 
