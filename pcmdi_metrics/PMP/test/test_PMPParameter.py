@@ -11,15 +11,15 @@ class testPMPParameter(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.pmp_parameter.check_case_id()
 
-    def test_check_data_set_a_with_nonlist_value(self):
-        self.pmp_parameter.data_set_a = 'GFDL-CM4'
+    def test_check_reference_data_set_with_nonlist_value(self):
+        self.pmp_parameter.reference_data_set = 'GFDL-CM4'
         with self.assertRaises(TypeError):
-            self.pmp_parameter.check_data_set_a()
+            self.pmp_parameter.check_reference_data_set()
 
-    def test_check_data_set_b_with_nonlist_value(self):
-        self.pmp_parameter.data_set_b = 'GFDL-CM4'
+    def test_check_test_data_set_with_nonlist_value(self):
+        self.pmp_parameter.test_data_set = 'GFDL-CM4'
         with self.assertRaises(TypeError):
-            self.pmp_parameter.check_data_set_b()
+            self.pmp_parameter.check_test_data_set()
 
     def test_check_period_with_nonstr_value(self):
         self.pmp_parameter.period = ['000101-000112']

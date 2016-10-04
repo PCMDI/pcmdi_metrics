@@ -8,8 +8,8 @@ class PMPParameter(CDPParameter):
         self.case_id = ''
         self.period = ''
         self.realization = ''
-        self.data_set_a = []
-        self.data_set_b = []
+        self.reference_data_set = []
+        self.test_data_set = []
 
         self.vars = []
         self.target_grid = ''
@@ -36,7 +36,6 @@ class PMPParameter(CDPParameter):
 
         self.metrics_output_path = ''
         self.filename_output_template = ''
-
 
     def check_str(self, str_var, str_var_name):
         if type(str_var) is not str:
@@ -77,25 +76,26 @@ class PMPParameter(CDPParameter):
     def check_case_id(self):
         self.check_str(self.case_id, 'case_id')
 
-    def check_data_set_a(self):
-        if type(self.data_set_a) is not list \
-                and type(self.data_set_a) is not tuple:
+    def check_reference_data_set(self):
+        if type(self.reference_data_set) is not list \
+                and type(self.reference_data_set) is not tuple:
             raise TypeError(
-                "data_a is the wrong type. It must be a list or tuple."
+                "reference_data_set is the wrong type." +
+                "It must be a list or tuple."
             )
 
-        if self.data_set_a == [] or self.data_set_a == ():
+        if self.reference_data_set == [] or self.reference_data_set == ():
             logging.error("data_a is blank.")
 
-    def check_data_set_b(self):
-        if type(self.data_set_b) is not list \
-                and type(self.data_set_b) is not tuple:
+    def check_test_data_set(self):
+        if type(self.test_data_set) is not list \
+                and type(self.test_data_set) is not tuple:
             raise TypeError(
-                "data_set_b is the wrong type. It must be a list or tuple."
+                "test_data_set is the wrong type. It must be a list or tuple."
             )
 
-        if self.data_set_b == [] or self.data_set_b == ():
-            logging.error("data_set_b is blank.")
+        if self.test_data_set == [] or self.test_data_set == ():
+            logging.error("test_data_set is blank.")
 
     def check_period(self):
         self.check_str(self.period, 'period')
@@ -214,8 +214,8 @@ class PMPParameter(CDPParameter):
     def check_values(self):
         # Check that all of the variables in __init__() have a valid value
         self.check_case_id()
-        self.check_data_set_a()
-        self.check_data_set_b()
+        self.check_reference_data_set()
+        self.check_test_data_set()
         self.check_period()
         self.check_realization()
         self.check_vars()
