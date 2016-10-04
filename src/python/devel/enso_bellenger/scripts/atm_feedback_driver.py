@@ -38,12 +38,12 @@ if not os.path.exists(out_dir): os.makedirs(out_dir)
 #=================================================
 # Additional options
 #=================================================
-#debug = True
-debug = False
+debug = True
+#debug = False
 
 if debug:
   mods = ['IPSL-CM5B-LR']  # Test just one model
-  fdbs = ['AtmBjerk'] # Test just one region
+  fdbs = ['AtmBjk'] # Test just one region
 else:
   mods = get_all_mip_mods(mip,exp,fq,realm,var)
   fdbs = ['AtmBjk','SfcFlx','SrtWav','LthFlx']
@@ -81,17 +81,19 @@ if 'RESULTS' not in enso_stat_dic.keys():
 for mod in mods:
   print ' ----- ', mod,' ---------------------'
 
-  try:
+  #try:
+  if 1 == 1:
 
     if mod not in enso_stat_dic['RESULTS'].keys():
       enso_stat_dic['RESULTS'][mod] = {}
-    if 'feedback' not in enso_stat_dic[mod].keys():
+    if 'feedback' not in enso_stat_dic['RESULTS'][mod].keys():
       enso_stat_dic['RESULTS'][mod]['feedback'] = {} 
 
     # x-axis of slope, common for all type of feedback
     xvar='ts'
     xregion = 'Nino3'
-    reg_timeseries_x_area_avg_anom = get_axis_base_dataset(xvar,xregion)
+    xvar_path = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,xvar,run)
+    reg_timeseries_x_area_avg_anom = get_axis_base_dataset(xvar, xregion, xvar_path)
 
     # y-axis of slope for each feedback
     for fdb in fdbs:  ### Too messy... there should be better way... working on it..
@@ -113,10 +115,12 @@ for mod in mods:
         sys.exit(fdb+" is not defined")
 
       try:
-        reg_timeseries_y_area_avg_anom = get_axis_base_dataset(yvar,yregion)
+        yvar_path = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,yvar,run)
+        reg_timeseries_y_area_avg_anom = get_axis_base_dataset(yvar, yregion, yvar_path)
 
         if fdb == 'SfcFlx':
-          reg_timeseries_y2_area_avg_anom = get_axis_base_dataset(yvar2,yregion)
+          yvar2_path = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,yvar2,run)
+          reg_timeseries_y2_area_avg_anom = get_axis_base_dataset(yvar2, yregion, yvar2_path)
           reg_timeseries_y_area_avg_anom = sum(reg_timeseries_y_area_avg_anom,reg_timeseries_y2_area_avg_anom)
 
         # Simple quality control
@@ -141,8 +145,8 @@ for mod in mods:
     # Write dictionary to json file
     json.dump(enso_stat_dic, open(json_file + '.json','w'),sort_keys=True, indent=4, separators=(',', ': '))
 
-  except:
-    print 'failed for model ', mod
-    pass
+  #except:
+  #  print 'failed for model ', mod
+  #  pass
 
 print 'all done for', var
