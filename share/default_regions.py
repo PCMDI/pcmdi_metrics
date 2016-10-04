@@ -30,7 +30,7 @@ regions_specs = {
         'Nino4'   : {'domain':cdutil.region.domain(latitude=(-5.,5,'ccb'),    longitude=(160,210,'ccb'))}, 
         'Nino1.2' : {'domain':cdutil.region.domain(latitude=(-10.,0,'ccb'),   longitude=(270,280,'ccb'))}, 
         'TSA'     : {'domain':cdutil.region.domain(latitude=(-20.,0,'ccb'),   longitude=(-30,10,'ccb'))},     # Tropical Southern Atlantic
-        'TNA'     : {'domain':cdutil.region.domain(latitude=(5.5.,23.5,'ccb'),longitude=(302.5,345.,'ccb'))}, # Tropical Northern Atlantic
+        'TNA'     : {'domain':cdutil.region.domain(latitude=(5.5,23.5,'ccb'),longitude=(302.5,345.,'ccb'))}, # Tropical Northern Atlantic
         'IO'      : {'domain':cdutil.region.domain(latitude=(-15.,15.,'ccb'), longitude=(40.,110.,'ccb'))},   # Indian Ocean
         'TropPac' : {'domain':cdutil.region.domain(latitude=(-10.,10.,'ccb'), longitude=(160.,270.,'ccb'))},  # Tropical Pacific (correct range?)
         'EqPac'   : {'domain':cdutil.region.domain(latitude=(-5.,5.,'ccb'),   longitude=(160.,270.,'ccb'))},  # Equatorial Pacific (correct range?)
