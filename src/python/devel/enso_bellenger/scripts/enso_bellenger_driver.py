@@ -1,5 +1,4 @@
 import sys, os
-import string
 import cdms2 as cdms
 import time
 import json

@@ -1,6 +1,4 @@
 import sys, os
-import string
-import subprocess
 import shutil
 import cdms2 as cdms
 import cdutil
