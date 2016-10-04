@@ -10,6 +10,7 @@ def get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,var,run):
    return(latest)
 
 def get_all_mip_mods(mip,exp,fq,realm,var):
+   import string
    if realm == 'atm': Realm = 'Amon'
    if mip == 'cmip5': pin = '/work/' + mip + '/' + exp + '/' + realm + '/' + fq + '/' + var + '/' + mip + '.*.' + exp + '.' + run + '.' + fq + '.' + realm + '.' + Realm + '.' + var + '*.xml'
 #  if mip == 'cmip5': pin = '/work/' + mip + '/' + exp + '/' + realm + '/' + fq + '/' + var + '/' + mip + '.*IPSL*.' + exp + '.' + run + '.' + fq + '.' + realm + '.' + Realm + '.' + var + '*.xml'
