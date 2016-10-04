@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-##########################################################################
+#
 #  RELIES UPON CDAT MODULES
 #  PRODUCE SIMPLE PORTRAIT PLOT BASED ON RESULTS FROM PCMDI'S METRICS PACKAGE
 #  WRITTEN BY P. GLECKLER, PCMDI/LLNL
@@ -8,10 +8,10 @@
 #  Cleaned up by C. Doutriaux
 # Adapted to unitest format by C. Doutriaux
 # See git for change logs
-##########################################################################
+#
 import unittest
-import checkimage
 
+bg = True
 
 class TestGraphics(unittest.TestCase):
 
@@ -31,14 +31,25 @@ class TestGraphics(unittest.TestCase):
         import pcmdi_metrics.graphics.portraits
         import MV2
         import numpy
-        from genutil import statistics
+        import genutil
         import os
         import sys
         import glob
 
+        print
+        print
+        print
+        print
+        print "---------------------------------------------------"
+        print "RUNNING: Portrait test"
+        print "---------------------------------------------------"
+        print
+        print
+        print
+        print
         # CREATES VCS OBJECT AS A PORTAIT PLOT AND LOADS PLOT SETTINGS FOR
         # EXAMPLE
-        x = vcs.init()
+        x = vcs.init(geometry=(814,606),bg=True)
         x.portrait()
         # Turn off antialiasing for test suite
         x.setantialiasing(0)
@@ -57,25 +68,24 @@ class TestGraphics(unittest.TestCase):
         P.PLOT_SETTINGS.y1 = .12
         P.PLOT_SETTINGS.y2 = .95
 
-        P.PLOT_SETTINGS.xtic2y1 = P.PLOT_SETTINGS.y1
-        P.PLOT_SETTINGS.xtic2y2 = P.PLOT_SETTINGS.y2
-        P.PLOT_SETTINGS.ytic2x1 = P.PLOT_SETTINGS.x1
-        P.PLOT_SETTINGS.ytic2x2 = P.PLOT_SETTINGS.x2
+        P.PLOT_SETTINGS.xtic2.y1 = P.PLOT_SETTINGS.y1
+        P.PLOT_SETTINGS.xtic2.y2 = P.PLOT_SETTINGS.y2
+        P.PLOT_SETTINGS.ytic2.x1 = P.PLOT_SETTINGS.x1
+        P.PLOT_SETTINGS.ytic2.x2 = P.PLOT_SETTINGS.x2
 
         # P.PLOT_SETTINGS.missing_color = 3
-        # P.PLOT_SETTINGS.logo = None
+        P.PLOT_SETTINGS.logo = os.path.join(sys.prefix,"share","pmp","graphics","png","160915_PCMDI_logo_348x300px.png")
+        P.PLOT_SETTINGS.logo.y = .95
+        P.PLOT_SETTINGS.logo.x = .93
         P.PLOT_SETTINGS.time_stamp = None
         P.PLOT_SETTINGS.draw_mesh = 'n'
         # P.PLOT_SETTINGS.tictable.font = 3
 
         x.scriptrun(
             os.path.join(
-                pcmdi_metrics.__path__[0],
-                "..",
-                "..",
-                "..",
-                "..",
+                sys.prefix,
                 "share",
+                "pmp",
                 "graphics",
                 'vcs',
                 'portraits.scr'))
@@ -86,118 +96,56 @@ class TestGraphics(unittest.TestCase):
 
         P.PLOT_SETTINGS.parametertable.expansion = 100
 
-        # LIST OF VARIABLES TO BE USED IN PORTRAIT PLOT
-        vars = [
-            'pr',
-            'rsut',
-            'rsutcs',
-            'rlutcs',
-            'tas',
-            'tos',
-            'sos',
-            'zos',
-            'ua-850',
-            'ua-200',
-            'zg-500']
-        vars = []
 
         # LOAD METRICS DICTIONARIES FROM JSON FILES FOR EACH VAR AND STORE AS A
         # SINGLE DICTIONARY
-        var_cmip5_dics = {}
-        mods = set()
         json_files = glob.glob(
             os.path.join(
-                pcmdi_metrics.__path__[0],
-                "..",
-                "..",
-                "..",
-                "..",
-                "share",
-                "CMIP_metrics_results",
-                "CMIP5",
-                "amip",
+                os.path.dirname(__file__),
+                "json",
+                "v1.0",
                 "*.json"))
 
-        for fnm in json_files:
-            f = open(fnm)
-            d = json.load(f)
-            var = os.path.basename(fnm).split("_")[0]
-            vars.append(var)
-            for m in d.keys():
-                mods.add(m)
-            if var in var_cmip5_dics:
-                var_cmip5_dics[var].update(d)
-            else:
-                var_cmip5_dics[var] = d
+        json_files += glob.glob(
+            os.path.join(
+                os.path.dirname(__file__),
+                "json",
+                "v2.0",
+                "*.json"))
 
-        vars.sort()
-        mods = sorted(list(mods))
-        print "Models:", mods
-        for bad in ["GridInfo", "References", "RegionalMasking",
-                    "metrics_git_sha1", "uvcdat_version"]:
-            if bad in mods:
-                mods.remove(bad)
-            else:
-                print "Not removing column %s (not present)" % bad
+        print "JFILES:",json_files
+        J = pcmdi_metrics.pcmdi.io.JSONs(json_files)
+        mods = sorted(J.getAxis("model")[:])
+        variables = sorted(J.getAxis("variable")[:])
+        print "MODELS:",len(mods),mods
+        print "VARS:",len(variables),variables
+        # Get what we need
+        out1_rel = J(statistic=["rms_xyt"],season=["ann"],region="global")(squeeze=1)
 
-        # ORGANIZE METRICS INTO A VARIABLES X MODELS MATRIX
+        out1_rel, med = genutil.grower(out1_rel,genutil.statistics.median(out1_rel,axis=1)[0])
 
-        out1_rel = MV2.zeros(
-            (len(vars),
-             len(mods)),
-            MV2.float32)  # DEFINE ARRAY
-
-        vn = -1  # VARIABLE INDEX
-        for var in vars:  # LOOP OVER VARIABLE
-            vn = vn + 1
-
-            vals = []
-            for mod in mods:  # LOOP OVER MODEL
-                try:
-                    rms = var_cmip5_dics[var][mod]["defaultReference"][
-                        "r1i1p1"]["global"]['rms_xyt_ann_GLB']
-                    if P.verbose:
-                        print var, ' ', mod, '  ', repr(rms), ' WITH global'
-                except:
-                    rms = 1.e20
-                    if P.verbose:
-                        print var, ' ', mod, '  ', repr(rms), ' missing'
-
-                rms = float(rms)
-                vals.append(rms)
-
-            vars_ar = MV2.array(vals)
-            # COMPUTE MEDIAN RESULT FOR PORTRAIT NORMALIZATION
-            med_rms = statistics.median(vars_ar)[0]
-
-            mn = -1  # MODEL INDEX
-            for mod in mods:
-                mn = mn + 1
-                try:
-                    out1_rel[vn, mn] = (float(var_cmip5_dics[var][mod]["defaultReference"][
-                                        "r1i1p1"]["global"]['rms_xyt_ann_GLB']) - med_rms) / med_rms  # RELATIVE ERROR
-                except:
-                    out1_rel[vn, mn] = numpy.ma.masked
+        out1_rel[:] = (out1_rel.asma() - med.asma())/ med.asma()
 
         # ADD SPACES FOR LABELS TO ALIGN AXIS LABELS WITH PLOT
         modsAxis = mods
-        varsAxis = vars
+        variablesAxis = variables
 
         # LOOP THROUGH LISTS TO ADD SPACES
         for i in range(len(modsAxis)):
             modsAxis[i] = modsAxis[i] + '  '
-        for i in range(len(varsAxis)):
-            varsAxis[i] = varsAxis[i] + '  '
+        for i in range(len(variablesAxis)):
+            variablesAxis[i] = variablesAxis[i] + '  '
 
         yax = [s.encode('utf-8')
                for s in mods]  # CHANGE FROM UNICODE TO BYTE STRINGS
-        xax = vars
 
         # GENERATE PLOT
-        P.decorate(out1_rel, xax, yax)
-        # P.plot(out1_rel,x=x,multiple=1.1,bg=0)  # FOR PLOTTING TRIANGLES WHEN
+        P.decorate(out1_rel, variables, yax)
+        # P.plot(out1_rel,x=x,multiple=1.1,bg=bg)  # FOR PLOTTING TRIANGLES WHEN
         # USING TWO OR MORE REFERENCE DATA SETS
-        P.plot(out1_rel, bg=1, x=x)
+        P.plot(out1_rel, bg=bg, x=x)
+        if not bg:
+            raw_input("Press enter")
         # x.backend.renWin.Render()
 
         # END OF PLOTTING
@@ -207,9 +155,8 @@ class TestGraphics(unittest.TestCase):
         print src
         fnm = os.path.join(os.getcwd(), "testPortrait.png")
         x.png(fnm)
-        ret = checkimage.check_result_image(
+        ret = vcs.testing.regression.check_result_image(
             fnm,
-            src,
-            checkimage.defaultThreshold)
+            src)
         if ret != 0:
             sys.exit(ret)

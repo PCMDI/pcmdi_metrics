@@ -4,7 +4,7 @@ def compute(d, sea):
         return {
             "Name": "Seasonal Mean",
             "Abstract": "Compute Seasonal Mean",
-            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Contact": "pcmdi-metrics@llnl.gov",
             "Comments": "Assumes input are 12 months climatology"
         }
 
@@ -21,7 +21,6 @@ def compute(d, sea):
 
     sea_no_days = mo_wts[indx[0]] + mo_wts[indx[1]] + mo_wts[indx[2]]
 
-    d_sea = (d[indx[0]] * mo_wts[indx[0]] + d[indx[1]]
-             * mo_wts[indx[1]] + d[indx[2]] * mo_wts[indx[2]]) / sea_no_days
+    d_sea = (d[indx[0]] * mo_wts[indx[0]] + d[indx[1]] * mo_wts[indx[1]] + d[indx[2]] * mo_wts[indx[2]]) / sea_no_days
 
     return d_sea
