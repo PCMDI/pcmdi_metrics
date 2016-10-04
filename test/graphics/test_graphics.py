@@ -65,9 +65,26 @@ class TestGraphics(unittest.TestCase):
         t.legend.x2 = .99
         t.legend.y1 = t.data.y1
         t.legend.y2 = t.data.y2
-        rms_xyt.units = ["mm/day","mm/day","hPa","W/m2","W/m2","W/m2", "K","K","K","m/s","m/s","m/s","m/s","m"]
+
+        # Set variable name
+        rms_xyt.id = "RMS"
+
+        # Set units of each variables on axis
+        rms_xyt.getAxis(-2).units = ["mm/day","mm/day","hPa","W/m2","W/m2","W/m2", "K","K","K","m/s","m/s","m/s","m/s","m"]
+        # Sets title
+        rms_xyt.title = "Annual Mean Error"
+
         gm.plot(rms_xyt,template=t,bg=bg)
 
+        src = os.path.join(os.path.dirname(__file__), "testParallelCoordinates.png")
+        print src
+        fnm = os.path.join(os.getcwd(), "testParallelCoordinates.png")
+        x.png(fnm)
+        ret = vcs.testing.regression.check_result_image(
+            fnm,
+            src)
+        if ret != 0:
+            sys.exit(ret)
 
     def test_portrait(self):
 

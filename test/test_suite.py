@@ -58,8 +58,7 @@ params = ["basic_test_parameters_file.py",
           ]
 
 others = ["flake8", ]
-#graphics = ["test_portrait", ]
-graphics = ["test_pcoord", ]
+graphics = ["test_portrait", "test_pcoord", ]
 
 if args.test is not None:
     tests = args.test
