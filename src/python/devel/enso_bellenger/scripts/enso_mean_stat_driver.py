@@ -148,52 +148,58 @@ for stat in stats:
   print ' ===== ', stat,' ====================='
 
   for mod in mods:
-    print ' ----- ', mod,' ---------------------'
+    try:
 
-    if mod not in enso_stat_dic['RESULTS'].keys():
-      enso_stat_dic['RESULTS'][mod] = {}
-
-    if 'mean_stat' not in enso_stat_dic['RESULTS'][mod].keys():
-      enso_stat_dic['RESULTS'][mod]['mean_stat'] = {}
-
-    mod_var_path = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,mod_var[stat],run)
-    fm = cdms.open(mod_var_path)
-
-    if debug:
-      reg_timeseries_m = fm(mod_var[stat],regions_specs[reg[stat]]['domain'],time = slice(0,60)) # RUN CODE FAST ON 5 YEARS OF DATA
-    else:
-      reg_timeseries_m = fm(mod_var[stat],regions_specs[reg[stat]]['domain'])
-
-    if stat in ['SST_RMSE','TAUU_RMSE','PR_RMSE']:
-      # Get climatology
-      mod_clim = cdutil.averager(reg_timeseries_m,axis='t')
-      if stat == 'SST_RMSE':
-        mod_clim = mod_clim - 273.15 # K to C degree
-      # Regrid (mod to obs)
-      mod_clim_regrid = mod_clim.regrid(obs_grid[stat], regridTool='regrid2')
-      # Get RMS
-      result = float(genutil.statistics.rms(mod_clim_regrid, obs_clim[stat], axis='xy'))
-    elif stat == 'SST_AMP':
-      # Get annual cycle
-      mod_ann_cycle = cdutil.ANNUALCYCLE.climatology(reg_timeseries_m)
-      mod_ann_cycle_area_avg = cdutil.averager(mod_ann_cycle,axis='xy')
-      # Get amplitude (Is below a right way to get amplitude??)
-      result = np.amax(mod_ann_cycle_area_avg)-np.mean(mod_ann_cycle_area_avg)
-
-    print mod, stat, 'stat =', result
-
-    if stat not in enso_stat_dic['RESULTS'][mod]['mean_stat'].keys():
-      enso_stat_dic['RESULTS'][mod]['mean_stat'][stat] = {}
-
-    if reg[stat] not in enso_stat_dic['RESULTS'][mod]['mean_stat'][stat].keys():
-      enso_stat_dic['RESULTS'][mod]['mean_stat'][stat][reg[stat]] = {}
-
-    enso_stat_dic['RESULTS'][mod]['mean_stat'][stat][reg[stat]] = result
-
-    if not debug:
-      fm.close()
-
-# Write dictionary to json file
-json.dump(enso_stat_dic, open(json_file,'w'),sort_keys=True, indent=4, separators=(',', ': '))
+      print ' ----- ', mod,' ---------------------'
+  
+      if mod not in enso_stat_dic['RESULTS'].keys():
+        enso_stat_dic['RESULTS'][mod] = {}
+  
+      if 'mean_stat' not in enso_stat_dic['RESULTS'][mod].keys():
+        enso_stat_dic['RESULTS'][mod]['mean_stat'] = {}
+  
+      mod_var_path = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,mod_var[stat],run)
+      fm = cdms.open(mod_var_path)
+  
+      if debug:
+        reg_timeseries_m = fm(mod_var[stat],regions_specs[reg[stat]]['domain'],time = slice(0,60)) # RUN CODE FAST ON 5 YEARS OF DATA
+      else:
+        reg_timeseries_m = fm(mod_var[stat],regions_specs[reg[stat]]['domain'])
+  
+      if stat in ['SST_RMSE','TAUU_RMSE','PR_RMSE']:
+        # Get climatology
+        mod_clim = cdutil.averager(reg_timeseries_m,axis='t')
+        if stat == 'SST_RMSE':
+          mod_clim = mod_clim - 273.15 # K to C degree
+        # Regrid (mod to obs)
+        mod_clim_regrid = mod_clim.regrid(obs_grid[stat], regridTool='regrid2')
+        # Get RMS
+        result = float(genutil.statistics.rms(mod_clim_regrid, obs_clim[stat], axis='xy'))
+      elif stat == 'SST_AMP':
+        # Get annual cycle
+        mod_ann_cycle = cdutil.ANNUALCYCLE.climatology(reg_timeseries_m)
+        mod_ann_cycle_area_avg = cdutil.averager(mod_ann_cycle,axis='xy')
+        # Get amplitude (Is below a right way to get amplitude??)
+        result = np.amax(mod_ann_cycle_area_avg)-np.mean(mod_ann_cycle_area_avg)
+  
+      print mod, stat, 'stat =', result
+  
+      if stat not in enso_stat_dic['RESULTS'][mod]['mean_stat'].keys():
+        enso_stat_dic['RESULTS'][mod]['mean_stat'][stat] = {}
+  
+      if reg[stat] not in enso_stat_dic['RESULTS'][mod]['mean_stat'][stat].keys():
+        enso_stat_dic['RESULTS'][mod]['mean_stat'][stat][reg[stat]] = {}
+  
+      enso_stat_dic['RESULTS'][mod]['mean_stat'][stat][reg[stat]] = result
+  
+      if not debug:
+        fm.close()
+  
+      # Write dictionary to json file
+      json.dump(enso_stat_dic, open(json_file,'w'),sort_keys=True, indent=4, separators=(',', ': '))
+  
+    except:
+      print 'failed for model ', mod
+      pass
 
 print 'all done'

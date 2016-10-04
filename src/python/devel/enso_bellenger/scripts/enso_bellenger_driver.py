@@ -197,5 +197,6 @@ for mod in mods:
   
   except:
     print 'failed for model ', mod
+    pass
 
 print 'all done for', var
