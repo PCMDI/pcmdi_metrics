@@ -3,7 +3,6 @@ import shutil
 import cdms2 as cdms
 import cdutil
 import genutil
-import time
 import json
 
 libfiles = ['durolib.py',

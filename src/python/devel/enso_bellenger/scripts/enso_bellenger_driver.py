@@ -1,6 +1,5 @@
 import sys, os
 import cdms2 as cdms
-import time
 import json
 import shutil
 
