@@ -22,16 +22,20 @@ class PMPDriverRunDiags(object):
 
         def run_diags(self):
             self.obs_dict = self.load_obs_dict()
+            self.regions_dict = self.create_regions_dict()
 
             for self.var_name_long in self.parameter.vars:
                 self.var = self.var_name_long.split('_')[0]
 
                 self.output_metric =\
                     pcmdi_metrics.PMP.OutputMetrics.OutputMetrics\
-                        (self.parameter, self.var_name_long)
+                        (self.parameter, self.var_name_long, self.obs_dict)
 
-                self.regions_loop()
+                for self.region in self.region_dict[self.var]:
 
+
+                    # Runs obs vs obs, obs vs model, or model vs model
+                    self.run_reference_and_test_comparison()
 
         def load_obs_dict(self):
             obs_file_name = 'obs_info_dictionary.json'
@@ -39,28 +43,6 @@ class PMPDriverRunDiags(object):
             obs_dic = json.loads(obs_json_file.read())
             obs_json_file.close()
             return obs_dic
-
-        @staticmethod
-        def load_path_as_file_obj(name):
-            file_path = os.path.join(os.path.dirname(__file__), 'share', name)
-            try:
-                opened_file = open(file_path)
-            except IOError:
-                logging.error('%s could not be loaded!' % file_path)
-                print 'IOError: %s could not be loaded!' % file_path
-            except:
-                logging.error('Unexpected error while opening file: '
-                              + sys.exc_info()[0])
-                print ('Unexpected error while opening file: '
-                       + sys.exc_info()[0])
-            return opened_file
-
-        def regions_loop(self):
-            self.regions_dict = self.create_regions_dict()
-
-            for self.region in self.region_dict[self.var]:
-                # Runs obs vs obs, obs vs model, or model vs model
-                self.run_data_a_and_data_b_comparison()
 
         def create_regions_dict(self):
             default_regions = []
@@ -86,52 +68,57 @@ class PMPDriverRunDiags(object):
 
             return regions_dict
 
-        def run_data_a_and_data_b_comparison(self):
-            data_set_a = self.parameter.data_set_a
-            data_set_b = self.parameter.data_set_b
+        @staticmethod
+        def load_path_as_file_obj(name):
+            file_path = os.path.join(os.path.dirname(__file__), 'share', name)
+            try:
+                opened_file = open(file_path)
+            except IOError:
+                logging.error('%s could not be loaded!' % file_path)
+                print 'IOError: %s could not be loaded!' % file_path
+            except:
+                logging.error('Unexpected error while opening file: '
+                              + sys.exc_info()[0])
+                print ('Unexpected error while opening file: '
+                       + sys.exc_info()[0])
+            return opened_file
+
+        def run_reference_and_test_comparison(self):
+            reference_data_set = self.parameter.reference_data_set
+            reference_data_set = Observation.setup_obs_list_from_parameter(
+                reference_data_set, self.obs_dict, self.var)
+            test_data_set = self.parameter.test_data_set
 
             # Member variables are used so when it's obs_vs_model, we know
             # which is which.
-            self.data_set_a_is_obs = self.is_data_set_obs(data_set_a)
-            self.data_set_b_is_obs = self.is_data_set_obs(data_set_b)
+            reference_data_set_is_obs = self.is_data_set_obs(reference_data_set)
+            test_data_set_is_obs = self.is_data_set_obs(test_data_set)
 
-            # element_a/b is either an obs or model
-            for self.element_a in self.parameter.data_set_a:
-                for self.element_b in self.parameter.data_set_b:
-                    if self.data_set_a_is_obs and self.data_set_b_is_obs:
-                        logging.info('Running obs vs obs.')
-                        data_a = Observation(self.parameter, self.var_name_long,
-                                             self.obs_dict, self.element_a)()
-                        data_b = Observation(self.parameter, self.var_name_long,
-                                             self.obs_dict, self.element_b)()
-                    elif self.data_set_a_is_obs and not self.data_set_b_is_obs:
-                        logging.info('Running obs vs model.')
-                    elif not self.data_set_a_is_obs and self.data_set_b_is_obs:
-                        logging.info('Running model vs obs.')
-                        data_a = Model(self.parameter, self.var_name_long,
-                                       self.obs_dict, self.element_a)()
-                        data_b = Observation(self.parameter, self.var_name_long,
-                                             self.obs_dict, self.element_b)()
-                    elif not self.data_set_a_is_obs and \
-                        not self.data_set_b_is_obs:
-                        logging.info('Running model vs model.')
-                        data_a = Model(self.parameter, self.var_name_long,
-                                             self.obs_dict, self.element_a)()
-                        data_b = Model(self.parameter, self.var_name_long,
-                                             self.obs_dict, self.element_b)()
-                    else:
-                         raise RuntimeError('Cannot determine comparison type')
+            # self.reference/self.test are either an obs or model
+            for self.reference in reference_data_set:
+                for self.test in self.test_data_set:
 
-                    self.output_metric.
+                    ref = self.determine_obs_or_model(reference_data_set_is_obs,
+                                                      self.reference)
+                    test = self.determine_obs_or_model(test_data_set_is_obs,
+                                                       self.test)
 
+                    self.output_metric.calculate_and_output_metrics(ref, test)
 
-        def is_data_set_obs(self, data_set, obs_dict):
+        def is_data_set_obs(self, data_set):
             data_set_is_obs = True
-            # If an element of data_a is not in the obs_dict, then data_a is
-            # a model.
+            # If an element of data_set is not in the obs_dict, then
+            # data_set is a model.
             for obs in data_set:
-                if obs not in obs_dict[self.var]:
+                if obs not in self.obs_dict[self.var]:
                     data_set_is_obs = False
+                    break
             return data_set_is_obs
 
-
+        def determine_obs_or_model(self, is_obs, ref_or_test):
+            if is_obs:
+                return Observation(self.parameter, self.var_name_long,
+                                   self.region, ref_or_test, self.obs_dict)
+            else:
+                return Model(self.parameter, self.var_name_long,
+                             self.region, ref_or_test, self.obs_dict)

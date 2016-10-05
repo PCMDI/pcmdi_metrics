@@ -13,6 +13,20 @@ parser.add_argument(
     help="Path to the user-defined parameter file",
     required=False)
 
+parser.add_argument(
+    "-p", "--parameters",
+    dest="user_parameter_file_path",
+    default="",
+    help="Path to the user-defined parameter file",
+    required=False)
+
+parser.add_argument(
+    "-p", "--parameters",
+    dest="user_parameter_file_path",
+    default="",
+    help="Path to the user-defined parameter file",
+    required=False)
+
 args = parser.parse_args()
 parameter = PMPParameter()
 if args.user_parameter_file_path is not '':
@@ -30,7 +44,7 @@ else:
     parameter.vars = ['tos', 'tas']
 
     parameter.model_tweaks = {
-        # Keys are model accronym or None which applies to all model entries
+        # Keys are model acronym or None which applies to all model entries
         None: {
             # Variables name mapping
             "variable_mapping": {"tos": "tos"},

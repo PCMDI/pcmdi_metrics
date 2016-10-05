@@ -113,8 +113,8 @@ class Observation(object):
             self.obs_file.realm = 'atm'
 
         self.obs_file.set_target_grid(self.parameter.target_grid,
-                                 regrid_tool,
-                                 regrid_method)
+                                      regrid_tool,
+                                      regrid_method)
         if self.region is not None:
             region_value = self.region.get('value', None)
             if region_value is not None:
@@ -134,31 +134,31 @@ class Observation(object):
     def create_sftlf(parameter):
         sftlf = {}
         # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
-        for model_version in parameter.model_versions:
+        for test in parameter.test_data_set:
             sft = PMPIO(
                 parameter.mod_data_path,
                 getattr(
                     parameter,
                     "sftlf_filename_template",
                     parameter.filename_template))
-            sft.model_version = model_version
+            sft.model_version = test
             sft.table = "fx"
             sft.realm = "atmos"
             sft.period = parameter.period
             sft.ext = "nc"
             sft.case_id = parameter.case_id
-            sft.targetGrid = None
+            sft.target_grid = None
             sft.realization = "r0i0p0"
             #applyCustomKeys(sft, parameter.custom_keys, "sftlf")
             try:
-                sftlf[model_version] = {"raw": sft.get("sftlf")}
-                sftlf[model_version]["filename"] = os.path.basename(sft())
-                sftlf[model_version]["md5"] = sft.hash()
+                sftlf[test] = {"raw": sft.get("sftlf")}
+                sftlf[test]["filename"] = os.path.basename(sft())
+                sftlf[test]["md5"] = sft.hash()
             except:
                 # Hum no sftlf...
-                sftlf[model_version] = {"raw": None}
-                sftlf[model_version]["filename"] = None
-                sftlf[model_version]["md5"] = None
+                sftlf[test] = {"raw": None}
+                sftlf[test]["filename"] = None
+                sftlf[test]["md5"] = None
         if parameter.targetGrid == "2.5x2.5":
             tGrid = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
         else:

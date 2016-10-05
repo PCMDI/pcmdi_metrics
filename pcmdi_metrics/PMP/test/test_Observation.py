@@ -8,7 +8,7 @@ class testObservation(unittest.TestCase):
 
     def setUp(self):
         self.parameter = PMPParameter()
-        self.parameter.data_set_a = ['all']
+        self.parameter.reference_data_set = ['all']
         self.var = 'tos'
         obs_all = 'all'
         obs_def = 'default'
