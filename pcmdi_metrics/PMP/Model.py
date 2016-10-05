@@ -1,70 +1,14 @@
 from pcmdi_metrics.PMP.PMPIO import *
+from pcmdi_metrics.PMP.DataSet import *
 
 
-class Model(object):
+class Model(DataSet):
     def __init__(self, parameter, var_name_long, region, model, obs_dict):
-        self.parameter = parameter
-        self.parameter = parameter
-        self.level = self.calculate_level_from_var(var_name_long)
-        self.var = var_name_long.split('_')[0]
-        self.region = region
+        super(Model, self).__init__(parameter, var_name_long, region, obs_dict)
         self.model = model
-        self.obs_dict = obs_dict
-        self.model_file = None
-        self.sftlf = self.create_sftlf(self.parameter)
+        # This is just to make it more clear.
+        self.model_file = self.obs_or_model_file
         self.create_model_file()
-
-    def __call__(self, *args, **kwargs):
-        self.get()
-
-    @staticmethod
-    def calculate_level_from_var(var):
-        var_split_name = var.split('_')
-        if len(var_split_name) > 1:
-            level = float(var_split_name[-1]) * 100
-        else:
-            level = None
-        return level
-
-    @staticmethod
-    def create_sftlf(parameter):
-        sftlf = {}
-        # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
-        for model_version in parameter.model_versions:
-            sft = PMPIO(
-                parameter.mod_data_path,
-                getattr(
-                    parameter,
-                    "sftlf_filename_template",
-                    parameter.filename_template))
-            sft.model_version = model_version
-            sft.table = "fx"
-            sft.realm = "atmos"
-            sft.period = parameter.period
-            sft.ext = "nc"
-            sft.case_id = parameter.case_id
-            sft.targetGrid = None
-            sft.realization = "r0i0p0"
-            #applyCustomKeys(sft, parameter.custom_keys, "sftlf")
-            try:
-                sftlf[model_version] = {"raw": sft.get("sftlf")}
-                sftlf[model_version]["filename"] = os.path.basename(sft())
-                sftlf[model_version]["md5"] = sft.hash()
-            except:
-                # Hum no sftlf...
-                sftlf[model_version] = {"raw": None}
-                sftlf[model_version]["filename"] = None
-                sftlf[model_version]["md5"] = None
-        if parameter.targetGrid == "2.5x2.5":
-            tGrid = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
-        else:
-            tGrid = parameter.targetGrid
-
-        sft = cdutil.generateLandSeaMask(tGrid)
-        sft[:] = sft.filled(1.) * 100.0
-        sftlf["targetGrid"] = sft
-
-        return sftlf
 
     def create_model_file(self):
         self.model_file = PMPIO(self.parameter.mod_data_path,
@@ -77,10 +21,7 @@ class Model(object):
         self.setup_model_file(self.model_file)
 
     def setup_model_file(self):
-        regrid_method = ''
-        regrid_tool = ''
-
-        if self.use_omon():
+        if self.use_omon(self.obs_dict, self.var):
             regrid_method = self.parameter.regrid_method_ocn
             regrid_tool = self.regrid_tool_ocn.regrid_tool
             self.model_file.table = 'Omon'
@@ -95,11 +36,6 @@ class Model(object):
                                         regrid_tool,
                                         regrid_method)
 
-    def use_omon(self):
-        return \
-            self.obs_dict[self.var][self.obs_dict[self.var]["default"]]\
-                ["CMIP_CMOR_TABLE"] == 'Omon'
-
     def get(self):
         var_in_file = self.get_var_in_file()
 
@@ -110,7 +46,8 @@ class Model(object):
                     self.create_sftlf_model_raw(var_in_file)
 
                 self.model_file.mask = self.sftlf[self.model]['raw']
-                self.model_file.target_mask = MV2.not_equal(self.sftlf['targetGrid'], region_value)
+                self.model_file.target_mask = \
+                    MV2.not_equal(self.sftlf['targetGrid'], region_value)
 
         try:
             if self.level is None:
@@ -124,10 +61,9 @@ class Model(object):
                                                  region=self.region)
             return data_model
         except Exception as err:
-            #TODO do something about success
+            # TODO do something about success
             success = False
             logging.exception('Failed to get variable %s for the version: %s. Error: %s' % (self.var, self.model, err))
-
 
     def get_var_in_file(self):
         tweaks = {}
@@ -156,8 +92,9 @@ class Model(object):
             if os.path.exists(self.model_file()):
                 var_file = cdms2.open(self.model_file())
                 var = var_file[var_in_file]
-                N = var.rank() - 2  # Minus lat and long
-                sft = cdutil.generateLandSeaMask(var(*(slice(0, 1),) * N)) * 100.0
+                n = var.rank() - 2  # Minus lat and long
+                sft = cdutil.generateLandSeaMask(var(*(slice(0, 1),) * n)) * \
+                      100.0
                 sft[:] = sft.filled(100.0)
                 self.sftlf[self.model]['raw'] = sft
                 var_file.close()

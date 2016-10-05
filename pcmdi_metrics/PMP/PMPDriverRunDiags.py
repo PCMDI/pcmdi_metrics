@@ -4,20 +4,23 @@ import sys
 import json
 import collections
 from pcmdi_metrics.PMP.PMPParameter import *
-import pcmdi_metrics.PMP.OutputMetrics
+from pcmdi_metrics.PMP.OutputMetrics import *
 from pcmdi_metrics.PMP.Observation import *
 from pcmdi_metrics.PMP.Model import *
+from pcmdi_metrics.PMP.DataSet import *
+
 
 class PMPDriverRunDiags(object):
 
         def __init__(self, parameter):
             self.parameter = parameter
-            self.regrid_method = ''
-            self.regrid_tool = ''
-            self.table_realm = ''
-            self.realm = ''
+            self.obs_dict = {}
+            self.regions_dict = {}
+            self.var = ''
+            self.output_metric = None
+            self.region = ''
 
-        def __call__(self, *args, **kwargs):
+        def __call__(self):
             self.run_diags()
 
         def run_diags(self):
@@ -27,19 +30,18 @@ class PMPDriverRunDiags(object):
             for self.var_name_long in self.parameter.vars:
                 self.var = self.var_name_long.split('_')[0]
 
-                self.output_metric =\
-                    pcmdi_metrics.PMP.OutputMetrics.OutputMetrics\
-                        (self.parameter, self.var_name_long, self.obs_dict)
+                self.output_metric = OutputMetrics(
+                    self.parameter, self.var_name_long, self.obs_dict)
 
-                for self.region in self.region_dict[self.var]:
+                for region in self.region_dict[self.var]:
 
-
+                    self.region = create_region(region)
                     # Runs obs vs obs, obs vs model, or model vs model
                     self.run_reference_and_test_comparison()
 
         def load_obs_dict(self):
             obs_file_name = 'obs_info_dictionary.json'
-            obs_json_file = self.load_path_as_file_obj(obs_file_name)
+            obs_json_file = DataSet.load_path_as_file_obj(obs_file_name)
             obs_dic = json.loads(obs_json_file.read())
             obs_json_file.close()
             return obs_dic
@@ -50,7 +52,7 @@ class PMPDriverRunDiags(object):
             # This loads the regions_specs and default_regions var into
             # the namespace of this scope.
             default_regions_file = \
-                self.load_path_as_file_obj('default_regions.py')
+                DataSet.load_path_as_file_obj('default_regions.py')
             execfile(default_regions_file.name)
 
             regions_dict = {}
@@ -67,21 +69,6 @@ class PMPDriverRunDiags(object):
                 regions_dict[var] = region
 
             return regions_dict
-
-        @staticmethod
-        def load_path_as_file_obj(name):
-            file_path = os.path.join(os.path.dirname(__file__), 'share', name)
-            try:
-                opened_file = open(file_path)
-            except IOError:
-                logging.error('%s could not be loaded!' % file_path)
-                print 'IOError: %s could not be loaded!' % file_path
-            except:
-                logging.error('Unexpected error while opening file: '
-                              + sys.exc_info()[0])
-                print ('Unexpected error while opening file: '
-                       + sys.exc_info()[0])
-            return opened_file
 
         def run_reference_and_test_comparison(self):
             reference_data_set = self.parameter.reference_data_set

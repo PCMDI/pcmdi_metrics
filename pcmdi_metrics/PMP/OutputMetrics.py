@@ -3,6 +3,8 @@ import sys
 from pcmdi_metrics.PMP.PMPIO import *
 from pcmdi_metrics.PMP.metrics.mean_climate_metrics_calculations import *
 from pcmdi_metrics.PMP.Observation import *
+from pcmdi_metrics.PMP.DataSet import DataSet
+
 
 class OutputMetrics(object):
 
@@ -11,20 +13,24 @@ class OutputMetrics(object):
         self.var_name_long = var_name_long
         self.obs_dict = obs_dict
         self.var = var_name_long.split('_')[0]
+
         self.metrics_def_dictionary = {}
         self.metrics_dictionary = {}
+
         string_template = "%(var)%(level)_%(targetGridName)_" +\
                           "%(regridTool)_%(regridMethod)_metrics"
         self.out_file = PMPIO(self.parameter.metrics_output_path,
                               string_template)
-        self.sftlf = self.create_sftlf()
-        self.setup_metrics_dictionary()
-        self.setup_out_file()
 
-    @staticmethod
-    def create_sftlf():
-        # Put this with the other static methods
-        pass
+        self.sftlf = DataSet.create_sftlf(self.parameter)
+        self.setup_metrics_dictionary()
+
+        self.regrid_method = ''
+        self.regrid_tool = ''
+        self.table_realm = ''
+        self.realm = ''
+        self.setup_regrid_and_realm_vars()
+        self.setup_out_file()
 
     def setup_metrics_dictionary(self):
         self.metrics_def_dictionary = collections.OrderedDict()
@@ -37,7 +43,7 @@ class OutputMetrics(object):
         self.metrics_dictionary["References"] = {}
         self.metrics_dictionary["RegionalMasking"] = {}
 
-        level = self.calculate_level_from_var(self.var_name_long)
+        level = DataSet.calculate_level_from_var(self.var_name_long)
         if level is not None:
             self.metrics_dictionary["Variable"]["level"] = level
 
@@ -62,31 +68,24 @@ class OutputMetrics(object):
                    + sys.exc_info()[0])
         return opened_file
 
-    @staticmethod
-    def calculate_level_from_var(var):
-        var_split_name = var.split('_')
-        if len(var_split_name) > 1:
-            level = float(var_split_name[-1]) * 100
+    def setup_regrid_and_realm_vars(self):
+        if DataSet.use_omon(self.obs_dict, self.var):
+            self.regrid_method = self.parameter.regrid_method_ocn
+            self.regrid_tool = self.parameter.regrid_tool_ocn
+            self.table_realm = 'Omon'
+            self.realm = "ocn"
         else:
-            level = None
-        return level
+            self.regrid_method = self.parameter.regrid_method
+            self.regrid_tool = self.parameter.regrid_tool
+            self.table_realm = 'Amon'
+            self.realm = "atm"
 
     def setup_out_file(self):
-        if self.use_omon(self.obs_dict, self.var):
-            regrid_method = self.parameter.regrid_method_ocn
-            regrid_tool = self.parameter.regrid_tool_ocn
-            table_realm = 'Omon'
-            realm = "ocn"
-        else:
-            regrid_method = self.parameter.regrid_method
-            regrid_tool = self.parameter.regrid_tool
-            table_realm = 'Amon'
-            realm = "atm"
         self.out_file.set_target_grid(
-            self.parameter.target_grid, regrid_tool, regrid_method)
+            self.parameter.target_grid, self.regrid_tool, self.regrid_method)
         self.out_file.variable = self.var
-        self.out_file.realm = realm
-        self.out_file.table = table_realm
+        self.out_file.realm = self.realm
+        self.out_file.table = self.table_realm
         self.out_file.case_id = self.parameter.case_id
 
     def calculate_and_output_metrics(self, ref, test):
@@ -107,7 +106,9 @@ class OutputMetrics(object):
         self.metrics_dictionary["RESULTS"][test.obs_or_model]\
             [ref.obs_or_model][self.parameter.realization] = \
             parameter_realization
+
         if not self.parameter.dry_run:
+
             pr_rgn = compute_metrics(self.var_name_long, test_data, ref_data)
             self.metrics_def_dictionary.update(
                 compute_metrics(self.var_name_long, test_data, ref_data))
@@ -139,7 +140,6 @@ class OutputMetrics(object):
             self.out_file.write(self.metrics_dictionary, mode='w', indent=4,
                                 seperators=(',', ': '))
             self.out_file.write(self.metrics_dictionary, mode='w', type='txt')
-
 
     def set_simulation_desc(self, ref, test):
         test_data = test()
@@ -210,10 +210,6 @@ class OutputMetrics(object):
                     "InputRegionMD5"] = \
                     self.sftlf[test.obs_or_model]["md5"]
 
-    def write_out_file(self):
-        # line 736 - 744
-        pass
-
     def output_interpolated_model_climatologies(self, test):
         region_name = self.get_region_name()
         pth = os.path.join(self.parameter.model_clims_interpolated_output,
@@ -221,33 +217,19 @@ class OutputMetrics(object):
         clim_file = PMPIO(pth, self.parameter.filename_output_template)
         clim_file.level = self.out_file.level
         clim_file.model_version = test.obs_or_model
-
-        if self.use_omon(self.obs_dict, self.var):
-            regrid_method = self.parameter.regrid_method_ocn
-            regrid_tool = self.parameter.regrid_tool_ocn
-            table_realm = 'Omon'
-        else:
-            regrid_method = self.parameter.regrid_method
-            regrid_tool = self.parameter.regrid_tool
-            table_realm = 'Amon'
-        clim_file.table = table_realm
+        clim_file.table = self.table_realm
         clim_file.period = self.parameter.period
         clim_file.case_id = self.parameter.case_id
         clim_file.set_target_grid(
             self.parameter.targetGrid,
-            regrid_tool,
-            regrid_method)
+            self.regrid_tool,
+            self.regrid_method)
         clim_file.variable = self.var
         clim_file.region = region_name
         clim_file.realization = self.parameter.realization
-        #apply_custom_keys(clim_file, self.parameter.custom_keys, self.var)
+        DataSet.apply_custom_keys(clim_file,
+                                  self.parameter.custom_keys, self.var)
         clim_file.write(test(), type="nc", id=self.var)
-
-    @staticmethod
-    def use_omon(obs_dict, var):
-        return \
-            obs_dict[var][obs_dict[var]["default"]]["CMIP_CMOR_TABLE"] == \
-            'Omon'
 
     def get_region_name(self):
         # region is both in ref and test
@@ -255,10 +237,6 @@ class OutputMetrics(object):
         if self.ref.region is None:
             region_name = 'global'
         return region_name
-
-    @staticmethod
-    def apply_custom_keys():
-        pass
 
     def check_save_mod_clim(self, ref):
         # Since we are only saving once per reference data set (it's always
@@ -272,5 +250,3 @@ class OutputMetrics(object):
                hasattr(self.parameter, 'save_mod_clim') and \
                self.parameter.save_mod_clim is True and \
                ref.obs_or_model == reference_data_set[0]
-
-

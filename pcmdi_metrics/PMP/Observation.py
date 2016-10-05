@@ -1,5 +1,5 @@
 from pcmdi_metrics.PMP.PMPIO import *
-
+from pcmdi_metrics.PMP.DataSet import *
 
 
 class OBS(PMPIO):
@@ -18,6 +18,9 @@ class OBS(PMPIO):
             obs_name = obs
 
         obs_table = obs_dict[var][obs_name]['CMIP_CMOR_TABLE']
+        self.realm = ''
+        self.frequency = ''
+        self.ac = ''
         self.setup_based_on_obs_table(obs_table)
 
         self.filename = obs_dict[var][obs_name]['filename']
@@ -39,29 +42,14 @@ class OBS(PMPIO):
             self.ac = 'ac'
 
 
-class Observation(object):
+class Observation(DataSet):
     def __init__(self, parameter, var_name_long, region, obs, obs_dict):
-        self.parameter = parameter
-        self.level = self.calculate_level_from_var(var_name_long)
-        self.var = var_name_long.split('_')[0]
-        self.region = region
+        super(Observation, self).__init__(parameter, var_name_long, region,
+                                          obs_dict)
         self.obs = obs
-        self.obs_dict = obs_dict
-        self.obs_file = None
-        self.sftlf = None
+        # This is just to make it more clear.
+        self.obs_file = self.obs_or_model_file
         self.create_obs_file()
-
-    def __call__(self, *args, **kwargs):
-        self.get()
-
-    @staticmethod
-    def calculate_level_from_var(var):
-        var_split_name = var.split('_')
-        if len(var_split_name) > 1:
-            level = float(var_split_name[-1]) * 100
-        else:
-            level = None
-        return level
 
     def create_obs_file(self):
         obs_mask_name = self.create_obs_mask_name()
@@ -70,8 +58,6 @@ class Observation(object):
                             file_mask_template=obs_mask_name)
 
         self.setup_obs_file(self.obs_file)
-
-
 
     def create_obs_mask_name(self):
         try:
@@ -96,12 +82,8 @@ class Observation(object):
             obs_from_obs_dict = self.obs_dict[self.var][self.obs]
         return obs_from_obs_dict
 
-
     def setup_obs_file(self):
-        regrid_method = ''
-        regrid_tool = ''
-
-        if self.use_omon():
+        if self.use_omon(self.obs_dict, self.var):
             regrid_method = self.parameter.regrid_method_ocn
             regrid_tool = self.regrid_tool_ocn.regrid_tool
             self.obs_file.table = 'Omon'
@@ -124,51 +106,6 @@ class Observation(object):
                     self.sftlf['targetGrid'],
                     region_value
                 )
-
-    def use_omon(self):
-        return \
-            self.obs_dict[self.var][self.obs_dict[self.var]["default"]]\
-                ["CMIP_CMOR_TABLE"] == 'Omon'
-
-    @staticmethod
-    def create_sftlf(parameter):
-        sftlf = {}
-        # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
-        for test in parameter.test_data_set:
-            sft = PMPIO(
-                parameter.mod_data_path,
-                getattr(
-                    parameter,
-                    "sftlf_filename_template",
-                    parameter.filename_template))
-            sft.model_version = test
-            sft.table = "fx"
-            sft.realm = "atmos"
-            sft.period = parameter.period
-            sft.ext = "nc"
-            sft.case_id = parameter.case_id
-            sft.target_grid = None
-            sft.realization = "r0i0p0"
-            #applyCustomKeys(sft, parameter.custom_keys, "sftlf")
-            try:
-                sftlf[test] = {"raw": sft.get("sftlf")}
-                sftlf[test]["filename"] = os.path.basename(sft())
-                sftlf[test]["md5"] = sft.hash()
-            except:
-                # Hum no sftlf...
-                sftlf[test] = {"raw": None}
-                sftlf[test]["filename"] = None
-                sftlf[test]["md5"] = None
-        if parameter.targetGrid == "2.5x2.5":
-            tGrid = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
-        else:
-            tGrid = parameter.targetGrid
-
-        sft = cdutil.generateLandSeaMask(tGrid)
-        sft[:] = sft.filled(1.) * 100.0
-        sftlf["targetGrid"] = sft
-
-        return sftlf
 
     def get(self):
         if self.level is not None:
