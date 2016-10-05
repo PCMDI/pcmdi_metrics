@@ -551,7 +551,7 @@ for model in models:
         if nc_out:
           write_nc_output(output_filename, eof_lr, pc1, frac1)
           if pseudo and obs_compare: 
-            write_nc_output(output_filename+'_pseudo', eof_lr_pseudo, pc1, frac1)
+            write_nc_output(output_filename+'_pseudo', eof_lr_pseudo, pseudo_pcs, frac1)
     
         # Plot map ---
         if plot:
