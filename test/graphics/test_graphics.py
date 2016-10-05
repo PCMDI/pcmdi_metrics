@@ -1,15 +1,9 @@
 #!/usr/bin/env python
 
-#
-#  RELIES UPON CDAT MODULES
-#  PRODUCE SIMPLE PORTRAIT PLOT BASED ON RESULTS FROM PCMDI'S METRICS PACKAGE
-#  WRITTEN BY P. GLECKLER, PCMDI/LLNL
-#  LAST UPDATE: 7/23/14
-#  Cleaned up by C. Doutriaux
-# Adapted to unitest format by C. Doutriaux
-# See git for change logs
-#
 import unittest
+import os
+import sys
+import pcmdi_metrics
 
 bg = True
 
@@ -17,24 +11,90 @@ class TestGraphics(unittest.TestCase):
 
     def __init__(self, name):
         super(TestGraphics, self).__init__(name)
-
-    def test_portrait(self):
         try:
             import vcs
         except:
             raise RuntimeError(
-                "Sorry your python is not build with VCS support cannot geenrate portrait plots")
+                "Sorry your python is not build with VCS support, cannot generate plots")
+
+    def loadJSON(self):
+        """
+        # LOAD METRICS DICTIONARIES FROM JSON FILES FOR EACH VAR AND STORE AS A
+        # SINGLE DICTIONARY
+        """
+        import glob
+        json_files = glob.glob(
+            os.path.join(
+                os.path.dirname(__file__),
+                "json",
+                "v1.0",
+                "*.json"))
+
+        json_files += glob.glob(
+            os.path.join(
+                os.path.dirname(__file__),
+                "json",
+                "v2.0",
+                "*.json"))
+
+        print "JFILES:",json_files
+        return pcmdi_metrics.pcmdi.io.JSONs(json_files)
+
+
+    def test_pcoord(self):
+        import json
+        import vcs
+        J=self.loadJSON()
+        rms_xyt = J(statistic=["rms_xyt"],season=["ann"],region="global")(squeeze=1)
+        import vcsaddons
+        bg = False
+        x=vcs.init(geometry=(1200,600),bg=bg)
+        gm = vcsaddons.createparallelcoordinates(x=x)
+        t = vcs.createtemplate()
+        to=x.createtextorientation()
+        to.angle=-45
+        to.halign="right"
+        t.xlabel1.textorientation = to.name
+        t.reset('x',0.05,0.9,t.data.x1,t.data.x2)
+        #t.reset('y',0.5,0.9,t.data.y1,t.data.y2)
+        ln = vcs.createline()
+        ln.color = [[0,0,0,0]]
+        t.legend.line = ln
+        t.box1.priority=0
+        t.legend.x1 = .91
+        t.legend.x2 = .99
+        t.legend.y1 = t.data.y1
+        t.legend.y2 = t.data.y2
+
+        # Set variable name
+        rms_xyt.id = "RMS"
+
+        # Set units of each variables on axis
+        rms_xyt.getAxis(-2).units = ["mm/day","mm/day","hPa","W/m2","W/m2","W/m2", "K","K","K","m/s","m/s","m/s","m/s","m"]
+        # Sets title
+        rms_xyt.title = "Annual Mean Error"
+
+        gm.plot(rms_xyt,template=t,bg=bg)
+
+        src = os.path.join(os.path.dirname(__file__), "testParallelCoordinates.png")
+        print src
+        fnm = os.path.join(os.getcwd(), "testParallelCoordinates.png")
+        x.png(fnm)
+        ret = vcs.testing.regression.check_result_image(
+            fnm,
+            src)
+        if ret != 0:
+            sys.exit(ret)
+
+    def test_portrait(self):
 
         import json
         # CDAT MODULES
-        import pcmdi_metrics
+        import vcs
         import pcmdi_metrics.graphics.portraits
         import MV2
         import numpy
         import genutil
-        import os
-        import sys
-        import glob
 
         print
         print
@@ -49,7 +109,7 @@ class TestGraphics(unittest.TestCase):
         print
         # CREATES VCS OBJECT AS A PORTAIT PLOT AND LOADS PLOT SETTINGS FOR
         # EXAMPLE
-        x = vcs.init(geometry=(814,606),bg=True)
+        x = vcs.init()
         x.portrait()
         # Turn off antialiasing for test suite
         x.setantialiasing(0)
@@ -96,25 +156,8 @@ class TestGraphics(unittest.TestCase):
 
         P.PLOT_SETTINGS.parametertable.expansion = 100
 
+        J = self.loadJSON()
 
-        # LOAD METRICS DICTIONARIES FROM JSON FILES FOR EACH VAR AND STORE AS A
-        # SINGLE DICTIONARY
-        json_files = glob.glob(
-            os.path.join(
-                os.path.dirname(__file__),
-                "json",
-                "v1.0",
-                "*.json"))
-
-        json_files += glob.glob(
-            os.path.join(
-                os.path.dirname(__file__),
-                "json",
-                "v2.0",
-                "*.json"))
-
-        print "JFILES:",json_files
-        J = pcmdi_metrics.pcmdi.io.JSONs(json_files)
         mods = sorted(J.getAxis("model")[:])
         variables = sorted(J.getAxis("variable")[:])
         print "MODELS:",len(mods),mods
