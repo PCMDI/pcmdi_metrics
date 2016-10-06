@@ -39,12 +39,34 @@ class OBS(pcmdi_metrics.io.base.Base):
         self.reference = obs_name
         self.variable = var
 
+def flatten(dic,parent_key="",sep="__**__"):
+    """ flattens a dictionary thanks stack overflow"""
+    items = []
+    for k, v in dic.items():
+        if parent_key:
+            new_key = "%s%s%s" % (parent_key,sep,k) 
+        else:
+            new_key = k
+        if isinstance(v,dict):
+            items.extend(flatten(v, new_key, sep=sep).items())
+        else:
+            items.append((new_key,v))
+    return dict(items)
 
 class JSONs(object):
 
+    def getstruct(self):
+        pass
+    def addJson(self,json_dict,struct):
+        pass
     def __init__(self, files):
+        import sqlite3
+        import tempfile
+        self.db = sqlite3.connect(tempfile.mktemp())
         self.data = {}
         self.json_version = "2.0"
+        self.json_struct = ["model","reference","rip","region","statisitic"]
+
         if len(files) == 0:
             raise Exception("You need to pass at least one file")
         for fnm in files:
@@ -139,6 +161,8 @@ class JSONs(object):
                 self.data[varnm].update(R)
             else:
                 self.data[varnm] = R
+            if fnm == files[0]:
+                print "file",fnm,flatten(R).keys()[0]
 
     def getAxis(self, axis):
         axes = self.getAxisList()
