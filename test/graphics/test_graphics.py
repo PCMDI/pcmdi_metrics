@@ -23,31 +23,31 @@ class TestGraphics(unittest.TestCase):
         # SINGLE DICTIONARY
         """
         import glob
-        json_files = glob.glob(
-            os.path.join(
-                os.path.dirname(__file__),
-                "json",
-                "v1.0",
-                "*.json"))
+        import json
 
-        json_files += glob.glob(
+        json_files = glob.glob(
             os.path.join(
                 os.path.dirname(__file__),
                 "json",
                 "v2.0",
                 "*.json"))
 
+        json_files += glob.glob(
+            os.path.join(
+                os.path.dirname(__file__),
+                "json",
+                "v1.0",
+                "*.json"))
         print "JFILES:",json_files
         return pcmdi_metrics.pcmdi.io.JSONs(json_files)
 
 
     def test_pcoord(self):
-        import json
         import vcs
+        import vcsaddons
+
         J=self.loadJSON()
         rms_xyt = J(statistic=["rms_xyt"],season=["ann"],region="global")(squeeze=1)
-        import vcsaddons
-        bg = False
         x=vcs.init(geometry=(1200,600),bg=bg)
         gm = vcsaddons.createparallelcoordinates(x=x)
         t = vcs.createtemplate()
@@ -88,13 +88,12 @@ class TestGraphics(unittest.TestCase):
 
     def test_portrait(self):
 
-        import json
         # CDAT MODULES
-        import vcs
         import pcmdi_metrics.graphics.portraits
         import MV2
         import numpy
         import genutil
+        import vcs
 
         print
         print
@@ -109,7 +108,7 @@ class TestGraphics(unittest.TestCase):
         print
         # CREATES VCS OBJECT AS A PORTAIT PLOT AND LOADS PLOT SETTINGS FOR
         # EXAMPLE
-        x = vcs.init()
+        x = vcs.init(geometry=(814,606),bg=bg)
         x.portrait()
         # Turn off antialiasing for test suite
         x.setantialiasing(0)
