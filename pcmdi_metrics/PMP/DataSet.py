@@ -9,7 +9,7 @@ from pcmdi_metrics.PMP.PMPIO import *
 class DataSet(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, parameter, var_name_long, region, obs_dict):
+    def __init__(self, parameter, var_name_long, region, obs_dict, sftlf=None):
         self.parameter = parameter
         self.var_name_long = var_name_long
         self.region = region
@@ -19,7 +19,9 @@ class DataSet(object):
         self.level = self.calculate_level_from_var(var_name_long)
         self.obs_or_model_file = None
 
-        self.sftlf = self.create_sftlf(self.parameter)
+        self.sftlf = sftlf
+        if sftlf is None:
+            self.sftlf = self.create_sftlf(self.parameter)
 
     def __call__(self):
         self.get()
@@ -46,10 +48,8 @@ class DataSet(object):
         for test in parameter.test_data_set:
             sft = PMPIO(
                 parameter.mod_data_path,
-                getattr(
-                    parameter,
-                    "sftlf_filename_template",
-                    parameter.filename_template))
+                getattr(parameter, "sftlf_filename_template",
+                        parameter.filename_template))
             sft.model_version = test
             sft.table = "fx"
             sft.realm = "atmos"
@@ -73,7 +73,7 @@ class DataSet(object):
             t_grid = parameter.target_grid
 
         sft = cdutil.generateLandSeaMask(t_grid)
-        sft[:] = sft.filled(1.) * 100.0
+        sft[:] = sft.filled(1.0) * 100.0
         sftlf["targetGrid"] = sft
 
         return sftlf
@@ -96,16 +96,17 @@ class DataSet(object):
             opened_file = open(file_path)
         except IOError:
             logging.error('%s could not be loaded!' % file_path)
-            print 'IOError: %s could not be loaded!' % file_path
         except:
             logging.error('Unexpected error while opening file: '
                           + sys.exc_info()[0])
-            print ('Unexpected error while opening file: '
-                   + sys.exc_info()[0])
         return opened_file
 
     def hash(self):
-        self.obs_or_model_file.hash()
+        if self.obs_or_model_file is None:
+            raise TypeError('self.obs_or_model was not set!')
+        return self.obs_or_model_file.hash()
 
     def file_path(self):
+        if self.obs_or_model_file is None:
+            raise TypeError('self.obs_or_model was not set!')
         return self.obs_or_model_file()
