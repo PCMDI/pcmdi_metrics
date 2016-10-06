@@ -48,7 +48,6 @@ class JSONs(object):
         if len(files) == 0:
             raise Exception("You need to pass at least one file")
         for fnm in files:
-            # print fnm
             f = open(fnm)
             tmp_dict = json.load(f)
             json_version = tmp_dict.get("json_version", None)
@@ -68,7 +67,9 @@ class JSONs(object):
                 else:
                     json_version = "2.0"
             # print "\tv%s" % json_version
-            if json_version == "1.0":  # ok old way we need to convert to 2.0
+            if json_version == "2.0":
+                R = tmp_dict["RESULTS"]
+            elif json_version == "1.0":  # ok old way we need to convert to 2.0
                 for model in R.keys():  # loop through models
                     # print "Reading in model:",model
                     m = R[model]
@@ -122,6 +123,8 @@ class JSONs(object):
                     # restore model into results
                     R[model] = m
                     # print "M:",model,m.keys()
+            else:
+                raise RuntimeError("Could not figure out how to read in json file: %s" % fnm)
             # Now update our stored results
             # First we need to figure out the variable read in
             var = tmp_dict.get("Variable", None)
