@@ -47,16 +47,16 @@ class Observation(DataSet):
                  obs, obs_dict, sftlf=None):
         super(Observation, self).__init__(parameter, var_name_long,
                                           region, obs_dict, sftlf)
-        self.obs = obs
+        self.obs_or_model = obs
         # This is just to make it more clear.
-        #self.obs_file = self.obs_or_model_file
+        self.obs_file = self.obs_or_model_file
 
         self.create_obs_file()
 
     def create_obs_file(self):
         obs_mask_name = self.create_obs_mask_name()
         self.obs_file = OBS(self.parameter.obs_data_path, self.var,
-                            self.obs_dict, self.obs,
+                            self.obs_dict, self.obs_or_model,
                             file_mask_template=obs_mask_name)
 
         self.setup_obs_file()
@@ -74,14 +74,14 @@ class Observation(DataSet):
         return obs_mask_name
 
     def get_obs_from_obs_dict(self):
-        if self.obs not in self.obs_dict[self.var]:
-           raise KeyError('The selected obs is not in the obs_dict')
+        if self.obs_or_model not in self.obs_dict[self.var]:
+            raise KeyError('The selected obs is not in the obs_dict')
 
-        if isinstance(self.obs_dict[self.var][self.obs], (str, unicode)):
+        if isinstance(self.obs_dict[self.var][self.obs_or_model], (str, unicode)):
             obs_from_obs_dict = \
-                self.obs_dict[self.var][self.obs_dict[self.var][self.obs]]
+                self.obs_dict[self.var][self.obs_dict[self.var][self.obs_or_model]]
         else:
-            obs_from_obs_dict = self.obs_dict[self.var][self.obs]
+            obs_from_obs_dict = self.obs_dict[self.var][self.obs_or_model]
         return obs_from_obs_dict
 
     def setup_obs_file(self):
@@ -117,6 +117,12 @@ class Observation(DataSet):
         else:
             return self.obs_file.get_var_from_netcdf(self.var,
                                                      region=self.region)
+
+    def hash(self):
+        return self.obs_file.hash()
+
+    def file_path(self):
+        return self.obs_file()
 
     @staticmethod
     # This must remain static b/c used before an Observation obj is created.

@@ -60,7 +60,7 @@ class PMPDriverRunDiags(object):
                     region = [region]
                 if region is None:
                     region.remove(None)
-                    for r in default_regions:
+                    for r in self.default_regions:
                         region.insert(0, r)
                 regions_dict[var] = region
 
@@ -83,6 +83,10 @@ class PMPDriverRunDiags(object):
                 region = self.regions_specs.get(
                     region_name,
                     self.regions_specs.get(region_name.lower()))
+                print 'self.regions_dict: ', self.regions_dict
+                print 'self.var: ', self.var
+                print 'regions_dict[self.var]: ', self.regions_dict[self.var]
+                print 'region: ', region
                 region['id'] = region_name
             elif region is None:
                 # It's okay if region == None

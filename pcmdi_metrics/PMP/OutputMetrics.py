@@ -109,12 +109,12 @@ class OutputMetrics(object):
                         {'custom':
                              self.parameter.compute_custom_metrics.__doc__})
 
-            parameter_realization[self.get_region_name()] = collections.OrderedDict(
+            parameter_realization[self.get_region_name(ref)] = collections.OrderedDict(
                 (k, parameter_realization[k]) for k in sorted(parameter_realization.keys())
             )
             self.metrics_dictionary['RESULTS'][test.obs_or_model]\
                 [ref.obs_or_model][self.parameter.realization] = \
-                self.parameter_realization
+                parameter_realization
 
         if self.check_save_mod_clim(ref):
             self.output_interpolated_model_climatologies(test)
@@ -122,13 +122,15 @@ class OutputMetrics(object):
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
 
         if not self.parameter.dry_run:
-            self.out_file.write(self.metrics_dictionary, mode='w', indent=4,
-                                seperators=(',', ': '))
-            self.out_file.write(self.metrics_dictionary, mode='w', type='txt')
+            self.out_file.write(self.metrics_dictionary, indent=4,
+                                separators=(',', ': '))
+            self.out_file.write(self.metrics_dictionary, extension='txt')
 
     def set_simulation_desc(self, ref, test):
         test_data = test()
 
+        self.metrics_dictionary["RESULTS"][test.obs_or_model] = \
+            self.metrics_dictionary["RESULTS"].get(test.obs_or_model, {})
         if "SimulationDescription" not in \
                 self.metrics_dictionary["RESULTS"][test.obs_or_model]:
 
@@ -163,10 +165,10 @@ class OutputMetrics(object):
                         vals.append(getattr(self.parameter, a))
                     # Now fall back on file...
                     else:
-                        f = cdms2.open(test.get_file_path())
+                        f = cdms2.open(test.file_path())
                         if hasattr(f, a):
                             try:
-                                vals.append(float(getattr(f,a)))
+                                vals.append(float(getattr(f, a)))
                             except:
                                 vals.append(getattr(f, a))
                         # Ok couldn't find it anywhere
@@ -187,6 +189,8 @@ class OutputMetrics(object):
             self.metrics_dictionary["RESULTS"][test.obs_or_model][
                 "InputClimatologyMD5"] = test.hash()
             # Not just global
+            #TODO Ask Charles if the below check is needed
+            '''
             if len(self.regions_dict[self.var]) > 1:
                 self.metrics_dictionary["RESULTS"][test.obs_or_model][
                     "InputRegionFileName"] = \
@@ -194,9 +198,10 @@ class OutputMetrics(object):
                 self.metrics_dictionary["RESULTS"][test.obs_or_model][
                     "InputRegionMD5"] = \
                     self.sftlf[test.obs_or_model]["md5"]
+            '''
 
     def output_interpolated_model_climatologies(self, test):
-        region_name = self.get_region_name()
+        region_name = self.get_region_name(test)
         pth = os.path.join(self.parameter.model_clims_interpolated_output,
                            region_name)
         clim_file = PMPIO(pth, self.parameter.filename_output_template)
@@ -216,10 +221,10 @@ class OutputMetrics(object):
                                   self.parameter.custom_keys, self.var)
         clim_file.write(test(), type="nc", id=self.var)
 
-    def get_region_name(self):
+    def get_region_name(self, ref_or_test):
         # region is both in ref and test
-        region_name = self.ref.region
-        if self.ref.region is None:
+        region_name = ref_or_test.region
+        if ref_or_test.region is None:
             region_name = 'global'
         return region_name
 

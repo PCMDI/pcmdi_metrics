@@ -22,6 +22,7 @@ if args.user_parameter_file_path is not '':
     )
 
 else:
+    parameter.dry_run = False
     parameter.case_id = 'installationTest'
     parameter.test_data_set = ['GFDL-ESM2G']
     parameter.simulation_description_mapping = {

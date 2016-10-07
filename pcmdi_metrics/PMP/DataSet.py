@@ -101,12 +101,11 @@ class DataSet(object):
                           + sys.exc_info()[0])
         return opened_file
 
+    @abc.abstractmethod
     def hash(self):
-        if self.obs_or_model_file is None:
-            raise TypeError('self.obs_or_model was not set!')
-        return self.obs_or_model_file.hash()
+        """Calls the hash function on the PMPIO object."""
+        raise NotImplementedError()
 
     def file_path(self):
-        if self.obs_or_model_file is None:
-            raise TypeError('self.obs_or_model was not set!')
-        return self.obs_or_model_file()
+        """Calls the __call__() function on the PMPIO object."""
+        raise NotImplementedError()
