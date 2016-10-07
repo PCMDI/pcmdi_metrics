@@ -43,12 +43,14 @@ class OBS(PMPIO):
 
 
 class Observation(DataSet):
-    def __init__(self, parameter, var_name_long, region, obs, obs_dict):
-        super(Observation, self).__init__(parameter, var_name_long, region,
-                                          obs_dict)
+    def __init__(self, parameter, var_name_long, region,
+                 obs, obs_dict, sftlf=None):
+        super(Observation, self).__init__(parameter, var_name_long,
+                                          region, obs_dict, sftlf)
         self.obs = obs
         # This is just to make it more clear.
-        self.obs_file = self.obs_or_model_file
+        #self.obs_file = self.obs_or_model_file
+
         self.create_obs_file()
 
     def create_obs_file(self):
@@ -57,7 +59,7 @@ class Observation(DataSet):
                             self.obs_dict, self.obs,
                             file_mask_template=obs_mask_name)
 
-        self.setup_obs_file(self.obs_file)
+        self.setup_obs_file()
 
     def create_obs_mask_name(self):
         try:
@@ -85,7 +87,7 @@ class Observation(DataSet):
     def setup_obs_file(self):
         if self.use_omon(self.obs_dict, self.var):
             regrid_method = self.parameter.regrid_method_ocn
-            regrid_tool = self.regrid_tool_ocn.regrid_tool
+            regrid_tool = self.parameter.regrid_tool
             self.obs_file.table = 'Omon'
             self.obs_file.realm = 'ocn'
         else:
@@ -109,10 +111,12 @@ class Observation(DataSet):
 
     def get(self):
         if self.level is not None:
-            return self.obs_file.get(self.var, level=self.level,
-                                     region=self.region)
+            return self.obs_file.get_var_from_netcdf(self.var,
+                                                     level=self.level,
+                                                     region=self.region)
         else:
-            return self.obs_file.get(self.var, region=self.region)
+            return self.obs_file.get_var_from_netcdf(self.var,
+                                                     region=self.region)
 
     @staticmethod
     # This must remain static b/c used before an Observation obj is created.

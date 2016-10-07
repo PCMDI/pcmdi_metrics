@@ -17,8 +17,8 @@ class OutputMetrics(object):
         self.metrics_def_dictionary = {}
         self.metrics_dictionary = {}
 
-        string_template = "%(var)%(level)_%(targetGridName)_" +\
-                          "%(regridTool)_%(regridMethod)_metrics"
+        string_template = "%(var)%(level)_%(target_grid_name)_" +\
+                          "%(regrid_tool)_%(regrid_method)_metrics"
         self.out_file = PMPIO(self.parameter.metrics_output_path,
                               string_template)
 
@@ -48,25 +48,10 @@ class OutputMetrics(object):
             self.metrics_dictionary["Variable"]["level"] = level
 
     def open_disclaimer(self):
-        f = self.load_path_as_file_obj('disclaimer.txt')
+        f = DataSet.load_path_as_file_obj('disclaimer.txt')
         contents = f.read()
         f.close()
         return contents
-
-    @staticmethod
-    def load_path_as_file_obj(name):
-        file_path = os.path.join(os.path.dirname(__file__), 'share', name)
-        try:
-            opened_file = open(file_path)
-        except IOError:
-            logging.error('%s could not be loaded!' % file_path)
-            print 'IOError: %s could not be loaded!' % file_path
-        except:
-            logging.error('Unexpected error while opening file: '
-                          + sys.exc_info()[0])
-            print ('Unexpected error while opening file: '
-                   + sys.exc_info()[0])
-        return opened_file
 
     def setup_regrid_and_realm_vars(self):
         if DataSet.use_omon(self.obs_dict, self.var):

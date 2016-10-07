@@ -24,7 +24,7 @@ class DataSet(object):
             self.sftlf = self.create_sftlf(self.parameter)
 
     def __call__(self):
-        self.get()
+        return self.get()
 
     @staticmethod
     def calculate_level_from_var(var):
@@ -74,7 +74,7 @@ class DataSet(object):
 
         sft = cdutil.generateLandSeaMask(t_grid)
         sft[:] = sft.filled(1.0) * 100.0
-        sftlf["targetGrid"] = sft
+        sftlf["target_grid"] = sft
 
         return sftlf
 

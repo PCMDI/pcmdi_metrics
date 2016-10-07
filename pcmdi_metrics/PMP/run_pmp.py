@@ -13,19 +13,6 @@ parser.add_argument(
     help="Path to the user-defined parameter file",
     required=False)
 
-parser.add_argument(
-    "-p", "--parameters",
-    dest="user_parameter_file_path",
-    default="",
-    help="Path to the user-defined parameter file",
-    required=False)
-
-parser.add_argument(
-    "-p", "--parameters",
-    dest="user_parameter_file_path",
-    default="",
-    help="Path to the user-defined parameter file",
-    required=False)
 
 args = parser.parse_args()
 parameter = PMPParameter()
@@ -36,7 +23,7 @@ if args.user_parameter_file_path is not '':
 
 else:
     parameter.case_id = 'installationTest'
-    parameter.model_versions = ['GFDL-ESM2G', ]
+    parameter.test_data_set = ['GFDL-ESM2G']
     parameter.simulation_description_mapping = {
         "Login": "Login",
         "Center": "Center",
@@ -56,10 +43,10 @@ else:
     parameter.regions = {"tas": [None, "terre", "ocean"], "tos": [None, ]}
     parameter.regions_values = {"terre": 100.}
 
-    parameter.ref = ['all']
+    parameter.reference_data_set = ['all']
     parameter.ext = '.nc'
 
-    parameter.targetGrid = '2.5x2.5'  # '2.5x2.5' or actual cdms2 grid object
+    parameter.target_grid = '2.5x2.5'  # '2.5x2.5' or actual cdms2 grid object
     parameter.regrid_tool = 'regrid2'  # OPTIONS: 'regrid2','esmf'
     parameter.regrid_method = 'linear'
     parameter.regrid_tool_ocn = 'esmf'  # OPTIONS: "regrid2","esmf"
@@ -70,8 +57,7 @@ else:
     parameter.save_mod_clims = True  # True or False
 
     parameter.filename_template = \
-        "%(variable)_%(model_version)_%(table)_historical" + \
-        "_%(realization)_%(period)-clim.nc"
+        "%(variable)_%(model_version)_%(table)_historical_%(realization)_%(period)-clim.nc"
     parameter.sftlf_filename_template = "sftlf_%(model_version).nc"
 
     pth = os.path.dirname(__file__)
@@ -93,7 +79,7 @@ else:
     # FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
     parameter.filename_output_template = "%(variable)%(level)_" + \
         "%(model_version)_%(table)_historical_%(realization)_%(period)" + \
-        ".interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"
+        ".interpolated.%(regrid_method).%(target_grid_name)-clim%(ext)"
 
 driver = PMPDriver(parameter)
 driver.run()

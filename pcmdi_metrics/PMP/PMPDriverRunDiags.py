@@ -19,6 +19,8 @@ class PMPDriverRunDiags(object):
             self.var = ''
             self.output_metric = None
             self.region = ''
+            self.default_regions = []
+            self.regions_specs = {}
 
         def __call__(self):
             self.run_diags()
@@ -33,9 +35,9 @@ class PMPDriverRunDiags(object):
                 self.output_metric = OutputMetrics(
                     self.parameter, self.var_name_long, self.obs_dict)
 
-                for region in self.region_dict[self.var]:
+                for region in self.regions_dict[self.var]:
 
-                    self.region = create_region(region)
+                    self.region = self.create_region(region)
                     # Runs obs vs obs, obs vs model, or model vs model
                     self.run_reference_and_test_comparison()
 
@@ -47,19 +49,13 @@ class PMPDriverRunDiags(object):
             return obs_dic
 
         def create_regions_dict(self):
-            default_regions = []
-
-            # This loads the regions_specs and default_regions var into
-            # the namespace of this scope.
-            default_regions_file = \
-                DataSet.load_path_as_file_obj('default_regions.py')
-            execfile(default_regions_file.name)
+            self.load_default_regions_and_regions_specs()
 
             regions_dict = {}
             for var_name_long in self.parameter.vars:
                 var = var_name_long.split('_')[0]
                 regions = self.parameter.regions
-                region = regions.get(var, default_regions)
+                region = regions.get(var, self.default_regions)
                 if not isinstance(region, (list, tuple)):
                     region = [region]
                 if region is None:
@@ -70,10 +66,32 @@ class PMPDriverRunDiags(object):
 
             return regions_dict
 
+        def load_default_regions_and_regions_specs(self):
+            default_regions_file = \
+                DataSet.load_path_as_file_obj('default_regions.py')
+            execfile(default_regions_file.name)
+            default_regions_file.close()
+            try:
+                self.default_regions = locals()['default_regions']
+                self.regions_specs = locals()['regions_specs']
+            except KeyError:
+                logging.error('Failed to open default_regions.py')
+
+        def create_region(self, region):
+            if isinstance(region, basestring):
+                region_name = region
+                region = self.regions_specs.get(
+                    region_name,
+                    self.regions_specs.get(region_name.lower()))
+                region['id'] = region_name
+            elif region is None:
+                # It's okay if region == None
+                pass
+            else:
+                raise Exception('Unknown region: %s' % region)
+
         def run_reference_and_test_comparison(self):
             reference_data_set = self.parameter.reference_data_set
-            reference_data_set = Observation.setup_obs_list_from_parameter(
-                reference_data_set, self.obs_dict, self.var)
             test_data_set = self.parameter.test_data_set
 
             # Member variables are used so when it's obs_vs_model, we know
@@ -81,18 +99,34 @@ class PMPDriverRunDiags(object):
             reference_data_set_is_obs = self.is_data_set_obs(reference_data_set)
             test_data_set_is_obs = self.is_data_set_obs(test_data_set)
 
+            # If reference or test are obs, the data sets themselves need to
+            # be modified.
+            if reference_data_set_is_obs:
+                reference_data_set = Observation.setup_obs_list_from_parameter(
+                    reference_data_set, self.obs_dict, self.var)
+            if test_data_set_is_obs:
+                test_data_set_is_obs = \
+                    Observation.setup_obs_list_from_parameter(
+                        test_data_set_is_obs, self.obs_dict, self.var)
+
             # self.reference/self.test are either an obs or model
             for self.reference in reference_data_set:
-                for self.test in self.test_data_set:
+                for self.test in test_data_set:
 
                     ref = self.determine_obs_or_model(reference_data_set_is_obs,
                                                       self.reference)
                     test = self.determine_obs_or_model(test_data_set_is_obs,
                                                        self.test)
 
+                    print 'RunDiags ref()', ref()
+                    print 'done RunDiags ref()'
+                    print 'RunDiags test()', test()
+                    print 'done RunDiags test()'
                     self.output_metric.calculate_and_output_metrics(ref, test)
 
         def is_data_set_obs(self, data_set):
+            if 'all' in data_set:
+                return True
             data_set_is_obs = True
             # If an element of data_set is not in the obs_dict, then
             # data_set is a model.
@@ -104,8 +138,10 @@ class PMPDriverRunDiags(object):
 
         def determine_obs_or_model(self, is_obs, ref_or_test):
             if is_obs:
+                print 'OBS'
                 return Observation(self.parameter, self.var_name_long,
                                    self.region, ref_or_test, self.obs_dict)
             else:
+                print 'MODEL'
                 return Model(self.parameter, self.var_name_long,
                              self.region, ref_or_test, self.obs_dict)

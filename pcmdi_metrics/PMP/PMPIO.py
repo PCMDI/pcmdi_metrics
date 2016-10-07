@@ -28,18 +28,14 @@ class PMPIO(CDPIO, genutil.StringConstructor):
         self.regrid_tool = 'esmf'
         self.file_mask_template = file_mask_template
         self.root = root
-        self.extension = 'json'
+        #self.extension = 'json'
         self.setup_cdms2()
 
     def read(self):
         pass
 
     def __call__(self):
-        path = os.path.abspath(genutil.StringConstructor.__call__(self))
-        if self.extension in path:
-            return path
-        else:
-            return path + '.' + self.extension
+        return os.path.abspath(genutil.StringConstructor.__call__(self))
 
     def write(self, data, extension='json', *args, **kwargs):
         self.extension = extension.lower()
@@ -52,7 +48,6 @@ class PMPIO(CDPIO, genutil.StringConstructor):
             except:
                 logging.error(
                     'Could not create output directory: %s' % dir_path)
-                print 'Could not create output directory: %s' % dir_path
 
         if self.extension == 'json':
             f = open(file_name, 'w')
@@ -97,6 +92,7 @@ class PMPIO(CDPIO, genutil.StringConstructor):
         self.var_from_file = \
             self.set_domain_in_var(self.var_from_file, self.region)
 
+        print 'type of get_var_from_netcdf() return ', type(self.var_from_file)
         return self.var_from_file
 
     def extract_var_from_file(self, var, var_in_file, *args, **kwargs):

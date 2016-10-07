@@ -3,27 +3,30 @@ from pcmdi_metrics.PMP.DataSet import *
 
 
 class Model(DataSet):
-    def __init__(self, parameter, var_name_long, region, model, obs_dict):
-        super(Model, self).__init__(parameter, var_name_long, region, obs_dict)
+    def __init__(self, parameter, var_name_long, region,
+                 model, obs_dict, sftlf=None):
+        super(Model, self).__init__(parameter, var_name_long,
+                                    region, obs_dict, sftlf)
         self.model = model
         # This is just to make it more clear.
-        self.model_file = self.obs_or_model_file
+        #self.model_file = self.obs_or_model_file
         self.create_model_file()
 
     def create_model_file(self):
         self.model_file = PMPIO(self.parameter.mod_data_path,
                                 self.parameter.filename_template)
+        self.model_file.variable = self.var
         self.model_file.model_version = self.model
         self.model_file.period = self.parameter.period
         self.model_file.ext = 'nc'
         self.model_file.case_id = self.parameter.case_id
         self.model_file.realization = self.parameter.realization
-        self.setup_model_file(self.model_file)
+        self.setup_model_file()
 
     def setup_model_file(self):
         if self.use_omon(self.obs_dict, self.var):
             regrid_method = self.parameter.regrid_method_ocn
-            regrid_tool = self.regrid_tool_ocn.regrid_tool
+            regrid_tool = self.parameter.regrid_tool
             self.model_file.table = 'Omon'
             self.model_file.realm = 'ocn'
         else:
@@ -33,8 +36,7 @@ class Model(DataSet):
             self.model_file.realm = 'atm'
 
         self.model_file.set_target_grid(self.parameter.target_grid,
-                                        regrid_tool,
-                                        regrid_method)
+                                        regrid_tool, regrid_method)
 
     def get(self):
         var_in_file = self.get_var_in_file()
@@ -47,19 +49,18 @@ class Model(DataSet):
 
                 self.model_file.mask = self.sftlf[self.model]['raw']
                 self.model_file.target_mask = \
-                    MV2.not_equal(self.sftlf['targetGrid'], region_value)
+                    MV2.not_equal(self.sftlf['target_grid'], region_value)
 
         try:
             if self.level is None:
-                data_model = self.model_file.get(self.var,
-                                                 var_in_file=var_in_file,
-                                                 region=self.region)
+                data_model = self.model_file.get_var_from_netcdf(
+                    self.var, var_in_file=var_in_file, region=self.region)
             else:
-                data_model = self.model_file.get(self.var,
-                                                 var_in_file=var_in_file,
-                                                 level=self.level,
-                                                 region=self.region)
+                data_model = self.model_file.get_var_from_netcdf(
+                    self.var, var_in_file=var_in_file,
+                    level=self.level, region=self.region)
             return data_model
+
         except Exception as err:
             # TODO do something about success
             success = False
@@ -87,7 +88,6 @@ class Model(DataSet):
             # TODO MAKE success a member variable?
             success = False
         else:
-            self.model_file.variable = self.var
             logging.info('Auto generating sftlf for model %s' % self.model())
             if os.path.exists(self.model_file()):
                 var_file = cdms2.open(self.model_file())

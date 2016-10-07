@@ -9,8 +9,8 @@ class PMPDriverCheckParameter(object):
         # Just check that the parameters use exist in the parameter object.
         # The validity for each option was already
         #  checked by the parameter itself.
-        vars_to_check = ['case_id', 'model_versions', 'period', 'realization',
-                         'vars', 'ref', 'target_grid', 'regrid_tool',
+        vars_to_check = ['case_id', 'test_data_set', 'period', 'realization',
+                         'vars', 'reference_data_set', 'target_grid', 'regrid_tool',
                          'regrid_method', 'regrid_tool_ocn',
                          'regrid_method_ocn', 'save_mod_clims',
                          'regions_specs', 'regions', 'custom_keys',
