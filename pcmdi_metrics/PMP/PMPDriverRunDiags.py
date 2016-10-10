@@ -36,8 +36,6 @@ class PMPDriverRunDiags(object):
                     self.parameter, self.var_name_long, self.obs_dict)
 
                 for region in self.regions_dict[self.var]:
-                #for self.region in self.regions_dict[self.var]:
-                    #self.create_region2()
                     self.region = self.create_region(region)
                     # Runs obs vs obs, obs vs model, or model vs model
                     self.run_reference_and_test_comparison()
@@ -88,18 +86,10 @@ class PMPDriverRunDiags(object):
 
         def create_region(self, region):
             if isinstance(region, basestring):
-                print 'region 1:', region
                 region_name = region
                 region = self.regions_specs.get(
                     region_name,
                     self.regions_specs.get(region_name.lower()))
-                #print 'default regions: ', self.default_regions
-                #print 'self.regions_dict: ', self.regions_dict
-                print 'self.var: ', self.var
-                #print 'regions_dict[self.var]: ', self.regions_dict[self.var]
-                print 'region 2: ', region
-                print 'regions_specs: ', self.regions_specs
-
                 region['id'] = region_name
             elif region is None:
                 # It's okay if region == None
@@ -136,10 +126,6 @@ class PMPDriverRunDiags(object):
                     test = self.determine_obs_or_model(test_data_set_is_obs,
                                                        self.test)
 
-                    print 'RunDiags ref()', ref()
-                    print 'done RunDiags ref()'
-                    print 'RunDiags test()', test()
-                    print 'done RunDiags test()'
                     self.output_metric.calculate_and_output_metrics(ref, test)
 
         def is_data_set_obs(self, data_set):

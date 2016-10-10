@@ -17,7 +17,7 @@ class OutputMetrics(object):
         self.metrics_def_dictionary = {}
         self.metrics_dictionary = {}
 
-        string_template = "%(var)%(level)_%(target_grid_name)_" +\
+        string_template = "%(variable)%(level)_%(target_grid_name)_" +\
                           "%(regrid_tool)_%(regrid_method)_metrics"
         self.out_file = PMPIO(self.parameter.metrics_output_path,
                               string_template)
@@ -93,7 +93,6 @@ class OutputMetrics(object):
             parameter_realization
 
         if not self.parameter.dry_run:
-
             pr_rgn = compute_metrics(self.var_name_long, test_data, ref_data)
             self.metrics_def_dictionary.update(
                 compute_metrics(self.var_name_long, test_data, ref_data))
@@ -122,6 +121,19 @@ class OutputMetrics(object):
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
 
         if not self.parameter.dry_run:
+            print 'SAVING STUFF'
+            print 'SAVING STUFF'
+            print 'SAVING STUFF'
+            print 'SAVING STUFF'
+            print 'SAVING STUFF'
+            print 'SAVING STUFF'
+            print 'SAVING STUFF'
+            print 'SAVING STUFF'
+            print 'SAVING STUFF'
+            print 'SAVING STUFF'
+            print 'SAVING STUFF'
+
+            logging.error('Saving results to: %s' % self.out_file())
             self.out_file.write(self.metrics_dictionary, indent=4,
                                 separators=(',', ': '))
             self.out_file.write(self.metrics_dictionary, extension='txt')
@@ -204,6 +216,18 @@ class OutputMetrics(object):
         region_name = self.get_region_name(test)
         pth = os.path.join(self.parameter.model_clims_interpolated_output,
                            region_name)
+        print 'SAVING STUFF'
+        print 'SAVING STUFF'
+        print 'SAVING STUFF'
+        print 'SAVING STUFF'
+        print 'SAVING STUFF'
+        print 'SAVING STUFF'
+        print 'SAVING STUFF'
+        print 'SAVING STUFF'
+        print 'SAVING STUFF'
+        print 'SAVING STUFF'
+        print 'SAVING STUFF'
+        logging.error('Saving interpolated climatologies to: %s' % pth)
         clim_file = PMPIO(pth, self.parameter.filename_output_template)
         clim_file.level = self.out_file.level
         clim_file.model_version = test.obs_or_model
@@ -211,7 +235,7 @@ class OutputMetrics(object):
         clim_file.period = self.parameter.period
         clim_file.case_id = self.parameter.case_id
         clim_file.set_target_grid(
-            self.parameter.targetGrid,
+            self.parameter.target_grid,
             self.regrid_tool,
             self.regrid_method)
         clim_file.variable = self.var
@@ -234,7 +258,7 @@ class OutputMetrics(object):
         # parameter, hence we have ref.obs_or_model == reference_data_set[0]
         reference_data_set = self.parameter.reference_data_set
         reference_data_set = Observation.setup_obs_list_from_parameter(
-                reference_data_set ,self.obs_dict, self.var)
+                reference_data_set, self.obs_dict, self.var)
 
         return not self.parameter.dry_run and \
                hasattr(self.parameter, 'save_mod_clim') and \
