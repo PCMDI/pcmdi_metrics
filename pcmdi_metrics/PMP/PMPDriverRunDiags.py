@@ -36,7 +36,8 @@ class PMPDriverRunDiags(object):
                     self.parameter, self.var_name_long, self.obs_dict)
 
                 for region in self.regions_dict[self.var]:
-
+                #for self.region in self.regions_dict[self.var]:
+                    #self.create_region2()
                     self.region = self.create_region(region)
                     # Runs obs vs obs, obs vs model, or model vs model
                     self.run_reference_and_test_comparison()
@@ -58,7 +59,7 @@ class PMPDriverRunDiags(object):
                 region = regions.get(var, self.default_regions)
                 if not isinstance(region, (list, tuple)):
                     region = [region]
-                if region is None:
+                if None in region:
                     region.remove(None)
                     for r in self.default_regions:
                         region.insert(0, r)
@@ -77,22 +78,35 @@ class PMPDriverRunDiags(object):
             except KeyError:
                 logging.error('Failed to open default_regions.py')
 
+            # Now need to edit regions_specs
+            for region in self.parameter.regions_values:
+                insert_dict = {'value': self.parameter.regions_values[region]}
+                if region in self.regions_specs:
+                    self.regions_specs[region].update(insert_dict)
+                else:
+                    self.regions_specs[region] = insert_dict
+
         def create_region(self, region):
             if isinstance(region, basestring):
+                print 'region 1:', region
                 region_name = region
                 region = self.regions_specs.get(
                     region_name,
                     self.regions_specs.get(region_name.lower()))
-                print 'self.regions_dict: ', self.regions_dict
+                #print 'default regions: ', self.default_regions
+                #print 'self.regions_dict: ', self.regions_dict
                 print 'self.var: ', self.var
-                print 'regions_dict[self.var]: ', self.regions_dict[self.var]
-                print 'region: ', region
+                #print 'regions_dict[self.var]: ', self.regions_dict[self.var]
+                print 'region 2: ', region
+                print 'regions_specs: ', self.regions_specs
+
                 region['id'] = region_name
             elif region is None:
                 # It's okay if region == None
                 pass
             else:
                 raise Exception('Unknown region: %s' % region)
+            return region
 
         def run_reference_and_test_comparison(self):
             reference_data_set = self.parameter.reference_data_set

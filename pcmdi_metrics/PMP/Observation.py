@@ -105,7 +105,7 @@ class Observation(DataSet):
                 if self.sftlf is None:
                     self.sftlf = self.create_sftlf(self.parameter)
                 self.obs_file.targetMask = MV2.not_equal(
-                    self.sftlf['targetGrid'],
+                    self.sftlf['target_grid'],
                     region_value
                 )
 
