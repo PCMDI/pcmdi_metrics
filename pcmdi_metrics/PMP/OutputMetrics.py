@@ -8,7 +8,7 @@ from pcmdi_metrics.PMP.DataSet import DataSet
 
 class OutputMetrics(object):
 
-    def __init__(self, parameter, var_name_long, obs_dict):
+    def __init__(self, parameter, var_name_long, obs_dict, stflf=None):
         self.parameter = parameter
         self.var_name_long = var_name_long
         self.obs_dict = obs_dict
@@ -22,7 +22,9 @@ class OutputMetrics(object):
         self.out_file = PMPIO(self.parameter.metrics_output_path,
                               string_template)
 
-        self.sftlf = DataSet.create_sftlf(self.parameter)
+        self.sftlf = stflf
+        if self.sftlf is None:
+            self.sftlf = DataSet.create_sftlf(self.parameter)
         self.setup_metrics_dictionary()
 
         self.regrid_method = ''
@@ -35,8 +37,8 @@ class OutputMetrics(object):
     def setup_metrics_dictionary(self):
         self.metrics_def_dictionary = collections.OrderedDict()
         self.metrics_dictionary = collections.OrderedDict()
-        self.metrics_dictionary["RESULTS"] = collections.OrderedDict()
         self.metrics_dictionary["DISCLAIMER"] = self.open_disclaimer()
+        self.metrics_dictionary["RESULTS"] = collections.OrderedDict()
 
         self.metrics_dictionary["Variable"] = {}
         self.metrics_dictionary["Variable"]["id"] = self.var
@@ -121,18 +123,6 @@ class OutputMetrics(object):
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
 
         if not self.parameter.dry_run:
-            print 'SAVING STUFF'
-            print 'SAVING STUFF'
-            print 'SAVING STUFF'
-            print 'SAVING STUFF'
-            print 'SAVING STUFF'
-            print 'SAVING STUFF'
-            print 'SAVING STUFF'
-            print 'SAVING STUFF'
-            print 'SAVING STUFF'
-            print 'SAVING STUFF'
-            print 'SAVING STUFF'
-
             logging.error('Saving results to: %s' % self.out_file())
             self.out_file.write(self.metrics_dictionary, indent=4,
                                 separators=(',', ': '))
@@ -216,19 +206,8 @@ class OutputMetrics(object):
         region_name = self.get_region_name(test)
         pth = os.path.join(self.parameter.model_clims_interpolated_output,
                            region_name)
-        print 'SAVING STUFF'
-        print 'SAVING STUFF'
-        print 'SAVING STUFF'
-        print 'SAVING STUFF'
-        print 'SAVING STUFF'
-        print 'SAVING STUFF'
-        print 'SAVING STUFF'
-        print 'SAVING STUFF'
-        print 'SAVING STUFF'
-        print 'SAVING STUFF'
-        print 'SAVING STUFF'
-        logging.error('Saving interpolated climatologies to: %s' % pth)
         clim_file = PMPIO(pth, self.parameter.filename_output_template)
+        logging.error('Saving interpolated climatologies to: %s' % clim_file())
         clim_file.level = self.out_file.level
         clim_file.model_version = test.obs_or_model
         clim_file.table = self.table_realm
@@ -243,7 +222,7 @@ class OutputMetrics(object):
         clim_file.realization = self.parameter.realization
         DataSet.apply_custom_keys(clim_file,
                                   self.parameter.custom_keys, self.var)
-        clim_file.write(test(), type="nc", id=self.var)
+        clim_file.write(test(), extension="nc", id=self.var)
 
     def get_region_name(self, ref_or_test):
         # region is both in ref and test
@@ -259,8 +238,7 @@ class OutputMetrics(object):
         reference_data_set = self.parameter.reference_data_set
         reference_data_set = Observation.setup_obs_list_from_parameter(
                 reference_data_set, self.obs_dict, self.var)
-
         return not self.parameter.dry_run and \
-               hasattr(self.parameter, 'save_mod_clim') and \
-               self.parameter.save_mod_clim is True and \
+               hasattr(self.parameter, 'save_mod_clims') and \
+               self.parameter.save_mod_clims is True and \
                ref.obs_or_model == reference_data_set[0]
