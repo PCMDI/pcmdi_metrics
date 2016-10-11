@@ -57,12 +57,39 @@ class JSONs(object):
 
     def getstruct(self):
         pass
-    def addJson(self,json_dict,struct):
+    def sql(self,cmd):
+        self.cu.execute(cmd)
+        return self.cu.fetchall()
+
+    def addJson(self,json_dict,json_struct,json_version):
+        "Adds content of a json dict to the db"
+        # first did we create the db
+        # if yes what are the columns in it
+        # do we need more columns??
+        info = self.sql("PRAGME table_info(pmp)")
+
+        if info == []:
+            cols = ", ".join(struct)
+            self.sql("create table pmp (%s , value float)" % cols)
+        else:
+            # ok let's check if we need more columns
+            actual_cols = [str(i[1]) for i in info]
+            add_cols = []
+            for c in struct:
+                if not str(c) in actual_cols:
+                    add_cols.append(c)
+            for c in add_cols:
+                self.sql("alter table pmp ADD COLUMN %s" % c)
+
+        # Ok at this point we have a db we now need to insert values in it
+        f = flatten(json_dict)
+
         pass
     def __init__(self, files):
         import sqlite3
         import tempfile
         self.db = sqlite3.connect(tempfile.mktemp())
+        self.cu = self.db.cursor()
         self.data = {}
         self.json_version = "2.0"
         self.json_struct = ["model","reference","rip","region","statisitic"]
