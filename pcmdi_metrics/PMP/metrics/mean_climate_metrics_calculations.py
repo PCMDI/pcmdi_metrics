@@ -29,7 +29,7 @@ def compute_metrics(Var, dm, do):
         metrics_defs["std_xyt"] = pcmdi_metrics.PMP.metrics.std_xyt.compute(None)
 
         metrics_defs["seasonal_mean"] = \
-            pcmdi_metrics.pcmdi.seasonal_mean.compute(
+            pcmdi_metrics.PMP.metrics.seasonal_mean.compute(
             None,
             None)
         metrics_defs["annual_mean"] = pcmdi_metrics.PMP.metrics.annual_mean.compute(

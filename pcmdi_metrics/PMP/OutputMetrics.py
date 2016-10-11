@@ -25,7 +25,6 @@ class OutputMetrics(object):
         self.sftlf = stflf
         if self.sftlf is None:
             self.sftlf = DataSet.create_sftlf(self.parameter)
-        self.setup_metrics_dictionary()
 
         self.regrid_method = ''
         self.regrid_tool = ''
@@ -33,6 +32,7 @@ class OutputMetrics(object):
         self.realm = ''
         self.setup_regrid_and_realm_vars()
         self.setup_out_file()
+        self.setup_metrics_dictionary()
 
     def setup_metrics_dictionary(self):
         self.metrics_def_dictionary = collections.OrderedDict()
@@ -42,6 +42,7 @@ class OutputMetrics(object):
 
         self.metrics_dictionary["Variable"] = {}
         self.metrics_dictionary["Variable"]["id"] = self.var
+        self.metrics_dictionary["json_version"] = '2.0'
         self.metrics_dictionary["References"] = {}
         self.metrics_dictionary["RegionalMasking"] = {}
 
@@ -79,25 +80,40 @@ class OutputMetrics(object):
         ref_data = ref()
         test_data = test()
 
+        # Todo: Make this a fcn
+        # ref and test can be used interchangeably.
+        self.metrics_dictionary['RegionalMasking'][self.get_region_name(ref)] \
+            = ref.region
+        if (self.obs_dict[self.var][ref.obs_or_model], (str, unicode)):
+            self.obs_var_ref = self.obs_dict[self.var][self.obs_dict[self.var][ref.obs_or_model]]
+        else:
+            self.obs_var_ref = self.obs_dict[self.var][ref.obs_or_model]
+
+        self.metrics_dictionary['References'][ref.obs_or_model] = self.obs_var_ref
+
+        self.set_grid_in_metrics_dictionary(test_data)
+
         if ref_data.shape != test_data.shape:
             raise RuntimeError('Two data sets have different shapes. %s vs %s' % (ref_data.shape, test_data.shape))
 
         self.set_simulation_desc(ref, test)
 
-        self.metrics_dictionary["RESULTS"][ref.obs_or_model] = \
-            self.metrics_dictionary["RESULTS"].get(test.obs_or_model, {})
-        self.metrics_dictionary["RESULTS"][test.obs_or_model][ref.obs_or_model] = \
-            {'source': self.obs_dict[self.var][ref.obs_or_model]}
+        print 'ref.obs_or_model: ', ref.obs_or_model
+        print "self.metrics_dictionary['RESULTS']"
+        print self.metrics_dictionary['RESULTS']
+        if ref.obs_or_model not in self.metrics_dictionary['RESULTS'][test.obs_or_model]:
+            self.metrics_dictionary["RESULTS"][test.obs_or_model][ref.obs_or_model] = \
+                {'source': self.obs_dict[self.var][ref.obs_or_model]}
+
         parameter_realization = self.metrics_dictionary["RESULTS"][test.obs_or_model][ref.obs_or_model].\
             get(self.parameter.realization, {})
-        self.metrics_dictionary["RESULTS"][test.obs_or_model]\
-            [ref.obs_or_model][self.parameter.realization] = \
-            parameter_realization
 
         if not self.parameter.dry_run:
             pr_rgn = compute_metrics(self.var_name_long, test_data, ref_data)
+            # Calling compute_metrics with None for the model and obs returns
+            # the definitions.
             self.metrics_def_dictionary.update(
-                compute_metrics(self.var_name_long, test_data, ref_data))
+                compute_metrics(self.var_name_long, None, None))
             if hasattr(self.parameter, 'compute_custom_metrics'):
                 pr_rgn.update(
                     self.parameter.compute_custom_metrics(test_data, ref_data))
@@ -128,6 +144,14 @@ class OutputMetrics(object):
                                 separators=(',', ': '))
             self.out_file.write(self.metrics_dictionary, extension='txt')
 
+    def set_grid_in_metrics_dictionary(self, test_data):
+        grid = {}
+        grid['RegridMethod'] = self.regrid_method
+        grid['RegridTool'] = self.regrid_tool
+        grid['GridName'] = self.parameter.target_grid
+        grid['GridResolution'] = test_data.shape[1:]
+        self.metrics_dictionary['GridInfo'] = grid
+
     def set_simulation_desc(self, ref, test):
         test_data = test()
 
@@ -136,13 +160,8 @@ class OutputMetrics(object):
         if "SimulationDescription" not in \
                 self.metrics_dictionary["RESULTS"][test.obs_or_model]:
 
-            if isinstance(self.obs_dict[self.var][ref.obs_or_model], (str, unicode)):
-                obs_var_ref = self.obs_dict[self.var][self.obs_dict[self.var][ref.obs_or_model]]
-            else:
-                obs_var_ref = self.obs_dict[self.var][ref.obs_or_model]
-
-            descr = {"MIPTable": obs_var_ref["CMIP_CMOR_TABLE"],
-                     "Model": ref.obs_or_model,
+            descr = {"MIPTable": self.obs_var_ref["CMIP_CMOR_TABLE"],
+                     "Model": test.obs_or_model,
                      }
             sim_descr_mapping = {
                 "ModelActivity": "project_id",
@@ -153,7 +172,7 @@ class OutputMetrics(object):
                 "creation_date": "creation_date",
             }
             sim_descr_mapping.update(
-                getattr(self.parameter, "simulation_description_mapping",{}))
+                getattr(self.parameter, "simulation_description_mapping", {}))
 
             for att in sim_descr_mapping.keys():
                 nm = sim_descr_mapping[att]
@@ -181,7 +200,7 @@ class OutputMetrics(object):
                 descr[att] = fmt % tuple(vals)
 
             self.metrics_dictionary["RESULTS"][test.obs_or_model]["units"] = \
-                getattr(test_data,"units","N/A")
+                getattr(test_data, "units", "N/A")
             self.metrics_dictionary["RESULTS"][test.obs_or_model]\
                 ["SimulationDescription"] = descr
 
@@ -192,15 +211,15 @@ class OutputMetrics(object):
                 "InputClimatologyMD5"] = test.hash()
             # Not just global
             #TODO Ask Charles if the below check is needed
-            '''
-            if len(self.regions_dict[self.var]) > 1:
-                self.metrics_dictionary["RESULTS"][test.obs_or_model][
-                    "InputRegionFileName"] = \
-                    self.sftlf[test.obs_or_model]["filename"]
-                self.metrics_dictionary["RESULTS"][test.obs_or_model][
-                    "InputRegionMD5"] = \
-                    self.sftlf[test.obs_or_model]["md5"]
-            '''
+
+            #if len(self.regions_dict[self.var]) > 1:
+            self.metrics_dictionary["RESULTS"][test.obs_or_model][
+                "InputRegionFileName"] = \
+                self.sftlf[test.obs_or_model]["filename"]
+            self.metrics_dictionary["RESULTS"][test.obs_or_model][
+                "InputRegionMD5"] = \
+                self.sftlf[test.obs_or_model]["md5"]
+
 
     def output_interpolated_model_climatologies(self, test):
         region_name = self.get_region_name(test)
