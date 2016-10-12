@@ -98,9 +98,6 @@ class OutputMetrics(object):
 
         self.set_simulation_desc(ref, test)
 
-        print 'ref.obs_or_model: ', ref.obs_or_model
-        print "self.metrics_dictionary['RESULTS']"
-        print self.metrics_dictionary['RESULTS']
         if ref.obs_or_model not in self.metrics_dictionary['RESULTS'][test.obs_or_model]:
             self.metrics_dictionary["RESULTS"][test.obs_or_model][ref.obs_or_model] = \
                 {'source': self.obs_dict[self.var][ref.obs_or_model]}

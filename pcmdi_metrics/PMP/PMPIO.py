@@ -7,7 +7,7 @@ import cdutil
 import MV2
 import cdms2
 import hashlib
-from pcmdi_metrics.base.CDPIO import *
+from CDP.base.CDPIO import *
 
 
 class CDMSDomainsEncoder(json.JSONEncoder):

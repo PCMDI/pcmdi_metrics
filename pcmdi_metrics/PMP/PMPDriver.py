@@ -1,4 +1,4 @@
-from pcmdi_metrics.base.CDPDriver import *
+from CDP.base.CDPDriver import *
 from pcmdi_metrics.PMP.PMPDriverCheckParameter import *
 from pcmdi_metrics.PMP.PMPDriverRunDiags import *
 
