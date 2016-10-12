@@ -7,6 +7,7 @@ class OBS(PMPIO):
                  file_mask_template=None):
         template = "%(realm)/%(frequency)/%(variable)/" +\
                    "%(reference)/%(ac)/%(filename)"
+        print 'file_mask_template: ', file_mask_template
         super(OBS, self).__init__(root, template, file_mask_template)
 
         if obs not in obs_dict[var]:
@@ -44,18 +45,19 @@ class OBS(PMPIO):
 
 class Observation(DataSet):
     def __init__(self, parameter, var_name_long, region,
-                 obs, obs_dict, sftlf=None):
-        super(Observation, self).__init__(parameter, var_name_long,
-                                          region, obs_dict, sftlf)
+                 obs, obs_dict, data_path, sftlf=None):
+        super(Observation, self).__init__(parameter, var_name_long, region,
+                                          obs_dict, data_path, sftlf)
         self.obs_or_model = obs
         # This is just to make it more clear.
+
         self.obs_file = self.obs_or_model_file
 
         self.create_obs_file()
 
     def create_obs_file(self):
         obs_mask_name = self.create_obs_mask_name()
-        self.obs_file = OBS(self.parameter.obs_data_path, self.var,
+        self.obs_file = OBS(self.data_path, self.var,
                             self.obs_dict, self.obs_or_model,
                             file_mask_template=obs_mask_name)
 
@@ -64,7 +66,7 @@ class Observation(DataSet):
     def create_obs_mask_name(self):
         try:
             obs_from_obs_dict = self.get_obs_from_obs_dict()
-            obs_mask = OBS(self.parameter.obs_data_path, 'sftlf',
+            obs_mask = OBS(self.data_path, 'sftlf',
                            self.obs_dict, obs_from_obs_dict['RefName'])
             obs_mask_name = obs_mask()
         except:

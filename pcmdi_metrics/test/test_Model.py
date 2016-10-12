@@ -21,7 +21,7 @@ class TestModel(unittest.TestCase):
         parameter.regrid_tool_ocn = 'esmf'
         parameter.regrid_method_ocn = 'linear'
         parameter.metrics_output_path = '.'
-        parameter.mod_data_path = os.path.join(
+        parameter.test_data_path = os.path.join(
             './',
             'metrics_results', "%(case_id)")
         parameter.filename_template = \

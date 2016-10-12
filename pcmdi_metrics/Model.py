@@ -4,16 +4,16 @@ from pcmdi_metrics.DataSet import *
 
 class Model(DataSet):
     def __init__(self, parameter, var_name_long, region,
-                 model, obs_dict, sftlf=None):
-        super(Model, self).__init__(parameter, var_name_long,
-                                    region, obs_dict, sftlf)
+                 model, obs_dict, data_path, sftlf=None):
+        super(Model, self).__init__(parameter, var_name_long, region,
+                                    obs_dict, data_path, sftlf)
         self.obs_or_model = model
         # This is just to make it more clear.
         self.model_file = self.obs_or_model_file
         self.create_model_file()
 
     def create_model_file(self):
-        self.model_file = PMPIO(self.parameter.mod_data_path,
+        self.model_file = PMPIO(self.data_path,
                                 self.parameter.filename_template)
         self.model_file.variable = self.var
         self.model_file.model_version = self.obs_or_model

@@ -28,11 +28,11 @@ class PMPParameter(CDPParameter):
         self.surface_type_land_fraction_filename_template = ''
         self.generate_surface_type_land_fraction = None
 
-        self.mod_data_path = ''
-        self.obs_data_path = ''
+        self.test_data_path = ''
+        self.reference_data_path = ''
         self.custom_observations_path = ''
-        self.save_mod_clims = None
-        self.model_clims_interpolated_output = ''
+        self.save_test_clims = None
+        self.test_clims_interpolated_output = ''
 
         self.metrics_output_path = ''
         self.filename_output_template = ''
@@ -145,10 +145,10 @@ class PMPParameter(CDPParameter):
             ['linear', 'conservative']
         )
 
-    def check_save_mod_clims(self):
-        if self.save_mod_clims is None:
+    def check_save_test_clims(self):
+        if self.save_test_clims is None:
             raise ValueError(
-                "save_mod_clims cannot be None. " +
+                "save_test_clims cannot be None. " +
                 "It must be either True or False."
             )
 
@@ -190,18 +190,18 @@ class PMPParameter(CDPParameter):
                  "be None. It must be either True or False.")
             )
 
-    def check_mod_data_path(self):
-        self.check_str(self.mod_data_path, 'mod_data_path')
+    def check_test_data_path(self):
+        self.check_str(self.test_data_path, 'test_data_path')
 
-    def check_obs_data_path(self):
-        self.check_str(self.obs_data_path, 'obs_data_path')
+    def check_reference_data_path(self):
+        self.check_str(self.reference_data_path, 'reference_data_path')
 
     def check_metrics_output_path(self):
         self.check_str(self.metrics_output_path, 'metrics_output_path')
 
-    def check_model_clims_interpolated_output(self):
-        self.check_str(self.model_clims_interpolated_output,
-                       'model_clims_interpolated_output')
+    def check_test_clims_interpolated_output(self):
+        self.check_str(self.test_clims_interpolated_output,
+                       'test_clims_interpolated_output')
 
     def check_filename_output_template(self):
         self.check_str(self.filename_output_template,
@@ -225,16 +225,16 @@ class PMPParameter(CDPParameter):
         self.check_regrid_method()
         self.check_regrid_tool_ocn()
         self.check_regrid_method_ocn()
-        self.check_save_mod_clims()
+        self.check_save_test_clims()
         self.check_regions_specs()
         self.check_regions()
         self.check_custom_keys()
         self.check_filename_template()
         self.check_surface_type_land_fraction_filename_template()
         self.check_generate_surface_type_land_fraction()
-        self.check_mod_data_path()
-        self.check_obs_data_path()
+        self.check_test_data_path()
+        self.check_reference_data_path()
         self.check_metrics_output_path()
-        self.check_model_clims_interpolated_output()
+        self.check_test_clims_interpolated_output()
         self.check_filename_output_template()
         self.check_custom_observations_path()

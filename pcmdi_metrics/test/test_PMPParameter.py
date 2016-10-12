@@ -56,10 +56,10 @@ class testPMPParameter(unittest.TestCase):
         with self.assertRaises(TypeError):
             self.pmp_parameter.check_regrid_method()
 
-    def test_check_save_mod_clims_with_none(self):
-        self.pmp_parameter.save_mod_clims = None
+    def test_check_save_test_clims_with_none(self):
+        self.pmp_parameter.save_test_clims = None
         with self.assertRaises(ValueError):
-            self.pmp_parameter.check_save_mod_clims()
+            self.pmp_parameter.check_save_test_clims()
 
     def test_check_regions_specs_with_non_dict(self):
         self.pmp_parameter.regions_specs = ['Nino34']
@@ -97,28 +97,28 @@ class testPMPParameter(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.pmp_parameter.check_generate_surface_type_land_fraction()
 
-    def test_check_mod_data_path_with_nonstr_value(self):
-        self.pmp_parameter.mod_data_path = ['%(variable)_%(period)']
+    def test_check_test_data_path_with_nonstr_value(self):
+        self.pmp_parameter.test_data_path = ['%(variable)_%(period)']
         with self.assertRaises(TypeError):
-            self.pmp_parameter.check_mod_data_path()
+            self.pmp_parameter.check_test_data_path()
 
-    def test_check_obs_data_path_with_nonstr_value(self):
-        self.pmp_parameter.obs_data_path = ['%(variable)_%(period)']
+    def test_check_reference_data_path_with_nonstr_value(self):
+        self.pmp_parameter.reference_data_path = ['%(variable)_%(period)']
         with self.assertRaises(TypeError):
-            self.pmp_parameter.check_obs_data_path()
+            self.pmp_parameter.check_reference_data_path()
 
     def test_check_metrics_output_path_with_nonstr_value(self):
         self.pmp_parameter.metrics_output_path = ['%(variable)_%(period)']
         with self.assertRaises(TypeError):
             self.pmp_parameter.check_metrics_output_path()
 
-    def test_check_model_clims_interpolated_output_with_nonstr_value(self):
-        self.pmp_parameter.model_clims_interpolated_output \
+    def test_check_test_clims_interpolated_output_with_nonstr_value(self):
+        self.pmp_parameter.test_clims_interpolated_output \
             = ['%(variable)_%(period)']
         with self.assertRaises(TypeError):
-            self.pmp_parameter.check_model_clims_interpolated_output()
+            self.pmp_parameter.check_test_clims_interpolated_output()
 
-    def test_check_mod_data_path_with_nonstr_value(self):
+    def test_check_test_data_path_with_nonstr_value(self):
         self.pmp_parameter.filename_output_template = ['%(variable)_%(period)']
         with self.assertRaises(TypeError):
             self.pmp_parameter.check_filename_output_template()

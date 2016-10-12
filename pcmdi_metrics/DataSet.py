@@ -9,11 +9,13 @@ from pcmdi_metrics.PMPIO import *
 class DataSet(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, parameter, var_name_long, region, obs_dict, sftlf=None):
+    def __init__(self, parameter, var_name_long, region,
+                 obs_dict, data_path, sftlf=None):
         self.parameter = parameter
         self.var_name_long = var_name_long
         self.region = region
         self.obs_dict = obs_dict
+        self.data_path = data_path
 
         self.var = var_name_long.split('_')[0]
         self.level = self.calculate_level_from_var(var_name_long)
@@ -47,7 +49,7 @@ class DataSet(object):
 
         for test in parameter.test_data_set:
             sft = PMPIO(
-                parameter.mod_data_path,
+                parameter.test_data_path,
                 getattr(parameter, "sftlf_filename_template",
                         parameter.filename_template))
             sft.model_version = test

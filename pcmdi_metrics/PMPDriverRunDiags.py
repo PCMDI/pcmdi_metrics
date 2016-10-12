@@ -19,6 +19,7 @@ class PMPDriverRunDiags(object):
             self.var = ''
             self.output_metric = None
             self.region = ''
+            self.sftlf = DataSet.create_sftlf(self.parameter)
             self.default_regions = []
             self.regions_specs = {}
 
@@ -33,7 +34,7 @@ class PMPDriverRunDiags(object):
                 self.var = self.var_name_long.split('_')[0]
 
                 self.output_metric = OutputMetrics(
-                    self.parameter, self.var_name_long, self.obs_dict)
+                    self.parameter, self.var_name_long, self.obs_dict, sftlf=self.sftlf)
 
                 for region in self.regions_dict[self.var]:
                     self.region = self.create_region(region)
@@ -120,11 +121,12 @@ class PMPDriverRunDiags(object):
             # self.reference/self.test are either an obs or model
             for self.reference in reference_data_set:
                 for self.test in test_data_set:
-
+                    print 'self.parameter.reference_data_set: ', self.parameter.reference_data_set
                     ref = self.determine_obs_or_model(reference_data_set_is_obs,
-                                                      self.reference)
+                                                    self.reference, self.parameter.reference_data_path)
+
                     test = self.determine_obs_or_model(test_data_set_is_obs,
-                                                       self.test)
+                                                       self.test, self.parameter.test_data_path)
 
                     self.output_metric.calculate_and_output_metrics(ref, test)
 
@@ -140,12 +142,14 @@ class PMPDriverRunDiags(object):
                     break
             return data_set_is_obs
 
-        def determine_obs_or_model(self, is_obs, ref_or_test):
+        def determine_obs_or_model(self, is_obs, ref_or_test, data_path):
             if is_obs:
                 print 'OBS'
                 return Observation(self.parameter, self.var_name_long,
-                                   self.region, ref_or_test, self.obs_dict)
+                                   self.region, ref_or_test, self.obs_dict,
+                                   data_path, sftlf=self.sftlf)
             else:
                 print 'MODEL'
                 return Model(self.parameter, self.var_name_long,
-                             self.region, ref_or_test, self.obs_dict)
+                             self.region, ref_or_test, self.obs_dict,
+                             data_path, sftlf=self.sftlf)

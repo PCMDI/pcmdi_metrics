@@ -8,7 +8,7 @@ from pcmdi_metrics.DataSet import DataSet
 
 class OutputMetrics(object):
 
-    def __init__(self, parameter, var_name_long, obs_dict, stflf=None):
+    def __init__(self, parameter, var_name_long, obs_dict, sftlf=None):
         self.parameter = parameter
         self.var_name_long = var_name_long
         self.obs_dict = obs_dict
@@ -22,7 +22,7 @@ class OutputMetrics(object):
         self.out_file = PMPIO(self.parameter.metrics_output_path,
                               string_template)
 
-        self.sftlf = stflf
+        self.sftlf = sftlf
         if self.sftlf is None:
             self.sftlf = DataSet.create_sftlf(self.parameter)
 
@@ -130,7 +130,7 @@ class OutputMetrics(object):
                 [ref.obs_or_model][self.parameter.realization] = \
                 parameter_realization
 
-        if self.check_save_mod_clim(ref):
+        if self.check_save_test_clim(ref):
             self.output_interpolated_model_climatologies(test)
 
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
@@ -220,7 +220,7 @@ class OutputMetrics(object):
 
     def output_interpolated_model_climatologies(self, test):
         region_name = self.get_region_name(test)
-        pth = os.path.join(self.parameter.model_clims_interpolated_output,
+        pth = os.path.join(self.parameter.test_clims_interpolated_output,
                            region_name)
         clim_file = PMPIO(pth, self.parameter.filename_output_template)
         logging.error('Saving interpolated climatologies to: %s' % clim_file())
@@ -247,7 +247,7 @@ class OutputMetrics(object):
             region_name = 'global'
         return region_name
 
-    def check_save_mod_clim(self, ref):
+    def check_save_test_clim(self, ref):
         # Since we are only saving once per reference data set (it's always
         # the same after), we need to check if ref is the first value from the
         # parameter, hence we have ref.obs_or_model == reference_data_set[0]
@@ -255,6 +255,6 @@ class OutputMetrics(object):
         reference_data_set = Observation.setup_obs_list_from_parameter(
                 reference_data_set, self.obs_dict, self.var)
         return not self.parameter.dry_run and \
-               hasattr(self.parameter, 'save_mod_clims') and \
-               self.parameter.save_mod_clims is True and \
+               hasattr(self.parameter, 'save_test_clims') and \
+               self.parameter.save_test_clims is True and \
                ref.obs_or_model == reference_data_set[0]
