@@ -3,11 +3,11 @@ import os
 import sys
 import json
 import collections
-from pcmdi_metrics.PMP.PMPParameter import *
-from pcmdi_metrics.PMP.OutputMetrics import *
-from pcmdi_metrics.PMP.Observation import *
-from pcmdi_metrics.PMP.Model import *
-from pcmdi_metrics.PMP.DataSet import *
+from pcmdi_metrics.PMPParameter import *
+from pcmdi_metrics.OutputMetrics import *
+from pcmdi_metrics.Observation import *
+from pcmdi_metrics.Model import *
+from pcmdi_metrics.DataSet import *
 
 
 class PMPDriverRunDiags(object):

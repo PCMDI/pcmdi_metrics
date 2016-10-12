@@ -1,7 +1,7 @@
 import argparse
 import os
-from pcmdi_metrics.PMP.PMPDriver import *
-from pcmdi_metrics.PMP.PMPParameter import *
+from pcmdi_metrics.PMPDriver import *
+from pcmdi_metrics.PMPParameter import *
 
 parser = argparse.ArgumentParser(
     description='Runs PCMDI Metrics Diagnostics')

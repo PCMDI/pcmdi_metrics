@@ -3,7 +3,7 @@ import os
 import sys
 import cdutil
 import cdms2
-from pcmdi_metrics.PMP.PMPIO import *
+from pcmdi_metrics.PMPIO import *
 
 
 class DataSet(object):

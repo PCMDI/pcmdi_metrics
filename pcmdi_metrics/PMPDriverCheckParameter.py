@@ -1,5 +1,5 @@
 import logging
-from pcmdi_metrics.PMP.PMPParameter import *
+from pcmdi_metrics.PMPParameter import *
 
 
 class PMPDriverCheckParameter(object):

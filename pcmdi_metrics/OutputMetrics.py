@@ -1,9 +1,9 @@
 import collections
 import sys
-from pcmdi_metrics.PMP.PMPIO import *
-from pcmdi_metrics.PMP.metrics.mean_climate_metrics_calculations import *
-from pcmdi_metrics.PMP.Observation import *
-from pcmdi_metrics.PMP.DataSet import DataSet
+from pcmdi_metrics.PMPIO import *
+from pcmdi_metrics.metrics.mean_climate_metrics_calculations import *
+from pcmdi_metrics.Observation import *
+from pcmdi_metrics.DataSet import DataSet
 
 
 class OutputMetrics(object):
