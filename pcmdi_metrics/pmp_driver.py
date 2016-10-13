@@ -1,6 +1,6 @@
-from CDP.base.CDPDriver import *
-from pcmdi_metrics.PMPDriverCheckParameter import *
-from pcmdi_metrics.PMPDriverRunDiags import *
+from cdp.cdp_driver import *
+from pcmdi_metrics.checkparameter import *
+from pcmdi_metrics.rundiags import *
 
 
 class PMPDriver(CDPDriver):
@@ -11,7 +11,7 @@ class PMPDriver(CDPDriver):
         pass
 
     def run_diags(self):
-        run = PMPDriverRunDiags(self.parameter)
+        run = RunDiags(self.parameter)
         run()
 
     def export(self):

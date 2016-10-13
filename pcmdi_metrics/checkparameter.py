@@ -1,8 +1,8 @@
 import logging
-from pcmdi_metrics.PMPParameter import *
+from pcmdi_metrics.pmp_parameter import *
 
 
-class PMPDriverCheckParameter(object):
+class CheckParameter(object):
 
     @staticmethod
     def check_parameter(parameter):

@@ -10,7 +10,7 @@ from pcmdi_metrics.PMP.PMPIO import *
 class testPMPIO(unittest.TestCase):
 
     def setUp(self):
-        self.path = os.path.realpath(__file__).replace('test_PMPIO.py', '')
+        self.path = os.path.realpath(__file__).replace('test_pmp_io.py', '')
         self.filename = 'test'
         self.pmp_io = PMPIO(self.path, self.filename)
 
@@ -74,7 +74,7 @@ class testPMPIO(unittest.TestCase):
 
     def test_hash_with_no_failures(self):
         try:
-            path = os.path.realpath(__file__).replace('test_PMPIO.py', '')
+            path = os.path.realpath(__file__).replace('test_pmp_io.py', '')
             filename = 'testhash.json'
             pmpio = PMPIO(path, filename)
             pmpio.write({})

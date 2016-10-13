@@ -3,14 +3,14 @@ import os
 import sys
 import json
 import collections
-from pcmdi_metrics.PMPParameter import *
-from pcmdi_metrics.OutputMetrics import *
-from pcmdi_metrics.Observation import *
-from pcmdi_metrics.Model import *
-from pcmdi_metrics.DataSet import *
+from pcmdi_metrics.pmp_parameter import *
+from pcmdi_metrics.outputmetrics import *
+from pcmdi_metrics.observation import *
+from pcmdi_metrics.model import *
+from pcmdi_metrics.dataset import *
 
 
-class PMPDriverRunDiags(object):
+class RunDiags(object):
 
         def __init__(self, parameter):
             self.parameter = parameter

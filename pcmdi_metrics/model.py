@@ -1,5 +1,5 @@
-from pcmdi_metrics.PMPIO import *
-from pcmdi_metrics.DataSet import *
+from pcmdi_metrics.pmp_io import *
+from pcmdi_metrics.dataset import *
 
 
 class Model(DataSet):
