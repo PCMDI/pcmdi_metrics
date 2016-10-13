@@ -57,6 +57,7 @@ class JSONs(object):
 
     def getstruct(self):
         pass
+
     def sql(self,cmd):
         self.cu.execute(cmd)
         return self.cu.fetchall()
@@ -66,33 +67,85 @@ class JSONs(object):
         # first did we create the db
         # if yes what are the columns in it
         # do we need more columns??
-        info = self.sql("PRAGME table_info(pmp)")
+        info = self.sql("PRAGMA table_info(pmp)")
+        print "INFO DB PMP:",info
 
         if info == []:
-            cols = ", ".join(struct)
-            self.sql("create table pmp (%s , value float)" % cols)
+            self.sql("PRAGMA FOREIGN_KEYS = ON")
+            cols = "value FLOAT , "
+            foreign = ""
+            for c in json_struct:
+                self.sql("create table %s (id INTEGER PRIMARY KEY AUTOINCREMENT, name char(25) UNIQUE ON CONFLICT IGNORE)" % c)
+                cols+="%s INTEGER CHECK(TYPEOF(%s) = 'integer'), " % (c,c)
+                foreign+="FOREIGN KEY(%s) REFERENCES %s(id) " % (c,c)
+            self.sql("create table pmp (%s, %s)" % (cols[:-2], foreign))
+            #self.sql("create table pmp (%s)" % (cols[:-2]))
         else:
             # ok let's check if we need more columns
             actual_cols = [str(i[1]) for i in info]
             add_cols = []
-            for c in struct:
+            for c in json_struct:
                 if not str(c) in actual_cols:
                     add_cols.append(c)
             for c in add_cols:
-                self.sql("alter table pmp ADD COLUMN %s" % c)
+                print "ADDING COLUMN:",c
+                self.sql("create table %s (id INTEGER PRIMARY KEY AUTOINCREMENT, name char(25) UNIQUE ON CONFLICT REPLACE)" % c)
+                self.sql("alter table pmp ADD COLUMN '%s' INTEGER CHECK(TYPEOF(%s))" % (c,c))
+                self.sql("alter table pmp FOREIGN KEY(%s) REFERENCES %s(id)" % (c,c))
 
         # Ok at this point we have a db we now need to insert values in it
         f = flatten(json_dict)
+        rows = []
+        for ky in f.keys():
+            values = ky.split("__**__")
+            if float(json_version)==2.0:
+                sp = values[-1].split("_")
+                season = sp[-1]
+                values[-1]="_".join(sp[:-1])
+                values+=[season,]
+            elif float(json_version)==1.0:
+                sp = values[-1].split("_")
+                if len(sp)<2:
+                    continue
+                reg = sp[-1]
+                file_region = values[-2]
+                if reg == "GBL":
+                    reg = "global"
+                if file_region == "global":
+                    file_region = reg
+                else:
+                    file_region += "_"+reg
+                values[-2]=file_region
+                season = sp[-2]
+                values[-1] = "_".join(sp[:-2])
+                values.append("season")
 
+            if len(values)!=len(json_struct):
+                continue
+            for k,v in zip(json_struct,values):
+                if not (v,) in self.sql("select (name) from %s" % k):
+                    self.sql("insert into %s (name) values ('%s')" % (k,v))
+            for i,v in enumerate(values):
+                val = self.sql("select id from %s where name='%s'" % (json_struct[i],v))
+                values[i]=val[0][0]
+            values.append(float(f[ky]))
+            rows.append(values)
+        keys = ", ".join(json_struct)+", value"
+        qmarks = "?, " * (len(json_struct)+1)
+        qry  = "INSERT into pmp (%s) VALUES (%s)"%(keys,qmarks[:-2])
+        self.cu.executemany(qry,rows)
+        self.db.commit()
         pass
     def __init__(self, files):
         import sqlite3
         import tempfile
-        self.db = sqlite3.connect(tempfile.mktemp())
+        dbnm = tempfile.mktemp()
+        dbnm = "Charles.sql"
+        self.db = sqlite3.connect(dbnm)
         self.cu = self.db.cursor()
         self.data = {}
         self.json_version = "2.0"
-        self.json_struct = ["model","reference","rip","region","statisitic"]
+        self.json_struct = ["model","reference","rip","region","statistic","season"]
 
         if len(files) == 0:
             raise Exception("You need to pass at least one file")
@@ -115,81 +168,27 @@ class JSONs(object):
                     json_version = "1.0"
                 else:
                     json_version = "2.0"
-            # print "\tv%s" % json_version
-            if json_version == "2.0":
-                R = tmp_dict["RESULTS"]
-            elif json_version == "1.0":  # ok old way we need to convert to 2.0
-                for model in R.keys():  # loop through models
-                    # print "Reading in model:",model
-                    m = R[model]
-                    # print "FIRST M:",m.keys()
-                    for ref in m.keys():
-                        aref = m[ref]
-                        if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
-                            continue
-                        # print "\treading in ref:",ref
-                        # print aref.keys()
-                        reals = aref.keys()
-                        src = reals.pop(reals.index("source"))
-                        for real in reals:
-                            # print "\t\treading in realization:",real
-                            # print real
-                            areal = aref[real]
-                            areal2 = {"source": src}
-                            for region in areal.keys():
-                                # print "\t\t\tREGION:",region
-                                reg = areal[region]
-                                if region == "global":
-                                    region2 = ""
-                                else:
-                                    region2 = region + "_"
-                                areal2[region2 + "global"] = {}
-                                areal2[region2 + "NHEX"] = {}
-                                areal2[region2 + "SHEX"] = {}
-                                areal2[region2 + "TROPICS"] = {}
-                                # print "OK HERE REGIONS:",areal2.keys()
-                                key_stats = reg.keys()
-                                for k in key_stats:
-                                    if k[:7] == "custom_":
-                                        areal2[region][k] = reg[k]
-                                    else:
-                                        # print "SPLITTING:",k
-                                        sp = k.split("_")
-                                        new_key = "_".join(sp[:-1])
-                                        domain = sp[-1]
-                                        if domain == "GLB":
-                                            domain = "global"
-                                        # if new_key.find("rms_xyt")>-1: print
-                                        # "\t\t\t\tregion,
-                                        # stats:",region2+domain,new_key,reg[k]
-                                        areal2[
-                                            region2 + domain][new_key] = reg[k]
-                            # Now we can replace the realization with the correctly formatted one
-                            # print "AREAL@:",areal2
-                            aref[real] = areal2
-                        # restore ref into model
-                        m[ref] = aref
-                    # restore model into results
-                    R[model] = m
-                    # print "M:",model,m.keys()
-            else:
-                raise RuntimeError("Could not figure out how to read in json file: %s" % fnm)
+            print "FILE:",fnm
+            print "\tv%s" % json_version
             # Now update our stored results
             # First we need to figure out the variable read in
-            var = tmp_dict.get("Variable", None)
-            if var is None:  # Not stored in json, need to get from file name
-                fnm = os.path.basename(fnm)
-                varnm = fnm.split("_")[0]
+            json_struct = tmp_dict.get("json_structure",list(self.json_struct))
+            print json_struct
+            if not "variable" in json_struct:
+                json_struct.insert(0,"variable")
+                var = tmp_dict.get("Variable", None)
+                if var is None:  # Not stored in json, need to get from file name
+                    fnm = os.path.basename(fnm)
+                    varnm = fnm.split("_")[0]
+                else:
+                    varnm = var["id"]
+                    if "level" in var:
+                        varnm += "-%i" % int(var["level"] / 100.)
+                print "NEW DICT"
+                tmp_dict = {varnm:tmp_dict["RESULTS"]}
             else:
-                varnm = var["id"]
-                if "level" in var:
-                    varnm += "-%i" % int(var["level"] / 100.)
-            if varnm in self.data:
-                self.data[varnm].update(R)
-            else:
-                self.data[varnm] = R
-            if fnm == files[0]:
-                print "file",fnm,flatten(R).keys()[0]
+                tmp_dict = tmp_dict["RESULTS"]
+            self.addJson(tmp_dict,json_struct,json_version)
 
     def getAxis(self, axis):
         axes = self.getAxisList()
