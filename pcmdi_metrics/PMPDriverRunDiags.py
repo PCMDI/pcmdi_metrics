@@ -114,16 +114,15 @@ class PMPDriverRunDiags(object):
                 reference_data_set = Observation.setup_obs_list_from_parameter(
                     reference_data_set, self.obs_dict, self.var)
             if test_data_set_is_obs:
-                test_data_set_is_obs = \
-                    Observation.setup_obs_list_from_parameter(
-                        test_data_set_is_obs, self.obs_dict, self.var)
+                test_data_set = Observation.setup_obs_list_from_parameter(
+                    test_data_set, self.obs_dict, self.var)
 
             # self.reference/self.test are either an obs or model
             for self.reference in reference_data_set:
                 for self.test in test_data_set:
-                    print 'self.parameter.reference_data_set: ', self.parameter.reference_data_set
+
                     ref = self.determine_obs_or_model(reference_data_set_is_obs,
-                                                    self.reference, self.parameter.reference_data_path)
+                                                      self.reference, self.parameter.reference_data_path)
 
                     test = self.determine_obs_or_model(test_data_set_is_obs,
                                                        self.test, self.parameter.test_data_path)

@@ -84,7 +84,7 @@ class OutputMetrics(object):
         # ref and test can be used interchangeably.
         self.metrics_dictionary['RegionalMasking'][self.get_region_name(ref)] \
             = ref.region
-        if (self.obs_dict[self.var][ref.obs_or_model], (str, unicode)):
+        if isinstance(self.obs_dict[self.var][ref.obs_or_model], (str, unicode)):
             self.obs_var_ref = self.obs_dict[self.var][self.obs_dict[self.var][ref.obs_or_model]]
         else:
             self.obs_var_ref = self.obs_dict[self.var][ref.obs_or_model]
