@@ -49,6 +49,7 @@ def recurs(out,ids,nms,axval,axes,cursor):
         cursor.execute(qry)
         val = cursor.fetchall()
         if len(val) == 0:
+            print "QRY:",qry
             val = 1.e20
         elif len(val)==1:
             val =float(val[0][0])
@@ -124,7 +125,7 @@ class JSONs(object):
                     continue
                 reg = sp[-1]
                 file_region = values[-2]
-                if reg == "GBL":
+                if reg == "GLB":
                     reg = "global"
                 if file_region == "global":
                     file_region = reg
@@ -223,7 +224,7 @@ class JSONs(object):
         info = self.sql("PRAGMA table_info(pmp)")
         axes = []
         for ax in info[1:]:
-            nm = ax[1]
+            nm = str(ax[1])
             # now get all possible values for this
             #values = self.sql("select distinct %s from pmp" % nm)
             #print "VALUES:",values
@@ -269,13 +270,12 @@ class JSONs(object):
                 sh[index] = len(axis)
 
         array = numpy.ma.ones(sh, dtype=numpy.float)
-        print "RETURN ARRAY:",sh
+        # Now let's fill this array
         recurs(array,[],[],[],axes,self.cu)
 
-        # Now let's fill this array
-        
-
-
+        f = cdms2.open("charles.nc","w")
+        f.write(array,id="pmp")
+        f.close()
         array = MV2.masked_greater(array, 9.e19)
         array.id = "pmp"
         array.setAxisList(axes)
