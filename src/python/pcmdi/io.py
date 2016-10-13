@@ -39,6 +39,25 @@ class OBS(pcmdi_metrics.io.base.Base):
         self.reference = obs_name
         self.variable = var
 
+def recurs(out,ids,nms,axval,axes,cursor):
+    if len(axes)>0:
+        for i,val in enumerate(axes[0][:]):
+             recurs(out,list(ids)+[i,],list(nms)+[axes[0].id],list(axval)+[val,],axes[1:],cursor)
+    else:
+        st = " and ".join(["%s='%s'"% (nm,val) for nm,val in zip(nms,axval)])
+        qry = "select (value) from pmp where %s" % st
+        cursor.execute(qry)
+        val = cursor.fetchall()
+        if len(val) == 0:
+            val = 1.e20
+        elif len(val)==1:
+            val =float(val[0][0])
+        else:
+            print "MULTIPLE ANSWERS",val
+            val=1.e20
+
+        out[tuple(ids)]=val
+
 def flatten(dic,parent_key="",sep="__**__"):
     """ flattens a dictionary thanks stack overflow"""
     items = []
@@ -67,19 +86,17 @@ class JSONs(object):
         # first did we create the db
         # if yes what are the columns in it
         # do we need more columns??
+        self.cu.execute("PRAGMA main.page_size = 65536")
+        self.cu.execute("PRAGMA main.cache_size = 65536")
         info = self.sql("PRAGMA table_info(pmp)")
         print "INFO DB PMP:",info
 
         if info == []:
-            self.sql("PRAGMA FOREIGN_KEYS = ON")
+            self.cu.execute("PRAGMA FOREIGN_KEYS = ON")
             cols = "value FLOAT , "
-            foreign = ""
             for c in json_struct:
-                self.sql("create table %s (id INTEGER PRIMARY KEY AUTOINCREMENT, name char(25) UNIQUE ON CONFLICT IGNORE)" % c)
-                cols+="%s INTEGER CHECK(TYPEOF(%s) = 'integer'), " % (c,c)
-                foreign+="FOREIGN KEY(%s) REFERENCES %s(id) " % (c,c)
-            self.sql("create table pmp (%s, %s)" % (cols[:-2], foreign))
-            #self.sql("create table pmp (%s)" % (cols[:-2]))
+                cols+="%s CHAR(32), " % (c,)
+            self.cu.execute("create table pmp (%s)" % (cols[:-2],))
         else:
             # ok let's check if we need more columns
             actual_cols = [str(i[1]) for i in info]
@@ -89,9 +106,7 @@ class JSONs(object):
                     add_cols.append(c)
             for c in add_cols:
                 print "ADDING COLUMN:",c
-                self.sql("create table %s (id INTEGER PRIMARY KEY AUTOINCREMENT, name char(25) UNIQUE ON CONFLICT REPLACE)" % c)
-                self.sql("alter table pmp ADD COLUMN '%s' INTEGER CHECK(TYPEOF(%s))" % (c,c))
-                self.sql("alter table pmp FOREIGN KEY(%s) REFERENCES %s(id)" % (c,c))
+                self.cu.execute("alter table pmp ADD COLUMN '%s' CHAR(32)" % (c,c))
 
         # Ok at this point we have a db we now need to insert values in it
         f = flatten(json_dict)
@@ -118,29 +133,31 @@ class JSONs(object):
                 values[-2]=file_region
                 season = sp[-2]
                 values[-1] = "_".join(sp[:-2])
-                values.append("season")
+                values.append(season)
 
             if len(values)!=len(json_struct):
                 continue
-            for k,v in zip(json_struct,values):
-                if not (v,) in self.sql("select (name) from %s" % k):
-                    self.sql("insert into %s (name) values ('%s')" % (k,v))
-            for i,v in enumerate(values):
-                val = self.sql("select id from %s where name='%s'" % (json_struct[i],v))
-                values[i]=val[0][0]
+            #for k,v in zip(json_struct,values):
+            #    #if not (v,) in self.sql("select (name) from %s" % k):
+            #        self.cu.execute("insert into %s (name) values ('%s')" % (k,v))
+            #for i,v in enumerate(values):
+            #    val = self.sql("select id from %s where name='%s'" % (json_struct[i],v))
+            #    values[i]=val[0][0]
             values.append(float(f[ky]))
             rows.append(values)
         keys = ", ".join(json_struct)+", value"
         qmarks = "?, " * (len(json_struct)+1)
         qry  = "INSERT into pmp (%s) VALUES (%s)"%(keys,qmarks[:-2])
         self.cu.executemany(qry,rows)
-        self.db.commit()
+        #self.db.commit()
         pass
-    def __init__(self, files):
+    def __init__(self, files=[], database = "Charles.sql"):
         import sqlite3
         import tempfile
-        dbnm = tempfile.mktemp()
-        dbnm = "Charles.sql"
+        if database is None:
+            dbnm = tempfile.mkfile()
+        else:
+            dbnm= database
         self.db = sqlite3.connect(dbnm)
         self.cu = self.db.cursor()
         self.data = {}
@@ -148,7 +165,11 @@ class JSONs(object):
         self.json_struct = ["model","reference","rip","region","statistic","season"]
 
         if len(files) == 0:
-            raise Exception("You need to pass at least one file")
+            if database is None:
+                raise Exception("You need to pass at least one file or a database")
+            elif self.sql("PRAGMA table_info(pmp)") == []:
+                raise Exception("You need to pass at least one file or a non empty database")
+
         for fnm in files:
             f = open(fnm)
             tmp_dict = json.load(f)
@@ -189,6 +210,7 @@ class JSONs(object):
             else:
                 tmp_dict = tmp_dict["RESULTS"]
             self.addJson(tmp_dict,json_struct,json_version)
+        self.db.commit()
 
     def getAxis(self, axis):
         axes = self.getAxisList()
@@ -198,54 +220,17 @@ class JSONs(object):
         return None
 
     def getAxisList(self):
-        variables = self.data.keys()
-        models = set()
-        observations = set()
-        rips = set()
-        regions = set()
-        stats = set()
-        seasons = ['ann', 'mam', 'jja', 'son', 'djf']
-        for v in variables:
-            # print "Variable:",v
-            V = self.data[v]
-            models.update(V.keys())
-            for m in V:
-                # print "\tModel:",m
-                M = V[m]
-                for o in M:
-                    O = M[o]
-                    if isinstance(
-                            O, dict) and "source" in O:  # ok it is indeed an obs key
-                        # print "\t\tObs:",o
-                        observations.update([o, ])
-                        for r in O:
-                            k = O.keys()
-                            k.remove("source")
-                            if r == "source":  # skip that one
-                                continue
-                            # print "\t\t\trip:",r
-                            rips.update(k)
-                            R = O[r]
-                            Rkeys = R.keys()
-                            if "source" in Rkeys:
-                                Rkeys.remove("source")
-                            for rg in Rkeys:
-                                # print "\t\t\tregion:",rg
-                                Rg = R[rg]
-                                regions.update(Rkeys)
-                                # print "REGIONS:",Rg
-                                for s in Rg:
-                                    stats.update([s[:-4], ])
-                    else:
-                        pass
-        variable = cdms2.createAxis(sorted(variables), id="variable")
-        model = cdms2.createAxis(sorted(models), id="model")
-        observation = cdms2.createAxis(sorted(observations), id="observation")
-        rip = cdms2.createAxis(sorted(rips), id="rip")
-        region = cdms2.createAxis(sorted(regions), id="region")
-        stat = cdms2.createAxis(sorted(stats), id="statistic")
-        season = cdms2.createAxis(seasons, id="season")
-        return [variable, model, observation, rip, region, stat, season]
+        info = self.sql("PRAGMA table_info(pmp)")
+        axes = []
+        for ax in info[1:]:
+            nm = ax[1]
+            # now get all possible values for this
+            #values = self.sql("select distinct %s from pmp" % nm)
+            #print "VALUES:",values
+            values = sorted([ str(a[0]) for a in self.sql("select distinct %s from pmp" % nm)])
+            axes.append(cdms2.createAxis(values,id=nm))
+        return axes
+
 
     def __call__(self, **kargs):
         """ Returns the array of values"""
@@ -284,54 +269,12 @@ class JSONs(object):
                 sh[index] = len(axis)
 
         array = numpy.ma.ones(sh, dtype=numpy.float)
+        print "RETURN ARRAY:",sh
+        recurs(array,[],[],[],axes,self.cu)
 
         # Now let's fill this array
-        for i in range(sh[0]):
-            # print
-            # "VAR:",axes[0][i],"----------------------------------------------------------------______"
-            try:
-                val = self.data[axes[0][i]]  # select var
-                for j in range(sh[1]):
-                    # print "Model:",axes[1][j],type(val)
-                    try:
-                        val2 = val[axes[1][j]]  # select model
-                        for k in range(sh[2]):
-                            # print "OBS:",axes[2][k]
-                            try:
-                                val3 = val2[axes[2][k]]  # select obs
-                                for l in range(sh[3]):
-                                    # print "RIP:",axes[3][l]
-                                    try:
-                                        val4 = val3[axes[3][l]]  # select rip
-                                        for m in range(sh[4]):
-                                            # print "Reg:",axes[4][m]
-                                            try:
-                                                # select region
-                                                val5 = val4[axes[4][m]]
-                                                for n in range(sh[5]):
-                                                    for o in range(sh[6]):
-                                                        try:
-                                                            val6 = val5[
-                                                                axes[5][n] + "_" + axes[6][o]]
-                                                        except:
-                                                            val6 = 1.e20
-                                                        # print val6
-                                                        array[(i, j, k, l, m, n, o)] = float(
-                                                            val6)
-                                            except:  # Region not available?
-                                                # print "NO REG"
-                                                array[(i, j, k, l, m)] = 1.e20
-                                    except:
-                                        # print "NO RIP"
-                                        array[(i, j, k, l)] = 1.e20
-                            except:
-                                # print "NO OBS"
-                                array[(i, j, k)] = 1.e20
-                    except Exception:
-                        array[(i, j)] = 1.e20
-            except:
-                # print "NO VAR!"
-                array[(i)] = 1.e20
+        
+
 
         array = MV2.masked_greater(array, 9.e19)
         array.id = "pmp"
