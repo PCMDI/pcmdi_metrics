@@ -99,7 +99,7 @@ def compute_metrics(Var, dm, do):
     stdObs_xy_devzm = pcmdi_metrics.pcmdi.std_xy.compute(do_am_devzm)
     std_xy_devzm = pcmdi_metrics.pcmdi.std_xy.compute(dm_am_devzm)
     
-    for stat in ["std-obs_xy","'std_xy","std-obs_xyt",
+    for stat in ["std-obs_xy","std_xy","std-obs_xyt",
             "std_xyt","std-obs_xy_devzm","std_xy_devzm",
             "rms_xyt","rms_xy","cor_xy","bias_xy",
             "mae_xy","rms_y","rms_devzm"]:
@@ -209,45 +209,32 @@ def compute_metrics(Var, dm, do):
             bias_sea *
             conv,
             sig_digits)
-        metrics_dictionary[
-            'rms_xy_' +
-            sea
-        ] = format(
+        metrics_dictionary[ 'rms_xy'][ sea ] = format(
             rms_sea *
             conv,
             sig_digits)
-        metrics_dictionary[
-            'cor_xy_' +
-            sea
-        ] = format(
+        metrics_dictionary[ 'cor_xy'][ sea ] = format(
             cor_sea,
             '.2f')
-        metrics_dictionary[
-            'mae_xy_' +
-            sea
-        ] = format(
+        metrics_dictionary[ 'mae_xy'][ sea ] = format(
             mae_sea *
             conv,
             sig_digits)
-        metrics_dictionary[
-            'std-obs_xy_' + sea] = format(
+        metrics_dictionary[ 'std-obs_xy'][ sea] = format(
             stdObs_xy_sea *
             conv,
             sig_digits)
-        metrics_dictionary[
-            'std_xy_' + sea] = format(
+        metrics_dictionary[ 'std_xy'][ sea] = format(
             std_xy_sea *
             conv,
             sig_digits)
 
 # ZONAL AND SEASONAL MEAN CONTRIBUTIONS
-#           metrics_dictionary[
-#              'rms_y_' + sea] = format(
+#           metrics_dictionary[ 'rms_y'][ sea] = format(
 #              rms_y *
 #              conv,
 #              sig_digits)
-#           metrics_dictionary[
-#              'rms_devzm_' + sea] = format(
+#           metrics_dictionary[ 'rms_devzm'][ sea] = format(
 #              rms_xy_devzm *
 #              conv,
 #              sig_digits)
