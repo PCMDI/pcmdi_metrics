@@ -145,3 +145,8 @@ def linear_regression(x,y):
   zz = zz[0,:,:]
  
   return(zz)
+def gain_pseudo_pcs(solver, field_to_be_projected, eofn):
+  # Given a data set, projects it onto the n-th EOF to generate a corresponding set of pseudo-PCs 
+  pseudo_pcs = solver.projectField(field_to_be_projected,neofs=eofn,eofscaling=1)
+  pseudo_pcs = pseudo_pcs[:,eofn-1]
+  return pseudo_pcs

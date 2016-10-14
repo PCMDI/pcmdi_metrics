@@ -1,4 +1,5 @@
 def model_land_mask_out(mip,model,model_timeseries):
+  import genutil
   import numpy as NP
   #-------------------------------------------------
   # Extract SST (mask out land region)
