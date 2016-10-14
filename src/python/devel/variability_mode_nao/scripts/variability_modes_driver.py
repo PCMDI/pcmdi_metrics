@@ -20,6 +20,7 @@ import string
 import subprocess
 import sys, os
 import time
+import pcmdi_metrics
 
 libfiles = ['argparse_functions.py',
             'durolib.py',
@@ -63,8 +64,8 @@ nc_out = True
 #nc_out = False
 
 # Plot figures --
-plot = True
-#plot = False
+#plot = True
+plot = False
 
 #=================================================
 # User defining options (argparse)
@@ -569,10 +570,18 @@ for model in models:
       #=================================================
       # Write dictionary to json file (let the json keep overwritten in model loop)
       #-------------------------------------------------
-      json.dump(var_mode_stat_dic, open(json_file,'w'), sort_keys=True, indent=4, separators=(',', ': '))
+      #json.dump(var_mode_stat_dic, open(json_file,'w'), sort_keys=True, indent=4, separators=(',', ': '))
+      JSON = pcmdi_metrics.io.base.Base(out_dir,json_filename)
+      JSON.write(var_mode_stat_dic,json_structure=["model","realization","reference","mode","season","statistic"],
+                mode="w",
+                indent=4,
+                separators=(
+                    ',',
+                    ': '))
 
-    except:
-      print 'faild for ', model, run
+
+    except Exception,err:
+      print 'faild for ', model, run, err
       pass
 
 if not debug: sys.exit('done')

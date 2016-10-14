@@ -190,7 +190,10 @@ def recurs(out, ids, nms, axval, axes, cursor, table_name):
             # print "QRY:",qry
             val = 1.e20
         elif len(val) == 1:
-            val = float(val[0][0])
+            try:
+		val = float(val[0][0])
+            except:
+                val = 1.e20
         else:
             print "MULTIPLE ANSWERS FOR:", zip(nms, axval)
             val = 1.e20
@@ -274,7 +277,10 @@ class JSONs(object):
 
             if len(values) != len(json_struct):
                 continue
-            values.append(float(f[ky]))
+            try:
+		values.append(float(f[ky]))
+            except:
+                values.append(f[ky])
             rows.append(values)
         keys = ", ".join(json_struct) + ", value"
         qmarks = "?, " * (len(json_struct) + 1)
@@ -308,7 +314,7 @@ class JSONs(object):
         f = open(filename)
         tmp_dict = json.load(f)
         json_struct = tmp_dict.get("json_structure", list(self.json_struct))
-        json_version = tmp_dict.get("json_version", None)
+        json_version = tmp_dict.get("json_version", self.json_version)
         if "variable" not in json_struct:
             json_struct.insert(0, "variable")
             var = tmp_dict.get("Variable", None)
