@@ -54,7 +54,7 @@ def recurs(out,ids,nms,axval,axes,cursor):
         elif len(val)==1:
             val =float(val[0][0])
         else:
-            print "MULTIPLE ANSWERS",val
+            print "MULTIPLE ANSWERS FOR:",zip(nms,axval)
             val=1.e20
 
         out[tuple(ids)]=val
@@ -90,7 +90,6 @@ class JSONs(object):
         self.cu.execute("PRAGMA main.page_size = 65536")
         self.cu.execute("PRAGMA main.cache_size = 65536")
         info = self.sql("PRAGMA table_info(pmp)")
-        print "INFO DB PMP:",info
 
         if info == []:
             self.cu.execute("PRAGMA FOREIGN_KEYS = ON")
@@ -99,15 +98,10 @@ class JSONs(object):
                 cols+="%s CHAR(32), " % (c,)
             self.cu.execute("create table pmp (%s)" % (cols[:-2],))
         else:
-            # ok let's check if we need more columns
-            actual_cols = [str(i[1]) for i in info]
-            add_cols = []
-            for c in json_struct:
-                if not str(c) in actual_cols:
-                    add_cols.append(c)
-            for c in add_cols:
-                print "ADDING COLUMN:",c
-                self.cu.execute("alter table pmp ADD COLUMN '%s' CHAR(32)" % (c,c))
+            # Let's figure out our db struct
+            db_struct = [str(a[1]) for a in info[1:]]
+            if json_struct!=db_struct:
+                raise RuntimeError("JSON file struct: %s is not compatible with db struct %s" % (json_struct,db_struct))
 
         # Ok at this point we have a db we now need to insert values in it
         f = flatten(json_dict)
@@ -138,12 +132,6 @@ class JSONs(object):
 
             if len(values)!=len(json_struct):
                 continue
-            #for k,v in zip(json_struct,values):
-            #    #if not (v,) in self.sql("select (name) from %s" % k):
-            #        self.cu.execute("insert into %s (name) values ('%s')" % (k,v))
-            #for i,v in enumerate(values):
-            #    val = self.sql("select id from %s where name='%s'" % (json_struct[i],v))
-            #    values[i]=val[0][0]
             values.append(float(f[ky]))
             rows.append(values)
         keys = ", ".join(json_struct)+", value"
@@ -190,12 +178,11 @@ class JSONs(object):
                     json_version = "1.0"
                 else:
                     json_version = "2.0"
-            print "FILE:",fnm
-            print "\tv%s" % json_version
+            #print "FILE:",fnm
+            #print "\tv%s" % json_version
             # Now update our stored results
             # First we need to figure out the variable read in
             json_struct = tmp_dict.get("json_structure",list(self.json_struct))
-            print json_struct
             if not "variable" in json_struct:
                 json_struct.insert(0,"variable")
                 var = tmp_dict.get("Variable", None)
@@ -206,7 +193,6 @@ class JSONs(object):
                     varnm = var["id"]
                     if "level" in var:
                         varnm += "-%i" % int(var["level"] / 100.)
-                print "NEW DICT"
                 tmp_dict = {varnm:tmp_dict["RESULTS"]}
             else:
                 tmp_dict = tmp_dict["RESULTS"]
