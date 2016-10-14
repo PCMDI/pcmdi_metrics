@@ -165,7 +165,7 @@ var_mode_stat_dic={}
 json_filename = 'var_mode_'+mode+'_EOF'+str(eofn_mod)+'_stat_'+mip+'_'+exp+'_'+fq+'_'+realm+'_'+str(syear)+'-'+str(eyear)
 
 json_file = out_dir + '/' + json_filename + '.json'
-json_file_org = out_dir + '/' + json_filename + '_org.json'
+json_file_org = out_dir + '/' + json_filename + '_org_'+str(os.getpid())+'.json'
 
 # Keep previous version of json file against overwrite ---
 if os.path.isfile(json_file):
@@ -192,12 +192,12 @@ if obs_compare:
   if var == 'psl':
     obs_path = '/clim_obs/obs/atm/mo/psl/ERAINT/psl_ERAINT_198901-200911.nc'
     fo = cdms.open(obs_path)
-    obs_timeseries = fo(var,time=(start_time,end_time))/100. # Pa to hPa
+    obs_timeseries = fo(var, time=(start_time,end_time), latitude=(-90,90))/100. # Pa to hPa
 
   elif var == 'ts':
     obs_path = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
     fo = cdms.open(obs_path)
-    obs_timeseries = fo('sst',time=(start_time,end_time))
+    obs_timeseries = fo('sst', time=(start_time,end_time), latitude=(-90,90))
 
     # Replace area where temperature below -1.8 C to -1.8 C ---
     obs_mask = obs_timeseries.mask
@@ -336,10 +336,10 @@ for model in models:
       f = cdms.open(model_path)
     
       if var == 'psl':
-        model_timeseries = f(var,time=(start_time,end_time))/100. # Pa to hPa
+        model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90))/100. # Pa to hPa
     
       elif var == 'ts':
-        model_timeseries = f(var,time=(start_time,end_time))-273.15 # K to C degree
+        model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90))-273.15 # K to C degree
         model_timeseries.units = 'degC'
     
         # Replace area where temperature below -1.8 C to -1.8 C (sea ice) ---

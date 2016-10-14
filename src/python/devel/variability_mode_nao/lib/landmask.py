@@ -7,7 +7,7 @@ def model_land_mask_out(mip,model,model_timeseries):
   model_lf_path = get_latest_pcmdi_mip_lf_data_path(mip,model,'sftlf')
   #model_lf_path = '/work/cmip5/fx/fx/sftlf/cmip5.'+model+'.historical.r0i0p0.fx.atm.fx.sftlf.ver-1.latestX.xml'
   f_lf = cdms.open(model_lf_path)
-  lf = f_lf('sftlf')
+  lf = f_lf('sftlf', latitude=(-90,90))
 
   # Check land fraction variable to see if it meets criteria (0 for ocean, 100 for land, no missing value)
   lf[ lf == lf.missing_value ] = 0
@@ -24,6 +24,8 @@ def model_land_mask_out(mip,model,model_timeseries):
     model_timeseries_masked = NP.ma.masked_where(lf_timeConst>0, model_timeseries) # mask out land even fractional (leave only pure ocean grid)
   else: # Masking out only full land grid but use weighting for partial land grids
     model_timeseries_masked = NP.ma.masked_where(lf_timeConst==100, model_timeseries) # mask out pure land grids
+    if model == 'EC-EARTH':
+      model_timeseries_masked = NP.ma.masked_where(lf_timeConst>=90, model_timeseries) # mask out over 90% land grids for models those consider river as part of land-sea fraction. So far only 'EC-EARTH' does..
     lf2 = (100.-lf)/100.
     model_timeseries,lf2_timeConst = genutil.grower(model_timeseries,lf2) # Matching dimension
     model_timeseries_masked = model_timeseries_masked * lf2_timeConst # consider land fraction like as weighting
