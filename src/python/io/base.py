@@ -305,7 +305,24 @@ class JSONs(object):
             self.addJson(fnm)
 
     def addJson(self, filename):
-        print "BLAH"
+        f = open(filename)
+        tmp_dict = json.load(f)
+        json_struct = tmp_dict.get("json_structure", list(self.json_struct))
+        json_version = tmp_dict.get("json_version", None)
+        if "variable" not in json_struct:
+            json_struct.insert(0, "variable")
+            var = tmp_dict.get("Variable", None)
+            if var is None:  # Not stored in json, need to get from file name
+                fnm = os.path.basename(filename)
+                varnm = fnm.split("_")[0]
+            else:
+                varnm = var["id"]
+                if "level" in var:
+                    varnm += "-%i" % int(var["level"] / 100.)
+            tmp_dict = {varnm: tmp_dict["RESULTS"]}
+        else:
+            tmp_dict = tmp_dict["RESULTS"]
+        self.addDict2DB(tmp_dict, json_struct, json_version)
 
     def getAxis(self, axis):
         axes = self.getAxisList()
