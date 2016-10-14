@@ -58,7 +58,7 @@ params = ["basic_test_parameters_file.py",
           ]
 
 others = ["flake8", ]
-graphics = ["test_portrait", ]
+graphics = ["test_portrait", "test_pcoord", ]
 
 if args.test is not None:
     tests = args.test
@@ -98,8 +98,8 @@ for t in tests:
         try:
             # If we have vcs we can test graphics
             import vcs  # noqa
-            import test_portrait
-            suite.addTest(test_portrait.TestGraphics(t))
+            import test_graphics
+            suite.addTest(test_graphics.TestGraphics(t))
         except Exception as err:
             print "ERROR import vcs, skipping graphics test (%s)..." % t
             pass

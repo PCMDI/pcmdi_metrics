@@ -1,13 +1,17 @@
 import pcmdi_metrics
+import json
+import os
 
 
 class OBS(pcmdi_metrics.io.base.Base):
 
-    def __init__(self, root, var, obs_dic, reference="default", file_mask_template=None):
+    def __init__(self, root, var, obs_dic, reference="default",
+                 file_mask_template=None):
 
         template = "%(realm)/%(frequency)/%(variable)/" +\
             "%(reference)/%(ac)/%(filename)"
-        pcmdi_metrics.io.base.Base.__init__(self, root, template, file_mask_template)
+        pcmdi_metrics.io.base.Base.__init__(
+            self, root, template, file_mask_template)
         obs_name = obs_dic[var][reference]
         # usually send "default", "alternate", etc
         # but some case (sftlf) we send the actual name
@@ -31,3 +35,57 @@ class OBS(pcmdi_metrics.io.base.Base):
         self.filename = ref["filename"]
         self.reference = obs_name
         self.variable = var
+
+
+class JSONs(pcmdi_metrics.io.base.JSONs):
+
+    def __init__(self, files=[], database=None):
+        super(
+            JSONs,
+            self).__init__(
+            files,
+            database,
+            structure=[
+                "model",
+                "reference",
+                "rip",
+                "region",
+                "statistic",
+                "season"])
+
+    def addJson(self, filename):
+        f = open(filename)
+        tmp_dict = json.load(f)
+        json_struct = tmp_dict.get("json_structure", list(self.json_struct))
+        json_version = tmp_dict.get("json_version", None)
+        if json_version is None:
+            # Json format not stored, trying to guess
+            R = tmp_dict["RESULTS"]
+            out = R[R.keys()[0]]  # get first available model
+            out = out["defaultReference"]  # get first set of obs
+            k = out.keys()
+            k.pop(k.index("source"))
+            out = out[k[0]]  # first realization
+            # Ok at this point we need to see if it is json std 1 or 2
+            # version 1 had NHEX in every region
+            # version 2 does not
+            if "bias_xy_djf_NHEX" in out[out.keys()[0]].keys():
+                json_version = "1.0"
+            else:
+                json_version = "2.0"
+        # Now update our stored results
+        # First we need to figure out the variable read in
+        if "variable" not in json_struct:
+            json_struct.insert(0, "variable")
+            var = tmp_dict.get("Variable", None)
+            if var is None:  # Not stored in json, need to get from file name
+                fnm = os.path.basename(filename)
+                varnm = fnm.split("_")[0]
+            else:
+                varnm = var["id"]
+                if "level" in var:
+                    varnm += "-%i" % int(var["level"] / 100.)
+            tmp_dict = {varnm: tmp_dict["RESULTS"]}
+        else:
+            tmp_dict = tmp_dict["RESULTS"]
+        self.addDict2DB(tmp_dict, json_struct, json_version)

@@ -41,11 +41,11 @@ execfile(sys.prefix + "/share/pmp/default_regions.py")
 
 # Load the obs dictionary
 fjson = open(
-        os.path.join(
-            sys.prefix,
-            "share",
-            "pmp",
-            "obs_info_dictionary.json"))
+    os.path.join(
+        sys.prefix,
+        "share",
+        "pmp",
+        "obs_info_dictionary.json"))
 obs_dic = json.loads(fjson.read())
 fjson.close()
 
@@ -735,6 +735,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         if not args.dry_run:
             OUT.write(
                 metrics_dictionary,
+                json_structure=["model", "reference", "rip", "region", "statistic", "season"],
                 mode="w",
                 indent=4,
                 separators=(

@@ -8,7 +8,49 @@ import glob
 from genutil import StringConstructor
 
 
-class Plot_defaults:
+class Xs(object):
+    __slots__ = ("x1", "x2")
+
+    def __init__(self, x1, x2):
+        self.x1 = x1
+        self.x2 = x2
+
+
+class Ys(object):
+    __slots__ = ("y1", "y2")
+
+    def __init__(self, y1, y2):
+        self.y1 = y1
+        self.y2 = y2
+
+
+class XYs(object):
+    __slots__ = ("x1", "x2", "y1", "y2")
+
+    def __init__(self, x1, x2, y1, y2):
+        self.x1 = x1
+        self.x2 = x2
+        self.y1 = y1
+        self.y2 = y2
+
+
+class Plot_defaults(object):
+    __slots__ = ["x1", "x2", "y1", "y2", "levels", "colormap",
+                 "fillareacolors", "legend", "logo", "_logo",
+                 "xticorientation", "yticorientation",
+                 "parameterorientation", "tictable",
+                 "parametertable", "draw_mesh",
+                 "missing_color", "xtic1", "xtic2", "ytic1", "ytic2",
+                 "time_stamp"]
+
+    def getlogo(self):
+        return self._logo
+
+    def setlogo(self, value):
+        if value is None or isinstance(value, basestring):
+            self._logo = vcs.utils.Logo(value)
+
+    logo = property(getlogo, setlogo)
 
     def __init__(self):
         self.x1 = .12
@@ -18,57 +60,36 @@ class Plot_defaults:
         self.levels = None
         self.colormap = None
         self.fillareacolors = None
-        self.legend_x1 = .89
-        self.legend_x2 = .91
-        self.legend_y1 = self.y1
-        self.legend_y2 = self.y2
-        x = vcs.init()
+        self.legend = XYs(.89, .91, self.y1, self.y2)
         # X ticks
-        self.xticorientation = x.createtextorientation()
+        self.xticorientation = vcs.createtextorientation()
         self.xticorientation.angle = 360 - 90
         self.xticorientation.halign = 'right'
         self.xticorientation.height = 10
         # Y ticks
-        self.yticorientation = x.createtextorientation()
+        self.yticorientation = vcs.createtextorientation()
         self.yticorientation.angle = 0
         self.yticorientation.halign = 'right'
         self.yticorientation.height = 10
         # Ticks table
-        self.tictable = x.createtexttable()
+        self.tictable = vcs.createtexttable()
         # parameters text settings
-        self.parameterorientation = x.createtextorientation()
+        self.parameterorientation = vcs.createtextorientation()
         self.parameterorientation.angle = 0
         self.parameterorientation.halign = 'center'
         self.parameterorientation.height = 20
-        self.parametertable = x.createtexttable()
+        self.parametertable = vcs.createtexttable()
         # Defaults
         self.draw_mesh = 'y'
         self.missing_color = 3
-        self.xtic1y1 = None
-        self.xtic1y2 = None
-        self.xtic2y1 = None
-        self.xtic2y2 = None
-        self.ytic1x1 = None
-        self.ytic1x2 = None
-        self.ytic2x1 = None
-        self.ytic2x2 = None
+        self.xtic1 = Ys(None, None)
+        self.xtic2 = Ys(None, None)
+        self.ytic1 = Xs(None, None)
+        self.ytic2 = Xs(None, None)
         # Set the logo textorientation
-        logo = x.createtext()
-        logo.height = 20
-        logo.halign = 'center'
-        logo.path = 'right'
-        logo.valign = 'half'
-        # Set the logo texttable
-        logo.font = 2
-        logo.spacing = 2
-        logo.expansion = 100
-        logo.color = [5, 10, 67, 100.0]
-        logo.string = 'PCMDI'
-        logo.x = [.9]
-        logo.y = [.98]
-        self.logo = logo
+        self.logo = None
         # Set the time stamp
-        time_stamp = x.createtext()
+        time_stamp = vcs.createtext()
         time_stamp.height = 10
         time_stamp.halign = 'center'
         time_stamp.path = 'right'
@@ -78,7 +99,14 @@ class Plot_defaults:
         self.time_stamp = time_stamp
 
 
-class Portrait:
+class Portrait(object):
+    __slots_ = [
+        "verbose", "files_structure",
+        "exclude", "parameters_list",
+        "dummies", "auto_dummies", "grouped",
+        "slaves", "altered", "aliased",
+        "portrait_types", "PLOT_SETTINGS",
+    ]
 
     def __init__(self, files_structure=None, exclude=[], **kw):
         ''' initialize the portrait object, from file structure'''
@@ -719,34 +747,34 @@ class Portrait:
             template.ylabel2.textorientation = \
                 self.PLOT_SETTINGS.yticorientation
 
-            if self.PLOT_SETTINGS.xtic1y1 is not None:
-                template.xtic1.y1 = self.PLOT_SETTINGS.xtic1y1
+            if self.PLOT_SETTINGS.xtic1.y1 is not None:
+                template.xtic1.y1 = self.PLOT_SETTINGS.xtic1.y1
                 template.xtic1.priority = 1
-            if self.PLOT_SETTINGS.xtic1y2 is not None:
-                template.xtic1.y2 = self.PLOT_SETTINGS.xtic1y2
+            if self.PLOT_SETTINGS.xtic1.y2 is not None:
+                template.xtic1.y2 = self.PLOT_SETTINGS.xtic1.y2
                 template.xtic1.priority = 1
-            if self.PLOT_SETTINGS.xtic2y1 is not None:
-                template.xtic2.y1 = self.PLOT_SETTINGS.xtic2y1
+            if self.PLOT_SETTINGS.xtic2.y1 is not None:
+                template.xtic2.y1 = self.PLOT_SETTINGS.xtic2.y1
                 template.xtic2.priority = 1
-            if self.PLOT_SETTINGS.xtic2y2 is not None:
-                template.xtic2.y2 = self.PLOT_SETTINGS.xtic2y2
+            if self.PLOT_SETTINGS.xtic2.y2 is not None:
+                template.xtic2.y2 = self.PLOT_SETTINGS.xtic2.y2
                 template.xtic2.priority = 1
-            if self.PLOT_SETTINGS.ytic1x1 is not None:
-                template.ytic1.x1 = self.PLOT_SETTINGS.ytic1x1
+            if self.PLOT_SETTINGS.ytic1.x1 is not None:
+                template.ytic1.x1 = self.PLOT_SETTINGS.ytic1.x1
                 template.ytic1.priority = 1
-            if self.PLOT_SETTINGS.ytic1x2 is not None:
-                template.ytic1.x2 = self.PLOT_SETTINGS.ytic1x2
+            if self.PLOT_SETTINGS.ytic1.x2 is not None:
+                template.ytic1.x2 = self.PLOT_SETTINGS.ytic1.x2
                 template.ytic1.priority = 1
-            if self.PLOT_SETTINGS.ytic2x1 is not None:
+            if self.PLOT_SETTINGS.ytic2.x1 is not None:
                 template.ytic2.priority = 1
-                template.ytic2.x1 = self.PLOT_SETTINGS.ytic2x1
-            if self.PLOT_SETTINGS.ytic2x2 is not None:
+                template.ytic2.x1 = self.PLOT_SETTINGS.ytic2.x1
+            if self.PLOT_SETTINGS.ytic2.x2 is not None:
                 template.ytic2.priority = 1
-                template.ytic2.x2 = self.PLOT_SETTINGS.ytic2x2
-            template.legend.x1 = self.PLOT_SETTINGS.legend_x1
-            template.legend.x2 = self.PLOT_SETTINGS.legend_x2
-            template.legend.y1 = self.PLOT_SETTINGS.legend_y1
-            template.legend.y2 = self.PLOT_SETTINGS.legend_y2
+                template.ytic2.x2 = self.PLOT_SETTINGS.ytic2.x2
+            template.legend.x1 = self.PLOT_SETTINGS.legend.x1
+            template.legend.x2 = self.PLOT_SETTINGS.legend.x2
+            template.legend.y1 = self.PLOT_SETTINGS.legend.y1
+            template.legend.y2 = self.PLOT_SETTINGS.legend.y2
             try:
                 tmp = x.createtextorientation('crap22')
             except:
@@ -1025,7 +1053,8 @@ class Portrait:
                             None,
                             self.PLOT_SETTINGS.parameterorientation.name)
                         value = getattr(self, p)
-                        if (isinstance(value, (list, tuple)) and len(value) == 1):
+                        if (isinstance(value, (list, tuple)) and
+                                len(value) == 1):
                             txt.string = p + ':' + \
                                 str(self.makestring(p, value[0]))
                             display = 1
@@ -1055,14 +1084,14 @@ class Portrait:
                                 if dic['y'] is not None:
                                     txt.y = dic['y']
                             x.plot(txt, bg=bg, continents=0)
-            if self.PLOT_SETTINGS.logo is not None:
-                x.plot(self.PLOT_SETTINGS.logo, bg=bg, continents=0)
             if self.PLOT_SETTINGS.time_stamp is not None:
                 import time
                 sp = time.ctime().split()
                 sp = sp[:3] + [sp[-1]]
                 self.PLOT_SETTINGS.time_stamp.string = ''.join(sp)
                 x.plot(self.PLOT_SETTINGS.time_stamp, bg=bg, continents=0)
+            if self.PLOT_SETTINGS.logo is not None:
+                self.PLOT_SETTINGS.logo.plot(x, bg=bg)
 
     def set_colormap(self, x):
         cols = (
