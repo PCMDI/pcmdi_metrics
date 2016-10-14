@@ -41,11 +41,11 @@ execfile(sys.prefix + "/share/pmp/default_regions.py")
 
 # Load the obs dictionary
 fjson = open(
-        os.path.join(
-            sys.prefix,
-            "share",
-            "pmp",
-            "obs_info_dictionary.json"))
+    os.path.join(
+        sys.prefix,
+        "share",
+        "pmp",
+        "obs_info_dictionary.json"))
 obs_dic = json.loads(fjson.read())
 fjson.close()
 
@@ -331,8 +331,8 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         if level is not None:
             metrics_dictionary["Variable"]["level"] = level
 
-        #metrics_dictionary["json_version"] = "2.0"
-        #metrics_dictionary["json_structure"] = ["model","reference","rip","region","statistic","season"]
+        metrics_dictionary["json_version"] = "3.0"
+        metrics_dictionary["json_structure"] = ["model", "reference", "rip", "region", "statistic", "season"]
         metrics_dictionary["References"] = {}
         metrics_dictionary["RegionalMasking"] = {}
         for region in regions_dict[var]:
@@ -737,7 +737,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         if not args.dry_run:
             OUT.write(
                 metrics_dictionary,
-                json_structure = ["model","reference","rip","region","statistic","season"],
+                json_structure=["model", "reference", "rip", "region", "statistic", "season"],
                 mode="w",
                 indent=4,
                 separators=(
