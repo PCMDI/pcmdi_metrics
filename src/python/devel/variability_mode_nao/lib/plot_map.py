@@ -9,7 +9,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   if not debug:
     canvas = vcs.init(geometry=(900,800),bg=1) # Plotting in background mode
 
-  canvas.open()
+  if debug: canvas.open()
   canvas.drawlogooff()
   template = canvas.createtemplate()
 
