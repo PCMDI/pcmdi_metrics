@@ -98,12 +98,12 @@ def compute_metrics(Var, dm, do):
     # CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN STD
     stdObs_xy_devzm = pcmdi_metrics.pcmdi.std_xy.compute(do_am_devzm)
     std_xy_devzm = pcmdi_metrics.pcmdi.std_xy.compute(dm_am_devzm)
-    
-    for stat in ["std-obs_xy","std_xy","std-obs_xyt",
-            "std_xyt","std-obs_xy_devzm","std_xy_devzm",
-            "rms_xyt","rms_xy","cor_xy","bias_xy",
-            "mae_xy","rms_y","rms_devzm"]:
-        metrics_dictionary[stat]={}
+
+    for stat in ["std-obs_xy", "std_xy", "std-obs_xyt",
+                 "std_xyt", "std-obs_xy_devzm", "std_xy_devzm",
+                 "rms_xyt", "rms_xy", "cor_xy", "bias_xy",
+                 "mae_xy", "rms_y", "rms_devzm"]:
+        metrics_dictionary[stat] = {}
 
     metrics_dictionary[
         'std-obs_xy']['ann'] = format(
@@ -205,26 +205,26 @@ def compute_metrics(Var, dm, do):
 
 #           print 'SEASONAL ZM HERE>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 
-        metrics_dictionary['bias_xy'][ sea ] = format(
+        metrics_dictionary['bias_xy'][sea] = format(
             bias_sea *
             conv,
             sig_digits)
-        metrics_dictionary[ 'rms_xy'][ sea ] = format(
+        metrics_dictionary['rms_xy'][sea] = format(
             rms_sea *
             conv,
             sig_digits)
-        metrics_dictionary[ 'cor_xy'][ sea ] = format(
+        metrics_dictionary['cor_xy'][sea] = format(
             cor_sea,
             '.2f')
-        metrics_dictionary[ 'mae_xy'][ sea ] = format(
+        metrics_dictionary['mae_xy'][sea] = format(
             mae_sea *
             conv,
             sig_digits)
-        metrics_dictionary[ 'std-obs_xy'][ sea] = format(
+        metrics_dictionary['std-obs_xy'][sea] = format(
             stdObs_xy_sea *
             conv,
             sig_digits)
-        metrics_dictionary[ 'std_xy'][ sea] = format(
+        metrics_dictionary['std_xy'][sea] = format(
             std_xy_sea *
             conv,
             sig_digits)
