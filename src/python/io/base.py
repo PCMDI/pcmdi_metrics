@@ -132,7 +132,7 @@ class Base(genutil.StringConstructor):
                 "Could not create output directory: %s" %
                 (os.path.split(fnm)[0]))
         if type.lower() == "json":
-            json_version = kargs.get("json_version", data.get("json_version", 3.0))
+            json_version = float(kargs.get("json_version", data.get("json_version", 3.0)))
             json_structure = kargs.get("json_structure", data.get("json_structure", None))
             if json_version >= 3. and json_structure is None:
                 raise Exception(
