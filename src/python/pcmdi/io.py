@@ -140,17 +140,17 @@ class JSONs(object):
         self.cu.executemany(qry,rows)
         #self.db.commit()
         pass
-    def __init__(self, files=[], database = "Charles.sql"):
+    def __init__(self, files=[], database = None):
         import sqlite3
         import tempfile
         if database is None:
-            dbnm = tempfile.mkfile()
+            dbnm = tempfile.mktemp()
         else:
             dbnm= database
         self.db = sqlite3.connect(dbnm)
         self.cu = self.db.cursor()
         self.data = {}
-        self.json_version = "2.0"
+        self.json_version = "3.0"
         self.json_struct = ["model","reference","rip","region","statistic","season"]
 
         if len(files) == 0:
