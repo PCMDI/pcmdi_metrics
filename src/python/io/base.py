@@ -132,12 +132,14 @@ class Base(genutil.StringConstructor):
                 "Could not create output directory: %s" %
                 (os.path.split(fnm)[0]))
         if type.lower() == "json":
-            json_version = kargs.get("json_version",data.get("json_version",3.0))
-            json_structure = kargs.get("json_structure",data.get("json_structure",None))
-            if json_version>=3. and json_structure is None:
-                raise Exception("json_version 3.0 of PMP requires json_structure to be passed to the write function or part of the dictionary dumped")
-            for k in ["json_structure","json_version"]:
-                if kargs.has_key(k):
+            json_version = kargs.get("json_version", data.get("json_version", 3.0))
+            json_structure = kargs.get("json_structure", data.get("json_structure", None))
+            if json_version >= 3. and json_structure is None:
+                raise Exception(
+                    "json_version 3.0 of PMP requires json_structure to be passed" +
+                    "to the write function or part of the dictionary dumped")
+            for k in ["json_structure", "json_version"]:
+                if k in kargs:
                     del(kargs[k])
             data["json_version"] = json_version
             data["json_structure"] = json_structure
@@ -171,83 +173,91 @@ class Base(genutil.StringConstructor):
         afile.close()
         return hasher.hexdigest()
 
-def recurs(out,ids,nms,axval,axes,cursor,table_name):
-    if len(axes)>0:
-        for i,val in enumerate(axes[0][:]):
-             recurs(out,list(ids)+[i,],list(nms)+[axes[0].id],list(axval)+[val,],axes[1:],cursor,table_name)
+
+def recurs(out, ids, nms, axval, axes, cursor, table_name):
+    if len(axes) > 0:
+        for i, val in enumerate(axes[0][:]):
+            recurs(out, list(ids) +
+                   [i, ], list(nms) +
+                   [axes[0].id], list(axval) +
+                   [val, ], axes[1:], cursor, table_name)
     else:
-        st = " and ".join(["%s='%s'"% (nm,val) for nm,val in zip(nms,axval)])
+        st = " and ".join(["%s='%s'" % (nm, val) for nm, val in zip(nms, axval)])
         qry = "select (value) from %s where %s" % (table_name, st)
         cursor.execute(qry)
         val = cursor.fetchall()
         if len(val) == 0:
-            #print "QRY:",qry
+            # print "QRY:",qry
             val = 1.e20
-        elif len(val)==1:
-            val =float(val[0][0])
+        elif len(val) == 1:
+            val = float(val[0][0])
         else:
-            print "MULTIPLE ANSWERS FOR:",zip(nms,axval)
-            val=1.e20
+            print "MULTIPLE ANSWERS FOR:", zip(nms, axval)
+            val = 1.e20
 
-        out[tuple(ids)]=val
+        out[tuple(ids)] = val
 
-def flatten(dic,parent_key="",sep="__**__"):
+
+def flatten(dic, parent_key="", sep="__**__"):
     """ flattens a dictionary thanks stack overflow"""
     items = []
     for k, v in dic.items():
         if parent_key:
-            new_key = "%s%s%s" % (parent_key,sep,k) 
+            new_key = "%s%s%s" % (parent_key, sep, k)
         else:
             new_key = k
-        if isinstance(v,dict):
+        if isinstance(v, dict):
             items.extend(flatten(v, new_key, sep=sep).items())
         else:
-            items.append((new_key,v))
+            items.append((new_key, v))
     return dict(items)
+
 
 class JSONs(object):
 
     def getstruct(self):
         pass
 
-    def sql(self,cmd):
+    def sql(self, cmd):
         self.cu.execute(cmd)
         return self.cu.fetchall()
 
-    def addDict2DB(self,json_dict,json_struct,json_version):
+    def addDict2DB(self, json_dict, json_struct, json_version):
         "Adds content of a json dict to the db"
         # first did we create the db
         # if yes what are the columns in it
         # do we need more columns??
         self.cu.execute("PRAGMA main.page_size = 65536")
         self.cu.execute("PRAGMA main.cache_size = 65536")
-        info = self.sql("PRAGMA table_info(%s)"%self.table_name)
+        info = self.sql("PRAGMA table_info(%s)" % self.table_name)
 
         if info == []:
             self.cu.execute("PRAGMA FOREIGN_KEYS = ON")
             cols = "value FLOAT , "
             for c in json_struct:
-                cols+="%s CHAR(32), " % (c,)
-            self.cu.execute("create table %s (%s)" % (self.table_name,cols[:-2],))
+                cols += "%s CHAR(32), " % (c,)
+            self.cu.execute("create table %s (%s)" % (self.table_name, cols[:-2],))
         else:
             # Let's figure out our db struct
             db_struct = [str(a[1]) for a in info[1:]]
-            if json_struct!=db_struct:
-                raise RuntimeError("JSON file struct: %s is not compatible with db struct %s" % (json_struct,db_struct))
+            if json_struct != db_struct:
+                raise RuntimeError(
+                    "JSON file struct: %s is not compatible with db struct %s" %
+                    (json_struct, db_struct))
 
         # Ok at this point we have a db we now need to insert values in it
         f = flatten(json_dict)
         rows = []
         for ky in f.keys():
             values = ky.split("__**__")
-            if float(json_version)==2.0:
+            if float(json_version) == 2.0:
                 sp = values[-1].split("_")
                 season = sp[-1]
-                values[-1]="_".join(sp[:-1])
-                values+=[season,]
-            elif float(json_version)==1.0:
+                values[-1] = "_".join(sp[:-1])
+                values += [season, ]
+            elif float(json_version) == 1.0:
                 sp = values[-1].split("_")
-                if len(sp)<2:
+                if len(sp) < 2:
                     continue
                 reg = sp[-1]
                 file_region = values[-2]
@@ -256,29 +266,30 @@ class JSONs(object):
                 if file_region == "global":
                     file_region = reg
                 else:
-                    file_region += "_"+reg
-                values[-2]=file_region
+                    file_region += "_" + reg
+                values[-2] = file_region
                 season = sp[-2]
                 values[-1] = "_".join(sp[:-2])
                 values.append(season)
 
-            if len(values)!=len(json_struct):
+            if len(values) != len(json_struct):
                 continue
             values.append(float(f[ky]))
             rows.append(values)
-        keys = ", ".join(json_struct)+", value"
-        qmarks = "?, " * (len(json_struct)+1)
-        qry  = "INSERT into %s (%s) VALUES (%s)"%(self.table_name,keys,qmarks[:-2])
-        self.cu.executemany(qry,rows)
-        #self.db.commit()
+        keys = ", ".join(json_struct) + ", value"
+        qmarks = "?, " * (len(json_struct) + 1)
+        qry = "INSERT into %s (%s) VALUES (%s)" % (self.table_name, keys, qmarks[:-2])
+        self.cu.executemany(qry, rows)
+        # self.db.commit()
         pass
-    def __init__(self, files=[], database = None, structure=[],table_name="pmp"):
+
+    def __init__(self, files=[], database=None, structure=[], table_name="pmp"):
         import sqlite3
         import tempfile
         if database is None:
             dbnm = tempfile.mktemp()
         else:
-            dbnm= database
+            dbnm = database
         self.table_name = table_name
         self.db = sqlite3.connect(dbnm)
         self.cu = self.db.cursor()
@@ -287,13 +298,13 @@ class JSONs(object):
         if len(files) == 0:
             if database is None:
                 raise Exception("You need to pass at least one file or a database")
-            elif self.sql("PRAGMA table_info(%s)"%self.table_name) == []:
+            elif self.sql("PRAGMA table_info(%s)" % self.table_name) == []:
                 raise Exception("You need to pass at least one file or a non empty database")
 
         for fnm in files:
             self.addJson(fnm)
 
-    def addJson(self,filename):
+    def addJson(self, filename):
         print "BLAH"
 
     def getAxis(self, axis):
@@ -304,15 +315,14 @@ class JSONs(object):
         return None
 
     def getAxisList(self):
-        info = self.sql("PRAGMA table_info(%s)"%self.table_name)
+        info = self.sql("PRAGMA table_info(%s)" % self.table_name)
         axes = []
         for ax in info[1:]:
             nm = str(ax[1])
             # now get all possible values for this
-            values = sorted([ str(a[0]) for a in self.sql("select distinct %s from %s" % (nm,self.table_name))])
-            axes.append(cdms2.createAxis(values,id=nm))
+            values = sorted([str(a[0]) for a in self.sql("select distinct %s from %s" % (nm, self.table_name))])
+            axes.append(cdms2.createAxis(values, id=nm))
         return axes
-
 
     def __call__(self, **kargs):
         """ Returns the array of values"""
@@ -352,7 +362,7 @@ class JSONs(object):
 
         array = numpy.ma.ones(sh, dtype=numpy.float)
         # Now let's fill this array
-        recurs(array,[],[],[],axes,self.cu,self.table_name)
+        recurs(array, [], [], [], axes, self.cu, self.table_name)
 
         array = MV2.masked_greater(array, 9.e19)
         array.id = self.table_name
