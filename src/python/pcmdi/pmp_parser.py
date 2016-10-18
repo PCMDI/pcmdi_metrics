@@ -1,9 +1,8 @@
 import argparse
 import ast
-from cdp.cdp_parameter import *
+import cdp.cdp_parameter
 
-
-class PMPParameter(CDPParameter):
+class PMPParameter(cdp.cdp_parameter.CDPParameter):
     # Since there's no checking needed for now, create a new class instead of
     # the PMPParameter class that will be in CDP.
     def check_values(self):
