@@ -16,11 +16,11 @@ import cdms2 as cdms
 import cdutil, cdtime
 import genutil
 import json
+import pcmdi_metrics
 import string
 import subprocess
 import sys, os
 import time
-import pcmdi_metrics
 
 libfiles = ['argparse_functions.py',
             'durolib.py',
@@ -484,12 +484,8 @@ for model in models:
           model_timeseries_season_regrid_subdomain.mask = model_timeseries_season_regrid_subdomain.mask + eof_obs[season].mask
     
           # Pseudo model PC time series ---
-          pseudo_pcs = solver_obs[season].projectField(model_timeseries_season_regrid_subdomain,neofs=1,eofscaling=1)
-          pseudo_pcs = pseudo_pcs(squeeze=1)
+          pseudo_pcs = gain_pseudo_pcs(solver_obs[season], model_timeseries_season_regrid_subdomain, 1, reverse_sign_obs[season])
     
-          # Arbitrary sign control, attempt to make all plots have the same sign ---
-          if reverse_sign_obs[season]: pseudo_pcs = pseudo_pcs * -1.
-        
           # Calculate stdv of pc time series
           pseudo_pcs_stdv = calcSTD(pseudo_pcs)
     
@@ -498,6 +494,9 @@ for model in models:
     
           # Extract subdomain for statistics
           eof_lr_pseudo_subdomain = eof_lr_pseudo(regions_specs[mode]['domain'])
+
+          # Calculate variance franction of pseudo-pcs ---
+          pseudo_fraction = gain_pcs_fraction(model_timeseries_season_regrid_subdomain, eof_lr_pseudo_subdomain, pseudo_pcs)
     
           #- - - - - - - - - - - - - - - - - - - - - - - - -
           # OBS statistics (over global domain), save as dictionary, alternative approach -- pseudo PC analysis
@@ -537,6 +536,7 @@ for model in models:
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['bias_alt_glo'] = float(bias_alt_glo)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['std_pseudo_pcs'] = float(pseudo_pcs_stdv)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['tcor_pseudo_vs_model_pcs'] = float(tc)
+          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['frac_pseudo'] = float(pseudo_fraction)
     
           if debug: print 'pseudo pcs end'
     
@@ -563,9 +563,9 @@ for model in models:
                    eof_lr(longitude=(lon1g,lon2g)), frac1, output_filename+'_teleconnection')
           if pseudo: 
             plot_map(mode, model+' ('+run+')'+' - pseudo', msyear, meyear, season, 
-                     eof_lr_pseudo(regions_specs[mode]['domain']), -999, output_filename+'_pseudo')
+                     eof_lr_pseudo(regions_specs[mode]['domain']), pseudo_fraction, output_filename+'_pseudo')
             plot_map(mode+'_pseudo_teleconnection', model+' ('+run+')', msyear, meyear, season, 
-                     eof_lr_pseudo(longitude=(lon1g,lon2g)), -999, output_filename+'_pseudo_teleconnection')
+                     eof_lr_pseudo(longitude=(lon1g,lon2g)), pseudo_fraction, output_filename+'_pseudo_teleconnection')
     
       #=================================================
       # Write dictionary to json file (let the json keep overwritten in model loop)
@@ -580,7 +580,7 @@ for model in models:
                     ': '))
 
 
-    except Exception,err:
+    except Exception, err:
       print 'faild for ', model, run, err
       pass
 

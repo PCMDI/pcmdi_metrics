@@ -145,8 +145,42 @@ def linear_regression(x,y):
   zz = zz[0,:,:]
  
   return(zz)
-def gain_pseudo_pcs(solver, field_to_be_projected, eofn):
+
+def gain_pseudo_pcs(solver, field_to_be_projected, eofn, reverse_sign):
   # Given a data set, projects it onto the n-th EOF to generate a corresponding set of pseudo-PCs 
-  pseudo_pcs = solver.projectField(field_to_be_projected,neofs=eofn,eofscaling=1)
+  pseudo_pcs = solver.projectField(field_to_be_projected, neofs=eofn, eofscaling=1)
   pseudo_pcs = pseudo_pcs[:,eofn-1]
-  return pseudo_pcs
+
+  # Arbitrary sign control, attempt to make all plots have the same sign ---
+  if reverse_sign: 
+    pseudo_pcs *= -1
+
+  return(pseudo_pcs)
+
+def gain_pcs_fraction(full_field, eof_pattern, pcs):
+  # This function is designed for getting fraction of variace obtained by pseudo pcs
+  # Input:
+  # - full_field (t,y,x)
+  # - eof_pattern (y,x)
+  # - pcs (t)
+  # dimension x, y, t should be identical for above inputs
+  
+  import genutil, cdutil
+
+  # 1) Get total variacne ---
+  variance_total = genutil.statistics.variance(full_field, axis='t')
+  variance_total_area_ave = cdutil.averager(variance_total, axis='xy', weights='weighted')
+
+  # 2) Get variance for pseudo pattern ---
+  # 2-1) Reconstruct field based on pseudo pattern
+  reconstructed_field = genutil.grower(full_field, eof_pattern)[1] # Matching dimension (add time axis)
+  for t in range(0,len(pcs)):
+    reconstructed_field[t] = reconstructed_field[t] * pcs[t]
+  # 2-2) Get variance of reconstructed field
+  variance_partial = genutil.statistics.variance(reconstructed_field, axis='t')
+  variance_partial_area_ave = cdutil.averager(variance_partial, axis='xy', weights='weighted')
+
+  # 3) Calculate fraction ---
+  pseudo_fraction = variance_partial_area_ave / variance_total_area_ave
+
+  return(pseudo_fraction)
