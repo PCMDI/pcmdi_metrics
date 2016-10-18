@@ -12,4 +12,4 @@ import std_xy  # noqa
 import std_xyt  # noqa
 import seasonal_mean  # noqa
 import zonal_mean  # noqa
-import pmp_parser
+import pmp_parser  # noqa
