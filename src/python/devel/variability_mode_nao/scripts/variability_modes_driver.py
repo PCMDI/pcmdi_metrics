@@ -20,6 +20,7 @@ import pcmdi_metrics
 import string
 import subprocess
 import sys, os
+import traceback
 import time
 
 libfiles = ['argparse_functions.py',
@@ -537,7 +538,6 @@ for model in models:
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['std_pseudo_pcs'] = float(pseudo_pcs_stdv)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['tcor_pseudo_vs_model_pcs'] = float(tc)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['frac_pseudo'] = float(pseudo_fraction)
-          print type(float(pseudo_fraction))
     
           if debug: print 'pseudo pcs end'
     
@@ -571,7 +571,6 @@ for model in models:
       #=================================================
       # Write dictionary to json file (let the json keep overwritten in model loop)
       #-------------------------------------------------
-      #json.dump(var_mode_stat_dic, open(json_file,'w'), sort_keys=True, indent=4, separators=(',', ': '))
       JSON = pcmdi_metrics.io.base.Base(out_dir,json_filename)
       JSON.write(var_mode_stat_dic,json_structure=["model","realization","reference","mode","season","statistic"],
                 mode="w",
@@ -580,9 +579,7 @@ for model in models:
                     ',',
                     ': '))
 
-
     except Exception, err:
-      import traceback,sys
       exc_type, exc_value, exc_traceback = sys.exc_info()
       print traceback.print_tb(exc_traceback)
       print 'faild for ', model, run, err
