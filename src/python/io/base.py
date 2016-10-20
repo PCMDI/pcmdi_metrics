@@ -308,29 +308,32 @@ class JSONs(object):
                     vals = vals[k]
                 except:
                     vals = 1.e20
-            out[tuple(ids)] = vals
+            try:
+                out[tuple(ids)] = float(vals)
+            except:
+                out[tuple(ids)] = 1.e20
 
-    def __init__(self, files=[], structure=[], ignored_keys=[]):
+    def __init__(self, files=[], structure=[], ignored_keys=[], oneVariablePerFile=True):
         self.json_version = 3.0
         self.json_struct = structure
         self.data = {}
         self.axes = None
         self.ignored_keys = ignored_keys
+        self.oneVariablePerFile = oneVariablePerFile
         if len(files) == 0:
             raise Exception("You need to pass at least one file")
 
         for fnm in files:
             self.addJson(fnm)
-        f = open("crap.json", "w")
-        json.dump(self.data, f, indent=2)
-        f.close()
 
     def addJson(self, filename):
         f = open(filename)
         tmp_dict = json.load(f)
         json_struct = tmp_dict.get("json_structure", list(self.json_struct))
         json_version = tmp_dict.get("json_version", self.json_version)
-        if "variable" not in json_struct:
+        if self.oneVariablePerFile and json_struct[0] == "variable":
+            json_struct = json_struct[1:]
+        if self.oneVariablePerFile and json_struct[0] != "variable":
             json_struct.insert(0, "variable")
             var = tmp_dict.get("Variable", None)
             if var is None:  # Not stored in json, need to get from file name
