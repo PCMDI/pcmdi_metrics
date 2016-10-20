@@ -54,7 +54,7 @@ class JSONs(pcmdi_metrics.io.base.JSONs):
                 "region",
                 "statistic",
                 "season"],
-            ignored_keys = ignored_keys)
+            ignored_keys=ignored_keys)
 
     def addJson(self, filename):
         f = open(filename)
@@ -70,7 +70,7 @@ class JSONs(pcmdi_metrics.io.base.JSONs):
                     out = R[ky]  # get first available model
                     out = out["defaultReference"]  # get first set of obs
                     k = out.keys()
-                    #print filename,"K IS:",k
+                    # print filename,"K IS:",k
                     k.pop(k.index("source"))
                     out = out[k[0]]  # first realization
                 except:

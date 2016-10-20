@@ -18,6 +18,7 @@ cdms2.setNetcdfDeflateLevelFlag(value)
 
 # cdutil region object need a serializer
 
+
 def update_dict(d, u):
     for k, v in u.iteritems():
         if isinstance(v, collections.Mapping):
@@ -26,6 +27,7 @@ def update_dict(d, u):
         else:
             d[k] = u[k]
     return d
+
 
 class CDMSDomainsEncoder(json.JSONEncoder):
 
@@ -183,123 +185,122 @@ class Base(genutil.StringConstructor):
         return hasher.hexdigest()
 
 
-
 class JSONs(object):
 
-    def addDict2Self(self,json_dict, json_struct, json_version):
+    def addDict2Self(self, json_dict, json_struct, json_version):
         if float(json_version) == 1.0:
-            V=json_dict[json_dict.keys()[0]]
-	    for model in V.keys():  # loop through models
-		m = V[model]
-		# print "FIRST M:",m.keys()
-		for ref in m.keys():
-		    aref = m[ref]
-		    if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
-			continue
-		    # print "\treading in ref:",ref
-		    # print aref.keys()
-		    reals = aref.keys()
-		    src = reals.pop(reals.index("source"))
-		    for real in reals:
-			# print "\t\treading in realization:",real
-			# print real
-			areal = aref[real]
-			areal2 = {"source": src}
-			for region in areal.keys():
-			    # print "\t\t\tREGION:",region
-			    reg = areal[region]
-			    if region == "global":
-				region2 = ""
-			    else:
-				region2 = region + "_"
-			    areal2[region2 + "global"] = {}
-			    areal2[region2 + "NHEX"] = {}
-			    areal2[region2 + "SHEX"] = {}
-			    areal2[region2 + "TROPICS"] = {}
-			    # print "OK HERE REGIONS:",areal2.keys()
-			    key_stats = reg.keys()
-			    for k in key_stats:
-				if k[:7] == "custom_":
+            V = json_dict[json_dict.keys()[0]]
+            for model in V.keys():  # loop through models
+                m = V[model]
+                # print "FIRST M:",m.keys()
+                for ref in m.keys():
+                    aref = m[ref]
+                    if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
+                        continue
+                    # print "\treading in ref:",ref
+                    # print aref.keys()
+                    reals = aref.keys()
+                    src = reals.pop(reals.index("source"))
+                    for real in reals:
+                        # print "\t\treading in realization:",real
+                        # print real
+                        areal = aref[real]
+                        areal2 = {"source": src}
+                        for region in areal.keys():
+                            # print "\t\t\tREGION:",region
+                            reg = areal[region]
+                            if region == "global":
+                                region2 = ""
+                            else:
+                                region2 = region + "_"
+                            areal2[region2 + "global"] = {}
+                            areal2[region2 + "NHEX"] = {}
+                            areal2[region2 + "SHEX"] = {}
+                            areal2[region2 + "TROPICS"] = {}
+                            # print "OK HERE REGIONS:",areal2.keys()
+                            key_stats = reg.keys()
+                            for k in key_stats:
+                                if k[:7] == "custom_":
                                     continue
-				else:
-				    sp = k.split("_")
-				    new_key = "_".join(sp[:-1])
-				    domain = sp[-1]
-				    if domain == "GLB":
-					domain = "global"
+                                else:
+                                    sp = k.split("_")
+                                    new_key = "_".join(sp[:-1])
+                                    domain = sp[-1]
+                                    if domain == "GLB":
+                                        domain = "global"
                                     sp = new_key.split("_")
                                     stat = "_".join(sp[:-1])
-                                    stat_dict = areal2[region2+domain].get(stat,{})
+                                    stat_dict = areal2[region2 + domain].get(stat, {})
                                     season = sp[-1]
                                     season_dict = stat_dict
-                                    stat_dict[season]=reg[k]
-                                    if areal2[region2+domain].has_key(stat):
-                                        areal2[region2+domain][stat].update(stat_dict)
+                                    stat_dict[season] = reg[k]
+                                    if stat in areal2[region2 + domain]:
+                                        areal2[region2 + domain][stat].update(stat_dict)
                                     else:
-                                        areal2[region2+domain][stat] = stat_dict
-			# Now we can replace the realization with the correctly formatted one
-			# print "AREAL@:",areal2
-			aref[real] = areal2
-		    # restore ref into model
-		    m[ref] = aref
+                                        areal2[region2 + domain][stat] = stat_dict
+                        # Now we can replace the realization with the correctly formatted one
+                        # print "AREAL@:",areal2
+                        aref[real] = areal2
+                    # restore ref into model
+                    m[ref] = aref
         elif float(json_version) == 2.0:
-            V=json_dict[json_dict.keys()[0]]
-	    for model in V.keys():  # loop through models
-		m = V[model]
-		for ref in m.keys():
-		    aref = m[ref]
-		    if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
-			continue
-		    # print "\treading in ref:",ref
-		    # print aref.keys()
-		    reals = aref.keys()
-		    src = reals.pop(reals.index("source"))
-		    for real in reals:
-			# print "\t\treading in realization:",real
-			# print real
-			areal = aref[real]
-			for region in areal.keys():
-			    reg = areal[region]
-			    key_stats = reg.keys()
-			    for k in key_stats:
-                                if k[:7]=="custom_":
-                                  continue
+            V = json_dict[json_dict.keys()[0]]
+            for model in V.keys():  # loop through models
+                m = V[model]
+                for ref in m.keys():
+                    aref = m[ref]
+                    if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
+                        continue
+                    # print "\treading in ref:",ref
+                    # print aref.keys()
+                    reals = aref.keys()
+                    src = reals.pop(reals.index("source"))
+                    for real in reals:
+                        # print "\t\treading in realization:",real
+                        # print real
+                        areal = aref[real]
+                        for region in areal.keys():
+                            reg = areal[region]
+                            key_stats = reg.keys()
+                            for k in key_stats:
+                                if k[:7] == "custom_":
+                                    continue
                                 sp = k.split("_")
                                 season = sp[-1]
                                 stat = "_".join(sp[:-1])
-                                stat_dict = reg.get(stat,{})
-                                season_dict = stat_dict.get(season,{})
-                                season_dict[season]=reg[k]
-                                #if stat_dict.has_key(stat):
+                                stat_dict = reg.get(stat, {})
+                                season_dict = stat_dict.get(season, {})
+                                season_dict[season] = reg[k]
+                                # if stat_dict.has_key(stat):
                                 #    stat_dict[stat].update(season_dict)
-                                #else:
+                                # else:
                                 #    stat_dict[stat]=season_dict
                                 del(reg[k])
-                                if reg.has_key(stat):
+                                if stat in reg:
                                     reg[stat].update(season_dict)
                                 else:
-                                    reg[stat]=season_dict
-			aref[real] = areal
-		    # restore ref into model
-		    m[ref] = aref
-                V[model]=m
-            json_dict[json_dict.keys()[0]]=V
-        update_dict(self.data,json_dict)
+                                    reg[stat] = season_dict
+                        aref[real] = areal
+                    # restore ref into model
+                    m[ref] = aref
+                V[model] = m
+            json_dict[json_dict.keys()[0]] = V
+        update_dict(self.data, json_dict)
 
-    def get_axes_values_recursive(self,depth,max_depth,data,values):
+    def get_axes_values_recursive(self, depth, max_depth, data, values):
         for k in data.keys():
-            if not k in self.ignored_keys and (isinstance(data[k],dict) or depth==max_depth):
+            if k not in self.ignored_keys and (isinstance(data[k], dict) or depth == max_depth):
                 values[depth].add(k)
-                if depth!=max_depth:
-                    self.get_axes_values_recursive(depth+1,max_depth,data[k],values)
+                if depth != max_depth:
+                    self.get_axes_values_recursive(depth + 1, max_depth, data[k], values)
 
-    def get_array_values_from_dict_recursive(self,out,ids,nms,axval,axes):
+    def get_array_values_from_dict_recursive(self, out, ids, nms, axval, axes):
         if len(axes) > 0:
             for i, val in enumerate(axes[0][:]):
                 self.get_array_values_from_dict_recursive(out, list(ids) +
-                       [i, ], list(nms) +
-                       [axes[0].id], list(axval) +
-                       [val, ], axes[1:])
+                                                          [i, ], list(nms) +
+                                                          [axes[0].id], list(axval) +
+                                                          [val, ], axes[1:])
         else:
             vals = self.data
             for k in axval:
@@ -307,8 +308,7 @@ class JSONs(object):
                     vals = vals[k]
                 except:
                     vals = 1.e20
-            out[tuple(ids)]=vals
-
+            out[tuple(ids)] = vals
 
     def __init__(self, files=[], structure=[], ignored_keys=[]):
         self.json_version = 3.0
@@ -321,8 +321,8 @@ class JSONs(object):
 
         for fnm in files:
             self.addJson(fnm)
-        f=open("crap.json","w")
-        json.dump(self.data,f,indent=2)
+        f = open("crap.json", "w")
+        json.dump(self.data, f, indent=2)
         f.close()
 
     def addJson(self, filename):
@@ -352,18 +352,17 @@ class JSONs(object):
                 return a
         return None
 
-
-    def getAxisList(self,use_cache = True):
+    def getAxisList(self, use_cache=True):
         if use_cache and self.axes is not None:
             return self.axes
         values = []
         axes = []
         for a in self.json_struct:
             values.append(set())
-        self.get_axes_values_recursive(0,len(self.json_struct)-1,self.data,values)
-        for i,nm in enumerate(self.json_struct):
-            axes.append(cdms2.createAxis(sorted(list(values[i])),id=nm))
-        self.axes=axes
+        self.get_axes_values_recursive(0, len(self.json_struct) - 1, self.data, values)
+        for i, nm in enumerate(self.json_struct):
+            axes.append(cdms2.createAxis(sorted(list(values[i])), id=nm))
+        self.axes = axes
         return self.axes
 
     def __call__(self, **kargs):
