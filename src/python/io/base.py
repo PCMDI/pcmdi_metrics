@@ -225,6 +225,94 @@ class JSONs(object):
         self.cu.execute(cmd)
         return self.cu.fetchall()
 
+    def addDict2Self(self,json_dict, json_struct, json_version):
+        if float(json_version) == 1.0:
+            V=json_dict[json_dict.keys()[0]]
+	    for model in V.keys():  # loop through models
+		# print "Reading in model:",model
+		m = V[model]
+		# print "FIRST M:",m.keys()
+		for ref in m.keys():
+		    aref = m[ref]
+		    if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
+			continue
+		    # print "\treading in ref:",ref
+		    # print aref.keys()
+		    reals = aref.keys()
+		    src = reals.pop(reals.index("source"))
+		    for real in reals:
+			# print "\t\treading in realization:",real
+			# print real
+			areal = aref[real]
+			areal2 = {"source": src}
+			for region in areal.keys():
+			    # print "\t\t\tREGION:",region
+			    reg = areal[region]
+			    if region == "global":
+				region2 = ""
+			    else:
+				region2 = region + "_"
+			    areal2[region2 + "global"] = {}
+			    areal2[region2 + "NHEX"] = {}
+			    areal2[region2 + "SHEX"] = {}
+			    areal2[region2 + "TROPICS"] = {}
+			    # print "OK HERE REGIONS:",areal2.keys()
+			    key_stats = reg.keys()
+			    for k in key_stats:
+				if k[:7] == "custom_":
+				    areal2[region][k] = reg[k]
+				else:
+				    # print "SPLITTING:",k
+				    sp = k.split("_")
+				    new_key = "_".join(sp[:-1])
+				    domain = sp[-1]
+				    if domain == "GLB":
+					domain = "global"
+				    # if new_key.find("rms_xyt")>-1: print
+				    # "\t\t\t\tregion,
+				    # stats:",region2+domain,new_key,reg[k]
+				    areal2[
+					region2 + domain][new_key] = reg[k]
+			# Now we can replace the realization with the correctly formatted one
+			# print "AREAL@:",areal2
+			aref[real] = areal2
+		    # restore ref into model
+		    m[ref] = aref
+        elif float(json_version) == 2.0:
+           print "2.0"
+            V=json_dict[json_dict.keys()[0]]
+	    for model in V.keys():  # loop through models
+		# print "Reading in model:",model
+		m = V[model]
+		# print "FIRST M:",m.keys()
+		for ref in m.keys():
+		    aref = m[ref]
+		    if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
+			continue
+		    # print "\treading in ref:",ref
+		    # print aref.keys()
+		    reals = aref.keys()
+		    src = reals.pop(reals.index("source"))
+		    for real in reals:
+			# print "\t\treading in realization:",real
+			# print real
+			areal = aref[real]
+			for region in areal.keys():
+			    reg = areal[region]
+			    key_stats = reg.keys()
+			    for k in key_stats:
+                                if k[:7]=="custom_":
+                                  continue
+                                sp = k.split("_")
+                                season = sp[-1]
+                                stat = "_".join(sp[:-1])
+                                stat_dict = reg.get(stat,{})
+                                season_dict = stat_dict.get(seas,{})
+                                season_dict[seas].update(reg[k])
+                                
+
+        self.data.update(json_dict)
+
     def addDict2DB(self, json_dict, json_struct, json_version):
         "Adds content of a json dict to the db"
         # first did we create the db
@@ -289,6 +377,25 @@ class JSONs(object):
         # self.db.commit()
         pass
 
+    def recurs_dict(self,out,ids,nms,axval,axes):
+        if len(axes) > 0:
+            for i, val in enumerate(axes[0][:]):
+                self.recurs_dict(out, list(ids) +
+                       [i, ], list(nms) +
+                       [axes[0].id], list(axval) +
+                       [val, ], axes[1:])
+        else:
+            print ids,nms,axval,axes
+            vals = self.data
+            for k in axval:
+                print "\t",k,vals.keys()
+                try:
+                    vals = vals[k]
+                except:
+                    vals = 1.e20
+            print "IN THE EBD VALS:",vals
+
+
     def __init__(self, files=[], database=None, structure=[], table_name="pmp"):
         import sqlite3
         import tempfile
@@ -301,6 +408,7 @@ class JSONs(object):
         self.cu = self.db.cursor()
         self.json_version = 3.0
         self.json_struct = structure
+        self.data = {}
         if len(files) == 0:
             if database is None:
                 raise Exception("You need to pass at least one file or a database")
@@ -328,7 +436,7 @@ class JSONs(object):
             tmp_dict = {varnm: tmp_dict["RESULTS"]}
         else:
             tmp_dict = tmp_dict["RESULTS"]
-        self.addDict2DB(tmp_dict, json_struct, json_version)
+        self.addDict2Self(tmp_dict, json_struct, json_version)
 
     def getAxis(self, axis):
         axes = self.getAxisList()
@@ -385,7 +493,8 @@ class JSONs(object):
 
         array = numpy.ma.ones(sh, dtype=numpy.float)
         # Now let's fill this array
-        recurs(array, [], [], [], axes, self.cu, self.table_name)
+        print "Getting data out"
+        self.recurs_dict(array, [], [], [], axes)#, self.cu, self.table_name)
 
         array = MV2.masked_greater(array, 9.e19)
         array.id = self.table_name
