@@ -54,7 +54,8 @@ class JSONs(pcmdi_metrics.io.base.JSONs):
                 "region",
                 "statistic",
                 "season"],
-            ignored_keys=ignored_keys)
+            ignored_keys=ignored_keys,
+            )
 
     def addJson(self, filename):
         f = open(filename)
