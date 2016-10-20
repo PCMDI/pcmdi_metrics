@@ -39,19 +39,22 @@ class OBS(pcmdi_metrics.io.base.Base):
 
 class JSONs(pcmdi_metrics.io.base.JSONs):
 
-    def __init__(self, files=[], database=None):
+    def __init__(self, files=[], ignored_keys=None):
+        if ignored_keys is None:
+            ignored_keys = ["SimulationDescription"]
         super(
             JSONs,
             self).__init__(
             files,
-            database,
             structure=[
+                "variable",
                 "model",
                 "reference",
                 "rip",
                 "region",
                 "statistic",
-                "season"])
+                "season"],
+            ignored_keys = ignored_keys)
 
     def addJson(self, filename):
         f = open(filename)
@@ -77,9 +80,12 @@ class JSONs(pcmdi_metrics.io.base.JSONs):
                 # version 2 does not
                 if "bias_xy_djf_NHEX" in out[out.keys()[0]].keys():
                     json_version = "1.0"
+                    json_struct = self.json_struct[1:]
                 else:
                     json_version = "2.0"
                 break
+        if float(json_version) == 2.:
+            json_struct = json_struct[1:]
         # Now update our stored results
         # First we need to figure out the variable read in
         if "variable" not in json_struct:
