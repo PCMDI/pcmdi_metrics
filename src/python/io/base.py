@@ -260,26 +260,29 @@ class JSONs(object):
 			    key_stats = reg.keys()
 			    for k in key_stats:
 				if k[:7] == "custom_":
-				    areal2[region][k] = reg[k]
+                                    continue
 				else:
-				    # print "SPLITTING:",k
 				    sp = k.split("_")
 				    new_key = "_".join(sp[:-1])
 				    domain = sp[-1]
 				    if domain == "GLB":
 					domain = "global"
-				    # if new_key.find("rms_xyt")>-1: print
-				    # "\t\t\t\tregion,
-				    # stats:",region2+domain,new_key,reg[k]
-				    areal2[
-					region2 + domain][new_key] = reg[k]
+                                    sp = new_key.split("_")
+                                    stat = "_".join(sp[:-1])
+                                    stat_dict = areal2[region2+domain].get(stat,{})
+                                    season = sp[-1]
+                                    season_dict = stat_dict
+                                    stat_dict[season]=reg[k]
+                                    if areal2[region2+domain].has_key(stat):
+                                        areal2[region2+domain][stat].update(stat_dict)
+                                    else:
+                                        areal2[region2+domain][stat] = stat_dict
 			# Now we can replace the realization with the correctly formatted one
 			# print "AREAL@:",areal2
 			aref[real] = areal2
 		    # restore ref into model
 		    m[ref] = aref
         elif float(json_version) == 2.0:
-           print "2.0"
             V=json_dict[json_dict.keys()[0]]
 	    for model in V.keys():  # loop through models
 		# print "Reading in model:",model
@@ -307,10 +310,17 @@ class JSONs(object):
                                 season = sp[-1]
                                 stat = "_".join(sp[:-1])
                                 stat_dict = reg.get(stat,{})
-                                season_dict = stat_dict.get(seas,{})
-                                season_dict[seas].update(reg[k])
-                                
-
+                                season_dict = stat_dict.get(season,{})
+                                season_dict[season]=reg[k]
+                                #if stat_dict.has_key(stat):
+                                #    stat_dict[stat].update(season_dict)
+                                #else:
+                                #    stat_dict[stat]=season_dict
+                                del(reg[k])
+                                if reg.has_key(stat):
+                                    reg[stat].update(season_dict)
+                                else:
+                                    reg[stat]=season_dict
         self.data.update(json_dict)
 
     def addDict2DB(self, json_dict, json_struct, json_version):
@@ -385,15 +395,19 @@ class JSONs(object):
                        [axes[0].id], list(axval) +
                        [val, ], axes[1:])
         else:
-            print ids,nms,axval,axes
+            #print ids,nms,axval,axes
             vals = self.data
             for k in axval:
-                print "\t",k,vals.keys()
+                #try:
+                #    print "\t",k,"keys:",vals.keys()
+                #except:
+                #    print "\t",k,"dict",vals
                 try:
                     vals = vals[k]
                 except:
                     vals = 1.e20
-            print "IN THE EBD VALS:",vals
+            #print "IN THE EBD VALS:",vals
+            out[tuple(ids)]=vals
 
 
     def __init__(self, files=[], database=None, structure=[], table_name="pmp"):
@@ -494,6 +508,9 @@ class JSONs(object):
         array = numpy.ma.ones(sh, dtype=numpy.float)
         # Now let's fill this array
         print "Getting data out"
+        f=open("crap.json","w")
+        json.dump(self.data,f,indent=2)
+        f.close()
         self.recurs_dict(array, [], [], [], axes)#, self.cu, self.table_name)
 
         array = MV2.masked_greater(array, 9.e19)
