@@ -25,13 +25,13 @@ regions_specs = {
         "PNA" : {'domain':cdutil.region.domain(latitude=(20.,85,'ccb'),longitude=(120,240,'ccb'))},
         "PDO" : {'domain':cdutil.region.domain(latitude=(20.,70,'ccb'),longitude=(110,260,'ccb'))},
 # Below is for monsoon regions 
-          'AllM':{'domain':cdutil.region.domain(latitude=(-45.,45,'ccb'),longitude=(0,360,'ccb'))}, # All monsoon domains
-          'NAM' :{'domain':cdutil.region.domain(latitude=(0.,45,'ccb'),longitude=(210,310,'ccb'))}, # North American Monsoon
-          'SAM' :{'domain':cdutil.region.domain(latitude=(-45.,0,'ccb'),longitude=(240,330,'ccb'))}, # South American Monsoon
-          'NAFM':{'domain':cdutil.region.domain(latitude=(0.,45,'ccb'),longitude=(310,60,'ccb'))},  # North African Monsoon
-          'SAFM':{'domain':cdutil.region.domain(latitude=(-45.,0.,'ccb'),longitude=(0.,90,'ccb'))}, # South African Monsoon
-          'ASM' :{'domain':cdutil.region.domain(latitude=(0.,45.,'ccb'),longitude=(60.,180.,'ccb'))}, # Asian Summer Monsoon
-          'AUSM':{'domain':cdutil.region.domain(latitude=(-45.,0,'ccb'),longitude=(90.,160.,'ccb'))}, # Australian Monsoon
+          'AllMn':{'domain':cdutil.region.domain(latitude=(-45.,45,'ccb'),longitude=(0,360,'ccb'))}, # All monsoon domains
+          'NAMn' :{'domain':cdutil.region.domain(latitude=(0.,45,'ccb'),longitude=(210,310,'ccb'))}, # North American Monsoon
+          'SAMn' :{'domain':cdutil.region.domain(latitude=(-45.,0,'ccb'),longitude=(240,330,'ccb'))}, # South American Monsoon
+          'NAFn':{'domain':cdutil.region.domain(latitude=(0.,45,'ccb'),longitude=(310,60,'ccb'))},  # North African Monsoon
+          'SAFn':{'domain':cdutil.region.domain(latitude=(-45.,0.,'ccb'),longitude=(0.,90,'ccb'))}, # South African Monsoon
+          'ASMn' :{'domain':cdutil.region.domain(latitude=(0.,45.,'ccb'),longitude=(60.,180.,'ccb'))}, # Asian Summer Monsoon
+          'AUSMn':{'domain':cdutil.region.domain(latitude=(-45.,0,'ccb'),longitude=(90.,160.,'ccb'))}, # Australian Monsoon
         }
 
 default_regions = ['global','NHEX','SHEX','TROPICS']
