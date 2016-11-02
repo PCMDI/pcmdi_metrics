@@ -1,6 +1,6 @@
-from pcmdi_metrics.pmp_io import *
-from pcmdi_metrics.dataset import *
-
+from pcmdi_metrics2.pmp_io import *
+from pcmdi_metrics2.dataset import *
+import re
 
 class OBS(PMPIO):
     def __init__(self, root, var, obs_dict, obs='default',
@@ -73,6 +73,8 @@ class Observation(DataSet):
             msg = 'Could not figure out obs mask name from obs json file'
             logging.error(msg)
             obs_mask_name = None
+
+        #num = str(raw_input('Enter a number'))
         return obs_mask_name
 
     def get_obs_from_obs_dict(self):
@@ -89,7 +91,7 @@ class Observation(DataSet):
     def setup_obs_file(self):
         if self.use_omon(self.obs_dict, self.var):
             regrid_method = self.parameter.regrid_method_ocn
-            regrid_tool = self.parameter.regrid_tool
+            regrid_tool = self.parameter.regrid_tool_ocn
             self.obs_file.table = 'Omon'
             self.obs_file.realm = 'ocn'
         else:
@@ -98,14 +100,16 @@ class Observation(DataSet):
             self.obs_file.table = 'Amon'
             self.obs_file.realm = 'atm'
 
+        self.obs_file.case_id = self.parameter.case_id
         self.obs_file.set_target_grid(self.parameter.target_grid,
                                       regrid_tool,
                                       regrid_method)
+        self.apply_custom_keys(self.obs_file, self.parameter.custom_keys, self.var)
         if self.region is not None:
             region_value = self.region.get('value', None)
             if region_value is not None:
-                if self.sftlf is None:
-                    self.sftlf = self.create_sftlf(self.parameter)
+                #if self.sftlf is None:
+                    #self.sftlf = self.create_sftlf(self.parameter)
                 self.obs_file.targetMask = MV2.not_equal(
                     self.sftlf['target_grid'],
                     region_value
@@ -113,12 +117,22 @@ class Observation(DataSet):
 
     def get(self):
         if self.level is not None:
-            return self.obs_file.get_var_from_netcdf(self.var,
+            data_obs = self.obs_file.get_var_from_netcdf(self.var,
                                                      level=self.level,
                                                      region=self.region)
         else:
-            return self.obs_file.get_var_from_netcdf(self.var,
+            data_obs = self.obs_file.get_var_from_netcdf(self.var,
                                                      region=self.region)
+
+            '''
+            print 'SAVING OBS FILE'
+            file_name = 'var_%s_level_%s_region_%s.nc' % (self.var, self.level, self.region)
+            file_name = re.sub(r'0x.*>','0x0>', file_name)
+            do_file = cdms2.open('~/github/pcmdi_metrics/files/do_' + file_name, 'w')
+            do_file.write(data_obs)
+            do_file.close()
+            '''
+        return data_obs
 
     def hash(self):
         return self.obs_file.hash()

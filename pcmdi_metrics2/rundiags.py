@@ -3,11 +3,11 @@ import os
 import sys
 import json
 import collections
-from pcmdi_metrics.pmp_parameter import *
-from pcmdi_metrics.outputmetrics import *
-from pcmdi_metrics.observation import *
-from pcmdi_metrics.model import *
-from pcmdi_metrics.dataset import *
+from pcmdi_metrics2.pmp_parameter import *
+from pcmdi_metrics2.outputmetrics import *
+from pcmdi_metrics2.observation import *
+from pcmdi_metrics2.model import *
+from pcmdi_metrics2.dataset import *
 
 
 class RunDiags(object):
@@ -35,7 +35,8 @@ class RunDiags(object):
 
                 self.output_metric = OutputMetrics(
                     self.parameter, self.var_name_long, self.obs_dict, sftlf=self.sftlf)
-
+                print self.regions_dict
+                #quit()
                 for region in self.regions_dict[self.var]:
                     self.region = self.create_region(region)
                     # Runs obs vs obs, obs vs model, or model vs model
@@ -77,13 +78,17 @@ class RunDiags(object):
             except KeyError:
                 logging.error('Failed to open default_regions.py')
 
+            region_values = self.parameter.regions_values
+            region_values.update(getattr(self.parameter, "regions_values", {}))
             # Now need to edit regions_specs
-            for region in self.parameter.regions_values:
-                insert_dict = {'value': self.parameter.regions_values[region]}
+            for region in region_values:
+                insert_dict = {'value': region_values[region]}
                 if region in self.regions_specs:
                     self.regions_specs[region].update(insert_dict)
                 else:
                     self.regions_specs[region] = insert_dict
+            self.regions_specs.update(getattr(self.parameter,
+                                              "regions_specs", {}))
 
         def create_region(self, region):
             if isinstance(region, basestring):
@@ -119,15 +124,29 @@ class RunDiags(object):
 
             # self.reference/self.test are either an obs or model
             for self.reference in reference_data_set:
+                ref = Observation(self.parameter, self.var_name_long,
+                                  self.region, self.reference, self.obs_dict,
+                                  self.parameter.reference_data_path, sftlf=self.sftlf)
+                #self.sftlf = ref.get_sftlf()
+
                 for self.test in test_data_set:
 
+                    """
                     ref = self.determine_obs_or_model(reference_data_set_is_obs,
                                                       self.reference, self.parameter.reference_data_path)
 
                     test = self.determine_obs_or_model(test_data_set_is_obs,
                                                        self.test, self.parameter.test_data_path)
 
-                    self.output_metric.calculate_and_output_metrics(ref, test)
+                    """
+
+
+                    test = Model(self.parameter, self.var_name_long,
+                                self.region, self.test, self.obs_dict,
+                                self.parameter.test_data_path, sftlf=self.sftlf)
+                    #self.sftlf = test.get_sftlf()
+                    self.output_metric.calculate_and_output_metrics(ref, test, self.sftlf)
+                    #self.sftlf = self.output_metric.sftlf
 
         def is_data_set_obs(self, data_set):
             if 'all' in data_set:

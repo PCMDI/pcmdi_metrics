@@ -1,14 +1,17 @@
 import collections
 import sys
-from pcmdi_metrics.pmp_io import *
-from pcmdi_metrics.metrics.mean_climate_metrics_calculations import *
-from pcmdi_metrics.observation import *
-from pcmdi_metrics.dataset import DataSet
+import re
+import json
+from pcmdi_metrics2.pmp_io import *
+from pcmdi_metrics2.metrics.mean_climate_metrics_calculations import *
+from pcmdi_metrics2.observation import *
+from pcmdi_metrics2.dataset import DataSet
+import pcmdi_metrics
 
 
 class OutputMetrics(object):
 
-    def __init__(self, parameter, var_name_long, obs_dict, sftlf=None):
+    def __init__(self, parameter, var_name_long, obs_dict, sftlf):
         self.parameter = parameter
         self.var_name_long = var_name_long
         self.obs_dict = obs_dict
@@ -23,8 +26,8 @@ class OutputMetrics(object):
                               string_template)
 
         self.sftlf = sftlf
-        if self.sftlf is None:
-            self.sftlf = DataSet.create_sftlf(self.parameter)
+        #if self.sftlf is None:
+        #    self.sftlf = DataSet.create_sftlf(self.parameter)
 
         self.regrid_method = ''
         self.regrid_tool = ''
@@ -76,7 +79,25 @@ class OutputMetrics(object):
         self.out_file.table = self.table_realm
         self.out_file.case_id = self.parameter.case_id
 
-    def calculate_and_output_metrics(self, ref, test):
+    def check_for_success(self, ref, test):
+        is_success = True
+        if hasattr(ref, 'success') and not ref.success:
+            is_success = False
+        if hasattr(test, 'success') and not test.success:
+            is_success = False
+        return is_success
+
+    def calculate_and_output_metrics(self, ref, test, sftlf):
+
+        """
+        while self.check_for_success(ref, test):
+            ref_data = ref()
+            test_data = test()
+            if self.check_for_success(ref, test) is False:
+                continue
+        """
+        #self.sftlf = sftlf
+
         ref_data = ref()
         test_data = test()
 
@@ -106,11 +127,30 @@ class OutputMetrics(object):
             get(self.parameter.realization, {})
 
         if not self.parameter.dry_run:
-            pr_rgn = compute_metrics(self.var_name_long, test_data, ref_data)
+            print 'SAVING OBS FILE'
+            file_name = 'var_%s_level_%s_region_%s.nc' % (ref.var, ref.level, ref.region)
+            file_name = re.sub(r'0x.*>','0x0>', file_name)
+            do_file = cdms2.open('~/github/pcmdi_metrics/files/do_' + file_name, 'w')
+            do_file.write(ref_data)
+            do_file.close()
+
+            print 'SAVING MODEL FILE'
+            file_name = 'var_%s_varInFile_%s_level_%s_region_%s.nc' % (test.var, test.var_in_file, test.level, test.region)
+            file_name = re.sub(r'0x.*>','0x0>', file_name)
+            dm_file = cdms2.open('~/github/pcmdi_metrics/files/dm_' + file_name, 'w')
+            dm_file.write(test_data)
+            dm_file.close()
+
+
+
+            #pr_rgn = compute_metrics(self.var_name_long, test_data, ref_data)
+            #pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(self.var_name_long, test_data, ref_data)
+            pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(self.var_name_long, test(), ref())
+
             # Calling compute_metrics with None for the model and obs returns
             # the definitions.
             self.metrics_def_dictionary.update(
-                compute_metrics(self.var_name_long, None, None))
+                pcmdi_metrics.pcmdi.compute_metrics(self.var_name_long, None, None))
             if hasattr(self.parameter, 'compute_custom_metrics'):
                 pr_rgn.update(
                     self.parameter.compute_custom_metrics(test_data, ref_data))
@@ -126,18 +166,27 @@ class OutputMetrics(object):
             parameter_realization[self.get_region_name(ref)] = collections.OrderedDict(
                 (k, pr_rgn[k]) for k in sorted(pr_rgn.keys())
             )
+
+            pr_rgn_file = open('/Users/shaheen2/github/pcmdi_metrics/files/pr_rgn.txt', 'a')
+            #pr_rgn_file.write(pr_rgn)
+            json.dump(parameter_realization[self.get_region_name(ref)], pr_rgn_file)
+            pr_rgn_file.close()
+
+
             self.metrics_dictionary['RESULTS'][test.obs_or_model]\
                 [ref.obs_or_model][self.parameter.realization] = \
                 parameter_realization
 
-        if self.check_save_test_clim(ref):
-            self.output_interpolated_model_climatologies(test)
+        #if self.check_save_test_clim(ref):
+        self.output_interpolated_model_climatologies(test)
 
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
 
         if not self.parameter.dry_run:
             logging.error('Saving results to: %s' % self.out_file())
-            self.out_file.write(self.metrics_dictionary, indent=4,
+            self.out_file.write(self.metrics_dictionary,
+                                json_structure=["model", "reference", "rip", "region", "statistic", "season"],
+                                indent=4,
                                 separators=(',', ': '))
             self.out_file.write(self.metrics_dictionary, extension='txt')
 
@@ -217,7 +266,6 @@ class OutputMetrics(object):
                 "InputRegionMD5"] = \
                 self.sftlf[test.obs_or_model]["md5"]
 
-
     def output_interpolated_model_climatologies(self, test):
         region_name = self.get_region_name(test)
         pth = os.path.join(self.parameter.test_clims_interpolated_output,
@@ -226,13 +274,25 @@ class OutputMetrics(object):
         logging.error('Saving interpolated climatologies to: %s' % clim_file())
         clim_file.level = self.out_file.level
         clim_file.model_version = test.obs_or_model
-        clim_file.table = self.table_realm
+
+        if DataSet.use_omon(self.obs_dict, self.var):
+            regrid_method = self.parameter.regrid_method_ocn
+            regrid_tool = self.parameter.regrid_tool_ocn
+            table_realm = 'Omon'
+            realm = "ocn"
+        else:
+            regrid_method = self.parameter.regrid_method
+            regrid_tool = self.parameter.regrid_tool
+            table_realm = 'Amon'
+            realm = "atm"
+
+        clim_file.table = table_realm
         clim_file.period = self.parameter.period
         clim_file.case_id = self.parameter.case_id
         clim_file.set_target_grid(
             self.parameter.target_grid,
-            self.regrid_tool,
-            self.regrid_method)
+            regrid_tool,
+            regrid_method)
         clim_file.variable = self.var
         clim_file.region = region_name
         clim_file.realization = self.parameter.realization

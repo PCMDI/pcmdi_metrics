@@ -3,7 +3,7 @@ import os
 import sys
 import cdutil
 import cdms2
-from pcmdi_metrics.pmp_io import *
+from pcmdi_metrics2.pmp_io import *
 
 
 class DataSet(object):
@@ -22,8 +22,11 @@ class DataSet(object):
         self.obs_or_model_file = None
 
         self.sftlf = sftlf
-        if sftlf is None:
-            self.sftlf = self.create_sftlf(self.parameter)
+        #if sftlf is None:
+        #    self.sftlf = self.create_sftlf(self.parameter)
+
+    def get_sftlf(self):
+        return self.sftlf
 
     def __call__(self):
         return self.get()
@@ -55,9 +58,9 @@ class DataSet(object):
             sft.model_version = test
             sft.table = "fx"
             sft.realm = "atmos"
-            sft.period = parameter.period
+            sft.period = getattr(parameter, 'period', '')
             sft.ext = "nc"
-            sft.case_id = parameter.case_id
+            sft.case_id = getattr(parameter, 'case_id', '')
             sft.target_grid = None
             sft.realization = "r0i0p0"
             DataSet.apply_custom_keys(sft, parameter.custom_keys, "sftlf")

@@ -1,5 +1,6 @@
-from pcmdi_metrics.pmp_io import *
-from pcmdi_metrics.dataset import *
+from pcmdi_metrics2.pmp_io import *
+from pcmdi_metrics2.dataset import *
+import re
 
 
 class Model(DataSet):
@@ -26,7 +27,7 @@ class Model(DataSet):
     def setup_model_file(self):
         if self.use_omon(self.obs_dict, self.var):
             regrid_method = self.parameter.regrid_method_ocn
-            regrid_tool = self.parameter.regrid_tool
+            regrid_tool = self.parameter.regrid_tool_ocn
             self.model_file.table = 'Omon'
             self.model_file.realm = 'ocn'
         else:
@@ -39,33 +40,42 @@ class Model(DataSet):
                                         regrid_tool, regrid_method)
 
     def get(self):
-        var_in_file = self.get_var_in_file()
+        self.var_in_file = self.get_var_in_file()
 
         if self.region is not None:
             region_value = self.region.get('value', None)
             if region_value is not None:
                 if self.sftlf[self.obs_or_model]['raw'] is None:
-                    self.create_sftlf_model_raw(var_in_file)
+                    self.create_sftlf_model_raw(self.var_in_file)
 
                 self.model_file.mask = self.sftlf[self.obs_or_model]['raw']
                 self.model_file.target_mask = \
                     MV2.not_equal(self.sftlf['target_grid'], region_value)
 
-        try:
-            if self.level is None:
-                data_model = self.model_file.get_var_from_netcdf(
-                    self.var, var_in_file=var_in_file, region=self.region)
-            else:
-                data_model = self.model_file.get_var_from_netcdf(
-                    self.var, var_in_file=var_in_file,
-                    level=self.level, region=self.region)
-            return data_model
+        #try:
+        if self.level is None:
+            data_model = self.model_file.get_var_from_netcdf(
+                self.var, var_in_file=self.var_in_file, region=self.region)
+        else:
+            data_model = self.model_file.get_var_from_netcdf(
+                self.var, var_in_file=self.var_in_file,
+                level=self.level, region=self.region)
 
-        except Exception as err:
+        '''
+        print 'SAVING MODEL FILE'
+        file_name = 'var_%s_varInFile_%s_level_%s_region_%s.nc' % (self.var, var_in_file, self.level, self.region)
+        file_name = re.sub(r'0x.*>','0x0>', file_name)
+        dm_file = cdms2.open('~/github/pcmdi_metrics/files/dm_' + file_name, 'w')
+        dm_file.write(data_model)
+        dm_file.close()
+        '''
+        return data_model
+
+        '''except Exception as err:
             # TODO do something about success
             success = False
             logging.exception('Failed to get variable %s for the version: %s. Error: %s' % (self.var, self.obs_or_model, err))
-
+        '''
     def get_var_in_file(self):
         tweaks = {}
         if hasattr(self.parameter, 'model_tweaks'):
@@ -105,4 +115,3 @@ class Model(DataSet):
 
     def file_path(self):
         return self.model_file()
-

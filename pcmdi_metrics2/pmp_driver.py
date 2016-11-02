@@ -1,6 +1,6 @@
 from cdp.cdp_driver import *
-from pcmdi_metrics.checkparameter import *
-from pcmdi_metrics.rundiags import *
+from pcmdi_metrics2.checkparameter import *
+from pcmdi_metrics2.rundiags import *
 
 
 class PMPDriver(CDPDriver):

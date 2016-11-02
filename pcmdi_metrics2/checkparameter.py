@@ -1,5 +1,5 @@
 import logging
-from pcmdi_metrics.pmp_parameter import *
+from pcmdi_metrics2.pmp_parameter import *
 
 
 class CheckParameter(object):

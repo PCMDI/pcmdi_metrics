@@ -100,8 +100,8 @@ dry_run = False
 # Ok do we have custom metrics?
 # The following allow users to plug in a set of custom metrics
 # Function needs to take in var name, model clim, obs clim
-#import pcmdi_metrics  # Or whatever your custom metrics package name is
-#compute_custom_metrics = pcmdi_metrics.pcmdi.compute_metrics
+#import pcmdi_metrics2  # Or whatever your custom metrics package name is
+#compute_custom_metrics = pcmdi_metrics2.pcmdi.compute_metrics
 # or
 
 '''
