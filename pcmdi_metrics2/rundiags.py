@@ -35,8 +35,7 @@ class RunDiags(object):
 
                 self.output_metric = OutputMetrics(
                     self.parameter, self.var_name_long, self.obs_dict, sftlf=self.sftlf)
-                print self.regions_dict
-                #quit()
+
                 for region in self.regions_dict[self.var]:
                     self.region = self.create_region(region)
                     # Runs obs vs obs, obs vs model, or model vs model
@@ -45,9 +44,15 @@ class RunDiags(object):
         def load_obs_dict(self):
             obs_file_name = 'obs_info_dictionary.json'
             obs_json_file = DataSet.load_path_as_file_obj(obs_file_name)
-            obs_dic = json.loads(obs_json_file.read())
+            obs_dict = json.loads(obs_json_file.read())
             obs_json_file.close()
-            return obs_dic
+
+            if hasattr(self.parameter, 'custom_observations'):
+                # Can't use load_path_as_file_obj() b/c might not be in /share/
+                cust_obs_json_file = open(self.parameter.custom_observations)
+                obs_dict.update(json.load(cust_obs_json_file))
+                cust_obs_json_file.close()
+            return obs_dict
 
         def create_regions_dict(self):
             self.load_default_regions_and_regions_specs()

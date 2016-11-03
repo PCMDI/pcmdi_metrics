@@ -9,6 +9,7 @@ import cdms2
 import hashlib
 import numpy
 import collections
+import re
 from cdp.cdp_io import *
 
 
@@ -95,8 +96,15 @@ class PMPIO(CDPIO, genutil.StringConstructor):
 
     def get_var_from_netcdf(self, var, var_in_file=None,
                             region={}, *args, **kwargs):
+
+        print 'CALLING GET'
         self.var_from_file = self.extract_var_from_file(
             var, var_in_file, *args, **kwargs)
+
+        print 'SAVING OUT FILE'
+        file_name = 'var_%s_varInFile_%s_region_%s.nc' % (var, var_in_file, region)
+        if 'level' in kwargs:
+            file_name = 'var_%s_varInFile_%s_level_%s_region_%s.nc' % (var, var_in_file, kwargs['level'], region)
 
         self.region = region
         if self.region is None:
@@ -105,10 +113,24 @@ class PMPIO(CDPIO, genutil.StringConstructor):
         if self.is_masking():
             self.var_from_file = self.mask_var(self.var_from_file)
 
+        '''
+        file_name = re.sub(r'0x.*>','0x0>', file_name)
+        do_file = cdms2.open('~/github/pcmdi_metrics/files/out_' + file_name, 'w')
+        do_file.write(self.var_from_file)
+        do_file.close()
+        '''
         self.var_from_file = \
             self.set_target_grid_and_mask_in_var(self.var_from_file)
+
+
+        file_name = re.sub(r'0x.*>','0x0>', file_name)
+        do_file = cdms2.open('~/github/pcmdi_metrics/files/out_' + file_name, 'w')
+        do_file.write(self.var_from_file)
+        do_file.close()
+
         self.var_from_file = \
             self.set_domain_in_var(self.var_from_file, self.region)
+
 
         return self.var_from_file
 
@@ -140,16 +162,23 @@ class PMPIO(CDPIO, genutil.StringConstructor):
 
     def set_target_grid_and_mask_in_var(self, var):
         if self.target_grid is not None:
+            print 'TARGET GRID IS NOT NONE'
             var = var.regrid(self.target_grid, regridTool=self.regrid_tool,
                              regridMethod=self.regrid_method, coordSys='deg',
                              diag={}, periodicity=1
                              )
-        if self.target_mask is not None:
-            if self.target_mask.shape != var.shape:
-                dummy, mask = genutil.grower(var, self.target_mask)
-            else:
-                mask = self.target_mask
-            var = MV2.masked_where(mask, var)
+
+            '''file_name = re.sub(r'0x.*>','0x0>', self.file_name)
+            do_file = cdms2.open('~/github/pcmdi_metrics/files/out_' + file_name, 'w')
+            do_file.write(var)
+            do_file.close()'''
+
+            if self.target_mask is not None:
+                if self.target_mask.shape != var.shape:
+                    dummy, mask = genutil.grower(var, self.target_mask)
+                else:
+                    mask = self.target_mask
+                var = MV2.masked_where(mask, var)
 
         return var
 

@@ -74,18 +74,19 @@ class Observation(DataSet):
             logging.error(msg)
             obs_mask_name = None
 
-        #num = str(raw_input('Enter a number'))
         return obs_mask_name
 
     def get_obs_from_obs_dict(self):
-        if self.obs_or_model not in self.obs_dict[self.var]:
-            raise KeyError('The selected obs is not in the obs_dict')
-
+        #if self.obs_or_model not in self.obs_dict[self.var]:
+        #    raise KeyError('The selected obs is not in the obs_dict')
+        #print self.obs_dict
+        #quit()
         if isinstance(self.obs_dict[self.var][self.obs_or_model], (str, unicode)):
             obs_from_obs_dict = \
                 self.obs_dict[self.var][self.obs_dict[self.var][self.obs_or_model]]
         else:
             obs_from_obs_dict = self.obs_dict[self.var][self.obs_or_model]
+        print 'obs_var_ref: ', obs_from_obs_dict
         return obs_from_obs_dict
 
     def setup_obs_file(self):
@@ -110,7 +111,7 @@ class Observation(DataSet):
             if region_value is not None:
                 #if self.sftlf is None:
                     #self.sftlf = self.create_sftlf(self.parameter)
-                self.obs_file.targetMask = MV2.not_equal(
+                self.obs_file.target_mask = MV2.not_equal(
                     self.sftlf['target_grid'],
                     region_value
                 )
