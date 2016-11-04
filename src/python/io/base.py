@@ -102,6 +102,36 @@ class Base(genutil.StringConstructor):
                 out = out(*[domain])
         return out
 
+    def provenanceGrab(self):
+        # Collect platform and user information
+        # Platform and version: uname (sysname, nodename, release, version, machine), mac_ver, linux_distribution
+        # http://stackoverflow.com/questions/1854/how-to-check-what-os-am-i-running-on-in-python
+        # https://docs.python.org/2/library/platform.html
+        # User privilege: os.geteuid() == 0 (means root on linux) ; No effecive mac version
+        # http://apple.stackexchange.com/questions/179527/check-if-an-os-x-user-is-an-administrator
+        # https://docs.python.org/2/library/os.html#files-and-directories
+        #os.access('/',os.R_OK)
+        #Out[21]: True
+        #os.access('/',os.W_OK)
+        #Out[22]: False
+        # PMP version
+        # PMP obs version
+        # CDP version
+        # conda version
+        # cdms version
+        # cdtime version
+        # cdutil version
+        # ESMF version
+        # genutil version
+        # numpy version
+        # python version
+        # regrid2 version
+        # vcs version
+        # vtk version
+
+        provenance = {}
+        return provenance
+
     def setTargetGrid(self, target, regridTool="esmf", regridMethod="linear"):
         self.regridTool = regridTool
         self.regridMethod = regridMethod
