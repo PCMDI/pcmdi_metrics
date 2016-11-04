@@ -15,6 +15,7 @@ def compute_metrics(Var, dm, do):
             None,
             None)
         metrics_defs["rms_xy"] = pcmdi_metrics.pcmdi.rms_xy.compute(None, None)
+        metrics_defs["rmsc_xy"] = pcmdi_metrics.pcmdi.rmsc_xy.compute(None, None)
         metrics_defs["bias_xy"] = pcmdi_metrics.pcmdi.bias_xy.compute(
             None, None)
         metrics_defs["mae_xy"] = pcmdi_metrics.pcmdi.meanabs_xy.compute(
@@ -68,8 +69,9 @@ def compute_metrics(Var, dm, do):
     # CALCULATE MEAN ABSOLUTE ERROR
     mae_xy = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_am, do_am)
 
-    # CALCULATE ANNUAL MEAN RMS
+    # CALCULATE ANNUAL MEAN RMS (centered and uncentered)
     rms_xy = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am, do_am)
+    rmsc_xy = pcmdi_metrics.pcmdi.rmsc_xy.compute(dm_am, do_am)
 
     # CALCULATE ANNUAL MEAN CORRELATION
     cor_xy = pcmdi_metrics.pcmdi.cor_xy.compute(dm_am, do_am)
@@ -101,7 +103,7 @@ def compute_metrics(Var, dm, do):
 
     for stat in ["std-obs_xy", "std_xy", "std-obs_xyt",
                  "std_xyt", "std-obs_xy_devzm", "std_xy_devzm",
-                 "rms_xyt", "rms_xy", "cor_xy", "bias_xy",
+                 "rms_xyt", "rms_xy", "rmsc_xy", "cor_xy", "bias_xy",
                  "mae_xy", "rms_y", "rms_devzm"]:
         metrics_dictionary[stat] = {}
 
@@ -146,6 +148,11 @@ def compute_metrics(Var, dm, do):
         conv,
         sig_digits)
     metrics_dictionary[
+        'rmsc_xy']['ann'] = format(
+        rmsc_xy *
+        conv,
+        sig_digits)
+    metrics_dictionary[
         'cor_xy']['ann'] = format(
         cor_xy,
         sig_digits)
@@ -179,6 +186,7 @@ def compute_metrics(Var, dm, do):
 
         # CALCULATE SEASONAL RMS AND CORRELATION
         rms_sea = pcmdi_metrics.pcmdi.rms_xy.compute(dm_sea, do_sea)
+        rmsc_sea = pcmdi_metrics.pcmdi.rmsc_xy.compute(dm_sea, do_sea)
         cor_sea = pcmdi_metrics.pcmdi.cor_xy.compute(dm_sea, do_sea)
         mae_sea = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_sea, do_sea)
         bias_sea = pcmdi_metrics.pcmdi.bias_xy.compute(dm_sea, do_sea)
@@ -211,6 +219,10 @@ def compute_metrics(Var, dm, do):
             sig_digits)
         metrics_dictionary['rms_xy'][sea] = format(
             rms_sea *
+            conv,
+            sig_digits)
+        metrics_dictionary['rmsc_xy'][sea] = format(
+            rmsc_sea *
             conv,
             sig_digits)
         metrics_dictionary['cor_xy'][sea] = format(
