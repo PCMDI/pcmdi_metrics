@@ -41,6 +41,20 @@
                             "jja": "1.717",
                             "djf": "1.387"
                         },
+                        "mean-obs_xy": {
+                            "ann": "299.442",
+                            "son": "299.167",
+                            "mam": "299.917",
+                            "jja": "299.626",
+                            "djf": "299.062"
+                        },
+                        "mean_xy": {
+                            "ann": "297.645",
+                            "son": "296.766",
+                            "mam": "298.240",
+                            "jja": "297.909",
+                            "djf": "297.677"
+                        },
                         "rms_devzm": {
                             "ann": "0.088"
                         },
@@ -56,6 +70,13 @@
                         },
                         "rms_y": {
                             "ann": "1.655"
+                        },
+                        "rmsc_xy": {
+                            "ann": "0.243",
+                            "son": "0.253",
+                            "mam": "0.418",
+                            "jja": "0.310",
+                            "djf": "0.355"
                         },
                         "some_custom": 1.5,
                         "std-obs_xy": {
@@ -108,6 +129,20 @@
                             "jja": "1.283",
                             "djf": "1.345"
                         },
+                        "mean-obs_xy": {
+                            "ann": "297.828",
+                            "son": "297.831",
+                            "mam": "298.298",
+                            "jja": "297.821",
+                            "djf": "297.367"
+                        },
+                        "mean_xy": {
+                            "ann": "296.934",
+                            "son": "296.969",
+                            "mam": "297.434",
+                            "jja": "297.027",
+                            "djf": "296.315"
+                        },
                         "rms_devzm": {
                             "ann": "1.113"
                         },
@@ -123,6 +158,13 @@
                         },
                         "rms_y": {
                             "ann": "1.050"
+                        },
+                        "rmsc_xy": {
+                            "ann": "1.195",
+                            "son": "1.717",
+                            "mam": "1.339",
+                            "jja": "1.353",
+                            "djf": "1.362"
                         },
                         "some_custom": 1.5,
                         "std-obs_xy": {
@@ -175,6 +217,20 @@
                             "jja": "1.534",
                             "djf": "1.993"
                         },
+                        "mean-obs_xy": {
+                            "ann": "287.563",
+                            "son": "287.607",
+                            "mam": "287.535",
+                            "jja": "289.271",
+                            "djf": "285.822"
+                        },
+                        "mean_xy": {
+                            "ann": "286.937",
+                            "son": "286.818",
+                            "mam": "287.046",
+                            "jja": "288.745",
+                            "djf": "285.141"
+                        },
                         "rms_devzm": {
                             "ann": "1.394"
                         },
@@ -190,6 +246,13 @@
                         },
                         "rms_y": {
                             "ann": "2.103"
+                        },
+                        "rmsc_xy": {
+                            "ann": "2.022",
+                            "son": "2.033",
+                            "mam": "2.418",
+                            "jja": "1.927",
+                            "djf": "2.681"
                         },
                         "some_custom": 1.5,
                         "std-obs_xy": {
@@ -242,6 +305,20 @@
                             "jja": "1.370",
                             "djf": "1.962"
                         },
+                        "mean-obs_xy": {
+                            "ann": "289.550",
+                            "son": "289.444",
+                            "mam": "289.601",
+                            "jja": "289.824",
+                            "djf": "289.331"
+                        },
+                        "mean_xy": {
+                            "ann": "289.339",
+                            "son": "289.003",
+                            "mam": "289.617",
+                            "jja": "289.633",
+                            "djf": "289.113"
+                        },
                         "rms_devzm": {
                             "ann": "1.028"
                         },
@@ -257,6 +334,13 @@
                         },
                         "rms_y": {
                             "ann": "2.452"
+                        },
+                        "rmsc_xy": {
+                            "ann": "1.984",
+                            "son": "1.861",
+                            "mam": "2.262",
+                            "jja": "1.711",
+                            "djf": "2.729"
                         },
                         "some_custom": 1.5,
                         "std-obs_xy": {
@@ -309,6 +393,20 @@
                             "jja": "1.982",
                             "djf": "3.276"
                         },
+                        "mean-obs_xy": {
+                            "ann": "278.356",
+                            "son": "279.717",
+                            "mam": "276.869",
+                            "jja": "288.334",
+                            "djf": "268.391"
+                        },
+                        "mean_xy": {
+                            "ann": "276.184",
+                            "son": "277.465",
+                            "mam": "274.625",
+                            "jja": "286.756",
+                            "djf": "265.852"
+                        },
                         "rms_devzm": {
                             "ann": "1.936"
                         },
@@ -324,6 +422,13 @@
                         },
                         "rms_y": {
                             "ann": "2.725"
+                        },
+                        "rmsc_xy": {
+                            "ann": "2.028",
+                            "son": "1.840",
+                            "mam": "2.536",
+                            "jja": "1.783",
+                            "djf": "3.532"
                         },
                         "some_custom": 1.5,
                         "std-obs_xy": {
@@ -376,6 +481,20 @@
                             "jja": "1.441",
                             "djf": "1.545"
                         },
+                        "mean-obs_xy": {
+                            "ann": "296.324",
+                            "son": "297.252",
+                            "mam": "295.474",
+                            "jja": "297.728",
+                            "djf": "294.816"
+                        },
+                        "mean_xy": {
+                            "ann": "295.153",
+                            "son": "296.503",
+                            "mam": "293.765",
+                            "jja": "296.895",
+                            "djf": "293.422"
+                        },
                         "rms_devzm": {
                             "ann": "1.119"
                         },
@@ -391,6 +510,13 @@
                         },
                         "rms_y": {
                             "ann": "1.256"
+                        },
+                        "rmsc_xy": {
+                            "ann": "1.160",
+                            "son": "1.459",
+                            "mam": "1.187",
+                            "jja": "1.505",
+                            "djf": "1.109"
                         },
                         "some_custom": 1.5,
                         "std-obs_xy": {
@@ -443,6 +569,20 @@
                             "jja": "1.590",
                             "djf": "2.006"
                         },
+                        "mean-obs_xy": {
+                            "ann": "276.238",
+                            "son": "275.051",
+                            "mam": "276.677",
+                            "jja": "273.107",
+                            "djf": "280.165"
+                        },
+                        "mean_xy": {
+                            "ann": "277.696",
+                            "son": "275.870",
+                            "mam": "278.688",
+                            "jja": "274.170",
+                            "djf": "282.082"
+                        },
                         "rms_devzm": {
                             "ann": "1.243"
                         },
@@ -458,6 +598,13 @@
                         },
                         "rms_y": {
                             "ann": "2.156"
+                        },
+                        "rmsc_xy": {
+                            "ann": "1.582",
+                            "son": "1.586",
+                            "mam": "1.939",
+                            "jja": "2.059",
+                            "djf": "1.444"
                         },
                         "some_custom": 1.5,
                         "std-obs_xy": {
@@ -580,6 +727,12 @@
             "Name": "Spatial Root Mean Square",
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
         },
+        "rmsc_xy": {
+            "Abstract": "Compute Centered Spatial Root Mean Square",
+            "Contact": "pcmdi-metrics@llnl.gov",
+            "Name": "Spatial Root Mean Square",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
         "bias_xy": {
             "Abstract": "Compute Full Average of Model - Observation",
             "Contact": "pcmdi-metrics@llnl.gov",
@@ -595,6 +748,11 @@
             "Contact": "pcmdi-metrics@llnl.gov",
             "Name": "Spatial Correlation",
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "mean_xy": {
+            "Abstract": "Area Mean (area weighted)",
+            "Contact": "pcmdi-metrics@llnl.gov",
+            "Name": "Mean"
         },
         "std_xy": {
             "Abstract": "Compute Spatial Standard Deviation",
@@ -648,6 +806,6 @@
         "statistic",
         "season"
     ],
-    "metrics_git_sha1": "d2ddb8657ba503b8e2e6a7385a26de977b6dd9e6",
-    "uvcdat_version": "v2.5.0-572-ga06818f"
+    "metrics_git_sha1": "fd08253cc5e396cf717da542e3f4c71facf8718b",
+    "uvcdat_version": "2.6"
 }
