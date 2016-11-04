@@ -6,6 +6,7 @@ import bias_xy  # noqa
 import rms_xy  # noqa
 import rmsc_xy  # noqa
 import rms_0  # noqa
+import mean_xy
 import annual_mean  # noqa
 import cor_xy  # noqa
 import meanabs_xy  # noqa

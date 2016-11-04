@@ -25,7 +25,7 @@ def compute_metrics(Var, dm, do):
         #     None,
         #     None)
         metrics_defs["cor_xy"] = pcmdi_metrics.pcmdi.cor_xy.compute(None, None)
-
+        metrics_defs["mean_xy"] = pcmdi_metrics.pcmdi.mean_xy.compute(None)
         metrics_defs["std_xy"] = pcmdi_metrics.pcmdi.std_xy.compute(None)
         metrics_defs["std_xyt"] = pcmdi_metrics.pcmdi.std_xyt.compute(None)
 
@@ -80,6 +80,10 @@ def compute_metrics(Var, dm, do):
     stdObs_xy = pcmdi_metrics.pcmdi.std_xy.compute(do_am)
     std_xy = pcmdi_metrics.pcmdi.std_xy.compute(dm_am)
 
+    # CALCULATE ANNUAL OBS and MOD MEAN 
+    meanObs_xy = pcmdi_metrics.pcmdi.mean_xy.compute(do_am)
+    mean_xy = pcmdi_metrics.pcmdi.mean_xy.compute(dm_am)
+
     # ZONAL MEANS ######
     # CALCULATE ANNUAL MEANS
     dm_amzm, do_amzm = pcmdi_metrics.pcmdi.zonal_mean.compute(dm_am, do_am)
@@ -102,11 +106,21 @@ def compute_metrics(Var, dm, do):
     std_xy_devzm = pcmdi_metrics.pcmdi.std_xy.compute(dm_am_devzm)
 
     for stat in ["std-obs_xy", "std_xy", "std-obs_xyt",
-                 "std_xyt", "std-obs_xy_devzm", "std_xy_devzm",
+                 "std_xyt", "std-obs_xy_devzm", "mean_xy","mean-obs_xy","std_xy_devzm",
                  "rms_xyt", "rms_xy", "rmsc_xy", "cor_xy", "bias_xy",
                  "mae_xy", "rms_y", "rms_devzm"]:
         metrics_dictionary[stat] = {}
 
+    metrics_dictionary[
+        'mean-obs_xy']['ann'] = format(
+        meanObs_xy *
+        conv,
+        sig_digits)
+    metrics_dictionary[
+        'mean_xy']['ann'] = format(
+        mean_xy *
+        conv,
+        sig_digits)
     metrics_dictionary[
         'std-obs_xy']['ann'] = format(
         stdObs_xy *
@@ -191,9 +205,14 @@ def compute_metrics(Var, dm, do):
         mae_sea = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_sea, do_sea)
         bias_sea = pcmdi_metrics.pcmdi.bias_xy.compute(dm_sea, do_sea)
 
-        # CALCULATE ANNUAL OBS and MOD STD
+        # CALCULATE SEASONAL OBS and MOD STD
         stdObs_xy_sea = pcmdi_metrics.pcmdi.std_xy.compute(do_sea)
         std_xy_sea = pcmdi_metrics.pcmdi.std_xy.compute(dm_sea)
+
+        # CALCULATE SEASONAL OBS and MOD MEAN 
+        meanObs_xy_sea = pcmdi_metrics.pcmdi.mean_xy.compute(do_sea)
+        mean_xy_sea = pcmdi_metrics.pcmdi.mean_xy.compute(dm_sea)
+
 
     # ZONAL MEANS ######
     # CALCULATE SEASONAL MEANS
@@ -238,6 +257,14 @@ def compute_metrics(Var, dm, do):
             sig_digits)
         metrics_dictionary['std_xy'][sea] = format(
             std_xy_sea *
+            conv,
+            sig_digits)
+        metrics_dictionary['mean-obs_xy'][sea] = format(
+            meanObs_xy_sea *
+            conv,
+            sig_digits)
+        metrics_dictionary['mean_xy'][sea] = format(
+            mean_xy_sea *
             conv,
             sig_digits)
 
