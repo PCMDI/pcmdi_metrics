@@ -1,8 +1,8 @@
 import argparse
 import os
 import json
-from pcmdi_metrics2.pmp_driver import *
-from pcmdi_metrics2.pmp_parameter import *
+from pcmdi_metrics.pmp_driver import *
+from pcmdi_metrics.pmp_parameter import *
 
 parser = argparse.ArgumentParser(
     description='Runs PCMDI Metrics Diagnostics')

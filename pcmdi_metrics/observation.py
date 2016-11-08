@@ -1,5 +1,5 @@
-from pcmdi_metrics2.pmp_io import *
-from pcmdi_metrics2.dataset import *
+from pcmdi_metrics.pmp_io import *
+from pcmdi_metrics.dataset import *
 import re
 
 class OBS(PMPIO):

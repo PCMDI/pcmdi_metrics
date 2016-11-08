@@ -3,11 +3,11 @@ import os
 import sys
 import json
 import collections
-from pcmdi_metrics2.pmp_parameter import *
-from pcmdi_metrics2.outputmetrics import *
-from pcmdi_metrics2.observation import *
-from pcmdi_metrics2.model import *
-from pcmdi_metrics2.dataset import *
+from pcmdi_metrics.pmp_parameter import *
+from pcmdi_metrics.outputmetrics import *
+from pcmdi_metrics.observation import *
+from pcmdi_metrics.model import *
+from pcmdi_metrics.dataset import *
 
 
 class RunDiags(object):
@@ -32,6 +32,10 @@ class RunDiags(object):
 
             for self.var_name_long in self.parameter.vars:
                 self.var = self.var_name_long.split('_')[0]
+
+                if self.var not in self.obs_dict:
+                    logging.error('Var %s not in obs_dict' % self.var)
+                    continue
 
                 self.output_metric = OutputMetrics(
                     self.parameter, self.var_name_long, self.obs_dict, sftlf=self.sftlf)

@@ -4,6 +4,7 @@ from cdp.cdp_parameter import *
 
 class PMPParameter(CDPParameter):
     def __init__(self):
+
         # Metrics run identification
         self.case_id = ''
         self.period = ''
@@ -31,8 +32,7 @@ class PMPParameter(CDPParameter):
         self.test_data_path = ''
         self.reference_data_path = ''
         self.custom_observations_path = ''
-        self.save_test_clims = None
-        self.test_clims_interpolated_output = ''
+        #self.test_clims_interpolated_output = ''
 
         self.metrics_output_path = ''
         self.filename_output_template = ''

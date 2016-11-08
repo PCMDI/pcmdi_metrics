@@ -2,11 +2,10 @@ import collections
 import sys
 import re
 import json
-from pcmdi_metrics2.pmp_io import *
-from pcmdi_metrics2.metrics.mean_climate_metrics_calculations import *
-from pcmdi_metrics2.observation import *
-from pcmdi_metrics2.dataset import DataSet
-import pcmdi_metrics
+from pcmdi_metrics.pmp_io import *
+from pcmdi_metrics.metrics.mean_climate_metrics_calculations import *
+from pcmdi_metrics.observation import *
+from pcmdi_metrics.dataset import DataSet
 
 
 class OutputMetrics(object):
@@ -45,13 +44,18 @@ class OutputMetrics(object):
 
         self.metrics_dictionary["Variable"] = {}
         self.metrics_dictionary["Variable"]["id"] = self.var
-        self.metrics_dictionary["json_version"] = '2.0'
+        self.metrics_dictionary["json_version"] = '3.0'
         self.metrics_dictionary["References"] = {}
         self.metrics_dictionary["RegionalMasking"] = {}
 
         level = DataSet.calculate_level_from_var(self.var_name_long)
-        if level is not None:
+        if level is None:
+            self.out_file.level = ''
+        else:
             self.metrics_dictionary["Variable"]["level"] = level
+            self.out_file.level = "-%i" % (int(level / 100.0))
+
+
 
     def open_disclaimer(self):
         f = DataSet.load_path_as_file_obj('disclaimer.txt')
@@ -78,6 +82,8 @@ class OutputMetrics(object):
         self.out_file.realm = self.realm
         self.out_file.table = self.table_realm
         self.out_file.case_id = self.parameter.case_id
+        DataSet.apply_custom_keys(self.out_file, self.parameter.custom_keys, self.var)
+
 
     def check_for_success(self, ref, test):
         is_success = True
@@ -96,7 +102,6 @@ class OutputMetrics(object):
             if self.check_for_success(ref, test) is False:
                 continue
         """
-        #self.sftlf = sftlf
 
         ref_data = ref()
         test_data = test()
@@ -127,33 +132,16 @@ class OutputMetrics(object):
             get(self.parameter.realization, {})
 
         if not self.parameter.dry_run:
-            print 'SAVING OBS FILE'
-            file_name = 'var_%s_level_%s_region_%s.nc' % (ref.var, ref.level, ref.region)
-            file_name = re.sub(r'0x.*>','0x0>', file_name)
-            do_file = cdms2.open('~/github/pcmdi_metrics/files/do_' + file_name, 'w')
-            do_file.write(ref_data)
-            do_file.close()
-
-            print 'SAVING MODEL FILE'
-            file_name = 'var_%s_varInFile_%s_level_%s_region_%s.nc' % (test.var, test.var_in_file, test.level, test.region)
-            file_name = re.sub(r'0x.*>','0x0>', file_name)
-            dm_file = cdms2.open('~/github/pcmdi_metrics/files/dm_' + file_name, 'w')
-            dm_file.write(test_data)
-            dm_file.close()
-
-
-
-            #pr_rgn = compute_metrics(self.var_name_long, test_data, ref_data)
-            #pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(self.var_name_long, test_data, ref_data)
-            pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(self.var_name_long, test(), ref())
+            pr_rgn = compute_metrics(self.var_name_long, test_data, ref_data)
 
             # Calling compute_metrics with None for the model and obs returns
             # the definitions.
             self.metrics_def_dictionary.update(
-                pcmdi_metrics.pcmdi.compute_metrics(self.var_name_long, None, None))
+                compute_metrics(self.var_name_long, None, None))
             if hasattr(self.parameter, 'compute_custom_metrics'):
                 pr_rgn.update(
-                    self.parameter.compute_custom_metrics(test_data, ref_data))
+                    self.parameter.compute_custom_metrics(self.var_name_long,
+                                                          test_data, ref_data))
                 try:
                     self.metrics_def_dictionary.update(
                         self.parameter.compute_custom_metrics(
@@ -167,18 +155,12 @@ class OutputMetrics(object):
                 (k, pr_rgn[k]) for k in sorted(pr_rgn.keys())
             )
 
-            pr_rgn_file = open('/Users/shaheen2/github/pcmdi_metrics/files/pr_rgn.txt', 'a')
-            #pr_rgn_file.write(pr_rgn)
-            json.dump(parameter_realization[self.get_region_name(ref)], pr_rgn_file)
-            pr_rgn_file.close()
-
-
             self.metrics_dictionary['RESULTS'][test.obs_or_model]\
                 [ref.obs_or_model][self.parameter.realization] = \
                 parameter_realization
 
-        #if self.check_save_test_clim(ref):
-        self.output_interpolated_model_climatologies(test)
+        if self.check_save_test_clim(ref):
+            self.output_interpolated_model_climatologies(test)
 
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
 

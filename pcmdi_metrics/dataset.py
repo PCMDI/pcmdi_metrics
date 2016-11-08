@@ -1,9 +1,10 @@
 import abc
 import os
 import sys
+import logging
 import cdutil
 import cdms2
-from pcmdi_metrics2.pmp_io import *
+from pcmdi_metrics.pmp_io import *
 
 
 class DataSet(object):
@@ -42,9 +43,10 @@ class DataSet(object):
 
     @staticmethod
     def use_omon(obs_dict, var):
-        return \
-            obs_dict[var][obs_dict[var]["default"]]["CMIP_CMOR_TABLE"] == \
-            'Omon'
+        obs_default = obs_dict[var][obs_dict[var]["default"]]
+        return obs_default["CMIP_CMOR_TABLE"] == 'Omon'
+
+
 
     @staticmethod
     def create_sftlf(parameter):

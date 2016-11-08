@@ -80,7 +80,7 @@ reference_data_path = os.path.abspath(os.path.join(pth, "obs"))
 custom_observations = os.path.abspath(
     os.path.join(
         reference_data_path,
-        "custom_obs_info_dictionary.json"))
+        "obs_info_dictionary.json"))
 # DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join(
     'pcmdi_install_test_results',
@@ -100,11 +100,12 @@ dry_run = False
 # Ok do we have custom metrics?
 # The following allow users to plug in a set of custom metrics
 # Function needs to take in var name, model clim, obs clim
-#import pcmdi_metrics2  # Or whatever your custom metrics package name is
-#compute_custom_metrics = pcmdi_metrics2.pcmdi.compute_metrics
+# Or whatever your custom metrics package name is
+from pcmdi_metrics.metrics.mean_climate_metrics_calculations import *
+compute_custom_metrics = compute_metrics
 # or
 
-'''
+
 def mymax(slab, nm):
     if slab is None:
         return {"custom_%s_max" % nm:
@@ -144,4 +145,4 @@ def my_custom(var, dm, do):
     return out
 compute_custom_metrics = my_custom
 # or for different metrics
-'''
+

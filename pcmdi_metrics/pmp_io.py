@@ -70,7 +70,7 @@ class PMPIO(CDPIO, genutil.StringConstructor):
             data["json_structure"] = json_structure
 
             f = open(file_name, 'w')
-            # data['metrics_git_sha1'] = pcmdi_metrics2.__git_sha1__
+            # data['metrics_git_sha1'] = pcmdi_metrics.__git_sha1__
             data['uvcdat_version'] = cdat_info.get_version()
             json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
@@ -84,7 +84,7 @@ class PMPIO(CDPIO, genutil.StringConstructor):
         elif self.extension == 'nc':
             f = cdms2.open(file_name, 'w')
             f.write(data, *args, **kwargs)
-            # f.metrics_git_sha1 = pcmdi_metrics2.__git_sha1__
+            # f.metrics_git_sha1 = pcmdi_metrics.__git_sha1__
             f.uvcdat_version = cdat_info.get_version()
             f.close()
 
@@ -137,7 +137,7 @@ class PMPIO(CDPIO, genutil.StringConstructor):
     def extract_var_from_file(self, var, var_in_file, *args, **kwargs):
         if var_in_file is None:
             var_in_file = var
-        self.extension = 'nc'
+        #self.extension = 'nc'
         var_file = cdms2.open(self(), 'r')
         extracted_var = var_file(var_in_file, *args, **kwargs)
         var_file.close()
@@ -204,6 +204,8 @@ class PMPIO(CDPIO, genutil.StringConstructor):
         try:
             o_mask = self.file_mask_template('sftlf')
         except:
+            print ': ', self.regrid_tool
+            print 'self.regrid_tool: ', self.regrid_tool
             o_mask = cdutil.generateLandSeaMask(
                 var, regridTool=self.regrid_tool).filled(1.) * 100.
             o_mask = MV2.array(o_mask)

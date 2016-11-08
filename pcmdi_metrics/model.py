@@ -1,5 +1,5 @@
-from pcmdi_metrics2.pmp_io import *
-from pcmdi_metrics2.dataset import *
+from pcmdi_metrics.pmp_io import *
+from pcmdi_metrics.dataset import *
 import re
 
 
@@ -22,6 +22,7 @@ class Model(DataSet):
         self.model_file.ext = 'nc'
         self.model_file.case_id = self.parameter.case_id
         self.model_file.realization = self.parameter.realization
+        self.apply_custom_keys(self.model_file, self.parameter.custom_keys, self.var)
         self.setup_model_file()
 
     def setup_model_file(self):
