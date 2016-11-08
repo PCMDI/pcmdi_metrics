@@ -45,7 +45,8 @@ class PMPDriver(CDPDriver):
                 logging.warning("Your parameter file asks to save interpolated model climatologies, " +
                     "but did not define a name template for this\n" +
                     "We set 'filename_output_template' to %s for you" % self.parameter.filename_output_template)
-
+        if not hasattr(self.parameter, 'dry_run'):
+            self.parameter.dry_run = True
 
 
     def run_diags(self):

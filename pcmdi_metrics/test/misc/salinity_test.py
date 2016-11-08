@@ -8,24 +8,17 @@ import os
 # RUN IDENTIFICATION
 # DEFINES A SUBDIRECTORY TO METRICS OUTPUT RESULTS SO MULTIPLE CASES CAN
 # BE COMPARED
-case_id = 'nosftlfTest'
+case_id = 'salinityTest'
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF
 # CLIMATOLOGY FILENAME
-test_data_set = ['GFDL-ESM2G', ]
-
-# dictionary of keywords for simulation description that you want to save
-# or remap
-simulation_description_mapping = {
-    "Login": "Login",
-    "Center": "Center",
-    "SimTrackingDate": "creation_date"}
+test_data_set = ['GFDL-CM3', ]
 
 # VARIABLES AND OBSERVATIONS TO USE
-vars = ['tas', ]
+vars = ['sos', ]
 
 # Observations to use at the moment "default" or "alternate"
-reference_data_set = ['default']
+reference_data_set = ['JPL-Aquarius-v2']
 ext = '.nc'
 
 # INTERPOLATION OPTIONS
@@ -37,28 +30,19 @@ regrid_tool_ocn = 'esmf'    # OPTIONS: "regrid2","esmf"
 # OPTIONS: 'linear','conservative', only if tool is esmf
 regrid_method_ocn = 'linear'
 
-# MODEL SPECIFC PARAMETERS
-model_tweaks = {
-    "GFDL-ESM2G": {
-        "variable_mapping": {"tas": "tas_ac"},
-    },
-}
 
 # SIMULATION PARAMETERS
 period = '000101-010012'
 realization = "r1i1p1"  # mandatory
-regions = {"tas": [None, "land", "ocean"], }
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
-save_mod_clims = True
+save_test_clims = False
 
 # DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 
 # Templates for climatology files
 # TEMPLATE EXAMPLE: tas_GFDL-ESM2G_Amon_historical_r1i1p1_198001-199912-clim.nc
-filename_template = "%(variable)_%(model_version)_%(table)_piControl_%(period)-clim01.xml"
-# filename template for landsea masks ('sftlf')
-sftlf_filename_template = "sftflf_not_here_%(model_version).nc"
+filename_template = "%(variable)_%(model_version)_%(table)_historical_%(period)-clim.nc"
 
 # ROOT PATH FOR MODELS CLIMATOLOGIES
 pth = os.path.dirname(__file__)
