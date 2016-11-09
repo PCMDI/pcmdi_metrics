@@ -113,20 +113,8 @@ class PMPIO(CDPIO, genutil.StringConstructor):
         if self.is_masking():
             self.var_from_file = self.mask_var(self.var_from_file)
 
-        '''
-        file_name = re.sub(r'0x.*>','0x0>', file_name)
-        do_file = cdms2.open('~/github/pcmdi_metrics/files/out_' + file_name, 'w')
-        do_file.write(self.var_from_file)
-        do_file.close()
-        '''
         self.var_from_file = \
             self.set_target_grid_and_mask_in_var(self.var_from_file)
-
-
-        file_name = re.sub(r'0x.*>','0x0>', file_name)
-        do_file = cdms2.open('~/github/pcmdi_metrics/files/out_' + file_name, 'w')
-        do_file.write(self.var_from_file)
-        do_file.close()
 
         self.var_from_file = \
             self.set_domain_in_var(self.var_from_file, self.region)
@@ -167,11 +155,6 @@ class PMPIO(CDPIO, genutil.StringConstructor):
                              regridMethod=self.regrid_method, coordSys='deg',
                              diag={}, periodicity=1
                              )
-
-            '''file_name = re.sub(r'0x.*>','0x0>', self.file_name)
-            do_file = cdms2.open('~/github/pcmdi_metrics/files/out_' + file_name, 'w')
-            do_file.write(var)
-            do_file.close()'''
 
             if self.target_mask is not None:
                 if self.target_mask.shape != var.shape:
