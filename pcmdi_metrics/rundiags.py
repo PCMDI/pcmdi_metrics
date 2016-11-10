@@ -133,29 +133,15 @@ class RunDiags(object):
 
             # self.reference/self.test are either an obs or model
             for self.reference in reference_data_set:
-                ref = Observation(self.parameter, self.var_name_long,
-                                  self.region, self.reference, self.obs_dict,
-                                  self.parameter.reference_data_path, sftlf=self.sftlf)
-                #self.sftlf = ref.get_sftlf()
+                ref = self.determine_obs_or_model(reference_data_set_is_obs,
+                                                  self.reference, self.parameter.reference_data_path)
 
                 for self.test in test_data_set:
-
-                    """
-                    ref = self.determine_obs_or_model(reference_data_set_is_obs,
-                                                      self.reference, self.parameter.reference_data_path)
 
                     test = self.determine_obs_or_model(test_data_set_is_obs,
                                                        self.test, self.parameter.test_data_path)
 
-                    """
-
-
-                    test = Model(self.parameter, self.var_name_long,
-                                self.region, self.test, self.obs_dict,
-                                self.parameter.test_data_path, sftlf=self.sftlf)
-                    #self.sftlf = test.get_sftlf()
-                    self.output_metric.calculate_and_output_metrics(ref, test, self.sftlf)
-                    #self.sftlf = self.output_metric.sftlf
+                    self.output_metric.calculate_and_output_metrics(ref, test)
 
         def is_data_set_obs(self, data_set):
             if 'all' in data_set:
@@ -174,9 +160,9 @@ class RunDiags(object):
                 print 'OBS'
                 return Observation(self.parameter, self.var_name_long,
                                    self.region, ref_or_test, self.obs_dict,
-                                   data_path, sftlf=self.sftlf)
+                                   data_path, self.sftlf)
             else:
                 print 'MODEL'
                 return Model(self.parameter, self.var_name_long,
                              self.region, ref_or_test, self.obs_dict,
-                             data_path, sftlf=self.sftlf)
+                             data_path, self.sftlf)

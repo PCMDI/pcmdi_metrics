@@ -45,21 +45,18 @@ class OBS(PMPIO):
 
 class Observation(DataSet):
     def __init__(self, parameter, var_name_long, region,
-                 obs, obs_dict, data_path, sftlf=None):
+                 obs, obs_dict, data_path, sftlf):
         super(Observation, self).__init__(parameter, var_name_long, region,
                                           obs_dict, data_path, sftlf)
         self.obs_or_model = obs
-        # This is just to make it more clear.
-
-        self.obs_file = self.obs_or_model_file
-
         self.create_obs_file()
 
     def create_obs_file(self):
         obs_mask_name = self.create_obs_mask_name()
-        self.obs_file = OBS(self.data_path, self.var,
+        self._obs_file = OBS(self.data_path, self.var,
                             self.obs_dict, self.obs_or_model,
                             file_mask_template=obs_mask_name)
+        self.apply_custom_keys(self._obs_file, self.parameter.custom_keys, self.var)
 
         self.setup_obs_file()
 
@@ -77,69 +74,40 @@ class Observation(DataSet):
         return obs_mask_name
 
     def get_obs_from_obs_dict(self):
-        #if self.obs_or_model not in self.obs_dict[self.var]:
-        #    raise KeyError('The selected obs is not in the obs_dict')
-        #print self.obs_dict
-        #quit()
         if isinstance(self.obs_dict[self.var][self.obs_or_model], (str, unicode)):
             obs_from_obs_dict = \
                 self.obs_dict[self.var][self.obs_dict[self.var][self.obs_or_model]]
         else:
             obs_from_obs_dict = self.obs_dict[self.var][self.obs_or_model]
-        print 'obs_var_ref: ', obs_from_obs_dict
         return obs_from_obs_dict
 
     def setup_obs_file(self):
-        if self.use_omon(self.obs_dict, self.var):
-            regrid_method = self.parameter.regrid_method_ocn
-            regrid_tool = self.parameter.regrid_tool_ocn
-            self.obs_file.table = 'Omon'
-            self.obs_file.realm = 'ocn'
-        else:
-            regrid_method = self.parameter.regrid_method
-            regrid_tool = self.parameter.regrid_tool
-            self.obs_file.table = 'Amon'
-            self.obs_file.realm = 'atm'
+        self.setup_target_grid(self._obs_file)
+        self._obs_file.case_id = self.parameter.case_id
 
-        self.obs_file.case_id = self.parameter.case_id
-        self.obs_file.set_target_grid(self.parameter.target_grid,
-                                      regrid_tool,
-                                      regrid_method)
-        self.apply_custom_keys(self.obs_file, self.parameter.custom_keys, self.var)
         if self.region is not None:
             region_value = self.region.get('value', None)
             if region_value is not None:
-                #if self.sftlf is None:
-                    #self.sftlf = self.create_sftlf(self.parameter)
-                self.obs_file.target_mask = MV2.not_equal(
+                self._obs_file.target_mask = MV2.not_equal(
                     self.sftlf['target_grid'],
                     region_value
                 )
 
     def get(self):
         if self.level is not None:
-            data_obs = self.obs_file.get_var_from_netcdf(self.var,
+            data_obs = self._obs_file.get_var_from_netcdf(self.var,
                                                      level=self.level,
                                                      region=self.region)
         else:
-            data_obs = self.obs_file.get_var_from_netcdf(self.var,
+            data_obs = self._obs_file.get_var_from_netcdf(self.var,
                                                      region=self.region)
-
-            '''
-            print 'SAVING OBS FILE'
-            file_name = 'var_%s_level_%s_region_%s.nc' % (self.var, self.level, self.region)
-            file_name = re.sub(r'0x.*>','0x0>', file_name)
-            do_file = cdms2.open('~/github/pcmdi_metrics/files/do_' + file_name, 'w')
-            do_file.write(data_obs)
-            do_file.close()
-            '''
         return data_obs
 
     def hash(self):
-        return self.obs_file.hash()
+        return self._obs_file.hash()
 
     def file_path(self):
-        return self.obs_file()
+        return self._obs_file()
 
     @staticmethod
     # This must remain static b/c used before an Observation obj is created.

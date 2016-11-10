@@ -39,7 +39,7 @@ regions = {"tas": [None, "terre"], }
 regions_values = {"terre": 100.}
 
 # Observations to use at the moment "default" or "alternate"
-test_data_set = ['ERAINT', ]
+reference_data_set = ['ERAINT', ]
 ext = '.nc'
 
 # INTERPOLATION OPTIONS

@@ -15,6 +15,7 @@ class OutputMetrics(object):
         self.var_name_long = var_name_long
         self.obs_dict = obs_dict
         self.var = var_name_long.split('_')[0]
+        self.sftlf = sftlf
 
         self.metrics_def_dictionary = {}
         self.metrics_dictionary = {}
@@ -23,10 +24,6 @@ class OutputMetrics(object):
                           "%(regrid_tool)_%(regrid_method)_metrics"
         self.out_file = PMPIO(self.parameter.metrics_output_path,
                               string_template)
-
-        self.sftlf = sftlf
-        #if self.sftlf is None:
-        #    self.sftlf = DataSet.create_sftlf(self.parameter)
 
         self.regrid_method = ''
         self.regrid_tool = ''
@@ -84,24 +81,7 @@ class OutputMetrics(object):
         self.out_file.case_id = self.parameter.case_id
         DataSet.apply_custom_keys(self.out_file, self.parameter.custom_keys, self.var)
 
-
-    def check_for_success(self, ref, test):
-        is_success = True
-        if hasattr(ref, 'success') and not ref.success:
-            is_success = False
-        if hasattr(test, 'success') and not test.success:
-            is_success = False
-        return is_success
-
-    def calculate_and_output_metrics(self, ref, test, sftlf):
-
-        """
-        while self.check_for_success(ref, test):
-            ref_data = ref()
-            test_data = test()
-            if self.check_for_success(ref, test) is False:
-                continue
-        """
+    def calculate_and_output_metrics(self, ref, test):
 
         ref_data = ref()
         test_data = test()
@@ -122,7 +102,7 @@ class OutputMetrics(object):
         if ref_data.shape != test_data.shape:
             raise RuntimeError('Two data sets have different shapes. %s vs %s' % (ref_data.shape, test_data.shape))
 
-        self.set_simulation_desc(ref, test)
+        self.set_simulation_desc(test)
 
         if ref.obs_or_model not in self.metrics_dictionary['RESULTS'][test.obs_or_model]:
             self.metrics_dictionary["RESULTS"][test.obs_or_model][ref.obs_or_model] = \
@@ -180,7 +160,7 @@ class OutputMetrics(object):
         grid['GridResolution'] = test_data.shape[1:]
         self.metrics_dictionary['GridInfo'] = grid
 
-    def set_simulation_desc(self, ref, test):
+    def set_simulation_desc(self, test):
         test_data = test()
 
         self.metrics_dictionary["RESULTS"][test.obs_or_model] = \
@@ -257,24 +237,13 @@ class OutputMetrics(object):
         clim_file.level = self.out_file.level
         clim_file.model_version = test.obs_or_model
 
-        if DataSet.use_omon(self.obs_dict, self.var):
-            regrid_method = self.parameter.regrid_method_ocn
-            regrid_tool = self.parameter.regrid_tool_ocn
-            table_realm = 'Omon'
-            realm = "ocn"
-        else:
-            regrid_method = self.parameter.regrid_method
-            regrid_tool = self.parameter.regrid_tool
-            table_realm = 'Amon'
-            realm = "atm"
-
-        clim_file.table = table_realm
+        clim_file.table = self.table_realm
         clim_file.period = self.parameter.period
         clim_file.case_id = self.parameter.case_id
         clim_file.set_target_grid(
             self.parameter.target_grid,
-            regrid_tool,
-            regrid_method)
+            self.regrid_tool,
+            self.regrid_method)
         clim_file.variable = self.var
         clim_file.region = region_name
         clim_file.realization = self.parameter.realization

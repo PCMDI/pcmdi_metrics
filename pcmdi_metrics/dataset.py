@@ -11,7 +11,7 @@ class DataSet(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, parameter, var_name_long, region,
-                 obs_dict, data_path, sftlf=None):
+                 obs_dict, data_path, sftlf):
         self.parameter = parameter
         self.var_name_long = var_name_long
         self.region = region
@@ -20,11 +20,8 @@ class DataSet(object):
 
         self.var = var_name_long.split('_')[0]
         self.level = self.calculate_level_from_var(var_name_long)
-        self.obs_or_model_file = None
 
         self.sftlf = sftlf
-        #if sftlf is None:
-        #    self.sftlf = self.create_sftlf(self.parameter)
 
     def get_sftlf(self):
         return self.sftlf
@@ -41,12 +38,25 @@ class DataSet(object):
             level = None
         return level
 
+    def setup_target_grid(self, obs_or_model_file):
+        if self.use_omon(self.obs_dict, self.var):
+            regrid_method = self.parameter.regrid_method_ocn
+            regrid_tool = self.parameter.regrid_tool_ocn
+            obs_or_model_file.table = 'Omon'
+            obs_or_model_file.realm = 'ocn'
+        else:
+            regrid_method = self.parameter.regrid_method
+            regrid_tool = self.parameter.regrid_tool
+            obs_or_model_file.table = 'Amon'
+            obs_or_model_file.realm = 'atm'
+
+        obs_or_model_file.set_target_grid(self.parameter.target_grid,
+                                          regrid_tool, regrid_method)
+
     @staticmethod
     def use_omon(obs_dict, var):
         obs_default = obs_dict[var][obs_dict[var]["default"]]
         return obs_default["CMIP_CMOR_TABLE"] == 'Omon'
-
-
 
     @staticmethod
     def create_sftlf(parameter):
@@ -99,6 +109,7 @@ class DataSet(object):
     @staticmethod
     def load_path_as_file_obj(name):
         file_path = os.path.join(os.path.dirname(__file__), 'share', name)
+        opened_file = None
         try:
             opened_file = open(file_path)
         except IOError:
