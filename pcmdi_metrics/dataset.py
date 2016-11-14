@@ -108,7 +108,7 @@ class DataSet(object):
 
     @staticmethod
     def load_path_as_file_obj(name):
-        file_path = os.path.join(os.path.dirname(__file__), 'share', name)
+        file_path = sys.prefix + '/share/pmp/' + name
         opened_file = None
         try:
             opened_file = open(file_path)
