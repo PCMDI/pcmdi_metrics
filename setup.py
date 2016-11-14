@@ -1,5 +1,12 @@
-from setuptools import find_packages, setup
+from distutils.core import setup
 
+data_files = [
+                ('share/pmp', ('docs/obs_info_dictionary.json',
+                               'pcmdi_metrics/share/disclaimer.txt'))
+            ]
+packages = {'pcmdi_metrics': 'pcmdi_metrics',
+            'pcmdi_metrics.metrics': 'pcmdi_metrics/metrics'
+            }
 setup(
     name="pcmdi_metrics",
     version="1.2",
@@ -7,7 +14,8 @@ setup(
     author_email="pcmdi@llnl.gov",
     url='http://github.com/PCMDI/pcmdi_metrics',
     description="Framework for creating climate diagnostics.",
-    packages=find_packages(exclude=["*.test", "*.test.*", "test.*", "test"]),
-    package_data = {'pcmdi_metrics':['share/*']},
-    include_package_data=True
+    packages=packages,
+    include_package_data=True,
+    data_files=data_files
 )
+

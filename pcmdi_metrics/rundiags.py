@@ -47,7 +47,8 @@ class RunDiags(object):
 
         def load_obs_dict(self):
             obs_file_name = 'obs_info_dictionary.json'
-            obs_json_file = DataSet.load_path_as_file_obj(obs_file_name)
+            file_path = sys.prefix + '/share/pmp/' + obs_file_name
+            obs_json_file = open(file_path)
             obs_dict = json.loads(obs_json_file.read())
             obs_json_file.close()
 
