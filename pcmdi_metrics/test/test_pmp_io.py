@@ -16,11 +16,11 @@ class testPMPIO(unittest.TestCase):
 
     def test_write_with_failing_extension(self):
         with self.assertRaises(RuntimeError):
-            self.pmp_io.write({}, extension='py')
+            self.pmp_io.write({}, type='py')
 
     def test_write_json_with_no_failures(self):
         try:
-            self.pmp_io.write({}, extension='json')
+            self.pmp_io.write({}, type='json')
         except:
             self.fail('Cannot write json file. Test failed.')
         finally:
@@ -28,7 +28,7 @@ class testPMPIO(unittest.TestCase):
 
     def test_write_txt_with_no_failures(self):
         try:
-            self.pmp_io.write({}, extension='txt')
+            self.pmp_io.write({}, type='txt')
         except:
             self.fail('Cannot write txt file. Test failed.')
         finally:
@@ -36,7 +36,7 @@ class testPMPIO(unittest.TestCase):
 
     def test_write_nc_with_no_failures(self):
         try:
-            self.pmp_io.write(MV2.arange(12.), extension='nc')
+            self.pmp_io.write(MV2.arange(12.), type='nc')
         except:
             self.fail('Cannot write Net-CDF file. Test failed.')
         finally:
@@ -87,7 +87,7 @@ class testPMPIO(unittest.TestCase):
     def test_extract_var_from_file_with_no_failures(self):
         try:
             stuff_to_write = cdms2.open(self.path + 'test_file.nc')['sftlf']
-            self.pmp_io.write(stuff_to_write, extension='nc')
+            self.pmp_io.write(stuff_to_write, type='nc')
             self.pmp_io.extract_var_from_file('sftlf', None)
         except:
             self.fail('Error executing extract_var_from_file(). Test failed.')
@@ -97,7 +97,7 @@ class testPMPIO(unittest.TestCase):
     def test_get_mask_from_var_with_no_failures(self):
         try:
             stuff_to_write = cdms2.open(self.path + 'test_file.nc')['sftlf']
-            self.pmp_io.write(stuff_to_write, extension='nc')
+            self.pmp_io.write(stuff_to_write, type='nc')
             var = self.pmp_io.extract_var_from_file('sftlf', None)
             self.pmp_io.get_mask_from_var(var)
         except:
@@ -109,7 +109,7 @@ class testPMPIO(unittest.TestCase):
         try:
             self.pmp_io.set_target_grid('2.5x2.5')
             stuff_to_write = cdms2.open(self.path + 'test_file.nc')['sftlf']
-            self.pmp_io.write(stuff_to_write, extension='nc')
+            self.pmp_io.write(stuff_to_write, type='nc')
             var = self.pmp_io.extract_var_from_file('sftlf', None)
             self.pmp_io.set_target_grid_and_mask_in_var(var)
         except:
@@ -123,7 +123,7 @@ class testPMPIO(unittest.TestCase):
         try:
             self.pmp_io.set_target_grid('2.5x2.5')
             stuff_to_write = cdms2.open(self.path + 'test_file.nc')['sftlf']
-            self.pmp_io.write(stuff_to_write, extension='nc')
+            self.pmp_io.write(stuff_to_write, type='nc')
             var = self.pmp_io.extract_var_from_file('sftlf', None)
             region = {'domain': {}}
             self.pmp_io.set_domain_in_var(var, region)
@@ -136,8 +136,8 @@ class testPMPIO(unittest.TestCase):
         try:
             self.pmp_io.set_target_grid('2.5x2.5')
             stuff_to_write = cdms2.open(self.path + 'test_file.nc')['sftlf']
-            self.pmp_io.write(stuff_to_write, extension='nc')
-            self.pmp_io.get_var_from_netcdf('sftlf')
+            self.pmp_io.write(stuff_to_write, type='nc')
+            self.pmp_io.get('sftlf')
         except:
             self.fail('Error executing get_var_from_netcdf(). Test failed.')
         finally:

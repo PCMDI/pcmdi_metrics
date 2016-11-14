@@ -31,21 +31,21 @@ class PMPIO(CDPIO, genutil.StringConstructor):
         self.regrid_tool = 'esmf'
         self.file_mask_template = file_mask_template
         self.root = root
-        self.extension = ''
+        self.type = ''
         self.setup_cdms2()
 
     def __call__(self):
         path = os.path.abspath(genutil.StringConstructor.__call__(self))
-        if self.extension in path:
+        if self.type in path:
             return path
         else:
-            return path + '.' + self.extension
+            return path + '.' + self.type
 
     def read(self):
         pass
 
-    def write(self, data, extension='json', *args, **kwargs):
-        self.extension = extension.lower()
+    def write(self, data, type='json', *args, **kwargs):
+        self.type = type.lower()
         file_name = self()
         dir_path = os.path.split(file_name)[0]
 
@@ -56,7 +56,7 @@ class PMPIO(CDPIO, genutil.StringConstructor):
                 logging.error(
                     'Could not create output directory: %s' % dir_path)
 
-        if self.extension == 'json':
+        if self.type == 'json':
             json_version = float(kwargs.get("json_version", data.get("json_version", 3.0)))
             json_structure = kwargs.get("json_structure", data.get("json_structure", None))
             if json_version >= 3.0 and json_structure is None:
@@ -75,13 +75,13 @@ class PMPIO(CDPIO, genutil.StringConstructor):
             json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 
-        elif self.extension in ['asc', 'ascii', 'txt']:
+        elif self.type in ['asc', 'ascii', 'txt']:
             f = open(file_name, 'w')
             for key in data.keys():
                 f.write('%s %s\n' % (key, data[key]))
             f.close()
 
-        elif self.extension == 'nc':
+        elif self.type == 'nc':
             f = cdms2.open(file_name, 'w')
             f.write(data, *args, **kwargs)
             # f.metrics_git_sha1 = pcmdi_metrics.__git_sha1__
@@ -89,19 +89,17 @@ class PMPIO(CDPIO, genutil.StringConstructor):
             f.close()
 
         else:
-            logging.error('Unknown extension: %s' % extension)
-            raise RuntimeError('Unknown extension: %s' % extension)
+            logging.error('Unknown type: %s' % type)
+            raise RuntimeError('Unknown type: %s' % type)
 
-        logging.error('Results saved to a %s file: %s' % (extension, file_name))
+        logging.error('Results saved to a %s file: %s' % (type, file_name))
 
-    def get_var_from_netcdf(self, var, var_in_file=None,
-                            region={}, *args, **kwargs):
+    def get(self, var, var_in_file=None,
+            region={}, *args, **kwargs):
 
-        print 'CALLING GET'
         self.var_from_file = self.extract_var_from_file(
             var, var_in_file, *args, **kwargs)
 
-        print 'SAVING OUT FILE'
         file_name = 'var_%s_varInFile_%s_region_%s.nc' % (var, var_in_file, region)
         if 'level' in kwargs:
             file_name = 'var_%s_varInFile_%s_level_%s_region_%s.nc' % (var, var_in_file, kwargs['level'], region)
@@ -119,13 +117,12 @@ class PMPIO(CDPIO, genutil.StringConstructor):
         self.var_from_file = \
             self.set_domain_in_var(self.var_from_file, self.region)
 
-
         return self.var_from_file
 
     def extract_var_from_file(self, var, var_in_file, *args, **kwargs):
         if var_in_file is None:
             var_in_file = var
-        #self.extension = 'nc'
+        # self.extension = 'nc'
         var_file = cdms2.open(self(), 'r')
         extracted_var = var_file(var_in_file, *args, **kwargs)
         var_file.close()
@@ -150,7 +147,6 @@ class PMPIO(CDPIO, genutil.StringConstructor):
 
     def set_target_grid_and_mask_in_var(self, var):
         if self.target_grid is not None:
-            print 'TARGET GRID IS NOT NONE'
             var = var.regrid(self.target_grid, regridTool=self.regrid_tool,
                              regridMethod=self.regrid_method, coordSys='deg',
                              diag={}, periodicity=1
@@ -187,8 +183,6 @@ class PMPIO(CDPIO, genutil.StringConstructor):
         try:
             o_mask = self.file_mask_template('sftlf')
         except:
-            print ': ', self.regrid_tool
-            print 'self.regrid_tool: ', self.regrid_tool
             o_mask = cdutil.generateLandSeaMask(
                 var, regridTool=self.regrid_tool).filled(1.) * 100.
             o_mask = MV2.array(o_mask)
@@ -226,250 +220,3 @@ class PMPIO(CDPIO, genutil.StringConstructor):
             buffer = self_file.read(block_size)
         self_file.close()
         return hasher.hexdigest()
-
-
-class JSONs(object):
-
-    def __init__(self, files=[], structure=[], ignored_keys=[],
-                 oneVariablePerFile=True):
-        self.json_version = 3.0
-        self.json_struct = structure
-        self.data = {}
-        self.axes = None
-        self.ignored_keys = ignored_keys
-        self.oneVariablePerFile = oneVariablePerFile
-        if len(files) == 0:
-            raise Exception("You need to pass at least one file")
-        for fnm in files:
-            self.addJson(fnm)
-
-    @staticmethod
-    def update_dict(d, u):
-        for k, v in u.iteritems():
-            if isinstance(v, collections.Mapping):
-                r = JSONs.update_dict(d.get(k, {}), v)
-                d[k] = r
-            else:
-                d[k] = u[k]
-        return d
-
-    def addDict2Self(self, json_dict, json_struct, json_version):
-        if float(json_version) == 1.0:
-            V = json_dict[json_dict.keys()[0]]
-            for model in V.keys():  # loop through models
-                m = V[model]
-                # print "FIRST M:",m.keys()
-                for ref in m.keys():
-                    aref = m[ref]
-                    if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
-                        continue
-                    # print "\treading in ref:",ref
-                    # print aref.keys()
-                    reals = aref.keys()
-                    src = reals.pop(reals.index("source"))
-                    for real in reals:
-                        # print "\t\treading in realization:",real
-                        # print real
-                        areal = aref[real]
-                        areal2 = {"source": src}
-                        for region in areal.keys():
-                            # print "\t\t\tREGION:",region
-                            reg = areal[region]
-                            if region == "global":
-                                region2 = ""
-                            else:
-                                region2 = region + "_"
-                            areal2[region2 + "global"] = {}
-                            areal2[region2 + "NHEX"] = {}
-                            areal2[region2 + "SHEX"] = {}
-                            areal2[region2 + "TROPICS"] = {}
-                            # print "OK HERE REGIONS:",areal2.keys()
-                            key_stats = reg.keys()
-                            for k in key_stats:
-                                if k[:7] == "custom_":
-                                    continue
-                                else:
-                                    sp = k.split("_")
-                                    new_key = "_".join(sp[:-1])
-                                    domain = sp[-1]
-                                    if domain == "GLB":
-                                        domain = "global"
-                                    sp = new_key.split("_")
-                                    stat = "_".join(sp[:-1])
-                                    stat_dict = areal2[region2 + domain].get(stat, {})
-                                    season = sp[-1]
-                                    season_dict = stat_dict
-                                    stat_dict[season] = reg[k]
-                                    if stat in areal2[region2 + domain]:
-                                        areal2[region2 + domain][stat].update(stat_dict)
-                                    else:
-                                        areal2[region2 + domain][stat] = stat_dict
-                        # Now we can replace the realization with the correctly formatted one
-                        # print "AREAL@:",areal2
-                        aref[real] = areal2
-                    # restore ref into model
-                    m[ref] = aref
-
-        elif float(json_version) == 2.0:
-            V = json_dict[json_dict.keys()[0]]
-            for model in V.keys():  # loop through models
-                m = V[model]
-                for ref in m.keys():
-                    aref = m[ref]
-                    if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
-                        continue
-                    # print "\treading in ref:",ref
-                    # print aref.keys()
-                    reals = aref.keys()
-                    src = reals.pop(reals.index("source"))
-                    for real in reals:
-                        # print "\t\treading in realization:",real
-                        # print real
-                        areal = aref[real]
-                        for region in areal.keys():
-                            reg = areal[region]
-                            key_stats = reg.keys()
-                            for k in key_stats:
-                                if k[:7] == "custom_":
-                                    continue
-                                sp = k.split("_")
-                                season = sp[-1]
-                                stat = "_".join(sp[:-1])
-                                stat_dict = reg.get(stat, {})
-                                season_dict = stat_dict.get(season, {})
-                                season_dict[season] = reg[k]
-                                # if stat_dict.has_key(stat):
-                                #    stat_dict[stat].update(season_dict)
-                                # else:
-                                #    stat_dict[stat]=season_dict
-                                del(reg[k])
-                                if stat in reg:
-                                    reg[stat].update(season_dict)
-                                else:
-                                    reg[stat] = season_dict
-                        aref[real] = areal
-                    # restore ref into model
-                    m[ref] = aref
-                V[model] = m
-            json_dict[json_dict.keys()[0]] = V
-        JSONs.update_dict(self.data, json_dict)
-
-    def get_axes_values_recursive(self, depth, max_depth, data, values):
-        for k in data.keys():
-            if k not in self.ignored_keys and (isinstance(data[k], dict) or depth == max_depth):
-                values[depth].add(k)
-                if depth != max_depth:
-                    self.get_axes_values_recursive(depth + 1, max_depth, data[k], values)
-
-    def get_array_values_from_dict_recursive(self, out, ids, nms, axval, axes):
-        if len(axes) > 0:
-            for i, val in enumerate(axes[0][:]):
-                self.get_array_values_from_dict_recursive(out, list(ids) +
-                                                          [i, ], list(nms) +
-                                                          [axes[0].id], list(axval) +
-                                                          [val, ], axes[1:])
-        else:
-            vals = self.data
-            for k in axval:
-                try:
-                    vals = vals[k]
-                except:
-                    vals = 1.e20
-            try:
-                out[tuple(ids)] = float(vals)
-            except:
-                out[tuple(ids)] = 1.e20
-
-    def addJson(self, filename):
-        f = open(filename)
-        tmp_dict = json.load(f)
-        json_struct = tmp_dict.get("json_structure", list(self.json_struct))
-        json_version = tmp_dict.get("json_version", self.json_version)
-        if self.oneVariablePerFile and json_struct[0] == "variable":
-            json_struct = json_struct[1:]
-        if self.oneVariablePerFile and json_struct[0] != "variable":
-            json_struct.insert(0, "variable")
-            var = tmp_dict.get("Variable", None)
-            if var is None:  # Not stored in json, need to get from file name
-                fnm = os.path.basename(filename)
-                varnm = fnm.split("_")[0]
-            else:
-                varnm = var["id"]
-                if "level" in var:
-                    varnm += "-%i" % int(var["level"] / 100.)
-            tmp_dict = {varnm: tmp_dict["RESULTS"]}
-        else:
-            tmp_dict = tmp_dict["RESULTS"]
-        self.addDict2Self(tmp_dict, json_struct, json_version)
-
-    def getAxis(self, axis):
-        axes = self.getAxisList()
-        for a in axes:
-            if a.id == axis:
-                return a
-        return None
-
-    def getAxisList(self, use_cache=True):
-        if use_cache and self.axes is not None:
-            return self.axes
-        values = []
-        axes = []
-        for a in self.json_struct:
-            values.append(set())
-        self.get_axes_values_recursive(0, len(self.json_struct) - 1, self.data, values)
-        for i, nm in enumerate(self.json_struct):
-            axes.append(cdms2.createAxis(sorted(list(values[i])), id=nm))
-        self.axes = axes
-        return self.axes
-
-    def __call__(self, **kargs):
-        """ Returns the array of values"""
-        axes = self.getAxisList()
-        sh = []
-        ids = []
-        for a in axes:
-            sh.append(len(a))  # store length to construct array shape
-            ids.append(a.id)  # store ids
-        # first let's see which vars are actually asked for
-        # for now assume all keys means restriction on dims
-        for axis_id in kargs:
-            if axis_id not in ids:
-                raise ValueError("Invalid axis '%s'" % axis_id)
-            index = ids.index(axis_id)
-            value = kargs[axis_id]
-            if isinstance(value, basestring):
-                value = [value]
-            if not isinstance(value, (list, tuple, slice)):
-                raise TypeError(
-                    "Invalid subsetting type for axis '%s', axes can only be subsetted by string,list or slice" %
-                    axis_id)
-            if isinstance(value, slice):
-                axes[index] = axes[index].subAxis(
-                    value.start, value.stop, value.step)
-                sh[index] = len(axes[index])
-            else:  # ok it's a list
-                for v in value:
-                    if v not in axes[index][:]:
-                        raise ValueError(
-                            "Unkwown value '%s' for axis '%s'" %
-                            (v, axis_id))
-                axis = cdms2.createAxis(value, id=axes[index].id)
-                axes[index] = axis
-                sh[index] = len(axis)
-        array = numpy.ma.ones(sh, dtype=numpy.float)
-        # Now let's fill this array
-        self.get_array_values_from_dict_recursive(array, [], [], [], axes)
-        array = MV2.masked_greater(array, 9.e19)
-        array.id = "pmp"
-        array.setAxisList(axes)
-        return array
-
-
-class pcmdi_jsons(JSONs):
-    def __init__(self, files=[], ignored_keys=None):
-        if ignored_keys is None:
-            ignored_keys = ["SimulationDescription"]
-        super(JSONs, self).\
-            __init__(files, structure=["variable", "model", "reference", "rip",
-                                       "region", "statistic", "season"],
-                     ignored_keys=ignored_keys)

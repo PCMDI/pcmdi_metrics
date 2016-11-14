@@ -1,13 +1,12 @@
 from pcmdi_metrics.pmp_io import *
 from pcmdi_metrics.dataset import *
-import re
+
 
 class OBS(PMPIO):
     def __init__(self, root, var, obs_dict, obs='default',
                  file_mask_template=None):
         template = "%(realm)/%(frequency)/%(variable)/" +\
                    "%(reference)/%(ac)/%(filename)"
-        print 'file_mask_template: ', file_mask_template
         super(OBS, self).__init__(root, template, file_mask_template)
 
         if obs not in obs_dict[var]:
@@ -48,17 +47,20 @@ class Observation(DataSet):
                  obs, obs_dict, data_path, sftlf):
         super(Observation, self).__init__(parameter, var_name_long, region,
                                           obs_dict, data_path, sftlf)
+        self._obs_file = None
         self.obs_or_model = obs
         self.create_obs_file()
+        self.setup_target_grid(self._obs_file)
+        self.setup_target_mask()
 
     def create_obs_file(self):
         obs_mask_name = self.create_obs_mask_name()
         self._obs_file = OBS(self.data_path, self.var,
-                            self.obs_dict, self.obs_or_model,
-                            file_mask_template=obs_mask_name)
-        self.apply_custom_keys(self._obs_file, self.parameter.custom_keys, self.var)
-
-        self.setup_obs_file()
+                             self.obs_dict, self.obs_or_model,
+                             file_mask_template=obs_mask_name)
+        self.apply_custom_keys(self._obs_file,
+                               self.parameter.custom_keys, self.var)
+        self._obs_file.case_id = self.parameter.case_id
 
     def create_obs_mask_name(self):
         try:
@@ -81,10 +83,7 @@ class Observation(DataSet):
             obs_from_obs_dict = self.obs_dict[self.var][self.obs_or_model]
         return obs_from_obs_dict
 
-    def setup_obs_file(self):
-        self.setup_target_grid(self._obs_file)
-        self._obs_file.case_id = self.parameter.case_id
-
+    def setup_target_mask(self):
         if self.region is not None:
             region_value = self.region.get('value', None)
             if region_value is not None:
@@ -95,12 +94,12 @@ class Observation(DataSet):
 
     def get(self):
         if self.level is not None:
-            data_obs = self._obs_file.get_var_from_netcdf(self.var,
-                                                     level=self.level,
-                                                     region=self.region)
+            data_obs = self._obs_file.get(self.var,
+                                          level=self.level,
+                                          region=self.region)
         else:
-            data_obs = self._obs_file.get_var_from_netcdf(self.var,
-                                                     region=self.region)
+            data_obs = self._obs_file.get(self.var,
+                                          region=self.region)
         return data_obs
 
     def hash(self):

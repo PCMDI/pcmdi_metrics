@@ -150,7 +150,7 @@ class OutputMetrics(object):
                                 json_structure=["model", "reference", "rip", "region", "statistic", "season"],
                                 indent=4,
                                 separators=(',', ': '))
-            self.out_file.write(self.metrics_dictionary, extension='txt')
+            self.out_file.write(self.metrics_dictionary, type='txt')
 
     def set_grid_in_metrics_dictionary(self, test_data):
         grid = {}
@@ -249,7 +249,7 @@ class OutputMetrics(object):
         clim_file.realization = self.parameter.realization
         DataSet.apply_custom_keys(clim_file,
                                   self.parameter.custom_keys, self.var)
-        clim_file.write(test(), extension="nc", id=self.var)
+        clim_file.write(test(), type="nc", id=self.var)
 
     def get_region_name(self, ref_or_test):
         # region is both in ref and test

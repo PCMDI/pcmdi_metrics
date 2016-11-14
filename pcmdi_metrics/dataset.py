@@ -77,7 +77,7 @@ class DataSet(object):
             sft.realization = "r0i0p0"
             DataSet.apply_custom_keys(sft, parameter.custom_keys, "sftlf")
             try:
-                sftlf[test] = {"raw": sft.get_var_from_netcdf("sftlf")}
+                sftlf[test] = {"raw": sft.get("sftlf")}
                 sftlf[test]["filename"] = os.path.basename(sft())
                 sftlf[test]["md5"] = sft.hash()
             except:

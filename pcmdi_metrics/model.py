@@ -1,6 +1,5 @@
 from pcmdi_metrics.pmp_io import *
 from pcmdi_metrics.dataset import *
-import re
 
 
 class Model(DataSet):
@@ -8,40 +7,45 @@ class Model(DataSet):
                  model, obs_dict, data_path, sftlf):
         super(Model, self).__init__(parameter, var_name_long, region,
                                     obs_dict, data_path, sftlf)
+        self._model_file = None
+        self.var_in_file = None
         self.obs_or_model = model
         self.create_model_file()
+        self.setup_target_grid(self._model_file)
+        self.setup_target_mask()
 
     def create_model_file(self):
         self._model_file = PMPIO(self.data_path,
-                                self.parameter.filename_template)
+                                 self.parameter.filename_template)
         self._model_file.variable = self.var
         self._model_file.model_version = self.obs_or_model
         self._model_file.period = self.parameter.period
         self._model_file.ext = 'nc'
         self._model_file.case_id = self.parameter.case_id
         self._model_file.realization = self.parameter.realization
-        self.apply_custom_keys(self._model_file, self.parameter.custom_keys, self.var)
-        self.setup_target_grid(self._model_file)
+        self.apply_custom_keys(self._model_file,
+                               self.parameter.custom_keys, self.var)
 
-    def get(self):
-        var_in_file = self.get_var_in_file()
+    def setup_target_mask(self):
+        self.var_in_file = self.get_var_in_file()
 
         if self.region is not None:
             region_value = self.region.get('value', None)
             if region_value is not None:
                 if self.sftlf[self.obs_or_model]['raw'] is None:
-                    self.create_sftlf_model_raw(var_in_file)
+                    self.create_sftlf_model_raw(self.var_in_file)
 
                 self._model_file.mask = self.sftlf[self.obs_or_model]['raw']
                 self._model_file.target_mask = \
                     MV2.not_equal(self.sftlf['target_grid'], region_value)
 
+    def get(self):
         if self.level is None:
-            data_model = self._model_file.get_var_from_netcdf(
-                self.var, var_in_file=var_in_file, region=self.region)
+            data_model = self._model_file.get(
+                self.var, var_in_file=self.var_in_file, region=self.region)
         else:
-            data_model = self._model_file.get_var_from_netcdf(
-                self.var, var_in_file=var_in_file,
+            data_model = self._model_file.get(
+                self.var, var_in_file=self.var_in_file,
                 level=self.level, region=self.region)
 
         return data_model

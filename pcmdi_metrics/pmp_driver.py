@@ -48,7 +48,6 @@ class PMPDriver(CDPDriver):
         if not hasattr(self.parameter, 'dry_run'):
             self.parameter.dry_run = True
 
-
     def run_diags(self):
         run = RunDiags(self.parameter)
         run()
