@@ -40,6 +40,7 @@ class Model(DataSet):
                     MV2.not_equal(self.sftlf['target_grid'], region_value)
 
     def get(self):
+        print ''
         if self.level is None:
             data_model = self._model_file.get(
                 self.var, var_in_file=self.var_in_file, region=self.region)

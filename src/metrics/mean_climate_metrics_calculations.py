@@ -20,7 +20,7 @@ def compute_metrics(Var, dm, do):
         metrics_defs["mae_xy"] = pcmdi_metrics.metrics.meanabs_xy.compute(
             None,
             None)
-        # metrics_defs["cor_xyt"] = pcmdi_metrics.metrics.cor_xyt.compute(
+        # metrics_defs["cor_xyt"] = src.metrics.cor_xyt.compute(
         #     None,
         #     None)
         metrics_defs["cor_xy"] = pcmdi_metrics.metrics.cor_xy.compute(None, None)
@@ -55,7 +55,7 @@ def compute_metrics(Var, dm, do):
 
     # CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD
     rms_xyt = pcmdi_metrics.metrics.rms_xyt.compute(dm, do)
-#   cor_xyt = pcmdi_metrics.metrics.cor_xyt.compute(dm, do)
+#   cor_xyt = src.metrics.cor_xyt.compute(dm, do)
     stdObs_xyt = pcmdi_metrics.metrics.std_xyt.compute(do)
     std_xyt = pcmdi_metrics.metrics.std_xyt.compute(dm)
 
@@ -189,18 +189,18 @@ def compute_metrics(Var, dm, do):
 
     # ZONAL MEANS ######
     # CALCULATE SEASONAL MEANS
-# dm_smzm, do_smzm = pcmdi_metrics.metrics.zonal_mean.compute(dm_sea,
+# dm_smzm, do_smzm = src.metrics.zonal_mean.compute(dm_sea,
 # do_sea)
 
     # CALCULATE SEASONAL AND ZONAL MEAN RMS
-#           rms_y = pcmdi_metrics.metrics.rms_y.compute(dm_smzm, do_smzm)
+#           rms_y = src.metrics.rms_y.compute(dm_smzm, do_smzm)
 
     # CALCULATE SEASONAL MEAN DEVIATION FROM ZONAL MEAN RMS
 #           dm_smzm_grown,dummy = grower(dm_smzm,dm_sea)
 #           dm_sea_devzm = MV.subtract(dm_sea,dm_smzm_grown)
 #           do_smzm_grown,dummy = grower(do_smzm,do_sea)
 #           do_sm_devzm = MV.subtract(do_sea,do_smzm_grown)
-# rms_xy_devzm = pcmdi_metrics.metrics.rms_xy.compute(dm_sm_devzm,
+# rms_xy_devzm = src.metrics.rms_xy.compute(dm_sm_devzm,
 # do_sm_devzm)
 
 #           print 'SEASONAL ZM HERE>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'

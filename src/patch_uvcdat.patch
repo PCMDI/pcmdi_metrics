@@ -1,0 +1,16 @@
+diff --git a/Packages/genutil/Lib/__init__.py b/Packages/genutil/Lib/__init__.py
+index b769627..0b6b4e4 100644
+--- a/Packages/genutil/Lib/__init__.py
++++ b/Packages/genutil/Lib/__init__.py
+@@ -11,7 +11,10 @@ import filters
+ import salstat
+ import arrayindexing
+ import ASCII
+-from unidata import udunits
++try:
++    from unidata import udunits
++except:
++    pass
+ from Filler import Filler,StringConstructor
+ from averager import averager, AveragerError, area_weights, getAxisWeight, getAxisWeightByName,__check_weightoptions
+ #from Statusbar_Pmw import Statusbar
