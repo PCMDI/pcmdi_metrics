@@ -1,9 +1,9 @@
 from distutils.core import setup
 
-data_files = [('share/pmp', ('docs/obs_info_dictionary.json',
-                             'pcmdi_metrics/share/disclaimer.txt',
-                             'pcmdi_metrics/share/default_regions.py',
-                             'pcmdi_metrics/share/pcmdi_metrics_table',))
+data_files = [('share/pmp', ('doc/obs_info_dictionary.json',
+                             'share/disclaimer.txt',
+                             'share/default_regions.py',
+                             'share/pcmdi_metrics_table',))
               ]
 
 packages = {'pcmdi_metrics': 'pcmdi_metrics',

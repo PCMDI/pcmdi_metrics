@@ -1,0 +1,292 @@
+{
+    "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference: Gleckler, P. J., C. Doutriaux, P. J. Durack, K. E. Taylor, Y. Zhang, and D. N. Williams, E. Mason, and J. Servonnat (2016), A more powerful reality test for climate models, Eos, 97, doi:10.1029/2016EO051663. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
+    "RESULTS": {
+        "0071-0100": {
+            "SimulationDescription": {
+                "ModellingGroup": "N/A",
+                "ModelFreeSpace": "N/A",
+                "MIPTable": "ERAINT",
+                "creation_date": "N/A",
+                "ModelActivity": "N/A",
+                "Experiment": "N/A",
+                "Realization": "r1i1p1",
+                "Model": "0071-0100"
+            },
+            "defaultReference": {
+                "source": "ERAINT",
+                "r1i1p1": {
+                    "TROPICS": {
+                        "bias_xy_ann": "-0.143",
+                        "bias_xy_djf": "-0.110",
+                        "bias_xy_jja": "-0.146",
+                        "bias_xy_mam": "-0.194",
+                        "bias_xy_son": "-0.121",
+                        "cor_xy_djf": "0.90",
+                        "cor_xy_jja": "0.92",
+                        "cor_xy_mam": "0.86",
+                        "cor_xy_son": "0.87",
+                        "mae_xy_ann": "0.514",
+                        "mae_xy_djf": "0.679",
+                        "mae_xy_jja": "0.653",
+                        "mae_xy_mam": "0.611",
+                        "mae_xy_son": "0.581",
+                        "rms_devzm_ann": "0.592",
+                        "rms_xy_ann": "0.654",
+                        "rms_xy_djf": "0.871",
+                        "rms_xy_jja": "0.856",
+                        "rms_xy_mam": "0.780",
+                        "rms_xy_son": "0.767",
+                        "rms_xyt_ann": "0.920",
+                        "rms_y_ann": "0.261",
+                        "std-obs_xy_ann": "1.333",
+                        "std-obs_xy_devzm_ann": "1.260",
+                        "std-obs_xy_djf": "1.608",
+                        "std-obs_xy_jja": "2.144",
+                        "std-obs_xy_mam": "1.396",
+                        "std-obs_xy_son": "1.419",
+                        "std-obs_xyt_ann": "1.834",
+                        "std_xy_ann": "1.344",
+                        "std_xy_devzm_ann": "1.306",
+                        "std_xy_djf": "1.937",
+                        "std_xy_jja": "2.072",
+                        "std_xy_mam": "1.426",
+                        "std_xy_son": "1.535",
+                        "std_xyt_ann": "1.949"
+                    },
+                    "global": {
+                        "bias_xy_ann": "-0.047",
+                        "bias_xy_djf": "-0.049",
+                        "bias_xy_jja": "-0.032",
+                        "bias_xy_mam": "-0.067",
+                        "bias_xy_son": "-0.040",
+                        "cor_xy_djf": "0.90",
+                        "cor_xy_jja": "0.91",
+                        "cor_xy_mam": "0.85",
+                        "cor_xy_son": "0.87",
+                        "mae_xy_ann": "0.486",
+                        "mae_xy_djf": "0.685",
+                        "mae_xy_jja": "0.624",
+                        "mae_xy_mam": "0.593",
+                        "mae_xy_son": "0.586",
+                        "rms_devzm_ann": "0.624",
+                        "rms_xy_ann": "0.638",
+                        "rms_xy_djf": "0.880",
+                        "rms_xy_jja": "0.823",
+                        "rms_xy_mam": "0.785",
+                        "rms_xy_son": "0.760",
+                        "rms_xyt_ann": "0.948",
+                        "rms_y_ann": "0.341",
+                        "std-obs_xy_ann": "1.473",
+                        "std-obs_xy_devzm_ann": "1.417",
+                        "std-obs_xy_djf": "1.827",
+                        "std-obs_xy_jja": "2.074",
+                        "std-obs_xy_mam": "1.539",
+                        "std-obs_xy_son": "1.515",
+                        "std-obs_xyt_ann": "1.849",
+                        "std_xy_ann": "1.380",
+                        "std_xy_devzm_ann": "1.356",
+                        "std_xy_djf": "1.979",
+                        "std_xy_jja": "1.953",
+                        "std_xy_mam": "1.472",
+                        "std_xy_son": "1.508",
+                        "std_xyt_ann": "1.877"
+                    },
+                    "NHEX": {
+                        "bias_xy_ann": "0.004",
+                        "bias_xy_djf": "0.003",
+                        "bias_xy_jja": "0.025",
+                        "bias_xy_mam": "-0.003",
+                        "bias_xy_son": "-0.007",
+                        "cor_xy_djf": "0.89",
+                        "cor_xy_jja": "0.92",
+                        "cor_xy_mam": "0.86",
+                        "cor_xy_son": "0.89",
+                        "mae_xy_ann": "0.438",
+                        "mae_xy_djf": "0.842",
+                        "mae_xy_jja": "0.496",
+                        "mae_xy_mam": "0.521",
+                        "mae_xy_son": "0.492",
+                        "rms_devzm_ann": "0.637",
+                        "rms_xy_ann": "0.639",
+                        "rms_xy_djf": "1.094",
+                        "rms_xy_jja": "0.676",
+                        "rms_xy_mam": "0.801",
+                        "rms_xy_son": "0.680",
+                        "rms_xyt_ann": "1.026",
+                        "rms_y_ann": "0.074",
+                        "std-obs_xy_ann": "1.429",
+                        "std-obs_xy_devzm_ann": "1.425",
+                        "std-obs_xy_djf": "2.273",
+                        "std-obs_xy_jja": "1.698",
+                        "std-obs_xy_mam": "1.447",
+                        "std-obs_xy_son": "1.396",
+                        "std-obs_xyt_ann": "1.827",
+                        "std_xy_ann": "1.466",
+                        "std_xy_devzm_ann": "1.464",
+                        "std_xy_djf": "2.368",
+                        "std_xy_jja": "1.702",
+                        "std_xy_mam": "1.591",
+                        "std_xy_son": "1.474",
+                        "std_xyt_ann": "1.948"
+                    },
+                    "SHEX": {
+                        "bias_xy_ann": "0.026",
+                        "bias_xy_djf": "-0.027",
+                        "bias_xy_jja": "0.061",
+                        "bias_xy_mam": "0.032",
+                        "bias_xy_son": "0.034",
+                        "cor_xy_djf": "0.90",
+                        "cor_xy_jja": "0.87",
+                        "cor_xy_mam": "0.84",
+                        "cor_xy_son": "0.83",
+                        "mae_xy_ann": "0.503",
+                        "mae_xy_djf": "0.513",
+                        "mae_xy_jja": "0.728",
+                        "mae_xy_mam": "0.650",
+                        "mae_xy_son": "0.693",
+                        "rms_devzm_ann": "0.673",
+                        "rms_xy_ann": "0.602",
+                        "rms_xy_djf": "0.619",
+                        "rms_xy_jja": "0.881",
+                        "rms_xy_mam": "0.781",
+                        "rms_xy_son": "0.820",
+                        "rms_xyt_ann": "0.927",
+                        "rms_y_ann": "0.523",
+                        "std-obs_xy_ann": "1.752",
+                        "std-obs_xy_devzm_ann": "1.679",
+                        "std-obs_xy_djf": "1.575",
+                        "std-obs_xy_jja": "2.090",
+                        "std-obs_xy_mam": "1.866",
+                        "std-obs_xy_son": "1.782",
+                        "std-obs_xyt_ann": "1.897",
+                        "std_xy_ann": "1.360",
+                        "std_xy_devzm_ann": "1.350",
+                        "std_xy_djf": "1.400",
+                        "std_xy_jja": "1.775",
+                        "std_xy_mam": "1.427",
+                        "std_xy_son": "1.474",
+                        "std_xyt_ann": "1.624"
+                    }
+                }
+            },
+            "InputRegionMD5": null,
+            "InputClimatologyFileName": "va.nc",
+            "units": "m/s",
+            "InputClimatologyMD5": "fc555362572dd926c64b329a9045d3f2",
+            "InputRegionFileName": null
+        }
+    },
+    "Variable": {
+        "id": "va",
+        "level": 85000.0
+    },
+    "json_version": "2.0",
+    "References": {
+        "default": {
+            "RefName": "ERAINT",
+            "MD5sum": "c99d076d1ce415ee07b510c3f4983a9f",
+            "period": "",
+            "filename": "va_ERAINT_000001-000012_ac.nc",
+            "shape": "(12, 17, 121, 240)",
+            "CMIP_CMOR_TABLE": "ERAINT",
+            "RefTrackingDate": "Tue Jul 12 17:27:33 2011"
+        }
+    },
+    "RegionalMasking": {
+        "TROPICS": {
+            "domain": {
+                "TROPICS": "cdutil.region.domain(latitude=(-30.0, 30, 'ccb'))"
+            },
+            "id": "TROPICS"
+        },
+        "global": {
+            "id": "global"
+        },
+        "NHEX": {
+            "domain": {
+                "NHEX": "cdutil.region.domain(latitude=(30.0, 90, 'ccb'))"
+            },
+            "id": "NHEX"
+        },
+        "SHEX": {
+            "domain": {
+                "SHEX": "cdutil.region.domain(latitude=(-90.0, -30, 'ccb'))"
+            },
+            "id": "SHEX"
+        }
+    },
+    "GridInfo": {
+        "GridResolution": [
+            1,
+            25,
+            144
+        ],
+        "GridName": "2.5x2.5",
+        "RegridMethod": "linear",
+        "RegridTool": "esmf"
+    },
+    "METRICS": {
+        "rms_xyt": {
+            "Abstract": "Compute Spatial and Temporal Root Mean Square",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatio-Temporal Root Mean Square",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "rms_xy": {
+            "Abstract": "Compute Spatial Root Mean Square",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatial Root Mean Square",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "bias_xy": {
+            "Abstract": "Compute Full Average of Model - Observation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Bias"
+        },
+        "mae_xy": {
+            "Abstract": "Compute Full Average of Absolute Difference Between Model And Observation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Mean Absolute Error"
+        },
+        "cor_xy": {
+            "Abstract": "Compute Spatial Correlation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatial Correlation",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "std_xy": {
+            "Abstract": "Compute Spatial Standard Deviation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatial Standard Deviation",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "std_xyt": {
+            "Abstract": "Compute Space-Time Standard Deviation",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Spatial-temporal Standard Deviation",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "seasonal_mean": {
+            "Abstract": "Compute Seasonal Mean",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Seasonal Mean",
+            "Comments": "Assumes input are 12 months climatology"
+        },
+        "annual_mean": {
+            "Abstract": "Compute Annual Mean",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Annual Mean",
+            "Comments": "Assumes input are 12 months climatology",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        },
+        "zonal_mean": {
+            "Abstract": "Compute Zonal Mean",
+            "Contact": "Peter Gleckler <gleckler1@llnl.gov>",
+            "Name": "Zonal Mean",
+            "Comments": "",
+            "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
+        }
+    },
+    "metrics_git_sha1": "c7ae78368d1d3b2ff451efc1b6981c74183b07c0",
+    "uvcdat_version": "2.6"
+}
