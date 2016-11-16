@@ -3,10 +3,10 @@ import logging
 import sys
 import re
 import json
-from pcmdi_metrics.pmp_io import *
-from pcmdi_metrics.metrics.mean_climate_metrics_calculations import *
-from pcmdi_metrics.observation import *
-from pcmdi_metrics.dataset import DataSet
+import pcmdi_metrics
+from pcmdi_metrics.io.pmp_io import *
+from pcmdi_metrics.driver.observation import *
+from pcmdi_metrics.driver.dataset import DataSet
 
 
 class OutputMetrics(object):
@@ -113,12 +113,12 @@ class OutputMetrics(object):
             get(self.parameter.realization, {})
 
         if not self.parameter.dry_run:
-            pr_rgn = compute_metrics(self.var_name_long, test_data, ref_data)
+            pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(self.var_name_long, test_data, ref_data)
 
             # Calling compute_metrics with None for the model and obs returns
             # the definitions.
             self.metrics_def_dictionary.update(
-                compute_metrics(self.var_name_long, None, None))
+                pcmdi_metrics.pcmdi.compute_metrics(self.var_name_long, None, None))
             if hasattr(self.parameter, 'compute_custom_metrics'):
                 pr_rgn.update(
                     self.parameter.compute_custom_metrics(self.var_name_long,

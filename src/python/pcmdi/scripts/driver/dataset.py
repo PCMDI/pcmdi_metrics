@@ -4,7 +4,7 @@ import sys
 import logging
 import cdutil
 import cdms2
-from pcmdi_metrics.pmp_io import *
+from pcmdi_metrics.io.pmp_io import *
 
 
 class DataSet(object):

@@ -1,5 +1,5 @@
-from pcmdi_metrics.pmp_io import *
-from pcmdi_metrics.dataset import *
+from pcmdi_metrics.io.pmp_io import *
+from pcmdi_metrics.driver.dataset import *
 
 
 class Model(DataSet):
@@ -40,7 +40,7 @@ class Model(DataSet):
                     MV2.not_equal(self.sftlf['target_grid'], region_value)
 
     def get(self):
-        print ''
+        print 'var: %s, var_in_file: %s, level: %s, region: %s' % (self.var, self.var_in_file, self.level, self.region)
         if self.level is None:
             data_model = self._model_file.get(
                 self.var, var_in_file=self.var_in_file, region=self.region)

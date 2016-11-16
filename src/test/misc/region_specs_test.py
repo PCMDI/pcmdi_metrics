@@ -102,7 +102,7 @@ filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_" +\
 # Ok do we have custom metrics?
 # The following allow users to plug in a set of custom metrics
 # Function needs to take in var name, model clim, obs clim
-from pcmdi_metrics.metrics.mean_climate_metrics_calculations import *
+from pcmdi_metrics.pcmdi.mean_climate_metrics_calculations import *
 compute_custom_metrics = compute_metrics
 # or
 

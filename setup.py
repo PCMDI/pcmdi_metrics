@@ -64,14 +64,14 @@ demo_files = glob.glob("demo/*/*")
 print "demo files"
 
 data_files = [
-              ('share/pmp/graphics/vcs', portrait_files),
+              #('share/pmp/graphics/vcs', portrait_files),
               ('share/pmp/graphics/png', ['share/pcmdi/160915_PCMDI_logo_348x300px.png',
                                           'share/pcmdi/160915_PCMDI_logo-oblong_377x300px.png']),
               ('share/pmp', ('doc/obs_info_dictionary.json',
                                'share/pcmdi_metrics_table',
                                'share/disclaimer.txt',
                                'share/default_regions.py')),
-              ('share/pmp/demo', demo_files),
+              #('share/pmp/demo', demo_files),
               ]
 
 if install_dev:

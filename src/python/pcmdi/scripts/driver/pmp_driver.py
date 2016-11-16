@@ -1,6 +1,6 @@
 import logging
 from cdp.cdp_driver import *
-from pcmdi_metrics.rundiags import *
+from pcmdi_metrics.driver.rundiags import *
 
 
 class PMPDriver(CDPDriver):
