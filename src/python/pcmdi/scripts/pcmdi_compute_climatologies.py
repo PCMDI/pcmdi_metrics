@@ -177,6 +177,7 @@ def checkCMORAttribute(att, source=filein):
             raise RuntimeError("Could not figure out the CMOR '%s'" % att)
     return res
 
+
 fvars = filein.variables.keys()
 for ivar, v in enumerate(A.vars):
     if v not in fvars:

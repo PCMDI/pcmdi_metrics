@@ -10,11 +10,11 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export UVCDAT_FEATURE="-nox"; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ] && ! [ -d ${HOME}/miniconda] ; then wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh; fi
   - export PATH="$HOME/miniconda/bin:$PATH"
-  - if [ ! -d ${HOME}/miniconda ]; then bash miniconda.sh -b -p $HOME/miniconda ; conda install --yes --channel uvcdat/label/nightly -c uvcdat uvcdat${UVCDAT_FEATURE} hdf5==1.8.16 flake8 ; fi
+  - if [ ! -d ${HOME}/miniconda ]; then bash miniconda.sh -b -p $HOME/miniconda ; conda install --show-channel-urls --yes -c conda-forge -c uvcdat cdp uvcdat${UVCDAT_FEATURE} flake8 ; fi
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  - conda install openssl=1.0.2d
+    #- conda install openssl=1.0.2d
   # Useful for debugging any issues with conda
   - conda info -a
 

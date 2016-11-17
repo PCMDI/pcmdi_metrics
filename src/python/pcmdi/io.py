@@ -39,19 +39,23 @@ class OBS(pcmdi_metrics.io.base.Base):
 
 class JSONs(pcmdi_metrics.io.base.JSONs):
 
-    def __init__(self, files=[], database=None):
+    def __init__(self, files=[], ignored_keys=None):
+        if ignored_keys is None:
+            ignored_keys = ["SimulationDescription"]
         super(
             JSONs,
             self).__init__(
             files,
-            database,
             structure=[
+                "variable",
                 "model",
                 "reference",
                 "rip",
                 "region",
                 "statistic",
-                "season"])
+                "season"],
+            ignored_keys=ignored_keys,
+            )
 
     def addJson(self, filename):
         f = open(filename)
@@ -61,18 +65,28 @@ class JSONs(pcmdi_metrics.io.base.JSONs):
         if json_version is None:
             # Json format not stored, trying to guess
             R = tmp_dict["RESULTS"]
-            out = R[R.keys()[0]]  # get first available model
-            out = out["defaultReference"]  # get first set of obs
-            k = out.keys()
-            k.pop(k.index("source"))
-            out = out[k[0]]  # first realization
-            # Ok at this point we need to see if it is json std 1 or 2
-            # version 1 had NHEX in every region
-            # version 2 does not
-            if "bias_xy_djf_NHEX" in out[out.keys()[0]].keys():
-                json_version = "1.0"
-            else:
-                json_version = "2.0"
+            K = R.keys()
+            for ky in K:
+                try:
+                    out = R[ky]  # get first available model
+                    out = out["defaultReference"]  # get first set of obs
+                    k = out.keys()
+                    # print filename,"K IS:",k
+                    k.pop(k.index("source"))
+                    out = out[k[0]]  # first realization
+                except:
+                    continue
+                # Ok at this point we need to see if it is json std 1 or 2
+                # version 1 had NHEX in every region
+                # version 2 does not
+                if "bias_xy_djf_NHEX" in out[out.keys()[0]].keys():
+                    json_version = "1.0"
+                    json_struct = self.json_struct[1:]
+                else:
+                    json_version = "2.0"
+                break
+        if float(json_version) == 2.:
+            json_struct = json_struct[1:]
         # Now update our stored results
         # First we need to figure out the variable read in
         if "variable" not in json_struct:
@@ -88,4 +102,4 @@ class JSONs(pcmdi_metrics.io.base.JSONs):
             tmp_dict = {varnm: tmp_dict["RESULTS"]}
         else:
             tmp_dict = tmp_dict["RESULTS"]
-        self.addDict2DB(tmp_dict, json_struct, json_version)
+        self.addDict2Self(tmp_dict, json_struct, json_version)
