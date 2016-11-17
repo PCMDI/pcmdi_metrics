@@ -15,6 +15,7 @@ def compute_metrics(Var, dm, do):
             None,
             None)
         metrics_defs["rms_xy"] = pcmdi_metrics.pcmdi.rms_xy.compute(None, None)
+        metrics_defs["rmsc_xy"] = pcmdi_metrics.pcmdi.rmsc_xy.compute(None, None)
         metrics_defs["bias_xy"] = pcmdi_metrics.pcmdi.bias_xy.compute(
             None, None)
         metrics_defs["mae_xy"] = pcmdi_metrics.pcmdi.meanabs_xy.compute(
@@ -24,7 +25,7 @@ def compute_metrics(Var, dm, do):
         #     None,
         #     None)
         metrics_defs["cor_xy"] = pcmdi_metrics.pcmdi.cor_xy.compute(None, None)
-
+        metrics_defs["mean_xy"] = pcmdi_metrics.pcmdi.mean_xy.compute(None)
         metrics_defs["std_xy"] = pcmdi_metrics.pcmdi.std_xy.compute(None)
         metrics_defs["std_xyt"] = pcmdi_metrics.pcmdi.std_xyt.compute(None)
 
@@ -68,8 +69,9 @@ def compute_metrics(Var, dm, do):
     # CALCULATE MEAN ABSOLUTE ERROR
     mae_xy = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_am, do_am)
 
-    # CALCULATE ANNUAL MEAN RMS
+    # CALCULATE ANNUAL MEAN RMS (centered and uncentered)
     rms_xy = pcmdi_metrics.pcmdi.rms_xy.compute(dm_am, do_am)
+    rmsc_xy = pcmdi_metrics.pcmdi.rmsc_xy.compute(dm_am, do_am)
 
     # CALCULATE ANNUAL MEAN CORRELATION
     cor_xy = pcmdi_metrics.pcmdi.cor_xy.compute(dm_am, do_am)
@@ -77,6 +79,10 @@ def compute_metrics(Var, dm, do):
     # CALCULATE ANNUAL OBS and MOD STD
     stdObs_xy = pcmdi_metrics.pcmdi.std_xy.compute(do_am)
     std_xy = pcmdi_metrics.pcmdi.std_xy.compute(dm_am)
+
+    # CALCULATE ANNUAL OBS and MOD MEAN
+    meanObs_xy = pcmdi_metrics.pcmdi.mean_xy.compute(do_am)
+    mean_xy = pcmdi_metrics.pcmdi.mean_xy.compute(dm_am)
 
     # ZONAL MEANS ######
     # CALCULATE ANNUAL MEANS
@@ -100,11 +106,21 @@ def compute_metrics(Var, dm, do):
     std_xy_devzm = pcmdi_metrics.pcmdi.std_xy.compute(dm_am_devzm)
 
     for stat in ["std-obs_xy", "std_xy", "std-obs_xyt",
-                 "std_xyt", "std-obs_xy_devzm", "std_xy_devzm",
-                 "rms_xyt", "rms_xy", "cor_xy", "bias_xy",
+                 "std_xyt", "std-obs_xy_devzm", "mean_xy", "mean-obs_xy", "std_xy_devzm",
+                 "rms_xyt", "rms_xy", "rmsc_xy", "cor_xy", "bias_xy",
                  "mae_xy", "rms_y", "rms_devzm"]:
         metrics_dictionary[stat] = {}
 
+    metrics_dictionary[
+        'mean-obs_xy']['ann'] = format(
+        meanObs_xy *
+        conv,
+        sig_digits)
+    metrics_dictionary[
+        'mean_xy']['ann'] = format(
+        mean_xy *
+        conv,
+        sig_digits)
     metrics_dictionary[
         'std-obs_xy']['ann'] = format(
         stdObs_xy *
@@ -146,6 +162,11 @@ def compute_metrics(Var, dm, do):
         conv,
         sig_digits)
     metrics_dictionary[
+        'rmsc_xy']['ann'] = format(
+        rmsc_xy *
+        conv,
+        sig_digits)
+    metrics_dictionary[
         'cor_xy']['ann'] = format(
         cor_xy,
         sig_digits)
@@ -179,31 +200,18 @@ def compute_metrics(Var, dm, do):
 
         # CALCULATE SEASONAL RMS AND CORRELATION
         rms_sea = pcmdi_metrics.pcmdi.rms_xy.compute(dm_sea, do_sea)
+        rmsc_sea = pcmdi_metrics.pcmdi.rmsc_xy.compute(dm_sea, do_sea)
         cor_sea = pcmdi_metrics.pcmdi.cor_xy.compute(dm_sea, do_sea)
         mae_sea = pcmdi_metrics.pcmdi.meanabs_xy.compute(dm_sea, do_sea)
         bias_sea = pcmdi_metrics.pcmdi.bias_xy.compute(dm_sea, do_sea)
 
-        # CALCULATE ANNUAL OBS and MOD STD
+        # CALCULATE SEASONAL OBS and MOD STD
         stdObs_xy_sea = pcmdi_metrics.pcmdi.std_xy.compute(do_sea)
         std_xy_sea = pcmdi_metrics.pcmdi.std_xy.compute(dm_sea)
 
-    # ZONAL MEANS ######
-    # CALCULATE SEASONAL MEANS
-# dm_smzm, do_smzm = pcmdi_metrics.pcmdi.zonal_mean.compute(dm_sea,
-# do_sea)
-
-    # CALCULATE SEASONAL AND ZONAL MEAN RMS
-#           rms_y = pcmdi_metrics.pcmdi.rms_y.compute(dm_smzm, do_smzm)
-
-    # CALCULATE SEASONAL MEAN DEVIATION FROM ZONAL MEAN RMS
-#           dm_smzm_grown,dummy = grower(dm_smzm,dm_sea)
-#           dm_sea_devzm = MV.subtract(dm_sea,dm_smzm_grown)
-#           do_smzm_grown,dummy = grower(do_smzm,do_sea)
-#           do_sm_devzm = MV.subtract(do_sea,do_smzm_grown)
-# rms_xy_devzm = pcmdi_metrics.pcmdi.rms_xy.compute(dm_sm_devzm,
-# do_sm_devzm)
-
-#           print 'SEASONAL ZM HERE>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+        # CALCULATE SEASONAL OBS and MOD MEAN
+        meanObs_xy_sea = pcmdi_metrics.pcmdi.mean_xy.compute(do_sea)
+        mean_xy_sea = pcmdi_metrics.pcmdi.mean_xy.compute(dm_sea)
 
         metrics_dictionary['bias_xy'][sea] = format(
             bias_sea *
@@ -211,6 +219,10 @@ def compute_metrics(Var, dm, do):
             sig_digits)
         metrics_dictionary['rms_xy'][sea] = format(
             rms_sea *
+            conv,
+            sig_digits)
+        metrics_dictionary['rmsc_xy'][sea] = format(
+            rmsc_sea *
             conv,
             sig_digits)
         metrics_dictionary['cor_xy'][sea] = format(
@@ -226,6 +238,14 @@ def compute_metrics(Var, dm, do):
             sig_digits)
         metrics_dictionary['std_xy'][sea] = format(
             std_xy_sea *
+            conv,
+            sig_digits)
+        metrics_dictionary['mean-obs_xy'][sea] = format(
+            meanObs_xy_sea *
+            conv,
+            sig_digits)
+        metrics_dictionary['mean_xy'][sea] = format(
+            mean_xy_sea *
             conv,
             sig_digits)
 
