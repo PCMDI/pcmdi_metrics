@@ -11,4 +11,4 @@ def compute(dm, do):
             "utilities/utilities-2.html",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    return float(genutil.statistics.rms(dm, do, axis='xy', centered = 1, weights='weighted'))
+    return float(genutil.statistics.rms(dm, do, axis='xy', centered=1, weights='weighted'))

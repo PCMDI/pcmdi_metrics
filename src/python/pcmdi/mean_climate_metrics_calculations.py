@@ -80,7 +80,7 @@ def compute_metrics(Var, dm, do):
     stdObs_xy = pcmdi_metrics.pcmdi.std_xy.compute(do_am)
     std_xy = pcmdi_metrics.pcmdi.std_xy.compute(dm_am)
 
-    # CALCULATE ANNUAL OBS and MOD MEAN 
+    # CALCULATE ANNUAL OBS and MOD MEAN
     meanObs_xy = pcmdi_metrics.pcmdi.mean_xy.compute(do_am)
     mean_xy = pcmdi_metrics.pcmdi.mean_xy.compute(dm_am)
 
@@ -106,7 +106,7 @@ def compute_metrics(Var, dm, do):
     std_xy_devzm = pcmdi_metrics.pcmdi.std_xy.compute(dm_am_devzm)
 
     for stat in ["std-obs_xy", "std_xy", "std-obs_xyt",
-                 "std_xyt", "std-obs_xy_devzm", "mean_xy","mean-obs_xy","std_xy_devzm",
+                 "std_xyt", "std-obs_xy_devzm", "mean_xy", "mean-obs_xy", "std_xy_devzm",
                  "rms_xyt", "rms_xy", "rmsc_xy", "cor_xy", "bias_xy",
                  "mae_xy", "rms_y", "rms_devzm"]:
         metrics_dictionary[stat] = {}
@@ -209,28 +209,9 @@ def compute_metrics(Var, dm, do):
         stdObs_xy_sea = pcmdi_metrics.pcmdi.std_xy.compute(do_sea)
         std_xy_sea = pcmdi_metrics.pcmdi.std_xy.compute(dm_sea)
 
-        # CALCULATE SEASONAL OBS and MOD MEAN 
+        # CALCULATE SEASONAL OBS and MOD MEAN
         meanObs_xy_sea = pcmdi_metrics.pcmdi.mean_xy.compute(do_sea)
         mean_xy_sea = pcmdi_metrics.pcmdi.mean_xy.compute(dm_sea)
-
-
-    # ZONAL MEANS ######
-    # CALCULATE SEASONAL MEANS
-# dm_smzm, do_smzm = pcmdi_metrics.pcmdi.zonal_mean.compute(dm_sea,
-# do_sea)
-
-    # CALCULATE SEASONAL AND ZONAL MEAN RMS
-#           rms_y = pcmdi_metrics.pcmdi.rms_y.compute(dm_smzm, do_smzm)
-
-    # CALCULATE SEASONAL MEAN DEVIATION FROM ZONAL MEAN RMS
-#           dm_smzm_grown,dummy = grower(dm_smzm,dm_sea)
-#           dm_sea_devzm = MV.subtract(dm_sea,dm_smzm_grown)
-#           do_smzm_grown,dummy = grower(do_smzm,do_sea)
-#           do_sm_devzm = MV.subtract(do_sea,do_smzm_grown)
-# rms_xy_devzm = pcmdi_metrics.pcmdi.rms_xy.compute(dm_sm_devzm,
-# do_sm_devzm)
-
-#           print 'SEASONAL ZM HERE>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
 
         metrics_dictionary['bias_xy'][sea] = format(
             bias_sea *
