@@ -1,6 +1,7 @@
 import os
 import logging
 import json
+import re
 import genutil
 import cdat_info
 import cdutil
@@ -11,6 +12,13 @@ import numpy
 import collections
 import pcmdi_metrics
 from cdp.cdp_io import *
+
+
+value = 0
+cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
+cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
+# where value is a integer between 0 and 9 included
+cdms2.setNetcdfDeflateLevelFlag(value)
 
 
 class CDMSDomainsEncoder(json.JSONEncoder):
@@ -96,21 +104,41 @@ class PMPIO(CDPIO, genutil.StringConstructor):
 
     def get(self, var, var_in_file=None,
             region={}, *args, **kwargs):
+        ##MESSES UP HERE, wrong var_in_file sent
+        ##MESSES UP HERE, wrong var_in_file sent
+        ##MESSES UP HERE, wrong var_in_file sent
+        ##MESSES UP HERE, wrong var_in_file sent
+        ##MESSES UP HERE, wrong var_in_file sent
+        ##MESSES UP HERE, wrong var_in_file sent
+        ##MESSES UP HERE, wrong var_in_file sent
+        ##MESSES UP HERE, wrong var_in_file sent
+        print 'var: %s, var_in_file: %s, region: %s' % (var, var_in_file, region)
+        ###print 'IO varInFile:', var_in_file
+        ###print 'IO region:', region
 
         self.var_from_file = self.extract_var_from_file(
             var, var_in_file, *args, **kwargs)
 
-        file_name = 'var_%s_varInFile_%s_region_%s.nc' % (var, var_in_file, region)
+        print 'self.var_from_file:', type(self.var_from_file)
+        ####################
+
+        self.file_name = 'var_%s_varInFile_%s_region_%s.nc' % (var, var_in_file, region)
         if 'level' in kwargs:
-            file_name = 'var_%s_varInFile_%s_level_%s_region_%s.nc' % (var, var_in_file, kwargs['level'], region)
+            self.file_name = 'var_%s_varInFile_%s_level_%s_region_%s.nc' % (var, var_in_file, kwargs['level'], region)
+        self.file_name = re.sub(r'0x.*>','0x0>', self.file_name)
 
         self.region = region
         if self.region is None:
             self.region = {}
         self.value = self.region.get('value', None)
+        #print 'IO varInFile:', var_in_file
         if self.is_masking():
             self.var_from_file = self.mask_var(self.var_from_file)
 
+
+
+
+        ##########################
         self.var_from_file = \
             self.set_target_grid_and_mask_in_var(self.var_from_file)
 
@@ -175,14 +203,28 @@ class PMPIO(CDPIO, genutil.StringConstructor):
 
     def set_file_mask_template(self):
         if isinstance(self.file_mask_template, basestring):
+            print 'CREATING file_mask_template as IO'
             self.file_mask_template = PMPIO(self.root, self.file_mask_template,
                                             {'domain':
                                             self.region.get('domain', None)})
 
     def get_mask_from_var(self, var):
         try:
-            o_mask = self.file_mask_template('sftlf')
+            o_mask = self.file_mask_template.get('sftlf')
         except:
+            '''
+            print 'type(var):', type(var)
+            print 'var.getLongitude():', var.getLongitude()
+            print 'regrid_tool:%s' % self.regrid_tool
+            print 'regrid_method:', self.regrid_method
+            print 'type target_grid:', type(self.target_grid)
+            print 'target_grid:', self.target_grid
+            '''
+            #print 'SAVING OMASK FILE'
+            #dm_file = cdms2.open('~/github/pcmdi_metrics/files/omask_' + self.file_name, 'w')
+            #dm_file.write(var)
+            #dm_file.close()
+
             o_mask = cdutil.generateLandSeaMask(
                 var, regridTool=self.regrid_tool).filled(1.) * 100.
             o_mask = MV2.array(o_mask)
@@ -220,12 +262,6 @@ class PMPIO(CDPIO, genutil.StringConstructor):
             buffer = self_file.read(block_size)
         self_file.close()
         return hasher.hexdigest()
-
-value = 0
-cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
-cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
-# where value is a integer between 0 and 9 included
-cdms2.setNetcdfDeflateLevelFlag(value)
 
 # cdutil region object need a serializer
 def update_dict(d, u):

@@ -140,8 +140,10 @@ class RunDiags(object):
 
                     test = self.determine_obs_or_model(test_data_set_is_obs,
                                                        self.test, self.parameter.test_data_path)
-
-                    self.output_metric.calculate_and_output_metrics(ref, test)
+                    try:
+                        self.output_metric.calculate_and_output_metrics(ref, test)
+                    except RuntimeError as e:
+                        break
 
         def is_data_set_obs(self, data_set):
             if 'all' in data_set:

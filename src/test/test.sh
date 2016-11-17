@@ -2,6 +2,7 @@ rm -rf ~/github/pcmdi_metrics/pcmdi_install_test_results
 rm -rf ~/pcmdi_metrics/pcmdi_install_test_results
 
 cd ~/github/pcmdi_metrics
+source activate temp13
 python setup.py install
 python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p ~/github/pcmdi_metrics/src/test/misc/basic_test_parameters_file.py
 python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p /Users/shaheen2/github/pcmdi_metrics/src/test/misc/gensftlf_test.py
@@ -12,6 +13,7 @@ python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p /Use
 python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p /Users/shaheen2/github/pcmdi_metrics/src/test/misc/region_specs_test.py
 python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p /Users/shaheen2/github/pcmdi_metrics/src/test/misc/salinity_test.py
 python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p /Users/shaheen2/github/pcmdi_metrics/src/test/misc/units_test.py
+source deactivate temp13
 
 source activate pmp
 cd ~/pcmdi_metrics/
@@ -42,7 +44,7 @@ echo 'gensftlf_test.py'
 diff ~/github/pcmdi_metrics/pcmdi_install_test_results/metrics_results/gensftlfTest/tas_2.5x2.5_esmf_linear_metrics.json ~/pcmdi_metrics/pcmdi_install_test_results/metrics_results/gensftlfTest/tas_2.5x2.5_esmf_linear_metrics.json
 
 echo '==================================================================================='
-echo '==================================================================================='
+echo '==========================================diff ~/github/pcmdi_metrics/pcmdi_install_test_results/metrics_results/keep_going_on_error_varnameTest/tos_2.5x2.5_esmf_linear_metrics.json ~/pcmdi_metrics/pcmdi_install_test_results/metrics_results/keep_going_on_error_varnameTest/tos_2.5x2.5_esmf_linear_metrics.json
 echo '==================================================================================='
 echo 'keep_going_on_error_varname_test.py'
 diff ~/github/pcmdi_metrics/pcmdi_install_test_results/metrics_results/keep_going_on_error_varnameTest/tos_2.5x2.5_esmf_linear_metrics.json ~/pcmdi_metrics/pcmdi_install_test_results/metrics_results/keep_going_on_error_varnameTest/tos_2.5x2.5_esmf_linear_metrics.json

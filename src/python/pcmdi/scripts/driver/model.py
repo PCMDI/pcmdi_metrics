@@ -28,6 +28,8 @@ class Model(DataSet):
 
     def setup_target_mask(self):
         self.var_in_file = self.get_var_in_file()
+        #print 'var_in_file:', self.var_in_file
+        #self.get_var_in_file() is CORRECT
 
         if self.region is not None:
             region_value = self.region.get('value', None)
@@ -40,21 +42,30 @@ class Model(DataSet):
                     MV2.not_equal(self.sftlf['target_grid'], region_value)
 
     def get(self):
-        print 'var: %s, var_in_file: %s, level: %s, region: %s' % (self.var, self.var_in_file, self.level, self.region)
-        if self.level is None:
-            data_model = self._model_file.get(
-                self.var, var_in_file=self.var_in_file, region=self.region)
-        else:
-            data_model = self._model_file.get(
-                self.var, var_in_file=self.var_in_file,
-                level=self.level, region=self.region)
+        try:
+            print 'MODEL get'
+            #print 'MODEL var_in_file: ', self.var_in_file
+            if self.level is None:
+                data_model = self._model_file.get(
+                    self.var, var_in_file=self.var_in_file, region=self.region)
+            else:
+                data_model = self._model_file.get(
+                    self.var, var_in_file=self.var_in_file,
+                    level=self.level, region=self.region)
 
-        return data_model
+            return data_model
+
+        except Exception as e:
+            msg = 'Failed to get variables %s for versions: %s, error: %s'
+            logging.error(msg % (self.var, self.obs_or_model, e))
+            raise RuntimeError('Need to skip model: %s' % self.obs_or_model)
 
     def get_var_in_file(self):
         tweaks = {}
+        #####tweaks_all = {}
         if hasattr(self.parameter, 'model_tweaks'):
             tweaks = self.parameter.model_tweaks.get(self.obs_or_model, {})
+            #####tweaks_all = self.parameter.model_tweaks.get(None, {})
         var_in_file = tweaks.get('variable_mapping', {}).get(self.var, None)
 
         if var_in_file is None:

@@ -53,8 +53,6 @@ class OutputMetrics(object):
             self.metrics_dictionary["Variable"]["level"] = level
             self.out_file.level = "-%i" % (int(level / 100.0))
 
-
-
     def open_disclaimer(self):
         f = DataSet.load_path_as_file_obj('disclaimer.txt')
         contents = f.read()
@@ -83,9 +81,18 @@ class OutputMetrics(object):
         DataSet.apply_custom_keys(self.out_file, self.parameter.custom_keys, self.var)
 
     def calculate_and_output_metrics(self, ref, test):
+        try:
+            ref_data = ref()
+        except Exception as e:
+            msg = 'Error while processing observation %s for variables %s:'+ \
+                  '\n\t%s'
+            logging.error(msg % (self.var, str(e)))
 
-        ref_data = ref()
-        test_data = test()
+        try:
+            test_data = test()
+        except RuntimeError as e:
+            # THIS EXCEPTION IS RAISED TO BREAK OUT OF THE FOR LOOP IN RunDiags
+            raise RuntimeError('Need to skip model: %s' % test.obs_or_model)
 
         # Todo: Make this a fcn
         # ref and test can be used interchangeably.
@@ -103,7 +110,7 @@ class OutputMetrics(object):
         if ref_data.shape != test_data.shape:
             raise RuntimeError('Two data sets have different shapes. %s vs %s' % (ref_data.shape, test_data.shape))
 
-        self.set_simulation_desc(test)
+        self.set_simulation_desc(test, test_data)
 
         if ref.obs_or_model not in self.metrics_dictionary['RESULTS'][test.obs_or_model]:
             self.metrics_dictionary["RESULTS"][test.obs_or_model][ref.obs_or_model] = \
@@ -141,12 +148,12 @@ class OutputMetrics(object):
                 parameter_realization
 
         if self.check_save_test_clim(ref):
-            self.output_interpolated_model_climatologies(test)
+            self.output_interpolated_model_climatologies(test, test_data)
 
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
 
         if not self.parameter.dry_run:
-            logging.error('Saving results to: %s' % self.out_file())
+            #logging.error('Saving results to: %s' % self.out_file())
             self.out_file.write(self.metrics_dictionary,
                                 json_structure=["model", "reference", "rip", "region", "statistic", "season"],
                                 indent=4,
@@ -161,8 +168,7 @@ class OutputMetrics(object):
         grid['GridResolution'] = test_data.shape[1:]
         self.metrics_dictionary['GridInfo'] = grid
 
-    def set_simulation_desc(self, test):
-        test_data = test()
+    def set_simulation_desc(self, test, test_data):
 
         self.metrics_dictionary["RESULTS"][test.obs_or_model] = \
             self.metrics_dictionary["RESULTS"].get(test.obs_or_model, {})
@@ -229,12 +235,12 @@ class OutputMetrics(object):
                 "InputRegionMD5"] = \
                 self.sftlf[test.obs_or_model]["md5"]
 
-    def output_interpolated_model_climatologies(self, test):
+    def output_interpolated_model_climatologies(self, test, test_data):
         region_name = self.get_region_name(test)
         pth = os.path.join(self.parameter.test_clims_interpolated_output,
                            region_name)
         clim_file = PMPIO(pth, self.parameter.filename_output_template)
-        logging.error('Saving interpolated climatologies to: %s' % clim_file())
+        #logging.error('Saving interpolated climatologies to: %s' % clim_file())
         clim_file.level = self.out_file.level
         clim_file.model_version = test.obs_or_model
 
@@ -250,7 +256,7 @@ class OutputMetrics(object):
         clim_file.realization = self.parameter.realization
         DataSet.apply_custom_keys(clim_file,
                                   self.parameter.custom_keys, self.var)
-        clim_file.write(test(), type="nc", id=self.var)
+        clim_file.write(test_data, type="nc", id=self.var)
 
     def get_region_name(self, ref_or_test):
         # region is both in ref and test

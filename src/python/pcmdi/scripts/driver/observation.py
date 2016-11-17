@@ -93,14 +93,23 @@ class Observation(DataSet):
                 )
 
     def get(self):
-        if self.level is not None:
-            data_obs = self._obs_file.get(self.var,
-                                          level=self.level,
-                                          region=self.region)
-        else:
-            data_obs = self._obs_file.get(self.var,
-                                          region=self.region)
-        return data_obs
+        try:
+            print 'OBS get'
+            if self.level is not None:
+                data_obs = self._obs_file.get(self.var,
+                                              level=self.level,
+                                              region=self.region)
+            else:
+                data_obs = self._obs_file.get(self.var,
+                                              region=self.region)
+            return data_obs
+        except Exception as e:
+            if self.level is not None:
+                logging.error('Failed opening 4D OBS',
+                              self.var, self.obs_or_model, e)
+            else:
+                logging.error('Failed opening 3D OBS',
+                              self.var, self.obs_or_model, e)
 
     def hash(self):
         return self._obs_file.hash()
