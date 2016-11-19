@@ -14,7 +14,9 @@ before_install:
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-    #- conda install openssl=1.0.2d
+  - conda install conda-build
+  - conda install anaconda-client
+  # - conda install openssl=1.0.2d
   # Useful for debugging any issues with conda
   - conda info -a
 
@@ -22,5 +24,8 @@ install:
   - python setup.py install
 
 script:
-    - export HDF5_DISABLE_VERSION_CHECK=1
-    - python test/test_suite.py # --no-graphics
+  - export HDF5_DISABLE_VERSION_CHECK=1
+  - python test/test_suite.py # --no-graphics
+
+after_success:
+  - bash conda-recipes/pcmdi_metrics/conda_upload.sh
