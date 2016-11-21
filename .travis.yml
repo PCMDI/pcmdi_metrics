@@ -14,8 +14,6 @@ before_install:
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda update -q conda
-  - conda install conda-build
-  - conda install anaconda-client
   # - conda install openssl=1.0.2d
   # Useful for debugging any issues with conda
   - conda info -a
@@ -28,4 +26,4 @@ script:
   - python test/test_suite.py # --no-graphics
 
 after_success:
-  - bash conda-recipes/pcmdi_metrics/conda_upload.sh
+  - test $TRAVIS_BRANCH = "master" && conda install conda-build && conda install anaconda-client && bash conda-recipes/pcmdi_metrics/conda_upload.sh
