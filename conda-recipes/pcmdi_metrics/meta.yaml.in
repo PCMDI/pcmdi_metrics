@@ -14,11 +14,11 @@ requirements:
   build:
     - python
     - setuptools
-    - numpy <=1.9.2
+    - numpy
   run:
     - vcs >=2.6
     - vcsaddons
-    - cdms2 >=2.6
+    - cdms2 >2.6
     - genutil
     - cdutil
     - unidata
