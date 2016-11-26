@@ -1,43 +1,14 @@
-import argparse
 import ast
-import cdp.cdp_parameter
+import cdp.cdp_parser
+from pcmdi_metrics.driver.pmp_parameter import *
 
 
-class PMPParameter(cdp.cdp_parameter.CDPParameter):
-    # Since there's no checking needed for now, create a new class instead of
-    # the PMPParameter class that will be in CDP.
-    def check_values(self):
-        pass
-
-
-class PMPParser(argparse.ArgumentParser):
+class PMPParser(cdp.cdp_parser.CDPParser):
     def __init__(self, *args, **kwargs):
-        # conflict_handler='resolve' lets new args override older ones
-        super(PMPParser, self).__init__(conflict_handler='resolve',
-                                        *args, **kwargs)
-        self.load_default_args()
-        self.parameter = PMPParameter()
-
-    def get_parameter(self):
-        args = self.parse_args()
-        if args.parameter is not None:
-            self.parameter.load_parameter_from_py(args.parameter)
-
-        # Overwrite the values of the parameter with the user's args
-        for arg_name, arg_value in vars(args).iteritems():
-            if arg_value is not None:
-                # Add it to the parameter
-                setattr(self.parameter, arg_name, arg_value)
-
-        self.parameter.check_values()
-        return self.parameter
+        super(PMPParser, self).__init__(PMPParameter, *args, **kwargs)
 
     def load_default_args(self):
-        self.add_argument(
-            '-p', '--parameters',
-            dest='parameter',
-            help='Path to the user-defined parameter file',
-            required=False)
+        super(PMPParser, self).load_default_args()
 
         self.add_argument(
             '--case_id',

@@ -1,4 +1,3 @@
-import logging
 from cdp.cdp_driver import *
 from pcmdi_metrics.driver.rundiags import *
 
