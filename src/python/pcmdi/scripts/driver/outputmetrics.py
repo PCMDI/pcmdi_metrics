@@ -81,6 +81,17 @@ class OutputMetrics(object):
         DataSet.apply_custom_keys(self.out_file, self.parameter.custom_keys, self.var)
 
     def calculate_and_output_metrics(self, ref, test):
+        # ref and test can be used interchangeably.
+        self.metrics_dictionary['RegionalMasking'][self.get_region_name(ref)] \
+            = ref.region
+
+        if isinstance(self.obs_dict[self.var][ref.obs_or_model], (str, unicode)):
+            self.obs_var_ref = self.obs_dict[self.var][self.obs_dict[self.var][ref.obs_or_model]]
+        else:
+            self.obs_var_ref = self.obs_dict[self.var][ref.obs_or_model]
+
+        self.metrics_dictionary['References'][ref.obs_or_model] = self.obs_var_ref
+
         try:
             ref_data = ref()
         except Exception as e:
@@ -95,16 +106,6 @@ class OutputMetrics(object):
             raise RuntimeError('Need to skip model: %s' % test.obs_or_model)
 
         # Todo: Make this a fcn
-        # ref and test can be used interchangeably.
-        self.metrics_dictionary['RegionalMasking'][self.get_region_name(ref)] \
-            = ref.region
-        if isinstance(self.obs_dict[self.var][ref.obs_or_model], (str, unicode)):
-            self.obs_var_ref = self.obs_dict[self.var][self.obs_dict[self.var][ref.obs_or_model]]
-        else:
-            self.obs_var_ref = self.obs_dict[self.var][ref.obs_or_model]
-
-        self.metrics_dictionary['References'][ref.obs_or_model] = self.obs_var_ref
-
         self.set_grid_in_metrics_dictionary(test_data)
 
         if ref_data.shape != test_data.shape:
@@ -150,15 +151,7 @@ class OutputMetrics(object):
         if self.check_save_test_clim(ref):
             self.output_interpolated_model_climatologies(test, test_data)
 
-        self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
-
-        if not self.parameter.dry_run:
-            #logging.error('Saving results to: %s' % self.out_file())
-            self.out_file.write(self.metrics_dictionary,
-                                json_structure=["model", "reference", "rip", "region", "statistic", "season"],
-                                indent=4,
-                                separators=(',', ': '))
-            self.out_file.write(self.metrics_dictionary, type='txt')
+        self.write_on_exit()
 
     def set_grid_in_metrics_dictionary(self, test_data):
         grid = {}
@@ -240,7 +233,7 @@ class OutputMetrics(object):
         pth = os.path.join(self.parameter.test_clims_interpolated_output,
                            region_name)
         clim_file = PMPIO(pth, self.parameter.filename_output_template)
-        #logging.error('Saving interpolated climatologies to: %s' % clim_file())
+        logging.error('Saving interpolated climatologies to: %s' % clim_file())
         clim_file.level = self.out_file.level
         clim_file.model_version = test.obs_or_model
 
@@ -276,3 +269,13 @@ class OutputMetrics(object):
                hasattr(self.parameter, 'save_test_clims') and \
                self.parameter.save_test_clims is True and \
                ref.obs_or_model == reference_data_set[0]
+
+    def write_on_exit(self):
+        self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
+        if not self.parameter.dry_run:
+            logging.error('Saving results to: %s' % self.out_file())
+            self.out_file.write(self.metrics_dictionary,
+                                json_structure=["model", "reference", "rip", "region", "statistic", "season"],
+                                indent=4,
+                                separators=(',', ': '))
+            self.out_file.write(self.metrics_dictionary, type='txt')

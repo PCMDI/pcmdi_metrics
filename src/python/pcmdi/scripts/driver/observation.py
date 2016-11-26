@@ -94,7 +94,6 @@ class Observation(DataSet):
 
     def get(self):
         try:
-            print 'OBS get'
             if self.level is not None:
                 data_obs = self._obs_file.get(self.var,
                                               level=self.level,

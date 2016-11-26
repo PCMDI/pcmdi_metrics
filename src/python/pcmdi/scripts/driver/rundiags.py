@@ -38,12 +38,14 @@ class RunDiags(object):
                     continue
 
                 self.output_metric = OutputMetrics(
-                    self.parameter, self.var_name_long, self.obs_dict, sftlf=self.sftlf)
+                    self.parameter, self.var_name_long,
+                    self.obs_dict, sftlf=self.sftlf)
 
                 for region in self.regions_dict[self.var]:
                     self.region = self.create_region(region)
                     # Runs obs vs obs, obs vs model, or model vs model
                     self.run_reference_and_test_comparison()
+                self.output_metric.write_on_exit()
 
         def load_obs_dict(self):
             obs_file_name = 'obs_info_dictionary.json'

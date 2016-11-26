@@ -28,8 +28,6 @@ class Model(DataSet):
 
     def setup_target_mask(self):
         self.var_in_file = self.get_var_in_file()
-        #print 'var_in_file:', self.var_in_file
-        #self.get_var_in_file() is CORRECT
 
         if self.region is not None:
             region_value = self.region.get('value', None)
@@ -43,8 +41,6 @@ class Model(DataSet):
 
     def get(self):
         try:
-            print 'MODEL get'
-            #print 'MODEL var_in_file: ', self.var_in_file
             if self.level is None:
                 data_model = self._model_file.get(
                     self.var, var_in_file=self.var_in_file, region=self.region)
@@ -62,14 +58,13 @@ class Model(DataSet):
 
     def get_var_in_file(self):
         tweaks = {}
-        #####tweaks_all = {}
+        tweaks_all = {}
         if hasattr(self.parameter, 'model_tweaks'):
             tweaks = self.parameter.model_tweaks.get(self.obs_or_model, {})
-            #####tweaks_all = self.parameter.model_tweaks.get(None, {})
+            tweaks_all = self.parameter.model_tweaks.get(None, {})
         var_in_file = tweaks.get('variable_mapping', {}).get(self.var, None)
 
         if var_in_file is None:
-            tweaks_all = {}
             if hasattr(self.parameter, 'model_tweaks'):
                 tweaks_all = self.parameter.model_tweaks.get(None, {})
             var_in_file = tweaks_all.get(
@@ -81,8 +76,6 @@ class Model(DataSet):
         if not hasattr(self.parameter, 'generate_sftlf') or \
                         self.parameter.generate_sftlf is False:
             logging.info('Model %s does not have sftlf, skipping region: %s' % (self.obs_or_model, self.region))
-            # TODO MAKE success a member variable?
-            success = False
         else:
             logging.info('Auto generating sftlf for model %s' % self._model_file())
             if os.path.exists(self._model_file()):
