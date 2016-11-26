@@ -1,8 +1,15 @@
+#!/usr/bin/env python
+
 from cdp.cdp_driver import *
 from pcmdi_metrics.driver.rundiags import *
+from pcmdi_metrics.driver.pmp_parser import *
 
 
 class PMPDriver(CDPDriver):
+    def __init__(self):
+        parser = PMPParser()
+        super(PMPDriver, self).__init__(parser.get_parameter())
+        self.run()
 
     def check_parameter(self):
         # Check that all of the variables used from parameter exist.
@@ -53,3 +60,5 @@ class PMPDriver(CDPDriver):
 
     def export(self):
         pass
+
+PMPDriver()

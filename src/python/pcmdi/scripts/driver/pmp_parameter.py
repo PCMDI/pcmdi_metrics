@@ -212,8 +212,7 @@ class PMPParameter(CDPParameter):
                        'custom_observations_path')
 
     def check_values(self):
-        if vars is not 'tas':
-            raise Exception
+        '''
         # Check that all of the variables in __init__() have a valid value
         self.check_case_id()
         self.check_reference_data_set()
@@ -240,3 +239,4 @@ class PMPParameter(CDPParameter):
         self.check_test_clims_interpolated_output()
         self.check_filename_output_template()
         self.check_custom_observations_path()
+        '''

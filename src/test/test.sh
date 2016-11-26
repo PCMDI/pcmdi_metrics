@@ -4,15 +4,15 @@ rm -rf ~/pcmdi_metrics/pcmdi_install_test_results
 cd ~/github/pcmdi_metrics
 source activate temp13
 python setup.py install
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p ~/github/pcmdi_metrics/src/test/misc/basic_test_parameters_file.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p ~/github/pcmdi_metrics/src/test/misc/gensftlf_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p ~/github/pcmdi_metrics/src/test/misc/keep_going_on_error_varname_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p ~/github/pcmdi_metrics/src/test/misc/level_data_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p ~/github/pcmdi_metrics/src/test/misc/nosftlf_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p ~/github/pcmdi_metrics/src/test/misc/obs_by_name_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p ~/github/pcmdi_metrics/src/test/misc/region_specs_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p ~/github/pcmdi_metrics/src/test/misc/salinity_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/run_pmp.py -p ~/github/pcmdi_metrics/src/test/misc/units_test.py
+python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/basic_test_parameters_file.py
+python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/gensftlf_test.py
+python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/keep_going_on_error_varname_test.py
+python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/level_data_test.py
+python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/nosftlf_test.py
+python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/obs_by_name_test.py
+python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/region_specs_test.py
+python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/salinity_test.py
+python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/units_test.py
 source deactivate temp13
 
 source activate pmp
