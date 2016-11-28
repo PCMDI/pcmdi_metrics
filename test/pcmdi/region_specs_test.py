@@ -12,7 +12,7 @@ case_id = 'customRegions'
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF
 # CLIMATOLOGY FILENAME
-model_versions = ['GFDL-ESM2G', ]
+test_data_set = ['GFDL-ESM2G', ]
 
 # dictionary of keywords for simulation description that you want to save
 # or remap
@@ -50,11 +50,11 @@ regions_specs = {"Nino34":
         }
 
 # Observations to use at the moment "default" or "alternate"
-ref = ['all']
+reference_data_set = ['all']
 ext = '.nc'
 
 # INTERPOLATION OPTIONS
-targetGrid = '2.5x2.5'  # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
+target_grid = '2.5x2.5'  # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
 regrid_tool = 'regrid2'  # 'regrid2' # OPTIONS: 'regrid2','esmf'
 # OPTIONS: 'linear','conservative', only if tool is esmf
 regrid_method = 'linear'
@@ -67,7 +67,7 @@ period = '198501-200512'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
-save_mod_clims = True  # True or False
+save_test_clims = True  # True or False
 
 # DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 
@@ -79,31 +79,31 @@ sftlf_filename_template = "sftlf_%(model_version).nc"
 
 pth = os.path.dirname(__file__)
 # ROOT PATH FOR MODELS CLIMATOLOGIES
-mod_data_path = os.path.abspath(os.path.join(pth, "data"))
+test_data_path = os.path.abspath(os.path.join(pth, "data"))
 # ROOT PATH FOR OBSERVATIONS
-obs_data_path = os.path.abspath(os.path.join(pth, "obs"))
+reference_data_path = os.path.abspath(os.path.join(pth, "obs"))
 # Custom obs dictionary file (one we use for tests)
 custom_observations = os.path.abspath(
     os.path.join(
-        obs_data_path,
+        reference_data_path,
         "obs_info_dictionary.json"))
 # DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join(
     'pcmdi_install_test_results',
     'metrics_results', "%(case_id)")
 # DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES
-model_clims_interpolated_output = os.path.join(
+test_clims_interpolated_output = os.path.join(
     'pcmdi_install_test_results',
     'interpolated_model_clims')
 # FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
 filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_" +\
-    "historical_%(realization)_%(period).interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"
+    "historical_%(realization)_%(period).interpolated.%(regrid_method).%(target_grid_name)-clim%(ext)"
 
 # Ok do we have custom metrics?
 # The following allow users to plug in a set of custom metrics
 # Function needs to take in var name, model clim, obs clim
-import pcmdi_metrics  # Or whatever your custom metrics package name is
-compute_custom_metrics = pcmdi_metrics.pcmdi.compute_metrics
+from pcmdi_metrics.pcmdi.mean_climate_metrics_calculations import *
+compute_custom_metrics = compute_metrics
 # or
 
 
@@ -146,3 +146,5 @@ def my_custom(var, dm, do):
     return out
 compute_custom_metrics = my_custom
 # or for different metrics
+
+dry_run = False
