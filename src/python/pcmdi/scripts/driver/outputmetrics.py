@@ -80,11 +80,12 @@ class OutputMetrics(object):
         self.out_file.case_id = self.parameter.case_id
         DataSet.apply_custom_keys(self.out_file, self.parameter.custom_keys, self.var)
 
-    def calculate_and_output_metrics(self, ref, test):
-        # ref and test can be used interchangeably.
-        self.metrics_dictionary['RegionalMasking'][self.get_region_name(ref)] \
-            = ref.region
+    def add_region(self, region):
+        self.metrics_dictionary['RegionalMasking']\
+            [self.get_region_name_from_region(region)] = region
 
+
+    def calculate_and_output_metrics(self, ref, test):
         if isinstance(self.obs_dict[self.var][ref.obs_or_model], (str, unicode)):
             self.obs_var_ref = self.obs_dict[self.var][self.obs_dict[self.var][ref.obs_or_model]]
         else:
@@ -140,7 +141,7 @@ class OutputMetrics(object):
                         {'custom':
                              self.parameter.compute_custom_metrics.__doc__})
 
-            parameter_realization[self.get_region_name(ref)] = collections.OrderedDict(
+            parameter_realization[self.get_region_name_from_region(ref.region)] = collections.OrderedDict(
                 (k, pr_rgn[k]) for k in sorted(pr_rgn.keys())
             )
 
@@ -229,7 +230,7 @@ class OutputMetrics(object):
                 self.sftlf[test.obs_or_model]["md5"]
 
     def output_interpolated_model_climatologies(self, test, test_data):
-        region_name = self.get_region_name(test)
+        region_name = self.get_region_name_from_region(test.region)
         pth = os.path.join(self.parameter.test_clims_interpolated_output,
                            region_name)
         clim_file = PMPIO(pth, self.parameter.filename_output_template)
@@ -251,10 +252,10 @@ class OutputMetrics(object):
                                   self.parameter.custom_keys, self.var)
         clim_file.write(test_data, type="nc", id=self.var)
 
-    def get_region_name(self, ref_or_test):
+    def get_region_name_from_region(self, region):
         # region is both in ref and test
-        region_name = ref_or_test.region['id']
-        if ref_or_test.region is None:
+        region_name = region['id']
+        if region is None:
             region_name = 'global'
         return region_name
 

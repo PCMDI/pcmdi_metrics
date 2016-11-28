@@ -43,6 +43,10 @@ class RunDiags(object):
 
                 for region in self.regions_dict[self.var]:
                     self.region = self.create_region(region)
+                    # Need to add the region to the output dict now b/c
+                    # otherwise if done later, sometimes it's not added due to
+                    # premature break in the for loops for reference and test.
+                    self.output_metric.add_region(self.region)
                     # Runs obs vs obs, obs vs model, or model vs model
                     self.run_reference_and_test_comparison()
                 self.output_metric.write_on_exit()
