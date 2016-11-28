@@ -21,7 +21,7 @@ echo 'basic_test_parameter_file.py'
 diff ~/github/pcmdi_metrics/test/pcmdi/installationTest/tas_2.5x2.5_regrid2_linear_metrics.json ~/github/pcmdi_metrics/pcmdi_install_test_results/metrics_results/installationTest/tas_2.5x2.5_regrid2_linear_metrics.json
 
 echo '==================================================================================='
-diff ~/github/pcmdi_metrics/test/pcmdi/installationTest/tos_2.5x2.5_esmf_linear_metrics.json ~/github/pcmdi_metrics/pcmdi_install_test_results/metrics_results/installationTest/tas_2.5x2.5_regrid2_linear_metrics.json
+diff ~/github/pcmdi_metrics/test/pcmdi/installationTest/tos_2.5x2.5_esmf_linear_metrics.json ~/github/pcmdi_metrics/pcmdi_install_test_results/metrics_results/installationTest/tos_2.5x2.5_esmf_linear_metrics.json
 
 echo '==================================================================================='
 echo '==================================================================================='
