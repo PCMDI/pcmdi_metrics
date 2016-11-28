@@ -50,7 +50,7 @@ realization = "r1i1p1"  # mandatory
 regions = {"tas": [None, "land", "ocean"], }
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
-save_mod_clims = True
+save_test_clims = True
 
 # DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 

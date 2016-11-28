@@ -135,13 +135,23 @@ class RunDiags(object):
 
             # self.reference/self.test are either an obs or model
             for self.reference in reference_data_set:
-                ref = self.determine_obs_or_model(reference_data_set_is_obs,
-                                                  self.reference, self.parameter.reference_data_path)
+                try:
+                    ref = self.determine_obs_or_model(reference_data_set_is_obs,
+                                                      self.reference, self.parameter.reference_data_path)
+                # TODO Make this a custom exception. This exception is for
+                # when a model doesn't have sftlf for a given region
+                except RuntimeError as e:
+                    continue
 
                 for self.test in test_data_set:
+                    try:
+                        test = self.determine_obs_or_model(test_data_set_is_obs,
+                                                           self.test, self.parameter.test_data_path)
+                    # TODO Make this a custom exception. This exception is for
+                    # when a model doesn't have sftlf for a given region
+                    except RuntimeError as e:
+                        continue
 
-                    test = self.determine_obs_or_model(test_data_set_is_obs,
-                                                       self.test, self.parameter.test_data_path)
                     try:
                         self.output_metric.calculate_and_output_metrics(ref, test)
                     except RuntimeError as e:

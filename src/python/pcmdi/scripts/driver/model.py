@@ -76,6 +76,8 @@ class Model(DataSet):
         if not hasattr(self.parameter, 'generate_sftlf') or \
                         self.parameter.generate_sftlf is False:
             logging.info('Model %s does not have sftlf, skipping region: %s' % (self.obs_or_model, self.region))
+            raise RuntimeError('Model %s does not have sftlf, skipping region: %s' % (self.obs_or_model, self.region))
+
         else:
             logging.info('Auto generating sftlf for model %s' % self._model_file())
             if os.path.exists(self._model_file()):
