@@ -1,12 +1,11 @@
 import collections
 import logging
-import sys
-import re
-import json
+import os
+import cdms2
 import pcmdi_metrics
-from pcmdi_metrics.io.pmp_io import *
-from pcmdi_metrics.driver.observation import *
-from pcmdi_metrics.driver.dataset import DataSet
+import pcmdi_metrics.io.pmp_io
+import pcmdi_metrics.driver.observation
+import pcmdi_metrics.driver.dataset
 
 
 class OutputMetrics(object):
@@ -23,8 +22,7 @@ class OutputMetrics(object):
 
         string_template = "%(variable)%(level)_%(target_grid_name)_" +\
                           "%(regrid_tool)_%(regrid_method)_metrics"
-        self.out_file = PMPIO(self.parameter.metrics_output_path,
-                              string_template)
+        self.out_file = pcmdi_metrics.io.pmp_io.PMPIO(self.parameter.metrics_output_path, string_template)
 
         self.regrid_method = ''
         self.regrid_tool = ''
@@ -46,7 +44,7 @@ class OutputMetrics(object):
         self.metrics_dictionary["References"] = {}
         self.metrics_dictionary["RegionalMasking"] = {}
 
-        level = DataSet.calculate_level_from_var(self.var_name_long)
+        level = pcmdi_metrics.driver.dataset.DataSet.calculate_level_from_var(self.var_name_long)
         if level is None:
             self.out_file.level = ''
         else:
@@ -54,13 +52,13 @@ class OutputMetrics(object):
             self.out_file.level = "-%i" % (int(level / 100.0))
 
     def open_disclaimer(self):
-        f = DataSet.load_path_as_file_obj('disclaimer.txt')
+        f = pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj('disclaimer.txt')
         contents = f.read()
         f.close()
         return contents
 
     def setup_regrid_and_realm_vars(self):
-        if DataSet.use_omon(self.obs_dict, self.var):
+        if pcmdi_metrics.driver.dataset.DataSet.use_omon(self.obs_dict, self.var):
             self.regrid_method = self.parameter.regrid_method_ocn
             self.regrid_tool = self.parameter.regrid_tool_ocn
             self.table_realm = 'Omon'
@@ -78,12 +76,10 @@ class OutputMetrics(object):
         self.out_file.realm = self.realm
         self.out_file.table = self.table_realm
         self.out_file.case_id = self.parameter.case_id
-        DataSet.apply_custom_keys(self.out_file, self.parameter.custom_keys, self.var)
+        pcmdi_metrics.driver.dataset.DataSet.apply_custom_keys(self.out_file, self.parameter.custom_keys, self.var)
 
     def add_region(self, region):
-        self.metrics_dictionary['RegionalMasking']\
-            [self.get_region_name_from_region(region)] = region
-
+        self.metrics_dictionary['RegionalMasking'][self.get_region_name_from_region(region)] = region
 
     def calculate_and_output_metrics(self, ref, test):
         if isinstance(self.obs_dict[self.var][ref.obs_or_model], (str, unicode)):
@@ -96,8 +92,7 @@ class OutputMetrics(object):
         try:
             ref_data = ref()
         except Exception as e:
-            msg = 'Error while processing observation %s for variables %s:'+ \
-                  '\n\t%s'
+            msg = 'Error while processing observation %s for variables %s:\n\t%s'
             logging.error(msg % (self.var, str(e)))
 
         try:
@@ -138,15 +133,13 @@ class OutputMetrics(object):
                             self.var_name_long, None, None))
                 except:
                     self.metrics_def_dictionary.update(
-                        {'custom':
-                             self.parameter.compute_custom_metrics.__doc__})
+                        {'custom': self.parameter.compute_custom_metrics.__doc__})
 
             parameter_realization[self.get_region_name_from_region(ref.region)] = collections.OrderedDict(
                 (k, pr_rgn[k]) for k in sorted(pr_rgn.keys())
             )
 
-            self.metrics_dictionary['RESULTS'][test.obs_or_model]\
-                [ref.obs_or_model][self.parameter.realization] = \
+            self.metrics_dictionary['RESULTS'][test.obs_or_model][ref.obs_or_model][self.parameter.realization] = \
                 parameter_realization
 
         if self.check_save_test_clim(ref):
@@ -210,18 +203,14 @@ class OutputMetrics(object):
 
             self.metrics_dictionary["RESULTS"][test.obs_or_model]["units"] = \
                 getattr(test_data, "units", "N/A")
-            self.metrics_dictionary["RESULTS"][test.obs_or_model]\
-                ["SimulationDescription"] = descr
+            self.metrics_dictionary["RESULTS"][test.obs_or_model]["SimulationDescription"] = descr
 
-            self.metrics_dictionary["RESULTS"][test.obs_or_model][
-                "InputClimatologyFileName"] = \
+            self.metrics_dictionary["RESULTS"][test.obs_or_model]["InputClimatologyFileName"] = \
                 os.path.basename(test.file_path())
-            self.metrics_dictionary["RESULTS"][test.obs_or_model][
-                "InputClimatologyMD5"] = test.hash()
+            self.metrics_dictionary["RESULTS"][test.obs_or_model]["InputClimatologyMD5"] = test.hash()
             # Not just global
-            #TODO Ask Charles if the below check is needed
-
-            #if len(self.regions_dict[self.var]) > 1:
+            # TODO Ask Charles if the below check is needed
+            # if len(self.regions_dict[self.var]) > 1:
             self.metrics_dictionary["RESULTS"][test.obs_or_model][
                 "InputRegionFileName"] = \
                 self.sftlf[test.obs_or_model]["filename"]
@@ -233,7 +222,7 @@ class OutputMetrics(object):
         region_name = self.get_region_name_from_region(test.region)
         pth = os.path.join(self.parameter.test_clims_interpolated_output,
                            region_name)
-        clim_file = PMPIO(pth, self.parameter.filename_output_template)
+        clim_file = pcmdi_metrics.io.pmp_io.PMPIO(pth, self.parameter.filename_output_template)
         logging.error('Saving interpolated climatologies to: %s' % clim_file())
         clim_file.level = self.out_file.level
         clim_file.model_version = test.obs_or_model
@@ -248,8 +237,7 @@ class OutputMetrics(object):
         clim_file.variable = self.var
         clim_file.region = region_name
         clim_file.realization = self.parameter.realization
-        DataSet.apply_custom_keys(clim_file,
-                                  self.parameter.custom_keys, self.var)
+        pcmdi_metrics.driver.dataset.DataSet.apply_custom_keys(clim_file, self.parameter.custom_keys, self.var)
         clim_file.write(test_data, type="nc", id=self.var)
 
     def get_region_name_from_region(self, region):
@@ -264,12 +252,10 @@ class OutputMetrics(object):
         # the same after), we need to check if ref is the first value from the
         # parameter, hence we have ref.obs_or_model == reference_data_set[0]
         reference_data_set = self.parameter.reference_data_set
-        reference_data_set = Observation.setup_obs_list_from_parameter(
-                reference_data_set, self.obs_dict, self.var)
-        return not self.parameter.dry_run and \
-               hasattr(self.parameter, 'save_test_clims') and \
-               self.parameter.save_test_clims is True and \
-               ref.obs_or_model == reference_data_set[0]
+        reference_data_set = pcmdi_metrics.driver.observation.Observation.setup_obs_list_from_parameter(
+            reference_data_set, self.obs_dict, self.var)
+        return not self.parameter.dry_run and hasattr(self.parameter, 'save_test_clims') \
+               and self.parameter.save_test_clims is True and ref.obs_or_model == reference_data_set[0]  # noqa
 
     def write_on_exit(self):
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary

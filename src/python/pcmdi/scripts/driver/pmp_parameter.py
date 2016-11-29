@@ -1,8 +1,8 @@
 import logging
-from cdp.cdp_parameter import *
+import cdp.cdp_parameter
 
 
-class PMPParameter(CDPParameter):
+class PMPParameter(cdp.cdp_parameter.CDPParameter):
     def __init__(self):
 
         # Metrics run identification
@@ -32,7 +32,7 @@ class PMPParameter(CDPParameter):
         self.test_data_path = ''
         self.reference_data_path = ''
         self.custom_observations_path = ''
-        #self.test_clims_interpolated_output = ''
+        # self.test_clims_interpolated_output = ''
 
         self.metrics_output_path = ''
         self.filename_output_template = ''

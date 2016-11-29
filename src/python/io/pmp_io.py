@@ -1,7 +1,6 @@
 import os
 import logging
 import json
-import re
 import genutil
 import cdat_info
 import cdutil
@@ -11,7 +10,7 @@ import hashlib
 import numpy
 import collections
 import pcmdi_metrics
-from cdp.cdp_io import *
+import cdp.cdp_io
 
 
 value = 0
@@ -30,7 +29,7 @@ class CDMSDomainsEncoder(json.JSONEncoder):
         return {o.id: 'cdutil.region.domain(%s)' % args}
 
 
-class PMPIO(CDPIO, genutil.StringConstructor):
+class PMPIO(cdp.cdp_io.CDPIO, genutil.StringConstructor):
     def __init__(self, root, file_template, file_mask_template=None):
         genutil.StringConstructor.__init__(self, root + '/' + file_template)
         self.target_grid = None
@@ -180,8 +179,7 @@ class PMPIO(CDPIO, genutil.StringConstructor):
     def set_file_mask_template(self):
         if isinstance(self.file_mask_template, basestring):
             self.file_mask_template = PMPIO(self.root, self.file_mask_template,
-                                            {'domain':
-                                            self.region.get('domain', None)})
+                                            {'domain': self.region.get('domain', None)})
 
     def get_mask_from_var(self, var):
         try:
@@ -224,6 +222,7 @@ class PMPIO(CDPIO, genutil.StringConstructor):
             buffer = self_file.read(block_size)
         self_file.close()
         return hasher.hexdigest()
+
 
 # cdutil region object need a serializer
 def update_dict(d, u):

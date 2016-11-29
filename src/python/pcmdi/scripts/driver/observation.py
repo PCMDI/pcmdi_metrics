@@ -1,8 +1,10 @@
-from pcmdi_metrics.io.pmp_io import *
-from pcmdi_metrics.driver.dataset import *
+import logging
+import MV2
+import pcmdi_metrics.io.pmp_io
+import pcmdi_metrics.driver.dataset
 
 
-class OBS(PMPIO):
+class OBS(pcmdi_metrics.io.pmp_io.PMPIO):
     def __init__(self, root, var, obs_dict, obs='default',
                  file_mask_template=None):
         template = "%(realm)/%(frequency)/%(variable)/" +\
@@ -42,7 +44,7 @@ class OBS(PMPIO):
             self.ac = 'ac'
 
 
-class Observation(DataSet):
+class Observation(pcmdi_metrics.driver.dataset.DataSet):
     def __init__(self, parameter, var_name_long, region,
                  obs, obs_dict, data_path, sftlf):
         super(Observation, self).__init__(parameter, var_name_long, region,
