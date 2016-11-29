@@ -2,31 +2,32 @@ rm -rf ~/github/pcmdi_metrics/pcmdi_install_test_results
 rm -rf ~/pcmdi_metrics/pcmdi_install_test_results
 
 cd ~/github/pcmdi_metrics
+conda create --name temp13 cdp cdms2 cdutil genutil python=2.7 -c conda-forge -c uvcdat -y
 source activate temp13
 python setup.py install
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/basic_test_parameters_file.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/gensftlf_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/keep_going_on_error_varname_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/level_data_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/nosftlf_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/obs_by_name_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/region_specs_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/salinity_test.py
-python ~/github/pcmdi_metrics/src/python/pcmdi/scripts/driver/pmp_driver.py -p ~/github/pcmdi_metrics/src/test/misc/units_test.py
+pcmdi_metrics_driver.py -p ~/github/pcmdi_metrics/src/test/misc/basic_test_parameters_file.py
+pcmdi_metrics_driver.py -p ~/github/pcmdi_metrics/src/test/misc/gensftlf_test.py
+pcmdi_metrics_driver.py -p ~/github/pcmdi_metrics/src/test/misc/keep_going_on_error_varname_test.py
+pcmdi_metrics_driver.py -p ~/github/pcmdi_metrics/src/test/misc/level_data_test.py
+pcmdi_metrics_driver.py -p ~/github/pcmdi_metrics/src/test/misc/nosftlf_test.py
+pcmdi_metrics_driver.py -p ~/github/pcmdi_metrics/src/test/misc/obs_by_name_test.py
+pcmdi_metrics_driver.py -p ~/github/pcmdi_metrics/src/test/misc/region_specs_test.py
+pcmdi_metrics_driver.py -p ~/github/pcmdi_metrics/src/test/misc/salinity_test.py
+pcmdi_metrics_driver.py -p ~/github/pcmdi_metrics/src/test/misc/units_test.py
 source deactivate temp13
 
 source activate pmp
 cd ~/pcmdi_metrics/
 python setup.py install
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/basic_test_parameters_file.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/gensftlf_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/keep_going_on_error_varname_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/level_data_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/nosftlf_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/obs_by_name_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/region_specs_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/salinity_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/units_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/basic_test_parameters_file.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/gensftlf_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/keep_going_on_error_varname_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/level_data_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/nosftlf_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/obs_by_name_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/region_specs_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/salinity_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/units_test.py
 source deactivate pmp
 
 echo '==================================================================================='

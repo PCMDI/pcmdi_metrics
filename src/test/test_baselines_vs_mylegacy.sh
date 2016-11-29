@@ -1,17 +1,18 @@
 rm -rf ~/pcmdi_metrics/pcmdi_install_test_results
 
-source activate pmp
 cd ~/pcmdi_metrics/
+conda create --name pmp cdp cdms2 cdutil genutil python=2.7 -c conda-forge -c uvcdat -y
+source activate pmp
 python setup.py install
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/basic_test_parameters_file.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/gensftlf_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/keep_going_on_error_varname_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/level_data_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/nosftlf_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/obs_by_name_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/region_specs_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/salinity_test.py
-python ~/pcmdi_metrics/src/python/pcmdi/scripts/pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/units_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/basic_test_parameters_file.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/gensftlf_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/keep_going_on_error_varname_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/level_data_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/nosftlf_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/obs_by_name_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/region_specs_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/salinity_test.py
+pcmdi_metrics_driver.py -p ~/pcmdi_metrics/test/pcmdi/units_test.py
 source deactivate pmp
 
 echo '==================================================================================='
