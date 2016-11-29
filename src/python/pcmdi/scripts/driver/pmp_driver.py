@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from cdp.cdp_driver import *
 from pcmdi_metrics.driver.rundiags import *
 from pcmdi_metrics.driver.pmp_parser import *
