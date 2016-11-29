@@ -21,8 +21,7 @@ class TestFromParam(unittest.TestCase):
 
     def setUp(self):
         if self.tb:
-            #tb = "-t"
-            tb=""
+            tb = "-t"
         else:
             tb=""
         print
@@ -38,9 +37,8 @@ class TestFromParam(unittest.TestCase):
         print
         subprocess.call(
             shlex.split(
-                #"pcmdi_metrics_driver_legacy.py -p %s %s" %
-                "pmp_driver.py -p %s" %
-                (self.param)))
+                "pcmdi_metrics_driver.py -p %s %s" %
+                (self.param, tb)))
         pass
 
     def test_from_parameter_file(self):
