@@ -21,7 +21,8 @@ class TestFromParam(unittest.TestCase):
 
     def setUp(self):
         if self.tb:
-            tb = "-t"
+            #tb = "-t"
+            tb=""
         else:
             tb=""
         print
