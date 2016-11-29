@@ -60,5 +60,3 @@ class PMPDriver(CDPDriver):
 
     def export(self):
         pass
-
-PMPDriver()

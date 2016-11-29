@@ -196,4 +196,4 @@ fIn.close()
 
 # Execute shell command
 # source /glade/u/home/durack1/141104_metrics/PCMDI_METRICS/bin/setup_runtime.csh
-# > pcmdi_metrics_driver.py -p pcmdi_input_parameters_test.py
+# > pcmdi_metrics_driver_legacy.py -p pcmdi_input_parameters_test.py

@@ -115,7 +115,7 @@ def demo(demo_file,title,colorized=True):
     Please kindly take a look at our sample parameter file in: %s""" % demo_file)
 
     describe(demo_file)
-    cmd = "pcmdi_metrics_driver.py -p %s" % demo_file
+    cmd = "pcmdi_metrics_driver_legacy.py -p %s" % demo_file
     comment("We will now run the pmp using this parameter file\nTo do so we are using the follwoing command\n%s" % cmd)
     pmp = subprocess.Popen(shlex.split(cmd))
     sys.path.insert(0,os.path.dirname(demo_file))
