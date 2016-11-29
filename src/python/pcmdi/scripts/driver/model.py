@@ -1,8 +1,13 @@
-from pcmdi_metrics.io.pmp_io import *
-from pcmdi_metrics.driver.dataset import *
+import os
+import logging
+import MV2
+import cdutil
+import cdms2
+import pcmdi_metrics.io.pmp_io
+import pcmdi_metrics.driver.dataset
 
 
-class Model(DataSet):
+class Model(pcmdi_metrics.driver.dataset.DataSet):
     def __init__(self, parameter, var_name_long, region,
                  model, obs_dict, data_path, sftlf):
         super(Model, self).__init__(parameter, var_name_long, region,
@@ -15,8 +20,8 @@ class Model(DataSet):
         self.setup_target_mask()
 
     def create_model_file(self):
-        self._model_file = PMPIO(self.data_path,
-                                 self.parameter.filename_template)
+        self._model_file = pcmdi_metrics.io.pmp_io.PMPIO(self.data_path,
+                                                         self.parameter.filename_template)
         self._model_file.variable = self.var
         self._model_file.model_version = self.obs_or_model
         self._model_file.period = self.parameter.period
@@ -84,8 +89,7 @@ class Model(DataSet):
                 var_file = cdms2.open(self._model_file())
                 var = var_file[var_in_file]
                 n = var.rank() - 2  # Minus lat and long
-                sft = cdutil.generateLandSeaMask(var(*(slice(0, 1),) * n)) * \
-                      100.0
+                sft = cdutil.generateLandSeaMask(var(*(slice(0, 1),) * n)) * 100.0
                 sft[:] = sft.filled(100.0)
                 self.sftlf[self.obs_or_model]['raw'] = sft
                 var_file.close()

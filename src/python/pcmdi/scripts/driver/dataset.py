@@ -4,7 +4,7 @@ import sys
 import logging
 import cdutil
 import cdms2
-from pcmdi_metrics.io.pmp_io import *
+import pcmdi_metrics.io.pmp_io
 
 
 class DataSet(object):
@@ -63,10 +63,9 @@ class DataSet(object):
         sftlf = {}
 
         for test in parameter.test_data_set:
-            sft = PMPIO(
-                parameter.test_data_path,
-                getattr(parameter, "sftlf_filename_template",
-                        parameter.filename_template))
+            sft = pcmdi_metrics.io.pmp_io.PMPIO(parameter.test_data_path,
+                                                getattr(parameter, "sftlf_filename_template",
+                                                        parameter.filename_template))
             sft.model_version = test
             sft.table = "fx"
             sft.realm = "atmos"

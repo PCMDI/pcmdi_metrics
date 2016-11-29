@@ -1,13 +1,9 @@
 import logging
-import os
-import sys
 import json
-import collections
-from pcmdi_metrics.driver.pmp_parameter import *
-from pcmdi_metrics.driver.outputmetrics import *
-from pcmdi_metrics.driver.observation import *
-from pcmdi_metrics.driver.model import *
-from pcmdi_metrics.driver.dataset import *
+import pcmdi_metrics.driver.outputmetrics
+import pcmdi_metrics.driver.observation
+import pcmdi_metrics.driver.model
+import pcmdi_metrics.driver.dataset
 
 
 class RunDiags(object):
@@ -19,7 +15,7 @@ class RunDiags(object):
             self.var = ''
             self.output_metric = None
             self.region = ''
-            self.sftlf = DataSet.create_sftlf(self.parameter)
+            self.sftlf = pcmdi_metrics.driver.dataset.DataSet.create_sftlf(self.parameter)
             self.default_regions = []
             self.regions_specs = {}
 
@@ -37,7 +33,7 @@ class RunDiags(object):
                     logging.error('Var %s not in obs_dict' % self.var)
                     continue
 
-                self.output_metric = OutputMetrics(
+                self.output_metric = pcmdi_metrics.driver.outputmetrics.OutputMetrics(
                     self.parameter, self.var_name_long,
                     self.obs_dict, sftlf=self.sftlf)
 
@@ -53,7 +49,7 @@ class RunDiags(object):
 
         def load_obs_dict(self):
             obs_file_name = 'obs_info_dictionary.json'
-            obs_json_file = DataSet.load_path_as_file_obj(obs_file_name)
+            obs_json_file = pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj(obs_file_name)
             obs_dict = json.loads(obs_json_file.read())
             obs_json_file.close()
 
@@ -84,7 +80,7 @@ class RunDiags(object):
 
         def load_default_regions_and_regions_specs(self):
             default_regions_file = \
-                DataSet.load_path_as_file_obj('default_regions.py')
+                pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj('default_regions.py')
             execfile(default_regions_file.name)
             default_regions_file.close()
             try:
@@ -131,10 +127,10 @@ class RunDiags(object):
             # If reference or test are obs, the data sets themselves need to
             # be modified.
             if reference_data_set_is_obs:
-                reference_data_set = Observation.setup_obs_list_from_parameter(
+                reference_data_set = pcmdi_metrics.driver.observation.Observation.setup_obs_list_from_parameter(
                     reference_data_set, self.obs_dict, self.var)
             if test_data_set_is_obs:
-                test_data_set = Observation.setup_obs_list_from_parameter(
+                test_data_set = pcmdi_metrics.driver.observation.Observation.setup_obs_list_from_parameter(
                     test_data_set, self.obs_dict, self.var)
 
             # self.reference/self.test are either an obs or model
@@ -144,7 +140,7 @@ class RunDiags(object):
                                                       self.reference, self.parameter.reference_data_path)
                 # TODO Make this a custom exception. This exception is for
                 # when a model doesn't have sftlf for a given region
-                except RuntimeError as e:
+                except RuntimeError:
                     continue
 
                 for self.test in test_data_set:
@@ -153,12 +149,12 @@ class RunDiags(object):
                                                            self.test, self.parameter.test_data_path)
                     # TODO Make this a custom exception. This exception is for
                     # when a model doesn't have sftlf for a given region
-                    except RuntimeError as e:
+                    except RuntimeError:
                         continue
 
                     try:
                         self.output_metric.calculate_and_output_metrics(ref, test)
-                    except RuntimeError as e:
+                    except RuntimeError:
                         break
 
         def is_data_set_obs(self, data_set):
@@ -176,11 +172,9 @@ class RunDiags(object):
         def determine_obs_or_model(self, is_obs, ref_or_test, data_path):
             if is_obs:
                 print 'OBS'
-                return Observation(self.parameter, self.var_name_long,
-                                   self.region, ref_or_test, self.obs_dict,
-                                   data_path, self.sftlf)
+                return pcmdi_metrics.driver.observation. Observation(self.parameter, self.var_name_long, self.region,
+                                                                     ref_or_test, self.obs_dict, data_path, self.sftlf)
             else:
                 print 'MODEL'
-                return Model(self.parameter, self.var_name_long,
-                             self.region, ref_or_test, self.obs_dict,
-                             data_path, self.sftlf)
+                return pcmdi_metrics.driver.model.Model(self.parameter, self.var_name_long, self.region,
+                                                        ref_or_test, self.obs_dict, data_path, self.sftlf)

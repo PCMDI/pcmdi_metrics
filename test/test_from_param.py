@@ -37,6 +37,7 @@ class TestFromParam(unittest.TestCase):
         print
         subprocess.call(
             shlex.split(
+                #"pcmdi_metrics_driver_legacy.py -p %s %s" %
                 "pcmdi_metrics_driver.py -p %s %s" %
                 (self.param, tb)))
         pass

@@ -1,11 +1,13 @@
-from cdp.cdp_driver import *
-from pcmdi_metrics.driver.rundiags import *
-from pcmdi_metrics.driver.pmp_parser import *
+import logging
+import os
+import cdp.cdp_driver
+import pcmdi_metrics.driver.rundiags
+import pcmdi_metrics.driver.pmp_parser
 
 
-class PMPDriver(CDPDriver):
+class PMPDriver(cdp.cdp_driver.CDPDriver):
     def __init__(self):
-        parser = PMPParser()
+        parser = pcmdi_metrics.driver.pmp_parser.PMPParser()
         super(PMPDriver, self).__init__(parser.get_parameter())
         self.run()
 
@@ -41,19 +43,20 @@ class PMPDriver(CDPDriver):
                     self.parameter.metrics_output_path,
                     'interpolated_model_clims')
                 logging.warning("Your parameter file asks to save interpolated test climatologies," +
-                    " but did not define a path for this\n" +
-                    "We set 'test_clims_interpolated_output' to %s for you" % self.parameter.test_clims_interpolated_output)
+                                " but did not define a path for this\n We set 'test_clims_interpolated" +
+                                "_output' to %s for you" % self.parameter.test_clims_interpolated_output)
             if not hasattr(self.parameter, "filename_output_template"):
-                self.parameter.filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_" +\
-                    "%(realization)_%(period).interpolated.%(regrid_method).%(target_grid_name)-clim%(ext)"
-                logging.warning("Your parameter file asks to save interpolated model climatologies, " +
-                    "but did not define a name template for this\n" +
-                    "We set 'filename_output_template' to %s for you" % self.parameter.filename_output_template)
+                template = "%(variable)%(level)_%(model_version)_%(table)_%(realization)" + \
+                           "_%(period).interpolated.%(regrid_method).%(target_grid_name)-clim%(ext)"
+                self.parameter.filename_output_template = template
+                logging.warning("Your parameter file asks to save interpolated model climatologies," +
+                                " but did not define a name template for this\nWe set 'filename_output" +
+                                "_template' to %s for you" % self.parameter.filename_output_template)
         if not hasattr(self.parameter, 'dry_run'):
             self.parameter.dry_run = True
 
     def run_diags(self):
-        run = RunDiags(self.parameter)
+        run = pcmdi_metrics.driver.rundiags.RunDiags(self.parameter)
         run()
 
     def export(self):
