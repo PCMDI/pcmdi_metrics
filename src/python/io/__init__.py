@@ -1,2 +1,2 @@
 # init for pcmdi_metrics.io
-import base  # noqa
+import pmp_io  # noqa

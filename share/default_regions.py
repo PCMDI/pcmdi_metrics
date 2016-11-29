@@ -41,4 +41,8 @@ regions_specs = {
     'AUSM': {'domain': cdutil.region.domain(latitude=(-45., 0., 'ccb'), longitude=(90., 160., 'ccb'))},
 }
 
+<<<<<<< HEAD
 default_regions = ['global', 'NHEX', 'SHEX', 'TROPICS']
+=======
+default_regions = ['global', 'NHEX', 'SHEX', 'TROPICS']
+>>>>>>> 011f004843960dc9ebd6ed8ea528c5a920cab8ae

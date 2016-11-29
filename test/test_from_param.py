@@ -37,7 +37,8 @@ class TestFromParam(unittest.TestCase):
         print
         subprocess.call(
             shlex.split(
-                "pcmdi_metrics_driver.py -p %s %s" %
+                #"pcmdi_metrics_driver.py -p %s %s" %
+                "pmp_driver.py -p %s %s" %
                 (self.param, tb)))
         pass
 
@@ -51,7 +52,7 @@ class TestFromParam(unittest.TestCase):
         parameters = ""  # so flake8 doesn't complain
         exec("import %s as parameters" % fnm)
         # Ok now let's figure out where the results have been dumped
-        pthout = pcmdi_metrics.io.base.Base(
+        pthout = pcmdi_metrics.io.pmp_io.PMPIO(
             os.path.join(
                 parameters.metrics_output_path),
             "*.json")

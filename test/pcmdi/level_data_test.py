@@ -12,7 +12,7 @@ case_id = 'level_data'
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF
 # CLIMATOLOGY FILENAME
-model_versions = ['GISS-E2-H', ]
+test_data_set = ['GISS-E2-H', ]
 
 # dictionary of keywords for simulation description that you want to save
 # or remap
@@ -25,11 +25,11 @@ simulation_description_mapping = {
 vars = ['ta_200']
 
 # Observations to use at the moment "default" or "alternate"
-ref = ['all']
+reference_data_set = ['all']
 ext = '.nc'
 
 # INTERPOLATION OPTIONS
-targetGrid = '2.5x2.5'  # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
+target_grid = '2.5x2.5'  # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
 regrid_tool = 'regrid2'  # 'regrid2' # OPTIONS: 'regrid2','esmf'
 # OPTIONS: 'linear','conservative', only if tool is esmf
 regrid_method = 'linear'
@@ -41,14 +41,14 @@ regrid_method_ocn = 'linear'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
-save_mod_clims = True  # True or False
+save_test_clims = True  # True or False
 
 # DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 # Custom key
 custom_keys = {
             "experiment": {
                 None: "historical",
-            }  } 
+            }  }
 
 # Templates for climatology files
 # TEMPLATE EXAMPLE: ta_GISS-E2-H_historical_r1i1p1_mo_atm_Amon_ta_ver-1_ac.nc
@@ -56,13 +56,13 @@ filename_template = "%(variable)_%(model_version)_%(experiment)_%(realization)_m
 
 pth = os.path.dirname(__file__)
 # ROOT PATH FOR MODELS CLIMATOLOGIES
-mod_data_path = os.path.abspath(os.path.join(pth, "data"))
+test_data_path = os.path.abspath(os.path.join(pth, "data"))
 # ROOT PATH FOR OBSERVATIONS
-obs_data_path = os.path.abspath(os.path.join(pth, "obs"))
+reference_data_path = os.path.abspath(os.path.join(pth, "obs"))
 # Custom obs dictionary file (one we use for tests)
 custom_observations = os.path.abspath(
     os.path.join(
-        obs_data_path,
+        reference_data_path,
         "obs_info_dictionary.json"))
 # DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join(
@@ -70,4 +70,6 @@ metrics_output_path = os.path.join(
     'metrics_results', "%(case_id)")
 # FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
 filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_" +\
-    "%(experiment)_%(realization)_%(period).interpolated.%(regridMethod).%(targetGridName)-clim%(ext)"
+    "%(experiment)_%(realization)_%(period).interpolated.%(regrid_method).%(target_grid_name)-clim%(ext)"
+
+dry_run = False
