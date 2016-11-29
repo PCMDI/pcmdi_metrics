@@ -26,8 +26,4 @@ script:
   - python test/test_suite.py # --no-graphics
 
 after_success:
-<<<<<<< HEAD
   - test $TRAVIS_BRANCH = "master" && conda install conda-build && conda install anaconda-client && bash conda-recipes/pcmdi_metrics/conda_upload.sh
-=======
-  - test $TRAVIS_BRANCH = "master" && conda install conda-build && conda install anaconda-client && bash conda-recipes/pcmdi_metrics/conda_upload.sh
->>>>>>> 011f004843960dc9ebd6ed8ea528c5a920cab8ae

@@ -10,11 +10,7 @@ class OBS(pcmdi_metrics.io.pmp_io.PMPIO):
 
         template = "%(realm)/%(frequency)/%(variable)/" +\
             "%(reference)/%(ac)/%(filename)"
-<<<<<<< HEAD
-        pcmdi_metrics.io.base.Base.__init__(
-=======
         pcmdi_metrics.io.pmp_io.PMPIO.__init__(
->>>>>>> 011f004843960dc9ebd6ed8ea528c5a920cab8ae
             self, root, template, file_mask_template)
         obs_name = obs_dic[var][reference]
         # usually send "default", "alternate", etc
@@ -41,11 +37,7 @@ class OBS(pcmdi_metrics.io.pmp_io.PMPIO):
         self.variable = var
 
 
-<<<<<<< HEAD
-class JSONs(pcmdi_metrics.io.base.JSONs):
-=======
 class JSONs(pcmdi_metrics.io.pmp_io.JSONs):
->>>>>>> 011f004843960dc9ebd6ed8ea528c5a920cab8ae
 
     def __init__(self, files=[], ignored_keys=None):
         if ignored_keys is None:

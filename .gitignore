@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-build
-=======
 led / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -93,4 +90,3 @@ ENV/
 
 # Rope project settings
 .ropeproject
->>>>>>> 011f004843960dc9ebd6ed8ea528c5a920cab8ae
