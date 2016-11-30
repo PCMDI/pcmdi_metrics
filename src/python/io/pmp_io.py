@@ -23,7 +23,7 @@ cdms2.setNetcdfDeflateLevelFlag(value)
 class CDMSDomainsEncoder(json.JSONEncoder):
     def default(self, o):
         components = o.components()[0].kargs
-        args = '.'.join(
+        args = ','.join(
             ['%s=%s' % (key, val) for key, val in components.iteritems()]
         )
         return {o.id: 'cdutil.region.domain(%s)' % args}

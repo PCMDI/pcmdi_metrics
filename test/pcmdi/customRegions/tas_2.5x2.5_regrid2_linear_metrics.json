@@ -661,7 +661,7 @@
     "RegionalMasking": {
         "Nino34": {
             "domain": {
-                "Nino34": "cdutil.region.domain(latitude=(-5.0, 5.0, 'ccb').longitude=(190.0, 240.0, 'ccb'))"
+                "Nino34": "cdutil.region.domain(latitude=(-5.0, 5.0, 'ccb'),longitude=(190.0, 240.0, 'ccb'))"
             },
             "id": "Nino34",
             "value": 0.0
