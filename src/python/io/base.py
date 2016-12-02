@@ -7,6 +7,7 @@ import os
 import pcmdi_metrics
 import cdat_info
 import hashlib
+import subprocess
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
@@ -114,6 +115,24 @@ class Base(genutil.StringConstructor):
         #Out[21]: True
         #os.access('/',os.W_OK)
         #Out[22]: False
+
+        # Platform        
+        platform = os.uname()
+        platformId = [platform[0], platform[2], platform[1]]
+        osAccess = [os.access('/', os.W_OK), os.access('/', os.R_OK)]
+        # Python
+        # conda (platform/conda-env/conda-build/python/root env/default env)
+        
+        # Conda meta
+        p = subprocess.Popen('conda info', stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd='./', shell=True)
+        condaInfo = p.stdout.read()
+        p.terminate()
+        if p.stderr.read() = '':
+            for  
+        # PMP
+        
+        # CDP
+        
         # PMP version
         # PMP obs version
         # CDP version
@@ -130,6 +149,9 @@ class Base(genutil.StringConstructor):
         # vtk version
 
         provenance = {}
+        provenance['platformId'] = platformId
+        provenance['osAccess'] = ['Root write: ',osAccess[0], '; Root read: ',osAccess[1]]
+        provenance['condaEnv'] = 
         return provenance
 
     def setTargetGrid(self, target, regridTool="esmf", regridMethod="linear"):
