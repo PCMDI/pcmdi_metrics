@@ -70,7 +70,7 @@ condaMetaDir = os.path.join(condaDefaultEnvironment,'conda-meta')
 listScour = os.listdir(condaMetaDir)
 for count,strBit in enumerate(listScour):
     for count1,pairKey in enumerate(pairs):
-        if pairs[pairKey] in ['']:
+        if pairs[pairKey] == '':
             vars()[pairKey] = 'None' ; # Case unimplemented
         elif pairs[pairKey] in strBit:
             vars()[pairKey] = strBit.replace(pairs[pairKey],'').replace('.json','')
