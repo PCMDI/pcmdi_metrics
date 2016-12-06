@@ -39,6 +39,7 @@ pairs = {
          'condaRootEnvironment':'root environment',
          'condaDefaultEnvironment':'default environment'
          }
+
 for count,strBit in enumerate(iter(out.splitlines())):
     for count1,pairKey in enumerate(pairs):
         if pairs[pairKey] in strBit:
@@ -65,15 +66,16 @@ pairs = {
          'VTKVersion':'vtk-cdat-'
          }
 
-#print condaDefaultEnvironment
 condaMetaDir = os.path.join(condaDefaultEnvironment,'conda-meta')
 listScour = os.listdir(condaMetaDir)
 for count,strBit in enumerate(listScour):
     for count1,pairKey in enumerate(pairs):
-        if pairs[pairKey] in ['','matplotlib-']:
-            vars()[pairKey] = 'None'
+        if pairs[pairKey] in ['']:
+            vars()[pairKey] = 'None' ; # Case unimplemented
         elif pairs[pairKey] in strBit:
             vars()[pairKey] = strBit.replace(pairs[pairKey],'').replace('.json','')
+        else:
+            vars()[pairKey] = 'None' ; # Case uninstalled
 
 # Sort
 keyList = pairs.keys()
