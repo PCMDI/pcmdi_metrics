@@ -75,6 +75,7 @@ def merge_branches(repo_pth, branches):
     for b in branches:
         execute_cmd("git merge --no-commit origin/%s" % b, path=repo_pth)
 
+
 # Make sure we yank conda
 execute_cmd("conda clean --lock")
 execute_cmd("conda remove -n %s -y --all" % args.env)
