@@ -11,7 +11,7 @@ import sys
 import os
 #import shlex
 
-# Platform        
+# Platform
 platform = os.uname()
 platformId = [platform[0], platform[2], platform[1]]
 osAccess = [os.access('/', os.W_OK), os.access('/', os.R_OK)]
