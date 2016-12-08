@@ -163,7 +163,7 @@ class Base(genutil.StringConstructor):
         provenance = {}
         provenance['platformId'] = platformId
         provenance['osAccess'] = ['Root write: ',osAccess[0], '; Root read: ',osAccess[1]]
-        provenance['condaEnv'] =
+        provenance['condaEnv'] = ''
         return provenance
 
     def setTargetGrid(self, target, regridTool="esmf", regridMethod="linear"):
