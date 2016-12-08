@@ -54,6 +54,7 @@ packages = {'pcmdi_metrics': 'src/python',
             }
 scripts = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
            'src/python/pcmdi/scripts/pcmdi_compute_climatologies.py',
+           'src/python/misc/scripts/install_metrics_from_branches.py',
            'demo/pmp_demo_1.py',
            'demo/pmp_demo.py',
            ]
@@ -61,6 +62,8 @@ demo_files = glob.glob("demo/*/*")
 print "demo files"
 data_files = [
               ('share/pmp/graphics/vcs', portrait_files),
+              ('share/pmp/graphics/png', ['share/pcmdi/160915_PCMDI_logo_348x300px.png',
+                                          'share/pcmdi/160915_PCMDI_logo-oblong_377x300px.png']),
               ('share/pmp', ('doc/obs_info_dictionary.json',
                                'share/pcmdi_metrics_table',
                                'share/disclaimer.txt',

@@ -1,0 +1,23 @@
+ parameter file ref is:  ['ERAINT']
+ ref is:  ['ERAINT']
+ couldn't figure out obs mask name from obs json file
+ REGION: {'domain': Selector(<cdutil.region.DomainComponent instance at 0x7f3cc077aab8>), 'id': 'TROPICS'}
+ OBS SHAPE IS  (12, 25, 144)
+ tas   GFDL-ESM2G   (12, 25, 144)   (12, 25, 144)    ERAINT
+ couldn't figure out obs mask name from obs json file
+ REGION: {'domain': Selector(<cdutil.region.DomainComponent instance at 0x7f3cc077aa28>), 'id': 'SHEX'}
+ OBS SHAPE IS  (12, 25, 144)
+ tas   GFDL-ESM2G   (12, 25, 144)   (12, 25, 144)    ERAINT
+ couldn't figure out obs mask name from obs json file
+ REGION: {'domain': Selector(<cdutil.region.DomainComponent instance at 0x7f3cc077a998>), 'id': 'NHEX'}
+ OBS SHAPE IS  (12, 24, 144)
+ tas   GFDL-ESM2G   (12, 24, 144)   (12, 24, 144)    ERAINT
+ couldn't figure out obs mask name from obs json file
+ REGION: {'id': 'global'}
+ OBS SHAPE IS  (12, 72, 144)
+ tas   GFDL-ESM2G   (12, 72, 144)   (12, 72, 144)    ERAINT
+ couldn't figure out obs mask name from obs json file
+ REGION: {'id': 'terre', 'value': 100.0}
+ OBS SHAPE IS  (12, 72, 144)
+ tas   GFDL-ESM2G   (12, 72, 144)   (12, 72, 144)    ERAINT
+ Done. Check log at: /export/gleckler1/git/pcmdi_metrics/test/pcmdi_install_test_results/metrics_results/obsByNameTest/errors_log.txt

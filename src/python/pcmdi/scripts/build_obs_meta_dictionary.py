@@ -23,6 +23,7 @@ lst = os.popen('ls ' + data_path + '/*/mo/*/*/ac/*.nc').readlines()
 # FOR MONTHLY MEAN OBS
 obs_dic_in = {'rlut': {'default': 'CERES'},
               'rst': {'default': 'CERES'},
+              'rt': {'default': 'CERES'},
               'rsut': {'default': 'CERES'},
               'rsds': {'default': 'CERES', },
               'rlds': {'default': 'CERES', },

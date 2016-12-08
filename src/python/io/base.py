@@ -7,7 +7,12 @@ import os
 import pcmdi_metrics
 import cdat_info
 import hashlib
+<<<<<<< HEAD
 import subprocess
+=======
+import numpy
+import collections
+>>>>>>> PCMDI
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
@@ -16,6 +21,16 @@ cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
 cdms2.setNetcdfDeflateLevelFlag(value)
 
 # cdutil region object need a serializer
+
+
+def update_dict(d, u):
+    for k, v in u.iteritems():
+        if isinstance(v, collections.Mapping):
+            r = update_dict(d.get(k, {}), v)
+            d[k] = r
+        else:
+            d[k] = u[k]
+    return d
 
 
 class CDMSDomainsEncoder(json.JSONEncoder):
@@ -183,6 +198,17 @@ class Base(genutil.StringConstructor):
                 "Could not create output directory: %s" %
                 (os.path.split(fnm)[0]))
         if type.lower() == "json":
+            json_version = float(kargs.get("json_version", data.get("json_version", 3.0)))
+            json_structure = kargs.get("json_structure", data.get("json_structure", None))
+            if json_version >= 3. and json_structure is None:
+                raise Exception(
+                    "json_version 3.0 of PMP requires json_structure to be passed" +
+                    "to the write function or part of the dictionary dumped")
+            for k in ["json_structure", "json_version"]:
+                if k in kargs:
+                    del(kargs[k])
+            data["json_version"] = json_version
+            data["json_structure"] = json_structure
             f = open(fnm, mode)
             data["metrics_git_sha1"] = pcmdi_metrics.__git_sha1__
             data["uvcdat_version"] = cdat_info.get_version()
@@ -212,3 +238,232 @@ class Base(genutil.StringConstructor):
             buf = afile.read(blocksize)
         afile.close()
         return hasher.hexdigest()
+
+
+class JSONs(object):
+
+    def addDict2Self(self, json_dict, json_struct, json_version):
+        if float(json_version) == 1.0:
+            V = json_dict[json_dict.keys()[0]]
+            for model in V.keys():  # loop through models
+                m = V[model]
+                # print "FIRST M:",m.keys()
+                for ref in m.keys():
+                    aref = m[ref]
+                    if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
+                        continue
+                    # print "\treading in ref:",ref
+                    # print aref.keys()
+                    reals = aref.keys()
+                    src = reals.pop(reals.index("source"))
+                    for real in reals:
+                        # print "\t\treading in realization:",real
+                        # print real
+                        areal = aref[real]
+                        areal2 = {"source": src}
+                        for region in areal.keys():
+                            # print "\t\t\tREGION:",region
+                            reg = areal[region]
+                            if region == "global":
+                                region2 = ""
+                            else:
+                                region2 = region + "_"
+                            areal2[region2 + "global"] = {}
+                            areal2[region2 + "NHEX"] = {}
+                            areal2[region2 + "SHEX"] = {}
+                            areal2[region2 + "TROPICS"] = {}
+                            # print "OK HERE REGIONS:",areal2.keys()
+                            key_stats = reg.keys()
+                            for k in key_stats:
+                                if k[:7] == "custom_":
+                                    continue
+                                else:
+                                    sp = k.split("_")
+                                    new_key = "_".join(sp[:-1])
+                                    domain = sp[-1]
+                                    if domain == "GLB":
+                                        domain = "global"
+                                    sp = new_key.split("_")
+                                    stat = "_".join(sp[:-1])
+                                    stat_dict = areal2[region2 + domain].get(stat, {})
+                                    season = sp[-1]
+                                    season_dict = stat_dict
+                                    stat_dict[season] = reg[k]
+                                    if stat in areal2[region2 + domain]:
+                                        areal2[region2 + domain][stat].update(stat_dict)
+                                    else:
+                                        areal2[region2 + domain][stat] = stat_dict
+                        # Now we can replace the realization with the correctly formatted one
+                        # print "AREAL@:",areal2
+                        aref[real] = areal2
+                    # restore ref into model
+                    m[ref] = aref
+        elif float(json_version) == 2.0:
+            V = json_dict[json_dict.keys()[0]]
+            for model in V.keys():  # loop through models
+                m = V[model]
+                for ref in m.keys():
+                    aref = m[ref]
+                    if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
+                        continue
+                    # print "\treading in ref:",ref
+                    # print aref.keys()
+                    reals = aref.keys()
+                    src = reals.pop(reals.index("source"))
+                    for real in reals:
+                        # print "\t\treading in realization:",real
+                        # print real
+                        areal = aref[real]
+                        for region in areal.keys():
+                            reg = areal[region]
+                            key_stats = reg.keys()
+                            for k in key_stats:
+                                if k[:7] == "custom_":
+                                    continue
+                                sp = k.split("_")
+                                season = sp[-1]
+                                stat = "_".join(sp[:-1])
+                                stat_dict = reg.get(stat, {})
+                                season_dict = stat_dict.get(season, {})
+                                season_dict[season] = reg[k]
+                                # if stat_dict.has_key(stat):
+                                #    stat_dict[stat].update(season_dict)
+                                # else:
+                                #    stat_dict[stat]=season_dict
+                                del(reg[k])
+                                if stat in reg:
+                                    reg[stat].update(season_dict)
+                                else:
+                                    reg[stat] = season_dict
+                        aref[real] = areal
+                    # restore ref into model
+                    m[ref] = aref
+                V[model] = m
+            json_dict[json_dict.keys()[0]] = V
+        update_dict(self.data, json_dict)
+
+    def get_axes_values_recursive(self, depth, max_depth, data, values):
+        for k in data.keys():
+            if k not in self.ignored_keys and (isinstance(data[k], dict) or depth == max_depth):
+                values[depth].add(k)
+                if depth != max_depth:
+                    self.get_axes_values_recursive(depth + 1, max_depth, data[k], values)
+
+    def get_array_values_from_dict_recursive(self, out, ids, nms, axval, axes):
+        if len(axes) > 0:
+            for i, val in enumerate(axes[0][:]):
+                self.get_array_values_from_dict_recursive(out, list(ids) +
+                                                          [i, ], list(nms) +
+                                                          [axes[0].id], list(axval) +
+                                                          [val, ], axes[1:])
+        else:
+            vals = self.data
+            for k in axval:
+                try:
+                    vals = vals[k]
+                except:
+                    vals = 1.e20
+            try:
+                out[tuple(ids)] = float(vals)
+            except:
+                out[tuple(ids)] = 1.e20
+
+    def __init__(self, files=[], structure=[], ignored_keys=[], oneVariablePerFile=True):
+        self.json_version = 3.0
+        self.json_struct = structure
+        self.data = {}
+        self.axes = None
+        self.ignored_keys = ignored_keys
+        self.oneVariablePerFile = oneVariablePerFile
+        if len(files) == 0:
+            raise Exception("You need to pass at least one file")
+
+        for fnm in files:
+            self.addJson(fnm)
+
+    def addJson(self, filename):
+        f = open(filename)
+        tmp_dict = json.load(f)
+        json_struct = tmp_dict.get("json_structure", list(self.json_struct))
+        json_version = tmp_dict.get("json_version", self.json_version)
+        if self.oneVariablePerFile and json_struct[0] == "variable":
+            json_struct = json_struct[1:]
+        if self.oneVariablePerFile and json_struct[0] != "variable":
+            json_struct.insert(0, "variable")
+            var = tmp_dict.get("Variable", None)
+            if var is None:  # Not stored in json, need to get from file name
+                fnm = os.path.basename(filename)
+                varnm = fnm.split("_")[0]
+            else:
+                varnm = var["id"]
+                if "level" in var:
+                    varnm += "-%i" % int(var["level"] / 100.)
+            tmp_dict = {varnm: tmp_dict["RESULTS"]}
+        else:
+            tmp_dict = tmp_dict["RESULTS"]
+        self.addDict2Self(tmp_dict, json_struct, json_version)
+
+    def getAxis(self, axis):
+        axes = self.getAxisList()
+        for a in axes:
+            if a.id == axis:
+                return a
+        return None
+
+    def getAxisList(self, use_cache=True):
+        if use_cache and self.axes is not None:
+            return self.axes
+        values = []
+        axes = []
+        for a in self.json_struct:
+            values.append(set())
+        self.get_axes_values_recursive(0, len(self.json_struct) - 1, self.data, values)
+        for i, nm in enumerate(self.json_struct):
+            axes.append(cdms2.createAxis(sorted(list(values[i])), id=nm))
+        self.axes = axes
+        return self.axes
+
+    def __call__(self, **kargs):
+        """ Returns the array of values"""
+        axes = self.getAxisList()
+        sh = []
+        ids = []
+        for a in axes:
+            sh.append(len(a))  # store length to construct array shape
+            ids.append(a.id)  # store ids
+
+        # first let's see which vars are actually asked for
+        # for now assume all keys means restriction on dims
+        for axis_id in kargs:
+            if axis_id not in ids:
+                raise ValueError("Invalid axis '%s'" % axis_id)
+            index = ids.index(axis_id)
+            value = kargs[axis_id]
+            if isinstance(value, basestring):
+                value = [value]
+            if not isinstance(value, (list, tuple, slice)):
+                raise TypeError(
+                    "Invalid subsetting type for axis '%s', axes can only be subsetted by string,list or slice" %
+                    axis_id)
+            if isinstance(value, slice):
+                axes[index] = axes[index].subAxis(
+                    value.start, value.stop, value.step)
+                sh[index] = len(axes[index])
+            else:  # ok it's a list
+                for v in value:
+                    if v not in axes[index][:]:
+                        raise ValueError(
+                            "Unkwown value '%s' for axis '%s'" %
+                            (v, axis_id))
+                axis = cdms2.createAxis(value, id=axes[index].id)
+                axes[index] = axis
+                sh[index] = len(axis)
+
+        array = numpy.ma.ones(sh, dtype=numpy.float)
+        # Now let's fill this array
+        self.get_array_values_from_dict_recursive(array, [], [], [], axes)
+
+        array = MV2.masked_greater(array, 9.e19)
+        array.id = "pmp"
+        array.setAxisList(axes)
+        return array
