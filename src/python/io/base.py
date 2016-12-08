@@ -128,23 +128,23 @@ class Base(genutil.StringConstructor):
         #os.access('/',os.W_OK)
         #Out[22]: False
 
-        # Platform        
+        # Platform
         platform = os.uname()
         platformId = [platform[0], platform[2], platform[1]]
         osAccess = [os.access('/', os.W_OK), os.access('/', os.R_OK)]
         # Python
         # conda (platform/conda-env/conda-build/python/root env/default env)
-        
+
         # Conda meta
         p = subprocess.Popen('conda info', stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd='./', shell=True)
         condaInfo = p.stdout.read()
         p.terminate()
         if p.stderr.read() = '':
-            for  
+            for
         # PMP
-        
+
         # CDP
-        
+
         # PMP version
         # PMP obs version
         # CDP version
@@ -163,7 +163,7 @@ class Base(genutil.StringConstructor):
         provenance = {}
         provenance['platformId'] = platformId
         provenance['osAccess'] = ['Root write: ',osAccess[0], '; Root read: ',osAccess[1]]
-        provenance['condaEnv'] = 
+        provenance['condaEnv'] =
         return provenance
 
     def setTargetGrid(self, target, regridTool="esmf", regridMethod="linear"):
