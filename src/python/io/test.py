@@ -63,15 +63,15 @@ pairs = {
          'numpyVersion':'numpy-',
          'pythonVersion':'python-',
          'VCSVersion':'vcs-',
-          'VTKVersion':'vtk-cdat-'
+         'VTKVersion':'vtk-cdat-'
          }
 
 condaMetaDir = os.path.join(condaDefaultEnvironment,'conda-meta')
-listScour = os.listdir(condaMetaDir)
+listScour = os.listdir(condaMetaDir) ; listScour.sort()
 for count,pairKey in enumerate(pairs):
     for count1,strBit in enumerate(listScour):
         #print pairs[pairKey],strBit
-        test = re.search(pairs[pairKey],strBit)
+        test = re.search(''.join(['^',pairs[pairKey]]),strBit)
         #if pairs[pairKey] in strBit:
         if test is not None:
             vars()[pairKey] = strBit.replace(pairs[pairKey],'').replace('.json','')
@@ -85,6 +85,5 @@ for count,pairKey in enumerate(pairs):
 keyList = pairs.keys()
 keyList.sort()
 # Print
-print '---'
 for count,key in enumerate(keyList):
     print key,eval(key)
