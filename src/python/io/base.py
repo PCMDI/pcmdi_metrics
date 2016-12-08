@@ -139,8 +139,8 @@ class Base(genutil.StringConstructor):
         p = subprocess.Popen('conda info', stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd='./', shell=True)
         condaInfo = p.stdout.read()
         p.terminate()
-        if p.stderr.read() = '':
-            for
+        #if p.stderr.read() = '':
+        #    for
         # PMP
 
         # CDP
