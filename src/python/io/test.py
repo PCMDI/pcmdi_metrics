@@ -14,9 +14,9 @@ import os
 # Platform
 platform = os.uname()
 platformId = [platform[0], platform[2], platform[1]]
-osAccess = [os.access('/', os.W_OK), os.access('/', os.R_OK)]
+osAccess = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
 print 'platformId',platformId
-print 'osAccess',osAccess
+print 'osRootAccess',osAccess
 print '---'
 
 p = subprocess.Popen('conda info', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) #cwd='./',
@@ -51,7 +51,7 @@ print '---'
 
 pairs = {
          'PMPVersion':'pcmdi_metrics-',
-         'PMPObsVersion':'',
+         'PMPObsVersion':'pcmdi_metrics_obs-',
          'CDPVersion':'cdp-',
          'cdmsVersion':'cdms2-',
          'cdtimeVersion':'cdtime-',
@@ -61,25 +61,27 @@ pairs = {
          'matplotlibVersion':'matplotlib-',
          'numpyVersion':'numpy-',
          'pythonVersion':'python-',
-         'regrid2Version':'',
          'VCSVersion':'vcs-',
-         'VTKVersion':'vtk-cdat-'
+          'VTKVersion':'vtk-cdat-'
          }
 
 condaMetaDir = os.path.join(condaDefaultEnvironment,'conda-meta')
 listScour = os.listdir(condaMetaDir)
-for count,strBit in enumerate(listScour):
-    for count1,pairKey in enumerate(pairs):
-        if pairs[pairKey] == '':
-            vars()[pairKey] = 'None' ; # Case unimplemented
-        elif pairs[pairKey] in strBit:
+for count,pairKey in enumerate(pairs):
+    for count1,strBit in enumerate(listScour):
+        #print pairs[pairKey],strBit
+        if pairs[pairKey] in strBit:
             vars()[pairKey] = strBit.replace(pairs[pairKey],'').replace('.json','')
+            #print pairKey,'elif'
+            break
         else:
             vars()[pairKey] = 'None' ; # Case uninstalled
+            #print pairKey,'else'
 
 # Sort
 keyList = pairs.keys()
 keyList.sort()
 # Print
+print '---'
 for count,key in enumerate(keyList):
     print key,eval(key)
