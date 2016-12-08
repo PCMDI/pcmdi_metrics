@@ -7,12 +7,9 @@ import os
 import pcmdi_metrics
 import cdat_info
 import hashlib
-<<<<<<< HEAD
 import subprocess
-=======
 import numpy
 import collections
->>>>>>> PCMDI
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
