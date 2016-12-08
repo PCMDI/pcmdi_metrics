@@ -7,6 +7,7 @@ Created on Thu Dec  1 17:42:30 2016
 """
 
 import os
+import pwd
 import re
 import subprocess
 import sys
@@ -14,19 +15,19 @@ import sys
 # Platform
 platform = os.uname()
 platformId = [platform[0], platform[2], platform[1]]
+userId = pwd.getpwuid(os.getuid()).pw_name
 osAccess = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
 print 'platformId',platformId
+print 'userName',userId
 print 'osRootAccess',osAccess
 print '---'
 
 p = subprocess.Popen('conda info', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) #cwd='./',
 out = p.stdout.read()
-#print 'stdout', out
 stde = p.stderr.read()
-
 p.terminate()
 if stde != '':
-    print 'error encountered'
+    print 'Error encountered - valid conda installation not on path'
     sys.exit()
 
 pairs = {
@@ -47,7 +48,7 @@ for count,strBit in enumerate(iter(out.splitlines())):
 
 # Sort
 keyList = pairs.keys()
-keyList.sort()
+#keyList.sort()
 # Print
 for count,key in enumerate(keyList):
     print key,eval(key)
