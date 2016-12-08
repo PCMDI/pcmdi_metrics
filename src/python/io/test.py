@@ -10,7 +10,6 @@ import os
 import re
 import subprocess
 import sys
-#import shlex
 
 # Platform
 platform = os.uname()
@@ -46,8 +45,12 @@ for count,strBit in enumerate(iter(out.splitlines())):
         if pairs[pairKey] in strBit:
             vars()[pairKey] = strBit.replace(''.join([pairs[pairKey],' :']),'').strip()
 
-for count,pair in enumerate(pairs):
-    print pair,eval(pair)
+# Sort
+keyList = pairs.keys()
+keyList.sort()
+# Print
+for count,key in enumerate(keyList):
+    print key,eval(key)
 print '---'
 
 pairs = {
@@ -70,16 +73,12 @@ condaMetaDir = os.path.join(condaDefaultEnvironment,'conda-meta')
 listScour = os.listdir(condaMetaDir) ; listScour.sort()
 for count,pairKey in enumerate(pairs):
     for count1,strBit in enumerate(listScour):
-        #print pairs[pairKey],strBit
         test = re.search(''.join(['^',pairs[pairKey]]),strBit)
-        #if pairs[pairKey] in strBit:
         if test is not None:
             vars()[pairKey] = strBit.replace(pairs[pairKey],'').replace('.json','')
-            #print pairKey,'elif'
             break
         else:
             vars()[pairKey] = 'None' ; # Case uninstalled
-            #print pairKey,'else'
 
 # Sort
 keyList = pairs.keys()
