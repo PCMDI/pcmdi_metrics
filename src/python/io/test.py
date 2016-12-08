@@ -6,9 +6,10 @@ Created on Thu Dec  1 17:42:30 2016
 @author: durack1
 """
 
+import os
+import re
 import subprocess
 import sys
-import os
 #import shlex
 
 # Platform
@@ -70,7 +71,9 @@ listScour = os.listdir(condaMetaDir)
 for count,pairKey in enumerate(pairs):
     for count1,strBit in enumerate(listScour):
         #print pairs[pairKey],strBit
-        if pairs[pairKey] in strBit:
+        test = re.search(pairs[pairKey],strBit)
+        #if pairs[pairKey] in strBit:
+        if test is not None:
             vars()[pairKey] = strBit.replace(pairs[pairKey],'').replace('.json','')
             #print pairKey,'elif'
             break
