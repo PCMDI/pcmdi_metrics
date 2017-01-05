@@ -20,6 +20,56 @@ cdms2.setNetcdfDeflateLevelFlag(value)
 # cdutil region object need a serializer
 
 
+def generateProvenance(self):
+    # Collect platform and user information
+    # Platform and version: uname (sysname, nodename, release, version, machine), mac_ver, linux_distribution
+    # http://stackoverflow.com/questions/1854/how-to-check-what-os-am-i-running-on-in-python
+    # https://docs.python.org/2/library/platform.html
+    # User privilege: os.geteuid() == 0 (means root on linux) ; No effecive mac version
+    # http://apple.stackexchange.com/questions/179527/check-if-an-os-x-user-is-an-administrator
+    # https://docs.python.org/2/library/os.html#files-and-directories
+    #os.access('/',os.R_OK)
+    #Out[21]: True
+    #os.access('/',os.W_OK)
+    #Out[22]: False
+
+    # Platform
+    platform = os.uname()
+    platformId = [platform[0], platform[2], platform[1]]
+    osAccess = [os.access('/', os.W_OK), os.access('/', os.R_OK)]
+    # Python
+    # conda (platform/conda-env/conda-build/python/root env/default env)
+
+    # Conda meta
+    p = subprocess.Popen('conda info', stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd='./', shell=True)
+    condaInfo = p.stdout.read()
+    p.terminate()
+    #if p.stderr.read() = '':
+    #    for
+    # PMP
+
+    # CDP
+
+    # PMP version
+    # PMP obs version
+    # CDP version
+    # conda version
+    # cdms version
+    # cdtime version
+    # cdutil version
+    # ESMF version
+    # genutil version
+    # numpy version
+    # python version
+    # regrid2 version
+    # vcs version
+    # vtk version
+
+    provenance = {}
+    provenance['platformId'] = platformId
+    provenance['osAccess'] = ['Root write: ',osAccess[0], '; Root read: ',osAccess[1]]
+    provenance['condaEnv'] = ''
+    return provenance
 def update_dict(d, u):
     for k, v in u.iteritems():
         if isinstance(v, collections.Mapping):
@@ -115,56 +165,6 @@ class Base(genutil.StringConstructor):
                 out = out(*[domain])
         return out
 
-    def provenanceGrab(self):
-        # Collect platform and user information
-        # Platform and version: uname (sysname, nodename, release, version, machine), mac_ver, linux_distribution
-        # http://stackoverflow.com/questions/1854/how-to-check-what-os-am-i-running-on-in-python
-        # https://docs.python.org/2/library/platform.html
-        # User privilege: os.geteuid() == 0 (means root on linux) ; No effecive mac version
-        # http://apple.stackexchange.com/questions/179527/check-if-an-os-x-user-is-an-administrator
-        # https://docs.python.org/2/library/os.html#files-and-directories
-        #os.access('/',os.R_OK)
-        #Out[21]: True
-        #os.access('/',os.W_OK)
-        #Out[22]: False
-
-        # Platform
-        platform = os.uname()
-        platformId = [platform[0], platform[2], platform[1]]
-        osAccess = [os.access('/', os.W_OK), os.access('/', os.R_OK)]
-        # Python
-        # conda (platform/conda-env/conda-build/python/root env/default env)
-
-        # Conda meta
-        p = subprocess.Popen('conda info', stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd='./', shell=True)
-        condaInfo = p.stdout.read()
-        p.terminate()
-        #if p.stderr.read() = '':
-        #    for
-        # PMP
-
-        # CDP
-
-        # PMP version
-        # PMP obs version
-        # CDP version
-        # conda version
-        # cdms version
-        # cdtime version
-        # cdutil version
-        # ESMF version
-        # genutil version
-        # numpy version
-        # python version
-        # regrid2 version
-        # vcs version
-        # vtk version
-
-        provenance = {}
-        provenance['platformId'] = platformId
-        provenance['osAccess'] = ['Root write: ',osAccess[0], '; Root read: ',osAccess[1]]
-        provenance['condaEnv'] = ''
-        return provenance
 
     def setTargetGrid(self, target, regridTool="esmf", regridMethod="linear"):
         self.regridTool = regridTool

@@ -11,21 +11,16 @@ import pwd
 import re
 import subprocess
 import sys
+import shlex
 
 # Platform
 platform = os.uname()
 platformId = [platform[0], platform[2], platform[1]]
 userId = pwd.getpwuid(os.getuid()).pw_name
 osAccess = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
-print 'platformId',platformId
-print 'userName',userId
-print 'osRootAccess',osAccess
-print '---'
 
-p = subprocess.Popen('conda info', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True) #cwd='./',
-out = p.stdout.read()
-stde = p.stderr.read()
-p.terminate()
+p = subprocess.Popen(shlex.split('conda info'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)#, shell=True) #cwd='./',
+out,stde = p.communicate()
 if stde != '':
     print 'Error encountered - valid conda installation not on path'
     sys.exit()
@@ -40,17 +35,14 @@ pairs = {
          'condaRootEnvironment':'root environment',
          'condaDefaultEnvironment':'default environment'
          }
-
+print out
+sys.exit()
 for count,strBit in enumerate(iter(out.splitlines())):
     for count1,pairKey in enumerate(pairs):
         if pairs[pairKey] in strBit:
             vars()[pairKey] = strBit.replace(''.join([pairs[pairKey],' :']),'').strip()
 
-# Sort
-keyList = pairs.keys()
-#keyList.sort()
-# Print
-for count,key in enumerate(keyList):
+for count,key in enumerate(pairs):
     print key,eval(key)
 print '---'
 
