@@ -273,7 +273,6 @@ class Base(genutil.StringConstructor):
             data["provenance"] = generateProvenance()
             json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kargs)
             f.close()
-            print "Results saved to JSON file:", fnm
         elif type.lower() in ["asc", "ascii", "txt"]:
             f = open(fnm, mode)
             for k in data.keys():
@@ -306,22 +305,16 @@ class JSONs(object):
             V = json_dict[json_dict.keys()[0]]
             for model in V.keys():  # loop through models
                 m = V[model]
-                # print "FIRST M:",m.keys()
                 for ref in m.keys():
                     aref = m[ref]
                     if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
                         continue
-                    # print "\treading in ref:",ref
-                    # print aref.keys()
                     reals = aref.keys()
                     src = reals.pop(reals.index("source"))
                     for real in reals:
-                        # print "\t\treading in realization:",real
-                        # print real
                         areal = aref[real]
                         areal2 = {"source": src}
                         for region in areal.keys():
-                            # print "\t\t\tREGION:",region
                             reg = areal[region]
                             if region == "global":
                                 region2 = ""
@@ -331,7 +324,6 @@ class JSONs(object):
                             areal2[region2 + "NHEX"] = {}
                             areal2[region2 + "SHEX"] = {}
                             areal2[region2 + "TROPICS"] = {}
-                            # print "OK HERE REGIONS:",areal2.keys()
                             key_stats = reg.keys()
                             for k in key_stats:
                                 if k[:7] == "custom_":
@@ -353,7 +345,6 @@ class JSONs(object):
                                     else:
                                         areal2[region2 + domain][stat] = stat_dict
                         # Now we can replace the realization with the correctly formatted one
-                        # print "AREAL@:",areal2
                         aref[real] = areal2
                     # restore ref into model
                     m[ref] = aref
@@ -365,13 +356,9 @@ class JSONs(object):
                     aref = m[ref]
                     if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
                         continue
-                    # print "\treading in ref:",ref
-                    # print aref.keys()
                     reals = aref.keys()
                     src = reals.pop(reals.index("source"))
                     for real in reals:
-                        # print "\t\treading in realization:",real
-                        # print real
                         areal = aref[real]
                         for region in areal.keys():
                             reg = areal[region]
@@ -460,6 +447,8 @@ class JSONs(object):
             tmp_dict = {varnm: tmp_dict["RESULTS"]}
         else:
             tmp_dict = tmp_dict["RESULTS"]
+        if json_struct != self.json_struct and self.json_struct == []:
+            self.json_struct = json_struct
         self.addDict2Self(tmp_dict, json_struct, json_version)
 
     def getAxis(self, axis):
@@ -469,9 +458,11 @@ class JSONs(object):
                 return a
         return None
 
-    def getAxisList(self, use_cache=True):
-        if use_cache and self.axes is not None:
-            return self.axes
+    def getAxisIds(self):
+        axes = self.getAxisList()
+        return [ax.id for ax in axes]
+
+    def getAxisList(self):
         values = []
         axes = []
         for a in self.json_struct:
