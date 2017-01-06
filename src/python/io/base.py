@@ -91,10 +91,13 @@ def generateProvenance():
         'python': 'python ',
         'vcs': 'vcs ',
         'vtk': 'vtk-cdat ',
+    }
+    prov["packages"] = collections.OrderedDict()
+    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
+    pairs = {
         'vcs': 'vcs-nox ',
         'vtk': 'vtk-cdat-nox ',
     }
-    prov["packages"] = collections.OrderedDict()
     populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
     pairs = {
         'PMP': 'pcmdi_metrics',
