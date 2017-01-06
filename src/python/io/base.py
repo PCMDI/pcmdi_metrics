@@ -346,6 +346,8 @@ class JSONs(object):
             tmp_dict = {varnm: tmp_dict["RESULTS"]}
         else:
             tmp_dict = tmp_dict["RESULTS"]
+        if json_struct != self.json_struct and self.json_struct == []:
+            self.json_struct = json_struct
         self.addDict2Self(tmp_dict, json_struct, json_version)
 
     def getAxis(self, axis):
@@ -354,6 +356,10 @@ class JSONs(object):
             if a.id == axis:
                 return a
         return None
+
+    def getAxisIds(self, use_cache=True):
+        axes = self.getAxisList(use_cache)
+        return [ax.id for ax in axes]
 
     def getAxisList(self, use_cache=True):
         if use_cache and self.axes is not None:

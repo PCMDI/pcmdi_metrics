@@ -57,7 +57,7 @@ params = ["basic_test_parameters_file.py",
           "level_data_test.py",
           ]
 
-others = ["flake8", ]
+others = ["flake8", "jsons"]
 graphics = ["test_portrait", "test_pcoord", ]
 
 if args.test is not None:
@@ -84,6 +84,14 @@ if "flake8" in tests:
             test_flake8.TestFlake8()
         )
     except:
+        pass
+
+if "jsons" in tests:
+    try:
+        import test_jsons
+        suite.addTest(test_jsons.TestJSONs())
+    except Exception,err:
+        print err
         pass
 
 for t in tests:
