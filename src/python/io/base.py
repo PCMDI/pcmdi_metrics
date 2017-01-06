@@ -10,6 +10,9 @@ import hashlib
 import subprocess
 import numpy
 import collections
+import sys
+import shlex
+import datetime
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
@@ -19,57 +22,116 @@ cdms2.setNetcdfDeflateLevelFlag(value)
 
 # cdutil region object need a serializer
 
+# Platform
 
-def generateProvenance(self):
-    # Collect platform and user information
-    # Platform and version: uname (sysname, nodename, release, version, machine), mac_ver, linux_distribution
-    # http://stackoverflow.com/questions/1854/how-to-check-what-os-am-i-running-on-in-python
-    # https://docs.python.org/2/library/platform.html
-    # User privilege: os.geteuid() == 0 (means root on linux) ; No effecive mac version
-    # http://apple.stackexchange.com/questions/179527/check-if-an-os-x-user-is-an-administrator
-    # https://docs.python.org/2/library/os.html#files-and-directories
-    #os.access('/',os.R_OK)
-    #Out[21]: True
-    #os.access('/',os.W_OK)
-    #Out[22]: False
+def populate_prov(prov,cmd,pairs,sep=None,index=1,fill_missing=False):
+    try:
+        p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except:
+        return
+    out,stde = p.communicate()
+    if stde != '':
+        return
+    for strBit in out.splitlines():
+        for key, value in pairs.iteritems():
+            if value in strBit:
+                prov[key] = strBit.split(sep)[index].strip()
+    if fill_missing is not False:
+        for k in pairs:
+            if not prov.has_key(k):
+                prov[k] = fill_missing
+    return
 
-    # Platform
+def generateProvenance():
+    prov = collections.OrderedDict()
     platform = os.uname()
-    platformId = [platform[0], platform[2], platform[1]]
-    osAccess = [os.access('/', os.W_OK), os.access('/', os.R_OK)]
-    # Python
-    # conda (platform/conda-env/conda-build/python/root env/default env)
+    platfrm = collections.OrderedDict()
+    platfrm["OS"] = platform[0]
+    platfrm["Version"]= platform[2]
+    platfrm["Name"] =  platform[1]
+    prov["platform"] = platfrm
+    try:
+        logname = os.getlogin()
+    except:
+        try:
+            import pwd
+            logname = pwd.getpwuid(os.getuid())[0]
+        except:
+            try: 
+                logname = os.environ.get('LOGNAME', 'unknown')
+            except:
+                logger.exception('Couldn\'t determine a login name for provenance information')
+                logname = 'unknown-loginname'
+    prov["userId"] = logname
+    prov["osAccess"] = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
+    prov["commandLine"] = " ".join(sys.argv)
+    prov["date"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    prov["conda"]=collections.OrderedDict()
+    pairs = {
+             'Platform':'platform ',
+             'Version':'conda version ',
+             'IsPrivate':'conda is private ',
+             'envVersion':'conda-env version ',
+             'buildVersion':'conda-build version ',
+             'PythonVersion':'python version ',
+             'RootEnvironment':'root environment ',
+             'DefaultEnvironment':'default environment '
+             }
+    populate_prov(prov["conda"],"conda info",pairs,sep=":",index=-1)
+    pairs = {
+             'CDP':'cdp ',
+             'cdms':'cdms2 ',
+             'cdtime':'cdtime ',
+             'cdutil':'cdutil ',
+             'esmf':'esmf ',
+             'genutil':'genutil ',
+             'matplotlib':'matplotlib ',
+             'numpy':'numpy ',
+             'python':'python ',
+             'vcs':'vcs ',
+             'vtk':'vtk-cdat ',
+             'vcs':'vcs-nox ',
+             'vtk':'vtk-cdat-nox ',
+             }
+    prov["packages"]=collections.OrderedDict()
+    populate_prov(prov["packages"],"conda list",pairs,fill_missing=None) 
+    pairs = {
+             'PMP':'pcmdi_metrics',
+             'PMPObs':'pcmdi_metrics_obs',
+             }
+    populate_prov(prov["packages"],"conda list",pairs,fill_missing=None) 
+    # TRying to capture glxinfo
 
-    # Conda meta
-    p = subprocess.Popen('conda info', stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd='./', shell=True)
-    condaInfo = p.stdout.read()
-    p.terminate()
-    #if p.stderr.read() = '':
-    #    for
-    # PMP
+    pairs = {
+            "vendor" : "OpenGL vendor string",
+            "renderer": "OpenGL renderer string",
+            "version" : "OpenGL version string",
+            "shading language version": "OpenGL shading language version string",
+            }
 
-    # CDP
+    prov["openGL"]=collections.OrderedDict()
+    populate_prov(prov["openGL"],"glxinfo",pairs,sep=":",index=-1)
+    prov["openGL"]["GLX"]={"server":collections.OrderedDict(),"client":collections.OrderedDict()}
+    pairs = {
+            "version" : "GLX version",
+            }
 
-    # PMP version
-    # PMP obs version
-    # CDP version
-    # conda version
-    # cdms version
-    # cdtime version
-    # cdutil version
-    # ESMF version
-    # genutil version
-    # numpy version
-    # python version
-    # regrid2 version
-    # vcs version
-    # vtk version
+    populate_prov(prov["openGL"]["GLX"],"glxinfo",pairs,sep=":",index=-1)
+    pairs = {
+            "vendor" :"server glx vendor string",
+            "version" : "server glx version string",
+            }
 
-    provenance = {}
-    provenance['platformId'] = platformId
-    provenance['osAccess'] = ['Root write: ',osAccess[0], '; Root read: ',osAccess[1]]
-    provenance['condaEnv'] = ''
-    return provenance
+    populate_prov(prov["openGL"]["GLX"]["server"],"glxinfo",pairs,sep=":",index=-1)
+    pairs = {
+            "vendor": "client glx vendor string",
+            "version": "client glx version string",
+            }
+
+    populate_prov(prov["openGL"]["GLX"]["client"],"glxinfo",pairs,sep=":",index=-1)
+
+    return prov
+
 def update_dict(d, u):
     for k, v in u.iteritems():
         if isinstance(v, collections.Mapping):
@@ -207,8 +269,7 @@ class Base(genutil.StringConstructor):
             data["json_version"] = json_version
             data["json_structure"] = json_structure
             f = open(fnm, mode)
-            data["metrics_git_sha1"] = pcmdi_metrics.__git_sha1__
-            data["uvcdat_version"] = cdat_info.get_version()
+            data["provenance"] = generateProvenance()
             json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kargs)
             f.close()
             print "Results saved to JSON file:", fnm
