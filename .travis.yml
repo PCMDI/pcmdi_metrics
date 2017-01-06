@@ -23,7 +23,7 @@ install:
 
 script:
   - export HDF5_DISABLE_VERSION_CHECK=1
-  - python test/test_suite.py # --no-graphics
+  - python test/test_suite.py -V # --no-graphics
 
 after_success:
   - test $TRAVIS_BRANCH = "master" && conda install conda-build && conda install anaconda-client && bash conda-recipes/pcmdi_metrics/conda_upload.sh
