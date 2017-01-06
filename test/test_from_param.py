@@ -23,13 +23,13 @@ class TestFromParam(unittest.TestCase):
         if self.tb:
             tb = "-t"
         else:
-            tb=""
+            tb = ""
         print
         print
         print
         print
         print "---------------------------------------------------"
-        print "RUNNING:",self.param
+        print "RUNNING:", self.param
         print "---------------------------------------------------"
         print
         print
@@ -78,7 +78,7 @@ class TestFromParam(unittest.TestCase):
                 if os.path.basename(gnm) == nm:
                     print "comparing:", fnm, gnm
                     if self.update:
-                        shutil.copy(fnm,gnm)
+                        shutil.copy(fnm, gnm)
                     u = difflib.unified_diff(
                         open(gnm).readlines(),
                         open(fnm).readlines())
@@ -100,11 +100,11 @@ class TestFromParam(unittest.TestCase):
                                 continue
                             else:
                                 for j in range(100):
-                                    ll = lines[i+j]
+                                    ll = lines[i + j]
                                     sp = ll.split()
-                                    #print "lines[%i+%i=%i]: %s" % (i,j,i+j,sp)
+                                    # print "lines[%i+%i=%i]: %s" % (i,j,i+j,sp)
                                     if sp[0] == "+" and sp[1] == l.split()[1]:
-                                        if ll.find("{")>-1 or ll.find("}")>-1:
+                                        if ll.find("{") > -1 or ll.find("}") > -1:
                                             break
                                         good = float(l.split()[-1][1:-2])
                                         bad = float(sp[-1][1:-2])
