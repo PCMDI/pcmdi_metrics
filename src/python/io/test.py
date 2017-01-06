@@ -77,15 +77,33 @@ pairs = {
         "renderder": "OpenGL renderer string",
         "version" : "OpenGL version string",
         "shading language version": "OpenGL shading language version string",
-        "glxServerVendor" :"server glx vendor string",
-        "glxServerVersion" : "server glx version string",
-        "glxClientVendor": "client glx vendor string",
-        "glxClientVersion": "client glx version string",
-        "GLXVersion" : "GLX version",
-        "ESVersion": "OpenGL ES profile version string",
-        "ESShadingLanguage" : "OpenGL ES profile shading language version string",
         }
 
 prov["openGL"]={}
 populate_prov(prov["openGL"],"glxinfo",pairs,sep=":",index=-1)
-print prov
+prov["openGL"]["GLX"]={"server":{},"client":{}}
+pairs = {
+        "version" : "GLX version",
+        }
+
+populate_prov(prov["openGL"]["GLX"],"glxinfo",pairs,sep=":",index=-1)
+pairs = {
+        "vendor" :"server glx vendor string",
+        "version" : "server glx version string",
+        }
+
+populate_prov(prov["openGL"]["GLX"]["server"],"glxinfo",pairs,sep=":",index=-1)
+pairs = {
+        "vendor": "client glx vendor string",
+        "version": "client glx version string",
+        }
+
+populate_prov(prov["openGL"]["GLX"]["client"],"glxinfo",pairs,sep=":",index=-1)
+pairs = {
+        "version": "OpenGL ES profile version string",
+        "shadingLanguage" : "OpenGL ES profile shading language version string",
+        }
+
+prov["openGL"]["ES"]={}
+populate_prov(prov["openGL"]["ES"],"glxinfo",pairs,sep=":",index=-1)
+print prov["openGL"]
