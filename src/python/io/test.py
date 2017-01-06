@@ -26,7 +26,7 @@ def populate_prov(prov,cmd,pairs,sep=None,index=1,fill_missing=False):
         sys.exit()
     for strBit in out.splitlines():
         for key, value in pairs.iteritems():
-            if value+" " in strBit:
+            if value in strBit:
                 print strBit.split(sep)
                 prov[key] = strBit.split(sep)[index].strip()
     if fill_missing is not False:
@@ -43,36 +43,49 @@ prov["osAccess"] = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
 
 prov["conda"]={}
 pairs = {
-         'Platform':'platform',
-         'Version':'conda version',
-         'IsPrivate':'conda is private',
-         'envVersion':'conda-env version',
-         'buildVersion':'conda-build version',
-         'PythonVersion':'python version',
-         'RootEnvironment':'root environment',
-         'DefaultEnvironment':'default environment'
+         'Platform':'platform ',
+         'Version':'conda version ',
+         'IsPrivate':'conda is private ',
+         'envVersion':'conda-env version ',
+         'buildVersion':'conda-build version ',
+         'PythonVersion':'python version ',
+         'RootEnvironment':'root environment ',
+         'DefaultEnvironment':'default environment '
          }
 populate_prov(prov["conda"],"conda info",pairs,sep=":",index=-1)
 pairs = {
-         'PMP':'pcmdi_metrics',
-         'PMPObs':'pcmdi_metrics_obs',
-         'CDP':'cdp',
-         'cdms':'cdms2',
-         'cdtime':'cdtime',
-         'cdutil':'cdutil',
-         'ESMF':'esmf-ESMF',
-         'genutil':'genutil',
-         'matplotlib':'matplotlib',
-         'numpy':'numpy',
-         'python':'python',
-         'VCS':'vcs',
-         'VTK':'vtk-cdat'
+         'PMP':'pcmdi_metrics ',
+         'PMPObs':'pcmdi_metrics_obs ',
+         'CDP':'cdp ',
+         'cdms':'cdms2 ',
+         'cdtime':'cdtime ',
+         'cdutil':'cdutil ',
+         'ESMF':'esmf-ESMF ',
+         'genutil':'genutil ',
+         'matplotlib':'matplotlib ',
+         'numpy':'numpy ',
+         'python':'python ',
+         'VCS':'vcs ',
+         'VTK':'vtk-cdat '
          }
 prov["packages"]={}
 populate_prov(prov["packages"],"conda list",pairs,fill_missing=None) 
 # TRying to capture glxinfo
 
-pairs = {"GLX":"GLX"}
+pairs = {
+        "vendor" : "OpenGL vendor string",
+        "renderder": "OpenGL renderer string",
+        "version" : "OpenGL version string",
+        "shading language version": "OpenGL shading language version string",
+        "glxServerVendor" :"server glx vendor string",
+        "glxServerVersion" : "server glx version string",
+        "glxClientVendor": "client glx vendor string",
+        "glxClientVersion": "client glx version string",
+        "GLXVersion" : "GLX version",
+        "ESVersion": "OpenGL ES profile version string",
+        "ESShadingLanguage" : "OpenGL ES profile shading language version string",
+        }
+
 prov["openGL"]={}
-populate_prov(prov["openGL"],"glxinfo",pairs)
+populate_prov(prov["openGL"],"glxinfo",pairs,sep=":",index=-1)
 print prov
