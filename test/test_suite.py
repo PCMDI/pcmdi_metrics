@@ -90,7 +90,7 @@ if "jsons" in tests:
     try:
         import test_jsons
         suite.addTest(test_jsons.TestJSONs())
-    except Exception,err:
+    except Exception as err:
         print err
         pass
 
