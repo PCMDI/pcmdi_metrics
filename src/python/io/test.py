@@ -14,68 +14,65 @@ import sys
 import shlex
 
 # Platform
+
+def populate_prov(prov,cmd,pairs,sep=None,index=1,fill_missing=False):
+    try:
+        p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except:
+        return
+    out,stde = p.communicate()
+    if stde != '':
+        print 'Error encountered - valid conda installation not on path'
+        sys.exit()
+    for strBit in out.splitlines():
+        for key, value in pairs.iteritems():
+            if value+" " in strBit:
+                print strBit.split(sep)
+                prov[key] = strBit.split(sep)[index].strip()
+    if fill_missing is not False:
+        for k in pairs:
+            if not prov.has_key(k):
+                prov[k] = fill_missing
+    return
+
+prov = {}
 platform = os.uname()
-platformId = [platform[0], platform[2], platform[1]]
-userId = pwd.getpwuid(os.getuid()).pw_name
-osAccess = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
+prov["platformId"] = [platform[0], platform[2], platform[1]]
+prov["userId"] = pwd.getpwuid(os.getuid()).pw_name
+prov["osAccess"] = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
 
-p = subprocess.Popen(shlex.split('conda info'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)#, shell=True) #cwd='./',
-out,stde = p.communicate()
-if stde != '':
-    print 'Error encountered - valid conda installation not on path'
-    sys.exit()
-
+prov["conda"]={}
 pairs = {
-         'condaPlatform':'platform',
-         'condaVersion':'conda version',
-         'condaIsPrivate':'conda is private',
-         'condaenvVersion':'conda-env version',
-         'condabuildVersion':'conda-build version',
-         'condaPythonVersion':'python version',
-         'condaRootEnvironment':'root environment',
-         'condaDefaultEnvironment':'default environment'
+         'Platform':'platform',
+         'Version':'conda version',
+         'IsPrivate':'conda is private',
+         'envVersion':'conda-env version',
+         'buildVersion':'conda-build version',
+         'PythonVersion':'python version',
+         'RootEnvironment':'root environment',
+         'DefaultEnvironment':'default environment'
          }
-print out
-sys.exit()
-for count,strBit in enumerate(iter(out.splitlines())):
-    for count1,pairKey in enumerate(pairs):
-        if pairs[pairKey] in strBit:
-            vars()[pairKey] = strBit.replace(''.join([pairs[pairKey],' :']),'').strip()
-
-for count,key in enumerate(pairs):
-    print key,eval(key)
-print '---'
-
+populate_prov(prov["conda"],"conda info",pairs,sep=":",index=-1)
 pairs = {
-         'PMPVersion':'pcmdi_metrics-',
-         'PMPObsVersion':'pcmdi_metrics_obs-',
-         'CDPVersion':'cdp-',
-         'cdmsVersion':'cdms2-',
-         'cdtimeVersion':'cdtime-',
-         'cdutilVersion':'cdutil-',
-         'ESMFVersion':'esmf-ESMF_',
-         'genutilVersion':'genutil-',
-         'matplotlibVersion':'matplotlib-',
-         'numpyVersion':'numpy-',
-         'pythonVersion':'python-',
-         'VCSVersion':'vcs-',
-         'VTKVersion':'vtk-cdat-'
+         'PMP':'pcmdi_metrics',
+         'PMPObs':'pcmdi_metrics_obs',
+         'CDP':'cdp',
+         'cdms':'cdms2',
+         'cdtime':'cdtime',
+         'cdutil':'cdutil',
+         'ESMF':'esmf-ESMF',
+         'genutil':'genutil',
+         'matplotlib':'matplotlib',
+         'numpy':'numpy',
+         'python':'python',
+         'VCS':'vcs',
+         'VTK':'vtk-cdat'
          }
+prov["packages"]={}
+populate_prov(prov["packages"],"conda list",pairs,fill_missing=None) 
+# TRying to capture glxinfo
 
-condaMetaDir = os.path.join(condaDefaultEnvironment,'conda-meta')
-listScour = os.listdir(condaMetaDir) ; listScour.sort()
-for count,pairKey in enumerate(pairs):
-    for count1,strBit in enumerate(listScour):
-        test = re.search(''.join(['^',pairs[pairKey]]),strBit)
-        if test is not None:
-            vars()[pairKey] = strBit.replace(pairs[pairKey],'').replace('.json','')
-            break
-        else:
-            vars()[pairKey] = 'None' ; # Case uninstalled
-
-# Sort
-keyList = pairs.keys()
-keyList.sort()
-# Print
-for count,key in enumerate(keyList):
-    print key,eval(key)
+pairs = {"GLX":"GLX"}
+prov["openGL"]={}
+populate_prov(prov["openGL"],"glxinfo",pairs)
+print prov
