@@ -7,8 +7,12 @@ import os
 import pcmdi_metrics
 import cdat_info
 import hashlib
+import subprocess
 import numpy
 import collections
+import sys
+import shlex
+import datetime
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
@@ -17,6 +21,120 @@ cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
 cdms2.setNetcdfDeflateLevelFlag(value)
 
 # cdutil region object need a serializer
+
+# Platform
+
+
+def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
+    try:
+        p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except:
+        return
+    out, stde = p.communicate()
+    if stde != '':
+        return
+    for strBit in out.splitlines():
+        for key, value in pairs.iteritems():
+            if value in strBit:
+                prov[key] = strBit.split(sep)[index].strip()
+    if fill_missing is not False:
+        for k in pairs:
+            if k not in prov:
+                prov[k] = fill_missing
+    return
+
+
+def generateProvenance():
+    prov = collections.OrderedDict()
+    platform = os.uname()
+    platfrm = collections.OrderedDict()
+    platfrm["OS"] = platform[0]
+    platfrm["Version"] = platform[2]
+    platfrm["Name"] = platform[1]
+    prov["platform"] = platfrm
+    try:
+        logname = os.getlogin()
+    except:
+        try:
+            import pwd
+            logname = pwd.getpwuid(os.getuid())[0]
+        except:
+            try:
+                logname = os.environ.get('LOGNAME', 'unknown')
+            except:
+                logname = 'unknown-loginname'
+    prov["userId"] = logname
+    prov["osAccess"] = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
+    prov["commandLine"] = " ".join(sys.argv)
+    prov["date"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    prov["conda"] = collections.OrderedDict()
+    pairs = {
+        'Platform': 'platform ',
+        'Version': 'conda version ',
+        'IsPrivate': 'conda is private ',
+        'envVersion': 'conda-env version ',
+        'buildVersion': 'conda-build version ',
+        'PythonVersion': 'python version ',
+        'RootEnvironment': 'root environment ',
+        'DefaultEnvironment': 'default environment '
+    }
+    populate_prov(prov["conda"], "conda info", pairs, sep=":", index=-1)
+    pairs = {
+        'CDP': 'cdp ',
+        'cdms': 'cdms2 ',
+        'cdtime': 'cdtime ',
+        'cdutil': 'cdutil ',
+        'esmf': 'esmf ',
+        'genutil': 'genutil ',
+        'matplotlib': 'matplotlib ',
+        'numpy': 'numpy ',
+        'python': 'python ',
+        'vcs': 'vcs ',
+        'vtk': 'vtk-cdat ',
+    }
+    prov["packages"] = collections.OrderedDict()
+    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
+    pairs = {
+        'vcs': 'vcs-nox ',
+        'vtk': 'vtk-cdat-nox ',
+    }
+    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
+    pairs = {
+        'PMP': 'pcmdi_metrics',
+        'PMPObs': 'pcmdi_metrics_obs',
+    }
+    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
+    # TRying to capture glxinfo
+
+    pairs = {
+        "vendor": "OpenGL vendor string",
+        "renderer": "OpenGL renderer string",
+        "version": "OpenGL version string",
+        "shading language version": "OpenGL shading language version string",
+    }
+
+    prov["openGL"] = collections.OrderedDict()
+    populate_prov(prov["openGL"], "glxinfo", pairs, sep=":", index=-1)
+    prov["openGL"]["GLX"] = {"server": collections.OrderedDict(), "client": collections.OrderedDict()}
+    pairs = {
+        "version": "GLX version",
+    }
+
+    populate_prov(prov["openGL"]["GLX"], "glxinfo", pairs, sep=":", index=-1)
+    pairs = {
+        "vendor": "server glx vendor string",
+        "version": "server glx version string",
+    }
+
+    populate_prov(prov["openGL"]["GLX"]["server"], "glxinfo", pairs, sep=":", index=-1)
+    pairs = {
+        "vendor": "client glx vendor string",
+        "version": "client glx version string",
+    }
+
+    populate_prov(prov["openGL"]["GLX"]["client"], "glxinfo", pairs, sep=":", index=-1)
+
+    return prov
 
 
 def update_dict(d, u):
@@ -155,8 +273,7 @@ class Base(genutil.StringConstructor):
             data["json_version"] = json_version
             data["json_structure"] = json_structure
             f = open(fnm, mode)
-            data["metrics_git_sha1"] = pcmdi_metrics.__git_sha1__
-            data["uvcdat_version"] = cdat_info.get_version()
+            data["provenance"] = generateProvenance()
             json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kargs)
             f.close()
         elif type.lower() in ["asc", "ascii", "txt"]:
