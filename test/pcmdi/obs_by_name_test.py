@@ -1,9 +1,9 @@
 import os
 
-##########################################################################
+#
 #  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY:
 #
-##########################################################################
+#
 
 # RUN IDENTIFICATION
 # DEFINES A SUBDIRECTORY TO METRICS OUTPUT RESULTS SO MULTIPLE CASES CAN
@@ -71,10 +71,15 @@ pth = os.path.dirname(__file__)
 mod_data_path = os.path.abspath(os.path.join(pth, "data"))
 # ROOT PATH FOR OBSERVATIONS
 obs_data_path = os.path.abspath(os.path.join(pth, "obs"))
+# Custom obs dictionary file (one we use for tests)
+custom_observations = os.path.abspath(
+    os.path.join(
+        obs_data_path,
+        "obs_info_dictionary.json"))
 # DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join(
     'pcmdi_install_test_results',
-    'metrics_results')
+    'metrics_results', '%(case_id)')
 # DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES
 model_clims_interpolated_output = os.path.join(
     'pcmdi_install_test_results',

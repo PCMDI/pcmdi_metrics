@@ -5,20 +5,40 @@ import os
 import sys
 import glob
 import difflib
+import numpy
+import pcmdi_metrics
+import shutil
 
 
 class TestFromParam(unittest.TestCase):
 
-    def __init__(self, parameter_file=None, good_files=[]):
+    def __init__(self, parameter_file=None, good_files=[], traceback=False, update_files=False):
         super(TestFromParam, self).__init__("test_from_parameter_file")
         self.param = parameter_file
         self.good_files = good_files
+        self.tb = traceback
+        self.update = update_files
 
     def setUp(self):
+        if self.tb:
+            tb = "-t"
+        else:
+            tb = ""
+        print
+        print
+        print
+        print
+        print "---------------------------------------------------"
+        print "RUNNING:", self.param
+        print "---------------------------------------------------"
+        print
+        print
+        print
+        print
         subprocess.call(
             shlex.split(
-                "pcmdi_metrics_driver.py -p %s" %
-                self.param))
+                "pcmdi_metrics_driver.py -p %s %s" %
+                (self.param, tb)))
         pass
 
     def test_from_parameter_file(self):
@@ -31,11 +51,15 @@ class TestFromParam(unittest.TestCase):
         parameters = ""  # so flake8 doesn't complain
         exec("import %s as parameters" % fnm)
         # Ok now let's figure out where the results have been dumped
-        pthout = os.path.join(
-            parameters.metrics_output_path,
-            parameters.case_id,
+        pthout = pcmdi_metrics.io.base.Base(
+            os.path.join(
+                parameters.metrics_output_path),
             "*.json")
-        files = glob.glob(pthout)
+        pthout.case_id = parameters.case_id
+        files = glob.glob(pthout())
+        print "FILES:", pthout, files
+        if len(files) == 0:
+            raise Exception("could not find out files!")
         for fnm in files:
             nm = os.path.basename(fnm)
             # Ok now we are trying to find the same file
@@ -53,17 +77,41 @@ class TestFromParam(unittest.TestCase):
             for gnm in self.good_files:
                 if os.path.basename(gnm) == nm:
                     print "comparing:", fnm, gnm
+                    if self.update:
+                        shutil.copy(fnm, gnm)
                     u = difflib.unified_diff(
                         open(gnm).readlines(),
                         open(fnm).readlines())
+                    lines = []
                     for l in u:
+                        lines.append(l)
+                    for i, l in enumerate(lines):
+                        if l[:2] == "+ ":
+                            if l.find("{") > -1:
+                                continue
+                            elif l.find("}") > -1:
+                                continue
                         if l[:2] == "- ":
                             if l.find("metrics_git_sha1") > -1:
                                 continue
-                            if l.find("uvcdat_version") > -1:
+                            elif l.find("uvcdat_version") > -1:
+                                continue
+                            elif l.find("DISCLAIMER") > -1:
                                 continue
                             else:
-                                print "Failing line:", l
-                                ok = False
+                                for j in range(100):
+                                    ll = lines[i + j]
+                                    sp = ll.split()
+                                    # print "lines[%i+%i=%i]: %s" % (i,j,i+j,sp)
+                                    if sp[0] == "+" and sp[1] == l.split()[1]:
+                                        if ll.find("{") > -1 or ll.find("}") > -1:
+                                            break
+                                        good = float(l.split()[-1][1:-2])
+                                        bad = float(sp[-1][1:-2])
+                                        if not numpy.allclose(
+                                                good, bad, atol=1.E-2):
+                                            print "Failing line:", l.strip(), "(we read:", bad, ")"
+                                            ok = False
+                                        break
             self.assertTrue(ok)
         # shutil.rmtree(os.path.join(parameters.metrics_output_path,parameters.case_id))

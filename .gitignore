@@ -1,9 +1,1 @@
-*.pyc
 build
-*.pyo
-*~
-*swp*
-*.o
-test_portrait
-PCMDI_METRICS
-obs_info_dictionary.json

@@ -46,47 +46,30 @@ print >>f, "__git_sha1__ = '%s'" % commit
 f.close()
 
 portrait_files = ["src/python/graphics/share/portraits.scr", ]
-cmip5_amip_json = glob.glob("data/CMIP_metrics_results/CMIP5/amip/*.json")
-cmip5_historical_json = glob.glob(
-    "data/CMIP_metrics_results/CMIP5/historical/*.json")
-cmip5_piControl_json = glob.glob(
-    "data/CMIP_metrics_results/CMIP5/piControl/*.json")
-demo_ACME_files = glob.glob("demo/ACME/*.py")
-demo_CSIRO_files = glob.glob("demo/CSIRO/*.py")
-demo_CSIRO_files += glob.glob("demo/CSIRO/*.png")
-demo_CSIRO_files += glob.glob("demo/CSIRO/*.sh")
-demo_GFDL_files = glob.glob("demo/GFDL/*.py")
-demo_GFDL_files += glob.glob("demo/GFDL/*.png")
-demo_NCAR_files = glob.glob("demo/NCAR/*.py")
-param_files = glob.glob("doc/parameter_files/*.py")
 
-
-packages={'pcmdi_metrics': 'src/python',
-           'pcmdi_metrics.io': 'src/python/io',
-           'pcmdi_metrics.pcmdi': 'src/python/pcmdi',
-           'pcmdi_metrics.graphics': 'src/python/graphics',
-           }
-scripts=['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
-       'src/python/pcmdi/scripts/pcmdi_compute_climatologies.py']
-
-data_files=[('demo/ACME', demo_ACME_files),
-          ('demo/CSIRO', demo_CSIRO_files),
-          ('demo/GFDL', demo_GFDL_files),
-          ('demo/NCAR', demo_NCAR_files),
-          ('doc/parameter_files', param_files),
-          ('doc',
-           ('doc/parameter_files/pcmdi_input_parameters_sample.py',
-            'doc/simple_json_test.py',
-            )),
-          ('share/CMIP_metrics_results/CMIP5/amip',
-           cmip5_amip_json),
-          ('share/CMIP_metrics_results/CMIP5/historical',
-           cmip5_historical_json),
-          ('share/CMIP_metrics_results/CMIP5/piControl',
-           cmip5_piControl_json),
-          ('share/graphics/vcs', portrait_files),
-          ('share/pcmdi', ('doc/obs_info_dictionary.json','share/pcmdi_metrics_table')),
-          ]
+packages = {'pcmdi_metrics': 'src/python',
+            'pcmdi_metrics.io': 'src/python/io',
+            'pcmdi_metrics.pcmdi': 'src/python/pcmdi',
+            'pcmdi_metrics.graphics': 'src/python/graphics',
+            }
+scripts = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
+           'src/python/pcmdi/scripts/pcmdi_compute_climatologies.py',
+           'src/python/misc/scripts/install_metrics_from_branches.py',
+           'demo/pmp_demo_1.py',
+           'demo/pmp_demo.py',
+           ]
+demo_files = glob.glob("demo/*/*")
+print "demo files"
+data_files = [
+              ('share/pmp/graphics/vcs', portrait_files),
+              ('share/pmp/graphics/png', ['share/pcmdi/160915_PCMDI_logo_348x300px.png',
+                                          'share/pcmdi/160915_PCMDI_logo-oblong_377x300px.png']),
+              ('share/pmp', ('doc/obs_info_dictionary.json',
+                               'share/pcmdi_metrics_table',
+                               'share/disclaimer.txt',
+                               'share/default_regions.py')),
+              ('share/pmp/demo',demo_files),
+              ]
 
 if install_dev:
     print "Adding experimental packages"
@@ -97,23 +80,24 @@ if install_dev:
             dev_packages.pop(p)
     dev_scripts = []
     for p in dev_packages:
-        scripts = glob.glob(os.path.join(p,"scripts","*"))
-        dev_scripts+=scripts
+        scripts = glob.glob(os.path.join(p, "scripts", "*"))
+        dev_scripts += scripts
     dev_pkg = {}
     dev_data = []
     for p in dev_packages:
-        nm = p.replace("/",".")
-        nm = nm.replace("src.python.devel","pcmdi_metrics")
+        nm = p.replace("/", ".")
+        nm = nm.replace("src.python.devel", "pcmdi_metrics")
         pnm = nm.split(".")[-1]
-        pkg_dir = os.path.join(p,"lib")
-        dev_pkg[nm]=pkg_dir
-        data = glob.glob(os.path.join(p,"data","*"))
+        pkg_dir = os.path.join(p, "lib")
+        dev_pkg[nm] = pkg_dir
+        data = glob.glob(os.path.join(p, "data", "*"))
         for d in data:
             dir_nm = os.path.split(d)[-1]
-            dev_data.append([os.path.join(dir_nm,pnm),glob.glob(os.path.join(d,"*"))])
+            dev_data.append([os.path.join(dir_nm, pnm),
+                             glob.glob(os.path.join(d, "*"))])
     packages.update(dev_pkg)
-    data_files+=dev_data
-    scripts+=dev_scripts
+    data_files += dev_data
+    scripts += dev_scripts
 
 setup(name='pcmdi_metrics',
       version=descr,

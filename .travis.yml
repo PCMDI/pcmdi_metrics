@@ -1,20 +1,29 @@
 os:
   - linux
-  - osx
+language: python
+  - "2.7"
 
-language: c++
+sudo: false
 
 before_install:
-    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get update -qq; sudo apt-get install -y gfortran; fi
-    - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; brew outdated cmake || brew upgrade cmake ; fi
-    - cmake --version
+  - export UVCDAT_FEATURE=""
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export UVCDAT_FEATURE="-nox"; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ] && ! [ -d ${HOME}/miniconda] ; then wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh; fi
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - if [ ! -d ${HOME}/miniconda ]; then bash miniconda.sh -b -p $HOME/miniconda ; conda install --show-channel-urls --yes -c conda-forge -c uvcdat cdp uvcdat${UVCDAT_FEATURE} flake8 ; fi
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # - conda install openssl=1.0.2d
+  # Useful for debugging any issues with conda
+  - conda info -a
+
+install:
+  - python setup.py install
 
 script:
-    - cd ..
-    - mkdir _build
-    - cd _build
-    - cp ../pcmdi_metrics/install_metrics.bash .
-    - bash ./install_metrics.bash
-    - source ./PCMDI_METRICS/bin/setup_runtime.sh
-    - cd ./PCMDI_METRICS/tmp/metrics
-    - python test/test_suite.py
+  - export HDF5_DISABLE_VERSION_CHECK=1
+  - python test/test_suite.py -V # --no-graphics
+
+after_success:
+  - test $TRAVIS_BRANCH = "master" && $TRAVIS_PULL_REQUEST = "false" && conda install conda-build && conda install anaconda-client && bash conda-recipes/pcmdi_metrics/conda_upload.sh
