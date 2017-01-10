@@ -137,9 +137,14 @@ try:
 except:
   pass
 
+### SETUP WHERE TO OUTPUT RESULTING  (netcdf)
+try:
+  jout = outpathjsons #   + '/' + exp + '_' + mip + '_wang-monsoon/'
+  os.mkdir(jout)
+except:
+  pass
 
 modpathall = string.replace(modpath,'MODS','*')
-
 
 lst = os.popen('ls ' + modpathall).readlines()
 
@@ -155,6 +160,8 @@ for mod in mods:
   
 print 'gmods is ', gmods
 
+if exp == 'historical' and mods == ['*']:
+ gmods = ['ACCESS1-0', 'ACCESS1-3', 'bcc-csm1-1', 'bcc-csm1-1-m', 'BNU-ESM', 'CanCM4', 'CanESM2', 'CCSM4', 'CESM1-BGC', 'CESM1-CAM5', 'CESM1-FASTCHEM', 'CESM1-WACCM', 'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS', 'CNRM-CM5-2', 'CNRM-CM5', 'CSIRO-Mk3-6-0', 'FGOALS-g2', 'FIO-ESM', 'GFDL-CM2p1', 'GFDL-CM3', 'GFDL-ESM2G', 'GFDL-ESM2M', 'GISS-E2-H', 'GISS-E2-H-CC', 'GISS-E2-R', 'GISS-E2-R-CC', 'HadCM3', 'HadGEM2-AO', 'HadGEM2-CC', 'HadGEM2-ES', 'inmcm4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR', 'IPSL-CM5B-LR', 'MIROC4h', 'MIROC5', 'MIROC-ESM', 'MIROC-ESM-CHEM', 'MPI-ESM-LR', 'MPI-ESM-MR', 'MPI-ESM-P', 'MRI-CGCM3', 'MRI-ESM1', 'NorESM1-M', 'NorESM1-ME']
 
 
 #########################################
@@ -165,7 +172,7 @@ default_regions = []
 execfile(sys.prefix + "/share/pmp/default_regions.py")
 
 
-doms = ['AllMn','NAMn','SAMn','NAFn','SAFn','ASMn','AUSMn']
+doms = ['AllM','NAMM','SAMM','NAFM','SAFM','ASM','AUSM']
 
 #w = sys.stdin.readline()
 
@@ -174,17 +181,17 @@ mpi_stats_dic = {}
 for mod in gmods:
  l = string.replace(modpath,'MODS',mod)
 
- try:
-  mpi_stats_dic[mod] = {}
+#try:
+ mpi_stats_dic[mod] = {}
 
-  f = cdms2.open(l) 
-  d_orig = f('pr')
+ f = cdms2.open(l) 
+ d_orig = f('pr')
 
-  annrange_mod, mpi_mod = mpd(d_orig)
-  annrange_mod = annrange_mod.regrid(obsgrid)
-  mpi_mod = mpi_mod.regrid(obsgrid)
+ annrange_mod, mpi_mod = mpd(d_orig)
+ annrange_mod = annrange_mod.regrid(obsgrid)
+ mpi_mod = mpi_mod.regrid(obsgrid)
 
-  for dom in doms:
+ for dom in doms:
 
    mpi_stats_dic[mod][dom] = {}
 
@@ -231,24 +238,24 @@ for mod in gmods:
    mpi_stats_dic[mod][dom]['rmsn']=  format(rmsn,sig_digits) 
    mpi_stats_dic[mod][dom]['threat_score'] = format(score,sig_digits) 
 
- except:
-  print 'FAILED FOR MODEL ', mod 
+#except:
+# print 'FAILED FOR MODEL ', mod 
 
- fm = nout + '/' + mod + '_' + dom + '_wang-monsoon.nc'
- g = cdms2.open(fm,'w+')
- annrange_mod_dom.id = 'annrange'
- hitmap.id = 'hit'
- missmap.id = 'miss'
- falarmmap.id = 'false_alarm'
- g.write(annrange_mod_dom)
- g.write(hitmap)
- g.write(missmap)
- g.write(falarmmap)
- g.close()
+   fm = nout + '/' + mod + '_' + dom + '_wang-monsoon.nc'
+   g = cdms2.open(fm,'w+')
+   annrange_mod_dom.id = 'annrange'
+   hitmap.id = 'hit'
+   missmap.id = 'miss'
+   falarmmap.id = 'false_alarm'
+   g.write(annrange_mod_dom)
+   g.write(hitmap)
+   g.write(missmap)
+   g.write(falarmmap)
+   g.close()
 
 #w = sys.stdin.readline()
 
-json_filename = 'MPI_' + mip + '_' + exp 
+json_filename = jout + '/MPI_' + mip + '_' + exp 
 json.dump(mpi_stats_dic, open(json_filename + '.json','w'),sort_keys=True, indent=4, separators=(',', ': '))
 
 #OUT = pcmdi_metrics.io.base.Base(
