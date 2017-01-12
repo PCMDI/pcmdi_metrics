@@ -1,4 +1,3 @@
-
 import cdms2,MV2
 import sys, string
 import os, vcs
@@ -13,6 +12,13 @@ import collections
 import argparse
 from argparse import RawTextHelpFormatter
 
+###########
+# SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW
+# python -i mpi_compute.py -mp /work/gleckler1/processed_data/cmip5clims_metrics_package-historical/pr_MODS_Amon_historical_r1i1p1_198001-200512-clim.nc -op /work/gleckler1/processed_data/obs/atm/mo/pr/GPCP/ac/pr_GPCP_000001-000012_ac.nc --mns "['NorESM1-ME','MRI-CGCM3']" --outpd /work/gleckler1/processed_data/wang_monsoon --outpj /work/gleckler1/processed_data/metrics_package/metrics_results/wang_monsoon
+
+##########
+
+
 P = PMPParser()
 
 P.add_argument("-mp", "--modpath",
@@ -20,7 +26,7 @@ P.add_argument("-mp", "--modpath",
                       dest = 'modpath',
                       default = '',
                       help = "Explicit path to model monthly PR climatology")
-P.add_argument("-o", "--obspath",
+P.add_argument("-op", "--obspath",
                       type = str,
                       dest = 'obspath',
                       default = '',
@@ -35,11 +41,6 @@ P.add_argument("--outpd", "--outpathdata",
                       dest = 'outpathdata',
                       default = '.',
                       help = "Output path for data")
-P.add_argument("--mn", "--modname",
-                      type = str,
-                      dest = 'modname',
-                      default = '',
-                      help = "AMIP, historical or picontrol")
 P.add_argument("--mns", "--modnames",
                       type = ast.literal_eval,
                       dest = 'modnames',
@@ -90,8 +91,7 @@ exp = 'historical'
 print 'mods is ', mods
 
 
-# VAR IS FIXED TO BE PRECIP FOR CALCULATING MONSOON PRECIPITATION INDICES
-# and threshold is set converted from mm/day to kgs-1m-2
+# VAR IS FIXED TO BE PRECIP FOR CALCULATING MONSOON PRECIPITATION INDICES and threshold is set converted from mm/day to kgs-1m-2
 var = 'pr'
 thr = 2./86400.
 sig_digits = '.3f'
@@ -238,9 +238,8 @@ for mod in gmods:
    mpi_stats_dic[mod][dom]['rmsn']=  format(rmsn,sig_digits) 
    mpi_stats_dic[mod][dom]['threat_score'] = format(score,sig_digits) 
 
-#except:
-# print 'FAILED FOR MODEL ', mod 
 
+# SAVE ANNRANGE AND HIT MISS AND FALSE ALARM FOR EACH MOD DOM 
    fm = nout + '/' + mod + '_' + dom + '_wang-monsoon.nc'
    g = cdms2.open(fm,'w+')
    annrange_mod_dom.id = 'annrange'
@@ -253,17 +252,12 @@ for mod in gmods:
    g.write(falarmmap)
    g.close()
 
-#w = sys.stdin.readline()
 
-json_filename = jout + '/MPI_' + mip + '_' + exp 
-json.dump(mpi_stats_dic, open(json_filename + '.json','w'),sort_keys=True, indent=4, separators=(',', ': '))
+#  OUTPUT METRICS TO JSON FILE
 
-#OUT = pcmdi_metrics.io.base.Base(
-#           parameters.metrics_output_path,
-#           "%(var)%(level)_%(targetGridName)_" +
-#           "%(regridTool)_%(regridMethod)_metrics")
+json_filename = '/MPI_' + mip + '_' + exp 
 
-OUT = pcmdi_metrics.io.base.Base('.',json_filename)
+OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout),json_filename)
 
 disclaimer = open(
     os.path.join(
@@ -272,31 +266,21 @@ disclaimer = open(
         "pmp",
         "disclaimer.txt")).read()
 
-#metrics_dictionary = mpi_stats_dic
-
 metrics_dictionary = collections.OrderedDict()
 metrics_def_dictionary = collections.OrderedDict()
 metrics_dictionary["DISCLAIMER"] = disclaimer
+metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Wang, B., Kim, HJ., Kikuchi, K. et al. Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0" 
 metrics_dictionary["RESULTS"] = mpi_stats_dic  #collections.OrderedDict()
 
-#OUT.setTargetGrid(parameters.targetGrid, regridTool, regridMethod)
 OUT.var = var
-#OUT.realm = realm 
-#OUT.table = table_realm
-OUT.case_id = 'crap'  #case_id 
-
 OUT.write(
                 metrics_dictionary,
                 json_structure=["model","domain"],
-#               json_structure=["model", "reference", "rip", "region", "statistic", "season"],
                 mode="w",
                 indent=4,
                 separators=(
                     ',',
                     ': '))
-
-
-
 
 
 print 'done'
