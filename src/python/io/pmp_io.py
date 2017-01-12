@@ -11,6 +11,10 @@ import numpy
 import collections
 import pcmdi_metrics
 import cdp.cdp_io
+import subprocess
+import sys
+import shlex
+import datetime
 
 
 value = 0
@@ -19,6 +23,109 @@ cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
 # where value is a integer between 0 and 9 included
 cdms2.setNetcdfDeflateLevelFlag(value)
 
+# Platform
+def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
+    try:
+        p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except:
+        return
+    out, stde = p.communicate()
+    if stde != '':
+        return
+    for strBit in out.splitlines():
+        for key, value in pairs.iteritems():
+            if value in strBit:
+                prov[key] = strBit.split(sep)[index].strip()
+    if fill_missing is not False:
+        for k in pairs:
+            if k not in prov:
+                prov[k] = fill_missing
+    return
+def generateProvenance():
+    prov = collections.OrderedDict()
+    platform = os.uname()
+    platfrm = collections.OrderedDict()
+    platfrm["OS"] = platform[0]
+    platfrm["Version"] = platform[2]
+    platfrm["Name"] = platform[1]
+    prov["platform"] = platfrm
+    try:
+        logname = os.getlogin()
+    except:
+        try:
+            import pwd
+            logname = pwd.getpwuid(os.getuid())[0]
+        except:
+            try:
+                logname = os.environ.get('LOGNAME', 'unknown')
+            except:
+                logname = 'unknown-loginname'
+    prov["userId"] = logname
+    prov["osAccess"] = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
+    prov["commandLine"] = " ".join(sys.argv)
+    prov["date"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    prov["conda"] = collections.OrderedDict()
+    pairs = {
+        'Platform': 'platform ',
+        'Version': 'conda version ',
+        'IsPrivate': 'conda is private ',
+        'envVersion': 'conda-env version ',
+        'buildVersion': 'conda-build version ',
+        'PythonVersion': 'python version ',
+        'RootEnvironment': 'root environment ',
+        'DefaultEnvironment': 'default environment '
+    }
+    populate_prov(prov["conda"], "conda info", pairs, sep=":", index=-1)
+    pairs = {
+        'CDP': 'cdp ',
+        'cdms': 'cdms2 ',
+        'cdtime': 'cdtime ',
+        'cdutil': 'cdutil ',
+        'esmf': 'esmf ',
+        'genutil': 'genutil ',
+        'matplotlib': 'matplotlib ',
+        'numpy': 'numpy ',
+        'python': 'python ',
+        'vcs': 'vcs ',
+        'vtk': 'vtk-cdat ',
+    }
+    prov["packages"] = collections.OrderedDict()
+    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
+    pairs = {
+        'vcs': 'vcs-nox ',
+        'vtk': 'vtk-cdat-nox ',
+    }
+    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
+    pairs = {
+        'PMP': 'pcmdi_metrics',
+        'PMPObs': 'pcmdi_metrics_obs',
+    }
+    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
+    # TRying to capture glxinfo
+    pairs = {
+        "vendor": "OpenGL vendor string",
+        "renderer": "OpenGL renderer string",
+        "version": "OpenGL version string",
+        "shading language version": "OpenGL shading language version string",
+    }
+    prov["openGL"] = collections.OrderedDict()
+    populate_prov(prov["openGL"], "glxinfo", pairs, sep=":", index=-1)
+    prov["openGL"]["GLX"] = {"server": collections.OrderedDict(), "client": collections.OrderedDict()}
+    pairs = {
+        "version": "GLX version",
+    }
+    populate_prov(prov["openGL"]["GLX"], "glxinfo", pairs, sep=":", index=-1)
+    pairs = {
+        "vendor": "server glx vendor string",
+        "version": "server glx version string",
+    }
+    populate_prov(prov["openGL"]["GLX"]["server"], "glxinfo", pairs, sep=":", index=-1)
+    pairs = {
+        "vendor": "client glx vendor string",
+        "version": "client glx version string",
+    }
+    populate_prov(prov["openGL"]["GLX"]["client"], "glxinfo", pairs, sep=":", index=-1)
+    return prov
 
 class CDMSDomainsEncoder(json.JSONEncoder):
     def default(self, o):
@@ -77,8 +184,7 @@ class PMPIO(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             data["json_structure"] = json_structure
 
             f = open(file_name, 'w')
-            data['metrics_git_sha1'] = pcmdi_metrics.__git_sha1__
-            data['uvcdat_version'] = cdat_info.get_version()
+            data["provenance"] = generateProvenance()
             json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 
@@ -242,22 +348,16 @@ class JSONs(object):
             V = json_dict[json_dict.keys()[0]]
             for model in V.keys():  # loop through models
                 m = V[model]
-                # print "FIRST M:",m.keys()
                 for ref in m.keys():
                     aref = m[ref]
                     if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
                         continue
-                    # print "\treading in ref:",ref
-                    # print aref.keys()
                     reals = aref.keys()
                     src = reals.pop(reals.index("source"))
                     for real in reals:
-                        # print "\t\treading in realization:",real
-                        # print real
                         areal = aref[real]
                         areal2 = {"source": src}
                         for region in areal.keys():
-                            # print "\t\t\tREGION:",region
                             reg = areal[region]
                             if region == "global":
                                 region2 = ""
@@ -267,7 +367,6 @@ class JSONs(object):
                             areal2[region2 + "NHEX"] = {}
                             areal2[region2 + "SHEX"] = {}
                             areal2[region2 + "TROPICS"] = {}
-                            # print "OK HERE REGIONS:",areal2.keys()
                             key_stats = reg.keys()
                             for k in key_stats:
                                 if k[:7] == "custom_":
@@ -289,7 +388,6 @@ class JSONs(object):
                                     else:
                                         areal2[region2 + domain][stat] = stat_dict
                         # Now we can replace the realization with the correctly formatted one
-                        # print "AREAL@:",areal2
                         aref[real] = areal2
                     # restore ref into model
                     m[ref] = aref
@@ -301,13 +399,9 @@ class JSONs(object):
                     aref = m[ref]
                     if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
                         continue
-                    # print "\treading in ref:",ref
-                    # print aref.keys()
                     reals = aref.keys()
                     src = reals.pop(reals.index("source"))
                     for real in reals:
-                        # print "\t\treading in realization:",real
-                        # print real
                         areal = aref[real]
                         for region in areal.keys():
                             reg = areal[region]
@@ -395,7 +489,9 @@ class JSONs(object):
                     varnm += "-%i" % int(var["level"] / 100.)
             tmp_dict = {varnm: tmp_dict["RESULTS"]}
         else:
-            tmp_dict = tmp_dict["RESULTS"]
+            tmp_dict = tmp_dict["RESULTS
+        if json_struct != self.json_struct and self.json_struct == []:
+            self.json_struct = json_struct
         self.addDict2Self(tmp_dict, json_struct, json_version)
 
     def getAxis(self, axis):
@@ -405,9 +501,11 @@ class JSONs(object):
                 return a
         return None
 
-    def getAxisList(self, use_cache=True):
-        if use_cache and self.axes is not None:
-            return self.axes
+    def getAxisIds(self):
+        axes = self.getAxisList()
+        return [ax.id for ax in axes]
+
+    def getAxisList(self):
         values = []
         axes = []
         for a in self.json_struct:
