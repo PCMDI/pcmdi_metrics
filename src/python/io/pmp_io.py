@@ -23,6 +23,17 @@ cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
 # where value is a integer between 0 and 9 included
 cdms2.setNetcdfDeflateLevelFlag(value)
 
+
+# cdutil region object need a serializer
+def update_dict(d, u):
+    for k, v in u.iteritems():
+        if isinstance(v, collections.Mapping):
+            r = update_dict(d.get(k, {}), v)
+            d[k] = r
+        else:
+            d[k] = u[k]
+    return d
+
 # Platform
 def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
     try:
@@ -41,6 +52,7 @@ def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
             if k not in prov:
                 prov[k] = fill_missing
     return
+
 def generateProvenance():
     prov = collections.OrderedDict()
     platform = os.uname()
@@ -126,6 +138,7 @@ def generateProvenance():
     }
     populate_prov(prov["openGL"]["GLX"]["client"], "glxinfo", pairs, sep=":", index=-1)
     return prov
+
 
 class CDMSDomainsEncoder(json.JSONEncoder):
     def default(self, o):
@@ -330,17 +343,6 @@ class PMPIO(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         return hasher.hexdigest()
 
 
-# cdutil region object need a serializer
-def update_dict(d, u):
-    for k, v in u.iteritems():
-        if isinstance(v, collections.Mapping):
-            r = update_dict(d.get(k, {}), v)
-            d[k] = r
-        else:
-            d[k] = u[k]
-    return d
-
-
 class JSONs(object):
 
     def addDict2Self(self, json_dict, json_struct, json_version):
@@ -489,7 +491,7 @@ class JSONs(object):
                     varnm += "-%i" % int(var["level"] / 100.)
             tmp_dict = {varnm: tmp_dict["RESULTS"]}
         else:
-            tmp_dict = tmp_dict["RESULTS
+            tmp_dict = tmp_dict["RESULTS"]
         if json_struct != self.json_struct and self.json_struct == []:
             self.json_struct = json_struct
         self.addDict2Self(tmp_dict, json_struct, json_version)

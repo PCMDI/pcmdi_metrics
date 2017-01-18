@@ -172,8 +172,8 @@ class RunDiags(object):
         def determine_obs_or_model(self, is_obs, ref_or_test, data_path):
             if is_obs:
                 print 'OBS'
-                return pcmdi_metrics.driver.observation. Observation(self.parameter, self.var_name_long, self.region,
-                                                                     ref_or_test, self.obs_dict, data_path, self.sftlf)
+                return pcmdi_metrics.driver.observation.Observation(self.parameter, self.var_name_long, self.region,
+                                                                    ref_or_test, self.obs_dict, data_path, self.sftlf)
             else:
                 print 'MODEL'
                 return pcmdi_metrics.driver.model.Model(self.parameter, self.var_name_long, self.region,
