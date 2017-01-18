@@ -34,6 +34,7 @@ def update_dict(d, u):
             d[k] = u[k]
     return d
 
+
 # Platform
 def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
     try:
@@ -52,6 +53,7 @@ def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
             if k not in prov:
                 prov[k] = fill_missing
     return
+
 
 def generateProvenance():
     prov = collections.OrderedDict()
