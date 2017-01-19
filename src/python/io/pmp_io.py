@@ -22,7 +22,7 @@ cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
 cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
 # where value is a integer between 0 and 9 included
 cdms2.setNetcdfDeflateLevelFlag(value)
-
+logging.basicConfig(level=logging.DEBUG)
 
 # cdutil region object need a serializer
 def update_dict(d, u):
@@ -220,7 +220,7 @@ class PMPIO(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             logging.error('Unknown type: %s' % type)
             raise RuntimeError('Unknown type: %s' % type)
 
-        logging.error('Results saved to a %s file: %s' % (type, file_name))
+        logging.info('Results saved to a %s file: %s' % (type, file_name))
 
     def get(self, var, var_in_file=None,
             region={}, *args, **kwargs):

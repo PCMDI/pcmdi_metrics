@@ -11,6 +11,8 @@ class OBS(pcmdi_metrics.io.pmp_io.PMPIO):
                    "%(reference)/%(ac)/%(filename)"
         super(OBS, self).__init__(root, template, file_mask_template)
 
+        logging.basicConfig(level=logging.DEBUG)
+
         if obs not in obs_dict[var]:
             msg = '%s is not a valid obs according to the obs_dict.' % obs
             raise RuntimeError(msg)
@@ -72,7 +74,7 @@ class Observation(pcmdi_metrics.driver.dataset.DataSet):
             obs_mask_name = obs_mask()
         except:
             msg = 'Could not figure out obs mask name from obs json file'
-            logging.error(msg)
+            logging.info(msg)
             obs_mask_name = None
 
         return obs_mask_name

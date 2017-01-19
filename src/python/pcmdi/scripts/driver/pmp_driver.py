@@ -10,6 +10,7 @@ class PMPDriver(cdp.cdp_driver.CDPDriver):
         parser = pcmdi_metrics.driver.pmp_parser.PMPParser()
         super(PMPDriver, self).__init__(parser.get_parameter())
         self.run()
+        logging.basicConfig(level=logging.DEBUG)
 
     def check_parameter(self):
         # Check that all of the variables used from parameter exist.

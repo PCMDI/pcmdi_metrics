@@ -11,6 +11,7 @@ import pcmdi_metrics.driver.dataset
 class OutputMetrics(object):
 
     def __init__(self, parameter, var_name_long, obs_dict, sftlf):
+        logging.basicConfig(level=logging.DEBUG)
         self.parameter = parameter
         self.var_name_long = var_name_long
         self.obs_dict = obs_dict
@@ -223,7 +224,7 @@ class OutputMetrics(object):
         pth = os.path.join(self.parameter.test_clims_interpolated_output,
                            region_name)
         clim_file = pcmdi_metrics.io.pmp_io.PMPIO(pth, self.parameter.filename_output_template)
-        logging.error('Saving interpolated climatologies to: %s' % clim_file())
+        logging.info('Saving interpolated climatologies to: %s' % clim_file())
         clim_file.level = self.out_file.level
         clim_file.model_version = test.obs_or_model
 
@@ -260,7 +261,7 @@ class OutputMetrics(object):
     def write_on_exit(self):
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
         if not self.parameter.dry_run:
-            logging.error('Saving results to: %s' % self.out_file())
+            logging.info('Saving results to: %s' % self.out_file())
             self.out_file.write(self.metrics_dictionary,
                                 json_structure=["model", "reference", "rip", "region", "statistic", "season"],
                                 indent=4,

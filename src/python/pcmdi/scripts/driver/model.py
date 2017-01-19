@@ -12,6 +12,8 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
                  model, obs_dict, data_path, sftlf):
         super(Model, self).__init__(parameter, var_name_long, region,
                                     obs_dict, data_path, sftlf)
+        logging.basicConfig(level=logging.DEBUG)
+
         self._model_file = None
         self.var_in_file = None
         self.obs_or_model = model

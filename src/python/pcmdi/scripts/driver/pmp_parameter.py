@@ -4,6 +4,7 @@ import cdp.cdp_parameter
 
 class PMPParameter(cdp.cdp_parameter.CDPParameter):
     def __init__(self):
+        logging.basicConfig(level=logging.DEBUG)
 
         # Metrics run identification
         self.case_id = ''
@@ -85,7 +86,7 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
             )
 
         if self.reference_data_set == [] or self.reference_data_set == ():
-            logging.error("data_a is blank.")
+            logging.error("reference_data_set is blank.")
 
     def check_test_data_set(self):
         if type(self.test_data_set) is not list \

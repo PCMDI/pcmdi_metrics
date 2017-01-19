@@ -9,6 +9,8 @@ import pcmdi_metrics.driver.dataset
 class RunDiags(object):
 
         def __init__(self, parameter):
+            logging.basicConfig(level=logging.DEBUG)
+
             self.parameter = parameter
             self.obs_dict = {}
             self.regions_dict = {}
