@@ -24,6 +24,7 @@ cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
 cdms2.setNetcdfDeflateLevelFlag(value)
 logging.basicConfig(level=logging.DEBUG)
 
+
 # cdutil region object need a serializer
 def update_dict(d, u):
     for k, v in u.iteritems():
@@ -197,7 +198,6 @@ class PMPIO(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                     del(kwargs[k])
             data["json_version"] = json_version
             data["json_structure"] = json_structure
-
             f = open(file_name, 'w')
             data["provenance"] = generateProvenance()
             json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kwargs)
