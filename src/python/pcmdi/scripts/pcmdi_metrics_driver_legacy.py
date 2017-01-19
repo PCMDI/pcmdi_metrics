@@ -149,7 +149,7 @@ if hasattr(parameters, "model_tweaks"):
 else:
     tweaks_all = {}
 
-out = pcmdi_metrics.io.base.Base(
+out = pcmdi_metrics.io.pmp_io.PMPIO(
     os.path.abspath(os.path.join(parameters.metrics_output_path)),
     "errors_log.txt")
 case_id = getattr(parameters, "case_id", "")
@@ -192,7 +192,7 @@ if getattr(parameters, "save_mod_clims", False):
 sftlf = {}
 # LOOP THROUGH DIFFERENT MODEL VERSIONS OBTAINED FROM input_model_data.py
 for model_version in parameters.model_versions:
-    sft = pcmdi_metrics.io.base.Base(
+    sft = pcmdi_metrics.io.pmp_io.PMPIO(
         parameters.mod_data_path,
         getattr(
             parameters,
@@ -317,7 +317,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                 refs = [refs, ]
         dup('ref is: ', refs)
 
-        OUT = pcmdi_metrics.io.base.Base(
+        OUT = pcmdi_metrics.io.pmp_io.PMPIO(
             parameters.metrics_output_path,
             "%(var)%(level)_%(targetGridName)_" +
             "%(regridTool)_%(regridMethod)_metrics")
@@ -433,7 +433,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
 
                         while success:
 
-                            MODEL = pcmdi_metrics.io.base.Base(
+                            MODEL = pcmdi_metrics.io.pmp_io.PMPIO(
                                 parameters.mod_data_path,
                                 parameters.filename_template)
                             MODEL.model_version = model_version
@@ -699,7 +699,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             # same after)
                             if not args.dry_run and hasattr(parameters, "save_mod_clims") and \
                                     parameters.save_mod_clims is True and ref == refs[0]:
-                                CLIM = pcmdi_metrics.io.base.Base(
+                                CLIM = pcmdi_metrics.io.pmp_io.PMPIO(
                                     os.path.join(parameters.
                                                  model_clims_interpolated_output, region_name),
                                     parameters.filename_output_template)

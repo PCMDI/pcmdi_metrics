@@ -12,7 +12,7 @@ class TestJSONs(unittest.TestCase):
 
     def variability(self):
         pth = os.path.dirname(inspect.getfile(self.__class__))
-        J = pcmdi_metrics.io.base.JSONs([os.path.join(
+        J = pcmdi_metrics.io.pmp_io.JSONs([os.path.join(
             pth, "io", "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_1900-2005_adjust_based_tcor_obs-pc1_vs_obs-pseudo_pcs.json")])
         axes_ids = J.getAxisIds()
         axes = J.getAxisList()
