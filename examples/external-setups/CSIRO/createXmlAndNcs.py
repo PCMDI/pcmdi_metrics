@@ -170,4 +170,4 @@ for count1, modelId in enumerate(inModels):
 
 # Execute shell command
 # source /short/p66/pjd599/PCMDI_METRICS/v1p0/bin/setup_runtime.csh
-# > pcmdi_metrics_driver_legacy.py -p gfdl_input_parameters_test.py
+# > pcmdi_metrics_driver.py -p gfdl_input_parameters_test.py

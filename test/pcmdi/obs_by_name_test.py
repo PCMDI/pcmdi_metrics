@@ -56,7 +56,7 @@ period = '198501-200512'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
-save_mod_clims = False  # True or False
+save_test_clims = False  # True or False
 
 # DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 

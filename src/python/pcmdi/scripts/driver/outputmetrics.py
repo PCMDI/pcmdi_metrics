@@ -3,7 +3,7 @@ import logging
 import os
 import cdms2
 import pcmdi_metrics
-import pcmdi_metrics.io.pmp_io
+import pcmdi_metrics.io.base
 import pcmdi_metrics.driver.observation
 import pcmdi_metrics.driver.dataset
 
@@ -23,7 +23,7 @@ class OutputMetrics(object):
 
         string_template = "%(variable)%(level)_%(target_grid_name)_" +\
                           "%(regrid_tool)_%(regrid_method)_metrics"
-        self.out_file = pcmdi_metrics.io.pmp_io.PMPIO(self.parameter.metrics_output_path, string_template)
+        self.out_file = pcmdi_metrics.io.base.Base(self.parameter.metrics_output_path, string_template)
 
         self.regrid_method = ''
         self.regrid_tool = ''
@@ -223,7 +223,7 @@ class OutputMetrics(object):
         region_name = self.get_region_name_from_region(test.region)
         pth = os.path.join(self.parameter.test_clims_interpolated_output,
                            region_name)
-        clim_file = pcmdi_metrics.io.pmp_io.PMPIO(pth, self.parameter.filename_output_template)
+        clim_file = pcmdi_metrics.io.base.Base(pth, self.parameter.filename_output_template)
         logging.info('Saving interpolated climatologies to: %s' % clim_file())
         clim_file.level = self.out_file.level
         clim_file.model_version = test.obs_or_model

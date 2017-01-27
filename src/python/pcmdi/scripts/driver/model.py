@@ -3,7 +3,7 @@ import logging
 import MV2
 import cdutil
 import cdms2
-import pcmdi_metrics.io.pmp_io
+import pcmdi_metrics.io.base
 import pcmdi_metrics.driver.dataset
 
 
@@ -22,7 +22,7 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
         self.setup_target_mask()
 
     def create_model_file(self):
-        self._model_file = pcmdi_metrics.io.pmp_io.PMPIO(self.data_path,
+        self._model_file = pcmdi_metrics.io.base.Base(self.data_path,
                                                          self.parameter.filename_template)
         self._model_file.variable = self.var
         self._model_file.model_version = self.obs_or_model

@@ -1,10 +1,10 @@
 import logging
 import MV2
-import pcmdi_metrics.io.pmp_io
+import pcmdi_metrics.io.base
 import pcmdi_metrics.driver.dataset
 
 
-class OBS(pcmdi_metrics.io.pmp_io.PMPIO):
+class OBS(pcmdi_metrics.io.base.Base):
     def __init__(self, root, var, obs_dict, obs='default',
                  file_mask_template=None):
         template = "%(realm)/%(frequency)/%(variable)/" +\

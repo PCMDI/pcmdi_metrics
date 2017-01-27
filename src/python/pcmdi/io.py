@@ -3,14 +3,14 @@ import json
 import os
 
 
-class OBS(pcmdi_metrics.io.pmp_io.PMPIO):
+class OBS(pcmdi_metrics.io.base.Base):
 
     def __init__(self, root, var, obs_dic, reference="default",
                  file_mask_template=None):
 
         template = "%(realm)/%(frequency)/%(variable)/" +\
             "%(reference)/%(ac)/%(filename)"
-        pcmdi_metrics.io.pmp_io.PMPIO.__init__(
+        pcmdi_metrics.io.base.Base.__init__(
             self, root, template, file_mask_template)
         obs_name = obs_dic[var][reference]
         # usually send "default", "alternate", etc
@@ -37,7 +37,7 @@ class OBS(pcmdi_metrics.io.pmp_io.PMPIO):
         self.variable = var
 
 
-class JSONs(pcmdi_metrics.io.pmp_io.JSONs):
+class JSONs(pcmdi_metrics.io.base.JSONs):
 
     def __init__(self, files=[], ignored_keys=None):
         if ignored_keys is None:

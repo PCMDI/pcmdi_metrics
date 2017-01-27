@@ -152,7 +152,7 @@ class CDMSDomainsEncoder(json.JSONEncoder):
         return {o.id: 'cdutil.region.domain(%s)' % args}
 
 
-class PMPIO(cdp.cdp_io.CDPIO, genutil.StringConstructor):
+class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
     def __init__(self, root, file_template, file_mask_template=None):
         genutil.StringConstructor.__init__(self, root + '/' + file_template)
         self.target_grid = None
@@ -299,7 +299,7 @@ class PMPIO(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
     def set_file_mask_template(self):
         if isinstance(self.file_mask_template, basestring):
-            self.file_mask_template = PMPIO(self.root, self.file_mask_template,
+            self.file_mask_template = Base(self.root, self.file_mask_template,
                                             {'domain': self.region.get('domain', None)})
 
     def get_mask_from_var(self, var):

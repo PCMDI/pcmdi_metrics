@@ -4,7 +4,7 @@ import sys
 import logging
 import cdutil
 import cdms2
-import pcmdi_metrics.io.pmp_io
+import pcmdi_metrics.io.base
 
 
 class DataSet(object):
@@ -63,7 +63,7 @@ class DataSet(object):
         sftlf = {}
 
         for test in parameter.test_data_set:
-            sft = pcmdi_metrics.io.pmp_io.PMPIO(parameter.test_data_path,
+            sft = pcmdi_metrics.io.base.Base(parameter.test_data_path,
                                                 getattr(parameter, "sftlf_filename_template",
                                                         parameter.filename_template))
             sft.model_version = test
@@ -102,7 +102,7 @@ class DataSet(object):
 
     @abc.abstractmethod
     def get(self):
-        """Calls the get function on the PMPIO object."""
+        """Calls the get function on the Base object."""
         raise NotImplementedError()
 
     @staticmethod
@@ -120,9 +120,9 @@ class DataSet(object):
 
     @abc.abstractmethod
     def hash(self):
-        """Calls the hash function on the PMPIO object."""
+        """Calls the hash function on the Base object."""
         raise NotImplementedError()
 
     def file_path(self):
-        """Calls the __call__() function on the PMPIO object."""
+        """Calls the __call__() function on the Base object."""
         raise NotImplementedError()
