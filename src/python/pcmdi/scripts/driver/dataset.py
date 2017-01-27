@@ -64,8 +64,8 @@ class DataSet(object):
 
         for test in parameter.test_data_set:
             sft = pcmdi_metrics.io.base.Base(parameter.test_data_path,
-                                                getattr(parameter, "sftlf_filename_template",
-                                                        parameter.filename_template))
+                                             getattr(parameter, "sftlf_filename_template",
+                                                     parameter.filename_template))
             sft.model_version = test
             sft.table = "fx"
             sft.realm = "atmos"

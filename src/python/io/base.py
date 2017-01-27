@@ -300,7 +300,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
     def set_file_mask_template(self):
         if isinstance(self.file_mask_template, basestring):
             self.file_mask_template = Base(self.root, self.file_mask_template,
-                                            {'domain': self.region.get('domain', None)})
+                                           {'domain': self.region.get('domain', None)})
 
     def get_mask_from_var(self, var):
         try:

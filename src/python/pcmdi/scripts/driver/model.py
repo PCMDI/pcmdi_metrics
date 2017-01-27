@@ -23,7 +23,7 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
 
     def create_model_file(self):
         self._model_file = pcmdi_metrics.io.base.Base(self.data_path,
-                                                         self.parameter.filename_template)
+                                                      self.parameter.filename_template)
         self._model_file.variable = self.var
         self._model_file.model_version = self.obs_or_model
         self._model_file.period = self.parameter.period
