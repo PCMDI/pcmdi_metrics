@@ -38,7 +38,7 @@ P.add_argument("--outpj", "--outpathjsons",
                       help = "Output path for jsons")
 P.add_argument("--outnj", "--outnamejson",
                       type = str,
-                      dest = 'jsonnames',
+                      dest = 'jsonname',
                       default = 'test',
                       help = "Output path for jsons")
 P.add_argument("--outpd", "--outpathdata",
@@ -90,14 +90,12 @@ mip = args.mip
 exp = args.experiment
 
 
-json_filename = args.jsonnames
+json_filename = args.jsonname
 
 if json_filename == 'CMIP_MME': json_filename = '/MPI_' + mip + '_' + exp
 
-#mip = 'CMIP5'
-#exp = 'historical'
-
-mods = ['ACCESS1-0', 'ACCESS1-3', 'bcc-csm1-1', 'bcc-csm1-1-m', 'BNU-ESM', 'CanCM4', 'CanESM2', 'CCSM4', 'CESM1-BGC', 'CESM1-CAM5', 'CESM1-FASTCHEM', 'CESM1-WACCM', 'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS', 'CNRM-CM5-2', 'CNRM-CM5', 'CSIRO-Mk3-6-0', 'FGOALS-g2', 'FIO-ESM', 'GFDL-CM2p1', 'GFDL-CM3', 'GFDL-ESM2G', 'GFDL-ESM2M', 'GISS-E2-H', 'GISS-E2-H-CC', 'GISS-E2-R', 'GISS-E2-R-CC', 'HadCM3', 'HadGEM2-AO', 'HadGEM2-CC', 'HadGEM2-ES', 'inmcm4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR', 'IPSL-CM5B-LR', 'MIROC4h', 'MIROC5', 'MIROC-ESM', 'MIROC-ESM-CHEM', 'MPI-ESM-LR', 'MPI-ESM-MR', 'MPI-ESM-P', 'MRI-CGCM3', 'MRI-ESM1', 'NorESM1-M', 'NorESM1-ME']
+if mip == 'CMIP5' and exp == 'historical':
+  mods = ['ACCESS1-0', 'ACCESS1-3', 'bcc-csm1-1', 'bcc-csm1-1-m', 'BNU-ESM', 'CanCM4', 'CanESM2', 'CCSM4', 'CESM1-BGC', 'CESM1-CAM5', 'CESM1-FASTCHEM', 'CESM1-WACCM', 'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS', 'CNRM-CM5-2', 'CNRM-CM5', 'CSIRO-Mk3-6-0', 'FGOALS-g2', 'FIO-ESM', 'GFDL-CM2p1', 'GFDL-CM3', 'GFDL-ESM2G', 'GFDL-ESM2M', 'GISS-E2-H', 'GISS-E2-H-CC', 'GISS-E2-R', 'GISS-E2-R-CC', 'HadCM3', 'HadGEM2-AO', 'HadGEM2-CC', 'HadGEM2-ES', 'inmcm4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR', 'IPSL-CM5B-LR', 'MIROC4h', 'MIROC5', 'MIROC-ESM', 'MIROC-ESM-CHEM', 'MPI-ESM-LR', 'MPI-ESM-MR', 'MPI-ESM-P', 'MRI-CGCM3', 'MRI-ESM1', 'NorESM1-M', 'NorESM1-ME']
 
 print 'mods is ', mods
 
@@ -118,7 +116,7 @@ obsgrid = dobs_orig.getGrid()
 
 ########################################
 
-#  SEASONAL RANGE
+#  SEASONAL RANGE - USING ANNUAL CYCLE CLIMATOLGIES 0=Jan, 11=Dec
 def mpd(d):
  mjjas = (d[4] + d[5] + d[6] + d[7] + d[8])/5.
  ndjfm = (d[10] + d[11] + d[0] + d[1] + d[2])/5.
@@ -249,7 +247,6 @@ for mod in gmods:
    mpi_stats_dic[mod][dom]['rmsn']=  format(rmsn,sig_digits) 
    mpi_stats_dic[mod][dom]['threat_score'] = format(score,sig_digits) 
 
-
 # SAVE ANNRANGE AND HIT MISS AND FALSE ALARM FOR EACH MOD DOM 
    fm = nout + '/' + mod + '_' + dom + '_wang-monsoon.nc'
    g = cdms2.open(fm,'w+')
@@ -265,7 +262,6 @@ for mod in gmods:
 
 
 #  OUTPUT METRICS TO JSON FILE
-
 #json_filename = '/MPI_' + mip + '_' + exp 
 
 OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout),json_filename)
@@ -292,6 +288,5 @@ OUT.write(
                 separators=(
                     ',',
                     ': '))
-
 
 print 'done'
