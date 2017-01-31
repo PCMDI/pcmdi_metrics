@@ -90,7 +90,6 @@ mods = args.modnames
 mip = args.mip
 exp = args.experiment
 
-
 json_filename = args.jsonname
 
 if json_filename == 'CMIP_MME': json_filename = '/MPI_' + mip + '_' + exp
@@ -200,16 +199,19 @@ for mod in gmods:
 
    print mod,' ', dom, ' ', cor 
 
-## SKILL SCORES
-#  HIT/(HIT + MISSED + FALSE ALARMS)
+#  DOMAIN SELECTED FROM GLOBAL ANNUAL RANGE FOR MODS AND OBS
    annrange_mod_dom = annrange_mod(reg_sel)
    annrange_obs_dom = annrange_obs(reg_sel)
 
+#  THRESHOLD (see Wang et al., doi:10.1007/s00382-010-0877-0)
    mt = MV2.where(MV2.greater(annrange_mod_dom,thr),1.,0.)
    ot = MV2.where(MV2.greater(annrange_obs_dom,thr),1.,0.)
 
+## SKILL SCORES
+#  HIT/(HIT + MISSED + FALSE ALARMS)
    hit, missed,falarm,score,hitmap,missmap,falarmmap = mpi_skill_scores(mt,ot,thr)
 
+#  POPULATE DICTIONARY FOR JSON FILES
    mpi_stats_dic[mod][dom] = {}
    mpi_stats_dic[mod][dom]['cor']=  format(cor,sig_digits)  
    mpi_stats_dic[mod][dom]['rmsn']=  format(rmsn,sig_digits) 
