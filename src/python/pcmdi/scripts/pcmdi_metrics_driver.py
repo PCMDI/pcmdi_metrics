@@ -33,10 +33,10 @@ unidata.addDimensionlessUnit("dimless")
 unidata.addScaledUnit("psu", .001, "dimless")
 unidata.addScaledUnit("PSS-78", .001, "dimless")
 unidata.addScaledUnit("Practical Salinity Scale 78", .001, "dimless")
-# PRINT
+
+# Default regions and specs for them
 regions_specs = pcmdi_metrics.pcmdi.regions_specs
 default_regions = pcmdi_metrics.pcmdi.default_regions
-print "REGIOND SPECS:",regions_specs,default_regions
 # Load the obs dictionary
 fjson = open(
     os.path.join(
