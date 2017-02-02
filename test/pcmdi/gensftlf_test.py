@@ -12,7 +12,7 @@ case_id = 'gensftlfTest'
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF
 # CLIMATOLOGY FILENAME
-model_versions = ['GFDL-ESM2G', ]
+test_data_set = ['GFDL-ESM2G', ]
 
 # dictionary of keywords for simulation description that you want to save
 # or remap
@@ -25,11 +25,11 @@ simulation_description_mapping = {
 vars = ['tas', ]
 
 # Observations to use at the moment "default" or "alternate"
-ref = ['default']
+reference_data_set = ['default']
 ext = '.nc'
 
 # INTERPOLATION OPTIONS
-targetGrid = '2.5x2.5'  # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
+target_grid = '2.5x2.5'  # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
 regrid_tool = 'esmf'  # 'regrid2' # OPTIONS: 'regrid2','esmf'
 # OPTIONS: 'linear','conservative', only if tool is esmf
 regrid_method = 'linear'
@@ -50,7 +50,7 @@ realization = "r1i1p1"  # mandatory
 regions = {"tas": [None, "land", "ocean"], }
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
-save_mod_clims = True
+save_test_clims = True
 
 # DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 # Templates for climatology files
@@ -62,18 +62,20 @@ generate_sftlf = True
 
 pth = os.path.dirname(__file__)
 # ROOT PATH FOR MODELS CLIMATOLOGIES
-mod_data_path = os.path.abspath(os.path.join(pth, "data"))
+test_data_path = os.path.abspath(os.path.join(pth, "data"))
 # ROOT PATH FOR OBSERVATIONS
-obs_data_path = os.path.abspath(os.path.join(pth, "obs"))
+reference_data_path = os.path.abspath(os.path.join(pth, "obs"))
 # Custom obs dictionary file (one we use for tests)
 custom_observations = os.path.abspath(
     os.path.join(
-        obs_data_path,
+        reference_data_path,
         "obs_info_dictionary.json"))
 # DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join(
     'pcmdi_install_test_results',
     'metrics_results', '%(case_id)')
-model_clims_interpolated_output = os.path.abspath(
+test_clims_interpolated_output = os.path.abspath(
     os.path.join('pcmdi_install_test_results', 'climos'))
 filename_output_template = "%(variable)_%(model_version)_%(table)_piControl_%(period)_%(region)-clim.nc"
+
+dry_run = False
