@@ -15,3 +15,4 @@ import std_xyt  # noqa
 import seasonal_mean  # noqa
 import zonal_mean  # noqa
 import pmp_parser  # noqa
+from default_regions import regions_specs, default_regions  # noqa

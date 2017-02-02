@@ -34,10 +34,9 @@ unidata.addScaledUnit("psu", .001, "dimless")
 unidata.addScaledUnit("PSS-78", .001, "dimless")
 unidata.addScaledUnit("Practical Salinity Scale 78", .001, "dimless")
 
-# Following are actually created in excfile bit, this is to make flae8 happy
-regions_specs = {}
-default_regions = []
-execfile(sys.prefix + "/share/pmp/default_regions.py")
+# Default regions and specs for them
+regions_specs = pcmdi_metrics.pcmdi.regions_specs
+default_regions = pcmdi_metrics.pcmdi.default_regions
 
 # Load the obs dictionary
 fjson = open(

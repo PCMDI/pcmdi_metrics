@@ -4,6 +4,7 @@ import pcmdi_metrics.driver.outputmetrics
 import pcmdi_metrics.driver.observation
 import pcmdi_metrics.driver.model
 import pcmdi_metrics.driver.dataset
+import pcmdi_metrics.pcmdi
 
 
 class RunDiags(object):
@@ -81,15 +82,8 @@ class RunDiags(object):
             return regions_dict
 
         def load_default_regions_and_regions_specs(self):
-            default_regions_file = \
-                pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj('default_regions.py')
-            execfile(default_regions_file.name)
-            default_regions_file.close()
-            try:
-                self.default_regions = locals()['default_regions']
-                self.regions_specs = locals()['regions_specs']
-            except KeyError:
-                logging.error('Failed to open default_regions.py')
+            self.default_regions = pcmdi_metrics.pcmdi.default_regions
+            self.regions_specs = pcmdi_metrics.pcmdi.regions_specs
 
             region_values = self.parameter.regions_values
             region_values.update(getattr(self.parameter, "regions_values", {}))
