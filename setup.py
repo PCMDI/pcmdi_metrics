@@ -67,7 +67,7 @@ data_files = [
               ('share/pmp', ('doc/obs_info_dictionary.json',
                                'share/pcmdi_metrics_table',
                                'share/disclaimer.txt',
-                               'share/default_regions.py')),
+                               )),
               ('share/pmp/demo',demo_files),
               ]
 
