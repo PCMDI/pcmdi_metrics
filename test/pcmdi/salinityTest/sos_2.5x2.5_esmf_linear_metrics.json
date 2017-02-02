@@ -379,6 +379,7 @@
     "Variable": {
         "id": "sos"
     },
+    "json_version": 3.0,
     "References": {
         "JPL-Aquarius-v2": {
             "RefName": "JPL-Aquarius-v2",
@@ -495,7 +496,6 @@
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
         }
     },
-    "json_version": 3.0,
     "json_structure": [
         "model",
         "reference",
@@ -504,6 +504,6 @@
         "statistic",
         "season"
     ],
-    "metrics_git_sha1": "fd08253cc5e396cf717da542e3f4c71facf8718b",
-    "uvcdat_version": "2.6"
+    "metrics_git_sha1": "13c63fb955868fd0dcbe0933e9ddc65021b0c427",
+    "uvcdat_version": "v2.8"
 }

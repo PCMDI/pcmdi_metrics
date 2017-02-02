@@ -15,7 +15,7 @@
                 "Login": "N/A",
                 "SimTrackingDate": "2012-01-10T20:19:59Z"
             },
-            "defaultReference": {
+            "default": {
                 "source": "UKMETOFFICE-HadISST-v1-1",
                 "r1i1p1": {
                     "TROPICS": {
@@ -374,6 +374,7 @@
     "Variable": {
         "id": "tos"
     },
+    "json_version": 3.0,
     "References": {
         "default": {
             "RefName": "UKMETOFFICE-HadISST-v1-1",
@@ -498,7 +499,6 @@
             "URI": "http://uvcdat.llnl.gov/documentation/utilities/utilities-2.html"
         }
     },
-    "json_version": 3.0,
     "json_structure": [
         "model",
         "reference",
@@ -507,6 +507,6 @@
         "statistic",
         "season"
     ],
-    "metrics_git_sha1": "fd08253cc5e396cf717da542e3f4c71facf8718b",
-    "uvcdat_version": "2.6"
+    "metrics_git_sha1": "13c63fb955868fd0dcbe0933e9ddc65021b0c427",
+    "uvcdat_version": "v2.8"
 }
