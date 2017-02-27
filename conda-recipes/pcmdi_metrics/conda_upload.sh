@@ -9,9 +9,9 @@ export VERSION=`date +%Y.%m.%d`
 
 mkdir temp
 git clone git://github.com/UV-CDAT/conda-recipes temp
-mkdir -p conda-recipes/pcmdi_metrics
-cp build.sh meta.yaml.in conda-recipes/pcmdi_metrics
-cd conda-recipes
+mkdir -p temp/conda-recipes/pcmdi_metrics
+cp conda-recipes/pcmdi_metrics/build.sh conda-recipes/pcmdi_metrics/meta.yaml.in temp/conda-recipes/pcmdi_metrics
+cd temp/conda-recipes
 
 python ./prep_for_build.py -v $VERSION
 conda build pcmdi_metrics
