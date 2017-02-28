@@ -7,12 +7,13 @@ conda config --set anaconda_upload no
 export CONDA_BLD_PATH=~/conda-bld
 export VERSION=`date +%Y.%m.%d`
 
-mkdir temp
-git clone git://github.com/UV-CDAT/conda-recipes temp
-mkdir -p temp/conda-recipes/pcmdi_metrics
+#mkdir temp
+mkdir -p temp/conda-recipes
+git clone git://github.com/UV-CDAT/conda-recipes temp/conda-recipes
+mkdir temp/conda-recipes/pcmdi_metrics
 cp conda-recipes/pcmdi_metrics/build.sh conda-recipes/pcmdi_metrics/meta.yaml.in temp/conda-recipes/pcmdi_metrics
 cd temp/conda-recipes
-echo ls temp/conda-recipes
+echo ls temp/conda-recipes:
 ls
 python ./prep_for_build.py -v $VERSION
 conda build pcmdi_metrics
