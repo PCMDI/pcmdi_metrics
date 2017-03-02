@@ -14,9 +14,6 @@ def compute_metrics(Var, dm, do):
         metrics_defs["rms_xyt"] = pcmdi_metrics.pcmdi.rms_xyt.compute(
             None,
             None)
-        metrics_defs["rmsc_xyt"] = pcmdi_metrics.pcmdi.rmsc_xyt.compute(
-            None,
-            None)
         metrics_defs["rms_xy"] = pcmdi_metrics.pcmdi.rms_xy.compute(None, None)
         metrics_defs["rmsc_xy"] = pcmdi_metrics.pcmdi.rmsc_xy.compute(None, None)
         metrics_defs["bias_xy"] = pcmdi_metrics.pcmdi.bias_xy.compute(
@@ -56,12 +53,9 @@ def compute_metrics(Var, dm, do):
         sig_digits = '.5f'
     else:
         sig_digits = '.3f'
-    if var in ['gpp']:
-        sig_digits = '.13f'
 
     # CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD
     rms_xyt = pcmdi_metrics.pcmdi.rms_xyt.compute(dm, do)
-    rmsc_xyt = pcmdi_metrics.pcmdi.rmsc_xyt.compute(dm, do)
 #   cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm, do)
     stdObs_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(do)
     std_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(dm)
@@ -113,7 +107,7 @@ def compute_metrics(Var, dm, do):
 
     for stat in ["std-obs_xy", "std_xy", "std-obs_xyt",
                  "std_xyt", "std-obs_xy_devzm", "mean_xy", "mean-obs_xy", "std_xy_devzm",
-                 "rms_xyt", "rmsc_xyt", "rms_xy", "rmsc_xy", "cor_xy", "bias_xy",
+                 "rms_xyt", "rms_xy", "rmsc_xy", "cor_xy", "bias_xy",
                  "mae_xy", "rms_y", "rms_devzm"]:
         metrics_dictionary[stat] = {}
 
@@ -160,11 +154,6 @@ def compute_metrics(Var, dm, do):
     metrics_dictionary[
         'rms_xyt']['ann'] = format(
         rms_xyt *
-        conv,
-        sig_digits)
-    metrics_dictionary[
-        'rmsc_xyt']['ann'] = format(
-        rmsc_xyt *
         conv,
         sig_digits)
     metrics_dictionary[
