@@ -8,7 +8,7 @@ import os
 import sys
 import shlex
 import genutil
-
+import argparse
 
 class bgcolor:
     HEADER = '\033[95m'
@@ -59,6 +59,11 @@ def describe(demo_file,colorized=True):
     comment(bc+"This ends this parameter file"+bgcolor.ENDC)
 
 def demo(demo_file,title,colorized=True):
+    parser = argparse.ArgumentParser(description='Just used for pointing to demo data')
+    parser.add_argument('-d', dest='demo_data_path',
+                        help='Path to the tarball of demo data')
+    args = parser.parse_args()
+
     comment("""
         PMP Demo: %s 
 
@@ -78,34 +83,41 @@ def demo(demo_file,title,colorized=True):
     if not os.path.exists(demo_pth):
         os.makedirs(demo_pth)
     #  http://oceanonly.llnl.gov/gleckler1/pmp-demo-data/pmpv1.1_demodata.tar
-    tar_filename = "pmpv1.1_demodata.tar"
-    tar_pth = os.path.join(demo_pth,tar_filename)
+    
+    if args.demo_data_path:
+        tar_pth = os.path.abspath(args.demo_data_path)
+        if not os.path.exists(tar_pth):
+            raise IOError('%s does not exist' % tar_pth)
+    
+    else:
+        tar_filename = "pmpv1.1_demodata.tar"    
+        tar_pth = os.path.join(demo_pth,tar_filename)
 
-    good_md5 = "a6ef8f15457378ff36fd46e8fbf5f157"
-
-    attempts = 0
-    while attempts < 3:
-        md5 = hashlib.md5()
-        if os.path.exists(tar_filename):
-            f = open(tar_filename)
-            md5.update(f.read())
+        good_md5 = "a6ef8f15457378ff36fd46e8fbf5f157"
+        
+        attempts = 0
+        while attempts < 3:
+            md5 = hashlib.md5()
+            if os.path.exists(tar_filename):
+                f = open(tar_filename)
+                md5.update(f.read())
+                if md5.hexdigest() == good_md5:
+                    attempts = 5
+                    continue
+            print "Downloading: ", tar_filename
+            r = requests.get("http://oceanonly.llnl.gov/gleckler1/pmp-demo-data/pmpv1.1_demodata.tar", stream=True)
+            with open(tar_pth, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=1024):
+                    if chunk:  # filter local_filename keep-alive new chunks
+                        f.write(chunk)
+                        md5.update(chunk)
+            f.close()
             if md5.hexdigest() == good_md5:
                 attempts = 5
-                continue
-        print "Downloading: ", tar_filename
-        r = requests.get("http://oceanonly.llnl.gov/gleckler1/pmp-demo-data/pmpv1.1_demodata.tar", stream=True)
-        with open(tar_pth, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:  # filter local_filename keep-alive new chunks
-                    f.write(chunk)
-                    md5.update(chunk)
-        f.close()
-        if md5.hexdigest() == good_md5:
-            attempts = 5
-        else:
-            attempts += 1
+            else:
+                attempts += 1
 
-    comment("Successfuly downloaded demo tarball\nNow untarring it", None)
+        comment("Successfuly downloaded demo tarball\nNow untarring it", None)
 
     tar_process = subprocess.Popen(shlex.split("tar xvf %s"%tar_pth),cwd=demo_pth)
     tar_process.wait()
