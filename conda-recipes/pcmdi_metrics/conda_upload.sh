@@ -15,9 +15,12 @@ cp conda-recipes/pcmdi_metrics/build.sh conda-recipes/pcmdi_metrics/meta.yaml.in
 cd temp/conda-recipes
 
 python ./prep_for_build.py -v $VERSION
+cp pcmdi_metrics/meta.yml.in pcmdi_metrics/meta.yml
 conda build pcmdi_metrics
+rm pcmdi_metrics/meta.yml
 anaconda -t $CONDA_UPLOAD_TOKEN upload -u $USER -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-$VERSION-0.tar.bz2 --force
 
 python ./prep_for_build.py -v $VERSION -f nox
+cp pcmdi_metrics/meta.yml.in pcmdi_metrics/meta.yml
 conda build pcmdi_metrics
 anaconda -t $CONDA_UPLOAD_TOKEN upload -u $USER -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-nox-$VERSION-0.tar.bz2 --force
