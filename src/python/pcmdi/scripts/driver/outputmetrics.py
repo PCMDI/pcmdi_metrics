@@ -3,9 +3,9 @@ import logging
 import os
 import cdms2
 import pcmdi_metrics
-import pcmdi_metrics.io.base
-import pcmdi_metrics.driver.observation
-import pcmdi_metrics.driver.dataset
+from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.driver.observation import Observation
+from pcmdi_metrics.driver.dataset import DataSet
 
 
 class OutputMetrics(object):
@@ -23,7 +23,7 @@ class OutputMetrics(object):
 
         string_template = "%(variable)%(level)_%(target_grid_name)_" +\
                           "%(regrid_tool)_%(regrid_method)_metrics"
-        self.out_file = pcmdi_metrics.io.base.Base(self.parameter.metrics_output_path, string_template)
+        self.out_file = Base(self.parameter.metrics_output_path, string_template)
 
         self.regrid_method = ''
         self.regrid_tool = ''
@@ -34,6 +34,8 @@ class OutputMetrics(object):
         self.setup_metrics_dictionary()
 
     def setup_metrics_dictionary(self):
+        ''' Initalize the results dict (metrics_dictionary) and the metrics documentation
+        dict (metrics_def_dictionary) which is put in the results dict. '''
         self.metrics_def_dictionary = collections.OrderedDict()
         self.metrics_dictionary = collections.OrderedDict()
         self.metrics_dictionary["DISCLAIMER"] = self.open_disclaimer()
@@ -45,7 +47,7 @@ class OutputMetrics(object):
         self.metrics_dictionary["References"] = {}
         self.metrics_dictionary["RegionalMasking"] = {}
 
-        level = pcmdi_metrics.driver.dataset.DataSet.calculate_level_from_var(self.var_name_long)
+        level = DataSet.calculate_level_from_var(self.var_name_long)
         if level is None:
             self.out_file.level = ''
         else:
@@ -53,13 +55,16 @@ class OutputMetrics(object):
             self.out_file.level = "-%i" % (int(level / 100.0))
 
     def open_disclaimer(self):
-        f = pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj('disclaimer.txt')
+        ''' Return the contents of disclaimer.txt. '''
+        f = DataSet.load_path_as_file_obj('disclaimer.txt')
         contents = f.read()
         f.close()
         return contents
 
     def setup_regrid_and_realm_vars(self):
-        if pcmdi_metrics.driver.dataset.DataSet.use_omon(self.obs_dict, self.var):
+        ''' Set the regrid_method, regrid_tool, table_realm,
+        and realm based off the obs dict and var. '''
+        if DataSet.use_omon(self.obs_dict, self.var):
             self.regrid_method = self.parameter.regrid_method_ocn
             self.regrid_tool = self.parameter.regrid_tool_ocn
             self.table_realm = 'Omon'
@@ -71,18 +76,21 @@ class OutputMetrics(object):
             self.realm = "atm"
 
     def setup_out_file(self):
+        ''' Setup for the out_file, which outputs both the .json and .txt. '''
         self.out_file.set_target_grid(
             self.parameter.target_grid, self.regrid_tool, self.regrid_method)
         self.out_file.variable = self.var
         self.out_file.realm = self.realm
         self.out_file.table = self.table_realm
         self.out_file.case_id = self.parameter.case_id
-        pcmdi_metrics.driver.dataset.DataSet.apply_custom_keys(self.out_file, self.parameter.custom_keys, self.var)
+        DataSet.apply_custom_keys(self.out_file, self.parameter.custom_keys, self.var)
 
     def add_region(self, region):
+        ''' Add a region to the metrics_dictionary. '''
         self.metrics_dictionary['RegionalMasking'][self.get_region_name_from_region(region)] = region
 
     def calculate_and_output_metrics(self, ref, test):
+        ''' Given ref and test (both either of type Observation or Model), compute the metrics. '''
         if isinstance(self.obs_dict[self.var][ref.obs_or_model], (str, unicode)):
             self.obs_var_ref = self.obs_dict[self.var][self.obs_dict[self.var][ref.obs_or_model]]
         else:
@@ -99,7 +107,8 @@ class OutputMetrics(object):
         try:
             test_data = test()
         except RuntimeError as e:
-            # THIS EXCEPTION IS RAISED TO BREAK OUT OF THE FOR LOOP IN RunDiags
+            # THIS EXCEPTION IS RAISED TO BREAK OUT OF THE FOR LOOP IN PCMDI_DRIVER
+            # THIS SHOULD BE A CUSTOM EXCEPTION (PrematureBreakError)
             raise RuntimeError('Need to skip model: %s' % test.obs_or_model)
 
         # Todo: Make this a fcn
@@ -149,6 +158,7 @@ class OutputMetrics(object):
         self.write_on_exit()
 
     def set_grid_in_metrics_dictionary(self, test_data):
+        ''' Set the grid in metrics_dictionary. '''
         grid = {}
         grid['RegridMethod'] = self.regrid_method
         grid['RegridTool'] = self.regrid_tool
@@ -157,7 +167,7 @@ class OutputMetrics(object):
         self.metrics_dictionary['GridInfo'] = grid
 
     def set_simulation_desc(self, test, test_data):
-
+        ''' Fillout information for the output .json and .txt files. '''
         self.metrics_dictionary["RESULTS"][test.obs_or_model] = \
             self.metrics_dictionary["RESULTS"].get(test.obs_or_model, {})
         if "SimulationDescription" not in \
@@ -220,10 +230,11 @@ class OutputMetrics(object):
                 self.sftlf[test.obs_or_model]["md5"]
 
     def output_interpolated_model_climatologies(self, test, test_data):
+        ''' Save the netCDF file. '''
         region_name = self.get_region_name_from_region(test.region)
         pth = os.path.join(self.parameter.test_clims_interpolated_output,
                            region_name)
-        clim_file = pcmdi_metrics.io.base.Base(pth, self.parameter.filename_output_template)
+        clim_file = Base(pth, self.parameter.filename_output_template)
         logging.info('Saving interpolated climatologies to: %s' % clim_file())
         clim_file.level = self.out_file.level
         clim_file.model_version = test.obs_or_model
@@ -238,10 +249,11 @@ class OutputMetrics(object):
         clim_file.variable = self.var
         clim_file.region = region_name
         clim_file.realization = self.parameter.realization
-        pcmdi_metrics.driver.dataset.DataSet.apply_custom_keys(clim_file, self.parameter.custom_keys, self.var)
+        DataSet.apply_custom_keys(clim_file, self.parameter.custom_keys, self.var)
         clim_file.write(test_data, type="nc", id=self.var)
 
     def get_region_name_from_region(self, region):
+        ''' Extract the region name from the region dict. '''
         # region is both in ref and test
         region_name = region['id']
         if region is None:
@@ -249,16 +261,18 @@ class OutputMetrics(object):
         return region_name
 
     def check_save_test_clim(self, ref):
+        ''' Bunch of checks to see if the netCDF files are needed to be saved. '''
         # Since we are only saving once per reference data set (it's always
         # the same after), we need to check if ref is the first value from the
         # parameter, hence we have ref.obs_or_model == reference_data_set[0]
         reference_data_set = self.parameter.reference_data_set
-        reference_data_set = pcmdi_metrics.driver.observation.Observation.setup_obs_list_from_parameter(
+        reference_data_set = Observation.setup_obs_list_from_parameter(
             reference_data_set, self.obs_dict, self.var)
         return not self.parameter.dry_run and hasattr(self.parameter, 'save_test_clims') \
                and self.parameter.save_test_clims is True and ref.obs_or_model == reference_data_set[0]  # noqa
 
     def write_on_exit(self):
+        ''' Output the metrics_dictionary as a json and text file. '''
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
         if not self.parameter.dry_run:
             logging.info('Saving results to: %s' % self.out_file())
