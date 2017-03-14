@@ -5,7 +5,7 @@ from pcmdi_metrics.driver.outputmetrics import OutputMetrics
 from pcmdi_metrics.driver.observation import Observation
 from pcmdi_metrics.driver.model import Model
 import pcmdi_metrics.driver.dataset
-import pcmdi_metrics.driver.dataset.pmp_parser
+import pcmdi_metrics.driver.pmp_parser
 
 
 class PMPDriver(object):

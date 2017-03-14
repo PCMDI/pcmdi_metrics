@@ -1,7 +1,7 @@
 import logging
 import MV2
 from pcmdi_metrics.io.base import Base
-from pcmdi_metrics.driver.dataset import Dataset
+from pcmdi_metrics.driver.dataset import DataSet
 
 
 class OBS(Base):
@@ -49,7 +49,7 @@ class OBS(Base):
             self.ac = 'ac'
 
 
-class Observation(Dataset):
+class Observation(DataSet):
     ''' Handles all the computation (setting masking, target grid, etc)
     and some file I/O related to observations. '''
     def __init__(self, parameter, var_name_long, region,
