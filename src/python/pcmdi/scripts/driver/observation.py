@@ -1,10 +1,11 @@
 import logging
 import MV2
-import pcmdi_metrics.io.base
-import pcmdi_metrics.driver.dataset
+from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.driver.dataset import DataSet
 
 
-class OBS(pcmdi_metrics.io.base.Base):
+class OBS(Base):
+    ''' Creates an output the netCDF file for an observation. '''
     def __init__(self, root, var, obs_dict, obs='default',
                  file_mask_template=None):
         template = "%(realm)/%(frequency)/%(variable)/" +\
@@ -32,6 +33,8 @@ class OBS(pcmdi_metrics.io.base.Base):
         self.variable = var
 
     def setup_based_on_obs_table(self, obs_table):
+        ''' Set the realm, frequency, ac based on the
+        CMIP_CMOR_TABLE value in the obs dict.'''
         if obs_table == u'Omon':
             self.realm = 'ocn'
             self.frequency = 'mo'
@@ -46,7 +49,9 @@ class OBS(pcmdi_metrics.io.base.Base):
             self.ac = 'ac'
 
 
-class Observation(pcmdi_metrics.driver.dataset.DataSet):
+class Observation(DataSet):
+    ''' Handles all the computation (setting masking, target grid, etc)
+    and some file I/O related to observations. '''
     def __init__(self, parameter, var_name_long, region,
                  obs, obs_dict, data_path, sftlf):
         super(Observation, self).__init__(parameter, var_name_long, region,
@@ -58,6 +63,7 @@ class Observation(pcmdi_metrics.driver.dataset.DataSet):
         self.setup_target_mask()
 
     def create_obs_file(self):
+        ''' Creates an object that will eventually output the netCDF file. '''
         obs_mask_name = self.create_obs_mask_name()
         self._obs_file = OBS(self.data_path, self.var,
                              self.obs_dict, self.obs_or_model,
@@ -67,6 +73,7 @@ class Observation(pcmdi_metrics.driver.dataset.DataSet):
         self._obs_file.case_id = self.parameter.case_id
 
     def create_obs_mask_name(self):
+        ''' Gets the name from the obs_mask, which is obtained from a netCDF file. '''
         try:
             obs_from_obs_dict = self.get_obs_from_obs_dict()
             obs_mask = OBS(self.data_path, 'sftlf',
@@ -80,6 +87,8 @@ class Observation(pcmdi_metrics.driver.dataset.DataSet):
         return obs_mask_name
 
     def get_obs_from_obs_dict(self):
+        ''' Returns the obsercation from the obsercation
+        dictionary for self.var and self.obs_or_model. '''
         if isinstance(self.obs_dict[self.var][self.obs_or_model], (str, unicode)):
             obs_from_obs_dict = \
                 self.obs_dict[self.var][self.obs_dict[self.var][self.obs_or_model]]
@@ -88,6 +97,7 @@ class Observation(pcmdi_metrics.driver.dataset.DataSet):
         return obs_from_obs_dict
 
     def setup_target_mask(self):
+        ''' Sets the attribute target_mask of self._obs_file. '''
         if self.region is not None:
             region_value = self.region.get('value', None)
             if region_value is not None:
@@ -97,6 +107,8 @@ class Observation(pcmdi_metrics.driver.dataset.DataSet):
                 )
 
     def get(self):
+        ''' Gets the variable based on the region and level (if given) for
+        the file from data_path, which is defined in the initializer. '''
         try:
             if self.level is not None:
                 data_obs = self._obs_file.get(self.var,
@@ -115,14 +127,18 @@ class Observation(pcmdi_metrics.driver.dataset.DataSet):
                               self.var, self.obs_or_model, e)
 
     def hash(self):
+        ''' Return a hash of the file. '''
         return self._obs_file.hash()
 
     def file_path(self):
+        ''' Return the path of the file. '''
         return self._obs_file()
 
     @staticmethod
-    # This must remain static b/c used before an Observation obj is created.
+    # This must remain static b/c used before an Observation object is created.
     def setup_obs_list_from_parameter(parameter_obs_list, obs_dict, var):
+        ''' If the data_set list from the parameter is
+        for observations, apply these special cases. '''
         obs_list = parameter_obs_list
         if 'all' in [x.lower() for x in obs_list]:
             obs_list = 'all'

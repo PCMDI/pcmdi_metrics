@@ -4,10 +4,11 @@ import sys
 import logging
 import cdutil
 import cdms2
-import pcmdi_metrics.io.base
+from pcmdi_metrics.io.base import Base
 
 
 class DataSet(object):
+    ''' Abstract parent of the Observation of Model classes. '''
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, parameter, var_name_long, region,
@@ -24,6 +25,7 @@ class DataSet(object):
         self.sftlf = sftlf
 
     def get_sftlf(self):
+        ''' Returns the sftlf attribute. '''
         return self.sftlf
 
     def __call__(self):
@@ -31,6 +33,7 @@ class DataSet(object):
 
     @staticmethod
     def calculate_level_from_var(var):
+        ''' Get the level from the var string, where it's var_LEVEL '''
         var_split_name = var.split('_')
         if len(var_split_name) > 1:
             level = float(var_split_name[-1]) * 100
@@ -39,6 +42,8 @@ class DataSet(object):
         return level
 
     def setup_target_grid(self, obs_or_model_file):
+        ''' Call the set_target_grid function for
+        obs_or_model_file, which is of type Base. '''
         if self.use_omon(self.obs_dict, self.var):
             regrid_method = self.parameter.regrid_method_ocn
             regrid_tool = self.parameter.regrid_tool_ocn
@@ -55,17 +60,19 @@ class DataSet(object):
 
     @staticmethod
     def use_omon(obs_dict, var):
+        ''' For the given variable and obs_dict, do we use Omon? '''
         obs_default = obs_dict[var][obs_dict[var]["default"]]
         return obs_default["CMIP_CMOR_TABLE"] == 'Omon'
 
     @staticmethod
     def create_sftlf(parameter):
+        ''' Create the sftlf file from the parameter. '''
         sftlf = {}
 
         for test in parameter.test_data_set:
-            sft = pcmdi_metrics.io.base.Base(parameter.test_data_path,
-                                             getattr(parameter, "sftlf_filename_template",
-                                                     parameter.filename_template))
+            sft = Base(parameter.test_data_path,
+                       getattr(parameter, "sftlf_filename_template",
+                               parameter.filename_template))
             sft.model_version = test
             sft.table = "fx"
             sft.realm = "atmos"
@@ -96,17 +103,19 @@ class DataSet(object):
 
     @staticmethod
     def apply_custom_keys(obj, custom_dict, var):
+        ''' Apply the all of the keys in custom_dict that are var to obj. '''
         for k, v in custom_dict.iteritems():
             key = custom_dict[k]
             setattr(obj, k, key.get(var, key.get(None, "")))
 
     @abc.abstractmethod
     def get(self):
-        """Calls the get function on the Base object."""
+        ''' Calls the get function on the Base object. '''
         raise NotImplementedError()
 
     @staticmethod
     def load_path_as_file_obj(name):
+        ''' Returns a File object for the file named name. '''
         file_path = sys.prefix + '/share/pmp/' + name
         opened_file = None
         try:
@@ -120,9 +129,9 @@ class DataSet(object):
 
     @abc.abstractmethod
     def hash(self):
-        """Calls the hash function on the Base object."""
+        ''' Calls the hash function on the Base object. '''
         raise NotImplementedError()
 
     def file_path(self):
-        """Calls the __call__() function on the Base object."""
+        ''' Calls the __call__() function on the Base object. '''
         raise NotImplementedError()

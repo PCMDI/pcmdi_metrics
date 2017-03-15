@@ -1,3 +1,4 @@
+import os
 import logging
 import cdp.cdp_parameter
 
@@ -33,7 +34,7 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
         self.test_data_path = ''
         self.reference_data_path = ''
         self.custom_observations_path = ''
-        # self.test_clims_interpolated_output = ''
+        self.test_clims_interpolated_output = ''
 
         self.metrics_output_path = ''
         self.filename_output_template = ''
@@ -119,7 +120,7 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
 
     def check_ref(self):
         ref_values = ['default', 'all', 'alternate', 'ref3']
-        self.check_str_seq_in_str_list(self.ref, 'ref', ref_values)
+        self.check_str_seq_in_str_list(self.reference_data_set, 'reference_data_set', ref_values)
 
     def check_target_grid(self):
         self.check_str_var_in_str_list(
@@ -242,3 +243,20 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
         self.check_filename_output_template()
         self.check_custom_observations_path()
         '''
+        if getattr(self, "save_test_clims", False):
+            if not hasattr(self, "test_clims_interpolated_output"):
+                self.test_clims_interpolated_output = os.path.join(
+                    self.metrics_output_path,
+                    'interpolated_model_clims')
+                logging.warning("Your parameter file asks to save interpolated test climatologies," +
+                                " but did not define a path for this\n We set 'test_clims_interpolated" +
+                                "_output' to %s for you" % self.test_clims_interpolated_output)
+            if not hasattr(self, "filename_output_template"):
+                template = "%(variable)%(level)_%(model_version)_%(table)_%(realization)" + \
+                           "_%(period).interpolated.%(regrid_method).%(target_grid_name)-clim%(ext)"
+                self.filename_output_template = template
+                logging.warning("Your parameter file asks to save interpolated model climatologies," +
+                                " but did not define a name template for this\nWe set 'filename_output" +
+                                "_template' to %s for you" % self.filename_output_template)
+        if not hasattr(self, 'dry_run'):
+            self.dry_run = True

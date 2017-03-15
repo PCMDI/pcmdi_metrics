@@ -3,11 +3,13 @@ import logging
 import MV2
 import cdutil
 import cdms2
-import pcmdi_metrics.io.base
+from pcmdi_metrics.io.base import Base
 import pcmdi_metrics.driver.dataset
 
 
 class Model(pcmdi_metrics.driver.dataset.DataSet):
+    ''' Handles all the computation (setting masking, target grid, etc)
+    and some file I/O related to models. '''
     def __init__(self, parameter, var_name_long, region,
                  model, obs_dict, data_path, sftlf):
         super(Model, self).__init__(parameter, var_name_long, region,
@@ -22,8 +24,8 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
         self.setup_target_mask()
 
     def create_model_file(self):
-        self._model_file = pcmdi_metrics.io.base.Base(self.data_path,
-                                                      self.parameter.filename_template)
+        ''' Creates an object that will eventually output the netCDF file. '''
+        self._model_file = Base(self.data_path, self.parameter.filename_template)
         self._model_file.variable = self.var
         self._model_file.model_version = self.obs_or_model
         self._model_file.period = self.parameter.period
@@ -34,6 +36,7 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
                                self.parameter.custom_keys, self.var)
 
     def setup_target_mask(self):
+        ''' Sets the mask and target_mask attribute of self._model_file '''
         self.var_in_file = self.get_var_in_file()
 
         if self.region is not None:
@@ -47,6 +50,8 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
                     MV2.not_equal(self.sftlf['target_grid'], region_value)
 
     def get(self):
+        ''' Gets the variable based on the region and level (if given) for
+        the file from data_path, which is defined in the initalizer. '''
         try:
             if self.level is None:
                 data_model = self._model_file.get(
@@ -64,6 +69,7 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
             raise RuntimeError('Need to skip model: %s' % self.obs_or_model)
 
     def get_var_in_file(self):
+        ''' Based off the model_tweaks parameter, get the variable mapping. '''
         tweaks = {}
         tweaks_all = {}
         if hasattr(self.parameter, 'model_tweaks'):
@@ -80,8 +86,10 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
         return var_in_file
 
     def create_sftlf_model_raw(self, var_in_file):
+        ''' For the self.obs_or_model from the initializer, create a landSeaMask
+        from cdutil for self.sftlf[self.obs_or_model]['raw'] value. '''
         if not hasattr(self.parameter, 'generate_sftlf') or \
-                        self.parameter.generate_sftlf is False:
+           self.parameter.generate_sftlf is False:
             logging.info('Model %s does not have sftlf, skipping region: %s' % (self.obs_or_model, self.region))
             raise RuntimeError('Model %s does not have sftlf, skipping region: %s' % (self.obs_or_model, self.region))
 
@@ -98,7 +106,9 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
                 logging.info('Auto generated sftlf for model %s' % self.obs_or_model)
 
     def hash(self):
+        ''' Return a hash of the file. '''
         return self._model_file.hash()
 
     def file_path(self):
+        ''' Return the path of the file. '''
         return self._model_file()
