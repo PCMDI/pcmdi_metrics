@@ -118,7 +118,7 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
 
         self.check_str_seq_in_str_list(self.vars, 'vars', vars_values)
 
-    def check_reference_data_set(self):
+    def check_ref(self):
         ref_values = ['default', 'all', 'alternate', 'ref3']
         self.check_str_seq_in_str_list(self.reference_data_set, 'reference_data_set', ref_values)
 
@@ -260,4 +260,3 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
                                 "_template' to %s for you" % self.filename_output_template)
         if not hasattr(self, 'dry_run'):
             self.dry_run = True
-
