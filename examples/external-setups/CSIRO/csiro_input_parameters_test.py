@@ -16,7 +16,7 @@ case_id = 'sampletest'
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF
 # CLIMATOLOGY FILENAME
-model_versions = ['ACCESS1-0', 'ACCESS1-3', ]
+test_data_set = ['ACCESS1-0', 'ACCESS1-3', ]
 
 # VARIABLES AND OBSERVATIONS TO USE
 # Variable acronyms are described in the CMIP5 standard output document -
@@ -42,11 +42,11 @@ vars = [
 # Observations to use "default", "alternate" or "all" or a specific obs
 # reference e.g. "ref3"
 # 'default' ; 'all' ; # Selecting 'default' uses a single obs dataset, 'all' processes against all available datasets
-ref = 'all'
+reference_data_set = 'all'
 ext = '.nc'  # '.xml'
 
 # INTERPOLATION OPTIONS
-targetGrid = '2.5x2.5'  # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
+target_grid = '2.5x2.5'  # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
 regrid_tool = 'esmf'  # 'regrid2' # OPTIONS: 'regrid2','esmf'
 # OPTIONS: 'linear','conservative', only if tool is esmf
 regrid_method = 'linear'
@@ -59,7 +59,7 @@ period = '050001-052912'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
-save_mod_clims = True  # True or False
+save_test_clims = True  # True or False
 
 # DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 
@@ -74,14 +74,14 @@ filename_template = "%(variable)_%(model_version)_piControl_%(table)_%(realizati
 #    }
 
 # ROOT PATH FOR MODELS CLIMATOLOGIES
-mod_data_path = ''.join(['/short/p66/', getpass.getuser(), '/test/ncs/'])
+test_data_path = ''.join(['/short/p66/', getpass.getuser(), '/test/ncs/'])
 # ROOT PATH FOR OBSERVATIONS
-obs_data_path = ''.join(['/short/p66/', getpass.getuser(), '/obs/'])
+reference_data_path = ''.join(['/short/p66/', getpass.getuser(), '/obs/'])
 # DIRECTORY WHERE TO PUT RESULTS - case_id will be appended to this path
 metrics_output_path = './metrics_output_path'
 # DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES - case_id will
 # be appended to this path
-model_clims_interpolated_output = './metrics_output_path/interpolation_output'
+test_clims_interpolated_output = './metrics_output_path/interpolation_output'
 # FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
 filename_output_template = "%(model_version)_experiment_%(table)_%(realization)_" +\
     "%(variable)%(level)_%(period)_interpolated_%(regridMethod)_%(targetGridName)-AC%(ext)"
