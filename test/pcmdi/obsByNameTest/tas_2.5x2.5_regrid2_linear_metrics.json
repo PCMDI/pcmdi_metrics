@@ -599,31 +599,43 @@
     ],
     "provenance": {
         "platform": {
-            "OS": "Linux",
-            "Version": "4.8.0-41-generic",
-            "Name": "drdoom"
+            "OS": "Darwin",
+            "Version": "16.4.0",
+            "Name": "loki"
         },
         "userId": "doutriaux1",
         "osAccess": false,
-        "commandLine": "/home/doutriaux1/anaconda2/envs/nightly/bin/pcmdi_metrics_driver.py -p test/pcmdi/obs_by_name_test.py",
-        "date": "2017-04-11 15:40:46",
-        "conda": {},
-        "packages": {},
+        "commandLine": "/Users/doutriaux1/anaconda2/envs/nightly/bin/pcmdi_metrics_driver.py -p test/pcmdi/obs_by_name_test.py",
+        "date": "2017-04-11 16:25:53",
+        "conda": {
+            "Platform": "osx-64",
+            "Version": "4.3.14",
+            "IsPrivate": "False",
+            "envVersion": "4.3.14",
+            "buildVersion": "2.1.6",
+            "PythonVersion": "2.7.13.final.0",
+            "RootEnvironment": "/Users/doutriaux1/anaconda2  (writable)",
+            "DefaultEnvironment": "/Users/doutriaux1/anaconda2/envs/nightly"
+        },
+        "packages": {
+            "cdms": "2017.03.01",
+            "CDP": "1.0.3",
+            "cdtime": "2.8",
+            "cdutil": "2017.3.1",
+            "esmf": "ESMF_6_3_0rp1_ESMP_01",
+            "genutil": "2.8",
+            "python": "2.7.12",
+            "matplotlib": "2.0.0",
+            "numpy": "1.11.3",
+            "vcs": "2.8.2",
+            "vtk": "7.1.0.2017.3.24.73fb094d17ccdd594a6abf9ff8732149c88dc2e6",
+            "PMP": "g4bf73bf",
+            "PMPObs": null
+        },
         "openGL": {
-            "vendor": "X.Org",
-            "renderer": "Gallium 0.4 on AMD TURKS (DRM 2.46.0 / 4.8.0-41-generic, LLVM 3.8.0)",
-            "version": "3.0 Mesa 12.0.6",
-            "shading language version": "1.30",
             "GLX": {
-                "client": {
-                    "vendor": "Mesa Project and SGI",
-                    "version": "1.4"
-                },
-                "version": "1.4",
-                "server": {
-                    "vendor": "SGI",
-                    "version": "1.4"
-                }
+                "client": {},
+                "server": {}
             }
         }
     }
