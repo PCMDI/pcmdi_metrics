@@ -26,4 +26,4 @@ script:
   - python test/test_suite.py -V # --no-graphics
 
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install conda-build && conda install anaconda-client && bash conda-recipes/pcmdi_metrics/conda_upload.sh; fi
+  - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install conda-build && conda install anaconda-client && cd conda-recipes/pcmdi_metrics && bash conda_upload.sh; fi
