@@ -814,8 +814,8 @@
         },
         "userId": "doutriaux1",
         "osAccess": false,
-        "commandLine": "/Users/doutriaux1/anaconda2/envs/pmp/bin/pcmdi_metrics_driver.py -p test/pcmdi/region_specs_test.py",
-        "date": "2017-05-12 09:43:06",
+        "commandLine": "/Users/doutriaux1/anaconda2/envs/pmp_vcs/bin/pcmdi_metrics_driver.py -p test/pcmdi/region_specs_test.py",
+        "date": "2017-05-12 11:12:43",
         "conda": {
             "Platform": "osx-64",
             "Version": "4.3.11",
@@ -824,7 +824,7 @@
             "buildVersion": "2.1.10",
             "PythonVersion": "2.7.13.final.0",
             "RootEnvironment": "/Users/doutriaux1/anaconda2  (writable)",
-            "DefaultEnvironment": "/Users/doutriaux1/anaconda2/envs/pmp"
+            "DefaultEnvironment": "/Users/doutriaux1/anaconda2/envs/pmp_vcs"
         },
         "packages": {
             "cdms": "2.10",
@@ -833,12 +833,12 @@
             "cdutil": "2.10",
             "esmf": "7.0.0",
             "genutil": "2.10",
-            "python": "2.7.13",
-            "matplotlib": "2.0.2",
             "numpy": "1.12.1",
+            "python": "2.7.13",
             "vcs": "2.10",
             "vtk": "7.1.0.2.10",
-            "PMP": "g350d151",
+            "matplotlib": null,
+            "PMP": "g39884dc",
             "PMPObs": null
         },
         "openGL": {
