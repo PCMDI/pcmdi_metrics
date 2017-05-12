@@ -4,6 +4,7 @@ import unittest
 import os
 import sys
 import pcmdi_metrics
+import checkimage
 
 bg = True
 
@@ -80,7 +81,7 @@ class TestGraphics(unittest.TestCase):
         print src
         fnm = os.path.join(os.getcwd(), "testParallelCoordinates.png")
         x.png(fnm)
-        ret = vcs.testing.regression.check_result_image(
+        ret = checkimage.check_result_image(
             fnm,
             src)
         if ret != 0:
@@ -136,6 +137,7 @@ class TestGraphics(unittest.TestCase):
         P.PLOT_SETTINGS.logo = os.path.join(sys.prefix,"share","pmp","graphics","png","160915_PCMDI_logo_348x300px.png")
         P.PLOT_SETTINGS.logo.y = .95
         P.PLOT_SETTINGS.logo.x = .93
+        P.PLOT_SETTINGS.logo.width = 60
         P.PLOT_SETTINGS.time_stamp = None
         P.PLOT_SETTINGS.draw_mesh = 'n'
         # P.PLOT_SETTINGS.tictable.font = 3
@@ -197,7 +199,7 @@ class TestGraphics(unittest.TestCase):
         print src
         fnm = os.path.join(os.getcwd(), "testPortrait.png")
         x.png(fnm)
-        ret = vcs.testing.regression.check_result_image(
+        ret = checkimage.check_result_image(
             fnm,
             src)
         if ret != 0:

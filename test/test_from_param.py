@@ -93,17 +93,12 @@ class TestFromParam(unittest.TestCase):
                             elif l.find("}") > -1:
                                 continue
                         if l[:2] == "- ":
-                            if l.find("metrics_git_sha1") > -1:
-                                continue
-                            elif l.find("uvcdat_version") > -1:
-                                continue
-                            elif l.find("DISCLAIMER") > -1:
-                                continue
-                            else:
+                            if any([l.find(blah)>-1 for blah in ["ann","son","djf","jja","mam"]]):
                                 for j in range(100):
                                     ll = lines[i + j]
                                     sp = ll.split()
                                     # print "lines[%i+%i=%i]: %s" % (i,j,i+j,sp)
+                                    print "line:",l
                                     if sp[0] == "+" and sp[1] == l.split()[1]:
                                         if ll.find("{") > -1 or ll.find("}") > -1:
                                             break
@@ -114,5 +109,7 @@ class TestFromParam(unittest.TestCase):
                                             print "Failing line:", l.strip(), "(we read:", bad, ")"
                                             ok = False
                                         break
+                        else:
+                            print("SKIPPING",l)
             self.assertTrue(ok)
         # shutil.rmtree(os.path.join(parameters.metrics_output_path,parameters.case_id))
