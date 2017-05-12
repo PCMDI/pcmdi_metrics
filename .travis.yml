@@ -14,7 +14,7 @@ before_install:
   - bash miniconda.sh -b -p $HOME/miniconda
   - conda config --set always_yes yes --set changeps1 no
   - conda install "conda<4.3.13"
-  - conda install uvcdat cdp mesalib --show-channel-urls -c conda-forge -c uvcdat; fi
+  - conda install uvcdat cdp mesalib --show-channel-urls -c conda-forge -c uvcdat
   - hash -r
   # Useful for debugging any issues with conda
   - conda info -a
