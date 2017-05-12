@@ -806,6 +806,57 @@
         "statistic",
         "season"
     ],
-    "metrics_git_sha1": "13c63fb955868fd0dcbe0933e9ddc65021b0c427",
-    "uvcdat_version": "v2.8"
+    "provenance": {
+        "platform": {
+            "OS": "Darwin",
+            "Version": "16.5.0",
+            "Name": "loki"
+        },
+        "userId": "doutriaux1",
+        "osAccess": false,
+        "commandLine": "/Users/doutriaux1/anaconda2/envs/pmp/bin/pcmdi_metrics_driver.py -p test/pcmdi/region_specs_test.py",
+        "date": "2017-05-12 09:43:06",
+        "conda": {
+            "Platform": "osx-64",
+            "Version": "4.3.11",
+            "IsPrivate": "False",
+            "envVersion": "4.3.11",
+            "buildVersion": "2.1.10",
+            "PythonVersion": "2.7.13.final.0",
+            "RootEnvironment": "/Users/doutriaux1/anaconda2  (writable)",
+            "DefaultEnvironment": "/Users/doutriaux1/anaconda2/envs/pmp"
+        },
+        "packages": {
+            "cdms": "2.10",
+            "CDP": "1.0.3",
+            "cdtime": "2.10",
+            "cdutil": "2.10",
+            "esmf": "7.0.0",
+            "genutil": "2.10",
+            "python": "2.7.13",
+            "matplotlib": "2.0.2",
+            "numpy": "1.12.1",
+            "vcs": "2.10",
+            "vtk": "7.1.0.2.10",
+            "PMP": "g350d151",
+            "PMPObs": null
+        },
+        "openGL": {
+            "vendor": "ATI Technologies Inc.",
+            "renderer": "AMD Radeon Pro 455 OpenGL Engine",
+            "version": "2.1 ATI-1.50.38",
+            "shading language version": "1.20",
+            "GLX": {
+                "client": {
+                    "vendor": "Mesa Project and SGI",
+                    "version": "1.4"
+                },
+                "version": "1.4",
+                "server": {
+                    "vendor": "SGI",
+                    "version": "1.4"
+                }
+            }
+        }
+    }
 }
