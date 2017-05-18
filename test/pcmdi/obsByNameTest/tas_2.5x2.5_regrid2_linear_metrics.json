@@ -597,6 +597,23 @@
         "statistic",
         "season"
     ],
-    "metrics_git_sha1": "13c63fb955868fd0dcbe0933e9ddc65021b0c427",
-    "uvcdat_version": "v2.8"
+    "provenance": {
+        "platform": {
+            "OS": "Linux",
+            "Version": "4.8.0-41-generic",
+            "Name": "drdoom"
+        },
+        "userId": "doutriaux1",
+        "osAccess": false,
+        "commandLine": "/home/doutriaux1/anaconda2/envs/test_nightly/bin/pcmdi_metrics_driver.py -p test/pcmdi/obs_by_name_test.py",
+        "date": "2017-03-31 13:35:31",
+        "conda": {},
+        "packages": {},
+        "openGL": {
+            "GLX": {
+                "client": {},
+                "server": {}
+            }
+        }
+    }
 }
