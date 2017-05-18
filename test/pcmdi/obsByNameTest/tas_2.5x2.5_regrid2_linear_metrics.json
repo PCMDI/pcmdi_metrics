@@ -597,6 +597,34 @@
         "statistic",
         "season"
     ],
-    "metrics_git_sha1": "13c63fb955868fd0dcbe0933e9ddc65021b0c427",
-    "uvcdat_version": "v2.8"
+    "provenance": {
+        "platform": {
+            "OS": "Linux",
+            "Version": "4.8.0-41-generic",
+            "Name": "drdoom"
+        },
+        "userId": "doutriaux1",
+        "osAccess": false,
+        "commandLine": "/home/doutriaux1/anaconda2/envs/nightly/bin/pcmdi_metrics_driver.py -p test/pcmdi/obs_by_name_test.py",
+        "date": "2017-04-11 15:40:46",
+        "conda": {},
+        "packages": {},
+        "openGL": {
+            "vendor": "X.Org",
+            "renderer": "Gallium 0.4 on AMD TURKS (DRM 2.46.0 / 4.8.0-41-generic, LLVM 3.8.0)",
+            "version": "3.0 Mesa 12.0.6",
+            "shading language version": "1.30",
+            "GLX": {
+                "client": {
+                    "vendor": "Mesa Project and SGI",
+                    "version": "1.4"
+                },
+                "version": "1.4",
+                "server": {
+                    "vendor": "SGI",
+                    "version": "1.4"
+                }
+            }
+        }
+    }
 }
