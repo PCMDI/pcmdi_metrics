@@ -26,15 +26,33 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 # cdutil region object need a serializer
-def update_dict(d, u):
+def update_dict(d, u, overwriteOnDuplicate=True):
     for k, v in u.iteritems():
         if isinstance(v, collections.Mapping):
             r = update_dict(d.get(k, {}), v)
-            d[k] = r
+            if overwriteOnDuplicate is True:
+                d[k]=r
+	    else:
+		tmp = {k:r}
+		update_dict_no_overwrite(d,tmp,level=level)
         else:
-            d[k] = u[k]
+            d[k] = v
     return d
 
+
+def update_dict_no_overwrite(d,u,level=0):
+    for k,v in u.items():
+        if k in d and level==0:
+            i=1
+            while str(k)+"_%i" % i in d:
+                i+=1
+            d[str(k)+"_%i"%i] = v 
+        else:
+            if isinstance(v,dict) and k in d:
+                d[k] = update_dict_no_overwrite(d[k],v,level-1)
+            else:   
+                d[k] = v
+    return d    
 
 # Platform
 def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
@@ -347,7 +365,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
 class JSONs(object):
 
-    def addDict2Self(self, json_dict, json_struct, json_version):
+    def addDict2Self(self, json_dict, json_struct, json_version, overwriteOnDuplicate=True):
         if float(json_version) == 1.0:
             V = json_dict[json_dict.keys()[0]]
             for model in V.keys():  # loop through models
@@ -461,7 +479,7 @@ class JSONs(object):
             except:
                 out[tuple(ids)] = 1.e20
 
-    def __init__(self, files=[], structure=[], ignored_keys=[], oneVariablePerFile=True):
+    def __init__(self, files=[], structure=[], ignored_keys=[], oneVariablePerFile=True, overwriteOnDuplicate=True):
         self.json_version = 3.0
         self.json_struct = structure
         self.data = {}
@@ -472,9 +490,9 @@ class JSONs(object):
             raise Exception("You need to pass at least one file")
 
         for fnm in files:
-            self.addJson(fnm)
+            self.addJson(fnm,overwriteOnDuplicate=overwriteOnDuplicate)
 
-    def addJson(self, filename):
+    def addJson(self, filename, overwriteOnDuplicate=True):
         f = open(filename)
         tmp_dict = json.load(f)
         json_struct = tmp_dict.get("json_structure", list(self.json_struct))
@@ -496,7 +514,7 @@ class JSONs(object):
             tmp_dict = tmp_dict["RESULTS"]
         if json_struct != self.json_struct and self.json_struct == []:
             self.json_struct = json_struct
-        self.addDict2Self(tmp_dict, json_struct, json_version)
+        self.addDict2Self(tmp_dict, json_struct, json_version, overwriteOnDuplicate=overwriteOnDuplicate)
 
     def getAxis(self, axis):
         axes = self.getAxisList()
