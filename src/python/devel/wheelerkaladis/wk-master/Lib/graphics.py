@@ -72,6 +72,8 @@ def createTemplateandGM(x,min,max,deltaisof,deltaisol,days_line,ntemplate=1,orie
     levs1a=list(numpy.arange(min,0,deltaisol))
     levs1b=list(numpy.arange(0,max,deltaisol))
     isof.levels=levs2
+    print levs2
+    print "colors:", vcs.getcolors(levs2,colors=range(16,40))
     isof.fillareacolors=vcs.getcolors(levs2,colors=range(16,40))
 
     levs1a=list(numpy.arange(min,0,deltaisol))
