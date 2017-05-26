@@ -12,20 +12,20 @@ from SeabarChart_mpl import BarChart
 import argparse
 from argparse import RawTextHelpFormatter
 import pdb  #, pdb.set_trace()
-
+from pcmdi_metrics.driver import pmp_parser
 
 test = False
 #test = True
 
-P = argparse.ArgumentParser(
-    description='Runs PCMDI Metrics Computations',
+P = pmp_parser.PMPParser(
+    description='Runs PCMDI Monsoon Computations',
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 P.add_argument("-j", "--json",
                       type = str,
                       dest = 'json',
                       help = "Path to json file")
-P.add_argument("-aj", "--aux_json_path",
+P.add_argument("--aj", "--aux_json_path",
                       type = str,
                       dest = 'aux_json_path',
                       default = '',
@@ -40,7 +40,7 @@ P.add_argument("-s", "--stat",
                       default = 'rms',
                       help = "Statistic:\n"
                              "- Available options: bias, cor, rms")
-P.add_argument("-seas", "--season",
+P.add_argument("--seas", "--season",
                       type = str,
                       dest = 'season',
                       default = 'all',
@@ -72,7 +72,7 @@ P.add_argument("-t", "--title",
                       dest = 'title',
                       default = '',
                       help = "Main title (top of the page)")
-P.add_argument("-yax", "--yaxis_label",
+P.add_argument("--yax", "--yaxis_label",
                       type = str,
                       dest = 'yaxis_label',
                       default = '',
@@ -82,21 +82,21 @@ P.add_argument("-o", "--outpath",
                       dest = 'outpath',
                       default = '.',
                       help = "")
-P.add_argument("-hi", "--highlights",
+P.add_argument("--hi", "--highlights",
                       type = str,
                       dest = 'highlights',
                       default = '',
                       help = "Names of the simulations (as they appear on the plot) that will be highlighted\n"
                              "with a different color than the default color (blue).\n"
                              "The user can provide a list of colors with -cl; otherwise, they will appear in green.")
-P.add_argument("-cn", "--customname",
+P.add_argument("--cn", "--customname",
                       type = str,
                       dest = 'customname',
                       default = '',
                       help = "Custom name for the name of the simulation(s) in the plot\n"
                              "- the user can pass one customname by auxillary json file \n"
                              "  separated by commas (,) and no space => Ex: Sim1,Sim2")
-P.add_argument("-kp", "--keywords",
+P.add_argument("--kp", "--keywords",
                       type = str,
                       dest = 'keywords',
                       default = '',
@@ -104,7 +104,7 @@ P.add_argument("-kp", "--keywords",
                              "- Available options: SimulationModel, Model_period, Realization\n"
                              "- the user can pass two keywords separated by commas (), \n"
                              "  and no space => Realization,Model_period")
-P.add_argument("-cl", "--colors",
+P.add_argument("--cl", "--colors",
                       type = str,
                       dest = 'colors',
                       default = 'g',
@@ -113,7 +113,7 @@ P.add_argument("-cl", "--colors",
                              "or one color per json file (separated by commas=> Ex: g,b,r)")
 
 
-args = P.parse_args(sys.argv[1:])
+args = P.get_parameters()
 
 json_path = args.json
 aux_json_path = args.aux_json_path
@@ -130,78 +130,6 @@ keywords = args.keywords
 title = args.title
 yaxis_label = args.yaxis_label
 highlights = args.highlights
-
-# -- Load the parameter file
-if args.parameters:
-   pth, fnm = os.path.split(args.parameters)
-   if pth != "":
-      sys.path.append(pth)
-   if fnm.lower()[-3:] == ".py":
-      fnm = fnm[:-3]
-      ext = ".py"
-   else:
-      ext = ""
-   # We need to make sure there is no "dot" in filename or import will fail
-   if fnm.find(".") > -1:
-      raise ValueError(
-          "Sorry input parameter file name CANNOT contain" +
-          " 'dots' (.), please rename it (e.g: %s%s)" %
-          (fnm.replace(
-            ".",
-            "_"),
-            ext))
-   sys.path.insert(0, os.getcwd())
-   parameters = ""  # dummy so flake8 knows about parameters
-   exec("import %s as parameters" % fnm)
-   if pth != "":
-      sys.path.pop(-1)
-   #
-   # -- Main json file (CMIP)
-   if hasattr(parameters, 'json_path') and not args.json:
-      json_path = parameters.json_path
-   # -- Auxillary json files
-   if hasattr(parameters, 'aux_json_path') and not args.aux_json_path:
-      aux_json_path = parameters.aux_json_path
-   # -- Variable
-   if hasattr(parameters, 'variable') and not args.var:
-      variable = parameters.variable
-   # -- Domain
-   if hasattr(parameters, 'domain') and args.domain not in 'global':
-      domain = parameters.domain
-   # -- experiment
-   if hasattr(parameters, 'experiment') and args.experiment not in 'historical':
-      experiment = parameters.experiment
-   # -- stat
-   if hasattr(parameters, 'stat') and args.stat not in 'rms':
-      stat = parameters.stat
-   # -- outpath
-   if hasattr(parameters, 'outpath') and args.outpath not in '.':
-      outpath = parameters.outpath
-   # -- customname
-   if hasattr(parameters, 'customname') and not args.customname:
-      customname = parameters.customname
-   # -- reference
-   if hasattr(parameters, 'reference') and args.reference not in 'defaultReference':
-      reference = parameters.reference
-   # -- season
-   if hasattr(parameters, 'season') and args.season not in 'all':
-      season = parameters.season
-   # -- colors
-   if hasattr(parameters, 'colors') and args.colors not in 'g':
-      colors = parameters.colors
-   # -- keywords
-   if hasattr(parameters, 'keywords') and not args.keywords:
-      keywords = parameters.keywords
-   # -- title
-   if hasattr(parameters, 'title') and not args.title:
-      title = parameters.title
-   # -- yaxis_label
-   if hasattr(parameters, 'yaxis_label') and not args.yaxis_label:
-      yaxis_label = parameters.yaxis_label
-   # -- highlights
-   if hasattr(parameters, 'highlights') and not args.highlights:
-      highlights = parameters.highlights
-
 
 print '-----------------------------'
 print '--'
@@ -225,15 +153,13 @@ print '-----------------------------'
  
 print '==> Loading json file : '+json_path
 print '...'
+from pcmdi_metrics.pcmdi.io import JSONs
 try:
  fj = open(json_path)
- dd = json.loads(fj.read())
  fj.close()
 except:
- json_path = string.replace(json_path,'@VAR',variable)
- fj = open(json_path)
- dd = json.loads(fj.read())
- fj.close()
+ json_path = json_path.replace('@VAR',variable)
+
 print '==> json file loaded'
 
 # --> aux_json_path can be a path, a json_file;
@@ -246,6 +172,8 @@ print '==> json file loaded'
 # -- Exploring a way to handle an auxillary json file
 try: 
  aux_mods = ''
+ custom_names = {}
+ aux_jsons=[]
  if aux_json_path:
    print '==> Loading auxillary json file : '+aux_json_path
    print '...'
@@ -254,8 +182,8 @@ try:
    aux_dd = dict( RESULTS=dict() ) ; inc = 1
    # -- Replace @VAR by var (if var was passed by the user)
    if variable:
-       for i in xrange(len(aux_jsons)): aux_jsons[i] = str.replace(aux_jsons[i],'@VAR',variable)
-   # -- Loop on the files
+       for i in xrange(len(aux_jsons)): aux_jsons[i] = aux_jsons[i].replace('@VAR',variable)
+   # -- Loop on the files to reconstruct new mod names
    for aux_json in aux_jsons:
        #
        # -- add the results to aux_mods:
@@ -263,39 +191,29 @@ try:
        # --   - 2. use keywords if we have keywords to construct the new name
        # --   - 3. add an increment to the model name if this name is already in aux_dd
        # --   -->  if not in 1, 2 or 3, leave the dictionary as it is
-       aux_fj = open(aux_json)
-       tmp_dict = json.loads(aux_fj.read())
-       aux_fj.close()
-       mod_name = tmp_dict['RESULTS'].keys()[0]
        new_mod_name = ''
        if customname:
           # - 1. if we have a custom name, use it as the new name (new_mod_name)
-          customnames = str.split(customname,',')
+          customnames = customname.split(',')
           new_mod_name = customnames[aux_jsons.index(aux_json)]
-       elif keywords:
-          # - 2. use keywords if we have keywords to construct the new name
-          customname_kw = str.split(keywords,',')
-          for kw in customname_kw:
-              if not new_mod_name:
-                 new_mod_name = tmp_dict['RESULTS'][mod_name]['SimulationDescription'][kw]
-              else:
-                 new_mod_name = new_mod_name+' '+tmp_dict['RESULTS'][mod_name]['SimulationDescription'][kw]
+       # elif keywords:
+       #    # - 2. use keywords if we have keywords to construct the new name
+       #    customname_kw = keywords.split(',')
+       #    for kw in customname_kw:
+       #        if not new_mod_name:
+       #           new_mod_name = tmp_dict['RESULTS'][mod_name]['SimulationDescription'][kw]
+       #        else:
+       #           new_mod_name = new_mod_name+' '+tmp_dict['RESULTS'][mod_name]['SimulationDescription'][kw]
        elif mod_name in aux_dd:
           # - 3. add an increment to the model name if this name is already in aux_dd
           new_mod_name = mod_name+'_'+inc
           inc = inc + 1
        if new_mod_name:
-          tmp_dict['RESULTS'][new_mod_name] = tmp_dict['RESULTS'][mod_name].copy()
-          tmp_dict['RESULTS'].pop(mod_name)
+          custom_names[mod_name]=new_mod_name
           #
-       # -- Add the results to the auxillary dictionary
-       aux_dd['RESULTS'].update( tmp_dict['RESULTS'] )
-       aux_mods = aux_dd['RESULTS'].keys()
    print '==> Auxillary json file loaded'
- else:
+ elif numexpts:
    # -- If the user gave a list of simulations via 'numexpts' in the parameter file:
-   if numexpts:
-      aux_dd = dict( RESULTS=dict() ) ; inc = 1
       for numexp in numexpts:
          # -- First, we see if it is a dictionary (with customnames) or a list
          if isinstance(numexpts,dict):
@@ -305,37 +223,37 @@ try:
          # -- Then, we try to open the json file
          try:
             numexp_fj = open(numexp_json)
+            numexp_fj.close()
          except:
-            numexp_json = string.replace(numexp_json,'@VAR',variable)
-            numexp_fj = open(numexp_json)
+            numexp_json = numexp_json.replace('@VAR',variable)
+         numexp_fj = open(numexp_json)
+         aux_jsons.append(numexp_json) 
          #
-         tmp_dict = json.loads(numexp_fj.read())
-         mod_name = tmp_dict['RESULTS'].keys()[0]
-         if isinstance(numexpts,dict) or mod_name in aux_dd['RESULTS'].keys():
-            if isinstance(numexpts,dict):
-               new_mod_name = numexp
-            else:
-               if mod_name in aux_dd:
-                  new_mod_name = mod_name+'_'+inc
-                  inc = inc + 1
-            tmp_dict['RESULTS'][new_mod_name] = tmp_dict['RESULTS'][mod_name].copy()
-            tmp_dict['RESULTS'].pop(mod_name)
+         new_mod_name = False
+         if isinstance(numexpts,dict):
+             tmp = json.load(numexp_fj)
+             mod_name = tmp["RESULTS"].keys()[0]
+             custom_names[mod_name] = numexp
          #
          # -- Add the results to the auxillary dictionary
-         aux_dd['RESULTS'].update( tmp_dict['RESULTS'] )
          numexp_fj.close()
-      aux_mods = aux_dd['RESULTS'].keys()
 
-except:
+except Exception,err:
+ print "ERROR READING IN Aux:",err
  pass
 
-mods = dd['RESULTS'].keys()
+J = JSONs([json_path,])
+dd= J()
+mods = dd.getAxis(dd.getAxisIndex("model"))
 mods = sorted(mods, key=lambda s:s.lower())
 # !!!!!!!!
 tot_mods = mods
-if aux_mods:
-   tot_mods = mods + aux_mods
-   dd['RESULTS'].update(aux_dd['RESULTS'])
+if len(aux_jsons)>0:
+    Jaux = JSONS(aux_jsons)
+    dd_aux = Jaux()
+    aux_mods = dd_aux.getAxisIndex(dd_aux..getAxisIndex("model"))
+    tot_mods += aux_mods
+  d2 = MV2.concatenate((dd,dd_aux))
 # !!!!!!!!
 
 unit_adj = 1

@@ -22,12 +22,12 @@ from argparse import RawTextHelpFormatter
 
 P = PMPParser()
 
-P.add_argument("-mp", "--modpath",
+P.add_argument("--mp", "--modpath",
                       type = str,
                       dest = 'modpath',
                       default = '',
                       help = "Explicit path to model monthly PR climatology")
-P.add_argument("-op", "--obspath",
+P.add_argument("--op", "--obspath",
                       type = str,
                       dest = 'obspath',
                       default = '',
