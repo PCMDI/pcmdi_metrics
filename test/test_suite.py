@@ -90,8 +90,6 @@ if "jsons" in tests:
     try:
         import test_jsons
         suite.addTest(test_jsons.TestJSONs('testVariability'))
-        suite.addTest(test_jsons.TestJSONs('testOverwrite'))
-        suite.addTest(test_jsons.TestJSONs('testNoOverwrite'))
     except Exception as err:
         print "Error json loading",err
         pass

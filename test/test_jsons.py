@@ -42,27 +42,3 @@ class TestJSONs(unittest.TestCase):
             season="JJA",
             statistic="rmsc_glo")
         assert(numpy.allclose(data, 0.7626659864144966))
-
-    def testOverwrite(self):
-        pth = os.path.dirname(inspect.getfile(self.__class__))
-        J = pcmdi_metrics.io.base.JSONs([os.path.join(
-                        pth, "io","monsoon_precip_indices.json")])
-        data = J()
-        J = pcmdi_metrics.io.base.JSONs([os.path.join(
-                        pth, "io","monsoon_precip_indices.json"),
-                        os.path.join(
-                            pth, "io","monsoon_precip_indices_over.json")])
-        data2 = J()
-        self.assertEqual(data.shape,data2.shape)
-
-    def testNoOverwrite(self):
-        pth = os.path.dirname(inspect.getfile(self.__class__))
-        J = pcmdi_metrics.io.base.JSONs([os.path.join(
-                        pth, "io","monsoon_precip_indices.json")])
-        data = J()
-        J = pcmdi_metrics.io.base.JSONs([os.path.join(
-                        pth, "io","monsoon_precip_indices.json"),
-                        os.path.join(
-                            pth, "io","monsoon_precip_indices_over.json")])
-        data2 = J()
-        self.assertNotEqual(data.shape,data2.shape)
