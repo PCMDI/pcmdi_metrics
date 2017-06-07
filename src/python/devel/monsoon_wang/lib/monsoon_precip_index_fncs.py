@@ -1,4 +1,6 @@
 import numpy
+import MV2
+
 #  SEASONAL RANGE - USING ANNUAL CYCLE CLIMATOLGIES 0=Jan, 11=Dec
 def mpd(data):
  """Monsoon precipitation index calculation
@@ -10,27 +12,28 @@ def mpd(data):
                 * Assumes climatology array with 12 times step first one January
 
 """
- mjjas = MV2.average(d[4:9])
- ndjfm = (d[10] + d[11] + d[0] + d[1] + d[2])/5.
- ann = MV2.average(d,axis=0)
+ mjjas = MV2.average(data[4:9])
+ ndjfm = (data[10] + data[11] + data[0] + data[1] + data[2])/5.
+ ann = MV2.average(data,axis=0)
 
  annrange = MV2.subtract(mjjas,ndjfm)
 
  lat = annrange.getAxis(0)
- i, e = lat.mapinterval((-91,0,'con'))
+ i, e = lat.mapInterval((-91,0,'con'))
  if i>e: # reveresedlats
      tmp = i+1
      i = e+1
      e = tmp
 
  annrange[slice(i,e)] = -annrange[slice(i,e)]
+ annrange.id = 'annrange'
 
  mpi = MV2.divide(annrange,ann)
 
  return annrange, mpi
 
 def mpi_skill_scores(annrange_mod_dom,annrange_obs_dom,threshold=1./43200.):
- """Monsoon precipitation index skill score calculation
+   """Monsoon precipitation index skill score calculation
 
         .. describe:: Input
 
@@ -62,7 +65,11 @@ def mpi_skill_scores(annrange_mod_dom,annrange_obs_dom,threshold=1./43200.):
 #  print mod,' hit missed falarm ', hit,' ', missed,' ', falarm
 
    score = hit/(hit+missed+falarm)
-
+   hitmap.id = 'hit'
+   missmap.id = 'miss'
+   falarmmap.id = 'false_alarm'
+   #for a in [hitmap,missmap,falarmmap]:
+   #    a.setAxisList(annrange_mod_dom.getAxisList())
    return hit, missed,falarm,score,hitmap,missmap,falarmmap
 
 

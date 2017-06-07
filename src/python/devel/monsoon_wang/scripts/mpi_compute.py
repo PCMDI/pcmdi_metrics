@@ -1,4 +1,7 @@
+#!/usr/bin/env python
+
 import cdms2,MV2
+import numpy
 import sys
 import os
 from genutil import statistics
@@ -9,6 +12,8 @@ from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 import pcmdi_metrics
 import collections
+import ast
+import glob
 
 ###########
 # SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW
@@ -37,7 +42,7 @@ P.add_argument("--outpj", "--outpathjsons",
 P.add_argument("--outnj", "--outnamejson",
                       type = str,
                       dest = 'jsonname',
-                      default = 'test',
+                      default = 'out.json',
                       help = "Output path for jsons")
 P.add_argument("--outpd", "--outpathdata",
                       type = str,
@@ -104,9 +109,10 @@ annrange_obs, mpi_obs = mpd(dobs_orig)
 #########################################
 ### SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
 try:
-  nout = os.path.join(outpathdata, "_".join(args.experiment, args.mip, 'wang-monsoon'))
+  nout = os.path.join(outpathdata, "_".join([args.experiment, args.mip, 'wang-monsoon']))
   os.mkdir(nout)
-except:
+except Exception,err:
+  print "NOUT ERR:",err
   pass
 
 ### SETUP WHERE TO OUTPUT RESULTING  (netcdf)
@@ -196,16 +202,12 @@ for mod in gmods:
    mpi_stats_dic[mod][dom]['threat_score'] = format(score,sig_digits) 
 
 # SAVE ANNRANGE AND HIT MISS AND FALSE ALARM FOR EACH MOD DOM 
-   fm = os.path.join(nout, '_'.join(mod,dom,'wang-monsoon.nc'))
+   fm = os.path.join(nout, '_'.join([mod,dom,'wang-monsoon.nc']))
    g = cdms2.open(fm,'w')
-   annrange_mod_dom.id = 'annrange'
-   hitmap.id = 'hit'
-   missmap.id = 'miss'
-   falarmmap.id = 'false_alarm'
    g.write(annrange_mod_dom)
-   g.write(hitmap)
-   g.write(missmap)
-   g.write(falarmmap)
+   g.write(hitmap,dtype=numpy.int32)
+   g.write(missmap,dtype=numpy.int32)
+   g.write(falarmmap,dtype=numpy.int32)
    g.close()
 
 
@@ -231,7 +233,6 @@ OUT.var = var
 OUT.write(
                 metrics_dictionary,
                 json_structure=["model","domain"],
-                mode="w",
                 indent=4,
                 separators=(
                     ',',
