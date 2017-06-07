@@ -1,17 +1,14 @@
 import cdms2,MV2
-import sys, string
-import os, vcs
+import sys
+import os
 from genutil import statistics
 import cdutil
 import regrid2
 import json
-from pcmdi_metrics.pcmdi.pmp_parser import *
-from pcmdi_metrics.monsoon_wang import * 
+from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
+from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 import pcmdi_metrics
 import collections
-
-import argparse
-from argparse import RawTextHelpFormatter
 
 ###########
 # SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW
@@ -50,7 +47,7 @@ P.add_argument("--outpd", "--outpathdata",
 P.add_argument("--mns", "--modnames",
                       type = ast.literal_eval,
                       dest = 'modnames',
-                      default = '',
+                      default = None,
                       help = "AMIP, historical or picontrol")
 P.add_argument("-e", "--experiment",
                       type = str,
@@ -62,17 +59,6 @@ P.add_argument("-c", "--MIP",
                       dest = 'mip',
                       default = 'CMIP5',
                       help = "put options here")
-P.add_argument("-d", "--domain",
-                      type = str,
-                      dest = 'domain',
-                      default = 'global',
-                      help = "put options here")
-P.add_argument("-r", "--reference",
-                      type = str,
-                      dest = 'reference',
-                      default = 'defaultReference',
-                      help = "Reference against which the statistics are computed\n"
-                             "- Available options: defaultReference (default), alternate1, alternate2")
 P.add_argument("-p", "--parameters",
                       type = str,
                       dest = 'parameters',
@@ -80,21 +66,16 @@ P.add_argument("-p", "--parameters",
                       help = "")
 
 args = P.parse_args(sys.argv[1:])
-domain = args.domain
-experiment = args.experiment
 modpath = args.modpath
-obspath = args.obspath 
 outpathjsons = args.outpathjsons
 outpathdata = args.outpathdata
 mods = args.modnames
-mip = args.mip
-exp = args.experiment
 
 json_filename = args.jsonname
 
-if json_filename == 'CMIP_MME': json_filename = '/MPI_' + mip + '_' + exp
+if json_filename == 'CMIP_MME': json_filename = '/MPI_' + args.mip + '_' + args.experiment
 
-if mip == 'CMIP5' and exp == 'historical':
+if args.mip == 'CMIP5' and args.experiment == 'historical' and mods is None:
   mods = ['ACCESS1-0', 'ACCESS1-3', 'bcc-csm1-1', 'bcc-csm1-1-m', 'BNU-ESM', 'CanCM4', 'CanESM2', 'CCSM4', 'CESM1-BGC', 'CESM1-CAM5', 'CESM1-FASTCHEM', 'CESM1-WACCM', 'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS', 'CNRM-CM5-2', 'CNRM-CM5', 'CSIRO-Mk3-6-0', 'FGOALS-g2', 'FIO-ESM', 'GFDL-CM2p1', 'GFDL-CM3', 'GFDL-ESM2G', 'GFDL-ESM2M', 'GISS-E2-H', 'GISS-E2-H-CC', 'GISS-E2-R', 'GISS-E2-R-CC', 'HadCM3', 'HadGEM2-AO', 'HadGEM2-CC', 'HadGEM2-ES', 'inmcm4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR', 'IPSL-CM5B-LR', 'MIROC4h', 'MIROC5', 'MIROC-ESM', 'MIROC-ESM-CHEM', 'MPI-ESM-LR', 'MPI-ESM-MR', 'MPI-ESM-P', 'MRI-CGCM3', 'MRI-ESM1', 'NorESM1-M', 'NorESM1-ME']
 
 print 'mods is ', mods
@@ -108,8 +89,7 @@ sig_digits = '.3f'
 #########################################
 ## PMP monthly default PR obs 
 
-fcobs = obspath
-fobs = cdms2.open(fcobs)
+fobs = cdms2.open(args.obspath)
 dobs_orig = fobs('pr')
 
 obsgrid = dobs_orig.getGrid()
@@ -124,21 +104,21 @@ annrange_obs, mpi_obs = mpd(dobs_orig)
 #########################################
 ### SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
 try:
-  nout = outpathdata + '/' + exp + '_' + mip + '_wang-monsoon/' 
+  nout = outpathdata + '/' + args.experiment + '_' + args.mip + '_wang-monsoon/' 
   os.mkdir(nout)
 except:
   pass
 
 ### SETUP WHERE TO OUTPUT RESULTING  (netcdf)
 try:
-  jout = outpathjsons #   + '/' + exp + '_' + mip + '_wang-monsoon/'
+  jout = outpathjsons #   + '/' + args.experiment + '_' + args.mip + '_wang-monsoon/'
   os.mkdir(jout)
 except:
   pass
 
-modpathall = string.replace(modpath,'MODS','*')
+modpathall = modpath.replace('MODS','*')
 
-lst = os.popen('ls ' + modpathall).readlines()
+lst = glob.glob(modpathall)
 
 ### CONFIRM DATA FOR MODS IS AVAIL AND REMOVE THOSE IT IS NOT
 
@@ -146,13 +126,13 @@ gmods = []  #  "Got" these MODS
 
 for mod in mods:
  for l in lst:
-   l1 = string.replace(modpath,'MODS',mod)
+   l1 = modpath.replace('MODS',mod)
    if os.path.isfile(l1) is True:
      if mod not in gmods: gmods.append(mod) 
   
 print 'gmods is ', gmods
 
-if exp == 'historical' and mods == ['*']:
+if args.experiment == 'historical' and mods == ['*']:
  gmods = ['ACCESS1-0', 'ACCESS1-3', 'bcc-csm1-1', 'bcc-csm1-1-m', 'BNU-ESM', 'CanCM4', 'CanESM2', 'CCSM4', 'CESM1-BGC', 'CESM1-CAM5', 'CESM1-FASTCHEM', 'CESM1-WACCM', 'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS', 'CNRM-CM5-2', 'CNRM-CM5', 'CSIRO-Mk3-6-0', 'FGOALS-g2', 'FIO-ESM', 'GFDL-CM2p1', 'GFDL-CM3', 'GFDL-ESM2G', 'GFDL-ESM2M', 'GISS-E2-H', 'GISS-E2-H-CC', 'GISS-E2-R', 'GISS-E2-R-CC', 'HadCM3', 'HadGEM2-AO', 'HadGEM2-CC', 'HadGEM2-ES', 'inmcm4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR', 'IPSL-CM5B-LR', 'MIROC4h', 'MIROC5', 'MIROC-ESM', 'MIROC-ESM-CHEM', 'MPI-ESM-LR', 'MPI-ESM-MR', 'MPI-ESM-P', 'MRI-CGCM3', 'MRI-ESM1', 'NorESM1-M', 'NorESM1-ME']
 
 
@@ -171,7 +151,7 @@ doms = ['AllM','NAMM','SAMM','NAFM','SAFM','ASM','AUSM']
 mpi_stats_dic = {}
 
 for mod in gmods:
- l = string.replace(modpath,'MODS',mod)
+ l = modpath.replace('MODS',mod)
 
 #try:
  mpi_stats_dic[mod] = {}
@@ -204,8 +184,8 @@ for mod in gmods:
    annrange_obs_dom = annrange_obs(reg_sel)
 
 #  THRESHOLD (see Wang et al., doi:10.1007/s00382-010-0877-0)
-   mt = MV2.where(MV2.greater(annrange_mod_dom,thr),1.,0.)
-   ot = MV2.where(MV2.greater(annrange_obs_dom,thr),1.,0.)
+   mt = MV2.greater(annrange_mod_dom,thr)
+   ot = MV2.greater(annrange_obs_dom,thr)
 
 ## SKILL SCORES
 #  HIT/(HIT + MISSED + FALSE ALARMS)
@@ -218,8 +198,8 @@ for mod in gmods:
    mpi_stats_dic[mod][dom]['threat_score'] = format(score,sig_digits) 
 
 # SAVE ANNRANGE AND HIT MISS AND FALSE ALARM FOR EACH MOD DOM 
-   fm = nout + '/' + mod + '_' + dom + '_wang-monsoon.nc'
-   g = cdms2.open(fm,'w+')
+   fm = os.path.join(nout, '_'.join(mod,dom,'wang-monsoon.nc'))
+   g = cdms2.open(fm,'w')
    annrange_mod_dom.id = 'annrange'
    hitmap.id = 'hit'
    missmap.id = 'miss'
@@ -232,7 +212,7 @@ for mod in gmods:
 
 
 #  OUTPUT METRICS TO JSON FILE
-#json_filename = '/MPI_' + mip + '_' + exp 
+#json_filename = '/MPI_' + args.mip + '_' + args.experiment 
 
 OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout),json_filename)
 
