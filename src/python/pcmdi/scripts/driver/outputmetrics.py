@@ -6,12 +6,13 @@ import pcmdi_metrics
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.driver.observation import Observation
 from pcmdi_metrics.driver.dataset import DataSet
+from pcmdi_metrics import LOG_LEVEL
 
 
 class OutputMetrics(object):
 
     def __init__(self, parameter, var_name_long, obs_dict, sftlf):
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=LOG_LEVEL)
         self.parameter = parameter
         self.var_name_long = var_name_long
         self.obs_dict = obs_dict

@@ -2,6 +2,7 @@ import logging
 import MV2
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.driver.dataset import DataSet
+from pcmdi_metrics import LOG_LEVEL
 
 
 class OBS(Base):
@@ -12,7 +13,7 @@ class OBS(Base):
                    "%(reference)/%(ac)/%(filename)"
         super(OBS, self).__init__(root, template, file_mask_template)
 
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=LOG_LEVEL)
 
         if obs not in obs_dict[var]:
             msg = '%s is not a valid obs according to the obs_dict.' % obs

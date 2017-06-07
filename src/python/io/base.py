@@ -15,6 +15,7 @@ import subprocess
 import sys
 import shlex
 import datetime
+from pcmdi_metrics import LOG_LEVEL
 
 
 value = 0
@@ -22,7 +23,7 @@ cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
 cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
 # where value is a integer between 0 and 9 included
 cdms2.setNetcdfDeflateLevelFlag(value)
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=LOG_LEVEL)
 
 
 # cdutil region object need a serializer

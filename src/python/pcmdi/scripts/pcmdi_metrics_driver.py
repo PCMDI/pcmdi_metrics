@@ -6,12 +6,13 @@ from pcmdi_metrics.driver.observation import Observation
 from pcmdi_metrics.driver.model import Model
 import pcmdi_metrics.driver.dataset
 import pcmdi_metrics.driver.pmp_parser
+from pcmdi_metrics import LOG_LEVEL
 
 
 class PMPDriver(object):
 
     def __init__(self, parameter):
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=LOG_LEVEL)
 
         self.parameter = parameter
         self.obs_dict = {}

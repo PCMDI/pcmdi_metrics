@@ -5,7 +5,7 @@ import cdutil
 import cdms2
 from pcmdi_metrics.io.base import Base
 import pcmdi_metrics.driver.dataset
-
+from pcmdi_metrics import LOG_LEVEL
 
 class Model(pcmdi_metrics.driver.dataset.DataSet):
     ''' Handles all the computation (setting masking, target grid, etc)
@@ -14,7 +14,7 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
                  model, obs_dict, data_path, sftlf):
         super(Model, self).__init__(parameter, var_name_long, region,
                                     obs_dict, data_path, sftlf)
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=LOG_LEVEL)
 
         self._model_file = None
         self.var_in_file = None

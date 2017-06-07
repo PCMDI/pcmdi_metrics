@@ -1,11 +1,12 @@
 import os
 import logging
 import cdp.cdp_parameter
+from pcmdi_metrics import LOG_LEVEL
 
 
 class PMPParameter(cdp.cdp_parameter.CDPParameter):
     def __init__(self):
-        logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level=LOG_LEVEL)
 
         # Metrics run identification
         self.case_id = ''
