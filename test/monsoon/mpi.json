@@ -2,19 +2,19 @@
     "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference: Gleckler, P. J., C. Doutriaux, P. J. Durack, K. E. Taylor, Y. Zhang, and D. N. Williams, E. Mason, and J. Servonnat (2016), A more powerful reality test for climate models, Eos, 97, doi:10.1029/2016EO051663. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
     "REFERENCE": "The statistics in this file are based on Wang, B., Kim, HJ., Kikuchi, K. et al. Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0",
     "RESULTS": {
-        "NorESM1-ME": {
+        "norESM1-ME": {
             "SAFM": {
                 "cor": "0.653",
                 "rmsn": "0.762",
                 "threat_score": "0.573"
             },
-            "SAMM": {
-                "cor": "0.720",
+            "SAM": {
+                "cor": "0.220",
                 "rmsn": "0.712",
                 "threat_score": "0.539"
             },
             "AllM": {
-                "cor": "0.819",
+                "cor": "0.919",
                 "rmsn": "0.575",
                 "threat_score": "0.573"
             },
@@ -39,16 +39,16 @@
                 "threat_score": "0.260"
             }
         },
-        "MRI-CGCM3": {
+        "MRI-TGCM3": {
             "SAFM": {
                 "cor": "0.882",
                 "rmsn": "0.576",
                 "threat_score": "0.619"
             },
-            "SAMM": {
+            "SAM": {
                 "cor": "0.712",
                 "rmsn": "0.838",
-                "threat_score": "0.514"
+                "threat_score": "0.114"
             },
             "AllM": {
                 "cor": "0.734",
@@ -79,7 +79,7 @@
     },
     "json_version": 3.0,
     "json_structure": [
-        "model",
+        "Model",
         "domain",
         "statistic"
     ],
