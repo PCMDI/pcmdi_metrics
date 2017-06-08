@@ -232,7 +232,7 @@ metrics_dictionary["RESULTS"] = mpi_stats_dic  #collections.OrderedDict()
 OUT.var = var
 OUT.write(
                 metrics_dictionary,
-                json_structure=["model","domain"],
+                json_structure=["model","domain","statistic"],
                 indent=4,
                 separators=(
                     ',',

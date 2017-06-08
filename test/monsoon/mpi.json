@@ -1,0 +1,139 @@
+{
+    "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference: Gleckler, P. J., C. Doutriaux, P. J. Durack, K. E. Taylor, Y. Zhang, and D. N. Williams, E. Mason, and J. Servonnat (2016), A more powerful reality test for climate models, Eos, 97, doi:10.1029/2016EO051663. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
+    "REFERENCE": "The statistics in this file are based on Wang, B., Kim, HJ., Kikuchi, K. et al. Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0",
+    "RESULTS": {
+        "NorESM1-ME": {
+            "SAFM": {
+                "cor": "0.653",
+                "rmsn": "0.762",
+                "threat_score": "0.573"
+            },
+            "SAMM": {
+                "cor": "0.720",
+                "rmsn": "0.712",
+                "threat_score": "0.539"
+            },
+            "AllM": {
+                "cor": "0.819",
+                "rmsn": "0.575",
+                "threat_score": "0.573"
+            },
+            "NAMM": {
+                "cor": "0.546",
+                "rmsn": "1.070",
+                "threat_score": "0.000"
+            },
+            "AUSM": {
+                "cor": "0.743",
+                "rmsn": "0.777",
+                "threat_score": "0.775"
+            },
+            "NAFM": {
+                "cor": "0.689",
+                "rmsn": "0.737",
+                "threat_score": "0.227"
+            },
+            "ASM": {
+                "cor": "0.748",
+                "rmsn": "0.678",
+                "threat_score": "0.260"
+            }
+        },
+        "MRI-CGCM3": {
+            "SAFM": {
+                "cor": "0.882",
+                "rmsn": "0.576",
+                "threat_score": "0.619"
+            },
+            "SAMM": {
+                "cor": "0.712",
+                "rmsn": "0.838",
+                "threat_score": "0.514"
+            },
+            "AllM": {
+                "cor": "0.734",
+                "rmsn": "1.065",
+                "threat_score": "0.510"
+            },
+            "NAMM": {
+                "cor": "0.318",
+                "rmsn": "2.256",
+                "threat_score": "0.000"
+            },
+            "AUSM": {
+                "cor": "0.949",
+                "rmsn": "0.334",
+                "threat_score": "0.873"
+            },
+            "NAFM": {
+                "cor": "0.623",
+                "rmsn": "2.790",
+                "threat_score": "0.341"
+            },
+            "ASM": {
+                "cor": "0.657",
+                "rmsn": "2.922",
+                "threat_score": "0.494"
+            }
+        }
+    },
+    "json_version": 3.0,
+    "json_structure": [
+        "model",
+        "domain",
+        "statistic"
+    ],
+    "provenance": {
+        "platform": {
+            "OS": "Darwin",
+            "Version": "16.6.0",
+            "Name": "loki"
+        },
+        "userId": "doutriaux1",
+        "osAccess": false,
+        "commandLine": "/Users/doutriaux1/anaconda2/envs/2.10/bin/mpi_compute.py --mp test/monsoon/pr_MODS_Amon_historical_r1i1p1_198001-200512-clim.nc --op test/monsoon/pr_GPCP_000001-000012_ac.nc --mns ['NorESM1-ME','MRI-CGCM3'] --outpd test_monsoon --outpj test_monsoon",
+        "date": "2017-06-07 22:21:31",
+        "conda": {
+            "Platform": "osx-64",
+            "Version": "4.3.11",
+            "IsPrivate": "False",
+            "envVersion": "4.3.11",
+            "buildVersion": "2.1.10",
+            "PythonVersion": "2.7.13.final.0",
+            "RootEnvironment": "/Users/doutriaux1/anaconda2  (writable)",
+            "DefaultEnvironment": "/Users/doutriaux1/anaconda2/envs/2.10"
+        },
+        "packages": {
+            "cdms": "2.10",
+            "CDP": "1.0.3",
+            "cdtime": "2.10",
+            "cdutil": "2.10",
+            "esmf": "7.0.0",
+            "genutil": "2.10",
+            "python": "2.7.13",
+            "matplotlib": "2.0.2",
+            "numpy": "1.12.1",
+            "vcs": "2.10",
+            "vtk": "7.1.0.2.10",
+            "PMP": "g97152ad",
+            "PMPObs": null
+        },
+        "openGL": {
+            "vendor": "ATI Technologies Inc.",
+            "renderer": "AMD Radeon Pro 455 OpenGL Engine",
+            "version": "2.1 ATI-1.51.8",
+            "shading language version": "1.20",
+            "GLX": {
+                "client": {
+                    "vendor": "Mesa Project and SGI",
+                    "version": "1.4"
+                },
+                "version": "1.4",
+                "server": {
+                    "vendor": "SGI",
+                    "version": "1.4"
+                }
+            }
+        }
+    }
+}
