@@ -3,112 +3,113 @@
 import numpy as NP
 import matplotlib.pyplot as PLT
 import json
-import sys, os
+import sys
+import os
 import string
 import getopt
 import pcmdi_metrics
-#from pcmdi_metrics.mean_climate_plots import BarChart
+# from pcmdi_metrics.mean_climate_plots import BarChart
 from SeabarChart_mpl import BarChart
 import argparse
 from argparse import RawTextHelpFormatter
-import pdb  #, pdb.set_trace()
+import pdb  # , pdb.set_trace()
 from pcmdi_metrics.driver import pmp_parser
 
 test = False
-#test = True
+# test = True
 
 P = pmp_parser.PMPParser(
     description='Runs PCMDI Monsoon Computations',
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
 P.add_argument("-j", "--json",
-                      type = str,
-                      dest = 'json',
-                      help = "Path to json file")
+                      type=str,
+                      dest='json',
+                      help="Path to json file")
 P.add_argument("--aj", "--aux_json_path",
-                      type = str,
-                      dest = 'aux_json_path',
-                      default = '',
-                      help = "Path to auxillary json file")
+                      type=str,
+                      dest='aux_json_path',
+                      default='',
+                      help="Path to auxillary json file")
 P.add_argument("-v", "--variable",
-                      type = str,
-                      dest = 'variable',
-                      default = '',
-                      help = "(Case Insensitive)")
+                      type=str,
+                      dest='variable',
+                      default='',
+                      help="(Case Insensitive)")
 P.add_argument("-s", "--stat",
-                      type = str,
-                      default = 'rms',
-                      help = "Statistic:\n"
+                      type=str,
+                      default='rms',
+                      help="Statistic:\n"
                              "- Available options: bias, cor, rms")
 P.add_argument("--seas", "--season",
-                      type = str,
-                      dest = 'season',
-                      default = 'all',
-                      help = "Season\n"
+                      type=str,
+                      dest='season',
+                      default='all',
+                      help="Season\n"
                              "- Available options: DJF (default), MAM, JJA, SON or all")
 P.add_argument("-r", "--reference",
-                      type = str,
-                      dest = 'reference',
-                      default = 'defaultReference',
-                      help = "Reference against which the statistics are computed\n"
+                      type=str,
+                      dest='reference',
+                      default='defaultReference',
+                      help="Reference against which the statistics are computed\n"
                              "- Available options: defaultReference (default), alternate1, alternate2")
 P.add_argument("-e", "--experiment",
-                      type = str,
-                      dest = 'experiment',
-                      default = 'historical',
-                      help = "AMIP, historical or picontrol")
+                      type=str,
+                      dest='experiment',
+                      default='historical',
+                      help="AMIP, historical or picontrol")
 P.add_argument("-d", "--domain",
-                      type = str,
-                      dest = 'domain',
-                      default = 'global',
-                      help = "put options here")
+                      type=str,
+                      dest='domain',
+                      default='global',
+                      help="put options here")
 P.add_argument("-p", "--parameters",
-                      type = str,
-                      dest = 'parameters',
-                      default = '',
-                      help = "")
+                      type=str,
+                      dest='parameters',
+                      default='',
+                      help="")
 P.add_argument("-t", "--title",
-                      type = str,
-                      dest = 'title',
-                      default = '',
-                      help = "Main title (top of the page)")
+                      type=str,
+                      dest='title',
+                      default='',
+                      help="Main title (top of the page)")
 P.add_argument("--yax", "--yaxis_label",
-                      type = str,
-                      dest = 'yaxis_label',
-                      default = '',
-                      help = "Label of the Y axis")
+                      type=str,
+                      dest='yaxis_label',
+                      default='',
+                      help="Label of the Y axis")
 P.add_argument("-o", "--outpath",
-                      type = str,
-                      dest = 'outpath',
-                      default = '.',
-                      help = "")
+                      type=str,
+                      dest='outpath',
+                      default='.',
+                      help="")
 P.add_argument("--hi", "--highlights",
-                      type = str,
-                      dest = 'highlights',
-                      default = '',
-                      help = "Names of the simulations (as they appear on the plot) that will be highlighted\n"
+                      type=str,
+                      dest='highlights',
+                      default='',
+                      help="Names of the simulations (as they appear on the plot) that will be highlighted\n"
                              "with a different color than the default color (blue).\n"
                              "The user can provide a list of colors with -cl; otherwise, they will appear in green.")
 P.add_argument("--cn", "--customname",
-                      type = str,
-                      dest = 'customname',
-                      default = '',
-                      help = "Custom name for the name of the simulation(s) in the plot\n"
+                      type=str,
+                      dest='customname',
+                      default='',
+                      help="Custom name for the name of the simulation(s) in the plot\n"
                              "- the user can pass one customname by auxillary json file \n"
                              "  separated by commas (,) and no space => Ex: Sim1,Sim2")
 P.add_argument("--kp", "--keywords",
-                      type = str,
-                      dest = 'keywords',
-                      default = '',
-                      help = "Keywords to build the name of the simulation in the plot\n"
+                      type=str,
+                      dest='keywords',
+                      default='',
+                      help="Keywords to build the name of the simulation in the plot\n"
                              "- Available options: SimulationModel, Model_period, Realization\n"
                              "- the user can pass two keywords separated by commas (), \n"
                              "  and no space => Realization,Model_period")
 P.add_argument("--cl", "--colors",
-                      type = str,
-                      dest = 'colors',
-                      default = 'g',
-                      help = "Colors for the simulations in the auxillary json files\n"
+                      type=str,
+                      dest='colors',
+                      default='g',
+                      help="Colors for the simulations in the auxillary json files\n"
                              "The user can pass either one color for all auxillary simulations or\n"
                              "or one color per json file (separated by commas=> Ex: g,b,r)")
 
@@ -134,31 +135,31 @@ highlights = args.highlights
 print '-----------------------------'
 print '--'
 print '-- Working on:'
-print '-> json_path (-j) : '+json_path
-print '-> aux_json_path (-aj) : '+aux_json_path
-print '-> stat (-s) : '+stat
-print '-> outpath (-o): '+outpath
-print '-> experiment (-e) : '+experiment
-print '-> variable (-v) : '+variable
-print '-> domain (-d) : '+domain
-print '-> reference (-r) : '+reference
-print '-> customname (-cn) : '+customname
-print '-> season (-seas) '+season
-print '-> colors (-cl) '+colors
-print '-> keywords (-kp) '+keywords
-print '-> parameters (-p) '+args.parameters
-print '-> yaxis_label (-yax) '+yaxis_label
-print '-> highlights (-hi) '+highlights
+print '-> json_path (-j) : ' + json_path
+print '-> aux_json_path (-aj) : ' + aux_json_path
+print '-> stat (-s) : ' + stat
+print '-> outpath (-o): ' + outpath
+print '-> experiment (-e) : ' + experiment
+print '-> variable (-v) : ' + variable
+print '-> domain (-d) : ' + domain
+print '-> reference (-r) : ' + reference
+print '-> customname (-cn) : ' + customname
+print '-> season (-seas) ' + season
+print '-> colors (-cl) ' + colors
+print '-> keywords (-kp) ' + keywords
+print '-> parameters (-p) ' + args.parameters
+print '-> yaxis_label (-yax) ' + yaxis_label
+print '-> highlights (-hi) ' + highlights
 print '-----------------------------'
- 
-print '==> Loading json file : '+json_path
+
+print '==> Loading json file : ' + json_path
 print '...'
 from pcmdi_metrics.pcmdi.io import JSONs
 try:
  fj = open(json_path)
  fj.close()
 except:
- json_path = json_path.replace('@VAR',variable)
+ json_path = json_path.replace('@VAR', variable)
 
 print '==> json file loaded'
 
@@ -168,21 +169,20 @@ print '==> json file loaded'
 # -->   - or a dictionary with a CustomName
 
 
-
 # -- Exploring a way to handle an auxillary json file
-try: 
+try:
  aux_mods = ''
  custom_names = {}
- aux_jsons=[]
+ aux_jsons = []
  if aux_json_path:
-   print '==> Loading auxillary json file : '+aux_json_path
+   print '==> Loading auxillary json file : ' + aux_json_path
    print '...'
    # -- Case: aux_json_path contains multiple paths separated by commas (,)
-   aux_jsons = str.split(aux_json_path,',')
-   aux_dd = dict( RESULTS=dict() ) ; inc = 1
+   aux_jsons = str.split(aux_json_path, ',')
+   aux_dd = dict(RESULTS=dict()); inc = 1
    # -- Replace @VAR by var (if var was passed by the user)
    if variable:
-       for i in xrange(len(aux_jsons)): aux_jsons[i] = aux_jsons[i].replace('@VAR',variable)
+       for i in xrange(len(aux_jsons)): aux_jsons[i] = aux_jsons[i].replace('@VAR', variable)
    # -- Loop on the files to reconstruct new mod names
    for aux_json in aux_jsons:
        #
@@ -206,17 +206,17 @@ try:
        #           new_mod_name = new_mod_name+' '+tmp_dict['RESULTS'][mod_name]['SimulationDescription'][kw]
        elif mod_name in aux_dd:
           # - 3. add an increment to the model name if this name is already in aux_dd
-          new_mod_name = mod_name+'_'+inc
+          new_mod_name = mod_name + '_' + inc
           inc = inc + 1
        if new_mod_name:
-          custom_names[mod_name]=new_mod_name
+          custom_names[mod_name] = new_mod_name
           #
    print '==> Auxillary json file loaded'
  elif numexpts:
    # -- If the user gave a list of simulations via 'numexpts' in the parameter file:
       for numexp in numexpts:
          # -- First, we see if it is a dictionary (with customnames) or a list
-         if isinstance(numexpts,dict):
+         if isinstance(numexpts, dict):
             numexp_json = numexpts[numexp]
          else:
             numexp_json = numexp
@@ -225,12 +225,12 @@ try:
             numexp_fj = open(numexp_json)
             numexp_fj.close()
          except:
-            numexp_json = numexp_json.replace('@VAR',variable)
+            numexp_json = numexp_json.replace('@VAR', variable)
          numexp_fj = open(numexp_json)
-         aux_jsons.append(numexp_json) 
+         aux_jsons.append(numexp_json)
          #
          new_mod_name = False
-         if isinstance(numexpts,dict):
+         if isinstance(numexpts, dict):
              tmp = json.load(numexp_fj)
              mod_name = tmp["RESULTS"].keys()[0]
              custom_names[mod_name] = numexp
@@ -238,17 +238,17 @@ try:
          # -- Add the results to the auxillary dictionary
          numexp_fj.close()
 
-except Exception,err:
- print "ERROR READING IN Aux:",err
+except Exception, err:
+ print "ERROR READING IN Aux:", err
  pass
 
-J = JSONs([json_path,])
-dd= J()
+J = JSONs([json_path, ])
+dd = J()
 mods = dd.getAxis(dd.getAxisIndex("model"))
-mods = sorted(mods, key=lambda s:s.lower())
+mods = sorted(mods, key=lambda s: s.lower())
 # !!!!!!!!
 tot_mods = mods
-if len(aux_jsons)>0:
+if len(aux_jsons) > 0:
     Jaux = JSONS(aux_jsons)
     dd_aux = Jaux()
     aux_mods = dd_aux.getAxisIndex(dd_aux..getAxisIndex("model"))
