@@ -1,3 +1,4 @@
+import os
 import unittest
 import pcmdi_metrics
 import subprocess
