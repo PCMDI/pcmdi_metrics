@@ -96,15 +96,17 @@ def generateProvenance():
         'cdms': 'cdms2 ',
         'cdtime': 'cdtime ',
         'cdutil': 'cdutil ',
+        'clapack': 'clapack ',
         'esmf': 'esmf ',
+        'esmpy': 'esmpy ',
         'genutil': 'genutil ',
+        'lapack': 'lapack ',
         'matplotlib': 'matplotlib ',
+        'mesalib': 'meslib ',
         'numpy': 'numpy ',
         'python': 'python ',
         'vcs': 'vcs ',
         'vtk': 'vtk-cdat ',
-        'esmpy': 'emspy ',
-        'mesalib': 'meslib '
     }
     prov["packages"] = collections.OrderedDict()
     populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)

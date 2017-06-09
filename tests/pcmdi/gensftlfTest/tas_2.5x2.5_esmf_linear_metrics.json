@@ -688,7 +688,7 @@
         "userId": "doutriaux1",
         "osAccess": false,
         "commandLine": "/export/doutriaux1/miniconda2/envs/pmp/bin/pcmdi_metrics_driver.py -p /export/doutriaux1/git/pcmdi_metrics/tests/pcmdi/gensftlf_test.py",
-        "date": "2017-06-09 11:54:37",
+        "date": "2017-06-09 13:13:28",
         "conda": {
             "Platform": "linux-64",
             "Version": "4.3.11",
@@ -704,14 +704,18 @@
             "CDP": "1.0.3",
             "cdtime": "2.10",
             "cdutil": "2.10",
+            "clapack": "3.2.1",
+            "lapack": "3.6.1",
             "esmf": "7.0.0",
+            "esmpy": "7.0.0",
             "genutil": "2.10",
             "numpy": "1.12.1",
             "python": "2.7.13",
             "vcs": "2.10",
             "vtk": "7.1.0.2.10",
+            "mesalib": null,
             "matplotlib": null,
-            "PMP": "gee34803",
+            "PMP": "g87589f2",
             "PMPObs": null
         },
         "openGL": {
