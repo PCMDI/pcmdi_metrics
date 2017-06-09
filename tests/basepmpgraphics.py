@@ -7,11 +7,10 @@ import pcmdi_metrics
 
 import checkimage
 
-bg = True
-
 class TestGraphics(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
+        self.update = eval(os.environ.get("UPDATE_TESTS","False"))
         self.geometry = {"width": 1200, "height": 600}
         if 'geometry' in kwargs:
             self.geometry = kwargs['geometry']
@@ -62,7 +61,7 @@ class TestGraphics(unittest.TestCase):
         print "Source file:",src
         if not pngReady:
             self.x.png(fnm,width=self.x.bgX,height=self.x.bgY,units="pixels")
-        ret = checkimage.check_result_image(fnm,src,threshold)
+        ret = checkimage.check_result_image(fnm,src,threshold, update_baseline=self.update)
         self.assertEqual(ret,0)
         return ret
 

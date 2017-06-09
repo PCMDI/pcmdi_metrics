@@ -500,6 +500,46 @@
         "statistic",
         "season"
     ],
-    "metrics_git_sha1": "13c63fb955868fd0dcbe0933e9ddc65021b0c427",
-    "uvcdat_version": "v2.8"
+    "provenance": {
+        "platform": {
+            "OS": "Linux",
+            "Version": "2.6.32-696.el6.x86_64",
+            "Name": "crunchy.llnl.gov"
+        },
+        "userId": "doutriaux1",
+        "osAccess": false,
+        "commandLine": "/export/doutriaux1/miniconda2/envs/pmp/bin/pcmdi_metrics_driver.py -p /export/doutriaux1/git/pcmdi_metrics/tests/pcmdi/level_data_test.py",
+        "date": "2017-06-09 11:52:43",
+        "conda": {
+            "Platform": "linux-64",
+            "Version": "4.3.11",
+            "IsPrivate": "False",
+            "envVersion": "4.3.11",
+            "buildVersion": "2.1.10",
+            "PythonVersion": "2.7.13.final.0",
+            "RootEnvironment": "/export/doutriaux1/miniconda2  (writable)",
+            "DefaultEnvironment": "/export/doutriaux1/miniconda2/envs/pmp"
+        },
+        "packages": {
+            "cdms": "2.10",
+            "CDP": "1.0.3",
+            "cdtime": "2.10",
+            "cdutil": "2.10",
+            "esmf": "7.0.0",
+            "genutil": "2.10",
+            "numpy": "1.12.1",
+            "python": "2.7.13",
+            "vcs": "2.10",
+            "vtk": "7.1.0.2.10",
+            "matplotlib": null,
+            "PMP": "gee34803",
+            "PMPObs": null
+        },
+        "openGL": {
+            "GLX": {
+                "client": {},
+                "server": {}
+            }
+        }
+    }
 }

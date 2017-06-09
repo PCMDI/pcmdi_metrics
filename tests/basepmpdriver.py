@@ -5,6 +5,7 @@ import shlex
 import sys
 import pcmdi_metrics
 import glob
+import shutil
 
 class PMPDriverTest(basepmp.PMPTest):
     def setUp(self):
