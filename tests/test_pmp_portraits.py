@@ -1,62 +1,20 @@
 #!/usr/bin/env python
 
 import basepmpgraphics
+import os
+import pcmdi_metrics.graphics.portraits
+import MV2
+import numpy
+import genutil
+import vcs
+import sys
 
-bg = True
-
-class TestPCoords(basepmpgraphics.TestGraphics):
-    def test_pcoord(self):
-        import vcs
-        import vcsaddons
-
-        J=self.loadJSON()
-        rms_xyt = J(statistic=["rms_xyt"],season=["ann"],region="global")(squeeze=1)
-        x=vcs.init(geometry=(1200,600),bg=bg)
-        gm = vcsaddons.createparallelcoordinates(x=x)
-        t = vcs.createtemplate()
-        to=x.createtextorientation()
-        to.angle=-45
-        to.halign="right"
-        t.xlabel1.textorientation = to.name
-        t.reset('x',0.05,0.9,t.data.x1,t.data.x2)
-        #t.reset('y',0.5,0.9,t.data.y1,t.data.y2)
-        ln = vcs.createline()
-        ln.color = [[0,0,0,0]]
-        t.legend.line = ln
-        t.box1.priority=0
-        t.legend.x1 = .91
-        t.legend.x2 = .99
-        t.legend.y1 = t.data.y1
-        t.legend.y2 = t.data.y2
-
-        # Set variable name
-        rms_xyt.id = "RMS"
-
-        # Set units of each variables on axis
-        rms_xyt.getAxis(-2).units = ["mm/day","mm/day","hPa","W/m2","W/m2","W/m2", "K","K","K","m/s","m/s","m/s","m/s","m"]
-        # Sets title
-        rms_xyt.title = "Annual Mean Error"
-
-        gm.plot(rms_xyt,template=t,bg=bg)
-
-        src = os.path.join(os.path.dirname(__file__), "testParallelCoordinates.png")
-        print src
-        fnm = os.path.join(os.getcwd(), "testParallelCoordinates.png")
-        x.png(fnm)
-        ret = vcs.testing.regression.check_result_image(
-            fnm,
-            src)
-        if ret != 0:
-            sys.exit(ret)
+class TestPortraits(basepmpgraphics.TestGraphics):
+    def __init__(self,*args,**kargs):
+        kargs["geometry"] = {"width":814,"height":606}
+        super(TestPortraits,self).__init__(*args,**kargs)
 
     def test_portrait(self):
-
-        # CDAT MODULES
-        import pcmdi_metrics.graphics.portraits
-        import MV2
-        import numpy
-        import genutil
-        import vcs
 
         print
         print
@@ -71,10 +29,7 @@ class TestPCoords(basepmpgraphics.TestGraphics):
         print
         # CREATES VCS OBJECT AS A PORTAIT PLOT AND LOADS PLOT SETTINGS FOR
         # EXAMPLE
-        x = vcs.init(geometry=(814,606),bg=bg)
-        x.portrait()
-        # Turn off antialiasing for test suite
-        x.setantialiasing(0)
+        self.x.portrait()
 
         # PARAMETERS STUFF
         P = pcmdi_metrics.graphics.portraits.Portrait()
@@ -99,11 +54,12 @@ class TestPCoords(basepmpgraphics.TestGraphics):
         P.PLOT_SETTINGS.logo = os.path.join(sys.prefix,"share","pmp","graphics","png","160915_PCMDI_logo_348x300px.png")
         P.PLOT_SETTINGS.logo.y = .95
         P.PLOT_SETTINGS.logo.x = .93
+        P.PLOT_SETTINGS.logo.width = 85
         P.PLOT_SETTINGS.time_stamp = None
         P.PLOT_SETTINGS.draw_mesh = 'n'
         # P.PLOT_SETTINGS.tictable.font = 3
 
-        x.scriptrun(
+        self.x.scriptrun(
             os.path.join(
                 sys.prefix,
                 "share",
@@ -146,22 +102,7 @@ class TestPCoords(basepmpgraphics.TestGraphics):
 
         # GENERATE PLOT
         P.decorate(out1_rel, variables, yax)
-        # P.plot(out1_rel,x=x,multiple=1.1,bg=bg)  # FOR PLOTTING TRIANGLES WHEN
         # USING TWO OR MORE REFERENCE DATA SETS
-        P.plot(out1_rel, bg=bg, x=x)
-        if not bg:
-            raw_input("Press enter")
-        # x.backend.renWin.Render()
-
-        # END OF PLOTTING
-
-        # SAVE PLOT
-        src = os.path.join(os.path.dirname(__file__), "testPortrait.png")
-        print src
+        P.plot(out1_rel, x=self.x)
         fnm = os.path.join(os.getcwd(), "testPortrait.png")
-        x.png(fnm)
-        ret = vcs.testing.regression.check_result_image(
-            fnm,
-            src)
-        if ret != 0:
-            sys.exit(ret)
+        self.checkImage(fnm)

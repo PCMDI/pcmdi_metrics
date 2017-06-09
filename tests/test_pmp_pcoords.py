@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
 import basepmpgraphics
+import os
 
-bg = True
 
 class TestPCoords(basepmpgraphics.TestGraphics):
     def test_pcoord(self):
@@ -11,14 +11,15 @@ class TestPCoords(basepmpgraphics.TestGraphics):
 
         J=self.loadJSON()
         rms_xyt = J(statistic=["rms_xyt"],season=["ann"],region="global")(squeeze=1)
-        x=vcs.init(geometry=(1200,600),bg=bg)
-        gm = vcsaddons.createparallelcoordinates(x=x)
+        gm = vcsaddons.createparallelcoordinates(x=self.x)
         t = vcs.createtemplate()
-        to=x.createtextorientation()
+        to = vcs.createtextorientation()
         to.angle=-45
         to.halign="right"
         t.xlabel1.textorientation = to.name
+        t.data.list()
         t.reset('x',0.05,0.9,t.data.x1,t.data.x2)
+        t.data.list()
         #t.reset('y',0.5,0.9,t.data.y1,t.data.y2)
         ln = vcs.createline()
         ln.color = [[0,0,0,0]]
@@ -37,15 +38,8 @@ class TestPCoords(basepmpgraphics.TestGraphics):
         # Sets title
         rms_xyt.title = "Annual Mean Error"
 
-        gm.plot(rms_xyt,template=t,bg=bg)
+        gm.plot(rms_xyt,template=t)
 
-        src = os.path.join(os.path.dirname(__file__), "testParallelCoordinates.png")
-        print src
         fnm = os.path.join(os.getcwd(), "testParallelCoordinates.png")
-        x.png(fnm)
-        ret = vcs.testing.regression.check_result_image(
-            fnm,
-            src)
-        if ret != 0:
-            sys.exit(ret)
+        self.checkImage(fnm)
 
