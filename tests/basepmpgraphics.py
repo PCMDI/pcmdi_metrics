@@ -9,8 +9,7 @@ bg = True
 
 class TestGraphics(unittest.TestCase):
 
-    def __init__(self, name):
-        super(TestGraphics, self).__init__(name)
+    def setUp(self, name):
         try:
             import vcs
         except:
@@ -28,6 +27,7 @@ class TestGraphics(unittest.TestCase):
         json_files = glob.glob(
             os.path.join(
                 os.path.dirname(__file__),
+                "graphics",
                 "json",
                 "v2.0",
                 "*.json"))
@@ -35,6 +35,7 @@ class TestGraphics(unittest.TestCase):
         json_files += glob.glob(
             os.path.join(
                 os.path.dirname(__file__),
+                "graphics",
                 "json",
                 "v1.0",
                 "*.json"))
