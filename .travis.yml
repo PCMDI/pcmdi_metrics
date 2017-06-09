@@ -11,10 +11,11 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export UVCDAT_FEATURE="-nox"; fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ] && ! [ -d ${HOME}/miniconda] ; then wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh; fi
   - export PATH="$HOME/miniconda/bin:$PATH"
-  - if [ ! -d ${HOME}/miniconda ]; then bash miniconda.sh -b -p $HOME/miniconda ; conda install --show-channel-urls --yes -c conda-forge -c uvcdat cdp uvcdat${UVCDAT_FEATURE} flake8 ; fi
+  - if [ ! -d ${HOME}/miniconda ]; then bash miniconda.sh -b -p $HOME/miniconda ; fi
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
+  - conda install -f  -q "conda<4.3.13"
+  - conda install --show-channel-urls --yes uvcdat mesalib cdp nose flake8 image-compare -c conda-forge -c uvcdat
   # - conda install openssl=1.0.2d
   # Useful for debugging any issues with conda
   - conda info -a
@@ -23,8 +24,7 @@ install:
   - python setup.py install
 
 script:
-  - export HDF5_DISABLE_VERSION_CHECK=1
-  - python test/test_suite.py -V # --no-graphics
+    - python run_tests.py -v2
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install conda-build && conda install anaconda-client && cd conda-recipes/pcmdi_metrics && bash conda_upload.sh; fi
