@@ -92,6 +92,7 @@ def generateProvenance():
     }
     populate_prov(prov["conda"], "conda info", pairs, sep=":", index=-1)
     pairs = {
+        'blas': 'blas',
         'CDP': 'cdp ',
         'cdms': 'cdms2 ',
         'cdtime': 'cdtime ',
@@ -102,7 +103,7 @@ def generateProvenance():
         'genutil': 'genutil ',
         'lapack': 'lapack ',
         'matplotlib': 'matplotlib ',
-        'mesalib': 'meslib ',
+        'mesalib': 'mesalib ',
         'numpy': 'numpy ',
         'python': 'python ',
         'vcs': 'vcs ',

@@ -509,7 +509,7 @@
         "userId": "doutriaux1",
         "osAccess": false,
         "commandLine": "/export/doutriaux1/miniconda2/envs/pmp/bin/pcmdi_metrics_driver.py -p /export/doutriaux1/git/pcmdi_metrics/tests/pcmdi/level_data_test.py",
-        "date": "2017-06-09 13:11:55",
+        "date": "2017-06-09 14:13:59",
         "conda": {
             "Platform": "linux-64",
             "Version": "4.3.11",
@@ -530,13 +530,14 @@
             "esmf": "7.0.0",
             "esmpy": "7.0.0",
             "genutil": "2.10",
+            "mesalib": "17.0.3",
             "numpy": "1.12.1",
             "python": "2.7.13",
             "vcs": "2.10",
             "vtk": "7.1.0.2.10",
-            "mesalib": null,
+            "blas": null,
             "matplotlib": null,
-            "PMP": "g87589f2",
+            "PMP": "ga507630",
             "PMPObs": null
         },
         "openGL": {
