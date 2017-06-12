@@ -224,6 +224,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
     def get(self, var, var_in_file=None,
             region={}, *args, **kwargs):
+        self.variable = var
         self.var_from_file = self.extract_var_from_file(
             var, var_in_file, *args, **kwargs)
 
