@@ -24,7 +24,11 @@ cdat_info.pingPCMDIdb("pcmdi_metrics", "pcmdi_metrics_driver")
 
 # Before we do anything else we need to create some units
 # Salinity Units
-unidata.udunits_wrap.init()
+try:
+    unidata.udunits_wrap.init()
+except:
+    import genutil as unidata
+    unidata.udunits_wrap.init()
 
 # Create a dimensionless units named dimless
 unidata.addDimensionlessUnit("dimless")
@@ -321,11 +325,14 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
             parameters.metrics_output_path,
             "%(var)%(level)_%(targetGridName)_" +
             "%(regridTool)_%(regridMethod)_metrics")
-        OUT.setTargetGrid(parameters.targetGrid, regridTool, regridMethod)
+        OUT.set_target_grid(parameters.targetGrid, regridTool, regridMethod)
         OUT.var = var
         OUT.realm = realm
         OUT.table = table_realm
         OUT.case_id = case_id
+        OUT.regridTool = regridTool
+        OUT.regridMethod = regridMethod
+        OUT.targetGridName = parameters.targetGrid
         applyCustomKeys(OUT, parameters.custom_keys, var)
         metrics_dictionary["Variable"] = {}
         metrics_dictionary["Variable"]["id"] = var
@@ -385,7 +392,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             obs_dic,
                             ref,
                             file_mask_template=oMasknm)
-                    OBS.setTargetGrid(
+                    OBS.set_target_grid(
                         parameters.targetGrid,
                         regridTool,
                         regridMethod)
@@ -442,7 +449,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             MODEL.period = period
                             MODEL.ext = "nc"
                             MODEL.case_id = case_id
-                            MODEL.setTargetGrid(
+                            MODEL.set_target_grid(
                                 parameters.targetGrid,
                                 regridTool,
                                 regridMethod)
@@ -708,7 +715,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                 CLIM.table = table_realm
                                 CLIM.period = period
                                 CLIM.case_id = case_id
-                                CLIM.setTargetGrid(
+                                CLIM.set_target_grid(
                                     parameters.targetGrid,
                                     regridTool,
                                     regridMethod)
@@ -737,7 +744,6 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
             OUT.write(
                 metrics_dictionary,
                 json_structure=["model", "reference", "rip", "region", "statistic", "season"],
-                mode="w",
                 indent=4,
                 separators=(
                     ',',
