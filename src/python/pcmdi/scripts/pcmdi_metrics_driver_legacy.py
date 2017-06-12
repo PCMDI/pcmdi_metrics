@@ -330,6 +330,9 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         OUT.realm = realm
         OUT.table = table_realm
         OUT.case_id = case_id
+        OUT.regridTool = regridTool
+        OUT.regridMethod = regridMethod
+        OUT.targetGridName = parameters.targetGrid
         applyCustomKeys(OUT, parameters.custom_keys, var)
         metrics_dictionary["Variable"] = {}
         metrics_dictionary["Variable"]["id"] = var
@@ -741,7 +744,6 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
             OUT.write(
                 metrics_dictionary,
                 json_structure=["model", "reference", "rip", "region", "statistic", "season"],
-                mode="w",
                 indent=4,
                 separators=(
                     ',',
