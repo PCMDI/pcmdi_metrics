@@ -22,8 +22,11 @@ cd conda-recipes
 # uvcdat creates issues for build -c uvcdat confises package and channel
 rm -rf uvcdat
 ln -s ../../conda-recipes/pcmdi_metrics pcmdi_metrics
+echo "Starting prep for build"
 python ./prep_for_build.py
-conda build pcmdi_metrics -c conda-forge -c pcmdi 
-anaconda -t $CONDA_UPLOAD_TOKEN upload -u $USER -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-`date +%Y*`-py27_0.tar.bz2 --force
+echo "starting conda build"
+conda build pcmdi_metrics -c conda-forge -c uvcdat
+echo "starting anaconda upload"
+anaconda -t $CONDA_UPLOAD_TOKEN upload -u $USER -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-`date +%Y`*-py27_0.tar.bz2 --force
 
 
