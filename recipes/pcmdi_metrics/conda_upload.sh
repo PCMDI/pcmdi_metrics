@@ -2,7 +2,7 @@
 
 PKG_NAME=pcmdi_metrics
 USER=PCMDI
-echo "Trying to upload conda"
+echo "Trying to upload conda in "`pwd`
 if [ `uname` == "Linux" ]; then
     OS=linux-64
     echo "Linux OS"
@@ -15,6 +15,7 @@ fi
 
 mkdir conda-bld
 cd conda-bld
+echo "WE are in :"`pwd`
 conda config --set anaconda_upload no
 export CONDA_BLD_PATH=`pwd`/build_conda
 mkdir build_conda
@@ -25,7 +26,9 @@ git clone git://github.com/UV-CDAT/conda-recipes
 cd conda-recipes
 rm -rf cdp
 # uvcdat creates issues for build -c uvcdat confises package and channel
-ln -s ../../recipes/pcmdi_metrics .
+#ln -s ../../recipes/pcmdi_metrics .
+echo "cp -r ../../recipes/pcmdi_metrics ."
+cp -r ../../recipes/pcmdi_metrics .
 echo "Starting prep for build"
 python ./prep_for_build.py
 echo "starting conda build"
