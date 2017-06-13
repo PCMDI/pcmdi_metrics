@@ -14,13 +14,14 @@ else
 fi
 
 mkdir conda-bld
+cd conda-bld
 conda config --set anaconda_upload no
 export CONDA_BLD_PATH=`pwd`
 export VERSION=`date +%Y.%m.%d`
 echo "Cloning recipes"
-cd conda-bld
 git clone git://github.com/UV-CDAT/conda-recipes
 cd conda-recipes
+rm -rf cdp
 # uvcdat creates issues for build -c uvcdat confises package and channel
 ln -s ../../conda-recipes/pcmdi_metrics .
 echo "Starting prep for build"
