@@ -229,6 +229,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
     def get(self, var, var_in_file=None,
             region={}, *args, **kwargs):
+        self.variable = var
         self.var_from_file = self.extract_var_from_file(
             var, var_in_file, *args, **kwargs)
 
@@ -253,6 +254,9 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             var_in_file = var
         # self.extension = 'nc'
         var_file = cdms2.open(self(), 'r')
+        for att in ["var_in_file,", "varInFile"]:
+            if att in kwargs:
+                del(kwargs[att])
         extracted_var = var_file(var_in_file, *args, **kwargs)
         var_file.close()
         return extracted_var
