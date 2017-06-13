@@ -1,24 +1,29 @@
+#!/usr/bin/env bash
 PKG_NAME=pcmdi_metrics
 USER=PCMDI
-OS=linux-64
+echo "Trying to upload conda"
+if [ `uname` == "Linux" ]; then
+    OS=linux-64
+    echo "Linux OS"
+    export PATH="$HOME/miniconda2/bin:$PATH"
+    conda update -y -q conda
+else
+    echo "Mac OS"
+    OS=osx-64
+fi
 
 mkdir ~/conda-bld
 conda config --set anaconda_upload no
-export CONDA_BLD_PATH=~/conda-bld
+export CONDA_BLD_PATH=${HOME}/conda-bld
 export VERSION=`date +%Y.%m.%d`
+echo "Cloning recipes"
+git clone git://github.com/UV-CDAT/conda-recipes
+cd conda-recipes
+# uvcdat creates issues for build -c uvcdat confises package and channel
+rm -rf uvcdat
+ln -s ../../conda-recipes/pcmdi_metrics pcmdi_metrics
+python ./prep_for_build.py
+conda build pcmdi_metrics -c conda-forge -c pcmdi 
+anaconda -t $CONDA_UPLOAD_TOKEN upload -u $USER -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-`date +%Y*`-py27_0.tar.bz2 --force
 
-
-mkdir ~/conda-bld
-conda config --set anaconda_upload no
-export CONDA_BLD_PATH=~/conda-bld
-export VERSION=`date +%Y.%m.%d`
-conda build .
-anaconda -t $CONDA_UPLOAD_TOKEN upload -u $USER -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-$VERSION-0.tar.bz2 --force
-
-mv meta.yaml meta-no-nox.yaml
-mv meta-nox.yaml meta.yaml
-conda build .
-mv meta.yaml meta-nox.yaml
-mv meta-no-nox.yaml meta.yaml
-anaconda -t $CONDA_UPLOAD_TOKEN upload -u $USER -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-nox-$VERSION-0.tar.bz2 --force
 

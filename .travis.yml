@@ -1,6 +1,6 @@
 os:
   - linux
-  - osx
+#  - osx
 language: python
   - "2.7"
 
@@ -27,4 +27,5 @@ script:
     - python run_tests.py -v2
 
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install conda-build && conda install anaconda-client && cd conda-recipes/pcmdi_metrics && bash conda_upload.sh; fi
+#  - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install conda-build && conda install anaconda-client && cd conda-recipes/pcmdi_metrics && bash conda_upload.sh; fi
+  - conda install conda-build && conda install anaconda-client && cd conda-recipes/pcmdi_metrics && bash conda_upload.sh

@@ -1,15 +1,12 @@
 package:
     name: pcmdi_metrics
-    version: {{ environ['VERSION'] }}
+    version: 1.1.2
 
 source:
     git_url: git://github.com/PCMDI/pcmdi_metrics
 
 build:
     script: python setup.py install
-    script_env:
-     - VERSION
-     - CONDA_BLD_PATH
 
 requirements:
   build:
@@ -17,12 +14,11 @@ requirements:
     - setuptools
     - numpy
   run:
-    - vcs >=2.6
-    - vcsaddons
-    - cdms2 >2.6
-    - genutil
-    - cdutil
-    - unidata
+    - vcs 2.10
+    - vcsaddons 2.10
+    - cdms2 2.10
+    - genutil 2.10
+    - cdutil 2.10
     - cdp
     - matplotlib
     - numpy
