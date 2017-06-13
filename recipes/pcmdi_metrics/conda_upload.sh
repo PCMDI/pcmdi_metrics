@@ -16,18 +16,20 @@ fi
 mkdir conda-bld
 cd conda-bld
 conda config --set anaconda_upload no
-export CONDA_BLD_PATH=`pwd`
+export CONDA_BLD_PATH=`pwd`/build_conda
+mkdir build_conda
+echo "BUILDING IN:",$CONDA_BLD_PATH
 export VERSION=`date +%Y.%m.%d`
 echo "Cloning recipes"
 git clone git://github.com/UV-CDAT/conda-recipes
 cd conda-recipes
 rm -rf cdp
 # uvcdat creates issues for build -c uvcdat confises package and channel
-ln -s ../../conda-recipes/pcmdi_metrics .
+ln -s ../../recipes/pcmdi_metrics .
 echo "Starting prep for build"
 python ./prep_for_build.py
 echo "starting conda build"
 conda build pcmdi_metrics -c conda-forge -c uvcdat
 echo "starting anaconda upload"
-anaconda -t $CONDA_UPLOAD_TOKEN upload -u $USER -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-$VERSION-py27_0.tar.bz2 --force
+anaconda -t $CONDA_UPLOAD_TOKEN upload -u $USER -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-*$VERSION*-0.tar.bz2 --force
 
