@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 PKG_NAME=pcmdi_metrics
 USER=PCMDI
 echo "Trying to upload conda"
@@ -21,6 +22,7 @@ git clone git://github.com/UV-CDAT/conda-recipes
 cd conda-recipes
 # uvcdat creates issues for build -c uvcdat confises package and channel
 rm -rf uvcdat
+pwd
 ln -s ../../conda-recipes/pcmdi_metrics pcmdi_metrics
 echo "Starting prep for build"
 python ./prep_for_build.py
