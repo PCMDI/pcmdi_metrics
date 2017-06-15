@@ -1,9 +1,9 @@
 PCMDI metrics package (PMP)
 ======
-[![stable version](https://img.shields.io/badge/stable%20version-1.1.1-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/1.1.1)
+[![stable version](https://img.shields.io/badge/stable%20version-1.1.2-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/1.1.2)
 ![repo size](https://reposs.herokuapp.com/?path=PCMDI/pcmdi_metrics)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
-[![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.58439-orange.svg)](http://doi.org/10.5281/zenodo.58439)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.809463.svg)](https://doi.org/10.5281/zenodo.809463)
 [![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/installer/conda.svg)](https://conda.anaconda.org/pcmdi)
 [![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
 
@@ -13,7 +13,7 @@ The PCMDI metrics package is used to objectively compare results from climate mo
 The metrics package consists of four parts: 1) Analysis software, 2) an observationally-based database of global (or near global, land or ocean) annual cycle climatologies, 3) a database of performance metrics computed for CMIP models and 4) package documentation.
 The package expects model data to be [CF-compliant](http://cfconventions.org/). To successfully use the package some input data "conditioning" may be required. We provide several demo scripts within the package to facilitate new users.
 
-**Users of the current release (v1.1) will need to contact the PMP developers (pcmdi-metrics@llnl.gov) to obtain supporting datasets and get started using the package.**
+**Users of the current release (v1.1.2) will need to contact the PMP developers (pcmdi-metrics@llnl.gov) to obtain supporting datasets and get started using the package.**
 
 
 GETTING STARTED
