@@ -251,7 +251,7 @@ class OutputMetrics(object):
         clim_file.realization = self.parameter.realization
         DataSet.apply_custom_keys(clim_file, self.parameter.custom_keys, self.var)
         clim_file.write(test_data, type="nc", id=self.var)
-        clim_file.write(ref_data, type="nc", id=ref_data.id)
+        clim_file.write(ref_data, type="nc", id=self.var+"_ref", mode="r+")
 
     def get_region_name_from_region(self, region):
         ''' Extract the region name from the region dict. '''

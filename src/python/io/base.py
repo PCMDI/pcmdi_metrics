@@ -215,7 +215,10 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             f.close()
 
         elif self.type == 'nc':
-            f = cdms2.open(file_name, 'w')
+            mode= kwargs.get("mode","w")
+            f = cdms2.open(file_name, mode)
+            if "mode" in kwargs:
+                del(kwargs["mode"])
             f.write(data, *args, **kwargs)
             f.metrics_git_sha1 = pcmdi_metrics.__git_sha1__
             f.uvcdat_version = cdat_info.get_version()
