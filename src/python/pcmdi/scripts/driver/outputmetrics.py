@@ -153,7 +153,7 @@ class OutputMetrics(object):
                 parameter_realization
 
         if self.check_save_test_clim(ref):
-            self.output_interpolated_model_climatologies(test, test_data)
+            self.output_interpolated_model_climatologies(test, test_data, ref_data)
 
         self.write_on_exit()
 
@@ -229,7 +229,7 @@ class OutputMetrics(object):
                 "InputRegionMD5"] = \
                 self.sftlf[test.obs_or_model]["md5"]
 
-    def output_interpolated_model_climatologies(self, test, test_data):
+    def output_interpolated_model_climatologies(self, test, test_data, ref_data):
         ''' Save the netCDF file. '''
         region_name = self.get_region_name_from_region(test.region)
         pth = os.path.join(self.parameter.test_clims_interpolated_output,
@@ -251,6 +251,7 @@ class OutputMetrics(object):
         clim_file.realization = self.parameter.realization
         DataSet.apply_custom_keys(clim_file, self.parameter.custom_keys, self.var)
         clim_file.write(test_data, type="nc", id=self.var)
+        clim_file.write(ref_data, type="nc", id=ref_data.id)
 
     def get_region_name_from_region(self, region):
         ''' Extract the region name from the region dict. '''
