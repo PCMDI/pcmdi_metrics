@@ -11,6 +11,11 @@ def get_latest_pcmdi_mip_data_path_as_list(mip,exp,mod,fq,realm,var,run):
    #from durolib import trimModelList
    if realm == 'atm': Realm = 'Amon'
    if mip == 'cmip5': pin = '/work/' + mip + '/' + exp + '/' + realm + '/' + fq + '/' + var + '/' + mip + '.' + mod + '.' + exp + '.' + run + '.' + fq + '.' + realm + '.' + Realm + '.' + var + '*.xml'
+
+   #### TEMPORARY ####
+   #if mod == 'GFDL-CM2p1' and mode == 'PDO':
+   #  pin = '/work/lee1043/ESGF/CMIP5/GFDL-CM2p1/'+ mip + '.' + mod + '.' + exp + '.' + run + '.' + fq + '.' + realm + '.' + Realm + '.' + var + '*.xml'
+
    lst0 = os.popen('ls ' + pin).readlines()
    modelFileListTrimmed = trimModelList(lst0)
    latest = map(str.rstrip, modelFileListTrimmed)

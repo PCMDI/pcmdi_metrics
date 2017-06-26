@@ -9,7 +9,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   if not debug:
     canvas = vcs.init(geometry=(900,800),bg=1) # Plotting in background mode
 
-  if debug: canvas.open()
+  #canvas.open()
   canvas.drawlogooff()
   template = canvas.createtemplate()
 
@@ -23,6 +23,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
     iso.levels = [-0.5, -0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5]
   else:
     iso.levels = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]
+  #iso.levels = [-2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5]
   iso.ext_1 = 'y' # control colorbar edge (arrow extention on/off)
   iso.ext_2 = 'y' # control colorbar edge (arrow extention on/off)
   cols = vcs.getcolors(iso.levels)

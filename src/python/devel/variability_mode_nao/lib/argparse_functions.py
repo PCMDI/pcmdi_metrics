@@ -32,11 +32,12 @@ def AddParserArgument(parser):
                              "- Usage: 1900,2005 (default)\n"
                              "  (CAUTION: DO NOT INCLUDE SPACE btw numbers)")
   parser.add_argument("-r", "--realization",
-                      type = int,
-                      default = 0,
+                      type = str,
+                      default = 'r1i1p1',
                       help = "Consider all accessible realizations as idividual\n"
-                             "- 0: off (default, consider only one member which is 'r1i1p1')\n"
-                             "- 1: on")
+                             "- r1i1p1: default, consider only one member which is 'r1i1p1'\n"
+                             "          Or, you can give specific realization, e.g, r3i1p1'\n"
+                             "- all: consider all available realizations")
   parser.add_argument("-eofn_o", "--eof_ordinal_number_for_observation",
                       type = int,
                       default = '1',
@@ -111,8 +112,12 @@ def YearCheck(year):
   return syear, eyear
 
 def RealizationCheck(realization):
-  if realization == 0:
-    multi_run = False
+  if realization.lower() == 'all':
+    #multi_run = True
+    runs = '*'
   else:
-    multi_run = True
-  return(multi_run)
+    #multi_run = False
+    runs = realization.lower()
+  #return(multi_run)
+  return(runs)
+
