@@ -105,6 +105,19 @@ for lib in libfiles:
   execfile(os.path.join('./lib/',lib))
 ##########################################################
 
+if var == 'ts':
+  if obspath == '':
+    obspath = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
+    varname_obs = 'sst'
+elif var == 'pr':
+  if obspath == '':
+    obspath = '/clim_obs/obs/atm/mo/pr/GPCP/pr_GPCP_197901-200909.nc'
+    varname_obs = 'pr'
+else:
+  sys.exit('Variable '+var+' is not correct')
+
+##########################################################
+
 # SETUP WHERE TO OUTPUT RESULTING  (netcdf)
 try:
     jout = outpathjsons
@@ -117,12 +130,8 @@ mip = 'cmip5'
 exp = 'piControl'
 fq = 'mo'
 realm = 'atm'
-#var = 'ts'
-#var = 'pr'
 var = args.variable
 run = 'r1i1p1'
-
-print 'Variable is '+var
 
 debug = True
 #debug = False
@@ -130,15 +139,10 @@ debug = True
 models = copy.copy(args.modnames)
 models.insert(0,'obs')
 
-regs = ['Nino3.4', 'Nino3']
-#regs = ['Nino3.4']
-#regs = ['Nino3']
-#regs = ['Nino3.4', 'Nino3', 'Nino4', 'Nino1.2','TSA','TNA','IO']
-#regs = args.regs
-
-#enso_stat_dic = {}  # Dictionary for JSON output file
-#enso_stat_dic['OBSERVATION'] = {}
-#enso_stat_dic['MODELS'] = {}
+if debug: 
+  regs = ['Nino3.4', 'Nino3']
+else: 
+  regs = ['Nino3.4', 'Nino3', 'Nino4', 'Nino1.2','TSA','TNA','IO']
 
 enso_stat_dic = tree() ## Set tree structure dictionary
 
@@ -149,21 +153,9 @@ for mod in models:
   print ' ----- ', mod,' ---------------------'
 
   if mod == 'obs':
-    if var == 'ts':
-      if obspath == '':
-        obspath = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
-        var_o = 'sst'
-    elif var == 'pr':
-      if obspath == '':
-        obspath = '/clim_obs/obs/atm/mo/pr/GPCP/pr_GPCP_197901-200909.nc'
-        var_o = 'pr'
-    else:
-      sys.exit('Variable '+var+' is not correct')
-
     file_path = obspath
-    varname = var_o
+    varname = varname_obs
     mods_key = 'OBSERVATION'
-
   else:
     if modpath == '':
       modpath = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,var,run)  
@@ -173,8 +165,6 @@ for mod in models:
 
   try:
 
-    #enso_stat_dic[mods_key][mod] = {}
-
     # Dictionary for obs ---
     if mod == 'obs': enso_stat_dic[mods_key][mod]['source'] = obspath
 
@@ -182,7 +172,6 @@ for mod in models:
     if debug: print file_path 
   
     for reg in regs:
-      #enso_stat_dic[mods_key][mod][reg] = {}
       reg_selector = get_reg_selector(reg)
       print reg, reg_selector
   
@@ -203,11 +192,6 @@ for mod in models:
         print 'std_NDJ = ', std_NDJ
         print 'std_MAM = ', std_MAM
 
-      # Dictionary ---
-      #enso_stat_dic[mods_key][mod][reg]['std'] = {}
-      #enso_stat_dic[mods_key][mod][reg]['std_NDJ'] = {}
-      #enso_stat_dic[mods_key][mod][reg]['std_MAM'] = {}
-  
       # Record Std. dev. from above calculation ---
       enso_stat_dic[mods_key][mod][reg]['std']['entire'] = std
       enso_stat_dic[mods_key][mod][reg]['std_NDJ']['entire'] = std_NDJ
@@ -239,9 +223,6 @@ for mod in models:
     print 'failed for ', mod
 
 #  OUTPUT METRICS TO JSON FILE
-#jout = '.'
-#json_filename = 'ENSO_' + mip + '_' + exp + '_' + run + '_' + fq + '_' +realm + '_' + var
-
 OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), json_filename)
 
 disclaimer = open(
@@ -252,7 +233,6 @@ disclaimer = open(
         "disclaimer.txt")).read()
 
 metrics_dictionary = collections.OrderedDict()
-#metrics_def_dictionary = collections.OrderedDict()
 metrics_dictionary["DISCLAIMER"] = disclaimer
 metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Bellenger, H et al. Clim Dyn (2014) 42:1999-2018. doi:10.1007/s00382-013-1783-z"
 metrics_dictionary["RESULTS"] = enso_stat_dic  # collections.OrderedDict()
