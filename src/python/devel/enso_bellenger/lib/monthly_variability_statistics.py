@@ -18,7 +18,7 @@ def interannual_variability_seasonal_std_mean_removed(d,season_string):
    return(float(d_area_avg_anom_sd))
 
 def get_slope_linear_regression(y,x):
-   import cdutil, genutil
+   import genutil
    results = genutil.statistics.linearregression(y,x=x)
    slope, intercept = results
    return(float(slope))
@@ -34,17 +34,20 @@ def get_slope_linear_regression_from_anomaly(y,x):
    return(float(slope))
 
 def get_area_avg_annual_cycle_removed(d):
-   import cdutil
+   import cdutil 
    d_area_avg = cdutil.averager(d,axis='xy')
    d_area_avg_anom = cdutil.ANNUALCYCLE.departures(d_area_avg)
    return(d_area_avg_anom)
 
-def get_axis_base_dataset(var, reg, path): # to be called from Atm Feedback driver
-   f = cdms.open(path)
+def get_axis_base_dataset(var,region): # to be called from Atm Feedback driver
+   import cdms2 as cdms
+   mod_var_path = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,var,run)
+   f = cdms.open(mod_var_path)
+   reg_selector = get_reg_selector(region)
    if debug:
-     reg_timeseries = f(var, regions_specs[reg]['domain'], time = slice(0,60)) # RUN CODE FAST ON 5 YEARS OF DATA
+     reg_timeseries = f(var,reg_selector,time = slice(0,60)) # RUN CODE FAST ON 5 YEARS OF DATA
    else:
-     reg_timeseries = f(var, regions_specs[reg]['domain'])
+     reg_timeseries = f(var,reg_selector)
    # Get area averaged and annual cycle removed 1-D time series
    reg_timeseries_area_avg_anom = get_area_avg_annual_cycle_removed(reg_timeseries)
    return(reg_timeseries_area_avg_anom)
