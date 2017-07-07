@@ -24,9 +24,10 @@ def tree(): return defaultdict(tree)
 # -op /clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc
 # --mns ACCESS1-0 ACCESS1-3
 # --var ts
-# --varobs sst ## varobs needed only when varname is different to model in obs
+# --varobs sst (varobs needed only when varname is different to model in obs)
 # --outpd /work/lee1043/cdat/pmp/enso/test
 # --outpj /work/lee1043/cdat/pmp/enso/test 
+# --outnj output.json 
 #########################################################
 
 P = PMPParser() # Includes all default options
@@ -156,7 +157,6 @@ for mod in models:
         if debug: print file_path 
       
         for reg in regs:
-            #reg_selector = get_reg_selector(reg)
             reg_selector = regions_specs[reg]['domain']
             print reg, reg_selector
         
@@ -210,7 +210,9 @@ for mod in models:
     except:
         print 'failed for ', mod
   
+#=================================================
 #  OUTPUT METRICS TO JSON FILE
+#-------------------------------------------------
 OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), outfilejson)
 
 disclaimer = open(
