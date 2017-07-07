@@ -1,9 +1,18 @@
-import sys, os
-import shutil
-import cdms2 as cdms
+#!/usr/bin/env python
+
 import cdutil
 import genutil
+
+import cdms2
+import copy
+import sys
+import os
+import string
 import json
+import pcmdi_metrics
+from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
+import collections
+from collections import defaultdict
 
 libfiles = ['durolib.py',
             'get_pcmdi_data.py',
@@ -40,7 +49,6 @@ debug = True
 
 if debug:
   mods = ['IPSL-CM5B-LR']  # Test just one model
-  stats = ['PR_RMSE'] # Test just one reg
   stats = ['SST_RMSE','PR_RMSE'] # Test just one reg
 else:
   mods = get_all_mip_mods(mip,exp,fq,realm,var)
@@ -50,28 +58,12 @@ else:
 # Declare dictionary for .json record 
 #-------------------------------------------------
 # Prepare dictionary frame
-enso_stat_dic = {}  # Dictionary to be output to JSON file
+def tree(): return defaultdict(tree)
+enso_stat_dic = tree()  # Dictionary to be output to JSON file
 
-json_filename = 'ENSO_mean_stat_' + mip + '_' + exp + '_' + run + '_' + fq + '_' +realm
+json_filename = 'out_enso_mean_stat.json'
 
-json_file = out_dir + '/' + json_filename + '.json'
-json_file_org = out_dir + '/' + json_filename + '_org.json'
-
-# Keep previous version of json file against overwrite ---
-if os.path.isfile(json_file):
-  shutil.copyfile(json_file, json_file_org)
-
-update_json = True
-
-if update_json == True and os.path.isfile(json_file):
-  fj = open(json_file)
-  enso_stat_dic = json.loads(fj.read())
-  fj.close()
-
-if 'REF' not in enso_stat_dic.keys():
-  enso_stat_dic['REF']={}
-if 'RESULTS' not in enso_stat_dic.keys():
-  enso_stat_dic['RESULTS']={}
+json_file = out_dir + '/' + json_filename
 
 #=================================================
 # Observation
@@ -106,7 +98,7 @@ for stat in stats:
     sys.exit(stat+" is not defined")
 
   # Prepare obs dataset
-  fo = cdms.open(obs_var_path)
+  fo = cdms2.open(obs_var_path)
   if debug:
     reg_timeseries_o = fo(obs_var,regions_specs[reg[stat]]['domain'],time = slice(0,60)) # RUN CODE FAST ON 5 YEARS OF DATA
   else:
@@ -117,12 +109,6 @@ for stat in stats:
 
   # Prepare regrid
   obs_grid[stat] = obs_clim[stat].getGrid()
-
-  if stat not in enso_stat_dic['REF'].keys():
-    enso_stat_dic['REF'][stat] = {} 
-
-  if reg[stat] not in enso_stat_dic['REF'][stat].keys():
-    enso_stat_dic['REF'][stat][reg[stat]] = {} 
 
   if stat in ['SST_RMSE','TAUU_RMSE','PR_RMSE']:
     enso_stat_dic['REF'][stat][reg[stat]] = 0
@@ -149,14 +135,8 @@ for stat in stats:
 
       print ' ----- ', mod,' ---------------------'
   
-      if mod not in enso_stat_dic['RESULTS'].keys():
-        enso_stat_dic['RESULTS'][mod] = {}
-  
-      if 'mean_stat' not in enso_stat_dic['RESULTS'][mod].keys():
-        enso_stat_dic['RESULTS'][mod]['mean_stat'] = {}
-  
       mod_var_path = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,mod_var[stat],run)
-      fm = cdms.open(mod_var_path)
+      fm = cdms2.open(mod_var_path)
   
       if debug:
         reg_timeseries_m = fm(mod_var[stat],regions_specs[reg[stat]]['domain'],time = slice(0,60)) # RUN CODE FAST ON 5 YEARS OF DATA
@@ -181,22 +161,40 @@ for stat in stats:
   
       print mod, stat, 'stat =', result
   
-      if stat not in enso_stat_dic['RESULTS'][mod]['mean_stat'].keys():
-        enso_stat_dic['RESULTS'][mod]['mean_stat'][stat] = {}
-  
-      if reg[stat] not in enso_stat_dic['RESULTS'][mod]['mean_stat'][stat].keys():
-        enso_stat_dic['RESULTS'][mod]['mean_stat'][stat][reg[stat]] = {}
-  
       enso_stat_dic['RESULTS'][mod]['mean_stat'][stat][reg[stat]] = result
   
       if not debug:
         fm.close()
   
-      # Write dictionary to json file
-      json.dump(enso_stat_dic, open(json_file,'w'),sort_keys=True, indent=4, separators=(',', ': '))
-  
     except:
       print 'failed for model ', mod
       pass
 
-print 'all done'
+#=================================================
+#  OUTPUT METRICS TO JSON FILE
+#-------------------------------------------------
+OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), outfilejson)
+
+disclaimer = open(
+    os.path.join(
+        sys.prefix,
+        "share",
+        "pmp",
+        "disclaimer.txt")).read()
+
+metrics_dictionary = collections.OrderedDict()
+metrics_dictionary["DISCLAIMER"] = disclaimer
+metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Bellenger, H et al. Clim Dyn (2014) 42:1999-2018. doi:10.1007/s00382-013-1783-z"
+metrics_dictionary["RESULTS"] = enso_stat_dic  # collections.OrderedDict()
+
+OUT.var = var
+OUT.write(
+    metrics_dictionary,
+    json_structure=["model", "index", "statistic", "period_chunk"],
+    indent=4,
+    separators=(
+        ',',
+        ': '),
+    sort_keys=True)
+
+sys.exit('done')
