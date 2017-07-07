@@ -165,8 +165,7 @@ for mod in models:
 
   try:
 
-    # Dictionary for obs ---
-    if mod == 'obs': enso_stat_dic[mods_key][mod]['source'] = obspath
+    enso_stat_dic[mods_key][mod]['input_data'] = file_path
 
     f = cdms2.open(file_path)
     if debug: print file_path 
