@@ -11,20 +11,19 @@ from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 import collections
 from collections import defaultdict
 
-def tree():
-  return defaultdict(tree)
+def tree(): return defaultdict(tree)
 
 #########################################################
 # SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW
 #########################################################
 # python -i enso_bellenger_compute.py 
-# -mp /work/gleckler1/processed_data/cmip5clims_metrics_package-historical/pr_MODS_Amon_historical_r1i1p1_198001-200512-clim.nc
-# -op /work/gleckler1/processed_data/obs/atm/mo/pr/GPCP/ac/pr_GPCP_000001-000012_ac.nc
+# -mp /work/cmip5/piControl/atm/mo/ts/cmip5.MODS.piControl.r1i1p1.mo.atm.Amon.ts.ver-1.latestX.xml
+# -op /clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc
 # --mns NorESM1-ME MRI-CGCM3
 # --var ts
 # --varobs sst ## varobs needed only when varname is different to model in obs
-# --outpd /work/gleckler1/processed_data/wang_monsoon 
-# --outpj /work/gleckler1/processed_data/metrics_package/metrics_results/wang_monsoon
+# --outpd /work/lee1043/cdat/pmp/enso/test
+# --outpj /work/lee1043/cdat/pmp/enso/test 
 #########################################################
 
 P = PMPParser() # Includes all default options
@@ -248,6 +247,8 @@ OUT.write(
     indent=4,
     separators=(
         ',',
-        ': '))
+        ': '),
+    sort_keys=True)
+
 
 print 'done'
