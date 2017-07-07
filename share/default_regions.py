@@ -25,15 +25,15 @@ regions_specs = {
         'PNA' : {'domain':cdutil.region.domain(latitude=(20.,85,'ccb'),  longitude=(120,240,'ccb'))},
         'PDO' : {'domain':cdutil.region.domain(latitude=(20.,70,'ccb'),  longitude=(110,260,'ccb'))},
         # Below is for ENSO metrics
-        'Nino3.4' : {'domain':cdutil.region.domain(latitude=(-5.,5,'ccb'),    longitude=(190,240,'ccb'))}, 
+        'Nino4'   : {'domain':cdutil.region.domain(latitude=(-5.,5,'ccb'),    longitude=(160,210,'ccb'))},
         'Nino3'   : {'domain':cdutil.region.domain(latitude=(-5.,5,'ccb'),    longitude=(210,270,'ccb'))}, 
-        'Nino4'   : {'domain':cdutil.region.domain(latitude=(-5.,5,'ccb'),    longitude=(160,210,'ccb'))}, 
+        'Nino3.4' : {'domain':cdutil.region.domain(latitude=(-5.,5,'ccb'),    longitude=(190,240,'ccb'))}, 
         'Nino1.2' : {'domain':cdutil.region.domain(latitude=(-10.,0,'ccb'),   longitude=(270,280,'ccb'))}, 
         'TSA'     : {'domain':cdutil.region.domain(latitude=(-20.,0,'ccb'),   longitude=(-30,10,'ccb'))},     # Tropical Southern Atlantic
-        'TNA'     : {'domain':cdutil.region.domain(latitude=(5.5,23.5,'ccb'),longitude=(302.5,345.,'ccb'))}, # Tropical Northern Atlantic
+        'TNA'     : {'domain':cdutil.region.domain(latitude=(5.5,23.5,'ccb'), longitude=(302.5,345.,'ccb'))}, # Tropical Northern Atlantic
         'IO'      : {'domain':cdutil.region.domain(latitude=(-15.,15.,'ccb'), longitude=(40.,110.,'ccb'))},   # Indian Ocean
-        'TropPac' : {'domain':cdutil.region.domain(latitude=(-10.,10.,'ccb'), longitude=(160.,270.,'ccb'))},  # Tropical Pacific (correct range?)
-        'EqPac'   : {'domain':cdutil.region.domain(latitude=(-5.,5.,'ccb'),   longitude=(160.,270.,'ccb'))},  # Equatorial Pacific (correct range?)
+        'TropPac' : {'domain':cdutil.region.domain(latitude=(-10.,10.,'ccb'), longitude=(150.,270.,'ccb'))},  # Tropical Pacific (correct range?)
+        'EqPac'   : {'domain':cdutil.region.domain(latitude=(-5.,5.,'ccb'),   longitude=(150.,270.,'ccb'))},  # Equatorial Pacific
         'IndoPac' : {'domain':cdutil.region.domain(latitude=(-30.,30.,'ccb'), longitude=(30.,240.,'ccb'))},   # Indo-Pacific (correct range?)
         }
 
