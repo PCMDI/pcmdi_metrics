@@ -21,23 +21,13 @@ def tree():
 # -mp /work/gleckler1/processed_data/cmip5clims_metrics_package-historical/pr_MODS_Amon_historical_r1i1p1_198001-200512-clim.nc
 # -op /work/gleckler1/processed_data/obs/atm/mo/pr/GPCP/ac/pr_GPCP_000001-000012_ac.nc
 # --mns NorESM1-ME MRI-CGCM3
+# --var ts
+# --varobs sst ## varobs needed only when varname is different to model in obs
 # --outpd /work/gleckler1/processed_data/wang_monsoon 
 # --outpj /work/gleckler1/processed_data/metrics_package/metrics_results/wang_monsoon
 #########################################################
 
 P = PMPParser() # Includes all default options
-
-P.add_argument('--mns', '--modnames',
-               type=str,
-               nargs='+',
-               dest='modnames',
-               default=None,
-               help='Models to apply')
-P.add_argument("--var", "--variable",
-               type=str,
-               dest='variable',
-               default='ts',
-               help="Variable: 'pr' or 'ts (default)'")
 
 P.add_argument("--mp", "--modpath",
                type=str,
@@ -49,6 +39,22 @@ P.add_argument("--op", "--obspath",
                dest='obspath',
                default='',
                help="Explicit path to obs monthly PR or TS climatology")
+P.add_argument('--mns', '--modnames',
+               type=str,
+               nargs='+',
+               dest='modnames',
+               default=None,
+               help='Models to apply')
+P.add_argument("--var", "--variable",
+               type=str,
+               dest='variable',
+               default='ts',
+               help="Variable: 'pr' or 'ts (default)'")
+P.add_argument("--varobs", "--variableobs",
+               type=str,
+               dest='variableobs',
+               default='ts',
+               help="Variable name in observation (default: ts)")
 P.add_argument("--outpj", "--outpathjsons",
                type=str,
                dest='outpathjsons',
@@ -64,11 +70,6 @@ P.add_argument("--outpd", "--outpathdata",
                dest='outpathdata',
                default='.',
                help="Output path for data")
-#P.add_argument("--mns", "--modnames",
-#               type=ast.literal_eval,
-#               dest='modnames',
-#               default=None,
-#               help="AMIP, historical or picontrol")
 P.add_argument("-e", "--experiment",
                type=str,
                dest='experiment',
@@ -86,13 +87,15 @@ P.add_argument("-p", "--parameters",
                help="")
 
 args = P.parse_args(sys.argv[1:])
-obspath = args.obspath
-modpath = args.modpath
-outpathjsons = args.outpathjsons
-outpathdata = args.outpathdata
-mods = args.modnames
 
-json_filename = args.jsonname
+modpath = args.modpath
+obspath = args.obspath
+mods = args.modnames
+varname = args.variable
+varname_obs = args.variableobs
+outpathjsons = args.outpathjsons
+outfilejson = args.jsonname
+outpathdata = args.outpathdata
 
 ##########################################################
 libfiles = ['durolib.py',
@@ -106,15 +109,15 @@ for lib in libfiles:
 ##########################################################
 
 if var == 'ts':
-  if obspath == '':
-    obspath = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
-    varname_obs = 'sst'
+    if obspath == '':
+      obspath = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
+      varname_obs = 'sst'
 elif var == 'pr':
-  if obspath == '':
-    obspath = '/clim_obs/obs/atm/mo/pr/GPCP/pr_GPCP_197901-200909.nc'
-    varname_obs = 'pr'
+    if obspath == '':
+      obspath = '/clim_obs/obs/atm/mo/pr/GPCP/pr_GPCP_197901-200909.nc'
+      varname_obs = 'pr'
 else:
-  sys.exit('Variable '+var+' is not correct')
+    sys.exit('Variable '+var+' is not correct')
 
 ##########################################################
 
@@ -124,7 +127,6 @@ try:
     os.mkdir(jout)
 except BaseException:
     pass
-
 
 mip = 'cmip5'
 exp = 'piControl'
@@ -140,9 +142,9 @@ models = copy.copy(args.modnames)
 models.insert(0,'obs')
 
 if debug: 
-  regs = ['Nino3.4', 'Nino3']
+    regs = ['Nino3.4', 'Nino3']
 else: 
-  regs = ['Nino3.4', 'Nino3', 'Nino4', 'Nino1.2','TSA','TNA','IO']
+    regs = ['Nino3.4', 'Nino3', 'Nino4', 'Nino1.2','TSA','TNA','IO']
 
 enso_stat_dic = tree() ## Set tree structure dictionary
 
@@ -190,11 +192,13 @@ for mod in models:
         print 'std = ', std
         print 'std_NDJ = ', std_NDJ
         print 'std_MAM = ', std_MAM
+        print 'seasonality = ', std_NDJ/std_MAM
 
       # Record Std. dev. from above calculation ---
       enso_stat_dic[mods_key][mod][reg]['std']['entire'] = std
       enso_stat_dic[mods_key][mod][reg]['std_NDJ']['entire'] = std_NDJ
       enso_stat_dic[mods_key][mod][reg]['std_MAM']['entire'] = std_MAM
+      enso_stat_dic[mods_key][mod][reg]['seasonality']['entire'] = std_NDJ/std_MAM ## Fig. 3b of Bellenger et al. 2014
   
       # Multiple centuries (only for models) ---
       if mod != 'obs':
@@ -214,6 +218,7 @@ for mod in models:
           enso_stat_dic[mods_key][mod][reg]['std'][tkey] = std
           enso_stat_dic[mods_key][mod][reg]['std_NDJ'][tkey] = std_NDJ
           enso_stat_dic[mods_key][mod][reg]['std_MAM'][tkey] = std_MAM
+          enso_stat_dic[mods_key][mod][reg]['seasonality'][tkey] = std_NDJ/std_MAM ## Fig. 3b of Bellenger et al. 2014
     
     enso_stat_dic[mods_key][mod]['reg_time'] = ntstep
     f.close()
@@ -222,7 +227,7 @@ for mod in models:
     print 'failed for ', mod
 
 #  OUTPUT METRICS TO JSON FILE
-OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), json_filename)
+OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), outfilejson)
 
 disclaimer = open(
     os.path.join(
