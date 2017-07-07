@@ -124,7 +124,7 @@ except BaseException:
 
 models = copy.copy(args.modnames)
 if obspath != '':
-  models.insert(0,'obs')
+    models.insert(0,'obs')
 
 if debug: 
     regs = ['Nino3.4', 'Nino3']
@@ -137,78 +137,78 @@ enso_stat_dic = tree() ## Set tree structure dictionary
 # Loop for Observation and Models 
 #-------------------------------------------------
 for mod in models:
-  print ' ----- ', mod,' ---------------------'
-
-  if mod == 'obs':
-    file_path = obspath
-    varname = varobs
-    mods_key = 'OBSERVATION'
-  else:
-    file_path = modpath.replace('MODS', mod)
-    varname = var
-    mods_key = 'MODELS'
-
-  try:
-
-    f = cdms2.open(file_path)
-    enso_stat_dic[mods_key][mod]['input_data'] = file_path
-
-    if debug: print file_path 
+    print ' ----- ', mod,' ---------------------'
   
-    for reg in regs:
-      reg_selector = get_reg_selector(reg)
-      print reg, reg_selector
+    if mod == 'obs':
+        file_path = obspath
+        varname = varobs
+        mods_key = 'OBSERVATION'
+    else:
+        file_path = modpath.replace('MODS', mod)
+        varname = var
+        mods_key = 'MODELS'
   
-      if debug:
-        reg_timeseries = f(varname,reg_selector,time = slice(0,60))   # RUN CODE FAST ON 5 YEARS OF DATA
-      else:
-        reg_timeseries = f(varname,reg_selector)  
-
-      if var == 'pr': reg_timeseries *= 86400. # kgs-1m-2 to mm/day
+    try:
   
-      std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries) 
-      std_NDJ = interannual_variability_seasonal_std_mean_removed(reg_timeseries,'NDJ')
-      std_MAM = interannual_variability_seasonal_std_mean_removed(reg_timeseries,'MAM')
-  
-      if debug:
-        print mod, ' ', reg
-        print 'std = ', std
-        print 'std_NDJ = ', std_NDJ
-        print 'std_MAM = ', std_MAM
-        print 'seasonality = ', std_NDJ/std_MAM
-
-      # Record Std. dev. from above calculation ---
-      enso_stat_dic[mods_key][mod][reg]['std']['entire'] = std
-      enso_stat_dic[mods_key][mod][reg]['std_NDJ']['entire'] = std_NDJ
-      enso_stat_dic[mods_key][mod][reg]['std_MAM']['entire'] = std_MAM
-      enso_stat_dic[mods_key][mod][reg]['seasonality']['entire'] = std_NDJ/std_MAM ## Fig. 3b of Bellenger et al. 2014
-  
-      # Multiple centuries (only for models) ---
-      if mod != 'obs':
-        ntstep = len(reg_timeseries)
-        if debug:
-          itstep = 24 # 2-yrs
-        else:
-          itstep = 1200 # 100-yrs
-  
-        for t in tstep_range(0, ntstep, itstep):
-          print t, t+itstep
-          reg_timeseries_cut = reg_timeseries[t:t+itstep] 
-          std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries_cut)
-          std_NDJ = interannual_variability_seasonal_std_mean_removed(reg_timeseries_cut,'NDJ')
-          std_MAM = interannual_variability_seasonal_std_mean_removed(reg_timeseries_cut,'MAM')
-          tkey=`t`+'-'+`t+itstep`+'_months'
-          enso_stat_dic[mods_key][mod][reg]['std'][tkey] = std
-          enso_stat_dic[mods_key][mod][reg]['std_NDJ'][tkey] = std_NDJ
-          enso_stat_dic[mods_key][mod][reg]['std_MAM'][tkey] = std_MAM
-          enso_stat_dic[mods_key][mod][reg]['seasonality'][tkey] = std_NDJ/std_MAM ## Fig. 3b of Bellenger et al. 2014
+        f = cdms2.open(file_path)
+        enso_stat_dic[mods_key][mod]['input_data'] = file_path
     
-    enso_stat_dic[mods_key][mod]['reg_time'] = ntstep
-    f.close()
-
-  except:
-    print 'failed for ', mod
-
+        if debug: print file_path 
+      
+        for reg in regs:
+            reg_selector = get_reg_selector(reg)
+            print reg, reg_selector
+        
+            if debug:
+                reg_timeseries = f(varname,reg_selector,time = slice(0,60))   # RUN CODE FAST ON 5 YEARS OF DATA
+            else:
+                reg_timeseries = f(varname,reg_selector)  
+      
+            if var == 'pr': reg_timeseries *= 86400. # kgs-1m-2 to mm/day
+        
+            std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries) 
+            std_NDJ = interannual_variability_seasonal_std_mean_removed(reg_timeseries,'NDJ')
+            std_MAM = interannual_variability_seasonal_std_mean_removed(reg_timeseries,'MAM')
+        
+            if debug:
+                print mod, ' ', reg
+                print 'std = ', std
+                print 'std_NDJ = ', std_NDJ
+                print 'std_MAM = ', std_MAM
+                print 'seasonality = ', std_NDJ/std_MAM
+      
+            # Record Std. dev. from above calculation ---
+            enso_stat_dic[mods_key][mod][reg]['std']['entire'] = std
+            enso_stat_dic[mods_key][mod][reg]['std_NDJ']['entire'] = std_NDJ
+            enso_stat_dic[mods_key][mod][reg]['std_MAM']['entire'] = std_MAM
+            enso_stat_dic[mods_key][mod][reg]['seasonality']['entire'] = std_NDJ/std_MAM ## Fig. 3b of Bellenger et al. 2014
+        
+            # Multiple centuries (only for models) ---
+            if mod != 'obs':
+                ntstep = len(reg_timeseries)
+                if debug:
+                    itstep = 24 # 2-yrs
+                else:
+                    itstep = 1200 # 100-yrs
+          
+                for t in tstep_range(0, ntstep, itstep):
+                    print t, t+itstep
+                    reg_timeseries_cut = reg_timeseries[t:t+itstep] 
+                    std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries_cut)
+                    std_NDJ = interannual_variability_seasonal_std_mean_removed(reg_timeseries_cut,'NDJ')
+                    std_MAM = interannual_variability_seasonal_std_mean_removed(reg_timeseries_cut,'MAM')
+                    tkey=`t`+'-'+`t+itstep`+'_months'
+                    enso_stat_dic[mods_key][mod][reg]['std'][tkey] = std
+                    enso_stat_dic[mods_key][mod][reg]['std_NDJ'][tkey] = std_NDJ
+                    enso_stat_dic[mods_key][mod][reg]['std_MAM'][tkey] = std_MAM
+                    enso_stat_dic[mods_key][mod][reg]['seasonality'][tkey] = std_NDJ/std_MAM ## Fig. 3b of Bellenger et al. 2014
+            
+        enso_stat_dic[mods_key][mod]['reg_time'] = ntstep
+        f.close()
+    
+    except:
+        print 'failed for ', mod
+  
 #  OUTPUT METRICS TO JSON FILE
 OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), outfilejson)
 
