@@ -31,18 +31,18 @@ P = PMPParser() # Includes all default options
 P.add_argument("--mp", "--modpath",
                type=str,
                dest='modpath',
-               default='',
+               required=True,
                help="Explicit path to model monthly PR or TS climatology")
 P.add_argument("--op", "--obspath",
                type=str,
                dest='obspath',
-               default='',
+               required=True,
                help="Explicit path to obs monthly PR or TS climatology")
 P.add_argument('--mns', '--modnames',
                type=str,
                nargs='+',
                dest='modnames',
-               default=None,
+               required=True,
                help='Models to apply')
 P.add_argument("--var", "--variable",
                type=str,
@@ -95,6 +95,7 @@ varobs = args.variableobs
 outpathjsons = args.outpathjsons
 outfilejson = args.jsonname
 outpathdata = args.outpathdata
+exp = args.experiment
 
 ##########################################################
 libfiles = ['durolib.py',
@@ -107,15 +108,7 @@ for lib in libfiles:
   execfile(os.path.join('./lib/',lib))
 ##########################################################
 
-if var == 'ts':
-    if obspath == '':
-      obspath = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
-      varobs = 'sst'
-elif var == 'pr':
-    if obspath == '':
-      obspath = '/clim_obs/obs/atm/mo/pr/GPCP/pr_GPCP_197901-200909.nc'
-      varobs = 'pr'
-else:
+if var != 'ts' or var != 'pr' :
     sys.exit('Variable '+var+' is not correct')
 
 ##########################################################
@@ -126,13 +119,6 @@ try:
     os.mkdir(jout)
 except BaseException:
     pass
-
-mip = 'cmip5'
-exp = 'piControl'
-fq = 'mo'
-realm = 'atm'
-var = args.variable
-run = 'r1i1p1'
 
 debug = True
 #debug = False
@@ -159,7 +145,9 @@ for mod in models:
     mods_key = 'OBSERVATION'
   else:
     if modpath == '':
-      modpath = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,var,run)  
+      #modpath = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,var,run)  
+    else:
+      modpath = modpath.replace('MODS', mod)
     file_path = modpath
     varname = var
     mods_key = 'MODELS'
