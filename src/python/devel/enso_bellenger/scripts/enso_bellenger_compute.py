@@ -11,6 +11,9 @@ from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 import collections
 from collections import defaultdict
 
+#debug = True
+debug = False
+
 def tree(): return defaultdict(tree)
 
 #########################################################
@@ -36,7 +39,7 @@ P.add_argument("--mp", "--modpath",
 P.add_argument("--op", "--obspath",
                type=str,
                dest='obspath',
-               required=True,
+               default='',
                help="Explicit path to obs monthly PR or TS climatology")
 P.add_argument('--mns', '--modnames',
                type=str,
@@ -119,11 +122,9 @@ try:
 except BaseException:
     pass
 
-debug = True
-#debug = False
-
 models = copy.copy(args.modnames)
-models.insert(0,'obs')
+if obspath != '':
+  models.insert(0,'obs')
 
 if debug: 
     regs = ['Nino3.4', 'Nino3']
