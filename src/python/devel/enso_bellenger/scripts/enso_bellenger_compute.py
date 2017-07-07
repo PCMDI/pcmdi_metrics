@@ -91,8 +91,8 @@ args = P.parse_args(sys.argv[1:])
 modpath = args.modpath
 obspath = args.obspath
 mods = args.modnames
-varname = args.variable
-varname_obs = args.variableobs
+var = args.variable
+varobs = args.variableobs
 outpathjsons = args.outpathjsons
 outfilejson = args.jsonname
 outpathdata = args.outpathdata
@@ -111,11 +111,11 @@ for lib in libfiles:
 if var == 'ts':
     if obspath == '':
       obspath = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
-      varname_obs = 'sst'
+      varobs = 'sst'
 elif var == 'pr':
     if obspath == '':
       obspath = '/clim_obs/obs/atm/mo/pr/GPCP/pr_GPCP_197901-200909.nc'
-      varname_obs = 'pr'
+      varobs = 'pr'
 else:
     sys.exit('Variable '+var+' is not correct')
 
@@ -156,7 +156,7 @@ for mod in models:
 
   if mod == 'obs':
     file_path = obspath
-    varname = varname_obs
+    varname = varobs
     mods_key = 'OBSERVATION'
   else:
     if modpath == '':
@@ -167,9 +167,9 @@ for mod in models:
 
   try:
 
+    f = cdms2.open(file_path)
     enso_stat_dic[mods_key][mod]['input_data'] = file_path
 
-    f = cdms2.open(file_path)
     if debug: print file_path 
   
     for reg in regs:
