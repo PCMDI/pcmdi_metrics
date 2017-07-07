@@ -98,9 +98,7 @@ outpathdata = args.outpathdata
 exp = args.experiment
 
 ##########################################################
-libfiles = ['durolib.py',
-            'get_pcmdi_data.py',
-            'PMP_rectangular_domains.py',
+libfiles = ['PMP_rectangular_domains.py',
             'monthly_variability_statistics.py',
             'slice_tstep.py']
 
@@ -144,11 +142,7 @@ for mod in models:
     varname = varobs
     mods_key = 'OBSERVATION'
   else:
-    if modpath == '':
-      #modpath = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,var,run)  
-    else:
-      modpath = modpath.replace('MODS', mod)
-    file_path = modpath
+    file_path = modpath.replace('MODS', mod)
     varname = var
     mods_key = 'MODELS'
 
