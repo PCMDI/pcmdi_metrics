@@ -101,19 +101,18 @@ outpathdata = args.outpathdata
 exp = args.experiment
 
 ##########################################################
-libfiles = ['PMP_rectangular_domains.py',
-            'monthly_variability_statistics.py',
+libfiles = ['monthly_variability_statistics.py',
             'slice_tstep.py']
 
 for lib in libfiles:
   execfile(os.path.join('./lib/',lib))
+
+regions_specs = {}
+execfile(sys.prefix + "/share/pmp/default_regions.py")
 ##########################################################
 
-print var
 if var != 'ts' and var != 'pr' :
     sys.exit('Variable '+var+' is not correct')
-
-##########################################################
 
 # SETUP WHERE TO OUTPUT RESULTING  (netcdf)
 try:
@@ -131,6 +130,7 @@ if debug:
 else: 
     regs = ['Nino3.4', 'Nino3', 'Nino4', 'Nino1.2','TSA','TNA','IO']
 
+# DICTIONARY TO SAVE RESULT
 enso_stat_dic = tree() ## Set tree structure dictionary
 
 #=================================================
@@ -156,7 +156,8 @@ for mod in models:
         if debug: print file_path 
       
         for reg in regs:
-            reg_selector = get_reg_selector(reg)
+            #reg_selector = get_reg_selector(reg)
+            reg_selector = regions_specs[reg]['domain']
             print reg, reg_selector
         
             if debug:
