@@ -109,7 +109,7 @@ for lib in libfiles:
   execfile(os.path.join('./lib/',lib))
 
 regions_specs = {}
-execfile(sys.prefix + "/share/pmp/default_regions.py")
+execfile(sys.prefix + "/share/default_regions.py")
 ##########################################################
 
 if var != 'ts' and var != 'pr' :
