@@ -36,12 +36,12 @@ P.add_argument("--mp", "--modpath",
                type=str,
                dest='modpath',
                required=True,
-               help="Explicit path to model monthly PR or TS climatology")
+               help="Explicit path to model monthly PR or TS time series")
 P.add_argument("--op", "--obspath",
                type=str,
                dest='obspath',
                default='',
-               help="Explicit path to obs monthly PR or TS climatology")
+               help="Explicit path to obs monthly PR or TS time series")
 P.add_argument('--mns', '--modnames',
                type=str,
                nargs='+',
