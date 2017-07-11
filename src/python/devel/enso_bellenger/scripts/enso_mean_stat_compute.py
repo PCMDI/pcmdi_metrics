@@ -14,161 +14,193 @@ from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 import collections
 from collections import defaultdict
 
-libfiles = ['durolib.py',
-            'get_pcmdi_data.py',
-            'monthly_variability_statistics.py',
+debug = True
+#debug = False
+
+def tree(): return defaultdict(tree)
+
+#########################################################
+# SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW
+#########################################################
+# python enso_mean_stat.py 
+# -mp /work/cmip5/piControl/atm/mo/ts/cmip5.MODS.piControl.r1i1p1.mo.atm.Amon.ts.ver-1.latestX.xml
+# -op /clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc
+# --mns ACCESS1-0 ACCESS1-3
+# --var ts
+# --varobs sst (varobs needed only when varname is different to model in obs)
+# --outpd /work/lee1043/cdat/pmp/enso/test
+# --outpj /work/lee1043/cdat/pmp/enso/test 
+# --outnj output_mean_stat.json 
+#########################################################
+
+
+P = PMPParser() # Includes all default options
+
+P.add_argument("--mp", "--modpath",
+               type=str,
+               dest='modpath',
+               required=True,
+               help="Explicit path to model monthly PR or TS time series")
+P.add_argument("--op", "--obspath",
+               type=str,
+               dest='obspath',
+               default='',
+               help="Explicit path to obs monthly PR or TS time series")
+P.add_argument('--mns', '--modnames',
+               type=str,
+               nargs='+',
+               dest='modnames',
+               required=True,
+               help='Models to apply')
+P.add_argument("--var", "--variable",
+               type=str,
+               dest='variable',
+               default='ts',
+               help="Variable: 'pr', 'tauu',  or 'ts (default)'")
+P.add_argument("--varobs", "--variableobs",
+               type=str,
+               dest='variableobs',
+               default='',
+               help="Variable name in observation (default: same as var)")
+P.add_argument("--outpj", "--outpathjsons",
+               type=str,
+               dest='outpathjsons',
+               default='.',
+               help="Output path for jsons")
+P.add_argument("--outnj", "--outnamejson",
+               type=str,
+               dest='jsonname',
+               default='out.json',
+               help="Output path for jsons")
+P.add_argument("--outpd", "--outpathdata",
+               type=str,
+               dest='outpathdata',
+               default='.',
+               help="Output path for data")
+P.add_argument("-e", "--experiment",
+               type=str,
+               dest='experiment',
+               default='historical',
+               help="AMIP, historical or picontrol")
+P.add_argument("-c", "--MIP",
+               type=str,
+               dest='mip',
+               default='CMIP5',
+               help="put options here")
+P.add_argument("-p", "--parameters",
+               type=str,
+               dest='parameters',
+               default='',
+               help="")
+P.add_argument("-s", "--stat",
+               type=str,
+               dest='stat',
+               default='rmse',
+               help="rmse or amp")
+P.add_argument("--reg", "--region",
+               type=str,
+               dest='region',
+               default='TropPac',
+               help="TropPac, Nino3, EqPac, IndoPac, etc. See /share/default_regions.py")
+
+args = P.parse_args(sys.argv[1:])
+
+modpath = args.modpath
+obspath = args.obspath
+mods = args.modnames
+var = args.variable
+varobs = args.variableobs
+if varobs == '': varobs = var
+outpathjsons = args.outpathjsons
+outfilejson = args.jsonname
+outpathdata = args.outpathdata
+exp = args.experiment
+stat = args.stat
+reg = args.region
+
+##########################################################
+libfiles = ['monthly_variability_statistics.py',
             'slice_tstep.py']
 
 libfiles_share = ['default_regions.py']
 
 for lib in libfiles:
-  execfile(os.path.join('../lib/',lib))
+  execfile(os.path.join('./lib/',lib))
 
-for lib in libfiles_share:
-  execfile(os.path.join('../../../../../share/',lib))
+regions_specs = {}
+execfile(sys.prefix + "/share/default_regions.py")
+##########################################################
 
-##################################################
-# Pre-defined options
-#=================================================
-mip = 'cmip5'
-exp = 'piControl'
-mod = 'IPSL-CM5B-LR'
-fq = 'mo'
-realm = 'atm'
-var = 'ts'
-run = 'r1i1p1'
+if var != 'ts' and var != 'pr' and var != 'tauu' :
+    sys.exit('Variable '+var+' is not correct')
 
-out_dir = './result'
-if not os.path.exists(out_dir): os.makedirs(out_dir)
+# SETUP WHERE TO OUTPUT RESULTING  (netcdf)
+try:
+    jout = outpathjsons
+    os.mkdir(jout)
+except BaseException:
+    pass
 
-#=================================================
-# Additional options
-#=================================================
-debug = True
-#debug = False
+models = copy.copy(args.modnames)
+if obspath != '':
+    models.insert(0,'obs')
 
-if debug:
-  mods = ['IPSL-CM5B-LR']  # Test just one model
-  stats = ['SST_RMSE','PR_RMSE'] # Test just one reg
-else:
-  mods = get_all_mip_mods(mip,exp,fq,realm,var)
-  stats = ['SST_RMSE','SST_AMP','TAUU_RMSE','PR_RMSE']
+# DICTIONARY TO SAVE RESULT
+enso_stat_dic = tree() ## Set tree structure dictionary
 
 #=================================================
-# Declare dictionary for .json record 
+# Loop for Observation and Models
 #-------------------------------------------------
-# Prepare dictionary frame
-def tree(): return defaultdict(tree)
-enso_stat_dic = tree()  # Dictionary to be output to JSON file
+for mod in models:
+    print ' ----- ', mod,' ---------------------'
 
-json_filename = 'out_enso_mean_stat.json'
+    if mod == 'obs':
+        file_path = obspath
+        varname = varobs
+        mods_key = 'OBSERVATION'
+    else:
+        file_path = modpath.replace('MODS', mod)
+        varname = var
+        mods_key = 'MODELS'
 
-json_file = out_dir + '/' + json_filename
-
-#=================================================
-# Observation
-#-------------------------------------------------
-mod_var = {}
-obs_clim = {}
-obs_grid = {}
-reg = {}
-
-for stat in stats:
-  if stat == 'SST_RMSE':
-    mod_var[stat] = 'ts'
-    reg[stat] = 'TropPac'
-    obs_var = 'sst'
-    obs_var_path = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
-  elif stat == 'SST_AMP':
-    mod_var[stat] = 'ts'
-    reg[stat] = 'Nino3'
-    obs_var = 'sst'
-    obs_var_path = '/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc'
-  elif stat == 'TAUU_RMSE':
-    mod_var[stat] = 'tauu'
-    reg[stat] = 'EqPac'
-    obs_var = 'tauu'
-    obs_var_path = '/clim_obs/obs/atm/mo/tauu/ERAINT/tauu_ERAINT_198901-200911.nc'
-  elif stat == 'PR_RMSE':
-    mod_var[stat] = 'pr'
-    reg[stat] = 'IndoPac'
-    obs_var = 'pr'
-    obs_var_path = '/clim_obs/obs/atm/mo/pr/GPCP/pr_GPCP_197901-200909.nc'
-  else:
-    sys.exit(stat+" is not defined")
-
-  # Prepare obs dataset
-  fo = cdms2.open(obs_var_path)
-  if debug:
-    reg_timeseries_o = fo(obs_var,regions_specs[reg[stat]]['domain'],time = slice(0,60)) # RUN CODE FAST ON 5 YEARS OF DATA
-  else:
-    reg_timeseries_o = fo(obs_var,regions_specs[reg[stat]]['domain'])
-
-  # Get climatology
-  obs_clim[stat] = cdutil.averager(reg_timeseries_o,axis='t')
-
-  # Prepare regrid
-  obs_grid[stat] = obs_clim[stat].getGrid()
-
-  if stat in ['SST_RMSE','TAUU_RMSE','PR_RMSE']:
-    enso_stat_dic['REF'][stat][reg[stat]] = 0
-  elif stat == 'SST_AMP':
-    obs_ann_cycle = cdutil.ANNUALCYCLE.climatology(reg_timeseries_o)
-    obs_ann_cycle_area_avg = cdutil.averager(obs_ann_cycle,axis='xy')
-    # Get amplitude (Is below a right way to get amplitude??)
-    result = np.amax(obs_ann_cycle_area_avg)-np.mean(obs_ann_cycle_area_avg)
-    enso_stat_dic['REF'][stat][reg[stat]] = result
-
-  enso_stat_dic['REF'][stat]['source'] = obs_var_path
-
-  if not debug:
-    fo.close()
-
-#=================================================
-# Models 
-#-------------------------------------------------
-for stat in stats:
-  print ' ===== ', stat,' ====================='
-
-  for mod in mods:
     try:
+        f = cdms2.open(file_path)
+        reg_selector = regions_specs[reg]['domain']
 
-      print ' ----- ', mod,' ---------------------'
-  
-      mod_var_path = get_latest_pcmdi_mip_data_path(mip,exp,mod,fq,realm,mod_var[stat],run)
-      fm = cdms2.open(mod_var_path)
-  
-      if debug:
-        reg_timeseries_m = fm(mod_var[stat],regions_specs[reg[stat]]['domain'],time = slice(0,60)) # RUN CODE FAST ON 5 YEARS OF DATA
-      else:
-        reg_timeseries_m = fm(mod_var[stat],regions_specs[reg[stat]]['domain'])
-  
-      if stat in ['SST_RMSE','TAUU_RMSE','PR_RMSE']:
+        if debug:
+            reg_timeseries = f(varname, reg_selector, time=slice(0,60)) # RUN CODE FAST ON 5 YEARS OF DATA
+        else:
+            reg_timeseries = f(varname, reg_selector)
+
         # Get climatology
-        mod_clim = cdutil.averager(reg_timeseries_m,axis='t')
-        if stat == 'SST_RMSE':
-          mod_clim = mod_clim - 273.15 # K to C degree
-        # Regrid (mod to obs)
-        mod_clim_regrid = mod_clim.regrid(obs_grid[stat], regridTool='regrid2')
-        # Get RMS
-        result = float(genutil.statistics.rms(mod_clim_regrid, obs_clim[stat], axis='xy'))
-      elif stat == 'SST_AMP':
-        # Get annual cycle
-        mod_ann_cycle = cdutil.ANNUALCYCLE.climatology(reg_timeseries_m)
-        mod_ann_cycle_area_avg = cdutil.averager(mod_ann_cycle,axis='xy')
-        # Get amplitude (Is below a right way to get amplitude??)
-        result = np.amax(mod_ann_cycle_area_avg)-np.mean(mod_ann_cycle_area_avg)
-  
-      print mod, stat, 'stat =', result
-  
-      enso_stat_dic['RESULTS'][mod]['mean_stat'][stat][reg[stat]] = result
-  
-      if not debug:
-        fm.close()
-  
+        clim = cdutil.averager(reg_timeseries,axis='t')
+
+        if stat == 'rmse': 
+            if mod == 'obs':
+                obs_clim = copy.copy(clim)
+                # Prepare regrid
+                obs_grid = clim.getGrid()
+                result = 0.
+             else:
+                mod_clim = copy.copy(clim)
+                if var == 'ts':
+                    mod_clim = mod_clim - 273.15 # K to C degree
+                # Regrid (mod to obs)
+                mod_clim_regrid = mod_clim.regrid(obs_grid, regridTool='regrid2')
+                # Get RMS
+                result = float(genutil.statistics.rms(mod_clim_regrid, obs_clim, axis='xy'))
+        elif stat == 'amp':
+            ann_cycle = cdutil.ANNUALCYCLE.climatology(reg_timeseries)
+            ann_cycle_area_avg = cdutil.averager(obs_ann_cycle,axis='xy')
+            # Get amplitude (Is below a right way to get amplitude??)
+            result = float(np.amax(ann_cycle_area_avg) - np.mean(ann_cycle_area_avg))
+
+        enso_stat_dic[mods_key][stat][reg] = result
+        enso_stat_dic[mods_key][stat]['source'] = file_path
+        f.close()
+
     except:
-      print 'failed for model ', mod
-      pass
+        print 'failed for ', mod
 
 #=================================================
 #  OUTPUT METRICS TO JSON FILE
