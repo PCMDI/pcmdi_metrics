@@ -56,8 +56,8 @@ P.add_argument("--var", "--variable",
 P.add_argument("--varobs", "--variableobs",
                type=str,
                dest='variableobs',
-               default='ts',
-               help="Variable name in observation (default: ts)")
+               default='',
+               help="Variable name in observation (default: same as var)")
 P.add_argument("--outpj", "--outpathjsons",
                type=str,
                dest='outpathjsons',
@@ -96,6 +96,7 @@ obspath = args.obspath
 mods = args.modnames
 var = args.variable
 varobs = args.variableobs
+if varobs == '': varobs = var
 outpathjsons = args.outpathjsons
 outfilejson = args.jsonname
 outpathdata = args.outpathdata
