@@ -14,8 +14,8 @@ from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 import collections
 from collections import defaultdict
 
-debug = True
-#debug = False
+#debug = True
+debug = False
 
 def tree(): return defaultdict(tree)
 
@@ -129,6 +129,7 @@ for lib in libfiles:
 
 regions_specs = {}
 execfile(sys.prefix + "/share/default_regions.py")
+#execfile("/export_backup/lee1043/git/pcmdi_metrics/share/default_regions.py")
 ##########################################################
 
 if var != 'ts' and var != 'pr' and var != 'tauu' :
@@ -177,14 +178,14 @@ for mod in models:
 
         if stat == 'rmse': 
             if mod == 'obs':
-                obs_clim = copy.copy(clim)
-                # Prepare regrid
+                obs_clim = clim.clone()
                 obs_grid = clim.getGrid()
                 result = 0.
              else:
-                mod_clim = copy.copy(clim)
+                mod_clim = clim.clone()
                 if var == 'ts':
-                    mod_clim = mod_clim - 273.15 # K to C degree
+                    mod_clim = MV2.subtract(mod_clim, 273.15) # K to C degree
+                    mod_clim.units = 'degC'
                 # Regrid (mod to obs)
                 mod_clim_regrid = mod_clim.regrid(obs_grid, regridTool='regrid2')
                 # Get RMS
