@@ -75,7 +75,7 @@ P.add_argument("--outpj", "--outpathjsons",
 P.add_argument("--outnj", "--outnamejson",
                type=str,
                dest='jsonname',
-               default='out.json',
+               default='enso_mean_stat.json',
                help="Output path for jsons")
 P.add_argument("--outpd", "--outpathdata",
                type=str,
