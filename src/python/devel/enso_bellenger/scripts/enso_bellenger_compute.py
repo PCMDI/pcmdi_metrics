@@ -166,7 +166,9 @@ for mod in models:
             else:
                 reg_timeseries = f(varname,reg_selector)  
       
-            if var == 'pr': reg_timeseries *= 86400. # kgs-1m-2 to mm/day
+            if var == 'pr': 
+                reg_timeseries = MV2.multiply(reg_timeseries, 86400.) # kgs-1m-2 to mm/day
+                reg_timeseries.units = 'mm/day'
         
             std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries) 
             std_NDJ = interannual_variability_seasonal_std_mean_removed(reg_timeseries,'NDJ')
