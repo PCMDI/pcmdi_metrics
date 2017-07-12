@@ -1,7 +1,12 @@
 #!/usr/bin/env python
 
+import logging
+LOG_LEVEL = logging.INFO
+logging.basicConfig(level=LOG_LEVEL)
+
 import cdutil
 import genutil
+import MV2
 
 import cdms2
 import copy
@@ -14,8 +19,8 @@ from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 import collections
 from collections import defaultdict
 
-#debug = True
-debug = False
+debug = True
+#debug = False
 
 def tree(): return defaultdict(tree)
 
@@ -181,7 +186,7 @@ for mod in models:
                 obs_clim = clim.clone()
                 obs_grid = clim.getGrid()
                 result = 0.
-             else:
+            else:
                 mod_clim = clim.clone()
                 if var == 'ts':
                     mod_clim = MV2.subtract(mod_clim, 273.15) # K to C degree
@@ -189,15 +194,15 @@ for mod in models:
                 # Regrid (mod to obs)
                 mod_clim_regrid = mod_clim.regrid(obs_grid, regridTool='regrid2')
                 # Get RMS
-                result = float(genutil.statistics.rms(mod_clim_regrid, obs_clim, axis='xy'))
+                result = float(genutil.statistics.rms(mod_clim_regrid, obs_clim, axis='xy', weights='weighted'))
         elif stat == 'amp':
             ann_cycle = cdutil.ANNUALCYCLE.climatology(reg_timeseries)
             ann_cycle_area_avg = cdutil.averager(obs_ann_cycle,axis='xy')
             # Get amplitude (Is below a right way to get amplitude??)
             result = float(np.amax(ann_cycle_area_avg) - np.mean(ann_cycle_area_avg))
 
-        enso_stat_dic[mods_key][stat][reg] = result
-        enso_stat_dic[mods_key][stat]['source'] = file_path
+        enso_stat_dic[mods_key][var][stat][reg] = result
+        enso_stat_dic[mods_key][var][stat]['source'] = file_path
         f.close()
 
     except:
