@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+import logging
+LOG_LEVEL = logging.INFO
+logging.basicConfig(level=LOG_LEVEL)
+
 import cdms2
 import copy
 import sys
@@ -111,6 +115,7 @@ for lib in libfiles:
 
 regions_specs = {}
 execfile(sys.prefix + "/share/default_regions.py")
+#execfile("/export_backup/lee1043/git/pcmdi_metrics/share/default_regions.py")
 ##########################################################
 
 if var != 'ts' and var != 'pr' :
