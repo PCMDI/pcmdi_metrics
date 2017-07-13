@@ -194,25 +194,27 @@ for mod in models:
         
             # Multiple centuries (only for models) ---
             if mod != 'obs':
-                ntstep = len(reg_timeseries)
+                ntstep = len(reg_timeseries) # Assume input has monthly interval
                 if debug:
                     itstep = 24 # 2-yrs
                 else:
                     itstep = 1200 # 100-yrs
           
                 for t in tstep_range(0, ntstep, itstep):
-                    print t, t+itstep
-                    reg_timeseries_cut = reg_timeseries[t:t+itstep] 
-                    std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries_cut)
-                    std_NDJ = interannual_variability_seasonal_std_mean_removed(reg_timeseries_cut,'NDJ')
-                    std_MAM = interannual_variability_seasonal_std_mean_removed(reg_timeseries_cut,'MAM')
-                    tkey=`t`+'-'+`t+itstep`+'_months'
-                    enso_stat_dic[mods_key][mod][reg]['std'][tkey] = std
-                    enso_stat_dic[mods_key][mod][reg]['std_NDJ'][tkey] = std_NDJ
-                    enso_stat_dic[mods_key][mod][reg]['std_MAM'][tkey] = std_MAM
-                    enso_stat_dic[mods_key][mod][reg]['seasonality'][tkey] = std_NDJ/std_MAM ## Fig. 3b of Bellenger et al. 2014
+                    etstep = t+itstep
+                    if etstep < ntstep:
+                        if debug: print t, etstep
+                        reg_timeseries_cut = reg_timeseries[t:etstep] 
+                        std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries_cut)
+                        std_NDJ = interannual_variability_seasonal_std_mean_removed(reg_timeseries_cut,'NDJ')
+                        std_MAM = interannual_variability_seasonal_std_mean_removed(reg_timeseries_cut,'MAM')
+                        tkey=str((t/12)+1)+'-'+str((etstep)/12)+'yrs'
+                        enso_stat_dic[mods_key][mod][reg]['std'][tkey] = std
+                        enso_stat_dic[mods_key][mod][reg]['std_NDJ'][tkey] = std_NDJ
+                        enso_stat_dic[mods_key][mod][reg]['std_MAM'][tkey] = std_MAM
+                        enso_stat_dic[mods_key][mod][reg]['seasonality'][tkey] = std_NDJ/std_MAM ## Fig. 3b of Bellenger et al. 2014
             
-        enso_stat_dic[mods_key][mod]['reg_time'] = ntstep
+                enso_stat_dic[mods_key][mod]['entire_yrs'] = ntstep/12
         f.close()
     
     except:
