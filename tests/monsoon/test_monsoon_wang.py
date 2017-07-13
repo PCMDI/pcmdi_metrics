@@ -27,12 +27,12 @@ class MonsoonTest(unittest.TestCase):
 
     def testMonsoonWang(self):
 
-        cmd = 'mpi_compute.py --mp test/monsoon/pr_MODS_Amon_historical_r1i1p1_198001-200512-clim.nc --op test/monsoon/pr_GPCP_000001-000012_ac.nc --mns "[\'NorESM1-ME\',\'MRI-CGCM3\']" --outpd test_monsoon --outpj test_monsoon'
+        cmd = 'mpindex_compute.py --mp tests/monsoon/data/pr_MODS_Amon_historical_r1i1p1_198001-200512-clim.nc --op tests/monsoon/obs/pr_GPCP_000001-000012_ac.nc --mns "[\'NorESM1-ME\',\'MRI-CGCM3\']" --outpd test_monsoon --outpj test_monsoon'
         p = subprocess.Popen(shlex.split(cmd))
         o, e = p.communicate()
 
         test_file = "test_monsoon/out.json"
-        correct_file = "test/monsoon/mpi.json"
+        correct_file = "tests/monsoon/mpi.json"
 
         self.compareJsons(test_file,correct_file)
         os.remove(test_file)

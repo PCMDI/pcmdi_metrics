@@ -52,6 +52,7 @@ packages = {'pcmdi_metrics': 'src/python',
             'pcmdi_metrics.pcmdi': 'src/python/pcmdi',
             'pcmdi_metrics.graphics': 'src/python/graphics',
             'pcmdi_metrics.driver': 'src/python/pcmdi/scripts/driver',
+            'pcmdi_metrics.monsoon_wang': 'src/python/monsoon_wang/lib',
             }
 scripts = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
            'src/python/pcmdi/scripts/pcmdi_metrics_driver_legacy.py',
@@ -59,6 +60,7 @@ scripts = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
            'src/python/misc/scripts/install_metrics_from_branches.py',
            'demo/pmp_demo_1.py',
            'demo/pmp_demo.py',
+           'src/python/monsoon_wang/scripts/mpindex_compute.py',
            ]
 
 demo_files = glob.glob("demo/*/*")

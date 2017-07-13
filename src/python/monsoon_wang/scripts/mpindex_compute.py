@@ -76,6 +76,14 @@ P.add_argument("-p", "--parameters",
                dest='parameters',
                default='',
                help="")
+P.add_argument("--ovar",
+               dest='obsvar',
+               default='pr',
+               help="Name of variable in obs file")
+P.add_argument("-v", "--var",
+               dest='modvar',
+               default='pr',
+               help="Name of variable in model files")
 
 args = P.parse_args(sys.argv[1:])
 modpath = args.modpath
@@ -143,7 +151,7 @@ print 'mods is ', mods
 
 # VAR IS FIXED TO BE PRECIP FOR CALCULATING MONSOON PRECIPITATION INDICES
 # and threshold is set converted from mm/day to kgs-1m-2
-var = 'pr'
+var = args.modvar
 thr = 2. / 86400.
 sig_digits = '.3f'
 
@@ -151,7 +159,7 @@ sig_digits = '.3f'
 # PMP monthly default PR obs
 
 fobs = cdms2.open(args.obspath)
-dobs_orig = fobs('pr')
+dobs_orig = fobs(args.obsvar)
 
 obsgrid = dobs_orig.getGrid()
 
@@ -164,12 +172,9 @@ annrange_obs, mpi_obs = mpd(dobs_orig)
 # print obs,' ', annrange_obs,' ', mpi_obs
 #########################################
 # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
-try:
-    nout = os.path.join(outpathdata, "_".join([args.experiment, args.mip, 'wang-monsoon']))
+nout = os.path.join(outpathdata, "_".join([args.experiment, args.mip, 'wang-monsoon']))
+if not os.path.exists(nout):
     os.mkdir(nout)
-except Exception as err:
-    print "NOUT ERR:", err
-    pass
 
 # SETUP WHERE TO OUTPUT RESULTING  (netcdf)
 try:
@@ -178,10 +183,11 @@ try:
 except BaseException:
     pass
 
+print modpath
 modpathall = modpath.replace('MODS', '*')
-
+print modpathall
 lst = glob.glob(modpathall)
-
+print lst
 # CONFIRM DATA FOR MODS IS AVAIL AND REMOVE THOSE IT IS NOT
 
 gmods = []  # "Got" these MODS
@@ -251,9 +257,9 @@ if args.experiment == 'historical' and mods is None:
 regions_specs = {}
 default_regions = []
 execfile(sys.prefix + "/share/pmp/default_regions.py")
+regions_specs["KEN"] = {'domain': cdutil.region.domain(latitude=(-40., 45.), longitude=(0., 360.))}
 
-
-doms = ['AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
+doms = ['AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM', "KEN"]
 
 #w = sys.stdin.readline()
 
@@ -265,7 +271,7 @@ for mod in gmods:
     mpi_stats_dic[mod] = {}
 
     f = cdms2.open(l)
-    d_orig = f('pr')
+    d_orig = f(var)
 
     annrange_mod, mpi_mod = mpd(d_orig)
     annrange_mod = annrange_mod.regrid(obsgrid)
