@@ -202,7 +202,7 @@ for mod in models:
           
                 for t in tstep_range(0, ntstep, itstep):
                     etstep = t+itstep
-                    if etstep < ntstep:
+                    if etstep <= ntstep:
                         if debug: print t, etstep
                         reg_timeseries_cut = reg_timeseries[t:etstep] 
                         std = interannual_variabilty_std_annual_cycle_removed(reg_timeseries_cut)
