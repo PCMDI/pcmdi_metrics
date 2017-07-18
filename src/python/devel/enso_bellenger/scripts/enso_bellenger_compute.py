@@ -1,5 +1,19 @@
 #!/usr/bin/env python
 
+#########################################################
+# SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW
+#########################################################
+# python enso_bellenger_compute.py 
+# -mp /work/cmip5/piControl/atm/mo/ts/cmip5.MODS.piControl.r1i1p1.mo.atm.Amon.ts.ver-1.latestX.xml
+# -op /clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc
+# --mns ACCESS1-0 ACCESS1-3
+# --var ts
+# --varobs sst (varobs needed only when varname is different to model in obs)
+# --outpd /work/lee1043/cdat/pmp/enso/test
+# --outpj /work/lee1043/cdat/pmp/enso/test 
+# --outnj output.json 
+#########################################################
+
 import logging
 LOG_LEVEL = logging.INFO
 logging.basicConfig(level=LOG_LEVEL)
@@ -20,18 +34,6 @@ debug = False
 
 def tree(): return defaultdict(tree)
 
-#########################################################
-# SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW
-#########################################################
-# python enso_bellenger_compute.py 
-# -mp /work/cmip5/piControl/atm/mo/ts/cmip5.MODS.piControl.r1i1p1.mo.atm.Amon.ts.ver-1.latestX.xml
-# -op /clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc
-# --mns ACCESS1-0 ACCESS1-3
-# --var ts
-# --varobs sst (varobs needed only when varname is different to model in obs)
-# --outpd /work/lee1043/cdat/pmp/enso/test
-# --outpj /work/lee1043/cdat/pmp/enso/test 
-# --outnj output.json 
 #########################################################
 
 P = PMPParser() # Includes all default options
