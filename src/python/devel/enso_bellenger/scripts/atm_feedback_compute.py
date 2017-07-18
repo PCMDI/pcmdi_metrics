@@ -1,11 +1,107 @@
+#!/usr/bin/env python
+
+import logging
+LOG_LEVEL = logging.INFO
+logging.basicConfig(level=LOG_LEVEL)
+
 import sys, os
 import shutil
 import cdms2 as cdms
 import json
 
-libfiles = ['durolib.py',
-            'get_pcmdi_data.py',
-            'monthly_variability_statistics.py',
+debug = True
+#debug = False
+
+def tree(): return defaultdict(tree)
+
+#########################################################
+
+P = PMPParser() # Includes all default options
+
+P.add_argument("--mp", "--modpath",
+               type=str,
+               dest='modpath',
+               required=True,
+               help="Explicit path to model monthly PR or TS time series")
+P.add_argument("--op", "--obspath",
+               type=str,
+               dest='obspath',
+               default='',
+               help="Explicit path to obs monthly PR or TS time series")
+P.add_argument('--mns', '--modnames',
+               type=str,
+               nargs='+',
+               dest='modnames',
+               required=True,
+               help='Models to apply')
+P.add_argument("--var", "--variable",
+               type=str,
+               dest='variable',
+               default='ts',
+               help="Variable: 'pr', 'tauu',  or 'ts (default)'")
+P.add_argument("--varobs", "--variableobs",
+               type=str,
+               dest='variableobs',
+               default='',
+               help="Variable name in observation (default: same as var)")
+P.add_argument("--outpj", "--outpathjsons",
+               type=str,
+               dest='outpathjsons',
+               default='.',
+               help="Output path for jsons")
+P.add_argument("--outnj", "--outnamejson",
+               type=str,
+               dest='jsonname',
+               default='atm_feedback_stat.json',
+               help="Output path for jsons")
+P.add_argument("--outpd", "--outpathdata",
+               type=str,
+               dest='outpathdata',
+               default='.',
+               help="Output path for data")
+P.add_argument("-e", "--experiment",
+               type=str,
+               dest='experiment',
+               default='historical',
+               help="AMIP, historical or picontrol")
+P.add_argument("-c", "--MIP",
+               type=str,
+               dest='mip',
+               default='CMIP5',
+               help="put options here")
+P.add_argument("-p", "--parameters",
+               type=str,
+               dest='parameters',
+               default='',
+               help="")
+P.add_argument("-s", "--stat",
+               type=str,
+               dest='stat',
+               default='rmse',
+               help="rmse or amp")
+P.add_argument("--reg", "--region",
+               type=str,
+               dest='region',
+               default='TropPac',
+               help="TropPac, Nino3, EqPac, IndoPac, etc. See /share/default_regions.py")
+
+args = P.parse_args(sys.argv[1:])
+
+modpath = args.modpath
+obspath = args.obspath
+mods = args.modnames
+var = args.variable
+varobs = args.variableobs
+if varobs == '': varobs = var
+outpathjsons = args.outpathjsons
+outfilejson = args.jsonname
+outpathdata = args.outpathdata
+exp = args.experiment
+stat = args.stat
+reg = args.region
+
+##########################################################
+libfiles = ['monthly_variability_statistics.py',
             'slice_tstep.py']
 
 libfiles_share = ['default_regions.py']
@@ -13,62 +109,29 @@ libfiles_share = ['default_regions.py']
 for lib in libfiles:
   execfile(os.path.join('../lib/',lib))
 
-for lib in libfiles_share:
-  execfile(os.path.join('../../../../../share/',lib))
-
-##################################################
-# Pre-defined options
-#=================================================
-mip = 'cmip5'
-exp = 'piControl'
-mod = 'IPSL-CM5B-LR'
-fq = 'mo'
-realm = 'atm'
-var = 'ts'
-run = 'r1i1p1'
-
-out_dir = './result'
-if not os.path.exists(out_dir): os.makedirs(out_dir)
-
-#=================================================
-# Additional options
-#=================================================
-debug = True
-#debug = False
+regions_specs = {}
+#execfile(sys.prefix + "/share/default_regions.py")
+execfile("/export_backup/lee1043/git/pcmdi_metrics/share/default_regions.py")
+##########################################################
 
 if debug:
-  mods = ['IPSL-CM5B-LR']  # Test just one model
   fdbs = ['AtmBjk'] # Test just one region
 else:
-  mods = get_all_mip_mods(mip,exp,fq,realm,var)
   fdbs = ['AtmBjk','SfcFlx','SrtWav','LthFlx']
 
-#=================================================
-# Declare dictionary for .json record 
-#-------------------------------------------------
-# Prepare dictionary frame
-enso_stat_dic = {}  # Dictionary to be output to JSON file
+# SETUP WHERE TO OUTPUT RESULTING  (netcdf)
+try:
+    jout = outpathjsons
+    os.mkdir(jout)
+except BaseException:
+    pass
 
-json_filename = 'AtmFeedback_' + mip + '_' + exp + '_' + run + '_' + fq + '_' +realm + '_' + var
+models = copy.copy(args.modnames)
+if obspath != '':
+    models.insert(0,'obs')
 
-json_file = out_dir + '/' + json_filename + '.json'
-json_file_org = out_dir + '/' + json_filename + '_org.json'
-
-# Keep previous version of json file against overwrite ---
-if os.path.isfile(json_file):
-  shutil.copyfile(json_file, json_file_org)
-
-update_json = True
-
-if update_json == True and os.path.isfile(json_file):
-  fj = open(json_file)
-  enso_stat_dic = json.loads(fj.read())
-  fj.close()
-
-if 'REF' not in enso_stat_dic.keys():
-  enso_stat_dic['REF']={}
-if 'RESULTS' not in enso_stat_dic.keys():
-  enso_stat_dic['RESULTS']={}
+# DICTIONARY TO SAVE RESULT
+enso_stat_dic = tree() ## Set tree structure dictionary
 
 #=================================================
 # Models 
@@ -76,14 +139,7 @@ if 'RESULTS' not in enso_stat_dic.keys():
 for mod in mods:
   print ' ----- ', mod,' ---------------------'
 
-  #try:
-  if 1 == 1:
-
-    if mod not in enso_stat_dic['RESULTS'].keys():
-      enso_stat_dic['RESULTS'][mod] = {}
-    if 'feedback' not in enso_stat_dic['RESULTS'][mod].keys():
-      enso_stat_dic['RESULTS'][mod]['feedback'] = {} 
-
+  try:
     # x-axis of slope, common for all type of feedback
     xvar='ts'
     xregion = 'Nino3'
@@ -137,11 +193,35 @@ for mod in mods:
 
     enso_stat_dic['RESULTS'][mod]['reg_time'] = ntstep
 
-    # Write dictionary to json file
-    json.dump(enso_stat_dic, open(json_file + '.json','w'),sort_keys=True, indent=4, separators=(',', ': '))
+  except:
+    print 'failed for model ', mod
+    pass
 
-  #except:
-  #  print 'failed for model ', mod
-  #  pass
+#=================================================
+#  OUTPUT METRICS TO JSON FILE
+#-------------------------------------------------
+OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), outfilejson)
 
-print 'all done for', var
+disclaimer = open(
+    os.path.join(
+        sys.prefix,
+        "share",
+        "pmp",
+        "disclaimer.txt")).read()
+
+metrics_dictionary = collections.OrderedDict()
+metrics_dictionary["DISCLAIMER"] = disclaimer
+metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Bellenger, H et al. Clim Dyn (2014) 42:1999-2018. doi:10.1007/s00382-013-1783-z"
+metrics_dictionary["RESULTS"] = enso_stat_dic  # collections.OrderedDict()
+
+OUT.var = var
+OUT.write(
+    metrics_dictionary,
+    json_structure=["model", "index", "statistic", "period_chunk"],
+    indent=4,
+    separators=(
+        ',',
+        ': '),
+    sort_keys=True)
+
+sys.exit('done')
