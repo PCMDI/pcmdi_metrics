@@ -1,19 +1,5 @@
 #!/usr/bin/env python
 
-#########################################################
-# SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW
-#########################################################
-# python enso_mean_stat.py 
-# -mp /work/cmip5/piControl/atm/mo/ts/cmip5.MODS.piControl.r1i1p1.mo.atm.Amon.ts.ver-1.latestX.xml
-# -op /clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc
-# --mns ACCESS1-0 ACCESS1-3
-# --var ts
-# --varobs sst (varobs needed only when varname is different to model in obs)
-# --outpd /work/lee1043/cdat/pmp/enso/test
-# --outpj /work/lee1043/cdat/pmp/enso/test 
-# --outnj output_mean_stat.json 
-#########################################################
-
 import logging
 LOG_LEVEL = logging.INFO
 logging.basicConfig(level=LOG_LEVEL)
@@ -36,8 +22,23 @@ from collections import defaultdict
 debug = True
 #debug = False
 
+MultiCenOn = True
+#MultiCenOn = False
+
 def tree(): return defaultdict(tree)
 
+#########################################################
+# SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW
+#########################################################
+# python enso_mean_stat.py 
+# -mp /work/cmip5/piControl/atm/mo/ts/cmip5.MODS.piControl.r1i1p1.mo.atm.Amon.ts.ver-1.latestX.xml
+# -op /clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc
+# --mns ACCESS1-0 ACCESS1-3
+# --var ts
+# --varobs sst (varobs needed only when varname is different to model in obs)
+# --outpd /work/lee1043/cdat/pmp/enso/test
+# --outpj /work/lee1043/cdat/pmp/enso/test 
+# --outnj output_mean_stat.json 
 #########################################################
 
 
@@ -173,6 +174,8 @@ for mod in models:
 
     try:
         f = cdms2.open(file_path)
+        enso_stat_dic[mods_key][mod]['input_data'] = file_path
+
         reg_selector = regions_specs[reg]['domain']
 
         if debug:
@@ -195,16 +198,48 @@ for mod in models:
                     mod_clim.units = 'degC'
                 # Regrid (mod to obs)
                 mod_clim_regrid = mod_clim.regrid(obs_grid, regridTool='regrid2')
-                # Get RMS
+                # Get RMS Error
                 result = float(genutil.statistics.rms(mod_clim_regrid, obs_clim, axis='xy', weights='weighted'))
+
         elif stat == 'amp':
             ann_cycle = cdutil.ANNUALCYCLE.climatology(reg_timeseries)
             ann_cycle_area_avg = cdutil.averager(obs_ann_cycle,axis='xy')
             # Get amplitude (Is below a right way to get amplitude??)
             result = float(np.amax(ann_cycle_area_avg) - np.mean(ann_cycle_area_avg))
 
-        enso_stat_dic[mods_key][var][stat][reg] = result
-        enso_stat_dic[mods_key][var][stat]['source'] = file_path
+        # Record result of calculation ---
+        enso_stat_dic[mods_key][mod][var][reg][stat]['entire'] = result
+
+        # Multiple centuries (only for models) --- 
+        if MultiCenOn:
+            if mod != 'obs':
+                ntstep = len(reg_timeseries) # Assume input has monthly interval
+                if debug:
+                    itstep = 24 # 2-yrs
+                else:
+                    itstep = 1200 # 100-yrs
+
+                for t in tstep_range(0, ntstep, itstep):
+                    etstep = t+itstep
+                    if etstep <= ntstep:
+                        if debug: print t, etstep
+                        reg_timeseries_cut = reg_timeseries[t:etstep]
+                        if stat == 'rmse':
+                            mod_clim = cdutil.averager(reg_timeseries_cut,axis='t')
+                            # Regrid (mod to obs)
+                            mod_clim_regrid = mod_clim.regrid(obs_grid, regridTool='regrid2')
+                            # Get RMS Error
+                            result = float(genutil.statistics.rms(mod_clim_regrid, obs_clim, axis='xy', weights='weighted'))
+                        elif stat == 'amp':
+                            ann_cycle = cdutil.ANNUALCYCLE.climatology(reg_timeseries_cut)
+                            ann_cycle_area_avg = cdutil.averager(obs_ann_cycle,axis='xy')
+                            # Get amplitude (Is below a right way to get amplitude??)
+                            result = float(np.amax(ann_cycle_area_avg) - np.mean(ann_cycle_area_avg))
+
+                        tkey=str((t/12)+1)+'-'+str((etstep)/12)+'yrs'
+                        enso_stat_dic[mods_key][mod][var][reg][stat][tkey] = result
+
+                enso_stat_dic[mods_key][mod]['entire_yrs'] = ntstep/12
         f.close()
 
     except:
@@ -230,7 +265,7 @@ metrics_dictionary["RESULTS"] = enso_stat_dic  # collections.OrderedDict()
 OUT.var = var
 OUT.write(
     metrics_dictionary,
-    json_structure=["model", "index", "statistic", "period_chunk"],
+    json_structure=["model", "variable", "region", "statistic", "period_chunk"],
     indent=4,
     separators=(
         ',',
