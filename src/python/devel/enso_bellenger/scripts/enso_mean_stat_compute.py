@@ -227,6 +227,9 @@ for mod in models:
                         reg_timeseries_cut = reg_timeseries[t:etstep]
                         if stat == 'rmse':
                             mod_clim = cdutil.averager(reg_timeseries_cut,axis='t')
+                            if var == 'ts':
+                                mod_clim = MV2.subtract(mod_clim, 273.15) # K to C degree
+                                mod_clim.units = 'degC'
                             # Regrid (mod to obs)
                             mod_clim_regrid = mod_clim.regrid(obs_grid, regridTool='regrid2')
                             # Get RMS Error
