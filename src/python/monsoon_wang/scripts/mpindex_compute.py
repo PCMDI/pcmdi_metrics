@@ -146,20 +146,21 @@ if args.mip == 'CMIP5' and args.experiment == 'historical' and mods is None:
         'NorESM1-M',
         'NorESM1-ME']
 
-print 'mods is ', mods
 
 
 # VAR IS FIXED TO BE PRECIP FOR CALCULATING MONSOON PRECIPITATION INDICES
 # and threshold is set converted from mm/day to kgs-1m-2
 var = args.modvar
-thr = 2. / 86400.
+thr = 2.5 / 86400.
 sig_digits = '.3f'
 
 #########################################
 # PMP monthly default PR obs
-
+cdms2.axis.longitude_aliases.append("longitude_prclim_mpd")
+cdms2.axis.latitude_aliases.append("latitude_prclim_mpd")
 fobs = cdms2.open(args.obspath)
-dobs_orig = fobs(args.obsvar)
+dobs_orig = fobs(args.obsvar) / 86400.
+fobs.close()
 
 obsgrid = dobs_orig.getGrid()
 
@@ -168,8 +169,6 @@ obsgrid = dobs_orig.getGrid()
 # FCN TO COMPUTE GLOBAL ANNUAL RANGE AND MONSOON PRECIP INDEX
 
 annrange_obs, mpi_obs = mpd(dobs_orig)
-
-# print obs,' ', annrange_obs,' ', mpi_obs
 #########################################
 # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
 nout = os.path.join(outpathdata, "_".join([args.experiment, args.mip, 'wang-monsoon']))
@@ -183,11 +182,8 @@ try:
 except BaseException:
     pass
 
-print modpath
 modpathall = modpath.replace('MODS', '*')
-print modpathall
 lst = glob.glob(modpathall)
-print lst
 # CONFIRM DATA FOR MODS IS AVAIL AND REMOVE THOSE IT IS NOT
 
 gmods = []  # "Got" these MODS
@@ -198,8 +194,6 @@ for mod in mods:
         if os.path.isfile(l1) is True:
             if mod not in gmods:
                 gmods.append(mod)
-
-print 'gmods is ', gmods
 
 if args.experiment == 'historical' and mods is None:
     gmods = [
@@ -260,6 +254,7 @@ execfile(sys.prefix + "/share/pmp/default_regions.py")
 regions_specs["KEN"] = {'domain': cdutil.region.domain(latitude=(-40., 45.), longitude=(0., 360.))}
 
 doms = ['AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM', "KEN"]
+doms = ["KEN"]
 
 #w = sys.stdin.readline()
 
@@ -271,7 +266,7 @@ for mod in gmods:
     mpi_stats_dic[mod] = {}
 
     f = cdms2.open(l)
-    d_orig = f(var)
+    d_orig = f(var)/86400.
 
     annrange_mod, mpi_mod = mpd(d_orig)
     annrange_mod = annrange_mod.regrid(obsgrid)
@@ -284,6 +279,7 @@ for mod in gmods:
         reg_sel = regions_specs[dom]['domain']
 
         mpi_obs_reg = mpi_obs(reg_sel)
+        mpi_obs_reg.info()
         mpi_obs_reg_sd = float(statistics.std(mpi_obs_reg, axis='xy'))
         mpi_mod_reg = mpi_mod(reg_sel)
 
@@ -291,19 +287,13 @@ for mod in gmods:
         rms = float(statistics.rms(mpi_mod_reg, mpi_obs_reg, axis='xy'))
         rmsn = rms / mpi_obs_reg_sd
 
-        print mod, ' ', dom, ' ', cor
-
 #  DOMAIN SELECTED FROM GLOBAL ANNUAL RANGE FOR MODS AND OBS
         annrange_mod_dom = annrange_mod(reg_sel)
         annrange_obs_dom = annrange_obs(reg_sel)
 
-#  THRESHOLD (see Wang et al., doi:10.1007/s00382-010-0877-0)
-        mt = MV2.greater(annrange_mod_dom, thr)
-        ot = MV2.greater(annrange_obs_dom, thr)
-
 # SKILL SCORES
 #  HIT/(HIT + MISSED + FALSE ALARMS)
-        hit, missed, falarm, score, hitmap, missmap, falarmmap = mpi_skill_scores(mt, ot, thr)
+        hit, missed, falarm, score, hitmap, missmap, falarmmap = mpi_skill_scores(annrange_mod_dom, annrange_obs_dom, thr)
 
 #  POPULATE DICTIONARY FOR JSON FILES
         mpi_stats_dic[mod][dom] = {}
@@ -322,8 +312,6 @@ for mod in gmods:
 
 
 #  OUTPUT METRICS TO JSON FILE
-#json_filename = '/MPI_' + args.mip + '_' + args.experiment
-
 OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), json_filename)
 
 disclaimer = open(
@@ -349,4 +337,3 @@ OUT.write(
         ',',
         ': '))
 
-print 'done'

@@ -3,9 +3,19 @@ import MV2
 
 #  SEASONAL RANGE - USING ANNUAL CYCLE CLIMATOLGIES 0=Jan, 11=Dec
 
+def compute_season(data,season_indices,weights):
+    out = numpy.ma.zeros(data.shape[1:],dtype=data.dtype)
+    N=0
+    for i in season_indices:
+        out+=data[i]*weights[i]
+        N+=weights[i]
+    out = MV2.array(out)
+    out.id = data.id
+    out.setAxisList(data.getAxisList()[1:])
+    return out/N
 
 def mpd(data):
-    """Monsoon precipitation index calculation
+    """Monsoon precipitation intensity and annual range calculation
 
            .. describe:: Input
 
@@ -14,9 +24,11 @@ def mpd(data):
                    * Assumes climatology array with 12 times step first one January
 
    """
-    mjjas = MV2.average(data[4:9])
-    ndjfm = (data[10] + data[11] + data[0] + data[1] + data[2]) / 5.
-    ann = MV2.average(data, axis=0)
+    months_length = [31., 28., 31., 30., 31., 30., 31., 31., 30., 31., 30., 31.]
+    mjjas = compute_season(data,[4,5,6,7,8],months_length)
+    ndjfm = compute_season(data,[10, 11, 0, 1, 2],months_length)
+    ann = compute_season(data,range(12),months_length)
+
 
     annrange = MV2.subtract(mjjas, ndjfm)
 
@@ -28,29 +40,33 @@ def mpd(data):
         e = tmp
 
     annrange[slice(i, e)] = -annrange[slice(i, e)]
-    annrange.id = 'annrange'
+    annrange.id = data.id+"_ar"
+    annrange.longname = "annual range"
 
     mpi = MV2.divide(annrange, ann)
+    mpi.id = data.id+"_int"
+    mpi.longname = "intensity"
 
     return annrange, mpi
 
 
-def mpi_skill_scores(annrange_mod_dom, annrange_obs_dom, threshold=1. / 43200.):
+def mpi_skill_scores(annrange_mod_dom, annrange_obs_dom, threshold=2.5 / 86400.):
     """Monsoon precipitation index skill score calculation
+       see Wang et al., doi:10.1007/s00382-010-0877-0
 
          .. describe:: Input
 
              *  annrange_mod_dom
 
-                 * blah
+                 * Model Values Range (summer - winter)
 
-             *  annrange_bos_dom
+             *  annrange_obs_dom
 
-                 * blah
+                 * Observations Values Range (summer - winter)
 
-             *  threshold [default is 2./86400.]
+             *  threshold [default is 2.5/86400.]
 
-                 * threshol is set converted from mm/day to kgs-1m-2
+                 * threshold in same units as inputs
  """
     mt = numpy.ma.greater(annrange_mod_dom, threshold)
     ot = numpy.ma.greater(annrange_obs_dom, threshold)
@@ -65,12 +81,13 @@ def mpi_skill_scores(annrange_mod_dom, annrange_obs_dom, threshold=1. / 43200.):
     falarmmap = xor * mt
     falarm = float(MV2.sum(falarmmap))
 
-#  print mod,' hit missed falarm ', hit,' ', missed,' ', falarm
-
     score = hit / (hit + missed + falarm)
+
     hitmap.id = 'hit'
     missmap.id = 'miss'
     falarmmap.id = 'false_alarm'
-    # for a in [hitmap,missmap,falarmmap]:
-    #    a.setAxisList(annrange_mod_dom.getAxisList())
+
+    for a in [hitmap,missmap,falarmmap]:
+        a.setAxisList(annrange_mod_dom.getAxisList())
+
     return hit, missed, falarm, score, hitmap, missmap, falarmmap
