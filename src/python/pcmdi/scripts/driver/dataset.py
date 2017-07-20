@@ -123,8 +123,8 @@ class DataSet(object):
         except IOError:
             logging.error('%s could not be loaded!' % file_path)
         except:
-            logging.error('Unexpected error while opening file: '
-                          + sys.exc_info()[0])
+            logging.error('Unexpected error while opening file: ' +
+                          sys.exc_info()[0])
         return opened_file
 
     @abc.abstractmethod
