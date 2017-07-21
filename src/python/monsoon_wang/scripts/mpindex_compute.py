@@ -172,13 +172,15 @@ annrange_obs, mpi_obs = mpd(dobs_orig)
 # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
 nout = os.path.join(outpathdata, "_".join(
     [args.experiment, args.mip, 'wang-monsoon']))
-if not os.path.exists(nout):
-    os.mkdir(nout)
-
-# SETUP WHERE TO OUTPUT RESULTING  (netcdf)
 try:
-    jout = outpathjsons
-    os.mkdir(jout)
+    os.makedirs(nout)
+except BaseException:
+    pass
+
+# SETUP WHERE TO OUTPUT RESULTS (json)
+jout = outpathjsons
+try:
+    os.makedirs(nout)
 except BaseException:
     pass
 

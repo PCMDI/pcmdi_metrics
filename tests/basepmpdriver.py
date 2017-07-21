@@ -44,6 +44,7 @@ class PMPDriverTest(basepmp.PMPTest):
                 os.path.dirname(__file__) +
                 "/pcmdi/%s/*.json" %
                 parameters.case_id)
+            print "GOOD FILES:",good_files
             if len(good_files) == 0:
                 raise Exception(" ".join("could not find good files",
                     __file__, os.path.dirname(__file__),
@@ -56,6 +57,8 @@ class PMPDriverTest(basepmp.PMPTest):
                         shutil.copy(fnm, gnm)
                     else:
                         correct = self.assertSimilarJsons(fnm, gnm, atol=1.E-2, raiseOnError=False)
+                        if not correct and os.path.exists(gnm+".mac"):
+                            correct = self.assertSimilarJsons(fnm, gnm+".mac", atol=1.E-2, raiseOnError=False)
                         allCorrect = allCorrect and correct
             if not allCorrect:
                 raise Exception("Error Encountered on some of the output files, check log")
