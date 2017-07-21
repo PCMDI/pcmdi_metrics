@@ -81,7 +81,10 @@ def mpi_skill_scores(annrange_mod_dom, annrange_obs_dom, threshold=2.5 / 86400.)
     falarmmap = xor * mt
     falarm = float(MV2.sum(falarmmap))
 
-    score = hit / (hit + missed + falarm)
+    if (hit+missed+falarm)>0.:
+        score = hit / (hit + missed + falarm)
+    else:
+        score = 1.e20
 
     hitmap.id = 'hit'
     missmap.id = 'miss'

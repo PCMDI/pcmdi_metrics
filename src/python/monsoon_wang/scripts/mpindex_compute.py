@@ -159,7 +159,7 @@ sig_digits = '.3f'
 cdms2.axis.longitude_aliases.append("longitude_prclim_mpd")
 cdms2.axis.latitude_aliases.append("latitude_prclim_mpd")
 fobs = cdms2.open(args.obspath)
-dobs_orig = fobs(args.obsvar) / 86400.
+dobs_orig = fobs(args.obsvar)
 fobs.close()
 
 obsgrid = dobs_orig.getGrid()
@@ -254,7 +254,8 @@ execfile(sys.prefix + "/share/pmp/default_regions.py")
 regions_specs["KEN"] = {'domain': cdutil.region.domain(latitude=(-40., 45.), longitude=(0., 360.))}
 
 doms = ['AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM', "KEN"]
-doms = ["KEN"]
+doms = ['AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
+#doms = ["KEN"]
 
 #w = sys.stdin.readline()
 
@@ -266,7 +267,7 @@ for mod in gmods:
     mpi_stats_dic[mod] = {}
 
     f = cdms2.open(l)
-    d_orig = f(var)/86400.
+    d_orig = f(var)
 
     annrange_mod, mpi_mod = mpd(d_orig)
     annrange_mod = annrange_mod.regrid(obsgrid)
@@ -279,7 +280,6 @@ for mod in gmods:
         reg_sel = regions_specs[dom]['domain']
 
         mpi_obs_reg = mpi_obs(reg_sel)
-        mpi_obs_reg.info()
         mpi_obs_reg_sd = float(statistics.std(mpi_obs_reg, axis='xy'))
         mpi_mod_reg = mpi_mod(reg_sel)
 
