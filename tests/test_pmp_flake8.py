@@ -11,6 +11,7 @@ class TestFlake8(unittest.TestCase):
         pth = os.path.join(pth, "..")
         pth = os.path.abspath(pth)
         pth = os.path.join(pth, "src/python")
+        nopth = os.path.join(pth, "devel")
         print
         print
         print
@@ -22,7 +23,10 @@ class TestFlake8(unittest.TestCase):
         print
         print
         print
-        P = subprocess.Popen(shlex.split("flake8 --show-source --statistics --ignore=F999,F405,E121,E123,E126,E226,E24,E704 --max-line-length=120 %s" % pth),
+        cmd = "flake8 --show-source --statistics " +\
+              "--ignore=F999,F405,E121,E123,E126,E226,E24,E704 " +\
+              "--max-line-length=120 %s --exclude %s" % (pth,nopth)
+        P = subprocess.Popen(shlex.split(cmd),
                              stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)

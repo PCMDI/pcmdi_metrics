@@ -7,6 +7,7 @@ from pcmdi_metrics.io.base import Base
 import pcmdi_metrics.driver.dataset
 from pcmdi_metrics import LOG_LEVEL
 
+
 class Model(pcmdi_metrics.driver.dataset.DataSet):
     ''' Handles all the computation (setting masking, target grid, etc)
     and some file I/O related to models. '''

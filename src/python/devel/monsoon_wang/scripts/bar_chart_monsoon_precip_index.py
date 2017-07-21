@@ -182,7 +182,10 @@ try:
    aux_dd = dict(RESULTS=dict()); inc = 1
    # -- Replace @VAR by var (if var was passed by the user)
    if variable:
-       for i in xrange(len(aux_jsons)): aux_jsons[i] = aux_jsons[i].replace('@VAR', variable)
+       for i in xrange(
+    len(aux_jsons)): aux_jsons[i] = aux_jsons[i].replace(
+        '@VAR',
+         variable)
    # -- Loop on the files to reconstruct new mod names
    for aux_json in aux_jsons:
        #
@@ -203,7 +206,8 @@ try:
        #        if not new_mod_name:
        #           new_mod_name = tmp_dict['RESULTS'][mod_name]['SimulationDescription'][kw]
        #        else:
-       #           new_mod_name = new_mod_name+' '+tmp_dict['RESULTS'][mod_name]['SimulationDescription'][kw]
+       # new_mod_name = new_mod_name+'
+       # '+tmp_dict['RESULTS'][mod_name]['SimulationDescription'][kw]
        elif mod_name in aux_dd:
           # - 3. add an increment to the model name if this name is already in aux_dd
           new_mod_name = mod_name + '_' + inc

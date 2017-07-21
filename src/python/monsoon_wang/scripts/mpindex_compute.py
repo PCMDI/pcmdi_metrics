@@ -1,14 +1,10 @@
 #!/usr/bin/env python
 
 import cdms2
-import MV2
 import numpy
 import sys
 import os
 from genutil import statistics
-import cdutil
-import regrid2
-import json
 from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 import pcmdi_metrics
@@ -85,7 +81,7 @@ P.add_argument("-v", "--var",
                default='pr',
                help="Name of variable in model files")
 P.add_argument("-t", "--threshold",
-               default=2.5/86400.,
+               default=2.5 / 86400.,
                type=float,
                help="Threshold for a hit when computing skill score")
 
@@ -152,7 +148,6 @@ if args.mip == 'CMIP5' and args.experiment == 'historical' and mods is None:
         'NorESM1-ME']
 
 
-
 # VAR IS FIXED TO BE PRECIP FOR CALCULATING MONSOON PRECIPITATION INDICES
 var = args.modvar
 thr = args.threshold
@@ -175,7 +170,8 @@ obsgrid = dobs_orig.getGrid()
 annrange_obs, mpi_obs = mpd(dobs_orig)
 #########################################
 # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
-nout = os.path.join(outpathdata, "_".join([args.experiment, args.mip, 'wang-monsoon']))
+nout = os.path.join(outpathdata, "_".join(
+    [args.experiment, args.mip, 'wang-monsoon']))
 if not os.path.exists(nout):
     os.mkdir(nout)
 
@@ -191,12 +187,12 @@ lst = glob.glob(modpathall)
 # CONFIRM DATA FOR MODS IS AVAIL AND REMOVE THOSE IT IS NOT
 
 gmods = []  # "Got" these MODS
-print "MODS:",mods
-print "LST:",lst
+print "MODS:", mods
+print "LST:", lst
 for mod in mods:
     for l in lst:
         l1 = modpath.replace('MODS', mod)
-        print "L!:",l1
+        print "L!:", l1
         if os.path.isfile(l1) is True:
             if mod not in gmods:
                 gmods.append(mod)
@@ -261,7 +257,7 @@ execfile(sys.prefix + "/share/pmp/default_regions.py")
 doms = ['AllMW', 'AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
 
 mpi_stats_dic = {}
-print "GMODS:",gmods
+print "GMODS:", gmods
 for mod in gmods:
     l = modpath.replace('MODS', mod)
 
@@ -286,7 +282,11 @@ for mod in gmods:
         mpi_obs_reg_sd = float(statistics.std(mpi_obs_reg, axis='xy'))
         mpi_mod_reg = mpi_mod(reg_sel)
 
-        cor = float(statistics.correlation(mpi_mod_reg, mpi_obs_reg, axis='xy'))
+        cor = float(
+            statistics.correlation(
+                mpi_mod_reg,
+                mpi_obs_reg,
+                axis='xy'))
         rms = float(statistics.rms(mpi_mod_reg, mpi_obs_reg, axis='xy'))
         rmsn = rms / mpi_obs_reg_sd
 
@@ -296,7 +296,8 @@ for mod in gmods:
 
 # SKILL SCORES
 #  HIT/(HIT + MISSED + FALSE ALARMS)
-        hit, missed, falarm, score, hitmap, missmap, falarmmap = mpi_skill_scores(annrange_mod_dom, annrange_obs_dom, thr)
+        hit, missed, falarm, score, hitmap, missmap, falarmmap = mpi_skill_scores(
+            annrange_mod_dom, annrange_obs_dom, thr)
 
 #  POPULATE DICTIONARY FOR JSON FILES
         mpi_stats_dic[mod][dom] = {}
@@ -327,8 +328,8 @@ disclaimer = open(
 metrics_dictionary = collections.OrderedDict()
 metrics_def_dictionary = collections.OrderedDict()
 metrics_dictionary["DISCLAIMER"] = disclaimer
-metrics_dictionary[
-    "REFERENCE"] = "The statistics in this file are based on Wang, B., Kim, HJ., Kikuchi, K. et al. Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0"
+metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Wang, B., Kim, HJ., Kikuchi, K. et al. " +\
+                                   "Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0"
 metrics_dictionary["RESULTS"] = mpi_stats_dic  # collections.OrderedDict()
 
 OUT.var = var
@@ -339,4 +340,3 @@ OUT.write(
     separators=(
         ',',
         ': '))
-
