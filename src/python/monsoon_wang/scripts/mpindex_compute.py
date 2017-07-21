@@ -84,6 +84,11 @@ P.add_argument("-v", "--var",
                dest='modvar',
                default='pr',
                help="Name of variable in model files")
+P.add_argument("-t", "--threshold",
+               default=2.5/86400.,
+               type=float,
+               help="Threshold for a hit when computing skill score")
+
 
 args = P.parse_args(sys.argv[1:])
 modpath = args.modpath
@@ -149,9 +154,8 @@ if args.mip == 'CMIP5' and args.experiment == 'historical' and mods is None:
 
 
 # VAR IS FIXED TO BE PRECIP FOR CALCULATING MONSOON PRECIPITATION INDICES
-# and threshold is set converted from mm/day to kgs-1m-2
 var = args.modvar
-thr = 2.5 / 86400.
+thr = args.threshold
 sig_digits = '.3f'
 
 #########################################
@@ -187,10 +191,12 @@ lst = glob.glob(modpathall)
 # CONFIRM DATA FOR MODS IS AVAIL AND REMOVE THOSE IT IS NOT
 
 gmods = []  # "Got" these MODS
-
+print "MODS:",mods
+print "LST:",lst
 for mod in mods:
     for l in lst:
         l1 = modpath.replace('MODS', mod)
+        print "L!:",l1
         if os.path.isfile(l1) is True:
             if mod not in gmods:
                 gmods.append(mod)
@@ -251,21 +257,18 @@ if args.experiment == 'historical' and mods is None:
 regions_specs = {}
 default_regions = []
 execfile(sys.prefix + "/share/pmp/default_regions.py")
-regions_specs["KEN"] = {'domain': cdutil.region.domain(latitude=(-40., 45.), longitude=(0., 360.))}
 
-doms = ['AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM', "KEN"]
-doms = ['AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
-#doms = ["KEN"]
-
-#w = sys.stdin.readline()
+doms = ['AllMW', 'AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
 
 mpi_stats_dic = {}
-
+print "GMODS:",gmods
 for mod in gmods:
     l = modpath.replace('MODS', mod)
 
     mpi_stats_dic[mod] = {}
 
+    print "******************************************************************************************"
+    print l
     f = cdms2.open(l)
     d_orig = f(var)
 
