@@ -6,7 +6,7 @@ from pcmdi_metrics import LOG_LEVEL
 
 class PMPParameter(cdp.cdp_parameter.CDPParameter):
     def __init__(self):
-        logging.basicConfig(level=LOG_LEVEL)
+        logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
 
         # Metrics run identification
         self.case_id = ''
@@ -48,7 +48,7 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
             )
 
         if str_var == '':
-            logging.warning("%s is blank." % str_var_name)
+            logging.getLogger("pcmdi_metrics").warning("%s is blank." % str_var_name)
 
     def check_str_seq_in_str_list(self, str_sequence,
                                   str_sequence_name, str_vars_list):
@@ -60,7 +60,7 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
 
         for str_var in str_sequence:
             if str_var not in str_vars_list:
-                logging.warning(
+                logging.getLogger("pcmdi_metrics").warning(
                     ("%s might not be a valid value in %s."
                      % (str_var, str_sequence_name))
                 )
@@ -72,7 +72,7 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
                 )
 
         if str_var not in str_vars_list:
-                logging.warning(
+                logging.getLogger("pcmdi_metrics").warning(
                     ("%s might not be a valid value in %s."
                      % (str_var, str_var_name))
                 )
@@ -89,7 +89,7 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
             )
 
         if self.reference_data_set == [] or self.reference_data_set == ():
-            logging.error("reference_data_set is blank.")
+            logging.getLogger("pcmdi_metrics").error("reference_data_set is blank.")
 
     def check_test_data_set(self):
         if type(self.test_data_set) is not list \
@@ -99,7 +99,7 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
             )
 
         if self.test_data_set == [] or self.test_data_set == ():
-            logging.error("test_data_set is blank.")
+            logging.getLogger("pcmdi_metrics").error("test_data_set is blank.")
 
     def check_period(self):
         self.check_str(self.period, 'period')
@@ -249,15 +249,21 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
                 self.test_clims_interpolated_output = os.path.join(
                     self.metrics_output_path,
                     'interpolated_model_clims')
-                logging.warning("Your parameter file asks to save interpolated test climatologies," +
-                                " but did not define a path for this\n We set 'test_clims_interpolated" +
-                                "_output' to %s for you" % self.test_clims_interpolated_output)
+                logging.getLogger("pcmdi_metrics").warning("Your parameter file asks to save interpolated" +
+                                                           "test climatologies," +
+                                                           " but did not define a path for this\n We set " +
+                                                           "'test_clims_interpolated" +
+                                                           "_output' to %s for you" %
+                                                           self.test_clims_interpolated_output)
             if not hasattr(self, "filename_output_template"):
                 template = "%(variable)%(level)_%(model_version)_%(table)_%(realization)" + \
                            "_%(period).interpolated.%(regrid_method).%(target_grid_name)-clim%(ext)"
                 self.filename_output_template = template
-                logging.warning("Your parameter file asks to save interpolated model climatologies," +
-                                " but did not define a name template for this\nWe set 'filename_output" +
-                                "_template' to %s for you" % self.filename_output_template)
+                logging.getLogger("pcmdi_metrics").warning("Your parameter file asks to save interpolated" +
+                                                           "model climatologies," +
+                                                           " but did not define a name template for this\n" +
+                                                           "We set 'filename_output" +
+                                                           "_template' to %s for you" %
+                                                           self.filename_output_template)
         if not hasattr(self, 'dry_run'):
             self.dry_run = True

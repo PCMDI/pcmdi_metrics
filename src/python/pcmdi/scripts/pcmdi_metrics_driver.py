@@ -12,8 +12,19 @@ from pcmdi_metrics import LOG_LEVEL
 class PMPDriver(object):
 
     def __init__(self, parameter):
-        logging.basicConfig(level=LOG_LEVEL)
+        plog = logging.getLogger("pcmdi_metrics")
+        plog.setLevel(LOG_LEVEL)
+        # create file handler which logs messages
+        formatter = logging.Formatter('%%(levelname)s::%%(asctime)s::%%(name)s::%s:: %%(message)s' %
+                                      (parameter.case_id), datefmt="%Y-%m-%d %H:%M")
+        for h in plog.handlers:
+            h.setFormatter(formatter)
 
+        fh = logging.FileHandler('pcmdi_metrics_driver.%s.log' % (parameter.case_id))
+        fh.setLevel(LOG_LEVEL)
+        formatter = logging.Formatter('%(levelname)s::%(asctime)s:: %(message)s', datefmt="%Y-%m-%d %H:%M")
+        fh.setFormatter(formatter)
+        plog.addHandler(fh)
         self.parameter = parameter
         self.obs_dict = {}
         self.regions_dict = {}
@@ -36,7 +47,7 @@ class PMPDriver(object):
             self.var = self.var_name_long.split('_')[0]
 
             if self.var not in self.obs_dict:
-                logging.error('Variable %s not in obs_dict' % self.var)
+                logging.getLogger("pcmdi_metrics").error('Variable %s not in obs_dict' % self.var)
                 continue
 
             self.output_metric = OutputMetrics(self.parameter, self.var_name_long,
@@ -97,7 +108,7 @@ class PMPDriver(object):
             self.default_regions = locals()['default_regions']
             self.regions_specs = locals()['regions_specs']
         except KeyError:
-            logging.error('Failed to open default_regions.py')
+            logging.getLogger("pcmdi_metrics").error('Failed to open default_regions.py')
 
         region_values = self.parameter.regions_values
         region_values.update(getattr(self.parameter, "regions_values", {}))
@@ -185,11 +196,11 @@ class PMPDriver(object):
         ''' Actually create Observation or Module object
         based on if ref_or_test is an obs or model. '''
         if is_obs:
-            logging.info('%s is an obs' % ref_or_test)
+            logging.getLogger("pcmdi_metrics").info('%s is an obs' % ref_or_test)
             return Observation(self.parameter, self.var_name_long, self.region,
                                ref_or_test, self.obs_dict, data_path, self.sftlf)
         else:
-            logging.info('%s is a model' % ref_or_test)
+            logging.getLogger("pcmdi_metrics").info('%s is a model' % ref_or_test)
             return Model(self.parameter, self.var_name_long, self.region,
                          ref_or_test, self.obs_dict, data_path, self.sftlf)
 
