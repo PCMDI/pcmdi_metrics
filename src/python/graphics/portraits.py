@@ -1008,9 +1008,9 @@ class Portrait(object):
             meshfill = x.createmeshfill(source=tid)
 
         if mesh is None:
-            x.plot(MV2.ravel(data), M, template, meshfill, bg=bg)
-        else:
-            x.plot(MV2.ravel(data), mesh, template, meshfill, bg=bg)
+            mesh = M
+
+        x.plot(MV2.ravel(data), mesh, template, meshfill, bg=bg)
 
         # Now prints the rest of the title, etc...
         # but only if n==1
@@ -1092,6 +1092,7 @@ class Portrait(object):
                 x.plot(self.PLOT_SETTINGS.time_stamp, bg=bg, continents=0)
             if self.PLOT_SETTINGS.logo is not None:
                 self.PLOT_SETTINGS.logo.plot(x, bg=bg)
+        return mesh, template, meshfill
 
     def set_colormap(self, x):
         cols = (
