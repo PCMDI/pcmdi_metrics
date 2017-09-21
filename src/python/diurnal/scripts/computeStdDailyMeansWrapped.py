@@ -28,9 +28,8 @@ finalyear = args.lastyear
 directory = args.modroot      # Input  directory for model data
 # These models have been processed already (or tried and found wanting,
 # e.g. problematic time coordinates):
-skipMe = ['ACCESS1-0', 'ACCESS1-3', 'bcc-csm1-1-m', 'bcc-csm1-1-m', 'BNU-ESM', 'CCSM4', 'CNRM-CM5', 'EC-EARTH',
-        'FGOALS-g2', 'GFDL-CM3', 'GFDL-ESM2M', 'GISS-E2-H', 'GISS-E2-R', 'inmcm4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR',
-        'MIROC4h', 'MIROC5', 'MIROC-ESM', 'MIROC-ESM-CHEM']
+skipMe = args.skip
+print "SKIPPING:",skipMe
 
 # Choose only one ensemble member per model, with the following ensemble-member code (for definitions, see
 # http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf):

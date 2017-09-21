@@ -40,3 +40,5 @@ P.add_argument("--model",default="*")
 P.add_argument("--experiment",default="historical")
 P.add_argument("-t","--filename_template",
        default = "cmip5.%(model).%(experiment).%(realization).%(frequency).%(realm).%(frequency).%(variable).%(version).latestX.xml")
+P.add_argument("--skip",default = [],
+        help="models to skip",nargs="*")

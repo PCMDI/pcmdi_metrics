@@ -26,7 +26,7 @@ monthname = monthname_d[args.month]
 #-------------------------------------HARD-CODED INPUT (add to command line later?):
 
 # These models have been processed already (or tried and found wanting, e.g. problematic time coordinates):
-skipMe = ['bcc-csm1-1', 'BNU-ESM', 'CCSM4', 'CMCC-CM', 'CNRM-CM5', 'GFDL-CM3', 'GISS-E2-H', 'GISS-E2-R']
+skipMe = args.skip
 
 # Choose only one ensemble member per model, with the following ensemble-member code (for definitions, see
 # http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf):
