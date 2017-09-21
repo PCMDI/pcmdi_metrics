@@ -42,3 +42,4 @@ P.add_argument("-t","--filename_template",
        default = "cmip5.%(model).%(experiment).%(realization).%(frequency).%(realm).%(frequency).%(variable).%(version).latestX.xml")
 P.add_argument("--skip",default = [],
         help="models to skip",nargs="*")
+P.add_argument("-a","--append",default=False,action="store_true",help="append in json file in json exist (e.g. adding a model to file)")

@@ -67,10 +67,21 @@ datanameID = 'diurnalstd' # Short ID name of output data
 print 'Preparing to write output to JSON file ...'           
 if not os.path.exists(args.output_directory):
     os.makedirs(args.output_directory)
-json = populateStringConstructor(args.outnamejson,args)
-json.month = monthname
+jsonFile = populateStringConstructor(args.outnamejson,args)
+jsonFile.month = monthname
 
-OUT = pcmdi_metrics.io.base.Base(os.path.abspath(args.output_directory),json())
+jsonname = os.path.join(os.path.abspath(args.output_directory),jsonFile())
+
+if not os.path.exists(jsonname) or args.append is False:
+    print 'Initializing dictionary of statistical results ...'
+    stats_dic = {}
+else:
+    with open(jsonname) as f:
+        j = json.load(f)
+        stats_dic = j["RESULTS"]
+
+OUT = pcmdi_metrics.io.base.Base(os.path.abspath(args.output_directory),jsonFile())
+
 disclaimer = open(
     os.path.join(
         sys.prefix,
@@ -81,9 +92,6 @@ metrics_dictionary = collections.OrderedDict()
 metrics_def_dictionary = collections.OrderedDict()
 metrics_dictionary["DISCLAIMER"] = disclaimer
 metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Trenberth, Zhang & Gehne, J Hydromet. 2017"
-
-print 'Initializing dictionary of statistical results ...'
-stats_dic = {}
 
 
 files = glob.glob(os.path.join(args.modroot,template()))
