@@ -17,7 +17,6 @@
 import cdms2, cdutil, MV2, os, sys, glob
 import pcmdi_metrics
 import collections
-from pcmdi_metrics.diurnal.vector_average import vectoravg # Assists vector-averaging by converting between hours and radians.
 
 from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor
 
@@ -25,7 +24,7 @@ from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstruct
 P.add_argument("-j", "--outnamejson",
                       type = str,
                       dest = 'outnamejson',
-                      default = 'savg_DiurnalFourier_%(month).json',
+                      default = 'pr_%(month)_%(firstyear)-%(lastyear)_savg_DiurnalFourier.json',
                       help = "Output name for jsons")
 
 P.add_argument("--lat1",type=float,default=-49.875,help="First latitude")
@@ -79,7 +78,7 @@ def vectoravg(hr1, hr2, clocktype):
     cos_avg = (MV2.cos(hrs_to_rad(hr1, clocktype)) + MV2.cos(hrs_to_rad(hr2, clocktype))) / 2
     return rad_to_hrs(MV2.arctan2(sin_avg, cos_avg), clocktype)
 
-def spacevavg(tvarb1,tvarb2,sftlf):
+def spacevavg(tvarb1,tvarb2,sftlf,model):
     '''
 	Given a "root filename" and month/year specifications, vector-average lat/lon arrays in an (amplitude, phase)
 	pair of input data files. Each input data file contains diurnal (24h), semidiurnal (12h) and terdiurnal (8h)
@@ -125,11 +124,11 @@ def spacevavg(tvarb1,tvarb2,sftlf):
         pha_avg_glo = MV2.remainder(rad_to_hrs(MV2.arctan2(sin_avg_glo, cos_avg_glo), clocktype), clocktype)
         pha_avg_lnd = MV2.remainder(rad_to_hrs(MV2.arctan2(sin_avg_lnd, cos_avg_lnd), clocktype), clocktype)
         pha_avg_ocn = MV2.remainder(rad_to_hrs(MV2.arctan2(sin_avg_ocn, cos_avg_ocn), clocktype), clocktype)
-        if 'CMCC-CM' in rootfname:
+        if 'CMCC-CM' in model:
                 # print '** Correcting erroneous time recording in ', rootfname
                 pha_avg_lnd -= 3.0
                 pha_avg_lnd = MV2.remainder(pha_avg_lnd, clocktype)
-        elif 'BNU-ESM' in rootfname or 'CCSM4' in rootfname or 'CNRM-CM5' in rootfname:
+        elif 'BNU-ESM' in model or 'CCSM4' in model or 'CNRM-CM5' in model:
                 # print '** Correcting erroneous time recording in ', rootfname
                 pha_avg_lnd -= 1.5
                 pha_avg_lnd = MV2.remainder(pha_avg_lnd, clocktype)
@@ -187,7 +186,7 @@ template_S = populateStringConstructor(args.filename_template,args)
 template_S.month=monthname
 template_tS = populateStringConstructor(args.filename_template_tS,args)
 template_tS.month=monthname
-template_sftlf = populateStringConstructor(args.filename_template_tS,args)
+template_sftlf = populateStringConstructor(args.filename_template_sftlf,args)
 template_sftlf.month=monthname
 
 print "TEMPLATE:",template_S()
@@ -203,15 +202,21 @@ for file_S in files_S:
     print 'Reading Phase from %s ...' % os.path.join(args.modroot,template_tS())
     tS = cdms2.open(os.path.join(args.modroot,template_tS()))("tS", latitude=latrange, longitude=lonrange)
     print 'Reading sftlf from %s ...' % os.path.join(args.modroot,template_sftlf())
-    sftlf = cdms2.open(os.path.join(args.modroot,template_sftlf()))("sftlf", latitude=latrange, longitude=lonrange)/100.
-    stats_dic[model] = spacevavg(S,tS,sftlf)
+    try:
+        sftlf = cdms2.open(os.path.join(args.modroot,template_sftlf()))("sftlf", latitude=latrange, longitude=lonrange)/100.
+    except BaseException,err:
+        print 'Failed reading sftlf from file (error was: %s)' % err
+        print 'Creating one for you'
+        sftlf = cdutil.generateLandSeaMask(S.getGrid())
+        print sftlf.min(),sftlf.max()
+    stats_dic[model] = spacevavg(S,tS,sftlf,model)
     print stats_dic
 
 # Write output to JSON file.
 metrics_dictionary["RESULTS"] = stats_dic
 OUT.write(
                 metrics_dictionary,
-                json_structure=["model","domain"],
+                json_structure=["model","domain","harmonic"],
                 indent=4,
                 separators=(
                     ',',
