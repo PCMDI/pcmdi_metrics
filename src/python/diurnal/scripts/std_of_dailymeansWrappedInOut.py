@@ -29,7 +29,7 @@ from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstruct
 P.add_argument("-j", "--outnamejson",
                       type = str,
                       dest = 'outnamejson',
-                      default = 'std_of_dailymeans_%(month).json',
+                      default = 'pr_%(month)_%(firstyear)_%(lastyear)_std_of_dailymeans.json',
                       help = "Output name for jsons")
 
 P.add_argument("--lat1",type=float,default=-49.875,help="First latitude")
@@ -38,7 +38,7 @@ P.add_argument("--lon1",type=float,default=0.125,help="First longitude")
 P.add_argument("--lon2",type=float,default=359.875,help="Last longitude")
 
 P.add_argument("-t","--filename_template",
-       default = "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_std_of_dailymeans.nc")
+       default = "pr_%(month)_%(firstyear)-%(lastyear)_std_of_dailymeans.nc")
 P.add_argument("--model",default="*")
 
 args = P.parse_args(sys.argv[1:])

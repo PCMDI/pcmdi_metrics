@@ -30,7 +30,7 @@ from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstruct
 P.add_argument("-j", "--outnamejson",
                       type = str,
                       dest = 'outnamejson',
-                      default = 'std_of_hourlymeans_%(month).json',
+                      default = 'pr_%(month)_%(firstyear)-%(lastyear)_std_of_hourlymeans.json',
                       help = "Output name for jsons")
 
 P.add_argument("--lat1",type=float,default=-49.875,help="First latitude")
