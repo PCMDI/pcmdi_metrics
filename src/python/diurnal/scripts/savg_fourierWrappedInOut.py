@@ -33,10 +33,10 @@ P.add_argument("--lon1",type=float,default=0.125,help="First longitude")
 P.add_argument("--lon2",type=float,default=359.875,help="Last longitude")
 
 P.add_argument("-t","--filename_template",
-       default = "pr_%(model)_S_%(month)_%(firstyear)-%(lastyear).nc",
+       default = "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_S.nc",
        help="template for getting at amplitude files")
 P.add_argument("--filename_template_tS",
-       default = "pr_%(model)_tS_%(month)_%(firstyear)-%(lastyear).nc",
+       default = "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_tS.nc",
        help="template for phase files")
 P.add_argument("--filename_template_sftlf",
         default = "cmip5.%(model).%(experiment).r0i0p0.fx.atm.fx.sftlf.%(version).latestX.xml",
@@ -55,6 +55,8 @@ print 'Specifying latitude / longitude domain of interest ...'
 # TRMM (observed) domain:
 latrange = (args.lat1,args.lat2)
 lonrange =  (args.lon1,args.lon2)
+
+region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
 
 # Amazon basin:
 # latrange = (-15.0,  -5.0)
@@ -198,17 +200,16 @@ for file_S in files_S:
     model = reverted["model"]
     template_tS.model = model
     template_sftlf.model = model
-    S = cdms2.open(file_S)("S", latitude=latrange, longitude=lonrange)
+    S = cdms2.open(file_S)("S", region)
     print 'Reading Phase from %s ...' % os.path.join(args.modroot,template_tS())
-    tS = cdms2.open(os.path.join(args.modroot,template_tS()))("tS", latitude=latrange, longitude=lonrange)
+    tS = cdms2.open(os.path.join(args.modroot,template_tS()))("tS", region)
     print 'Reading sftlf from %s ...' % os.path.join(args.modroot,template_sftlf())
     try:
-        sftlf = cdms2.open(os.path.join(args.modroot,template_sftlf()))("sftlf", latitude=latrange, longitude=lonrange)/100.
+        sftlf = cdms2.open(os.path.join(args.modroot,template_sftlf()))("sftlf", region)/100.
     except BaseException,err:
         print 'Failed reading sftlf from file (error was: %s)' % err
         print 'Creating one for you'
         sftlf = cdutil.generateLandSeaMask(S.getGrid())
-        print sftlf.min(),sftlf.max()
     stats_dic[model] = spacevavg(S,tS,sftlf,model)
     print stats_dic
 

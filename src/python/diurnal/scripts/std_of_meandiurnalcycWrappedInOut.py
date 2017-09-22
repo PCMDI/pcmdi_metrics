@@ -56,6 +56,8 @@ print 'Specifying latitude / longitude domain of interest ...'
 latrange = (args.lat1,args.lat2)
 lonrange =  (args.lon1,args.lon2)
 
+region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
+
 # Amazon basin:
 # latrange = (-15.0,  -5.0)
 # lonrange = (285.0, 295.0)
@@ -99,7 +101,7 @@ for fnameRoot in files:
     reverted = template.reverse(os.path.basename(fnameRoot))
     model = reverted["model"]
     f = cdms2.open(fnameRoot)
-    x = f(datanameID, lat = latrange, lon = lonrange)
+    x = f(datanameID, region)
     units = x.units
     print '  Shape =', x.shape
 

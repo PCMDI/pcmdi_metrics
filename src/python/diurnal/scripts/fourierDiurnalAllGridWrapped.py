@@ -20,7 +20,7 @@ from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstruct
 
 P.add_argument("-t","--filename_template",
        default = "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_diurnal_avg.nc",
-       help="template for file names conatiaing diurnal average")
+       help="template for file names containing diurnal average")
 P.add_argument("--model",default="*")
 P.add_argument("--filename_template_LST",
        default = "pr_%(model)_LocalSolarTimes.nc",
@@ -93,9 +93,9 @@ for LSTfile in LSTfiles:
     tmax.units = 'GMT'
 
     print '... and writing to netCDF.'
-    f = cdms2.open(os.path.join(args.output_directory,'pr_' + model + '_tmean_' + monthname + '_' +yearrange + '.nc'), 'w')
-    g = cdms2.open(os.path.join(args.output_directory,'pr_' + model + '_S_'    + monthname + '_' +yearrange + '.nc'), 'w')
-    h = cdms2.open(os.path.join(args.output_directory,'pr_' + model + '_tS_'   + monthname + '_' +yearrange + '.nc'), 'w')
+    f = cdms2.open(os.path.join(args.output_directory,'pr_' + model + '_' + monthname + '_' +yearrange + '_tmean.nc'), 'w')
+    g = cdms2.open(os.path.join(args.output_directory,'pr_' + model + '_' + monthname + '_' +yearrange + '_S.nc'), 'w')
+    h = cdms2.open(os.path.join(args.output_directory,'pr_' + model + '_' + monthname + '_' +yearrange + '_tS.nc'), 'w')
     f.write(cycmean)
     g.write(maxvalue)
     h.write(tmax)
