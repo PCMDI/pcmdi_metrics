@@ -38,7 +38,7 @@ P.add_argument("--lon1",type=float,default=0.125,help="First longitude")
 P.add_argument("--lon2",type=float,default=359.875,help="Last longitude")
 
 P.add_argument("-t","--filename_template",
-       default = "pr_%(month)_%(firstyear)-%(lastyear)_std_of_dailymeans.nc")
+       default = "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_std_of_dailymeans.nc")
 P.add_argument("--model",default="*")
 
 args = P.parse_args(sys.argv[1:])
