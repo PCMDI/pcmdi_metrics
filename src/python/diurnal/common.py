@@ -17,7 +17,7 @@ P.add_argument("-i", "--modroot",
                       help="Root directory for model (or observed) 3-hourly data")
 P.add_argument("-m", "--month",
                       type=int,
-                      default=9,
+                      default=7,
                       help="Month to be processed, given as 2-char month number")
 P.add_argument("-f", "--firstyear",
                       type=int,
