@@ -18,6 +18,7 @@ import numpy.ma
 import os
 import glob
 import sys
+import cdp
 
 from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor, INPUT
 
@@ -137,5 +138,6 @@ print "FILES:",fileList
 params = [INPUT(args,name,template) for name in fileList]
 print "PARAMS:",params
 
-for param in params:
-    compute(param)
+cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
+#for param in params:
+#    compute(param)

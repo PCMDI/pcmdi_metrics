@@ -42,6 +42,7 @@ P.add_argument("-o","--output_directory",
 P.add_argument("-r", "--realization",
                       default="r1i1p1",
                       help="Realization used")
+P.add_argument("-w","--num-workers",default=None,type=int,help="number of workers to use in multiprocessing, 0 means auto")
 P.add_argument("--version",default="*")
 P.add_argument("--frequency",default="3hr")
 P.add_argument("--realm",default="atm")
