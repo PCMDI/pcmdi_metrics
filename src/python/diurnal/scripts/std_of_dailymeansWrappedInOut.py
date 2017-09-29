@@ -100,17 +100,20 @@ for fnameRoot in files:
     print 'Reading %s ...' % fnameRoot
     reverted = template.reverse(os.path.basename(fnameRoot))
     model = reverted["model"]
-    f = cdms2.open(fnameRoot)
-    x = f(datanameID, region)
-    units = x.units
-    print '  Shape =', x.shape
-    print 'Finding RMS area-average ...'
-    x = x*x
-    x = cdutil.averager(x, axis = 'xy')
-    x = numpy.ma.sqrt(x)
-    print 'For %8s in %s, average variance of daily values = (%5.2f %s)^2' % (model, monthname, x, units)
-    stats_dic[model] = float(x) # Converts singleton transient variable to plain floating-point number
-    f.close()
+    try:
+        f = cdms2.open(fnameRoot)
+        x = f(datanameID, region)
+        units = x.units
+        print '  Shape =', x.shape
+        print 'Finding RMS area-average ...'
+        x = x*x
+        x = cdutil.averager(x, axis = 'xy')
+        x = numpy.ma.sqrt(x)
+        print 'For %8s in %s, average variance of daily values = (%5.2f %s)^2' % (model, monthname, x, units)
+        stats_dic[model] = float(x) # Converts singleton transient variable to plain floating-point number
+        f.close()
+    except Exception,err:
+        print "Failed for model %s with error %s" % (model,err)
 
 
 print 'Writing output to JSON file ...'

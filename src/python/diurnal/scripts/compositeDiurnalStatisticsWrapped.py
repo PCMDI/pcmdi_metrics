@@ -66,6 +66,7 @@ for fileName in fileList:
     reverted = template.reverse(os.path.basename(fileName))
     dataname = reverted["model"]
     if dataname not in skipMe:
+      try:
         print 'Data source:', dataname
         print 'Opening %s ...' % fileName
         f = cdms2.open(fileName)
@@ -155,5 +156,7 @@ for fileName in fileList:
         f.close()
         g.close()
         h.close()
+      except Exception,err:
+          print "Failed for model %s with erro: %s" % (model,err)
 
 print 'done'

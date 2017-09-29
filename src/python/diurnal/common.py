@@ -1,4 +1,5 @@
 import genutil
+import argparse
 
 monthname_d = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
                7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}
@@ -11,7 +12,7 @@ def populateStringConstructor(template,args):
     return template
 
 from pcmdi_metrics.driver.pmp_parser import PMPParser
-P = PMPParser()
+P = PMPParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 P.add_argument("-i", "--modroot",
                       default='data',
                       help="Root directory for model (or observed) 3-hourly data")

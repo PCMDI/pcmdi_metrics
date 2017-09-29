@@ -100,23 +100,26 @@ for fnameRoot in files:
     print 'Reading %s ...' % fnameRoot
     reverted = template.reverse(os.path.basename(fnameRoot))
     model = reverted["model"]
-    f = cdms2.open(fnameRoot)
-    x = f(datanameID, region)
-    units = x.units
-    print '  Shape =', x.shape
+    try:
+        f = cdms2.open(fnameRoot)
+        x = f(datanameID, region)
+        units = x.units
+        print '  Shape =', x.shape
 
-    print 'Finding standard deviation over first dimension (time of day) ...'
-    x = genutil.statistics.std(x)
-    print '  Shape =', x.shape
+        print 'Finding standard deviation over first dimension (time of day) ...'
+        x = genutil.statistics.std(x)
+        print '  Shape =', x.shape
 
-    print 'Finding r.m.s. average over 2nd-3rd dimensions (area) ...'
-    x = x * x
-    x = cdutil.averager(x, axis = 'xy')
-    x = cdms2.MV2.sqrt(x)
+        print 'Finding r.m.s. average over 2nd-3rd dimensions (area) ...'
+        x = x * x
+        x = cdutil.averager(x, axis = 'xy')
+        x = cdms2.MV2.sqrt(x)
 
-    print 'For %8s in %s, average variance of hourly values = (%5.2f %s)^2' % (model, monthname, x, units)
-    stats_dic[model] = float(x) # Converts singleton transient variable to plain floating-point number
-    f.close()
+        print 'For %8s in %s, average variance of hourly values = (%5.2f %s)^2' % (model, monthname, x, units)
+        stats_dic[model] = float(x) # Converts singleton transient variable to plain floating-point number
+        f.close()
+    except Exception,err:
+        print "Failed model %s with error" % (err)
     
 print 'Writing output to JSON file ...'
 metrics_dictionary["RESULTS"] = stats_dic

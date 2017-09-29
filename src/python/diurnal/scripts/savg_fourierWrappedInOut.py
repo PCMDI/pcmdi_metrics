@@ -198,20 +198,23 @@ for file_S in files_S:
     print 'Reading Amplitude from %s ...' % file_S
     reverted = template_S.reverse(os.path.basename(file_S))
     model = reverted["model"]
-    template_tS.model = model
-    template_sftlf.model = model
-    S = cdms2.open(file_S)("S", region)
-    print 'Reading Phase from %s ...' % os.path.join(args.modroot,template_tS())
-    tS = cdms2.open(os.path.join(args.modroot,template_tS()))("tS", region)
-    print 'Reading sftlf from %s ...' % os.path.join(args.modroot,template_sftlf())
     try:
-        sftlf = cdms2.open(os.path.join(args.modroot,template_sftlf()))("sftlf", region)/100.
-    except BaseException,err:
-        print 'Failed reading sftlf from file (error was: %s)' % err
-        print 'Creating one for you'
-        sftlf = cdutil.generateLandSeaMask(S.getGrid())
-    stats_dic[model] = spacevavg(S,tS,sftlf,model)
-    print stats_dic
+        template_tS.model = model
+        template_sftlf.model = model
+        S = cdms2.open(file_S)("S", region)
+        print 'Reading Phase from %s ...' % os.path.join(args.modroot,template_tS())
+        tS = cdms2.open(os.path.join(args.modroot,template_tS()))("tS", region)
+        print 'Reading sftlf from %s ...' % os.path.join(args.modroot,template_sftlf())
+        try:
+            sftlf = cdms2.open(os.path.join(args.modroot,template_sftlf()))("sftlf", region)/100.
+        except BaseException,err:
+            print 'Failed reading sftlf from file (error was: %s)' % err
+            print 'Creating one for you'
+            sftlf = cdutil.generateLandSeaMask(S.getGrid())
+        stats_dic[model] = spacevavg(S,tS,sftlf,model)
+        print stats_dic
+    except Exception,err:
+        print "Failed for model %s with error %s" % (model,err)
 
 # Write output to JSON file.
 metrics_dictionary["RESULTS"] = stats_dic
