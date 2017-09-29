@@ -15,63 +15,31 @@ import cdms2, genutil, MV2, os
 import sys
 import glob
 import cdtime
+import cdp
 
-from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor
+from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor, INPUT
 
-args = P.parse_args(sys.argv[1:])
+def compute(params):
+    fileName = params.fileName
+    startyear = params.args.firstyear
+    finalyear = params.args.lastyear
+    month = params.args.month
+    monthname = params.monthname
+    varbname = params.varname
+    template = populateStringConstructor(args.filename_template,args)
+    template.variable = varbname
+    outunits = 'mm/d' # Units on output (*may be converted below from the units of input*)
+    startime =  1.5 # GMT value for starting time-of-day
 
-month = args.month
-monthname = monthname_d[args.month]
-
-#-------------------------------------HARD-CODED INPUT (add to command line later?):
-
-# These models have been processed already (or tried and found wanting, e.g. problematic time coordinates):
-skipMe = args.skip
-
-# Choose only one ensemble member per model, with the following ensemble-member code (for definitions, see
-# http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf):
-
-
-# NOTE--These models do not supply 3hr data from the 'r1i1p1' ensemble member, but do supply it from other ensemble members:
-#       bcc-csm1-1 (3hr data is from r2i1p1)
-#       CCSM4      (3hr data is from r6i1p1)
-#       GFDL-CM3   (3hr data is from r2i1p1, r3i1p1, r4i1p1, r5i1p1)
-#       GISS-E2-H  (3hr data is from r6i1p1, r6i1p3)
-#       GISS-E2-R  (3hr data is from r6i1p2)
-
-varbname = 'pr'
-outunits = 'mm/d' # Units on output (*may be converted below from the units of input*)
-startime =  1.5 # GMT value for starting time-of-day
-
-#           Note that CMIP5 specifications designate (01:30, 04:30, 07:30, ..., 22:30) GMT for 3hr flux fields, but
-# *WARNING* some GMT timepoints are actually (0, 3, 6,..., 21) in submitted CMIP5 data, despite character strings in
-#           file names (and time axis metadata) to the contrary. See CMIP5 documentation and errata! Overrides to
-#           correct these problems are given below:
-# startGMT =  '0:0:0.0' # Include 00Z as a possible starting time, to accomodate (0, 3, 6,..., 21)GMT in the input data. 
-# startime = -1.5     # Subtract 1.5h from (0, 3, 6,..., 21)GMT input data. This is needed for BNU-ESM, CCSM4 and CNRM-CM5.
-# startime = -3.0       # Subtract 1.5h from (0, 3, 6,..., 21)GMT input data. This is needed for CMCC-CM.
-
-#-------------------------------------
-
-nYears = args.lastyear - args.firstyear + 1
-
-template = populateStringConstructor(args.filename_template,args)
-template.variable = varbname
-
-print "TEMPLATE:",template()
-fileList = glob.glob(os.path.join(args.modroot,template()))
-print "FILES:",fileList
-for fileName in fileList:
-    # try to get model 
     reverted = template.reverse(os.path.basename(fileName))
     dataname = reverted["model"]
-    if dataname not in skipMe:
+    if dataname not in args.skip:
       try:
         print 'Data source:', dataname
         print 'Opening %s ...' % fileName
         f = cdms2.open(fileName)
 
-        # Composite-mean and composite-s.d diurnal cycle for month and year(s):
+# Composite-mean and composite-s.d diurnal cycle for month and year(s):
         iYear = 0
         for year in range(args.firstyear, args.lastyear+1):
             print 'Year %s:' % year
@@ -160,3 +128,48 @@ for fileName in fileList:
           print "Failed for model %s with erro: %s" % (model,err)
 
 print 'done'
+args = P.parse_args(sys.argv[1:])
+
+month = args.month
+monthname = monthname_d[args.month]
+
+#-------------------------------------HARD-CODED INPUT (add to command line later?):
+
+# These models have been processed already (or tried and found wanting, e.g. problematic time coordinates):
+skipMe = args.skip
+
+# Choose only one ensemble member per model, with the following ensemble-member code (for definitions, see
+# http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf):
+
+
+# NOTE--These models do not supply 3hr data from the 'r1i1p1' ensemble member, but do supply it from other ensemble members:
+#       bcc-csm1-1 (3hr data is from r2i1p1)
+#       CCSM4      (3hr data is from r6i1p1)
+#       GFDL-CM3   (3hr data is from r2i1p1, r3i1p1, r4i1p1, r5i1p1)
+#       GISS-E2-H  (3hr data is from r6i1p1, r6i1p3)
+#       GISS-E2-R  (3hr data is from r6i1p2)
+
+varbname = 'pr'
+
+#           Note that CMIP5 specifications designate (01:30, 04:30, 07:30, ..., 22:30) GMT for 3hr flux fields, but
+# *WARNING* some GMT timepoints are actually (0, 3, 6,..., 21) in submitted CMIP5 data, despite character strings in
+#           file names (and time axis metadata) to the contrary. See CMIP5 documentation and errata! Overrides to
+#           correct these problems are given below:
+# startGMT =  '0:0:0.0' # Include 00Z as a possible starting time, to accomodate (0, 3, 6,..., 21)GMT in the input data. 
+# startime = -1.5     # Subtract 1.5h from (0, 3, 6,..., 21)GMT input data. This is needed for BNU-ESM, CCSM4 and CNRM-CM5.
+# startime = -3.0       # Subtract 1.5h from (0, 3, 6,..., 21)GMT input data. This is needed for CMCC-CM.
+
+#-------------------------------------
+
+nYears = args.lastyear - args.firstyear + 1
+
+template = populateStringConstructor(args.filename_template,args)
+template.variable = varbname
+
+print "TEMPLATE:",template()
+fileList = glob.glob(os.path.join(args.modroot,template()))
+print "FILES:",fileList
+params = [INPUT(args,name,template) for name in fileList]
+print "PARAMS:",params
+
+cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)

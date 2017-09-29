@@ -34,7 +34,7 @@ def compute(params):
 
     reverted = template.reverse(os.path.basename(fileName))
     dataname = reverted["model"]
-    if dataname not in skipMe:
+    if dataname not in args.skip:
       try:
         print 'Data source:', dataname
         print 'Opening %s ...' % fileName
@@ -139,5 +139,3 @@ params = [INPUT(args,name,template) for name in fileList]
 print "PARAMS:",params
 
 cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
-#for param in params:
-#    compute(param)
