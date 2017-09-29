@@ -4,6 +4,14 @@ import argparse
 monthname_d = {1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
                7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'}
 
+class INPUT(object):
+    def __init__(self,args,filename,filename_template,varname="pr"):
+        self.fileName = filename
+        self.args = args
+        self.monthname = monthname_d[args.month]
+        self.varname = varname
+        self.template = filename_template
+
 def populateStringConstructor(template,args):
     template = genutil.StringConstructor(template)
     for k in template.keys():
