@@ -24,7 +24,39 @@ import glob
 import sys
 import genutil
 
-from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor
+from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor, INPUT
+import cdp
+
+
+def compute(param):
+    template = populateStringConstructor(args.filename_template,args)
+    template.variable = param.varname
+    template.month = param.monthname
+    fnameRoot = param.fileName
+    reverted = template.reverse(os.path.basename(fnameRoot))
+    model = reverted["model"]
+    print 'Specifying latitude / longitude domain of interest ...'
+    datanameID = 'dailySD' # Short ID name of output data
+    latrange = (param.args.lat1,param.args.lat2)
+    lonrange =  (param.args.lon1,param.args.lon2)
+    region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
+    print 'Reading %s ...' % fnameRoot
+    try:
+        f = cdms2.open(fnameRoot)
+        x = f(datanameID, region)
+        units = x.units
+        print '  Shape =', x.shape
+        print 'Finding RMS area-average ...'
+        x = x*x
+        x = cdutil.averager(x, axis = 'xy')
+        x = numpy.ma.sqrt(x)
+        print 'For %8s in %s, average variance of daily values = (%5.2f %s)^2' % (model, monthname, x, units)
+        f.close()
+    except Exception,err:
+        print "Failed for model %s with error %s" % (model,err)
+        x = 1.e20
+    return model,x
+
 
 P.add_argument("-j", "--outnamejson",
                       type = str,
@@ -52,18 +84,6 @@ template.month = monthname
 
 print "TEMPLATE NAME:",template()
 
-print 'Specifying latitude / longitude domain of interest ...'
-# TRMM (observed) domain:
-latrange = (args.lat1,args.lat2)
-lonrange =  (args.lon1,args.lon2)
-
-region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
-
-# Amazon basin:
-# latrange = (-15.0,  -5.0)
-# lonrange = (285.0, 295.0)
-
-datanameID = 'dailySD' # Short ID name of output data
 
 print 'Preparing to write output to JSON file ...'           
 if not os.path.exists(args.output_directory):
@@ -96,25 +116,13 @@ metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Tren
 
 files = glob.glob(os.path.join(args.modroot,template()))
 print files
-for fnameRoot in files:
-    print 'Reading %s ...' % fnameRoot
-    reverted = template.reverse(os.path.basename(fnameRoot))
-    model = reverted["model"]
-    try:
-        f = cdms2.open(fnameRoot)
-        x = f(datanameID, region)
-        units = x.units
-        print '  Shape =', x.shape
-        print 'Finding RMS area-average ...'
-        x = x*x
-        x = cdutil.averager(x, axis = 'xy')
-        x = numpy.ma.sqrt(x)
-        print 'For %8s in %s, average variance of daily values = (%5.2f %s)^2' % (model, monthname, x, units)
-        stats_dic[model] = float(x) # Converts singleton transient variable to plain floating-point number
-        f.close()
-    except Exception,err:
-        print "Failed for model %s with error %s" % (model,err)
+params = [INPUT(args,name,template) for name in files]
+print "PARAMS:",params
 
+results = cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
+
+for r in results:
+    stats_dic[r[0]] = r[1]
 
 print 'Writing output to JSON file ...'
 metrics_dictionary["RESULTS"] = stats_dic
