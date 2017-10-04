@@ -89,6 +89,8 @@ def SeasonCheck(season):
     if mode in ['NAM', 'NAO', 'SAM', 'PNA' ]:
       if season.upper() in [ 'DJF', 'MAM', 'JJA', 'SON' ]:
         seasons = [ season.upper() ]
+      elif season.lower() in ['monthly']:
+        seasons = [ season.lower() ]
       else:
         parser.error('Given SEASON, "'+season+'", is NOT available with given VARIABILITY_MODE, '+mode)
   if mode in ['PDO']:

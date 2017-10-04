@@ -145,7 +145,8 @@ def get_anomaly_timeseries(timeseries, mode, season):
 
   timeseries_ano = cdutil.ANNUALCYCLE.departures(timeseries) # Reomove annual cycle 
 
-  if mode != 'PDO': 
+  #if mode != 'PDO': 
+  if season != 'monthly': 
     # Get seasonal mean time series, each season chunk should have 100% of data to get mean
     timeseries_ano = getattr(cdutil,season)(timeseries_ano, criteriaarg=[1.0,None])
 

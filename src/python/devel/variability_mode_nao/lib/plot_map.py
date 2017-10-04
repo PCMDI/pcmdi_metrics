@@ -26,7 +26,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   #iso.levels = [-2.5, -2, -1.5, -1, -0.5, 0, 0.5, 1, 1.5, 2, 2.5]
   iso.ext_1 = 'y' # control colorbar edge (arrow extention on/off)
   iso.ext_2 = 'y' # control colorbar edge (arrow extention on/off)
-  cols = vcs.getcolors(iso.levels)
+  cols = vcs.getcolors(iso.levels, range(16,240))
   cols[6] = 139 # Adjsut to light red
   iso.fillareacolors = cols
   iso.missing = 0

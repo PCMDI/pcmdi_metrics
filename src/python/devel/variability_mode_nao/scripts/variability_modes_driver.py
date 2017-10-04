@@ -40,15 +40,15 @@ libfiles = ['argparse_functions.py',
 libfiles_share = ['default_regions.py']
 
 for lib in libfiles:
-  execfile(os.path.join('../lib/',lib))
+  #execfile(os.path.join('../lib/',lib))
   #execfile(os.path.join('../../lib/',lib))
-  #execfile(os.path.join('./lib/',lib))
+  execfile(os.path.join('./lib/',lib))
 
 for lib in libfiles_share:
   #execfile(os.path.join('../../../../../share/',lib))
-  execfile(os.path.join('../lib/',lib))
+  #execfile(os.path.join('../lib/',lib))
   #execfile(os.path.join('../../lib/',lib))
-  #execfile(os.path.join('./lib/',lib))
+  execfile(os.path.join('./lib/',lib))
 
 ##################################################
 # Pre-defined options
@@ -75,8 +75,8 @@ nc_out = True
 #nc_out = False
 
 # Plot figures --
-plot = True
-#plot = False
+#plot = True
+plot = False
 
 ########################################################################
 ########################################################################
@@ -160,8 +160,8 @@ elif version == '3.1':
   testCeline = True
 
   # For SAM...
-  osyear = 1955
-  oeyear = 2005
+  #osyear = 1955
+  #oeyear = 2005
 
 elif version == '3.2':
   OBS = 'ERAint'
@@ -349,7 +349,8 @@ if obs_compare:
     if OBS == 'ERAint':
       obs_path = '/clim_obs/obs/atm/mo/psl/ERAINT/psl_ERAINT_198901-200911.nc'
       fo = cdms.open(obs_path)
-      obs_timeseries = fo(var, time=(start_time_obs,end_time_obs), latitude=(-90,90))/100. # Pa to hPa
+      obs_timeseries = fo(var, time=(start_time_obs,end_time_obs), latitude=(-90,90))
+      obs_timeseries = MV2.divide(obs_timeseries, 100.) # Pa to hPa
       obs_name = 'ERAint'
 
     ## HadSLP2r
@@ -363,14 +364,16 @@ if obs_compare:
     elif OBS == '20CR':
       obs_path = '/work/lee1043/DATA/reanalysis/20CR/slp_monthly_mean/monthly.prmsl.1871-2012.nc'
       fo = cdms.open(obs_path)
-      obs_timeseries = fo('prmsl', time=(start_time_obs,end_time_obs), latitude=(-90,90))/100. # Pa to hPa
+      obs_timeseries = fo('prmsl', time=(start_time_obs,end_time_obs), latitude=(-90,90))
+      obs_timeseries = MV2.divide(obs_timeseries, 100.) # Pa to hPa
       obs_name = 'NOAA-CIRES_20CR'
 
     ## ERA 20C
     elif OBS == 'ERA20C':
       obs_path = '/work/lee1043/DATA/reanalysis/ERA20C/psl_ERA20C_190001-201012.nc'
       fo = cdms.open(obs_path)
-      obs_timeseries = fo('msl', time=(start_time_obs,end_time_obs), latitude=(-90,90))/100. # Pa to hPa
+      obs_timeseries = fo('msl', time=(start_time_obs,end_time_obs), latitude=(-90,90))
+      obs_timeseries = MV2.divide(obs_timeseries, 100.) # Pa to hPa
       obs_name = 'ERA-20C'
 
   elif var == 'ts':
@@ -393,7 +396,8 @@ if obs_compare:
     elif OBS == 'ERA20C':
       obs_path = '/work/lee1043/DATA/reanalysis/ERA20C/sst_ERA20C_190001-201012.nc'
       fo = cdms.open(obs_path)
-      obs_timeseries = fo('sst', time=(start_time_obs,end_time_obs), latitude=(-90,90))-273.15 # K to C
+      obs_timeseries = fo('sst', time=(start_time_obs,end_time_obs), latitude=(-90,90)) # K to C
+      obs_timeseries = MV2.subtract(obs_timeseries, 273.15) # K to C
       obs_name = 'ERA-20C'
 
     # Replace area where temperature below -1.8 C to -1.8 C ---
@@ -448,7 +452,11 @@ if obs_compare:
   #- - - - - - - - - - - - - - - - - - - - - - - - -
   obs_timeseries_season_subdomain = {}
 
+  if debug: print 'obs season loop starts'
+
   for season in seasons:
+
+    if debug: print season
 
     if season not in var_mode_stat_dic['REF']['obs']['defaultReference'][mode].keys():
       var_mode_stat_dic['REF']['obs']['defaultReference'][mode][season]={}
@@ -456,6 +464,8 @@ if obs_compare:
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     # Time series adjustment
     #. . . . . . . . . . . . . . . . . . . . . . . . .
+    if debug: print 'Time series adjustment'
+
     # Reomove annual cycle (for all modes) and get its seasonal mean time series (except PDO) ---
     obs_timeseries_ano = get_anomaly_timeseries(obs_timeseries, mode, season)
 
@@ -465,33 +475,44 @@ if obs_compare:
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     # Extract subdomain ---
     #. . . . . . . . . . . . . . . . . . . . . . . . .
+    if debug: print 'Extract subdomain'
+
     obs_timeseries_season_subdomain[season] = obs_timeseries_season(regions_specs[mode]['domain'])
 
     # EOF analysis ---
+    if debug: print 'EOF analysis'
     eof_obs[season], pc1_obs[season], frac1_obs[season], solver_obs[season], reverse_sign_obs[season] = \
            eof_analysis_get_variance_mode(mode, obs_timeseries_season_subdomain[season], eofn_obs)
 
     # Calculate stdv of pc time series
+    if debug: print 'Calculate stdv of pc time series'
     pc1_obs_stdv[season] = calcSTD(pc1_obs[season])
 
     # Linear regression to have extended global map; teleconnection purpose ---
+    if debug: print 'Linear regression'
+    if debug: print pc1_obs[season].shape, obs_timeseries_season.shape
     if testCeline:
       #slope_obs, intercept_obs = linear_regression(pc1_obs[season], obs_timeseries_ano)
       slope_obs, intercept_obs = linear_regression(pc1_obs[season], obs_timeseries_season)
       #eof_lr_obs[season] = linear_regression(pc1_obs[season], obs_timeseries_ano) * pc1_obs_stdv[season]
-      eof_lr_obs[season] = ( slope_obs * pc1_obs_stdv[season] ) + intercept_obs
+      #eof_lr_obs[season] = ( slope_obs * pc1_obs_stdv[season] ) + intercept_obs
+      eof_lr_obs[season] = MV2.add(MV2.multiply(slope_obs, pc1_obs_stdv[season]), intercept_obs)
     else:
       slope_obs, intercept_obs = linear_regression(pc1_obs[season], obs_timeseries_season)
       if not EofScaling:
         #eof_lr_obs[season] = linear_regression(pc1_obs[season], obs_timeseries_season) * pc1_obs_stdv[season]
-        eof_lr_obs[season] = ( slope_obs * pc1_obs_stdv[season] ) + intercept_obs
+        #eof_lr_obs[season] = ( slope_obs * pc1_obs_stdv[season] ) + intercept_obs
+        eof_lr_obs[season] = MV2.add(MV2.multiply(slope_obs, pc1_obs_stdv[season]),intercept_obs)
       else:
         #eof_lr_obs[season] = linear_regression(pc1_obs[season], obs_timeseries_season)
-        eof_lr_obs[season] = slope_obs + intercept_obs
+        #eof_lr_obs[season] = slope_obs + intercept_obs
+        eof_lr_obs[season] = MV2.add(slope_obs, intercept_obs)
 
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     # Record results 
     #. . . . . . . . . . . . . . . . . . . . . . . . .
+    if debug: print 'Record results'
+
     # Set output file name for NetCDF and plot ---
     output_filename_obs = out_dir + '/' + mode+'_'+var+'_EOF'+str(eofn_obs)+'_'+season+'_obs_'+str(osyear)+'-'+str(oeyear)
 
@@ -514,6 +535,8 @@ if obs_compare:
     if debug: print 'obs plotting end'
 
     #execfile('../north_test.py')
+
+#sys.exit()
 
 #=================================================
 # Model
@@ -546,10 +569,12 @@ for model in models:
       f = cdms.open(model_path)
     
       if var == 'psl':
-        model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90))/100. # Pa to hPa
+        model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90))
+        model_timeseries = MV2.divide(model_timeseries, 100.) # Pa to hPa
     
       elif var == 'ts':
-        model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90))-273.15 # K to C degree
+        model_timeseries = f(var,time=(start_time,end_time),latitude=(-90,90))
+        model_timeseries = MV2.subtract(model_timeseries, 273.15) # K to C degree
         model_timeseries.units = 'degC'
     
         # Replace area where temperature below -1.8 C to -1.8 C (sea ice) ---
@@ -578,12 +603,16 @@ for model in models:
       #- - - - - - - - - - - - - - - - - - - - - - - - -
       for season in seasons:
 
+        if debug: print season
+
         if season not in var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode].keys():
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]={}
     
         #- - - - - - - - - - - - - - - - - - - - - - - - -
         # Time series adjustment
         #. . . . . . . . . . . . . . . . . . . . . . . . . 
+        if debug: print 'Time series adjustment'
+
         if mode == 'PDO':
           # Extract SST (land region mask out) ---
           model_timeseries = model_land_mask_out(mip,model,model_timeseries)
@@ -605,6 +634,8 @@ for model in models:
         #-------------------------------------------------
         # Usual EOF approach
         #- - - - - - - - - - - - - - - - - - - - - - - - -
+        if debug: print 'Usual EOF approach'
+
         # EOF analysis ---
         eof, pc1, frac1, solver, reverse_sign = \
               eof_analysis_get_variance_mode(mode, model_timeseries_season_subdomain, eofn_mod)
@@ -621,15 +652,18 @@ for model in models:
           #slope, intercept = linear_regression(pc1, model_timeseries_ano)
           slope, intercept = linear_regression(pc1, model_timeseries_season)
           #eof_lr = linear_regression(pc1, model_timeseries_ano) * model_pcs_stdv
-          eof_lr = ( slope * model_pcs_stdv ) + intercept
+          #eof_lr = ( slope * model_pcs_stdv ) + intercept
+          eof_lr = MV2.add(MV2.multiply(slope, model_pcs_stdv), intercept)
         else:
           slope, intercept = linear_regression(pc1, model_timeseries_season)
           if not EofScaling:
             #eof_lr = linear_regression(pc1, model_timeseries_season) * model_pcs_stdv
-            eof_lr = ( slope * model_pcs_stdv ) + intercept
+            #eof_lr = ( slope * model_pcs_stdv ) + intercept
+            eof_lr = MV2.add(MV2.multiply(slope, model_pcs_stdv), intercept)
           else:
             #eof_lr = linear_regression(pc1, model_timeseries_season)
-            eof_lr = slope + intercept
+            #eof_lr = slope + intercept
+            eof_lr = MV2.add(slope, intercept)
         if debug: print 'linear regression'
 
         # Add to dictionary for json output ---
@@ -656,11 +690,16 @@ for model in models:
 
           # Double check for arbitrary sign control --- 
           if cor < 0: 
-            eof = eof * -1
-            pc1 = pc1 * -1
-            eof_lr = eof_lr * -1
-            eof_lr_regrid_global = eof_lr_regrid_global * -1
-            eof_regrid = eof_regrid * -1
+            #eof = eof * -1
+            #pc1 = pc1 * -1
+            #eof_lr = eof_lr * -1
+            #eof_lr_regrid_global = eof_lr_regrid_global * -1
+            #eof_regrid = eof_regrid * -1
+            eof = MV2.multiply(eof, -1)
+            pc1 = MV2.multiply(pc1, -1)
+            eof_lr = MV2.multiply(eof_lr, -1)
+            eof_lr_regrid_global = MV2.multiply(eof_lr_regrid_global, -1)
+            eof_regrid = MV2.multiply(eof_regrid, -1)
             # Calc cor again ---
             cor = calcSCOR(eof_regrid, eof_obs[season])
             cor_glo = calcSCOR(eof_lr_regrid_global, eof_lr_obs[season])
@@ -693,7 +732,7 @@ for model in models:
         #-------------------------------------------------
         # pseudo model PC timeseries and teleconnection 
         #- - - - - - - - - - - - - - - - - - - - - - - - -
-        if debug: pdb.set_trace()
+        #if debug: pdb.set_trace()
 
         if pseudo and obs_compare:
           # Regrid (interpolation, model grid to ref grid) ---
@@ -728,7 +767,8 @@ for model in models:
           model_timeseries_season_regrid_subdomain.setAxis(2,lon)
     
           # Pseudo model PC time series ---
-          pseudo_pcs = gain_pseudo_pcs(solver_obs[season], model_timeseries_season_regrid_subdomain, 1, reverse_sign_obs[season])
+          ##pseudo_pcs = gain_pseudo_pcs(solver_obs[season], model_timeseries_season_regrid_subdomain, 1, reverse_sign_obs[season])
+          pseudo_pcs = gain_pseudo_pcs(solver_obs[season], model_timeseries_season_regrid_subdomain, eofn_obs, reverse_sign_obs[season])
     
           # Calculate stdv of pc time series ---
           pseudo_pcs_stdv = calcSTD(pseudo_pcs)
@@ -738,15 +778,18 @@ for model in models:
             #slope_pseudo, intercept_pseudo = linear_regression(pseudo_pcs, model_timeseries_ano_regrid)
             slope_pseudo, intercept_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid)
             #eof_lr_pseudo = linear_regression(pseudo_pcs, model_timeseries_ano_regrid) * pseudo_pcs_stdv
-            eof_lr_pseudo = ( slope_pseudo * pseudo_pcs_stdv ) + intercept_pseudo
+            #eof_lr_pseudo = ( slope_pseudo * pseudo_pcs_stdv ) + intercept_pseudo
+            eof_lr_pseudo = MV2.add(MV2.multiply(slope_pseudo, pseudo_pcs_stdv), intercept_pseudo)
           else: 
             slope_pseudo, intercept_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid)
             if not EofScaling:
               #eof_lr_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid) * pseudo_pcs_stdv
-              eof_lr_pseudo = ( slope_pseudo * pseudo_pcs_stdv ) + intercept_pseudo
+              #eof_lr_pseudo = ( slope_pseudo * pseudo_pcs_stdv ) + intercept_pseudo
+              eof_lr_pseudo = MV2.add(MV2.multiply(slope_pseudo, pseudo_pcs_stdv), intercept_pseudo)
             else:
               #eof_lr_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid)
-              eof_lr_pseudo = slope_pseudo + intercept_pseudo
+              #eof_lr_pseudo = slope_pseudo + intercept_pseudo
+              eof_lr_pseudo = MV2.add(slope_pseudo, intercept_pseudo)
 
           # Extract subdomain for statistics ---
           eof_lr_pseudo_subdomain = eof_lr_pseudo(regions_specs[mode]['domain'])
@@ -835,7 +878,8 @@ for model in models:
           tc2 = calcTCOR(pseudo_pcs_on_obs_space, pc1_obs[season])
 
           if tc2 < 0:
-            pseudo_pcs_on_obs_space = pseudo_pcs_on_obs_space * -1.
+            #pseudo_pcs_on_obs_space = pseudo_pcs_on_obs_space * -1.
+            pseudo_pcs_on_obs_space = MV2.multiply(pseudo_pcs_on_obs_space, -1.)
             tc2 = calcTCOR(pseudo_pcs_on_obs_space, pc1_obs[season])
 
           # Calculate stdv of pc time series ---
@@ -884,17 +928,20 @@ for model in models:
       #=================================================
       # Write dictionary to json file (let the json keep overwritten in model loop)
       #-------------------------------------------------
-      if mode == 'PDO':
-        new_json_structure = False
-        #new_json_structure = True
-      else:
-        #new_json_structure = True
-        new_json_structure = False
+      #if mode == 'PDO':
+      #  new_json_structure = False
+      #  #new_json_structure = True
+      #else:
+      #  #new_json_structure = True
+      #  new_json_structure = False
+
+      new_json_structure = True
 
       if new_json_structure:
         JSON = pcmdi_metrics.io.base.Base(out_dir,json_filename)
         JSON.write(var_mode_stat_dic,json_structure=["model","realization","reference","mode","season","statistic"],
-                   sort_keys=True, mode="w", indent=4, separators=(',', ': '))
+                   sort_keys=True, indent=4, separators=(',', ': '))
+                   #sort_keys=True, mode="w", indent=4, separators=(',', ': '))
       else:
         json.dump(var_mode_stat_dic, open(json_file,'w'), sort_keys=True, indent=4, separators=(',', ': '))
 
