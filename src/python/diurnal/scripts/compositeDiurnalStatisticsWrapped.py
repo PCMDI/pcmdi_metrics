@@ -43,19 +43,20 @@ def compute(params):
         iYear = 0
         for year in range(args.firstyear, args.lastyear+1):
             print 'Year %s:' % year
-            startTime = cdtime.comptime(year,month)
+            startTime = cdtime.comptime(year,month,1,1,30)
             # Last possible second to get all tpoints
-            finishtime = startTime.add(1,cdtime.Month).add(-1,cdtime.Minute)
+            finishtime = startTime.add(1,cdtime.Month).add(-1.5,cdtime.Hour).add(.1,cdtime.Second)
             print 'Reading %s from %s for time interval %s to %s ...' % (varbname, fileName, startTime, finishtime)
             # Transient variable stores data for current year's month.
-            tvarb = f(varbname, time=(startTime, finishtime,"ccn"))
+            tvarb = f(varbname, time=(startTime, finishtime))
             tvarb *= 86400        # *HARD-CODES conversion from kg/m2/sec to mm/day.
+            print 'Shape:',tvarb.shape
             if year == args.firstyear: # The following tasks need to be done only once, extracting metadata from first-year file: 
                 tc=tvarb.getTime().asComponentTime()
                 day1 = cdtime.comptime(tc[0].year,tc[0].month)
                 firstday = tvarb(time=(day1,day1.add(1,cdtime.Day),"con"))
                 dimensions = firstday.shape
-                print '  Shape = ', dimensions
+                #print '  Shape = ', dimensions
                 N = dimensions[0] # Number of time points in the selected month for one year
                 nlats = dimensions[1]
                 nlons = dimensions[2]
@@ -80,7 +81,7 @@ def compute(params):
                 hour = iGMT * deltaH + startime
                 print '  Choosing timepoints with GMT %5.2f ...' % hour
                 # Transient-variable slice: every Nth tpoint gets all of the current GMT's tpoints for current year:
-                tvslice[iGMT] = tvarb[iGMT:dimensions[0]:N]
+                tvslice[iGMT] = tvarb[iGMT:tvarb.shape[0]:N]
                 concatenation[iGMT, iYear*dayspermo : (iYear+1)*dayspermo] = tvslice[iGMT]
             iYear += 1
         f.close()
@@ -100,7 +101,6 @@ def compute(params):
         stdvalues.units = outunits # Standard deviation has same units as mean (not so for higher-moment stats).
         LSTs.units = 'hr'
         LSTs.longname = 'Local Solar Time'
-        print avgvalues.shape
         avgvalues.setAxis(0, comptime)
         avgvalues.setAxis(1, modellats)
         avgvalues.setAxis(2, modellons)
@@ -125,7 +125,7 @@ def compute(params):
         g.close()
         h.close()
       except Exception,err:
-          print "Failed for model %s with erro: %s" % (model,err)
+          print "Failed for model %s with erro: %s" % (dataname,err)
 
 print 'done'
 args = P.parse_args(sys.argv[1:])

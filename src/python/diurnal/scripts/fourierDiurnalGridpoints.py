@@ -11,6 +11,7 @@
 
 
 
+from __future__ import print_function
 import cdms2, MV2, numpy
 import sys
 import glob
@@ -31,6 +32,11 @@ P.add_argument("--filename_template_std",
        help="template for file names containing diurnal std")
 P.add_argument("-l","--lats",nargs="*",default = [ 31.125,  31.125,  36.4,   5.125,   45.125,  45.125], help="latitudes")
 P.add_argument("-L","--lons",nargs="*",default = [ -83.125, 111.145, -97.5, 147.145, -169.145, -35.145], help="longitudes")
+P.add_argument("-A", "--outnameasc",
+                      type = str,
+                      dest = 'outnameasc',
+                      default = 'pr_%(month)_%(firstyear)-%(lastyear)_fourierDiurnalGridPoints.asc',
+                      help = "Output name for ascs")
 args = P.parse_args(sys.argv[1:])
 month = args.month
 monthname = monthname_d[month]
@@ -46,8 +52,14 @@ template_LST = populateStringConstructor(args.filename_template_LST, args)
 template_LST.month = monthname
 
 LSTfiles = glob.glob(os.path.join(args.modroot,template_LST()))
-print "LSTFILES:",LSTfiles
-print "TMPL",template_LST()
+print("LSTFILES:",LSTfiles)
+print("TMPL",template_LST())
+
+ascFile = populateStringConstructor(args.outnameasc,args)
+ascFile.month = monthname
+ascname = os.path.join(os.path.abspath(args.output_directory),ascFile())
+
+fasc  = open(ascname,"w")
 
 
 gridptlats = [ float(x) for x in args.lats]
@@ -64,23 +76,23 @@ assert(len(gridptlons)==nGridPoints)
 
 N = 8 # Number of timepoints in a 24-hour cycle
 for LSTfile in LSTfiles:
-    print 'Reading %s ...' % LSTfile,os.path.basename(LSTfile)
-    print 'Reading %s ...' % LSTfile,os.path.basename(LSTfile)
+    print('Reading %s ...' % LSTfile,os.path.basename(LSTfile), file=fasc)
+    print('Reading %s ...' % LSTfile,os.path.basename(LSTfile), file=fasc)
     reverted = template_LST.reverse(os.path.basename(LSTfile))
     model = reverted["model"]
-    print '===================='
-    print model
-    print '===================='
+    print('====================', file=fasc)
+    print(model, file=fasc)
+    print('====================', file=fasc)
     template.model=model
     avgfile = template()
     template_std.model=model
     stdfile = template_std()
-    print 'Reading time series of mean diurnal cycle ...'
+    print('Reading time series of mean diurnal cycle ...', file=fasc)
     f = cdms2.open(LSTfile)
     g = cdms2.open(os.path.join(args.modroot,avgfile))
     h = cdms2.open(os.path.join(args.modroot,stdfile))
     LSTs = f('LST')
-    print 'Input shapes: ', LSTs.shape
+    print('Input shapes: ', LSTs.shape, file=fasc)
 
 
     modellats = LSTs.getLatitude()
@@ -96,15 +108,15 @@ for LSTfile in LSTfiles:
     stdvalues = MV2.zeros((nGridPoints, N))
     # ... in which case, just pick the closest full-grid point:
     for i in range(nGridPoints):
-            print '   (lat, lon) = (%8.3f, %8.3f)' % (gridptlats[i], gridptlons[i])
+            print('   (lat, lon) = (%8.3f, %8.3f)' % (gridptlats[i], gridptlons[i]), file=fasc)
             closestlats[i] = gridptlats[i]
             closestlons[i] = gridptlons[i]%360
-            print '   Closest (lat, lon) for gridpoint = (%8.3f, %8.3f)' % (closestlats[i], closestlons[i])
+            print('   Closest (lat, lon) for gridpoint = (%8.3f, %8.3f)' % (closestlats[i], closestlons[i]), file=fasc)
             # Time series for selected grid point:
             avgvalues[i] = g('diurnalmean', lat=(closestlats[i], closestlats[i],"cob"), lon=(closestlons[i], closestlons[i],"cob"), squeeze = 1)
             stdvalues[i] = h('diurnalstd',  lat=(closestlats[i], closestlats[i],"cob"), lon=(closestlons[i], closestlons[i],"cob"), squeeze = 1)
             pointLSTs[i] = f('LST',         lat=(closestlats[i], closestlats[i],"cob"), lon=(closestlons[i], closestlons[i],"cob"), squeeze = 1)
-            print ' '
+            print(' ', file=fasc)
     f.close()
     g.close()
     h.close()
@@ -115,29 +127,31 @@ for LSTfile in LSTfiles:
             deltaI = 0
     prefix = args.modroot
     for i in range(nGridPoints):
-            print 'For gridpoint %d at %5.1f deg latitude, %6.1f deg longitude ...' % (i, gridptlats[i], gridptlons[i])
-            print '   Local Solar Times are:'
-            print (prefix + 'LST%d = {') % (i + deltaI)
-            print N*'%5.3f, ' % tuple(pointLSTs[i]),
-            print '};'
-            print '   Mean values for each time-of-day are:'
-            print (prefix + 'mean%d = {') % (i + deltaI)
-            print N*'%5.3f, ' % tuple(avgvalues[i]),
-            print '};'
-            print '   Standard deviations for each time-of-day are:'
-            print (prefix + 'std%d = {') % (i + deltaI)
-            print N*'%6.4f, ' % tuple(stdvalues[i]),
-            print '};'
-            print ' '
+            print('For gridpoint %d at %5.1f deg latitude, %6.1f deg longitude ...' % (i, gridptlats[i], gridptlons[i]), file=fasc)
+            print('   Local Solar Times are:', file=fasc)
+            print((prefix + 'LST%d = {') % (i + deltaI), file=fasc)
+            print(N*'%5.3f, ' % tuple(pointLSTs[i]), end="", file=fasc)
+            print('};', file=fasc)
+            print('   Mean values for each time-of-day are:', file=fasc)
+            print((prefix + 'mean%d = {') % (i + deltaI), file=fasc)
+            print(N*'%5.3f, ' % tuple(avgvalues[i]), end="", file=fasc)
+            print('};', file=fasc)
+            print('   Standard deviations for each time-of-day are:', file=fasc)
+            print((prefix + 'std%d = {') % (i + deltaI), file=fasc)
+            print(N*'%6.4f, ' % tuple(stdvalues[i]), end="", file=fasc)
+            print('};', file=fasc)
+            print(' ', file=fasc)
 
     # Take fast Fourier transform of the overall multi-year mean diurnal cycle.
-    print '**************   ', avgvalues[0][0]
+    print('**************   ', avgvalues[0][0], file=fasc)
     cycmean, maxvalue, tmax = fastFT(avgvalues, pointLSTs)
-    print '**************   ', avgvalues[0][0]
+    print('**************   ', avgvalues[0][0], file=fasc)
     # Print Fourier harmonics:
     for i in range(nGridPoints):
-            print 'For gridpoint %d at %5.1f deg latitude, %6.1f deg longitude ...' % (i, gridptlats[i], gridptlons[i])
-            print '  Mean value over cycle = %6.2f' % cycmean[i]
-            print '  Diurnal     maximum   = %6.2f at %6.2f hr Local Solar Time.' % (maxvalue[i, 0], tmax[i, 0] % 24)
-            print '  Semidiurnal maximum   = %6.2f at %6.2f hr Local Solar Time.' % (maxvalue[i, 1], tmax[i, 1] % 24)
-            print '  Terdiurnal  maximum   = %6.2f at %6.2f hr Local Solar Time.' % (maxvalue[i, 2], tmax[i, 2] % 24)
+            print('For gridpoint %d at %5.1f deg latitude, %6.1f deg longitude ...' % (i, gridptlats[i], gridptlons[i]), file=fasc)
+            print('  Mean value over cycle = %6.2f' % cycmean[i], file=fasc)
+            print('  Diurnal     maximum   = %6.2f at %6.2f hr Local Solar Time.' % (maxvalue[i, 0], tmax[i, 0] % 24), file=fasc)
+            print('  Semidiurnal maximum   = %6.2f at %6.2f hr Local Solar Time.' % (maxvalue[i, 1], tmax[i, 1] % 24), file=fasc)
+            print('  Terdiurnal  maximum   = %6.2f at %6.2f hr Local Solar Time.' % (maxvalue[i, 2], tmax[i, 2] % 24), file=fasc)
+
+print("Results sent to:",ascname)

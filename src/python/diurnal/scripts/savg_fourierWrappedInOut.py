@@ -206,7 +206,8 @@ for file_S in files_S:
         tS = cdms2.open(os.path.join(args.modroot,template_tS()))("tS", region)
         print 'Reading sftlf from %s ...' % os.path.join(args.modroot,template_sftlf())
         try:
-            sftlf = cdms2.open(os.path.join(args.modroot,template_sftlf()))("sftlf", region)/100.
+            sftlf_fnm = glob.glob(os.path.join(args.modroot,template_sftlf()))[0]
+            sftlf = cdms2.open(sftlf_fnm)("sftlf", region)/100.
         except BaseException,err:
             print 'Failed reading sftlf from file (error was: %s)' % err
             print 'Creating one for you'

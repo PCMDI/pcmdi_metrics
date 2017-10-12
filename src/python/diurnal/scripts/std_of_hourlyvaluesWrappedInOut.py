@@ -49,7 +49,8 @@ def compute(param):
         print '  Shape =', x.shape
         print 'Finding RMS area-average ...'
         x = x*x
-        x = cdms2.MV2.average(x, axis=0)
+        #x = cdms2.MV2.average(x, axis=0)
+        x = cdutil.averager(x, weights = 'unweighted')
         x = cdutil.averager(x, axis = 'xy')
         x = numpy.ma.sqrt(x)
         print 'For %8s in %s, average variance of hourly values = (%5.2f %s)^2' % (model, monthname, x, units)
