@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Globally average the day-to-day variance of CMIP5/AMIP composite-diurnal-cycle precipitation--"Var(Pi)" in Trenberth,
-# Zhang & Gehne 2107: "Intermittency in Precipitation," J. Hydrometeorology--from a given month spanning years 1999-2005.
+# Zhang & Gehne 2107: "Intermittency in Precipitation," J. Hydrometeorology-from a given month spanning years 1999-2005.
 # Square the input standard deviations before averaging over the hours of the day and then area, and then finally take
 # the square root. This is the correct order of operations to get the fraction of total variance, as shown by Covey and
 # Gehne 2016 (https://e-reports-ext.llnl.gov/pdf/823104.pdf).
@@ -9,35 +9,35 @@
 # This has the PMP Parser "wrapped" around it, so it's executed with both input and output parameters specified in the
 # Unix command line. For example:
 
-# ---> python std_of_hourlyvaluesWrappedInOut.py -m7 
+# ---> python std_of_hourlyvaluesWrappedInOut.py -m7
 
-#	Curt Covey (from ./old_std_of_hourlyvaluesWrappedInOut.py)		        July 2017
-
-
+# Curt Covey (from ./old_std_of_hourlyvaluesWrappedInOut.py)		        July 2017
 
 
-
-import cdms2, cdutil, os
+import cdms2
+import cdutil
+import os
 import numpy.ma
 import pcmdi_metrics
 import collections
 import glob
 import sys
-import genutil
 import cdp
+import json
 from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor, INPUT
 
+
 def compute(param):
-    template = populateStringConstructor(args.filename_template,args)
+    template = populateStringConstructor(args.filename_template, args)
     template.variable = param.varname
     template.month = param.monthname
     fnameRoot = param.fileName
     reverted = template.reverse(os.path.basename(fnameRoot))
     model = reverted["model"]
     print 'Specifying latitude / longitude domain of interest ...'
-    datanameID = 'diurnalstd' # Short ID name of output data
-    latrange = (param.args.lat1,param.args.lat2)
-    lonrange =  (param.args.lon1,param.args.lon2)
+    datanameID = 'diurnalstd'  # Short ID name of output data
+    latrange = (param.args.lat1, param.args.lat2)
+    lonrange = (param.args.lon1, param.args.lon2)
     region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
     print 'Reading %s ...' % fnameRoot
     reverted = template.reverse(os.path.basename(fnameRoot))
@@ -48,32 +48,32 @@ def compute(param):
         units = x.units
         print '  Shape =', x.shape
         print 'Finding RMS area-average ...'
-        x = x*x
-        #x = cdms2.MV2.average(x, axis=0)
-        x = cdutil.averager(x, weights = 'unweighted')
-        x = cdutil.averager(x, axis = 'xy')
+        x = x * x
+        x = cdutil.averager(x, weights='unweighted')
+        x = cdutil.averager(x, axis='xy')
         x = numpy.ma.sqrt(x)
         print 'For %8s in %s, average variance of hourly values = (%5.2f %s)^2' % (model, monthname, x, units)
         f.close()
-    except Exception,err:
-        print "Failed model %s with error: %s" % (model,err)
+    except Exception as err:
+        print "Failed model %s with error: %s" % (model, err)
         x = 1.e20
-    return model,x
+    return model, x
+
 
 P.add_argument("-j", "--outnamejson",
-                      type = str,
-                      dest = 'outnamejson',
-                      default = 'pr_%(month)_%(firstyear)-%(lastyear)_std_of_hourlymeans.json',
-                      help = "Output name for jsons")
+               type=str,
+               dest='outnamejson',
+               default='pr_%(month)_%(firstyear)-%(lastyear)_std_of_hourlymeans.json',
+               help="Output name for jsons")
 
-P.add_argument("--lat1",type=float,default=-49.875,help="First latitude")
-P.add_argument("--lat2",type=float,default=49.875,help="Last latitude")
-P.add_argument("--lon1",type=float,default=0.125,help="First longitude")
-P.add_argument("--lon2",type=float,default=359.875,help="Last longitude")
+P.add_argument("--lat1", type=float, default=-49.875, help="First latitude")
+P.add_argument("--lat2", type=float, default=49.875, help="Last latitude")
+P.add_argument("--lon1", type=float, default=0.125, help="First longitude")
+P.add_argument("--lon2", type=float, default=359.875, help="Last longitude")
 
-P.add_argument("-t","--filename_template",
-       default = "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_diurnal_std.nc")
-P.add_argument("--model",default="*")
+P.add_argument("-t", "--filename_template",
+               default="pr_%(model)_%(month)_%(firstyear)-%(lastyear)_diurnal_std.nc")
+P.add_argument("--model", default="*")
 
 args = P.parse_args(sys.argv[1:])
 month = args.month
@@ -84,12 +84,12 @@ finalyear = args.lastyear
 template = populateStringConstructor(args.filename_template, args)
 template.month = monthname
 
-print "TEMPLATE NAME:",template()
+print "TEMPLATE NAME:", template()
 
 print 'Specifying latitude / longitude domain of interest ...'
 # TRMM (observed) domain:
-latrange = (args.lat1,args.lat2)
-lonrange =  (args.lon1,args.lon2)
+latrange = (args.lat1, args.lat2)
+lonrange = (args.lon1, args.lon2)
 
 region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
 
@@ -98,13 +98,13 @@ region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
 # lonrange = (285.0, 295.0)
 
 
-print 'Preparing to write output to JSON file ...'           
+print 'Preparing to write output to JSON file ...'
 if not os.path.exists(args.output_directory):
     os.makedirs(args.output_directory)
-jsonFile = populateStringConstructor(args.outnamejson,args)
+jsonFile = populateStringConstructor(args.outnamejson, args)
 jsonFile.month = monthname
 
-jsonname = os.path.join(os.path.abspath(args.output_directory),jsonFile())
+jsonname = os.path.join(os.path.abspath(args.output_directory), jsonFile())
 
 if not os.path.exists(jsonname) or args.append is False:
     print 'Initializing dictionary of statistical results ...'
@@ -114,7 +114,10 @@ else:
         j = json.load(f)
         stats_dic = j["RESULTS"]
 
-OUT = pcmdi_metrics.io.base.Base(os.path.abspath(args.output_directory),jsonFile())
+OUT = pcmdi_metrics.io.base.Base(
+    os.path.abspath(
+        args.output_directory),
+    jsonFile())
 
 disclaimer = open(
     os.path.join(
@@ -128,14 +131,15 @@ metrics_dictionary["DISCLAIMER"] = disclaimer
 metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Trenberth, Zhang & Gehne, J Hydromet. 2017"
 
 
-files = glob.glob(os.path.join(args.modroot,template()))
+files = glob.glob(os.path.join(args.modroot, template()))
 print files
 
 
-params = [INPUT(args,name,template) for name in files]
-print "PARAMS:",params
+params = [INPUT(args, name, template) for name in files]
+print "PARAMS:", params
 
-results = cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
+results = cdp.cdp_run.multiprocess(
+    compute, params, num_workers=args.num_workers)
 
 for r in results:
     stats_dic[r[0]] = r[1]
@@ -143,10 +147,10 @@ for r in results:
 print 'Writing output to JSON file ...'
 metrics_dictionary["RESULTS"] = stats_dic
 OUT.write(
-                metrics_dictionary,
-                json_structure=["model","domain"],
-                indent=4,
-                separators=(
-                    ',',
-                    ': '))
+    metrics_dictionary,
+    json_structure=["model", "domain"],
+    indent=4,
+    separators=(
+        ',',
+        ': '))
 print 'done'

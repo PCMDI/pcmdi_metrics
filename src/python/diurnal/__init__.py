@@ -1,2 +1,2 @@
-from . import common
-from . import fourierFFT
+from . import common  # noqa
+from . import fourierFFT  # noqa
