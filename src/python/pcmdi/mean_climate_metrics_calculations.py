@@ -108,7 +108,7 @@ def compute_metrics(Var, dm, do):
     for stat in ["std-obs_xy", "std_xy", "std-obs_xyt",
                  "std_xyt", "std-obs_xy_devzm", "mean_xy", "mean-obs_xy", "std_xy_devzm",
                  "rms_xyt", "rms_xy", "rmsc_xy", "cor_xy", "bias_xy",
-                 "mae_xy", "rms_y", "rms_devzm"]:
+                 "mae_xy", "rms_y", "rms_devzm",'rms_sea_dev_am_xy','rms_sea_dev_zm_xy']:
         metrics_dictionary[stat] = {}
 
     metrics_dictionary[
