@@ -110,7 +110,7 @@ def compute_metrics(Var, dm, do):
     for stat in ["std-obs_xy", "std_xy", "std-obs_xyt",
                  "std_xyt", "std-obs_xy_devzm", "mean_xy", "mean-obs_xy", "std_xy_devzm",
                  "rms_xyt", "rms_xy", "rmsc_xy", "cor_xy", "bias_xy",
-                 "mae_xy", "rms_y", "rms_devzm","rms_sea_dev_am_xy","rms_sea_dev_zm_xy"]:
+                 "mae_xy", "rms_y", "rms_devzm_xy","rms_devam_xy"]:
         metrics_dictionary[stat] = {}
 
     metrics_dictionary[
@@ -189,7 +189,7 @@ def compute_metrics(Var, dm, do):
         conv,
         sig_digits)
     metrics_dictionary[
-        'rms_devzm']['ann'] = format(
+        'rms_devzm_xy']['ann'] = format(
         rms_xy_devzm *
         conv,
         sig_digits)
@@ -218,8 +218,11 @@ def compute_metrics(Var, dm, do):
 
     # CALCULATE SEASONAL MEAN DEVIATION FROM ZONAL MEAN RMS
 
-        dm_sea_devzm =  MV2.subtract(dm_sea,dm_sea_zm)
-        do_sea_devzm =  MV2.subtract(do_sea,do_sea_zm)
+        dm_sea_zm_grown, dummy = grower(dm_sea_zm, dm_am)
+        do_sea_zm_grown, dummy = grower(do_sea_zm, do_am)
+
+        dm_sea_devzm =  MV2.subtract(dm_sea,dm_sea_zm_grown)
+        do_sea_devzm =  MV2.subtract(do_sea,do_sea_zm_grown)
         rms_sea_devzm = pcmdi_metrics.pcmdi.rms_xy.compute(dm_sea_devzm, do_sea_devzm)
 
         # CALCULATE SEASONAL OBS and MOD STD
@@ -230,11 +233,11 @@ def compute_metrics(Var, dm, do):
         meanObs_xy_sea = pcmdi_metrics.pcmdi.mean_xy.compute(do_sea)
         mean_xy_sea = pcmdi_metrics.pcmdi.mean_xy.compute(dm_sea)
 
-        metrics_dictionary['rms_sea_dev_zm_xy'][sea] = format(
+        metrics_dictionary['rms_devzm_xy'][sea] = format(
             rms_sea_devzm *
             conv,
             sig_digits)
-        metrics_dictionary['rms_sea_dev_am_xy'][sea] = format(
+        metrics_dictionary['rms_devam_xy'][sea] = format(
             rms_sea_devam *
             conv,
             sig_digits)
