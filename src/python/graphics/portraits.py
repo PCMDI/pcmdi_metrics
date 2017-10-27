@@ -997,6 +997,8 @@ class Portrait(object):
                     M[:, :, 0, 2] = Y + .5
                     M[:, :, 1, 2] = X + .5
                 M = MV2.reshape(M, (sh[0] * sh[1], 2, 3))
+            else:
+                raise RuntimeError("Portrait plot support only up to 4 subcells at the moment")
         else:
             if isinstance(meshfill, vcs.meshfill.P):
                 tid = mesh.id
