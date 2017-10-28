@@ -104,7 +104,7 @@ try:
     print ''.join(['start_time: ', str(start_time)])
     end_time = f_h.getAxis('time').asComponentTime()[-1]
     print ''.join(['end_time:   ', str(end_time)])
-except:
+except BaseException:
     print '** No time access associated with file_variable'
     start_time = cdt.comptime(int(args.start_yr), 1, 1)
     end_time = cdt.comptime(int(args.end_yr), 12, 31)

@@ -14,7 +14,7 @@ import cdtime
 
 try:
     import cmor
-except:
+except BaseException:
     raise RuntimeError("Your UV-CDAT is not built with cmor")
 
 parser = argparse.ArgumentParser(
@@ -204,7 +204,7 @@ for ivar, v in enumerate(A.vars):
             v0 = float(A.start)
             try:
                 i0, tmp = tim.mapInterval((v0, v0), 'cob')
-            except:
+            except BaseException:
                 raise RuntimeError(
                     "Could not find value %s for start time for variable %s" %
                     (A.start, v))
@@ -215,7 +215,7 @@ for ivar, v in enumerate(A.vars):
             v0 = v0.add(1, cdtime.Minute)
             try:
                 i0, tmp = tim.mapInterval((v0, v0), 'cob')
-            except:
+            except BaseException:
                 raise RuntimeError(
                     "Could not find start time %s for variable: %s" %
                     (A.start, v))
@@ -234,7 +234,7 @@ for ivar, v in enumerate(A.vars):
             v0 = float(A.end)
             try:
                 tmp, i1 = tim.mapInterval((v0, v0), 'cob')
-            except:
+            except BaseException:
                 raise RuntimeError(
                     "Could not find value %s for end time for variable %s" %
                     (A.end, v))
@@ -245,7 +245,7 @@ for ivar, v in enumerate(A.vars):
             v0 = v0.add(1, cdtime.Minute)
             try:
                 tmp, i1 = tim.mapInterval((v0, v0), 'cob')
-            except:
+            except BaseException:
                 raise RuntimeError(
                     "Could not find end time %s for variable: %s" %
                     (A.end, v))
@@ -339,7 +339,7 @@ for ivar, v in enumerate(A.vars):
         for x in cmor_xtra_args:
             try:
                 xtra[x] = checkCMORAttribute(x)
-            except:
+            except BaseException:
                 pass
         cal = data.getTime().getCalendar()  # cmor understand cdms calendars
         if A.verbose:

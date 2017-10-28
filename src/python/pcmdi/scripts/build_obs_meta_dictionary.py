@@ -137,7 +137,7 @@ for l in lst:
         for r in obs_dic_in[var].keys():
             if obs_dic_in[var][r] == product:
                 obs_dic[var][r] = product
-    except:
+    except BaseException:
         pass
 
 
