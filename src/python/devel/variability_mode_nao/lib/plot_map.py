@@ -4,10 +4,7 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   import string
 
   # Create canvas
-  if debug:
-    canvas = vcs.init(geometry=(900,800)) # Show canvas
-  if not debug:
-    canvas = vcs.init(geometry=(900,800),bg=1) # Plotting in background mode
+  canvas = vcs.init(geometry=(900,800),bg=1) # Plotting in background mode
 
   #canvas.open()
   canvas.drawlogooff()
@@ -70,5 +67,5 @@ def plot_map(mode, model, syear, eyear, season, eof1, frac1, output_file_name):
   #- - - - - - - - - - - - - - - - - - - - - - - - - 
   canvas.png(output_file_name+'.png')
 
-  if not debug:
-    canvas.close()
+  canvas.clear()
+  canvas.close()

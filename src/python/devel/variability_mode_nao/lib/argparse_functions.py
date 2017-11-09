@@ -115,11 +115,8 @@ def YearCheck(year):
 
 def RealizationCheck(realization):
   if realization.lower() == 'all':
-    #multi_run = True
     runs = '*'
   else:
-    #multi_run = False
     runs = realization.lower()
-  #return(multi_run)
   return(runs)
 

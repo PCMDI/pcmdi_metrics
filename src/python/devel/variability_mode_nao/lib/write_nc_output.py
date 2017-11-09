@@ -1,9 +1,11 @@
-def write_nc_output(output_file_name,eof1,pc1,frac1,slope,intercept):
+def write_nc_output(output_file_name,
+                    eofMap, pc, frac, slopeMap, interceptMap):
+
   import cdms2 as cdms
   fout = cdms.open(output_file_name+'.nc','w')
-  fout.write(eof1,id='eof1')
-  fout.write(slope,id='slope')
-  fout.write(intercept,id='intercept')
-  fout.write(pc1,id='pc1')
-  fout.write(frac1,id='frac1')
+  fout.write(eofMap,id='eof')
+  fout.write(slopeMap,id='slope')
+  fout.write(interceptMap,id='intercept')
+  fout.write(pc,id='pc')
+  fout.write(frac,id='frac')
   fout.close()

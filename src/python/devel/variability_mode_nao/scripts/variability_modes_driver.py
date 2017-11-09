@@ -17,16 +17,10 @@ import cdutil, cdtime
 import genutil
 import json
 import pcmdi_metrics
-import pdb
 import string
-import subprocess
 import sys, os
 import time
 import MV2
-
-# To avoid warning with NaN value for PDO case
-#import warnings
-#warnings.simplefilter(action = "ignore", category = RuntimeWarning)
 
 libfiles = ['argparse_functions.py',
             'durolib.py',
@@ -40,14 +34,9 @@ libfiles = ['argparse_functions.py',
 libfiles_share = ['default_regions.py']
 
 for lib in libfiles:
-  #execfile(os.path.join('../lib/',lib))
-  #execfile(os.path.join('../../lib/',lib))
   execfile(os.path.join('./lib/',lib))
 
 for lib in libfiles_share:
-  #execfile(os.path.join('../../../../../share/',lib))
-  #execfile(os.path.join('../lib/',lib))
-  #execfile(os.path.join('../../lib/',lib))
   execfile(os.path.join('./lib/',lib))
 
 ##################################################
@@ -75,8 +64,8 @@ nc_out = True
 #nc_out = False
 
 # Plot figures --
-#plot = True
-plot = False
+plot = True
+#plot = False
 
 ########################################################################
 ########################################################################
@@ -97,7 +86,7 @@ version = '3.1'  ### Default
 
 DirCmp2NCAR = False
 EofScaling = False
-testCeline = False
+RemoveDomainMean = False
 
 #--------------------
 if version == '0.0':
@@ -148,16 +137,16 @@ elif version == '2.2':
 elif version == '3.0':
   OBS = 'HadSLP'
   OBS_SST = 'ERSSTv3b'
-  testCeline = True
+  RemoveDomainMean = True
 
   # For SAM...
-  osyear = 1955
-  oeyear = 2005
+  #osyear = 1955
+  #oeyear = 2005
 
 elif version == '3.1':
   OBS = '20CR'
   OBS_SST = 'HadISST'
-  testCeline = True
+  RemoveDomainMean = True
 
   # For SAM...
   #osyear = 1955
@@ -166,7 +155,7 @@ elif version == '3.1':
 elif version == '3.2':
   OBS = 'ERAint'
   OBS_SST = 'HadISST'
-  testCeline = True
+  RemoveDomainMean = True
 
   # For Non-PDOs...
   #osyear = 1989
@@ -179,7 +168,7 @@ elif version == '3.2':
 elif version == '3.3':
   OBS = '20CR'
   OBS_SST = 'HadISST'
-  testCeline = True
+  RemoveDomainMean = True
 
   osyear = 1979
   oeyear = 2005
@@ -187,11 +176,11 @@ elif version == '3.3':
 elif version == '3.4':
   OBS = 'ERA20C'
   OBS_SST = 'ERA20C'
-  testCeline = True
+  RemoveDomainMean = True
 
   # For SAM...
-  osyear = 1955
-  oeyear = 2005
+  #osyear = 1955
+  #oeyear = 2005
 #--------------------
 
 
@@ -244,12 +233,11 @@ print 'outdir: ', out_dir
 # Debug ---
 debug = args.debug
 print 'debug: ', debug
-##if debug: pdb.set_trace()
 
 ##################################################
 
 # Create output directory ---
-out_dir = out_dir + '/' + mode
+out_dir = os.path.join(out_dir, mode)
 if not os.path.exists(out_dir): os.makedirs(out_dir)
 
 # Multiple realization ---
@@ -283,14 +271,11 @@ lon1g = -180
 lon2g = 180
 
 if mode == 'PDO':
-  seasons = ['monthly']
+  #seasons = ['monthly']
   lon1g = 0
   lon2g = 360
-  # Select models with land fraction available ---
-  ###models_lf = get_all_mip_mods_lf(mip,'sftlf')
-  ###models = list(set(models).intersection(models_lf)) # Select models when land fraction exists as well
-  models = sorted(models, key=lambda s:s.lower()) # Sort list alphabetically, case-insensitive
-  if debug: print 'Finally selected models: ', models
+
+models = sorted(models, key=lambda s:s.lower()) # Sort list alphabetically, case-insensitive
 
 #=================================================
 # Time period control
@@ -318,8 +303,8 @@ var_mode_stat_dic={}
 # Define output json file ---
 json_filename = 'var_mode_'+mode+'_EOF'+str(eofn_mod)+'_stat_'+mip+'_'+exp+'_'+fq+'_'+realm+'_'+str(syear)+'-'+str(eyear)
 
-json_file = out_dir + '/' + json_filename + '.json'
-json_file_org = out_dir + '/' + json_filename + '_org_'+str(os.getpid())+'.json'
+json_file = os.path.join(out_dir, json_filename+'.json')
+json_file_org = os.path.join(out_dir, json_filename+'_org_'+str(os.getpid())+'.json')
 
 # Save pre-existing json file against overwriting ---
 if os.path.isfile(json_file) and os.stat(json_file).st_size > 0 :
@@ -427,12 +412,12 @@ if obs_compare:
 
   # Declare dictionary variables to keep information obtained from the observation ---
   eof_obs={}
-  pc1_obs={}
+  pc_obs={}
   frac1_obs={}
   solver_obs={}
   reverse_sign_obs={}
   eof_lr_obs={}
-  pc1_obs_stdv={}
+  pc_obs_stdv={}
 
   # Dictonary for json archive ---
   if 'obs' not in var_mode_stat_dic['REF'].keys(): 
@@ -470,7 +455,7 @@ if obs_compare:
     obs_timeseries_ano = get_anomaly_timeseries(obs_timeseries, mode, season)
 
     # Calculate residual by subtracting domain average (or global mean) ---
-    obs_timeseries_season = get_residual_timeseries(obs_timeseries_ano, mode)
+    obs_timeseries_season = get_residual_timeseries(obs_timeseries_ano, mode, RemoveDomainMean)
 
     #- - - - - - - - - - - - - - - - - - - - - - - - -
     # Extract subdomain ---
@@ -481,31 +466,25 @@ if obs_compare:
 
     # EOF analysis ---
     if debug: print 'EOF analysis'
-    eof_obs[season], pc1_obs[season], frac1_obs[season], solver_obs[season], reverse_sign_obs[season] = \
-           eof_analysis_get_variance_mode(mode, obs_timeseries_season_subdomain[season], eofn_obs)
+    eof_obs[season], pc_obs[season], frac1_obs[season], solver_obs[season], reverse_sign_obs[season] = \
+           eof_analysis_get_variance_mode(mode, obs_timeseries_season_subdomain[season], eofn_obs, EofScaling)
 
     # Calculate stdv of pc time series
     if debug: print 'Calculate stdv of pc time series'
-    pc1_obs_stdv[season] = calcSTD(pc1_obs[season])
+    pc_obs_stdv[season] = calcSTD(pc_obs[season])
 
     # Linear regression to have extended global map; teleconnection purpose ---
     if debug: print 'Linear regression'
-    if debug: print pc1_obs[season].shape, obs_timeseries_season.shape
-    if testCeline:
-      #slope_obs, intercept_obs = linear_regression(pc1_obs[season], obs_timeseries_ano)
-      slope_obs, intercept_obs = linear_regression(pc1_obs[season], obs_timeseries_season)
-      #eof_lr_obs[season] = linear_regression(pc1_obs[season], obs_timeseries_ano) * pc1_obs_stdv[season]
-      #eof_lr_obs[season] = ( slope_obs * pc1_obs_stdv[season] ) + intercept_obs
-      eof_lr_obs[season] = MV2.add(MV2.multiply(slope_obs, pc1_obs_stdv[season]), intercept_obs)
+    if debug: print pc_obs[season].shape, obs_timeseries_season.shape
+
+    if RemoveDomainMean:
+      slope_obs, intercept_obs = linear_regression(pc_obs[season], obs_timeseries_season)
+      eof_lr_obs[season] = MV2.add(MV2.multiply(slope_obs, pc_obs_stdv[season]), intercept_obs)
     else:
-      slope_obs, intercept_obs = linear_regression(pc1_obs[season], obs_timeseries_season)
+      slope_obs, intercept_obs = linear_regression(pc_obs[season], obs_timeseries_season)
       if not EofScaling:
-        #eof_lr_obs[season] = linear_regression(pc1_obs[season], obs_timeseries_season) * pc1_obs_stdv[season]
-        #eof_lr_obs[season] = ( slope_obs * pc1_obs_stdv[season] ) + intercept_obs
-        eof_lr_obs[season] = MV2.add(MV2.multiply(slope_obs, pc1_obs_stdv[season]),intercept_obs)
+        eof_lr_obs[season] = MV2.add(MV2.multiply(slope_obs, pc_obs_stdv[season]),intercept_obs)
       else:
-        #eof_lr_obs[season] = linear_regression(pc1_obs[season], obs_timeseries_season)
-        #eof_lr_obs[season] = slope_obs + intercept_obs
         eof_lr_obs[season] = MV2.add(slope_obs, intercept_obs)
 
     #- - - - - - - - - - - - - - - - - - - - - - - - -
@@ -518,7 +497,7 @@ if obs_compare:
 
     # Save global map, pc timeseries, and fraction in NetCDF output ---
     if nc_out:
-      write_nc_output(output_filename_obs, eof_lr_obs[season], pc1_obs[season], frac1_obs[season], slope_obs, intercept_obs)
+      write_nc_output(output_filename_obs, eof_lr_obs[season], pc_obs[season], frac1_obs[season], slope_obs, intercept_obs)
 
     # Plotting ---
     if plot:
@@ -529,20 +508,16 @@ if obs_compare:
                eof_lr_obs[season](longitude=(lon1g,lon2g)), frac1_obs[season], output_filename_obs+'_teleconnection')
 
     # Save stdv of PC time series in dictionary ---
-    var_mode_stat_dic['REF']['obs']['defaultReference'][mode][season]['pc1_stdv'] = float(pc1_obs_stdv[season])
+    var_mode_stat_dic['REF']['obs']['defaultReference'][mode][season]['pc_stdv'] = float(pc_obs_stdv[season])
     var_mode_stat_dic['REF']['obs']['defaultReference'][mode][season]['frac'] = float(frac1_obs[season])
 
     if debug: print 'obs plotting end'
 
     #execfile('../north_test.py')
 
-#sys.exit()
-
 #=================================================
 # Model
 #-------------------------------------------------
-##if debug: pdb.set_trace()
-
 for model in models:
   print ' ----- ', model,' ---------------------'
 
@@ -589,10 +564,6 @@ for model in models:
       msyear = mstime.year; msmonth = mstime.month
       meyear = metime.year; memonth = metime.month
     
-      ##if msmonth > 1: msyear = msyear + 1
-      ##if memonth < 12: meyear = meyear - 1
-      ####if memonth < 11: meyear = meyear - 1  ## HadGEM2-CC ends at Nov... 
-
       msyear = max(syear, msyear)
       meyear = min(eyear, meyear)
 
@@ -621,7 +592,7 @@ for model in models:
         model_timeseries_ano = get_anomaly_timeseries(model_timeseries, mode, season)
   
         # Calculate residual by subtracting domain average (or global mean) ---
-        model_timeseries_season = get_residual_timeseries(model_timeseries_ano, mode)
+        model_timeseries_season = get_residual_timeseries(model_timeseries_ano, mode, RemoveDomainMean)
   
         #- - - - - - - - - - - - - - - - - - - - - - - - -
         # Extract subdomain ---
@@ -637,32 +608,25 @@ for model in models:
         if debug: print 'Usual EOF approach'
 
         # EOF analysis ---
-        eof, pc1, frac1, solver, reverse_sign = \
-              eof_analysis_get_variance_mode(mode, model_timeseries_season_subdomain, eofn_mod)
+        eof, pc, frac1, solver, reverse_sign = \
+              eof_analysis_get_variance_mode(mode, model_timeseries_season_subdomain, eofn_mod, EofScaling)
         if debug: print 'eof analysis'
     
         # Calculate stdv of pc time series ---
-        model_pcs_stdv = calcSTD(pc1)
+        model_pcs_stdv = calcSTD(pc)
 
         # Linear regression to have extended global map:
         # -- Reconstruct EOF fist mode including teleconnection purpose as well
         # -- Have confirmed that "eof_lr" is identical to "eof" over EOF domain (i.e., "subdomain")
         # -- Note that eof_lr has global field ---
-        if testCeline:
-          #slope, intercept = linear_regression(pc1, model_timeseries_ano)
-          slope, intercept = linear_regression(pc1, model_timeseries_season)
-          #eof_lr = linear_regression(pc1, model_timeseries_ano) * model_pcs_stdv
-          #eof_lr = ( slope * model_pcs_stdv ) + intercept
+        if RemoveDomainMean:
+          slope, intercept = linear_regression(pc, model_timeseries_season)
           eof_lr = MV2.add(MV2.multiply(slope, model_pcs_stdv), intercept)
         else:
-          slope, intercept = linear_regression(pc1, model_timeseries_season)
+          slope, intercept = linear_regression(pc, model_timeseries_season)
           if not EofScaling:
-            #eof_lr = linear_regression(pc1, model_timeseries_season) * model_pcs_stdv
-            #eof_lr = ( slope * model_pcs_stdv ) + intercept
             eof_lr = MV2.add(MV2.multiply(slope, model_pcs_stdv), intercept)
           else:
-            #eof_lr = linear_regression(pc1, model_timeseries_season)
-            #eof_lr = slope + intercept
             eof_lr = MV2.add(slope, intercept)
         if debug: print 'linear regression'
 
@@ -676,7 +640,6 @@ for model in models:
         if obs_compare:
     
           # Regrid (interpolation, model grid to ref grid) ---
-          if debug: print 'regrid (global) start'
           eof_lr_regrid_global = eof_lr.regrid(ref_grid_global, regridTool='regrid2', mkCyclic=True)
           if debug: print 'regrid end'
     
@@ -690,13 +653,8 @@ for model in models:
 
           # Double check for arbitrary sign control --- 
           if cor < 0: 
-            #eof = eof * -1
-            #pc1 = pc1 * -1
-            #eof_lr = eof_lr * -1
-            #eof_lr_regrid_global = eof_lr_regrid_global * -1
-            #eof_regrid = eof_regrid * -1
             eof = MV2.multiply(eof, -1)
-            pc1 = MV2.multiply(pc1, -1)
+            pc = MV2.multiply(pc, -1)
             eof_lr = MV2.multiply(eof_lr, -1)
             eof_lr_regrid_global = MV2.multiply(eof_lr_regrid_global, -1)
             eof_regrid = MV2.multiply(eof_regrid, -1)
@@ -732,29 +690,15 @@ for model in models:
         #-------------------------------------------------
         # pseudo model PC timeseries and teleconnection 
         #- - - - - - - - - - - - - - - - - - - - - - - - -
-        #if debug: pdb.set_trace()
-
         if pseudo and obs_compare:
           # Regrid (interpolation, model grid to ref grid) ---
-          #if testCeline:
-          #  model_timeseries_ano_regrid = model_timeseries_ano.regrid(ref_grid_global, regridTool='regrid2', mkCyclic=True)
           model_timeseries_season_regrid = model_timeseries_season.regrid(ref_grid_global, regridTool='regrid2', mkCyclic=True)
           model_timeseries_season_regrid_subdomain = model_timeseries_season_regrid(regions_specs[mode]['domain'])
     
           # Matching model's missing value location to that of observation ---
           # 1) Replace model's masked grid to 0, so theoritically won't affect to result
           # 2) Give obs's mask to model field, so enable projecField functionality below 
-          #missing_value = model_timeseries_season_regrid_subdomain.missing
-          #model_timeseries_season_regrid_subdomain[ model_timeseries_season_regrid_subdomain == missing_value ] = 0
-          #model_timeseries_season_regrid_subdomain.mask = model_timeseries_season_regrid_subdomain.mask + eof_obs[season].mask
-
-          ##### Method 1... not working..  (above is working with only old UVCDAT version....)
-          #missing_value = model_timeseries_season_regrid_subdomain.missing
-          #model_timeseries_season_regrid_subdomain.mask = False
-          #model_timeseries_season_regrid_subdomain.mask = model_timeseries_season_regrid_subdomain.mask + eof_obs[season].mask
-          #model_timeseries_season_regrid_subdomain.mask = eof_obs[season].mask
-
-          ##### Method 2... working!!..
+          #
           time = model_timeseries_season_regrid_subdomain.getTime()
           lat = model_timeseries_season_regrid_subdomain.getLatitude()
           lon = model_timeseries_season_regrid_subdomain.getLongitude()
@@ -767,35 +711,26 @@ for model in models:
           model_timeseries_season_regrid_subdomain.setAxis(2,lon)
     
           # Pseudo model PC time series ---
-          ##pseudo_pcs = gain_pseudo_pcs(solver_obs[season], model_timeseries_season_regrid_subdomain, 1, reverse_sign_obs[season])
-          pseudo_pcs = gain_pseudo_pcs(solver_obs[season], model_timeseries_season_regrid_subdomain, eofn_obs, reverse_sign_obs[season])
+          pseudo_pcs = gain_pseudo_pcs(solver_obs[season], model_timeseries_season_regrid_subdomain, eofn_obs, reverse_sign_obs[season], EofScaling)
     
           # Calculate stdv of pc time series ---
           pseudo_pcs_stdv = calcSTD(pseudo_pcs)
     
           # Linear regression to have extended global map; teleconnection purpose ---
-          if testCeline:
-            #slope_pseudo, intercept_pseudo = linear_regression(pseudo_pcs, model_timeseries_ano_regrid)
+          if RemoveDomainMean:
             slope_pseudo, intercept_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid)
-            #eof_lr_pseudo = linear_regression(pseudo_pcs, model_timeseries_ano_regrid) * pseudo_pcs_stdv
-            #eof_lr_pseudo = ( slope_pseudo * pseudo_pcs_stdv ) + intercept_pseudo
             eof_lr_pseudo = MV2.add(MV2.multiply(slope_pseudo, pseudo_pcs_stdv), intercept_pseudo)
           else: 
             slope_pseudo, intercept_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid)
             if not EofScaling:
-              #eof_lr_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid) * pseudo_pcs_stdv
-              #eof_lr_pseudo = ( slope_pseudo * pseudo_pcs_stdv ) + intercept_pseudo
               eof_lr_pseudo = MV2.add(MV2.multiply(slope_pseudo, pseudo_pcs_stdv), intercept_pseudo)
             else:
-              #eof_lr_pseudo = linear_regression(pseudo_pcs, model_timeseries_season_regrid)
-              #eof_lr_pseudo = slope_pseudo + intercept_pseudo
               eof_lr_pseudo = MV2.add(slope_pseudo, intercept_pseudo)
 
           # Extract subdomain for statistics ---
           eof_lr_pseudo_subdomain = eof_lr_pseudo(regions_specs[mode]['domain'])
 
           # Calculate variance franction of pseudo-pcs ---
-          #pseudo_fraction = gain_pcs_fraction(model_timeseries_season_regrid_subdomain, eof_lr_pseudo_subdomain, pseudo_pcs)
           pseudo_fraction = gain_pcs_fraction(model_timeseries_season_regrid_subdomain, eof_lr_pseudo_subdomain, pseudo_pcs/pseudo_pcs_stdv)
 
           #- - - - - - - - - - - - - - - - - - - - - - - - -
@@ -817,7 +752,7 @@ for model in models:
           if debug: print 'pseudo rmsc end'
 
           # Temporal correlation between pseudo PC timeseries and usual model PC timeseries
-          tc = calcTCOR(pseudo_pcs, pc1)
+          tc = calcTCOR(pseudo_pcs, pc)
           if debug: print 'pseudo tc end'
     
           # Bias ---
@@ -845,21 +780,10 @@ for model in models:
           ######################################################
           # Regrid (interpolation, obs to model grid) ---
           obs_timeseries_season_regrid_subdomain = obs_timeseries_season_subdomain[season].regrid(model_grid_subdomain, regridTool='regrid2')
-
           # Matching obs's missing value location to that of model ---
           # 1) Replace obs's masked grid to 0, so theoritically won't affect to result
           # 2) Give model's mask to obs field, so enable projecField functionality below 
-          #missing_value = obs_timeseries_season_regrid_subdomain.missing
-          #obs_timeseries_season_regrid_subdomain[ obs_timeseries_season_regrid_subdomain == missing_value ] = 0
-          #obs_timeseries_season_regrid_subdomain.mask = obs_timeseries_season_regrid_subdomain.mask + eof.mask
-
-          ##### Method 1... not working..  (above is working with only old UVCDAT version....)
-          #missing_value = obs_timeseries_season_regrid_subdomain.missing
-          #obs_timeseries_season_regrid_subdomain.mask = False
-          #obs_timeseries_season_regrid_subdomain[ obs_timeseries_season_regrid_subdomain == missing_value ] = 0
-          #obs_timeseries_season_regrid_subdomain.mask = eof.mask
-
-          ##### Method 2... working!!..
+          #
           time = obs_timeseries_season_regrid_subdomain.getTime()
           lat = obs_timeseries_season_regrid_subdomain.getLatitude()
           lon = obs_timeseries_season_regrid_subdomain.getLongitude()
@@ -872,26 +796,24 @@ for model in models:
           obs_timeseries_season_regrid_subdomain.setAxis(2,lon)
 
           # Project model pattern onto observation space
-          pseudo_pcs_on_obs_space = gain_pseudo_pcs(solver, obs_timeseries_season_regrid_subdomain, eofn_mod, reverse_sign)
+          pseudo_pcs_on_obs_space = gain_pseudo_pcs(solver, obs_timeseries_season_regrid_subdomain, eofn_mod, reverse_sign, EofScaling)
 
           # Temporal correlation between pseudo PC timeseries and usual model PC timeseries
-          tc2 = calcTCOR(pseudo_pcs_on_obs_space, pc1_obs[season])
+          tc2 = calcTCOR(pseudo_pcs_on_obs_space, pc_obs[season])
 
           if tc2 < 0:
-            #pseudo_pcs_on_obs_space = pseudo_pcs_on_obs_space * -1.
             pseudo_pcs_on_obs_space = MV2.multiply(pseudo_pcs_on_obs_space, -1.)
-            tc2 = calcTCOR(pseudo_pcs_on_obs_space, pc1_obs[season])
+            tc2 = calcTCOR(pseudo_pcs_on_obs_space, pc_obs[season])
 
           # Calculate stdv of pc time series ---
           pseudo_pcs_on_obs_space_stdv = calcSTD(pseudo_pcs_on_obs_space)
 
           # Calculate variance franction of pseudo-pcs ---
-          #pseudo2_fraction = gain_pcs_fraction(obs_timeseries_season_regrid_subdomain, eof_lr(regions_specs[mode]['domain']), pseudo_pcs_on_obs_space)
           pseudo2_fraction = gain_pcs_fraction(obs_timeseries_season_regrid_subdomain, eof_lr(regions_specs[mode]['domain']), pseudo_pcs_on_obs_space/pseudo_pcs_on_obs_space_stdv)
 
           if debug: print 'pseudo2 tc end'
 
-          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['tcor_obs-pc1_vs_obs-pseudo_pcs'] = float(tc2)
+          var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['tcor_obs-pc_vs_obs-pseudo_pcs'] = float(tc2)
           var_mode_stat_dic['RESULTS'][model][run]['defaultReference'][mode][season]['frac_pseudo2'] = float(pseudo2_fraction)
           ######################################################
     
@@ -905,12 +827,9 @@ for model in models:
     
         # Save global map, pc timeseries, and fraction in NetCDF output ---
         if nc_out:
-          #write_nc_output(output_filename, eof_lr, pc1, frac1)
-          write_nc_output(output_filename, eof_lr, pc1, frac1, slope, intercept)
+          write_nc_output(output_filename, eof_lr, pc, frac1, slope, intercept)
           if pseudo and obs_compare: 
-            #write_nc_output(output_filename+'_pseudo', eof_lr_pseudo, pseudo_pcs, pseudo_fraction)
             write_nc_output(output_filename+'_pseudo', eof_lr_pseudo, pseudo_pcs, pseudo_fraction, slope_pseudo, intercept_pseudo)
-            #write_nc_output(output_filename+'_pseudo2', eof_lr_pseudo, pseudo_pcs_on_obs_space, pseudo2_fraction)
     
         # Plot map ---
         if plot:
@@ -928,26 +847,17 @@ for model in models:
       #=================================================
       # Write dictionary to json file (let the json keep overwritten in model loop)
       #-------------------------------------------------
-      #if mode == 'PDO':
-      #  new_json_structure = False
-      #  #new_json_structure = True
-      #else:
-      #  #new_json_structure = True
-      #  new_json_structure = False
-
       new_json_structure = True
 
       if new_json_structure:
         JSON = pcmdi_metrics.io.base.Base(out_dir,json_filename)
         JSON.write(var_mode_stat_dic,json_structure=["model","realization","reference","mode","season","statistic"],
                    sort_keys=True, indent=4, separators=(',', ': '))
-                   #sort_keys=True, mode="w", indent=4, separators=(',', ': '))
       else:
         json.dump(var_mode_stat_dic, open(json_file,'w'), sort_keys=True, indent=4, separators=(',', ': '))
 
     except Exception, err:
       print 'faild for ', model, run, err
       pass
-
 
 if not debug: sys.exit('done')
