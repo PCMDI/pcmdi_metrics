@@ -72,5 +72,11 @@ class DiurnalTest(unittest.TestCase):
     def teestStd_of_meandiurnalcycWrappedInOut(self):
         self.runJsoner("std_of_meandiurnalcycWrappedInOut.py","pr_Jul_1999-2005_std_of_meandiurnalcyc.json")
 
-    def testSavg_fourierWrappedInOut(self):
+    def teestSavg_fourierWrappedInOut(self):
         self.runJsoner("savg_fourierWrappedInOut.py","pr_Jul_1999-2005_savg_DiurnalFourier.json")
+
+    def testfourierDiurnalGridpoints(self):
+        cmd = "fourierDiurnalGridpoints.py -i tests/diurnal/results/nc -o test_data/results/ascii"  
+        p = subprocess.Popen(shlex.split(cmd))
+        p.communicate()
+        self.assertTrue(os.path.exists("test_data/results/ascii/pr_Jul_1999-2005_fourierDiurnalGridPoints.asc"))

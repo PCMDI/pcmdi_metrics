@@ -72,6 +72,8 @@ ascFile = populateStringConstructor(args.outnameasc, args)
 ascFile.month = monthname
 ascname = os.path.join(os.path.abspath(args.output_directory), ascFile())
 
+if not os.path.exists(os.path.dirname(ascname)):
+    os.makedirs(os.path.dirname(ascname))
 fasc = open(ascname, "w")
 
 
