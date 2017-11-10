@@ -5,6 +5,8 @@ import shlex
 import os
 import cdms2
 import numpy
+import json
+
 
 class DiurnalTest(unittest.TestCase):
 
@@ -40,6 +42,11 @@ class DiurnalTest(unittest.TestCase):
         cmd = 'std_of_dailymeansWrappedInOut.py --append -i tests/diurnal/results/nc -o test_data/results/jsons -m7'
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
+        good = open("tests/diurnal/results/json/pr_Jul_1999_2005_std_of_dailymeans.json")
+        test = open("test_data/results/jsons/pr_Jul_1999_2005_std_of_dailymeans.json")
+        test = json.load(test)
+        good = json.load(good)
+        self.assertEqual(test["RESULTS"],good["RESULTS"])
 
 
 
