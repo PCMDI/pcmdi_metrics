@@ -13,7 +13,7 @@
         "userId": "doutriaux1",
         "osAccess": false,
         "commandLine": "/Users/doutriaux1/anaconda2/envs/dev-nox/bin/std_of_dailymeansWrappedInOut.py --append -i tests/diurnal/results/nc -o test_data/results/jsons -m7",
-        "date": "2017-11-10 08:37:43",
+        "date": "2017-11-10 12:26:38",
         "conda": {
             "Platform": "osx-64",
             "Version": "4.3.29",

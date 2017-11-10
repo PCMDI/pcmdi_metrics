@@ -13,7 +13,7 @@
         "userId": "doutriaux1",
         "osAccess": false,
         "commandLine": "/Users/doutriaux1/anaconda2/envs/dev-nox/bin/std_of_meandiurnalcycWrappedInOut.py --append -i tests/diurnal/results/nc -o test_data/results/jsons -m7",
-        "date": "2017-11-10 10:43:13",
+        "date": "2017-11-10 12:27:09",
         "conda": {
             "Platform": "osx-64",
             "Version": "4.3.29",
@@ -65,7 +65,7 @@
     "RESULTS": {
         "CMCC": {
             "TROPICS": 1.2867014136692358,
-            "TRMM": 1.1381049437109456
+            "TRMM": 1.1373195943304841
         }
     },
     "RegionalMasking": {
@@ -77,7 +77,7 @@
         },
         "TRMM": {
             "domain": {
-                "TRMM": "cdutil.region.domain(latitude=(-49.875, 49.875),longitude=(0.125, 359.875))"
+                "TRMM": "cdutil.region.domain(latitude=(-50.0, 50.0),longitude=(0.0, 360.0))"
             },
             "id": "TRMM"
         }

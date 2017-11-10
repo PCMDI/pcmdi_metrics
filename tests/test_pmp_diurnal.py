@@ -29,14 +29,14 @@ class DiurnalTest(unittest.TestCase):
 
             self.assertSame(test,good)
         
-    def teestDiurnaliComputeStdDailyMean(self):
+    def testDiurnaliComputeStdDailyMean(self):
         cmd = 'computeStdDailyMeansWrapped.py -i test_data -o test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
 
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_std_of_dailymeans.nc")
 
-    def teestFourierDiurnalAllGridWrapped(self):
+    def testFourierDiurnalAllGridWrapped(self):
         cmd = 'fourierDiurnalAllGridWrapped.py -i test_data/results/nc -o test_data/results/nc -m7'
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
@@ -44,7 +44,7 @@ class DiurnalTest(unittest.TestCase):
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_tS.nc")
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_S.nc")
 
-    def teestDiurnalStdDailyVariance(self):
+    def testDiurnalStdDailyVariance(self):
         self.runJsoner("std_of_dailymeansWrappedInOut.py","pr_Jul_1999_2005_std_of_dailymeans.json")
     def runJsoner(self,script,json_file):
         cmd = '{} --region_name=TROPICS --lat1=-30. --lat2=30. --lon1=0. --lon2=360 -i tests/diurnal/results/nc -o test_data/results/jsons -m7'.format(script)
@@ -58,7 +58,7 @@ class DiurnalTest(unittest.TestCase):
         test = json.load(test)
         good = json.load(good)
         self.assertEqual(test["RESULTS"],good["RESULTS"])
-    def teestCompositeDiurnalStatisticsWrapped(self):
+    def testCompositeDiurnalStatisticsWrapped(self):
         cmd = 'compositeDiurnalStatisticsWrapped.py -i test_data -o test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
@@ -66,13 +66,13 @@ class DiurnalTest(unittest.TestCase):
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_diurnal_std.nc")
         self.compare_nc("results/nc/pr_CMCC_LocalSolarTimes.nc")
 
-    def teestStd_of_hourlyvaluesWrappedInOut(self):
+    def testStd_of_hourlyvaluesWrappedInOut(self):
         self.runJsoner("std_of_hourlyvaluesWrappedInOut.py","pr_Jul_1999-2005_std_of_hourlymeans.json")
 
-    def teestStd_of_meandiurnalcycWrappedInOut(self):
+    def testStd_of_meandiurnalcycWrappedInOut(self):
         self.runJsoner("std_of_meandiurnalcycWrappedInOut.py","pr_Jul_1999-2005_std_of_meandiurnalcyc.json")
 
-    def teestSavg_fourierWrappedInOut(self):
+    def testSavg_fourierWrappedInOut(self):
         self.runJsoner("savg_fourierWrappedInOut.py","pr_Jul_1999-2005_savg_DiurnalFourier.json")
 
     def testfourierDiurnalGridpoints(self):
