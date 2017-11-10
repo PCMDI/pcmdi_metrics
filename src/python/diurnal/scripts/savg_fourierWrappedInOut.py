@@ -32,10 +32,11 @@ P.add_argument("-j", "--outnamejson",
                default='pr_%(month)_%(firstyear)-%(lastyear)_savg_DiurnalFourier.json',
                help="Output name for jsons")
 
-P.add_argument("--lat1", type=float, default=-49.875, help="First latitude")
-P.add_argument("--lat2", type=float, default=49.875, help="Last latitude")
-P.add_argument("--lon1", type=float, default=0.125, help="First longitude")
-P.add_argument("--lon2", type=float, default=359.875, help="Last longitude")
+P.add_argument("--lat1", type=float, default=-50., help="First latitude")
+P.add_argument("--lat2", type=float, default=50., help="Last latitude")
+P.add_argument("--lon1", type=float, default=0., help="First longitude")
+P.add_argument("--lon2", type=float, default=360., help="Last longitude")
+P.add_argument("--region_name", type=str, default="TRMM", help="name for the region of interest")
 
 P.add_argument("-t", "--filename_template",
                default="pr_%(model)_%(month)_%(firstyear)-%(lastyear)_S.nc",
@@ -62,6 +63,11 @@ latrange = (args.lat1, args.lat2)
 lonrange = (args.lon1, args.lon2)
 
 region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
+
+if args.region_name == "":
+    region_name = "{:g}_{:g}&{:g}_{:g}".format(*(latrange+lonrange))
+else:
+    region_name = args.region_name
 
 # Amazon basin:
 # latrange = (-15.0,  -5.0)
@@ -200,10 +206,11 @@ jsonname = os.path.join(os.path.abspath(args.output_directory), jsonFile())
 if not os.path.exists(jsonname) or args.append is False:
     print 'Initializing dictionary of statistical results ...'
     stats_dic = {}
+    metrics_dictionary = collections.OrderedDict()
 else:
     with open(jsonname) as f:
-        j = json.load(f)
-        stats_dic = j["RESULTS"]
+        metrics_dictionary = json.load(f)
+        stats_dic = metrics_dictionary["RESULTS"]
 
 OUT = pcmdi_metrics.io.base.Base(
     os.path.abspath(
@@ -215,8 +222,6 @@ disclaimer = open(
         "share",
         "pmp",
         "disclaimer.txt")).read()
-metrics_dictionary = collections.OrderedDict()
-metrics_def_dictionary = collections.OrderedDict()
 metrics_dictionary["DISCLAIMER"] = disclaimer
 metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Covey et al., J Climate 2016"
 
@@ -258,16 +263,25 @@ for file_S in files_S:
             print 'Failed reading sftlf from file (error was: %s)' % err
             print 'Creating one for you'
             sftlf = cdutil.generateLandSeaMask(S.getGrid())
-        stats_dic[model] = spacevavg(S, tS, sftlf, model)
+
+        if not stats_dic.has_key(model):
+            stats_dic[model] = {region_name:spacevavg(S, tS, sftlf, model)}
+        else:
+            stats_dic[model].update({region_name:spacevavg(S, tS, sftlf, model)})
         print stats_dic
     except Exception as err:
         print "Failed for model %s with error %s" % (model, err)
 
 # Write output to JSON file.
 metrics_dictionary["RESULTS"] = stats_dic
+rgmsk = metrics_dictionary.get("RegionalMasking",{})
+nm = region_name
+region.id = nm
+rgmsk[nm]={"id":nm,"domain":region}
+metrics_dictionary["RegionalMasking"] = rgmsk
 OUT.write(
     metrics_dictionary,
-    json_structure=["model", "domain", "harmonic"],
+    json_structure=["model", "domain", "harmonic","statistic"],
     indent=4,
     separators=(
         ',',

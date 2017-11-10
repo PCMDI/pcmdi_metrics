@@ -36,7 +36,7 @@ class DiurnalTest(unittest.TestCase):
 
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_std_of_dailymeans.nc")
 
-    def testFourierDiurnalAllGridWrapped(self):
+    def teestFourierDiurnalAllGridWrapped(self):
         cmd = 'fourierDiurnalAllGridWrapped.py -i test_data/results/nc -o test_data/results/nc -m7'
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
@@ -71,3 +71,6 @@ class DiurnalTest(unittest.TestCase):
 
     def teestStd_of_meandiurnalcycWrappedInOut(self):
         self.runJsoner("std_of_meandiurnalcycWrappedInOut.py","pr_Jul_1999-2005_std_of_meandiurnalcyc.json")
+
+    def testSavg_fourierWrappedInOut(self):
+        self.runJsoner("savg_fourierWrappedInOut.py","pr_Jul_1999-2005_savg_DiurnalFourier.json")
