@@ -34,7 +34,10 @@ class DiurnalTest(unittest.TestCase):
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_std_of_dailymeans.nc")
 
     def testDiurnalStdDailyVariance(self):
-        cmd = 'std_of_dailymeansWrappedInOut.py -i tests/diurnal/results/nc -o test_data/results/jsons -m7'
+        cmd = 'std_of_dailymeansWrappedInOut.py --region_name=TROPICS --lat1=-30. --lat2=30. --lon1=0. --lon2=360 -i tests/diurnal/results/nc -o test_data/results/jsons -m7'
+        p = subprocess.Popen(shlex.split(cmd))
+        p.communicate()
+        cmd = 'std_of_dailymeansWrappedInOut.py --append -i tests/diurnal/results/nc -o test_data/results/jsons -m7'
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
 
