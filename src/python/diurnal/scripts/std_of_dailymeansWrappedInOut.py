@@ -43,7 +43,9 @@ def compute(param):
     latrange = (param.args.lat1, param.args.lat2)
     lonrange = (param.args.lon1, param.args.lon2)
     region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
-    print 'Reading %s ...' % fnameRoot
+    print latrange+lonrange
+    region_name = "{:g}_{:g}&{:g}_{:g}".format(*(latrange+lonrange))
+    print 'Reading {} ...'.format(fnameRoot)
     try:
         f = cdms2.open(fnameRoot)
         x = f(datanameID, region)
@@ -58,7 +60,7 @@ def compute(param):
     except Exception as err:
         print "Failed for model %s with error %s" % (model, err)
         x = 1.e20
-    return model, x
+    return model, region, {region_name:x}
 
 
 P.add_argument("-j", "--outnamejson",
@@ -129,9 +131,13 @@ results = cdp.cdp_run.multiprocess(
     compute, params, num_workers=args.num_workers)
 
 for r in results:
-    stats_dic[r[0]] = r[1]
+    m, nm, res = r
+    if not stats_dic.has_key(r[0]):
+        stats_dic[m] = res
+    else:
+        stats_dic[m].update(res)
 
-print 'Writing output to JSON file ...'
+print 'Writing output to JSON file ...',stats_dic
 metrics_dictionary["RESULTS"] = stats_dic
 OUT.write(
     metrics_dictionary,
