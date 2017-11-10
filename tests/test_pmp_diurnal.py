@@ -35,7 +35,7 @@ class DiurnalTest(unittest.TestCase):
 
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_std_of_dailymeans.nc")
 
-    def testDiurnalStdDailyVariance(self):
+    def teestDiurnalStdDailyVariance(self):
         self.runJsoner("std_of_dailymeansWrappedInOut.py","pr_Jul_1999_2005_std_of_dailymeans.json")
     def runJsoner(self,script,json_file):
         cmd = '{} --region_name=TROPICS --lat1=-30. --lat2=30. --lon1=0. --lon2=360 -i tests/diurnal/results/nc -o test_data/results/jsons -m7'.format(script)
@@ -49,7 +49,7 @@ class DiurnalTest(unittest.TestCase):
         test = json.load(test)
         good = json.load(good)
         self.assertEqual(test["RESULTS"],good["RESULTS"])
-    def testCompositeDiurnalStatisticsWrapped(self):
+    def teestCompositeDiurnalStatisticsWrapped(self):
         cmd = 'compositeDiurnalStatisticsWrapped.py -i test_data -o test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
@@ -57,5 +57,8 @@ class DiurnalTest(unittest.TestCase):
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_diurnal_std.nc")
         self.compare_nc("results/nc/pr_CMCC_LocalSolarTimes.nc")
 
-    def teststd_of_hourlyvaluesWrappedInOut(self):
+    def teestStd_of_hourlyvaluesWrappedInOut(self):
         self.runJsoner("std_of_hourlyvaluesWrappedInOut.py","pr_Jul_1999-2005_std_of_hourlymeans.json")
+
+    def testStd_of_meandiurnalcycWrappedInOut(self):
+        self.runJsoner("std_of_meandiurnalcycWrappedInOut.py","pr_Jul_1999-2005_std_of_meandiurnalcyc.json")

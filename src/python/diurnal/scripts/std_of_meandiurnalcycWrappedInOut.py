@@ -37,6 +37,10 @@ def compute(param):
     latrange = (param.args.lat1, param.args.lat2)
     lonrange = (param.args.lon1, param.args.lon2)
     region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
+    if param.args.region_name == "":
+        region_name = "{:g}_{:g}&{:g}_{:g}".format(*(latrange+lonrange))
+    else:
+        region_name = param.args.region_name
     print 'Reading %s ...' % fnameRoot
     try:
         f = cdms2.open(fnameRoot)
@@ -58,7 +62,7 @@ def compute(param):
     except Exception as err:
         print "Failed model %s with error" % (err)
         x = 1.e20
-    return model, float(x)
+    return model, region, {region_name:float(x)}
 
 
 P.add_argument("-j", "--outnamejson",
@@ -71,6 +75,7 @@ P.add_argument("--lat1", type=float, default=-49.875, help="First latitude")
 P.add_argument("--lat2", type=float, default=49.875, help="Last latitude")
 P.add_argument("--lon1", type=float, default=0.125, help="First longitude")
 P.add_argument("--lon2", type=float, default=359.875, help="Last longitude")
+P.add_argument("--region_name", type=str, default="TRMM", help="name for the region of interest")
 
 P.add_argument("-t", "--filename_template",
                default="pr_%(model)_%(month)_%(firstyear)-%(lastyear)_diurnal_avg.nc")
@@ -110,10 +115,12 @@ jsonname = os.path.join(os.path.abspath(args.output_directory), jsonFile())
 if not os.path.exists(jsonname) or args.append is False:
     print 'Initializing dictionary of statistical results ...'
     stats_dic = {}
+    metrics_dictionary = collections.OrderedDict()
 else:
     with open(jsonname) as f:
-        j = json.load(f)
-        stats_dic = j["RESULTS"]
+        metrics_dictionary = json.load(f)
+        print "LOADE WITH KEYS:",metrics_dictionary.keys()
+        stats_dic = metrics_dictionary["RESULTS"]
 
 OUT = pcmdi_metrics.io.base.Base(
     os.path.abspath(
@@ -125,8 +132,6 @@ disclaimer = open(
         "share",
         "pmp",
         "disclaimer.txt")).read()
-metrics_dictionary = collections.OrderedDict()
-metrics_def_dictionary = collections.OrderedDict()
 metrics_dictionary["DISCLAIMER"] = disclaimer
 metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Trenberth, Zhang & Gehne, J Hydromet. 2017"
 
@@ -141,10 +146,21 @@ results = cdp.cdp_run.multiprocess(
     compute, params, num_workers=args.num_workers)
 
 for r in results:
-    stats_dic[r[0]] = r[1]
+    m, region, res = r
+    if not stats_dic.has_key(r[0]):
+        stats_dic[m] = res
+    else:
+        stats_dic[m].update(res)
 
 print 'Writing output to JSON file ...'
 metrics_dictionary["RESULTS"] = stats_dic
+print "KEYS AT END:",metrics_dictionary.keys()
+rgmsk = metrics_dictionary.get("RegionalMasking",{})
+print "REG MASK:",rgmsk
+nm = res.keys()[0]
+region.id = nm
+rgmsk[nm]={"id":nm,"domain":region}
+metrics_dictionary["RegionalMasking"] = rgmsk
 OUT.write(
     metrics_dictionary,
     json_structure=["model", "domain"],

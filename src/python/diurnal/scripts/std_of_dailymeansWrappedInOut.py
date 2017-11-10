@@ -43,7 +43,6 @@ def compute(param):
     latrange = (param.args.lat1, param.args.lat2)
     lonrange = (param.args.lon1, param.args.lon2)
     region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
-    print latrange+lonrange
     if param.args.region_name == "":
         region_name = "{:g}_{:g}&{:g}_{:g}".format(*(latrange+lonrange))
     else:
@@ -143,6 +142,7 @@ for r in results:
 print 'Writing output to JSON file ...',stats_dic
 metrics_dictionary["RESULTS"] = stats_dic
 rgmsk = metrics_dictionary.get("RegionalMasking",{})
+print "REG MASK:",rgmsk
 nm = res.keys()[0]
 region.id = nm
 rgmsk[nm]={"id":nm,"domain":region}
