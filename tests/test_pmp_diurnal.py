@@ -11,9 +11,10 @@ import json
 class DiurnalTest(unittest.TestCase):
 
     def assertSame(self,a,b):
-        return numpy.ma.allclose(a,b)
+        self.assertTrue(numpy.ma.allclose(a,b))
 
     def compare_nc(self,test_name):
+        print "Checking integrity of",test_name
         self.assertTrue(os.path.exists(os.path.join("test_data",test_name)))
         good_name = test_name.replace("test_data","tests/diurnal")
 
@@ -34,6 +35,14 @@ class DiurnalTest(unittest.TestCase):
         p.communicate()
 
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_std_of_dailymeans.nc")
+
+    def testFourierDiurnalAllGridWrapped(self):
+        cmd = 'fourierDiurnalAllGridWrapped.py -i test_data/results/nc -o test_data/results/nc -m7'
+        p = subprocess.Popen(shlex.split(cmd))
+        p.communicate()
+        self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_tmean.nc")
+        self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_tS.nc")
+        self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_S.nc")
 
     def teestDiurnalStdDailyVariance(self):
         self.runJsoner("std_of_dailymeansWrappedInOut.py","pr_Jul_1999_2005_std_of_dailymeans.json")
@@ -60,5 +69,5 @@ class DiurnalTest(unittest.TestCase):
     def teestStd_of_hourlyvaluesWrappedInOut(self):
         self.runJsoner("std_of_hourlyvaluesWrappedInOut.py","pr_Jul_1999-2005_std_of_hourlymeans.json")
 
-    def testStd_of_meandiurnalcycWrappedInOut(self):
+    def teestStd_of_meandiurnalcycWrappedInOut(self):
         self.runJsoner("std_of_meandiurnalcycWrappedInOut.py","pr_Jul_1999-2005_std_of_meandiurnalcyc.json")
