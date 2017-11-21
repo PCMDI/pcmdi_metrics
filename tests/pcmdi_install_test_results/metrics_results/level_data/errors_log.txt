@@ -1,0 +1,23 @@
+ WARNING: Your parameter file asks to save interpolated model climatologies, but did not define a path for this
+We set 'model_clims_interpolated_output' to pcmdi_install_test_results/metrics_results/%(case_id)/interpolated_model_clims for you
+ No mask for  /export/gleckler1/git/pcmdi_metrics/test/pcmdi/data/sftlf_GISS-E2-H_historical_r0i0p0_mo_atm_Amon_sftlf_ver-1_ac.nc
+ parameter file ref is:  ['all']
+ refs: [u'default']
+ ref is:  [u'default']
+ couldn't figure out obs mask name from obs json file
+ REGION: {'id': 'global'}
+ OBS SHAPE IS  (12, 1, 72, 144)
+ ta   GISS-E2-H   (12, 1, 72, 144)   (12, 1, 72, 144)    default
+ couldn't figure out obs mask name from obs json file
+ REGION: {'domain': Selector(<cdutil.region.DomainComponent instance at 0x7fc8bd9b8998>), 'id': 'NHEX'}
+ OBS SHAPE IS  (12, 1, 24, 144)
+ ta   GISS-E2-H   (12, 1, 24, 144)   (12, 1, 24, 144)    default
+ couldn't figure out obs mask name from obs json file
+ REGION: {'domain': Selector(<cdutil.region.DomainComponent instance at 0x7fc8bd9b8a28>), 'id': 'SHEX'}
+ OBS SHAPE IS  (12, 1, 25, 144)
+ ta   GISS-E2-H   (12, 1, 25, 144)   (12, 1, 25, 144)    default
+ couldn't figure out obs mask name from obs json file
+ REGION: {'domain': Selector(<cdutil.region.DomainComponent instance at 0x7fc8bd9b8ab8>), 'id': 'TROPICS'}
+ OBS SHAPE IS  (12, 1, 25, 144)
+ ta   GISS-E2-H   (12, 1, 25, 144)   (12, 1, 25, 144)    default
+ Done. Check log at: /export/gleckler1/git/pcmdi_metrics/test/pcmdi_install_test_results/metrics_results/level_data/errors_log.txt
