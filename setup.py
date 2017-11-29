@@ -67,6 +67,7 @@ print "demo files"
 data_files = [
               ('share/pmp/graphics/vcs', portrait_files),
               ('share/pmp/graphics/png', ['share/pcmdi/171101_doutriaux1_UVCDATLogo_446x119px_72dpi.png',
+                                          'share/pcmdi/CDATLogo_140x49px_72dpi.png',
                                           'share/pcmdi/CDATLogo_1866x651px_300dpi.png',
                                           'share/pcmdi/CDATLogo_200x70px_72dpi.png',
                                           'share/pcmdi/CDATLogoText_1898x863px_300dpi.png',
