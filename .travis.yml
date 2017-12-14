@@ -14,7 +14,11 @@ before_install:
   - if [ ! -d ${HOME}/miniconda ]; then bash miniconda.sh -b -p $HOME/miniconda ; fi
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
-  - conda install --show-channel-urls --yes vcs vcsaddons mesalib cdp nose flake8 image-compare -c uvcdat/label/nightly -c conda-forge -c uvcdat
+  - conda install --show-channel-urls --yes mesalib -c uvcdat/label/nightly -c conda-forge -c uvcdat
+  - conda install --show-channel-urls --yes vcs vcsaddons -c uvcdat/label/nightly -c conda-forge -c uvcdat
+  - conda install --show-channel-urls --yes cdp -c uvcdat/label/nightly -c conda-forge -c uvcdat
+  - conda install --show-channel-urls --yes nose flake8 -c uvcdat/label/nightly -c conda-forge -c uvcdat
+  - conda install --show-channel-urls --yes image-compare -c uvcdat/label/nightly -c conda-forge -c uvcdat
   # - conda install openssl=1.0.2d
   # Useful for debugging any issues with conda
   - conda info -a
