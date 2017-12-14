@@ -18,7 +18,6 @@ import time
 if len(sys.argv) > 1:
     data_path = sys.argv[1]
 else:
-    #data_path = '/work/gleckler1/processed_data/metrics_package/obs'
     data_path = '/work/gleckler1/processed_data/obs'
 
 lst = glob.glob(os.path.join(data_path, '*/mo/*/*/ac/*.nc'))
