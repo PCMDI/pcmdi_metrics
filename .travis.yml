@@ -15,7 +15,7 @@ before_install:
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
   - conda install -f  -q "conda<4.3.13"
-  - conda install --show-channel-urls --yes vcs vcsaddons mesalib cdp nose flake8 image-compare -c conda-forge -c uvcdat
+  - conda install --show-channel-urls --yes vcs vcsaddons mesalib cdp nose flake8 image-compare -c uvcdat/label/nightly -c conda-forge -c uvcdat
   # - conda install openssl=1.0.2d
   # Useful for debugging any issues with conda
   - conda info -a
