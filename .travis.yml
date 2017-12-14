@@ -16,7 +16,7 @@ before_install:
   - conda update -y -q conda
 
 script:
-  - conda create -q -n py2 -c uvcdat/label/nightly -c conda-forge -c uvcdat vcs vcsaddons cdp mesalib image-compare flake8
+  - conda create -q -n py2 -c uvcdat/label/nightly -c conda-forge -c uvcdat vcs vcsaddons cdp mesalib image-compare flake8 nose
   # Useful for debugging any issues with conda
   - conda info -a
   - source activate py2
