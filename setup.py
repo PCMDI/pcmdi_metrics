@@ -89,13 +89,9 @@ data_files = [
               ('share/pmp', ('doc/obs_info_dictionary.json',
                                'share/pcmdi_metrics_table',
                                'share/disclaimer.txt',
-<<<<<<< HEAD
                                'share/test_data_files.txt',
-                               'share/default_regions.py')),
-=======
                                'share/default_regions.py'
                             )),
->>>>>>> master
               ('share/pmp/demo', demo_files),
              ]
 
