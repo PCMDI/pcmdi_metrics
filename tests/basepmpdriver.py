@@ -55,7 +55,7 @@ class PMPDriverTest(basepmp.PMPTest):
                     if self.update:
                         shutil.copy(fnm, gnm)
                     else:
-                        correct = self.assertSimilarJsons(fnm, gnm, atol=1.E-2, raiseOnError=False)
+                        correct = self.assertSimilarJsons(fnm, gnm, rtol=5.E-3, atol=0., raiseOnError=False)
                         allCorrect = allCorrect and correct
             if not allCorrect:
                 raise Exception("Error Encountered on some of the output files, check log")
