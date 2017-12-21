@@ -704,47 +704,58 @@
     "provenance": {
         "platform": {
             "OS": "Linux",
-            "Version": "2.6.32-696.el6.x86_64",
+            "Version": "2.6.32-696.3.1.el6.x86_64",
             "Name": "crunchy.llnl.gov"
         },
         "userId": "doutriaux1",
         "osAccess": false,
-        "commandLine": "/export/doutriaux1/miniconda2/envs/pmp/bin/pcmdi_metrics_driver.py -p /export/doutriaux1/git/pcmdi_metrics/tests/pcmdi/basic_test_parameters_file.py",
-        "date": "2017-06-09 14:17:26",
+        "commandLine": "/export/doutriaux1/miniconda2/envs/dev-nox/bin/pcmdi_metrics_driver.py -p /export/doutriaux1/git/pcmdi_metrics/tests/pcmdi/basic_test_parameters_file.py",
+        "date": "2017-10-12 13:39:21",
         "conda": {
             "Platform": "linux-64",
-            "Version": "4.3.11",
+            "Version": "4.3.25",
             "IsPrivate": "False",
-            "envVersion": "4.3.11",
-            "buildVersion": "2.1.10",
+            "envVersion": "4.3.25",
+            "buildVersion": "3.0.15",
             "PythonVersion": "2.7.13.final.0",
             "RootEnvironment": "/export/doutriaux1/miniconda2  (writable)",
-            "DefaultEnvironment": "/export/doutriaux1/miniconda2/envs/pmp"
+            "DefaultEnvironment": "/export/doutriaux1/miniconda2/envs/dev-nox"
         },
         "packages": {
-            "cdms": "2.10",
-            "CDP": "1.0.3",
-            "cdtime": "2.10",
-            "cdutil": "2.10",
+            "cdms": "2.12",
+            "CDP": "2017.09.07",
+            "cdtime": "2.12",
+            "cdutil": "2.12",
             "clapack": "3.2.1",
             "lapack": "3.6.1",
             "esmf": "7.0.0",
             "esmpy": "7.0.0",
-            "genutil": "2.10",
-            "mesalib": "17.0.3",
-            "numpy": "1.12.1",
+            "genutil": "2.12",
             "python": "2.7.13",
-            "vcs": "2.10",
-            "vtk": "7.1.0.2.10",
+            "matplotlib": "1.5.3",
+            "mesalib": "17.2.0",
+            "numpy": "1.13.1",
+            "vcs": "2.12.2017.09.13.00.29.5669624a25139ad2e19e4af8b921d0571338375d",
+            "vtk": "7.1.0.2.12",
             "blas": null,
-            "matplotlib": null,
-            "PMP": "ga507630",
+            "PMP": "g8bcb816",
             "PMPObs": null
         },
         "openGL": {
+            "vendor": "VMware, Inc.",
+            "renderer": "Gallium 0.4 on llvmpipe (LLVM 3.6, 128 bits)",
+            "version": "2.1 Mesa 11.0.7",
+            "shading language version": "1.30",
             "GLX": {
-                "client": {},
-                "server": {}
+                "client": {
+                    "vendor": "Mesa Project and SGI",
+                    "version": "1.4"
+                },
+                "version": "1.4",
+                "server": {
+                    "vendor": "SGI",
+                    "version": "1.4"
+                }
             }
         }
     }

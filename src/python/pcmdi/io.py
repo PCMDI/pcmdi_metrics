@@ -74,7 +74,11 @@ class JSONs(pcmdi_metrics.io.base.JSONs):
                     # print filename,"K IS:",k
                     k.pop(k.index("source"))
                     out = out[k[0]]  # first realization
+<<<<<<< HEAD
                 except BaseException:
+=======
+                except Exception:
+>>>>>>> master
                     continue
                 # Ok at this point we need to see if it is json std 1 or 2
                 # version 1 had NHEX in every region

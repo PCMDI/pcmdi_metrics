@@ -68,15 +68,36 @@ print "demo files"
 
 data_files = [
               ('share/pmp/graphics/vcs', portrait_files),
-              ('share/pmp/graphics/png', ['share/pcmdi/160915_PCMDI_logo_348x300px.png',
-                                          'share/pcmdi/160915_PCMDI_logo-oblong_377x300px.png']),
+              ('share/pmp/graphics/png', ['share/pcmdi/171101_doutriaux1_UVCDATLogo_446x119px_72dpi.png',
+                                          'share/pcmdi/CDATLogo_140x49px_72dpi.png',
+                                          'share/pcmdi/CDATLogo_1866x651px_300dpi.png',
+                                          'share/pcmdi/CDATLogo_200x70px_72dpi.png',
+                                          'share/pcmdi/CDATLogoText_1898x863px_300dpi.png',
+                                          'share/pcmdi/CDATLogoText_200x91px_72dpi.png',
+                                          'share/pcmdi/PCMDILogo_1588x520px_300dpi.png',
+                                          'share/pcmdi/PCMDILogo_200x65px_72dpi.png',
+                                          'share/pcmdi/PCMDILogo_300x98px_72dpi.png',
+                                          'share/pcmdi/PCMDILogo_400x131px_72dpi.png',
+                                          'share/pcmdi/PCMDILogo_500x164px_72dpi.png',
+                                          'share/pcmdi/PCMDILogoText_1365x520px_300dpi.png',
+                                          'share/pcmdi/PCMDILogo-old-oblong_377x300px_72dpi.png',
+                                          'share/pcmdi/PCMDILogo-old_348x300px_72dpi.png',
+                                          'share/pcmdi/PMPLogoText_1359x1146px_300dpi.png',
+                                          'share/pcmdi/PMPLogo_1359x1146px_300dpi.png',
+                                          'share/pcmdi/PMPLogo_500x421px_72dpi.png'
+                                         ]),
               ('share/pmp', ('doc/obs_info_dictionary.json',
                                'share/pcmdi_metrics_table',
                                'share/disclaimer.txt',
+<<<<<<< HEAD
                                'share/test_data_files.txt',
                                'share/default_regions.py')),
+=======
+                               'share/default_regions.py'
+                            )),
+>>>>>>> master
               ('share/pmp/demo', demo_files),
-              ]
+             ]
 
 if install_dev:
     print "Adding experimental packages"

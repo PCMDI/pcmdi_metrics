@@ -141,7 +141,7 @@ class OutputMetrics(object):
                     self.metrics_def_dictionary.update(
                         self.parameter.compute_custom_metrics(
                             self.var_name_long, None, None))
-                except BaseException:
+                except Exception:
                     self.metrics_def_dictionary.update(
                         {'custom': self.parameter.compute_custom_metrics.__doc__})
 
@@ -203,7 +203,7 @@ class OutputMetrics(object):
                         if hasattr(f, a):
                             try:
                                 vals.append(float(getattr(f, a)))
-                            except BaseException:
+                            except Exception:
                                 vals.append(getattr(f, a))
                         # Ok couldn't find it anywhere
                         # setting to N/A

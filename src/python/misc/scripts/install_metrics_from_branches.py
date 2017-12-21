@@ -7,8 +7,8 @@ import sys
 import shlex
 
 
-lt = time.localtime()
-today = "%s.%s.%s" % (lt.tm_year, lt.tm_mon, lt.tm_mday)
+loc = time.localtime()
+today = "%s.%s.%s" % (loc.tm_year, loc.tm_mon, loc.tm_mday)
 
 P = argparse.ArgumentParser(
     description='Merge many branches into a conda env',
@@ -50,9 +50,9 @@ b.add_argument(
     default=["master"],
     nargs="*",
     help="cdms branches to merge")
-ls = P.add_argument_group('Local Setup')
-ls.add_argument("-g", "--git", default=os.path.expanduser("~/git"),
-                help="top directory where you will clone your git repos")
+loc = P.add_argument_group('Local Setup')
+loc.add_argument("-g", "--git", default=os.path.expanduser("~/git"),
+                 help="top directory where you will clone your git repos")
 
 args = P.parse_args(sys.argv[1:])
 
