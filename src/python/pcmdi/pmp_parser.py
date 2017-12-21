@@ -7,4 +7,3 @@ class PMPParser(pmp_parser.PMPParser):
         super(PMPParser, self).__init__(*args, **kwargs)
         if warning:
             print("Deprecation warning: please use 'import pcmdi_metrics.driver.pmp_parser.PMPParser'")
-

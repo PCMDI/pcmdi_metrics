@@ -4,22 +4,29 @@
 # PJG 02012016 RESURRECTING...
 # /obs AND HARDWIRED TEST CASE WHICH
 # NEEDS FIXIN
-# PJD 171121 Attempting to fix issue with default missing for thetao and CMOR Table being wrong
+# PJD 171121 Attempting to fix issue with default missing for thetao and
+# CMOR Table being wrong
 
-#import pdb
-import cdms2,gc,glob,json,os,sys,time
+import cdms2
+import gc
+import glob
+import json
+import os
+import sys
+import time
 
 if len(sys.argv) > 1:
     data_path = sys.argv[1]
 else:
-    #data_path = '/work/gleckler1/processed_data/metrics_package/obs'
     data_path = '/work/gleckler1/processed_data/obs'
 
-lst = glob.glob(os.path.join(data_path,'*/mo/*/*/ac/*.nc'))
+lst = glob.glob(os.path.join(data_path, '*/mo/*/*/ac/*.nc'))
 data_path_fx = '/clim_obs/obs'
-lstm = glob.glob(os.path.join(data_path_fx,'fx/sftlf/*.nc'))
-lst.extend(lstm) ; del(lstm)
-del(data_path,data_path_fx) ; gc.collect()
+lstm = glob.glob(os.path.join(data_path_fx, 'fx/sftlf/*.nc'))
+lst.extend(lstm)
+del(lstm)
+del(data_path, data_path_fx)
+gc.collect()
 # Generate remap dictionary
 sftlf_product_remap = {
     'ECMWF-ERAInterim': 'ERAINT',
@@ -28,60 +35,60 @@ sftlf_product_remap = {
 }
 
 # FOR MONTHLY MEAN OBS
-obs_dic_in = {'rlut':   {'default': 'CERES'},
-              'rst':    {'default': 'CERES'},
-              'rsut':   {'default': 'CERES'},
-              'rsds':   {'default': 'CERES'},
-              'rlds':   {'default': 'CERES'},
-              'rsdt':   {'default': 'CERES'},
+obs_dic_in = {'rlut': {'default': 'CERES'},
+              'rst': {'default': 'CERES'},
+              'rsut': {'default': 'CERES'},
+              'rsds': {'default': 'CERES'},
+              'rlds': {'default': 'CERES'},
+              'rsdt': {'default': 'CERES'},
               'rsdscs': {'default': 'CERES'},
               'rldscs': {'default': 'CERES'},
-              'rlus':   {'default': 'CERES'},
-              'rsus':   {'default': 'CERES'},
+              'rlus': {'default': 'CERES'},
+              'rsus': {'default': 'CERES'},
               'rlutcs': {'default': 'CERES'},
               'rsutcs': {'default': 'CERES'},
               'rstcre': {'default': 'CERES'},
               'rltcre': {'default': 'CERES'},
-              'pr':     {'default': 'GPCP',
-                         'alternate1': 'TRMM'},
-              'prw':    {'default': 'RSS'},
-              'tas':    {'default': 'ERAINT',
-                         'alternate2': 'JRA25',
-                         'alternate1': 'ERA40'},
-              'psl':    {'default': 'ERAINT',
-                         'alternate2': 'JRA25',
-                         'alternate1': 'ERA40'},
-              'ua':     {'default': 'ERAINT',
-                         'alternate2': 'JRA25',
-                         'alternate1': 'ERA40'},
-              'va':     {'default': 'ERAINT',
-                         'alternate2': 'JRA25',
-                         'alternate1': 'ERA40'},
-              'uas':    {'default': 'ERAINT',
-                         'alternate2': 'JRA25',
-                         'alternate1': 'ERA40'},
-              'hus':    {'default': 'ERAINT',
-                        'alternate2': 'JRA25',
-                        'alternate1': 'ERA40'},
-              'vas':    {'default': 'ERAINT',
-                         'alternate2': 'JRA25',
-                         'alternate1': 'ERA40'},
-              'ta':     {'default': 'ERAINT',
-                         'alternate2': 'JRA25',
-                         'alternate1': 'ERA40'},
-              'zg':     {'default': 'ERAINT',
-                         'alternate2': 'JRA25',
-                         'alternate1': 'ERA40'},
-              'tauu':   {'default': 'ERAINT',
-                         'alternate2': 'JRA25',
-                         'alternate1': 'ERA40'},
-              'tauv':   {'default': 'ERAINT',
-                         'alternate2': 'JRA25',
-                         'alternate1': 'ERA40'},
-              'tos':    {'default': 'UKMETOFFICE-HadISST-v1-1'},
-              'zos':    {'default': 'CNES-AVISO-L4'},
-              'sos':    {'default': 'NODC-WOA09'},
-              'ts':     {'default': 'HadISST1'},
+              'pr': {'default': 'GPCP',
+                     'alternate1': 'TRMM'},
+              'prw': {'default': 'RSS'},
+              'tas': {'default': 'ERAINT',
+                      'alternate2': 'JRA25',
+                      'alternate1': 'ERA40'},
+              'psl': {'default': 'ERAINT',
+                      'alternate2': 'JRA25',
+                      'alternate1': 'ERA40'},
+              'ua': {'default': 'ERAINT',
+                     'alternate2': 'JRA25',
+                     'alternate1': 'ERA40'},
+              'va': {'default': 'ERAINT',
+                     'alternate2': 'JRA25',
+                     'alternate1': 'ERA40'},
+              'uas': {'default': 'ERAINT',
+                      'alternate2': 'JRA25',
+                      'alternate1': 'ERA40'},
+              'hus': {'default': 'ERAINT',
+                      'alternate2': 'JRA25',
+                      'alternate1': 'ERA40'},
+              'vas': {'default': 'ERAINT',
+                      'alternate2': 'JRA25',
+                      'alternate1': 'ERA40'},
+              'ta': {'default': 'ERAINT',
+                     'alternate2': 'JRA25',
+                     'alternate1': 'ERA40'},
+              'zg': {'default': 'ERAINT',
+                     'alternate2': 'JRA25',
+                     'alternate1': 'ERA40'},
+              'tauu': {'default': 'ERAINT',
+                       'alternate2': 'JRA25',
+                       'alternate1': 'ERA40'},
+              'tauv': {'default': 'ERAINT',
+                       'alternate2': 'JRA25',
+                       'alternate1': 'ERA40'},
+              'tos': {'default': 'UKMETOFFICE-HadISST-v1-1'},
+              'zos': {'default': 'CNES-AVISO-L4'},
+              'sos': {'default': 'NODC-WOA09'},
+              'ts': {'default': 'HadISST1'},
               'thetao': {'default': 'WOA13v2',
                          'alternate1': 'UCSD',
                          'alternate2': 'Hosoda-MOAA-PGV',
@@ -112,25 +119,25 @@ for filePath in lst:
         tableId = 'Omon'
     elif realm == 'fx':
         tableId = 'fx'
-    print 'tableId:',tableId
-    print 'subp:',subp
-    print 'var:',var
-    print 'product:',product
+    print 'tableId:', tableId
+    print 'subp:', subp
+    print 'var:', var
+    print 'product:', product
 
     fileName = subp.split('/')[-1]
-    print 'Filename:',fileName
+    print 'Filename:', fileName
     # Fix rgd2.5_ac issue
-    fileName = fileName.replace('rgd2.5_ac','ac')
+    fileName = fileName.replace('rgd2.5_ac', 'ac')
     if '-clim' in fileName:
         period = fileName.split('_')[-1]
     # Fix durack1 formatted files
     elif 'sftlf_pcmdi-metrics_fx' in fileName:
         period = fileName.split('_')[-1]
-        period = period.replace('.nc','')
+        period = period.replace('.nc', '')
     else:
         period = fileName.split('_')[-2]
-    period = period.replace('-clim.nc','') #.replace('ac.nc','')
-    print 'period:',period
+    period = period.replace('-clim.nc', '')  # .replace('ac.nc','')
+    print 'period:', period
 
     # TRAP FILE NAME FOR OBS DATA
     if var not in obs_dic.keys():
@@ -152,22 +159,24 @@ for filePath in lst:
         f.close()
         shape = repr(d.shape)
         obs_dic[var][product]['shape'] = shape
-        print 'md5:',md5
+        print 'md5:', md5
         print ''
-        del(d,fileName) ; gc.collect()
+        del(d, fileName)
+        gc.collect()
 
     try:
         for r in obs_dic_in[var].keys():
-            #print '1',r,var,product
-            #print obs_dic_in[var][r],'=',product
+            # print '1',r,var,product
+            # print obs_dic_in[var][r],'=',product
             if obs_dic_in[var][r] == product:
-                #print '2',r,var,product
+                # print '2',r,var,product
                 obs_dic[var][r] = product
-    except:
+    except BaseException:
         pass
-del(filePath,lst,md5,period,product,r,realm,shape,subp,
-    tableId,var); gc.collect()
-#pdb.set_trace()
+del(filePath, lst, md5, period, product, r, realm, shape, subp,
+    tableId, var)
+gc.collect()
+# pdb.set_trace()
 
 # ADD SPECIAL CASE SFTLF FROM TEST DIR
 product = 'UKMETOFFICE-HadISST-v1-1'
@@ -181,11 +190,12 @@ obs_dic[var][product]['RefName'] = product
 obs_dic[var][product]['MD5sum'] = ''
 obs_dic[var][product]['RefTrackingDate'] = ''
 obs_dic[var][product]['period'] = '198002-200501'
-del(product,var) ; gc.collect()
+del(product, var)
+gc.collect()
 
 # Save dictionary locally and in doc subdir
 json_name = 'obs_info_dictionary.json'
-json.dump(obs_dic,open(json_name,'wb'),sort_keys=True,indent=4,
-          separators=(',',': '))
-json.dump(obs_dic,open('../../../../doc/' + json_name,'wb'),sort_keys=True,
-          indent=4,separators=(',',': '))
+json.dump(obs_dic, open(json_name, 'wb'), sort_keys=True, indent=4,
+          separators=(',', ': '))
+json.dump(obs_dic, open('../../../../doc/' + json_name, 'wb'), sort_keys=True,
+          indent=4, separators=(',', ': '))

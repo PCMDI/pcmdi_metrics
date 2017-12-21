@@ -86,7 +86,7 @@ class DataSet(object):
                 sftlf[test] = {"raw": sft.get("sftlf")}
                 sftlf[test]["filename"] = os.path.basename(sft())
                 sftlf[test]["md5"] = sft.hash()
-            except:
+            except Exception:
                 sftlf[test] = {"raw": None}
                 sftlf[test]["filename"] = None
                 sftlf[test]["md5"] = None
@@ -122,7 +122,7 @@ class DataSet(object):
             opened_file = open(file_path)
         except IOError:
             logging.error('%s could not be loaded!' % file_path)
-        except:
+        except Exception:
             logging.error('Unexpected error while opening file: ' +
                           sys.exc_info()[0])
         return opened_file

@@ -371,9 +371,9 @@ class Portrait(object):
         b = MV2.zeros(a0.shape, MV2.float)
         sh = a0[1].shape
         for i in range(n):
-            I = MV2.ones(sh) * i
+            Indx = MV2.ones(sh) * i
             c = MV2.array(a0[i].filled(n - 1))
-            b = genutil.arrayindexing.set(b, c, I)
+            b = genutil.arrayindexing.set(b, c, Indx)
 
         m = data.mask
         if m is not None:
@@ -410,9 +410,9 @@ class Portrait(object):
         b = MV2.zeros(a0.shape, MV2.float)
         sh = a0[1].shape
         for i in range(n):
-            I = MV2.ones(sh) * i
+            Indx = MV2.ones(sh) * i
             c = MV2.array(a0[i].filled(n - 1))
-            b = genutil.arrayindexing.set(b, c, I)
+            b = genutil.arrayindexing.set(b, c, Indx)
         m = data.mask
         if m is not None:
             b = MV2.masked_where(m, b)
@@ -595,7 +595,7 @@ class Portrait(object):
                 if sp1[j] == 'time_domain':
                     try:
                         v = int(v)
-                    except:
+                    except Exception:
                         pass
                 if v == 'NONE':
                     v = ''
@@ -641,7 +641,7 @@ class Portrait(object):
                 # In case sometihng goes wrong (like modle not processed or
                 # inexsitant for this var, etc...)
                 f.close()
-            except:
+            except Exception:
                 pass
         output = MV2.reshape(output, (axes_length[0], axes_length[1]))
         output.id = 'portrait plot'
@@ -665,7 +665,7 @@ class Portrait(object):
             del(x.name)
             del(y.name)
             del(output.name)
-        except:
+        except Exception:
             pass
 
         nm = '___'.join(xnm)
@@ -777,7 +777,7 @@ class Portrait(object):
             template.legend.y2 = self.PLOT_SETTINGS.legend.y2
             try:
                 tmp = x.createtextorientation('crap22')
-            except:
+            except Exception:
                 tmp = x.gettextorientation('crap22')
             tmp.height = 12
             # tmp.halign = 'center'
@@ -844,9 +844,9 @@ class Portrait(object):
 # data=data
             sh = list(data.shape)
             sh.append(2)
-            I = MV2.indices((sh[0], sh[1]))
-            Y = I[0]
-            X = I[1]
+            Indx = MV2.indices((sh[0], sh[1]))
+            Y = Indx[0]
+            X = Indx[1]
 # if ntot>1:
 # meshfill.mesh='y'
             if ntot == 1:

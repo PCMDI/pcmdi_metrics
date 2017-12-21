@@ -40,7 +40,7 @@ def update_dict(d, u):
 def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
     try:
         p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    except:
+    except Exception:
         return
     out, stde = p.communicate()
     if stde != '':
@@ -66,14 +66,14 @@ def generateProvenance():
     prov["platform"] = platfrm
     try:
         logname = os.getlogin()
-    except:
+    except Exception:
         try:
             import pwd
             logname = pwd.getpwuid(os.getuid())[0]
-        except:
+        except Exception:
             try:
                 logname = os.environ.get('LOGNAME', 'unknown')
-            except:
+            except Exception:
                 logname = 'unknown-loginname'
     prov["userId"] = logname
     prov["osAccess"] = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
@@ -187,7 +187,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         if not os.path.exists(dir_path):
             try:
                 os.makedirs(dir_path)
-            except:
+            except Exception:
                 logging.error(
                     'Could not create output directory: %s' % dir_path)
 
@@ -314,7 +314,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
     def get_mask_from_var(self, var):
         try:
             o_mask = self.file_mask_template.get('sftlf')
-        except:
+        except Exception:
             o_mask = cdutil.generateLandSeaMask(
                 var, regridTool=self.regrid_tool).filled(1.) * 100.
             o_mask = MV2.array(o_mask)
@@ -463,11 +463,11 @@ class JSONs(object):
             for k in axval:
                 try:
                     vals = vals[k]
-                except:
+                except Exception:
                     vals = 1.e20
             try:
                 out[tuple(ids)] = float(vals)
-            except:
+            except Exception:
                 out[tuple(ids)] = 1.e20
 
     def __init__(self, files=[], structure=[], ignored_keys=[], oneVariablePerFile=True):
