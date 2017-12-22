@@ -61,4 +61,4 @@ P.add_argument(
     "--append",
     default=False,
     action="store_true",
-    help="append in json file in json exist (e.g. adding a model to file)")
+    help="append in json file if json exist (e.g. adding a model to file)")

@@ -7,15 +7,15 @@ Return mean + amplitudes and times-of-maximum of the first three Fourier harmoni
 Do NOT detrend the time series first, in order to retain the "sawtooth" frequency implied by the input length of the
 time series (e.g. the 24-hour period from a composite-diurnal cycle).
 
-On input: x[i, j] = values      at each gridpoint (i) for N times (j), e.g. N = 8 for a 3-hr composite-diurnal cycle
-      t[i, j] = timepoints  at each gridpoint (i) for N times (j), e.g. Local Standard Times
+On input: x[i, j] = values at each gridpoint (i) for N times (j), e.g. N = 8 for a 3-hr composite-diurnal cycle
+          t[i, j] = timepoints at each gridpoint (i) for N times (j), e.g. Local Standard Times
 
 On output: c[i] = mean value at each gridpoint (i) in the time series (= constant term in Fourier series)
-       maxvalue[i, k] = amplitude       at each gridpoint (i) for each Fourier harmonic (k)
-       tmax    [i, k] = time of maximum at each gridpoint (i) for each Fourier harmonic (k)
+           maxvalue[i, k] = amplitude at each gridpoint (i) for each Fourier harmonic (k)
+           tmax    [i, k] = time of maximum at each gridpoint (i) for each Fourier harmonic (k)
 
-            Curt Covey, PCMDI/LLNL                                      November 2016
-            (from ./fourier.py and ./fourierTestFFT.py)
+           Curt Covey, PCMDI/LLNL November 2016
+             (from ./fourier.py and ./fourierTestFFT.py)
     '''
     import numpy
     nGridPoints = len(x)
