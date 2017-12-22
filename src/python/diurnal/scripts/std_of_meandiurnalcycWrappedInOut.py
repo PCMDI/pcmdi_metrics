@@ -38,7 +38,7 @@ def compute(param):
     lonrange = (param.args.lon1, param.args.lon2)
     region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
     if param.args.region_name == "":
-        region_name = "{:g}_{:g}&{:g}_{:g}".format(*(latrange+lonrange))
+        region_name = "{:g}_{:g}&{:g}_{:g}".format(*(latrange + lonrange))
     else:
         region_name = param.args.region_name
     print 'Reading %s ...' % fnameRoot
@@ -62,7 +62,7 @@ def compute(param):
     except Exception as err:
         print "Failed model %s with error" % (err)
         x = 1.e20
-    return model, region, {region_name:float(x)}
+    return model, region, {region_name: float(x)}
 
 
 P.add_argument("-j", "--outnamejson",
@@ -75,7 +75,8 @@ P.add_argument("--lat1", type=float, default=-50., help="First latitude")
 P.add_argument("--lat2", type=float, default=50., help="Last latitude")
 P.add_argument("--lon1", type=float, default=0., help="First longitude")
 P.add_argument("--lon2", type=float, default=360., help="Last longitude")
-P.add_argument("--region_name", type=str, default="TRMM", help="name for the region of interest")
+P.add_argument("--region_name", type=str, default="TRMM",
+               help="name for the region of interest")
 
 P.add_argument("-t", "--filename_template",
                default="pr_%(model)_%(month)_%(firstyear)-%(lastyear)_diurnal_avg.nc")
@@ -119,7 +120,7 @@ if not os.path.exists(jsonname) or args.append is False:
 else:
     with open(jsonname) as f:
         metrics_dictionary = json.load(f)
-        print "LOADE WITH KEYS:",metrics_dictionary.keys()
+        print "LOADE WITH KEYS:", metrics_dictionary.keys()
         stats_dic = metrics_dictionary["RESULTS"]
 
 OUT = pcmdi_metrics.io.base.Base(
@@ -147,19 +148,19 @@ results = cdp.cdp_run.multiprocess(
 
 for r in results:
     m, region, res = r
-    if not stats_dic.has_key(r[0]):
+    if r[0] not in stats_dic:
         stats_dic[m] = res
     else:
         stats_dic[m].update(res)
 
 print 'Writing output to JSON file ...'
 metrics_dictionary["RESULTS"] = stats_dic
-print "KEYS AT END:",metrics_dictionary.keys()
-rgmsk = metrics_dictionary.get("RegionalMasking",{})
-print "REG MASK:",rgmsk
+print "KEYS AT END:", metrics_dictionary.keys()
+rgmsk = metrics_dictionary.get("RegionalMasking", {})
+print "REG MASK:", rgmsk
 nm = res.keys()[0]
 region.id = nm
-rgmsk[nm]={"id":nm,"domain":region}
+rgmsk[nm] = {"id": nm, "domain": region}
 metrics_dictionary["RegionalMasking"] = rgmsk
 OUT.write(
     metrics_dictionary,

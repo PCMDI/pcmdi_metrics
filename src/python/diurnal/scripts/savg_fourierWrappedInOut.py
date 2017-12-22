@@ -36,7 +36,8 @@ P.add_argument("--lat1", type=float, default=-50., help="First latitude")
 P.add_argument("--lat2", type=float, default=50., help="Last latitude")
 P.add_argument("--lon1", type=float, default=0., help="First longitude")
 P.add_argument("--lon2", type=float, default=360., help="Last longitude")
-P.add_argument("--region_name", type=str, default="TRMM", help="name for the region of interest")
+P.add_argument("--region_name", type=str, default="TRMM",
+               help="name for the region of interest")
 
 P.add_argument("-t", "--filename_template",
                default="pr_%(model)_%(month)_%(firstyear)-%(lastyear)_S.nc",
@@ -65,7 +66,7 @@ lonrange = (args.lon1, args.lon2)
 region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
 
 if args.region_name == "":
-    region_name = "{:g}_{:g}&{:g}_{:g}".format(*(latrange+lonrange))
+    region_name = "{:g}_{:g}&{:g}_{:g}".format(*(latrange + lonrange))
 else:
     region_name = args.region_name
 
@@ -264,24 +265,25 @@ for file_S in files_S:
             print 'Creating one for you'
             sftlf = cdutil.generateLandSeaMask(S.getGrid())
 
-        if not stats_dic.has_key(model):
-            stats_dic[model] = {region_name:spacevavg(S, tS, sftlf, model)}
+        if model not in stats_dic:
+            stats_dic[model] = {region_name: spacevavg(S, tS, sftlf, model)}
         else:
-            stats_dic[model].update({region_name:spacevavg(S, tS, sftlf, model)})
+            stats_dic[model].update(
+                {region_name: spacevavg(S, tS, sftlf, model)})
         print stats_dic
     except Exception as err:
         print "Failed for model %s with error %s" % (model, err)
 
 # Write output to JSON file.
 metrics_dictionary["RESULTS"] = stats_dic
-rgmsk = metrics_dictionary.get("RegionalMasking",{})
+rgmsk = metrics_dictionary.get("RegionalMasking", {})
 nm = region_name
 region.id = nm
-rgmsk[nm]={"id":nm,"domain":region}
+rgmsk[nm] = {"id": nm, "domain": region}
 metrics_dictionary["RegionalMasking"] = rgmsk
 OUT.write(
     metrics_dictionary,
-    json_structure=["model", "domain", "harmonic","statistic"],
+    json_structure=["model", "domain", "harmonic", "statistic"],
     indent=4,
     separators=(
         ',',

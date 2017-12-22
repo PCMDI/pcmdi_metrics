@@ -143,7 +143,8 @@ def compute(params):
                                                               dataname, monthname,
                                                               str(args.firstyear), str(args.lastyear))
             stdoutfile = ('%s_%s_%s_%s-%s_diurnal_std.nc') % (varbname,
-                                                              dataname, monthname, str(args.firstyear),
+                                                              dataname, monthname, str(
+                                                                  args.firstyear),
                                                               str(args.lastyear))
             LSToutfile = ('%s_%s_LocalSolarTimes.nc' % (varbname, dataname))
             if not os.path.exists(args.output_directory):

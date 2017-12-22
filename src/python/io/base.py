@@ -150,7 +150,6 @@ def generateProvenance():
 
 class CDMSDomainsEncoder(json.JSONEncoder):
     def default(self, o):
-        print("ENCODER:",o)
         components = o.components()[0].kargs
         args = ','.join(
             ['%s=%s' % (key, val) for key, val in components.iteritems()]
