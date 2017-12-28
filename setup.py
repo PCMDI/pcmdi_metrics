@@ -50,6 +50,7 @@ portrait_files = ["src/python/graphics/share/portraits.scr", ]
 packages = {'pcmdi_metrics': 'src/python',
             'pcmdi_metrics.io': 'src/python/io',
             'pcmdi_metrics.pcmdi': 'src/python/pcmdi',
+            'pcmdi_metrics.diurnal': 'src/python/diurnal',
             'pcmdi_metrics.graphics': 'src/python/graphics',
             'pcmdi_metrics.driver': 'src/python/pcmdi/scripts/driver',
             }
@@ -60,6 +61,7 @@ scripts = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
            'demo/pmp_demo_1.py',
            'demo/pmp_demo.py',
            ]
+scripts += glob.glob("src/python/diurnal/scripts/*.py")
 
 demo_files = glob.glob("demo/*/*")
 print "demo files"
@@ -87,6 +89,7 @@ data_files = [
               ('share/pmp', ('doc/obs_info_dictionary.json',
                                'share/pcmdi_metrics_table',
                                'share/disclaimer.txt',
+                               'share/test_data_files.txt',
                                'share/default_regions.py'
                             )),
               ('share/pmp/demo', demo_files),
