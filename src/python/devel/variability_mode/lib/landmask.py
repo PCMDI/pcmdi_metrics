@@ -6,18 +6,7 @@ def model_land_mask_out(mip,model,model_timeseries):
   # Extract SST (mask out land region)
   #- - - - - - - - - - - - - - - - - - - - - - - - -
   # Read model's land fraction
-  #model_lf_path = get_latest_pcmdi_mip_lf_data_path(mip,model,'sftlf')
-  #model_lf_path = '/work/cmip5/fx/fx/sftlf/cmip5.'+model+'.historical.r0i0p0.fx.atm.fx.sftlf.ver-1.latestX.xml'
-
-  if model == 'CESM1-CAM5' or model == 'CESM1-BGC':
-    model_lf_path = '/work/lee1043/ESGF/CMIP5/CESM1-CAM5/cmip5.CESM1-CAM5.historical.r0i0p0.fx.atm.fx.sftlf.ver-v20120614.latestX.xml'
-  if model == 'FIO-ESM':
-    model_lf_path = get_latest_pcmdi_mip_lf_data_path(mip,'fio-esm','sftlf')
-  else:
-    model_lf_path = get_latest_pcmdi_mip_lf_data_path(mip,model,'sftlf')
-    #model_lf_path = '/work/cmip5/fx/fx/sftlf/cmip5.'+model+'.historical.r0i0p0.fx.atm.fx.sftlf.ver-1.latestX.xml'
-
-
+  model_lf_path = param.modpath_lf.replace('MOD',model)
   f_lf = cdms.open(model_lf_path)
   lf = f_lf('sftlf', latitude=(-90,90))
 
