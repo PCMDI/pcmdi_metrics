@@ -592,7 +592,7 @@ for model in models:
         if plot and pseudo and param.CBF: 
           plot_map(mode, model+' ('+run+')'+' - CBF', msyear, meyear, season, 
                    eof_lr_cbf(regions_specs[mode]['domain']), frac_cbf, output_filename+'_cbf')
-          plot_map(mode+'_cbf_teleconnection', model+' ('+run+')', msyear, meyear, season, 
+          plot_map(mode+'_CBF_teleconnection', model+' ('+run+')', msyear, meyear, season, 
                    eof_lr_cbf(longitude=(lon1g,lon2g)), frac_cbf, output_filename+'_cbf_teleconnection')
     
       #=================================================
