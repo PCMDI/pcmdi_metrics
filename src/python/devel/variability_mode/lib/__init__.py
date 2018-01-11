@@ -1,5 +1,4 @@
 from barChart import BarChart
 from write_nc_output import write_nc_output
 from plot_map import plot_map
-from get_pcmdi_data import get_latest_pcmdi_mip_data_path, get_all_mip_mods
 from eof_analysis import eof_analysis_get_first_variance_mode
