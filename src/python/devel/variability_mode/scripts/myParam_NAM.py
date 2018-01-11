@@ -64,7 +64,8 @@ eofn_mod = 1
 #=================================================
 # Output
 #-------------------------------------------------
-outdir = './result_test/'+mode
+case_id = 'test_case'
+outdir = './' + case_id + '/'+ mode
 nc_out = True # Write output in NetCDF
 plot = True # Create map graphics
 
