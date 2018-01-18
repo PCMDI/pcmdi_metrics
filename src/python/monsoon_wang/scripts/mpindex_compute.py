@@ -261,13 +261,13 @@ doms = ['AllMW', 'AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
 mpi_stats_dic = {}
 print "GMODS:", gmods
 for mod in gmods:
-    l = modpath.replace('MODS', mod)
+    modelFile = modpath.replace('MODS', mod)
 
     mpi_stats_dic[mod] = {}
 
     print "******************************************************************************************"
-    print l
-    f = cdms2.open(l)
+    print modelFile
+    f = cdms2.open(modelFile)
     d_orig = f(var)
 
     annrange_mod, mpi_mod = mpd(d_orig)
@@ -315,6 +315,7 @@ for mod in gmods:
         g.write(missmap, dtype=numpy.int32)
         g.write(falarmmap, dtype=numpy.int32)
         g.close()
+    f.close()
 
 
 #  OUTPUT METRICS TO JSON FILE

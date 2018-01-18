@@ -58,7 +58,7 @@ class PMPDriverTest(basepmp.PMPTest):
                     else:
                         correct = self.assertSimilarJsons(fnm, gnm, rtol=5.E-3, atol=0., raiseOnError=False)
                         if not correct and os.path.exists(gnm+".mac"):
-                            correct = self.assertSimilarJsons(fnm, gnm+".mac", rtol=5.E-3, `atol=0, raiseOnError=False)
+                            correct = self.assertSimilarJsons(fnm, gnm+".mac", rtol=5.E-3, atol=0, raiseOnError=False)
                         allCorrect = allCorrect and correct
             if not allCorrect:
                 raise Exception("Error Encountered on some of the output files, check log")
