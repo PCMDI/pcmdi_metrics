@@ -80,7 +80,7 @@ class Observation(DataSet):
             obs_mask = OBS(self.data_path, 'sftlf',
                            self.obs_dict, obs_from_obs_dict['RefName'])
             obs_mask_name = obs_mask()
-        except:
+        except Exception:
             msg = 'Could not figure out obs mask name from obs json file'
             logging.getLogger("pcmdi_metrics").info(msg)
             obs_mask_name = None
