@@ -19,13 +19,13 @@ class PMPTest(unittest.TestCase):
                 print "(",
                 for indx in d:
                     print "%i," % indx,
-                print "). Test value %.3f vs expected value: %.3f" % (a[tuple(d)],b[tuple(d)])
+                print "). Test value %.3f vs expected value: %.3f realtive: %.3f%%" % (a[tuple(d)],b[tuple(d)],abs((a[tuple(d)]-b[tuple(d)])/b[tuple(d)])*100.)
             return False
         return True
 
     def assertSimilarJsons(self, test_file, correct_file, rtol=1e-05, atol=1e-08, raiseOnError=True):
 
-        print "Comparing:",test_file, correct_file, "atol:",atol
+        print "Comparing:",test_file, correct_file, "atol:",atol,"rtol:",rtol
         T = pcmdi_metrics.io.base.JSONs([test_file], oneVariablePerFile=False)
         test = T()
 

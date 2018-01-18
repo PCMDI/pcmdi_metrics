@@ -7,24 +7,22 @@ language: python
 sudo: false
 
 before_install:
-  - export UVCDAT_FEATURE=""
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then curl -o miniconda.sh https://repo.continuum.io/miniconda/Miniconda2-latest-MacOSX-x86_64.sh ; fi
   - export PATH="$HOME/miniconda/bin:$PATH"
   - if [ ! -d ${HOME}/miniconda ]; then bash miniconda.sh -b -p $HOME/miniconda ; fi
   - hash -r
   - conda config --set always_yes yes --set changeps1 no
-  - conda install -f  -q "conda<4.3.13"
-  - conda install --show-channel-urls --yes vcs vcsaddons mesalib cdp nose flake8 image-compare -c conda-forge -c uvcdat
-  # - conda install openssl=1.0.2d
-  # Useful for debugging any issues with conda
-  - conda info -a
-
-install:
-  - python setup.py install
+  - conda update -y -q conda
 
 script:
-    - python run_tests.py -v2
+  - conda create -q -n py2 -c uvcdat/label/nightly -c conda-forge -c uvcdat vcs vcsaddons cdp mesalib image-compare flake8 nose
+  # Useful for debugging any issues with conda
+  - conda info -a
+  - source activate py2
+  - python setup.py install
+  - source activate py2
+  - python run_tests.py -v2
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install conda-build && conda install anaconda-client && bash -x recipes/pcmdi_metrics/conda_upload.sh; fi

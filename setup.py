@@ -50,6 +50,7 @@ portrait_files = ["src/python/graphics/share/portraits.scr", ]
 packages = {'pcmdi_metrics': 'src/python',
             'pcmdi_metrics.io': 'src/python/io',
             'pcmdi_metrics.pcmdi': 'src/python/pcmdi',
+            'pcmdi_metrics.diurnal': 'src/python/diurnal',
             'pcmdi_metrics.graphics': 'src/python/graphics',
             'pcmdi_metrics.driver': 'src/python/pcmdi/scripts/driver',
             }
@@ -60,20 +61,39 @@ scripts = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
            'demo/pmp_demo_1.py',
            'demo/pmp_demo.py',
            ]
+scripts += glob.glob("src/python/diurnal/scripts/*.py")
 
 demo_files = glob.glob("demo/*/*")
 print "demo files"
 
 data_files = [
               ('share/pmp/graphics/vcs', portrait_files),
-              ('share/pmp/graphics/png', ['share/pcmdi/160915_PCMDI_logo_348x300px.png',
-                                          'share/pcmdi/160915_PCMDI_logo-oblong_377x300px.png']),
+              ('share/pmp/graphics/png', ['share/pcmdi/171101_doutriaux1_UVCDATLogo_446x119px_72dpi.png',
+                                          'share/pcmdi/CDATLogo_140x49px_72dpi.png',
+                                          'share/pcmdi/CDATLogo_1866x651px_300dpi.png',
+                                          'share/pcmdi/CDATLogo_200x70px_72dpi.png',
+                                          'share/pcmdi/CDATLogoText_1898x863px_300dpi.png',
+                                          'share/pcmdi/CDATLogoText_200x91px_72dpi.png',
+                                          'share/pcmdi/PCMDILogo_1588x520px_300dpi.png',
+                                          'share/pcmdi/PCMDILogo_200x65px_72dpi.png',
+                                          'share/pcmdi/PCMDILogo_300x98px_72dpi.png',
+                                          'share/pcmdi/PCMDILogo_400x131px_72dpi.png',
+                                          'share/pcmdi/PCMDILogo_500x164px_72dpi.png',
+                                          'share/pcmdi/PCMDILogoText_1365x520px_300dpi.png',
+                                          'share/pcmdi/PCMDILogo-old-oblong_377x300px_72dpi.png',
+                                          'share/pcmdi/PCMDILogo-old_348x300px_72dpi.png',
+                                          'share/pcmdi/PMPLogoText_1359x1146px_300dpi.png',
+                                          'share/pcmdi/PMPLogo_1359x1146px_300dpi.png',
+                                          'share/pcmdi/PMPLogo_500x421px_72dpi.png'
+                                         ]),
               ('share/pmp', ('doc/obs_info_dictionary.json',
                                'share/pcmdi_metrics_table',
                                'share/disclaimer.txt',
-                               'share/default_regions.py')),
+                               'share/test_data_files.txt',
+                               'share/default_regions.py'
+                            )),
               ('share/pmp/demo', demo_files),
-              ]
+             ]
 
 if install_dev:
     print "Adding experimental packages"
