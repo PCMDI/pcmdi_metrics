@@ -15,6 +15,7 @@ import subprocess
 import sys
 import shlex
 import datetime
+from pcmdi_metrics import LOG_LEVEL
 
 
 value = 0
@@ -22,7 +23,7 @@ cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
 cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
 # where value is a integer between 0 and 9 included
 cdms2.setNetcdfDeflateLevelFlag(value)
-logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
 
 
 # cdutil region object need a serializer
@@ -188,7 +189,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             try:
                 os.makedirs(dir_path)
             except Exception:
-                logging.error(
+                logging.getLogger("pcmdi_metrics").error(
                     'Could not create output directory: %s' % dir_path)
 
         if self.type == 'json':
@@ -222,10 +223,10 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             f.close()
 
         else:
-            logging.error('Unknown type: %s' % type)
+            logging.getLogger("pcmdi_metrics").error('Unknown type: %s' % type)
             raise RuntimeError('Unknown type: %s' % type)
 
-        logging.info('Results saved to a %s file: %s' % (type, file_name))
+        logging.getLogger("pcmdi_metrics").info('Results saved to a %s file: %s' % (type, file_name))
 
     def get(self, var, var_in_file=None,
             region={}, *args, **kwargs):
@@ -335,7 +336,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             self.target_grid = target
             self.target_grid_name = target
         else:
-            logging.error('Unknown grid: %s' % target)
+            logging.getLogger("pcmdi_metrics").error('Unknown grid: %s' % target)
             raise RuntimeError('Unknown grid: %s' % target)
 
     def setup_cdms2(self):

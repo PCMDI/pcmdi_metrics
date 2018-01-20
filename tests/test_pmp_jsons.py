@@ -6,11 +6,7 @@ import numpy
 
 
 class TestJSONs(unittest.TestCase):
-
-    def __init__(self):
-        super(TestJSONs, self).__init__("variability")
-
-    def variability(self):
+    def testVariability(self):
         pth = os.path.dirname(inspect.getfile(self.__class__))
         J = pcmdi_metrics.io.base.JSONs([os.path.join(
             pth, "io", "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_1900-2005_adjust_based_tcor_obs-pc1_vs_obs-pseudo_pcs.json")])

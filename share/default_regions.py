@@ -26,6 +26,7 @@ regions_specs = {
     "PDO": {'domain': cdutil.region.domain(latitude=(20., 70), longitude=(110, 260))},
     # Below is for monsoon domains
     # All monsoon domains
+    'AllMW': {'domain': cdutil.region.domain(latitude=(-40., 45.), longitude=(0., 360.))},
     'AllM': {'domain': cdutil.region.domain(latitude=(-45., 45.), longitude=(0., 360.))},
     # North American Monsoon
     'NAMM': {'domain': cdutil.region.domain(latitude=(0., 45.), longitude=(210., 310.))},

@@ -5,6 +5,7 @@ import cdutil
 import cdms2
 from pcmdi_metrics.io.base import Base
 import pcmdi_metrics.driver.dataset
+from pcmdi_metrics import LOG_LEVEL
 
 
 class Model(pcmdi_metrics.driver.dataset.DataSet):
@@ -14,7 +15,7 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
                  model, obs_dict, data_path, sftlf):
         super(Model, self).__init__(parameter, var_name_long, region,
                                     obs_dict, data_path, sftlf)
-        logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
 
         self._model_file = None
         self.var_in_file = None
@@ -65,7 +66,7 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
 
         except Exception as e:
             msg = 'Failed to get variables %s for versions: %s, error: %s'
-            logging.error(msg % (self.var, self.obs_or_model, e))
+            logging.getLogger("pcmdi_metrics").error(msg % (self.var, self.obs_or_model, e))
             raise RuntimeError('Need to skip model: %s' % self.obs_or_model)
 
     def get_var_in_file(self):
@@ -90,11 +91,12 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
         from cdutil for self.sftlf[self.obs_or_model]['raw'] value. '''
         if not hasattr(self.parameter, 'generate_sftlf') or \
            self.parameter.generate_sftlf is False:
-            logging.info('Model %s does not have sftlf, skipping region: %s' % (self.obs_or_model, self.region))
+            logging.getLogger("pcmdi_metrics").info('Model %s does not have sftlf, skipping region: %s' %
+                                                    (self.obs_or_model, self.region))
             raise RuntimeError('Model %s does not have sftlf, skipping region: %s' % (self.obs_or_model, self.region))
 
         else:
-            logging.info('Auto generating sftlf for model %s' % self._model_file())
+            logging.getLogger("pcmdi_metrics").info('Auto generating sftlf for model %s' % self._model_file())
             if os.path.exists(self._model_file()):
                 var_file = cdms2.open(self._model_file())
                 var = var_file[var_in_file]
@@ -103,7 +105,7 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
                 sft[:] = sft.filled(100.0)
                 self.sftlf[self.obs_or_model]['raw'] = sft
                 var_file.close()
-                logging.info('Auto generated sftlf for model %s' % self.obs_or_model)
+                logging.getLogger("pcmdi_metrics").info('Auto generated sftlf for model %s' % self.obs_or_model)
 
     def hash(self):
         ''' Return a hash of the file. '''
