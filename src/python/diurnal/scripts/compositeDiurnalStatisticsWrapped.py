@@ -40,24 +40,24 @@ def compute(params):
     dataname = reverted["model"]
     if dataname not in args.skip:
         try:
-            print 'Data source:', dataname
-            print 'Opening %s ...' % fileName
+            print('Data source:', dataname)
+            print('Opening %s ...' % fileName)
             f = cdms2.open(fileName)
 
 # Composite-mean and composite-s.d diurnal cycle for month and year(s):
             iYear = 0
             for year in range(args.firstyear, args.lastyear + 1):
-                print 'Year %s:' % year
+                print('Year %s:' % year)
                 startTime = cdtime.comptime(year, month, 1, 1, 30)
                 # Last possible second to get all tpoints
                 finishtime = startTime.add(
                     1, cdtime.Month).add(-1.5, cdtime.Hour).add(.1, cdtime.Second)
-                print 'Reading %s from %s for time interval %s to %s ...' % (varbname, fileName, startTime, finishtime)
+                print('Reading %s from %s for time interval %s to %s ...' % (varbname, fileName, startTime, finishtime))
                 # Transient variable stores data for current year's month.
                 tvarb = f(varbname, time=(startTime, finishtime))
                 # *HARD-CODES conversion from kg/m2/sec to mm/day.
                 tvarb *= 86400
-                print 'Shape:', tvarb.shape
+                print('Shape:', tvarb.shape)
                 # The following tasks need to be done only once, extracting
                 # metadata from first-year file:
                 if year == args.firstyear:
@@ -78,14 +78,14 @@ def compute(params):
                     nlons = dimensions[2]
                     deltaH = 24. / N
                     dayspermo = tvarb.shape[0] / N
-                    print '  %d timepoints per day, %d hr intervals between timepoints' % (N, deltaH)
+                    print('  %d timepoints per day, %d hr intervals between timepoints' % (N, deltaH))
                     comptime = firstday.getTime()
                     modellons = tvarb.getLongitude()
                     modellats = tvarb.getLatitude()
                     # Longitude values are needed later to compute Local Solar
                     # Times.
                     lons = modellons[:]
-                    print '  Creating temporary storage and output fields ...'
+                    print('  Creating temporary storage and output fields ...')
                     # Sorts tvarb into separate GMTs for one year
                     tvslice = MV2.zeros((N, dayspermo, nlats, nlons))
                     # Concatenates tvslice over all years
@@ -94,13 +94,13 @@ def compute(params):
                     LSTs = MV2.zeros((N, nlats, nlons))
                     for iGMT in range(N):
                         hour = iGMT * deltaH + startime
-                        print '  Computing Local Standard Times for GMT %5.2f ...' % hour
+                        print('  Computing Local Standard Times for GMT %5.2f ...' % hour)
                         for j in range(nlats):
                             for k in range(nlons):
                                 LSTs[iGMT, j, k] = (hour + lons[k] / 15) % 24
                 for iGMT in range(N):
                     hour = iGMT * deltaH + startime
-                    print '  Choosing timepoints with GMT %5.2f ...' % hour
+                    print('  Choosing timepoints with GMT %5.2f ...' % hour)
                     # Transient-variable slice: every Nth tpoint gets all of
                     # the current GMT's tpoints for current year:
                     tvslice[iGMT] = tvarb[iGMT:tvarb.shape[0]:N]
@@ -117,7 +117,7 @@ def compute(params):
             stdvalues = MV2.zeros((N, nlats, nlons))
             for iGMT in range(N):
                 hour = iGMT * deltaH + startime
-                print 'Computing mean and standard deviation over all GMT %5.2f timepoints ...' % hour
+                print('Computing mean and standard deviation over all GMT %5.2f timepoints ...' % hour)
                 # Assumes first dimension of input ("axis#0") is time
                 avgvalues[iGMT] = MV2.average(concatenation[iGMT], axis=0)
                 stdvalues[iGMT] = genutil.statistics.std(concatenation[iGMT])
@@ -171,10 +171,10 @@ def compute(params):
             g.close()
             h.close()
         except Exception as err:
-            print "Failed for model %s with erro: %s" % (dataname, err)
+            print("Failed for model %s with erro: %s" % (dataname, err))
 
 
-print 'done'
+print('done')
 args = P.parse_args(sys.argv[1:])
 
 month = args.month
@@ -216,10 +216,10 @@ nYears = args.lastyear - args.firstyear + 1
 template = populateStringConstructor(args.filename_template, args)
 template.variable = varbname
 
-print "TEMPLATE:", template()
+print("TEMPLATE:", template())
 fileList = glob.glob(os.path.join(args.modroot, template()))
-print "FILES:", fileList
+print("FILES:", fileList)
 params = [INPUT(args, name, template) for name in fileList]
-print "PARAMS:", params
+print("PARAMS:", params)
 
 cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)

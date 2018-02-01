@@ -1,3 +1,4 @@
+from __future__ import print_function
 import unittest
 import cdat_info
 import subprocess
@@ -14,16 +15,16 @@ class DiurnalTest(unittest.TestCase):
         self.assertTrue(numpy.ma.allclose(a,b))
 
     def compare_nc(self,test_name):
-        print "Checking integrity of",test_name
+        print("Checking integrity of",test_name)
         self.assertTrue(os.path.exists(os.path.join("test_data",test_name)))
         good_name = test_name.replace("test_data","tests/diurnal")
 
         test_out = cdms2.open(os.path.join("test_data",test_name))
         good_out = cdms2.open(os.path.join("tests/diurnal",test_name))
 
-        self.assertEqual(test_out.variables.keys(),good_out.variables.keys())
+        self.assertEqual(list(test_out.variables.keys()),list(good_out.variables.keys()))
 
-        for v in good_out.variables.keys():
+        for v in list(good_out.variables.keys()):
             test = test_out(v)
             good = good_out(v)
 

@@ -47,7 +47,7 @@ class Plot_defaults(object):
         return self._logo
 
     def setlogo(self, value):
-        if value is None or isinstance(value, basestring):
+        if value is None or isinstance(value, str):
             self._logo = vcs.utils.Logo(value)
 
     logo = property(getlogo, setlogo)
@@ -139,7 +139,7 @@ class Portrait(object):
         self.parameters_list.append('time_domain')
         for p in self.parameters_list:
             setattr(self, p, None)
-        for k in kw.keys():
+        for k in list(kw.keys()):
             setattr(self, k, kw[k])
 
     def alter_parameter(
@@ -158,7 +158,7 @@ class Portrait(object):
 
     def string_construct(self, nms):
         n = nms[0]
-        if n not in self.slaves.keys():
+        if n not in list(self.slaves.keys()):
             t1 = [n + ' ' for nn in getattr(self, n)]
             t2 = [str(nn) + ' ' for nn in getattr(self, n)]
         else:
@@ -179,7 +179,7 @@ class Portrait(object):
                 vals.append(tmp)
             t2 = [nn for nn in vals]
         for n in nms[1:]:
-            if n not in self.slaves.keys():
+            if n not in list(self.slaves.keys()):
                 t1 = [' ' + t + ' ' + n for t in t1 for nn in getattr(self, n)]
                 t2 = [
                     ' ' +
@@ -223,7 +223,7 @@ class Portrait(object):
 
     def set(self, portrait_type, parameter=None, values=None):
         if portrait_type.lower() == 'absolute':
-            if 'relative' in self.portrait_types.keys():
+            if 'relative' in list(self.portrait_types.keys()):
                 del(self.portrait_types['relative'])
         elif portrait_type.lower() == 'relative':
             if not isinstance(parameter, str):
@@ -273,7 +273,7 @@ class Portrait(object):
 
     def slave(self, master, slave):
         ''' defines a parameter as a slave of a master parameter'''
-        if master in self.slaves.keys():
+        if master in list(self.slaves.keys()):
             v = self.slaves[master]
             if slave not in v:
                 v.append(slave)
@@ -288,7 +288,7 @@ class Portrait(object):
             self.aliased[parameter] = values
         else:
             oldvalue = getattr(self, parameter)
-            if parameter in self.slaves.keys():
+            if parameter in list(self.slaves.keys()):
                 ov = []
                 for n in oldvalue:
                     ov.append(n[0])
@@ -303,9 +303,9 @@ class Portrait(object):
             self.aliased[parameter] = dic
 
     def makestring(self, parameter, value):
-        if parameter in self.aliased.keys():
+        if parameter in list(self.aliased.keys()):
             dic = self.aliased[parameter]
-            if value in dic.keys():
+            if value in list(dic.keys()):
                 return dic[value]
             else:
                 return value
@@ -339,7 +339,7 @@ class Portrait(object):
         dic = {}
         for i in range(len(axis_names)):
             dic[i] = axis_names[i]
-        y = cdms2.createAxis(range(axis_length))
+        y = cdms2.createAxis(list(range(axis_length)))
         y.names = repr(dic)
         nm = []
         for t in sp1:
@@ -433,14 +433,14 @@ class Portrait(object):
         return b
 
     def get(self):
-        if 'difference' in self.portrait_types.keys():
+        if 'difference' in list(self.portrait_types.keys()):
             d = self.portrait_types['difference']
             setattr(self, d[0], d[1][0])
             a1 = self._get()
             setattr(self, d[0], d[1][1])
             a2 = self._get()
             return a1 - a2
-        elif 'mean' in self.portrait_types.keys():
+        elif 'mean' in list(self.portrait_types.keys()):
             d = self.portrait_types['mean']
             setattr(self, d[0], d[1][0])
             # This picked up by flake8
@@ -455,7 +455,7 @@ class Portrait(object):
             return self._get()
 
     def _get(self):
-        if 'relative' in self.portrait_types.keys():
+        if 'relative' in list(self.portrait_types.keys()):
             d = self.portrait_types['relative']
             vals = d[1]
             real_value = getattr(self, d[0])
@@ -557,11 +557,11 @@ class Portrait(object):
                 if isinstance(v, (list, tuple)):
                     if len(v) == 1:
                         v = v[0]
-                        if p in self.slaves.keys():
+                        if p in list(self.slaves.keys()):
                             # vslvs = v[1:]
                             v = v[0]
                         setattr(F, p, v)
-                        if p in self.slaves.keys():
+                        if p in list(self.slaves.keys()):
                             slvs = self.slaves[p]
                             for js in range(len(slvs)):
                                 s = slvs[js]
@@ -569,11 +569,11 @@ class Portrait(object):
                     else:
                         setattr(F, p, '*')
                 else:
-                    if p in self.slaves.keys():
+                    if p in list(self.slaves.keys()):
                         # vslvs = v[1:]
                         v = v[0]
                     setattr(F, p, v)
-                    if p in self.slaves.keys():
+                    if p in list(self.slaves.keys()):
                         slvs = self.slaves[p]
                         for js in range(len(slvs)):
                             s = slvs[js]
@@ -604,7 +604,7 @@ class Portrait(object):
             # f=os.popen('ls '+F()).readlines()
             # ip,op,ep=os.popen3('ls '+F())
             if self.verbose:
-                print 'command line:', F()
+                print('command line:', F())
             # f=op.readlines()
             f = glob.glob(F())
             # print 'F is:',f
@@ -616,7 +616,7 @@ class Portrait(object):
                         files.pop(-1)
                         break
             if self.verbose:
-                print 'files:', files
+                print('files:', files)
             try:
                 # now we get the one value needed in this file
                 f = cdms2.open(files[0])
@@ -625,12 +625,12 @@ class Portrait(object):
                 time_domain = F.time_domain
                 if isinstance(component, str):
                     dic = eval(f.components)
-                    for k in dic.keys():
+                    for k in list(dic.keys()):
                         if dic[k] == F.component:
                             component = k
                 if isinstance(F.time_domain, str):
                     dic = eval(f.time_domain)
-                    for k in dic.keys():
+                    for k in list(dic.keys()):
                         if dic[k] == F.time_domain:
                             time_domain = k
                 value = V(
@@ -658,8 +658,8 @@ class Portrait(object):
         return output
 
     def decorate(self, output, ynm=None, xnm=None):
-        x = cdms2.createAxis(range(len(xnm)))
-        y = cdms2.createAxis(range(len(ynm)))
+        x = cdms2.createAxis(list(range(len(xnm))))
+        y = cdms2.createAxis(list(range(len(ynm))))
 
         try:
             del(x.name)
@@ -828,7 +828,7 @@ class Portrait(object):
             if len(levs) > 1:
                 meshfill.levels = levs
                 if self.PLOT_SETTINGS.fillareacolors is None:
-                    cols = vcs.getcolors(levs, range(16, 40), split=1)
+                    cols = vcs.getcolors(levs, list(range(16, 40)), split=1)
                     meshfill.fillareacolors = cols
                 else:
                     meshfill.fillareacolors = self.PLOT_SETTINGS.fillareacolors
@@ -1028,7 +1028,7 @@ class Portrait(object):
                     nparam += 1
 
             if self.verbose:
-                print 'NPARAM:', nparam
+                print('NPARAM:', nparam)
             if nparam > 0:
                 for i in range(nparam):
                     j = MV2.ceil(float(nparam) / (i + 1.))
@@ -1058,7 +1058,7 @@ class Portrait(object):
                             txt.string = p + ':' + \
                                 str(self.makestring(p, value[0]))
                             display = 1
-                        elif isinstance(value, (str, int, float, long)):
+                        elif isinstance(value, (str, int, float)):
                             txt.string = p + ':' + \
                                 str(self.makestring(p, value))
                             display = 1
@@ -1073,7 +1073,7 @@ class Portrait(object):
                             if npci >= npc:
                                 npci = 0
                                 npli += 1
-                            if p in self.altered.keys():
+                            if p in list(self.altered.keys()):
                                 dic = self.altered[p]
                                 if dic['size'] is not None:
                                     txt.size = dic['size']

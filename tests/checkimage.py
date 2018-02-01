@@ -1,3 +1,4 @@
+from __future__ import print_function
 """
 This script compares the png test image given in the second argument against
 the known good baseline given in the third. Alternate known good images
@@ -37,8 +38,8 @@ def image_from_file(fname):
         removeAlpha.SetInputConnection(rd.GetOutputPort())
         removeAlpha.Update()
         return removeAlpha.GetOutput();
-    except Exception,err:
-        print "Problem opening file '%s': %s"%(fname,err)
+    except Exception as err:
+        print("Problem opening file '%s': %s"%(fname,err))
         return None
 
 def find_alternates(fname):
@@ -55,7 +56,7 @@ def check_result_image(fname, baselinefname, threshold = defaultThreshold,
                        baseline = True, cleanup=True, update_baseline=False):
     testImage = image_from_file(fname)
     if testImage is None:
-        print "Testing image missing, test failed."
+        print("Testing image missing, test failed.")
         return -1
 
     if baseline:
@@ -63,9 +64,9 @@ def check_result_image(fname, baselinefname, threshold = defaultThreshold,
     else:
         baselinefnames = [baselinefname,]
 
-    print "Found Baselines:"
+    print("Found Baselines:")
     for baselinefname in baselinefnames:
-        print "- %s"%baselinefname
+        print("- %s"%baselinefname)
 
     bestImage = None
     bestFilename = None
@@ -92,32 +93,32 @@ def check_result_image(fname, baselinefname, threshold = defaultThreshold,
         sys.stdout.write("\n")
 
     if bestImage is None:
-      print "No baseline images found. Test failed."
+      print("No baseline images found. Test failed.")
       return -1
     
     if update_baseline is True:
-      print "UPDATE MODE updating %s with %s" % (bestFilename,fname)
+      print("UPDATE MODE updating %s with %s" % (bestFilename,fname))
       shutil.copy(fname,bestFilename)
       return 0
 
     if bestDiff < threshold:
-        print "Baseline '%s' is the best match with a difference of %f."%(bestFilename, bestDiff)
+        print("Baseline '%s' is the best match with a difference of %f."%(bestFilename, bestDiff))
         if cleanup:
-            print "Deleting test image '%s'..."%(fname)
+            print("Deleting test image '%s'..."%(fname))
             os.remove(fname)
         return 0
 
-    print "All baselines failed! Lowest error (%f) exceeds threshold (%f)."%(bestDiff, threshold)
+    print("All baselines failed! Lowest error (%f) exceeds threshold (%f)."%(bestDiff, threshold))
 
     sp = fname.split(".")
     diffFilename = ".".join(sp[:-1])+"_diff."+sp[-1]
-    print "Saving image diff at %s"%diffFilename
+    print("Saving image diff at %s"%diffFilename)
     dump_image_to_file(diffFilename, bestDiffImage)
 
     # Print metadata for CDash image upload:
     def printDart(name, type, value, suff=""):
-      print '<DartMeasurement%s name="%s" type="%s">%s</DartMeasurement%s>'%(
-        suff, name, type, value, suff)
+      print('<DartMeasurement%s name="%s" type="%s">%s</DartMeasurement%s>'%(
+        suff, name, type, value, suff))
     printDart("ImageError", "numeric/double", "%f"%bestDiff)
     printDart("TestImage", "image/png", os.path.abspath(fname), "File")
     printDart("DifferenceImage", "image/png", os.path.abspath(diffFilename), "File")
@@ -126,9 +127,9 @@ def check_result_image(fname, baselinefname, threshold = defaultThreshold,
 
 def main():
     if len(sys.argv) != 4:
-        print "Error:"
-        print "Called with: " + str(sys.argv)
-        print "Call with " + sys.argv[0] + " test_directory/test_filename.png  baseline_directory/baseline_filename.png threshold"
+        print("Error:")
+        print("Called with: " + str(sys.argv))
+        print("Call with " + sys.argv[0] + " test_directory/test_filename.png  baseline_directory/baseline_filename.png threshold")
         sys.exit(-1)
 
     ret = check_result_image(sys.argv[1], sys.argv[2], float(sys.argv[3]))

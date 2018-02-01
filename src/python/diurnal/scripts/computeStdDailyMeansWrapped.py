@@ -37,18 +37,18 @@ def compute(params):
     dataname = reverted["model"]
     if dataname not in args.skip:
         try:
-            print 'Data source:', dataname
-            print 'Opening %s ...' % fileName
+            print('Data source:', dataname)
+            print('Opening %s ...' % fileName)
             f = cdms2.open(fileName)
             iYear = 0
             dmean = None
             for year in range(startyear, finalyear + 1):
-                print 'Year %s:' % year
+                print('Year %s:' % year)
                 startTime = cdtime.comptime(year, month)
                 # Last possible second to get all tpoints
                 finishtime = startTime.add(
                     1, cdtime.Month).add(-1, cdtime.Minute)
-                print 'Reading %s from %s for time interval %s to %s ...' % (varbname, fileName, startTime, finishtime)
+                print('Reading %s from %s for time interval %s to %s ...' % (varbname, fileName, startTime, finishtime))
                 # Transient variable stores data for current year's month.
                 tvarb = f(varbname, time=(startTime, finishtime, "ccn"))
                 # *HARD-CODES conversion from kg/m2/sec to mm/day.
@@ -86,7 +86,7 @@ def compute(params):
             stdoutfile = ('%s_%s_%s_%s-%s_std_of_dailymeans.nc') % (varbname, dataname,
                                                                     monthname, str(startyear), str(finalyear))
         except Exception as err:
-            print "Failed for model: %s with error: %s" % (dataname, err)
+            print("Failed for model: %s with error: %s" % (dataname, err))
     if not os.path.exists(args.output_directory):
         os.makedirs(args.output_directory)
     g = cdms2.open(os.path.join(args.output_directory, stdoutfile), 'w')
@@ -102,7 +102,7 @@ directory = args.modroot      # Input  directory for model data
 # These models have been processed already (or tried and found wanting,
 # e.g. problematic time coordinates):
 skipMe = args.skip
-print "SKIPPING:", skipMe
+print("SKIPPING:", skipMe)
 
 # Choose only one ensemble member per model, with the following ensemble-member code (for definitions, see
 # http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf):
@@ -143,9 +143,9 @@ template = populateStringConstructor(args.filename_template, args)
 template.variable = varbname
 
 fileList = glob.glob(os.path.join(directory, template()))
-print "FILES:", fileList
+print("FILES:", fileList)
 
 params = [INPUT(args, name, template) for name in fileList]
-print "PARAMS:", params
+print("PARAMS:", params)
 
 cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)

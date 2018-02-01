@@ -17,7 +17,7 @@ class INPUT(object):
 
 def populateStringConstructor(template, args):
     template = genutil.StringConstructor(template)
-    for k in template.keys():
+    for k in list(template.keys()):
         if hasattr(args, k):
             setattr(template, k, str(getattr(args, k)))
     return template

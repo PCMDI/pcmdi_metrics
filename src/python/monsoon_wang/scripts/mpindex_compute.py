@@ -189,12 +189,12 @@ lst = glob.glob(modpathall)
 # CONFIRM DATA FOR MODS IS AVAIL AND REMOVE THOSE IT IS NOT
 
 gmods = []  # "Got" these MODS
-print "MODS:", mods
-print "LST:", lst
+print("MODS:", mods)
+print("LST:", lst)
 for mod in mods:
     for l in lst:
         l1 = modpath.replace('MODS', mod)
-        print "L!:", l1
+        print("L!:", l1)
         if os.path.isfile(l1) is True:
             if mod not in gmods:
                 gmods.append(mod)
@@ -254,19 +254,20 @@ if args.experiment == 'historical' and mods is None:
 
 regions_specs = {}
 default_regions = []
-execfile(sys.prefix + "/share/pmp/default_regions.py")
+exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
+             sys.prefix + "/share/pmp/default_regions.py", 'exec'))
 
 doms = ['AllMW', 'AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
 
 mpi_stats_dic = {}
-print "GMODS:", gmods
+print("GMODS:", gmods)
 for mod in gmods:
     modelFile = modpath.replace('MODS', mod)
 
     mpi_stats_dic[mod] = {}
 
-    print "******************************************************************************************"
-    print modelFile
+    print("******************************************************************************************")
+    print(modelFile)
     f = cdms2.open(modelFile)
     d_orig = f(var)
 

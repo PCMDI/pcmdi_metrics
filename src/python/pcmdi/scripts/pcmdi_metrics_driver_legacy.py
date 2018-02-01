@@ -5,6 +5,7 @@
 #  Identified via --parameters key at startup
 #
 #
+from __future__ import print_function
 import pcmdi_metrics
 import sys
 import argparse
@@ -41,7 +42,8 @@ unidata.addScaledUnit("Practical Salinity Scale 78", .001, "dimless")
 # Following are actually created in excfile bit, this is to make flae8 happy
 regions_specs = {}
 default_regions = []
-execfile(sys.prefix + "/share/pmp/default_regions.py")
+exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
+             sys.prefix + "/share/pmp/default_regions.py", 'exec'))
 
 # Load the obs dictionary
 fjson = open(
@@ -67,18 +69,18 @@ class DUP(object):
         if self.tb:
             import traceback
             exc_type, exc_value, exc_traceback = sys.exc_info()
-            print "<<<<<<<<<<<< BEG TRACEBACK >>>>>>>>>>>>>>>>>>"
+            print("<<<<<<<<<<<< BEG TRACEBACK >>>>>>>>>>>>>>>>>>")
             traceback.print_tb(exc_traceback)
-            print "<<<<<<<<<<<< END TRACEBACK >>>>>>>>>>>>>>>>>>"
-            print>>self.outfile, "<<<<<<<<<<<< BEG TRACEBACK >>>>>>>>>>>>>>>>>>"
+            print("<<<<<<<<<<<< END TRACEBACK >>>>>>>>>>>>>>>>>>")
+            print("<<<<<<<<<<<< BEG TRACEBACK >>>>>>>>>>>>>>>>>>", file=self.outfile)
             traceback.print_tb(exc_traceback, file=self.outfile)
-            print>>self.outfile, "<<<<<<<<<<<< END TRACEBACK >>>>>>>>>>>>>>>>>>"
-        print msg
-        print>>self.outfile, msg
+            print("<<<<<<<<<<<< END TRACEBACK >>>>>>>>>>>>>>>>>>", file=self.outfile)
+        print(msg)
+        print(msg, file=self.outfile)
 
 
 def applyCustomKeys(O, custom_dict, var):
-    for k, v in custom_dict.iteritems():
+    for k, v in custom_dict.items():
         key = custom_dict[k]
         setattr(O, k, key.get(var, key.get(None, "")))
 
@@ -308,13 +310,13 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         refs = parameters.ref
         if isinstance(refs, list) and "all" in [x.lower() for x in refs]:
             refs = "all"
-        if isinstance(refs, (unicode, str)):
+        if isinstance(refs, str):
             # Is it "all"
             if refs.lower() == "all":
-                Refs = obs_dic[var].keys()
+                Refs = list(obs_dic[var].keys())
                 refs = []
                 for r in Refs:
-                    if isinstance(obs_dic[var][r], (unicode, str)):
+                    if isinstance(obs_dic[var][r], str):
                         refs.append(r)
                 dup("refs:", refs)
             else:
@@ -342,7 +344,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
         metrics_dictionary["References"] = {}
         metrics_dictionary["RegionalMasking"] = {}
         for region in regions_dict[var]:
-            if isinstance(region, basestring):
+            if isinstance(region, str):
                 region_name = region
                 region = regions_specs.get(
                     region_name,
@@ -361,7 +363,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                     refabbv = ref + "Reference"
                 else:
                     refabbv = ref
-                if isinstance(obs_dic[var][ref], (str, unicode)):
+                if isinstance(obs_dic[var][ref], str):
                     obs_var_ref = obs_dic[var][obs_dic[var][ref]]
                 else:
                     obs_var_ref = obs_dic[var][ref]
@@ -595,7 +597,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                         parameters,
                                         "simulation_description_mapping",
                                         {}))
-                                for att in sim_descr_mapping.keys():
+                                for att in list(sim_descr_mapping.keys()):
                                     nm = sim_descr_mapping[att]
                                     if not isinstance(nm, (list, tuple)):
                                         nm = ["%s", nm]

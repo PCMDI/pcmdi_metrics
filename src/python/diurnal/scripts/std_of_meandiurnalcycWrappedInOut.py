@@ -32,7 +32,7 @@ def compute(param):
     fnameRoot = param.fileName
     reverted = template.reverse(os.path.basename(fnameRoot))
     model = reverted["model"]
-    print 'Specifying latitude / longitude domain of interest ...'
+    print('Specifying latitude / longitude domain of interest ...')
     datanameID = 'diurnalmean'  # Short ID name of output data
     latrange = (param.args.lat1, param.args.lat2)
     lonrange = (param.args.lon1, param.args.lon2)
@@ -41,26 +41,26 @@ def compute(param):
         region_name = "{:g}_{:g}&{:g}_{:g}".format(*(latrange + lonrange))
     else:
         region_name = param.args.region_name
-    print 'Reading %s ...' % fnameRoot
+    print('Reading %s ...' % fnameRoot)
     try:
         f = cdms2.open(fnameRoot)
         x = f(datanameID, region)
         units = x.units
-        print '  Shape =', x.shape
+        print('  Shape =', x.shape)
 
-        print 'Finding standard deviation over first dimension (time of day) ...'
+        print('Finding standard deviation over first dimension (time of day) ...')
         x = genutil.statistics.std(x)
-        print '  Shape =', x.shape
+        print('  Shape =', x.shape)
 
-        print 'Finding r.m.s. average over 2nd-3rd dimensions (area) ...'
+        print('Finding r.m.s. average over 2nd-3rd dimensions (area) ...')
         x = x * x
         x = cdutil.averager(x, axis='xy')
         x = cdms2.MV2.sqrt(x)
 
-        print 'For %8s in %s, average variance of hourly values = (%5.2f %s)^2' % (model, monthname, x, units)
+        print('For %8s in %s, average variance of hourly values = (%5.2f %s)^2' % (model, monthname, x, units))
         f.close()
     except Exception as err:
-        print "Failed model %s with error" % (err)
+        print("Failed model %s with error" % (err))
         x = 1.e20
     return model, region, {region_name: float(x)}
 
@@ -91,9 +91,9 @@ finalyear = args.lastyear
 template = populateStringConstructor(args.filename_template, args)
 template.month = monthname
 
-print "TEMPLATE NAME:", template()
+print("TEMPLATE NAME:", template())
 
-print 'Specifying latitude / longitude domain of interest ...'
+print('Specifying latitude / longitude domain of interest ...')
 # TRMM (observed) domain:
 latrange = (args.lat1, args.lat2)
 lonrange = (args.lon1, args.lon2)
@@ -105,7 +105,7 @@ region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
 # lonrange = (285.0, 295.0)
 
 
-print 'Preparing to write output to JSON file ...'
+print('Preparing to write output to JSON file ...')
 if not os.path.exists(args.output_directory):
     os.makedirs(args.output_directory)
 jsonFile = populateStringConstructor(args.outnamejson, args)
@@ -114,13 +114,13 @@ jsonFile.month = monthname
 jsonname = os.path.join(os.path.abspath(args.output_directory), jsonFile())
 
 if not os.path.exists(jsonname) or args.append is False:
-    print 'Initializing dictionary of statistical results ...'
+    print('Initializing dictionary of statistical results ...')
     stats_dic = {}
     metrics_dictionary = collections.OrderedDict()
 else:
     with open(jsonname) as f:
         metrics_dictionary = json.load(f)
-        print "LOADE WITH KEYS:", metrics_dictionary.keys()
+        print("LOADE WITH KEYS:", list(metrics_dictionary.keys()))
         stats_dic = metrics_dictionary["RESULTS"]
 
 OUT = pcmdi_metrics.io.base.Base(
@@ -138,10 +138,10 @@ metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Tren
 
 
 files = glob.glob(os.path.join(args.modroot, template()))
-print files
+print(files)
 
 params = [INPUT(args, name, template) for name in files]
-print "PARAMS:", params
+print("PARAMS:", params)
 
 results = cdp.cdp_run.multiprocess(
     compute, params, num_workers=args.num_workers)
@@ -153,12 +153,12 @@ for r in results:
     else:
         stats_dic[m].update(res)
 
-print 'Writing output to JSON file ...'
+print('Writing output to JSON file ...')
 metrics_dictionary["RESULTS"] = stats_dic
-print "KEYS AT END:", metrics_dictionary.keys()
+print("KEYS AT END:", list(metrics_dictionary.keys()))
 rgmsk = metrics_dictionary.get("RegionalMasking", {})
-print "REG MASK:", rgmsk
-nm = res.keys()[0]
+print("REG MASK:", rgmsk)
+nm = list(res.keys())[0]
 region.id = nm
 rgmsk[nm] = {"id": nm, "domain": region}
 metrics_dictionary["RegionalMasking"] = rgmsk
@@ -169,4 +169,4 @@ OUT.write(
     separators=(
         ',',
         ': '))
-print 'done'
+print('done')

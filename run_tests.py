@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import glob
 import sys
 import os
@@ -102,7 +103,7 @@ def findDiffFiles(log):
                         file2 = log[k].split()[2]
                     except:
                         file2 = log[k].split()[1][:-1]+log[j].split()[0]
-                        print "+++++++++++++++++++++++++",file2
+                        print("+++++++++++++++++++++++++",file2)
             if log[j].find("Saving image diff") > -1:
                 diff = log[j].split()[-1]
                 # break
@@ -110,10 +111,10 @@ def findDiffFiles(log):
 
 
 def run_command(command, join_stderr=True):
-    if isinstance(command, basestring):
+    if isinstance(command, str):
         command = shlex.split(command)
     if args.verbosity > 0:
-        print "Executing %s in %s" % (" ".join(command), os.getcwd())
+        print("Executing %s in %s" % (" ".join(command), os.getcwd()))
     if join_stderr:
         stderr = subprocess.STDOUT
     else:
@@ -129,7 +130,7 @@ def run_command(command, join_stderr=True):
         read = P.stdout.readline().rstrip()
         out.append(read)
         if args.verbosity > 1 and len(read) != 0:
-            print read
+            print(read)
     return P, out
 
 
@@ -147,7 +148,7 @@ def run_nose(test_name):
 
 if args.vtk is not None:
     P, installed_vtk = run_command("conda list vtk-cdat")
-    print installed_vtk
+    print(installed_vtk)
     while installed_vtk[-1] == "":
         installed_vtk.pop(-1)
     installed_vtk = installed_vtk[-1]
@@ -155,7 +156,7 @@ if args.vtk is not None:
     vtk_name = installed_vtk[0]
     vtk_channel = installed_vtk[-1]
     if args.verbosity > 1:
-        print "%s installed from: %s" % (vtk_name, vtk_channel)
+        print("%s installed from: %s" % (vtk_name, vtk_channel))
     run_command("conda install -f -y -c %s %s" % (args.vtk, vtk_name))
 
 sys.path.append(
@@ -179,10 +180,10 @@ if args.failed_only and os.path.exists(os.path.join("tests",".last_failure")):
     names = new_names
 
 if args.verbosity > 1:
-    print("Names:", names)
+    print(("Names:", names))
 
 if len(names)==0:
-    print "No tests to run"
+    print("No tests to run")
     sys.exit(0)
 
 # Make sure we have sample data
@@ -200,7 +201,7 @@ results = {}
 failed = []
 for d in outs:
     results.update(d)
-    nm = d.keys()[0]
+    nm = list(d.keys())[0]
     if d[nm]["result"] != 0:
         failed.append(nm)
 f = open(os.path.join("tests",".last_failure"),"w")
@@ -208,12 +209,12 @@ f.write(repr(failed))
 f.close()
 
 if args.verbosity > 0:
-    print "Ran %i tests, %i failed (%.2f%% success)" %\
-        (len(outs), len(failed), 100. - float(len(failed)) / len(outs) * 100.)
+    print("Ran %i tests, %i failed (%.2f%% success)" %\
+        (len(outs), len(failed), 100. - float(len(failed)) / len(outs) * 100.))
     if len(failed) > 0:
-        print "Failed tests:"
+        print("Failed tests:")
         for f in failed:
-            print "\t", f
+            print("\t", f)
 if args.html or args.package or args.dropbox:
     if not os.path.exists("tests_html"):
         os.makedirs("tests_html")
@@ -222,8 +223,8 @@ if args.html or args.package or args.dropbox:
     js = image_compare.script_data()
 
     fi = open("index.html", "w")
-    print>>fi, "<!DOCTYPE html>"
-    print>>fi, """<html><head><title>VCS Test Results %s</title>
+    print("<!DOCTYPE html>", file=fi)
+    print("""<html><head><title>VCS Test Results %s</title>
     <link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.13/css/jquery.dataTables.css">
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.4.js"></script>
     <script type="text/javascript" charset="utf8"
@@ -236,47 +237,47 @@ if args.html or args.package or args.dropbox:
             });
                 } );
     </script>
-    </head>""" % time.asctime()
-    print>>fi, "<body><h1>VCS Test results: %s</h1>" % time.asctime()
-    print>>fi, "<table id='table_id' class='display'>"
-    print>>fi, "<thead><tr><th>Test</th><th>Result</th><th>Start Time</th><th>End Time</th><th>Time</th></tr></thead>"
-    print>>fi, "<tfoot><tr><th>Test</th><th>Result</th><th>Start Time</th><th>End Time</th><th>Time</th></tr></tfoot>"
+    </head>""" % time.asctime(), file=fi)
+    print("<body><h1>VCS Test results: %s</h1>" % time.asctime(), file=fi)
+    print("<table id='table_id' class='display'>", file=fi)
+    print("<thead><tr><th>Test</th><th>Result</th><th>Start Time</th><th>End Time</th><th>Time</th></tr></thead>", file=fi)
+    print("<tfoot><tr><th>Test</th><th>Result</th><th>Start Time</th><th>End Time</th><th>Time</th></tr></tfoot>", file=fi)
 
     for t in sorted(results.keys()):
         result = results[t]
         nm = t.split("/")[-1][:-3]
-        print>>fi, "<tr><td>%s</td>" % nm,
+        print("<tr><td>%s</td>" % nm, end=' ', file=fi)
         fe = codecs.open("%s.html" % nm, "w", encoding="utf-8")
-        print>>fe, "<!DOCTYPE html>"
-        print>>fe, "<html><head><title>%s</title>" % nm
+        print("<!DOCTYPE html>", file=fe)
+        print("<html><head><title>%s</title>" % nm, file=fe)
         if result["result"] == 0:
-            print>>fi, "<td><a href='%s.html'>OK</a></td>" % nm,
-            print>>fe, "</head><body>"
-            print>>fe, "<a href='index.html'>Back To Results List</a>"
+            print("<td><a href='%s.html'>OK</a></td>" % nm, end=' ', file=fi)
+            print("</head><body>", file=fe)
+            print("<a href='index.html'>Back To Results List</a>", file=fe)
         else:
-            print>>fi, "<td><a href='%s.html'>Fail</a></td>" % nm,
-            print>>fe, "<script type='text/javascript'>%s</script></head><body>" % js
-            print>>fe, "<a href='index.html'>Back To Results List</a>"
-            print>>fe, "<h1>Failed test: %s on %s</h1>" % (nm, time.asctime())
+            print("<td><a href='%s.html'>Fail</a></td>" % nm, end=' ', file=fi)
+            print("<script type='text/javascript'>%s</script></head><body>" % js, file=fe)
+            print("<a href='index.html'>Back To Results List</a>", file=fe)
+            print("<h1>Failed test: %s on %s</h1>" % (nm, time.asctime()), file=fe)
             file1, file2, diff = findDiffFiles(result["log"])
             if file1 != "":
-                print>>fe, '<div id="comparison"></div><script type="text/javascript"> ImageCompare.compare(' +\
+                print('<div id="comparison"></div><script type="text/javascript"> ImageCompare.compare(' +\
                     'document.getElementById("comparison"), "%s", "%s"); </script>' % (
-                        abspath(file2, nm, "test"), abspath(file1, nm, "source"))
-                print>>fe, "<div><a href='index.html'>Back To Results List</a></div>"
-                print>>fe, "<div id='diff'><img src='%s' alt='diff file'></div>" % abspath(
-                    diff, nm, "diff")
-                print>>fe, "<div><a href='index.html'>Back To Results List</a></div>"
-        print>>fe, '<div id="output"><h1>Log</h1><pre>%s</pre></div>' % "\n".join(result[
-                                                                                  "log"])
-        print>>fe, "<a href='index.html'>Back To Results List</a>"
-        print>>fe, "</body></html>"
+                        abspath(file2, nm, "test"), abspath(file1, nm, "source")), file=fe)
+                print("<div><a href='index.html'>Back To Results List</a></div>", file=fe)
+                print("<div id='diff'><img src='%s' alt='diff file'></div>" % abspath(
+                    diff, nm, "diff"), file=fe)
+                print("<div><a href='index.html'>Back To Results List</a></div>", file=fe)
+        print('<div id="output"><h1>Log</h1><pre>%s</pre></div>' % "\n".join(result[
+                                                                                  "log"]), file=fe)
+        print("<a href='index.html'>Back To Results List</a>", file=fe)
+        print("</body></html>", file=fe)
         fe.close()
         t = result["times"]
-        print>>fi, "<td>%s</td><td>%s</td><td>%s</td></tr>" % (
-            time.ctime(t["start"]), time.ctime(t["end"]), t["end"] - t["start"])
+        print("<td>%s</td><td>%s</td><td>%s</td></tr>" % (
+            time.ctime(t["start"]), time.ctime(t["end"]), t["end"] - t["start"]), file=fi)
 
-    print>>fi, "</table></body></html>"
+    print("</table></body></html>", file=fi)
     fi.close()
     if args.html:
         webbrowser.open("file://%s/index.html" % os.getcwd())
@@ -290,7 +291,7 @@ if args.package or args.dropbox:
     t.add("tests_html")
     t.close()
     if args.verbosity > 0:
-        print "Packaged Result Info in:", tnm
+        print("Packaged Result Info in:", tnm)
 if args.dropbox: 
     import dropbox
     dbx = dropbox.Dropbox(os.environ.get("DROPBOX_TOKEN",""))

@@ -1,3 +1,4 @@
+from __future__ import print_function
 import unittest
 import os
 import subprocess
@@ -12,17 +13,17 @@ class TestFlake8(unittest.TestCase):
         pth = os.path.abspath(pth)
         pth = os.path.join(pth, "src/python")
         nopth = os.path.join(pth, "devel")
-        print
-        print
-        print
-        print
-        print "---------------------------------------------------"
-        print "RUNNING: flake8 on directory %s" % pth
-        print "---------------------------------------------------"
-        print
-        print
-        print
-        print
+        print()
+        print()
+        print()
+        print()
+        print("---------------------------------------------------")
+        print("RUNNING: flake8 on directory %s" % pth)
+        print("---------------------------------------------------")
+        print()
+        print()
+        print()
+        print()
         cmd = "flake8 --show-source --statistics " +\
               "--ignore=F999,F405,E121,E123,E126,E226,E24,E704 " +\
               "--max-line-length=120 %s --exclude %s" % (pth,nopth)
@@ -32,5 +33,5 @@ class TestFlake8(unittest.TestCase):
                              stderr=subprocess.PIPE)
         out,e = P.communicate()
         if out != "":
-            print out
+            print(out)
         self.assertEqual(out, "")
