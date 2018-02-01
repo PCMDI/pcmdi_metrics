@@ -7,6 +7,7 @@ from pcmdi_metrics.driver.model import Model
 import pcmdi_metrics.driver.dataset
 import pcmdi_metrics.driver.pmp_parser
 from pcmdi_metrics import LOG_LEVEL
+import ast
 
 
 class PMPDriver(object):
@@ -318,13 +319,6 @@ parser.add_argument(
     required=False)
 
 parser.add_argument(
-    '--model_tweaks',
-    type=ast.literal_eval,
-    dest='model_tweaks',
-    help='Model specific tweaks',
-    required=False)
-
-parser.add_argument(
     '--ext',
     dest='ext',
     help='Extension for the output files?',
@@ -384,11 +378,6 @@ parser.add_argument(
          'test climatologies',
     required=False)
 
-parser.add_argument(
-    '--compute_custom_metrics',
-    dest='compute_custom_metrics',
-    help='Allows for user-defined metrics',
-    required=False)
 
 parameter = parser.get_parameter()
 driver = PMPDriver(parameter)

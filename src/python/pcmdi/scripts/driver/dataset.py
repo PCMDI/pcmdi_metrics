@@ -70,9 +70,10 @@ class DataSet(object):
         sftlf = {}
 
         for test in parameter.test_data_set:
-            sft = Base(parameter.test_data_path,
-                       getattr(parameter, "sftlf_filename_template",
-                               parameter.filename_template))
+            tmp_name = getattr(parameter, "sftlf_filename_template")
+            if tmp_name is None:  # Not defined from commandline or param file
+                tmp_name = parameter.filename_template
+            sft = Base(parameter.test_data_path, tmp_name)
             sft.model_version = test
             sft.table = "fx"
             sft.realm = "atmos"
