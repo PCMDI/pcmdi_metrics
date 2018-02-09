@@ -19,8 +19,7 @@ test = False
 # test = True
 
 P = pmp_parser.PMPParser(
-    description='Runs PCMDI Monsoon Computations',
-    formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    description='Runs PCMDI Monsoon Computations')
 
 P.add_argument("-j", "--json",
                       type=str,
