@@ -86,7 +86,8 @@ P.add_argument("-t", "--threshold",
                help="Threshold for a hit when computing skill score")
 
 
-args = P.parse_args(sys.argv[1:])
+# args = P.parse_args(sys.argv[1:])
+args = P.get_parameter()
 modpath = args.modpath
 outpathjsons = args.outpathjsons
 outpathdata = args.outpathdata

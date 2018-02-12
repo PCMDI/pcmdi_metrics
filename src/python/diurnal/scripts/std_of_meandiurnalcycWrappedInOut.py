@@ -82,7 +82,7 @@ P.add_argument("-t", "--filename_template",
                default="pr_%(model)_%(month)_%(firstyear)-%(lastyear)_diurnal_avg.nc")
 P.add_argument("--model", default="*")
 
-args = P.parse_args(sys.argv[1:])
+args = P.get_parameter()
 month = args.month
 monthname = monthname_d[month]
 startyear = args.firstyear

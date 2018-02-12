@@ -13,7 +13,6 @@
 import cdms2
 import MV2
 from pcmdi_metrics.diurnal.fourierFFT import fastAllGridFT
-import sys
 import glob
 import os
 
@@ -27,7 +26,7 @@ P.add_argument("--filename_template_LST",
                default="pr_%(model)_LocalSolarTimes.nc",
                help="template for file names point to Local Solar Time Files")
 
-args = P.parse_args(sys.argv[1:])
+args = P.get_parameter()
 month = args.month
 monthname = monthname_d[month]
 startyear = args.firstyear
