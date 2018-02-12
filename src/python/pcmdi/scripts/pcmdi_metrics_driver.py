@@ -316,6 +316,7 @@ parser.add_argument(
     dest='simulation_description_mapping',
     help='List of observations or models to test ' +
          'against the reference_data_set',
+    default={},
     required=False)
 
 parser.add_argument(
