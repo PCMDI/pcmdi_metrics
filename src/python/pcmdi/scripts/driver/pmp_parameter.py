@@ -6,6 +6,11 @@ from pcmdi_metrics import LOG_LEVEL
 
 class PMPParameter(cdp.cdp_parameter.CDPParameter):
     def __init__(self):
+        logging.getLogger("pmp").setLevel(LOG_LEVEL)
+
+
+class PMPMetricsParameter(cdp.cdp_parameter.CDPParameter):
+    def __init__(self):
         logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
 
         # Metrics run identification

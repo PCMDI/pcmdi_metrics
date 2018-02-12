@@ -206,7 +206,7 @@ class PMPDriver(object):
                          ref_or_test, self.obs_dict, data_path, self.sftlf)
 
 
-parser = pcmdi_metrics.driver.pmp_parser.PMPParser()
+parser = pcmdi_metrics.driver.pmp_parser.PMPMetricsParser()
 parser.add_argument(
     '--case_id',
     dest='case_id',
