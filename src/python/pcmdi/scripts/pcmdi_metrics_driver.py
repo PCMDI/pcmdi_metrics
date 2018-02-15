@@ -103,7 +103,7 @@ class PMPDriver(object):
         from default_regions.py and stores them as attributes. '''
         default_regions_file = \
             pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj('default_regions.py')
-        execfile(default_regions_file.name)
+        exec(compile(open(default_regions_file.name).read(), default_regions_file.name, 'exec'))
         default_regions_file.close()
         try:
             self.default_regions = locals()['default_regions']
@@ -126,7 +126,7 @@ class PMPDriver(object):
     def create_region(self, region):
         ''' From the argument region, it gets that region from self.regions_specs
         (which itself is loaded from default_regions.py) '''
-        if isinstance(region, basestring):
+        if isinstance(region, str):
             region_name = region
             region = self.regions_specs.get(
                 region_name,
