@@ -6,6 +6,7 @@ import sys
 import pcmdi_metrics
 import glob
 import shutil
+import importlib
 
 class PMPDriverTest(basepmp.PMPTest):
     def setUp(self):
@@ -70,8 +71,7 @@ class PMPDriverTest(basepmp.PMPTest):
             sys.path.append(pth)
         if fnm.lower()[-3:] == ".py":
             fnm = fnm[:-3]
-        parameters = ""  # so flake8 doesn't complain
-        exec("import %s as parameters" % fnm)
+        parameters = importlib.__import__(fnm, globals(), locals(), [], 0)
         # Ok now let's figure out where the results have been dumped
         pthout = pcmdi_metrics.io.base.Base(
             os.path.join(

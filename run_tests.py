@@ -132,7 +132,7 @@ def run_command(command, join_stderr=True):
         cwd=os.getcwd())
     out = []
     while P.poll() is None:
-        read = P.stdout.readline().rstrip()
+        read = P.stdout.readline().rstrip().decode("utf-8")
         out.append(read)
         if args.verbosity > 1 and len(read) != 0:
             print(read)
@@ -176,7 +176,11 @@ else:
 
 if args.failed_only and os.path.exists(os.path.join("tests",".last_failure")):
     f = open(os.path.join("tests",".last_failure"))
-    failed = set(eval(f.read().strip()))
+    read = f.read().strip()
+    try:
+        failed = set(eval(read.decode("utf-8")))
+    except Exception:
+        failed = set(eval(read))
     f.close()
     new_names = []
     for fnm in failed:

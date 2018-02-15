@@ -10,7 +10,7 @@ from pcmdi_metrics import LOG_LEVEL
 
 
 try:
-    basestring
+    basestring  # noqa
 except Exception:
     basestring = str
 

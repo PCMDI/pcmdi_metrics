@@ -20,7 +20,7 @@ p = subprocess.Popen(
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE)
 try:
-    descr = p.stdout.readlines()[0].strip()
+    descr = p.stdout.readlines()[0].strip().decode("utf-8")
     Version = "-".join(descr.split("-")[:-2])
     if Version == "":
         Version = descr
@@ -37,7 +37,7 @@ p = subprocess.Popen(
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE)
 try:
-    commit = p.stdout.readlines()[0].split()[1]
+    commit = p.stdout.readlines()[0].split()[1].decode("utf-8")
 except:
     commit = ""
 f = open("src/python/version.py", "w")

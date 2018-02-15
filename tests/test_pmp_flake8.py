@@ -32,6 +32,7 @@ class TestFlake8(unittest.TestCase):
                              stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE)
         out,e = P.communicate()
+        out = out.decode("utf-8")
         if out != "":
             print(out)
         self.assertEqual(out, "")

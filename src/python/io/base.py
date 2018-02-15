@@ -26,7 +26,7 @@ cdms2.setNetcdfDeflateLevelFlag(value)
 logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
 
 try:
-    basestring
+    basestring  # noqa
 except Exception:
     basestring = str
 
@@ -350,7 +350,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         cdms2.setNetcdfDeflateLevelFlag(0)  # Argument is int between 0 and 9
 
     def hash(self, block_size=65536):
-        self_file = open(self())
+        self_file = open(self(), 'rb')
         buffer = self_file.read(block_size)
         hasher = hashlib.md5()
         while len(buffer) > 0:

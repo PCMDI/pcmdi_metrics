@@ -7,11 +7,14 @@ import pcmdi_metrics
 
 class PMPTest(unittest.TestCase):
     def checkAllClose(self, a, b, rtol=1e-05, atol=1e-08):
+        print("SHAPES: {} {}".format(a.shape,b.shape))
         if numpy.ma.allclose(a.filled(), b.filled(), rtol=rtol, atol=atol):
             return True
         else:
             axes = a.getAxisList()
-            c = numpy.isclose(a.filled(), b.filled(), rtol=rtol, atol=atol)
+            a = a.filled()
+            b = b.filled()
+            c = numpy.isclose(a, b, rtol=rtol, atol=atol)
             w = numpy.argwhere(c==0)
             for d in w:
                 print("Error for:", end=' ')
