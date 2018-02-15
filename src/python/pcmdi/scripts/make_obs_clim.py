@@ -80,10 +80,12 @@ args = parser.parse_args()
 
 # Test and validate file
 if (args.file == ""):
-    print("** No valid file specified - no *.nc files will be written **")
+    print "** No valid file specified - no *.nc " +\
+        "files will be written **"
     sys.exit()
 elif os.path.isfile(args.file) is False:
-    print("** No valid file specified - no *.nc files will be written **")
+    print "** No valid file specified - no " +\
+        "*.nc files will be written **"
     sys.exit()
 
 # Get CMOR_table_id
@@ -95,33 +97,37 @@ elif args.target_variable in ['sftlf']:
     cmor_table = 'fx'
 
 # Open file instance
-print("".join(['** Processing: ', args.file]))
+print "".join(['** Processing: ', args.file])
 f_h = cdm.open(args.file)
 try:
     start_time = f_h.getAxis('time').asComponentTime()[0]
-    print(''.join(['start_time: ', str(start_time)]))
+    print ''.join(['start_time: ', str(start_time)])
     end_time = f_h.getAxis('time').asComponentTime()[-1]
-    print(''.join(['end_time:   ', str(end_time)]))
+    print ''.join(['end_time:   ', str(end_time)])
 except Exception:
-    print('** No time access associated with file_variable')
+    print '** No time access associated with file_variable'
     start_time = cdt.comptime(int(args.start_yr), 1, 1)
     end_time = cdt.comptime(int(args.end_yr), 12, 31)
 
 # Test and validate file_variable
 if (args.file_variable == ""):
-    print("** No valid variable specified - no *.nc files will be written **")
+    print "** No valid variable specified - " +\
+        "no *.nc files will be written **"
     sys.exit()
-if args.file_variable not in list(f_h.variables.keys()):
-    print("** No valid variable specified - no *.nc files will be written **")
+if args.file_variable not in f_h.variables.keys():
+    print "** No valid variable specified - " +\
+        "no *.nc files will be written **"
     f_h.close()
     sys.exit()
 # Test target_variable
 if (args.target_variable == ""):
-    print("** No valid target_variable specified - no *.nc files will be written **")
+    print "** No valid target_variable specified - " +\
+        "no *.nc files will be written **"
     sys.exit()
 # Test data_source
 if (args.data_source == ""):
-    print("** No valid data_source specified - no *.nc files will be written **")
+    print "** No valid data_source specified - " +\
+        "no *.nc files will be written **"
     sys.exit()
 else:
     # Convert data_source to standard - saving '_' for field delimiters
@@ -132,50 +138,60 @@ end_yr = 2005
 
 # Test start_yr
 if args.start_yr is None:
-    print("** No valid start_yr specified - defaulting to start_yr=1980 **")
+    print "** No valid start_yr specified           " +\
+        "- defaulting to start_yr=1980 **"
     start_yr = 1980
     start_yr_s = str(start_yr)
 elif args.start_yr is not None and start_time.year == 0:
     start_yr = args.start_yr
     start_yr_s = str(start_yr)
-    print('** Start year specified by user - resetting to start_yr= %s **' % start_yr_s)
+    print '** Start year specified by user - ' +\
+        'resetting to start_yr= %s **' % start_yr_s
 elif args.start_yr is not None:
     start_yr = args.start_yr
     start_yr_s = str(start_yr)
-    print('** Start year specified by user - resetting to start_yr= %s **' % start_yr_s)
+    print '** Start year specified by user ' +\
+        '- resetting to start_yr= %s **' % start_yr_s
 elif start_time.year < start_yr:
     start_yr = 1980
     start_yr_s = str(start_yr)
-    print('** Start year != 1980 - resetting to start_yr=1980 **')
+    print '** Start year != 1980           ' +\
+        '- resetting to start_yr=1980 **'
 elif start_time.year > start_yr:
     start_yr = start_time.year
     start_yr_s = str(start_yr)
-    print('** Start year != 1980 - resetting to start_yr= %s **' % start_yr_s)
+    print '** Start year != 1980           "+\
+            "- resetting to start_yr= %s **' % start_yr_s
 # Test end_yr
 if args.end_yr is None:
-    print("** No valid end_yr specified - defaulting to end_yr=2005 **")
+    print "** No valid end_yr specified             " +\
+        "- defaulting to end_yr=2005 **"
     end_yr = 2005
     end_yr_s = str(end_yr)
 elif args.end_yr is not None and end_time.year == 0:
     end_yr = args.end_yr
     end_yr_s = str(end_yr)
-    print('** End year specified by user - resetting to end_yr= %s **' % end_yr_s)
+    print '** End year specified by user   ' +\
+        '- resetting to end_yr= %s **' % end_yr_s
 elif args.end_yr is not None:
     end_yr = args.end_yr
     end_yr_s = str(end_yr)
-    print('** End year specified by user   -  resetting to end_yr= %s **' % end_yr_s)
+    print '** End year specified by user   -' +\
+        ' resetting to end_yr= %s **' % end_yr_s
 elif end_time.year < end_yr:
     end_yr = end_time.year
     end_yr_s = str(end_yr)
-    print('** End year != 2005 - resetting to start_yr= %s **' % end_yr_s)
+    print '** End year != 2005             ' +\
+        '- resetting to start_yr= %s **' % end_yr_s
 elif end_time.year > end_yr and start_time.year > end_yr:
     end_yr = args.end_yr
     end_yr_s = str(end_yr)
-    print('** End year specified by user - resetting to end_yr= %s **' % end_yr_s)
+    print '** End year specified by user   ' +\
+        '- resetting to end_yr= %s **' % end_yr_s
 elif end_time.year > end_yr:
     end_yr = 2005
     end_yr_s = str(end_yr)
-    print('** End year != 2005  - resetting to start_yr=2005 **')
+    print '** End year != 2005             - resetting to start_yr=2005 **'
 
 # Open and process file
 f_h = cdm.open(args.file)
@@ -188,12 +204,12 @@ if args.target_variable == 'sftlf':
             if key in ['add_offset', 'missing_value', 'scale_factor']:
                 continue
             else:
-                print(key)
+                print key
                 delattr(clim_ac, key)
         start_month_s = '01'
         end_month_s = '12'
     elif args.data_source == 'UKMetOffice-HadISST':
-        print(args.data_source)
+        print args.data_source
         clim_ac = f_h(args.file_variable)[0, ...]
         clim_ac1 = cdm.createVariable(clim_ac.mask, id='sftlf')
         clim_ac1.setGrid(clim_ac.getGrid())
@@ -269,12 +285,12 @@ elif args.target_variable == 'sftlf':
 else:
     clim_ac.units = d.units
 # Rewrite variable attributes
-print(args.target_variable)
-print(clim_ac.shape)
+print args.target_variable
+print clim_ac.shape
 clim_ac.id = args.target_variable
 clim_ac.name = args.target_variable
 clim_ac.source_name = args.file_variable
-att_keys = list(d.attributes.keys())
+att_keys = d.attributes.keys()
 for i, key in enumerate(d.attributes.keys()):
     if key in ['Conventions', 'conventions', 'add_offset',
                'history', 'institution',
@@ -294,11 +310,11 @@ outfile = "".join(["_".join([args.target_variable,
                                                 end_month_s]),
                                        'clim'])]),
                    '.nc'])
-print("".join(['** Creating: ', outfile]))
+print "".join(['** Creating: ', outfile])
 
 # Check file exists
 if os.path.exists(outfile):
-    print("** File exists.. removing **")
+    print "** File exists.. removing **"
     os.remove(outfile)
 f_out = cdm.open(outfile, 'w')
 # Write new outfile global atts
@@ -306,8 +322,8 @@ f_out = cdm.open(outfile, 'w')
 globalAttWrite(f_out, options=None)
 f_out.pcmdi_metrics_version = '0.1-alpha'
 f_out.pcmdi_metrics_comment = 'This climatology was prepared by PCMDI ' +\
-                              'for the WGNE/WGCM metrics package and ' +\
-                              'is intended for research purposes only'
+    'for the WGNE/WGCM metrics package and ' +\
+    'is intended for research purposes only'
 for i, key in enumerate(f_h.attributes.keys()):
     if key in ['history']:
         continue

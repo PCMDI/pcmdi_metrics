@@ -141,7 +141,7 @@ for f in A.files:
         raise RuntimeError("file '%s' doe not exits" % f)
 if len(A.files) > 1:
     if A.verbose:
-        print("Multiple files sent, running cdscan on them")
+        print "Multiple files sent, running cdscan on them"
     xml = tempfile.mkstemp(suffix=".xml")[1]
     P = subprocess.Popen(
         shlex.split(
@@ -178,7 +178,7 @@ def checkCMORAttribute(att, source=filein):
     return res
 
 
-fvars = list(filein.variables.keys())
+fvars = filein.variables.keys()
 for ivar, v in enumerate(A.vars):
     if v not in fvars:
         raise RuntimeError(
@@ -252,7 +252,7 @@ for ivar, v in enumerate(A.vars):
     # Read in data
     data = V(time=slice(i0, i1))
     if A.verbose:
-        print("DATA:", data.shape, data.getTime().asComponentTime()[0], data.getTime().asComponentTime()[-1])
+        print "DATA:", data.shape, data.getTime().asComponentTime()[0], data.getTime().asComponentTime()[-1]
     if A.bounds:
         cdutil.times.setTimeBoundsMonthly(data)
     # Now we can actually read and compute the climo
@@ -285,8 +285,8 @@ for ivar, v in enumerate(A.vars):
         tc = T.asComponentTime()
 
         if A.verbose:
-            print("TG:", Tg.asComponentTime()[0])
-            print("START END THRESHOLD:", istart, iend, A.threshold, len(Tg))
+            print "TG:", Tg.asComponentTime()[0]
+            print "START END THRESHOLD:", istart, iend, A.threshold, len(Tg)
             # print "SEASON:", season, "ORIGINAL:", T.asComponentTime()
         b1 = cdtime.reltime(Tg.getBounds()[0][0], Tg.units)
         b2 = cdtime.reltime(Tg.getBounds()[-1][1], Tg.units)
@@ -300,8 +300,8 @@ for ivar, v in enumerate(A.vars):
         y = cdtime.reltime(yr, T.units).tocomp(cal).year
 
         if A.verbose:
-            print("We found data from ", y1.tocomp(cal), "to", y2.tocomp(cal), "MID YEAR:", y)
-            print("bounds:", b1.tocomp(cal), b2.tocomp(cal))
+            print "We found data from ", y1.tocomp(cal), "to", y2.tocomp(cal), "MID YEAR:", y
+            print "bounds:", b1.tocomp(cal), b2.tocomp(cal)
 
         values = []
         bounds = []
@@ -328,7 +328,7 @@ for ivar, v in enumerate(A.vars):
             #  if b1.month == b2.month:
             #    b2.year = b1.year+1
             if A.verbose:
-                print(B1.tocomp(cal), "<", t, "<", B2.tocomp(cal))
+                print B1.tocomp(cal), "<", t, "<", B2.tocomp(cal)
             bounds.append([B1.torel(Tunits, cal).value,
                            B2.torel(Tunits, cal).value])
 
@@ -429,11 +429,11 @@ for ivar, v in enumerate(A.vars):
         path2 = path.replace("-clim.nc", "-clim-%s.nc" % suffix)
         os.rename(path, path2)
         if A.verbose:
-            print("Saved to:", path2)
+            print "Saved to:", path2
 
         cmor.close()
         if A.verbose:
-            print("closed cmor")
+            print "closed cmor"
 
 
 # clean up

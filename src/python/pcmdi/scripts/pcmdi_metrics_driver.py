@@ -10,12 +10,6 @@ from pcmdi_metrics import LOG_LEVEL
 import ast
 
 
-try:
-    basestring
-except:
-    basestring = str
-
-
 class PMPDriver(object):
 
     def __init__(self, parameter):
@@ -109,7 +103,7 @@ class PMPDriver(object):
         from default_regions.py and stores them as attributes. '''
         default_regions_file = \
             pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj('default_regions.py')
-        exec(compile(open(default_regions_file.name).read(), default_regions_file.name, 'exec'))
+        execfile(default_regions_file.name)
         default_regions_file.close()
         try:
             self.default_regions = locals()['default_regions']

@@ -119,13 +119,13 @@ for filePath in lst:
         tableId = 'Omon'
     elif realm == 'fx':
         tableId = 'fx'
-    print('tableId:', tableId)
-    print('subp:', subp)
-    print('var:', var)
-    print('product:', product)
+    print 'tableId:', tableId
+    print 'subp:', subp
+    print 'var:', var
+    print 'product:', product
 
     fileName = subp.split('/')[-1]
-    print('Filename:', fileName)
+    print 'Filename:', fileName
     # Fix rgd2.5_ac issue
     fileName = fileName.replace('rgd2.5_ac', 'ac')
     if '-clim' in fileName:
@@ -137,12 +137,12 @@ for filePath in lst:
     else:
         period = fileName.split('_')[-2]
     period = period.replace('-clim.nc', '')  # .replace('ac.nc','')
-    print('period:', period)
+    print 'period:', period
 
     # TRAP FILE NAME FOR OBS DATA
-    if var not in list(obs_dic.keys()):
+    if var not in obs_dic.keys():
         obs_dic[var] = {}
-    if product not in list(obs_dic[var].keys()) and os.path.isfile(filePath):
+    if product not in obs_dic[var].keys() and os.path.isfile(filePath):
         obs_dic[var][product] = {}
         obs_dic[var][product]['filename'] = fileName
         obs_dic[var][product]['CMIP_CMOR_TABLE'] = tableId
@@ -159,13 +159,13 @@ for filePath in lst:
         f.close()
         shape = repr(d.shape)
         obs_dic[var][product]['shape'] = shape
-        print('md5:', md5)
-        print('')
+        print 'md5:', md5
+        print ''
         del(d, fileName)
         gc.collect()
 
     try:
-        for r in list(obs_dic_in[var].keys()):
+        for r in obs_dic_in[var].keys():
             # print '1',r,var,product
             # print obs_dic_in[var][r],'=',product
             if obs_dic_in[var][r] == product:

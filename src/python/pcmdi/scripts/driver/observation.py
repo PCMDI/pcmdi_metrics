@@ -5,12 +5,6 @@ from pcmdi_metrics.driver.dataset import DataSet
 from pcmdi_metrics import LOG_LEVEL
 
 
-try:
-    basestring
-except:
-    basestring = str
-
-
 class OBS(Base):
     ''' Creates an output the netCDF file for an observation. '''
     def __init__(self, root, var, obs_dict, obs='default',
@@ -42,11 +36,11 @@ class OBS(Base):
     def setup_based_on_obs_table(self, obs_table):
         ''' Set the realm, frequency, ac based on the
         CMIP_CMOR_TABLE value in the obs dict.'''
-        if obs_table == 'Omon':
+        if obs_table == u'Omon':
             self.realm = 'ocn'
             self.frequency = 'mo'
             self.ac = 'ac'
-        elif obs_table == 'fx':
+        elif obs_table == u'fx':
             self.realm = ''
             self.frequency = 'fx'
             self.ac = ''
@@ -96,7 +90,7 @@ class Observation(DataSet):
     def get_obs_from_obs_dict(self):
         ''' Returns the obsercation from the obsercation
         dictionary for self.var and self.obs_or_model. '''
-        if isinstance(self.obs_dict[self.var][self.obs_or_model], basestring):
+        if isinstance(self.obs_dict[self.var][self.obs_or_model], (str, unicode)):
             obs_from_obs_dict = \
                 self.obs_dict[self.var][self.obs_dict[self.var][self.obs_or_model]]
         else:
@@ -151,11 +145,11 @@ class Observation(DataSet):
         obs_list = parameter_obs_list
         if 'all' in [x.lower() for x in obs_list]:
             obs_list = 'all'
-        if isinstance(obs_list, str):
+        if isinstance(obs_list, (unicode, str)):
             if obs_list.lower() == 'all':
                 obs_list = []
-                for obs in list(obs_dict[var].keys()):
-                    if isinstance(obs_dict[var][obs], str):
+                for obs in obs_dict[var].keys():
+                    if isinstance(obs_dict[var][obs], (unicode, str)):
                         obs_list.append(obs)
             else:
                 obs_list = [obs_list]

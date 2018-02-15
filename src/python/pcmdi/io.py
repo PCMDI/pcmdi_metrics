@@ -3,12 +3,6 @@ import json
 import os
 
 
-try:
-    basestring
-except:
-    basestring = str
-
-
 class OBS(pcmdi_metrics.io.base.Base):
 
     def __init__(self, root, var, obs_dic, reference="default",
@@ -26,11 +20,11 @@ class OBS(pcmdi_metrics.io.base.Base):
         ref = obs_dic[var][obs_name]
         obs_table = ref["CMIP_CMOR_TABLE"]
 
-        if obs_table == "Omon":
+        if obs_table == u"Omon":
             self.realm = 'ocn'
             self.frequency = 'mo'
             self.ac = 'ac'
-        elif obs_table == "fx":
+        elif obs_table == u"fx":
             self.realm = ''
             self.frequency = 'fx'
             self.ac = ''
@@ -71,12 +65,12 @@ class JSONs(pcmdi_metrics.io.base.JSONs):
         if json_version is None:
             # Json format not stored, trying to guess
             R = tmp_dict["RESULTS"]
-            K = list(R.keys())
+            K = R.keys()
             for ky in K:
                 try:
                     out = R[ky]  # get first available model
                     out = out["defaultReference"]  # get first set of obs
-                    k = list(out.keys())
+                    k = out.keys()
                     # print filename,"K IS:",k
                     k.pop(k.index("source"))
                     out = out[k[0]]  # first realization
@@ -85,7 +79,7 @@ class JSONs(pcmdi_metrics.io.base.JSONs):
                 # Ok at this point we need to see if it is json std 1 or 2
                 # version 1 had NHEX in every region
                 # version 2 does not
-                if "bias_xy_djf_NHEX" in list(out[list(out.keys())[0]].keys()):
+                if "bias_xy_djf_NHEX" in out[out.keys()[0]].keys():
                     json_version = "1.0"
                     json_struct = self.json_struct[1:]
                 else:
