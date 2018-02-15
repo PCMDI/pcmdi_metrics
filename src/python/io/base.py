@@ -27,8 +27,9 @@ logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
 
 try:
     basestring
-except:
+except Exception:
     basestring = str
+
 
 # cdutil region object need a serializer
 def update_dict(d, u):
