@@ -30,14 +30,14 @@ class DiurnalTest(unittest.TestCase):
 
             self.assertSame(test,good)
         
-    def testDiurnaliComputeStdDailyMean(self):
+    def teistDiurnaliComputeStdDailyMean(self):
         cmd = 'computeStdDailyMeansWrapped.py -i test_data -o test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
 
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_std_of_dailymeans.nc")
 
-    def testFourierDiurnalAllGridWrapped(self):
+    def teistFourierDiurnalAllGridWrapped(self):
         cmd = 'fourierDiurnalAllGridWrapped.py -i test_data/results/nc -o test_data/results/nc -m7'
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
@@ -45,13 +45,13 @@ class DiurnalTest(unittest.TestCase):
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_tS.nc")
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_S.nc")
 
-    def testDiurnalStdDailyVariance(self):
+    def teistDiurnalStdDailyVariance(self):
         self.runJsoner("std_of_dailymeansWrappedInOut.py","pr_Jul_1999_2005_std_of_dailymeans.json")
     def runJsoner(self,script,json_file):
-        cmd = '{} --region_name=TROPICS --lat1=-30. --lat2=30. --lon1=0. --lon2=360 -i tests/diurnal/results/nc -o test_data/results/jsons -m7'.format(script)
+        cmd = '{} --region_name=TROPICS --lat1=-30. --lat2=30. --lon1=0. --lon2=360 -i tests/diurnal/results/nc -o test_data/results/jsons -m7 -t "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_S.nc"'.format(script)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
-        cmd = '{} --append -i tests/diurnal/results/nc -o test_data/results/jsons -m7'.format(script)
+        cmd = '{} --append -i tests/diurnal/results/nc -o test_data/results/jsons -m7 -t "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_S.nc"'.format(script)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
         good = open("tests/diurnal/results/json/{}".format(json_file))
@@ -59,7 +59,7 @@ class DiurnalTest(unittest.TestCase):
         test = json.load(test)
         good = json.load(good)
         self.assertEqual(test["RESULTS"],good["RESULTS"])
-    def testCompositeDiurnalStatisticsWrapped(self):
+    def teistCompositeDiurnalStatisticsWrapped(self):
         cmd = 'compositeDiurnalStatisticsWrapped.py -i test_data -o test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
@@ -67,16 +67,16 @@ class DiurnalTest(unittest.TestCase):
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_diurnal_std.nc")
         self.compare_nc("results/nc/pr_CMCC_LocalSolarTimes.nc")
 
-    def testStd_of_hourlyvaluesWrappedInOut(self):
+    def teistStd_of_hourlyvaluesWrappedInOut(self):
         self.runJsoner("std_of_hourlyvaluesWrappedInOut.py","pr_Jul_1999-2005_std_of_hourlymeans.json")
 
-    def testStd_of_meandiurnalcycWrappedInOut(self):
+    def teistStd_of_meandiurnalcycWrappedInOut(self):
         self.runJsoner("std_of_meandiurnalcycWrappedInOut.py","pr_Jul_1999-2005_std_of_meandiurnalcyc.json")
 
     def testSavg_fourierWrappedInOut(self):
         self.runJsoner("savg_fourierWrappedInOut.py","pr_Jul_1999-2005_savg_DiurnalFourier.json")
 
-    def testfourierDiurnalGridpoints(self):
+    def teistfourierDiurnalGridpoints(self):
         cmd = "fourierDiurnalGridpoints.py -i tests/diurnal/results/nc -o test_data/results/ascii"  
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()

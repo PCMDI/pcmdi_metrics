@@ -50,7 +50,7 @@ P.add_argument("--filename_template_sftlf",
                help="template for sftlf file names")
 P.add_argument("--model", default="*")
 
-args = P.parse_args(sys.argv[1:])
+args = P.get_parameter()
 month = args.month
 monthname = monthname_d[month]
 startyear = args.firstyear

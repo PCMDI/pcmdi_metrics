@@ -12,7 +12,6 @@
 from __future__ import print_function
 import cdms2
 import MV2
-import sys
 import glob
 import os
 
@@ -48,7 +47,7 @@ P.add_argument("-A", "--outnameasc",
                dest='outnameasc',
                default='pr_%(month)_%(firstyear)-%(lastyear)_fourierDiurnalGridPoints.asc',
                help="Output name for ascs")
-args = P.parse_args(sys.argv[1:])
+args = P.get_parameter()
 month = args.month
 monthname = monthname_d[month]
 startyear = args.firstyear

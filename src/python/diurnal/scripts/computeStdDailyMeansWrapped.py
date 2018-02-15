@@ -17,7 +17,6 @@ import genutil
 import numpy.ma
 import os
 import glob
-import sys
 import cdp
 
 from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor, INPUT
@@ -94,7 +93,7 @@ def compute(params):
     g.close()
 
 
-args = P.parse_args(sys.argv[1:])
+args = P.get_parameter()
 month = args.month
 startyear = args.firstyear
 finalyear = args.lastyear

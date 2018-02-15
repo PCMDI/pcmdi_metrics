@@ -61,7 +61,7 @@ class TestGraphics(unittest.TestCase):
         print("Test file  :",fnm)
         print("Source file:",src)
         if not pngReady:
-            self.x.png(fnm,width=self.x.bgX,height=self.x.bgY,units="pixels")
+            self.x.png(fnm,width=self.x.width, height=self.x.height, units="pixels")
         ret = checkimage.check_result_image(fnm,src,threshold, update_baseline=self.update)
         self.assertEqual(ret,0)
         return ret

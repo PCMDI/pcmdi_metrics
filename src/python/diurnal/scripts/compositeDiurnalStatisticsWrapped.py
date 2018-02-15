@@ -17,7 +17,6 @@ import cdms2
 import genutil
 import MV2
 import os
-import sys
 import glob
 import cdtime
 import cdp
@@ -175,7 +174,7 @@ def compute(params):
 
 
 print('done')
-args = P.parse_args(sys.argv[1:])
+args = P.get_parameter()
 
 month = args.month
 monthname = monthname_d[args.month]
