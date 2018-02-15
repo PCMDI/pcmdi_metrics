@@ -3,6 +3,12 @@ import json
 import os
 
 
+try:
+    basestring
+except:
+    basestring = str
+
+
 class OBS(pcmdi_metrics.io.base.Base):
 
     def __init__(self, root, var, obs_dic, reference="default",

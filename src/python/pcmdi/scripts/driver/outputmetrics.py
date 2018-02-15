@@ -9,6 +9,12 @@ from pcmdi_metrics.driver.dataset import DataSet
 from pcmdi_metrics import LOG_LEVEL
 
 
+try:
+    basestring
+except:
+    basestring = str
+
+
 class OutputMetrics(object):
 
     def __init__(self, parameter, var_name_long, obs_dict, sftlf):
@@ -92,7 +98,7 @@ class OutputMetrics(object):
 
     def calculate_and_output_metrics(self, ref, test):
         ''' Given ref and test (both either of type Observation or Model), compute the metrics. '''
-        if isinstance(self.obs_dict[self.var][ref.obs_or_model], str):
+        if isinstance(self.obs_dict[self.var][ref.obs_or_model], basestring):
             self.obs_var_ref = self.obs_dict[self.var][self.obs_dict[self.var][ref.obs_or_model]]
         else:
             self.obs_var_ref = self.obs_dict[self.var][ref.obs_or_model]
@@ -277,6 +283,7 @@ class OutputMetrics(object):
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
         if not self.parameter.dry_run:
             logging.getLogger("pcmdi_metrics").info('Saving results to: %s' % self.out_file())
+            print("DUMPING CRAP:",self.metrics_dictionary)
             self.out_file.write(self.metrics_dictionary,
                                 json_structure=["model", "reference", "rip", "region", "statistic", "season"],
                                 indent=4,

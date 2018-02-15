@@ -13,6 +13,11 @@ import webbrowser
 import shlex
 import cdat_info
 
+try:
+    basestring
+except Exception:
+    basestring = str
+
 root = os.getcwd()
 cpus = multiprocessing.cpu_count()
 
@@ -111,7 +116,7 @@ def findDiffFiles(log):
 
 
 def run_command(command, join_stderr=True):
-    if isinstance(command, str):
+    if isinstance(command, basestring):
         command = shlex.split(command)
     if args.verbosity > 0:
         print("Executing %s in %s" % (" ".join(command), os.getcwd()))

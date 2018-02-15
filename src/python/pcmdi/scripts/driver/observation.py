@@ -5,6 +5,12 @@ from pcmdi_metrics.driver.dataset import DataSet
 from pcmdi_metrics import LOG_LEVEL
 
 
+try:
+    basestring
+except:
+    basestring = str
+
+
 class OBS(Base):
     ''' Creates an output the netCDF file for an observation. '''
     def __init__(self, root, var, obs_dict, obs='default',
@@ -90,7 +96,7 @@ class Observation(DataSet):
     def get_obs_from_obs_dict(self):
         ''' Returns the obsercation from the obsercation
         dictionary for self.var and self.obs_or_model. '''
-        if isinstance(self.obs_dict[self.var][self.obs_or_model], str):
+        if isinstance(self.obs_dict[self.var][self.obs_or_model], basestring):
             obs_from_obs_dict = \
                 self.obs_dict[self.var][self.obs_dict[self.var][self.obs_or_model]]
         else:

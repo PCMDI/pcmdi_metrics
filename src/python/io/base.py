@@ -551,7 +551,7 @@ class JSONs(object):
                 raise ValueError("Invalid axis '%s'" % axis_id)
             index = ids.index(axis_id)
             value = kargs[axis_id]
-            if isinstance(value, str):
+            if isinstance(value, basestring):
                 value = [value]
             if not isinstance(value, (list, tuple, slice)):
                 raise TypeError(

@@ -10,6 +10,12 @@ from pcmdi_metrics import LOG_LEVEL
 import ast
 
 
+try:
+    basestring
+except:
+    basestring = str
+
+
 class PMPDriver(object):
 
     def __init__(self, parameter):
@@ -126,7 +132,7 @@ class PMPDriver(object):
     def create_region(self, region):
         ''' From the argument region, it gets that region from self.regions_specs
         (which itself is loaded from default_regions.py) '''
-        if isinstance(region, str):
+        if isinstance(region, basestring):
             region_name = region
             region = self.regions_specs.get(
                 region_name,
