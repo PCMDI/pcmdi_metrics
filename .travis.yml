@@ -17,11 +17,16 @@ before_install:
 
 script:
   - conda create -q -n py2 -c uvcdat/label/nightly -c conda-forge -c uvcdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia
+  - conda create -q -n py3 -c uvcdat/label/nightly -c conda-forge -c uvcdat -c pcmdi -c nesii/label/dev-esmf vcs vcsaddons cdp mesalib image-compare flake8 nose cia "python>3"
   # Useful for debugging any issues with conda
   - conda info -a
   - source activate py2
   - python setup.py install
   - source activate py2
+  - python run_tests.py -v2
+  - git clean -fd
+  - source activate py3
+  - python setup.py install
   - python run_tests.py -v2
 
 after_success:
