@@ -22,6 +22,7 @@ script:
   - source activate py2
   - python setup.py install
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python run_tests.py -v2 ; fi
+  - source deactivate
 
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install conda-build anaconda-client && bash -x recipes/pcmdi_metrics/conda_upload.sh; fi
+    - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install -n root conda-build anaconda-client && bash -x recipes/pcmdi_metrics/conda_upload.sh; fi
