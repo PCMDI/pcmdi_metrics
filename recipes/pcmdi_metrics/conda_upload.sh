@@ -27,6 +27,7 @@ rm -rf cdp
 echo "cp -r ../../recipes/pcmdi_metrics ."
 cp -r ../../recipes/pcmdi_metrics .
 echo "Starting prep for build"
+source deactivate
 python ./prep_for_build.py -l 1.1.2
 echo "starting conda build"
 conda build pcmdi_metrics -c conda-forge -c uvcdat
