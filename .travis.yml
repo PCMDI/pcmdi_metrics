@@ -25,4 +25,4 @@ script:
   - python run_tests.py -v2
 
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install "conda-build<4" && conda install anaconda-client && bash -x recipes/pcmdi_metrics/conda_upload.sh; fi
+  - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install "conda-build <=3.3.0" "anaconda-client <=1.6.6"  && bash -x recipes/pcmdi_metrics/conda_upload.sh; fi
