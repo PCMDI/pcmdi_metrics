@@ -21,7 +21,7 @@ script:
   - conda info -a
   - source activate py2
   - python setup.py install
-  - "$TRAVIS_OS_NAME" = "linux" ]; then python run_tests.py -v2
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python run_tests.py -v2
 
 after_success:
   - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install conda-build anaconda-client && bash -x recipes/pcmdi_metrics/conda_upload.sh; fi
