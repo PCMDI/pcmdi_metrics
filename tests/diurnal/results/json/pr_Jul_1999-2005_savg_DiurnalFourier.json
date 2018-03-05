@@ -1,0 +1,127 @@
+{
+    "REFERENCE": "The statistics in this file are based on Covey et al., J Climate 2016",
+    "json_structure": [
+        "model",
+        "domain",
+        "harmonic",
+        "statistic"
+    ],
+    "provenance": {
+        "platform": {
+            "OS": "Linux",
+            "Version": "4.13.0-19-generic",
+            "Name": "drdoom"
+        },
+        "userId": "doutriaux1",
+        "osAccess": false,
+        "commandLine": "/home/doutriaux1/anaconda2/envs/nightly2/bin/savg_fourierWrappedInOut.py --append -i tests/diurnal/results/nc -o test_data/results/jsons -m7",
+        "date": "2017-12-21 17:20:06",
+        "conda": {
+            "Platform": "linux-64",
+            "Version": "4.3.30",
+            "IsPrivate": "False",
+            "envVersion": "4.3.30",
+            "buildVersion": "3.0.28",
+            "PythonVersion": "2.7.14.final.0",
+            "RootEnvironment": "/home/doutriaux1/anaconda2  (writable)",
+            "DefaultEnvironment": "/home/doutriaux1/anaconda2/envs/nightly2"
+        },
+        "packages": {
+            "blas": "0.2.20",
+            "cdms": "2.12.2017.11.30.06.06.14b9b9380c14680498a0ba8e9aefb4c84d2756be",
+            "CDP": "1.1.0",
+            "cdtime": "2017.11.15",
+            "cdutil": "2.12.2017.11.16.21.46.e717f782e07d0a187f2b616a408103af20ceb57f",
+            "clapack": "3.2.1",
+            "lapack": "3.6.1",
+            "esmf": "7.0.0",
+            "esmpy": "7.0.0",
+            "genutil": "2017.11.15",
+            "python": "2.7.14",
+            "matplotlib": "2.1.1",
+            "mesalib": "17.2.0",
+            "numpy": "1.13.3",
+            "vcs": "2.12.2017.12.14.17.01.99491e457b26e4e5fbb875e5ba75e7265f5e5b1b",
+            "vtk": "7.1.0.2.12",
+            "PMP": "g6ca4d58",
+            "PMPObs": null
+        },
+        "openGL": {
+            "vendor": "X.Org",
+            "renderer": "AMD TURKS (DRM 2.50.0 / 4.13.0-19-generic, LLVM 5.0.0)",
+            "version": "3.0 Mesa 17.2.2",
+            "shading language version": "1.30",
+            "GLX": {
+                "client": {
+                    "vendor": "Mesa Project and SGI",
+                    "version": "1.4"
+                },
+                "version": "1.4",
+                "server": {
+                    "vendor": "SGI",
+                    "version": "1.4"
+                }
+            }
+        }
+    },
+    "RESULTS": {
+        "CMCC": {
+            "TROPICS": {
+                "harmonic2": {
+                    "pha_avg_lnd": 4.630479623191498,
+                    "amp_avg_ocn": 0.1013535443192936,
+                    "pha_avg_ocn": 6.216779605786119,
+                    "amp_avg_lnd": 0.4446492127610328
+                },
+                "harmonic3": {
+                    "pha_avg_lnd": 0.6424494812695326,
+                    "amp_avg_ocn": 0.018649923583445832,
+                    "pha_avg_ocn": 2.9074929649270276,
+                    "amp_avg_lnd": 0.05872192253917548
+                },
+                "harmonic1": {
+                    "pha_avg_lnd": 16.571398252926915,
+                    "amp_avg_ocn": 0.36913808560762545,
+                    "pha_avg_ocn": 8.261227664939977,
+                    "amp_avg_lnd": 0.8902230200805754
+                }
+            },
+            "TRMM": {
+                "harmonic2": {
+                    "pha_avg_lnd": 4.527929393121403,
+                    "amp_avg_ocn": 0.08501471624047707,
+                    "pha_avg_ocn": 6.358694740438092,
+                    "amp_avg_lnd": 0.3772614118017368
+                },
+                "harmonic3": {
+                    "pha_avg_lnd": 0.44504280439914284,
+                    "amp_avg_ocn": 0.012034623053092585,
+                    "pha_avg_ocn": 2.3086496727977948,
+                    "amp_avg_lnd": 0.04654577252551838
+                },
+                "harmonic1": {
+                    "pha_avg_lnd": 16.275695610410192,
+                    "amp_avg_ocn": 0.31771654735858623,
+                    "pha_avg_ocn": 7.969509128258713,
+                    "amp_avg_lnd": 0.77801266028589
+                }
+            }
+        }
+    },
+    "RegionalMasking": {
+        "TROPICS": {
+            "domain": {
+                "TROPICS": "cdutil.region.domain(latitude=(-30.0, 30.0),longitude=(0.0, 360.0))"
+            },
+            "id": "TROPICS"
+        },
+        "TRMM": {
+            "domain": {
+                "TRMM": "cdutil.region.domain(latitude=(-50.0, 50.0),longitude=(0.0, 360.0))"
+            },
+            "id": "TRMM"
+        }
+    },
+    "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference: Gleckler, P. J., C. Doutriaux, P. J. Durack, K. E. Taylor, Y. Zhang, and D. N. Williams, E. Mason, and J. Servonnat (2016), A more powerful reality test for climate models, Eos, 97, doi:10.1029/2016EO051663. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
+    "json_version": 3.0
+}

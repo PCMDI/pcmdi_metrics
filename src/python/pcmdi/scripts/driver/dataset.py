@@ -70,9 +70,10 @@ class DataSet(object):
         sftlf = {}
 
         for test in parameter.test_data_set:
-            sft = Base(parameter.test_data_path,
-                       getattr(parameter, "sftlf_filename_template",
-                               parameter.filename_template))
+            tmp_name = getattr(parameter, "sftlf_filename_template")
+            if tmp_name is None:  # Not defined from commandline or param file
+                tmp_name = parameter.filename_template
+            sft = Base(parameter.test_data_path, tmp_name)
             sft.model_version = test
             sft.table = "fx"
             sft.realm = "atmos"
@@ -86,7 +87,7 @@ class DataSet(object):
                 sftlf[test] = {"raw": sft.get("sftlf")}
                 sftlf[test]["filename"] = os.path.basename(sft())
                 sftlf[test]["md5"] = sft.hash()
-            except:
+            except Exception:
                 sftlf[test] = {"raw": None}
                 sftlf[test]["filename"] = None
                 sftlf[test]["md5"] = None
@@ -121,10 +122,10 @@ class DataSet(object):
         try:
             opened_file = open(file_path)
         except IOError:
-            logging.error('%s could not be loaded!' % file_path)
-        except:
-            logging.error('Unexpected error while opening file: ' +
-                          sys.exc_info()[0])
+            logging.getLogger("pcmdi_metrics").error('%s could not be loaded!' % file_path)
+        except Exception:
+            logging.getLogger("pcmdi_metrics").error('Unexpected error while opening file: ' +
+                                                     sys.exc_info()[0])
         return opened_file
 
     @abc.abstractmethod

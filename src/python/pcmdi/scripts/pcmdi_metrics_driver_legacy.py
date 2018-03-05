@@ -26,7 +26,7 @@ cdat_info.pingPCMDIdb("pcmdi_metrics", "pcmdi_metrics_driver")
 # Salinity Units
 try:
     unidata.udunits_wrap.init()
-except:
+except Exception:
     import genutil as unidata
     unidata.udunits_wrap.init()
 
@@ -166,7 +166,7 @@ try:
     os.makedirs(
         os.path.dirname(out)
     )
-except:
+except Exception:
     pass
 
 Efile = open(out, "w")
@@ -215,7 +215,7 @@ for model_version in parameters.model_versions:
         sftlf[model_version] = {"raw": sft.get("sftlf")}
         sftlf[model_version]["filename"] = os.path.basename(sft())
         sftlf[model_version]["md5"] = sft.hash()
-    except:
+    except Exception:
         # Hum no sftlf...
         dup.tb = args.traceback
         dup("No mask for ", sft())
@@ -374,7 +374,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                             obs_dic,
                             obs_var_ref["RefName"])
                         oMasknm = oMask()
-                    except:
+                    except Exception:
                         dup("couldn't figure out obs mask name from obs json file")
                         oMasknm = None
 
@@ -556,7 +556,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                           "(%s) to observation unit (%s) scaling: %g offset: %g" % (
                                               dm.units, do.units, scaling, offset)
                                     warnings.warn(wrn)
-                                except:
+                                except Exception:
                                     raise RuntimeError(
                                         "Could not convert model units (%s) " % dm.units +
                                         "to obs units: (%s)" % (do.units))
@@ -615,7 +615,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                                             getattr(
                                                                 f,
                                                                 a)))
-                                                except:
+                                                except Exception:
                                                     vals.append(getattr(f, a))
                                             # Ok couldn't find it anywhere
                                             # setting to N/A
@@ -688,7 +688,7 @@ for Var in parameters.vars:  # CALCULATE METRICS FOR ALL VARIABLES IN vars
                                                 Var,
                                                 None,
                                                 None))
-                                    except:
+                                    except Exception:
                                         # Better than nothing we will use the doc
                                         # string
                                         metrics_def_dictionary.update(

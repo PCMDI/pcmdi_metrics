@@ -186,7 +186,9 @@ if len(names)==0:
     sys.exit(0)
 
 # Make sure we have sample data
-#cdat_info.download_sample_data_files(os.path.join(sys.prefix,"share","vcs","test_data_files.txt"),cdat_info.get_sampledata_path())
+if not os.path.exists("test_data"):
+    os.makedirs("test_data")
+cdat_info.download_sample_data_files(os.path.join(sys.prefix,"share","pmp","test_data_files.txt"),"test_data")
 if args.update:
     os.environ["UPDATE_TESTS"]="True"
 if args.traceback:

@@ -88,3 +88,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# durack1 files
+recipes/conda-envs/pmp-1.1.2a.yml
+test/

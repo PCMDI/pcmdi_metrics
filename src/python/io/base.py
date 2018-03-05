@@ -15,6 +15,7 @@ import subprocess
 import sys
 import shlex
 import datetime
+from pcmdi_metrics import LOG_LEVEL
 
 
 value = 0
@@ -22,7 +23,7 @@ cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
 cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
 # where value is a integer between 0 and 9 included
 cdms2.setNetcdfDeflateLevelFlag(value)
-logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
 
 
 # cdutil region object need a serializer
@@ -40,7 +41,7 @@ def update_dict(d, u):
 def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
     try:
         p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    except:
+    except Exception:
         return
     out, stde = p.communicate()
     if stde != '':
@@ -66,14 +67,14 @@ def generateProvenance():
     prov["platform"] = platfrm
     try:
         logname = os.getlogin()
-    except:
+    except Exception:
         try:
             import pwd
             logname = pwd.getpwuid(os.getuid())[0]
-        except:
+        except Exception:
             try:
                 logname = os.environ.get('LOGNAME', 'unknown')
-            except:
+            except Exception:
                 logname = 'unknown-loginname'
     prov["userId"] = logname
     prov["osAccess"] = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
@@ -187,8 +188,8 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         if not os.path.exists(dir_path):
             try:
                 os.makedirs(dir_path)
-            except:
-                logging.error(
+            except Exception:
+                logging.getLogger("pcmdi_metrics").error(
                     'Could not create output directory: %s' % dir_path)
 
         if self.type == 'json':
@@ -222,10 +223,10 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             f.close()
 
         else:
-            logging.error('Unknown type: %s' % type)
+            logging.getLogger("pcmdi_metrics").error('Unknown type: %s' % type)
             raise RuntimeError('Unknown type: %s' % type)
 
-        logging.info('Results saved to a %s file: %s' % (type, file_name))
+        logging.getLogger("pcmdi_metrics").info('Results saved to a %s file: %s' % (type, file_name))
 
     def get(self, var, var_in_file=None,
             region={}, *args, **kwargs):
@@ -314,7 +315,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
     def get_mask_from_var(self, var):
         try:
             o_mask = self.file_mask_template.get('sftlf')
-        except:
+        except Exception:
             o_mask = cdutil.generateLandSeaMask(
                 var, regridTool=self.regrid_tool).filled(1.) * 100.
             o_mask = MV2.array(o_mask)
@@ -335,7 +336,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             self.target_grid = target
             self.target_grid_name = target
         else:
-            logging.error('Unknown grid: %s' % target)
+            logging.getLogger("pcmdi_metrics").error('Unknown grid: %s' % target)
             raise RuntimeError('Unknown grid: %s' % target)
 
     def setup_cdms2(self):
@@ -463,11 +464,11 @@ class JSONs(object):
             for k in axval:
                 try:
                     vals = vals[k]
-                except:
+                except Exception:
                     vals = 1.e20
             try:
                 out[tuple(ids)] = float(vals)
-            except:
+            except Exception:
                 out[tuple(ids)] = 1.e20
 
     def __init__(self, files=[], structure=[], ignored_keys=[], oneVariablePerFile=True):

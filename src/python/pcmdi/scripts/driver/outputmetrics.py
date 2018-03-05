@@ -6,12 +6,13 @@ import pcmdi_metrics
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.driver.observation import Observation
 from pcmdi_metrics.driver.dataset import DataSet
+from pcmdi_metrics import LOG_LEVEL
 
 
 class OutputMetrics(object):
 
     def __init__(self, parameter, var_name_long, obs_dict, sftlf):
-        logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
         self.parameter = parameter
         self.var_name_long = var_name_long
         self.obs_dict = obs_dict
@@ -102,7 +103,7 @@ class OutputMetrics(object):
             ref_data = ref()
         except Exception as e:
             msg = 'Error while processing observation %s for variables %s:\n\t%s'
-            logging.error(msg % (self.var, str(e)))
+            logging.getLogger("pcmdi_metrics").error(msg % (self.var, str(e)))
 
         try:
             test_data = test()
@@ -141,7 +142,7 @@ class OutputMetrics(object):
                     self.metrics_def_dictionary.update(
                         self.parameter.compute_custom_metrics(
                             self.var_name_long, None, None))
-                except:
+                except Exception:
                     self.metrics_def_dictionary.update(
                         {'custom': self.parameter.compute_custom_metrics.__doc__})
 
@@ -203,7 +204,7 @@ class OutputMetrics(object):
                         if hasattr(f, a):
                             try:
                                 vals.append(float(getattr(f, a)))
-                            except:
+                            except Exception:
                                 vals.append(getattr(f, a))
                         # Ok couldn't find it anywhere
                         # setting to N/A
@@ -235,7 +236,7 @@ class OutputMetrics(object):
         pth = os.path.join(self.parameter.test_clims_interpolated_output,
                            region_name)
         clim_file = Base(pth, self.parameter.filename_output_template)
-        logging.info('Saving interpolated climatologies to: %s' % clim_file())
+        logging.getLogger("pcmdi_metrics").info('Saving interpolated climatologies to: %s' % clim_file())
         clim_file.level = self.out_file.level
         clim_file.model_version = test.obs_or_model
 
@@ -275,7 +276,7 @@ class OutputMetrics(object):
         ''' Output the metrics_dictionary as a json and text file. '''
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
         if not self.parameter.dry_run:
-            logging.info('Saving results to: %s' % self.out_file())
+            logging.getLogger("pcmdi_metrics").info('Saving results to: %s' % self.out_file())
             self.out_file.write(self.metrics_dictionary,
                                 json_structure=["model", "reference", "rip", "region", "statistic", "season"],
                                 indent=4,

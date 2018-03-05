@@ -1,10 +1,10 @@
 package:
     name: pcmdi_metrics
-    version: 1.1.2
+    version: 2.12.2018.02.08.16.44.{{ GIT_FULL_HASH }}
 
 source:
     git_url: git://github.com/PCMDI/pcmdi_metrics
-    git_rev: 1.1.2
+    git_rev: master
 
 build:
     script: python setup.py install
@@ -16,14 +16,15 @@ requirements:
     - setuptools
     - numpy
   run:
-    - vcs ==2.10
-    - vcsaddons ==2.10
-    - cdms2 ==2.10
-    - genutil ==2.10
-    - cdutil ==2.10
+    - vcs >=2.10
+    - vcsaddons >=2.10
+    - cdms2 >=2.10
+    - genutil >=2.10
+    - cdutil >=2.10
     - cdp
     - matplotlib
     - numpy
+    - cia
 
 
 about:

@@ -2,6 +2,7 @@ import logging
 import MV2
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.driver.dataset import DataSet
+from pcmdi_metrics import LOG_LEVEL
 
 
 class OBS(Base):
@@ -12,7 +13,7 @@ class OBS(Base):
                    "%(reference)/%(ac)/%(filename)"
         super(OBS, self).__init__(root, template, file_mask_template)
 
-        logging.basicConfig(level=logging.DEBUG)
+        logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
 
         if obs not in obs_dict[var]:
             msg = '%s is not a valid obs according to the obs_dict.' % obs
@@ -79,9 +80,9 @@ class Observation(DataSet):
             obs_mask = OBS(self.data_path, 'sftlf',
                            self.obs_dict, obs_from_obs_dict['RefName'])
             obs_mask_name = obs_mask()
-        except:
+        except Exception:
             msg = 'Could not figure out obs mask name from obs json file'
-            logging.info(msg)
+            logging.getLogger("pcmdi_metrics").info(msg)
             obs_mask_name = None
 
         return obs_mask_name
@@ -120,11 +121,13 @@ class Observation(DataSet):
             return data_obs
         except Exception as e:
             if self.level is not None:
-                logging.error('Failed opening 4D OBS',
-                              self.var, self.obs_or_model, e)
+                logging.getLogger("pcmdi_metrics").error('Failed opening 4D OBS',
+                                                         self.var, self.obs_or_model,
+                                                         e)
             else:
-                logging.error('Failed opening 3D OBS',
-                              self.var, self.obs_or_model, e)
+                logging.getLogger("pcmdi_metrics").error('Failed opening 3D OBS',
+                                                         self.var,
+                                                         self.obs_or_model, e)
 
     def hash(self):
         ''' Return a hash of the file. '''
