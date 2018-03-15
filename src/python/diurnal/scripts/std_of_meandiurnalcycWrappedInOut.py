@@ -106,12 +106,12 @@ region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
 
 
 print 'Preparing to write output to JSON file ...'
-if not os.path.exists(args.output_directory):
-    os.makedirs(args.output_directory)
+if not os.path.exists(args.results_dir):
+    os.makedirs(args.results_dir)
 jsonFile = populateStringConstructor(args.outnamejson, args)
 jsonFile.month = monthname
 
-jsonname = os.path.join(os.path.abspath(args.output_directory), jsonFile())
+jsonname = os.path.join(os.path.abspath(args.results_dir), jsonFile())
 
 if not os.path.exists(jsonname) or args.append is False:
     print 'Initializing dictionary of statistical results ...'
@@ -125,7 +125,7 @@ else:
 
 OUT = pcmdi_metrics.io.base.Base(
     os.path.abspath(
-        args.output_directory),
+        args.results_dir),
     jsonFile())
 disclaimer = open(
     os.path.join(
@@ -137,7 +137,7 @@ metrics_dictionary["DISCLAIMER"] = disclaimer
 metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Trenberth, Zhang & Gehne, J Hydromet. 2017"
 
 
-files = glob.glob(os.path.join(args.modroot, template()))
+files = glob.glob(os.path.join(args.modpath, template()))
 print files
 
 params = [INPUT(args, name, template) for name in files]

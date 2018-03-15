@@ -146,21 +146,21 @@ def compute(params):
                                                                   args.firstyear),
                                                               str(args.lastyear))
             LSToutfile = ('%s_%s_LocalSolarTimes.nc' % (varbname, dataname))
-            if not os.path.exists(args.output_directory):
-                os.makedirs(args.output_directory)
+            if not os.path.exists(args.results_dir):
+                os.makedirs(args.results_dir)
             f = cdms2.open(
                 os.path.join(
-                    args.output_directory,
+                    args.results_dir,
                     avgoutfile),
                 'w')
             g = cdms2.open(
                 os.path.join(
-                    args.output_directory,
+                    args.results_dir,
                     stdoutfile),
                 'w')
             h = cdms2.open(
                 os.path.join(
-                    args.output_directory,
+                    args.results_dir,
                     LSToutfile),
                 'w')
             f.write(avgvalues)
@@ -216,7 +216,7 @@ template = populateStringConstructor(args.filename_template, args)
 template.variable = varbname
 
 print "TEMPLATE:", template()
-fileList = glob.glob(os.path.join(args.modroot, template()))
+fileList = glob.glob(os.path.join(args.modpath, template()))
 print "FILES:", fileList
 params = [INPUT(args, name, template) for name in fileList]
 print "PARAMS:", params

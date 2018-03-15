@@ -38,7 +38,7 @@ template.month = monthname
 template_LST = populateStringConstructor(args.filename_template_LST, args)
 template_LST.month = monthname
 
-LSTfiles = glob.glob(os.path.join(args.modroot, template_LST()))
+LSTfiles = glob.glob(os.path.join(args.modpath, template_LST()))
 print "LSTFILES:", LSTfiles
 print "TMPL", template_LST()
 for LSTfile in LSTfiles:
@@ -52,7 +52,7 @@ for LSTfile in LSTfiles:
     avgfile = template()
     print 'Reading time series of mean diurnal cycle ...'
     f = cdms2.open(LSTfile)
-    g = cdms2.open(os.path.join(args.modroot, avgfile))
+    g = cdms2.open(os.path.join(args.modpath, avgfile))
     LSTs = f('LST')
     avgs = g('diurnalmean')
     print 'Input shapes: ', LSTs.shape, avgs.shape
@@ -95,7 +95,7 @@ for LSTfile in LSTfiles:
     print '... and writing to netCDF.'
     f = cdms2.open(
         os.path.join(
-            args.output_directory,
+            args.results_dir,
             'pr_' +
             model +
             '_' +
@@ -106,7 +106,7 @@ for LSTfile in LSTfiles:
         'w')
     g = cdms2.open(
         os.path.join(
-            args.output_directory,
+            args.results_dir,
             'pr_' +
             model +
             '_' +
@@ -117,7 +117,7 @@ for LSTfile in LSTfiles:
         'w')
     h = cdms2.open(
         os.path.join(
-            args.output_directory,
+            args.results_dir,
             'pr_' +
             model +
             '_' +

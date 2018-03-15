@@ -197,12 +197,12 @@ def spacevavg(tvarb1, tvarb2, sftlf, model):
 
 
 print 'Preparing to write output to JSON file ...'
-if not os.path.exists(args.output_directory):
-    os.makedirs(args.output_directory)
+if not os.path.exists(args.results_dir):
+    os.makedirs(args.results_dir)
 jsonFile = populateStringConstructor(args.outnamejson, args)
 jsonFile.month = monthname
 
-jsonname = os.path.join(os.path.abspath(args.output_directory), jsonFile())
+jsonname = os.path.join(os.path.abspath(args.results_dir), jsonFile())
 
 if not os.path.exists(jsonname) or args.append is False:
     print 'Initializing dictionary of statistical results ...'
@@ -215,7 +215,7 @@ else:
 
 OUT = pcmdi_metrics.io.base.Base(
     os.path.abspath(
-        args.output_directory),
+        args.results_dir),
     os.path.basename(jsonname))
 disclaimer = open(
     os.path.join(
@@ -236,7 +236,7 @@ template_sftlf = populateStringConstructor(args.filename_template_sftlf, args)
 template_sftlf.month = monthname
 
 print "TEMPLATE:", template_S()
-files_S = glob.glob(os.path.join(args.modroot, template_S()))
+files_S = glob.glob(os.path.join(args.modpath, template_S()))
 print files_S
 for file_S in files_S:
     print 'Reading Amplitude from %s ...' % file_S
@@ -246,18 +246,18 @@ for file_S in files_S:
         template_tS.model = model
         template_sftlf.model = model
         S = cdms2.open(file_S)("S", region)
-        print 'Reading Phase from %s ...' % os.path.join(args.modroot, template_tS())
+        print 'Reading Phase from %s ...' % os.path.join(args.modpath, template_tS())
         tS = cdms2.open(
             os.path.join(
-                args.modroot,
+                args.modpath,
                 template_tS()))(
             "tS",
             region)
-        print 'Reading sftlf from %s ...' % os.path.join(args.modroot, template_sftlf())
+        print 'Reading sftlf from %s ...' % os.path.join(args.modpath, template_sftlf())
         try:
             sftlf_fnm = glob.glob(
                 os.path.join(
-                    args.modroot,
+                    args.modpath,
                     template_sftlf()))[0]
             sftlf = cdms2.open(sftlf_fnm)("sftlf", region) / 100.
         except BaseException as err:
