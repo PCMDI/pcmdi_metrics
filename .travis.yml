@@ -1,6 +1,6 @@
 os:
   - linux
-    #  - osx
+  - osx
 language: python
   - "2.7"
 
@@ -16,18 +16,19 @@ before_install:
   - conda update -y -q conda
 
 script:
-  - conda create -q -n py2 -c uvcdat/label/nightly -c conda-forge -c uvcdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia
-  - conda create -q -n py3 -c uvcdat/label/nightly -c conda-forge -c uvcdat -c pcmdi -c nesii/label/dev-esmf vcs vcsaddons cdp mesalib image-compare flake8 nose cia "python>3"
+  - conda create -q -n py2 -c cdat/label/nightly -c nesii/label/dev-esmf -c conda-forge -c uvcdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "python<3"
+  - conda create -q -n py3 -c cdat/label/nightly -c nesii/label/dev-esmf -c conda-forge -c uvcdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "python>3"
   # Useful for debugging any issues with conda
   - conda info -a
   - source activate py2
   - python setup.py install
-  - source activate py2
-  - python run_tests.py -v2
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python run_tests.py -v2 ; fi
   - git clean -fd
   - source activate py3
   - python setup.py install
-  - python run_tests.py -v2 || true
+  - python run_tests.py -v2
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python run_tests.py -v2 ; fi
+  - source deactivate
 
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install conda-build && conda install anaconda-client && bash -x recipes/pcmdi_metrics/conda_upload.sh; fi
+    - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install -n root conda-build anaconda-client && bash -x recipes/pcmdi_metrics/conda_upload.sh; fi

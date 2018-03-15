@@ -692,7 +692,7 @@ class Portrait(object):
             x = vcs.init()
 
         # Continents bug
-        x.setcontinentstype(0)
+        # x.setcontinentstype(0)
         # gets the thing to plot !
         if data is None:
             data = self.get()
