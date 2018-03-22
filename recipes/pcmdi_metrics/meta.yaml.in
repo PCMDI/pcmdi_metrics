@@ -25,6 +25,7 @@ requirements:
     - matplotlib
     - numpy
     - cia
+    - proj4 <5
 
 
 about:
