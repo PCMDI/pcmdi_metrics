@@ -9,7 +9,6 @@ from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 import pcmdi_metrics
 import collections
-import ast
 import glob
 
 ###########
