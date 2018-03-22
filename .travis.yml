@@ -26,7 +26,6 @@ script:
   - git clean -fd
   - source activate py3
   - python setup.py install
-  - python run_tests.py -v2
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python run_tests.py -v2 ; fi
   - source deactivate
 
