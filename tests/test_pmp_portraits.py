@@ -97,8 +97,7 @@ class TestPortraits(basepmpgraphics.TestGraphics):
         for i in range(len(variablesAxis)):
             variablesAxis[i] = variablesAxis[i] + '  '
 
-        yax = [s.encode('utf-8')
-               for s in mods]  # CHANGE FROM UNICODE TO BYTE STRINGS
+        yax = [str(s) for s in mods]
 
         # GENERATE PLOT
         P.decorate(out1_rel, variables, yax)

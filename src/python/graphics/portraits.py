@@ -36,7 +36,7 @@ class XYs(object):
 
 class Plot_defaults(object):
     __slots__ = ["x1", "x2", "y1", "y2", "levels", "colormap",
-                 "fillareacolors", "legend", "logo", "_logo",
+                 "fillareacolors", "legend", "_logo",
                  "xticorientation", "yticorientation",
                  "parameterorientation", "tictable",
                  "parametertable", "draw_mesh",
@@ -657,7 +657,7 @@ class Portrait(object):
 
         return output
 
-    def decorate(self, output, ynm=None, xnm=None):
+    def decorate(self, output, ynm, xnm):
         x = cdms2.createAxis(list(range(len(xnm))))
         y = cdms2.createAxis(list(range(len(ynm))))
 
