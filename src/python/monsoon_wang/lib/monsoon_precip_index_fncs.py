@@ -41,7 +41,7 @@ def mpd(data):
         31.]
     mjjas = compute_season(data, [4, 5, 6, 7, 8], months_length)
     ndjfm = compute_season(data, [10, 11, 0, 1, 2], months_length)
-    ann = compute_season(data, range(12), months_length)
+    ann = compute_season(data, list(range(12)), months_length)
 
     annrange = MV2.subtract(mjjas, ndjfm)
 

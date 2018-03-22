@@ -1,3 +1,4 @@
+from __future__ import print_function
 import unittest
 import numpy
 import os
@@ -10,22 +11,24 @@ class PMPTest(unittest.TestCase):
             return True
         else:
             axes = a.getAxisList()
-            c = numpy.isclose(a.filled(), b.filled(), rtol=rtol, atol=atol)
+            a = a.filled()
+            b = b.filled()
+            c = numpy.isclose(a, b, rtol=rtol, atol=atol)
             w = numpy.argwhere(c==0)
             for d in w:
-                print "Error for:",
+                print("Error for:", end=' ')
                 for i,indx in enumerate(d):
-                    print "%s, " % axes[i][indx],
-                print "(",
+                    print("%s, " % axes[i][indx], end=' ')
+                print("(", end=' ')
                 for indx in d:
-                    print "%i," % indx,
-                print "). Test value %.3f vs expected value: %.3f realtive: %.3f%%" % (a[tuple(d)],b[tuple(d)],abs((a[tuple(d)]-b[tuple(d)])/b[tuple(d)])*100.)
+                    print("%i," % indx, end=' ')
+                print("). Test value %.3f vs expected value: %.3f realtive: %.3f%%" % (a[tuple(d)],b[tuple(d)],abs((a[tuple(d)]-b[tuple(d)])/b[tuple(d)])*100.))
             return False
         return True
 
     def assertSimilarJsons(self, test_file, correct_file, rtol=1e-05, atol=1e-08, raiseOnError=True):
 
-        print "Comparing:",test_file, correct_file, "atol:",atol,"rtol:",rtol
+        print("Comparing:",test_file, correct_file, "atol:",atol,"rtol:",rtol)
         T = pcmdi_metrics.io.base.JSONs([test_file], oneVariablePerFile=False)
         test = T()
 
@@ -41,11 +44,11 @@ class PMPTest(unittest.TestCase):
         correct = True
         for i in range(len(tax)):
             if not tax[i].id == cax[i].id:
-                print "Axes index %i have different names, test is '%s' vs expected: '%s'" % (i,tax[i].id, cax[i].id)
+                print("Axes index %i have different names, test is '%s' vs expected: '%s'" % (i,tax[i].id, cax[i].id))
                 correct = False
             for j in range(len(tax[i])):
                 if not tax[i][j] == cax[i][j]:
-                    print "Axes %s, differ at index %i, test value: %s vs expectedi value: %s" % (tax[i].id,j,tax[i][j], cax[i][j])
+                    print("Axes %s, differ at index %i, test value: %s vs expectedi value: %s" % (tax[i].id,j,tax[i][j], cax[i][j]))
                     correct = False
 
         if not self.checkAllClose(test, valid, rtol, atol):

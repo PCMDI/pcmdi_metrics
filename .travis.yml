@@ -17,9 +17,14 @@ before_install:
 
 script:
   - conda create -q -n py2 -c cdat/label/nightly -c nesii/label/dev-esmf -c conda-forge -c uvcdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "proj4<5" "python<3"
+  - conda create -q -n py3 -c cdat/label/nightly -c nesii/label/dev-esmf -c conda-forge -c uvcdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "proj4<5" "python>3"
   # Useful for debugging any issues with conda
   - conda info -a
   - source activate py2
+  - python setup.py install
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python run_tests.py -v2 ; fi
+  - git clean -fd
+  - source activate py3
   - python setup.py install
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python run_tests.py -v2 ; fi
   - source deactivate

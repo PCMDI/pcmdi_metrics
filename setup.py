@@ -1,3 +1,4 @@
+from __future__ import print_function
 from distutils.core import setup
 import glob
 import subprocess
@@ -19,7 +20,7 @@ p = subprocess.Popen(
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE)
 try:
-    descr = p.stdout.readlines()[0].strip()
+    descr = p.stdout.readlines()[0].strip().decode("utf-8")
     Version = "-".join(descr.split("-")[:-2])
     if Version == "":
         Version = descr
@@ -36,13 +37,13 @@ p = subprocess.Popen(
     stdout=subprocess.PIPE,
     stderr=subprocess.PIPE)
 try:
-    commit = p.stdout.readlines()[0].split()[1]
+    commit = p.stdout.readlines()[0].split()[1].decode("utf-8")
 except:
     commit = ""
 f = open("src/python/version.py", "w")
-print >>f, "__version__ = '%s'" % Version
-print >>f, "__git_tag_describe__ = '%s'" % descr
-print >>f, "__git_sha1__ = '%s'" % commit
+print("__version__ = '%s'" % Version, file=f)
+print("__git_tag_describe__ = '%s'" % descr, file=f)
+print("__git_sha1__ = '%s'" % commit, file=f)
 f.close()
 
 portrait_files = ["src/python/graphics/share/portraits.scr", ]
@@ -66,7 +67,7 @@ scripts = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
 scripts += glob.glob("src/python/diurnal/scripts/*.py")
 
 demo_files = glob.glob("demo/*/*")
-print "demo files"
+print("demo files")
 
 data_files = [
               ('share/pmp/graphics/vcs', portrait_files),
@@ -98,7 +99,7 @@ data_files = [
              ]
 
 if install_dev:
-    print "Adding experimental packages"
+    print("Adding experimental packages")
     dev_packages = glob.glob("src/python/devel/*")
     dev_packages.remove("src/python/devel/example_dev")
     for p in dev_packages:
@@ -130,7 +131,7 @@ setup(name='pcmdi_metrics',
       author='PCMDI',
       description='model metrics tools',
       url='http://github.com/PCMDI/pcmdi_metrics',
-      packages=packages.keys(),
+      packages=list(packages.keys()),
       package_dir=packages,
       scripts=scripts,
       data_files=data_files

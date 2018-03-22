@@ -31,7 +31,8 @@ source deactivate
 source activate root
 python ./prep_for_build.py -l 1.1.2
 echo "starting conda build"
-conda build pcmdi_metrics -c conda-forge -c uvcdat -c pcmdi
+conda build pcmdi_metrics -c nesii/label/dev-esmf -c conda-forge -c uvcdat -c pcmdi --python=27
+conda build pcmdi_metrics -c nesii/label/dev-esmf -c conda-forge -c uvcdat -c pcmdi --python=36
 echo "starting anaconda upload"
 anaconda -t $CONDA_UPLOAD_TOKEN upload -u $USER -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-*tar.bz2 --force
 

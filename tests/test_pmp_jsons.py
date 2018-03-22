@@ -12,7 +12,7 @@ class TestJSONs(unittest.TestCase):
             pth, "io", "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_1900-2005_adjust_based_tcor_obs-pc1_vs_obs-pseudo_pcs.json")])
         axes_ids = J.getAxisIds()
         axes = J.getAxisList()
-        assert(axes_ids == ['variable', u'model', u'realization', u'reference', u'mode', u'season', u'statistic'])
+        assert(axes_ids == ['variable', 'model', 'realization', 'reference', 'mode', 'season', 'statistic'])
         data = J()
         assert(data.shape == (1, 47, 33, 1, 1, 4, 24))
         data = J(

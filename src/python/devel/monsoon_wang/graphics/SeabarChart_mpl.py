@@ -8,7 +8,7 @@ class BarChart(object):
 
     def __init__(self, mods, data, uni, fig=None, rect=111, **kwargs):
 
-        print 'IN FCN..... '
+        print('IN FCN..... ')
 
         # Canvas setup
         if fig is None:
@@ -24,7 +24,7 @@ class BarChart(object):
             unit = kwargs['label']
         else:
             unit = uni  # 'Unit needed here ...'
-        print 'data above max '
+        print('data above max ')
         ymax = max(data)
         ymin = min(data)
 #   yint = float((ymax-ymin)/3.)  # REPLACE INT WITH FLOAT
@@ -52,12 +52,12 @@ class BarChart(object):
                         # -- if we didn't provide enough colors (for the number of simulations),
                         #    we will use green as a default
                         tmpcolors = ['g'] * len(highlights)
-                        for i in xrange(len(colors)):
+                        for i in range(len(colors)):
                             tmpcolors[i] = colors[i]
                         colors = tmpcolors
             else:
                 colors = ['g'] * len(highlights)
-            print 'highlights = ', highlights
+            print('highlights = ', highlights)
             for highlight in highlights:
                 y_highlight = [0] * len(y)
 

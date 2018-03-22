@@ -39,25 +39,25 @@ template_LST = populateStringConstructor(args.filename_template_LST, args)
 template_LST.month = monthname
 
 LSTfiles = glob.glob(os.path.join(args.modroot, template_LST()))
-print "LSTFILES:", LSTfiles
-print "TMPL", template_LST()
+print("LSTFILES:", LSTfiles)
+print("TMPL", template_LST())
 for LSTfile in LSTfiles:
-    print 'Reading %s ...' % LSTfile, os.path.basename(LSTfile)
+    print('Reading %s ...' % LSTfile, os.path.basename(LSTfile))
     reverted = template_LST.reverse(os.path.basename(LSTfile))
     model = reverted["model"]
-    print '===================='
-    print model
-    print '===================='
+    print('====================')
+    print(model)
+    print('====================')
     template.model = model
     avgfile = template()
-    print 'Reading time series of mean diurnal cycle ...'
+    print('Reading time series of mean diurnal cycle ...')
     f = cdms2.open(LSTfile)
     g = cdms2.open(os.path.join(args.modroot, avgfile))
     LSTs = f('LST')
     avgs = g('diurnalmean')
-    print 'Input shapes: ', LSTs.shape, avgs.shape
+    print('Input shapes: ', LSTs.shape, avgs.shape)
 
-    print 'Getting latitude and longitude coordinates.'
+    print('Getting latitude and longitude coordinates.')
     # Any file with grid info will do, so use Local Standard Times file:
     modellats = LSTs.getLatitude()
     modellons = LSTs.getLongitude()
@@ -65,14 +65,14 @@ for LSTfile in LSTfiles:
     f.close()
     g.close()
 
-    print 'Taking fast Fourier transform of the mean diurnal cycle ...'
+    print('Taking fast Fourier transform of the mean diurnal cycle ...')
     cycmean, maxvalue, tmax = fastAllGridFT(avgs, LSTs)
-    print '  Output:'
-    print '    cycmean', cycmean.shape
-    print '    maxvalue', maxvalue.shape
-    print '    tmax', tmax.shape
+    print('  Output:')
+    print('    cycmean', cycmean.shape)
+    print('    maxvalue', maxvalue.shape)
+    print('    tmax', tmax.shape)
 
-    print '"Re-decorating" Fourier harmonics with grid info, etc., ...'
+    print('"Re-decorating" Fourier harmonics with grid info, etc., ...')
     cycmean = MV2.array(cycmean)
     maxvalue = MV2.array(maxvalue)
     tmax = MV2.array(tmax)
@@ -92,7 +92,7 @@ for LSTfile in LSTfiles:
     tmax.id = 'tS'
     tmax.units = 'GMT'
 
-    print '... and writing to netCDF.'
+    print('... and writing to netCDF.')
     f = cdms2.open(
         os.path.join(
             args.output_directory,
