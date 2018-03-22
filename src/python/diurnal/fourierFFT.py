@@ -61,7 +61,7 @@ On output: c[i,j] = mean value at each gridpoint (i,j) in the time series ("zero
     '''
     import numpy
 
-    print 'Creating output arrays ...'
+    print('Creating output arrays ...')
     nx = x.shape[1]
     ny = x.shape[2]
     # time  of maximum for nth component (n=0 => diurnal, n=1 => semi...)
@@ -69,11 +69,11 @@ On output: c[i,j] = mean value at each gridpoint (i,j) in the time series ("zero
     # value of maximum for nth component (= 1/2 peak-to-peak amplitude)
     maxvalue = numpy.zeros((3, nx, ny))
 
-    print 'Calling numpy FFT function ...'
+    print('Calling numpy FFT function ...')
     X = numpy.fft.ifft(x, axis=0)
-    print X.shape
+    print(X.shape)
 
-    print 'Converting from complex-valued FFT to real-valued amplitude and phase ...'
+    print('Converting from complex-valued FFT to real-valued amplitude and phase ...')
     a = X.real
     b = X.imag
     S = numpy.sqrt(a**2 + b**2)

@@ -14,6 +14,7 @@
 # Curt Covey (from ./savg_fourierWrappedInOutCCSMandMIROC.py)
 # June 2017
 
+from __future__ import print_function
 import cdms2
 import cdutil
 import MV2
@@ -58,7 +59,7 @@ finalyear = args.lastyear
 years = "%s-%s" % (startyear, finalyear)
 
 
-print 'Specifying latitude / longitude domain of interest ...'
+print('Specifying latitude / longitude domain of interest ...')
 # TRMM (observed) domain:
 latrange = (args.lat1, args.lat2)
 lonrange = (args.lon1, args.lon2)
@@ -113,7 +114,7 @@ def spacevavg(tvarb1, tvarb2, sftlf, model):
         '''
 
     glolf = cdutil.averager(sftlf, axis='xy')
-    print '  Global mean land fraction = %5.3f' % glolf
+    print('  Global mean land fraction = %5.3f' % glolf)
     outD = {}  # Output dictionary to be returned by this function
     harmonics = [1, 2, 3]
     for harmonic in harmonics:
@@ -125,7 +126,7 @@ def spacevavg(tvarb1, tvarb2, sftlf, model):
         cosine = MV2.cos(hrs_to_rad(tmax, clocktype)) * ampl    # X-component
         sine = MV2.sin(hrs_to_rad(tmax, clocktype)) * ampl    # Y-component
 
-        print 'Area-averaging globally, over land only, and over ocean only ...'
+        print('Area-averaging globally, over land only, and over ocean only ...')
         # Average Cartesian components ...
         cos_avg_glo = cdutil.averager(cosine, axis='xy')
         sin_avg_glo = cdutil.averager(sine, axis='xy')
@@ -174,19 +175,19 @@ def spacevavg(tvarb1, tvarb2, sftlf, model):
             # print '** Correcting erroneous time recording in ', rootfname
             pha_avg_lnd -= 1.5
             pha_avg_lnd = MV2.remainder(pha_avg_lnd, clocktype)
-        print 'Converting singleton transient variables to plain floating-point numbers ...'
+        print('Converting singleton transient variables to plain floating-point numbers ...')
         amp_avg_glo = float(amp_avg_glo)
         pha_avg_glo = float(pha_avg_glo)
         amp_avg_lnd = float(amp_avg_lnd)
         pha_avg_lnd = float(pha_avg_lnd)
         amp_avg_ocn = float(amp_avg_ocn)
         pha_avg_ocn = float(pha_avg_ocn)
-        print '%s %s-harmonic amplitude, phase = %7.3f mm/d, %7.3f hrsLST averaged globally' \
-              % (monthname, harmonic, amp_avg_glo, pha_avg_glo)
-        print '%s %s-harmonic amplitude, phase = %7.3f mm/d, %7.3f hrsLST averaged over land'\
-              % (monthname, harmonic, amp_avg_lnd, pha_avg_lnd)
-        print '%s %s-harmonic amplitude, phase = %7.3f mm/d, %7.3f hrsLST averaged over ocean'\
-              % (monthname, harmonic, amp_avg_ocn, pha_avg_ocn)
+        print('%s %s-harmonic amplitude, phase = %7.3f mm/d, %7.3f hrsLST averaged globally'
+              % (monthname, harmonic, amp_avg_glo, pha_avg_glo))
+        print('%s %s-harmonic amplitude, phase = %7.3f mm/d, %7.3f hrsLST averaged over land'
+              % (monthname, harmonic, amp_avg_lnd, pha_avg_lnd))
+        print('%s %s-harmonic amplitude, phase = %7.3f mm/d, %7.3f hrsLST averaged over ocean'
+              % (monthname, harmonic, amp_avg_ocn, pha_avg_ocn))
         # Sub-dictionaries, one for each harmonic component:
         outD['harmonic' + str(harmonic)] = {}
         outD['harmonic' + str(harmonic)]['amp_avg_lnd'] = amp_avg_lnd
@@ -196,7 +197,7 @@ def spacevavg(tvarb1, tvarb2, sftlf, model):
     return outD
 
 
-print 'Preparing to write output to JSON file ...'
+print('Preparing to write output to JSON file ...')
 if not os.path.exists(args.results_dir):
     os.makedirs(args.results_dir)
 jsonFile = populateStringConstructor(args.outnamejson, args)
@@ -205,7 +206,7 @@ jsonFile.month = monthname
 jsonname = os.path.join(os.path.abspath(args.results_dir), jsonFile())
 
 if not os.path.exists(jsonname) or args.append is False:
-    print 'Initializing dictionary of statistical results ...'
+    print('Initializing dictionary of statistical results ...')
     stats_dic = {}
     metrics_dictionary = collections.OrderedDict()
 else:
@@ -235,25 +236,25 @@ template_tS.month = monthname
 template_sftlf = populateStringConstructor(args.filename_template_sftlf, args)
 template_sftlf.month = monthname
 
-print "TEMPLATE:", template_S()
+print("TEMPLATE:", template_S())
 files_S = glob.glob(os.path.join(args.modpath, template_S()))
-print files_S
+print(files_S)
 for file_S in files_S:
-    print 'Reading Amplitude from %s ...' % file_S
+    print('Reading Amplitude from %s ...' % file_S)
     reverted = template_S.reverse(os.path.basename(file_S))
     model = reverted["model"]
     try:
         template_tS.model = model
         template_sftlf.model = model
         S = cdms2.open(file_S)("S", region)
-        print 'Reading Phase from %s ...' % os.path.join(args.modpath, template_tS())
+        print('Reading Phase from %s ...' % os.path.join(args.modpath, template_tS()))
         tS = cdms2.open(
             os.path.join(
                 args.modpath,
                 template_tS()))(
             "tS",
             region)
-        print 'Reading sftlf from %s ...' % os.path.join(args.modpath, template_sftlf())
+        print('Reading sftlf from %s ...' % os.path.join(args.modpath, template_sftlf()))
         try:
             sftlf_fnm = glob.glob(
                 os.path.join(
@@ -261,8 +262,8 @@ for file_S in files_S:
                     template_sftlf()))[0]
             sftlf = cdms2.open(sftlf_fnm)("sftlf", region) / 100.
         except BaseException as err:
-            print 'Failed reading sftlf from file (error was: %s)' % err
-            print 'Creating one for you'
+            print('Failed reading sftlf from file (error was: %s)' % err)
+            print('Creating one for you')
             sftlf = cdutil.generateLandSeaMask(S.getGrid())
 
         if model not in stats_dic:
@@ -270,9 +271,9 @@ for file_S in files_S:
         else:
             stats_dic[model].update(
                 {region_name: spacevavg(S, tS, sftlf, model)})
-        print stats_dic
+        print(stats_dic)
     except Exception as err:
-        print "Failed for model %s with error %s" % (model, err)
+        print("Failed for model %s with error %s" % (model, err))
 
 # Write output to JSON file.
 metrics_dictionary["RESULTS"] = stats_dic
@@ -288,4 +289,4 @@ OUT.write(
     separators=(
         ',',
         ': '))
-print 'done'
+print('done')

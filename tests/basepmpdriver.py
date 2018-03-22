@@ -18,17 +18,17 @@ class PMPDriverTest(basepmp.PMPTest):
             tb="-t"
         else:
             tb = ""
-        print
-        print
-        print
-        print
-        print "---------------------------------------------------"
-        print "RUNNING:", parameterFile
-        print "---------------------------------------------------"
-        print
-        print
-        print
-        print
+        print()
+        print()
+        print()
+        print()
+        print("---------------------------------------------------")
+        print("RUNNING:", parameterFile)
+        print("---------------------------------------------------")
+        print()
+        print()
+        print()
+        print()
         subprocess.call(
             shlex.split(
                 #"pcmdi_metrics_driver_legacy.py -p %s %s" %
@@ -44,7 +44,7 @@ class PMPDriverTest(basepmp.PMPTest):
                 os.path.dirname(__file__) +
                 "/pcmdi/%s/*.json" %
                 parameters.case_id)
-            print "GOOD FILES:",good_files
+            print("GOOD FILES:",good_files)
             if len(good_files) == 0:
                 raise Exception(" ".join("could not find good files",
                     __file__, os.path.dirname(__file__),
@@ -52,7 +52,7 @@ class PMPDriverTest(basepmp.PMPTest):
             allCorrect = True
             for gnm in good_files:
                 if os.path.basename(gnm) == nm:
-                    print "comparing:", fnm, gnm
+                    print("comparing:", fnm, gnm)
                     if self.update:
                         shutil.copy(fnm, gnm)
                     else:
@@ -70,8 +70,7 @@ class PMPDriverTest(basepmp.PMPTest):
             sys.path.append(pth)
         if fnm.lower()[-3:] == ".py":
             fnm = fnm[:-3]
-        parameters = ""  # so flake8 doesn't complain
-        exec("import %s as parameters" % fnm)
+        parameters = __import__(fnm, globals(), locals(), [], 0)
         # Ok now let's figure out where the results have been dumped
         pthout = pcmdi_metrics.io.base.Base(
             os.path.join(

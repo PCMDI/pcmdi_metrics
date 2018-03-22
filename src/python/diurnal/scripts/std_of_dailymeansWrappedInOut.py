@@ -17,6 +17,7 @@
 # Curt Covey (from ./old_std_of_dailymeansWrappedInOut.py)
 # July 2017
 
+from __future__ import print_function
 import cdms2
 import cdutil
 import os
@@ -38,7 +39,7 @@ def compute(param):
     fnameRoot = param.fileName
     reverted = template.reverse(os.path.basename(fnameRoot))
     model = reverted["model"]
-    print 'Specifying latitude / longitude domain of interest ...'
+    print('Specifying latitude / longitude domain of interest ...')
     datanameID = 'dailySD'  # Short ID name of output data
     latrange = (param.args.lat1, param.args.lat2)
     lonrange = (param.args.lon1, param.args.lon2)
@@ -47,20 +48,20 @@ def compute(param):
         region_name = "{:g}_{:g}&{:g}_{:g}".format(*(latrange + lonrange))
     else:
         region_name = param.args.region_name
-    print 'Reading {} ...'.format(fnameRoot)
+    print('Reading {} ...'.format(fnameRoot))
     try:
         f = cdms2.open(fnameRoot)
         x = f(datanameID, region)
         units = x.units
-        print '  Shape =', x.shape
-        print 'Finding RMS area-average ...'
+        print('  Shape =', x.shape)
+        print('Finding RMS area-average ...')
         x = x * x
         x = cdutil.averager(x, axis='xy')
         x = numpy.ma.sqrt(x)
-        print 'For %8s in %s, average variance of daily values = (%5.2f %s)^2' % (model, monthname, x, units)
+        print('For %8s in %s, average variance of daily values = (%5.2f %s)^2' % (model, monthname, x, units))
         f.close()
     except Exception as err:
-        print "Failed for model %s with error %s" % (model, err)
+        print("Failed for model %s with error %s" % (model, err))
         x = 1.e20
     return model, region, {region_name: x}
 
@@ -91,10 +92,10 @@ finalyear = args.lastyear
 template = populateStringConstructor(args.filename_template, args)
 template.month = monthname
 
-print "TEMPLATE NAME:", template()
+print("TEMPLATE NAME:", template())
 
 
-print 'Preparing to write output to JSON file ...'
+print('Preparing to write output to JSON file ...')
 if not os.path.exists(args.results_dir):
     os.makedirs(args.results_dir)
 jsonFile = populateStringConstructor(args.outnamejson, args)
@@ -103,7 +104,7 @@ jsonFile.month = monthname
 jsonname = os.path.join(os.path.abspath(args.results_dir), jsonFile())
 
 if not os.path.exists(jsonname) or args.append is False:
-    print 'Initializing dictionary of statistical results ...'
+    print('Initializing dictionary of statistical results ...')
     stats_dic = {}
     metrics_dictionary = collections.OrderedDict()
 else:
@@ -126,9 +127,9 @@ metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Tren
 
 
 files = glob.glob(os.path.join(args.modpath, template()))
-print files
+print(files)
 params = [INPUT(args, name, template) for name in files]
-print "PARAMS:", params
+print("PARAMS:", params)
 
 results = cdp.cdp_run.multiprocess(
     compute, params, num_workers=args.num_workers)
@@ -140,11 +141,11 @@ for r in results:
     else:
         stats_dic[m].update(res)
 
-print 'Writing output to JSON file ...', stats_dic
+print('Writing output to JSON file ...', stats_dic)
 metrics_dictionary["RESULTS"] = stats_dic
 rgmsk = metrics_dictionary.get("RegionalMasking", {})
-print "REG MASK:", rgmsk
-nm = res.keys()[0]
+print("REG MASK:", rgmsk)
+nm = list(res.keys())[0]
 region.id = nm
 rgmsk[nm] = {"id": nm, "domain": region}
 metrics_dictionary["RegionalMasking"] = rgmsk
@@ -155,4 +156,4 @@ OUT.write(
     separators=(
         ',',
         ': '))
-print 'done'
+print('done')

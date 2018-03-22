@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import print_function
 import basepmpgraphics
 import os
 import pcmdi_metrics.graphics.portraits
@@ -16,17 +16,17 @@ class TestPortraits(basepmpgraphics.TestGraphics):
 
     def test_portrait(self):
 
-        print
-        print
-        print
-        print
-        print "---------------------------------------------------"
-        print "RUNNING: Portrait test"
-        print "---------------------------------------------------"
-        print
-        print
-        print
-        print
+        print()
+        print()
+        print()
+        print()
+        print("---------------------------------------------------")
+        print("RUNNING: Portrait test")
+        print("---------------------------------------------------")
+        print()
+        print()
+        print()
+        print()
         # CREATES VCS OBJECT AS A PORTAIT PLOT AND LOADS PLOT SETTINGS FOR
         # EXAMPLE
         self.x.portrait()
@@ -69,7 +69,7 @@ class TestPortraits(basepmpgraphics.TestGraphics):
                 'portraits.scr'))
         P.PLOT_SETTINGS.colormap = 'bl_rd_12'
         # cols=vcs.getcolors(P.PLOT_SETTINGS.levels,range(16,40),split=1)
-        cols = vcs.getcolors(P.PLOT_SETTINGS.levels, range(144, 156), split=1)
+        cols = vcs.getcolors(P.PLOT_SETTINGS.levels, list(range(144, 156)), split=1)
         P.PLOT_SETTINGS.fillareacolors = cols
 
         P.PLOT_SETTINGS.parametertable.expansion = 100
@@ -78,8 +78,8 @@ class TestPortraits(basepmpgraphics.TestGraphics):
 
         mods = sorted(J.getAxis("model")[:])
         variables = sorted(J.getAxis("variable")[:])
-        print "MODELS:",len(mods),mods
-        print "VARS:",len(variables),variables
+        print("MODELS:",len(mods),mods)
+        print("VARS:",len(variables),variables)
         # Get what we need
         out1_rel = J(statistic=["rms_xyt"],season=["ann"],region="global")(squeeze=1)
 
@@ -97,8 +97,7 @@ class TestPortraits(basepmpgraphics.TestGraphics):
         for i in range(len(variablesAxis)):
             variablesAxis[i] = variablesAxis[i] + '  '
 
-        yax = [s.encode('utf-8')
-               for s in mods]  # CHANGE FROM UNICODE TO BYTE STRINGS
+        yax = [str(s) for s in mods]
 
         # GENERATE PLOT
         P.decorate(out1_rel, variables, yax)

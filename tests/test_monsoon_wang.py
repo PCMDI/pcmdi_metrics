@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import unittest
 import pcmdi_metrics
@@ -15,13 +16,13 @@ class MonsoonTest(unittest.TestCase):
             c = numpy.isclose(a.filled(),b.filled())
             w = numpy.argwhere(c==0)
             for d in w:
-                print "Error for:",
+                print("Error for:", end=' ')
                 for i,indx in enumerate(d):
-                    print "%s, " % axes[i][indx],
-                print "(",
+                    print("%s, " % axes[i][indx], end=' ')
+                print("(", end=' ')
                 for indx in d:
-                    print "%i," % indx,
-                print "). Test value %.3f vs expected value: %.3f" % (a[tuple(d)],b[tuple(d)])
+                    print("%i," % indx, end=' ')
+                print("). Test value %.3f vs expected value: %.3f" % (a[tuple(d)],b[tuple(d)]))
             return False
         return True
 
@@ -41,7 +42,7 @@ class MonsoonTest(unittest.TestCase):
 
     def compareJsons(self, test_file, correct_file):
 
-        print "Comparing:",test_file, correct_file
+        print("Comparing:",test_file, correct_file)
         T = pcmdi_metrics.io.base.JSONs([test_file], oneVariablePerFile=False)
         test = T()
 
@@ -57,11 +58,11 @@ class MonsoonTest(unittest.TestCase):
         correct = True
         for i in range(len(tax)):
             if not tax[i].id == cax[i].id:
-                print "Axes index %i have different names, test is '%s' vs expected: '%s'" % (i,tax[i].id, cax[i].id)
+                print("Axes index %i have different names, test is '%s' vs expected: '%s'" % (i,tax[i].id, cax[i].id))
                 correct = False
             for j in range(len(tax[i])):
                 if not tax[i][j] == cax[i][j]:
-                    print "Axes %s, differ at index %i, test value: %s vs expectedi value: %s" % (tax[i].id,j,tax[i][j], cax[i][j])
+                    print("Axes %s, differ at index %i, test value: %s vs expectedi value: %s" % (tax[i].id,j,tax[i][j], cax[i][j]))
                     correct = False
 
         if not self.checkAllClose(test, valid):

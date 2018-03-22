@@ -5,11 +5,11 @@ import logging
 import cdutil
 import cdms2
 from pcmdi_metrics.io.base import Base
+from six import with_metaclass
 
 
-class DataSet(object):
+class DataSet(with_metaclass(abc.ABCMeta, object)):
     ''' Abstract parent of the Observation of Model classes. '''
-    __metaclass__ = abc.ABCMeta
 
     def __init__(self, parameter, var_name_long, region,
                  obs_dict, data_path, sftlf):
@@ -105,7 +105,7 @@ class DataSet(object):
     @staticmethod
     def apply_custom_keys(obj, custom_dict, var):
         ''' Apply the all of the keys in custom_dict that are var to obj. '''
-        for k, v in custom_dict.iteritems():
+        for k, v in custom_dict.items():
             key = custom_dict[k]
             setattr(obj, k, key.get(var, key.get(None, "")))
 

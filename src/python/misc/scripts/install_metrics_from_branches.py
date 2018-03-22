@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import argparse
 import time
 import subprocess
@@ -62,7 +63,7 @@ metrics_name = "/".join(sp[1:])
 
 
 def execute_cmd(cmd, path=os.getcwd()):
-    print("Executing: %s in: %s" % (cmd, path))
+    print(("Executing: %s in: %s" % (cmd, path)))
     p = subprocess.Popen(shlex.split(cmd), cwd=path)
     o, e = p.communicate()
     return o, e
@@ -114,32 +115,32 @@ metrics_pth = os.path.join(args.git, metrics_name)
 merge_branches(metrics_pth, args.metrics)
 
 f = open("install_in_env.bash", "w")
-print >> f, "#!/usr/bin/env bash"
-print >>f, "source activate %s" % args.env
-print >>f, "conda uninstall -y openblas"
+print("#!/usr/bin/env bash", file=f)
+print("source activate %s" % args.env, file=f)
+print("conda uninstall -y openblas", file=f)
 if args.vcs != ["master"]:
-    print >>f, "cd %s" % vcs_pth
-    print >>f, "rm -rf build"
-    print >>f, "python setup.py install --old-and-unmanageable"
+    print("cd %s" % vcs_pth, file=f)
+    print("rm -rf build", file=f)
+    print("python setup.py install --old-and-unmanageable", file=f)
 if args.cdms != ["master"]:
-    print >>f, "cd %s" % cdms_pth
-    print >>f, "rm -rf build"
-    print >>f, "python setup.py install"
-print >>f, "cd %s" % metrics_pth
-print >>f, "rm -rf build"
-print >>f, "python setup.py install"
+    print("cd %s" % cdms_pth, file=f)
+    print("rm -rf build", file=f)
+    print("python setup.py install", file=f)
+print("cd %s" % metrics_pth, file=f)
+print("rm -rf build", file=f)
+print("python setup.py install", file=f)
 f.close()
 execute_cmd("bash install_in_env.bash")
 
 
-print(
+print((
     "You should be good to go, we merged vcs branches:" +
     "'%s' cdms branches: '%s' and metrics branches '%s' into conda env: '%s'" %
     (" ".join(
         args.vcs), " ".join(
             args.cdms), " ".join(
-                args.metrics), args.env))
+                args.metrics), args.env)))
 
 print("now run")
 
-print("source activate %s" % args.env)
+print(("source activate %s" % args.env))

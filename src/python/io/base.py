@@ -25,10 +25,15 @@ cdms2.setNetcdfDeflateFlag(value)  # where value is either 0 or 1
 cdms2.setNetcdfDeflateLevelFlag(value)
 logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
 
+try:
+    basestring  # noqa
+except Exception:
+    basestring = str
+
 
 # cdutil region object need a serializer
 def update_dict(d, u):
-    for k, v in u.iteritems():
+    for k, v in u.items():
         if isinstance(v, collections.Mapping):
             r = update_dict(d.get(k, {}), v)
             d[k] = r
@@ -47,7 +52,7 @@ def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
     if stde != '':
         return
     for strBit in out.splitlines():
-        for key, value in pairs.iteritems():
+        for key, value in pairs.items():
             if value in strBit:
                 prov[key] = strBit.split(sep)[index].strip()
     if fill_missing is not False:
@@ -153,7 +158,7 @@ class CDMSDomainsEncoder(json.JSONEncoder):
     def default(self, o):
         components = o.components()[0].kargs
         args = ','.join(
-            ['%s=%s' % (key, val) for key, val in components.iteritems()]
+            ['%s=%s' % (key, val) for key, val in components.items()]
         )
         return {o.id: 'cdutil.region.domain(%s)' % args}
 
@@ -211,7 +216,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
         elif self.type in ['asc', 'ascii', 'txt']:
             f = open(file_name, 'w')
-            for key in data.keys():
+            for key in list(data.keys()):
                 f.write('%s %s\n' % (key, data[key]))
             f.close()
 
@@ -345,7 +350,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         cdms2.setNetcdfDeflateLevelFlag(0)  # Argument is int between 0 and 9
 
     def hash(self, block_size=65536):
-        self_file = open(self())
+        self_file = open(self(), 'rb')
         buffer = self_file.read(block_size)
         hasher = hashlib.md5()
         while len(buffer) > 0:
@@ -359,19 +364,19 @@ class JSONs(object):
 
     def addDict2Self(self, json_dict, json_struct, json_version):
         if float(json_version) == 1.0:
-            V = json_dict[json_dict.keys()[0]]
-            for model in V.keys():  # loop through models
+            V = json_dict[list(json_dict.keys())[0]]
+            for model in list(V.keys()):  # loop through models
                 m = V[model]
-                for ref in m.keys():
+                for ref in list(m.keys()):
                     aref = m[ref]
                     if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
                         continue
-                    reals = aref.keys()
+                    reals = list(aref.keys())
                     src = reals.pop(reals.index("source"))
                     for real in reals:
                         areal = aref[real]
                         areal2 = {"source": src}
-                        for region in areal.keys():
+                        for region in list(areal.keys()):
                             reg = areal[region]
                             if region == "global":
                                 region2 = ""
@@ -381,7 +386,7 @@ class JSONs(object):
                             areal2[region2 + "NHEX"] = {}
                             areal2[region2 + "SHEX"] = {}
                             areal2[region2 + "TROPICS"] = {}
-                            key_stats = reg.keys()
+                            key_stats = list(reg.keys())
                             for k in key_stats:
                                 if k[:7] == "custom_":
                                     continue
@@ -406,20 +411,20 @@ class JSONs(object):
                     # restore ref into model
                     m[ref] = aref
         elif float(json_version) == 2.0:
-            V = json_dict[json_dict.keys()[0]]
-            for model in V.keys():  # loop through models
+            V = json_dict[list(json_dict.keys())[0]]
+            for model in list(V.keys()):  # loop through models
                 m = V[model]
-                for ref in m.keys():
+                for ref in list(m.keys()):
                     aref = m[ref]
                     if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
                         continue
-                    reals = aref.keys()
+                    reals = list(aref.keys())
                     src = reals.pop(reals.index("source"))
                     for real in reals:
                         areal = aref[real]
-                        for region in areal.keys():
+                        for region in list(areal.keys()):
                             reg = areal[region]
-                            key_stats = reg.keys()
+                            key_stats = list(reg.keys())
                             for k in key_stats:
                                 if k[:7] == "custom_":
                                     continue
@@ -442,11 +447,11 @@ class JSONs(object):
                     # restore ref into model
                     m[ref] = aref
                 V[model] = m
-            json_dict[json_dict.keys()[0]] = V
+            json_dict[list(json_dict.keys())[0]] = V
         update_dict(self.data, json_dict)
 
     def get_axes_values_recursive(self, depth, max_depth, data, values):
-        for k in data.keys():
+        for k in list(data.keys()):
             if k not in self.ignored_keys and (isinstance(data[k], dict) or depth == max_depth):
                 values[depth].add(k)
                 if depth != max_depth:

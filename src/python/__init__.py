@@ -11,6 +11,6 @@ ch.setFormatter(formatter)
 # add the handler to the logger
 plog.addHandler(ch)
 plog.setLevel(LOG_LEVEL)
-import io  # noqa
-import pcmdi  # noqa
-from version import __version__, __git_sha1__, __git_tag_describe__  # noqa
+from . import io  # noqa
+from . import pcmdi  # noqa
+from .version import __version__, __git_sha1__, __git_tag_describe__  # noqa
