@@ -39,15 +39,9 @@ template.month = monthname
 template_LST = populateStringConstructor(args.filename_template_LST, args)
 template_LST.month = monthname
 
-<<<<<<< HEAD
 LSTfiles = glob.glob(os.path.join(args.modpath, template_LST()))
-print "LSTFILES:", LSTfiles
-print "TMPL", template_LST()
-=======
-LSTfiles = glob.glob(os.path.join(args.modroot, template_LST()))
 print("LSTFILES:", LSTfiles)
 print("TMPL", template_LST())
->>>>>>> origin/master
 for LSTfile in LSTfiles:
     print('Reading %s ...' % LSTfile, os.path.basename(LSTfile))
     reverted = template_LST.reverse(os.path.basename(LSTfile))
