@@ -28,7 +28,7 @@ class MonsoonTest(unittest.TestCase):
 
     def testMonsoonWang(self):
 
-        cmd = 'mpindex_compute.py --mp tests/monsoon/data/pr_1961_1999_MRI-CGCM3_regrid_MODS.nc --op tests/monsoon/obs/pr_gpcp_79_07_mseas.nc --mns "[\'xa\',]" --outpd test_monsoon --outpj test_monsoon --threshold=2.5'
+        cmd = 'mpindex_compute.py --mp tests/monsoon/data/pr_1961_1999_MRI-CGCM3_regrid_MODS.nc --reference_data_path tests/monsoon/obs/pr_gpcp_79_07_mseas.nc --mns "[\'xa\',]" --results_dir test_monsoon --outpj test_monsoon --threshold=2.5'
         print("CMD:",cmd)
         p = subprocess.Popen(shlex.split(cmd))
         o, e = p.communicate()

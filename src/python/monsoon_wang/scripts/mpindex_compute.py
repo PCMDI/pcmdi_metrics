@@ -9,7 +9,6 @@ from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 import pcmdi_metrics
 import collections
-import ast
 import glob
 
 ###########
@@ -27,16 +26,11 @@ import glob
 
 P = PMPParser()
 
-P.add_argument("--mp", "--modpath",
-               type=str,
-               dest='modpath',
-               default='',
-               help="Explicit path to model monthly PR climatology")
-P.add_argument("--op", "--obspath",
-               type=str,
-               dest='obspath',
-               default='',
-               help="Explicit path to obs monthly PR climatology")
+P.use("--modpath")
+P.use("--modnames")
+P.use("--results_dir")
+P.use("--reference_data_path")
+
 P.add_argument("--outpj", "--outpathjsons",
                type=str,
                dest='outpathjsons',
@@ -47,16 +41,6 @@ P.add_argument("--outnj", "--outnamejson",
                dest='jsonname',
                default='out.json',
                help="Output path for jsons")
-P.add_argument("--outpd", "--outpathdata",
-               type=str,
-               dest='outpathdata',
-               default='.',
-               help="Output path for data")
-P.add_argument("--mns", "--modnames",
-               type=ast.literal_eval,
-               dest='modnames',
-               default=None,
-               help="AMIP, historical or picontrol")
 P.add_argument("-e", "--experiment",
                type=str,
                dest='experiment',
@@ -67,11 +51,6 @@ P.add_argument("-c", "--MIP",
                dest='mip',
                default='CMIP5',
                help="put options here")
-P.add_argument("-p", "--parameters",
-               type=str,
-               dest='parameters',
-               default='',
-               help="")
 P.add_argument("--ovar",
                dest='obsvar',
                default='pr',
@@ -90,7 +69,7 @@ P.add_argument("-t", "--threshold",
 args = P.get_parameter()
 modpath = args.modpath
 outpathjsons = args.outpathjsons
-outpathdata = args.outpathdata
+outpathdata = args.results_dir
 mods = args.modnames
 
 json_filename = args.jsonname
@@ -158,7 +137,7 @@ sig_digits = '.3f'
 # PMP monthly default PR obs
 cdms2.axis.longitude_aliases.append("longitude_prclim_mpd")
 cdms2.axis.latitude_aliases.append("latitude_prclim_mpd")
-fobs = cdms2.open(args.obspath)
+fobs = cdms2.open(args.reference_data_path)
 dobs_orig = fobs(args.obsvar)
 fobs.close()
 

@@ -23,9 +23,10 @@ def populateStringConstructor(template, args):
 
 
 P = PMPParser()
-P.add_argument("-i", "--modroot",
-               default='data',
-               help="Root directory for model (or observed) 3-hourly data")
+P.use("--modpath")
+P.use("--results_dir")
+P.use("--num_workers")
+
 P.add_argument("-m", "--month",
                type=int,
                default=7,
@@ -38,14 +39,9 @@ P.add_argument("-l", "--lastyear",
                type=int,
                default=2005,
                help="Last year of data processing")
-P.add_argument("-o", "--output_directory",
-               default="out",
-               help="output directory")
 P.add_argument("-r", "--realization",
                default="r1i1p1",
                help="Realization used")
-P.add_argument("-w", "--num-workers", default=None, type=int,
-               help="number of workers to use in multiprocessing, 0 means auto")
 P.add_argument("--version", default="*")
 P.add_argument("--frequency", default="3hr")
 P.add_argument("--realm", default="atm")

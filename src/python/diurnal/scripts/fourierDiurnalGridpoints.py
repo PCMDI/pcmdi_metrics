@@ -61,13 +61,13 @@ template_std.month = monthname
 template_LST = populateStringConstructor(args.filename_template_LST, args)
 template_LST.month = monthname
 
-LSTfiles = glob.glob(os.path.join(args.modroot, template_LST()))
+LSTfiles = glob.glob(os.path.join(args.modpath, template_LST()))
 print("LSTFILES:", LSTfiles)
 print("TMPL", template_LST())
 
 ascFile = populateStringConstructor(args.outnameasc, args)
 ascFile.month = monthname
-ascname = os.path.join(os.path.abspath(args.output_directory), ascFile())
+ascname = os.path.join(os.path.abspath(args.results_dir), ascFile())
 
 if not os.path.exists(os.path.dirname(ascname)):
     os.makedirs(os.path.dirname(ascname))
@@ -101,8 +101,8 @@ for LSTfile in LSTfiles:
     stdfile = template_std()
     print('Reading time series of mean diurnal cycle ...', file=fasc)
     f = cdms2.open(LSTfile)
-    g = cdms2.open(os.path.join(args.modroot, avgfile))
-    h = cdms2.open(os.path.join(args.modroot, stdfile))
+    g = cdms2.open(os.path.join(args.modpath, avgfile))
+    h = cdms2.open(os.path.join(args.modpath, stdfile))
     LSTs = f('LST')
     print('Input shapes: ', LSTs.shape, file=fasc)
 
@@ -150,7 +150,7 @@ for LSTfile in LSTfiles:
         deltaI = 6
     else:
         deltaI = 0
-    prefix = args.modroot
+    prefix = args.modpath
     for i in range(nGridPoints):
         print(
             'For gridpoint %d at %5.1f deg latitude, %6.1f deg longitude ...' %

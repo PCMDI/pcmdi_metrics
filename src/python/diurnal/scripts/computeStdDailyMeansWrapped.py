@@ -11,6 +11,7 @@
 # This version has the PMP Parser "wrapped" around it, so it can be executed with input parameters in the command line
 # ---> computeStdDailyMeansWrapped.py -i data -m7 --realization="r1i1p1" -t "sample_data_%(variable)_%(model).nc"
 
+from __future__ import print_function
 import cdms2
 import cdtime
 import genutil
@@ -86,9 +87,9 @@ def compute(params):
                                                                     monthname, str(startyear), str(finalyear))
         except Exception as err:
             print("Failed for model: %s with error: %s" % (dataname, err))
-    if not os.path.exists(args.output_directory):
-        os.makedirs(args.output_directory)
-    g = cdms2.open(os.path.join(args.output_directory, stdoutfile), 'w')
+    if not os.path.exists(args.results_dir):
+        os.makedirs(args.results_dir)
+    g = cdms2.open(os.path.join(args.results_dir, stdoutfile), 'w')
     g.write(stdvalues)
     g.close()
 
@@ -97,7 +98,7 @@ args = P.get_parameter()
 month = args.month
 startyear = args.firstyear
 finalyear = args.lastyear
-directory = args.modroot      # Input  directory for model data
+directory = args.modpath      # Input  directory for model data
 # These models have been processed already (or tried and found wanting,
 # e.g. problematic time coordinates):
 skipMe = args.skip
