@@ -21,7 +21,7 @@ export CONDA_BLD_PATH=`pwd`/build_conda
 mkdir build_conda
 echo "BUILDING IN:",$CONDA_BLD_PATH
 echo "Cloning recipes"
-git clone git://github.com/UV-CDAT/conda-recipes
+git clone git://github.com/cdat/conda-recipes
 cd conda-recipes
 rm -rf cdp
 echo "cp -r ../../recipes/pcmdi_metrics ."
