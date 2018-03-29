@@ -12,10 +12,11 @@ build:
 
 requirements:
   build:
-    - python
+    - python {{ python}}
     - setuptools
     - numpy
   run:
+    - python {{ python }}
     - vcs >=2.10
     - vcsaddons >=2.10
     - cdms2 >=2.10

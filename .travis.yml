@@ -16,8 +16,8 @@ before_install:
   - conda update -y -q conda
 
 script:
-  - conda create -q -n py2 -c cdat/label/nightly -c nesii/label/dev-esmf -c conda-forge -c uvcdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "proj4<5" "python<3"
-  - conda create -q -n py3 -c cdat/label/nightly -c nesii/label/dev-esmf -c conda-forge -c uvcdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "proj4<5" "python>3"
+  - conda create -q -n py2 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "proj4<5" "python<3"
+  - conda create -q -n py3 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "proj4<5" "python>3"
   # Useful for debugging any issues with conda
   - conda info -a
   - source activate py2
