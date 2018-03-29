@@ -1,6 +1,6 @@
 package:
     name: pcmdi_metrics
-    version: 2.12.2018.02.08.16.44.{{ GIT_FULL_HASH }}
+    version: 1.1.2.2018.03.29.13.52.{{ GIT_DESCRIBE_HASH }}
 
 source:
     git_url: git://github.com/PCMDI/pcmdi_metrics
@@ -12,10 +12,11 @@ build:
 
 requirements:
   build:
-    - python
+    - python {{ python}}
     - setuptools
     - numpy
   run:
+    - python {{ python }}
     - vcs >=2.10
     - vcsaddons >=2.10
     - cdms2 >=2.10
@@ -25,6 +26,7 @@ requirements:
     - matplotlib
     - numpy
     - cia
+    - proj4 <5
 
 
 about:
