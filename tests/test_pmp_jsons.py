@@ -42,3 +42,8 @@ class TestJSONs(unittest.TestCase):
             season="JJA",
             statistic="rmsc_glo")
         assert(numpy.allclose(data, 0.7626659864144966))
+    def testCustomStruct(self):
+        pth = os.path.dirname(inspect.getfile(self.__class__))
+        J = pcmdi_metrics.io.base.JSONs([os.path.join(pth,"io","test_MC1_alljson")])
+        print J.getAxisList()
+
