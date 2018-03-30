@@ -3,7 +3,7 @@ import pcmdi_metrics
 import inspect
 import os
 import numpy
-
+import json
 
 class TestJSONs(unittest.TestCase):
     def testVariability(self):
@@ -44,6 +44,10 @@ class TestJSONs(unittest.TestCase):
         assert(numpy.allclose(data, 0.7626659864144966))
     def testCustomStruct(self):
         pth = os.path.dirname(inspect.getfile(self.__class__))
-        J = pcmdi_metrics.io.base.JSONs([os.path.join(pth,"io","test_MC1_alljson")])
-        print J.getAxisList()
+        json_pth = os.path.join(pth,"io","test_MC1_all.json")
+        J = pcmdi_metrics.io.base.JSONs([json_pth])
+        jids = J.getAxisIds()[1:]
+        json_data = json.load(open(json_pth))
+        json_struct = json_data[u'json_structure']
+        self.assertTrue(jids == json_struct)
 
