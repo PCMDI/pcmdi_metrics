@@ -34,6 +34,7 @@ class PMPMetricsParameter(cdp.cdp_parameter.CDPParameter):
         self.custom_keys = {}
 
         self.filename_template = ''
+        self.sftlf_filename_template = ''
         self.surface_type_land_fraction_filename_template = ''
         self.generate_surface_type_land_fraction = None
 

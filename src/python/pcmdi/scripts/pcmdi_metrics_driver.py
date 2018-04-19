@@ -380,6 +380,6 @@ parser.add_argument(
     required=False)
 
 
-parameter = parser.get_parameter()
+parameter = parser.get_parameter(cmd_default_vars=False)
 driver = PMPDriver(parameter)
 driver.run_diags()

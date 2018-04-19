@@ -22,7 +22,7 @@ requirements:
     - cdms2 >=2.10
     - genutil >=2.10
     - cdutil >=2.10
-    - cdp
+    - cdp >=1.3.2
     - matplotlib
     - numpy
     - cia
