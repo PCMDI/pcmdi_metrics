@@ -17,7 +17,7 @@ from __future__ import print_function
 import cdms2
 import genutil
 import MV2
-import os
+import os,sys
 import glob
 import cdtime
 import cdp
@@ -216,8 +216,9 @@ nYears = args.lastyear - args.firstyear + 1
 template = populateStringConstructor(args.filename_template, args)
 template.variable = varbname
 
-print("TEMPLATE:", template())
-fileList = glob.glob(os.path.join(args.modpath, template()))
+print("TEMPLATE:", template()) 
+print(args.mp, type(args.mp),' ', type(template()) ) 
+fileList = glob.glob(os.path.join(args.mp, template()))
 print("FILES:", fileList)
 params = [INPUT(args, name, template) for name in fileList]
 print("PARAMS:", params)
