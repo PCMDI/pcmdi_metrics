@@ -109,7 +109,10 @@ class OutputMetrics(object):
             ref_data = ref()
         except Exception as e:
             msg = 'Error while processing observation %s for variables %s:\n\t%s'
-            logging.getLogger("pcmdi_metrics").error(msg % (self.var, str(e)))
+            logging.getLogger("pcmdi_metrics").error(msg % (ref.obs_or_model, self.var, str(e)))
+
+        if ref_data is None:  # Something went bad!
+            raise RuntimeError('Could not load reference {}'.format(ref.obs_or_model))
 
         try:
             test_data = test()
@@ -281,6 +284,8 @@ class OutputMetrics(object):
     def write_on_exit(self):
         ''' Output the metrics_dictionary as a json and text file. '''
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
+        if len(self.metrics_def_dictionary) == 0:
+            raise RuntimeError("No results generated, cannot write to file")
         if not self.parameter.dry_run:
             logging.getLogger("pcmdi_metrics").info('Saving results to: %s' % self.out_file())
             self.out_file.write(self.metrics_dictionary,
