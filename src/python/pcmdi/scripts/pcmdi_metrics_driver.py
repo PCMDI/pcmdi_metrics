@@ -145,9 +145,7 @@ class PMPDriver(object):
         test_data_set = self.parameter.test_data_set
 
         reference_data_set_is_obs = self.is_data_set_obs(reference_data_set)
-        print("IS REF OBS?",reference_data_set_is_obs)
         test_data_set_is_obs = self.is_data_set_obs(test_data_set)
-        print("IS TEST OBS?",test_data_set_is_obs)
 
         # If either the reference or test are obs, the data sets
         # themselves need to be modified.
@@ -181,7 +179,6 @@ class PMPDriver(object):
                     continue
 
                 try:
-                    print("REF:",ref())
                     self.output_metric.calculate_and_output_metrics(ref, tst)
                 except RuntimeError:
                     break
