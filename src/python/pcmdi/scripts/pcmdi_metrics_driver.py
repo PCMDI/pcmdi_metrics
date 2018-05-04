@@ -31,7 +31,9 @@ class PMPDriver(object):
         self.regions_dict = {}
         self.var = ''
         self.output_metric = None
-        self.metrics_output_filename = parameter.metrics_output_filename 
+        self.metrics_output_filename = parameter.metrics_output_filename
+        self.user_notes = parameter.user_notes
+ 
         self.region = ''
         self.sftlf = pcmdi_metrics.driver.dataset.DataSet.create_sftlf(self.parameter)
         self.default_regions = []
@@ -53,7 +55,7 @@ class PMPDriver(object):
                 continue
 
             self.output_metric = OutputMetrics(self.parameter, self.var_name_long,
-                                               self.obs_dict, self.metrics_output_filename, sftlf=self.sftlf)
+                                               self.obs_dict, self.metrics_output_filename, self.user_notes, sftlf=self.sftlf)
 
             for region in self.regions_dict[self.var]:
                 self.region = self.create_region(region)
@@ -385,6 +387,13 @@ parser.add_argument(
     dest='metrics_output_filename',
     default = '',
     help='Filename template for results json files',
+    required=False)
+
+parser.add_argument(
+    '--user_notes',
+    dest='user_notes',
+    default = '',
+    help='Provide a short description to help identify this run of the PMP mean climate.',
     required=False)
 
 parameter = parser.get_parameter(cmd_default_vars=False)

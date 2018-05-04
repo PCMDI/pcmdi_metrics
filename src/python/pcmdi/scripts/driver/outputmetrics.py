@@ -17,7 +17,7 @@ except Exception:
 
 class OutputMetrics(object):
 
-    def __init__(self, parameter, var_name_long, obs_dict, metrics_output_filename,sftlf):
+    def __init__(self, parameter, var_name_long, obs_dict, metrics_output_filename,user_notes,sftlf):
         logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
         self.parameter = parameter
         self.var_name_long = var_name_long
@@ -25,6 +25,7 @@ class OutputMetrics(object):
         self.var = var_name_long.split('_')[0]
         self.sftlf = sftlf
         self.metrics_output_filename = metrics_output_filename
+        self.user_notes = user_notes
 
         self.metrics_def_dictionary = {}
         self.metrics_dictionary = {}
@@ -54,6 +55,7 @@ class OutputMetrics(object):
         self.metrics_def_dictionary = collections.OrderedDict()
         self.metrics_dictionary = collections.OrderedDict()
         self.metrics_dictionary["DISCLAIMER"] = self.open_disclaimer()
+        self.metrics_dictionary["USER_NOTES"] = self.user_notes
         self.metrics_dictionary["RESULTS"] = collections.OrderedDict()
 
         self.metrics_dictionary["Variable"] = {}
