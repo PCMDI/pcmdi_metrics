@@ -17,19 +17,27 @@ except Exception:
 
 class OutputMetrics(object):
 
-    def __init__(self, parameter, var_name_long, obs_dict, sftlf):
+    def __init__(self, parameter, var_name_long, obs_dict, metrics_output_filename,sftlf):
         logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
         self.parameter = parameter
         self.var_name_long = var_name_long
         self.obs_dict = obs_dict
         self.var = var_name_long.split('_')[0]
         self.sftlf = sftlf
+        self.metrics_output_filename = metrics_output_filename
 
         self.metrics_def_dictionary = {}
         self.metrics_dictionary = {}
 
         string_template = "%(variable)%(level)_%(target_grid_name)_" +\
                           "%(regrid_tool)_%(regrid_method)_metrics"
+
+        if self.metrics_output_filename != '':
+           string_template = metrics_output_filename
+
+        print('string_template is ========== ', string_template,' ---- ', metrics_output_filename)
+
+
         self.out_file = Base(self.parameter.metrics_output_path, string_template)
 
         self.regrid_method = ''

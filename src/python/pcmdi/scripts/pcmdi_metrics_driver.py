@@ -31,6 +31,7 @@ class PMPDriver(object):
         self.regions_dict = {}
         self.var = ''
         self.output_metric = None
+        self.metrics_output_filename = parameter.metrics_output_filename 
         self.region = ''
         self.sftlf = pcmdi_metrics.driver.dataset.DataSet.create_sftlf(self.parameter)
         self.default_regions = []
@@ -52,7 +53,7 @@ class PMPDriver(object):
                 continue
 
             self.output_metric = OutputMetrics(self.parameter, self.var_name_long,
-                                               self.obs_dict, sftlf=self.sftlf)
+                                               self.obs_dict, self.metrics_output_filename, sftlf=self.sftlf)
 
             for region in self.regions_dict[self.var]:
                 self.region = self.create_region(region)
@@ -379,7 +380,15 @@ parser.add_argument(
          'test climatologies',
     required=False)
 
+parser.add_argument(
+    '--metrics_output_filename',
+    dest='metrics_output_filename',
+    default = '',
+    help='Filename template for results json files',
+    required=False)
 
 parameter = parser.get_parameter(cmd_default_vars=False)
+
+print('params are ---- ', parameter.metrics_output_filename)
 driver = PMPDriver(parameter)
 driver.run_diags()
