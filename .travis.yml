@@ -22,11 +22,11 @@ script:
   - conda info -a
   - source activate py2
   - python setup.py install
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python run_tests.py -v2 ; fi
+  - python run_tests.py -v2
   - git clean -fd
   - source activate py3
   - python setup.py install
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python run_tests.py -v2 ; fi
+  - python run_tests.py -v2
   - source deactivate
 
 after_success:
