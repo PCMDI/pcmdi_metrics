@@ -1,6 +1,6 @@
 os:
   - linux
-  - osx
+    #  - osx
 language: python
   - "2.7"
 
@@ -16,17 +16,18 @@ before_install:
   - conda update -y -q conda
 
 script:
-  - conda create -q -n py2 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "proj4<5" "python<3"
-  - conda create -q -n py3 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "proj4<5" "python>3"
+  - export UVCDAT_ANONYMOUS_LOG="False"
+  - conda create -q -n py2 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "proj4<5" "python<3" "ffmpeg<4"
+  - conda create -q -n py3 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "proj4<5" "python>3" "ffmpeg<4"
   # Useful for debugging any issues with conda
   - conda info -a
   - source activate py2
   - python setup.py install
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python run_tests.py -v2 ; fi
+  - python run_tests.py -v2
   - git clean -fd
   - source activate py3
   - python setup.py install
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then python run_tests.py -v2 ; fi
+  - python run_tests.py -v2
   - source deactivate
 
 after_success:

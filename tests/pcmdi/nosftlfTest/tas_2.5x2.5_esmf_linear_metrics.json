@@ -393,7 +393,7 @@
         },
         "TROPICS": {
             "domain": {
-                "TROPICS": "cdutil.region.domain(latitude=(-30.0, 30, 'ccb'))"
+                "TROPICS": "cdutil.region.domain(latitude=(-30.0, 30))"
             },
             "id": "TROPICS"
         },
@@ -406,13 +406,13 @@
         },
         "NHEX": {
             "domain": {
-                "NHEX": "cdutil.region.domain(latitude=(30.0, 90, 'ccb'))"
+                "NHEX": "cdutil.region.domain(latitude=(30.0, 90))"
             },
             "id": "NHEX"
         },
         "SHEX": {
             "domain": {
-                "SHEX": "cdutil.region.domain(latitude=(-90.0, -30, 'ccb'))"
+                "SHEX": "cdutil.region.domain(latitude=(-90.0, -30))"
             },
             "id": "SHEX"
         }
@@ -510,47 +510,54 @@
     "provenance": {
         "platform": {
             "OS": "Linux",
-            "Version": "2.6.32-696.el6.x86_64",
-            "Name": "crunchy.llnl.gov"
+            "Version": "4.13.0-39-generic",
+            "Name": "drdoom"
         },
         "userId": "doutriaux1",
         "osAccess": false,
-        "commandLine": "/export/doutriaux1/miniconda2/envs/pmp/bin/pcmdi_metrics_driver.py -p /export/doutriaux1/git/pcmdi_metrics/tests/pcmdi/nosftlf_test.py",
-        "date": "2017-06-09 14:13:52",
+        "commandLine": "/home/doutriaux1/anaconda2/envs/cdat_test/bin/pcmdi_metrics_driver.py -p /git/pcmdi_metrics/tests/pcmdi/nosftlf_test.py",
+        "date": "2018-04-26 11:07:02",
         "conda": {
-            "Platform": "linux-64",
-            "Version": "4.3.11",
-            "IsPrivate": "False",
-            "envVersion": "4.3.11",
-            "buildVersion": "2.1.10",
-            "PythonVersion": "2.7.13.final.0",
-            "RootEnvironment": "/export/doutriaux1/miniconda2  (writable)",
-            "DefaultEnvironment": "/export/doutriaux1/miniconda2/envs/pmp"
+            "Version": "4.5.0",
+            "buildVersion": "3.7.2",
+            "PythonVersion": "2.7.14.final.0",
+            "Platform": "linux-64"
         },
         "packages": {
-            "cdms": "2.10",
-            "CDP": "1.0.3",
-            "cdtime": "2.10",
-            "cdutil": "2.10",
+            "cdms": "3.0",
+            "CDP": "1.3.3",
+            "cdtime": "3.0",
+            "cdutil": "8.0",
             "clapack": "3.2.1",
             "lapack": "3.6.1",
-            "esmf": "7.0.0",
-            "esmpy": "7.0.0",
-            "genutil": "2.10",
-            "mesalib": "17.0.3",
-            "numpy": "1.12.1",
-            "python": "2.7.13",
-            "vcs": "2.10",
-            "vtk": "7.1.0.2.10",
+            "esmf": "7.1.0r",
+            "esmpy": "7.1.0r",
+            "genutil": "8.0",
+            "python": "2.7.14",
+            "matplotlib": "2.2.2",
+            "mesalib": "17.2.0",
+            "numpy": "1.14.2",
+            "vcs": "8.0",
+            "vtk": "8.0.1.8.0.2018.04.09.07.58.g9a839a5",
             "blas": null,
-            "matplotlib": null,
-            "PMP": "ga507630",
+            "PMP": "geb4d089",
             "PMPObs": null
         },
         "openGL": {
+            "vendor": "X.Org",
+            "renderer": "AMD TURKS (DRM 2.50.0 / 4.13.0-39-generic, LLVM 5.0.0)",
+            "version": "3.0 Mesa 17.2.8",
+            "shading language version": "1.30",
             "GLX": {
-                "client": {},
-                "server": {}
+                "client": {
+                    "vendor": "Mesa Project and SGI",
+                    "version": "1.4"
+                },
+                "version": "1.4",
+                "server": {
+                    "vendor": "SGI",
+                    "version": "1.4"
+                }
             }
         }
     }
