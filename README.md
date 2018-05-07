@@ -1,4 +1,4 @@
-<img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" alt="" style="width: 280px;"/>
+<img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" alt="" style="width: 50px;"/>
 <h5 align="right"></h5> 
 
 PCMDI metrics package (PMP)
