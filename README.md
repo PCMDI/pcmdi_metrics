@@ -1,3 +1,6 @@
+<img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" alt="" style="width: 280px;"/>
+<h5 align="right"></h5> 
+
 PCMDI metrics package (PMP)
 ======
 [![stable version](https://img.shields.io/badge/stable%20version-1.1.2-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/1.1.2)
