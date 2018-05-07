@@ -47,9 +47,6 @@ aliases:
        source activate py3
        python run_tests.py -H -v2
        RESULT=$(( $RESULT + $? ))
-       cd docs
-       make doctest
-       RESULT=$(( $RESULT + $? ))
        cd ..
        echo "py3 test command exit result:",$RESULT
        if [ $RESULT -eq 0 -a $CIRCLE_BRANCH == "master" ]; then conda install -n root conda-build anaconda-client ; fi
