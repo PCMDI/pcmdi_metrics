@@ -22,7 +22,7 @@ The package expects model data to be [CF-compliant](http://cfconventions.org/). 
 GETTING STARTED
 ----------------
 
-Installation requirements and instructions are available on the [Install](https://github.com/PCMDI/pcmdi_metrics/wiki/Install) page
+Installation requirements and instructions are available on the [Install](https://github.com/PCMDI/pcmdi_metrics/wiki/Install-using-Anaconda) page
 
 An overview for using the package and template scripts are detailed on the [Using-the-package](https://github.com/PCMDI/pcmdi_metrics/wiki/Using-the-package) page
 
