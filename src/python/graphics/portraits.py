@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import MV2
 import cdms2
 import vcs
 import genutil
 import glob
+import numpy
+import time
 from genutil import StringConstructor
-
 
 class Xs(object):
     __slots__ = ("x1", "x2")
@@ -41,7 +43,7 @@ class Plot_defaults(object):
                  "parameterorientation", "tictable",
                  "parametertable", "draw_mesh",
                  "missing_color", "xtic1", "xtic2", "ytic1", "ytic2",
-                 "show_values", "valuesorientation", "valuesorientation", "valuestable",
+                 "show_values", "valuestext", "valuesformat", "valuesarray",
                  "time_stamp"]
 
     def getlogo(self):
@@ -82,8 +84,11 @@ class Plot_defaults(object):
         self.parametertable = vcs.createtexttable()
         # values in cell setting
         self.show_values = False
-        self.valuesorientation = vcs.createtextorientation()
-        self.valuestable = vcs.createtexttable()
+        self.valuestext = vcs.createtext()
+        self.valuestext.valign = "half"
+        self.valuestext.halign = "center"
+        self.valuesformat = "{0:.2f}"
+        self.valuesarray = None
         # Defaults
         self.draw_mesh = 'y'
         self.missing_color = 3
@@ -110,11 +115,15 @@ class Portrait(object):
         "exclude", "parameters_list",
         "dummies", "auto_dummies", "grouped",
         "slaves", "altered", "aliased",
-        "portrait_types", "PLOT_SETTINGS",
+        "portrait_types", "PLOT_SETTINGS","x","bg"
     ]
 
     def __init__(self, files_structure=None, exclude=[], **kw):
         ''' initialize the portrait object, from file structure'''
+        if "x" in kw:
+            self.x = kw["x"]
+        else:
+            self.x = vcs.init()
         self.verbose = True  # output files looked for to the screen
         self.files_structure = files_structure
         self.exclude = exclude
@@ -692,9 +701,10 @@ class Portrait(object):
 
     def plot(self, data=None, mesh=None, template=None,
              meshfill=None, x=None, bg=0, multiple=1.1):
+        self.bg = bg
         # Create the vcs canvas
-        if x is None:
-            x = vcs.init()
+        if x is not None:
+            self.x = x
 
         # Continents bug
         # x.setcontinentstype(0)
@@ -704,7 +714,7 @@ class Portrait(object):
 
         # Do we use a predefined template ?
         if template is None:
-            template = x.createtemplate()
+            template = vcs.createtemplate()
             # Now sets all the things for the template...
             # Sets a bunch of template attributes to off
             for att in [
@@ -781,9 +791,9 @@ class Portrait(object):
             template.legend.y1 = self.PLOT_SETTINGS.legend.y1
             template.legend.y2 = self.PLOT_SETTINGS.legend.y2
             try:
-                tmp = x.createtextorientation('crap22')
+                tmp = vcs.createtextorientation('crap22')
             except Exception:
-                tmp = x.gettextorientation('crap22')
+                tmp = vcs.gettextorientation('crap22')
             tmp.height = 12
             # tmp.halign = 'center'
             # template.legend.texttable = tmp
@@ -798,14 +808,14 @@ class Portrait(object):
                 raise 'Error cannot understand what you mean by template=' + \
                     str(template)
 
-            template = x.createtemplate()
+            template = vcs.createtemplate()
 
         # Do we use a predefined meshfill ?
         if meshfill is None:
             mtics = {}
             for i in range(100):
                 mtics[i - .5] = ''
-            meshfill = x.createmeshfill()
+            meshfill = vcs.createmeshfill()
             meshfill.xticlabels1 = eval(data.getAxis(1).names)
             meshfill.yticlabels1 = eval(data.getAxis(0).names)
 
@@ -818,9 +828,9 @@ class Portrait(object):
             meshfill.xticlabels2 = mtics
             meshfill.yticlabels2 = mtics
             if self.PLOT_SETTINGS.colormap is None:
-                self.set_colormap(x)
+                self.set_colormap()
             elif x.getcolormapname() != self.PLOT_SETTINGS.colormap:
-                x.setcolormap(self.PLOT_SETTINGS.colormap)
+                self.x.setcolormap(self.PLOT_SETTINGS.colormap)
 
             if self.PLOT_SETTINGS.levels is None:
                 min, max = vcs.minmax(data)
@@ -1003,17 +1013,17 @@ class Portrait(object):
             else:
                 raise 'Error cannot understand what you mean by meshfill=' + \
                     str(meshfill)
-            meshfill = x.createmeshfill(source=tid)
+            meshfill = vcs.createmeshfill(source=tid)
 
         if mesh is None:
             mesh = M
 
         raveled = MV2.ravel(data)
-        x.plot(raveled, mesh, template, meshfill, bg=bg)
+        self.x.plot(raveled, mesh, template, meshfill, bg=self.bg)
 
         # If required plot values
-        if self.show_values:
-            self.draw_values(x, raveled, mesh, template)
+        if self.PLOT_SETTINGS.show_values:
+            self.draw_values(raveled, mesh, meshfill, template)
 
         # Now prints the rest of the title, etc...
         # but only if n==1
@@ -1086,18 +1096,81 @@ class Portrait(object):
                                     txt.x = dic['x']
                                 if dic['y'] is not None:
                                     txt.y = dic['y']
-                            x.plot(txt, bg=bg, continents=0)
+                            self.x.plot(txt, bg=self.bg, continents=0)
             if self.PLOT_SETTINGS.time_stamp is not None:
-                import time
                 sp = time.ctime().split()
                 sp = sp[:3] + [sp[-1]]
                 self.PLOT_SETTINGS.time_stamp.string = ''.join(sp)
-                x.plot(self.PLOT_SETTINGS.time_stamp, bg=bg, continents=0)
+                self.x.plot(self.PLOT_SETTINGS.time_stamp, bg=self.bg, continents=0)
             if self.PLOT_SETTINGS.logo is not None:
-                self.PLOT_SETTINGS.logo.plot(x, bg=bg)
+                self.PLOT_SETTINGS.logo.plot(self.x, bg=self.bg)
         return mesh, template, meshfill
 
-    def set_colormap(self, x):
+    def draw_values(self, raveled, mesh, meshfill, template):
+        # Values to use (data or user passed)
+        if self.PLOT_SETTINGS.valuesarray is None:
+            data = MV2.array(raveled)
+        else:
+            data = MV2.ravel(self.PLOT_SETTINGS.valuesarray)
+        if isinstance(raveled, numpy.ma.core.MaskedArray):
+            data.mask = data.mask + raveled.mask
+
+        # Now remove masked values
+        if data.mask is not numpy.ma.nomask:  # we have missing
+            indices = numpy.argwhere(numpy.ma.logical_not(data.mask))
+            data = data.take(indices).filled(0)[:,0]
+            M = mesh.filled()[indices][:,0]
+        else:
+            M = mesh.filled()
+        # Baricenters
+        xcenters = numpy.average(M[:,1],axis=-1).tolist()
+        ycenters = numpy.average(M[:,0],axis=-1).tolist()
+        self.PLOT_SETTINGS.valuestext.x = xcenters
+        self.PLOT_SETTINGS.valuestext.y = ycenters
+        self.PLOT_SETTINGS.valuestext.viewport = [template.data.x1, template.data.x2,
+                                    template.data.y1, template.data.y2]
+        if not numpy.allclose(meshfill.datawc_x1, 1.e20):
+            self.PLOT_SETTINGS.valuestext.worldcoordinate = [meshfill.datawc_x1,
+                                                meshfill.datawc_x2,
+                                                meshfill.datawc_y1,
+                                                meshfill.datawc_y2]
+        else:
+            self.PLOT_SETTINGS.valuestext.worldcoordinate = [M[:,1].min(),
+                                                              M[:,1].max(),
+                                                              M[:,0].min(),
+                                                              M[:,0].max()]
+
+        self.PLOT_SETTINGS.valuestext.string = [self.PLOT_SETTINGS.valuesformat.format(value) for value in data]
+
+        # Now that we have the formatted values we need get the longest string
+        lengths = [len(txt) for txt in self.PLOT_SETTINGS.valuestext.string]
+        longest = max(lengths)
+        index = lengths.index(longest)
+        long_string = self.PLOT_SETTINGS.valuestext.string[index]
+
+        tmptxt = vcs.createtext()
+        tmptxt.string = self.PLOT_SETTINGS.valuestext.string[index]
+        tmptxt.x = xcenters[index]
+        tmptxt.y = ycenters[index]
+        smallY = M[index,0,:].min()
+        bigY = M[index,0,:].max()
+        smallX = M[index,1,:].min()
+        bigX = M[index,1,:].max()
+        tmptxt.worldcoordinate = self.PLOT_SETTINGS.valuestext.worldcoordinate
+        tmptxt.viewport = self.PLOT_SETTINGS.valuestext.viewport
+        # Now try to shrink until it fits
+        extent = self.x.gettextextent(tmptxt)[0]
+        while ((extent[1]-extent[0])/(bigX-smallX)>1.01 or (extent[3]-extent[2])/(bigY-smallY)>1.01) and tmptxt.height>=1:
+            print("EXT:",extent,"vs",smallX, bigX, smallY, bigY, long_string, tmptxt.height)
+            tmptxt.height-=1
+            extent = self.x.gettextextent(tmptxt)[0]
+
+        self.PLOT_SETTINGS.valuestext.height = tmptxt.height
+        self.x.plot(self.PLOT_SETTINGS.valuestext, bg=self.bg)
+
+
+
+    def set_colormap(self):
         cols = (
             100,
             100,
@@ -1823,12 +1896,12 @@ class Portrait(object):
         cols = MV2.reshape(cols, (len(cols) / 3, 3))
 
         for i in range(cols.shape[0]):
-            co = x.getcolorcell(i)
+            co = self.x.getcolorcell(i)
             if (co[0] != int(cols[i][0]) or co[1] != int(
                     cols[i][1]) or co[2] != int(cols[i][2])):
-                x.setcolorcell(
+                self.x.setcolorcell(
                     i, int(
                         cols[i][0]), int(
                         cols[i][1]), int(
                         cols[i][2]))
-        pass
+        return
