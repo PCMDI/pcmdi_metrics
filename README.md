@@ -1,3 +1,6 @@
+<img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" width="15%" height="15%" align="right" />
+<h5 align="right"></h5> 
+
 PCMDI metrics package (PMP)
 ======
 [![stable version](https://img.shields.io/badge/stable%20version-1.1.2-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/1.1.2)
@@ -19,7 +22,7 @@ The package expects model data to be [CF-compliant](http://cfconventions.org/). 
 GETTING STARTED
 ----------------
 
-Installation requirements and instructions are available on the [Install](https://github.com/PCMDI/pcmdi_metrics/wiki/Install) page
+Installation requirements and instructions are available on the [Install](https://github.com/PCMDI/pcmdi_metrics/wiki/Install-using-Anaconda) page
 
 An overview for using the package and template scripts are detailed on the [Using-the-package](https://github.com/PCMDI/pcmdi_metrics/wiki/Using-the-package) page
 
