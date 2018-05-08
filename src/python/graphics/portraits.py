@@ -41,6 +41,7 @@ class Plot_defaults(object):
                  "parameterorientation", "tictable",
                  "parametertable", "draw_mesh",
                  "missing_color", "xtic1", "xtic2", "ytic1", "ytic2",
+                 "show_values", "valuesorientation", "valuesorientation", "valuestable",
                  "time_stamp"]
 
     def getlogo(self):
@@ -79,6 +80,10 @@ class Plot_defaults(object):
         self.parameterorientation.halign = 'center'
         self.parameterorientation.height = 20
         self.parametertable = vcs.createtexttable()
+        # values in cell setting
+        self.show_values = False
+        self.valuesorientation = vcs.createtextorientation()
+        self.valuestable = vcs.createtexttable()
         # Defaults
         self.draw_mesh = 'y'
         self.missing_color = 3
@@ -833,22 +838,15 @@ class Portrait(object):
                 else:
                     meshfill.fillareacolors = self.PLOT_SETTINGS.fillareacolors
 
-# self.setmeshfill(x,meshfill,levs)
-# if self.PLOT_SETTINGS.legend is None:
-# meshfill.legend=vcs.mklabels(levs)
-# else:
-# meshfill.legend=self.PLOT_SETTINGS.legend
             # Now creates the mesh associated
             n = int(multiple)
             ntot = int((multiple - n) * 10 + .1)
-# data=data
             sh = list(data.shape)
             sh.append(2)
             Indx = MV2.indices((sh[0], sh[1]))
             Y = Indx[0]
             X = Indx[1]
-# if ntot>1:
-# meshfill.mesh='y'
+
             if ntot == 1:
                 sh.append(4)
                 M = MV2.zeros(sh)
@@ -1010,7 +1008,12 @@ class Portrait(object):
         if mesh is None:
             mesh = M
 
-        x.plot(MV2.ravel(data), mesh, template, meshfill, bg=bg)
+        raveled = MV2.ravel(data)
+        x.plot(raveled, mesh, template, meshfill, bg=bg)
+
+        # If required plot values
+        if self.show_values:
+            self.draw_values(x, raveled, mesh, template)
 
         # Now prints the rest of the title, etc...
         # but only if n==1
