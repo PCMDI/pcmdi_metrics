@@ -10,6 +10,7 @@ import numpy
 import time
 from genutil import StringConstructor
 
+
 class Xs(object):
     __slots__ = ("x1", "x2")
 
@@ -115,7 +116,7 @@ class Portrait(object):
         "exclude", "parameters_list",
         "dummies", "auto_dummies", "grouped",
         "slaves", "altered", "aliased",
-        "portrait_types", "PLOT_SETTINGS","x","bg"
+        "portrait_types", "PLOT_SETTINGS", "x", "bg"
     ]
 
     def __init__(self, files_structure=None, exclude=[], **kw):
@@ -1101,7 +1102,10 @@ class Portrait(object):
                 sp = time.ctime().split()
                 sp = sp[:3] + [sp[-1]]
                 self.PLOT_SETTINGS.time_stamp.string = ''.join(sp)
-                self.x.plot(self.PLOT_SETTINGS.time_stamp, bg=self.bg, continents=0)
+                self.x.plot(
+                    self.PLOT_SETTINGS.time_stamp,
+                    bg=self.bg,
+                    continents=0)
             if self.PLOT_SETTINGS.logo is not None:
                 self.PLOT_SETTINGS.logo.plot(self.x, bg=self.bg)
         return mesh, template, meshfill
@@ -1118,57 +1122,56 @@ class Portrait(object):
         # Now remove masked values
         if data.mask is not numpy.ma.nomask:  # we have missing
             indices = numpy.argwhere(numpy.ma.logical_not(data.mask))
-            data = data.take(indices).filled(0)[:,0]
-            M = mesh.filled()[indices][:,0]
+            data = data.take(indices).filled(0)[:, 0]
+            M = mesh.filled()[indices][:, 0]
         else:
             M = mesh.filled()
         # Baricenters
-        xcenters = numpy.average(M[:,1],axis=-1).tolist()
-        ycenters = numpy.average(M[:,0],axis=-1).tolist()
+        xcenters = numpy.average(M[:, 1], axis=-1).tolist()
+        ycenters = numpy.average(M[:, 0], axis=-1).tolist()
         self.PLOT_SETTINGS.valuestext.x = xcenters
         self.PLOT_SETTINGS.valuestext.y = ycenters
         self.PLOT_SETTINGS.valuestext.viewport = [template.data.x1, template.data.x2,
-                                    template.data.y1, template.data.y2]
+                                                  template.data.y1, template.data.y2]
         if not numpy.allclose(meshfill.datawc_x1, 1.e20):
             self.PLOT_SETTINGS.valuestext.worldcoordinate = [meshfill.datawc_x1,
-                                                meshfill.datawc_x2,
-                                                meshfill.datawc_y1,
-                                                meshfill.datawc_y2]
+                                                             meshfill.datawc_x2,
+                                                             meshfill.datawc_y1,
+                                                             meshfill.datawc_y2]
         else:
-            self.PLOT_SETTINGS.valuestext.worldcoordinate = [M[:,1].min(),
-                                                              M[:,1].max(),
-                                                              M[:,0].min(),
-                                                              M[:,0].max()]
+            self.PLOT_SETTINGS.valuestext.worldcoordinate = [M[:, 1].min(),
+                                                             M[:, 1].max(),
+                                                             M[:, 0].min(),
+                                                             M[:, 0].max()]
 
-        self.PLOT_SETTINGS.valuestext.string = [self.PLOT_SETTINGS.valuesformat.format(value) for value in data]
+        self.PLOT_SETTINGS.valuestext.string = [
+            self.PLOT_SETTINGS.valuesformat.format(value) for value in data]
 
         # Now that we have the formatted values we need get the longest string
         lengths = [len(txt) for txt in self.PLOT_SETTINGS.valuestext.string]
         longest = max(lengths)
         index = lengths.index(longest)
-        long_string = self.PLOT_SETTINGS.valuestext.string[index]
 
         tmptxt = vcs.createtext()
         tmptxt.string = self.PLOT_SETTINGS.valuestext.string[index]
         tmptxt.x = xcenters[index]
         tmptxt.y = ycenters[index]
-        smallY = M[index,0,:].min()
-        bigY = M[index,0,:].max()
-        smallX = M[index,1,:].min()
-        bigX = M[index,1,:].max()
+        smallY = M[index, 0, :].min()
+        bigY = M[index, 0, :].max()
+        smallX = M[index, 1, :].min()
+        bigX = M[index, 1, :].max()
         tmptxt.worldcoordinate = self.PLOT_SETTINGS.valuestext.worldcoordinate
         tmptxt.viewport = self.PLOT_SETTINGS.valuestext.viewport
         # Now try to shrink until it fits
         extent = self.x.gettextextent(tmptxt)[0]
-        while ((extent[1]-extent[0])/(bigX-smallX)>1.01 or (extent[3]-extent[2])/(bigY-smallY)>1.01) and tmptxt.height>=1:
-            print("EXT:",extent,"vs",smallX, bigX, smallY, bigY, long_string, tmptxt.height)
-            tmptxt.height-=1
+        while ((extent[1] - extent[0]) / (bigX - smallX) > 1.01 or
+               (extent[3] - extent[2]) / (bigY - smallY) > 1.01) and \
+                tmptxt.height >= 1:
+            tmptxt.height -= 1
             extent = self.x.gettextextent(tmptxt)[0]
 
         self.PLOT_SETTINGS.valuestext.height = tmptxt.height
         self.x.plot(self.PLOT_SETTINGS.valuestext, bg=self.bg)
-
-
 
     def set_colormap(self):
         cols = (
