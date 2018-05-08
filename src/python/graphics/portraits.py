@@ -11,6 +11,13 @@ import time
 from genutil import StringConstructor
 
 
+def is_dark_color_type(R, G, B, A):
+    """figure out if a color is dark or light alpha is ignored"""
+    # Counting the perceptive luminance - human eye favors green color...
+    a = 1 - (0.299 * R + 0.587 * G + 0.114 * B) / 100.
+    return a > .5
+
+
 class Xs(object):
     __slots__ = ("x1", "x2")
 
@@ -45,6 +52,7 @@ class Plot_defaults(object):
                  "parametertable", "draw_mesh",
                  "missing_color", "xtic1", "xtic2", "ytic1", "ytic2",
                  "show_values", "valuestext", "valuesformat", "valuesarray",
+                 "valueslightcolor",
                  "time_stamp"]
 
     def getlogo(self):
@@ -90,6 +98,7 @@ class Plot_defaults(object):
         self.valuestext.halign = "center"
         self.valuesformat = "{0:.2f}"
         self.valuesarray = None
+        self.valueslightcolor = None
         # Defaults
         self.draw_mesh = 'y'
         self.missing_color = 3
@@ -1124,13 +1133,13 @@ class Portrait(object):
             indices = numpy.argwhere(numpy.ma.logical_not(data.mask))
             data = data.take(indices).filled(0)[:, 0]
             M = mesh.filled()[indices][:, 0]
+            raveled = raveled.take(indices).filled(0.)[:, 0]
         else:
             M = mesh.filled()
+
         # Baricenters
-        xcenters = numpy.average(M[:, 1], axis=-1).tolist()
-        ycenters = numpy.average(M[:, 0], axis=-1).tolist()
-        self.PLOT_SETTINGS.valuestext.x = xcenters
-        self.PLOT_SETTINGS.valuestext.y = ycenters
+        xcenters = numpy.average(M[:, 1], axis=-1)
+        ycenters = numpy.average(M[:, 0], axis=-1)
         self.PLOT_SETTINGS.valuestext.viewport = [template.data.x1, template.data.x2,
                                                   template.data.y1, template.data.y2]
         if not numpy.allclose(meshfill.datawc_x1, 1.e20):
@@ -1169,9 +1178,35 @@ class Portrait(object):
                 tmptxt.height >= 1:
             tmptxt.height -= 1
             extent = self.x.gettextextent(tmptxt)[0]
-
         self.PLOT_SETTINGS.valuestext.height = tmptxt.height
-        self.x.plot(self.PLOT_SETTINGS.valuestext, bg=self.bg)
+
+        # Finally we need to split into two text objects for dark and light background
+        # Step 1: figure out each bin color type (dark/light)
+        colormap = self.x.colormap
+        if colormap is None:
+            colormap = vcs._colorMap
+        cmap = vcs.getcolormap(colormap)
+        colors = meshfill.fillareacolors
+        dark_bins = [
+            is_dark_color_type(
+                *cmap.getcolorcell(color)) for color in colors]
+
+        # Step 2: put values into bin (color where they land)
+        bins = meshfill.levels[1:-1]
+        binned = numpy.digitize(raveled, bins)
+        isdark = [dark_bins[indx] for indx in binned]
+        tmptxt = vcs.createtext(
+            Tt_source=self.PLOT_SETTINGS.valuestext.Tt_name,
+            To_source=self.PLOT_SETTINGS.valuestext.To_name)
+        for pick, color in [(numpy.argwhere(isdark), "white"),
+                            (numpy.argwhere(numpy.logical_not(isdark)), "black")]:
+            tmptxt.x = xcenters.take(pick)[:, 0].tolist()
+            tmptxt.y = ycenters.take(pick)[:, 0].tolist()
+            tmptxt.string = numpy.array(
+                self.PLOT_SETTINGS.valuestext.string).take(pick)[
+                :, 0].tolist()
+            tmptxt.color = color
+            self.x.plot(tmptxt, bg=self.bg)
 
     def set_colormap(self):
         cols = (
