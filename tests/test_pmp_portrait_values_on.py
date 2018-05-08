@@ -74,9 +74,9 @@ class TestPortraits(basepmpgraphics.TestGraphics):
 
         P.PLOT_SETTINGS.parametertable.expansion = 100
 
-        P.PLOT_SETTINGS.show_values = True
-        P.PLOT_SETTINGS.valuestext.color = "red"
-        P.PLOT_SETTINGS.valuestext.angle = -45
+        P.PLOT_SETTINGS.values.show = True
+        P.PLOT_SETTINGS.values.text.color = "red"
+        P.PLOT_SETTINGS.values.text.angle = -45
 
         J = self.loadJSON()
 
@@ -106,7 +106,9 @@ class TestPortraits(basepmpgraphics.TestGraphics):
         # GENERATE PLOT
         P.decorate(out1_rel, variables, yax)
         # USING TWO OR MORE REFERENCE DATA SETS
-        P.PLOT_SETTINGS.valuesarray = out1_rel + 2.
+        P.PLOT_SETTINGS.values.array = out1_rel + 2.
+        P.PLOT_SETTINGS.values.lightcolor = "green"
+        P.PLOT_SETTINGS.values.darkcolor = "red"
         P.plot(out1_rel, x=self.x, multiple=1.3)
         fnm = os.path.join(os.getcwd(), "testValuesOnPortrait.png")
         self.checkImage(fnm)

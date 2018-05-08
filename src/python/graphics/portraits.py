@@ -18,6 +18,22 @@ def is_dark_color_type(R, G, B, A):
     return a > .5
 
 
+class Values(object):
+    __slots__ = ("show", "array", "text",
+                 "lightcolor", "darkcolor", "format")
+
+    def __init__(self, show=False, array=None,
+                 lightcolor="white", darkcolor="black", format="{0:.2f}"):
+        self.show = show
+        self.array = array
+        self.text = vcs.createtext()
+        self.text.valign = "half"
+        self.text.halign = "center"
+        self.lightcolor = lightcolor
+        self.darkcolor = darkcolor
+        self.format = format
+
+
 class Xs(object):
     __slots__ = ("x1", "x2")
 
@@ -49,10 +65,8 @@ class Plot_defaults(object):
                  "fillareacolors", "legend", "_logo",
                  "xticorientation", "yticorientation",
                  "parameterorientation", "tictable",
-                 "parametertable", "draw_mesh",
+                 "parametertable", "draw_mesh", "values",
                  "missing_color", "xtic1", "xtic2", "ytic1", "ytic2",
-                 "show_values", "valuestext", "valuesformat", "valuesarray",
-                 "valueslightcolor",
                  "time_stamp"]
 
     def getlogo(self):
@@ -92,13 +106,7 @@ class Plot_defaults(object):
         self.parameterorientation.height = 20
         self.parametertable = vcs.createtexttable()
         # values in cell setting
-        self.show_values = False
-        self.valuestext = vcs.createtext()
-        self.valuestext.valign = "half"
-        self.valuestext.halign = "center"
-        self.valuesformat = "{0:.2f}"
-        self.valuesarray = None
-        self.valueslightcolor = None
+        self.values = Values()
         # Defaults
         self.draw_mesh = 'y'
         self.missing_color = 3
@@ -1032,7 +1040,7 @@ class Portrait(object):
         self.x.plot(raveled, mesh, template, meshfill, bg=self.bg)
 
         # If required plot values
-        if self.PLOT_SETTINGS.show_values:
+        if self.PLOT_SETTINGS.values.show:
             self.draw_values(raveled, mesh, meshfill, template)
 
         # Now prints the rest of the title, etc...
@@ -1121,10 +1129,10 @@ class Portrait(object):
 
     def draw_values(self, raveled, mesh, meshfill, template):
         # Values to use (data or user passed)
-        if self.PLOT_SETTINGS.valuesarray is None:
+        if self.PLOT_SETTINGS.values.array is None:
             data = MV2.array(raveled)
         else:
-            data = MV2.ravel(self.PLOT_SETTINGS.valuesarray)
+            data = MV2.ravel(self.PLOT_SETTINGS.values.array)
         if isinstance(raveled, numpy.ma.core.MaskedArray):
             data.mask = data.mask + raveled.mask
 
@@ -1140,37 +1148,37 @@ class Portrait(object):
         # Baricenters
         xcenters = numpy.average(M[:, 1], axis=-1)
         ycenters = numpy.average(M[:, 0], axis=-1)
-        self.PLOT_SETTINGS.valuestext.viewport = [template.data.x1, template.data.x2,
-                                                  template.data.y1, template.data.y2]
+        self.PLOT_SETTINGS.values.text.viewport = [template.data.x1, template.data.x2,
+                                                   template.data.y1, template.data.y2]
         if not numpy.allclose(meshfill.datawc_x1, 1.e20):
-            self.PLOT_SETTINGS.valuestext.worldcoordinate = [meshfill.datawc_x1,
-                                                             meshfill.datawc_x2,
-                                                             meshfill.datawc_y1,
-                                                             meshfill.datawc_y2]
+            self.PLOT_SETTINGS.values.text.worldcoordinate = [meshfill.datawc_x1,
+                                                              meshfill.datawc_x2,
+                                                              meshfill.datawc_y1,
+                                                              meshfill.datawc_y2]
         else:
-            self.PLOT_SETTINGS.valuestext.worldcoordinate = [M[:, 1].min(),
-                                                             M[:, 1].max(),
-                                                             M[:, 0].min(),
-                                                             M[:, 0].max()]
+            self.PLOT_SETTINGS.values.text.worldcoordinate = [M[:, 1].min(),
+                                                              M[:, 1].max(),
+                                                              M[:, 0].min(),
+                                                              M[:, 0].max()]
 
-        self.PLOT_SETTINGS.valuestext.string = [
-            self.PLOT_SETTINGS.valuesformat.format(value) for value in data]
+        self.PLOT_SETTINGS.values.text.string = [
+            self.PLOT_SETTINGS.values.format.format(value) for value in data]
 
         # Now that we have the formatted values we need get the longest string
-        lengths = [len(txt) for txt in self.PLOT_SETTINGS.valuestext.string]
+        lengths = [len(txt) for txt in self.PLOT_SETTINGS.values.text.string]
         longest = max(lengths)
         index = lengths.index(longest)
 
         tmptxt = vcs.createtext()
-        tmptxt.string = self.PLOT_SETTINGS.valuestext.string[index]
+        tmptxt.string = self.PLOT_SETTINGS.values.text.string[index]
         tmptxt.x = xcenters[index]
         tmptxt.y = ycenters[index]
         smallY = M[index, 0, :].min()
         bigY = M[index, 0, :].max()
         smallX = M[index, 1, :].min()
         bigX = M[index, 1, :].max()
-        tmptxt.worldcoordinate = self.PLOT_SETTINGS.valuestext.worldcoordinate
-        tmptxt.viewport = self.PLOT_SETTINGS.valuestext.viewport
+        tmptxt.worldcoordinate = self.PLOT_SETTINGS.values.text.worldcoordinate
+        tmptxt.viewport = self.PLOT_SETTINGS.values.text.viewport
         # Now try to shrink until it fits
         extent = self.x.gettextextent(tmptxt)[0]
         while ((extent[1] - extent[0]) / (bigX - smallX) > 1.01 or
@@ -1178,7 +1186,7 @@ class Portrait(object):
                 tmptxt.height >= 1:
             tmptxt.height -= 1
             extent = self.x.gettextextent(tmptxt)[0]
-        self.PLOT_SETTINGS.valuestext.height = tmptxt.height
+        self.PLOT_SETTINGS.values.text.height = tmptxt.height
 
         # Finally we need to split into two text objects for dark and light background
         # Step 1: figure out each bin color type (dark/light)
@@ -1196,14 +1204,14 @@ class Portrait(object):
         binned = numpy.digitize(raveled, bins)
         isdark = [dark_bins[indx] for indx in binned]
         tmptxt = vcs.createtext(
-            Tt_source=self.PLOT_SETTINGS.valuestext.Tt_name,
-            To_source=self.PLOT_SETTINGS.valuestext.To_name)
-        for pick, color in [(numpy.argwhere(isdark), "white"),
-                            (numpy.argwhere(numpy.logical_not(isdark)), "black")]:
+            Tt_source=self.PLOT_SETTINGS.values.text.Tt_name,
+            To_source=self.PLOT_SETTINGS.values.text.To_name)
+        for pick, color in [(numpy.argwhere(isdark), self.PLOT_SETTINGS.values.lightcolor),
+                            (numpy.argwhere(numpy.logical_not(isdark)), self.PLOT_SETTINGS.values.darkcolor)]:
             tmptxt.x = xcenters.take(pick)[:, 0].tolist()
             tmptxt.y = ycenters.take(pick)[:, 0].tolist()
             tmptxt.string = numpy.array(
-                self.PLOT_SETTINGS.valuestext.string).take(pick)[
+                self.PLOT_SETTINGS.values.text.string).take(pick)[
                 :, 0].tolist()
             tmptxt.color = color
             self.x.plot(tmptxt, bg=self.bg)
