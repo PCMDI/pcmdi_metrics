@@ -176,6 +176,7 @@ class PMPDriver(object):
                     continue
 
                 try:
+                    print("We have:",ref, tst)
                     self.output_metric.calculate_and_output_metrics(ref, tst)
                 except RuntimeError:
                     break
@@ -226,6 +227,7 @@ parser.add_argument(
     '--regions',
     type=ast.literal_eval,
     dest='regions',
+    default={},
     help='Regions on which to run the metrics',
     required=False)
 
@@ -234,6 +236,7 @@ parser.add_argument(
     type=ast.literal_eval,
     dest='regions_values',
     help='Users can customize regions values names',
+    default={},
     required=False)
 
 parser.add_argument(
