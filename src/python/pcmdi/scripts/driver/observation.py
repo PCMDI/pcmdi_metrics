@@ -127,13 +127,13 @@ class Observation(DataSet):
             return data_obs
         except Exception as e:
             if self.level is not None:
-                logging.getLogger("pcmdi_metrics").error('Failed opening 4D OBS',
+                logging.getLogger("pcmdi_metrics").error("{} {} {} {}".format('Failed opening 4D OBS',
                                                          self.var, self.obs_or_model,
-                                                         e)
+                                                         e))
             else:
-                logging.getLogger("pcmdi_metrics").error('Failed opening 3D OBS',
+                logging.getLogger("pcmdi_metrics").error("{} {} {} {}".format('Failed opening 3D OBS',
                                                          self.var,
-                                                         self.obs_or_model, e)
+                                                         self.obs_or_model, e))
 
     def hash(self):
         ''' Return a hash of the file. '''

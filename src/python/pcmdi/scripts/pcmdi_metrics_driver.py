@@ -156,6 +156,9 @@ class PMPDriver(object):
             test_data_set = Observation.setup_obs_list_from_parameter(
                 test_data_set, self.obs_dict, self.var)
 
+        if len(reference_data_set) == 0:  # We did not find any ref!!!
+            raise RuntimeError("No reference dataset found!")
+
         # self.reference/self.test are either an obs or model
         for reference in reference_data_set:
             try:
