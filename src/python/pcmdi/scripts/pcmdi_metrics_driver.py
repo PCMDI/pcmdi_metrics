@@ -226,7 +226,6 @@ parser.add_argument(
     '--regions',
     type=ast.literal_eval,
     dest='regions',
-    default={},
     help='Regions on which to run the metrics',
     required=False)
 
@@ -235,7 +234,6 @@ parser.add_argument(
     type=ast.literal_eval,
     dest='regions_values',
     help='Users can customize regions values names',
-    default={},
     required=False)
 
 parser.add_argument(
@@ -379,23 +377,20 @@ parser.add_argument(
     dest='test_clims_interpolated_output',
     help='Directory of where to put the interpolated ' +
          'test climatologies',
-    default="",
     required=False)
 
 parser.add_argument(
     '--output_json_template',
-    default="%(variable)%(level)_%(target_grid_name)_%(regrid_tool)_%(regrid_method)_metrics",
     help='Filename template for results json files',
     required=False)
 
 parser.add_argument(
     '--user_notes',
     dest='user_notes',
-    default=None,
     help='Provide a short description to help identify this run of the PMP mean climate.',
     required=False)
 
-parameter = parser.get_parameter()  # cmd_default_vars=False)
+parameter = parser.get_parameter(cmd_default_vars=False)
 
 driver = PMPDriver(parameter)
 driver.run_diags()
