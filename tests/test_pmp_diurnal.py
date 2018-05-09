@@ -1,5 +1,6 @@
 from __future__ import print_function
 import unittest
+import basepmp
 import cdat_info
 import subprocess
 import shlex
@@ -9,7 +10,7 @@ import numpy
 import json
 
 
-class DiurnalTest(unittest.TestCase):
+class DiurnalTest(basepmp.PMPTest):
 
     def assertSame(self,a,b):
         self.assertTrue(numpy.ma.allclose(a,b))
@@ -56,9 +57,14 @@ class DiurnalTest(unittest.TestCase):
         p.communicate()
         good = open("tests/diurnal/results/json/{}".format(json_file))
         test = open("test_data/results/jsons/{}".format(json_file))
+        good_nm = "tests/diurnal/results/json/{}".format(json_file)
+        test_nm = "test_data/results/jsons/{}".format(json_file)
+        self.assertSimilarJsons(test_nm, good_nm)
+        """
         test = json.load(test)
         good = json.load(good)
         self.assertEqual(test["RESULTS"],good["RESULTS"])
+        """
     def teistCompositeDiurnalStatisticsWrapped(self):
         cmd = 'compositeDiurnalStatisticsWrapped.py --mp test_data --rd test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'
         p = subprocess.Popen(shlex.split(cmd))

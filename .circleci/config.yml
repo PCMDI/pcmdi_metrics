@@ -1,0 +1,98 @@
+version: r
+
+checkout:
+  post:
+    - ./ci-support/checkout_merge_commit.sh
+        
+aliases:
+
+  - &setup_miniconda
+    name: setup_miniconda
+    command: |
+      mkdir -p workspace
+      git clone -b validateNightly git@github.com:CDAT/cdat workspace/cdat
+      ls workspace/cdat
+      # following will install miniconda3 under $WORKDIR/miniconda/bin
+      python workspace/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3'
+      
+  - &create_conda_env
+    name: create_conda_env
+    command: |
+       export PATH=$WORKDIR/miniconda/bin:$PATH
+       conda config --set always_yes yes --set changeps1 no
+       conda update -y -q conda
+       conda config --set anaconda_upload no
+       conda create -q -n py2 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "proj4<5" "python<3" "ffmpeg<4"
+       conda create -q -n py3 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons cdp mesalib image-compare flake8 nose cia "proj4<5" "python>3" "ffmpeg<4"
+
+  - &setup_pmp
+    name: setup_pmp
+    command: |
+       export PATH=$WORKDIR/miniconda/bin:$PATH
+       source activate py2
+       python setup.py install
+       source activate py3
+       python setup.py install
+
+  - &run_pmp_tests
+    name: run_pmp_tests
+    command: |
+       export PATH=$WORKDIR/miniconda/bin:$PATH
+       export UVCDAT_ANONYMOUS_LOG=False
+       export UVCDAT_SETUP_PATH=${HOME}
+       source activate py2
+       python run_tests.py -H -v2
+       RESULT=$?
+       echo "py2 test command exit result:",$RESULT
+       source activate py3
+       python run_tests.py -H -v2
+       RESULT=$(( $RESULT + $? ))
+       cd ..
+       echo "py3 test command exit result:",$RESULT
+       if [ $RESULT -eq 0 -a $CIRCLE_BRANCH == "master" ]; then conda install -n root conda-build anaconda-client ; fi
+       # if [ $RESULT -eq 0 -a $CIRCLE_BRANCH == "master" ]; then bash ./ci-support/conda_upload.sh ; fi
+
+
+jobs:
+  macos_pmp:
+    macos:
+      xcode: "9.2.0"
+    environment:
+      WORKDIR: "workspace/test_macos_pmp"
+    steps:
+      - checkout
+      - run: *setup_miniconda
+      - run: *create_conda_env
+      - run: *setup_pmp
+      - run: *run_pmp_tests
+      - store_artifacts:
+          path: tests_html
+          destination: tests_html
+      - store_artifacts:
+          path: tests_png
+          destination: tests_png
+
+  linux_pmp:
+    machine:
+      image: circleci/classic:latest
+    environment:
+      WORKDIR: "workspace/test_linux_pmp"
+    steps:
+      - checkout
+      - run: *setup_miniconda
+      - run: *create_conda_env
+      - run: *setup_pmp
+      - run: *run_pmp_tests
+      - store_artifacts:
+          path: tests_html
+          destination: tests_html
+      - store_artifacts:
+          path: tests_png
+          destination: tests_png
+
+workflows:
+  version: 2
+  nightly:
+    jobs:
+      - macos_pmp
+      - linux_pmp
