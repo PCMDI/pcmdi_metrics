@@ -176,7 +176,6 @@ class PMPDriver(object):
                     continue
 
                 try:
-                    print("We have:",ref, tst)
                     self.output_metric.calculate_and_output_metrics(ref, tst)
                 except RuntimeError:
                     break
@@ -380,6 +379,7 @@ parser.add_argument(
     dest='test_clims_interpolated_output',
     help='Directory of where to put the interpolated ' +
          'test climatologies',
+    default="",
     required=False)
 
 parser.add_argument(
