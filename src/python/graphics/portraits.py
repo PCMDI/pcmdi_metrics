@@ -1,11 +1,37 @@
 #!/usr/bin/env python
 
+from __future__ import print_function
 import MV2
 import cdms2
 import vcs
 import genutil
 import glob
+import numpy
+import time
 from genutil import StringConstructor
+
+
+def is_dark_color_type(R, G, B, A):
+    """figure out if a color is dark or light alpha is ignored"""
+    # Counting the perceptive luminance - human eye favors green color...
+    a = 1 - (0.299 * R + 0.587 * G + 0.114 * B) / 100.
+    return a > .5
+
+
+class Values(object):
+    __slots__ = ("show", "array", "text",
+                 "lightcolor", "darkcolor", "format")
+
+    def __init__(self, show=False, array=None,
+                 lightcolor="white", darkcolor="black", format="{0:.2f}"):
+        self.show = show
+        self.array = array
+        self.text = vcs.createtext()
+        self.text.valign = "half"
+        self.text.halign = "center"
+        self.lightcolor = lightcolor
+        self.darkcolor = darkcolor
+        self.format = format
 
 
 class Xs(object):
@@ -39,7 +65,7 @@ class Plot_defaults(object):
                  "fillareacolors", "legend", "_logo",
                  "xticorientation", "yticorientation",
                  "parameterorientation", "tictable",
-                 "parametertable", "draw_mesh",
+                 "parametertable", "draw_mesh", "values",
                  "missing_color", "xtic1", "xtic2", "ytic1", "ytic2",
                  "time_stamp"]
 
@@ -79,6 +105,8 @@ class Plot_defaults(object):
         self.parameterorientation.halign = 'center'
         self.parameterorientation.height = 20
         self.parametertable = vcs.createtexttable()
+        # values in cell setting
+        self.values = Values()
         # Defaults
         self.draw_mesh = 'y'
         self.missing_color = 3
@@ -105,11 +133,15 @@ class Portrait(object):
         "exclude", "parameters_list",
         "dummies", "auto_dummies", "grouped",
         "slaves", "altered", "aliased",
-        "portrait_types", "PLOT_SETTINGS",
+        "portrait_types", "PLOT_SETTINGS", "x", "bg"
     ]
 
     def __init__(self, files_structure=None, exclude=[], **kw):
         ''' initialize the portrait object, from file structure'''
+        if "x" in kw:
+            self.x = kw["x"]
+        else:
+            self.x = vcs.init()
         self.verbose = True  # output files looked for to the screen
         self.files_structure = files_structure
         self.exclude = exclude
@@ -687,9 +719,10 @@ class Portrait(object):
 
     def plot(self, data=None, mesh=None, template=None,
              meshfill=None, x=None, bg=0, multiple=1.1):
+        self.bg = bg
         # Create the vcs canvas
-        if x is None:
-            x = vcs.init()
+        if x is not None:
+            self.x = x
 
         # Continents bug
         # x.setcontinentstype(0)
@@ -699,7 +732,7 @@ class Portrait(object):
 
         # Do we use a predefined template ?
         if template is None:
-            template = x.createtemplate()
+            template = vcs.createtemplate()
             # Now sets all the things for the template...
             # Sets a bunch of template attributes to off
             for att in [
@@ -776,9 +809,9 @@ class Portrait(object):
             template.legend.y1 = self.PLOT_SETTINGS.legend.y1
             template.legend.y2 = self.PLOT_SETTINGS.legend.y2
             try:
-                tmp = x.createtextorientation('crap22')
+                tmp = vcs.createtextorientation('crap22')
             except Exception:
-                tmp = x.gettextorientation('crap22')
+                tmp = vcs.gettextorientation('crap22')
             tmp.height = 12
             # tmp.halign = 'center'
             # template.legend.texttable = tmp
@@ -793,14 +826,14 @@ class Portrait(object):
                 raise 'Error cannot understand what you mean by template=' + \
                     str(template)
 
-            template = x.createtemplate()
+            template = vcs.createtemplate()
 
         # Do we use a predefined meshfill ?
         if meshfill is None:
             mtics = {}
             for i in range(100):
                 mtics[i - .5] = ''
-            meshfill = x.createmeshfill()
+            meshfill = vcs.createmeshfill()
             meshfill.xticlabels1 = eval(data.getAxis(1).names)
             meshfill.yticlabels1 = eval(data.getAxis(0).names)
 
@@ -813,9 +846,9 @@ class Portrait(object):
             meshfill.xticlabels2 = mtics
             meshfill.yticlabels2 = mtics
             if self.PLOT_SETTINGS.colormap is None:
-                self.set_colormap(x)
+                self.set_colormap()
             elif x.getcolormapname() != self.PLOT_SETTINGS.colormap:
-                x.setcolormap(self.PLOT_SETTINGS.colormap)
+                self.x.setcolormap(self.PLOT_SETTINGS.colormap)
 
             if self.PLOT_SETTINGS.levels is None:
                 min, max = vcs.minmax(data)
@@ -833,22 +866,15 @@ class Portrait(object):
                 else:
                     meshfill.fillareacolors = self.PLOT_SETTINGS.fillareacolors
 
-# self.setmeshfill(x,meshfill,levs)
-# if self.PLOT_SETTINGS.legend is None:
-# meshfill.legend=vcs.mklabels(levs)
-# else:
-# meshfill.legend=self.PLOT_SETTINGS.legend
             # Now creates the mesh associated
             n = int(multiple)
             ntot = int((multiple - n) * 10 + .1)
-# data=data
             sh = list(data.shape)
             sh.append(2)
             Indx = MV2.indices((sh[0], sh[1]))
             Y = Indx[0]
             X = Indx[1]
-# if ntot>1:
-# meshfill.mesh='y'
+
             if ntot == 1:
                 sh.append(4)
                 M = MV2.zeros(sh)
@@ -1005,12 +1031,17 @@ class Portrait(object):
             else:
                 raise 'Error cannot understand what you mean by meshfill=' + \
                     str(meshfill)
-            meshfill = x.createmeshfill(source=tid)
+            meshfill = vcs.createmeshfill(source=tid)
 
         if mesh is None:
             mesh = M
 
-        x.plot(MV2.ravel(data), mesh, template, meshfill, bg=bg)
+        raveled = MV2.ravel(data)
+        self.x.plot(raveled, mesh, template, meshfill, bg=self.bg)
+
+        # If required plot values
+        if self.PLOT_SETTINGS.values.show:
+            self.draw_values(raveled, mesh, meshfill, template)
 
         # Now prints the rest of the title, etc...
         # but only if n==1
@@ -1083,18 +1114,109 @@ class Portrait(object):
                                     txt.x = dic['x']
                                 if dic['y'] is not None:
                                     txt.y = dic['y']
-                            x.plot(txt, bg=bg, continents=0)
+                            self.x.plot(txt, bg=self.bg, continents=0)
             if self.PLOT_SETTINGS.time_stamp is not None:
-                import time
                 sp = time.ctime().split()
                 sp = sp[:3] + [sp[-1]]
                 self.PLOT_SETTINGS.time_stamp.string = ''.join(sp)
-                x.plot(self.PLOT_SETTINGS.time_stamp, bg=bg, continents=0)
+                self.x.plot(
+                    self.PLOT_SETTINGS.time_stamp,
+                    bg=self.bg,
+                    continents=0)
             if self.PLOT_SETTINGS.logo is not None:
-                self.PLOT_SETTINGS.logo.plot(x, bg=bg)
+                self.PLOT_SETTINGS.logo.plot(self.x, bg=self.bg)
         return mesh, template, meshfill
 
-    def set_colormap(self, x):
+    def draw_values(self, raveled, mesh, meshfill, template):
+        # Values to use (data or user passed)
+        if self.PLOT_SETTINGS.values.array is None:
+            data = MV2.array(raveled)
+        else:
+            data = MV2.ravel(self.PLOT_SETTINGS.values.array)
+        if isinstance(raveled, numpy.ma.core.MaskedArray):
+            data.mask = data.mask + raveled.mask
+
+        # Now remove masked values
+        if data.mask is not numpy.ma.nomask:  # we have missing
+            indices = numpy.argwhere(numpy.ma.logical_not(data.mask))
+            data = data.take(indices).filled(0)[:, 0]
+            M = mesh.filled()[indices][:, 0]
+            raveled = raveled.take(indices).filled(0.)[:, 0]
+        else:
+            M = mesh.filled()
+
+        # Baricenters
+        xcenters = numpy.average(M[:, 1], axis=-1)
+        ycenters = numpy.average(M[:, 0], axis=-1)
+        self.PLOT_SETTINGS.values.text.viewport = [template.data.x1, template.data.x2,
+                                                   template.data.y1, template.data.y2]
+        if not numpy.allclose(meshfill.datawc_x1, 1.e20):
+            self.PLOT_SETTINGS.values.text.worldcoordinate = [meshfill.datawc_x1,
+                                                              meshfill.datawc_x2,
+                                                              meshfill.datawc_y1,
+                                                              meshfill.datawc_y2]
+        else:
+            self.PLOT_SETTINGS.values.text.worldcoordinate = [M[:, 1].min(),
+                                                              M[:, 1].max(),
+                                                              M[:, 0].min(),
+                                                              M[:, 0].max()]
+
+        self.PLOT_SETTINGS.values.text.string = [
+            self.PLOT_SETTINGS.values.format.format(value) for value in data]
+
+        # Now that we have the formatted values we need get the longest string
+        lengths = [len(txt) for txt in self.PLOT_SETTINGS.values.text.string]
+        longest = max(lengths)
+        index = lengths.index(longest)
+
+        tmptxt = vcs.createtext()
+        tmptxt.string = self.PLOT_SETTINGS.values.text.string[index]
+        tmptxt.x = xcenters[index]
+        tmptxt.y = ycenters[index]
+        smallY = M[index, 0, :].min()
+        bigY = M[index, 0, :].max()
+        smallX = M[index, 1, :].min()
+        bigX = M[index, 1, :].max()
+        tmptxt.worldcoordinate = self.PLOT_SETTINGS.values.text.worldcoordinate
+        tmptxt.viewport = self.PLOT_SETTINGS.values.text.viewport
+        # Now try to shrink until it fits
+        extent = self.x.gettextextent(tmptxt)[0]
+        while ((extent[1] - extent[0]) / (bigX - smallX) > 1.01 or
+               (extent[3] - extent[2]) / (bigY - smallY) > 1.01) and \
+                tmptxt.height >= 1:
+            tmptxt.height -= 1
+            extent = self.x.gettextextent(tmptxt)[0]
+        self.PLOT_SETTINGS.values.text.height = tmptxt.height
+
+        # Finally we need to split into two text objects for dark and light background
+        # Step 1: figure out each bin color type (dark/light)
+        colormap = self.x.colormap
+        if colormap is None:
+            colormap = vcs._colorMap
+        cmap = vcs.getcolormap(colormap)
+        colors = meshfill.fillareacolors
+        dark_bins = [
+            is_dark_color_type(
+                *cmap.getcolorcell(color)) for color in colors]
+
+        # Step 2: put values into bin (color where they land)
+        bins = meshfill.levels[1:-1]
+        binned = numpy.digitize(raveled, bins)
+        isdark = [dark_bins[indx] for indx in binned]
+        tmptxt = vcs.createtext(
+            Tt_source=self.PLOT_SETTINGS.values.text.Tt_name,
+            To_source=self.PLOT_SETTINGS.values.text.To_name)
+        for pick, color in [(numpy.argwhere(isdark), self.PLOT_SETTINGS.values.lightcolor),
+                            (numpy.argwhere(numpy.logical_not(isdark)), self.PLOT_SETTINGS.values.darkcolor)]:
+            tmptxt.x = xcenters.take(pick)[:, 0].tolist()
+            tmptxt.y = ycenters.take(pick)[:, 0].tolist()
+            tmptxt.string = numpy.array(
+                self.PLOT_SETTINGS.values.text.string).take(pick)[
+                :, 0].tolist()
+            tmptxt.color = color
+            self.x.plot(tmptxt, bg=self.bg)
+
+    def set_colormap(self):
         cols = (
             100,
             100,
@@ -1820,12 +1942,12 @@ class Portrait(object):
         cols = MV2.reshape(cols, (len(cols) / 3, 3))
 
         for i in range(cols.shape[0]):
-            co = x.getcolorcell(i)
+            co = self.x.getcolorcell(i)
             if (co[0] != int(cols[i][0]) or co[1] != int(
                     cols[i][1]) or co[2] != int(cols[i][2])):
-                x.setcolorcell(
+                self.x.setcolorcell(
                     i, int(
                         cols[i][0]), int(
                         cols[i][1]), int(
                         cols[i][2]))
-        pass
+        return
