@@ -17,29 +17,18 @@ except Exception:
 
 class OutputMetrics(object):
 
-    def __init__(self, parameter, var_name_long, obs_dict, metrics_output_filename,user_notes,sftlf):
+    def __init__(self, parameter, var_name_long, obs_dict, sftlf):
         logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
         self.parameter = parameter
         self.var_name_long = var_name_long
         self.obs_dict = obs_dict
         self.var = var_name_long.split('_')[0]
         self.sftlf = sftlf
-        self.metrics_output_filename = metrics_output_filename
-        self.user_notes = user_notes
 
         self.metrics_def_dictionary = {}
         self.metrics_dictionary = {}
 
-        string_template = "%(variable)%(level)_%(target_grid_name)_" +\
-                          "%(regrid_tool)_%(regrid_method)_metrics"
-
-        if self.metrics_output_filename != '':
-           string_template = metrics_output_filename
-
-        print('string_template is ========== ', string_template,' ---- ', metrics_output_filename)
-
-
-        self.out_file = Base(self.parameter.metrics_output_path, string_template)
+        self.out_file = Base(self.parameter.metrics_output_path, self.parameter.output_filename_template)
 
         self.regrid_method = ''
         self.regrid_tool = ''
@@ -55,7 +44,8 @@ class OutputMetrics(object):
         self.metrics_def_dictionary = collections.OrderedDict()
         self.metrics_dictionary = collections.OrderedDict()
         self.metrics_dictionary["DISCLAIMER"] = self.open_disclaimer()
-        self.metrics_dictionary["USER_NOTES"] = self.user_notes
+        if self.parameter.user_notes is not None:
+            self.metrics_dictionary["USER_NOTES"] = self.parameter.user_notes
         self.metrics_dictionary["RESULTS"] = collections.OrderedDict()
 
         self.metrics_dictionary["Variable"] = {}
