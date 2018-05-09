@@ -28,7 +28,7 @@ class OutputMetrics(object):
         self.metrics_def_dictionary = {}
         self.metrics_dictionary = {}
 
-        self.out_file = Base(self.parameter.metrics_output_path, self.parameter.output_filename_template)
+        self.out_file = Base(self.parameter.metrics_output_path, self.parameter.output_json_template)
 
         self.regrid_method = ''
         self.regrid_tool = ''
