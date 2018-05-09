@@ -382,7 +382,18 @@ parser.add_argument(
          'test climatologies',
     required=False)
 
+parser.add_argument(
+    '--output_json_template',
+    help='Filename template for results json files',
+    required=False)
+
+parser.add_argument(
+    '--user_notes',
+    dest='user_notes',
+    help='Provide a short description to help identify this run of the PMP mean climate.',
+    required=False)
 
 parameter = parser.get_parameter(cmd_default_vars=False)
+
 driver = PMPDriver(parameter)
 driver.run_diags()

@@ -28,9 +28,7 @@ class OutputMetrics(object):
         self.metrics_def_dictionary = {}
         self.metrics_dictionary = {}
 
-        string_template = "%(variable)%(level)_%(target_grid_name)_" +\
-                          "%(regrid_tool)_%(regrid_method)_metrics"
-        self.out_file = Base(self.parameter.metrics_output_path, string_template)
+        self.out_file = Base(self.parameter.metrics_output_path, self.parameter.output_json_template)
 
         self.regrid_method = ''
         self.regrid_tool = ''
@@ -46,6 +44,8 @@ class OutputMetrics(object):
         self.metrics_def_dictionary = collections.OrderedDict()
         self.metrics_dictionary = collections.OrderedDict()
         self.metrics_dictionary["DISCLAIMER"] = self.open_disclaimer()
+        if self.parameter.user_notes is not None:
+            self.metrics_dictionary["USER_NOTES"] = self.parameter.user_notes
         self.metrics_dictionary["RESULTS"] = collections.OrderedDict()
 
         self.metrics_dictionary["Variable"] = {}

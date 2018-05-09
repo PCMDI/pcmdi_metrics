@@ -46,6 +46,8 @@ class PMPMetricsParameter(cdp.cdp_parameter.CDPParameter):
         self.metrics_output_path = ''
         self.filename_output_template = ''
         self.dry_run = False
+        self.user_notes = None
+        self.output_json_template = "%(variable)%(level)_%(target_grid_name)_%(regrid_tool)_%(regrid_method)_metrics"
 
     def check_str(self, str_var, str_var_name):
         if type(str_var) is not str:

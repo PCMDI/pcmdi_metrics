@@ -211,6 +211,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             data["json_structure"] = json_structure
             f = open(file_name, 'w')
             data["provenance"] = generateProvenance()
+#           data["user_notes"] = "BLAH"
             json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 

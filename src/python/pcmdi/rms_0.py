@@ -12,8 +12,6 @@ def compute(dm, do):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     if 1 in [x.isLevel() for x in dm.getAxisList()]:
-        print(dm.shape, "B4")
         dm = dm(squeeze=1)
         do = do(squeeze=1)
-        print(dm.shape, "AF")
     return float(genutil.statistics.rms(dm, do))

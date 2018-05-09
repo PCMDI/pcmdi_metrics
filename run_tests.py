@@ -21,7 +21,7 @@ except Exception:
 root = os.getcwd()
 cpus = multiprocessing.cpu_count()
 
-parser = argparse.ArgumentParser(description="Run VCS tests",
+parser = argparse.ArgumentParser(description="Run PMP tests",
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("-H", "--html", action="store_true",
                     help="create and show html result page")
@@ -233,7 +233,7 @@ if args.html or args.package or args.dropbox:
 
     fi = open("index.html", "w")
     print("<!DOCTYPE html>", file=fi)
-    print("""<html><head><title>VCS Test Results %s</title>
+    print("""<html><head><title>PMP Test Results %s</title>
     <link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/1.10.13/css/jquery.dataTables.css">
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.12.4.js"></script>
     <script type="text/javascript" charset="utf8"
@@ -247,7 +247,7 @@ if args.html or args.package or args.dropbox:
                 } );
     </script>
     </head>""" % time.asctime(), file=fi)
-    print("<body><h1>VCS Test results: %s</h1>" % time.asctime(), file=fi)
+    print("<body><h1>PMP Test results: %s</h1>" % time.asctime(), file=fi)
     print("<table id='table_id' class='display'>", file=fi)
     print("<thead><tr><th>Test</th><th>Result</th><th>Start Time</th><th>End Time</th><th>Time</th></tr></thead>", file=fi)
     print("<tfoot><tr><th>Test</th><th>Result</th><th>Start Time</th><th>End Time</th><th>Time</th></tr></tfoot>", file=fi)
