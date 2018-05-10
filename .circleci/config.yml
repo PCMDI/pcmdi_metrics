@@ -49,9 +49,39 @@ aliases:
        RESULT=$(( $RESULT + $? ))
        cd ..
        echo "py3 test command exit result:",$RESULT
-       if [ $RESULT -eq 0 -a $CIRCLE_BRANCH == "master" ]; then conda install -n root conda-build anaconda-client ; fi
-       # if [ $RESULT -eq 0 -a $CIRCLE_BRANCH == "master" ]; then bash ./ci-support/conda_upload.sh ; fi
 
+  - &conda_upload
+    name: conda_upload
+    command: |
+       export PATH=$WORKDIR/miniconda/bin:$PATH
+       source activate base
+       conda install conda-build anaconda-client
+       cd conda-bld
+       # conda config --set anaconda_upload no
+       export CONDA_BLD_PATH=`pwd`/build_conda
+       mkdir conda-bld
+       mkdir build_conda
+       echo "BUILDING IN:",$CONDA_BLD_PATH
+       echo "Cloning recipes"
+       git clone git://github.com/cdat/conda-recipes
+       cd conda-recipes
+       rm -rf cdp
+       echo "cp -r ../../recipes/pcmdi_metrics ."
+       cp -r ../../recipes/pcmdi_metrics .
+       echo "Starting prep for build"
+       python ./prep_for_build.py -l 1.1.2
+       echo "starting conda build"
+       conda build pcmdi_metrics -c conda-forge -c cdat -c pcmdi --python=27
+       conda build pcmdi_metrics -c conda-forge -c cdat -c pcmdi --python=36
+       echo "starting anaconda upload"
+       anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-*tar.bz2 --force
+
+
+deployment:
+    nightly:
+        branch: deploy_via_circleci
+        commands:
+            - run: *conda_upload
 
 jobs:
   macos_pmp:
@@ -59,6 +89,7 @@ jobs:
       xcode: "9.2.0"
     environment:
       WORKDIR: "workspace/test_macos_pmp"
+      OS: "osx-64"
     steps:
       - checkout
       - run: *setup_miniconda
@@ -77,6 +108,7 @@ jobs:
       image: circleci/classic:latest
     environment:
       WORKDIR: "workspace/test_linux_pmp"
+      OS: "linux-64"
     steps:
       - checkout
       - run: *setup_miniconda
