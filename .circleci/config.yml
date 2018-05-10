@@ -77,13 +77,35 @@ aliases:
        anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-*tar.bz2 --force
 
 
-deployment:
-    nightly:
-        branch: deploy_via_circleci
-        commands:
-            - run: *conda_upload
-
 jobs:
+  deploy_mac:
+    macos:
+      xcode: "9.2.0"
+    environment:
+      WORKDIR: "workspace/test_macos_pmp"
+      OS: "osx-64"
+    filters:
+      branches:
+        only: deploy_via_circleci
+    steps:
+      - checkout
+      - run: *setup_miniconda
+      - run: *conda_upload
+
+  deploy_linux:
+    machine:
+      image: circleci/classic:latest
+    environment:
+      WORKDIR: "workspace/test_linux_pmp"
+      OS: "linux-64"
+    filters:
+      branches:
+        only: deploy_via_circleci
+    steps:
+      - checkout
+      - run: *setup_miniconda
+      - run: *conda_upload
+
   macos_pmp:
     macos:
       xcode: "9.2.0"
@@ -95,7 +117,7 @@ jobs:
       - run: *setup_miniconda
       - run: *create_conda_env
       - run: *setup_pmp
-      - run: *run_pmp_tests
+        #- run: *run_pmp_tests
       - store_artifacts:
           path: tests_html
           destination: tests_html
@@ -114,7 +136,7 @@ jobs:
       - run: *setup_miniconda
       - run: *create_conda_env
       - run: *setup_pmp
-      - run: *run_pmp_tests
+        #- run: *run_pmp_tests
       - store_artifacts:
           path: tests_html
           destination: tests_html
@@ -127,4 +149,17 @@ workflows:
   nightly:
     jobs:
       - macos_pmp
+      - deploy_mac:
+          requires:
+            - macos_pmp
       - linux_pmp
+      - deploy_linux:
+          requires:
+            - linux_pmp
+
+deployment:
+  nightly:
+    branch: deploy_via_circleci
+    commands:
+      - run: *conda_upload
+
