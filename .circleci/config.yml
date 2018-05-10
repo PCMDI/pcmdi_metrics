@@ -55,7 +55,7 @@ aliases:
     command: |
        mkdir conda-bld
        cd conda-bld
-       export PATH=$WORKDIR/miniconda/bin:$PATH
+       export PATH=$HOME/$WORKDIR/miniconda/bin:$PATH
        source activate base
        conda install conda-build anaconda-client
        conda config --set anaconda_upload no
