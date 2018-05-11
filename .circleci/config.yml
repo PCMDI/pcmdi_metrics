@@ -53,7 +53,7 @@ aliases:
   - &conda_upload
     name: conda_upload
     command: |
-       export PATH=$WORKDIR/miniconda/bin:$PATH
+       export PATH=${HOME}/$WORKDIR/miniconda/bin:$PATH
        echo "PATH:"${PATH}
        echo "CONDA:"$(which conda)
        mkdir conda-bld
@@ -116,8 +116,8 @@ jobs:
     steps:
       - checkout
       - run: *setup_miniconda
-      - run: *create_conda_env
-      - run: *setup_pmp
+        #- run: *create_conda_env
+        #- run: *setup_pmp
         #- run: *run_pmp_tests
       - store_artifacts:
           path: tests_html
@@ -135,8 +135,8 @@ jobs:
     steps:
       - checkout
       - run: *setup_miniconda
-      - run: *create_conda_env
-      - run: *setup_pmp
+        #- run: *create_conda_env
+        #- run: *setup_pmp
         #- run: *run_pmp_tests
       - store_artifacts:
           path: tests_html
