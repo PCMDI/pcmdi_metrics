@@ -53,12 +53,11 @@ aliases:
   - &conda_upload
     name: conda_upload
     command: |
-       mkdir conda-bld
-       cd conda-bld
-       export PATH=$HOME/$WORKDIR/miniconda/bin:$PATH
+       export PATH=$WORKDIR/miniconda/bin:$PATH
        echo "PATH:"${PATH}
        echo "CONDA:"$(which conda)
-       source activate base
+       mkdir conda-bld
+       cd conda-bld
        conda install conda-build anaconda-client
        conda config --set anaconda_upload no
        export CONDA_BLD_PATH=`pwd`/build_conda
