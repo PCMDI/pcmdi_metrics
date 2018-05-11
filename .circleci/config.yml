@@ -53,7 +53,7 @@ aliases:
   - &conda_upload
     name: conda_upload
     command: |
-       export PATH=${HOME}/$WORKDIR/miniconda/bin:$PATH
+       export PATH=${HOME}/project/$WORKDIR/miniconda/bin:$PATH
        echo "PATH:"${PATH}
        echo "CONDA:"$(which conda)
        mkdir conda-bld
@@ -85,9 +85,6 @@ jobs:
     environment:
       WORKDIR: "workspace/test_macos_pmp"
       OS: "osx-64"
-    filters:
-      branches:
-        only: deploy_via_circleci
     steps:
       - checkout
       - run: *setup_miniconda
@@ -99,9 +96,6 @@ jobs:
     environment:
       WORKDIR: "workspace/test_linux_pmp"
       OS: "linux-64"
-    filters:
-      branches:
-        only: deploy_via_circleci
     steps:
       - checkout
       - run: *setup_miniconda
@@ -151,10 +145,16 @@ workflows:
     jobs:
       - macos_pmp
       - deploy_mac:
+          filters:
+            branches:
+              only: deploy_via_circleci
           requires:
             - macos_pmp
       - linux_pmp
       - deploy_linux:
+          filters:
+            branches:
+              only: deploy_via_circleci
           requires:
             - linux_pmp
 
