@@ -30,5 +30,5 @@ script:
   - python run_tests.py -v2
   - source deactivate
 
-after_success:
-    - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install -n root conda-build anaconda-client && bash -x recipes/pcmdi_metrics/conda_upload.sh; fi
+#after_success:
+#    - if [ "$TRAVIS_BRANCH" == "master" -a "$TRAVIS_PULL_REQUEST" == "false" ]; then conda install -n root conda-build anaconda-client && bash -x recipes/pcmdi_metrics/conda_upload.sh; fi
