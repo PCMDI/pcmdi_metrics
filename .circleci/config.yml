@@ -54,27 +54,19 @@ aliases:
     name: conda_upload
     command: |
        export PATH=${HOME}/project/$WORKDIR/miniconda/bin:$PATH
-       echo "PATH:"${PATH}
-       echo "CONDA:"$(which conda)
        mkdir conda-bld
        cd conda-bld
        conda install conda-build anaconda-client
        conda config --set anaconda_upload no
        export CONDA_BLD_PATH=`pwd`/build_conda
        mkdir build_conda
-       echo "BUILDING IN:",$CONDA_BLD_PATH
-       echo "Cloning recipes"
        git clone git://github.com/cdat/conda-recipes
        cd conda-recipes
        rm -rf cdp
-       echo "cp -r ../../recipes/pcmdi_metrics ."
        cp -r ../../recipes/pcmdi_metrics .
-       echo "Starting prep for build"
        python ./prep_for_build.py -l 1.1.2
-       echo "starting conda build"
        conda build pcmdi_metrics -c conda-forge -c cdat -c pcmdi --python=27
        conda build pcmdi_metrics -c conda-forge -c cdat -c pcmdi --python=36
-       echo "starting anaconda upload"
        anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-*tar.bz2 --force
 
 
@@ -112,9 +104,9 @@ jobs:
     steps:
       - checkout
       - run: *setup_miniconda
-        #- run: *create_conda_env
-        #- run: *setup_pmp
-        #- run: *run_pmp_tests
+      - run: *create_conda_env
+      - run: *setup_pmp
+      - run: *run_pmp_tests
       - store_artifacts:
           path: tests_html
           destination: tests_html
@@ -131,9 +123,9 @@ jobs:
     steps:
       - checkout
       - run: *setup_miniconda
-        #- run: *create_conda_env
-        #- run: *setup_pmp
-        #- run: *run_pmp_tests
+      - run: *create_conda_env
+      - run: *setup_pmp
+      - run: *run_pmp_tests
       - store_artifacts:
           path: tests_html
           destination: tests_html
@@ -149,20 +141,13 @@ workflows:
       - deploy_mac:
           filters:
             branches:
-              only: deploy_via_circleci
+              only: master
           requires:
             - macos_pmp
       - linux_pmp
       - deploy_linux:
           filters:
             branches:
-              only: deploy_via_circleci
+              only: master
           requires:
             - linux_pmp
-
-deployment:
-  nightly:
-    branch: deploy_via_circleci
-    commands:
-      - run: *conda_upload
-
