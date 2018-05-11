@@ -10,7 +10,7 @@ aliases:
     name: setup_miniconda
     command: |
       mkdir -p workspace
-      git clone -b validateNightly git@github.com:CDAT/cdat workspace/cdat
+      git clone -b validateNightly git@github.com:CDAT/cdat workspace/cdat --depth=1
       ls workspace/cdat
       # following will install miniconda3 under $WORKDIR/miniconda/bin
       python workspace/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3'
@@ -85,6 +85,7 @@ jobs:
     environment:
       WORKDIR: "workspace/test_macos_pmp"
       OS: "osx-64"
+      PKG_NAME: "pcmdi_metrics"
     steps:
       - checkout
       - run: *setup_miniconda
@@ -96,6 +97,7 @@ jobs:
     environment:
       WORKDIR: "workspace/test_linux_pmp"
       OS: "linux-64"
+      PKG_NAME: "pcmdi_metrics"
     steps:
       - checkout
       - run: *setup_miniconda
