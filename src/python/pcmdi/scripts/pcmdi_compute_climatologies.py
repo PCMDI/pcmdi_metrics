@@ -10,15 +10,15 @@ import cdms2
 import cdutil
 import numpy
 import cdtime
-
+from pcmdi_metrics.driver.pmp_parser import PMPParser
 
 try:
     import cmor
+    hasCMOR = True
 except Exception:
-    raise RuntimeError("Your UV-CDAT is not built with cmor")
+    hasCMOR = False
 
-parser = argparse.ArgumentParser(
-    description='Generates Climatologies from files')
+parser = PMPParser(description='Generates Climatologies from files')
 
 p = parser.add_argument_group('processing')
 p.add_argument(
@@ -36,7 +36,7 @@ p.add_argument("-v", "--vars",
                nargs="*",
                dest="vars",
                default=None,
-               required=True,
+               # required=True,
                help="variables to use for climatology")
 p.add_argument("-t", "--threshold",
                dest='threshold',
@@ -77,21 +77,19 @@ p.add_argument("-b", "--bounds",
                dest="bounds",
                default=False,
                help="reset bounds to monthly")
+parser.use("results_dir", p)
 c = parser.add_argument_group("CMOR options")
-c.add_argument("-O", "--output-directory",
-               dest="output_directory",
-               default=".",
-               help="output directory")
+c.add_argument("--use-cmor", dest="cmor", default=False, action="store_true")
 c.add_argument("-D", "--drs",
                action="store_true",
                dest="drs",
                default=False,
                help="Use drs for output path"
                )
-c.add_argument("-T", "--tables",
-               dest="tables",
-               help="path where CMOR tables reside (directory or table)",
-               default=os.path.join(sys.prefix, "share", "pmp", "pcmdi_metrics_table"))
+c.add_argument("-T", "--table",
+               dest="table",
+               nargs="+",
+               help="CMOR table")
 c.add_argument("-U", "--units",
                dest="units",
                nargs="*",
@@ -129,7 +127,7 @@ for x in cmor_xtra_args:
                    help="'%s' for this run (will try to get from input file" % x
                    )
 
-A = parser.parse_args(sys.argv[1:])
+A = parser.get_parameter()
 if len(A.files) == 0:
     raise RuntimeError("You need to provide at least one file for input")
 
@@ -166,7 +164,198 @@ season_function = {
     "year": cdutil.times.YEAR,
 }
 filein = cdms2.open(A.files)
+def getCalendarName(cal):
+   for att in dir(cdtime):
+        if getattr(cdtime,att) == cal:
+            return att[:-8].lower()
 
+
+def dump_cmor(A, s, time, bounds):
+        inst = checkCMORAttribute("institution")
+        src = checkCMORAttribute("source")
+        exp = checkCMORAttribute("experiment_id")
+        xtra = {}
+        for x in cmor_xtra_args:
+            try:
+                xtra[x] = checkCMORAttribute(x)
+            except Exception:
+                pass
+        cal = data.getTime().getCalendar()  # cmor understand cdms calendars
+        cal_name = getCalendarName(cal)
+        if A.verbose:
+            cmor_verbose = cmor.CMOR_NORMAL
+        else:
+            cmor_verbose = cmor.CMOR_QUIET
+        tables_dir = os.path.dirname(A.table)
+        error_flag = cmor.setup(
+            inpath=tables_dir,
+            netcdf_file_action=cmor.CMOR_REPLACE,
+            set_verbosity=cmor_verbose,
+            exit_control=cmor.CMOR_NORMAL,
+            #            logfile='logfile',
+            create_subdirectories=int(A.drs))
+        
+        tmp = tempfile.NamedTemporaryFile(mode="w")
+        tmp.write("""{{
+           "_control_vocabulary_file": "CMIP6_CV.json",
+           "_AXIS_ENTRY_FILE":         "CMIP6_coordinate.json",
+           "_FORMULA_VAR_FILE":        "CMIP6_formula_terms.json",
+           "_cmip6_option":           "CMIP6",
+
+           "tracking_prefix":        "hdl:21.14100",
+           "activity_id":            "ISMIP6",
+
+
+           "#output":                "Root directory where files are written",
+           "outpath":                "{}",
+
+           "#experiment_id":         "valid experiment_ids are found in CMIP6_CV.json",
+           "experiment_id":          "{}",
+           "sub_experiment_id":      "none",
+           "sub_experiment":         "none",
+
+           "source_type":            "AOGCM",
+           "mip_era":                "CMIP6",
+           "calendar":               "{}",
+
+           "realization_index":      "{}",
+           "initialization_index":   "{}",
+           "physics_index":          "{}",
+           "forcing_index":          "1",
+
+           "#contact ":              "Not required",
+           "contact ":              "Python Coder (coder@a.b.c.com)",
+
+           "#history":               "not required, supplemented by CMOR",
+           "history":                "Output from archivcl_A1.nce/giccm_03_std_2xCO2_2256.",
+
+           "#comment":               "Not required",
+           "comment":                "",
+
+           "#references":            "Not required",
+           "references":             "Model described by Koder and Tolkien (J. Geophys. Res., 2001, 576-591).  Also see http://www.GICC.su/giccm/doc/index.html  2XCO2 simulation described in Dorkey et al
+. '(Clim. Dyn., 2003, 323-357.)'",
+
+           "grid":                   "gs1x1",
+           "grid_label":             "gr",
+           "nominal_resolution":     "5 km",
+
+           "institution_id":         "{}",
+
+           "parent_experiment_id":   "histALL",
+           "parent_activity_id":     "ISMIP6",
+           "parent_mip_era":         "CMIP6",
+
+           "parent_source_id":       "PCMDI-test-1-0",
+           "parent_time_units":      "days since 1970-01-01",
+           "parent_variant_label":   "r123i1p33f5",
+
+           "branch_method":          "Spin-up documentation",
+           "branch_time_in_child":   2310.0,
+           "branch_time_in_parent":  12345.0,
+
+
+           "#run_variant":           "Description of run variant (Recommended).",
+           "run_variant":            "forcing: black carbon aerosol only",
+
+           "#source_id":              "Model Source",
+           "source_id":               "{}",
+
+           "#source":                "source title, first part is source_id",
+           "source":                 "PCMDI's PMP",
+
+
+           "_history_template":       "%s ;rewrote data to be consistent with <activity_id> for variable <variable_id> found in table <table_id>.",
+           "#output_path_template":   "Template for output path directory using tables keys or global attributes",
+           "output_path_template":    "<mip_era><activity_id><institution_id><source_id><experiment_id><_member_id><table><variable_id><grid_label><version>",
+           "output_file_template":    "<variable_id><table><source_id><experiment_id><_member_id><grid_label>",
+           "license":                 "CMIP6 model data produced by Lawrence Livermore PCMDI is licensed under a Creative Commons Attribution ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at https:///pcmdi.llnl.gov/. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law."
+}}
+""".format(A.results_dir, exp, cal_name, r, i, p, inst.split()[0], src))
+
+        tmp.flush()
+        error_flag = cmor.dataset_json(tmp.name)
+        if not os.path.exists(A.table):
+            raise RuntimeError("No such file or directory for tables: %s" % A.table)
+
+        print("Loading table: {}".format(os.path.abspath(A.table)))
+        table_content = open(A.table).read().replace("time","time2")
+        table_content = table_content.replace("time22","time2")
+        table = tempfile.NamedTemporaryFile("w")
+        table.write(table_content)
+        table.flush()
+        for table_name in ["formula_terms", "coordinate"]:
+            nm = "CMIP6_{}.json".format(table_name)
+            with open(os.path.join(os.path.dirname(table.name),nm),"w") as tmp:
+                tmp.write(open(os.path.join(tables_dir, nm)).read())
+
+        table = cmor.load_table(table.name)
+
+        # Ok CMOR is ready let's create axes
+        cmor_axes = []
+        for ax in s.getAxisList():
+            if ax.isLatitude():
+                table_entry = "latitude"
+            elif ax.isLongitude():
+                table_entry = "longitude"
+            elif ax.isLevel():  # Need work here for sigma
+                table_entry = "plevs"
+            if ax.isTime():
+                table_entry = "time2"
+                ntimes = len(ax)
+                axvals = numpy.array(values)
+                axbnds = numpy.array(bounds)
+                axunits = Tunits
+            else:
+                axvals = ax[:]
+                axbnds = ax.getBounds()
+                axunits = ax.units
+            ax_id = cmor.axis(table_entry=table_entry,
+                              units=axunits,
+                              coord_vals=axvals,
+                              cell_bounds=axbnds
+                              )
+            cmor_axes.append(ax_id)
+        # Now create the variable itself
+        if A.cf_var is not None:
+            var_entry = A.cf_var[ivar]
+        else:
+            var_entry = data.id
+
+        units = A.units
+        if units is None:
+            units = data.units
+        else:
+            units = units[ivar]
+        kw = eval(A.variable_extra_args)
+        if not isinstance(kw, dict):
+            raise RuntimeError(
+                "invalid evaled type for -X args, should be evaled as a dict, e.g: -X '{\"positive\":\"up\"}'")
+        var_id = cmor.variable(table_entry=var_entry,
+                               units=units,
+                               axis_ids=cmor_axes,
+                               type=s.typecode(),
+                               missing_value=s.missing_value,
+                               **kw)
+
+        # And finally write the data
+        data2 = s.filled(s.missing_value)
+        cmor.write(var_id, data2, ntimes_passed=ntimes)
+
+        # Close cmor
+        path = cmor.close(var_id, file_name=True)
+        if season.lower() == "ann":
+            suffix = "ac"
+        else:
+            suffix = season
+        path2 = path.replace("-clim.nc", "-clim-%s.nc" % suffix)
+        os.rename(path, path2)
+        if A.verbose:
+            print("Saved to:", path2)
+
+        cmor.close()
+        if A.verbose:
+            print("closed cmor")
 
 def checkCMORAttribute(att, source=filein):
     res = getattr(A, att)
@@ -280,6 +469,7 @@ for ivar, v in enumerate(A.vars):
         Tg = Tg.subAxis(istart, iend)
 
         cal = T.getCalendar()
+        cal_name = getCalendarName(cal)
         Tunits = T.units
         bnds = T.getBounds()
         tc = T.asComponentTime()
@@ -330,110 +520,33 @@ for ivar, v in enumerate(A.vars):
             if A.verbose:
                 print(B1.tocomp(cal), "<", t, "<", B2.tocomp(cal))
             bounds.append([B1.torel(Tunits, cal).value,
-                           B2.torel(Tunits, cal).value])
+                          B2.torel(Tunits, cal).value])
 
-        inst = checkCMORAttribute("institution")
-        src = checkCMORAttribute("source")
-        exp = checkCMORAttribute("experiment_id")
-        xtra = {}
-        for x in cmor_xtra_args:
-            try:
-                xtra[x] = checkCMORAttribute(x)
-            except Exception:
-                pass
-        cal = data.getTime().getCalendar()  # cmor understand cdms calendars
-        if A.verbose:
-            cmor_verbose = cmor.CMOR_NORMAL
-        else:
-            cmor_verbose = cmor.CMOR_QUIET
-        error_flag = cmor.setup(
-            inpath='.',
-            netcdf_file_action=cmor.CMOR_REPLACE,
-            set_verbosity=cmor_verbose,
-            exit_control=cmor.CMOR_NORMAL,
-            #            logfile='logfile',
-            create_subdirectories=int(A.drs))
-        error_flag = cmor.dataset(
-            experiment_id=exp,
-            outpath=A.output_directory,
-            institution=inst,
-            source=src,
-            calendar=cal,
-            **xtra
-        )
-        if not os.path.exists(A.tables):
-            raise RuntimeError("No such file or directory for tables: %s" % A.tables)
-        if os.path.isdir(A.tables):
-            table = os.path.join(A.tables, "pcmdi_metrics_table")
-        else:
-            table = A.tables
-        table = cmor.load_table(table)
-
-        # Ok CMOR is ready let's create axes
-        cmor_axes = []
-        for ax in s.getAxisList():
-            if ax.isLatitude():
-                table_entry = "latitude"
-            elif ax.isLongitude():
-                table_entry = "longitude"
-            elif ax.isLevel():  # Need work here for sigma
-                table_entry = "plevs"
-            if ax.isTime():
-                table_entry = "time2"
-                ntimes = len(ax)
-                axvals = numpy.array(values)
-                axbnds = numpy.array(bounds)
-                axunits = Tunits
-            else:
-                axvals = ax[:]
-                axbnds = ax.getBounds()
-                axunits = ax.units
-            ax_id = cmor.axis(table_entry=table_entry,
-                              units=axunits,
-                              coord_vals=axvals,
-                              cell_bounds=axbnds
-                              )
-            cmor_axes.append(ax_id)
-        # Now create the variable itself
-        if A.cf_var is not None:
-            var_entry = A.cf_var[ivar]
-        else:
-            var_entry = data.id
-
-        units = A.units
-        if units is None:
-            units = data.units
-        else:
-            units = units[ivar]
-        kw = eval(A.variable_extra_args)
-        if not isinstance(kw, dict):
-            raise RuntimeError(
-                "invalid evaled type for -X args, should be evaled as a dict, e.g: -X '{\"positive\":\"up\"}'")
-        var_id = cmor.variable(table_entry=var_entry,
-                               units=units,
-                               axis_ids=cmor_axes,
-                               type=s.typecode(),
-                               missing_value=s.missing_value,
-                               **kw)
-
-        # And finally write the data
-        data2 = s.filled(s.missing_value)
-        cmor.write(var_id, data2, ntimes_passed=ntimes)
-
-        # Close cmor
-        path = cmor.close(var_id, file_name=True)
-        if season.lower() == "ann":
-            suffix = "ac"
-        else:
-            suffix = season
-        path2 = path.replace("-clim.nc", "-clim-%s.nc" % suffix)
-        os.rename(path, path2)
-        if A.verbose:
-            print("Saved to:", path2)
-
-        cmor.close()
-        if A.verbose:
-            print("closed cmor")
+    model_id = checkCMORAttribute("model_id")
+    exp = checkCMORAttribute("experiment_id")
+    r = checkCMORAttribute("realization")
+    i = checkCMORAttribute("initialization_method")
+    p = checkCMORAttribute("physics_version")
+    if A.cmor and hasCMOR:
+        dump_cmor(A, s, values, bounds)
+    else:
+        if not hasCMOR:
+            print("Your Python does not have CMOR, using regular cdms to write out files")
+        print("MODEL ID:",model_id)
+        if not os.path.exists(A.results_dir):
+            os.makedirs(A.results_dir)
+        end_tc = tc[-1].add(1, cdtime.Month)
+        nm = os.path.join(A.results_dir, "{}_PMP_{}_{}_r{}i{}p{}_{}{:02d}-{}{:02d}-clim-{}.nc".format(
+            v, model_id, exp, r, i, p, tc[0].year, tc[0].month, end_tc.year, end_tc.month, season))
+        f = cdms2.open(nm, "w")
+        t = cdms2.createAxis(values)
+        t.setBounds(numpy.array(bounds))
+        t.designateTime()
+        t.id = "time"
+        s.setAxis(0,t)
+        f.write(s, dtype=data.dtype)
+        f.close()
+        
 
 
 # clean up
