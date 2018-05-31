@@ -77,7 +77,8 @@ p.add_argument("-b", "--bounds",
                dest="bounds",
                default=False,
                help="reset bounds to monthly")
-parser.use("results_dir", p)
+# parser.use("results_dir", p)
+parser.use("results_dir")
 c = parser.add_argument_group("CMOR options")
 c.add_argument("--use-cmor", dest="cmor", default=False, action="store_true")
 c.add_argument("-D", "--drs",
