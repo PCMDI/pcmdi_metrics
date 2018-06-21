@@ -45,7 +45,8 @@ def update_dict(d, u):
 # Platform
 def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
     try:
-        p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(shlex.split(
+            cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except Exception:
         return
     out, stde = p.communicate()
@@ -136,7 +137,8 @@ def generateProvenance():
     }
     prov["openGL"] = collections.OrderedDict()
     populate_prov(prov["openGL"], "glxinfo", pairs, sep=":", index=-1)
-    prov["openGL"]["GLX"] = {"server": collections.OrderedDict(), "client": collections.OrderedDict()}
+    prov["openGL"]["GLX"] = {
+        "server": collections.OrderedDict(), "client": collections.OrderedDict()}
     pairs = {
         "version": "GLX version",
     }
@@ -145,12 +147,14 @@ def generateProvenance():
         "vendor": "server glx vendor string",
         "version": "server glx version string",
     }
-    populate_prov(prov["openGL"]["GLX"]["server"], "glxinfo", pairs, sep=":", index=-1)
+    populate_prov(prov["openGL"]["GLX"]["server"],
+                  "glxinfo", pairs, sep=":", index=-1)
     pairs = {
         "vendor": "client glx vendor string",
         "version": "client glx version string",
     }
-    populate_prov(prov["openGL"]["GLX"]["client"], "glxinfo", pairs, sep=":", index=-1)
+    populate_prov(prov["openGL"]["GLX"]["client"],
+                  "glxinfo", pairs, sep=":", index=-1)
     return prov
 
 
@@ -198,8 +202,10 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                     'Could not create output directory: %s' % dir_path)
 
         if self.type == 'json':
-            json_version = float(kwargs.get("json_version", data.get("json_version", 3.0)))
-            json_structure = kwargs.get("json_structure", data.get("json_structure", None))
+            json_version = float(kwargs.get(
+                "json_version", data.get("json_version", 3.0)))
+            json_structure = kwargs.get(
+                "json_structure", data.get("json_structure", None))
             if json_version >= 3.0 and json_structure is None:
                 raise Exception(
                     "json_version 3.0 of PMP requires json_structure to be passed" +
@@ -225,14 +231,15 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             f = cdms2.open(file_name, 'w')
             f.write(data, *args, **kwargs)
             f.metrics_git_sha1 = pcmdi_metrics.__git_sha1__
-            f.uvcdat_version = cdat_info.get_version()
+            f.cdat_version = cdat_info.get_version()
             f.close()
 
         else:
             logging.getLogger("pcmdi_metrics").error('Unknown type: %s' % type)
             raise RuntimeError('Unknown type: %s' % type)
 
-        logging.getLogger("pcmdi_metrics").info('Results saved to a %s file: %s' % (type, file_name))
+        logging.getLogger("pcmdi_metrics").info(
+            'Results saved to a %s file: %s' % (type, file_name))
 
     def get(self, var, var_in_file=None,
             region={}, *args, **kwargs):
@@ -342,7 +349,8 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             self.target_grid = target
             self.target_grid_name = target
         else:
-            logging.getLogger("pcmdi_metrics").error('Unknown grid: %s' % target)
+            logging.getLogger("pcmdi_metrics").error(
+                'Unknown grid: %s' % target)
             raise RuntimeError('Unknown grid: %s' % target)
 
     def setup_cdms2(self):
@@ -399,14 +407,17 @@ class JSONs(object):
                                         domain = "global"
                                     sp = new_key.split("_")
                                     stat = "_".join(sp[:-1])
-                                    stat_dict = areal2[region2 + domain].get(stat, {})
+                                    stat_dict = areal2[region2 +
+                                                       domain].get(stat, {})
                                     season = sp[-1]
                                     season_dict = stat_dict
                                     stat_dict[season] = reg[k]
                                     if stat in areal2[region2 + domain]:
-                                        areal2[region2 + domain][stat].update(stat_dict)
+                                        areal2[region2 +
+                                               domain][stat].update(stat_dict)
                                     else:
-                                        areal2[region2 + domain][stat] = stat_dict
+                                        areal2[region2 +
+                                               domain][stat] = stat_dict
                         # Now we can replace the realization with the correctly formatted one
                         aref[real] = areal2
                     # restore ref into model
@@ -456,7 +467,8 @@ class JSONs(object):
             if k not in self.ignored_keys and (isinstance(data[k], dict) or depth == max_depth):
                 values[depth].add(k)
                 if depth != max_depth:
-                    self.get_axes_values_recursive(depth + 1, max_depth, data[k], values)
+                    self.get_axes_values_recursive(
+                        depth + 1, max_depth, data[k], values)
 
     def get_array_values_from_dict_recursive(self, out, ids, nms, axval, axes):
         if len(axes) > 0:
@@ -530,13 +542,68 @@ class JSONs(object):
         axes = []
         for a in self.json_struct:
             values.append(set())
-        self.get_axes_values_recursive(0, len(self.json_struct) - 1, self.data, values)
+        self.get_axes_values_recursive(
+            0, len(self.json_struct) - 1, self.data, values)
         for i, nm in enumerate(self.json_struct):
             axes.append(cdms2.createAxis(sorted(list(values[i])), id=nm))
         self.axes = axes
         return self.axes
 
-    def __call__(self, **kargs):
+    def __call__(self, overwrite='', fillin='', **kargs):
+        # Make sure we passed a string for overwrite and fillin
+        if not isinstance(overwrite, basestring):
+            raise RuntimeError(
+                "overwrite keyword must be a string pointing to an existing axis, you passed: {}".format(overwrite))
+        if not isinstance(fillin, basestring):
+            raise RuntimeError(
+                "fillin keyword must be a string pointing to an existing axis, you passed: {}".format(fillin))
+        # User didn't pass any of overwrite or filli, regular read call
+        if overwrite == "" and fillin == "":
+            return self.__readin__(**kargs)
+
+        # Make sure only one was passed
+        if overwrite != "" and fillin != "":
+            raise RuntimeError(
+                "At the moment you cannot specify both overwrite and fillin options when reading in the jsons")
+
+        axis = overwrite.strip() + fillin.strip()
+        axes = self.getAxisIds()
+        if not axis in axes:
+            raise RuntimeError(
+                "You asked to overwrite or fillin over the dimension '{}' but it not a valid dimension ({})".format(axis, axes))
+
+        out = None
+        kargs2 = kargs.copy()
+        if axis in kargs:
+            values = kargs[axis]
+            del(kargs2[axis])
+        else:
+            values = self.getAxis(axis)
+        for value in values:
+            kargs2[axis] = value
+            array = self.__readin__(**kargs2)
+            if out is None:
+                out = array
+            else:
+                if fillin:  # we only use values if it was missing before
+                    if out.mask is not MV2.nomask:  # There is a maks
+                        out = MV2.where(out.mask, array, out)
+                else:  # we use this whereever it is not missing
+                    if array.mask is not MV2.nomask:  # array has missing values
+                        out = MV2.where(array.mask, out, array)
+                    else:
+                        out = array
+        axes = array.getAxisList()
+        pop_index = array.getAxisIndex(axis)
+        slices = [slice(0, None)]*pop_index + [0]
+        out = out.asma()
+        out = MV2.array(out[slices])
+        axes.pop(pop_index)
+        out.setAxisList(axes)
+        out.id = "pmp"
+        return out
+
+    def __readin__(self, **kargs):
         """ Returns the array of values"""
         axes = self.getAxisList()
         sh = []
