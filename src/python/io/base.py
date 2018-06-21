@@ -568,9 +568,10 @@ class JSONs(object):
 
         axis = overwrite.strip() + fillin.strip()
         axes = self.getAxisIds()
-        if not axis in axes:
+        if axis not in axes:
             raise RuntimeError(
-                "You asked to overwrite or fillin over the dimension '{}' but it not a valid dimension ({})".format(axis, axes))
+                "You asked to overwrite or fillin over the dimension '{}' but it not a valid dimension ({})".format(
+                    axis, axes))
 
         out = None
         kargs2 = kargs.copy()
