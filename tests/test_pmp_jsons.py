@@ -4,15 +4,21 @@ import inspect
 import os
 import numpy
 import json
+import cdms2
+
 
 class TestJSONs(unittest.TestCase):
+    def setUp(self):
+        self.pth = os.path.dirname(inspect.getfile(self.__class__))
+
     def testVariability(self):
         pth = os.path.dirname(inspect.getfile(self.__class__))
         J = pcmdi_metrics.io.base.JSONs([os.path.join(
             pth, "io", "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_1900-2005_adjust_based_tcor_obs-pc1_vs_obs-pseudo_pcs.json")])
         axes_ids = J.getAxisIds()
         axes = J.getAxisList()
-        assert(axes_ids == ['variable', 'model', 'realization', 'reference', 'mode', 'season', 'statistic'])
+        assert(axes_ids == ['variable', 'model', 'realization',
+                            'reference', 'mode', 'season', 'statistic'])
         data = J()
         assert(data.shape == (1, 47, 33, 1, 1, 4, 24))
         data = J(
@@ -42,12 +48,25 @@ class TestJSONs(unittest.TestCase):
             season="JJA",
             statistic="rmsc_glo")
         assert(numpy.allclose(data, 0.7626659864144966))
+
     def testCustomStruct(self):
-        pth = os.path.dirname(inspect.getfile(self.__class__))
-        json_pth = os.path.join(pth,"io","test_MC1_all.json")
+        json_pth = os.path.join(self.pth, "io", "test_MC1_all.json")
         J = pcmdi_metrics.io.base.JSONs([json_pth])
         jids = J.getAxisIds()[1:]
         json_data = json.load(open(json_pth))
         json_struct = json_data[u'json_structure']
         self.assertTrue(jids == json_struct)
 
+    def testFillin(self):
+        json_pth = os.path.join(
+            self.pth, "io", "test_MC1_all_reformatted.json")
+        J = pcmdi_metrics.io.base.JSONs([json_pth])
+        data = J(statistic=["value"], type=["metric"], source=[
+                 "HadISST", "HadISST_Tropflux"])
+        self.assertEqual(data.shape, (1, 9, 19, 1, 2, 1))
+        data = J(statistic=["value"], type=["metric"], source=[
+                 "HadISST", "HadISST_Tropflux"], fillin="source")
+        self.assertEqual(data.shape, (1, 9, 19, 1, 1))
+        with cdms2.open(os.path.join(self.pth, "io", "test_MC1_all_reformatted.nc")) as f:
+            good = f('pmp')
+        self.assertTrue(numpy.allclose(good.filled(1.e20), data.filled(1.e20)))
