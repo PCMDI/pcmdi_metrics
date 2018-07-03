@@ -20,7 +20,9 @@ files = glob.glob(glb)
 
 file = files[:5]
 var= vars[:3]
-climout = 'cmip5clims_newsystem_' + exp + '/'  
+
+base = '/export/gleckler1/processing/clims/'
+climout = base + 'cmip5clims_newsystem_' + exp + '/'  
 
 results_dir = climout
 
