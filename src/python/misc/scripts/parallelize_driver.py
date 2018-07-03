@@ -46,15 +46,17 @@ def build_command_lines(driver, parameters, matrix):
             if att[:2] == "__":
                 continue
             val = getattr(parameters, att)
-            if inspect.ismodule(val) or inspect.isbuiltin(val) or inspect.ismethod(val) or inspect.isfunction(val):
-                continue
+            if inspect.ismodule(val) or inspect.isbuiltin(val) or \
+               inspect.ismethod(val) or inspect.isfunction(val):
+                    continue
             if att in ['granularize']:
                 continue
             if att in mydict:
                 val = mydict[att]
             print(att, "=", repr(val), file=f)
         f.close()
-        cmds.append("{}/bin/python {} -p {}".format(sys.prefix, driver, filename))
+        cmds.append(
+            "{}/bin/python {} -p {}".format(sys.prefix, driver, filename))
     return cmds
 
 

@@ -6,15 +6,13 @@ import string
 import cdtime
 import cdutil
 import MV2 as MV
-import sys
 import logging
 import time
 import datetime
-import glob
 from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 
-cdms2.setAutoBounds('on')
 
+cdms2.setAutoBounds('on')
 cdms2.setNetcdfShuffleFlag(0)
 cdms2.setNetcdfDeflateFlag(0)
 cdms2.setNetcdfDeflateLevelFlag(0)
@@ -99,27 +97,10 @@ print('exp is ', exp)
 pi = '/work/durack1/Shared/cmip5/$EXPERIMENT/' + realm + '/mo/$VAR/'  # *.xml
 pi = '/work/cmip5/$EXPERIMENT/' + realm + '/mo/$VAR/'
 piv = '/work/cmip5/historical/' + realm + '/mo/'
-#vars = os.listdir(piv)
 
-print(vars)
-
-#vars = ['pr','rlut', 'rsut','rsutcs','rlutcs','tas','prw','tauu','tauv','uas','vas','psl','hus','ta','ua','va', 'zg']
-#vars = ['rlut']
-#exps = ['historical']
 
 onerun = 'y'   # one realization only
-#onerun = 'n'
 
-"""
-ext_vars = sys.argv[1:len(sys.argv)]
-print 'ext_vars is ', ext_vars
-
-if len(ext_vars) != 0: 
-   vars = ext_vars  
-#vars = ['ts']
-
-#w = sys.stdin.readline()
-"""
 
 # GENERATE LOG
 time_is = datetime.datetime.now()
@@ -143,18 +124,13 @@ for var in vars:
         os.mkdir(results_dir + '/' + var)
     except:
         pass
-# pit = string.replace(pi,'$EXPERIMENT',exp)
     pit = modpath + var + '/'
 
-# lst = os.listdir(pit)
     lstt = os.popen('ls ' + pit + '*.xml').readlines()
 
     print('lenght of full list ', len(lstt))
 
-# w = sys.stdin.readline()
 
-####
-# REMOVE \n
     lst0 = []
     for l in lstt:
         tmp = string.replace(l[:-1], pit, '')
@@ -170,9 +146,6 @@ for var in vars:
 
     print('length of list with only one run/model ', len(lst))
 
-######
-# w = sys.stdin.readline()
-
     if onerun != 'y':
         lst = lstt
 
@@ -185,23 +158,16 @@ for var in vars:
             mod = string.split(l, '.')[1]
             run = string.split(l, '.')[3]
 
-            print("OPENING:",pit+"/"+l)
+            print("OPENING:", pit+"/"+l)
             fc = cdms2.open(pit + '/' + l)
             realm = fc.directory
             if string.find(realm, 'Amon') == -1 and var == 'pr':
                 var = 'crap'  # SKIP IF WRONG REALM (PR) - WILL FAIL TRY BELOW
-#  w = sys.stdin.readline()
-#  print pit + l
-        except:
+        except Exception:
             print('not making if for ', l)
 
 
-########
         try:
-            #  if mod != 'BNU-ESM':
-
-            # Trap last 5 years if picontrol
-
             if exp == 'piControl':
                 t2 = time.time(1)
                 dc = fc[var]
@@ -214,43 +180,17 @@ for var in vars:
                         yrs.append(yr)
 
                 by = len(yrs) - 26
-#      ey = by + 3    # TESTING 4D THETAO CLIMS WITH 3 years
                 ey = by + 25
 
                 print('picontrol', '  ', mod, ' ',  by, '  ', ey, '  ', ey-by)
-#    w = sys.stdin.readline()
 
-
-##############################
-
-#    d = fc(var,time = (cdtime.comptime(1980,0),cdtime.comptime(2005,0)))
-#    if exp in ['amip','historical']:  d = fc(var,time = (cdtime.comptime(by,0),cdtime.comptime(ey,0)))
             d = fc(var, time=(cdtime.comptime(by, 0), cdtime.comptime(ey+1, 0)))
             t = d.getTime()
             c = t.asComponentTime()
             nt = len(t)
 
             t2 = time.time()
-#    print exp,' ', mod,' ',run,' ', var,' ',d.shape,'  ', c[0].year,' ', c[0].month,' --> ', c[nt-1].year,' ',c[nt-1].month,' --- ', c[0],'   ', c[nt-1],' ', d.shape[0]/12.,'  ', t2-t1
             da = cdutil.times.ANNUALCYCLE.climatology(d)
-#     ds = cdutil.times.SEASONALCYCLE.climatology(d)
-
-### DATA CORRECTIONS #####
-# THESE SHOULD BE REMOVED FROM CLIM CODE AND BE A SECOND STEP OR AT LEAST READ FROM AN EXTERNAL MODULE
-
-            if mod == 'GFDL-CM2p1' and var == 'tos':
-                da = da + 273.15
-                ds = ds + 273.15
-
-            if mod in ['FIO-ESM', 'BNU-ESM'] and var in ['tauu', 'tauv']:
-                un = d.units
-                da = MV.multiply(da, -1.)
-                ds = MV.multiply(ds, -1.)
-                da.units = un
-                ds.units = un
-
-##################
-# TIME MODEL REPAIR
 
             timel = [15.5, 45.5, 75.5, 106, 136.5, 167,
                      197.5, 228.5, 259, 289.5, 320, 350.5]
@@ -270,12 +210,6 @@ for var in vars:
             dau = d.units
             da.setAxis(0, ta)
 
-# TIME AXIS FOR SEASONAL DATA - CURRENTLY NOT IMPLEMENTED
-#    ts = ds.getAxis(0)
-#    ts = ts - ts[0]  + 45
-#    ts_nax = cdms2.createAxis(ts,id='Time')
-#    ts_nax.units = 'days since 0-0-0'
-#    ts_nax.calendar = 'gregorian'
 #    ts_nax.axis = 'T'
 #    ds.setAxis(0,ts_nax)
 ##################
@@ -285,7 +219,7 @@ for var in vars:
             gc = string.replace(gc, '.latestX', '')
 #    print 'after dc write'
             fo = results_dir + '/' + var + '/' + gc
-            print("WRTIING TO:",fo)
+            print("WRTIING TO:", fo)
             g = cdms2.open(fo, 'w+')
             da.id = var  # + '_ac'
             da.units = dau

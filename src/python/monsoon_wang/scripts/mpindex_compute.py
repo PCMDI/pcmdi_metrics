@@ -11,18 +11,6 @@ import pcmdi_metrics
 import collections
 import glob
 
-###########
-# SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW
-# python -i mpi_compute.py -mp
-# /work/gleckler1/processed_data/cmip5clims_metrics_package-historical/pr_MODS_Amon_historical_r1i1p1_198001-200512-clim.nc
-# -op
-# /work/gleckler1/processed_data/obs/atm/mo/pr/GPCP/ac/pr_GPCP_000001-000012_ac.nc
-# --mns "['NorESM1-ME','MRI-CGCM3']" --outpd
-# /work/gleckler1/processed_data/wang_monsoon --outpj
-# /work/gleckler1/processed_data/metrics_package/metrics_results/wang_monsoon
-
-##########
-
 
 P = PMPParser()
 
@@ -70,7 +58,7 @@ args = P.get_parameter()
 modpath = args.modpath
 outpathjsons = args.outpathjsons
 outpathdata = args.results_dir
-mods = args.modnames
+mods = eval(args.modnames)
 
 json_filename = args.jsonname
 
