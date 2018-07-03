@@ -1,10 +1,9 @@
-from __future__ import print_function
 import os
 import glob
 
 vars = ['pr','rlut', 'rsut','rsutcs','rlutcs','tas','prw','tauu','tauv','uas','vas','psl','hus','ta','ua','va', 'zg']
 #vars = ['rlut']
-var = [vars[0],]
+var = ['rlut']
 realm = 'atm'
 MIP = 'cmip5'
 exp = 'historical'
@@ -19,7 +18,7 @@ glb = os.path.join(modpath,"rlut",filename_template)
 files = glob.glob(glb)
 
 file = files[:5]
-var= vars[:3]
+#var= vars[:3]
 climout = 'cmip5clims_newsystem_' + exp + '/'  
 
 results_dir = climout

@@ -20,7 +20,6 @@ param_name = parser.view_args().parameters
 pth = os.path.dirname(os.path.abspath(param_name))
 sys.path.insert(0, pth)
 nm = os.path.basename(param_name)[:-3]
-
 parameters = importlib.import_module(nm)
 
 
@@ -34,7 +33,6 @@ def build(variables, parameters, params=[{}]):
         params = params * len(values)
     for i in range(len_in):
         for j in range(len(values)):
-            print(i, j)
             params[j*len_in+i][var] = values[j]
     return build(variables, parameters, params)
 
@@ -42,13 +40,15 @@ def build(variables, parameters, params=[{}]):
 def build_command_lines(driver, parameters, matrix):
     cmds = []
     for mydict in matrix:
-        f, filename = tempfile.mkstemp()
+        f, filename = tempfile.mkstemp(suffix=".py", text=True)
         f = open(filename, "w")
         for att in dir(parameters):
             if att[:2] == "__":
                 continue
             val = getattr(parameters, att)
             if inspect.ismodule(val) or inspect.isbuiltin(val) or inspect.ismethod(val) or inspect.isfunction(val):
+                continue
+            if att in ['granularize']:
                 continue
             if att in mydict:
                 val = mydict[att]
@@ -68,5 +68,4 @@ def run_command(cmd):
 
 matrix = build(p.granularize, parameters)
 cmds = build_command_lines(p.driver, parameters, matrix)
-
 cdp.cdp_run.multiprocess(run_command, cmds, num_workers=p.num_workers)
