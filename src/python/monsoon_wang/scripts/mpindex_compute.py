@@ -5,16 +5,14 @@ import numpy
 import sys
 import os
 from genutil import statistics
-#from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
-from pcmdi_metrics.driver.pmp_parser import PMPParser
-#import pcmdi_metrics.driver.pmp_parser.PMPParser
+from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 import pcmdi_metrics
 import collections
 import glob
 
 ###########
-# SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW
+# SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW HERE
 # python -i mpi_compute.py -mp
 # /work/gleckler1/processed_data/cmip5clims_metrics_package-historical/pr_MODS_Amon_historical_r1i1p1_198001-200512-clim.nc
 # -op
@@ -43,16 +41,6 @@ P.add_argument("--outnj", "--outnamejson",
                dest='jsonname',
                default='out.json',
                help="Output path for jsons")
-P.add_argument("--diagnostic_results_dir",
-               type=str,
-               dest='diagsdir',
-               default='.',
-               help="Output path for diagnostics")
-P.add_argument("--metrics_results_dir",
-               type=str,
-               dest='jsondir',
-               default='.',
-               help="Output path for metrics")
 P.add_argument("-e", "--experiment",
                type=str,
                dest='experiment',
@@ -76,17 +64,13 @@ P.add_argument("-t", "--threshold",
                type=float,
                help="Threshold for a hit when computing skill score")
 
+
 # args = P.parse_args(sys.argv[1:])
 args = P.get_parameter()
 modpath = args.modpath
-outpathjsons = args.metrics_results_dir #args.outpathjsons
-outpathdata = args.diagnostic_results_dir  #diagnostic_results_dir  #args.results_dir
+outpathjsons = args.outpathjsons
+outpathdata = args.results_dir
 mods = args.modnames
-
-print 'modpath ----------------- ', modpath
-#print 'outputs'
-#print outpathjsons
-#print outpathdata
 
 json_filename = args.jsonname
 
@@ -166,10 +150,8 @@ obsgrid = dobs_orig.getGrid()
 annrange_obs, mpi_obs = mpd(dobs_orig)
 #########################################
 # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
-#nout = os.path.join(outpathdata, "_".join(
-#    [args.experiment, args.mip, 'wang-monsoon']))
-nout = outpathdata
-
+nout = os.path.join(outpathdata, "_".join(
+    [args.experiment, args.mip, 'wang-monsoon']))
 try:
     os.makedirs(nout)
 except BaseException:
@@ -184,7 +166,7 @@ except BaseException:
 
 modpathall = modpath.replace('MODS', '*')
 lst = glob.glob(modpathall)
-# CONFIRM DATA FOR MODS IS AVAIL AND REMOVE THOSE IF IS NOT
+# CONFIRM DATA FOR MODS IS AVAIL AND REMOVE THOSE IT IS NOT
 
 gmods = []  # "Got" these MODS
 print("MODS:", mods)
