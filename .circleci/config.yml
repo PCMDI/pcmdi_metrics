@@ -1,4 +1,4 @@
-version: r
+version: 2
 
 checkout:
   post:

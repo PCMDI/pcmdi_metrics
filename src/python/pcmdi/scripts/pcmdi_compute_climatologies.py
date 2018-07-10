@@ -169,7 +169,6 @@ def dump_cmor(A, s, time, bounds):
         #            logfile='logfile',
         create_subdirectories=int(A.drs))
 
-
     tmp = tempfile.NamedTemporaryFile(mode="w")
     tmp.write("""{{
            "_control_vocabulary_file": "CMIP6_CV.json",
