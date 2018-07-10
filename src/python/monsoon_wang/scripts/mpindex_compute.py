@@ -12,7 +12,7 @@ import collections
 import glob
 
 ###########
-# SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW 
+# SAMPLE COMMAND LINE EXECUTION USING ARGUMENTS BELOW
 # python -i mpi_compute.py -mp
 # /work/gleckler1/processed_data/cmip5clims_metrics_package-historical/pr_MODS_Amon_historical_r1i1p1_198001-200512-clim.nc
 # -op
