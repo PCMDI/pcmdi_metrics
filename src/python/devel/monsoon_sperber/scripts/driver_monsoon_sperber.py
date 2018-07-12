@@ -97,6 +97,7 @@ for l in lst[0:1]:  # model loop
         for region in list_regions:
             d_sub = d(regions_specs[region]['domain'])  # extract for monsoon region
             d_sub_aave = cdutil.averager(d_sub, axis='xy', weights='weighted')  # area average
+
             if debug: 
                 print('debug: region: ', region)
                 print('debug: d_sub.shape: ', d_sub.shape)
@@ -127,8 +128,10 @@ for l in lst[0:1]:  # model loop
         if nc_out:
             fout.write(composite_pentad_time_series, id=region+'_composite')
         if debug:
-            ax.plot(np.array(composite_pentad_time_series), label=region+'_composite_'+str(startYear)+'_'+str(endYear))
-            ax.set_title(','.join([project, model, exp, run, region]))
+            ax.plot(
+                np.array(composite_pentad_time_series),
+                label='_'.join([region, 'composite', str(startYear), str(endYear)])
+            ax.set_title(', '.join([project, model, exp, run, region]))
             ax.set_xlabel('pentad count')
             ax.set_ylabel('pentad precip mm/d')
             ax.legend()
