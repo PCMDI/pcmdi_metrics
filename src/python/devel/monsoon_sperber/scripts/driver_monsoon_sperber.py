@@ -66,7 +66,8 @@ def maskoutOcean(d):
     print('placeholder for mask out ocean')
     return d
 
-for l in lst[0:1]:  # model loop
+#for l in lst[0:1]:  # model loop
+for l in lst[0:2]:  # model loop
 
     project = l.split('/')[-1].split('.')[0]
     model = l.split('/')[-1].split('.')[1]
@@ -166,6 +167,7 @@ for l in lst[0:1]:  # model loop
             +', '.join([project, model, exp, run, str(startYear)+'-'+str(endYear)]))
         plt.subplots_adjust(top=0.85)
         plt.savefig('_'.join([project, model, exp, run])+'.png')
+        plt.cla()
 
     if nc_out:
         fout.close()
