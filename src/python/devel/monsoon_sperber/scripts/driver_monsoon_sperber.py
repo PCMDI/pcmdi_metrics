@@ -45,6 +45,10 @@ def maskoutOcean(d):
     return d
 
 for l in lst[0:1]:  # model loop
+
+    model = l.split('/')[-1].split('.')[1]
+    exp = l.split('/')[-1].split('.')[2]
+    run = l.split('/')[-1].split('.')[3]
  
     print(pathin + l)
     fc = cdms2.open(pathin + l)
@@ -98,7 +102,7 @@ for l in lst[0:1]:  # model loop
             if debug:
                 fig, ax = plt.subplots()
                 ax.plot(np.array(pentad_time_series))
-                ax.set_title(str(year)+', '+region)
+                ax.set_title(','.join([model, run, exp, region, str(year)]))
                 ax.set_xlabel('pentad count')
                 ax.set_ylabel('pentad precip mm/d')
-                plt.savefig(region+'_'+str(year)+'.png')
+                plt.savefig('_'.join([model, run, exp, region, str(year)])+'.png')
