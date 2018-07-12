@@ -12,14 +12,34 @@ pathin = '/work/cmip5-test/new/historical/atmos/day/pr/'
  
 lst = os.listdir(pathin)
 
-list_monsoon_regions = ['ASM']  # Will be added later
+list_monsoon_regions = ['ASM', 'NAMM']  # Will be added later
+#list_monsoon_regions = ['ASM']  # Will be added later
 
 debug = True
 nc_out = True
 
+# Open canvas for debug plot
 if debug:
     import matplotlib.pyplot as plt
-    fig, ax = plt.subplots()
+    import math
+    ax = {}
+    if len(list_monsoon_regions) > 1:
+        nrows = math.ceil(len(list_monsoon_regions)/2.)
+        ncols = 2
+    else:
+        nrows = 1
+        ncols = 1
+
+    fig = plt.figure()
+    for i, region in enumerate(list_monsoon_regions):
+        ax[region] = plt.subplot(nrows, ncols, i+1)
+        print('debug: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
+        ax[region].set_xlabel('pentad count')
+        ax[region].set_ylabel('pentad precip mm/d')
+        if ncols > 1 and (i+1)%2 == 0:
+            ax[region].set_ylabel('')
+        if nrows > 1 and math.ceil((i+1)/float(ncols)) < ncols:
+            ax[region].set_xlabel('')
 
 regions_specs = {}
 exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
@@ -112,7 +132,11 @@ for l in lst[0:1]:  # model loop
             print('pentad_time_series', year, ': ', pentad_time_series)
 
             if debug:
-                ax.plot(np.array(pentad_time_series), label=region+'_'+str(year))
+                if year == startYear:
+                    label = 'Individual year'
+                else:
+                    label = ''
+                ax[region].plot(np.array(pentad_time_series), c='grey', label=label)
 
             if nc_out:
                 fout.write(MV2.array(pentad_time_series), id=region+'_'+str(year))
@@ -126,16 +150,22 @@ for l in lst[0:1]:  # model loop
             axis=0,
             weights='unweighted')
         if nc_out:
-            fout.write(composite_pentad_time_series, id=region+'_composite')
+            fout.write(composite_pentad_time_series, id=region+'_comp')
         if debug:
-            ax.plot(
+            ax[region].plot(
                 np.array(composite_pentad_time_series),
-                label='_'.join([region, 'composite', str(startYear), str(endYear)]))
-            ax.set_title(', '.join([project, model, exp, run, region]))
-            ax.set_xlabel('pentad count')
-            ax.set_ylabel('pentad precip mm/d')
-            ax.legend()
-            plt.savefig('_'.join([project, model, exp, run, region])+'.png')
+                c='red',
+                label=region+'_comp')
+            ax[region].set_title(region)
+            #ax[region].set_xlabel('pentad count')
+            #ax[region].set_ylabel('pentad precip mm/d')
+            ax[region].legend()
+    if debug:
+        fig.suptitle(
+            'Precipitation pentad time series\n'
+            +', '.join([project, model, exp, run, str(startYear)+'-'+str(endYear)]))
+        plt.subplots_adjust(top=0.85)
+        plt.savefig('_'.join([project, model, exp, run])+'.png')
 
     if nc_out:
         fout.close()
