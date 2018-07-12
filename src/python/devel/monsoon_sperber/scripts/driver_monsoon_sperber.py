@@ -149,6 +149,8 @@ for l in lst[0:1]:  # model loop
             MV2.array(list_pentad_time_series[region]),
             axis=0,
             weights='unweighted')
+        composite_pentad_time_series.setAxis(
+            0, getAxis(MV2.array(pentad_time_series),0))
         if nc_out:
             fout.write(composite_pentad_time_series, id=region+'_comp')
         if debug:
@@ -157,8 +159,6 @@ for l in lst[0:1]:  # model loop
                 c='red',
                 label=region+'_comp')
             ax[region].set_title(region)
-            #ax[region].set_xlabel('pentad count')
-            #ax[region].set_ylabel('pentad precip mm/d')
             ax[region].legend()
     if debug:
         fig.suptitle(
