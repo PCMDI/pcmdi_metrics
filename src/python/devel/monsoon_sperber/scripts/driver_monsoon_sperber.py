@@ -130,7 +130,7 @@ for l in lst[0:1]:  # model loop
         if debug:
             ax.plot(
                 np.array(composite_pentad_time_series),
-                label='_'.join([region, 'composite', str(startYear), str(endYear)])
+                label='_'.join([region, 'composite', str(startYear), str(endYear)]))
             ax.set_title(', '.join([project, model, exp, run, region]))
             ax.set_xlabel('pentad count')
             ax.set_ylabel('pentad precip mm/d')
