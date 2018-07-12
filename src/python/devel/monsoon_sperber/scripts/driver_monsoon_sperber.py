@@ -15,6 +15,7 @@ lst = os.listdir(pathin)
 list_regions = ['ASM']  # Will be added later
 
 debug = True
+nc_out = True
 
 if debug:
     import matplotlib.pyplot as plt
@@ -76,7 +77,15 @@ for l in lst[0:1]:  # model loop
         print('debug: endMonth: ', type(endMonth), endMonth)
 
     if debug:
-        endYear = startYear
+        endYear = startYear + 1
+
+    if nc_out:
+        output_file_name = '_'.join([project, model, exp, run])
+        fout = cdms2.open(output_file_name+'.nc', 'w')
+
+    list_pentad_time_series = {}  # Archive individual year pentad time series for composite
+    for region in list_regions:
+        list_pentad_time_series[region] = []
    
     for year in range(startYear, endYear+1):  # year loop, endYear+1 to include last year
         d = fc('pr',time=(cdtime.comptime(year),cdtime.comptime(year+1)))
@@ -102,8 +111,28 @@ for l in lst[0:1]:  # model loop
             print('pentad_time_series', year, ': ', pentad_time_series)
 
             if debug:
-                ax.plot(np.array(pentad_time_series), label=str(year)+'_'+region)
-                ax.set_title(','.join([project, model, exp, run, region, str(year)]))
-                ax.set_xlabel('pentad count')
-                ax.set_ylabel('pentad precip mm/d')
-                plt.savefig('_'.join([project, model, exp, run, region, str(year)])+'.png')
+                ax.plot(np.array(pentad_time_series), label=region+'_'+str(year))
+
+            if nc_out:
+                fout.write(MV2.array(pentad_time_series), id=region+'_'+str(year))
+
+            list_pentad_time_series[region].append(MV2.array(pentad_time_series))
+
+    # Get composite for each region
+    for region in list_regions:
+        composite_pentad_time_series = cdutil.averager(
+            MV2.array(list_pentad_time_series[region]),
+            axis=0,
+            weights='unweighted')
+        if nc_out:
+            fout.write(composite_pentad_time_series, id=region+'_composite')
+        if debug:
+            ax.plot(np.array(composite_pentad_time_series), label=region+'_composite_'+str(startYear)+'_'+str(endYear))
+            ax.set_title(','.join([project, model, exp, run, region]))
+            ax.set_xlabel('pentad count')
+            ax.set_ylabel('pentad precip mm/d')
+            ax.legend()
+            plt.savefig('_'.join([project, model, exp, run, region])+'.png')
+
+    if nc_out:
+        fout.close()
