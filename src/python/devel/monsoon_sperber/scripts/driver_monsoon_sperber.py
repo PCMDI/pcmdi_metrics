@@ -31,6 +31,7 @@ if debug:
         ncols = 1
 
     fig = plt.figure()
+'''
     for i, region in enumerate(list_monsoon_regions):
         ax[region] = plt.subplot(nrows, ncols, i+1)
         print('debug: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
@@ -40,7 +41,7 @@ if debug:
             ax[region].set_ylabel('')
         if nrows > 1 and math.ceil((i+1)/float(ncols)) < ncols:
             ax[region].set_xlabel('')
-
+'''
 regions_specs = {}
 exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
              sys.prefix + "/share/pmp/default_regions.py", 'exec'))
@@ -85,7 +86,7 @@ for l in lst[0:2]:  # model loop
     endYear = c[-1].year
     endMonth = c[-1].month
 
-    # Consider entire calendar years only
+    # Consider year only when entire calendar available
     if startMonth > 1:
         startYear += 1
     if endMonth < 12:
@@ -107,7 +108,18 @@ for l in lst[0:2]:  # model loop
     list_pentad_time_series = {}  # Archive individual year pentad time series for composite
     for region in list_monsoon_regions:
         list_pentad_time_series[region] = []
-   
+
+    if debug:
+        for i, region in enumerate(list_monsoon_regions):
+            ax[region] = plt.subplot(nrows, ncols, i+1)
+            print('debug: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
+            ax[region].set_xlabel('pentad count')
+            ax[region].set_ylabel('pentad precip mm/d')
+            if ncols > 1 and (i+1)%2 == 0:
+                ax[region].set_ylabel('')
+            if nrows > 1 and math.ceil((i+1)/float(ncols)) < ncols:
+                ax[region].set_xlabel('')
+       
     for year in range(startYear, endYear+1):  # year loop, endYear+1 to include last year
         d = fc('pr',time=(cdtime.comptime(year),cdtime.comptime(year+1)))
         d = MV2.multiply(d, 86400.)  # unit change
@@ -161,13 +173,14 @@ for l in lst[0:2]:  # model loop
                 label=region+'_comp')
             ax[region].set_title(region)
             ax[region].legend()
+
     if debug:
         fig.suptitle(
             'Precipitation pentad time series\n'
             +', '.join([project, model, exp, run, str(startYear)+'-'+str(endYear)]))
         plt.subplots_adjust(top=0.85)
         plt.savefig('_'.join([project, model, exp, run])+'.png')
-        plt.cla()
+        plt.clf()
 
     if nc_out:
         fout.close()
