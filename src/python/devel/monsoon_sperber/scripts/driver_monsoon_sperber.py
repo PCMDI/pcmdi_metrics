@@ -12,7 +12,7 @@ pathin = '/work/cmip5-test/new/historical/atmos/day/pr/'
  
 lst = os.listdir(pathin)
 
-list_regions = ['ASM']  # Will be added later
+list_monsoon_regions = ['ASM']  # Will be added later
 
 debug = True
 nc_out = True
@@ -84,7 +84,7 @@ for l in lst[0:1]:  # model loop
         fout = cdms2.open(output_file_name+'.nc', 'w')
 
     list_pentad_time_series = {}  # Archive individual year pentad time series for composite
-    for region in list_regions:
+    for region in list_monsoon_regions:
         list_pentad_time_series[region] = []
    
     for year in range(startYear, endYear+1):  # year loop, endYear+1 to include last year
@@ -94,7 +94,7 @@ for l in lst[0:1]:  # model loop
         print('debug: year: ', year)
         print('debug: d.shape: ', d.shape)
       
-        for region in list_regions:
+        for region in list_monsoon_regions:
             d_sub = d(regions_specs[region]['domain'])  # extract for monsoon region
             d_sub_aave = cdutil.averager(d_sub, axis='xy', weights='weighted')  # area average
 
@@ -120,7 +120,7 @@ for l in lst[0:1]:  # model loop
             list_pentad_time_series[region].append(MV2.array(pentad_time_series))
 
     # Get composite for each region
-    for region in list_regions:
+    for region in list_monsoon_regions:
         composite_pentad_time_series = cdutil.averager(
             MV2.array(list_pentad_time_series[region]),
             axis=0,
