@@ -92,6 +92,8 @@ data_files = [
               ('share/pmp', ('doc/obs_info_dictionary.json',
                                'share/pcmdi_metrics_table',
                                'share/disclaimer.txt',
+                               'share/test_data_files.txt',
+                               'share/cmip_model_list.json',
                                'share/default_regions.py'
                             )),
               ('share/pmp/demo', demo_files),
