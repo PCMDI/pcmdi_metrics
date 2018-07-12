@@ -18,6 +18,7 @@ debug = True
 
 if debug:
     import matplotlib.pyplot as plt
+    fig, ax = plt.subplots()
 
 regions_specs = {}
 exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
@@ -46,6 +47,7 @@ def maskoutOcean(d):
 
 for l in lst[0:1]:  # model loop
 
+    project = l.split('/')[-1].split('.')[0]
     model = l.split('/')[-1].split('.')[1]
     exp = l.split('/')[-1].split('.')[2]
     run = l.split('/')[-1].split('.')[3]
@@ -100,9 +102,8 @@ for l in lst[0:1]:  # model loop
             print('pentad_time_series', year, ': ', pentad_time_series)
 
             if debug:
-                fig, ax = plt.subplots()
-                ax.plot(np.array(pentad_time_series))
-                ax.set_title(','.join([model, run, exp, region, str(year)]))
+                ax.plot(np.array(pentad_time_series), label=str(year)+'_'+region)
+                ax.set_title(','.join([project, model, exp, run, region, str(year)]))
                 ax.set_xlabel('pentad count')
                 ax.set_ylabel('pentad precip mm/d')
-                plt.savefig('_'.join([model, run, exp, region, str(year)])+'.png')
+                plt.savefig('_'.join([project, model, exp, run, region, str(year)])+'.png')
