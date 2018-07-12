@@ -172,7 +172,7 @@ for l in lst[0:2]:  # model loop
                 c='red',
                 label='Composite')
             ax[region].set_title(region)
-            ax[region].legend()
+            ax[region].legend(loc=4)
 
     if debug:
         fig.suptitle(
