@@ -4,6 +4,7 @@ import cdms2
 import cdtime
 import cdutil
 import MV2
+import numpy as np
 import os
 import sys
  
@@ -15,6 +16,8 @@ list_regions = ['ASM']  # Will be added later
 
 debug = True
 
+if debug:
+    import matplotlib.pyplot as plt
 
 regions_specs = {}
 exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
@@ -35,6 +38,11 @@ def divide_chunks(l, n):
 # list should have
 n = 5
 
+
+def maskoutOcean(d):
+    # masking out land should come here
+    print('placeholder for mask out ocean')
+    return d
 
 for l in lst[0:1]:  # model loop
  
@@ -67,6 +75,7 @@ for l in lst[0:1]:  # model loop
     for year in range(startYear, endYear+1):  # year loop, endYear+1 to include last year
         d = fc('pr',time=(cdtime.comptime(year),cdtime.comptime(year+1)))
         d = MV2.multiply(d, 86400.)  # unit change
+        d = maskoutOcean(d)
         print('debug: year: ', year)
         print('debug: d.shape: ', d.shape)
       
@@ -78,12 +87,18 @@ for l in lst[0:1]:  # model loop
                 print('debug: d_sub.shape: ', d_sub.shape)
                 print('debug: d_sub_aave.shape: ', d_sub_aave.shape)
   
-            my_list = d_sub_aave
             list_d_sub_aave_chunks = list(divide_chunks(d_sub_aave, n)) 
-
             pentad_time_series = []
             for d_sub_aave_chunk in list_d_sub_aave_chunks:
                 if d_sub_aave_chunk.shape[0] == n:  # ignore when chunk length is shorter than defined
                     ave_chunk = cdutil.averager(d_sub_aave_chunk, axis='t')
                     pentad_time_series.append(float(ave_chunk))
             print('pentad_time_series', year, ': ', pentad_time_series)
+
+            if debug:
+                fig, ax = plt.subplots()
+                ax.plot(np.array(pentad_time_series))
+                ax.set_title(str(year)+', '+region)
+                ax.set_xlabel('pentad count')
+                ax.set_ylabel('pentad precip mm/d')
+                plt.savefig('_'.join(region,str(year))+'.png')
