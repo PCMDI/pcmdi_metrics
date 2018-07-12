@@ -170,7 +170,7 @@ for l in lst[0:2]:  # model loop
             ax[region].plot(
                 np.array(composite_pentad_time_series),
                 c='red',
-                label=region+'_comp')
+                label='Composite')
             ax[region].set_title(region)
             ax[region].legend()
 
