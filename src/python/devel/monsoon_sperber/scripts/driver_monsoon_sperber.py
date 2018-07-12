@@ -3,6 +3,7 @@ from __future__ import print_function
 import cdms2
 import cdtime
 import cdutil
+import MV2
 import os
 import sys
  
@@ -18,6 +19,21 @@ debug = True
 regions_specs = {}
 exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
              sys.prefix + "/share/pmp/default_regions.py", 'exec'))
+
+'''For pentad,
+taken from https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
+'''
+# Yield successive n-sized
+# chunks from l.
+def divide_chunks(l, n):
+     
+    # looping till length l
+    for i in range(0, len(l), n): 
+        yield l[i:i + n]
+ 
+# How many elements each
+# list should have
+n = 5
 
 
 for l in lst[0:1]:  # model loop
@@ -50,6 +66,7 @@ for l in lst[0:1]:  # model loop
    
     for year in range(startYear, endYear+1):  # year loop, endYear+1 to include last year
         d = fc('pr',time=(cdtime.comptime(year),cdtime.comptime(year+1)))
+        d = MV2.multiply(d, 86400.)  # unit change
         print('debug: year: ', year)
         print('debug: d.shape: ', d.shape)
       
@@ -61,4 +78,13 @@ for l in lst[0:1]:  # model loop
                 print('debug: d_sub.shape: ', d_sub.shape)
                 print('debug: d_sub_aave.shape: ', d_sub_aave.shape)
   
-   
+            my_list = d_sub_aave
+            list_d_sub_aave_chunks = list(divide_chunks(d_sub_aave, n)) 
+
+            pentad_time_series = []
+            for d_sub_aave_chunk in list_d_sub_aave_chunks:
+                if d_sub_aave_chunk.shape[0] == n:  # ignore when chunk length is shorter than defined
+                    ave_chunk = cdutil.averager(d_sub_aave_chunk, axis='t')
+                    pentad_time_series.append(float(ave_chunk))
+            print('pentad_time_series', year, ': ', pentad_time_series)
+
