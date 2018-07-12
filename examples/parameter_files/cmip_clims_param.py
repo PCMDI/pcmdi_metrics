@@ -8,8 +8,7 @@ realm = 'atm'
 MIP = 'cmip5'
 exp = 'historical'
 
-modpath = '/work/cmip5-test/' + exp + '/' + realm + '/mo_new/'
-modpath = '/work/cmip5/' + exp  + '/' + realm + '/mo/'
+modpath = os.path.join('/work', 'cmip5', exp, realm, 'mo_new')
 
 
 filename_template = MIP + '.*' + '.' + exp + '.r1i1p1.mo.' + realm + '.Amon.' + '*' + '.ver-*.latestX.xml'
