@@ -2,21 +2,16 @@ from __future__ import print_function
 
 import cdms2
 import cdtime
-<<<<<<< HEAD
 import cdutil
 import MV2
 import os
 import sys
-=======
-import os
->>>>>>> fa6dbe72b84d02c34dace4e8c831410128b5a6ec
  
 pathin = '/work/cmip5-test/new/historical/atmos/day/pr/'
  
 lst = os.listdir(pathin)
 
 list_regions = ['ASM']  # Will be added later
-<<<<<<< HEAD
 
 debug = True
 
@@ -41,9 +36,6 @@ def divide_chunks(l, n):
 n = 5
 
 
-=======
- 
->>>>>>> fa6dbe72b84d02c34dace4e8c831410128b5a6ec
 for l in lst[0:1]:  # model loop
  
     print(pathin + l)
@@ -52,7 +44,6 @@ for l in lst[0:1]:  # model loop
     t = d.getTime()
     c = t.asComponentTime()
    
-<<<<<<< HEAD
     startYear = c[0].year
     startMonth = c[0].month
     endYear = c[-1].year
@@ -96,19 +87,3 @@ for l in lst[0:1]:  # model loop
                     ave_chunk = cdutil.averager(d_sub_aave_chunk, axis='t')
                     pentad_time_series.append(float(ave_chunk))
             print('pentad_time_series', year, ': ', pentad_time_series)
-
-=======
-    startyear = c[0].year
-    endyear = c[-1].year
-    print(type(startyear), startyear)
-    print(type(endyear), endyear)
-   
-    d = fc('pr',time=(cdtime.comptime(startyear),cdtime.comptime(startyear+1)))
-    print(d.shape)
-  
-    for region in list_regions:
-        print(region)
-  
-  
-   
->>>>>>> fa6dbe72b84d02c34dace4e8c831410128b5a6ec
