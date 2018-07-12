@@ -101,4 +101,4 @@ for l in lst[0:1]:  # model loop
                 ax.set_title(str(year)+', '+region)
                 ax.set_xlabel('pentad count')
                 ax.set_ylabel('pentad precip mm/d')
-                plt.savefig('_'.join(region,str(year))+'.png')
+                plt.savefig(region+'_'+str(year)+'.png')
