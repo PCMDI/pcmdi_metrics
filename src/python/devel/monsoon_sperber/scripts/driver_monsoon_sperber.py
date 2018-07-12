@@ -150,7 +150,7 @@ for l in lst[0:1]:  # model loop
             axis=0,
             weights='unweighted')
         composite_pentad_time_series.setAxis(
-            0, getAxis(MV2.array(pentad_time_series),0))
+            0, MV2.array(pentad_time_series).getAxis(0))
         if nc_out:
             fout.write(composite_pentad_time_series, id=region+'_comp')
         if debug:
