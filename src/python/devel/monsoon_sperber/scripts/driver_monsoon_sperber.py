@@ -24,7 +24,8 @@ from genutil import StringConstructor
 8. use unit adjust parameter in the code
 """
  
-libfiles = ['argparse_functions.py',]
+libfiles = ['argparse_functions.py',
+            'model_land_only.py']
 
 for lib in libfiles:
     exec(compile(open(os.path.join('../lib/', lib)).read(),
@@ -61,12 +62,6 @@ def divide_chunks(l, n):
 # How many elements each
 # list should have
 n = 5
-
-
-def model_land_only(d):
-    # masking out land should come here
-    print('placeholder for mask out ocean')
-    return d
 
 # =================================================
 # Collect user defined options
@@ -171,9 +166,17 @@ for l in lst[0:1]:  # model loop
 
     #if debug:
     #    print('debug: model_path_list: ', model_path_list)
+
+    model_lf_path = modpath_lf(model=model)
+    if os.path.isfile(model_lf_path):
+        pass
+    else:
+        model_lf_path = modpath_lf(model=model.upper())
+    print(model_lf_path)
  
-    print(pathin + l)
-    fc = cdms2.open(pathin + l)
+    model_path = pathin + l
+    print(model_path)
+    fc = cdms2.open(model_path)
     d = fc['pr']  # NOTE: square brackets does not bring data into memory, only coordinates!
     t = d.getTime()
     c = t.asComponentTime()
@@ -223,7 +226,8 @@ for l in lst[0:1]:  # model loop
                time=(cdtime.comptime(year),cdtime.comptime(year+1)),
                latitude=(-90,90))
         d = MV2.multiply(d, 86400.)  # unit change
-        d = model_land_only(model, d, model_lf_path)
+        d.unit = 'mm/d'
+        d = model_land_only(model, d, model_lf_path, debug=debug)
         print('debug: year: ', year)
         print('debug: d.shape: ', d.shape)
       
