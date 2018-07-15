@@ -12,6 +12,14 @@ import sys
 from argparse import RawTextHelpFormatter
 from genutil import StringConstructor
 
+'''NOTE FOR ISSUES
+1. syear/eyear given by parameter file need to be refered in the code
+2. ocean mask for land only is not complete; refer placeholder
+3. pathin need to be fully replaced by modpath
+4. reference data (obs) is yet to be used
+5. 72 pentad to 73 pentad interpolation need to be added for HadGEM2 models 
+6. Adding of custom domain maybe needed to test Indian region as in Sperber & Annamalai 2014 Clim Dyn
+'''
  
 libfiles = ['argparse_functions.py',]
 
