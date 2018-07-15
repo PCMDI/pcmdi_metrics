@@ -6,18 +6,115 @@ import cdutil
 import MV2
 import numpy as np
 import os
+import pcmdi_metrics
 import sys
+
+from argparse import RawTextHelpFormatter
+from genutil import StringConstructor
+
  
+libfiles = ['argparse_functions.py',]
+
+for lib in libfiles:
+    exec(compile(open(os.path.join('../lib/', lib)).read(),
+                 os.path.join('../lib/', lib), 'exec'))
+
+# =================================================
+# Hard coded options... will be moved out later
+# -------------------------------------------------
 pathin = '/work/cmip5-test/new/historical/atmos/day/pr/'
  
 lst = os.listdir(pathin)
 
-list_monsoon_regions = ['ASM', 'NAMM']  # Will be added later
-#list_monsoon_regions = ['ASM']  # Will be added later
+#list_monsoon_regions = ['ASM', 'NAMM']  # Will be added later
+list_monsoon_regions = ['ASM']  # Will be added later
 
-debug = True
-nc_out = True
+regions_specs = {}
+exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
+             sys.prefix + "/share/pmp/default_regions.py", 'exec'))
 
+# =================================================
+# Some functions... will be moved out later
+# -------------------------------------------------
+'''For pentad,
+taken from https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
+'''
+# Yield successive n-sized
+# chunks from l.
+def divide_chunks(l, n):
+     
+    # looping till length l
+    for i in range(0, len(l), n): 
+        yield l[i:i + n]
+ 
+# How many elements each
+# list should have
+n = 5
+
+
+def maskoutOcean(d):
+    # masking out land should come here
+    print('placeholder for mask out ocean')
+    return d
+
+# =================================================
+# Collect user defined options
+# -------------------------------------------------
+P = pcmdi_metrics.driver.pmp_parser.PMPParser(
+        description='Runs PCMDI Monsoon Sperber Computations',
+        formatter_class=RawTextHelpFormatter)
+P = AddParserArgument(P)
+param = P.get_parameter()
+
+# Pre-defined options
+mip = param.mip
+exp = param.exp
+fq = param.frequency
+realm = param.realm
+
+# On/off switches
+nc_out = param.nc_out  # Record NetCDF output
+plot = param.plot # Generate plots
+
+# Path to model data as string template
+modpath = StringConstructor(param.modpath)
+modpath_lf = StringConstructor(param.modpath_lf)
+
+# Check given model option
+models = param.modnames
+print('models:', models)
+
+# Realizations
+realization = param.realization
+print('realization: ', realization)
+
+# Output
+outdir = param.results_dir
+print('outdir: ', outdir)
+
+# Create output directory
+if not os.path.exists(outdir):
+    os.makedirs(outdir)
+
+# Debug
+debug = param.debug
+print('debug: ', debug)
+
+# Variables
+var = param.varModel
+
+# Year
+syear = param.msyear
+eyear = param.meyear
+YearCheck(syear, eyear, P)
+
+osyear = param.osyear
+oeyear = param.oeyear
+YearCheck(osyear, oeyear, P)
+
+# =================================================
+# Debugging tool
+# -------------------------------------------------
 # Open canvas for debug plot
 if debug:
     import matplotlib.pyplot as plt
@@ -42,38 +139,27 @@ if debug:
         if nrows > 1 and math.ceil((i+1)/float(ncols)) < ncols:
             ax[region].set_xlabel('')
 '''
-regions_specs = {}
-exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
-             sys.prefix + "/share/pmp/default_regions.py", 'exec'))
 
-'''For pentad,
-taken from https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
-'''
-# Yield successive n-sized
-# chunks from l.
-def divide_chunks(l, n):
-     
-    # looping till length l
-    for i in range(0, len(l), n): 
-        yield l[i:i + n]
- 
-# How many elements each
-# list should have
-n = 5
+# =================================================
+# Loop start 
+# -------------------------------------------------
+for l in lst[0:1]:  # model loop
+#for l in lst[0:2]:  # model loop
 
+#for model in models:
+#    print(' ----- ', model, ' ---------------------')
 
-def maskoutOcean(d):
-    # masking out land should come here
-    print('placeholder for mask out ocean')
-    return d
-
-#for l in lst[0:1]:  # model loop
-for l in lst[0:2]:  # model loop
-
-    project = l.split('/')[-1].split('.')[0]
+    mip = l.split('/')[-1].split('.')[0]
     model = l.split('/')[-1].split('.')[1]
     exp = l.split('/')[-1].split('.')[2]
     run = l.split('/')[-1].split('.')[3]
+
+    #model_path_list = os.popen(
+    #    'ls '+modpath(model=model, realization=realization,
+    #    variable=var)).readlines() 
+
+    #if debug:
+    #    print('debug: model_path_list: ', model_path_list)
  
     print(pathin + l)
     fc = cdms2.open(pathin + l)
@@ -82,8 +168,9 @@ for l in lst[0:2]:  # model loop
     c = t.asComponentTime()
    
     startYear = c[0].year
-    startMonth = c[0].month
     endYear = c[-1].year
+
+    startMonth = c[0].month
     endMonth = c[-1].month
 
     # Consider year only when entire calendar available
@@ -102,8 +189,8 @@ for l in lst[0:2]:  # model loop
         endYear = startYear + 1
 
     if nc_out:
-        output_file_name = '_'.join([project, model, exp, run])
-        fout = cdms2.open(output_file_name+'.nc', 'w')
+        output_file_name = '_'.join([mip, model, exp, run])
+        fout = cdms2.open(os.path.join(outdir, output_file_name+'.nc'), 'w')
 
     list_pentad_time_series = {}  # Archive individual year pentad time series for composite
     for region in list_monsoon_regions:
@@ -177,9 +264,9 @@ for l in lst[0:2]:  # model loop
     if debug:
         fig.suptitle(
             'Precipitation pentad time series\n'
-            +', '.join([project, model, exp, run, str(startYear)+'-'+str(endYear)]))
+            +', '.join([mip, model, exp, run, str(startYear)+'-'+str(endYear)]))
         plt.subplots_adjust(top=0.85)
-        plt.savefig('_'.join([project, model, exp, run])+'.png')
+        plt.savefig(os.path.join(outdir, '_'.join([mip, model, exp, run])+'.png'))
         plt.clf()
 
     if nc_out:
