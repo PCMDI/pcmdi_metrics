@@ -248,6 +248,9 @@ for l in lst[0:1]:  # model loop
                     pentad_time_series.append(float(ave_chunk))
             print('pentad_time_series', year, ': ', pentad_time_series)
 
+            pentad_time_series = MV2.array(pentad_time_series)
+            pentad_time_series.units = d.units
+
             if debug:
                 if year == startYear:
                     label = 'Individual year'
@@ -256,9 +259,9 @@ for l in lst[0:1]:  # model loop
                 ax[region].plot(np.array(pentad_time_series), c='grey', label=label)
 
             if nc_out:
-                fout.write(MV2.array(pentad_time_series), id=region+'_'+str(year))
+                fout.write(pentad_time_series, id=region+'_'+str(year))
 
-            list_pentad_time_series[region].append(MV2.array(pentad_time_series))
+            list_pentad_time_series[region].append(pentad_time_series)
 
     # Get composite for each region
     for region in list_monsoon_regions:
@@ -267,7 +270,7 @@ for l in lst[0:1]:  # model loop
             axis=0,
             weights='unweighted')
         composite_pentad_time_series.setAxis(
-            0, MV2.array(pentad_time_series).getAxis(0))
+            0, pentad_time_series.getAxis(0))
         if nc_out:
             fout.write(composite_pentad_time_series, id=region+'_comp')
         if debug:
