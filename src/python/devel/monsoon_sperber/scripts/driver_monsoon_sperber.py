@@ -226,7 +226,7 @@ for l in lst[0:1]:  # model loop
                time=(cdtime.comptime(year),cdtime.comptime(year+1)),
                latitude=(-90,90))
         d = MV2.multiply(d, 86400.)  # unit change
-        d.unit = 'mm/d'
+        d.units = 'mm/d'
         d = model_land_only(model, d, model_lf_path, debug=debug)
         print('debug: year: ', year)
         print('debug: d.shape: ', d.shape)
