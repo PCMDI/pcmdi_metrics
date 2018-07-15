@@ -12,7 +12,7 @@ realm = 'atm'
 # Observation
 # -------------------------------------------------
 reference_data_name = 'CPC'
-reference_data_path = '/work/lee1043/DATA/reanalysis/20CR/slp_monthly_mean/monthly.prmsl.1871-2012.nc'
+reference_data_path = '/work/lee1043/DATA/CPC/cpc_precip_1979-2018.xml'
 
 varOBS = 'precip'
 ObsUnitsAdjust = (False, 0, 0)  # Pa to hPa; or (False, 0, 0)
