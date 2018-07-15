@@ -12,7 +12,7 @@ import sys
 from argparse import RawTextHelpFormatter
 from genutil import StringConstructor
 
-'''NOTE FOR ISSUES
+"""NOTE FOR ISSUES
 1. syear/eyear given by parameter file need to be refered in the code
 2. ocean mask for land only is not complete; refer placeholder
 3. pathin need to be fully replaced by modpath
@@ -20,7 +20,8 @@ from genutil import StringConstructor
 5. 72 pentad to 73 pentad interpolation need to be added for HadGEM2 models 
 6. Adding of custom domain maybe needed to test Indian region as in Sperber & Annamalai 2014 Clim Dyn
    (or define the domain in the share/default_regions.py)
-'''
+7. Make the results_dir aknowledge the tree structure
+"""
  
 libfiles = ['argparse_functions.py',]
 
@@ -45,9 +46,9 @@ exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
 # =================================================
 # Some functions... will be moved out later
 # -------------------------------------------------
-'''For pentad,
-taken from https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
-'''
+"""For pentad,
+Code taken from https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
+"""
 # Yield successive n-sized
 # chunks from l.
 def divide_chunks(l, n):
