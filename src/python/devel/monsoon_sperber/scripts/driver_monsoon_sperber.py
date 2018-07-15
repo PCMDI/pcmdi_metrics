@@ -12,7 +12,7 @@ import sys
 from argparse import RawTextHelpFormatter
 from genutil import StringConstructor
 
-"""NOTE FOR ISSUES
+""" NOTE FOR ISSUES
 1. syear/eyear given by parameter file need to be refered in the code
 2. ocean mask for land only is not complete; refer placeholder
 3. pathin need to be fully replaced by modpath
@@ -46,7 +46,7 @@ exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
 # =================================================
 # Some functions... will be moved out later
 # -------------------------------------------------
-"""For pentad,
+""" For pentad,
 Code taken from https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
 """
 # Yield successive n-sized
