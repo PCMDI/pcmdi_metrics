@@ -21,6 +21,7 @@ from genutil import StringConstructor
 6. Adding of custom domain maybe needed to test Indian region as in Sperber & Annamalai 2014 Clim Dyn
    (or define the domain in the share/default_regions.py)
 7. Make the results_dir aknowledge the tree structure
+8. use unit adjust parameter in the code
 """
  
 libfiles = ['argparse_functions.py',]
@@ -62,7 +63,7 @@ def divide_chunks(l, n):
 n = 5
 
 
-def maskoutOcean(d):
+def model_land_only(d):
     # masking out land should come here
     print('placeholder for mask out ocean')
     return d
@@ -218,9 +219,11 @@ for l in lst[0:1]:  # model loop
                 ax[region].set_xlabel('')
        
     for year in range(startYear, endYear+1):  # year loop, endYear+1 to include last year
-        d = fc('pr',time=(cdtime.comptime(year),cdtime.comptime(year+1)))
+        d = fc('pr',
+               time=(cdtime.comptime(year),cdtime.comptime(year+1)),
+               latitude=(-90,90))
         d = MV2.multiply(d, 86400.)  # unit change
-        d = maskoutOcean(d)
+        d = model_land_only(model, d, model_lf_path)
         print('debug: year: ', year)
         print('debug: d.shape: ', d.shape)
       
