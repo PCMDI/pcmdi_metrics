@@ -19,6 +19,7 @@ from genutil import StringConstructor
 4. reference data (obs) is yet to be used
 5. 72 pentad to 73 pentad interpolation need to be added for HadGEM2 models 
 6. Adding of custom domain maybe needed to test Indian region as in Sperber & Annamalai 2014 Clim Dyn
+   (or define the domain in the share/default_regions.py)
 '''
  
 libfiles = ['argparse_functions.py',]
