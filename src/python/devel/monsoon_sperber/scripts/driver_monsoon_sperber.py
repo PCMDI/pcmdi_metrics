@@ -22,6 +22,8 @@ from genutil import StringConstructor
    (or define the domain in the share/default_regions.py)
 7. Make the results_dir aknowledge the tree structure
 8. use unit adjust parameter in the code
+9. leaf year
+10. start from July 1st for SH region
 """
  
 libfiles = ['argparse_functions.py',
