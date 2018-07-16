@@ -52,7 +52,7 @@ meyear = 1999
 # =================================================
 # Output
 # -------------------------------------------------
-results_dir = '/work/lee1043/imsi/result_test/monsoon_wang'
+results_dir = '/work/lee1043/imsi/result_test/monsoon_sperber'
 nc_out = True  # Write output in NetCDF
 plot = True  # Create map graphics
 
