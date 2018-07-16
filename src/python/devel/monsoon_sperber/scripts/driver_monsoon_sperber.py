@@ -198,19 +198,8 @@ for l in lst[0:1]:  # model loop
         print('debug: startMonth: ', type(startMonth), startMonth)
         print('debug: endYear: ', type(endYear), endYear)
         print('debug: endMonth: ', type(endMonth), endMonth)
-
-    if debug:
         endYear = startYear + 1
 
-    if nc_out:
-        output_file_name = '_'.join([mip, model, exp, run])
-        fout = cdms2.open(os.path.join(outdir, output_file_name+'.nc'), 'w')
-
-    list_pentad_time_series = {}  # Archive individual year pentad time series for composite
-    for region in list_monsoon_regions:
-        list_pentad_time_series[region] = []
-
-    if debug:
         for i, region in enumerate(list_monsoon_regions):
             ax[region] = plt.subplot(nrows, ncols, i+1)
             print('debug: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
@@ -220,7 +209,15 @@ for l in lst[0:1]:  # model loop
                 ax[region].set_ylabel('')
             if nrows > 1 and math.ceil((i+1)/float(ncols)) < ncols:
                 ax[region].set_xlabel('')
-       
+
+    list_pentad_time_series = {}  # Archive individual year pentad time series for composite
+    for region in list_monsoon_regions:
+        list_pentad_time_series[region] = []
+
+    if nc_out:
+        output_file_name = '_'.join([mip, model, exp, run])
+        fout = cdms2.open(os.path.join(outdir, output_file_name+'.nc'), 'w')
+
     for year in range(startYear, endYear+1):  # year loop, endYear+1 to include last year
         d = fc(var,
                time=(cdtime.comptime(year),cdtime.comptime(year+1)),
