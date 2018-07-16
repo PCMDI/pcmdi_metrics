@@ -27,6 +27,7 @@ from genutil import StringConstructor
 """
  
 libfiles = ['argparse_functions.py',
+            'divide_chunks.py',
             'model_land_only.py']
 
 for lib in libfiles:
@@ -41,67 +42,12 @@ pathin = '/work/cmip5-test/new/historical/atmos/day/pr/'
 lst = os.listdir(pathin)
 
 #list_monsoon_regions = ['ASM', 'NAMM']  # Will be added later
-list_monsoon_regions = ['ASM']  # Will be added later
+#list_monsoon_regions = ['ASM']  # Will be added later
+list_monsoon_regions = ['AIR']  # Will be added later
 
-regions_specs = {}
-exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
-             sys.prefix + "/share/pmp/default_regions.py", 'exec'))
-
-# =================================================
-# Some functions... will be moved out later
-# -------------------------------------------------
-""" For pentad,
-Code taken from https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
-"""
-# Yield successive n-sized
-# chunks from l.
-def divide_chunks(l, n):
-    # looping till length l
-    for i in range(0, len(l), n): 
-        yield l[i:i+n]
- 
 # How many elements each
 # list should have
-n = 5
-
-def divide_chunks_advanced(l, n, debug=False):
-    # Double check first date should be Jan 1 (except for SH monsoon)
-    month = l.getTime().asComponentTime()[0].month
-    day = l.getTime().asComponentTime()[0].day
-    if debug: print('debug: first day of year is '+str(month)+'/'+str(day))
-    if month != 1 or day != 1:
-        sys.exit('error: first day of year time series is '+str(month)+'/'+str(day))
-
-    # Check number of days in given year
-    nday = len(l)
-
-    if nday in [365, 360]:
-        # looping till length l
-        for i in range(0, len(l), n):
-            yield l[i:i+n]
-    elif nday == 366:
-        # until leap year day detected
-        for i in range(0, len(l), n):
-            # Check if leap year date included
-            leap_detect = False
-            for i in range(i, i+n):
-                month = l.getTime().asComponentTime()[i].month
-                day = l.getTime().asComponentTime()[i].day
-                if month == 2 and day > 28:
-                    if debug: print('debug: leap year detected')
-                    leap_detect = True
-            if leap_detect:
-                yield l[i:i+n+1]
-                tmp = i+n+1
-                break
-            else:
-                yield l[i:i+n]
-        # after leap year day passed
-        if leap_detect:
-            for i in range(tmp, len(l), n):
-                yield l[i:i+n]
-    else:
-        sys.exit('error: number of days in year is '+str(nday))
+n = 5  # pentad
 
 # =================================================
 # Collect user defined options
@@ -189,6 +135,10 @@ if debug:
 # =================================================
 # Loop start 
 # -------------------------------------------------
+regions_specs = {}
+exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
+             sys.prefix + "/share/pmp/default_regions.py", 'exec'))
+
 for l in lst[0:1]:  # model loop
 #for l in lst[0:2]:  # model loop
 
