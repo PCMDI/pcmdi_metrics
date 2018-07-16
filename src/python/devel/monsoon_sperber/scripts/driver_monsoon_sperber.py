@@ -155,9 +155,9 @@ for l in lst[0:1]:  # model loop
 #for model in models:
 #    print(' ----- ', model, ' ---------------------')
 
-    mip = l.split('/')[-1].split('.')[0]
+    #mip = l.split('/')[-1].split('.')[0]
     model = l.split('/')[-1].split('.')[1]
-    exp = l.split('/')[-1].split('.')[2]
+    #exp = l.split('/')[-1].split('.')[2]
     run = l.split('/')[-1].split('.')[3]
 
     #model_path_list = os.popen(
@@ -177,7 +177,7 @@ for l in lst[0:1]:  # model loop
     model_path = pathin + l
     print(model_path)
     fc = cdms2.open(model_path)
-    d = fc['pr']  # NOTE: square brackets does not bring data into memory, only coordinates!
+    d = fc[var]  # NOTE: square brackets does not bring data into memory, only coordinates!
     t = d.getTime()
     c = t.asComponentTime()
    
@@ -222,7 +222,7 @@ for l in lst[0:1]:  # model loop
                 ax[region].set_xlabel('')
        
     for year in range(startYear, endYear+1):  # year loop, endYear+1 to include last year
-        d = fc('pr',
+        d = fc(var,
                time=(cdtime.comptime(year),cdtime.comptime(year+1)),
                latitude=(-90,90))
         d = MV2.multiply(d, 86400.)  # unit change
