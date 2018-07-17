@@ -183,12 +183,17 @@ for l in lst[0:1]:  # model loop
     if endMonth < 12:
         endYear -= 1
 
+    # Check calendar
+    calendar = d.getTime().calendar
+    if debug:
+        print('debug: calendar: ', calendar)
+
     if debug:
         print('debug: startYear: ', type(startYear), startYear)
         print('debug: startMonth: ', type(startMonth), startMonth)
         print('debug: endYear: ', type(endYear), endYear)
         print('debug: endMonth: ', type(endMonth), endMonth)
-        endYear = startYear + 1
+        endYear = startYear + 4
 
         for i, region in enumerate(list_monsoon_regions):
             ax[region] = plt.subplot(nrows, ncols, i+1)
@@ -213,10 +218,6 @@ for l in lst[0:1]:  # model loop
                time=(cdtime.comptime(year),cdtime.comptime(year+1)),
                latitude=(-90,90))
 
-        # Check calendar
-        calendar = d.getTime().calendar
-        if debug:
-            print('debug: calendar: ', calendar)
 
         # unit change
         d = MV2.multiply(d, 86400.)
@@ -237,20 +238,23 @@ for l in lst[0:1]:  # model loop
                 print('debug: d_sub.shape: ', d_sub.shape)
                 print('debug: d_sub_aave.shape: ', d_sub_aave.shape)
   
-            list_d_sub_aave_chunks = list(divide_chunks(d_sub_aave, n)) 
+            #list_d_sub_aave_chunks = list(divide_chunks(d_sub_aave, n)) 
+            list_d_sub_aave_chunks = list(divide_chunks_advanced(d_sub_aave, n, debug=debug)) 
             pentad_time_series = []
             for d_sub_aave_chunk in list_d_sub_aave_chunks:
                 if d_sub_aave_chunk.shape[0] == n:  # ignore when chunk length is shorter than defined
                     ave_chunk = cdutil.averager(d_sub_aave_chunk, axis='t')
                     pentad_time_series.append(float(ave_chunk))
-            print('pentad_time_series', year, ': ', pentad_time_series)
+            if debug:
+                print('debug: pentad_time_series', year, ': ', pentad_time_series)
+                print('debug: length: ', len(pentad_time_series))
 
             pentad_time_series = MV2.array(pentad_time_series)
             pentad_time_series.units = d.units
 
             if debug:
                 if year == startYear:
-                    label = 'Individual year'
+                    label = 'Individual yr'
                 else:
                     label = ''
                 ax[region].plot(np.array(pentad_time_series), c='grey', label=label)
@@ -261,6 +265,7 @@ for l in lst[0:1]:  # model loop
             list_pentad_time_series[region].append(pentad_time_series)
 
     # Get composite for each region
+    if debug: print('debug: composite start')
     for region in list_monsoon_regions:
         composite_pentad_time_series = cdutil.averager(
             MV2.array(list_pentad_time_series[region]),
