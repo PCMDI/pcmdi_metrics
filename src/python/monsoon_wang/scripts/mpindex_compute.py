@@ -5,7 +5,8 @@ import numpy
 import sys
 import os
 from genutil import statistics
-from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
+#from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
+import pcmdi_metrics.driver.pmp_parser.PMPParser
 from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 import pcmdi_metrics
 import collections
