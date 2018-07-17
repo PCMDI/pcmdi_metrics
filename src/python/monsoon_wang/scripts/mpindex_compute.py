@@ -1,12 +1,11 @@
 #!/usr/bin/env python
-
 import cdms2
 import numpy
 import sys
 import os
 from genutil import statistics
-#from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
-import pcmdi_metrics.driver.pmp_parser.PMPParser
+from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
+#import pcmdi_metrics.driver.pmp_parser.PMPParser
 from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 import pcmdi_metrics
 import collections
@@ -60,6 +59,7 @@ modpath = args.modpath
 outpathjsons = args.outpathjsons
 outpathdata = args.results_dir
 mods = args.modnames
+experiment = args.experiment
 
 json_filename = args.jsonname
 
@@ -153,6 +153,7 @@ try:
 except BaseException:
     pass
 
+"""
 modpathall = modpath.replace('MODS', '*')
 lst = glob.glob(modpathall)
 # CONFIRM DATA FOR MODS IS AVAIL AND REMOVE THOSE IT IS NOT
@@ -167,6 +168,10 @@ for mod in mods:
         if os.path.isfile(l1) is True:
             if mod not in gmods:
                 gmods.append(mod)
+"""
+gmods = mods[0:3]
+
+
 
 if args.experiment == 'historical' and mods is None:
     gmods = [
@@ -230,9 +235,12 @@ doms = ['AllMW', 'AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
 
 mpi_stats_dic = {}
 print("GMODS:", gmods)
-for mod in gmods:
-    modelFile = modpath.replace('MODS', mod)
 
+modpath.experiment = experiment
+for mod in gmods:
+#   modelFile = modpath.replace('MODS', mod)
+    modpath.model = mod
+    modelFile = modpath() 
     mpi_stats_dic[mod] = {}
 
     print("******************************************************************************************")
