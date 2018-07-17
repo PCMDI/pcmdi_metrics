@@ -59,7 +59,7 @@ args = P.get_parameter()
 modpath = args.modpath
 outpathjsons = args.outpathjsons
 outpathdata = args.results_dir
-mods = eval(args.modnames)
+mods = args.modnames
 
 json_filename = args.jsonname
 
