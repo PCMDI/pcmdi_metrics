@@ -16,7 +16,7 @@ P = PMPParser()
 
 P.use("--modpath")
 P.use("--modnames")
-P.use("--results_dir")
+#P.use("--results_dir")
 P.use("--reference_data_path")
 
 P.add_argument("--outpj", "--outpathjsons",
@@ -24,6 +24,13 @@ P.add_argument("--outpj", "--outpathjsons",
                dest='outpathjsons',
                default='.',
                help="Output path for jsons")
+
+P.add_argument("--outpd", "--outpathdiags",
+               type=str,
+               dest='outpathdiags',
+               default='.',
+               help="Output path for diagnostics, usually netCDF")
+
 P.add_argument("--outnj", "--outnamejson",
                type=str,
                dest='jsonname',
@@ -52,70 +59,19 @@ P.add_argument("-t", "--threshold",
                type=float,
                help="Threshold for a hit when computing skill score")
 
-
-# args = P.parse_args(sys.argv[1:])
 args = P.get_parameter()
 modpath = args.modpath
 outpathjsons = args.outpathjsons
-outpathdata = args.results_dir
-mods = args.modnames
+outpathdata = args.outpathdiags
+
+mods = args.modnames   # LIST OF MODELS COMING FROM INPUT PARAMETER FILE
 experiment = args.experiment
+modpath.experiment = experiment
 
 json_filename = args.jsonname
 
 if json_filename == 'CMIP_MME':
     json_filename = '/MPI_' + args.mip + '_' + args.experiment
-
-if args.mip == 'CMIP5' and args.experiment == 'historical' and mods is None:
-    mods = [
-        'ACCESS1-0',
-        'ACCESS1-3',
-        'bcc-csm1-1',
-        'bcc-csm1-1-m',
-        'BNU-ESM',
-        'CanCM4',
-        'CanESM2',
-        'CCSM4',
-        'CESM1-BGC',
-        'CESM1-CAM5',
-        'CESM1-FASTCHEM',
-        'CESM1-WACCM',
-        'CMCC-CESM',
-        'CMCC-CM',
-        'CMCC-CMS',
-        'CNRM-CM5-2',
-        'CNRM-CM5',
-        'CSIRO-Mk3-6-0',
-        'FGOALS-g2',
-        'FIO-ESM',
-        'GFDL-CM2p1',
-        'GFDL-CM3',
-        'GFDL-ESM2G',
-        'GFDL-ESM2M',
-        'GISS-E2-H',
-        'GISS-E2-H-CC',
-        'GISS-E2-R',
-        'GISS-E2-R-CC',
-        'HadCM3',
-        'HadGEM2-AO',
-        'HadGEM2-CC',
-        'HadGEM2-ES',
-        'inmcm4',
-        'IPSL-CM5A-LR',
-        'IPSL-CM5A-MR',
-        'IPSL-CM5B-LR',
-        'MIROC4h',
-        'MIROC5',
-        'MIROC-ESM',
-        'MIROC-ESM-CHEM',
-        'MPI-ESM-LR',
-        'MPI-ESM-MR',
-        'MPI-ESM-P',
-        'MRI-CGCM3',
-        'MRI-ESM1',
-        'NorESM1-M',
-        'NorESM1-ME']
-
 
 # VAR IS FIXED TO BE PRECIP FOR CALCULATING MONSOON PRECIPITATION INDICES
 var = args.modvar
@@ -139,8 +95,9 @@ obsgrid = dobs_orig.getGrid()
 annrange_obs, mpi_obs = mpd(dobs_orig)
 #########################################
 # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
-nout = os.path.join(outpathdata, "_".join(
-    [args.experiment, args.mip, 'wang-monsoon']))
+
+nout = outpathdata 
+
 try:
     os.makedirs(nout)
 except BaseException:
@@ -153,76 +110,19 @@ try:
 except BaseException:
     pass
 
-"""
-modpathall = modpath.replace('MODS', '*')
-lst = glob.glob(modpathall)
-# CONFIRM DATA FOR MODS IS AVAIL AND REMOVE THOSE IT IS NOT
+gmods = [] # TRAP LIST OF MODELS AVAILABLE WHICH MAY BE LESS THAN REQUESTED FROM PARAM FILE.
+for m in mods:
+  modpath.model = m
+  if os.path.isfile(modpath()) is True and m not in gmods:  
+    gmods.append(m)
 
-gmods = []  # "Got" these MODS
-print("MODS:", mods)
-print("LST:", lst)
-for mod in mods:
-    for l in lst:
-        l1 = modpath.replace('MODS', mod)
-        print("L!:", l1)
-        if os.path.isfile(l1) is True:
-            if mod not in gmods:
-                gmods.append(mod)
-"""
-gmods = mods[0:3]
+mods_notfound=[]
+for m in mods:
+  if m not in gmods: mods_notfound.append(m)
 
-
-
-if args.experiment == 'historical' and mods is None:
-    gmods = [
-        'ACCESS1-0',
-        'ACCESS1-3',
-        'bcc-csm1-1',
-        'bcc-csm1-1-m',
-        'BNU-ESM',
-        'CanCM4',
-        'CanESM2',
-        'CCSM4',
-        'CESM1-BGC',
-        'CESM1-CAM5',
-        'CESM1-FASTCHEM',
-        'CESM1-WACCM',
-        'CMCC-CESM',
-        'CMCC-CM',
-        'CMCC-CMS',
-        'CNRM-CM5-2',
-        'CNRM-CM5',
-        'CSIRO-Mk3-6-0',
-        'FGOALS-g2',
-        'FIO-ESM',
-        'GFDL-CM2p1',
-        'GFDL-CM3',
-        'GFDL-ESM2G',
-        'GFDL-ESM2M',
-        'GISS-E2-H',
-        'GISS-E2-H-CC',
-        'GISS-E2-R',
-        'GISS-E2-R-CC',
-        'HadCM3',
-        'HadGEM2-AO',
-        'HadGEM2-CC',
-        'HadGEM2-ES',
-        'inmcm4',
-        'IPSL-CM5A-LR',
-        'IPSL-CM5A-MR',
-        'IPSL-CM5B-LR',
-        'MIROC4h',
-        'MIROC5',
-        'MIROC-ESM',
-        'MIROC-ESM-CHEM',
-        'MPI-ESM-LR',
-        'MPI-ESM-MR',
-        'MPI-ESM-P',
-        'MRI-CGCM3',
-        'MRI-ESM1',
-        'NorESM1-M',
-        'NorESM1-ME']
-
+print 'FOUND THESE MODELS ', gmods
+if mods_notfound == []: print 'ALL MODELS FOUND'
+if mods_notfound != []: print 'MODELS NOT FOUND INCLUDE ', mods_notfound
 
 #########################################
 
@@ -234,11 +134,8 @@ exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
 doms = ['AllMW', 'AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
 
 mpi_stats_dic = {}
-print("GMODS:", gmods)
 
-modpath.experiment = experiment
 for mod in gmods:
-#   modelFile = modpath.replace('MODS', mod)
     modpath.model = mod
     modelFile = modpath() 
     mpi_stats_dic[mod] = {}
@@ -286,7 +183,7 @@ for mod in gmods:
         mpi_stats_dic[mod][dom]['threat_score'] = format(score, sig_digits)
 
 # SAVE ANNRANGE AND HIT MISS AND FALSE ALARM FOR EACH MOD DOM
-        fm = os.path.join(nout, '_'.join([mod, dom, 'wang-monsoon.nc']))
+        fm = os.path.join(nout, '_'.join([mod, dom, 'monsoon-wang.nc']))
         g = cdms2.open(fm, 'w')
         g.write(annrange_mod_dom)
         g.write(hitmap, dtype=numpy.int32)
@@ -295,6 +192,7 @@ for mod in gmods:
         g.close()
     f.close()
 
+    print 'DONE WITH ', mod
 
 #  OUTPUT METRICS TO JSON FILE
 OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), json_filename)
