@@ -31,7 +31,8 @@ from genutil import StringConstructor
  
 libfiles = ['argparse_functions.py',
             'divide_chunks.py',
-            'model_land_only.py']
+            'model_land_only.py',
+            'calc_metrics.py']
 
 for lib in libfiles:
     exec(compile(open(os.path.join('../lib/', lib)).read(),
@@ -221,12 +222,9 @@ for model in models:
             if endMonth < 12:
                 endYear -= 1
 
-            # Check calendar
-            calendar = d.getTime().calendar
             if debug:
+                calendar = d.getTime().calendar  # Check calendar
                 print('debug: calendar: ', calendar)
-
-            if debug:
                 print('debug: startYear: ', type(startYear), startYear)
                 print('debug: startMonth: ', type(startMonth), startMonth)
                 print('debug: endYear: ', type(endYear), endYear)
@@ -254,6 +252,9 @@ for model in models:
                 output_file_name = '_'.join([mip, model, exp, run, 'monsoon_sperber'])
                 fout = cdms2.open(os.path.join(outdir, output_file_name+'.nc'), 'w')
 
+            # -------------------------------------------------
+            # Loop start - Year
+            # -------------------------------------------------
             for year in range(startYear, endYear+1):  # year loop, endYear+1 to include last year
                 d = fc(var,
                        time=(cdtime.comptime(year),cdtime.comptime(year+1)),
@@ -269,6 +270,9 @@ for model in models:
                 print('debug: -- year: ', year)
                 print('debug: d.shape: ', d.shape)
 
+                # - - - - - - - - - - - - - - - - - - - - - - - - -
+                # Loop start - Monsoon region
+                # - - - - - - - - - - - - - - - - - - - - - - - - -
                 for region in list_monsoon_regions:
                     d_sub = d(regions_specs[region]['domain'])  # extract for monsoon region
                     d_sub_aave = cdutil.averager(d_sub, axis='xy', weights='weighted')  # area average
@@ -306,6 +310,9 @@ for model in models:
                     list_pentad_time_series[region].append(pentad_time_series)
                     list_pentad_time_series_cumsum[region].append(pentad_time_series_cumsum)
 
+                # --- Monsoon region loop end
+            # --- Year loop end
+
             # Get composite for each region
             if debug:
                 print('debug: composite start')
@@ -320,9 +327,20 @@ for model in models:
                 composite_pentad_time_series_cumsum = np.cumsum(composite_pentad_time_series)
                 composite_pentad_time_series_cumsum.setAxis(
                     0, pentad_time_series.getAxis(0))
+
+                # Metrics for composite
+                metrics_result = sperber_metcis(composite_pentad_time_series_cumsum)
+
+                if region not in list(monsoon_stat_dic['RESULTS'][model][run].keys()):
+                    monsoon_stat_dic['RESULTS'][model][run][region] = {}
+                monsoon_stat_dic['RESULTS'][model][run][region]['onset_index'] = metrics_result['onset_index']
+                monsoon_stat_dic['RESULTS'][model][run][region]['decay_index'] = metrics_result['decay_index']
+                monsoon_stat_dic['RESULTS'][model][run][region]['slope'] = metrics_result['slope']
+
                 if nc_out:
                     fout.write(composite_pentad_time_series, id=region+'_comp')
                     fout.write(composite_pentad_time_series_cumsum, id=region+'_comp_cumsum')
+                    fout.write(metrics_result['frac_accum'], id=region+'_comp_cumsum_frac')
                 if debug:
                     ax[region].plot(
                         #np.array(composite_pentad_time_series),
@@ -331,6 +349,7 @@ for model in models:
                         label='Composite')
                     ax[region].set_title(region)
                     ax[region].legend(loc=2)
+
 
             if debug:
                 fig.suptitle(
@@ -342,17 +361,6 @@ for model in models:
 
             if nc_out:
                 fout.close()
-
-            # =================================================
-            # Metrics
-            # -------------------------------------------------
-            # Note: We can add metrics for individual years later for 
-            #       interannual variability spread, but then metrics part
-            #       should move upward
-            # -------------------------------------------------
-            # cumsum to fractional using composite
-            ts_sum = composite_pentad_time_series_cumsum[-1]
-            frac_accum = MV2.divide(composite_pentad_time_series_cumsum, ts_sum)
 
             # =================================================
             # Write dictionary to json file
