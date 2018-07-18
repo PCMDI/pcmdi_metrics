@@ -242,7 +242,7 @@ for l in lst[0:1]:  # model loop
             list_d_sub_aave_chunks = list(divide_chunks_advanced(d_sub_aave, n, debug=debug)) 
             pentad_time_series = []
             for d_sub_aave_chunk in list_d_sub_aave_chunks:
-                if d_sub_aave_chunk.shape[0] <= n:  # ignore when chunk length is shorter than defined
+                if d_sub_aave_chunk.shape[0] >= n:  # ignore when chunk length is shorter than defined
                     ave_chunk = cdutil.averager(d_sub_aave_chunk, axis='t')
                     pentad_time_series.append(float(ave_chunk))
             if debug:
