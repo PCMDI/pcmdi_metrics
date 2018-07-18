@@ -413,8 +413,11 @@ for model in models:
                           sort_keys=True, indent=4, separators=(',', ': '))
 
         except Exception as err:
-            print('warning: faild for ', model, run, err)
-            pass
+            if debug:
+                raise
+            else:
+                print('warning: faild for ', model, run, err)
+                pass
 
 if not debug:
     sys.exit('done')
