@@ -24,6 +24,7 @@ from genutil import StringConstructor
 8. use unit adjust parameter in the code
 *9. leaf year
 10. start from July 1st for SH region
+11. add pentad time series to cumulative and archive it in netCDF
 """
  
 libfiles = ['argparse_functions.py',
@@ -150,12 +151,13 @@ for l in lst[0:1]:  # model loop
     #exp = l.split('/')[-1].split('.')[2]
     run = l.split('/')[-1].split('.')[3]
 
-    #model_path_list = os.popen(
-    #    'ls '+modpath(model=model, realization=realization,
-    #    variable=var)).readlines() 
+    model_path_list = os.popen(
+        'ls '+modpath(model=model, exp=exp,
+        realization=run, variable=var)).readlines() 
 
-    #if debug:
-    #    print('debug: model_path_list: ', model_path_list)
+    if debug:
+        print('debug: model_path as l: ', l)
+        print('debug: model_path_list: ', model_path_list)
 
     model_lf_path = modpath_lf(model=model)
     if os.path.isfile(model_lf_path):
@@ -193,7 +195,8 @@ for l in lst[0:1]:  # model loop
         print('debug: startMonth: ', type(startMonth), startMonth)
         print('debug: endYear: ', type(endYear), endYear)
         print('debug: endMonth: ', type(endMonth), endMonth)
-        endYear = startYear + 4
+        #endYear = startYear + 4
+        endYear = startYear + 1
 
         for i, region in enumerate(list_monsoon_regions):
             ax[region] = plt.subplot(nrows, ncols, i+1)
