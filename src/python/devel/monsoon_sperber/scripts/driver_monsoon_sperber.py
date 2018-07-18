@@ -13,9 +13,9 @@ from argparse import RawTextHelpFormatter
 from genutil import StringConstructor
 
 """ NOTE FOR ISSUES
-1. syear/eyear given by parameter file need to be refered in the code
+*1. syear/eyear given by parameter file need to be refered in the code
 *2. ocean mask for land only is not complete; refer placeholder
-3. pathin need to be fully replaced by modpath
+*3. pathin need to be fully replaced by modpath
 4. reference data (obs) is yet to be used
 5. 72 pentad to 73 pentad interpolation need to be added for HadGEM2 models 
 *6. Adding of custom domain maybe needed to test Indian region as in Sperber & Annamalai 2014 Clim Dyn
@@ -24,7 +24,8 @@ from genutil import StringConstructor
 8. use unit adjust parameter in the code
 *9. leaf year
 10. start from July 1st for SH region
-11. add pentad time series to cumulative and archive it in netCDF
+*11. add pentad time series to cumulative and archive it in netCDF
+12. calculate metrics based on cumulative pentad time series
 """
  
 libfiles = ['argparse_functions.py',
@@ -140,16 +141,6 @@ regions_specs = {}
 exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
              sys.prefix + "/share/pmp/default_regions.py", 'exec'))
 
-"""
-for l in lst[0:1]:  # model loop
-#for l in lst[0:2]:  # model loop
-
-    #mip = l.split('/')[-1].split('.')[0]
-    model = l.split('/')[-1].split('.')[1]
-    #exp = l.split('/')[-1].split('.')[2]
-    run = l.split('/')[-1].split('.')[3]
-"""
-
 for model in models:
     print(' ----- ', model, ' ---------------------')
 
@@ -158,7 +149,6 @@ for model in models:
         realization=realization, variable=var)).readlines() 
 
     if debug:
-        #print('debug: model_path as l: ', l)
         print('debug: model_path_list: ', model_path_list)
 
     model_lf_path = modpath_lf(model=model)
@@ -250,7 +240,6 @@ for model in models:
                         print('debug: d_sub.shape: ', d_sub.shape)
                         print('debug: d_sub_aave.shape: ', d_sub_aave.shape)
 
-                    #list_d_sub_aave_chunks = list(divide_chunks(d_sub_aave, n)) 
                     list_d_sub_aave_chunks = list(divide_chunks_advanced(d_sub_aave, n, debug=debug)) 
                     pentad_time_series = []
                     for d_sub_aave_chunk in list_d_sub_aave_chunks:
@@ -258,7 +247,6 @@ for model in models:
                             ave_chunk = cdutil.averager(d_sub_aave_chunk, axis='t')
                             pentad_time_series.append(float(ave_chunk))
                     if debug:
-                        #print('debug: pentad_time_series', year, ': ', pentad_time_series)
                         print('debug: pentad_time_series length: ', len(pentad_time_series))
 
                     pentad_time_series = MV2.array(pentad_time_series)
@@ -281,7 +269,9 @@ for model in models:
                     list_pentad_time_series_cumsum[region].append(pentad_time_series_cumsum)
 
             # Get composite for each region
-            if debug: print('debug: composite start')
+            if debug:
+                print('debug: composite start')
+
             for region in list_monsoon_regions:
                 composite_pentad_time_series = cdutil.averager(
                     MV2.array(list_pentad_time_series[region]),
