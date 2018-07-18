@@ -12,6 +12,7 @@ import sys
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
 from genutil import StringConstructor
+from shutil import copyfile
 
 """ NOTE FOR ISSUES
 *1. syear/eyear given by parameter file need to be refered in the code
