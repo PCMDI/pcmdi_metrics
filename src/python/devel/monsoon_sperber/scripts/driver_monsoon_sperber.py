@@ -406,7 +406,7 @@ for model in models:
 
             if new_json_structure:
                 JSON = pcmdi_metrics.io.base.Base(outdir, json_filename)
-                JSON.write(monsoon_stat_dic, json_structure=["model", "realization", "monsoon_region", "statistic"],
+                JSON.write(monsoon_stat_dic, json_structure=["data", "model", "realization", "monsoon_region", "metric"],
                            sort_keys=True, indent=4, separators=(',', ': '))
             else:
                 json.dump(monsoon_stat_dic, open(json_file, 'w'),
