@@ -1,3 +1,37 @@
+""" Calculate monsoon metrics
+
+Jiwoo Lee (lee1043@llnl.gov)
+
+Reference:
+Sperber, K. and H. Annamalai, 2014:
+The use of fractional accumulated precipitation for the evaluation of the
+annual cycle of monsoons. Climate Dynamics, 43:3219-3244,
+doi: 10.1007/s00382-014-2099-3
+
+Auspices:
+This work was performed under the auspices of the U.S. Department of
+Energy by Lawrence Livermore National Laboratory under Contract
+DE-AC52-07NA27344. Lawrence Livermore National Laboratory is operated by
+Lawrence Livermore National Security, LLC, for the U.S. Department of Energy,
+National Nuclear Security Administration under Contract DE-AC52-07NA27344.
+
+Disclaimer:
+This document was prepared as an account of work sponsored by an
+agency of the United States government. Neither the United States government
+nor Lawrence Livermore National Security, LLC, nor any of their employees
+makes any warranty, expressed or implied, or assumes any legal liability or
+responsibility for the accuracy, completeness, or usefulness of any
+information, apparatus, product, or process disclosed, or represents that its
+use would not infringe privately owned rights. Reference herein to any specific
+commercial product, process, or service by trade name, trademark, manufacturer,
+or otherwise does not necessarily constitute or imply its endorsement,
+recommendation, or favoring by the United States government or Lawrence
+Livermore National Security, LLC. The views and opinions of authors expressed
+herein do not necessarily state or reflect those of the United States
+government or Lawrence Livermore National Security, LLC, and shall not be used
+for advertising or product endorsement purposes.
+"""
+
 from __future__ import print_function
 
 import cdms2
