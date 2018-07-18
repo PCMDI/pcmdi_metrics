@@ -39,8 +39,8 @@ modnames = ['ACCESS1-0', 'ACCESS1-3',
 
 modnames = ['ACCESS1-0']
 
-# realization = '*' # realizations
-realization = 'r1i1p1'
+realization = '*' # realizations
+#realization = 'r1i1p1'
 
 varModel = 'pr'
 ModUnitsAdjust = (True, 'multiply', 86400.0) # kg m-2 s-1 to mm day-1
