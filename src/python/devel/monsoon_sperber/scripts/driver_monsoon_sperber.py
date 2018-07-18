@@ -229,7 +229,7 @@ for l in lst[0:1]:  # model loop
         # land only
         d = model_land_only(model, d, model_lf_path, debug=debug)
 
-        print('debug: year: ', year)
+        print('debug: -- year: ', year)
         print('debug: d.shape: ', d.shape)
       
         for region in list_monsoon_regions:
@@ -249,8 +249,8 @@ for l in lst[0:1]:  # model loop
                     ave_chunk = cdutil.averager(d_sub_aave_chunk, axis='t')
                     pentad_time_series.append(float(ave_chunk))
             if debug:
-                print('debug: pentad_time_series', year, ': ', pentad_time_series)
-                print('debug: length: ', len(pentad_time_series))
+                #print('debug: pentad_time_series', year, ': ', pentad_time_series)
+                print('debug: pentad_time_series length: ', len(pentad_time_series))
 
             pentad_time_series = MV2.array(pentad_time_series)
             pentad_time_series.units = d.units
