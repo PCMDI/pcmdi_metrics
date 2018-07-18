@@ -217,8 +217,10 @@ for model in models:
                         ax[region].set_xlabel('')
 
             list_pentad_time_series = {}  # Archive individual year pentad time series for composite
+            list_pentad_time_series_cumsum = {} # For cumulative time series
             for region in list_monsoon_regions:
                 list_pentad_time_series[region] = []
+                list_pentad_time_series_cumsum[region] =[]
 
             if nc_out:
                 output_file_name = '_'.join([mip, model, exp, run, 'monsoon_sperber'])
@@ -261,18 +263,22 @@ for model in models:
 
                     pentad_time_series = MV2.array(pentad_time_series)
                     pentad_time_series.units = d.units
+                    pentad_time_series_cumsum = np.cumsum(pentad_time_series)
 
                     if debug:
                         if year == startYear:
                             label = 'Individual yr'
                         else:
                             label = ''
-                        ax[region].plot(np.array(pentad_time_series), c='grey', label=label)
+                        #ax[region].plot(np.array(pentad_time_series), c='grey', label=label)
+                        ax[region].plot(np.array(pentad_time_series_cumsum), c='grey', label=label)
 
                     if nc_out:
                         fout.write(pentad_time_series, id=region+'_'+str(year))
+                        fout.write(pentad_time_series_cumsum, id=region+'_'+str(year)+'_cumsum')
         
                     list_pentad_time_series[region].append(pentad_time_series)
+                    list_pentad_time_series_cumsum[region].append(pentad_time_series_cumsum)
 
             # Get composite for each region
             if debug: print('debug: composite start')
@@ -283,11 +289,16 @@ for model in models:
                     weights='unweighted')
                 composite_pentad_time_series.setAxis(
                     0, pentad_time_series.getAxis(0))
+                composite_pentad_time_series_cumsum = np.cumsum(composite_pentad_time_series)
+                composite_pentad_time_series_cumsum.setAxis(
+                    0, pentad_time_series.getAxis(0))
                 if nc_out:
                     fout.write(composite_pentad_time_series, id=region+'_comp')
+                    fout.write(composite_pentad_time_series_cumsum, id=region+'_comp_cumsum')
                 if debug:
                     ax[region].plot(
-                        np.array(composite_pentad_time_series),
+                        #np.array(composite_pentad_time_series),
+                        np.array(composite_pentad_time_series_cumsum),
                         c='red',
                         label='Composite')
                     ax[region].set_title(region)
