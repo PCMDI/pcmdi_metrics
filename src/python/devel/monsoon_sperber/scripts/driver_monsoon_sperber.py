@@ -10,6 +10,7 @@ import pcmdi_metrics
 import sys
 
 from argparse import RawTextHelpFormatter
+from collections import defaultdict
 from genutil import StringConstructor
 
 """ NOTE FOR ISSUES
@@ -135,7 +136,38 @@ if debug:
 '''
 
 # =================================================
-# Loop start 
+# Declare dictionary for .json record
+# -------------------------------------------------
+def tree():
+    return defaultdict(tree)
+
+monsoon_stat_dic = tree()
+
+# Define output json file ---
+json_filename = '_'.join(['monsoon_sperber_stat', 
+                          mip, exp, fq, realm, str(syear)+'-'+str(eyear)])
+json_file = os.path.join(outdir, json_filename + '.json')
+json_file_org = os.path.join(
+    outdir, '_'.join([json_filename, 'org', str(os.getpid())])+'.json')
+
+# Save pre-existing json file against overwriting ---
+if os.path.isfile(json_file) and os.stat(json_file).st_size > 0:
+    copyfile(json_file, json_file_org)
+
+    update_json = param.update_json
+
+    if update_json:
+        fj = open(json_file)
+        monsoon_stat_dic = json.loads(fj.read())
+        fj.close()
+
+if 'REF' not in list(monsoon_stat_dic.keys()):
+    monsoon_stat_dic['REF'] = {}
+if 'RESULTS' not in list(monsoon_stat_dic.keys()):
+    monsoon_stat_dic['RESULTS'] = {}
+
+# =================================================
+# Loop start - Model
 # -------------------------------------------------
 regions_specs = {}
 exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
@@ -143,6 +175,9 @@ exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
 
 for model in models:
     print(' ----- ', model, ' ---------------------')
+
+    if model not in list(monsoon_stat_dic['RESULTS'].keys()):
+        monsoon_stat_dic['RESULTS'][model] = {}
 
     model_path_list = os.popen(
         'ls '+modpath(model=model, exp=exp,
@@ -163,6 +198,9 @@ for model in models:
         try:
             run = model_path.split('/')[-1].split('.')[3]
             print(' --- ', run, ' ---')
+
+            if run not in list(monsoon_stat_dic['RESULTS'][model].keys()):
+                monsoon_stat_dic['RESULTS'][model][run] = {}
 
             #model_path = pathin + l
             print(model_path)
@@ -305,5 +343,34 @@ for model in models:
             if nc_out:
                 fout.close()
 
-        except:
+            # =================================================
+            # Metrics
+            # -------------------------------------------------
+            # Note: We can add metrics for individual years later for 
+            #       interannual variability spread, but then metrics part
+            #       should move upward
+            # -------------------------------------------------
+            # cumsum to fractional using composite
+            ts_sum = composite_pentad_time_series_cumsum[-1]
+            frac_accum = MV2.divide(composite_pentad_time_series_cumsum, ts_sum)
+
+            # =================================================
+            # Write dictionary to json file
+            # (let the json keep overwritten in model loop)
+            # -------------------------------------------------
+            new_json_structure = True
+
+            if new_json_structure:
+                JSON = pcmdi_metrics.io.base.Base(outdir, json_filename)
+                JSON.write(monsoon_stat_dic, json_structure=["model", "realization", "monsoon_region", "statistic"],
+                           sort_keys=True, indent=4, separators=(',', ': '))
+            else:
+                json.dump(monsoon_stat_dic, open(json_file, 'w'),
+                          sort_keys=True, indent=4, separators=(',', ': '))
+
+        except Exception as err:
+            print('warning: faild for ', model, run, err)
             pass
+
+if not debug:
+    sys.exit('done')
