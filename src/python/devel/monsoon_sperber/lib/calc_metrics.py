@@ -20,7 +20,7 @@ def sperber_metcis(d, debug=False):
     frac_accum = MV2.divide(d, d_sum)
     onset_index = next(i for i,v in enumerate(frac_accum) if v >= 0.2)
     decay_index = next(i for i,v in enumerate(frac_accum) if v >= 0.8)
-    slope = ( frac_accum[decay_index] - frac_accum[onset_index]) ) 
+    slope = ( frac_accum[decay_index] - frac_accum[onset_index] ) \
             / float(decay_index - onset_index)
     return {'frac_accum': frac_accum,
             'onset_index': onset_index,
