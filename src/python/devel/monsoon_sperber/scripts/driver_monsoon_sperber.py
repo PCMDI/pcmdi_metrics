@@ -322,7 +322,7 @@ for model in models:
                     pentad_time_series = []
                     for d_sub_aave_chunk in list_d_sub_aave_chunks:
                         if d_sub_aave_chunk.shape[0] >= n:  # ignore when chunk length is shorter than defined
-                            ave_chunk = cdutil.averager(d_sub_aave_chunk, axis='t')
+                            ave_chunk = cdutil.averager(d_sub_aave_chunk, axis=0)
                             pentad_time_series.append(float(ave_chunk))
                     if debug:
                         print('debug: pentad_time_series length: ', len(pentad_time_series))
