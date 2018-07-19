@@ -78,10 +78,6 @@ for lib in libfiles:
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-pathin = '/work/cmip5-test/new/historical/atmos/day/pr/'
- 
-lst = os.listdir(pathin)
-
 list_monsoon_regions = ['AIR']  # Will be added later
 list_monsoon_regions = ['AIR', 'AUS', 'Sahel', 'GoG']  # Will be added later
 
@@ -257,7 +253,6 @@ for model in models:
                 startYear += 1
             if endMonth < 12:
                 endYear -= 1
-
 
             calendar = d.getTime().calendar  # Check calendar
             print('check: calendar: ', calendar)
