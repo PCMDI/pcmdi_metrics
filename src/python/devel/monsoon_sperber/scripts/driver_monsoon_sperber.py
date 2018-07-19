@@ -79,7 +79,7 @@ for lib in libfiles:
 # Hard coded options... will be moved out later
 # -------------------------------------------------
 list_monsoon_regions = ['AIR']  # Will be added later
-list_monsoon_regions = ['AIR', 'AUS', 'Sahel', 'GoG']  # Will be added later
+list_monsoon_regions = ['AIR', 'AUS', 'Sahel', 'GoG', 'NAmo', 'SAmo']  # Will be added later
 
 # How many elements each
 # list should have
@@ -289,6 +289,8 @@ for model in models:
             # -------------------------------------------------
             # Loop start - Year
             # -------------------------------------------------
+            temporary = {}
+
             for year in range(startYear, endYear+1):  # year loop, endYear+1 to include last year
                 d = fc(var,
                        time=(cdtime.comptime(year),cdtime.comptime(year+1)),
@@ -319,6 +321,12 @@ for model in models:
                         print('debug: region: ', region)
                         print('debug: d_sub.shape: ', d_sub.shape)
                         print('debug: d_sub_aave.shape: ', d_sub_aave.shape)
+
+                    # Southern Hemisphere monsoon domain -- set time series as 7/1~6/30
+                    if year == startYear:
+                         temporary[region] = 'placeholder'
+                    else:
+                         temporary[region] = 'placeholder'
 
                     # get pentad time series
                     list_d_sub_aave_chunks = list(divide_chunks_advanced(d_sub_aave, n, debug=debug)) 
