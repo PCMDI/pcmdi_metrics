@@ -18,8 +18,7 @@ varOBS = 'precip'
 ObsUnitsAdjust = (False, 0, 0)  # Pa to hPa; or (False, 0, 0)
 
 osyear = 1961
-#oeyear = 1999
-oeyear = 1978
+oeyear = 1999
 
 # =================================================
 # Models
@@ -47,7 +46,8 @@ varModel = 'pr'
 ModUnitsAdjust = (True, 'multiply', 86400.0) # kg m-2 s-1 to mm day-1
 
 msyear = 1961
-meyear = 1999
+#meyear = 1999
+meyear = 1978
 
 # =================================================
 # Output
