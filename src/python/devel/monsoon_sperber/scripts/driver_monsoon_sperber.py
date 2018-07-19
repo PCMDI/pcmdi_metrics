@@ -388,7 +388,8 @@ for model in models:
                         c='red',
                         label='Composite')
                     ax[region].set_title(region)
-                    ax[region].legend(loc=2)
+                    if region == list_monsoon_regions[0]:
+                        ax[region].legend(loc=2)
 
             if nc_out:
                 fout.close()
