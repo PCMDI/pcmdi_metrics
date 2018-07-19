@@ -56,12 +56,10 @@ def model_land_only(model, model_timeseries, model_lf_path, debug=False):
         model_timeseries_masked = model_timeseries_masked * \
             lf2_timeConst  # consider land fraction like as weighting
 
-    model_timeseries = model_timeseries_masked
-
     if debug:
         x.clear()
-        x.plot(model_timeseries)
+        x.plot(model_timeseries_masked)
         x.png('_'.join(['test',model,'afterMask.png']))
         x.close()
 
-    return(model_timeseries)
+    return(model_timeseries_masked)
