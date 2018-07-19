@@ -15,7 +15,7 @@ def divide_chunks_advanced(l, n, debug=False):
     month = l.getTime().asComponentTime()[0].month
     day = l.getTime().asComponentTime()[0].day
     if debug: print('debug: first day of year is '+str(month)+'/'+str(day))
-    if month != 1 or day != 1:
+    if month not in [1,7] or day != 1:
         sys.exit('error: first day of year time series is '+str(month)+'/'+str(day))
 
     # Check number of days in given year

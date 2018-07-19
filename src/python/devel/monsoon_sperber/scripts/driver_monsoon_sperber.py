@@ -60,7 +60,7 @@ from shutil import copyfile
 7. Make the results_dir aknowledge the tree structure
 8. use unit adjust parameter in the code
 *9. leaf year
-10. start from July 1st for SH region
+*10. start from July 1st for SH region
 *11. add pentad time series to cumulative and archive it in netCDF
 *12. calculate metrics based on cumulative pentad time series
 13. add time checker
@@ -262,8 +262,8 @@ for model in models:
                 print('debug: startMonth: ', type(startMonth), startMonth)
                 print('debug: endYear: ', type(endYear), endYear)
                 print('debug: endMonth: ', type(endMonth), endMonth)
-                #endYear = startYear + 4
-                endYear = startYear + 1
+                endYear = startYear + 4
+                #endYear = startYear + 1
 
             if plot:
                 for i, region in enumerate(list_monsoon_regions):
@@ -323,10 +323,17 @@ for model in models:
                         print('debug: d_sub_aave.shape: ', d_sub_aave.shape)
 
                     # Southern Hemisphere monsoon domain -- set time series as 7/1~6/30
-                    if year == startYear:
-                         temporary[region] = 'placeholder'
-                    else:
-                         temporary[region] = 'placeholder'
+                    if region in ['AUS', 'SAmo']:
+                        if year == startYear:
+                            temporary[region] = d_sub_aave(time=(cdtime.comptime(year,7,1),cdtime.comptime(year+1)))
+                            continue
+                        else:
+                            part1 = temporary[region] # n-1 year 7/1~12/31
+                            part2 = d_sub_aave(time=(cdtime.comptime(year),cdtime.comptime(year,7,1))) # n year 1/1~6/30
+                            temporary[region] = d_sub_aave(time=(cdtime.comptime(year,7,1),cdtime.comptime(year+1)))
+                            d_sub_aave = MV2.concatenate([part1,part2],axis=0)
+                            if debug:
+                                print('debug: ', region, year, d_sub_aave.getTime().asComponentTime())
 
                     # get pentad time series
                     list_d_sub_aave_chunks = list(divide_chunks_advanced(d_sub_aave, n, debug=debug)) 
@@ -377,10 +384,11 @@ for model in models:
                     0, pentad_time_series.getAxis(0))
 
                 # Metrics for composite
-                metrics_result = sperber_metcis(composite_pentad_time_series_cumsum)
+                metrics_result = sperber_metrics(composite_pentad_time_series_cumsum, region, debug=debug)
 
                 if region not in list(monsoon_stat_dic['RESULTS'][model][run].keys()):
                     monsoon_stat_dic['RESULTS'][model][run][region] = {}
+
                 monsoon_stat_dic['RESULTS'][model][run][region]['onset_index'] = metrics_result['onset_index']
                 monsoon_stat_dic['RESULTS'][model][run][region]['decay_index'] = metrics_result['decay_index']
                 monsoon_stat_dic['RESULTS'][model][run][region]['slope'] = metrics_result['slope']
@@ -404,7 +412,7 @@ for model in models:
             if plot:
                 fig.suptitle(
                     'Precipitation pentad time series\n'
-                    +', '.join([mip, model, exp, run, str(startYear)+'-'+str(endYear)]))
+                    + ', '.join([mip, model, exp, run, str(startYear)+'-'+str(endYear)]))
                 plt.subplots_adjust(top=0.85)
                 plt.savefig(os.path.join(outdir, output_file_name+'.png'))
                 plt.clf()
