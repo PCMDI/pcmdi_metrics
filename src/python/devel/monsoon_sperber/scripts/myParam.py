@@ -23,19 +23,11 @@ oeyear = 1999
 # =================================================
 # Models
 # -------------------------------------------------
-modpath = '/work/cmip5-test/new/historical/atmos/day/pr/cmip5.%(model).%(exp).%(realization).day.atmos.day.%(variable).*.xml'
+#modpath = '/work/cmip5-test/new/historical/atmos/day/pr/cmip5.%(model).%(exp).%(realization).day.atmos.day.%(variable).*.xml'
+modpath = '/work/lee1043/ESGF/xmls/cmip5/historical/day/pr/cmip5.%(model).%(exp).%(realization).day.pr.xml'
 modpath_lf = '/work/lee1043/ESGF/xmls/cmip5/fx/fx/sftlf/cmip5.%(model).fx.r0i0p0.fx.sftlf.xml'
 
-modnames = ['ACCESS1-0', 'ACCESS1-3', 
-            'bcc-csm1-1', 'bcc-csm1-1-m', 'BNU-ESM', 
-            'CanCM4', 'CanESM2', 'CCSM4', 
-            'CESM1-BGC', 'CESM1-CAM5', 'CESM1-FASTCHEM', 
-            'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS', 'CNRM-CM5', 'CSIRO-Mk3-6-0', 
-            'EC-EARTH', 'FGOALS-g2', 'GFDL-CM3', 'GFDL-ESM2G', 'GFDL-ESM2M', 
-            'GISS-E2-H', 'GISS-E2-R', 'HadGEM2-AO', 'HadGEM2-CC', 'HadGEM2-ES', 
-            'inmcm4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR', 'IPSL-CM5B-LR', 
-            'MIROC-ESM', 'MIROC-ESM-CHEM', 'MIROC4h', 'MIROC5', 
-            'MPI-ESM-MR', 'MPI-ESM-P', 'MRI-CGCM3', 'MRI-ESM1', 'NorESM1-M'] 
+modnames = ['ACCESS1-0', 'ACCESS1-3', 'BCC-CSM1-1', 'BCC-CSM1-1-M', 'BNU-ESM', 'CanCM4', 'CanESM2', 'CCSM4', 'CESM1-BGC', 'CESM1-CAM5', 'CESM1-FASTCHEM', 'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS', 'CNRM-CM5', 'CSIRO-Mk3-6-0', 'EC-EARTH', 'FGOALS-g2', 'GFDL-CM3', 'GFDL-ESM2G', 'GFDL-ESM2M', 'GISS-E2-H', 'GISS-E2-R', 'HadGEM2-AO', 'HadGEM2-CC', 'HadGEM2-ES', 'INMCM4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR', 'IPSL-CM5B-LR', 'MIROC-ESM', 'MIROC-ESM-CHEM', 'MIROC4h', 'MIROC5', 'MPI-ESM-MR', 'MPI-ESM-P', 'MRI-CGCM3', 'MRI-ESM1', 'NorESM1-M']
 
 modnames = ['CanESM2']
 
@@ -46,8 +38,7 @@ varModel = 'pr'
 ModUnitsAdjust = (True, 'multiply', 86400.0) # kg m-2 s-1 to mm day-1
 
 msyear = 1961
-#meyear = 1999
-meyear = 1978
+meyear = 1999
 
 # =================================================
 # Output

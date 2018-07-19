@@ -156,7 +156,8 @@ if plot:
         ncols = 1
 
     fig = plt.figure()
-'''
+    plt.subplots_adjust(hspace = 0.25)
+
     for i, region in enumerate(list_monsoon_regions):
         ax[region] = plt.subplot(nrows, ncols, i+1)
         print('debug: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
@@ -166,7 +167,7 @@ if plot:
             ax[region].set_ylabel('')
         if nrows > 1 and math.ceil((i+1)/float(ncols)) < ncols:
             ax[region].set_xlabel('')
-'''
+            ax[region].set_xticks([])
 
 # =================================================
 # Declare dictionary for .json record
@@ -231,12 +232,11 @@ for model in models:
         try:
             run = model_path.split('/')[-1].split('.')[3]
             print(' --- ', run, ' ---')
+            print(model_path)
 
             if run not in list(monsoon_stat_dic['RESULTS'][model].keys()):
                 monsoon_stat_dic['RESULTS'][model][run] = {}
 
-            #model_path = pathin + l
-            print(model_path)
             fc = cdms2.open(model_path)
             d = fc[var]  # NOTE: square brackets does not bring data into memory, only coordinates!
             t = d.getTime()
@@ -299,7 +299,7 @@ for model in models:
                 d.units = 'mm/d'
 
                 # land only
-                d = model_land_only(model, d, model_lf_path, debug=debug)
+                d_land = model_land_only(model, d, model_lf_path, debug=debug)
 
                 print('check: year, d.shape: ', year, d.shape)
 
@@ -307,19 +307,24 @@ for model in models:
                 # Loop start - Monsoon region
                 # - - - - - - - - - - - - - - - - - - - - - - - - -
                 for region in list_monsoon_regions:
-                    d_sub = d(regions_specs[region]['domain'])  # extract for monsoon region
-                    d_sub_aave = cdutil.averager(d_sub, axis='xy', weights='weighted')  # area average
+                    # extract for monsoon region
+                    if region in ['GoG', 'NAmo']:  # all grid point rainfall
+                        d_sub = d(regions_specs[region]['domain'])
+                    else:  # land-only rainfall
+                        d_sub = d_land(regions_specs[region]['domain'])
+                    # area average
+                    d_sub_aave = cdutil.averager(d_sub, axis='xy', weights='weighted')
 
                     if debug: 
                         print('debug: region: ', region)
                         print('debug: d_sub.shape: ', d_sub.shape)
                         print('debug: d_sub_aave.shape: ', d_sub_aave.shape)
 
+                    # get pentad time series
                     list_d_sub_aave_chunks = list(divide_chunks_advanced(d_sub_aave, n, debug=debug)) 
                     pentad_time_series = []
                     for d_sub_aave_chunk in list_d_sub_aave_chunks:
                         if d_sub_aave_chunk.shape[0] >= n:  # ignore when chunk length is shorter than defined
-                            #ave_chunk = cdutil.averager(d_sub_aave_chunk, axis=0)
                             ave_chunk = MV2.average(d_sub_aave_chunk, axis=0)
                             pentad_time_series.append(float(ave_chunk))
                     if debug:
@@ -329,6 +334,9 @@ for model in models:
                     pentad_time_series.units = d.units
                     pentad_time_series_cumsum = np.cumsum(pentad_time_series)
 
+                    if nc_out:
+                        fout.write(pentad_time_series, id=region+'_'+str(year))
+                        fout.write(pentad_time_series_cumsum, id=region+'_'+str(year)+'_cumsum')
                     if plot:
                         if year == startYear:
                             label = 'Individual yr'
@@ -337,16 +345,14 @@ for model in models:
                         #ax[region].plot(np.array(pentad_time_series), c='grey', label=label)
                         ax[region].plot(np.array(pentad_time_series_cumsum), c='grey', label=label)
 
-                    if nc_out:
-                        fout.write(pentad_time_series, id=region+'_'+str(year))
-                        fout.write(pentad_time_series_cumsum, id=region+'_'+str(year)+'_cumsum')
-        
+                    # Archive for composite
                     list_pentad_time_series[region].append(pentad_time_series)
                     list_pentad_time_series_cumsum[region].append(pentad_time_series_cumsum)
 
                 # --- Monsoon region loop end
             # --- Year loop end
 
+            # --- Monsoon region loop start without year loop
             # Get composite for each region
             if debug:
                 print('debug: composite start')
@@ -384,7 +390,8 @@ for model in models:
                     ax[region].set_title(region)
                     ax[region].legend(loc=2)
 
-
+            if nc_out:
+                fout.close()
             if plot:
                 fig.suptitle(
                     'Precipitation pentad time series\n'
@@ -392,9 +399,6 @@ for model in models:
                 plt.subplots_adjust(top=0.85)
                 plt.savefig(os.path.join(outdir, output_file_name+'.png'))
                 plt.clf()
-
-            if nc_out:
-                fout.close()
 
             # =================================================
             # Write dictionary to json file
