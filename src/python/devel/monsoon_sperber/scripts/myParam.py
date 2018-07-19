@@ -18,7 +18,8 @@ varOBS = 'precip'
 ObsUnitsAdjust = (False, 0, 0)  # Pa to hPa; or (False, 0, 0)
 
 osyear = 1961
-oeyear = 1999
+#oeyear = 1999
+oeyear = 1978
 
 # =================================================
 # Models
@@ -37,7 +38,7 @@ modnames = ['ACCESS1-0', 'ACCESS1-3',
             'MIROC-ESM', 'MIROC-ESM-CHEM', 'MIROC4h', 'MIROC5', 
             'MPI-ESM-MR', 'MPI-ESM-P', 'MRI-CGCM3', 'MRI-ESM1', 'NorESM1-M'] 
 
-modnames = ['ACCESS1-0']
+modnames = ['CanESM2']
 
 #realization = '*' # realizations
 realization = 'r1i1p1'
@@ -59,4 +60,5 @@ plot = True  # Create map graphics
 # Miscellaneous
 # -------------------------------------------------
 update_json = True  # False
-debug = True # False
+#debug = True # False
+debug = False # False
