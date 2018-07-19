@@ -400,15 +400,16 @@ for model in models:
             # Write dictionary to json file
             # (let the json keep overwritten in model loop)
             # -------------------------------------------------
-            new_json_structure = True
-
-            if new_json_structure:
-                JSON = pcmdi_metrics.io.base.Base(outdir, json_filename)
-                JSON.write(monsoon_stat_dic, json_structure=["data", "model", "realization", "monsoon_region", "metric"],
-                           sort_keys=True, indent=4, separators=(',', ': '))
-            else:
-                json.dump(monsoon_stat_dic, open(json_file, 'w'),
-                          sort_keys=True, indent=4, separators=(',', ': '))
+            JSON = pcmdi_metrics.io.base.Base(outdir, json_filename)
+            JSON.write(monsoon_stat_dic,
+                       json_structure=["data",
+                                       "model",
+                                       "realization",
+                                       "monsoon_region",
+                                       "metric"],
+                       sort_keys=True,
+                       indent=4,
+                       separators=(',', ': '))
 
         except Exception as err:
             if debug:
