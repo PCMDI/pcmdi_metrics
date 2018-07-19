@@ -146,10 +146,10 @@ oeyear = param.oeyear
 YearCheck(osyear, oeyear, P)
 
 # =================================================
-# Debugging tool
+# Plotting tool
 # -------------------------------------------------
 # Open canvas for debug plot
-if debug:
+if plot:
     import matplotlib.pyplot as plt
     import math
     ax = {}
@@ -269,6 +269,7 @@ for model in models:
                 #endYear = startYear + 4
                 endYear = startYear + 1
 
+            if plot:
                 for i, region in enumerate(list_monsoon_regions):
                     ax[region] = plt.subplot(nrows, ncols, i+1)
                     print('debug: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
@@ -333,7 +334,7 @@ for model in models:
                     pentad_time_series.units = d.units
                     pentad_time_series_cumsum = np.cumsum(pentad_time_series)
 
-                    if debug:
+                    if plot:
                         if year == startYear:
                             label = 'Individual yr'
                         else:
@@ -379,7 +380,7 @@ for model in models:
                     fout.write(composite_pentad_time_series, id=region+'_comp')
                     fout.write(composite_pentad_time_series_cumsum, id=region+'_comp_cumsum')
                     fout.write(metrics_result['frac_accum'], id=region+'_comp_cumsum_frac')
-                if debug:
+                if plot:
                     ax[region].plot(
                         #np.array(composite_pentad_time_series),
                         np.array(composite_pentad_time_series_cumsum),
@@ -389,7 +390,7 @@ for model in models:
                     ax[region].legend(loc=2)
 
 
-            if debug:
+            if plot:
                 fig.suptitle(
                     'Precipitation pentad time series\n'
                     +', '.join([mip, model, exp, run, str(startYear)+'-'+str(endYear)]))
@@ -418,7 +419,7 @@ for model in models:
             if debug:
                 raise
             else:
-                print('warning: faild for ', model, run, err)
+                print('warning: faild for ', model, run, err, ',')
                 pass
 
 if not debug:
