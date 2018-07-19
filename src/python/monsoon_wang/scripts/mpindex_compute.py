@@ -63,6 +63,7 @@ args = P.get_parameter()
 modpath = args.modpath
 outpathjsons = args.outpathjsons
 outpathdata = args.outpathdiags
+obspath = args.reference_data_path
 
 mods = args.modnames   # LIST OF MODELS COMING FROM INPUT PARAMETER FILE
 experiment = args.experiment
@@ -209,6 +210,7 @@ metrics_def_dictionary = collections.OrderedDict()
 metrics_dictionary["DISCLAIMER"] = disclaimer
 metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Wang, B., Kim, HJ., Kikuchi, K. et al. " +\
                                    "Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0"
+metrics_dictionary["Reference Data"] = obspath 
 metrics_dictionary["RESULTS"] = mpi_stats_dic  # collections.OrderedDict()
 
 OUT.var = var
