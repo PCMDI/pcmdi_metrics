@@ -9,7 +9,7 @@ import inspect
 import tempfile
 import cdp
 import shlex
-
+import copy
 
 parser = PMPParser(description='Parallelize a driver over some arguments')
 parser.add_argument("--driver", help="driver to prallelize")
@@ -29,8 +29,10 @@ def build(variables, parameters, params=[{}]):
     var = variables.pop(0)
     values = getattr(parameters, var)
     len_in = len(params)
-    if len(values) > 1:
-        params = params * len(values)
+    count = len(values)
+    nparms = len(params)
+    while len(params) < count*nparms:
+        params += copy.deepcopy(params[:nparms])
     for i in range(len_in):
         for j in range(len(values)):
             params[j*len_in+i][var] = values[j]
