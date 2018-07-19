@@ -83,7 +83,7 @@ pathin = '/work/cmip5-test/new/historical/atmos/day/pr/'
 lst = os.listdir(pathin)
 
 list_monsoon_regions = ['AIR']  # Will be added later
-list_monsoon_regions = ['AIR', 'AUS', 'Sahel']  # Will be added later
+list_monsoon_regions = ['AIR', 'AUS', 'Sahel', 'GoG']  # Will be added later
 
 # How many elements each
 # list should have
@@ -258,9 +258,11 @@ for model in models:
             if endMonth < 12:
                 endYear -= 1
 
+
+            calendar = d.getTime().calendar  # Check calendar
+            print('check: calendar: ', calendar)
+
             if debug:
-                calendar = d.getTime().calendar  # Check calendar
-                print('debug: calendar: ', calendar)
                 print('debug: startYear: ', type(startYear), startYear)
                 print('debug: startMonth: ', type(startMonth), startMonth)
                 print('debug: endYear: ', type(endYear), endYear)
@@ -271,7 +273,7 @@ for model in models:
             if plot:
                 for i, region in enumerate(list_monsoon_regions):
                     ax[region] = plt.subplot(nrows, ncols, i+1)
-                    print('debug: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
+                    print('plot: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
                     ax[region].set_xlabel('pentad count')
                     ax[region].set_ylabel('pentad precip mm/d')
                     if ncols > 1 and (i+1)%2 == 0:
@@ -304,8 +306,7 @@ for model in models:
                 # land only
                 d = model_land_only(model, d, model_lf_path, debug=debug)
 
-                print('debug: -- year: ', year)
-                print('debug: d.shape: ', d.shape)
+                print('check: year, d.shape: ', year, d.shape)
 
                 # - - - - - - - - - - - - - - - - - - - - - - - - -
                 # Loop start - Monsoon region
