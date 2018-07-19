@@ -82,9 +82,8 @@ pathin = '/work/cmip5-test/new/historical/atmos/day/pr/'
  
 lst = os.listdir(pathin)
 
-#list_monsoon_regions = ['ASM', 'NAMM']  # Will be added later
-#list_monsoon_regions = ['ASM']  # Will be added later
 list_monsoon_regions = ['AIR']  # Will be added later
+list_monsoon_regions = ['AIR', 'AUS', 'Sahel']  # Will be added later
 
 # How many elements each
 # list should have
