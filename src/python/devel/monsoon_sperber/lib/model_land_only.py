@@ -2,13 +2,14 @@ import cdms2
 import genutil
 import MV2
 
-def model_land_only(model, model_timeseries, model_lf_path, debug=False):
+#def model_land_only(model, model_timeseries, model_lf_path, debug=False):
+def model_land_only(model, model_timeseries, lf, debug=False):
     # -------------------------------------------------
     # Mask out over ocean grid 
     # - - - - - - - - - - - - - - - - - - - - - - - - -
     # Read model's land fraction
-    f_lf = cdms2.open(model_lf_path)
-    lf = f_lf('sftlf', latitude=(-90, 90))
+    #f_lf = cdms2.open(model_lf_path)
+    #lf = f_lf('sftlf', latitude=(-90, 90))
 
     if debug:
         import vcs

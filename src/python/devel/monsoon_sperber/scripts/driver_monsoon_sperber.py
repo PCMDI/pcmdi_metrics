@@ -227,7 +227,14 @@ for model in models:
     else:
         model_lf_path = modpath_lf(model=model.upper())
     print(model_lf_path)
+
+    # Read model's land fraction
+    f_lf = cdms2.open(model_lf_path)
+    lf = f_lf('sftlf', latitude=(-90, 90))
  
+    # -------------------------------------------------
+    # Loop start - Realization
+    # -------------------------------------------------
     for model_path in model_path_list:
 
         timechk1 = time.time()
@@ -304,7 +311,8 @@ for model in models:
                 d.units = 'mm/d'
 
                 # land only
-                d_land = model_land_only(model, d, model_lf_path, debug=debug)
+                #d_land = model_land_only(model, d, model_lf_path, debug=debug)
+                d_land = model_land_only(model, d, lf, debug=debug)
 
                 print('check: year, d.shape: ', year, d.shape)
 
@@ -369,6 +377,7 @@ for model in models:
 
                 # --- Monsoon region loop end
             # --- Year loop end
+            fc.close()
 
             # --- Monsoon region loop start without year loop
             # Get composite for each region
@@ -441,9 +450,14 @@ for model in models:
             else:
                 print('warning: faild for ', model, run, err, ',')
                 pass
+
         timechk2 = time.time()
         timechk = timechk2 - timechk1
         print('timechk: ', model, run, timechk)
+        # --- Realization loop end
+
+    f_lf.close()
+    # --- Model loop end
 
 if not debug:
     sys.exit('done')
