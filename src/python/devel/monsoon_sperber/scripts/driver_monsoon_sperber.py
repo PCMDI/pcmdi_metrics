@@ -161,14 +161,12 @@ if plot:
 
     for i, region in enumerate(list_monsoon_regions):
         ax[region] = plt.subplot(nrows, ncols, i+1)
-        print('debug: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
-        ax[region].set_xlabel('pentad count')
-        ax[region].set_ylabel('pentad precip mm/d')
-        if ncols > 1 and (i+1)%2 == 0:
-            ax[region].set_ylabel('')
+        print('plot: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
         if nrows > 1 and math.ceil((i+1)/float(ncols)) < nrows:
-            ax[region].set_xlabel('')
             ax[region].set_xticks([])
+
+    fig.text(0.5, 0.04, 'pentad count', ha='center')
+    fig.text(0.03, 0.5, 'pentad precip mm/d', va='center', rotation='vertical')
 
 # =================================================
 # Declare dictionary for .json record
@@ -279,8 +277,8 @@ for model in models:
                 for i, region in enumerate(list_monsoon_regions):
                     ax[region] = plt.subplot(nrows, ncols, i+1)
                     print('plot: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
-                    ax[region].set_xlabel('pentad count')
-                    ax[region].set_ylabel('pentad precip mm/d')
+                    #ax[region].set_xlabel('pentad count')
+                    #ax[region].set_ylabel('pentad precip mm/d')
                     if ncols > 1 and (i+1)%2 == 0:
                         ax[region].set_ylabel('')
                     if nrows > 1 and math.ceil((i+1)/float(ncols)) < ncols:
