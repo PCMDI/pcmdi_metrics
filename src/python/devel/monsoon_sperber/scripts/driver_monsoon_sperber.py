@@ -64,7 +64,7 @@ from shutil import copyfile
 *10. start from July 1st for SH region
 *11. add pentad time series to cumulative and archive it in netCDF
 *12. calculate metrics based on cumulative pentad time series
-13. add time checker
+*13. add time checker
 """
  
 libfiles = ['argparse_functions.py',
@@ -166,7 +166,7 @@ if plot:
         ax[region].set_ylabel('pentad precip mm/d')
         if ncols > 1 and (i+1)%2 == 0:
             ax[region].set_ylabel('')
-        if nrows > 1 and math.ceil((i+1)/float(ncols)) < ncols:
+        if nrows > 1 and math.ceil((i+1)/float(ncols)) < nrows:
             ax[region].set_xlabel('')
             ax[region].set_xticks([])
 
