@@ -38,6 +38,8 @@ import cdms2
 import cdtime
 import cdutil
 import json
+import math
+import matplotlib.pyplot as plt
 import MV2
 import numpy as np
 import os
@@ -141,13 +143,12 @@ osyear = param.osyear
 oeyear = param.oeyear
 YearCheck(osyear, oeyear, P)
 
+"""
 # =================================================
 # Plotting tool
 # -------------------------------------------------
 # Open canvas for debug plot
 if plot:
-    import matplotlib.pyplot as plt
-    import math
     ax = {}
     if len(list_monsoon_regions) > 1:
         nrows = math.ceil(len(list_monsoon_regions)/2.)
@@ -167,6 +168,7 @@ if plot:
 
     fig.text(0.5, 0.04, 'pentad count', ha='center')
     fig.text(0.03, 0.5, 'pentad precip mm/d', va='center', rotation='vertical')
+"""
 
 # =================================================
 # Declare dictionary for .json record
@@ -270,9 +272,35 @@ for model in models:
                 print('debug: startMonth: ', type(startMonth), startMonth)
                 print('debug: endYear: ', type(endYear), endYear)
                 print('debug: endMonth: ', type(endMonth), endMonth)
-                endYear = startYear + 4
-                #endYear = startYear + 1
+                #endYear = startYear + 4
+                endYear = startYear + 1
 
+            # -------------------------------------------------
+            # Plotting tool
+            # -------------------------------------------------
+            # Open canvas for debug plot
+            if plot:
+                ax = {}
+                if len(list_monsoon_regions) > 1:
+                    nrows = math.ceil(len(list_monsoon_regions)/2.)
+                    ncols = 2
+                else:
+                    nrows = 1
+                    ncols = 1
+            
+                fig = plt.figure()
+                plt.subplots_adjust(hspace = 0.25)
+            
+                for i, region in enumerate(list_monsoon_regions):
+                    ax[region] = plt.subplot(nrows, ncols, i+1)
+                    print('plot: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
+                    if nrows > 1 and math.ceil((i+1)/float(ncols)) < nrows:
+                        ax[region].set_xticks([])
+            
+                fig.text(0.5, 0.04, 'pentad count', ha='center')
+                fig.text(0.03, 0.5, 'pentad precip mm/d', va='center', rotation='vertical')
+            
+            """
             if plot:
                 for i, region in enumerate(list_monsoon_regions):
                     ax[region] = plt.subplot(nrows, ncols, i+1)
@@ -283,6 +311,7 @@ for model in models:
                         ax[region].set_ylabel('')
                     if nrows > 1 and math.ceil((i+1)/float(ncols)) < ncols:
                         ax[region].set_xlabel('')
+            """
 
             list_pentad_time_series = {}  # Archive individual year pentad time series for composite
             list_pentad_time_series_cumsum = {} # For cumulative time series
@@ -425,7 +454,7 @@ for model in models:
                     + ', '.join([mip, model, exp, run, str(startYear)+'-'+str(endYear)]))
                 plt.subplots_adjust(top=0.85)
                 plt.savefig(os.path.join(outdir, output_file_name+'.png'))
-                plt.clf()
+                plt.close()
 
             # =================================================
             # Write dictionary to json file
