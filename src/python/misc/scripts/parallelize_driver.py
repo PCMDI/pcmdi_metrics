@@ -10,6 +10,7 @@ import tempfile
 import cdp
 import shlex
 import copy
+import distutils.spawn
 
 parser = PMPParser(description='Parallelize a driver over some arguments')
 parser.add_argument("--driver", help="driver to prallelize")
@@ -50,15 +51,20 @@ def build_command_lines(driver, parameters, matrix):
             val = getattr(parameters, att)
             if inspect.ismodule(val) or inspect.isbuiltin(val) or \
                inspect.ismethod(val) or inspect.isfunction(val):
-                    continue
+                continue
             if att in ['granularize']:
                 continue
             if att in mydict:
                 val = mydict[att]
             print(att, "=", repr(val), file=f)
         f.close()
-        cmds.append(
-            "{}/bin/python {} -p {}".format(sys.prefix, driver, filename))
+        cmd = "{} -p {}".format(driver, filename)
+        if os.path.exists(driver):
+            cmd = "{}/bin/python {}".format(sys.prefix, cmd)
+        elif distutils.spawn.find_executable(driver) is None:
+            raise RuntimeError(
+                "cannot find driver: '{}', it does not appear to be an executable on your path either".format(driver))
+        cmds.append(cmd)
     return cmds
 
 
