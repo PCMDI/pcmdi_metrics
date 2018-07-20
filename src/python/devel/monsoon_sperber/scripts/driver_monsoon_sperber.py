@@ -443,7 +443,7 @@ for model in models:
                 pass
         timechk2 = time.time()
         timechk = timechk2 - timechk1
-        print('timechk: ', model, run, timchk)
+        print('timechk: ', model, run, timechk)
 
 if not debug:
     sys.exit('done')
