@@ -43,6 +43,7 @@ import numpy as np
 import os
 import pcmdi_metrics
 import sys
+import time
 
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
@@ -229,10 +230,12 @@ for model in models:
  
     for model_path in model_path_list:
 
+        timechk1 = time.time()
         try:
             run = model_path.split('/')[-1].split('.')[3]
             print(' --- ', run, ' ---')
             print(model_path)
+
 
             if run not in list(monsoon_stat_dic['RESULTS'][model].keys()):
                 monsoon_stat_dic['RESULTS'][model][run] = {}
@@ -438,6 +441,9 @@ for model in models:
             else:
                 print('warning: faild for ', model, run, err, ',')
                 pass
+        timechk2 = time.time()
+        timechk = timechk2 - timechk1
+        print('timechk: ', model, run, timchk)
 
 if not debug:
     sys.exit('done')
