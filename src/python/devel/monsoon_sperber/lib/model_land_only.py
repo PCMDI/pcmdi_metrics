@@ -30,10 +30,15 @@ def model_land_only(model, model_timeseries, lf, debug=False):
     lf.id = lf_id
 
     if float(MV2.max(lf)) == 1.:
-        lf = lf * 100
+        lf = MV2.multiplu(lf, 100.)
 
     # Matching dimension
     model_timeseries, lf_timeConst = genutil.grower(model_timeseries, lf)
+
+    # Conserve axes
+    time_c = model_timeseries.getAxis(0)
+    lat_c2 = model_timeseries.getAxis(1)
+    lon_c2 = model_timeseries.getAxis(2)
 
     #opt1 = True
     opt1 = False
@@ -51,16 +56,23 @@ def model_land_only(model, model_timeseries, lf, debug=False):
             model_timeseries_masked = MV2.masked_where(
                 lf_timeConst < 90, model_timeseries)
         #lf2 = (100.-lf)/100.
-        lf2 = MV2.divide(lf,100.)
+        lf2 = MV2.divide(lf, 100.)
         model_timeseries, lf2_timeConst = genutil.grower(
             model_timeseries, lf2)  # Matching dimension
-        model_timeseries_masked = model_timeseries_masked * \
-            lf2_timeConst  # consider land fraction like as weighting
+        model_timeseries_masked = MV2.multiply(
+            model_timeseries_masked, lf2_timeConst)  # consider land fraction like as weighting
+
+    # Make sure to have consistent axes
+    model_timeseries_masked.setAxis(0,time_c)
+    model_timeseries_masked.setAxis(1,lat_c2)
+    model_timeseries_masked.setAxis(2,lon_c2)
 
     if debug:
         x.clear()
         x.plot(model_timeseries_masked)
         x.png('_'.join(['test',model,'afterMask.png']))
         x.close()
+
+    #f_fl.close()
 
     return(model_timeseries_masked)
