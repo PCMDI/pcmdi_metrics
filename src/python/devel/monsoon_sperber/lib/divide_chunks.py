@@ -21,7 +21,7 @@ def divide_chunks_advanced(l, n, debug=False):
     # Check number of days in given year
     nday = len(l)
 
-    if nday in [365, 360]:
+    if nday == 365:
         # looping till length l
         for i in range(0, len(l), n):
             yield l[i:i+n]
@@ -48,5 +48,7 @@ def divide_chunks_advanced(l, n, debug=False):
         if leap_detect:
             for i in range(tmp, len(l), n):
                 yield l[i:i+n]
+    elif nday == 360:
+        print('place holder for 1d interpolation')
     else:
         sys.exit('error: number of days in year is '+str(nday))
