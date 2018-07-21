@@ -143,33 +143,6 @@ osyear = param.osyear
 oeyear = param.oeyear
 YearCheck(osyear, oeyear, P)
 
-"""
-# =================================================
-# Plotting tool
-# -------------------------------------------------
-# Open canvas for debug plot
-if plot:
-    ax = {}
-    if len(list_monsoon_regions) > 1:
-        nrows = math.ceil(len(list_monsoon_regions)/2.)
-        ncols = 2
-    else:
-        nrows = 1
-        ncols = 1
-
-    fig = plt.figure()
-    plt.subplots_adjust(hspace = 0.25)
-
-    for i, region in enumerate(list_monsoon_regions):
-        ax[region] = plt.subplot(nrows, ncols, i+1)
-        print('plot: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
-        if nrows > 1 and math.ceil((i+1)/float(ncols)) < nrows:
-            ax[region].set_xticks([])
-
-    fig.text(0.5, 0.04, 'pentad count', ha='center')
-    fig.text(0.03, 0.5, 'pentad precip mm/d', va='center', rotation='vertical')
-"""
-
 # =================================================
 # Declare dictionary for .json record
 # -------------------------------------------------
@@ -243,10 +216,10 @@ for model in models:
             print(' --- ', run, ' ---')
             print(model_path)
 
-
             if run not in list(monsoon_stat_dic['RESULTS'][model].keys()):
                 monsoon_stat_dic['RESULTS'][model][run] = {}
 
+            # Get time coordinate information
             fc = cdms2.open(model_path)
             d = fc[var]  # NOTE: square brackets does not bring data into memory, only coordinates!
             t = d.getTime()
@@ -254,7 +227,6 @@ for model in models:
 
             startYear = max(syear, c[0].year)
             endYear = min(eyear, c[-1].year)
-
             startMonth = c[0].month
             endMonth = c[-1].month
 
@@ -264,7 +236,8 @@ for model in models:
             if endMonth < 12:
                 endYear -= 1
 
-            calendar = d.getTime().calendar  # Check calendar
+            # Check calendar (just checking..)
+            calendar = d.getTime().calendar
             print('check: calendar: ', calendar)
 
             if debug:
@@ -275,10 +248,19 @@ for model in models:
                 #endYear = startYear + 4
                 endYear = startYear + 1
 
+            list_pentad_time_series = {}  # Archive individual year pentad time series for composite
+            list_pentad_time_series_cumsum = {} # For cumulative time series
+            for region in list_monsoon_regions:
+                list_pentad_time_series[region] = []
+                list_pentad_time_series_cumsum[region] =[]
+
+            if nc_out:
+                output_file_name = '_'.join([mip, model, exp, run, 'monsoon_sperber', startYear, endYear])
+                fout = cdms2.open(os.path.join(outdir, output_file_name+'.nc'), 'w')
+
             # -------------------------------------------------
             # Plotting tool
             # -------------------------------------------------
-            # Open canvas for debug plot
             if plot:
                 ax = {}
                 if len(list_monsoon_regions) > 1:
@@ -300,29 +282,6 @@ for model in models:
                 fig.text(0.5, 0.04, 'pentad count', ha='center')
                 fig.text(0.03, 0.5, 'pentad precip mm/d', va='center', rotation='vertical')
             
-            """
-            if plot:
-                for i, region in enumerate(list_monsoon_regions):
-                    ax[region] = plt.subplot(nrows, ncols, i+1)
-                    print('plot: region', region, 'nrows', nrows, 'ncols', ncols, 'index', i+1)
-                    #ax[region].set_xlabel('pentad count')
-                    #ax[region].set_ylabel('pentad precip mm/d')
-                    if ncols > 1 and (i+1)%2 == 0:
-                        ax[region].set_ylabel('')
-                    if nrows > 1 and math.ceil((i+1)/float(ncols)) < ncols:
-                        ax[region].set_xlabel('')
-            """
-
-            list_pentad_time_series = {}  # Archive individual year pentad time series for composite
-            list_pentad_time_series_cumsum = {} # For cumulative time series
-            for region in list_monsoon_regions:
-                list_pentad_time_series[region] = []
-                list_pentad_time_series_cumsum[region] =[]
-
-            if nc_out:
-                output_file_name = '_'.join([mip, model, exp, run, 'monsoon_sperber'])
-                fout = cdms2.open(os.path.join(outdir, output_file_name+'.nc'), 'w')
-
             # -------------------------------------------------
             # Loop start - Year
             # -------------------------------------------------
