@@ -57,7 +57,7 @@ from shutil import copyfile
 *2. ocean mask for land only is not complete; refer placeholder
 *3. pathin need to be fully replaced by modpath
 4. reference data (obs) is yet to be used
-5. 72 pentad to 73 pentad interpolation need to be added for HadGEM2 models 
+*5. 72 pentad to 73 pentad interpolation need to be added for HadGEM2 models 
 *6. Adding of custom domain maybe needed to test Indian region as in Sperber & Annamalai 2014 Clim Dyn
    (or define the domain in the share/default_regions.py)
 7. Make the results_dir aknowledge the tree structure
@@ -342,6 +342,11 @@ for model in models:
                             pentad_time_series.append(float(ave_chunk))
                     if debug:
                         print('debug: pentad_time_series length: ', len(pentad_time_series))
+
+                    # Keep pentad time series length in consistent
+                    ref_length = int(365/n)
+                    if len(pentad_time_series) < ref_length:
+                        pentad_time_series = interp1d(pentad_time_series, ref_length, debug=debug) 
 
                     pentad_time_series = MV2.array(pentad_time_series)
                     pentad_time_series.units = d.units
