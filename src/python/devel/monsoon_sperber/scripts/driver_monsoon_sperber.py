@@ -255,7 +255,8 @@ for model in models:
                 list_pentad_time_series_cumsum[region] =[]
 
             if nc_out:
-                output_file_name = '_'.join([mip, model, exp, run, 'monsoon_sperber', startYear, endYear])
+                output_file_name = '_'.join([mip, model, exp, run,
+                    'monsoon_sperber', str(startYear), str(endYear)])
                 fout = cdms2.open(os.path.join(outdir, output_file_name+'.nc'), 'w')
 
             # -------------------------------------------------
