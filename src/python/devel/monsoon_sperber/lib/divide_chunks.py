@@ -1,3 +1,6 @@
+from __future__ import print_function
+import scipy.interpolate as interp
+
 """ For pentad,
 Code taken from https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
 """
@@ -49,6 +52,15 @@ def divide_chunks_advanced(l, n, debug=False):
             for i in range(tmp, len(l), n):
                 yield l[i:i+n]
     elif nday == 360:
-        print('place holder for 1d interpolation')
+        ref_length = int(365/n)
+        l_interp = interp.interp1d(np.arange(l.size), l)
+        l2 = l_interp(np.linspace(0, l.size-1, ref_length))
+        # looping till length l
+        for i in range(0, len(l2), n):
+            yield l2[i:i+n]
+        if debug:
+            print('debug: nday: 360 - 1d interpolation')
+            print('debug: length before interp: ', len(l))
+            print('debug: length after interp: ', len(l2))
     else:
         sys.exit('error: number of days in year is '+str(nday))
