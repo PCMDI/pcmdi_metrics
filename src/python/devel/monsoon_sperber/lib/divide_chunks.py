@@ -61,6 +61,7 @@ def divide_chunks_advanced(l, n, debug=False):
 
 
 def interp1d(l, ref_length, debug=False):
+    l = np.array(l)
     l_interp = interp.interp1d(np.arange(l.size), l)
     l2 = l_interp(np.linspace(0, l.size-1, ref_length))
     if debug:
