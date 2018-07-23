@@ -5,18 +5,17 @@ import sys
 import os
 from genutil import statistics
 from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
-#import pcmdi_metrics.driver.pmp_parser.PMPParser
 from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 import pcmdi_metrics
 import collections
 import glob
 
+from __future__ import print_function
 
 P = PMPParser()
 
 P.use("--modpath")
 P.use("--modnames")
-#P.use("--results_dir")
 P.use("--reference_data_path")
 
 P.add_argument("--outpj", "--outpathjsons",
@@ -121,9 +120,9 @@ mods_notfound=[]
 for m in mods:
   if m not in gmods: mods_notfound.append(m)
 
-print 'FOUND THESE MODELS ', gmods
-if mods_notfound == []: print 'ALL MODELS FOUND'
-if mods_notfound != []: print 'MODELS NOT FOUND INCLUDE ', mods_notfound
+print('FOUND THESE MODELS ', gmods)
+if mods_notfound == []: print('ALL MODELS FOUND')
+if mods_notfound != []: print('MODELS NOT FOUND INCLUDE ', mods_notfound)
 
 #########################################
 
@@ -193,7 +192,7 @@ for mod in gmods:
         g.close()
     f.close()
 
-    print 'DONE WITH ', mod
+    print('DONE WITH ', mod)
 
 #  OUTPUT METRICS TO JSON FILE
 OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), json_filename)
