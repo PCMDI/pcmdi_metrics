@@ -11,9 +11,11 @@ import cdp
 import shlex
 import copy
 import distutils.spawn
+import stat
 
 parser = PMPParser(description='Parallelize a driver over some arguments')
 parser.add_argument("--driver", help="driver to prallelize")
+parser.add_argument("--bash", help="generate a bash script rather than running in parallel", action="store_true")
 parser.use("num_workers")
 p = parser.get_parameter()
 
@@ -78,4 +80,14 @@ def run_command(cmd):
 
 matrix = build(p.granularize, parameters)
 cmds = build_command_lines(p.driver, parameters, matrix)
-cdp.cdp_run.multiprocess(run_command, cmds, num_workers=p.num_workers)
+if p.bash:
+    bash_filename = os.path.splitext(os.path.basename(p.driver))[0]+"_bash.bash"
+    with open(bash_filename, "w") as fout:
+        print("#!/usr/bin/env bash", file=fout)
+        print("\n".join(cmds), file=fout)
+    print("Bash file stored in: {}".format(os.path.abspath(bash_filename)))
+    st = os.stat(bash_filename)
+    os.chmod(bash_filename, st.st_mode | stat.S_IEXEC)
+else:
+    cdp.cdp_run.multiprocess(run_command, cmds, num_workers=p.num_workers)
+print("Done")
