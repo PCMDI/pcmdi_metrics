@@ -136,6 +136,15 @@ season_function = {
     "year": cdutil.times.YEAR,
 }
 
+A.results_dir = genutil.StringConstructor(A.results_dir)
+for k in A.results_dir.keys():
+    if k == "results_dir":
+        continue
+    setattr(A.results_dir, k, getattr(A, k, "*"))
+A.results_dir.model = A.model
+A.results_dir.variable = A.variable
+A.results_dir = A.results_dir()
+
 filename_in = genutil.StringConstructor(os.path.join(A.modpath, A.filename_template))
 for k in filename_in.keys():
     setattr(filename_in, k, getattr(A, k, "*"))
