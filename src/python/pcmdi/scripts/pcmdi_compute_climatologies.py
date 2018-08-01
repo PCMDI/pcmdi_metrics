@@ -153,7 +153,8 @@ filename_in.model = A.model
 filename_in.variable = A.variable
 
 
-print("FNMAE IN:",filename_in())
+if A.verbose:
+        print("filename in after templating:", filename_in())
 filename = glob.glob(filename_in())[0]
 
 if not os.path.exists(filename):
@@ -547,7 +548,8 @@ if A.cmor and hasCMOR:
 else:
     if A.cmor and not hasCMOR:
         print("Your Python does not have CMOR, using regular cdms to write out files")
-    print("MODEL ID:", model_id)
+    if A.verbose:
+        print("MODEL ID:", model_id)
     if not os.path.exists(A.results_dir):
         os.makedirs(A.results_dir)
     end_tc = tc[-1].add(1, cdtime.Month)
@@ -567,4 +569,5 @@ else:
         setattr(s, att, value)
     f.write(s, dtype=data.dtype)
     f.close()
-    print("Results out to:", nm)
+    if A.verbose:
+        print("Results out to:", nm)
