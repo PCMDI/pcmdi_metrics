@@ -30,8 +30,8 @@ p.add_argument(
     action="store_false",
     dest="verbose",
     help="quiet output")
-p.add_argument("-v", "--var",
-               dest="var",
+p.add_argument("-v", "--variable",
+               dest="variable",
                default=None,
                # required=True,
                help="variable to use for climatology")
@@ -150,9 +150,10 @@ for k in filename_in.keys():
     setattr(filename_in, k, getattr(A, k, "*"))
 
 filename_in.model = A.model
-filename_in.variable = A.var
+filename_in.variable = A.variable
 
 
+print("FNMAE IN:",filename_in())
 filename = glob.glob(filename_in())[0]
 
 if not os.path.exists(filename):
@@ -379,7 +380,7 @@ def store_attributes(var):
 
 
 fvars = list(filein.variables.keys())
-v = A.var
+v = A.variable
 if v not in fvars:
     raise RuntimeError(
         "Variable '%s' is not contained in input file(s)" %
