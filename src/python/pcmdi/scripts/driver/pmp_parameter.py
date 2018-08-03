@@ -2,11 +2,46 @@ import os
 import logging
 import cdp.cdp_parameter
 from pcmdi_metrics import LOG_LEVEL
+import genutil
 
 
 class PMPParameter(cdp.cdp_parameter.CDPParameter):
     def __init__(self):
         logging.getLogger("pmp").setLevel(LOG_LEVEL)
+
+    def process_templated_argument(self, name, default_value="*", extras=None):
+        """Applies arg parse values to a genutil.StringConstructor template type argument
+        Input:
+           name: name of the argument to process
+           extra: other object(s) to get keys from, superseeds argparse object
+        Output:
+           formatted argument as a genutil.StringConstructor
+        """
+
+        process = getattr(self, name, None)
+        if process is None:  # Ok not an argument from arg_parse maybe a template or string constructor itself
+            if isinstance(name, basestring):
+                process = name
+            elif isinstance(name, genutil.StringConstructor):
+                process = name.template
+            else:
+                raise RuntimeError("Could not figure out how to process argument {}".format(name))
+
+        if not isinstance(process, basestring):
+                raise RuntimeError(
+                    "Could not figure out how to process argument {}".format(name))
+
+        if extras is None:
+            sources = []
+        elif not isinstance(extras, (list, tuple)):
+            sources = [extras]
+
+        sources.insert(0, self)  # will use itself as default source
+        process = genutil.StringConstructor(process)
+        for key in process.keys():
+            for source in sources:
+                setattr(process, key, getattr(source, key, default_value))
+        return process
 
 
 class PMPMetricsParameter(cdp.cdp_parameter.CDPParameter):

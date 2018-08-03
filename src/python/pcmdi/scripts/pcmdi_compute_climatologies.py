@@ -6,7 +6,6 @@ import cdms2
 import cdutil
 import numpy
 import cdtime
-import genutil
 from pcmdi_metrics.driver.pmp_parser import PMPParser
 import glob
 
@@ -136,22 +135,10 @@ season_function = {
     "year": cdutil.times.YEAR,
 }
 
-A.results_dir = genutil.StringConstructor(A.results_dir)
-for k in A.results_dir.keys():
-    if k == "results_dir":
-        continue
-    setattr(A.results_dir, k, getattr(A, k, "*"))
-A.results_dir.model = A.model
-A.results_dir.variable = A.variable
-A.results_dir = A.results_dir()
+results_dir = A.process_templated_argument("results_dir")
+A.results_dir = results_dir()
 
-filename_in = genutil.StringConstructor(os.path.join(A.modpath, A.filename_template))
-for k in filename_in.keys():
-    setattr(filename_in, k, getattr(A, k, "*"))
-
-filename_in.model = A.model
-filename_in.variable = A.variable
-
+filename_in = A.process_templated_argument(os.path.join(A.modpath, A.filename_template))
 
 if A.verbose:
         print("filename in after templating:", filename_in())
