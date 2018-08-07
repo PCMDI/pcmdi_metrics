@@ -5,6 +5,12 @@ from pcmdi_metrics import LOG_LEVEL
 import genutil
 
 
+try:
+    basestring
+except Exception:
+    basestring = str
+
+
 class PMPParameter(cdp.cdp_parameter.CDPParameter):
     def __init__(self):
         logging.getLogger("pmp").setLevel(LOG_LEVEL)
