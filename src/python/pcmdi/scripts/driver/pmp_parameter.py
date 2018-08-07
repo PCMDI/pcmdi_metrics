@@ -6,7 +6,7 @@ import genutil
 
 
 try:
-    basestring
+    basestring  # noqa
 except Exception:
     basestring = str
 
