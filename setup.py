@@ -55,6 +55,7 @@ packages = {'pcmdi_metrics': 'src/python',
             'pcmdi_metrics.graphics': 'src/python/graphics',
             'pcmdi_metrics.driver': 'src/python/pcmdi/scripts/driver',
             'pcmdi_metrics.monsoon_wang': 'src/python/monsoon_wang/lib',
+            'pcmdi_metrics.monsoon_sperber': 'src/python/monsoon_sperber/lib',
             }
 scripts = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
            'src/python/pcmdi/scripts/pcmdi_metrics_driver_legacy.py',
@@ -63,6 +64,7 @@ scripts = ['src/python/pcmdi/scripts/pcmdi_metrics_driver.py',
            'demo/pmp_demo_1.py',
            'demo/pmp_demo.py',
            'src/python/monsoon_wang/scripts/mpindex_compute.py',
+           'src/python/monsoon_sperber/scripts/driver_monsoon_sperber.py',
            ]
 scripts += glob.glob("src/python/diurnal/scripts/*.py")
 

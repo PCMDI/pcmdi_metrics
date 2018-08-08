@@ -51,6 +51,7 @@ from argparse import RawTextHelpFormatter
 from collections import defaultdict
 from genutil import StringConstructor
 from shutil import copyfile
+from pcmdi_metrics.monsoon_sperber import AddParserArgument, YearCheck, model_land_only, divide_chunks_advanced, divide_chunks, interp1d
 
 """ NOTE FOR ISSUES
 *1. syear/eyear given by parameter file need to be refered in the code
@@ -68,15 +69,6 @@ from shutil import copyfile
 *12. calculate metrics based on cumulative pentad time series
 *13. add time checker
 """
- 
-libfiles = ['argparse_functions.py',
-            'divide_chunks.py',
-            'model_land_only.py',
-            'calc_metrics.py']
-
-for lib in libfiles:
-    exec(compile(open(os.path.join('../lib/', lib)).read(),
-                 os.path.join('../lib/', lib), 'exec'))
 
 # =================================================
 # Hard coded options... will be moved out later
@@ -178,8 +170,8 @@ if 'RESULTS' not in list(monsoon_stat_dic.keys()):
 # Loop start - Model
 # -------------------------------------------------
 regions_specs = {}
-exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
-             sys.prefix + "/share/pmp/default_regions.py", 'exec'))
+exec(compile(open(os.path.join(sys.prefix, "share", "pmp", "default_regions.py") ).read(),
+             os.path.join(sys.prefix, "share", "pmp" ,"default_regions.py"), 'exec'))
 
 for model in models:
     print(' ----- ', model, ' ---------------------')
