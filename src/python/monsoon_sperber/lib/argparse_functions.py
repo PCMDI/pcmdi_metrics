@@ -27,6 +27,8 @@ def AddParserArgument(P):
                    type=bool,
                    default=False,
                    help="Option for debug: False (defualt) or True")
+    P.add_argument("--nc-out", dest="nc_out", help="record netcdf output", action="store_true", default=False)
+    P.add_argument("--plot", dest="plot", help="produce plots", action="store_true", default=False)
     return P
 
 

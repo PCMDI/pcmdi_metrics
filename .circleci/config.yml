@@ -22,8 +22,8 @@ aliases:
        conda config --set always_yes yes --set changeps1 no
        conda update -y -q conda
        conda config --set anaconda_upload no
-       conda create -q -n py2 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons mesalib cia testsrunner "proj4<5" "python<3"
-       conda create -q -n py3 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons mesalib cia testsrunner "proj4<5" "python>3"
+       conda create -q -n py2 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons mesalib matplotlib scipy cia testsrunner "proj4<5" "python<3"
+       conda create -q -n py3 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons mesalib matplotlib scipy cia testsrunner "proj4<5" "python>3"
 
   - &setup_pmp
     name: setup_pmp

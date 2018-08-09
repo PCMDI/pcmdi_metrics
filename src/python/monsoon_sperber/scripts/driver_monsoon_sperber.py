@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """ Calculate monsoon metrics
 
 Jiwoo Lee (lee1043@llnl.gov)
@@ -73,7 +74,6 @@ from pcmdi_metrics.monsoon_sperber import AddParserArgument, YearCheck, model_la
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-list_monsoon_regions = ['AIR']  # Will be added later
 list_monsoon_regions = ['AIR', 'AUS', 'Sahel', 'GoG', 'NAmo', 'SAmo']  # Will be added later
 
 # How many elements each
@@ -90,8 +90,8 @@ P = AddParserArgument(P)
 param = P.get_parameter()
 
 # Pre-defined options
-mip = param.mip
-exp = param.exp
+mip = param.MIP
+exp = param.EXP
 fq = param.frequency
 realm = param.realm
 
