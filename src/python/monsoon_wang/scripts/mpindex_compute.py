@@ -58,7 +58,8 @@ args = P.get_parameter()
 modpath = args.modpath
 outpathjsons = args.outpathjsons
 outpathdata = args.results_dir
-mods = args.modnames
+mods = eval(args.modnames)
+print("MODELS:",mods)
 
 json_filename = args.jsonname
 
