@@ -7,6 +7,7 @@ import cdutil
 import numpy
 import cdtime
 from pcmdi_metrics.driver.pmp_parser import PMPParser
+import glob
 
 try:
     import cmor
@@ -28,8 +29,8 @@ p.add_argument(
     action="store_false",
     dest="verbose",
     help="quiet output")
-p.add_argument("-v", "--var",
-               dest="var",
+p.add_argument("-v", "--variable",
+               dest="variable",
                default=None,
                # required=True,
                help="variable to use for climatology")
@@ -63,9 +64,12 @@ p.add_argument("-i", "--indexation-type",
                default="date",
                choices=["date", "value", "index"],
                help="indexation type")
-p.add_argument("-f", "--file",
-               dest="file",
-               help="Input file")
+p.add_argument("-f", "--filename_template",
+               dest="filename_template",
+               help="Input file template")
+p.add_argument("-m", "--model",
+               dest="model",
+               help="Model Name")
 p.add_argument("-b", "--bounds",
                action="store_true",
                dest="bounds",
@@ -73,6 +77,7 @@ p.add_argument("-b", "--bounds",
                help="reset bounds to monthly")
 # parser.use("results_dir", p)
 parser.use("results_dir")
+parser.use("modpath")
 c = parser.add_argument_group("CMOR options")
 c.add_argument("--use-cmor", dest="cmor", default=False, action="store_true")
 c.add_argument("-D", "--drs",
@@ -119,11 +124,6 @@ for x in cmor_xtra_args:
                    )
 
 A = parser.get_parameter()
-if len(A.file) == 0:
-    raise RuntimeError("You need to provide at least one file for input")
-
-if not os.path.exists(A.file):
-    raise RuntimeError("file '%s' doe not exits" % A.file)
 
 # season dictionary
 season_function = {
@@ -135,7 +135,19 @@ season_function = {
     "year": cdutil.times.YEAR,
 }
 
-filein = cdms2.open(A.file)
+results_dir = A.process_templated_argument("results_dir")
+A.results_dir = results_dir()
+
+filename_in = A.process_templated_argument(os.path.join(A.modpath, A.filename_template))
+
+if A.verbose:
+        print("filename in after templating:", filename_in())
+filename = glob.glob(filename_in())[0]
+
+if not os.path.exists(filename):
+    raise RuntimeError("file '{}' doe not exits".format(filename))
+
+filein = cdms2.open(filename)
 
 
 def getCalendarName(cal):
@@ -356,7 +368,7 @@ def store_attributes(var):
 
 
 fvars = list(filein.variables.keys())
-v = A.var
+v = A.variable
 if v not in fvars:
     raise RuntimeError(
         "Variable '%s' is not contained in input file(s)" %
@@ -523,7 +535,8 @@ if A.cmor and hasCMOR:
 else:
     if A.cmor and not hasCMOR:
         print("Your Python does not have CMOR, using regular cdms to write out files")
-    print("MODEL ID:", model_id)
+    if A.verbose:
+        print("MODEL ID:", model_id)
     if not os.path.exists(A.results_dir):
         os.makedirs(A.results_dir)
     end_tc = tc[-1].add(1, cdtime.Month)
@@ -543,4 +556,5 @@ else:
         setattr(s, att, value)
     f.write(s, dtype=data.dtype)
     f.close()
-    print("Results out to:", nm)
+    if A.verbose:
+        print("Results out to:", nm)
