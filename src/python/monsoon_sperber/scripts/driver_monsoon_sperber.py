@@ -100,7 +100,7 @@ nc_out = param.nc_out  # Record NetCDF output
 plot = param.plot # Generate plots
 
 # Path to model data as string template
-modpath = StringConstructor(param.modpath)
+modpath = param.process_templated_argument("modpath")
 modpath_lf = StringConstructor(param.modpath_lf)
 
 # Check given model option
