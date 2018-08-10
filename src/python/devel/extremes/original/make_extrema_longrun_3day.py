@@ -1,19 +1,20 @@
+# Revision by MFW 08/10/2018: Removed the 4 seasons for speed. Added some comments
 # Adapted for numpy/ma/cdms2 by convertcdms.py
 # Calculate annual and seasonal extrema from a dataset of daily averages
 # suitable for input into a return value calculation.
 import  MV2 as MV, cdtime,os, cdms2 as cdms, sys, string
-#NCAR Control runs have no leap years. Historical runs do.
+#Note: NCAR Control runs have no leap years. Historical runs do.
 
 #cdms.setNetcdfShuffleFlag(0)
 #cdms.setNetcdfDeflateFlag(0)
 #cdms.setNetcdfDeflateLevelFlag(0)
 
-# Calculate annual and seasonal 3 day extrema from a dataset of daily averages
+# Calculate annual 3 day extrema from a dataset of daily averages
 # suitable for input into a return value calculation or comparison between models and observations.
 # example execute line:
 # python make_extrema_longrun_3day.py var model_scenario_realization var_file lat_name date_range
 # Where:
-# var is the variable name
+# var is the variable name (for the PMP this is either tasmax or tasmin or the negative of these)
 # model_scenario_realization is a descriptor for the output file
 # var_file is the input file of daily data. An xml file constructed with cdscan works here.
 # lat_name is the name of the latitude dimension
@@ -23,6 +24,15 @@ import  MV2 as MV, cdtime,os, cdms2 as cdms, sys, string
 # Note: the main purpose of this routine is to construct the ETCCDI-like extreme index, TX3x, from the daily variable tasmax.
 # However, the prefix of the name of the output variable is unchanged from the input variable name.
 # The suffix of the name of the output variable reflects the season.
+
+# PMP specific instructions for Peter regarding output file and variable names. Not sure how you want to deal with this
+# If var== tasmax, the change the variable name to TX3x
+# If var== -tasmax, the change the variable name to TX3n
+# If var== tasmin, the change the variable name to TN3x
+# If var== -tasmin, the change the variable name to TN3n
+# If var== -tasmax or -tasmin, multiply the final answer by -1 to make it positive again.
+# And change output file names accordingly
+
 
 var=sys.argv[1]
 f=cdms.open(sys.argv[3])
@@ -126,192 +136,6 @@ daily_max.setdimattribute(2,'name','longitude')
 daily_max.setattribute('name',var+'_annual_daily_max')
 daily_max.setdimattribute(0,'units','years since 00-01-01 00:00:00')
 daily_max.id=var+'_annual_daily_max'
-output.write(daily_max)
-
-# Calculate DJF extrema
-print("starting DJF")
-y1=y0
-m1=11 # December
-d1=27
-m2=2 # February
-d2=28
-y=0
-while y1<y2+1:
-  beg=cdtime.comptime(y1-1,m1,d1).torel(u).value
-  end=cdtime.comptime(y1,m2,d2).torel(u).value
-  time[y]=float(y1)
-  b=0
-  e=-1
-  for i in range(n-1):
-    t1=cdtime.reltime(tim[i]  ,u).value
-    t2=cdtime.reltime(tim[i+1],u).value
-    if t1<=beg and t2>beg : b=i
-    if t1<end and t2>=end : e=i+1
-  s1=f.getslab(var,tim[b+1],tim[e+1])
-  if var=='pr' or var=='precip' or var=='PRECT':s1.missing_value=0.0
-  ndays=s1.shape[0]
-  s=0.*s1
-  ii=2
-  while ii<ndays:
-    s[ii,:,:]=(s1[ii,:,:]+s1[ii-1,:,:]+s1[ii-2,:,:])/3.
-    ii=ii+1
-#  mask_s=s.mask
-#  MV.putmask(s,mask_s,0)
-  sorted=MV.sort(s,0)
-  daily_max[y,:,:]=sorted[e-b,:,:]
-  y=y+1
-  y1=y1+1
-
-# output DJF Daily extrema
-daily_max.setdimattribute(0,'values',time)
-daily_max.setdimattribute(1,'values',latitude)
-daily_max.setdimattribute(2,'values',longitude)
-daily_max.setdimattribute(0,'name','time')
-daily_max.setdimattribute(1,'name','latitude')
-daily_max.setdimattribute(2,'name','longitude')
-daily_max.setattribute('name',var+'_DJF_daily_max')
-daily_max.setdimattribute(0,'units','years since 00-01-01 00:00:00')
-daily_max.id=var+'_DJF_daily_max'
-output.write(daily_max)
-
-# Calculate MAM extrema
-print("starting MAM")
-y1=y0
-m1=2# March
-d1=24
-m2=5 # May
-d2=31
-y=0
-while y1<y2+1:
-  beg=cdtime.comptime(y1,m1,d1).torel(u).value
-  end=cdtime.comptime(y1,m2,d2).torel(u).value
-  time[y]=float(y1)
-  b=0
-  e=-1
-  for i in range(n-1):
-    t1=cdtime.reltime(tim[i]  ,u).value
-    t2=cdtime.reltime(tim[i+1],u).value
-    if t1<=beg and t2>beg : b=i
-    if t1<end and t2>=end : e=i+1
-# Compute the extrema of the daily average values for year=Y
-  s1=f.getslab(var,tim[b+1],tim[e+1])
-  ndays=s1.shape[0]
-  s=0.*s1
-  ii=2
-  while ii<ndays:
-    s[ii,:,:]=(s1[ii,:,:]+s1[ii-1,:,:]+s1[ii-2,:,:])/3.
-    ii=ii+1
-#  mask_s=s.mask
-#  MV.putmask(s,mask_s,0)
-  sorted=MV.sort(s,0)
-  daily_max[y,:,:]=sorted[e-b,:,:]
-  y=y+1
-  y1=y1+1
-
-# output MAM Daily extrema
-daily_max.setdimattribute(0,'values',time)
-daily_max.setdimattribute(1,'values',latitude)
-daily_max.setdimattribute(2,'values',longitude)
-daily_max.setdimattribute(0,'name','time')
-daily_max.setdimattribute(1,'name','latitude')
-daily_max.setdimattribute(2,'name','longitude')
-daily_max.setattribute('name',var+'_MAM_daily_max')
-daily_max.setdimattribute(0,'units','years since 00-01-01 00:00:00')
-daily_max.id=var+'_MAM_daily_max'
-output.write(daily_max)
-
-
-# Calculate SON extrema
-print("starting SON")
-y1=y0
-m1=8 # September
-d1=28
-m2=11 # November
-d2=30
-y=0
-while y1<y2+1:
-  beg=cdtime.comptime(y1,m1,d1).torel(u).value
-  end=cdtime.comptime(y1,m2,d2).torel(u).value
-  time[y]=float(y1)
-  b=0
-  e=-1
-  for i in range(n-1):
-    t1=cdtime.reltime(tim[i]  ,u).value
-    t2=cdtime.reltime(tim[i+1],u).value
-    if t1<=beg and t2>beg : b=i
-    if t1<end and t2>=end : e=i+1
-# Compute the extrema of the daily average values for year=Y
-  s1=f.getslab(var,tim[b+1],tim[e+1])
-  ndays=s1.shape[0]
-  s=0.*s1
-  ii=2
-  while ii<ndays:
-    s[ii,:,:]=(s1[ii,:,:]+s1[ii-1,:,:]+s1[ii-2,:,:])/3.
-    ii=ii+1
-#  mask_s=s.mask
-#  MV.putmask(s,mask_s,0)
-  sorted=MV.sort(s,0)
-  daily_max[y,:,:]=sorted[e-b,:,:]
-  y=y+1
-  y1=y1+1
-
-# output SON Daily extrema
-daily_max.setdimattribute(0,'values',time)
-daily_max.setdimattribute(1,'values',latitude)
-daily_max.setdimattribute(2,'values',longitude)
-daily_max.setdimattribute(0,'name','time')
-daily_max.setdimattribute(1,'name','latitude')
-daily_max.setdimattribute(2,'name','longitude')
-daily_max.setattribute('name',var+'_SON_daily_max')
-daily_max.setdimattribute(0,'units','years since 00-01-01 00:00:00')
-daily_max.id=var+'_SON_daily_max'
-output.write(daily_max)
-
-
-# Calculate JJA extrema
-print("starting JJA")
-y1=y0
-m1=5 # June
-d1=27
-m2=8 # August
-d2=31
-y=0
-while y1<y2+1:
-  beg=cdtime.comptime(y1,m1,d1).torel(u).value
-  end=cdtime.comptime(y1,m2,d2).torel(u).value
-  time[y]=float(y1)
-  b=0
-  e=-1
-  for i in range(n-1):
-    t1=cdtime.reltime(tim[i]  ,u).value
-    t2=cdtime.reltime(tim[i+1],u).value
-    if t1<=beg and t2>beg : b=i
-    if t1<end and t2>=end : e=i+1
-# Compute the extrema of the daily average values for year=Y
-  s1=f.getslab(var,tim[b+1],tim[e+1])
-  ndays=s1.shape[0]
-  s=0.*s1
-  ii=2
-  while ii<ndays:
-    s[ii,:,:]=(s1[ii,:,:]+s1[ii-1,:,:]+s1[ii-2,:,:])/3.
-    ii=ii+1
-#  mask_s=s.mask
-#  MV.putmask(s,mask_s,0)
-  sorted=MV.sort(s,0)
-  daily_max[y,:,:]=sorted[e-b,:,:]  
-  y=y+1
-  y1=y1+1
-
-# output JJA Daily extrema:
-daily_max.setdimattribute(0,'values',time)
-daily_max.setdimattribute(1,'values',latitude)
-daily_max.setdimattribute(2,'values',longitude)
-daily_max.setdimattribute(0,'name','time')
-daily_max.setdimattribute(1,'name','latitude')
-daily_max.setdimattribute(2,'name','longitude')
-daily_max.setattribute('name',var+'_JJA_daily_max')
-daily_max.setdimattribute(0,'units','years since 00-01-01 00:00:00')
-daily_max.id=var+'_JJA_daily_max'
 output.write(daily_max)
 
 output.close()
