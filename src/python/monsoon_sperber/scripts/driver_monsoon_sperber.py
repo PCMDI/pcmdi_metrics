@@ -38,6 +38,7 @@ from __future__ import print_function
 import cdms2
 import cdtime
 import cdutil
+import copy
 import json
 import math
 import matplotlib.pyplot as plt
@@ -358,12 +359,12 @@ for model in models:
                     # Southern Hemisphere monsoon domain -- set time series as 7/1~6/30
                     if region in ['AUS', 'SAmo']:
                         if year == startYear:
-                            temporary[region] = d_sub_aave(time=(cdtime.comptime(year,7,1),cdtime.comptime(year+1)))
+                            temporary[region] = d_sub_aave(time=(cdtime.comptime(year,7,1),cdtime.comptime(year,12,31,23,59,59)))
                             continue
                         else:
-                            part1 = temporary[region] # n-1 year 7/1~12/31
-                            part2 = d_sub_aave(time=(cdtime.comptime(year),cdtime.comptime(year,7,1))) # n year 1/1~6/30
-                            temporary[region] = d_sub_aave(time=(cdtime.comptime(year,7,1),cdtime.comptime(year+1)))
+                            part1 = copy.copy(temporary[region]) # n-1 year 7/1~12/31
+                            part2 = d_sub_aave(time=(cdtime.comptime(year),cdtime.comptime(year,6,30,23,59,59))) # n year 1/1~6/30
+                            temporary[region] = d_sub_aave(time=(cdtime.comptime(year,7,1),cdtime.comptime(year,12,31,23,59,59)))
                             d_sub_aave = MV2.concatenate([part1,part2],axis=0)
                             if debug:
                                 print('debug: ', region, year, d_sub_aave.getTime().asComponentTime())
