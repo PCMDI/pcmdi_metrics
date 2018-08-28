@@ -323,7 +323,7 @@ for model in models:
 
             for year in range(startYear, endYear+1):  # year loop, endYear+1 to include last year
                 d = fc(var,
-                       time=(cdtime.comptime(year),cdtime.comptime(year+1)),
+                       time=(cdtime.comptime(year,1,1,0,0,0),cdtime.comptime(year,12,31,23,59,59)),
                        latitude=(-90,90))
 
                 # unit change
