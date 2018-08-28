@@ -2,15 +2,10 @@ import cdms2
 import genutil
 import MV2
 
-#def model_land_only(model, model_timeseries, model_lf_path, debug=False):
 def model_land_only(model, model_timeseries, lf, debug=False):
     # -------------------------------------------------
     # Mask out over ocean grid 
     # - - - - - - - - - - - - - - - - - - - - - - - - -
-    # Read model's land fraction
-    #f_lf = cdms2.open(model_lf_path)
-    #lf = f_lf('sftlf', latitude=(-90, 90))
-
     if debug:
         import vcs
         x = vcs.init()
@@ -30,7 +25,7 @@ def model_land_only(model, model_timeseries, lf, debug=False):
     lf.id = lf_id
 
     if float(MV2.max(lf)) == 1.:
-        lf = MV2.multiplu(lf, 100.)
+        lf = MV2.multiply(lf, 100.)
 
     # Matching dimension
     model_timeseries, lf_timeConst = genutil.grower(model_timeseries, lf)
@@ -72,7 +67,5 @@ def model_land_only(model, model_timeseries, lf, debug=False):
         x.plot(model_timeseries_masked)
         x.png('_'.join(['test',model,'afterMask.png']))
         x.close()
-
-    #f_fl.close()
 
     return(model_timeseries_masked)
