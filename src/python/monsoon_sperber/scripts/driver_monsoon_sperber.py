@@ -428,15 +428,17 @@ for model in models:
                 # Metrics for composite
                 metrics_result = sperber_metrics(composite_pentad_time_series_cumsum, region, debug=debug)
 
-                if region not in list(monsoon_stat_dic['RESULTS'][model][run].keys()):
-                    monsoon_stat_dic['RESULTS'][model][run][region] = {}
 
                 # Archive as dict for JSON
                 if model == 'obs':
+                    if region not in list(monsoon_stat_dic['REF'][reference_data_name].keys()):
+                        monsoon_stat_dic['REF'][reference_data_name][region] = {}
                     monsoon_stat_dic['REF'][reference_data_name][region]['onset_index'] = metrics_result['onset_index']
                     monsoon_stat_dic['REF'][reference_data_name][region]['decay_index'] = metrics_result['decay_index']
                     monsoon_stat_dic['REF'][reference_data_name][region]['slope'] = metrics_result['slope']
                 else: 
+                    if region not in list(monsoon_stat_dic['RESULTS'][model][run].keys()):
+                        monsoon_stat_dic['RESULTS'][model][run][region] = {}
                     monsoon_stat_dic['RESULTS'][model][run][region]['onset_index'] = metrics_result['onset_index']
                     monsoon_stat_dic['RESULTS'][model][run][region]['decay_index'] = metrics_result['decay_index']
                     monsoon_stat_dic['RESULTS'][model][run][region]['slope'] = metrics_result['slope']
