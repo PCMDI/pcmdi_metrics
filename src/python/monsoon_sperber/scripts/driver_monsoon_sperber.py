@@ -52,7 +52,7 @@ from argparse import RawTextHelpFormatter
 from collections import defaultdict
 from genutil import StringConstructor
 from shutil import copyfile
-from pcmdi_metrics.monsoon_sperber import AddParserArgument, YearCheck, model_land_only, divide_chunks_advanced, divide_chunks, interp1d
+from pcmdi_metrics.monsoon_sperber import AddParserArgument, YearCheck, model_land_only, divide_chunks_advanced, divide_chunks, interp1d, sperber_metrics
 
 """ NOTE FOR ISSUES
 *1. syear/eyear given by parameter file need to be refered in the code
@@ -90,8 +90,8 @@ P = AddParserArgument(P)
 param = P.get_parameter()
 
 # Pre-defined options
-mip = param.MIP
-exp = param.EXP
+mip = param.mip
+exp = param.exp
 fq = param.frequency
 realm = param.realm
 
@@ -101,7 +101,7 @@ plot = param.plot # Generate plots
 
 # Path to model data as string template
 modpath = param.process_templated_argument("modpath")
-modpath_lf = StringConstructor(param.modpath_lf)
+modpath_lf = param.process_templated_argument("modpath_lf")
 
 # Check given model option
 models = param.modnames
