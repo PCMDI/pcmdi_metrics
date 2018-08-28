@@ -143,14 +143,14 @@ def tree():
 
 monsoon_stat_dic = tree()
 
-# Define output json file ---
+# Define output json file
 json_filename = '_'.join(['monsoon_sperber_stat', 
                           mip, exp, fq, realm, str(syear)+'-'+str(eyear)])
 json_file = os.path.join(outdir, json_filename + '.json')
 json_file_org = os.path.join(
     outdir, '_'.join([json_filename, 'org', str(os.getpid())])+'.json')
 
-# Save pre-existing json file against overwriting ---
+# Save pre-existing json file against overwriting
 if os.path.isfile(json_file) and os.stat(json_file).st_size > 0:
     copyfile(json_file, json_file_org)
 
@@ -217,12 +217,13 @@ for model in models:
             t = d.getTime()
             c = t.asComponentTime()
 
+            # Fix starting and ending year
             startYear = max(syear, c[0].year)
             endYear = min(eyear, c[-1].year)
             startMonth = c[0].month
             endMonth = c[-1].month
 
-            # Consider year only when entire calendar available
+            # Consider year to be counted only when entire calendar available
             if startMonth > 1:
                 startYear += 1
             if endMonth < 12:
@@ -246,6 +247,7 @@ for model in models:
                 list_pentad_time_series[region] = []
                 list_pentad_time_series_cumsum[region] =[]
 
+            # Write individual year time series for each monsoon domain in a netCDF file
             if nc_out:
                 output_file_name = '_'.join([mip, model, exp, run,
                     'monsoon_sperber', str(startYear), str(endYear)])
@@ -290,7 +292,6 @@ for model in models:
                 d.units = 'mm/d'
 
                 # land only
-                #d_land = model_land_only(model, d, model_lf_path, debug=debug)
                 d_land = model_land_only(model, d, lf, debug=debug)
 
                 print('check: year, d.shape: ', year, d.shape)
