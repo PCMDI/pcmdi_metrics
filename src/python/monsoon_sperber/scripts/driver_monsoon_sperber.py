@@ -99,6 +99,11 @@ realm = param.realm
 nc_out = param.nc_out  # Record NetCDF output
 plot = param.plot # Generate plots
 
+# Path to reference data
+reference_data_name = param.reference_data_name
+reference_data_path = param.reference_data_path
+reference_data_lf_path = param.reference_data_lf_path
+
 # Path to model data as string template
 modpath = param.process_templated_argument("modpath")
 modpath_lf = param.process_templated_argument("modpath_lf")
@@ -124,16 +129,28 @@ debug = param.debug
 print('debug: ', debug)
 
 # Variables
-var = param.varModel
+varModel = param.varModel
+varOBS = param.varOBS
 
 # Year
-syear = param.msyear
-eyear = param.meyear
-YearCheck(syear, eyear, P)
-
+#  model
+msyear = param.msyear
+meyear = param.meyear
+YearCheck(msyear, meyear, P)
+#  obs
 osyear = param.osyear
 oeyear = param.oeyear
 YearCheck(osyear, oeyear, P)
+
+# Units
+units = param.units
+#  model
+ModUnitsAdjust = param.ModUnitsAdjust
+#  obs
+ObsUnitsAdjust = param.ObsUnitsAdjust
+
+# JSON update
+update_json = param.update_json
 
 # =================================================
 # Declare dictionary for .json record
@@ -145,7 +162,7 @@ monsoon_stat_dic = tree()
 
 # Define output json file
 json_filename = '_'.join(['monsoon_sperber_stat', 
-                          mip, exp, fq, realm, str(syear)+'-'+str(eyear)])
+                          mip, exp, fq, realm, str(msyear)+'-'+str(meyear)])
 json_file = os.path.join(outdir, json_filename + '.json')
 json_file_org = os.path.join(
     outdir, '_'.join([json_filename, 'org', str(os.getpid())])+'.json')
@@ -153,9 +170,6 @@ json_file_org = os.path.join(
 # Save pre-existing json file against overwriting
 if os.path.isfile(json_file) and os.stat(json_file).st_size > 0:
     copyfile(json_file, json_file_org)
-
-    update_json = param.update_json
-
     if update_json:
         fj = open(json_file)
         monsoon_stat_dic = json.loads(fj.read())
@@ -167,30 +181,51 @@ if 'RESULTS' not in list(monsoon_stat_dic.keys()):
     monsoon_stat_dic['RESULTS'] = {}
 
 # =================================================
-# Loop start - Model
+# Loop start for given models
 # -------------------------------------------------
 regions_specs = {}
 exec(compile(open(os.path.join(sys.prefix, "share", "pmp", "default_regions.py") ).read(),
              os.path.join(sys.prefix, "share", "pmp" ,"default_regions.py"), 'exec'))
 
+models.insert(0, 'obs')
+
 for model in models:
     print(' ----- ', model, ' ---------------------')
 
-    if model not in list(monsoon_stat_dic['RESULTS'].keys()):
-        monsoon_stat_dic['RESULTS'][model] = {}
+    if model == 'obs':
+        var = varOBS
+        UnitsAdjust = ObsUnitsAdjust
+        syear = osyear
+        eyear = oeyear
 
-    model_path_list = os.popen(
-        'ls '+modpath(model=model, exp=exp,
-        realization=realization, variable=var)).readlines() 
+        model_path_list = [reference_data_path]
+        model_lf_path = reference_data_lf_path
 
-    if debug:
-        print('debug: model_path_list: ', model_path_list)
+        if reference_data_name not in list(monsoon_stat_dic['REF'].keys()):
+            monsoon_stat_dic['REF'][reference_data_name] = {}
 
-    model_lf_path = modpath_lf(model=model)
-    if os.path.isfile(model_lf_path):
-        pass
-    else:
-        model_lf_path = modpath_lf(model=model.upper())
+    else: # for rest of models
+        var = varModel
+        UnitsAdjust = ModUnitsAdjust
+        syear = msyear
+        eyear = meyear
+
+        if model not in list(monsoon_stat_dic['RESULTS'].keys()):
+            monsoon_stat_dic['RESULTS'][model] = {}
+
+        model_path_list = os.popen(
+            'ls '+modpath(model=model, exp=exp,
+            realization=realization, variable=var)).readlines() 
+
+        if debug:
+            print('debug: model_path_list: ', model_path_list)
+
+        model_lf_path = modpath_lf(model=model)
+        if os.path.isfile(model_lf_path):
+            pass
+        else:
+            model_lf_path = modpath_lf(model=model.upper())
+
     print(model_lf_path)
 
     # Read model's land fraction
@@ -204,12 +239,16 @@ for model in models:
 
         timechk1 = time.time()
         try:
-            run = model_path.split('/')[-1].split('.')[3]
+            if model == 'obs':
+                run = 'obs'
+            else:
+                run = model_path.split('/')[-1].split('.')[3]
+
+                if run not in list(monsoon_stat_dic['RESULTS'][model].keys()):
+                    monsoon_stat_dic['RESULTS'][model][run] = {}
+
             print(' --- ', run, ' ---')
             print(model_path)
-
-            if run not in list(monsoon_stat_dic['RESULTS'][model].keys()):
-                monsoon_stat_dic['RESULTS'][model][run] = {}
 
             # Get time coordinate information
             fc = cdms2.open(model_path)
@@ -288,8 +327,11 @@ for model in models:
                        latitude=(-90,90))
 
                 # unit change
-                d = MV2.multiply(d, 86400.)
-                d.units = 'mm/d'
+                #d = MV2.multiply(d, 86400.)
+                #d.units = 'mm/d'
+                if UnitsAdjust[0]:
+                    d = getattr(MV2, UnitsAdjust[1])(d, UnitsAdjust[2])
+                    d.units = units
 
                 # land only
                 d_land = model_land_only(model, d, lf, debug=debug)
@@ -345,9 +387,11 @@ for model in models:
                     pentad_time_series.units = d.units
                     pentad_time_series_cumsum = np.cumsum(pentad_time_series)
 
+                    # Archive individual year time series in netCDF file
                     if nc_out:
                         fout.write(pentad_time_series, id=region+'_'+str(year))
                         fout.write(pentad_time_series_cumsum, id=region+'_'+str(year)+'_cumsum')
+                    # Add grey line for individual year in plot 
                     if plot:
                         if year == startYear:
                             label = 'Individual yr'
@@ -356,7 +400,7 @@ for model in models:
                         #ax[region].plot(np.array(pentad_time_series), c='grey', label=label)
                         ax[region].plot(np.array(pentad_time_series_cumsum), c='grey', label=label)
 
-                    # Archive for composite
+                    # Save for following composite
                     list_pentad_time_series[region].append(pentad_time_series)
                     list_pentad_time_series_cumsum[region].append(pentad_time_series_cumsum)
 
@@ -386,14 +430,23 @@ for model in models:
                 if region not in list(monsoon_stat_dic['RESULTS'][model][run].keys()):
                     monsoon_stat_dic['RESULTS'][model][run][region] = {}
 
-                monsoon_stat_dic['RESULTS'][model][run][region]['onset_index'] = metrics_result['onset_index']
-                monsoon_stat_dic['RESULTS'][model][run][region]['decay_index'] = metrics_result['decay_index']
-                monsoon_stat_dic['RESULTS'][model][run][region]['slope'] = metrics_result['slope']
+                # Archive as dict for JSON
+                if model == 'obs':
+                    monsoon_stat_dic['REF'][reference_data_name][region]['onset_index'] = metrics_result['onset_index']
+                    monsoon_stat_dic['REF'][reference_data_name][region]['decay_index'] = metrics_result['decay_index']
+                    monsoon_stat_dic['REF'][reference_data_name][region]['slope'] = metrics_result['slope']
+                else: 
+                    monsoon_stat_dic['RESULTS'][model][run][region]['onset_index'] = metrics_result['onset_index']
+                    monsoon_stat_dic['RESULTS'][model][run][region]['decay_index'] = metrics_result['decay_index']
+                    monsoon_stat_dic['RESULTS'][model][run][region]['slope'] = metrics_result['slope']
 
+                # Archice in netCDF file
                 if nc_out:
                     fout.write(composite_pentad_time_series, id=region+'_comp')
                     fout.write(composite_pentad_time_series_cumsum, id=region+'_comp_cumsum')
                     fout.write(metrics_result['frac_accum'], id=region+'_comp_cumsum_frac')
+
+                # Add line in plot 
                 if plot:
                     ax[region].plot(
                         #np.array(composite_pentad_time_series),
