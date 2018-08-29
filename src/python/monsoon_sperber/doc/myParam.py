@@ -52,5 +52,5 @@ plot = True  # Create map graphics
 # Miscellaneous
 # -------------------------------------------------
 update_json = True  # False
-debug = True # False
-#debug = False # False
+#debug = True # False
+debug = False # False
