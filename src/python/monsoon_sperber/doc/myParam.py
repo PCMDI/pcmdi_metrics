@@ -21,6 +21,9 @@ ObsUnitsAdjust = (True, 'multiply', 86400.0) # kg m-2 s-1 to mm day-1
 osyear = 1996
 oeyear = 2016
 
+includeOBS = True
+includeOBS = False
+
 # =================================================
 # Models
 # -------------------------------------------------

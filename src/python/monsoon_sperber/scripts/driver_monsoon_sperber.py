@@ -99,6 +99,7 @@ realm = param.realm
 # On/off switches
 nc_out = param.nc_out  # Record NetCDF output
 plot = param.plot # Generate plots
+includeOBS = param.includeOBS # Loop run for OBS or not
 
 # Path to reference data
 reference_data_name = param.reference_data_name
@@ -188,7 +189,8 @@ regions_specs = {}
 exec(compile(open(os.path.join(sys.prefix, "share", "pmp", "default_regions.py") ).read(),
              os.path.join(sys.prefix, "share", "pmp" ,"default_regions.py"), 'exec'))
 
-models.insert(0, 'obs')
+if includeOBS:
+    models.insert(0, 'obs')
 
 for model in models:
     print(' ----- ', model, ' ---------------------')
