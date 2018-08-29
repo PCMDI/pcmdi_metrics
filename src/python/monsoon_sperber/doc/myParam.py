@@ -22,7 +22,6 @@ osyear = 1996
 oeyear = 2016
 
 includeOBS = True
-includeOBS = False
 
 # =================================================
 # Models
