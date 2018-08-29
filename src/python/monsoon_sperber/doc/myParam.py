@@ -11,19 +11,19 @@ realm = 'atm'
 # =================================================
 # Observation
 # -------------------------------------------------
-reference_data_name = 'CPC'
-reference_data_path = '/work/lee1043/DATA/CPC/cpc_precip_1979-2018.xml'
+reference_data_name = 'GPCP'
+reference_data_path = '/p/user_pub/pmp/pmp_results/tree_v0.3/pmp_v1.1.2/data/PMPObs/PMPObs_v1.3/atmos/day/pr/GPCP-1-3/gn/v20180816/pr_day_GPCP-1-3_BE_gn_19961002-20170101.nc'
+reference_data_lf_path = '/work/lee1043/DATA/LandSeaMask_1x1_NCL/NCL_LandSeaMask_rewritten.nc'
 
-varOBS = 'precip'
-ObsUnitsAdjust = (False, 0, 0)  # Pa to hPa; or (False, 0, 0)
+varOBS = 'pr'
+ObsUnitsAdjust = (True, 'multiply', 86400.0) # kg m-2 s-1 to mm day-1
 
-osyear = 1961
-oeyear = 1999
+osyear = 1996
+oeyear = 2016
 
 # =================================================
 # Models
 # -------------------------------------------------
-#modpath = '/work/cmip5-test/new/historical/atmos/day/pr/cmip5.%(model).%(exp).%(realization).day.atmos.day.%(variable).*.xml'
 modpath = '/work/lee1043/ESGF/xmls/cmip5/historical/day/pr/cmip5.%(model).%(exp).%(realization).day.pr.xml'
 modpath_lf = '/work/lee1043/ESGF/xmls/cmip5/fx/fx/sftlf/cmip5.%(model).fx.r0i0p0.fx.sftlf.xml'
 
@@ -36,6 +36,7 @@ realization = 'r1i1p1'
 
 varModel = 'pr'
 ModUnitsAdjust = (True, 'multiply', 86400.0) # kg m-2 s-1 to mm day-1
+units = 'mm/d'
 
 msyear = 1961
 meyear = 1999
@@ -51,5 +52,5 @@ plot = True  # Create map graphics
 # Miscellaneous
 # -------------------------------------------------
 update_json = True  # False
-#debug = True # False
-debug = False # False
+debug = True # False
+#debug = False # False
