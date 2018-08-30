@@ -476,7 +476,7 @@ for model in models:
                 if debug:
                     raise
                 else:
-                    print('warning: faild for ', model, run, err, ',')
+                    print('warning: faild for ', model, run, err)
                     pass
     
             timechk2 = time.time()
@@ -490,7 +490,7 @@ for model in models:
         if debug:
             raise
         else:
-            print('warning: faild for ', model, err ',')
+            print('warning: faild for ', model, err)
             pass
 # --- Model loop end
 
