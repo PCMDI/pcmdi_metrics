@@ -272,7 +272,7 @@ for model in models:
                 endYear -= 1
 
             # Check calendar (just checking..)
-            calendar = d.getTime().calendar
+            calendar = t.calendar
             print('check: calendar: ', calendar)
 
             if debug:

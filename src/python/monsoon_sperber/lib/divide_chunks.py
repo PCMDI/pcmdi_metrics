@@ -16,8 +16,10 @@ def divide_chunks(l, n):
 """
 def divide_chunks_advanced(l, n, debug=False):
     # Double check first date should be Jan 1 (except for SH monsoon)
-    month = l.getTime().asComponentTime()[0].month
-    day = l.getTime().asComponentTime()[0].day
+    tim = l.getTime()
+    calendar = tim.calendar
+    month = tim.asComponentTime()[0].month
+    day = tim.asComponentTime()[0].day
     if debug: print('debug: first day of year is '+str(month)+'/'+str(day))
     if month not in [1,7] or day != 1:
         sys.exit('error: first day of year time series is '+str(month)+'/'+str(day))
@@ -52,6 +54,13 @@ def divide_chunks_advanced(l, n, debug=False):
         if leap_detect:
             for i in range(tmp, len(l), n):
                 yield l[i:i+n]
+    elif nday == 361 and calendar == '360_day':
+        # Speacial case handling for HadGEM2 family where time bounds was not 
+        # properly saved, so include next year's first day in time series
+        l = l[0:360]
+        # looping till length l
+        for i in range(0, len(l), n):
+            yield l[i:i+n]
     #elif nday == 360:
     #    l2 = interp1d(l, 365, debug=debug)
     #    # looping till length l
