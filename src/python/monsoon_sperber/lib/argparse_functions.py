@@ -14,6 +14,9 @@ def AddParserArgument(P):
     P.add_argument("--reference_data_lf_path",
                    type=str,
                    help="Path of landsea mask for reference data set")
+    P.add_argument("--modpath_lf",
+                   type=str,
+                   help="Path of landsea mask for model data set")
     P.add_argument("--varobs", dest="varOBS", type=str, help="Variable name in reference data set")
     P.add_argument("--varmod", dest="varMOD", type=str, help="Variable name in model data set")
     P.add_argument("--obs_units_adjust", dest="ObsUnitsAdjust", type=tuple, 
