@@ -55,23 +55,6 @@ from genutil import StringConstructor
 from shutil import copyfile
 from pcmdi_metrics.monsoon_sperber import AddParserArgument, YearCheck, model_land_only, divide_chunks_advanced, divide_chunks, interp1d, sperber_metrics
 
-""" NOTE FOR ISSUES
-*1. syear/eyear given by parameter file need to be refered in the code
-*2. ocean mask for land only is not complete; refer placeholder
-*3. pathin need to be fully replaced by modpath
-4. reference data (obs) is yet to be used
-*5. 72 pentad to 73 pentad interpolation need to be added for HadGEM2 models 
-*6. Adding of custom domain maybe needed to test Indian region as in Sperber & Annamalai 2014 Clim Dyn
-   (or define the domain in the share/default_regions.py)
-7. Make the results_dir aknowledge the tree structure
-8. use unit adjust parameter in the code
-*9. leaf year
-*10. start from July 1st for SH region
-*11. add pentad time series to cumulative and archive it in netCDF
-*12. calculate metrics based on cumulative pentad time series
-*13. add time checker
-"""
-
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
