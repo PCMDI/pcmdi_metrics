@@ -58,7 +58,11 @@ def divide_chunks_advanced(l, n, debug=False):
     elif nday == 361 and calendar == '360_day':
         # Speacial case handling for HadGEM2 family where time bounds was not 
         # properly saved, so include next year's first day in time series
+        if debug:
+            print('debug: 361 to 360 revise: l.shape, before:', l.shape)
         l = l[0:360]
+        if debug:
+            print('debug: 361 to 360 revise: l.shape, after:', l.shape)
         # looping till length l
         for i in range(0, len(l), n):
             yield l[i:i+n]
