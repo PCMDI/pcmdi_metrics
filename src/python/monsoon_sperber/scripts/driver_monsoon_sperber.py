@@ -169,8 +169,11 @@ if 'RESULTS' not in list(monsoon_stat_dic.keys()):
 # Loop start for given models
 # -------------------------------------------------
 regions_specs = {}
-exec(compile(open(os.path.join(sys.prefix, "share", "pmp", "default_regions.py") ).read(),
-             os.path.join(sys.prefix, "share", "pmp" ,"default_regions.py"), 'exec'))
+# Reactivate below, using sys.prefix, when updated default_regions.py merged to master
+#exec(compile(open(os.path.join(sys.prefix, "share", "pmp", "default_regions.py") ).read(),
+#             os.path.join(sys.prefix, "share", "pmp" ,"default_regions.py"), 'exec'))
+exec(compile(open(os.path.join("../../../..", "share", "default_regions.py") ).read(),
+             os.path.join("../../../..", "share", "default_regions.py"), 'exec'))
 
 if includeOBS:
     models.insert(0, 'obs')
