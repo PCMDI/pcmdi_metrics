@@ -466,8 +466,7 @@ for model in models:
                 # -------------------------------------------------
                 JSON = pcmdi_metrics.io.base.Base(outdir, json_filename)
                 JSON.write(monsoon_stat_dic,
-                           json_structure=["data",
-                                           "model",
+                           json_structure=["model",
                                            "realization",
                                            "monsoon_region",
                                            "metric"],
