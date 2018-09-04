@@ -322,9 +322,11 @@ for model in models:
                            latitude=(-90,90))
     
                     # unit change
-                    #d = MV2.multiply(d, 86400.)
-                    #d.units = 'mm/d'
                     if UnitsAdjust[0]:
+                        """ Below two lines are identical to following:
+                        # d = MV2.multiply(d, 86400.)
+                        # d.units = 'mm/d'
+                        """
                         d = getattr(MV2, UnitsAdjust[1])(d, UnitsAdjust[2])
                         d.units = units
     
