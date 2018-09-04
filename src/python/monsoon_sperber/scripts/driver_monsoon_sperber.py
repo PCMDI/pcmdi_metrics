@@ -222,6 +222,7 @@ for model in models:
         # Read model's land fraction
         f_lf = cdms2.open(model_lf_path)
         lf = f_lf('sftlf', latitude=(-90, 90))
+        f_lf.close()
      
         # -------------------------------------------------
         # Loop start - Realization
@@ -492,8 +493,6 @@ for model in models:
             print('timechk: ', model, run, timechk)
         # --- Realization loop end
     
-        f_lf.close()
-
     except Exception as err:
         if debug:
             raise
