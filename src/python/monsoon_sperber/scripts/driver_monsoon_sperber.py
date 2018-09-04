@@ -425,7 +425,6 @@ for model in models:
                     # Metrics for composite
                     metrics_result = sperber_metrics(composite_pentad_time_series_cumsum, region, debug=debug)
     
-    
                     # Archive as dict for JSON
                     if model == 'obs':
                         if region not in list(monsoon_stat_dic['REF'][reference_data_name].keys()):
