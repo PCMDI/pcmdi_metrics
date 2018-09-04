@@ -408,20 +408,23 @@ for model in models:
                 fc.close()
     
                 # --- Monsoon region loop start without year loop
-                # Get composite for each region
                 if debug:
                     print('debug: composite start')
     
                 for region in list_monsoon_regions:
+                    # Get composite for each region
                     composite_pentad_time_series = cdutil.averager(
                         MV2.array(list_pentad_time_series[region]),
                         axis=0,
                         weights='unweighted')
-                    composite_pentad_time_series.setAxis(
-                        0, pentad_time_series.getAxis(0))
+
+                    # Get accumulation ts from the composite
                     composite_pentad_time_series_cumsum = np.cumsum(composite_pentad_time_series)
-                    composite_pentad_time_series_cumsum.setAxis(
-                        0, pentad_time_series.getAxis(0))
+
+                    # Maintain axis information
+                    axis0 = pentad_time_series.getAxis(0)
+                    composite_pentad_time_series.setAxis(0, axis0)
+                    composite_pentad_time_series_cumsum.setAxis(0, axis0)
     
                     # Metrics for composite
                     metrics_result = sperber_metrics(composite_pentad_time_series_cumsum, region, debug=debug)
@@ -445,6 +448,8 @@ for model in models:
                         fout.write(composite_pentad_time_series, id=region+'_comp')
                         fout.write(composite_pentad_time_series_cumsum, id=region+'_comp_cumsum')
                         fout.write(metrics_result['frac_accum'], id=region+'_comp_cumsum_frac')
+                        if region == list_monsoon_regions[-1]:
+                            fout.close()
     
                     # Add line in plot 
                     if plot:
@@ -456,16 +461,13 @@ for model in models:
                         ax[region].set_title(region)
                         if region == list_monsoon_regions[0]:
                             ax[region].legend(loc=2)
-    
-                if nc_out:
-                    fout.close()
-                if plot:
-                    fig.suptitle(
-                        'Precipitation pentad time series\n'
-                        + ', '.join([mip, model, exp, run, str(startYear)+'-'+str(endYear)]))
-                    plt.subplots_adjust(top=0.85)
-                    plt.savefig(os.path.join(outdir, output_filename+'.png'))
-                    plt.close()
+                        if region == list_monsoon_regions[-1]:
+                            fig.suptitle(
+                                'Precipitation pentad time series\n'
+                                + ', '.join([mip, model, exp, run, str(startYear)+'-'+str(endYear)]))
+                            plt.subplots_adjust(top=0.85)
+                            plt.savefig(os.path.join(outdir, output_filename+'.png'))
+                            plt.close()
     
                 # =================================================
                 # Write dictionary to json file
