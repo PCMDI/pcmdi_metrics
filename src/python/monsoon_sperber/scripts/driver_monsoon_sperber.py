@@ -247,17 +247,21 @@ for model in models:
                 t = d.getTime()
                 c = t.asComponentTime()
     
-                # Fix starting and ending year
-                startYear = max(syear, c[0].year)
-                endYear = min(eyear, c[-1].year)
+                # Get starting and ending year and month
+                startYear = c[0].year
                 startMonth = c[0].month
+                endYear = c[-1].year
                 endMonth = c[-1].month
     
-                # Consider year to be counted only when entire calendar available
+                # Adjust years to consider only when they have entire calendar months
                 if startMonth > 1:
                     startYear += 1
                 if endMonth < 12:
                     endYear -= 1
+
+                # Final selection of starting and ending years
+                startYear = max(syear, startYear)
+                endYear = min(eyear, endYear)
     
                 # Check calendar (just checking..)
                 calendar = t.calendar
@@ -279,9 +283,9 @@ for model in models:
     
                 # Write individual year time series for each monsoon domain in a netCDF file
                 if nc_out:
-                    output_file_name = '_'.join([mip, model, exp, run,
+                    output_filename = '_'.join([mip, model, exp, run,
                         'monsoon_sperber', str(startYear), str(endYear)])
-                    fout = cdms2.open(os.path.join(outdir, output_file_name+'.nc'), 'w')
+                    fout = cdms2.open(os.path.join(outdir, output_filename+'.nc'), 'w')
     
                 # -------------------------------------------------
                 # Plotting tool
@@ -457,7 +461,7 @@ for model in models:
                         'Precipitation pentad time series\n'
                         + ', '.join([mip, model, exp, run, str(startYear)+'-'+str(endYear)]))
                     plt.subplots_adjust(top=0.85)
-                    plt.savefig(os.path.join(outdir, output_file_name+'.png'))
+                    plt.savefig(os.path.join(outdir, output_filename+'.png'))
                     plt.close()
     
                 # =================================================
