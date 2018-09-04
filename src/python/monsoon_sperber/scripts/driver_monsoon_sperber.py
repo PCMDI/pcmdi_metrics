@@ -384,12 +384,13 @@ for model in models:
                         pentad_time_series.units = d.units
                         pentad_time_series_cumsum = np.cumsum(pentad_time_series)
     
-                        # Archive individual year time series in netCDF file
                         if nc_out:
+                            # Archive individual year time series in netCDF file
                             fout.write(pentad_time_series, id=region+'_'+str(year))
                             fout.write(pentad_time_series_cumsum, id=region+'_'+str(year)+'_cumsum')
-                        # Add grey line for individual year in plot 
+
                         if plot:
+                            # Add grey line for individual year in plot 
                             if year == startYear:
                                 label = 'Individual yr'
                             else:
