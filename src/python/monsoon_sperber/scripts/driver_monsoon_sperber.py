@@ -53,7 +53,7 @@ from argparse import RawTextHelpFormatter
 from collections import defaultdict
 from genutil import StringConstructor
 from shutil import copyfile
-from pcmdi_metrics.monsoon_sperber import AddParserArgument, YearCheck, model_land_only, divide_chunks_advanced, divide_chunks, interp1d, sperber_metrics
+from pcmdi_metrics.monsoon_sperber import AddParserArgument, YearCheck, model_land_only, divide_chunks_advanced, interp1d, sperber_metrics
 
 # =================================================
 # Hard coded options... will be moved out later
