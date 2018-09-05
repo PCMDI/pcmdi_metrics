@@ -288,9 +288,7 @@ for model in models:
                         'monsoon_sperber', str(startYear), str(endYear)])
                     fout = cdms2.open(os.path.join(outdir, output_filename+'.nc'), 'w')
     
-                # -------------------------------------------------
-                # Plotting tool
-                # -------------------------------------------------
+                # Plotting setup
                 if plot:
                     ax = {}
                     if len(list_monsoon_regions) > 1:
