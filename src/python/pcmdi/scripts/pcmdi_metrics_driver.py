@@ -393,7 +393,7 @@ parser.add_argument(
     help='Provide a short description to help identify this run of the PMP mean climate.',
     required=False)
 
-parameter = parser.get_parameter(cmd_default_vars=False)
+parameter = parser.get_parameter(cmd_default_vars=False, argparse_vals_only=False)
 
 driver = PMPDriver(parameter)
 driver.run_diags()
