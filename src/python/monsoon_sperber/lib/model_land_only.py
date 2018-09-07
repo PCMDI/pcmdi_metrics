@@ -1,16 +1,16 @@
-import cdms2
 import genutil
 import MV2
 
+
 def model_land_only(model, model_timeseries, lf, debug=False):
     # -------------------------------------------------
-    # Mask out over ocean grid 
+    # Mask out over ocean grid
     # - - - - - - - - - - - - - - - - - - - - - - - - -
     if debug:
         import vcs
         x = vcs.init()
         x.plot(model_timeseries)
-        x.png('_'.join(['test',model,'beforeMask.png']))
+        x.png('_'.join(['test', model, 'beforeMask.png']))
 
     # Check land fraction variable to see if it meet criteria
     # (0 for ocean, 100 for land, no missing value)
@@ -35,7 +35,6 @@ def model_land_only(model, model_timeseries, lf, debug=False):
     lat_c2 = model_timeseries.getAxis(1)
     lon_c2 = model_timeseries.getAxis(2)
 
-    #opt1 = True
     opt1 = False
 
     if opt1:  # Masking out partial ocean grids as well
@@ -50,7 +49,6 @@ def model_land_only(model, model_timeseries, lf, debug=False):
             # part of land-sea fraction. So far only 'EC-EARTH' does..
             model_timeseries_masked = MV2.masked_where(
                 lf_timeConst < 90, model_timeseries)
-        #lf2 = (100.-lf)/100.
         lf2 = MV2.divide(lf, 100.)
         model_timeseries, lf2_timeConst = genutil.grower(
             model_timeseries, lf2)  # Matching dimension
@@ -58,14 +56,14 @@ def model_land_only(model, model_timeseries, lf, debug=False):
             model_timeseries_masked, lf2_timeConst)  # consider land fraction like as weighting
 
     # Make sure to have consistent axes
-    model_timeseries_masked.setAxis(0,time_c)
-    model_timeseries_masked.setAxis(1,lat_c2)
-    model_timeseries_masked.setAxis(2,lon_c2)
+    model_timeseries_masked.setAxis(0, time_c)
+    model_timeseries_masked.setAxis(1, lat_c2)
+    model_timeseries_masked.setAxis(2, lon_c2)
 
     if debug:
         x.clear()
         x.plot(model_timeseries_masked)
-        x.png('_'.join(['test',model,'afterMask.png']))
+        x.png('_'.join(['test', model, 'afterMask.png']))
         x.close()
 
     return(model_timeseries_masked)

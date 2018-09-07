@@ -2,10 +2,8 @@ from __future__ import print_function
 import os
 import glob
 
-#pathin = '/work/cmip5-test/new/historical/atmos/day/pr'
 pathin = '/work/lee1043/ESGF/xmls/cmip5/historical/day/pr'
-#lst = os.listdir(pathin)
-lst = glob.glob(os.path.join(pathin,'*.xml'))
+lst = glob.glob(os.path.join(pathin, '*.xml'))
 print(lst)
 
 models = set([])
@@ -16,8 +14,7 @@ for l in sorted(lst):
     mip = l.split('/')[-1].split('.')[0]
     model = l.split('/')[-1].split('.')[1]
     exp = l.split('/')[-1].split('.')[2]
-    run = l.split('/')[-1].split('.')[3] 
-    #print(mip, model, exp, run)
+    run = l.split('/')[-1].split('.')[3]
     models.add(model)
     model_runs.add(model+'_'+run)
 
