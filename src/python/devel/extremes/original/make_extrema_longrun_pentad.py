@@ -4,7 +4,7 @@
 # example execute line:
 # python make_extrema_longrun_pentad.py var model_scenario_realization var_file lat_name
 # Where:
-# var is the variable name
+# var is the variable name. This almost always going to be daily accumulated precipitation (pr).
 # model_scenario_realization is a descriptor for the output file
 # var_file is the input file of daily data. An xml file constructed with cdscan works here.
 # lat_name is the name of the latitude dimension
@@ -71,6 +71,7 @@ daily_max=MV.zeros((y2-y1+1,nlat,nlon),MV.float)
 time=MV.zeros((y2-y0+1),MV.float)
 
 # Calculate annual extrema
+# Note to Peter G. From here to line 123 could be deleted or commented out to save time. We don't really need the annual maxima.
 print("starting annual")
 y1=y0
 m1=1 # January
