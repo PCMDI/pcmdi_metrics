@@ -27,6 +27,11 @@ var_file = '/work/cmip5-test/new/historical/atmos/day/pr/cmip5.GFDL-CM3.historic
 latitude = 'latitude'
 model = 'crap'
 lat = 'latitude'
+pathout = '/export_backup/gleckler1/processing/metrics_package/my_test/mfw_extremes/'
+testrun = 'y'
+
+
+
 
 #var=sys.argv[1]
 #f=cdms.open(sys.argv[3])
@@ -51,8 +56,9 @@ if hasattr(tt, 'calendar'):
  if tt.calendar=='proleptic_gregorian':cdtime.DefaultCalendar=cdtime.GregorianCalendar
  if tt.calendar=='standard':cdtime.DefaultCalendar=cdtime.StandardCalendar
 
-output=cdms.open(var+'_max_pentad_'+model+'.nc','w')
-output.execute_line="python "+ " ".join(sys.argv)
+output=cdms.open(pathout + '/' + var+'_max_pentad_'+model+'.nc','w')
+#output.execute_line="python "+ " ".join(sys.argv)
+
 for a in f.listglobal():
   setattr(output,a,getattr(f,a))
 
@@ -82,7 +88,7 @@ time2=cdtime.reltime(tim[n-1],u)
 #y2=int(time2.torel('years since 0000-1-1').value)
 
 y1=int(time1.torel('years since 1800').value)+1
-y2=int(time2.torel('years since 1800').value)
+y2=int(time2.torel('years since 1800').value) # PG swapped y1 and y2 
 y0=y1
 
 daily_max=MV.zeros((y2-y1+1,nlat,nlon),MV.float)
@@ -90,7 +96,7 @@ daily_max=MV.zeros((y2-y1+1,nlat,nlon),MV.float)
 time=MV.zeros((y2-y0+1),MV.float)
 
 # Calculate annual extrema
-print("starting annual")
+print "starting annual y1 y2 and time.shape ", y1,' ',y2,' ', time.shape
 y1=y0
 m1=1 # January
 d1=1
@@ -112,9 +118,14 @@ while y1<y2+1:
     if t1<end and t2>=end : e=i+1
 # Compute the extrema of the daily average values for year=Y
   aa = atime.time()
+  print "t1 and t2 beg end ", t1," ", t2," ", t1," ", t2
+  print "b e tim[b] and tim[e] ", b," ",e," ", tim[b]," ", tim[e]
   s1=f.getslab(var,tim[b],tim[e])
   bb = atime.time()
-  print 'time to read year ', bb-aa
+  print 'time to read year and slab shape ', bb-aa,' ', s1.shape
+
+# w =sys.stdin.readline()
+
   if var=='pr' or var=='precip' or var=='PRECT':s1.missing_value=0.0
 #  mask_s=s.mask
 #  MV.putmask(s,mask_s,0)
@@ -123,7 +134,7 @@ while y1<y2+1:
   ii=4
 
   cc = atime.time()
-  print 'before while'
+  print 'before while ii<ndays'
   while ii<ndays:
     s[ii,:,:]=0.2*(s1[ii,:,:]+s1[ii-1,:,:]+s1[ii-2,:,:]+s1[ii-3,:,:]+s1[ii-4,:,:])
     ii=ii+1
@@ -147,6 +158,10 @@ daily_max.setattribute('name',var+'_annual_daily_max')
 daily_max.setdimattribute(0,'units','years since 00-01-01 00:00:00')
 daily_max.id=var+'_annual_daily_max'
 output.write(daily_max)
+output.close()
+
+print 'done with annual'
+w = sys.stdin.readline()
 
 # Calculate DJF extrema
 print("starting DJF")
