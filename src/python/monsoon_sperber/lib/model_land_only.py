@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import genutil
 import MV2
 
@@ -7,10 +9,12 @@ def model_land_only(model, model_timeseries, lf, debug=False):
     # Mask out over ocean grid
     # - - - - - - - - - - - - - - - - - - - - - - - - -
     if debug:
+        print('debug: plot for beforeMask start')
         import vcs
         x = vcs.init()
         x.plot(model_timeseries)
         x.png('_'.join(['test', model, 'beforeMask.png']))
+        print('debug: plot for beforeMask done')
 
     # Check land fraction variable to see if it meet criteria
     # (0 for ocean, 100 for land, no missing value)
@@ -28,6 +32,7 @@ def model_land_only(model, model_timeseries, lf, debug=False):
         lf = MV2.multiply(lf, 100.)
 
     # Matching dimension
+    if debug: print('debug: match dimension in model_land_only')
     model_timeseries, lf_timeConst = genutil.grower(model_timeseries, lf)
 
     # Conserve axes
@@ -65,5 +70,6 @@ def model_land_only(model, model_timeseries, lf, debug=False):
         x.plot(model_timeseries_masked)
         x.png('_'.join(['test', model, 'afterMask.png']))
         x.close()
+        print('debug: plot for afterMask done')
 
     return(model_timeseries_masked)
