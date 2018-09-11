@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 import cdms2
 import numpy
 import sys
@@ -9,8 +10,6 @@ from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 import pcmdi_metrics
 import collections
 import glob
-
-from __future__ import print_function
 
 P = PMPParser()
 

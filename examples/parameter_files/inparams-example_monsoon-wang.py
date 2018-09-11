@@ -3,10 +3,13 @@
 # TO RUN THIS AND OTHER EXAMPLES, download and untar the following data: https://pcmdi.llnl.gov/pss/pmpdata/pmp_inparam_exampledata_07192018.tar 
 
 # EXECUTION WITH THE PMP
-# >  mpindex_compute.py -p inparams-mpindex_compute.py
+# >  mpindex_compute.py -p inparams-example_monsoon-wang.py 
+
+# ALTERNATE EXECUTION VIA THE COMMAND LINE
+# > .... 
 
 ### NEEDED IMPROVEMENTS
-# Add regridding options here and in driver
+# Add regridding options here and in Monsoon driver
 
 import datetime
 import glob
@@ -27,7 +30,7 @@ experiment = 'historical'
 # INPUT PATHS
 
 # Create a StringConstructor object (see https://cdat.llnl.gov/Jupyter/EasilyCreatingStringsWithTemplating/EasilyCreatingStringsWithTemplating.html) 
-root_dir = './pmp_inparam_exampledata_07192018/' # or some other location where the example data is untarred 
+root_dir = './pmp_inparam_exampledata_07192018/' # or some other location where the example data has been untarred 
 file_template = root_dir + "modeldata/pr_%(model)_Amon_%(experiment)_r1i1p1_198101-200512-clim.nc"
 modpath = genutil.StringConstructor(file_template)
 #print 'modpath is ', type(modpath),' ', type(modpath()),' ', modpath()
@@ -40,11 +43,11 @@ reference_data_path = root_dir + "obs/pr_GPCP_000001-000012_ac.nc"
 
 f  = open(sys.prefix + "/share/pmp/cmip_model_list.json")
 possible_mod_dic = json.load(f)
-modnames = possible_mod_dic[MIP][experiment] 
+#modnames = possible_mod_dic[MIP][experiment] 
 #print 'modnames are ', modnames
 
 # OR SELECT A SUBSET OF MODELS
-#modnames = ['GISS-E2-H-CC', 'CSIRO-Mk3-6-0']
+modnames = ['ACCESS1-3']
 
 ########################
 # OUTPUT PATHS (METRICS AND DIAGNOSTICS)
