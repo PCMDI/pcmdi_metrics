@@ -32,7 +32,8 @@ def model_land_only(model, model_timeseries, lf, debug=False):
         lf = MV2.multiply(lf, 100.)
 
     # Matching dimension
-    if debug: print('debug: match dimension in model_land_only')
+    if debug:
+        print('debug: match dimension in model_land_only')
     model_timeseries, lf_timeConst = genutil.grower(model_timeseries, lf)
 
     # Conserve axes
