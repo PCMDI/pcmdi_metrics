@@ -78,7 +78,6 @@ jobs:
       WORKDIR: "workspace/test_macos_pmp"
       OS: "osx-64"
       PKG_NAME: "pcmdi_metrics"
-      FFMPEG: "'ffmpeg>4'"
     steps:
       - checkout
       - run: *setup_miniconda
@@ -91,7 +90,6 @@ jobs:
       WORKDIR: "workspace/test_linux_pmp"
       OS: "linux-64"
       PKG_NAME: "pcmdi_metrics"
-      FFMPEG: "ffmpeg"
     steps:
       - checkout
       - run: *setup_miniconda
@@ -103,6 +101,7 @@ jobs:
     environment:
       WORKDIR: "workspace/test_macos_pmp"
       OS: "osx-64"
+      FFMPEG: "'ffmpeg>4'"
     steps:
       - checkout
       - run: *setup_miniconda
@@ -122,6 +121,7 @@ jobs:
     environment:
       WORKDIR: "workspace/test_linux_pmp"
       OS: "linux-64"
+      FFMPEG: "ffmpeg"
     steps:
       - checkout
       - run: *setup_miniconda
