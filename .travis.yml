@@ -19,8 +19,8 @@ script:
   - export CDAT_ANONYMOUS_LOG="False"
   - export FFMPEG="ffmpeg"
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; export FFMPEG="'ffmpeg>4' 'libpng>1.6.34'"; fi
-  - conda create -q -n py2 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons mesalib testsrunner cia "proj4<5" "python<3" $FFMPEG
-  - conda create -q -n py3 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons mesalib testsrunner cia "proj4<5" "python>3" $FFMPEG
+  - conda create -q -n py2 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons mesalib testsrunner cia "proj4<5" "python<3" scipy $FFMPEG
+  - conda create -q -n py3 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons mesalib testsrunner cia "proj4<5" "python>3" scipy $FFMPEG
   # Useful for debugging any issues with conda
   - conda info -a
   - source activate py2
