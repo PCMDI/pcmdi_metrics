@@ -64,7 +64,7 @@ aliases:
        cd conda-recipes
        rm -rf cdp
        cp -r ../../recipes/pcmdi_metrics .
-       python ./prep_for_build.py -l 1.1.2
+       python ./prep_for_build.py -l 1.2
        conda build pcmdi_metrics -c conda-forge -c cdat -c pcmdi --python=27
        conda build pcmdi_metrics -c conda-forge -c cdat -c pcmdi --python=36
        anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-*tar.bz2 --force
