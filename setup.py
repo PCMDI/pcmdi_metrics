@@ -11,7 +11,7 @@ if "--enable-devel" in sys.argv:
 else:
     install_dev = False
 
-Version = "0.6.0"
+Version = "1.2"
 p = subprocess.Popen(
     ("git",
      "describe",
@@ -25,7 +25,6 @@ try:
     if Version == "":
         Version = descr
 except:
-    Version = "0.9.pre-release"
     descr = Version
 
 p = subprocess.Popen(
