@@ -101,7 +101,7 @@ jobs:
     environment:
       WORKDIR: "workspace/test_macos_pmp"
       OS: "osx-64"
-      FFMPEG: "'ffmpeg>4'"
+      FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
     steps:
       - checkout
       - run: *setup_miniconda
