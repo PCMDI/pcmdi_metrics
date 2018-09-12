@@ -20,7 +20,7 @@ requirements:
     - vcs ==8.0
     - vcsaddons ==8.0
     - cdms2 ==3.0.1
-    - genutil ==8.1
+    - genutil
     - cdutil ==8.0
     - cdp >=1.4.0
     - numpy
