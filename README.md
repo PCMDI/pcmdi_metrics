@@ -38,4 +38,4 @@ v1.1 - First public release, emphasizing climatological statistics, with develop
 
 v1.1.2 - Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added.   Extensive provenance information incorporated into json files.
 
-v1.2 - Tied to CDAT 8.0.  Diurnal Cycle metrics, Sperber/Lee Monsoon statistics, Monsoon Wang metrics
+v1.2 - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal Cycle, Sperber/Lee Monsoon, Monsoon Wang metrics
