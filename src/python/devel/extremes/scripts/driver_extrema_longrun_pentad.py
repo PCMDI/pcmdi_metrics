@@ -87,8 +87,8 @@ time2=cdtime.reltime(tim[n-1],u)
 #y1=int(time1.torel('years since 0000-1-1').value)+1
 #y2=int(time2.torel('years since 0000-1-1').value)
 
-y1=int(time1.torel('years since 1800').value)+1
-y2=int(time2.torel('years since 1800').value) 
+y1=int(time1.torel('years since 1800').value)+1 + 1800
+y2=int(time2.torel('years since 1800').value) + 1800
 y0=y1
 
 daily_max=MV.zeros((y2-y1+1,nlat,nlon),MV.float)
