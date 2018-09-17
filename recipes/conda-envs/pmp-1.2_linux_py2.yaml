@@ -1,10 +1,6 @@
 name: pmp_1.2_linux_py2
 channels:
-  - pcmdi
-  - cdat/label/nightly
-  - conda-forge
-  - cdat
-  - defaults
+  - cdat-forge
 dependencies:
   - cdp=1.4.0=py27_0
   - dv3d=8.0=py27_0
