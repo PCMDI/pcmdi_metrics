@@ -26,7 +26,7 @@ aliases:
        if [[ $PY_VER = "py2" ]]; then
           conda create -q -n $PY_VER $CHANNELS $PKGS $FFMPEG "python<3"
        else
-          conda create -q -n $PY_VER $CHANNELS $PKGS $FFMPEG "python>3"
+          conda create -q -n $PY_VER $CHANNELS $PKGS $FFMPEG "python>3" $COVERAGE_PKGS
        fi
 
   - &setup_pmp
@@ -47,6 +47,14 @@ aliases:
        RESULT=$?
        cd ..
        echo "*** $PY_VER test result: "${RESULT}
+
+  - &run_coveralls
+    name: run_coveralls
+    command: |
+       export PATH=$WORKDIR/miniconda/bin:$PATH
+       source activate $PY_VER
+       coveralls
+       source deactivate
 
   - &conda_upload
     name: conda_upload
@@ -154,6 +162,7 @@ jobs:
       PY_VER: "py3"
       FFMPEG: "ffmpeg"
       COVERAGE: "-c tests/coverage.json"
+      COVERAGE_PKGS: "coverage coveralls"
     steps:
       - checkout
       - run: *setup_miniconda
@@ -161,6 +170,7 @@ jobs:
       - run: *setup_pmp
       - run: *run_pmp_tests
       - run: *conda_upload
+      - run: *run_coveralls
       - store_artifacts:
           path: tests_html
           destination: tests_html
