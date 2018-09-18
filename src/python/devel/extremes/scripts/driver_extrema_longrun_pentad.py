@@ -25,13 +25,13 @@ import time as atime
 var = 'pr'
 var_file = '/work/cmip5-test/new/historical/atmos/day/pr/cmip5.GFDL-CM3.historical.r1i1p1.day.atmos.day.pr.000000.v20120227.xml' 
 latitude = 'latitude'
-model = 'crap'
+mod_name = 'GFDL-CM3'
+exp = 'historical'
+mip = 'cmip5'
+
 lat = 'latitude'
 pathout = '/export_backup/gleckler1/processing/metrics_package/my_test/mfw_extremes/'
 testrun = 'y'
-
-
-
 
 #var=sys.argv[1]
 #f=cdms.open(sys.argv[3])
@@ -56,7 +56,7 @@ if hasattr(tt, 'calendar'):
  if tt.calendar=='proleptic_gregorian':cdtime.DefaultCalendar=cdtime.GregorianCalendar
  if tt.calendar=='standard':cdtime.DefaultCalendar=cdtime.StandardCalendar
 
-output=cdms.open(pathout + '/' + var+'_max_pentad_'+model+'.nc','w')
+output=cdms.open(pathout + '/' + var+'_max_pentad_'+mod_name+'.nc','w')
 #output.execute_line="python "+ " ".join(sys.argv)
 
 for a in f.listglobal():
@@ -158,10 +158,10 @@ daily_max.setattribute('name',var+'_annual_daily_max')
 daily_max.setdimattribute(0,'units','years since 00-01-01 00:00:00')
 daily_max.id=var+'_annual_daily_max'
 output.write(daily_max)
-output.close()
+#output.close()
 
 print 'done with annual'
-w = sys.stdin.readline()
+#w = sys.stdin.readline()
 
 # Calculate DJF extrema
 print("starting DJF")
@@ -209,6 +209,8 @@ daily_max.setdimattribute(0,'units','years since 00-01-01 00:00:00')
 daily_max.id=var+'_DJF_daily_max'
 output.write(daily_max)
 
+print("done with DJF")
+
 # Calculate MAM extrema
 print("starting MAM")
 y1=y0
@@ -255,6 +257,7 @@ daily_max.setdimattribute(0,'units','years since 00-01-01 00:00:00')
 daily_max.id=var+'_MAM_daily_max'
 output.write(daily_max)
 
+print("DONE WITH MAM")
 
 # Calculate SON extrema
 print("starting SON")
@@ -301,7 +304,7 @@ daily_max.setattribute('name',var+'_SON_daily_max')
 daily_max.setdimattribute(0,'units','years since 00-01-01 00:00:00')
 daily_max.id=var+'_SON_daily_max'
 output.write(daily_max)
-
+print("done with MAM")
 
 # Calculate JJA extrema
 print("starting JJA")
@@ -348,5 +351,6 @@ daily_max.setattribute('name',var+'_JJA_daily_max')
 daily_max.setdimattribute(0,'units','years since 00-01-01 00:00:00')
 daily_max.id=var+'_JJA_daily_max'
 output.write(daily_max)
+print("DONE WITH JJA")
 
 output.close()
