@@ -1,0 +1,3 @@
+{
+   "include": ["pcmdi_metrics", "cdat_info", "cdms2", "genutil", "vcs", "vtk"]]
+}
