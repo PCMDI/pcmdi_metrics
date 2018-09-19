@@ -11,48 +11,61 @@ aliases:
     command: |
       mkdir -p workspace
       git clone -b validateNightly git@github.com:CDAT/cdat workspace/cdat --depth=1
-      ls workspace/cdat
-      # following will install miniconda3 under $WORKDIR/miniconda/bin
       python workspace/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3'
       
   - &create_conda_env
     name: create_conda_env
+    environment:
+       PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner 'proj4<5'"
+       CHANNELS: "-c cdat/label/nightly -c conda-forge -c cdat -c pcmdi"
     command: |
        export PATH=$WORKDIR/miniconda/bin:$PATH
        conda config --set always_yes yes --set changeps1 no
        conda update -y -q conda
        conda config --set anaconda_upload no
-       conda create -q -n py2 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons mesalib matplotlib scipy cia testsrunner "proj4<5" "python<3" $FFMPEG
-       conda create -q -n py3 -c cdat/label/nightly -c conda-forge -c cdat -c pcmdi vcs vcsaddons mesalib matplotlib scipy cia testsrunner "proj4<5" "python>3" $FFMPEG
+       if [[ $PY_VER = "py2" ]]; then
+          conda create -q -n $PY_VER $CHANNELS $PKGS $FFMPEG "python<3"
+       else
+          conda create -q -n $PY_VER $CHANNELS $PKGS $FFMPEG "python>3" $COVERAGE_PKGS
+       fi
 
   - &setup_pmp
     name: setup_pmp
     command: |
        export PATH=$WORKDIR/miniconda/bin:$PATH
-       source activate py2
-       python setup.py install
-       source activate py3
+       source activate $PY_VER
        python setup.py install
 
   - &run_pmp_tests
     name: run_pmp_tests
     command: |
        export PATH=$WORKDIR/miniconda/bin:$PATH
-       export UVCDAT_ANONYMOUS_LOG=False
-       export UVCDAT_SETUP_PATH=${HOME}
-       source activate py2
-       python run_tests.py -H -v2
+       export CDAT_ANONYMOUS_LOG=False
+       export CDAT_SETUP_PATH=${HOME}
+       source activate $PY_VER
+       python run_tests.py -H -v2 $COVERAGE
        RESULT=$?
-       echo "py2 test command exit result:",$RESULT
-       source activate py3
-       python run_tests.py -H -v2
-       RESULT=$(( $RESULT + $? ))
        cd ..
-       echo "py3 test command exit result:",$RESULT
+       echo "*** $PY_VER test result: "${RESULT}
+
+  - &run_coveralls
+    name: run_coveralls
+    command: |
+       export PATH=$WORKDIR/miniconda/bin:$PATH
+       source activate $PY_VER
+       coveralls
+       source deactivate
 
   - &conda_upload
     name: conda_upload
+    environment:
+       CHANNELS: "-c conda-forge -c cdat -c pcmdi"
+       PKG_NAME: "pcmdi_metrics"
+       LABEL: "nightly"
     command: |
+       if [[ $CIRCLE_BRANCH != 'master' ]]; then
+          exit 0
+       fi
        export PATH=${HOME}/project/$WORKDIR/miniconda/bin:$PATH
        mkdir conda-bld
        cd conda-bld
@@ -65,42 +78,22 @@ aliases:
        rm -rf cdp
        cp -r ../../recipes/pcmdi_metrics .
        python ./prep_for_build.py -l 1.2
-       conda build pcmdi_metrics -c conda-forge -c cdat -c pcmdi --python=27
-       conda build pcmdi_metrics -c conda-forge -c cdat -c pcmdi --python=36
-       anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l nightly $CONDA_BLD_PATH/$OS/$PKG_NAME-*tar.bz2 --force
+       if [[ $PY_VER = 'py2' ]]; then
+          conda build $PKG_NAME $CHANNELS --python=27
+       else
+          conda build $PKG_NAME $CHANNELS --python=36
+       fi
+       anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l $LABEL $CONDA_BLD_PATH/$OS/$PKG_NAME-*tar.bz2 --force
 
 
 jobs:
-  deploy_mac:
+  macos_pmp_py2:
     macos:
       xcode: "9.2.0"
     environment:
-      WORKDIR: "workspace/test_macos_pmp"
+      WORKDIR: "test_macos_pmp_py2"
       OS: "osx-64"
-      PKG_NAME: "pcmdi_metrics"
-    steps:
-      - checkout
-      - run: *setup_miniconda
-      - run: *conda_upload
-
-  deploy_linux:
-    machine:
-      image: circleci/classic:latest
-    environment:
-      WORKDIR: "workspace/test_linux_pmp"
-      OS: "linux-64"
-      PKG_NAME: "pcmdi_metrics"
-    steps:
-      - checkout
-      - run: *setup_miniconda
-      - run: *conda_upload
-
-  macos_pmp:
-    macos:
-      xcode: "9.2.0"
-    environment:
-      WORKDIR: "workspace/test_macos_pmp"
-      OS: "osx-64"
+      PY_VER: "py2"
       FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
     steps:
       - checkout
@@ -108,6 +101,7 @@ jobs:
       - run: *create_conda_env
       - run: *setup_pmp
       - run: *run_pmp_tests
+      - run: *conda_upload
       - store_artifacts:
           path: tests_html
           destination: tests_html
@@ -115,12 +109,35 @@ jobs:
           path: tests_png
           destination: tests_png
 
-  linux_pmp:
+  macos_pmp_py3:
+    macos:
+      xcode: "9.2.0"
+    environment:
+      WORKDIR: "test_macos_pmp_py3"
+      OS: "osx-64"
+      PY_VER: "py3"
+      FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
+    steps:
+      - checkout
+      - run: *setup_miniconda
+      - run: *create_conda_env
+      - run: *setup_pmp
+      - run: *run_pmp_tests
+      - run: *conda_upload
+      - store_artifacts:
+          path: tests_html
+          destination: tests_html
+      - store_artifacts:
+          path: tests_png
+          destination: tests_png
+
+  linux_pmp_py2:
     machine:
       image: circleci/classic:latest
     environment:
-      WORKDIR: "workspace/test_linux_pmp"
+      WORKDIR: "test_linux_pmp_py2"
       OS: "linux-64"
+      PY_VER: "py2"
       FFMPEG: "ffmpeg"
     steps:
       - checkout
@@ -128,6 +145,32 @@ jobs:
       - run: *create_conda_env
       - run: *setup_pmp
       - run: *run_pmp_tests
+      - run: *conda_upload
+      - store_artifacts:
+          path: tests_html
+          destination: tests_html
+      - store_artifacts:
+          path: tests_png
+          destination: tests_png
+
+  linux_pmp_py3:
+    machine:
+      image: circleci/classic:latest
+    environment:
+      WORKDIR: "test_linux_pmp_py3"
+      OS: "linux-64"
+      PY_VER: "py3"
+      FFMPEG: "ffmpeg"
+      COVERAGE: "-c tests/coverage.json"
+      COVERAGE_PKGS: "coverage coveralls"
+    steps:
+      - checkout
+      - run: *setup_miniconda
+      - run: *create_conda_env
+      - run: *setup_pmp
+      - run: *run_pmp_tests
+      - run: *conda_upload
+      - run: *run_coveralls
       - store_artifacts:
           path: tests_html
           destination: tests_html
@@ -137,19 +180,13 @@ jobs:
 
 workflows:
   version: 2
-  nightly:
+  pcmdi_metrics:
     jobs:
-      - macos_pmp
-      - deploy_mac:
-          filters:
-            branches:
-              only: master
-          requires:
-            - macos_pmp
-      - linux_pmp
-      - deploy_linux:
-          filters:
-            branches:
-              only: master
-          requires:
-            - linux_pmp
+      - macos_pmp_py2
+      - macos_pmp_py3:
+           requires:
+              - macos_pmp_py2
+      - linux_pmp_py2
+      - linux_pmp_py3:
+           requires:
+              - linux_pmp_py2
