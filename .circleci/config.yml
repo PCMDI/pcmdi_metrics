@@ -77,7 +77,7 @@ aliases:
        cd conda-recipes
        rm -rf cdp
        cp -r ../../recipes/pcmdi_metrics .
-       python ./prep_for_build.py -l 1.1.2
+       python ./prep_for_build.py -l 1.2
        if [[ $PY_VER = 'py2' ]]; then
           conda build $PKG_NAME $CHANNELS --python=27
        else
