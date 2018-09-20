@@ -31,8 +31,7 @@ class PMPDriverTest(basepmp.PMPTest):
         print()
         subprocess.call(
             shlex.split(
-                #"pcmdi_metrics_driver_legacy.py -p %s %s" %
-                "pcmdi_metrics_driver.py -p %s %s" %
+                "mean_climate_driver.py -p %s %s" %
                 (parameterFile, tb)))
 
         parameters,files = self.assertFilesOut(parameterFile)
@@ -79,6 +78,6 @@ class PMPDriverTest(basepmp.PMPTest):
         pthout.case_id = parameters.case_id
         files = glob.glob(pthout())
         if len(files) == 0:
-            raise Exception("could not find output files after running pcmdi_metrics_driver on parameter file: %s" % parameterFile)
+            raise Exception("could not find output files after running mean_climate_driver on parameter file: %s" % parameterFile)
         return parameters, files
 
