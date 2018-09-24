@@ -143,7 +143,6 @@ template = populateStringConstructor(args.filename_template, args)
 template.variable = varbname
 
 fileList = glob.glob(os.path.join(directory, template()))
-print("DIRE GLOB:",os.path.join(directory, template()))
 print("FILES:", fileList)
 
 params = [INPUT(args, name, template) for name in fileList]
