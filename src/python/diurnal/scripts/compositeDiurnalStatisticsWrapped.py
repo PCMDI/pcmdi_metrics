@@ -44,7 +44,7 @@ def compute(params):
             print('Opening %s ...' % fileName)
             f = cdms2.open(fileName)
 
-# Composite-mean and composite-s.d diurnal cycle for month and year(s):
+            # Composite-mean and composite-s.d diurnal cycle for month and year(s):
             iYear = 0
             for year in range(args.firstyear, args.lastyear + 1):
                 print('Year %s:' % year)
@@ -77,7 +77,7 @@ def compute(params):
                     nlats = dimensions[1]
                     nlons = dimensions[2]
                     deltaH = 24. / N
-                    dayspermo = tvarb.shape[0] / N
+                    dayspermo = tvarb.shape[0] // N
                     print('  %d timepoints per day, %d hr intervals between timepoints' % (N, deltaH))
                     comptime = firstday.getTime()
                     modellons = tvarb.getLongitude()
@@ -221,5 +221,4 @@ fileList = glob.glob(os.path.join(args.modpath, template()))
 print("FILES:", fileList)
 params = [INPUT(args, name, template) for name in fileList]
 print("PARAMS:", params)
-
 cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
