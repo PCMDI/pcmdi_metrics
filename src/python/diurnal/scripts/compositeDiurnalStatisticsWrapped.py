@@ -13,7 +13,7 @@
 # 'GISS-E2-H', 'inmcm4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR',
 # 'MIROC4h',   'MIROC5',    'MIROC-ESM',  'MIROC-ESM-CHEM'
 
-from __future__ import print_function
+from __future__ import print_function, division
 import cdms2
 import genutil
 import MV2
