@@ -278,6 +278,7 @@ for mod in gmods:
 # SAVE ANNRANGE AND HIT MISS AND FALSE ALARM FOR EACH MOD DOM
         fm = os.path.join(nout, '_'.join([mod, dom, 'wang-monsoon.nc']))
         g = cdms2.open(fm, 'w')
+        annrange_mod_dom.id = 'pr'
         g.write(annrange_mod_dom)
         g.write(hitmap, dtype=numpy.int32)
         g.write(missmap, dtype=numpy.int32)
