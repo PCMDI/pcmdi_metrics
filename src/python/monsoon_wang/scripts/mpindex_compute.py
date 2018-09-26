@@ -141,8 +141,9 @@ obsgrid = dobs_orig.getGrid()
 annrange_obs, mpi_obs = mpd(dobs_orig)
 #########################################
 # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
-nout = os.path.join(outpathdata, "_".join(
-    [args.experiment, args.mip, 'wang-monsoon']))
+#nout = os.path.join(outpathdata, "_".join([args.experiment, args.mip, 'wang-monsoon']))
+nout = outpathdata
+
 try:
     os.makedirs(nout)
 except BaseException:
