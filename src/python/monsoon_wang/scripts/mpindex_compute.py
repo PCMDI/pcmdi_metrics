@@ -43,6 +43,10 @@ P.add_argument("--ovar",
                dest='obsvar',
                default='pr',
                help="Name of variable in obs file")
+P.add_argument("--obsid",
+               dest='obsid',
+               default='obsid',
+               help="Observation source_id")
 P.add_argument("-v", "--var",
                dest='modvar',
                default='pr',
@@ -129,6 +133,7 @@ sig_digits = '.3f'
 cdms2.axis.longitude_aliases.append("longitude_prclim_mpd")
 cdms2.axis.latitude_aliases.append("latitude_prclim_mpd")
 fobs = cdms2.open(args.reference_data_path)
+obsid = args.obsid
 dobs_orig = fobs(args.obsvar)
 fobs.close()
 
