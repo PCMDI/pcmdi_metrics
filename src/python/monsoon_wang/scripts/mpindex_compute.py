@@ -238,6 +238,7 @@ for mod in gmods:
     modelFile = modpath.replace('MODS', mod)
 
     mpi_stats_dic[mod] = {}
+    if mod == gmods[0]: mpi_stats_dic[obsid] = {}
 
     print("******************************************************************************************")
     print(modelFile)
@@ -249,7 +250,7 @@ for mod in gmods:
     mpi_mod = mpi_mod.regrid(obsgrid)
 
     for dom in doms:
-
+        if mod == gmods[0]: mpi_stats_dic[obsid][dom] = {}
         mpi_stats_dic[mod][dom] = {}
 
         reg_sel = regions_specs[dom]['domain']
@@ -266,6 +267,9 @@ for mod in gmods:
         rms = float(statistics.rms(mpi_mod_reg, mpi_obs_reg, axis='xy'))
         rmsn = rms / mpi_obs_reg_sd
 
+        mpi_mod_avg = cdutil.averager(mpi_mod_reg,axis='xy')
+        mpi_obs_avg = cdutil.averager(mpi_obs_reg,axis='xy')
+
 #  DOMAIN SELECTED FROM GLOBAL ANNUAL RANGE FOR MODS AND OBS
         annrange_mod_dom = annrange_mod(reg_sel)
         annrange_obs_dom = annrange_obs(reg_sel)
@@ -280,6 +284,8 @@ for mod in gmods:
         mpi_stats_dic[mod][dom]['cor'] = format(cor, sig_digits)
         mpi_stats_dic[mod][dom]['rmsn'] = format(rmsn, sig_digits)
         mpi_stats_dic[mod][dom]['threat_score'] = format(score, sig_digits)
+        mpi_stats_dic[mod][dom]['MPI_area_avg'] = format(mpi_mod_avg, sig_digits)
+        if mod == gmods[0]: mpi_stats_dic[obsid][dom]['MPI_area_avg'] = format(mpi_obs_avg, sig_digits)
 
 # SAVE ANNRANGE AND HIT MISS AND FALSE ALARM FOR EACH MOD DOM
         fm = os.path.join(nout, '_'.join([mod, dom, 'wang-monsoon.nc']))
@@ -290,6 +296,13 @@ for mod in gmods:
         g.write(missmap, dtype=numpy.int32)
         g.write(falarmmap, dtype=numpy.int32)
         g.close()
+      
+        if mod == gmods[0]:  # SAVE DIAGNOSTIC FROM OBS
+          fmo = os.path.join(nout, '_'.join([obsid, dom, 'wang-monsoon.nc']))
+          go = cdms2.open(fmo, 'w')
+          annrange_obs_dom.id = 'pr'
+          go.write(annrange_obs_dom)
+          go.close()
     f.close()
 
 
