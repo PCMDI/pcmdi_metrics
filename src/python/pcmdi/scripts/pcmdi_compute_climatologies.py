@@ -66,10 +66,8 @@ p.add_argument("-i", "--indexation-type",
                help="indexation type")
 p.add_argument("-o", "--output_filename_template",
                help="template for output filename",
-               default="%(variable)_PMP_%(model)_%(experiment)_r%(realization)i%(initialization)p%(physics)_%(start)-%(end)-clim-%(season).nc"
+               default="%(variable)_PMP_%(model_id)_%(experiment_id)_r%(realization)i%(initialization_method)p%(physics_version)_%(start)-%(end)-clim-%(season).nc"
                )
-
-        v, model_id, exp, r, i, p, tc[0].year, tc[0].month, end_tc.year, end_tc.month, season))
 p.add_argument("-f", "--filename_template",
                dest="filename_template",
                help="Input file template")
@@ -532,11 +530,17 @@ for season in seasons:
                        B2.torel(Tunits, cal).value])
 
 fnmout = genutil.StringConstructor(A.output_filename_template)
-model_id = checkCMORAttribute("model_id")
-exp = checkCMORAttribute("experiment_id")
-r = checkCMORAttribute("realization")
-i = checkCMORAttribute("initialization_method")
-p = checkCMORAttribute("physics_version")
+
+if "model_id" in fnmout.keys():
+    model_id = checkCMORAttribute("model_id")
+if "experiment_id" in fnmout.keys():
+    experiment_id = checkCMORAttribute("experiment_id")
+if "realization" in fnmout.keys():
+    realization = checkCMORAttribute("realization")
+if "initialization_method" in fnmout.keys():
+    initialization = checkCMORAttribute("initialization_method")
+if "physics_version" in fnmout.keys():
+    physics_version = checkCMORAttribute("physics_version")
 if A.cmor and hasCMOR:
     dump_cmor(A, s, values, bounds)
 else:
@@ -547,8 +551,17 @@ else:
     if not os.path.exists(A.results_dir):
         os.makedirs(A.results_dir)
     end_tc = tc[-1].add(1, cdtime.Month)
-    nm = os.path.join(A.results_dir, "{}_PMP_{}_{}_r{}i{}p{}_{}{:02d}-{}{:02d}-clim-{}.nc".format(
-        v, model_id, exp, r, i, p, tc[0].year, tc[0].month, end_tc.year, end_tc.month, season))
+
+    # Populate fout template with values
+    start = "{}{:02d}".format(tc[0].year, tc[0].month)
+    end = "{}{:02d}".format(end_tc.year, end_tc.month)
+    for k in fnmout.keys():
+        try:
+            setattr(fnmout,k,getattr(A,k))
+        except:
+            pass
+        setattr(fnmout,k,locals()[k])
+    nm = os.path.join(A.results_dir, fnmout())
     f = cdms2.open(nm, "w")
     # Global attributes copied
     for att, value in store_globals(filein).items():
