@@ -1,3 +1,4 @@
 {
-   "include": ["pcmdi_metrics", "pcmdi_metrics/pcmdi"]
+   "include": ["pcmdi_metrics"],
+   "subprocess": ["bin/mean_climate_driver.py", "bin/pcmdi_compute_climatologies.py"]
 }
