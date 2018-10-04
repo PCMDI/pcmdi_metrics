@@ -64,6 +64,12 @@ p.add_argument("-i", "--indexation-type",
                default="date",
                choices=["date", "value", "index"],
                help="indexation type")
+p.add_argument("-o", "--output_filename_template",
+               help="template for output filename",
+               default="%(variable)_PMP_%(model)_%(experiment)_r%(realization)i%(initialization)p%(physics)_%(start)-%(end)-clim-%(season).nc"
+               )
+
+        v, model_id, exp, r, i, p, tc[0].year, tc[0].month, end_tc.year, end_tc.month, season))
 p.add_argument("-f", "--filename_template",
                dest="filename_template",
                help="Input file template")
@@ -525,6 +531,7 @@ for season in seasons:
         bounds.append([B1.torel(Tunits, cal).value,
                        B2.torel(Tunits, cal).value])
 
+fnmout = genutil.StringConstructor(A.output_filename_template)
 model_id = checkCMORAttribute("model_id")
 exp = checkCMORAttribute("experiment_id")
 r = checkCMORAttribute("realization")
