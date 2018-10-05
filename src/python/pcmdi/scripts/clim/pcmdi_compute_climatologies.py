@@ -8,6 +8,7 @@ import numpy
 import cdtime
 from pcmdi_metrics.driver.pmp_parser import PMPParser
 import genutil 
+import glob
 
 try:
     import cmor
