@@ -24,9 +24,11 @@ aliases:
        conda update -y -q conda
        conda config --set anaconda_upload no
        if [[ $PY_VER = "py2" ]]; then
-          conda create -q -n $PY_VER $CHANNELS $PKGS $FFMPEG "python<3"
+          conda create -n $PY_VER -c conda-forge/label/gcc7 "python<3"
+          conda install -q -n $PY_VER $CHANNELS $PKGS $FFMPEG
        else
-          conda create -q -n $PY_VER $CHANNELS $PKGS $FFMPEG "python>3" $COVERAGE_PKGS
+          conda create -n $PY_VER -c conda-forge/label/gcc7 "python>3"
+          conda install -q -n $PY_VER $CHANNELS $PKGS $FFMPEG $COVERAGE_PKGS
        fi
 
   - &setup_pmp
