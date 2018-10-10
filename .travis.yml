@@ -29,7 +29,7 @@ script:
   - git clean -fd
   - source activate py3
   - python setup.py install
-  - python run_tests.py -v2
+  - python run_tests.py -v2 -n1
   - source deactivate
 
 #after_success:
