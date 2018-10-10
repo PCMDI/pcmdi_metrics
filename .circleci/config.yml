@@ -27,7 +27,7 @@ aliases:
           conda create -n $PY_VER -c conda-forge/label/gcc7 "python<3"
           conda install -q -n $PY_VER $CHANNELS $PKGS $FFMPEG
        else
-          conda create -n $PY_VER -c conda-forge/label/gcc7 "python>3"
+          conda create -n $PY_VER -c conda-forge/label/gcc7 "python=3.6"
           conda install -q -n $PY_VER $CHANNELS $PKGS $FFMPEG $COVERAGE_PKGS
        fi
 
