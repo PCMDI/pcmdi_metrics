@@ -6,6 +6,7 @@ import cdms2
 import cdutil
 import numpy
 import cdtime
+import genutil
 from pcmdi_metrics.driver.pmp_parser import PMPParser
 import glob
 
@@ -66,7 +67,9 @@ p.add_argument("-i", "--indexation-type",
                help="indexation type")
 p.add_argument("-o", "--output_filename_template",
                help="template for output filename",
-               default="%(variable)_PMP_%(model_id)_%(experiment_id)_r%(realization)i%(initialization_method)p%(physics_version)_%(start)-%(end)-clim-%(season).nc"
+               default="%(variable)_PMP_%(model_id)_%(experiment_id)_" +
+               "r%(realization)i%(initialization_method)p%(physics_version)" +
+               "_%(start)-%(end)-clim-%(season).nc"
                )
 p.add_argument("-f", "--filename_template",
                dest="filename_template",
@@ -145,7 +148,7 @@ A.results_dir = results_dir()
 filename_in = A.process_templated_argument(os.path.join(A.modpath, A.filename_template))
 
 if A.verbose:
-        print("filename in after templating:", filename_in())
+    print("filename in after templating:", filename_in())
 filename = glob.glob(filename_in())[0]
 
 if not os.path.exists(filename):
@@ -557,10 +560,10 @@ else:
     end = "{}{:02d}".format(end_tc.year, end_tc.month)
     for k in fnmout.keys():
         try:
-            setattr(fnmout,k,getattr(A,k))
-        except:
+            setattr(fnmout, k, getattr(A, k))
+        except Exception:
             pass
-        setattr(fnmout,k,locals()[k])
+        setattr(fnmout, k, locals()[k])
     nm = os.path.join(A.results_dir, fnmout())
     f = cdms2.open(nm, "w")
     # Global attributes copied
