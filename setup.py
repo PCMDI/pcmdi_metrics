@@ -1,5 +1,5 @@
 from __future__ import print_function
-from distutils.core import setup
+from setuptools import setup, find_packages
 import glob
 import subprocess
 import os
@@ -39,13 +39,13 @@ try:
     commit = p.stdout.readlines()[0].split()[1].decode("utf-8")
 except:
     commit = ""
-f = open("src/python/version.py", "w")
+f = open("pcmdi_metrics/version.py", "w")
 print("__version__ = '%s'" % Version, file=f)
 print("__git_tag_describe__ = '%s'" % descr, file=f)
 print("__git_sha1__ = '%s'" % commit, file=f)
 f.close()
 
-portrait_files = ["src/python/graphics/share/portraits.scr", ]
+portrait_files = ["pcmdi_metrics/graphics/share/portraits.scr", ]
 
 packages = {'pcmdi_metrics': 'src/python',
             'pcmdi_metrics.io': 'src/python/io',
@@ -56,13 +56,15 @@ packages = {'pcmdi_metrics': 'src/python',
             'pcmdi_metrics.monsoon_wang': 'src/python/monsoon_wang/lib',
             'pcmdi_metrics.monsoon_sperber': 'src/python/monsoon_sperber/lib',
             }
-scripts = ['src/python/pcmdi/scripts/mean_climate_driver.py',
-           'src/python/pcmdi/scripts/pcmdi_compute_climatologies.py',
-           'src/python/misc/scripts/parallelize_driver.py',
-           'src/python/monsoon_wang/scripts/mpindex_compute.py',
-           'src/python/monsoon_sperber/scripts/driver_monsoon_sperber.py',
+packages = find_packages()
+print("PKGS:",packages)
+scripts = ['pcmdi_metrics/pcmdi/scripts/mean_climate_driver.py',
+           'pcmdi_metrics/pcmdi/scripts/pcmdi_compute_climatologies.py',
+           'pcmdi_metrics/misc/scripts/parallelize_driver.py',
+           'pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py',
+           'pcmdi_metrics/monsoon_sperber/scripts/driver_monsoon_sperber.py',
            ]
-scripts += glob.glob("src/python/diurnal/scripts/*.py")
+scripts += glob.glob("pcmdi_metrics/diurnal/scripts/*.py")
 
 demo_files = glob.glob("demo/*/*")
 print("demo files")
@@ -130,8 +132,7 @@ setup(name='pcmdi_metrics',
       author='PCMDI',
       description='model metrics tools',
       url='http://github.com/PCMDI/pcmdi_metrics',
-      packages=list(packages.keys()),
-      package_dir=packages,
+      packages=packages,
       scripts=scripts,
       data_files=data_files
       # include_dirs = [numpy.lib.utils.get_include()],

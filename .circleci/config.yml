@@ -161,7 +161,7 @@ jobs:
       OS: "linux-64"
       PY_VER: "py3"
       FFMPEG: "ffmpeg"
-      COVERAGE: "-c tests/coverage.json"
+      COVERAGE: "-c tests/coverage.json --coverage-from-repo"
       COVERAGE_PKGS: "coverage coveralls"
     steps:
       - checkout
