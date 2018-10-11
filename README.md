@@ -4,13 +4,13 @@
 PCMDI metrics package (PMP)
 ======
 [![stable version](https://img.shields.io/badge/stable%20version-1.2-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/1.2)
-![repo size](https://reposs.herokuapp.com/?path=PCMDI/pcmdi_metrics)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.809463.svg)](https://doi.org/10.5281/zenodo.809463)
 [![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/installer/conda.svg)](https://conda.anaconda.org/pcmdi)
 [![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
 [![CircleCI](https://circleci.com/gh/PCMDI/pcmdi_metrics.svg?style=svg)](https://circleci.com/gh/PCMDI/pcmdi_metrics)
 [![Coverage Status](https://coveralls.io/repos/github/PCMDI/pcmdi_metrics/badge.svg)](https://coveralls.io/github/PCMDI/pcmdi_metrics)
+![repo size](https://reposs.herokuapp.com/?path=PCMDI/pcmdi_metrics)
 
 The PCMDI metrics package is used to objectively compare results from climate models with observations using well-established statistical tests. Results are produced in the context of all model simulations contributed to CMIP5 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons emphasize large- to global-scale annual cycle performance metrics. Current work in v1.x development branches include established statistics for ENSO, regional monsoon precipitation, and the diurnal cycle of precipitation. These diagnostics will be included in a future PMP release.
 
@@ -29,14 +29,14 @@ An overview for using the package and template scripts are detailed on the [Usin
 
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
 
-
 PMP versions
 ------------
 
-v1.0 - Prototype version of the PMP
-
-v1.1 - First public release, emphasizing climatological statistics, with development branches for ENSO and regional monsoon precipitation indices
+v1.2 - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal cycle and intermittency of precipitation, Sperber and Wang Monsoon metrics
 
 v1.1.2 - Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added.   Extensive provenance information incorporated into json files.
 
-v1.2 - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal Cycle, Sperber/Lee Monsoon, Monsoon Wang metrics
+v1.1 - First public release, emphasizing climatological statistics, with development branches for ENSO and regional monsoon precipitation indices
+
+v1.0 - Prototype version of the PMP
+

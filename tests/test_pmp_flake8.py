@@ -25,7 +25,7 @@ class TestFlake8(unittest.TestCase):
         print()
         print()
         cmd = "flake8 --show-source --statistics " +\
-              "--ignore=F999,F405,E121,E123,E126,E226,E24,E704 " +\
+              "--ignore=F999,F405,E121,E123,E126,E226,E24,E704,W504 " +\
               "--max-line-length=120 %s --exclude %s" % (pth,nopth)
         P = subprocess.Popen(shlex.split(cmd),
                              stdin=subprocess.PIPE,
