@@ -1939,7 +1939,7 @@ class Portrait(object):
             92.9412,
             100)
 
-        cols = MV2.reshape(cols, (len(cols) / 3, 3))
+        cols = MV2.reshape(cols, (len(cols) // 3, 3))
 
         for i in range(cols.shape[0]):
             co = self.x.getcolorcell(i)
