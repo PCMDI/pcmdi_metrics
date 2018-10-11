@@ -475,6 +475,8 @@ for season in seasons:
         iend = None
     else:
         iend += 1
+    if iend is None:
+        iend = len(Tg)
     Tg = Tg.subAxis(istart, iend)
 
     cal = T.getCalendar()
@@ -549,8 +551,6 @@ if A.cmor and hasCMOR:
 else:
     if A.cmor and not hasCMOR:
         print("Your Python does not have CMOR, using regular cdms to write out files")
-    if A.verbose:
-        print("MODEL ID:", model_id)
     if not os.path.exists(A.results_dir):
         os.makedirs(A.results_dir)
     end_tc = tc[-1].add(1, cdtime.Month)
@@ -563,7 +563,11 @@ else:
             setattr(fnmout, k, getattr(A, k))
         except Exception:
             pass
-        setattr(fnmout, k, locals()[k])
+        # overwrite with locals
+        try:
+            setattr(fnmout, k, locals()[k])
+        except Exception:
+            pass
     nm = os.path.join(A.results_dir, fnmout())
     f = cdms2.open(nm, "w")
     # Global attributes copied
