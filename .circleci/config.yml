@@ -28,6 +28,7 @@ aliases:
        else
           conda create -q -n $PY_VER $CHANNELS "python>3" $PKGS $FFMPEG $COVERAGE_PKGS
        fi
+       conda install -n $PY_VER -c cdat/label/linatest testsrunner
 
   - &setup_pmp
     name: setup_pmp
@@ -182,11 +183,13 @@ workflows:
   version: 2
   pcmdi_metrics:
     jobs:
-      - macos_pmp_py2
-      - macos_pmp_py3:
-           requires:
-              - macos_pmp_py2
-      - linux_pmp_py2
-      - linux_pmp_py3:
-           requires:
-              - linux_pmp_py2
+      #- macos_pmp_py2
+      #- macos_pmp_py3:
+      #     requires:
+      #        - macos_pmp_py2
+      #- linux_pmp_py2
+      #- linux_pmp_py3:
+      #     requires:
+      #        - linux_pmp_py2
+      - linux_pmp_py3
+
