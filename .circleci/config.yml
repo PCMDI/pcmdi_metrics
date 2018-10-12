@@ -46,7 +46,6 @@ aliases:
        source activate $PY_VER
        python run_tests.py -H -v2 $COVERAGE
        RESULT=$?
-       cd ..
        echo "*** $PY_VER test result: "${RESULT}
 
   - &run_coveralls
