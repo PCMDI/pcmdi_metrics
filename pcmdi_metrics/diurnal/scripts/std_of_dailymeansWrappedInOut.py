@@ -27,6 +27,7 @@ import collections
 import glob
 import sys
 import json
+import pkg_resources
 
 from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor, INPUT
 import cdp
@@ -116,11 +117,10 @@ OUT = pcmdi_metrics.io.base.Base(
     os.path.abspath(
         args.results_dir),
     jsonFile())
+egg_pth = pkg_resources.resource_filename(pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
 disclaimer = open(
     os.path.join(
-        sys.prefix,
-        "share",
-        "pmp",
+        egg_pth,
         "disclaimer.txt")).read()
 metrics_dictionary["DISCLAIMER"] = disclaimer
 metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Trenberth, Zhang & Gehne, J Hydromet. 2017"

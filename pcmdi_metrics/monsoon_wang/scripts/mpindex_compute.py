@@ -10,6 +10,7 @@ from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 import pcmdi_metrics
 import collections
 import glob
+import pkg_resources
 
 
 P = PMPParser()
@@ -222,8 +223,9 @@ if args.experiment == 'historical' and mods is None:
 
 regions_specs = {}
 default_regions = []
-exec(compile(open(sys.prefix + "/share/pmp/default_regions.py").read(),
-             sys.prefix + "/share/pmp/default_regions.py", 'exec'))
+egg_pth = pkg_resources.resource_filename(pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
+exec(compile(open(os.path.join(egg_pth, "default_regions.py")).read(),
+             os.path.join(egg_pth, "default_regions.py"), 'exec'))
 
 doms = ['AllMW', 'AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
 
@@ -291,9 +293,7 @@ OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), json_filename)
 
 disclaimer = open(
     os.path.join(
-        sys.prefix,
-        "share",
-        "pmp",
+        egg_pth,
         "disclaimer.txt")).read()
 
 metrics_dictionary = collections.OrderedDict()

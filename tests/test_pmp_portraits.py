@@ -8,6 +8,8 @@ import numpy
 import genutil
 import vcs
 import sys
+import pkg_resources
+egg_pth = pkg_resources.resource_filename(pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
 
 class TestPortraits(basepmpgraphics.TestGraphics):
     def __init__(self,*args,**kargs):
@@ -51,7 +53,7 @@ class TestPortraits(basepmpgraphics.TestGraphics):
         P.PLOT_SETTINGS.ytic2.x2 = P.PLOT_SETTINGS.x2
 
         # P.PLOT_SETTINGS.missing_color = 3
-        P.PLOT_SETTINGS.logo = os.path.join(sys.prefix,"share","pmp","graphics","png","PCMDILogo-old_348x300px_72dpi.png")
+        P.PLOT_SETTINGS.logo = os.path.join(egg_pth, "graphics", "png", "PCMDILogo-old_348x300px_72dpi.png")
         P.PLOT_SETTINGS.logo.y = .95
         P.PLOT_SETTINGS.logo.x = .93
         P.PLOT_SETTINGS.logo.width = 85
@@ -61,9 +63,7 @@ class TestPortraits(basepmpgraphics.TestGraphics):
 
         self.x.scriptrun(
             os.path.join(
-                sys.prefix,
-                "share",
-                "pmp",
+                egg_pth,
                 "graphics",
                 'vcs',
                 'portraits.scr'))

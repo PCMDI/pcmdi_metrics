@@ -4,6 +4,7 @@ import sys
 import logging
 import cdutil
 import cdms2
+import pkg_resources
 from pcmdi_metrics.io.base import Base
 from six import with_metaclass
 
@@ -117,7 +118,8 @@ class DataSet(with_metaclass(abc.ABCMeta, object)):
     @staticmethod
     def load_path_as_file_obj(name):
         ''' Returns a File object for the file named name. '''
-        file_path = sys.prefix + '/share/pmp/' + name
+        egg_pth = pkg_resources.resource_filename(pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
+        file_path = os.path.join(egg_pth, name)
         opened_file = None
         try:
             opened_file = open(file_path)
