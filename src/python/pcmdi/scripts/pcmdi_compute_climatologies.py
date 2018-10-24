@@ -6,9 +6,9 @@ import cdms2
 import cdutil
 import numpy
 import cdtime
-import genutil
 from pcmdi_metrics.driver.pmp_parser import PMPParser
 import glob
+import genutil
 
 try:
     import cmor
