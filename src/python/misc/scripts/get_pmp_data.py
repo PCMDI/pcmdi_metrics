@@ -19,10 +19,10 @@ parser = PMPParser(description='Get sample data')
 parser.add_argument("--dataset", help="Download observation or sample data or both",
                     default="all", choices=["all", "obs", "sample"])
 parser.add_argument("--version", help="which version to use", default="latest")
-parser.add_argument("--server", help="which serverto use",
+parser.add_argument("--server", help="which server to use",
                     default="https://pcmdiweb.llnl.gov/pss/pmpdata")
 parser.add_argument("--version_in_path", action="store_true", default=False,
-                    help="Append version in rooot path, avoids clobbering versions")
+                    help="Append version in root path, avoids clobbering versions")
 parser.add_argument(
     "--output-path", help="directory where to download", default=None)
 # parser.use("num_workers")
