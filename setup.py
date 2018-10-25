@@ -59,6 +59,7 @@ packages = {'pcmdi_metrics': 'src/python',
 scripts = ['src/python/pcmdi/scripts/mean_climate_driver.py',
            'src/python/pcmdi/scripts/pcmdi_compute_climatologies.py',
            'src/python/misc/scripts/parallelize_driver.py',
+           'src/python/misc/scripts/get_pmp_data.py',
            'src/python/monsoon_wang/scripts/mpindex_compute.py',
            'src/python/monsoon_sperber/scripts/driver_monsoon_sperber.py',
            ]
