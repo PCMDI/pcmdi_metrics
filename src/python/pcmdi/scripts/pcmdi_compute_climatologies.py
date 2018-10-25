@@ -8,6 +8,7 @@ import numpy
 import cdtime
 from pcmdi_metrics.driver.pmp_parser import PMPParser
 import glob
+import genutil
 
 try:
     import cmor
@@ -64,6 +65,12 @@ p.add_argument("-i", "--indexation-type",
                default="date",
                choices=["date", "value", "index"],
                help="indexation type")
+p.add_argument("-o", "--output_filename_template",
+               help="template for output filename",
+               default="%(variable)_PMP_%(model_id)_%(experiment_id)_" +
+               "r%(realization)i%(initialization_method)p%(physics_version)" +
+               "_%(start)-%(end)-clim-%(season).nc"
+               )
 p.add_argument("-f", "--filename_template",
                dest="filename_template",
                help="Input file template")
@@ -141,7 +148,7 @@ A.results_dir = results_dir()
 filename_in = A.process_templated_argument(os.path.join(A.modpath, A.filename_template))
 
 if A.verbose:
-        print("filename in after templating:", filename_in())
+    print("filename in after templating:", filename_in())
 filename = glob.glob(filename_in())[0]
 
 if not os.path.exists(filename):
@@ -468,6 +475,8 @@ for season in seasons:
         iend = None
     else:
         iend += 1
+    if iend is None:
+        iend = len(Tg)
     Tg = Tg.subAxis(istart, iend)
 
     cal = T.getCalendar()
@@ -525,23 +534,41 @@ for season in seasons:
         bounds.append([B1.torel(Tunits, cal).value,
                        B2.torel(Tunits, cal).value])
 
-model_id = checkCMORAttribute("model_id")
-exp = checkCMORAttribute("experiment_id")
-r = checkCMORAttribute("realization")
-i = checkCMORAttribute("initialization_method")
-p = checkCMORAttribute("physics_version")
+fnmout = genutil.StringConstructor(A.output_filename_template)
+
+if "model_id" in fnmout.keys():
+    model_id = checkCMORAttribute("model_id")
+if "experiment_id" in fnmout.keys():
+    experiment_id = checkCMORAttribute("experiment_id")
+if "realization" in fnmout.keys():
+    realization = checkCMORAttribute("realization")
+if "initialization_method" in fnmout.keys():
+    initialization = checkCMORAttribute("initialization_method")
+if "physics_version" in fnmout.keys():
+    physics_version = checkCMORAttribute("physics_version")
 if A.cmor and hasCMOR:
     dump_cmor(A, s, values, bounds)
 else:
     if A.cmor and not hasCMOR:
         print("Your Python does not have CMOR, using regular cdms to write out files")
-    if A.verbose:
-        print("MODEL ID:", model_id)
     if not os.path.exists(A.results_dir):
         os.makedirs(A.results_dir)
     end_tc = tc[-1].add(1, cdtime.Month)
-    nm = os.path.join(A.results_dir, "{}_PMP_{}_{}_r{}i{}p{}_{}{:02d}-{}{:02d}-clim-{}.nc".format(
-        v, model_id, exp, r, i, p, tc[0].year, tc[0].month, end_tc.year, end_tc.month, season))
+
+    # Populate fout template with values
+    start = "{}{:02d}".format(tc[0].year, tc[0].month)
+    end = "{}{:02d}".format(end_tc.year, end_tc.month)
+    for k in fnmout.keys():
+        try:
+            setattr(fnmout, k, getattr(A, k))
+        except Exception:
+            pass
+        # overwrite with locals
+        try:
+            setattr(fnmout, k, locals()[k])
+        except Exception:
+            pass
+    nm = os.path.join(A.results_dir, fnmout())
     f = cdms2.open(nm, "w")
     # Global attributes copied
     for att, value in store_globals(filein).items():
