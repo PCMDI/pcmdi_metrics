@@ -17,16 +17,16 @@ aliases:
     name: create_conda_env
     environment:
        PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner 'proj4<5'"
-       CHANNELS: "-c cdat/label/nightly -c conda-forge -c cdat -c pcmdi"
+       CHANNELS: "-c cdat/label/nightly -c cdat-forge -c conda-forge -c cdat -c pcmdi"
     command: |
        export PATH=$WORKDIR/miniconda/bin:$PATH
        conda config --set always_yes yes --set changeps1 no
        conda update -y -q conda
        conda config --set anaconda_upload no
        if [[ $PY_VER = "py2" ]]; then
-          conda create -q -n $PY_VER $CHANNELS $PKGS $FFMPEG "python<3"
+          conda create -n $PY_VER -q -n $PY_VER $CHANNELS "python<3" $PKGS $FFMPEG
        else
-          conda create -q -n $PY_VER $CHANNELS $PKGS $FFMPEG "python>3" $COVERAGE_PKGS
+          conda create -n $PY_VER -q -n $PY_VER $CHANNELS "python>3" $PKGS $FFMPEG $COVERAGE_PKGS
        fi
 
   - &setup_pmp
@@ -59,7 +59,7 @@ aliases:
   - &conda_upload
     name: conda_upload
     environment:
-       CHANNELS: "-c conda-forge -c cdat -c pcmdi"
+       CHANNELS: "-c cdat-forge -c conda-forge -c cdat -c pcmdi"
        PKG_NAME: "pcmdi_metrics"
        LABEL: "nightly"
     command: |
