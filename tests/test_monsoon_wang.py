@@ -5,9 +5,18 @@ import pcmdi_metrics
 import subprocess
 import shlex
 import numpy
+import sys
 
 
 class MonsoonTest(unittest.TestCase):
+    def setUp(self):
+        if "COVERAGE_PROCESS_START" in os.environ:
+            runner = "coverage run -a"
+        else:
+            runner = "python"
+        runner += " {}/".format(os.path.join(sys.prefix, "bin"))
+        self.runner = runner
+
     def checkAllClose(self, a, b):
         if numpy.ma.allclose(a.filled(), b.filled()):
             return True
@@ -28,7 +37,7 @@ class MonsoonTest(unittest.TestCase):
 
     def testMonsoonWang(self):
 
-        cmd = 'mpindex_compute.py --mp tests/monsoon/data/pr_1961_1999_MRI-CGCM3_regrid_MODS.nc --reference_data_path tests/monsoon/obs/pr_gpcp_79_07_mseas.nc --mns "[\'xa\',]" --results_dir test_monsoon --outpj test_monsoon --threshold=2.5'
+        cmd = '{}mpindex_compute.py --mp tests/monsoon/data/pr_1961_1999_MRI-CGCM3_regrid_MODS.nc --reference_data_path tests/monsoon/obs/pr_gpcp_79_07_mseas.nc --mns "[\'xa\',]" --results_dir test_monsoon --outpj test_monsoon --threshold=2.5'.format(self.runner)
         print("CMD:",cmd)
         p = subprocess.Popen(shlex.split(cmd))
         o, e = p.communicate()

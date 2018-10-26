@@ -9,7 +9,9 @@ import genutil
 import vcs
 import sys
 import pkg_resources
-egg_pth = pkg_resources.resource_filename(pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
+one = pkg_resources.Requirement.parse("pcmdi_metrics")
+print("ONE:",one)
+egg_pth = pkg_resources.resource_filename(one, "share/pmp")
 
 class TestPortraits(basepmpgraphics.TestGraphics):
     def __init__(self,*args,**kargs):

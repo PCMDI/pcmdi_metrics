@@ -8,9 +8,18 @@ import os
 import cdms2
 import numpy
 import json
+import sys
 
 
 class DiurnalTest(basepmp.PMPTest):
+
+    def setUp(self):
+        if "COVERAGE_PROCESS_START" in os.environ:
+            runner = "coverage run -a"
+        else:
+            runner = "python"
+        runner += " {}/".format(os.path.join(sys.prefix, "bin"))
+        self.runner = runner
 
     def assertSame(self,a,b):
         self.assertTrue(numpy.ma.allclose(a,b))
@@ -34,14 +43,14 @@ class DiurnalTest(basepmp.PMPTest):
         
     def testDiurnaliComputeStdDailyMean(self):
         data_pth = cdat_info.get_sampledata_path()
-        cmd = 'computeStdDailyMeansWrapped.py --mp {} --rd test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'.format(data_pth)
+        cmd = '{}computeStdDailyMeansWrapped.py --num_workers=1 --mp {} --rd test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'.format(self.runner, data_pth)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
 
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_std_of_dailymeans.nc")
 
     def testFourierDiurnalAllGridWrapped(self):
-        cmd = 'fourierDiurnalAllGridWrapped.py --mp tests/diurnal/results/nc --rd test_data/results/nc -m7'
+        cmd = '{}fourierDiurnalAllGridWrapped.py --num_workers=1 --mp tests/diurnal/results/nc --rd test_data/results/nc -m7'.format(self.runner)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_tmean.nc")
@@ -51,10 +60,10 @@ class DiurnalTest(basepmp.PMPTest):
     def testDiurnalStdDailyVariance(self):
         self.runJsoner("std_of_dailymeansWrappedInOut.py","pr_Jul_1999_2005_std_of_dailymeans.json","std_of_dailymeans")
     def runJsoner(self,script,json_file,ext):
-        cmd = '{} --region_name=TROPICS --lat1=-30. --lat2=30. --lon1=0. --lon2=360 --mp tests/diurnal/results/nc --rd test_data/results/jsons -m7 -t "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_{}.nc"'.format(script, ext)
+        cmd = '{}{} --num_workers=1 --region_name=TROPICS --lat1=-30. --lat2=30. --lon1=0. --lon2=360 --mp tests/diurnal/results/nc --rd test_data/results/jsons -m7 -t "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_{}.nc"'.format(self.runner, script, ext)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
-        cmd = '{} --append --mp tests/diurnal/results/nc --rd test_data/results/jsons -m7 -t "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_{}.nc"'.format(script, ext)
+        cmd = '{}{} --append --mp tests/diurnal/results/nc --rd test_data/results/jsons -m7 -t "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_{}.nc"'.format(self.runner, script, ext)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
         good = open("tests/diurnal/results/json/{}".format(json_file))
@@ -69,7 +78,7 @@ class DiurnalTest(basepmp.PMPTest):
         """
     def testCompositeDiurnalStatisticsWrapped(self):
         data_pth = cdat_info.get_sampledata_path()
-        cmd = 'compositeDiurnalStatisticsWrapped.py --mp {} --rd test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'.format(data_pth)
+        cmd = '{}compositeDiurnalStatisticsWrapped.py --num_workers=1 --mp {} --rd test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'.format(self.runner, data_pth)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_diurnal_avg.nc")
@@ -86,7 +95,7 @@ class DiurnalTest(basepmp.PMPTest):
         self.runJsoner("savg_fourierWrappedInOut.py","pr_Jul_1999-2005_savg_DiurnalFourier.json","S")
 
     def testfourierDiurnalGridpoints(self):
-        cmd = 'fourierDiurnalGridpoints.py --mp tests/diurnal/results/nc --rd test_data/results/ascii'
+        cmd = '{}fourierDiurnalGridpoints.py --num_workers=1 --mp tests/diurnal/results/nc --rd test_data/results/ascii'.format(self.runner)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
         self.assertTrue(os.path.exists("test_data/results/ascii/pr_Jul_1999-2005_fourierDiurnalGridPoints.asc"))

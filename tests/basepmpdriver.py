@@ -12,6 +12,12 @@ class PMPDriverTest(basepmp.PMPTest):
         self.path_parameter_files = os.path.join(os.path.dirname(__file__),"pcmdi")
         self.traceback = eval(os.environ.get("TRACEBACK","False"))
         self.update = eval(os.environ.get("UPDATE_TESTS","False"))
+        if "COVERAGE_PROCESS_START" in os.environ:
+            runner = "coverage run -a"
+        else:
+            runner = "python"
+        runner += " {}/".format(os.path.join(sys.prefix, "bin"))
+        self.runner = runner
 
     def runPMP(self,parameterFile):
         if self.traceback:
@@ -29,10 +35,8 @@ class PMPDriverTest(basepmp.PMPTest):
         print()
         print()
         print()
-        subprocess.call(
-            shlex.split(
-                "mean_climate_driver.py -p %s %s" %
-                (parameterFile, tb)))
+        cmd = "{}mean_climate_driver.py -p {} {}".format(self.runner, parameterFile, tb)
+        subprocess.call(shlex.split(cmd))
 
         parameters,files = self.assertFilesOut(parameterFile)
 

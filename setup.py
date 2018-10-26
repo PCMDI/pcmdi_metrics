@@ -69,7 +69,7 @@ scripts += glob.glob("pcmdi_metrics/diurnal/scripts/*.py")
 demo_files = glob.glob("demo/*/*")
 print("demo files")
 
-data_files = [
+data_files = (
               ('share/pmp/graphics/vcs', portrait_files),
               ('share/pmp/graphics/png', ['share/pcmdi/171101_doutriaux1_UVCDATLogo_446x119px_72dpi.png',
                                           'share/pcmdi/CDATLogo_140x49px_72dpi.png',
@@ -97,7 +97,7 @@ data_files = [
                                'share/default_regions.py'
                             )),
               ('share/pmp/demo', demo_files),
-             ]
+             )
 
 if install_dev:
     print("Adding experimental packages")
