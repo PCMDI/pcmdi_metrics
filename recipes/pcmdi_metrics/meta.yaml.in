@@ -9,6 +9,7 @@ source:
 build:
     script: python setup.py install
     number: @BUILD_NUMBER@
+    noarch: python
 
 requirements:
   build:
