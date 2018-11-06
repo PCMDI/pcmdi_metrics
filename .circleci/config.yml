@@ -189,5 +189,3 @@ workflows:
       - linux_pmp_py3:
            requires:
               - linux_pmp_py2
-      - linux_pmp_py3
-
