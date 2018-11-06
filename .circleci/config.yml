@@ -28,7 +28,6 @@ aliases:
        else
           conda create -q -n $PY_VER $CHANNELS "python>3" $PKGS $FFMPEG $COVERAGE_PKGS
        fi
-       conda install -n $PY_VER -c cdat/label/linatest testsrunner
 
   - &setup_pmp
     name: setup_pmp
