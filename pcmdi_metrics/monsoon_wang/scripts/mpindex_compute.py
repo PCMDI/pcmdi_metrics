@@ -2,7 +2,6 @@
 
 import cdms2
 import numpy
-import sys
 import os
 from genutil import statistics
 from pcmdi_metrics.pcmdi.pmp_parser import PMPParser

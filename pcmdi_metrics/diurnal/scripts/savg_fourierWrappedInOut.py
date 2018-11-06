@@ -19,7 +19,6 @@ import cdms2
 import cdutil
 import MV2
 import os
-import sys
 import glob
 import pcmdi_metrics
 import collections

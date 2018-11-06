@@ -11,7 +11,7 @@ class TestFlake8(unittest.TestCase):
         pth = os.path.dirname(__file__)
         pth = os.path.join(pth, "..")
         pth = os.path.abspath(pth)
-        pth = os.path.join(pth, "src/python")
+        pth = os.path.join(pth, "pcmdi_metrics")
         nopth = os.path.join(pth, "devel")
         print()
         print()

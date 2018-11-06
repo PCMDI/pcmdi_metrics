@@ -25,7 +25,6 @@ import numpy.ma
 import pcmdi_metrics
 import collections
 import glob
-import sys
 import json
 import pkg_resources
 

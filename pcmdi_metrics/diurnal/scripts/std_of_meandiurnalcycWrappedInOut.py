@@ -19,7 +19,6 @@ import os
 import pcmdi_metrics
 import collections
 import glob
-import sys
 import genutil
 import json
 import cdp
