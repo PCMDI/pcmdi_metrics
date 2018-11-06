@@ -57,10 +57,10 @@ packages = {'pcmdi_metrics': 'src/python',
             'pcmdi_metrics.monsoon_sperber': 'src/python/monsoon_sperber/lib',
             }
 packages = find_packages()
-print("PKGS:",packages)
 scripts = ['pcmdi_metrics/pcmdi/scripts/mean_climate_driver.py',
            'pcmdi_metrics/pcmdi/scripts/pcmdi_compute_climatologies.py',
            'pcmdi_metrics/misc/scripts/parallelize_driver.py',
+           'pcmdi_metrics/misc/scripts/get_pmp_data.py',
            'pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py',
            'pcmdi_metrics/monsoon_sperber/scripts/driver_monsoon_sperber.py',
            ]
