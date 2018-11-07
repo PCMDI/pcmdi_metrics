@@ -13,7 +13,7 @@ class PMPDriverTest(basepmp.PMPTest):
         self.traceback = eval(os.environ.get("TRACEBACK","False"))
         self.update = eval(os.environ.get("UPDATE_TESTS","False"))
         if "COVERAGE_PROCESS_START" in os.environ:
-            runner = "coverage run -a"
+            runner = "coverage run"
         else:
             runner = "python"
         runner += " {}/".format(os.path.join(sys.prefix, "bin"))

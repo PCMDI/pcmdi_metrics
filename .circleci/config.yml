@@ -17,7 +17,7 @@ aliases:
     name: create_conda_env
     environment:
        PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner 'proj4<5'"
-       CHANNELS: "-c cdat/label/nightly -c cdat-forge -c conda-forge -c cdat -c pcmdi"
+       CHANNELS: "-c doutriaux1/label/crp -c cdat/label/nightly -c cdat-forge -c conda-forge -c cdat -c pcmdi"
     command: |
        export PATH=$WORKDIR/miniconda/bin:$PATH
        conda config --set always_yes yes --set changeps1 no
@@ -175,11 +175,11 @@ workflows:
   version: 2
   pcmdi_metrics:
     jobs:
-      - macos_pmp_py2
-      - macos_pmp_py3:
-           requires:
-              - macos_pmp_py2
-      - linux_pmp_py2
-      - linux_pmp_py3:
-           requires:
-              - linux_pmp_py2
+      #- macos_pmp_py2
+      #- macos_pmp_py3:
+      #     requires:
+      #        - macos_pmp_py2
+      - linux_pmp_py3
+      #- linux_pmp_py3:
+      #     requires:
+      #        - linux_pmp_py2
