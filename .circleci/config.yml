@@ -111,6 +111,8 @@ jobs:
       OS: "osx-64"
       PY_VER: "py3"
       FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
+      COVERAGE: "-c tests/coverage.json --coverage-from-egg"
+      COVERAGE_PKGS: "coverage coveralls"
     steps:
       - checkout
       - run: *setup_miniconda
@@ -175,11 +177,12 @@ workflows:
   version: 2
   pcmdi_metrics:
     jobs:
+      - macos_pmp_py3:
       #- macos_pmp_py2
       #- macos_pmp_py3:
       #     requires:
       #        - macos_pmp_py2
-      - linux_pmp_py3
+      #- linux_pmp_py2
       #- linux_pmp_py3:
       #     requires:
       #        - linux_pmp_py2
