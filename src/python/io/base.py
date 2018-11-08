@@ -536,17 +536,27 @@ class JSONs(object):
         self.axes = axes
         return self.axes
 
-    def __call__(self, **kargs):
+    def __call__(self, merge=[], **kargs):
         """ Returns the array of values"""
         axes = self.getAxisList()
+        axes_ids = self.getAxisIds()
         sh = []
         ids = []
+        used_ids = []
         for a in axes:
+            # Regular axis not a merged one
             sh.append(len(a))  # store length to construct array shape
             ids.append(a.id)  # store ids
 
+            used_ids.append(a.id)
+
+
+        print("IN GET SHAPES:", sh, ids)
         # first let's see which vars are actually asked for
         # for now assume all keys means restriction on dims
+        if "merge" in kargs:
+            merge  = kargs["merge"]
+            del(kargs["merge"])
         for axis_id in kargs:
             if axis_id not in ids:
                 raise ValueError("Invalid axis '%s'" % axis_id)
@@ -575,6 +585,56 @@ class JSONs(object):
         array = numpy.ma.ones(sh, dtype=numpy.float)
         # Now let's fill this array
         self.get_array_values_from_dict_recursive(array, [], [], [], axes)
+
+
+        # Ok at this point we need to take care of merged axes
+        print("MERGER IS:",merge)
+        sh2 = list(sh)
+        for merger in merge:
+            for merger in merge:  # loop through all possible merging
+                merged_indices = []
+                for id in merger:
+                    merged_indices.append(axes_ids.index(id))
+                for indx in merged_indices:
+                    sh2[indx] = 1
+                smallest = min(merged_indices)
+                for indx in merged_indices:
+                    sh2[smallest] *= sh[indx]
+        
+        print("SHAPE @ WOULD BE:", sh2, sh)
+        myorder = list(range(len(sh)))
+        for merger in merge:
+            merger = [axes_ids.index(x) for x in merger]
+            minIndex = min(merger)
+            order = []
+            for i in range(minIndex):
+                order.append(myorder[i])
+            order += merger
+            for i in range(minIndex+len(merger), len(sh)):
+                for j in range(i+1):
+                    if j not in order:
+                        order.append(j)
+            myorder = order
+
+        outData = numpy.transpose(array, myorder)
+        outData = numpy.reshape(outData, sh2)
+        print(outData.shape)
+
+        yank = []
+        for merger in merge:
+            merger = [axes_ids.index(x) for x in merger]
+            mn = min(merger)
+            merger.remove(mn)
+            yank += merger
+        yank = sorted(yank, reverse=True)
+        for yk in yank:
+            print("Yk:", yk)
+            extract = (slice(0, None),)*yk
+            extract += (0,)
+            print("EXTR:",  extract)
+        if yank != []:
+            outData = outData[extract]
+        print("OUT:",outData.shape)
 
         array = MV2.masked_greater(array, 9.e19)
         array.id = "pmp"
