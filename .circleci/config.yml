@@ -119,6 +119,7 @@ jobs:
       - run: *create_conda_env
       - run: *setup_pmp
       - run: *run_pmp_tests
+      - run: *run_coveralls
       - store_artifacts:
           path: tests_html
           destination: tests_html
