@@ -31,6 +31,25 @@ except Exception:
     basestring = str
 
 
+# Group merged axes
+def groupAxes(axes, final=[], ids=None, separator="_"):
+    if axes == []:
+        return cdms2.createAxis(final, id=separator.join(ids))
+    if final == []:
+        final = [val for val in axes[0]]
+        ids = [ax.id for ax in axes]
+        return groupAxes(axes[1:], final, ids)
+    axis = axes[0]
+    original_length = len(final)
+    final = final * len(axis)
+    idx = 0
+    for val in axis:
+        for i in range(original_length):
+            final[idx] = "{}{}{}".format(final[idx], separator, val)
+            idx += 1
+    return groupAxes(axes[1:], final, ids)
+
+
 # cdutil region object need a serializer
 def update_dict(d, u):
     for k, v in u.items():
@@ -45,7 +64,10 @@ def update_dict(d, u):
 # Platform
 def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
     try:
-        p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(
+            shlex.split(cmd),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
     except Exception:
         return
     out, stde = p.communicate()
@@ -136,7 +158,9 @@ def generateProvenance():
     }
     prov["openGL"] = collections.OrderedDict()
     populate_prov(prov["openGL"], "glxinfo", pairs, sep=":", index=-1)
-    prov["openGL"]["GLX"] = {"server": collections.OrderedDict(), "client": collections.OrderedDict()}
+    prov["openGL"]["GLX"] = {
+        "server": collections.OrderedDict(),
+        "client": collections.OrderedDict()}
     pairs = {
         "version": "GLX version",
     }
@@ -145,12 +169,22 @@ def generateProvenance():
         "vendor": "server glx vendor string",
         "version": "server glx version string",
     }
-    populate_prov(prov["openGL"]["GLX"]["server"], "glxinfo", pairs, sep=":", index=-1)
+    populate_prov(
+        prov["openGL"]["GLX"]["server"],
+        "glxinfo",
+        pairs,
+        sep=":",
+        index=-1)
     pairs = {
         "vendor": "client glx vendor string",
         "version": "client glx version string",
     }
-    populate_prov(prov["openGL"]["GLX"]["client"], "glxinfo", pairs, sep=":", index=-1)
+    populate_prov(
+        prov["openGL"]["GLX"]["client"],
+        "glxinfo",
+        pairs,
+        sep=":",
+        index=-1)
     return prov
 
 
@@ -198,8 +232,15 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                     'Could not create output directory: %s' % dir_path)
 
         if self.type == 'json':
-            json_version = float(kwargs.get("json_version", data.get("json_version", 3.0)))
-            json_structure = kwargs.get("json_structure", data.get("json_structure", None))
+            json_version = float(
+                kwargs.get(
+                    "json_version",
+                    data.get(
+                        "json_version",
+                        3.0)))
+            json_structure = kwargs.get(
+                "json_structure", data.get(
+                    "json_structure", None))
             if json_version >= 3.0 and json_structure is None:
                 raise Exception(
                     "json_version 3.0 of PMP requires json_structure to be passed" +
@@ -232,7 +273,9 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             logging.getLogger("pcmdi_metrics").error('Unknown type: %s' % type)
             raise RuntimeError('Unknown type: %s' % type)
 
-        logging.getLogger("pcmdi_metrics").info('Results saved to a %s file: %s' % (type, file_name))
+        logging.getLogger("pcmdi_metrics").info(
+            'Results saved to a %s file: %s' %
+            (type, file_name))
 
     def get(self, var, var_in_file=None,
             region={}, *args, **kwargs):
@@ -342,7 +385,8 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             self.target_grid = target
             self.target_grid_name = target
         else:
-            logging.getLogger("pcmdi_metrics").error('Unknown grid: %s' % target)
+            logging.getLogger("pcmdi_metrics").error(
+                'Unknown grid: %s' % target)
             raise RuntimeError('Unknown grid: %s' % target)
 
     def setup_cdms2(self):
@@ -370,7 +414,8 @@ class JSONs(object):
                 m = V[model]
                 for ref in list(m.keys()):
                     aref = m[ref]
-                    if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
+                    if not(isinstance(aref, dict) and
+                           "source" in aref):  # not an obs key
                         continue
                     reals = list(aref.keys())
                     src = reals.pop(reals.index("source"))
@@ -399,15 +444,19 @@ class JSONs(object):
                                         domain = "global"
                                     sp = new_key.split("_")
                                     stat = "_".join(sp[:-1])
-                                    stat_dict = areal2[region2 + domain].get(stat, {})
+                                    stat_dict = areal2[region2 +
+                                                       domain].get(stat, {})
                                     season = sp[-1]
                                     season_dict = stat_dict
                                     stat_dict[season] = reg[k]
                                     if stat in areal2[region2 + domain]:
-                                        areal2[region2 + domain][stat].update(stat_dict)
+                                        areal2[region2 +
+                                               domain][stat].update(stat_dict)
                                     else:
-                                        areal2[region2 + domain][stat] = stat_dict
-                        # Now we can replace the realization with the correctly formatted one
+                                        areal2[region2 +
+                                               domain][stat] = stat_dict
+                        # Now we can replace the realization with the correctly
+                        # formatted one
                         aref[real] = areal2
                     # restore ref into model
                     m[ref] = aref
@@ -417,7 +466,8 @@ class JSONs(object):
                 m = V[model]
                 for ref in list(m.keys()):
                     aref = m[ref]
-                    if not(isinstance(aref, dict) and "source" in aref):  # not an obs key
+                    if not(isinstance(aref, dict) and
+                           "source" in aref):  # not an obs key
                         continue
                     reals = list(aref.keys())
                     src = reals.pop(reals.index("source"))
@@ -453,10 +503,12 @@ class JSONs(object):
 
     def get_axes_values_recursive(self, depth, max_depth, data, values):
         for k in list(data.keys()):
-            if k not in self.ignored_keys and (isinstance(data[k], dict) or depth == max_depth):
+            if k not in self.ignored_keys and (
+                    isinstance(data[k], dict) or depth == max_depth):
                 values[depth].add(k)
                 if depth != max_depth:
-                    self.get_axes_values_recursive(depth + 1, max_depth, data[k], values)
+                    self.get_axes_values_recursive(
+                        depth + 1, max_depth, data[k], values)
 
     def get_array_values_from_dict_recursive(self, out, ids, nms, axval, axes):
         if len(axes) > 0:
@@ -477,7 +529,8 @@ class JSONs(object):
             except Exception:
                 out[tuple(ids)] = 1.e20
 
-    def __init__(self, files=[], structure=[], ignored_keys=[], oneVariablePerFile=True):
+    def __init__(self, files=[], structure=[], ignored_keys=[],
+                 oneVariablePerFile=True):
         self.json_version = 3.0
         self.json_struct = structure
         self.data = {}
@@ -530,7 +583,8 @@ class JSONs(object):
         axes = []
         for a in self.json_struct:
             values.append(set())
-        self.get_axes_values_recursive(0, len(self.json_struct) - 1, self.data, values)
+        self.get_axes_values_recursive(
+            0, len(self.json_struct) - 1, self.data, values)
         for i, nm in enumerate(self.json_struct):
             axes.append(cdms2.createAxis(sorted(list(values[i])), id=nm))
         self.axes = axes
@@ -550,13 +604,18 @@ class JSONs(object):
 
             used_ids.append(a.id)
 
-
-        print("IN GET SHAPES:", sh, ids)
         # first let's see which vars are actually asked for
         # for now assume all keys means restriction on dims
         if "merge" in kargs:
-            merge  = kargs["merge"]
+            merge = kargs["merge"]
             del(kargs["merge"])
+        if not isinstance(merge, (list, tuple)):
+            raise RuntimeError(
+                "merge keyword must be a list of dimensions to merge together")
+
+        if len(merge) > 0 and not isinstance(merge[0], (list, tuple)):
+            merge = [merge, ]
+
         for axis_id in kargs:
             if axis_id not in ids:
                 raise ValueError("Invalid axis '%s'" % axis_id)
@@ -586,9 +645,10 @@ class JSONs(object):
         # Now let's fill this array
         self.get_array_values_from_dict_recursive(array, [], [], [], axes)
 
-
         # Ok at this point we need to take care of merged axes
-        print("MERGER IS:",merge)
+        # First let's create the merged axes
+        new_axes = [groupAxes([self.getAxis(x) for x in merger])
+                    for merger in merge]
         sh2 = list(sh)
         for merger in merge:
             for merger in merge:  # loop through all possible merging
@@ -600,25 +660,21 @@ class JSONs(object):
                 smallest = min(merged_indices)
                 for indx in merged_indices:
                     sh2[smallest] *= sh[indx]
-        
-        print("SHAPE @ WOULD BE:", sh2, sh)
-        myorder = list(range(len(sh)))
-        for merger in merge:
-            merger = [axes_ids.index(x) for x in merger]
-            minIndex = min(merger)
-            order = []
-            for i in range(minIndex):
-                order.append(myorder[i])
-            order += merger
-            for i in range(minIndex+len(merger), len(sh)):
-                for j in range(i+1):
-                    if j not in order:
-                        order.append(j)
-            myorder = order
+
+        myorder = []
+        for index in range(len(sh)):
+            if index in myorder:
+                continue
+            for merger in merge:
+                merger = [axes_ids.index(x) for x in merger]
+                if index in merger and index not in myorder:
+                    for indx in merger:
+                        myorder.append(indx)
+            if index not in myorder:  # ok did not find this one anywhere
+                myorder.append(index)
 
         outData = numpy.transpose(array, myorder)
         outData = numpy.reshape(outData, sh2)
-        print(outData.shape)
 
         yank = []
         for merger in merge:
@@ -628,15 +684,31 @@ class JSONs(object):
             yank += merger
         yank = sorted(yank, reverse=True)
         for yk in yank:
-            print("Yk:", yk)
-            extract = (slice(0, None),)*yk
+            extract = (slice(0, None),) * yk
             extract += (0,)
-            print("EXTR:",  extract)
-        if yank != []:
             outData = outData[extract]
-        print("OUT:",outData.shape)
-
-        array = MV2.masked_greater(array, 9.e19)
-        array.id = "pmp"
-        array.setAxisList(axes)
-        return array
+        # Ok now let's apply the newaxes
+        sub = 0
+        outData = MV2.array(outData)
+        merged_axis_done = []
+        for index in range(len(array.shape)):
+            foundInMerge = False
+            for imerge, merger in enumerate(merge):
+                merger = [axes_ids.index(x) for x in merger]
+                if index in merger:
+                    foundInMerge = True
+                    if imerge not in merged_axis_done:
+                        merged_axis_done.append(imerge)
+                        setMergedAxis = imerge
+                    else:
+                        setMergedAxis = -1
+            if not foundInMerge:
+                outData.setAxis(index - sub, axes[index])
+            else:
+                if setMergedAxis == -1:
+                    sub += 1
+                else:
+                    outData.setAxis(index - sub, new_axes[setMergedAxis])
+        outData = MV2.masked_greater(outData, 9.e19)
+        outData.id = "pmp"
+        return outData
