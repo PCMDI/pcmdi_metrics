@@ -24,13 +24,16 @@ import time as atime
 
 var = 'pr'
 var_file = '/work/cmip5-test/new/historical/atmos/day/pr/cmip5.GFDL-CM3.historical.r1i1p1.day.atmos.day.pr.000000.v20120227.xml' 
+#var_file = '/work/cmip-dyn/CMIP5/CMIP/' + exp + '/atmos/day/pr/'
+var_file = '/export/gleckler1/XMLS/work/cmip-dyn/CMIP5/CMIP/historical/atmos/day/pr/CMIP5.CMIP.historical.NOAA-GFDL.GFDL-CM3.r1i1p1.day.pr.atmos.glb-2d-gu.v20120227.0000000.0.xml'
+
 latitude = 'latitude'
 mod_name = 'GFDL-CM3'
 exp = 'historical'
 mip = 'cmip5'
 
 lat = 'latitude'
-pathout = '/export_backup/gleckler1/processing/metrics_package/my_test/mfw_extremes/'
+pathout = '/export/gleckler1/processing/metrics_package/my_test/mfw_extremes/'
 testrun = 'y'
 
 #var=sys.argv[1]
