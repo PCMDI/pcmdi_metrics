@@ -178,12 +178,11 @@ workflows:
   version: 2
   pcmdi_metrics:
     jobs:
-      - linux_pmp_py3
-      #- macos_pmp_py2
-      #- macos_pmp_py3:
-      #     requires:
-      #        - macos_pmp_py2
-      #- linux_pmp_py2
-      #- linux_pmp_py3:
-      #     requires:
-      #        - linux_pmp_py2
+      - macos_pmp_py2
+      - macos_pmp_py3:
+           requires:
+              - macos_pmp_py2
+      - linux_pmp_py2
+      - linux_pmp_py3:
+           requires:
+              - linux_pmp_py2
