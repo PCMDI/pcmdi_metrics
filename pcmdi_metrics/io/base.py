@@ -531,9 +531,12 @@ class JSONs(object):
         for a in self.json_struct:
             values.append(set())
         self.get_axes_values_recursive(0, len(self.json_struct) - 1, self.data, values)
+        autoBounds = cdms2.getAutoBounds()
+        cdms2.setAutoBounds("off")
         for i, nm in enumerate(self.json_struct):
             axes.append(cdms2.createAxis(sorted(list(values[i])), id=nm))
         self.axes = axes
+        cdms2.setAutoBounds(autoBounds)
         return self.axes
 
     def __call__(self, **kargs):
