@@ -6,22 +6,17 @@ import sys
 import pcmdi_metrics
 import glob
 import shutil
+from pcmdi_metrics.pcmdi import PMPDriver, create_mean_climate_parser
 
 class PMPDriverTest(basepmp.PMPTest):
     def setUp(self):
         self.path_parameter_files = os.path.join(os.path.dirname(__file__),"pcmdi")
         self.traceback = eval(os.environ.get("TRACEBACK","False"))
         self.update = eval(os.environ.get("UPDATE_TESTS","False"))
-        if "COVERAGE_PROCESS_START" in os.environ:
-            runner = "coverage run"
-        else:
-            runner = "python"
-        runner += " {}/".format(os.path.join(sys.prefix, "bin"))
-        self.runner = runner
 
     def runPMP(self,parameterFile):
         if self.traceback:
-            tb="-t"
+            tb = "-t"
         else:
             tb = ""
         print()
@@ -35,10 +30,13 @@ class PMPDriverTest(basepmp.PMPTest):
         print()
         print()
         print()
-        cmd = "{}mean_climate_driver.py -p {} {}".format(self.runner, parameterFile, tb)
-        subprocess.call(shlex.split(cmd))
 
-        parameters,files = self.assertFilesOut(parameterFile)
+        parser = create_mean_climate_parser()
+        parser.add_args_and_values(['-p', parameterFile])
+        parameter = parser.get_parameter(cmd_default_vars=False, argparse_vals_only=False)
+        driver = PMPDriver(parameter)
+        driver.run_diags()
+        parameters, files = self.assertFilesOut(parameterFile)
 
         for fnm in files:
             nm = os.path.basename(fnm)
