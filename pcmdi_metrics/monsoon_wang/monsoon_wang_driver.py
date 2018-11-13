@@ -227,7 +227,6 @@ def monsoon_wang_runner(args):
     exec(compile(open(os.path.join(egg_pth, "default_regions.py")).read(),
                  os.path.join(egg_pth, "default_regions.py"), 'exec'), globals, locals)
     regions_specs = locals["regions_specs"]
-    default_regions = locals["default_regions"]
     doms = ['AllMW', 'AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
 
     mpi_stats_dic = {}
