@@ -11,6 +11,7 @@ import collections
 import glob
 import pkg_resources
 
+
 def create_monsoon_wang_parser():
     P = PMPParser()
 
@@ -20,38 +21,39 @@ def create_monsoon_wang_parser():
     P.use("--reference_data_path")
 
     P.add_argument("--outpj", "--outpathjsons",
-                type=str,
-                dest='outpathjsons',
-                default='.',
-                help="Output path for jsons")
+                   type=str,
+                   dest='outpathjsons',
+                   default='.',
+                   help="Output path for jsons")
     P.add_argument("--outnj", "--outnamejson",
-                type=str,
-                dest='jsonname',
-                default='out.json',
-                help="Output path for jsons")
+                   type=str,
+                   dest='jsonname',
+                   default='out.json',
+                   help="Output path for jsons")
     P.add_argument("-e", "--experiment",
-                type=str,
-                dest='experiment',
-                default='historical',
-                help="AMIP, historical or picontrol")
+                   type=str,
+                   dest='experiment',
+                   default='historical',
+                   help="AMIP, historical or picontrol")
     P.add_argument("-c", "--MIP",
-                type=str,
-                dest='mip',
-                default='CMIP5',
-                help="put options here")
+                   type=str,
+                   dest='mip',
+                   default='CMIP5',
+                   help="put options here")
     P.add_argument("--ovar",
-                dest='obsvar',
-                default='pr',
-                help="Name of variable in obs file")
+                   dest='obsvar',
+                   default='pr',
+                   help="Name of variable in obs file")
     P.add_argument("-v", "--var",
-                dest='modvar',
-                default='pr',
-                help="Name of variable in model files")
+                   dest='modvar',
+                   default='pr',
+                   help="Name of variable in model files")
     P.add_argument("-t", "--threshold",
-                default=2.5 / 86400.,
-                type=float,
-                help="Threshold for a hit when computing skill score")
+                   default=2.5 / 86400.,
+                   type=float,
+                   help="Threshold for a hit when computing skill score")
     return P
+
 
 def monsoon_wang_runner(args):
     # args = P.parse_args(sys.argv[1:])
@@ -117,7 +119,6 @@ def monsoon_wang_runner(args):
             'MRI-ESM1',
             'NorESM1-M',
             'NorESM1-ME']
-
 
     # VAR IS FIXED TO BE PRECIP FOR CALCULATING MONSOON PRECIPITATION INDICES
     var = args.modvar
@@ -217,15 +218,15 @@ def monsoon_wang_runner(args):
             'NorESM1-M',
             'NorESM1-ME']
 
-
     #########################################
 
-    egg_pth = pkg_resources.resource_filename(pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
+    egg_pth = pkg_resources.resource_filename(
+        pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
     globals = {}
     locals = {}
     exec(compile(open(os.path.join(egg_pth, "default_regions.py")).read(),
-                os.path.join(egg_pth, "default_regions.py"), 'exec'), globals, locals)
-    regions_specs = locals["regions_specs"] 
+                 os.path.join(egg_pth, "default_regions.py"), 'exec'), globals, locals)
+    regions_specs = locals["regions_specs"]
     default_regions = locals["default_regions"]
     doms = ['AllMW', 'AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
 
@@ -287,7 +288,6 @@ def monsoon_wang_runner(args):
             g.close()
         f.close()
 
-
     #  OUTPUT METRICS TO JSON FILE
     OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), json_filename)
 
@@ -299,8 +299,9 @@ def monsoon_wang_runner(args):
     metrics_dictionary = collections.OrderedDict()
     metrics_def_dictionary = collections.OrderedDict()
     metrics_dictionary["DISCLAIMER"] = disclaimer
-    metrics_dictionary["REFERENCE"] = "The statistics in this file are based on Wang, B., Kim, HJ., Kikuchi, K. et al. " +\
-                                    "Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0"
+    metrics_dictionary["REFERENCE"] = "The statistics in this file are based on" +\
+        " Wang, B., Kim, HJ., Kikuchi, K. et al. " +\
+        "Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0"
     metrics_dictionary["RESULTS"] = mpi_stats_dic  # collections.OrderedDict()
 
     OUT.var = var

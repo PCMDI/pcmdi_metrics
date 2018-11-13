@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 import logging
 import json
@@ -22,9 +21,11 @@ class PMPDriver(object):
         for h in plog.handlers:
             h.setFormatter(formatter)
 
-        fh = logging.FileHandler('pcmdi_metrics_driver.%s.log' % (parameter.case_id))
+        fh = logging.FileHandler(
+            'pcmdi_metrics_driver.%s.log' % (parameter.case_id))
         fh.setLevel(LOG_LEVEL)
-        formatter = logging.Formatter('%(levelname)s::%(asctime)s:: %(message)s', datefmt="%Y-%m-%d %H:%M")
+        formatter = logging.Formatter(
+            '%(levelname)s::%(asctime)s:: %(message)s', datefmt="%Y-%m-%d %H:%M")
         fh.setFormatter(formatter)
         plog.addHandler(fh)
         self.parameter = parameter
@@ -33,7 +34,8 @@ class PMPDriver(object):
         self.var = ''
         self.output_metric = None
         self.region = ''
-        self.sftlf = pcmdi_metrics.driver.dataset.DataSet.create_sftlf(self.parameter)
+        self.sftlf = pcmdi_metrics.driver.dataset.DataSet.create_sftlf(
+            self.parameter)
         self.default_regions = []
         self.regions_specs = {}
 
@@ -49,7 +51,8 @@ class PMPDriver(object):
             self.var = self.var_name_long.split('_')[0]
 
             if self.var not in self.obs_dict:
-                logging.getLogger("pcmdi_metrics").error('Variable %s not in obs_dict' % self.var)
+                logging.getLogger("pcmdi_metrics").error(
+                    'Variable %s not in obs_dict' % self.var)
                 continue
 
             self.output_metric = OutputMetrics(self.parameter, self.var_name_long,
@@ -69,7 +72,8 @@ class PMPDriver(object):
         ''' Loads obs_info_dictionary.json and appends
         custom_observations from the parameter file if needed. '''
         obs_file_name = 'obs_info_dictionary.json'
-        obs_json_file = pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj(obs_file_name)
+        obs_json_file = pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj(
+            obs_file_name)
         obs_dict = json.loads(obs_json_file.read())
         obs_json_file.close()
 
@@ -103,14 +107,17 @@ class PMPDriver(object):
         ''' Gets the default_regions dict and regions_specs dict
         from default_regions.py and stores them as attributes. '''
         default_regions_file = \
-            pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj('default_regions.py')
-        exec(compile(open(default_regions_file.name).read(), default_regions_file.name, 'exec'))
+            pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj(
+                'default_regions.py')
+        exec(compile(open(default_regions_file.name).read(),
+                     default_regions_file.name, 'exec'))
         default_regions_file.close()
         try:
             self.default_regions = locals()['default_regions']
             self.regions_specs = locals()['regions_specs']
         except KeyError:
-            logging.getLogger("pcmdi_metrics").error('Failed to open default_regions.py')
+            logging.getLogger("pcmdi_metrics").error(
+                'Failed to open default_regions.py')
 
         region_values = self.parameter.regions_values
         region_values.update(getattr(self.parameter, "regions_values", {}))
@@ -201,11 +208,13 @@ class PMPDriver(object):
         ''' Actually create Observation or Module object
         based on if ref_or_test is an obs or model. '''
         if is_obs:
-            logging.getLogger("pcmdi_metrics").info('%s is an obs' % ref_or_test)
+            logging.getLogger("pcmdi_metrics").info(
+                '%s is an obs' % ref_or_test)
             return Observation(self.parameter, self.var_name_long, self.region,
                                ref_or_test, self.obs_dict, data_path, self.sftlf)
         else:
-            logging.getLogger("pcmdi_metrics").info('%s is a model' % ref_or_test)
+            logging.getLogger("pcmdi_metrics").info(
+                '%s is a model' % ref_or_test)
             return Model(self.parameter, self.var_name_long, self.region,
                          ref_or_test, self.obs_dict, data_path, self.sftlf)
 
@@ -216,7 +225,7 @@ def create_mean_climate_parser():
         '--case_id',
         dest='case_id',
         help='Defines a subdirectory to the metrics output, so multiple' +
-            'cases can be compared',
+        'cases can be compared',
         required=False)
 
     parser.add_argument(
@@ -247,7 +256,7 @@ def create_mean_climate_parser():
         nargs='+',
         dest='reference_data_set',
         help='List of observations or models that are used as a ' +
-            'reference against the test_data_set',
+        'reference against the test_data_set',
         required=False)
 
     parser.add_argument(
@@ -262,7 +271,7 @@ def create_mean_climate_parser():
         nargs='+',
         dest='test_data_set',
         help='List of observations or models to test ' +
-            'against the reference_data_set',
+        'against the reference_data_set',
         required=False)
 
     parser.add_argument(
@@ -287,7 +296,7 @@ def create_mean_climate_parser():
         '--regrid_method',
         dest='regrid_method',
         help='Options are "linear" or "conservative", ' +
-            'only if regrid_tool is "esmf"',
+        'only if regrid_tool is "esmf"',
         required=False)
 
     parser.add_argument(
@@ -300,7 +309,7 @@ def create_mean_climate_parser():
         '--regrid_method_ocn',
         dest='regrid_method_ocn',
         help='Options are "linear" or "conservative", ' +
-            'only if regrid_tool is "esmf"',
+        'only if regrid_tool is "esmf"',
         required=False)
 
     parser.add_argument(
@@ -320,7 +329,7 @@ def create_mean_climate_parser():
         type=ast.literal_eval,
         dest='simulation_description_mapping',
         help='List of observations or models to test ' +
-            'against the reference_data_set',
+        'against the reference_data_set',
         default={},
         required=False)
 
@@ -374,14 +383,14 @@ def create_mean_climate_parser():
         type=lambda x: x.lower() == 'true',
         dest='save_test_clims',
         help='True if to save interpolated test climatologies,' +
-            ' otherwise False',
+        ' otherwise False',
         required=False)
 
     parser.add_argument(
         '--test_clims_interpolated_output',
         dest='test_clims_interpolated_output',
         help='Directory of where to put the interpolated ' +
-            'test climatologies',
+        'test climatologies',
         required=False)
 
     parser.add_argument(
@@ -394,5 +403,5 @@ def create_mean_climate_parser():
         dest='user_notes',
         help='Provide a short description to help identify this run of the PMP mean climate.',
         required=False)
-    
+
     return parser
