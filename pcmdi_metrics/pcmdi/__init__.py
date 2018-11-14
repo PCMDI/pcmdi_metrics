@@ -15,3 +15,4 @@ from . import std_xyt  # noqa
 from . import seasonal_mean  # noqa
 from . import zonal_mean  # noqa
 from . import pmp_parser  # noqa
+from .mean_climate_metrics_driver import PMPDriver, create_mean_climate_parser  # noqa

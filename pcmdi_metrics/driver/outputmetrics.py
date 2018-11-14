@@ -116,7 +116,7 @@ class OutputMetrics(object):
 
         try:
             test_data = test()
-        except RuntimeError as e:
+        except RuntimeError:
             # THIS EXCEPTION IS RAISED TO BREAK OUT OF THE FOR LOOP IN PCMDI_DRIVER
             # THIS SHOULD BE A CUSTOM EXCEPTION (PrematureBreakError)
             raise RuntimeError('Need to skip model: %s' % test.obs_or_model)

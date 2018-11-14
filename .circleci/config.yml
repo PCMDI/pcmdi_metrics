@@ -24,9 +24,9 @@ aliases:
        conda update -y -q conda
        conda config --set anaconda_upload no
        if [[ $PY_VER = "py2" ]]; then
-          conda create -n $PY_VER -q -n $PY_VER $CHANNELS "python<3" $PKGS $FFMPEG
+          conda create -q -n $PY_VER $CHANNELS "python<3" $PKGS $FFMPEG
        else
-          conda create -n $PY_VER -q -n $PY_VER $CHANNELS "python>3" $PKGS $FFMPEG $COVERAGE_PKGS
+          conda create -q -n $PY_VER $CHANNELS "python>3" $PKGS $FFMPEG $COVERAGE_PKGS
        fi
 
   - &setup_pmp
@@ -45,7 +45,6 @@ aliases:
        source activate $PY_VER
        python run_tests.py -H -v2 $COVERAGE
        RESULT=$?
-       cd ..
        echo "*** $PY_VER test result: "${RESULT}
 
   - &run_coveralls
@@ -78,12 +77,8 @@ aliases:
        rm -rf cdp
        cp -r ../../recipes/pcmdi_metrics .
        python ./prep_for_build.py -l 1.2
-       if [[ $PY_VER = 'py2' ]]; then
-          conda build $PKG_NAME $CHANNELS --python=27
-       else
-          conda build $PKG_NAME $CHANNELS --python=36
-       fi
-       anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l $LABEL $CONDA_BLD_PATH/$OS/$PKG_NAME-*tar.bz2 --force
+       conda build $PKG_NAME $CHANNELS --python=36
+       anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l $LABEL $CONDA_BLD_PATH/noarch/$PKG_NAME-*tar.bz2 --force
 
 
 jobs:
@@ -101,7 +96,6 @@ jobs:
       - run: *create_conda_env
       - run: *setup_pmp
       - run: *run_pmp_tests
-      - run: *conda_upload
       - store_artifacts:
           path: tests_html
           destination: tests_html
@@ -117,13 +111,15 @@ jobs:
       OS: "osx-64"
       PY_VER: "py3"
       FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
+      COVERAGE: "-c tests/coverage.json --coverage-from-egg"
+      COVERAGE_PKGS: "coverage coveralls"
     steps:
       - checkout
       - run: *setup_miniconda
       - run: *create_conda_env
       - run: *setup_pmp
       - run: *run_pmp_tests
-      - run: *conda_upload
+      - run: *run_coveralls
       - store_artifacts:
           path: tests_html
           destination: tests_html
@@ -145,7 +141,6 @@ jobs:
       - run: *create_conda_env
       - run: *setup_pmp
       - run: *run_pmp_tests
-      - run: *conda_upload
       - store_artifacts:
           path: tests_html
           destination: tests_html
@@ -161,7 +156,7 @@ jobs:
       OS: "linux-64"
       PY_VER: "py3"
       FFMPEG: "ffmpeg"
-      COVERAGE: "-c tests/coverage.json"
+      COVERAGE: "-c tests/coverage.json --coverage-from-egg"
       COVERAGE_PKGS: "coverage coveralls"
     steps:
       - checkout
@@ -177,6 +172,7 @@ jobs:
       - store_artifacts:
           path: tests_png
           destination: tests_png
+
 
 workflows:
   version: 2
