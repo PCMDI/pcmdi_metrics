@@ -1,15 +1,3 @@
 {
-   "include": ["pcmdi_metrics"],
-   "subprocess": ["bin/mean_climate_driver.py", 
-   		 "bin/pcmdi_compute_climatologies.py",
-		 "bin/computeStdDailyMeansWrapped.py",
-		 "bin/fourierDiurnalAllGridWrapped.py",
-		 "bin/compositeDiurnalStatisticsWrapped.py",
-		 "bin/std_of_hourlyvaluesWrappedInOut.py",
-		 "bin/std_of_meandiurnalcycWrappedInOut.py",
-		 "bin/savg_fourierWrappedInOut.py",
-		 "bin/fourierDiurnalGridpoints.py",
-		 "bin/std_of_dailymeansWrappedInOut.py",
-		 "bin/mpindex_compute.py",
-		 "bin/driver_monsoon_sperber.py"]
+   "include": ["pcmdi_metrics"]
 }
