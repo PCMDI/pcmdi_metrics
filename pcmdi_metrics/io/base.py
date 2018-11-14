@@ -595,6 +595,8 @@ class JSONs(object):
 
     def __call__(self, merge=[], **kargs):
         """ Returns the array of values"""
+        ab = cdms2.getAutoBounds()
+        cdms2.setAutoBounds("off")
         axes = self.getAxisList()
         axes_ids = self.getAxisIds()
         sh = []
@@ -714,4 +716,5 @@ class JSONs(object):
                     outData.setAxis(index - sub, new_axes[setMergedAxis])
         outData = MV2.masked_greater(outData, 9.e19)
         outData.id = "pmp"
+        cdms2.setAutoBounds(ab)
         return outData
