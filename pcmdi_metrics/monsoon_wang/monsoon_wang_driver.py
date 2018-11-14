@@ -296,7 +296,6 @@ def monsoon_wang_runner(args):
             "disclaimer.txt")).read()
 
     metrics_dictionary = collections.OrderedDict()
-    metrics_def_dictionary = collections.OrderedDict()
     metrics_dictionary["DISCLAIMER"] = disclaimer
     metrics_dictionary["REFERENCE"] = "The statistics in this file are based on" +\
         " Wang, B., Kim, HJ., Kikuchi, K. et al. " +\
