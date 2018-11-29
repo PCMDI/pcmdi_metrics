@@ -9,21 +9,25 @@ source:
 build:
     script: python setup.py install
     number: @BUILD_NUMBER@
+    noarch: python
 
 requirements:
   build:
-    - python
+    - python {{ python}}
     - setuptools
     - numpy
   run:
+    - python {{ python }}
     - vcs >=2.10
     - vcsaddons >=2.10
     - cdms2 >=2.10
     - genutil >=2.10
     - cdutil >=2.10
-    - cdp
+    - cdp >=1.3.2
     - matplotlib
     - numpy
+    - cia
+    - proj4 <5
 
 
 about:

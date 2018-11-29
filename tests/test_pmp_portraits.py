@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+from __future__ import print_function
 import basepmpgraphics
 import os
 import pcmdi_metrics.graphics.portraits
@@ -8,6 +8,10 @@ import numpy
 import genutil
 import vcs
 import sys
+import pkg_resources
+one = pkg_resources.Requirement.parse("pcmdi_metrics")
+print("ONE:",one)
+egg_pth = pkg_resources.resource_filename(one, "share/pmp")
 
 class TestPortraits(basepmpgraphics.TestGraphics):
     def __init__(self,*args,**kargs):
@@ -16,17 +20,17 @@ class TestPortraits(basepmpgraphics.TestGraphics):
 
     def test_portrait(self):
 
-        print
-        print
-        print
-        print
-        print "---------------------------------------------------"
-        print "RUNNING: Portrait test"
-        print "---------------------------------------------------"
-        print
-        print
-        print
-        print
+        print()
+        print()
+        print()
+        print()
+        print("---------------------------------------------------")
+        print("RUNNING: Portrait test")
+        print("---------------------------------------------------")
+        print()
+        print()
+        print()
+        print()
         # CREATES VCS OBJECT AS A PORTAIT PLOT AND LOADS PLOT SETTINGS FOR
         # EXAMPLE
         self.x.portrait()
@@ -51,7 +55,7 @@ class TestPortraits(basepmpgraphics.TestGraphics):
         P.PLOT_SETTINGS.ytic2.x2 = P.PLOT_SETTINGS.x2
 
         # P.PLOT_SETTINGS.missing_color = 3
-        P.PLOT_SETTINGS.logo = os.path.join(sys.prefix,"share","pmp","graphics","png","160915_PCMDI_logo_348x300px.png")
+        P.PLOT_SETTINGS.logo = os.path.join(egg_pth, "graphics", "png", "PCMDILogo-old_348x300px_72dpi.png")
         P.PLOT_SETTINGS.logo.y = .95
         P.PLOT_SETTINGS.logo.x = .93
         P.PLOT_SETTINGS.logo.width = 85
@@ -61,15 +65,13 @@ class TestPortraits(basepmpgraphics.TestGraphics):
 
         self.x.scriptrun(
             os.path.join(
-                sys.prefix,
-                "share",
-                "pmp",
+                egg_pth,
                 "graphics",
                 'vcs',
                 'portraits.scr'))
         P.PLOT_SETTINGS.colormap = 'bl_rd_12'
         # cols=vcs.getcolors(P.PLOT_SETTINGS.levels,range(16,40),split=1)
-        cols = vcs.getcolors(P.PLOT_SETTINGS.levels, range(144, 156), split=1)
+        cols = vcs.getcolors(P.PLOT_SETTINGS.levels, list(range(144, 156)), split=1)
         P.PLOT_SETTINGS.fillareacolors = cols
 
         P.PLOT_SETTINGS.parametertable.expansion = 100
@@ -78,8 +80,8 @@ class TestPortraits(basepmpgraphics.TestGraphics):
 
         mods = sorted(J.getAxis("model")[:])
         variables = sorted(J.getAxis("variable")[:])
-        print "MODELS:",len(mods),mods
-        print "VARS:",len(variables),variables
+        print("MODELS:",len(mods),mods)
+        print("VARS:",len(variables),variables)
         # Get what we need
         out1_rel = J(statistic=["rms_xyt"],season=["ann"],region="global")(squeeze=1)
 
@@ -97,8 +99,7 @@ class TestPortraits(basepmpgraphics.TestGraphics):
         for i in range(len(variablesAxis)):
             variablesAxis[i] = variablesAxis[i] + '  '
 
-        yax = [s.encode('utf-8')
-               for s in mods]  # CHANGE FROM UNICODE TO BYTE STRINGS
+        yax = [str(s) for s in mods]
 
         # GENERATE PLOT
         P.decorate(out1_rel, variables, yax)
