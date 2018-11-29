@@ -826,7 +826,8 @@ class Portrait(object):
                 raise 'Error cannot understand what you mean by template=' + \
                     str(template)
 
-            template = vcs.createtemplate()
+            template = vcs.createtemplate(source=tid)
+            print("We reset template to:", template)
 
         # Do we use a predefined meshfill ?
         if meshfill is None:
