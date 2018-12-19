@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Adapted for numpy/ma/cdms2 by convertcdms.py
 
-
+from __future__ import print_function
 import MV2,vcs,sys,genutil,numpy
 
 def createTemplateandGM(x,min,max,deltaisof,deltaisol,days_line,ntemplate=1,orientation='landscape'):
@@ -72,8 +72,8 @@ def createTemplateandGM(x,min,max,deltaisof,deltaisol,days_line,ntemplate=1,orie
     levs1a=list(numpy.arange(min,0,deltaisol))
     levs1b=list(numpy.arange(0,max,deltaisol))
     isof.levels=levs2
-    print levs2
-    print "colors:", vcs.getcolors(levs2,colors=range(16,40))
+    print(levs2)
+    print("colors:", vcs.getcolors(levs2,colors=range(16,40)))
     isof.fillareacolors=vcs.getcolors(levs2,colors=range(16,40))
 
     levs1a=list(numpy.arange(min,0,deltaisol))
@@ -106,11 +106,11 @@ def createTemplateandGM(x,min,max,deltaisof,deltaisol,days_line,ntemplate=1,orie
 def mask_power(power,wvnb,fqcy):
     w=power.getAxis(1)
     f=power.getAxis(0)
-##     print w
-##     print f
+##     print(w)
+##     print(f)
     iw=-1
     for i in range(len(w)):
-        #print w[i],wvnb
+        #print(w[i],wvnb)
         if w[i]==wvnb:
             iw=i
             break
@@ -118,12 +118,12 @@ def mask_power(power,wvnb,fqcy):
         raise 'Could not find wave number:'+str(wvnb)
     ifq=-1
     for i in range(len(f)):
-        #print f[i],fqcy,numpy.ma.subtract(f[i],fqcy)
+        #print(f[i],fqcy,numpy.ma.subtract(f[i],fqcy))
         if numpy.ma.allclose(f[i],fqcy):
             ifq=i
             break
     if ifq==-1:
-        print 'Could not find frequency:'+str(fqcy)
+        print('Could not find frequency:'+str(fqcy))
     else:
         power[ifq,iw]=-999
     power=MV2.masked_equal(power,-999)

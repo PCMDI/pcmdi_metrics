@@ -1,10 +1,11 @@
 # Adapted for numpy/ma/cdms2 by convertcdms.py
+from __future__ import print_function
 import cdms2 as cdms,sys,WK,cdutil
 import os
 
-f= cdms.open(os.path.join(vcs.sample_data,'clt.nc'))
+f = cdms.open(os.path.join(vcs.sample_data,'clt.nc'))
 
-s=f('clt')
+s = f('clt')
 
 W=WK.WK()
 
@@ -12,10 +13,10 @@ failed = False
 try:
     p = W.process(s)
 except:
-    print 'ok did not work on boundless time dim as expected'
+    print('ok did not work on boundless time dim as expected')
     failed = True
 if not failed:
-    raise Exception,"Error shoud have fail on boundless time dim"
+    raise Exception("Error shoud have fail on boundless time dim")
 
 cdutil.times.setTimeBoundsMonthly(s)
 

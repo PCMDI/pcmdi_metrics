@@ -1,5 +1,6 @@
 # Adapted for numpy/ma/cdms2 by convertcdms.py
 ## Wheeler Koladis Reproduction Package
+from __future__ import print_function
 import cdutil, genutil, cdms2, numpy, MV2
 
 class WK(object):
@@ -38,28 +39,28 @@ class WK(object):
         return self._frequency
     def _setfrequency(self,value):
         if not isinstance(value,(int,float)):
-            raise ValueError,"Error value must be a number"
+            raise ValueError("Error value must be a number")
         self._frequency = value
         self._NShift=int(self.shift*value) # Number of time points to shift by
         self._NTSub=int(self.number_of_days*value) #Number of time point per subdomain
-##         print self.scm()
+##         print(self.scm())
     frequency = property(_getfrequency,_setfrequency,None,"data frequency in samples per day (default=1, i.e daily)")
 
     def _getnumber_of_days(self):
         return self._number_of_days
     def _setnumber_of_days(self,value):
         if not isinstance(value,(int,float)):
-            raise ValueError,"Error value must be a number"
+            raise ValueError("Error value must be a number")
         self._number_of_days = value
         self._NTSub=int(self.frequency*value) #Number of time point per subdomain
-##         print self.scm()
+##         print(self.scm())
     number_of_days = property(_getnumber_of_days,_setnumber_of_days,None,"length of time subdomains in days (default=96 days)")
     
     def _getshift(self):
         return self._shift
     def _setshift(self,value):
         if not isinstance(value,(int,float)):
-            raise ValueError,"Error value must be a number"
+            raise ValueError("Error value must be a number")
         self._shift = value
         self._NShift=int(self.frequency*value) # Number of time points to shift by
     shift = property(_getshift,_setshift,None,"Number of days to shift subtimedomains by (default=30 days)")
@@ -74,13 +75,13 @@ class WK(object):
         # length of time axis
         nt=len(t)
         if nt%2!=0:
-            print "Warning time wasn't even, removed last time step"
+            print("Warning time wasn't even, removed last time step")
             data=data[:-1]
             t=data.getTime() ## get the new time axis
             nt=len(t)
 
         if len(t)<self._NTSub:
-            raise Exception,"Error your data must have at least %i time steps, adjust frequency (currently: %i/day) or number_of_days (currently: %i processed at once) to reach that limit, or get more data" % (self._NTSub,self.frequency,self.number_of_days)
+            raise Exception("Error your data must have at least %i time steps, adjust frequency (currently: %i/day) or number_of_days (currently: %i processed at once) to reach that limit, or get more data" % (self._NTSub,self.frequency,self.number_of_days))
         ## Computes PP, number of sub-domain
         PP=float(nt-self._NTSub)/self._NShift+1
         PP=int(PP)
@@ -101,8 +102,8 @@ class WK(object):
         ss=numpy.arange(0,NL+1,1,numpy.float)
         for i in range(1,NL+2):
             ss[i-1]=float(i-1-NL/2.)
-##         print 'Frequencies:',ff
-##         print 'Wave numbers:',ss
+##         print('Frequencies:',ff)
+##         print('Wave numbers:',ss)
         ## Ok, we now do the real stuff
         ## Creates the array of powers (Number of subtimes,fqcy,wave_numbers,latitudes)
         lats=data.getLatitude()
@@ -177,9 +178,9 @@ class WK(object):
                 pp+=1
                 vals.append((st[0]+st[-1])/2.)
                 bds=st.getBounds()
-                #print 'Bounds:',bds
+                #print('Bounds:',bds)
                 if bds is None:
-                    raise ValueError, "Data need to have bounds on time dimension"
+                    raise ValueError("Data need to have bounds on time dimension")
                 else:
                     bounds.append([bds[0][0],bds[-1][1]])
         ## Convert lists to arrays
@@ -270,7 +271,7 @@ class WK(object):
             for i in range(len(fqcies)):
                 f=fqcies[i]
                 if f<=fqcy: iend=i
-##         print istart,iend+1
+##         print(istart,iend+1)
             for i in range(n):
                 tmp=MWsmooth121(power[:,istart:iend+1])
                 power[:,istart:iend+1]=tmp
@@ -289,7 +290,7 @@ class WK(object):
             for i in range(len(wns)):
                 w=wns[i]
                 if w<=wn: iend=i
-##         print istart,iend+1
+##         print(istart,iend+1))
             for i in range(n):
                 tmp=MWsmooth121(power[:,istart:iend+1])
                 power[:,istart:iend+1]=tmp
