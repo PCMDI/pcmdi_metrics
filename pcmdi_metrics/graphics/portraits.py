@@ -142,7 +142,7 @@ class Portrait(object):
             self.x = kw["x"]
         else:
             self.x = vcs.init()
-        self.verbose = True  # output files looked for to the screen
+        self.verbose = False  # output files looked for to the screen
         self.files_structure = files_structure
         self.exclude = exclude
         # First determine the list of parameters on which we can have a
