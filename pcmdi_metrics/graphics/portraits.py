@@ -827,7 +827,6 @@ class Portrait(object):
                     str(template)
 
             template = vcs.createtemplate(source=tid)
-            print("We reset template to:", template)
 
         # Do we use a predefined meshfill ?
         if meshfill is None:
