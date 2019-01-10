@@ -708,14 +708,103 @@ class Portrait(object):
         x.names = repr(dic)
         nm = '___'.join(ynm)
         y.id = nm
+        y.original_id = output.getAxis(0,).id
         output.setAxis(0, y)
         dic = {}
         for i in range(len(ynm)):
             dic[i] = ynm[i]
         y.names = repr(dic)
+        x.original_id = output.getAxis(1,).id
         output.setAxis(1, x)
 
         return
+
+    def generateTemplate(self):
+        template = vcs.createtemplate()
+        # Now sets all the things for the template...
+        # Sets a bunch of template attributes to off
+        for att in [
+            'line1', 'line2', 'line3', 'line4',
+            'box2', 'box3', 'box4',
+            'min', 'max', 'mean',
+            'xtic1', 'xtic2',
+            'ytic1', 'ytic2',
+            'xvalue', 'yvalue', 'zvalue', 'tvalue',
+            'xunits', 'yunits', 'zunits', 'tunits',
+            'source', 'title', 'dataname',
+        ]:
+            a = getattr(template, att)
+            setattr(a, 'priority', 0)
+        for att in [
+            'xname', 'yname',
+        ]:
+            a = getattr(template, att)
+            setattr(a, 'priority', 0)
+
+        template.data.x1 = self.PLOT_SETTINGS.x1
+        template.data.x2 = self.PLOT_SETTINGS.x2
+        template.data.y1 = self.PLOT_SETTINGS.y1
+        template.data.y2 = self.PLOT_SETTINGS.y2
+        template.box1.x1 = self.PLOT_SETTINGS.x1
+        template.box1.x2 = self.PLOT_SETTINGS.x2
+        template.box1.y1 = self.PLOT_SETTINGS.y1
+        template.box1.y2 = self.PLOT_SETTINGS.y2
+        template.xname.y = self.PLOT_SETTINGS.y2 + .02
+        template.yname.x = self.PLOT_SETTINGS.x2 + .01
+        template.xlabel1.y = self.PLOT_SETTINGS.y1
+        template.xlabel2.y = self.PLOT_SETTINGS.y2
+        template.xlabel1.texttable = self.PLOT_SETTINGS.tictable
+        template.xlabel2.texttable = self.PLOT_SETTINGS.tictable
+        template.xlabel1.textorientation = \
+            self.PLOT_SETTINGS.xticorientation
+        template.xlabel2.textorientation = \
+            self.PLOT_SETTINGS.xticorientation
+        template.ylabel1.x = self.PLOT_SETTINGS.x1
+        template.ylabel2.x = self.PLOT_SETTINGS.x2
+        template.ylabel1.texttable = self.PLOT_SETTINGS.tictable
+        template.ylabel2.texttable = self.PLOT_SETTINGS.tictable
+        template.ylabel1.textorientation = \
+            self.PLOT_SETTINGS.yticorientation
+        template.ylabel2.textorientation = \
+            self.PLOT_SETTINGS.yticorientation
+
+        if self.PLOT_SETTINGS.xtic1.y1 is not None:
+            template.xtic1.y1 = self.PLOT_SETTINGS.xtic1.y1
+            template.xtic1.priority = 1
+        if self.PLOT_SETTINGS.xtic1.y2 is not None:
+            template.xtic1.y2 = self.PLOT_SETTINGS.xtic1.y2
+            template.xtic1.priority = 1
+        if self.PLOT_SETTINGS.xtic2.y1 is not None:
+            template.xtic2.y1 = self.PLOT_SETTINGS.xtic2.y1
+            template.xtic2.priority = 1
+        if self.PLOT_SETTINGS.xtic2.y2 is not None:
+            template.xtic2.y2 = self.PLOT_SETTINGS.xtic2.y2
+            template.xtic2.priority = 1
+        if self.PLOT_SETTINGS.ytic1.x1 is not None:
+            template.ytic1.x1 = self.PLOT_SETTINGS.ytic1.x1
+            template.ytic1.priority = 1
+        if self.PLOT_SETTINGS.ytic1.x2 is not None:
+            template.ytic1.x2 = self.PLOT_SETTINGS.ytic1.x2
+            template.ytic1.priority = 1
+        if self.PLOT_SETTINGS.ytic2.x1 is not None:
+            template.ytic2.priority = 1
+            template.ytic2.x1 = self.PLOT_SETTINGS.ytic2.x1
+        if self.PLOT_SETTINGS.ytic2.x2 is not None:
+            template.ytic2.priority = 1
+            template.ytic2.x2 = self.PLOT_SETTINGS.ytic2.x2
+        template.legend.x1 = self.PLOT_SETTINGS.legend.x1
+        template.legend.x2 = self.PLOT_SETTINGS.legend.x2
+        template.legend.y1 = self.PLOT_SETTINGS.legend.y1
+        template.legend.y2 = self.PLOT_SETTINGS.legend.y2
+        try:
+            tmp = vcs.createtextorientation('crap22')
+        except Exception:
+            tmp = vcs.gettextorientation('crap22')
+        tmp.height = 12
+        # tmp.halign = 'center'
+        # template.legend.texttable = tmp
+        template.legend.textorientation = tmp
+        return template
 
     def plot(self, data=None, mesh=None, template=None,
              meshfill=None, x=None, bg=0, multiple=1.1):
@@ -732,91 +821,7 @@ class Portrait(object):
 
         # Do we use a predefined template ?
         if template is None:
-            template = vcs.createtemplate()
-            # Now sets all the things for the template...
-            # Sets a bunch of template attributes to off
-            for att in [
-                'line1', 'line2', 'line3', 'line4',
-                'box2', 'box3', 'box4',
-                'min', 'max', 'mean',
-                'xtic1', 'xtic2',
-                'ytic1', 'ytic2',
-                'xvalue', 'yvalue', 'zvalue', 'tvalue',
-                'xunits', 'yunits', 'zunits', 'tunits',
-                'source', 'title', 'dataname',
-            ]:
-                a = getattr(template, att)
-                setattr(a, 'priority', 0)
-            for att in [
-                'xname', 'yname',
-            ]:
-                a = getattr(template, att)
-                setattr(a, 'priority', 0)
-
-            template.data.x1 = self.PLOT_SETTINGS.x1
-            template.data.x2 = self.PLOT_SETTINGS.x2
-            template.data.y1 = self.PLOT_SETTINGS.y1
-            template.data.y2 = self.PLOT_SETTINGS.y2
-            template.box1.x1 = self.PLOT_SETTINGS.x1
-            template.box1.x2 = self.PLOT_SETTINGS.x2
-            template.box1.y1 = self.PLOT_SETTINGS.y1
-            template.box1.y2 = self.PLOT_SETTINGS.y2
-            template.xname.y = self.PLOT_SETTINGS.y2 + .02
-            template.yname.x = self.PLOT_SETTINGS.x2 + .01
-            template.xlabel1.y = self.PLOT_SETTINGS.y1
-            template.xlabel2.y = self.PLOT_SETTINGS.y2
-            template.xlabel1.texttable = self.PLOT_SETTINGS.tictable
-            template.xlabel2.texttable = self.PLOT_SETTINGS.tictable
-            template.xlabel1.textorientation = \
-                self.PLOT_SETTINGS.xticorientation
-            template.xlabel2.textorientation = \
-                self.PLOT_SETTINGS.xticorientation
-            template.ylabel1.x = self.PLOT_SETTINGS.x1
-            template.ylabel2.x = self.PLOT_SETTINGS.x2
-            template.ylabel1.texttable = self.PLOT_SETTINGS.tictable
-            template.ylabel2.texttable = self.PLOT_SETTINGS.tictable
-            template.ylabel1.textorientation = \
-                self.PLOT_SETTINGS.yticorientation
-            template.ylabel2.textorientation = \
-                self.PLOT_SETTINGS.yticorientation
-
-            if self.PLOT_SETTINGS.xtic1.y1 is not None:
-                template.xtic1.y1 = self.PLOT_SETTINGS.xtic1.y1
-                template.xtic1.priority = 1
-            if self.PLOT_SETTINGS.xtic1.y2 is not None:
-                template.xtic1.y2 = self.PLOT_SETTINGS.xtic1.y2
-                template.xtic1.priority = 1
-            if self.PLOT_SETTINGS.xtic2.y1 is not None:
-                template.xtic2.y1 = self.PLOT_SETTINGS.xtic2.y1
-                template.xtic2.priority = 1
-            if self.PLOT_SETTINGS.xtic2.y2 is not None:
-                template.xtic2.y2 = self.PLOT_SETTINGS.xtic2.y2
-                template.xtic2.priority = 1
-            if self.PLOT_SETTINGS.ytic1.x1 is not None:
-                template.ytic1.x1 = self.PLOT_SETTINGS.ytic1.x1
-                template.ytic1.priority = 1
-            if self.PLOT_SETTINGS.ytic1.x2 is not None:
-                template.ytic1.x2 = self.PLOT_SETTINGS.ytic1.x2
-                template.ytic1.priority = 1
-            if self.PLOT_SETTINGS.ytic2.x1 is not None:
-                template.ytic2.priority = 1
-                template.ytic2.x1 = self.PLOT_SETTINGS.ytic2.x1
-            if self.PLOT_SETTINGS.ytic2.x2 is not None:
-                template.ytic2.priority = 1
-                template.ytic2.x2 = self.PLOT_SETTINGS.ytic2.x2
-            template.legend.x1 = self.PLOT_SETTINGS.legend.x1
-            template.legend.x2 = self.PLOT_SETTINGS.legend.x2
-            template.legend.y1 = self.PLOT_SETTINGS.legend.y1
-            template.legend.y2 = self.PLOT_SETTINGS.legend.y2
-            try:
-                tmp = vcs.createtextorientation('crap22')
-            except Exception:
-                tmp = vcs.gettextorientation('crap22')
-            tmp.height = 12
-            # tmp.halign = 'center'
-            # template.legend.texttable = tmp
-            template.legend.textorientation = tmp
-
+            template = self.generateTemplate()
         else:
             if isinstance(template, vcs.template.P):
                 tid = template.name
@@ -847,7 +852,7 @@ class Portrait(object):
             meshfill.yticlabels2 = mtics
             if self.PLOT_SETTINGS.colormap is None:
                 self.set_colormap()
-            elif x.getcolormapname() != self.PLOT_SETTINGS.colormap:
+            elif self.x.getcolormapname() != self.PLOT_SETTINGS.colormap:
                 self.x.setcolormap(self.PLOT_SETTINGS.colormap)
 
             if self.PLOT_SETTINGS.levels is None:
@@ -1078,7 +1083,7 @@ class Portrait(object):
                     if p not in self.dummies and \
                             p not in self.auto_dummies and \
                             p not in axes_param:
-                        txt = x.createtext(
+                        txt = self.x.createtext(
                             None,
                             self.PLOT_SETTINGS.parametertable.name,
                             None,
