@@ -866,7 +866,11 @@ class Portrait(object):
             if len(levs) > 1:
                 meshfill.levels = levs
                 if self.PLOT_SETTINGS.fillareacolors is None:
-                    cols = vcs.getcolors(levs, list(range(16, 40)), split=1)
+                    if self.PLOT_SETTINGS.colormap is None:
+                        # Default colormap only use range 16->40
+                        cols = vcs.getcolors(levs, list(range(16, 40)), split=1)
+                    else:
+                        cols = vcs.getcolors(levs, split=1)
                     meshfill.fillareacolors = cols
                 else:
                     meshfill.fillareacolors = self.PLOT_SETTINGS.fillareacolors
