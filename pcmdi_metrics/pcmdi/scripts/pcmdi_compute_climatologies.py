@@ -18,120 +18,134 @@ except Exception:
 
 parser = PMPParser(description='Generates Climatologies from files')
 
-p = parser.add_argument_group('processing')
-p.add_argument(
-    "--verbose",
-    action="store_true",
-    dest="verbose",
-    help="verbose output",
-    default=True)
-p.add_argument(
-    "--quiet",
-    action="store_false",
-    dest="verbose",
-    help="quiet output")
-p.add_argument("-v", "--variable",
-               dest="variable",
-               default=None,
-               # required=True,
-               help="variable to use for climatology")
-p.add_argument("-t", "--threshold",
-               dest='threshold',
-               default=.5,
-               type=float,
-               help="Threshold bellow which a season is considered as " +
-               "not having enough data to be computed")
-p.add_argument("-c", "--climatological_season",
-               dest="seasons",
-               default=["all"],
-               nargs="*",
-               choices=["djf", "DJF", "ann", "ANN", "all", "ALL",
-                        "mam", "MAM", "jja", "JJA", "son", "SON", "year",
-                        "YEAR"],
-               help="Which season you wish to produce"
-               )
-p.add_argument("-s", "--start",
-               dest="start",
-               default=None,
-               help="Start for climatology: date, value or index " +
-               "as determined by -i arg")
-p.add_argument("-e", "--end",
-               dest="end",
-               default=None,
-               help="End for climatology: date, value or index " +
-               "as determined by -I arg")
-p.add_argument("-i", "--indexation-type",
-               dest="index",
-               default="date",
-               choices=["date", "value", "index"],
-               help="indexation type")
-p.add_argument("-o", "--output_filename_template",
-               help="template for output filename",
-               default="%(variable)_PMP_%(model_id)_%(experiment_id)_" +
-               "r%(realization)i%(initialization_method)p%(physics_version)" +
-               "_%(start)-%(end)-clim-%(season).nc"
-               )
-p.add_argument("-f", "--filename_template",
-               dest="filename_template",
-               help="Input file template")
-p.add_argument("-m", "--model",
-               dest="model",
-               help="Model Name")
-p.add_argument("-b", "--bounds",
-               action="store_true",
-               dest="bounds",
-               default=False,
-               help="reset bounds to monthly")
-# parser.use("results_dir", p)
-parser.use("results_dir")
-parser.use("modpath")
-c = parser.add_argument_group("CMOR options")
-c.add_argument("--use-cmor", dest="cmor", default=False, action="store_true")
-c.add_argument("-D", "--drs",
-               action="store_true",
-               dest="drs",
-               default=False,
-               help="Use drs for output path"
-               )
-c.add_argument("-T", "--table",
-               dest="table",
-               nargs="+",
-               help="CMOR table")
-c.add_argument("-U", "--units",
-               dest="units",
-               help="variable(s) units")
-c.add_argument("-V", "--cf-var",
-               dest="cf_var",
-               help="variable name in CMOR tables")
-c.add_argument("-E", "--experiment_id", default=None,
-               help="'experiment id' for this run (will try to get from input file",
-               )
-c.add_argument("-I", "--institution", default=None,
-               help="'institution' for this run (will try to get from input file",
-               )
-c.add_argument("-S", "--source", default=None,
-               help="'source' for this run (will try to get from input file",
-               )
-c.add_argument("-X", "--variable_extra_args", default="{}",
-               help="Potential extra args to pass to cmor_variable call",
-               )
+def load_parser(parser):
+    p = parser.add_argument_group('processing')
+    p.add_argument(
+        "--verbose",
+        action="store_true",
+        dest="verbose",
+        help="verbose output",
+        default=True)
+    p.add_argument(
+        "--quiet",
+        action="store_false",
+        dest="verbose",
+        help="quiet output")
+    p.add_argument("-v", "--variable",
+                dest="variable",
+                default=None,
+                # required=True,
+                help="variable to use for climatology")
+    p.add_argument("-t", "--threshold",
+                dest='threshold',
+                default=.5,
+                type=float,
+                help="Threshold bellow which a season is considered as " +
+                "not having enough data to be computed")
+    p.add_argument("-c", "--climatological_season",
+                dest="seasons",
+                default=["all"],
+                nargs="*",
+                choices=["djf", "DJF", "ann", "ANN", "all", "ALL",
+                            "mam", "MAM", "jja", "JJA", "son", "SON", "year",
+                            "YEAR"],
+                help="Which season you wish to produce"
+                )
+    p.add_argument("-s", "--start",
+                dest="start",
+                default=None,
+                help="Start for climatology: date, value or index " +
+                "as determined by -i arg")
+    p.add_argument("-e", "--end",
+                dest="end",
+                default=None,
+                help="End for climatology: date, value or index " +
+                "as determined by -I arg")
+    p.add_argument("-i", "--indexation-type",
+                dest="index",
+                default="date",
+                choices=["date", "value", "index"],
+                help="indexation type")
+    p.add_argument("-o", "--output_filename_template",
+                help="template for output filename",
+                default="%(variable)_PMP_%(model_id)_%(experiment_id)_" +
+                "r%(realization)i%(initialization_method)p%(physics_version)" +
+                "_%(start)-%(end)-clim-%(season).nc"
+                )
+    p.add_argument("-f", "--filename_template",
+                dest="filename_template",
+                help="Input file template")
+    p.add_argument("-m", "--model",
+                dest="model",
+                help="Model Name")
+    p.add_argument("-b", "--bounds",
+                action="store_true",
+                dest="bounds",
+                default=False,
+                help="reset bounds to monthly")
+    # parser.use("results_dir", p)
+    parser.use("results_dir")
+    parser.use("modpath")
+    c = parser.add_argument_group("CMOR options")
+    c.add_argument("--use-cmor", dest="cmor", default=False, action="store_true")
+    c.add_argument("-D", "--drs",
+                action="store_true",
+                dest="drs",
+                default=False,
+                help="Use drs for output path"
+                )
+    c.add_argument("-T", "--table",
+                dest="table",
+                nargs="+",
+                help="CMOR table")
+    c.add_argument("-U", "--units",
+                dest="units",
+                help="variable(s) units")
+    c.add_argument("-V", "--cf-var",
+                dest="cf_var",
+                help="variable name in CMOR tables")
+    c.add_argument("-E", "--experiment_id", default=None,
+                help="'experiment id' for this run (will try to get from input file",
+                )
+    c.add_argument("-I", "--institution", default=None,
+                help="'institution' for this run (will try to get from input file",
+                )
+    c.add_argument("-S", "--source", default=None,
+                help="'source' for this run (will try to get from input file",
+                )
+    c.add_argument("-X", "--variable_extra_args", default="{}",
+                help="Potential extra args to pass to cmor_variable call",
+                )
 
-cmor_xtra_args = ["contact", "references", "model_id",
-                  "institute_id", "forcing",
-                  "parent_experiment_id",
-                  "parent_experiment_rip",
-                  "realization", "comment", "history",
-                  "branch_time", "physics_version",
-                  "initialization_method",
-                  ]
-for x in cmor_xtra_args:
-    c.add_argument("--%s" % x, default=None,
-                   dest=x,
-                   help="'%s' for this run (will try to get from input file" % x
-                   )
+    cmor_xtra_args = ["contact", "references", "model_id",
+                    "institute_id", "forcing",
+                    "parent_experiment_id",
+                    "parent_experiment_rip",
+                    "realization", "comment", "history",
+                    "branch_time", "physics_version",
+                    "initialization_method",
+                    ]
+    for x in cmor_xtra_args:
+        c.add_argument("--%s" % x, default=None,
+                    dest=x,
+                    help="'%s' for this run (will try to get from input file" % x
+                    )
+
+
+load_parser(parser)
 
 A = parser.get_parameter()
 
+parser = PMPParser(description='Generates Climatologies from files')
+load_parser(parser)
+
+for tmpl in [A.filename_template, A.output_filename_template]:
+    con = genutil.StringConstructor(tmpl)
+    for k in con.keys():
+        parser.add_argument("--{}".format(k))
+
+A = parser.get_parameter()
+print("GFGFGFDGFDFGFGFGFGFFGDGGFDDDGFFD", A.crap)
 # season dictionary
 season_function = {
     "djf": cdutil.times.DJF,
