@@ -9,6 +9,7 @@ import cdtime
 from pcmdi_metrics.driver.pmp_parser import PMPParser
 import glob
 import genutil
+import cdp
 
 try:
     import cmor
@@ -83,6 +84,7 @@ def load_parser(parser):
                 dest="bounds",
                 default=False,
                 help="reset bounds to monthly")
+    p.add_argument("--mapping_dictionary", default={}, type=dict, help="A mapping dictionary to map undefnied parameters")
     # parser.use("results_dir", p)
     parser.use("results_dir")
     parser.use("modpath")
@@ -134,42 +136,18 @@ def load_parser(parser):
 
 load_parser(parser)
 
-A = parser.get_parameter()
+As = parser.get_parameters()
 
 parser = PMPParser(description='Generates Climatologies from files')
 load_parser(parser)
 
-for tmpl in [A.filename_template, A.output_filename_template]:
-    con = genutil.StringConstructor(tmpl)
-    for k in con.keys():
-        parser.add_argument("--{}".format(k))
-
-A = parser.get_parameter()
-print("GFGFGFDGFDFGFGFGFGFFGDGGFDDDGFFD", A.crap)
-# season dictionary
-season_function = {
-    "djf": cdutil.times.DJF,
-    "mam": cdutil.times.MAM,
-    "jja": cdutil.times.JJA,
-    "son": cdutil.times.SON,
-    "ann": cdutil.times.ANNUALCYCLE,
-    "year": cdutil.times.YEAR,
-}
-
-results_dir = A.process_templated_argument("results_dir")
-A.results_dir = results_dir()
-
-filename_in = A.process_templated_argument(os.path.join(A.modpath, A.filename_template))
-
-if A.verbose:
-    print("filename in after templating:", filename_in())
-filename = glob.glob(filename_in())[0]
-
-if not os.path.exists(filename):
-    raise RuntimeError("file '{}' doe not exits".format(filename))
-
-filein = cdms2.open(filename)
-
+for A in As:
+    for tmpl in [A.modpath, A.filename_template, A.output_filename_template]:
+        con = genutil.StringConstructor(tmpl)
+        print("TEMPLE:", con.template)
+        for k in con.keys():
+            print("ADDING OPTION:",k)
+            parser.add_argument("--{}".format(k))
 
 def getCalendarName(cal):
     for att in dir(cdtime):
@@ -364,7 +342,7 @@ def dump_cmor(A, s, time, bounds):
         print("closed cmor")
 
 
-def checkCMORAttribute(att, source=filein):
+def checkCMORAttribute(att, source):
     res = getattr(A, att)
     if res is None:
         if hasattr(source, att):
@@ -387,215 +365,253 @@ def store_attributes(var):
         attributes[att] = getattr(var, att)
     return attributes
 
+def runClim(A):
 
-fvars = list(filein.variables.keys())
-v = A.variable
-if v not in fvars:
-    raise RuntimeError(
-        "Variable '%s' is not contained in input file(s)" %
-        v)
-V = filein[v]
-tim = V.getTime().clone()
-# "monthly"
-if A.bounds:
-    cdutil.times.setTimeBoundsMonthly(tim)
-# Now make sure we can get the requested period
-if A.start is None:
-    i0 = 0
-else:  # Ok user specified a start time
-    if A.index == "index":  # index-based slicing
-        if int(A.start) >= len(tim):
-            raise RuntimeError(
-                "For variable %s you requested start time to be at index: %i but the file only has %i time steps" %
-                (v, int(
-                    A.start), len(tim)))
-        i0 = int(A.start)
-    elif A.index == "value":  # actual value used for slicing
-        v0 = float(A.start)
-        try:
-            i0, tmp = tim.mapInterval((v0, v0), 'cob')
-        except Exception:
-            raise RuntimeError(
-                "Could not find value %s for start time for variable %s" %
-                (A.start, v))
-    elif A.index == "date":
-        v0 = A.start
-        # When too close from bounds it messes it up, adding a minute seems to help
-        v0 = cdtime.s2c(A.start)
-        v0 = v0.add(1, cdtime.Minute)
-        try:
-            i0, tmp = tim.mapInterval((v0, v0), 'cob')
-        except Exception:
-            raise RuntimeError(
-                "Could not find start time %s for variable: %s" %
-                (A.start, v))
+    print("OK SO START IS:", A.start)
+    # season dictionary
+    season_function = {
+        "djf": cdutil.times.DJF,
+        "mam": cdutil.times.MAM,
+        "jja": cdutil.times.JJA,
+        "son": cdutil.times.SON,
+        "ann": cdutil.times.ANNUALCYCLE,
+        "year": cdutil.times.YEAR,
+    }
 
-if A.end is None:
-    i1 = None
-else:  # Ok user specified a end time
-    if A.index == "index":  # index-based slicing
-        if int(A.end) >= len(tim):
-            raise RuntimeError(
-                "For variable %s you requested end time to be at index: %i but the file only has %i time steps" %
-                (v, int(
-                    A.end), len(tim)))
-        i1 = int(A.end)
-    elif A.index == "value":  # actual value used for slicing
-        v0 = float(A.end)
-        try:
-            tmp, i1 = tim.mapInterval((v0, v0), 'cob')
-        except Exception:
-            raise RuntimeError(
-                "Could not find value %s for end time for variable %s" %
-                (A.end, v))
-    elif A.index == "date":
-        v0 = A.end
-        # When too close from bounds it messes it up, adding a minute seems to help
-        v0 = cdtime.s2c(A.end)
-        v0 = v0.add(1, cdtime.Minute)
-        try:
-            tmp, i1 = tim.mapInterval((v0, v0), 'cob')
-        except Exception:
-            raise RuntimeError(
-                "Could not find end time %s for variable: %s" %
-                (A.end, v))
-# Read in data
-data = V(time=slice(i0, i1))
-if A.verbose:
-    print("DATA:", data.shape, data.getTime().asComponentTime()
-          [0], data.getTime().asComponentTime()[-1])
-if A.bounds:
-    cdutil.times.setTimeBoundsMonthly(data)
-# Now we can actually read and compute the climo
-seasons = [s.lower() for s in A.seasons]
-if "all" in seasons:
-    seasons = ["djf", "mam", "jja", "son", "year", "ann"]
+    print("BEFORE RPOCESEED:", A.results_dir)
+    print("A VAR:", A.variable)
+    print("A REF:", A.reference)
+    results_dir = A.process_templated_argument("results_dir")
+    print("RESDIR:", results_dir.template)
+    A.results_dir = results_dir()
 
-for season in seasons:
-    s = season_function[season].climatology(
-        data, criteriaarg=[A.threshold, None])
-    g = season_function[season].get(data, criteriaarg=[A.threshold, None])
-    # Ok we know we have monthly data
-    # We want to tweak bounds
-    T = data.getTime()
-    Tg = g.getTime()
-    istart = 0
-    while numpy.ma.allequal(g[istart].mask, True):
-        istart += 1
-    iend = -1
-    while numpy.ma.allequal(g[iend].mask, True):
-        iend -= 1
-    if iend == -1:
-        iend = None
-    else:
-        iend += 1
-    if iend is None:
-        iend = len(Tg)
-    Tg = Tg.subAxis(istart, iend)
-
-    cal = T.getCalendar()
-    cal_name = getCalendarName(cal)
-    Tunits = T.units
-    bnds = T.getBounds()
-    tc = T.asComponentTime()
+    filename_in = A.process_templated_argument(os.path.join(A.modpath, A.filename_template))
 
     if A.verbose:
-        print("TG:", Tg.asComponentTime()[0])
-        print("START END THRESHOLD:", istart, iend, A.threshold, len(Tg))
-        # print "SEASON:", season, "ORIGINAL:", T.asComponentTime()
-    b1 = cdtime.reltime(Tg.getBounds()[0][0], Tg.units)
-    b2 = cdtime.reltime(Tg.getBounds()[-1][1], Tg.units)
+        print("filename in after templating:", filename_in())
+    filename = glob.glob(filename_in())[0]
 
-    # First and last time points
-    y1 = cdtime.reltime(Tg[0], T.units)
-    y2 = cdtime.reltime(Tg[-1], T.units)
+    if not os.path.exists(filename):
+        raise RuntimeError("file '{}' doe not exits".format(filename))
 
-    # Mid year is:
-    yr = (y2.value + y1.value) / 2.
-    y = cdtime.reltime(yr, T.units).tocomp(cal).year
+    filein = cdms2.open(filename)
 
+
+
+
+    fvars = list(filein.variables.keys())
+    v = A.variable
+    if v not in fvars:
+        raise RuntimeError(
+            "Variable '%s' is not contained in input file(s)" %
+            v)
+    V = filein[v]
+    tim = V.getTime().clone()
+    # "monthly"
+    if A.bounds:
+        cdutil.times.setTimeBoundsMonthly(tim)
+    # Now make sure we can get the requested period
+    if A.start is None:
+        i0 = 0
+    else:  # Ok user specified a start time
+        if A.index == "index":  # index-based slicing
+            if int(A.start) >= len(tim):
+                raise RuntimeError(
+                    "For variable %s you requested start time to be at index: %i but the file only has %i time steps" %
+                    (v, int(
+                        A.start), len(tim)))
+            i0 = int(A.start)
+        elif A.index == "value":  # actual value used for slicing
+            v0 = float(A.start)
+            try:
+                i0, tmp = tim.mapInterval((v0, v0), 'cob')
+            except Exception:
+                raise RuntimeError(
+                    "Could not find value %s for start time for variable %s" %
+                    (A.start, v))
+        elif A.index == "date":
+            v0 = A.start
+            # When too close from bounds it messes it up, adding a minute seems to help
+            v0 = cdtime.s2c(A.start)
+            v0 = v0.add(1, cdtime.Minute)
+            try:
+                i0, tmp = tim.mapInterval((v0, v0), 'cob')
+            except Exception:
+                raise RuntimeError(
+                    "Could not find start time %s for variable: %s" %
+                    (A.start, v))
+
+    if A.end is None:
+        i1 = None
+    else:  # Ok user specified a end time
+        if A.index == "index":  # index-based slicing
+            if int(A.end) >= len(tim):
+                raise RuntimeError(
+                    "For variable %s you requested end time to be at index: %i but the file only has %i time steps" %
+                    (v, int(
+                        A.end), len(tim)))
+            i1 = int(A.end)
+        elif A.index == "value":  # actual value used for slicing
+            v0 = float(A.end)
+            try:
+                tmp, i1 = tim.mapInterval((v0, v0), 'cob')
+            except Exception:
+                raise RuntimeError(
+                    "Could not find value %s for end time for variable %s" %
+                    (A.end, v))
+        elif A.index == "date":
+            v0 = A.end
+            # When too close from bounds it messes it up, adding a minute seems to help
+            v0 = cdtime.s2c(A.end)
+            v0 = v0.add(1, cdtime.Minute)
+            try:
+                tmp, i1 = tim.mapInterval((v0, v0), 'cob')
+            except Exception:
+                raise RuntimeError(
+                    "Could not find end time %s for variable: %s" %
+                    (A.end, v))
+    # Read in data
+    data = V(time=slice(i0, i1))
     if A.verbose:
-        print("We found data from ", y1.tocomp(cal),
-              "to", y2.tocomp(cal), "MID YEAR:", y)
-        print("bounds:", b1.tocomp(cal), b2.tocomp(cal))
+        print("DATA:", data.shape, data.getTime().asComponentTime()
+            [0], data.getTime().asComponentTime()[-1])
+    if A.bounds:
+        cdutil.times.setTimeBoundsMonthly(data)
+    # Now we can actually read and compute the climo
+    seasons = [s.lower() for s in A.seasons]
+    if "all" in seasons:
+        seasons = ["djf", "mam", "jja", "son", "year", "ann"]
 
-    values = []
-    bounds = []
-
-    # Loop thru clim month and set value and bounds appropriately
-    ts = s.getTime().asComponentTime()
-    for ii in range(s.shape[0]):
-        t = ts[ii]
-        t.year = y
-        values.append(t.torel(Tunits, cal).value)
-        if (s.shape[0] > 1):
-            B1 = b1.tocomp(cal).add(ii, cdtime.Month)
-            B2 = b2.tocomp(cal).add(ii - s.shape[0] + 1, cdtime.Month)
+    for season in seasons:
+        s = season_function[season].climatology(
+            data, criteriaarg=[A.threshold, None])
+        g = season_function[season].get(data, criteriaarg=[A.threshold, None])
+        # Ok we know we have monthly data
+        # We want to tweak bounds
+        T = data.getTime()
+        Tg = g.getTime()
+        istart = 0
+        while numpy.ma.allequal(g[istart].mask, True):
+            istart += 1
+        iend = -1
+        while numpy.ma.allequal(g[iend].mask, True):
+            iend -= 1
+        if iend == -1:
+            iend = None
         else:
-            B1 = b1
-            B2 = b2
-        # b2.year = y
-        # b1.year = y
-        #  if b1.cmp(b2) > 0:  # ooops
-        #    if b1.month>b2.month and b1.month-b2.month!=11:
-        #        b1.year -= 1
-        #    else:
-        #        b2.year += 1
-        #  if b1.month == b2.month:
-        #    b2.year = b1.year+1
+            iend += 1
+        if iend is None:
+            iend = len(Tg)
+        Tg = Tg.subAxis(istart, iend)
+
+        cal = T.getCalendar()
+        cal_name = getCalendarName(cal)
+        Tunits = T.units
+        bnds = T.getBounds()
+        tc = T.asComponentTime()
+
         if A.verbose:
-            print(B1.tocomp(cal), "<", t, "<", B2.tocomp(cal))
-        bounds.append([B1.torel(Tunits, cal).value,
-                       B2.torel(Tunits, cal).value])
+            print("TG:", Tg.asComponentTime()[0])
+            print("START END THRESHOLD:", istart, iend, A.threshold, len(Tg))
+            # print "SEASON:", season, "ORIGINAL:", T.asComponentTime()
+        b1 = cdtime.reltime(Tg.getBounds()[0][0], Tg.units)
+        b2 = cdtime.reltime(Tg.getBounds()[-1][1], Tg.units)
 
-fnmout = genutil.StringConstructor(A.output_filename_template)
+        # First and last time points
+        y1 = cdtime.reltime(Tg[0], T.units)
+        y2 = cdtime.reltime(Tg[-1], T.units)
 
-if "model_id" in fnmout.keys():
-    model_id = checkCMORAttribute("model_id")
-if "experiment_id" in fnmout.keys():
-    experiment_id = checkCMORAttribute("experiment_id")
-if "realization" in fnmout.keys():
-    realization = checkCMORAttribute("realization")
-if "initialization_method" in fnmout.keys():
-    initialization = checkCMORAttribute("initialization_method")
-if "physics_version" in fnmout.keys():
-    physics_version = checkCMORAttribute("physics_version")
-if A.cmor and hasCMOR:
-    dump_cmor(A, s, values, bounds)
-else:
-    if A.cmor and not hasCMOR:
-        print("Your Python does not have CMOR, using regular cdms to write out files")
-    if not os.path.exists(A.results_dir):
-        os.makedirs(A.results_dir)
-    end_tc = tc[-1].add(1, cdtime.Month)
+        # Mid year is:
+        yr = (y2.value + y1.value) / 2.
+        y = cdtime.reltime(yr, T.units).tocomp(cal).year
 
-    # Populate fout template with values
-    start = "{}{:02d}".format(tc[0].year, tc[0].month)
-    end = "{}{:02d}".format(end_tc.year, end_tc.month)
-    for k in fnmout.keys():
-        try:
-            setattr(fnmout, k, getattr(A, k))
-        except Exception:
-            pass
-        # overwrite with locals
-        try:
-            setattr(fnmout, k, locals()[k])
-        except Exception:
-            pass
-    nm = os.path.join(A.results_dir, fnmout())
-    f = cdms2.open(nm, "w")
-    # Global attributes copied
-    for att, value in store_globals(filein).items():
-        setattr(f, att, value)
-    t = cdms2.createAxis(values)
-    t.setBounds(numpy.array(bounds))
-    t.designateTime()
-    t.id = "time"
-    s.setAxis(0, t)
-    # copy orignal attributes
-    for att, value in store_attributes(V).items():
-        setattr(s, att, value)
-    f.write(s, dtype=data.dtype)
-    f.close()
-    if A.verbose:
-        print("Results out to:", nm)
+        if A.verbose:
+            print("We found data from ", y1.tocomp(cal),
+                "to", y2.tocomp(cal), "MID YEAR:", y)
+            print("bounds:", b1.tocomp(cal), b2.tocomp(cal))
+
+        values = []
+        bounds = []
+
+        # Loop thru clim month and set value and bounds appropriately
+        ts = s.getTime().asComponentTime()
+        for ii in range(s.shape[0]):
+            t = ts[ii]
+            t.year = y
+            values.append(t.torel(Tunits, cal).value)
+            if (s.shape[0] > 1):
+                B1 = b1.tocomp(cal).add(ii, cdtime.Month)
+                B2 = b2.tocomp(cal).add(ii - s.shape[0] + 1, cdtime.Month)
+            else:
+                B1 = b1
+                B2 = b2
+            # b2.year = y
+            # b1.year = y
+            #  if b1.cmp(b2) > 0:  # ooops
+            #    if b1.month>b2.month and b1.month-b2.month!=11:
+            #        b1.year -= 1
+            #    else:
+            #        b2.year += 1
+            #  if b1.month == b2.month:
+            #    b2.year = b1.year+1
+            if A.verbose:
+                print(B1.tocomp(cal), "<", t, "<", B2.tocomp(cal))
+            bounds.append([B1.torel(Tunits, cal).value,
+                        B2.torel(Tunits, cal).value])
+
+    fnmout = genutil.StringConstructor(A.output_filename_template)
+
+    if "model_id" in fnmout.keys():
+        model_id = checkCMORAttribute("model_id")
+    if "experiment_id" in fnmout.keys():
+        experiment_id = checkCMORAttribute("experiment_id")
+    if "realization" in fnmout.keys():
+        realization = checkCMORAttribute("realization")
+    if "initialization_method" in fnmout.keys():
+        initialization = checkCMORAttribute("initialization_method")
+    if "physics_version" in fnmout.keys():
+        physics_version = checkCMORAttribute("physics_version")
+    if A.cmor and hasCMOR:
+        dump_cmor(A, s, values, bounds)
+    else:
+        if A.cmor and not hasCMOR:
+            print("Your Python does not have CMOR, using regular cdms to write out files")
+        if not os.path.exists(A.results_dir):
+            os.makedirs(A.results_dir)
+        end_tc = tc[-1].add(1, cdtime.Month)
+
+        # Populate fout template with values
+        start = "{}{:02d}".format(tc[0].year, tc[0].month)
+        end = "{}{:02d}".format(end_tc.year, end_tc.month)
+        for k in fnmout.keys():
+            try:
+                setattr(fnmout, k, getattr(A, k))
+            except Exception:
+                pass
+            # overwrite with locals
+            try:
+                setattr(fnmout, k, locals()[k])
+            except Exception:
+                pass
+        nm = os.path.join(A.results_dir, fnmout())
+        f = cdms2.open(nm, "w")
+        # Global attributes copied
+        for att, value in store_globals(filein).items():
+            setattr(f, att, value)
+        t = cdms2.createAxis(values)
+        t.setBounds(numpy.array(bounds))
+        t.designateTime()
+        t.id = "time"
+        s.setAxis(0, t)
+        # copy orignal attributes
+        for att, value in store_attributes(V).items():
+            setattr(s, att, value)
+        f.write(s, dtype=data.dtype)
+        f.close()
+        if A.verbose:
+            print("Results out to:", nm)
+
+
+parameters = parser.get_parameters()
+
+cdp.cdp_run.multiprocess(runClim, parameters)
