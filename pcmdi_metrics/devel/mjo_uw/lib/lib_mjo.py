@@ -266,7 +266,6 @@ def unit_conversion(data, UnitsAdjust):
     - UnitsAdjust: tuple with 4 elements
       e.g.: (True, 'multiply', 86400., 'mm d-1'): e.g., kg m-2 s-1 to mm d-1
             (False, 0, 0, 0): no unit conversion
-
     """
     if UnitsAdjust[0]:
         data = getattr(MV2, UnitsAdjust[1])(data, UnitsAdjust[2])

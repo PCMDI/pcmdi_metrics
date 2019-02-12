@@ -1,3 +1,11 @@
+"""
+Code written by Jiwoo Lee, LLNL. Feb. 2019
+Inspired by Daehyun Kim and Min-Seop Ahn's MJO metrics.
+
+Reference:
+Ahn, MS., Kim, D., Sperber, K.R. et al. Clim Dyn (2017) 49: 4023.
+https://doi.org/10.1007/s00382-017-3558-4 
+"""
 from __future__ import print_function
 import cdms2
 import cdtime
