@@ -10,7 +10,6 @@ PCMDI metrics package (PMP)
 [![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
 [![CircleCI](https://circleci.com/gh/PCMDI/pcmdi_metrics.svg?style=svg)](https://circleci.com/gh/PCMDI/pcmdi_metrics)
 [![Coverage Status](https://coveralls.io/repos/github/PCMDI/pcmdi_metrics/badge.svg)](https://coveralls.io/github/PCMDI/pcmdi_metrics)
-![repo size](https://reposs.herokuapp.com/?path=PCMDI/pcmdi_metrics)
 
 The PCMDI metrics package is used to objectively compare results from climate models with observations using well-established statistical tests. Results are produced in the context of all model simulations contributed to CMIP5 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons emphasize large- to global-scale annual cycle performance metrics. Current work in v1.x development branches include established statistics for ENSO, regional monsoon precipitation, and the diurnal cycle of precipitation. These diagnostics will be included in a future PMP release.
 
