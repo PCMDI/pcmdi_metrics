@@ -197,7 +197,7 @@ def generate_axes_and_decorate(Power, NT, NL):
     for n in range(0, NL+1):
         ss.append(float(n)-float(NL/2))
     ss = MV2.array(ss)
-    ss.id = 'planetaryzonalwavenumber'
+    ss.id = 'zonalwavenumber'
     ss.units = '-'
     # Decoration
     Power = decorate_2d_array_axes(
@@ -255,10 +255,10 @@ def calculate_ewr(OEE):
     Actual ranges of frequency and wavenumber have been checked and applied.
     """
     east_power_domain = OEE(
-        planetaryzonalwavenumber=(1,3),
+        zonalwavenumber=(1,3),
         frequency=(0.0166667, 0.0333333))
     west_power_domain = OEE(
-        planetaryzonalwavenumber=(1,3),
+        zonalwavenumber=(1,3),
         frequency=(-0.0333333,-0.0166667))
     eastPower = np.average(np.array(east_power_domain))
     westPower = np.average(np.array(west_power_domain))
