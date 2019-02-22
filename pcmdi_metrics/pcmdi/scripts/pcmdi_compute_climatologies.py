@@ -379,12 +379,14 @@ def runClim(A):
     }
 
     print("BEFORE RPOCESEED:", A.results_dir)
-    print("A VAR:", A.variable)
-    print("A REF:", A.reference)
+#   print("A VAR:", A.variable)
+#   print("A REF:", A.reference)
     results_dir = A.process_templated_argument("results_dir")
     print("RESDIR:", results_dir.template)
     A.results_dir = results_dir()
 
+    print("HERE?", os.path.join(A.modpath, A.filename_template))
+    print("A.variable", A.variable, A.model)
     filename_in = A.process_templated_argument(os.path.join(A.modpath, A.filename_template))
 
     if A.verbose:
