@@ -39,6 +39,9 @@ class OBS(Base):
         self.reference = obs_name
         self.variable = var
 
+        if "subpath" in obs_dict[var][obs_name]:
+            self.template = obs_dict[var][obs_name]["subpath"]
+
     def setup_based_on_obs_table(self, obs_table):
         ''' Set the realm, frequency, ac based on the
         CMIP_CMOR_TABLE value in the obs dict.'''
