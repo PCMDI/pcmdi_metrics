@@ -19,7 +19,7 @@ if len(sys.argv) > 1:
     data_path = sys.argv[1]
 else:
 #   data_path = '/work/gleckler1/processed_data/obs'
-    data_path = '/p/user_pub/pmp/PCMDIobs/PCMDIobs2.0'
+    data_path = '/p/user_pub/PCMDIobs/PCMDIobs2.0'
 
 #lst = glob.glob(os.path.join(data_path, '*/mo/*/*/ac/*.nc'))
 comb = data_path + '/atmos/mon/*/*/gn/*/ac/*.nc'
@@ -106,9 +106,9 @@ obs_dic = {}
 for filePath in lst:
     subp = filePath.split('/')
     subpath = filePath.split(data_path)[1]
-    realm = subp[6]
-    var = subp[8]
-    product = subp[9]
+    realm = subp[5]
+    var = subp[7]
+    product = subp[8]
     # Assign tableId
     if realm == 'atmos':
         tableId = 'Amon'
