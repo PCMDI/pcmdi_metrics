@@ -32,22 +32,26 @@ except Exception:
 
 
 # Group merged axes
-def groupAxes(axes, final=[], ids=None, separator="_"):
-    if axes == []:
-        return cdms2.createAxis(final, id=separator.join(ids))
-    if final == []:
-        final = [val for val in axes[0]]
+def groupAxes(axes, ids=None, separator="_"):
+    if ids is None:
         ids = [ax.id for ax in axes]
-        return groupAxes(axes[1:], final, ids)
-    axis = axes[0]
-    original_length = len(final)
-    final = final * len(axis)
-    idx = 0
-    for val in axis:
-        for i in range(original_length):
-            final[idx] = "{}{}{}".format(final[idx], separator, val)
-            idx += 1
-    return groupAxes(axes[1:], final, ids)
+    if len(ids) != len(axes):
+        raise RuntimeError("You need to pass as many ids as axes")
+    final = []
+    while len(axes)>0:
+        axis = axes.pop(-1)
+        if final == []:
+            final = [str(v) for v in axis]
+        else:
+            tmp = final
+            final = []
+            for v1 in axis:
+                for v2 in tmp:
+                    final += ["{}{}{}".format(v1, separator, v2)]
+    print("IDS:", ids)
+    print("IDS:", separator.join(ids))
+    return cdms2.createAxis(final, id=separator.join(ids))
+
 
 
 # cdutil region object need a serializer
@@ -599,6 +603,10 @@ class JSONs(object):
         cdms2.setAutoBounds("off")
         axes = self.getAxisList()
         axes_ids = self.getAxisIds()
+        if merge is not []:
+            for merger in merge:
+                if not merger in axes_ids:
+                    raise RuntimeError("You requested to merge axis is '{}' which is not valid. Axes: {}".format(merger, axes_ids))
         sh = []
         ids = []
         used_ids = []
@@ -654,6 +662,7 @@ class JSONs(object):
         # First let's create the merged axes
         new_axes = [groupAxes([self.getAxis(x) for x in merger])
                     for merger in merge]
+        print("NEW AXES:", new_axes)
         sh2 = list(sh)
         for merger in merge:
             for merger in merge:  # loop through all possible merging
@@ -678,6 +687,7 @@ class JSONs(object):
             if index not in myorder:  # ok did not find this one anywhere
                 myorder.append(index)
 
+        print("Myorder", myorder, sh2)
         outData = numpy.transpose(array, myorder)
         outData = numpy.reshape(outData, sh2)
 
