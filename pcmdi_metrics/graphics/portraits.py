@@ -78,6 +78,16 @@ class Plot_defaults(object):
 
     logo = property(getlogo, setlogo)
 
+
+    def _repr_png_(self):
+        import tempfile
+        tmp = tempfile.mktemp() + ".png"
+        self.x.png(tmp)
+        f = open(tmp, "rb")
+        st = f.read()
+        f.close()
+
+
     def __init__(self):
         self.x1 = .12
         self.x2 = .84
