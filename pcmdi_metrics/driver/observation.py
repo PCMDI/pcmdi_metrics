@@ -29,8 +29,6 @@ class OBS(Base):
 
         template = obs_dict[var][obs_name].get("template", "%(realm)/%(frequency)/%(variable)/" +
                                                "%(reference)/%(ac)/%(filename)")
-        print("OBFDDF:", obs_dict[var])
-        print("TEMPLATE:", root, template)
 
         super(OBS, self).__init__(root, template, file_mask_template)
 

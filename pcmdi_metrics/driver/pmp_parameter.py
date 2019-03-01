@@ -25,7 +25,6 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
         """
 
         process = getattr(self, name, None)
-        print("PROCESS IS:", process)
         if process is None:  # Ok not an argument from arg_parse maybe a template or string constructor itself
             if isinstance(name, basestring):
                 process = name
