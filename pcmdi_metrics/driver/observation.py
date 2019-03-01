@@ -15,8 +15,9 @@ class OBS(Base):
     ''' Creates an output the netCDF file for an observation. '''
     def __init__(self, root, var, obs_dict, obs='default',
                  file_mask_template=None):
-        template = "%(realm)/%(frequency)/%(variable)/" +\
-                   "%(reference)/%(ac)/%(filename)"
+
+        template = obs_dict[var].get("template", "%(realm)/%(frequency)/%(variable)/" +\
+                   "%(reference)/%(ac)/%(filename)")
         super(OBS, self).__init__(root, template, file_mask_template)
 
         logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
