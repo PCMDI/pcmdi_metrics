@@ -79,6 +79,8 @@ class PMPDriver(object):
 
         if hasattr(self.parameter, 'custom_observations'):
             # Can't use load_path_as_file_obj() b/c might not be in /share/
+            print("WE ARE USING CUSTOM OBS:",
+                  self.parameter.custom_observations)
             cust_obs_json_file = open(self.parameter.custom_observations)
             obs_dict.update(json.load(cust_obs_json_file))
             cust_obs_json_file.close()
