@@ -13,11 +13,9 @@ except Exception:
 
 class OBS(Base):
     ''' Creates an output the netCDF file for an observation. '''
+
     def __init__(self, root, var, obs_dict, obs='default',
                  file_mask_template=None):
-        template = "%(realm)/%(frequency)/%(variable)/" +\
-                   "%(reference)/%(ac)/%(filename)"
-        super(OBS, self).__init__(root, template, file_mask_template)
 
         logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
 
@@ -29,6 +27,13 @@ class OBS(Base):
         if isinstance(obs_name, dict):
             obs_name = obs
 
+        template = obs_dict[var][obs_name].get("template", "%(realm)/%(frequency)/%(variable)/" +
+                                               "%(reference)/%(ac)/%(filename)")
+        print("OBFDDF:", obs_dict[var])
+        print("TEMPLATE:", root, template)
+
+        super(OBS, self).__init__(root, template, file_mask_template)
+
         obs_table = obs_dict[var][obs_name]['CMIP_CMOR_TABLE']
         self.realm = ''
         self.frequency = ''
@@ -38,6 +43,9 @@ class OBS(Base):
         self.filename = obs_dict[var][obs_name]['filename']
         self.reference = obs_name
         self.variable = var
+
+        if "subpath" in obs_dict[var][obs_name]:
+            self.template = obs_dict[var][obs_name]["subpath"]
 
     def setup_based_on_obs_table(self, obs_table):
         ''' Set the realm, frequency, ac based on the
@@ -59,6 +67,7 @@ class OBS(Base):
 class Observation(DataSet):
     ''' Handles all the computation (setting masking, target grid, etc)
     and some file I/O related to observations. '''
+
     def __init__(self, parameter, var_name_long, region,
                  obs, obs_dict, data_path, sftlf):
         super(Observation, self).__init__(parameter, var_name_long, region,
@@ -98,7 +107,8 @@ class Observation(DataSet):
         dictionary for self.var and self.obs_or_model. '''
         if isinstance(self.obs_dict[self.var][self.obs_or_model], basestring):
             obs_from_obs_dict = \
-                self.obs_dict[self.var][self.obs_dict[self.var][self.obs_or_model]]
+                self.obs_dict[self.var][self.obs_dict[self.var]
+                                        [self.obs_or_model]]
         else:
             obs_from_obs_dict = self.obs_dict[self.var][self.obs_or_model]
         return obs_from_obs_dict
@@ -128,12 +138,12 @@ class Observation(DataSet):
         except Exception as e:
             if self.level is not None:
                 logging.getLogger("pcmdi_metrics").error("{} {} {} {}".format('Failed opening 4D OBS',
-                                                         self.var, self.obs_or_model,
-                                                         e))
+                                                                              self.var, self.obs_or_model,
+                                                                              e))
             else:
                 logging.getLogger("pcmdi_metrics").error("{} {} {} {}".format('Failed opening 3D OBS',
-                                                         self.var,
-                                                         self.obs_or_model, e))
+                                                                              self.var,
+                                                                              self.obs_or_model, e))
 
     def hash(self):
         ''' Return a hash of the file. '''

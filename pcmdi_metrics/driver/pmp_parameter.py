@@ -25,17 +25,19 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
         """
 
         process = getattr(self, name, None)
+        print("PROCESS IS:", process)
         if process is None:  # Ok not an argument from arg_parse maybe a template or string constructor itself
             if isinstance(name, basestring):
                 process = name
             elif isinstance(name, genutil.StringConstructor):
                 process = name.template
             else:
-                raise RuntimeError("Could not figure out how to process argument {}".format(name))
-
-        if not isinstance(process, basestring):
                 raise RuntimeError(
                     "Could not figure out how to process argument {}".format(name))
+
+        if not isinstance(process, basestring):
+            raise RuntimeError(
+                "Could not figure out how to process argument {}".format(name))
 
         if extras is None:
             sources = []
@@ -97,7 +99,8 @@ class PMPMetricsParameter(cdp.cdp_parameter.CDPParameter):
             )
 
         if str_var == '':
-            logging.getLogger("pcmdi_metrics").warning("%s is blank." % str_var_name)
+            logging.getLogger("pcmdi_metrics").warning(
+                "%s is blank." % str_var_name)
 
     def check_str_seq_in_str_list(self, str_sequence,
                                   str_sequence_name, str_vars_list):
@@ -116,15 +119,15 @@ class PMPMetricsParameter(cdp.cdp_parameter.CDPParameter):
 
     def check_str_var_in_str_list(self, str_var, str_var_name, str_vars_list):
         if type(str_var) is not str:
-                raise TypeError(
-                    "%s is the wrong type. It must be a string." % str_var_name
-                )
+            raise TypeError(
+                "%s is the wrong type. It must be a string." % str_var_name
+            )
 
         if str_var not in str_vars_list:
-                logging.getLogger("pcmdi_metrics").warning(
-                    ("%s might not be a valid value in %s."
-                     % (str_var, str_var_name))
-                )
+            logging.getLogger("pcmdi_metrics").warning(
+                ("%s might not be a valid value in %s."
+                 % (str_var, str_var_name))
+            )
 
     def check_case_id(self):
         self.check_str(self.case_id, 'case_id')
@@ -138,7 +141,8 @@ class PMPMetricsParameter(cdp.cdp_parameter.CDPParameter):
             )
 
         if self.reference_data_set == [] or self.reference_data_set == ():
-            logging.getLogger("pcmdi_metrics").error("reference_data_set is blank.")
+            logging.getLogger("pcmdi_metrics").error(
+                "reference_data_set is blank.")
 
     def check_test_data_set(self):
         if type(self.test_data_set) is not list \
@@ -170,7 +174,8 @@ class PMPMetricsParameter(cdp.cdp_parameter.CDPParameter):
 
     def check_ref(self):
         ref_values = ['default', 'all', 'alternate', 'ref3']
-        self.check_str_seq_in_str_list(self.reference_data_set, 'reference_data_set', ref_values)
+        self.check_str_seq_in_str_list(
+            self.reference_data_set, 'reference_data_set', ref_values)
 
     def check_target_grid(self):
         self.check_str_var_in_str_list(
