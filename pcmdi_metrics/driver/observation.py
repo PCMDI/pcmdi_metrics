@@ -16,10 +16,6 @@ class OBS(Base):
     def __init__(self, root, var, obs_dict, obs='default',
                  file_mask_template=None):
 
-        template = obs_dict[var].get("template", "%(realm)/%(frequency)/%(variable)/" +\
-                   "%(reference)/%(ac)/%(filename)")
-        super(OBS, self).__init__(root, template, file_mask_template)
-
         logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
 
         if obs not in obs_dict[var]:
@@ -29,6 +25,13 @@ class OBS(Base):
         # Sometimes (when sftlf), we send the actually name of the obs
         if isinstance(obs_name, dict):
             obs_name = obs
+
+        template = obs_dict[var][obs_name].get("template", "%(realm)/%(frequency)/%(variable)/" +\
+                   "%(reference)/%(ac)/%(filename)")
+        print("OBFDDF:",obs_dict[var])
+        print("TEMPLATE:", root, template)
+
+        super(OBS, self).__init__(root, template, file_mask_template)
 
         obs_table = obs_dict[var][obs_name]['CMIP_CMOR_TABLE']
         self.realm = ''
