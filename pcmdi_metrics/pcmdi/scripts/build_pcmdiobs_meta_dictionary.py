@@ -105,7 +105,7 @@ obs_dic = {}
 
 for filePath in lst:
     subp = filePath.split('/')
-    subpath = filePath.split(data_path)[1]
+    template = filePath.split(data_path)[1]
     realm = subp[5]
     var = subp[7]
     product = subp[8]
@@ -141,7 +141,7 @@ for filePath in lst:
         obs_dic[var] = {}
     if product not in list(obs_dic[var].keys()) and os.path.isfile(filePath):
         obs_dic[var][product] = {}
-        obs_dic[var][product]['subpath'] = subpath 
+        obs_dic[var][product]['template'] = template 
         obs_dic[var][product]['filename'] = fileName
         obs_dic[var][product]['CMIP_CMOR_TABLE'] = tableId
         obs_dic[var][product]['period'] = period

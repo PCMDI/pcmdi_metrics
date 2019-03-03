@@ -1,17 +1,4 @@
 {
-    "pr": {
-        "GPCP-2-3": {
-            "CMIP_CMOR_TABLE": "Amon",
-            "MD5sum": "5d224c63754f87fc64abc4b600517290",
-            "RefName": "GPCP-2-3",
-            "RefTrackingDate": "Thu Feb 28 14:04:43 2019",
-            "filename": "pr_mon_GPCP-2-3_BE_gn_197901-201804_AC.nc",
-            "period": "197901-201804",
-            "shape": "(12, 72, 144)",
-            "subpath": "/atmos/mon/pr/GPCP-2-3/gn/v20190228/ac/pr_mon_GPCP-2-3_BE_gn_197901-201804_AC.nc"
-        },
-        "default": "GPCP-2-3"
-    },
     "psl": {
         "ERA-40": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -21,7 +8,7 @@
             "filename": "psl_mon_ERA-40_BE_gn_197901-200201_AC.nc",
             "period": "197901-200201",
             "shape": "(12, 73, 144)",
-            "subpath": "/atmos/mon/psl/ERA-40/gn/v20190221/ac/psl_mon_ERA-40_BE_gn_197901-200201_AC.nc"
+            "template": "/atmos/mon/psl/ERA-40/gn/v20190221/ac/psl_mon_ERA-40_BE_gn_197901-200201_AC.nc"
         },
         "alternate1": "ERA-40"
     },
@@ -34,7 +21,7 @@
             "filename": "rlut_mon_CERES-EBAF-4-0_BE_gn_200101-201801_AC.nc",
             "period": "200101-201801",
             "shape": "(12, 180, 360)",
-            "subpath": "/atmos/mon/rlut/CERES-EBAF-4-0/gn/v20190221/ac/rlut_mon_CERES-EBAF-4-0_BE_gn_200101-201801_AC.nc"
+            "template": "/atmos/mon/rlut/CERES-EBAF-4-0/gn/v20190221/ac/rlut_mon_CERES-EBAF-4-0_BE_gn_200101-201801_AC.nc"
         },
         "default": "CERES-EBAF-4-0"
     },
@@ -47,7 +34,7 @@
             "filename": "rlutcs_mon_CERES-EBAF-4-0_BE_gn_200003-201811_AC.nc",
             "period": "200003-201811",
             "shape": "(12, 180, 360)",
-            "subpath": "/atmos/mon/rlutcs/CERES-EBAF-4-0/gn/v20190221/ac/rlutcs_mon_CERES-EBAF-4-0_BE_gn_200003-201811_AC.nc"
+            "template": "/atmos/mon/rlutcs/CERES-EBAF-4-0/gn/v20190221/ac/rlutcs_mon_CERES-EBAF-4-0_BE_gn_200003-201811_AC.nc"
         },
         "default": "CERES-EBAF-4-0"
     },
@@ -60,7 +47,7 @@
             "filename": "rsut_mon_CERES-EBAF-4-0_BE_gn_200003-201811_AC.nc",
             "period": "200003-201811",
             "shape": "(12, 180, 360)",
-            "subpath": "/atmos/mon/rsut/CERES-EBAF-4-0/gn/v20190221/ac/rsut_mon_CERES-EBAF-4-0_BE_gn_200003-201811_AC.nc"
+            "template": "/atmos/mon/rsut/CERES-EBAF-4-0/gn/v20190221/ac/rsut_mon_CERES-EBAF-4-0_BE_gn_200003-201811_AC.nc"
         },
         "default": "CERES-EBAF-4-0"
     },
@@ -73,7 +60,7 @@
             "filename": "rsutcs_mon_CERES-EBAF-4-0_BE_gn_200101-201801_AC.nc",
             "period": "200101-201801",
             "shape": "(12, 180, 360)",
-            "subpath": "/atmos/mon/rsutcs/CERES-EBAF-4-0/gn/v20190221/ac/rsutcs_mon_CERES-EBAF-4-0_BE_gn_200101-201801_AC.nc"
+            "template": "/atmos/mon/rsutcs/CERES-EBAF-4-0/gn/v20190221/ac/rsutcs_mon_CERES-EBAF-4-0_BE_gn_200101-201801_AC.nc"
         },
         "default": "CERES-EBAF-4-0"
     },
@@ -86,7 +73,7 @@
             "filename": "tas_mon_ERA-40_BE_gn_195709-200209_AC.nc",
             "period": "195709-200209",
             "shape": "(12, 73, 144)",
-            "subpath": "/atmos/mon/tas/ERA-40/gn/v20190221/ac/tas_mon_ERA-40_BE_gn_195709-200209_AC.nc"
+            "template": "/atmos/mon/tas/ERA-40/gn/v20190221/ac/tas_mon_ERA-40_BE_gn_195709-200209_AC.nc"
         },
         "ERA-INT": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -96,7 +83,7 @@
             "filename": "tas_mon_ERA-INT_BE_gn_198901-200912_AC.nc",
             "period": "198901-200912",
             "shape": "(12, 121, 240)",
-            "subpath": "/atmos/mon/tas/ERA-INT/gn/v20190221/ac/tas_mon_ERA-INT_BE_gn_198901-200912_AC.nc"
+            "template": "/atmos/mon/tas/ERA-INT/gn/v20190221/ac/tas_mon_ERA-INT_BE_gn_198901-200912_AC.nc"
         },
         "alternate1": "ERA-40",
         "default": "ERA-INT"
@@ -110,7 +97,7 @@
             "filename": "uas_mon_ERA-40_BE_gn_197901-200201_AC.nc",
             "period": "197901-200201",
             "shape": "(12, 73, 144)",
-            "subpath": "/atmos/mon/uas/ERA-40/gn/v20190221/ac/uas_mon_ERA-40_BE_gn_197901-200201_AC.nc"
+            "template": "/atmos/mon/uas/ERA-40/gn/v20190221/ac/uas_mon_ERA-40_BE_gn_197901-200201_AC.nc"
         },
         "alternate1": "ERA-40"
     },
@@ -123,7 +110,7 @@
             "filename": "vas_mon_ERA-40_BE_gn_197901-200201_AC.nc",
             "period": "197901-200201",
             "shape": "(12, 73, 144)",
-            "subpath": "/atmos/mon/vas/ERA-40/gn/v20190221/ac/vas_mon_ERA-40_BE_gn_197901-200201_AC.nc"
+            "template": "/atmos/mon/vas/ERA-40/gn/v20190221/ac/vas_mon_ERA-40_BE_gn_197901-200201_AC.nc"
         },
         "alternate1": "ERA-40"
     }
