@@ -43,7 +43,7 @@ endYear = 2010
 segmentLength = 180  # number of time step for each segment (in day, in this case), need to keep this number as even number?
 
 case_id = "{:v%Y%m%d-%H%M}".format(datetime.datetime.now())
-result_dir = '../result/' + case_id
+result_dir = '/work/lee1043/imsi/result_test/mjo_metrics/' + case_id
 ncfileName = 'GPCP_stps_'+str(startYear)+'-'+str(endYear) # output netCDF file
 if cmmGrid:
     ncfileName += '_cmmGrid'
