@@ -1,3 +1,4 @@
+import datetime
 
 # =================================================
 # Background Information
@@ -42,7 +43,10 @@ meyear = 1999
 # =================================================
 # Output
 # -------------------------------------------------
-results_dir = '/work/lee1043/imsi/result_test/monsoon_sperber'
+case_id = "{:v%Y%m%d-%H%M}".format(datetime.datetime.now())
+results_dir = '/work/lee1043/imsi/result_test/%(output_type)/monsoon/monsoon_sperber/'+case_id
+#case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+#results_dir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/%(output_type)/monsoon/monsoon_sperber/'+case_id
 nc_out = True  # Write output in NetCDF
 plot = True  # Create map graphics
 

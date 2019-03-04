@@ -104,12 +104,15 @@ realization = param.realization
 print('realization: ', realization)
 
 # Output
-outdir = param.results_dir
-print('outdir: ', outdir)
+outdir = param.process_templated_argument("results_dir")
 
 # Create output directory
-if not os.path.exists(outdir):
-    os.makedirs(outdir)
+for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
+    if not os.path.exists(outdir(output_type=output_type)):
+        os.makedirs(outdir(output_type=output_type))
+    print(outdir(output_type=output_type))
+
+sys.exit()
 
 # Debug
 debug = param.debug
@@ -142,20 +145,17 @@ update_json = param.update_json
 # =================================================
 # Declare dictionary for .json record
 # -------------------------------------------------
-
-
 def tree():
     return defaultdict(tree)
-
 
 monsoon_stat_dic = tree()
 
 # Define output json file
 json_filename = '_'.join(['monsoon_sperber_stat',
                           mip, exp, fq, realm, str(msyear)+'-'+str(meyear)])
-json_file = os.path.join(outdir, json_filename + '.json')
+json_file = os.path.join(outdir(output_type='metrics_results'), json_filename + '.json')
 json_file_org = os.path.join(
-    outdir, '_'.join([json_filename, 'org', str(os.getpid())])+'.json')
+    outdir(output_type='metrics_results'), '_'.join([json_filename, 'org', str(os.getpid())])+'.json')
 
 # Save pre-existing json file against overwriting
 if os.path.isfile(json_file) and os.stat(json_file).st_size > 0:
@@ -296,7 +296,7 @@ for model in models:
                         mip, model, exp,
                         run, 'monsoon_sperber', startYear, endYear)
                     fout = cdms2.open(os.path.join(
-                        outdir, output_filename+'.nc'), 'w')
+                        outdir(output_type='diagnostic_results'), output_filename+'.nc'), 'w')
 
                 # Plotting setup
                 if plot:
@@ -518,14 +518,14 @@ for model in models:
                                 ', '.join([mip, model, exp, run, str(startYear)+'-'+str(endYear)]))
                             plt.subplots_adjust(top=0.85)
                             plt.savefig(os.path.join(
-                                outdir, output_filename+'.png'))
+                                outdir(output_type='graphics'), output_filename+'.png'))
                             plt.close()
 
                 # =================================================
                 # Write dictionary to json file
                 # (let the json keep overwritten in model loop)
                 # -------------------------------------------------
-                JSON = pcmdi_metrics.io.base.Base(outdir, json_filename)
+                JSON = pcmdi_metrics.io.base.Base(outdir(output_type='diagnostic_results'), json_filename)
                 JSON.write(monsoon_stat_dic,
                            json_structure=["model",
                                            "realization",
