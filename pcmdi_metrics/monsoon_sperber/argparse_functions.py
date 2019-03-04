@@ -17,18 +17,29 @@ def AddParserArgument(P):
     P.add_argument("--modpath_lf",
                    type=str,
                    help="Path of landsea mask for model data set")
-    P.add_argument("--varobs", dest="varOBS", type=str,
-                   help="Variable name in reference data set")
-    P.add_argument("--varmod", dest="varMOD", type=str,
-                   help="Variable name in model data set")
-    P.add_argument("--obs_units_adjust", dest="ObsUnitsAdjust", type=tuple,
-                   help="Unit conversion\n"
-                        "- if needed: e.g., (True, 'multiply', 86400.),\n"
-                        "- no needed: (False, 0, 0)")
-    P.add_argument("--mod_units_adjust", dest="ModUnitsAdjust", type=tuple,
-                   help="Unit conversion\n"
-                        "- if needed: e.g., (True, 'multiply', 86400.),\n"
-                        "- no needed: (False, 0, 0)")
+    P.add_argument("--varOBS",
+                   type=str,
+                   help="Name of variable in reference data")
+    P.add_argument("--varModel",
+                   type=str,
+                   help="Name of variable in model(s)")
+
+
+    P.add_argument("--ObsUnitsAdjust",
+                   type=tuple,
+                   default=(False, 0, 0),
+                   help="For unit adjust for OBS dataset. For example:\n"
+                        "- (True, 'divide', 100.0)  # Pa to hPa\n"
+                        "- (True, 'subtract', 273.15)  # degK to degC\n"
+                        "- (False, 0, 0) # No adjustment (default)")
+    P.add_argument("--ModUnitsAdjust",
+                   type=tuple,
+                   default=(False, 0, 0),
+                   help="For unit adjust for model dataset. For example:\n"
+                        "- (True, 'divide', 100.0)  # Pa to hPa\n"
+                        "- (True, 'subtract', 273.15)  # degK to degC\n"
+                        "- (False, 0, 0) # No adjustment (default)")
+
     P.add_argument("--units", dest="units", type=str,
                    help="Final units for the variable")
     P.add_argument("--osyear", dest="osyear", type=int,
@@ -59,8 +70,12 @@ def AddParserArgument(P):
                    help="record netcdf output", action="store_true", default=False)
     P.add_argument("--plot", dest="plot", help="produce plots",
                    action="store_true", default=False)
-    P.add_argument("--include_obs", dest="includeOBS",
+    P.add_argument("--includeOBS", dest="includeOBS",
                    help="include observation", action="store_true", default=False)
+    P.add_argument("--update_json",
+                   type=bool,
+                   default=True,
+                   help="Option for update existing JSON file: True (i.e., update) (default) / False (i.e., overwrite)")
     return P
 
 
