@@ -112,8 +112,6 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
         os.makedirs(outdir(output_type=output_type))
     print(outdir(output_type=output_type))
 
-sys.exit()
-
 # Debug
 debug = param.debug
 print('debug: ', debug)
