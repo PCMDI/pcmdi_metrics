@@ -46,6 +46,7 @@ import MV2
 import numpy as np
 import os
 import pcmdi_metrics
+import pkg_resources
 import sys
 import time
 
@@ -171,11 +172,19 @@ if 'RESULTS' not in list(monsoon_stat_dic.keys()):
 # =================================================
 # Loop start for given models
 # -------------------------------------------------
+"""
 regions_specs = {}
 exec(compile(open(os.path.join(sys.prefix, "share",
                                "pmp", "default_regions.py")).read(),
              os.path.join(sys.prefix, "share", "pmp",
                           "default_regions.py"), 'exec'))
+"""
+regions_specs = {}
+egg_pth = pkg_resources.resource_filename(
+    pkg_resources.Requirement.parse("pcmdi_metrics"), 
+    "share/pmp")
+exec(compile(open(os.path.join(egg_pth, "default_regions.py")).read(),
+os.path.join(egg_pth, "default_regions.py"), 'exec'))
 
 if includeOBS:
     models.insert(0, 'obs')
@@ -523,7 +532,7 @@ for model in models:
                 # Write dictionary to json file
                 # (let the json keep overwritten in model loop)
                 # -------------------------------------------------
-                JSON = pcmdi_metrics.io.base.Base(outdir(output_type='diagnostic_results'), json_filename)
+                JSON = pcmdi_metrics.io.base.Base(outdir(output_type='metrics_results'), json_filename)
                 JSON.write(monsoon_stat_dic,
                            json_structure=["model",
                                            "realization",
