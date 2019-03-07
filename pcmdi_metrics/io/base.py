@@ -48,8 +48,6 @@ def groupAxes(axes, ids=None, separator="_"):
             for v1 in axis:
                 for v2 in tmp:
                     final += ["{}{}{}".format(v1, separator, v2)]
-    print("IDS:", ids)
-    print("IDS:", separator.join(ids))
     return cdms2.createAxis(final, id=separator.join(ids))
 
 
@@ -599,10 +597,21 @@ class JSONs(object):
 
     def __call__(self, merge=[], **kargs):
         """ Returns the array of values"""
+        # First clean up kargs
+        if "merge" in kargs:
+            merge = kargs["merge"]
+            del(kargs["merge"])
+        order = None
+        axes_ids = self.getAxisIds()
+        if "order" in kargs:
+            # If it's an actual axis assume that it's what user wants
+            # Otherwise it's an out order keyword
+            if "order" not in axes_ids:
+                order = kargs["order"]
+                del(kargs["order"])
         ab = cdms2.getAutoBounds()
         cdms2.setAutoBounds("off")
         axes = self.getAxisList()
-        axes_ids = self.getAxisIds()
         if merge is not []:
             for merger in merge:
                 if not merger in axes_ids:
@@ -619,9 +628,6 @@ class JSONs(object):
 
         # first let's see which vars are actually asked for
         # for now assume all keys means restriction on dims
-        if "merge" in kargs:
-            merge = kargs["merge"]
-            del(kargs["merge"])
         if not isinstance(merge, (list, tuple)):
             raise RuntimeError(
                 "merge keyword must be a list of dimensions to merge together")
@@ -660,9 +666,15 @@ class JSONs(object):
 
         # Ok at this point we need to take care of merged axes
         # First let's create the merged axes
-        new_axes = [groupAxes([self.getAxis(x) for x in merger])
-                    for merger in merge]
-        print("NEW AXES:", new_axes)
+        axes_to_group = []
+        for merger in merge:
+            merged_axes = []
+            for axid in merger:
+                for ax in axes:
+                    if ax.id == axid:
+                        merged_axes.append(ax)
+            axes_to_group.append(merged_axes)
+        new_axes = [groupAxes(grp_axes) for grp_axes in axes_to_group]
         sh2 = list(sh)
         for merger in merge:
             for merger in merge:  # loop through all possible merging
@@ -687,7 +699,6 @@ class JSONs(object):
             if index not in myorder:  # ok did not find this one anywhere
                 myorder.append(index)
 
-        print("Myorder", myorder, sh2)
         outData = numpy.transpose(array, myorder)
         outData = numpy.reshape(outData, sh2)
 
@@ -727,4 +738,10 @@ class JSONs(object):
         outData = MV2.masked_greater(outData, 9.e19)
         outData.id = "pmp"
         cdms2.setAutoBounds(ab)
+        if order is not None:
+            print("REORDERING:", outData.shape, numpy.ma.ravel(outData))
+            myorder = "".join(["({})".format(nm) for nm in order])
+            print("Desired order:", myorder)
+            outData = outData(order=myorder)*1.
+            print("REORDERED:", outData.shape, numpy.ma.ravel(outData))
         return outData
