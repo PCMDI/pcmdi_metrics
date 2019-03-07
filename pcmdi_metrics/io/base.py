@@ -739,9 +739,6 @@ class JSONs(object):
         outData.id = "pmp"
         cdms2.setAutoBounds(ab)
         if order is not None:
-            print("REORDERING:", outData.shape, numpy.ma.ravel(outData))
             myorder = "".join(["({})".format(nm) for nm in order])
-            print("Desired order:", myorder)
-            outData = outData(order=myorder)*1.
-            print("REORDERED:", outData.shape, numpy.ma.ravel(outData))
+            outData = outData(order=myorder)
         return outData
