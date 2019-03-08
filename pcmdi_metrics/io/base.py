@@ -38,7 +38,7 @@ def groupAxes(axes, ids=None, separator="_"):
     if len(ids) != len(axes):
         raise RuntimeError("You need to pass as many ids as axes")
     final = []
-    while len(axes)>0:
+    while len(axes) > 0:
         axis = axes.pop(-1)
         if final == []:
             final = [str(v) for v in axis]
@@ -49,7 +49,6 @@ def groupAxes(axes, ids=None, separator="_"):
                 for v2 in tmp:
                     final += ["{}{}{}".format(v1, separator, v2)]
     return cdms2.createAxis(final, id=separator.join(ids))
-
 
 
 # cdutil region object need a serializer
@@ -188,6 +187,33 @@ def generateProvenance():
         sep=":",
         index=-1)
     return prov
+
+
+def scrap(data, axis=0):
+    originalOrder = data.getOrder(ids=True)
+    if axis not in ['x', 'y', 'z', 't'] and not isinstance(axis, int):
+        order = "({})...".format(axis)
+    else:
+        order = "{}...".format(axis)
+    new = data(order=order)
+    axes = new.getAxisList()  # Save for later
+    new = MV2.array(new.asma())  # lose dims
+    for i in range(new.shape[0] - 1, -1, -1):
+        tmp = new[i]
+        if tmp.mask.all():
+            a = new[:i]
+            b = new[i+1:]
+            if b.shape[0] == 0:
+                new = a
+            else:
+                new = MV2.concatenate((a, b))
+    newAxis = []
+    for v in new.getAxis(0):
+        newAxis.append(axes[0][int(v)])
+    ax = cdms2.createAxis(newAxis, id=axes[0].id)
+    axes[0] = ax
+    new.setAxisList(axes)
+    return new(order=originalOrder)
 
 
 class CDMSDomainsEncoder(json.JSONEncoder):
@@ -525,11 +551,11 @@ class JSONs(object):
                 try:
                     vals = vals[k]
                 except Exception:
-                    vals = 1.e20
+                    vals = 9.99e20
             try:
                 out[tuple(ids)] = float(vals)
             except Exception:
-                out[tuple(ids)] = 1.e20
+                out[tuple(ids)] = 9.99e20
 
     def __init__(self, files=[], structure=[], ignored_keys=[],
                  oneVariablePerFile=True):
@@ -615,7 +641,8 @@ class JSONs(object):
         if merge is not []:
             for merger in merge:
                 if not merger in axes_ids:
-                    raise RuntimeError("You requested to merge axis is '{}' which is not valid. Axes: {}".format(merger, axes_ids))
+                    raise RuntimeError(
+                        "You requested to merge axis is '{}' which is not valid. Axes: {}".format(merger, axes_ids))
         sh = []
         ids = []
         used_ids = []
@@ -735,10 +762,15 @@ class JSONs(object):
                     sub += 1
                 else:
                     outData.setAxis(index - sub, new_axes[setMergedAxis])
-        outData = MV2.masked_greater(outData, 9.e19)
+        outData = MV2.masked_greater(outData, 9.98e20)
         outData.id = "pmp"
         cdms2.setAutoBounds(ab)
         if order is not None:
             myorder = "".join(["({})".format(nm) for nm in order])
             outData = outData(order=myorder)
+        # Merge needs cleaning for extra dims crated
+        if merge != []:
+            for i in range(outData.ndim):
+                outData = scrap(outData, axis=i)
+        outData = MV2.masked_greater(outData, 9.9e19)
         return outData
