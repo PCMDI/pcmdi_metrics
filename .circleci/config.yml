@@ -17,7 +17,7 @@ aliases:
     name: create_conda_env
     environment:
        PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner 'proj4<5' 'vtk-cdat>8.1'"
-       CHANNELS: "-c cdat/label/nightly -c conda-forge -c pcmdi"
+       CHANNELS: "-c cdat/label/v81 -c conda-forge -c pcmdi"
     command: |
        export PATH=$WORKDIR/miniconda/bin:$PATH
        conda config --set always_yes yes --set changeps1 no
