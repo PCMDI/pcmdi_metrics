@@ -21,10 +21,11 @@ reference_data_path = '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/day/pr/CMORPH-1-0/
 reference_data_lf_path = '/work/lee1043/DATA/LandSeaMask_CMORPH/CMORPH_landmask.nc'  # noqa
 
 varOBS = 'pr'
-ObsUnitsAdjust = (True, 'multiply', 86400.0)  # kg m-2 s-1 to mm day-1
+#ObsUnitsAdjust = (True, 'multiply', 86400.0)  # kg m-2 s-1 to mm day-1
+ObsUnitsAdjust = (False, 0, 0)  # mm day-1
 
-osyear = 1996
-oeyear = 2016
+osyear = 1999
+oeyear = 2013
 
 includeOBS = True
 
