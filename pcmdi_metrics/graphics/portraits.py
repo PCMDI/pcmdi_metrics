@@ -1960,6 +1960,8 @@ class Portrait(object):
 
         cols = MV2.reshape(cols, (len(cols) // 3, 3))
 
+        cmap = self.x.createcolormap()
+        self.x.setcolormap(cmap.name)
         for i in range(cols.shape[0]):
             co = self.x.getcolorcell(i)
             if (co[0] != int(cols[i][0]) or co[1] != int(
