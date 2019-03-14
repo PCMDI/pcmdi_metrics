@@ -55,7 +55,7 @@ case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 results_dir = os.path.join(
     '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
     '%(output_type)', 'monsoon', 'monsoon_sperber',
-    mip, exp, case_id, variability_mode)
+    mip, exp, case_id)
 nc_out = True  # Write output in NetCDF
 plot = True  # Create map graphics
 
