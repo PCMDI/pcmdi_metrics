@@ -200,7 +200,7 @@ def scrap(data, axis=0):
     new = MV2.array(new.asma())  # lose dims
     for i in range(new.shape[0] - 1, -1, -1):
         tmp = new[i]
-        if tmp.mask.all():
+        if not isinstance(tmp, (float, numpy.float)) and tmp.mask.all():
             a = new[:i]
             b = new[i+1:]
             if b.shape[0] == 0:
@@ -638,11 +638,15 @@ class JSONs(object):
         ab = cdms2.getAutoBounds()
         cdms2.setAutoBounds("off")
         axes = self.getAxisList()
-        if merge is not []:
+        if merge != []:
+            if isinstance(merge[0], str):
+                merge = [merge,]
+        if merge != []:
             for merger in merge:
-                if not merger in axes_ids:
-                    raise RuntimeError(
-                        "You requested to merge axis is '{}' which is not valid. Axes: {}".format(merger, axes_ids))
+                for merge_axis_id in merger:
+                    if not merge_axis_id in axes_ids:
+                        raise RuntimeError(
+                            "You requested to merge axis is '{}' which is not valid. Axes: {}".format(merge_axis_id, axes_ids))
         sh = []
         ids = []
         used_ids = []
