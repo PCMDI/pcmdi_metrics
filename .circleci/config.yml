@@ -16,7 +16,7 @@ aliases:
   - &create_conda_env
     name: create_conda_env
     environment:
-       PKGS: "vcs vcsaddons 'numpy<1.15' mesalib matplotlib scipy cia testsrunner 'proj4<5' 'vtk-cdat>8.1'"
+       PKGS: "vcs vcsaddons 'numpy<1.14.2' mesalib matplotlib scipy cia testsrunner 'proj4<5' 'vtk-cdat>8.1'"
        CHANNELS: "-c cdat/label/v81 -c conda-forge -c pcmdi"
     command: |
        export PATH=$WORKDIR/miniconda/bin:$PATH
