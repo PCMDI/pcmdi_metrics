@@ -768,7 +768,6 @@ class JSONs(object):
                     outData.setAxis(index - sub, new_axes[setMergedAxis])
         outData = MV2.masked_greater(outData, 9.98e20)
         outData.id = "pmp"
-        cdms2.setAutoBounds(ab)
         if order is not None:
             myorder = "".join(["({})".format(nm) for nm in order])
             outData = outData(order=myorder)
@@ -777,4 +776,5 @@ class JSONs(object):
             for i in range(outData.ndim):
                 outData = scrap(outData, axis=i)
         outData = MV2.masked_greater(outData, 9.9e19)
+        cdms2.setAutoBounds(ab)
         return outData
