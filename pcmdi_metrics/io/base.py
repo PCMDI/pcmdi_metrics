@@ -32,22 +32,23 @@ except Exception:
 
 
 # Group merged axes
-def groupAxes(axes, final=[], ids=None, separator="_"):
-    if axes == []:
-        return cdms2.createAxis(final, id=separator.join(ids))
-    if final == []:
-        final = [val for val in axes[0]]
+def groupAxes(axes, ids=None, separator="_"):
+    if ids is None:
         ids = [ax.id for ax in axes]
-        return groupAxes(axes[1:], final, ids)
-    axis = axes[0]
-    original_length = len(final)
-    final = final * len(axis)
-    idx = 0
-    for val in axis:
-        for i in range(original_length):
-            final[idx] = "{}{}{}".format(final[idx], separator, val)
-            idx += 1
-    return groupAxes(axes[1:], final, ids)
+    if len(ids) != len(axes):
+        raise RuntimeError("You need to pass as many ids as axes")
+    final = []
+    while len(axes) > 0:
+        axis = axes.pop(-1)
+        if final == []:
+            final = [str(v) for v in axis]
+        else:
+            tmp = final
+            final = []
+            for v1 in axis:
+                for v2 in tmp:
+                    final += ["{}{}{}".format(v1, separator, v2)]
+    return cdms2.createAxis(final, id=separator.join(ids))
 
 
 # cdutil region object need a serializer
@@ -186,6 +187,33 @@ def generateProvenance():
         sep=":",
         index=-1)
     return prov
+
+
+def scrap(data, axis=0):
+    originalOrder = data.getOrder(ids=True)
+    if axis not in ['x', 'y', 'z', 't'] and not isinstance(axis, int):
+        order = "({})...".format(axis)
+    else:
+        order = "{}...".format(axis)
+    new = data(order=order)
+    axes = new.getAxisList()  # Save for later
+    new = MV2.array(new.asma())  # lose dims
+    for i in range(new.shape[0] - 1, -1, -1):
+        tmp = new[i]
+        if not isinstance(tmp, (float, numpy.float)) and tmp.mask.all():
+            a = new[:i]
+            b = new[i + 1:]
+            if b.shape[0] == 0:
+                new = a
+            else:
+                new = MV2.concatenate((a, b))
+    newAxis = []
+    for v in new.getAxis(0):
+        newAxis.append(axes[0][int(v)])
+    ax = cdms2.createAxis(newAxis, id=axes[0].id)
+    axes[0] = ax
+    new.setAxisList(axes)
+    return new(order=originalOrder)
 
 
 class CDMSDomainsEncoder(json.JSONEncoder):
@@ -523,11 +551,11 @@ class JSONs(object):
                 try:
                     vals = vals[k]
                 except Exception:
-                    vals = 1.e20
+                    vals = 9.99e20
             try:
                 out[tuple(ids)] = float(vals)
             except Exception:
-                out[tuple(ids)] = 1.e20
+                out[tuple(ids)] = 9.99e20
 
     def __init__(self, files=[], structure=[], ignored_keys=[],
                  oneVariablePerFile=True):
@@ -595,10 +623,31 @@ class JSONs(object):
 
     def __call__(self, merge=[], **kargs):
         """ Returns the array of values"""
+        # First clean up kargs
+        if "merge" in kargs:
+            merge = kargs["merge"]
+            del(kargs["merge"])
+        order = None
+        axes_ids = self.getAxisIds()
+        if "order" in kargs:
+            # If it's an actual axis assume that it's what user wants
+            # Otherwise it's an out order keyword
+            if "order" not in axes_ids:
+                order = kargs["order"]
+                del(kargs["order"])
         ab = cdms2.getAutoBounds()
         cdms2.setAutoBounds("off")
         axes = self.getAxisList()
-        axes_ids = self.getAxisIds()
+        if merge != []:
+            if isinstance(merge[0], str):
+                merge = [merge, ]
+        if merge != []:
+            for merger in merge:
+                for merge_axis_id in merger:
+                    if merge_axis_id not in axes_ids:
+                        raise RuntimeError(
+                            "You requested to merge axis is '{}' which is not valid. Axes: {}".format(
+                                merge_axis_id, axes_ids))
         sh = []
         ids = []
         used_ids = []
@@ -611,9 +660,6 @@ class JSONs(object):
 
         # first let's see which vars are actually asked for
         # for now assume all keys means restriction on dims
-        if "merge" in kargs:
-            merge = kargs["merge"]
-            del(kargs["merge"])
         if not isinstance(merge, (list, tuple)):
             raise RuntimeError(
                 "merge keyword must be a list of dimensions to merge together")
@@ -652,8 +698,15 @@ class JSONs(object):
 
         # Ok at this point we need to take care of merged axes
         # First let's create the merged axes
-        new_axes = [groupAxes([self.getAxis(x) for x in merger])
-                    for merger in merge]
+        axes_to_group = []
+        for merger in merge:
+            merged_axes = []
+            for axid in merger:
+                for ax in axes:
+                    if ax.id == axid:
+                        merged_axes.append(ax)
+            axes_to_group.append(merged_axes)
+        new_axes = [groupAxes(grp_axes) for grp_axes in axes_to_group]
         sh2 = list(sh)
         for merger in merge:
             for merger in merge:  # loop through all possible merging
@@ -714,7 +767,15 @@ class JSONs(object):
                     sub += 1
                 else:
                     outData.setAxis(index - sub, new_axes[setMergedAxis])
-        outData = MV2.masked_greater(outData, 9.e19)
+        outData = MV2.masked_greater(outData, 9.98e20)
         outData.id = "pmp"
+        if order is not None:
+            myorder = "".join(["({})".format(nm) for nm in order])
+            outData = outData(order=myorder)
+        # Merge needs cleaning for extra dims crated
+        if merge != []:
+            for i in range(outData.ndim):
+                outData = scrap(outData, axis=i)
+        outData = MV2.masked_greater(outData, 9.9e19)
         cdms2.setAutoBounds(ab)
         return outData
