@@ -202,7 +202,7 @@ def scrap(data, axis=0):
         tmp = new[i]
         if not isinstance(tmp, (float, numpy.float)) and tmp.mask.all():
             a = new[:i]
-            b = new[i+1:]
+            b = new[i + 1:]
             if b.shape[0] == 0:
                 new = a
             else:
@@ -640,13 +640,14 @@ class JSONs(object):
         axes = self.getAxisList()
         if merge != []:
             if isinstance(merge[0], str):
-                merge = [merge,]
+                merge = [merge, ]
         if merge != []:
             for merger in merge:
                 for merge_axis_id in merger:
-                    if not merge_axis_id in axes_ids:
+                    if merge_axis_id not in axes_ids:
                         raise RuntimeError(
-                            "You requested to merge axis is '{}' which is not valid. Axes: {}".format(merge_axis_id, axes_ids))
+                            "You requested to merge axis is '{}' which is not valid. Axes: {}".format(
+                                merge_axis_id, axes_ids))
         sh = []
         ids = []
         used_ids = []
