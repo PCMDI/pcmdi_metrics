@@ -11,13 +11,13 @@ aliases:
     command: |
       mkdir -p workspace
       git clone -b validateNightly git@github.com:CDAT/cdat workspace/cdat --depth=1
-      python workspace/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3'
+      python workspace/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3.6'
       
   - &create_conda_env
     name: create_conda_env
     environment:
-       PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner 'proj4<5'"
-       CHANNELS: "-c cdat/label/nightly -c cdat-forge -c conda-forge -c cdat -c pcmdi"
+       PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner 'proj4<5' 'vtk-cdat>8.1'"
+       CHANNELS: "-c cdat/label/v81 -c conda-forge -c pcmdi"
     command: |
        export PATH=$WORKDIR/miniconda/bin:$PATH
        conda config --set always_yes yes --set changeps1 no
@@ -26,7 +26,7 @@ aliases:
        if [[ $PY_VER = "py2" ]]; then
           conda create -q -n $PY_VER $CHANNELS "python<3" $PKGS $FFMPEG
        else
-          conda create -q -n $PY_VER $CHANNELS "python>3" $PKGS $FFMPEG $COVERAGE_PKGS
+          conda create -q -n $PY_VER $CHANNELS "python=3.6" $PKGS $FFMPEG $COVERAGE_PKGS
        fi
 
   - &setup_pmp

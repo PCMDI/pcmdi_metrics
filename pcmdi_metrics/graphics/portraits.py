@@ -78,6 +78,15 @@ class Plot_defaults(object):
 
     logo = property(getlogo, setlogo)
 
+    def _repr_png_(self):
+        import tempfile
+        tmp = tempfile.mktemp() + ".png"
+        self.x.png(tmp)
+        f = open(tmp, "rb")
+        st = f.read()
+        f.close()
+        return st
+
     def __init__(self):
         self.x1 = .12
         self.x2 = .84
@@ -142,7 +151,7 @@ class Portrait(object):
             self.x = kw["x"]
         else:
             self.x = vcs.init()
-        self.verbose = True  # output files looked for to the screen
+        self.verbose = False  # output files looked for to the screen
         self.files_structure = files_structure
         self.exclude = exclude
         # First determine the list of parameters on which we can have a
@@ -708,14 +717,103 @@ class Portrait(object):
         x.names = repr(dic)
         nm = '___'.join(ynm)
         y.id = nm
+        y.original_id = output.getAxis(0,).id
         output.setAxis(0, y)
         dic = {}
         for i in range(len(ynm)):
             dic[i] = ynm[i]
         y.names = repr(dic)
+        x.original_id = output.getAxis(1,).id
         output.setAxis(1, x)
 
         return
+
+    def generateTemplate(self):
+        template = vcs.createtemplate()
+        # Now sets all the things for the template...
+        # Sets a bunch of template attributes to off
+        for att in [
+            'line1', 'line2', 'line3', 'line4',
+            'box2', 'box3', 'box4',
+            'min', 'max', 'mean',
+            'xtic1', 'xtic2',
+            'ytic1', 'ytic2',
+            'xvalue', 'yvalue', 'zvalue', 'tvalue',
+            'xunits', 'yunits', 'zunits', 'tunits',
+            'source', 'title', 'dataname',
+        ]:
+            a = getattr(template, att)
+            setattr(a, 'priority', 0)
+        for att in [
+            'xname', 'yname',
+        ]:
+            a = getattr(template, att)
+            setattr(a, 'priority', 0)
+
+        template.data.x1 = self.PLOT_SETTINGS.x1
+        template.data.x2 = self.PLOT_SETTINGS.x2
+        template.data.y1 = self.PLOT_SETTINGS.y1
+        template.data.y2 = self.PLOT_SETTINGS.y2
+        template.box1.x1 = self.PLOT_SETTINGS.x1
+        template.box1.x2 = self.PLOT_SETTINGS.x2
+        template.box1.y1 = self.PLOT_SETTINGS.y1
+        template.box1.y2 = self.PLOT_SETTINGS.y2
+        template.xname.y = self.PLOT_SETTINGS.y2 + .02
+        template.yname.x = self.PLOT_SETTINGS.x2 + .01
+        template.xlabel1.y = self.PLOT_SETTINGS.y1
+        template.xlabel2.y = self.PLOT_SETTINGS.y2
+        template.xlabel1.texttable = self.PLOT_SETTINGS.tictable
+        template.xlabel2.texttable = self.PLOT_SETTINGS.tictable
+        template.xlabel1.textorientation = \
+            self.PLOT_SETTINGS.xticorientation
+        template.xlabel2.textorientation = \
+            self.PLOT_SETTINGS.xticorientation
+        template.ylabel1.x = self.PLOT_SETTINGS.x1
+        template.ylabel2.x = self.PLOT_SETTINGS.x2
+        template.ylabel1.texttable = self.PLOT_SETTINGS.tictable
+        template.ylabel2.texttable = self.PLOT_SETTINGS.tictable
+        template.ylabel1.textorientation = \
+            self.PLOT_SETTINGS.yticorientation
+        template.ylabel2.textorientation = \
+            self.PLOT_SETTINGS.yticorientation
+
+        if self.PLOT_SETTINGS.xtic1.y1 is not None:
+            template.xtic1.y1 = self.PLOT_SETTINGS.xtic1.y1
+            template.xtic1.priority = 1
+        if self.PLOT_SETTINGS.xtic1.y2 is not None:
+            template.xtic1.y2 = self.PLOT_SETTINGS.xtic1.y2
+            template.xtic1.priority = 1
+        if self.PLOT_SETTINGS.xtic2.y1 is not None:
+            template.xtic2.y1 = self.PLOT_SETTINGS.xtic2.y1
+            template.xtic2.priority = 1
+        if self.PLOT_SETTINGS.xtic2.y2 is not None:
+            template.xtic2.y2 = self.PLOT_SETTINGS.xtic2.y2
+            template.xtic2.priority = 1
+        if self.PLOT_SETTINGS.ytic1.x1 is not None:
+            template.ytic1.x1 = self.PLOT_SETTINGS.ytic1.x1
+            template.ytic1.priority = 1
+        if self.PLOT_SETTINGS.ytic1.x2 is not None:
+            template.ytic1.x2 = self.PLOT_SETTINGS.ytic1.x2
+            template.ytic1.priority = 1
+        if self.PLOT_SETTINGS.ytic2.x1 is not None:
+            template.ytic2.priority = 1
+            template.ytic2.x1 = self.PLOT_SETTINGS.ytic2.x1
+        if self.PLOT_SETTINGS.ytic2.x2 is not None:
+            template.ytic2.priority = 1
+            template.ytic2.x2 = self.PLOT_SETTINGS.ytic2.x2
+        template.legend.x1 = self.PLOT_SETTINGS.legend.x1
+        template.legend.x2 = self.PLOT_SETTINGS.legend.x2
+        template.legend.y1 = self.PLOT_SETTINGS.legend.y1
+        template.legend.y2 = self.PLOT_SETTINGS.legend.y2
+        try:
+            tmp = vcs.createtextorientation('crap22')
+        except Exception:
+            tmp = vcs.gettextorientation('crap22')
+        tmp.height = 12
+        # tmp.halign = 'center'
+        # template.legend.texttable = tmp
+        template.legend.textorientation = tmp
+        return template
 
     def plot(self, data=None, mesh=None, template=None,
              meshfill=None, x=None, bg=0, multiple=1.1):
@@ -732,91 +830,7 @@ class Portrait(object):
 
         # Do we use a predefined template ?
         if template is None:
-            template = vcs.createtemplate()
-            # Now sets all the things for the template...
-            # Sets a bunch of template attributes to off
-            for att in [
-                'line1', 'line2', 'line3', 'line4',
-                'box2', 'box3', 'box4',
-                'min', 'max', 'mean',
-                'xtic1', 'xtic2',
-                'ytic1', 'ytic2',
-                'xvalue', 'yvalue', 'zvalue', 'tvalue',
-                'xunits', 'yunits', 'zunits', 'tunits',
-                'source', 'title', 'dataname',
-            ]:
-                a = getattr(template, att)
-                setattr(a, 'priority', 0)
-            for att in [
-                'xname', 'yname',
-            ]:
-                a = getattr(template, att)
-                setattr(a, 'priority', 0)
-
-            template.data.x1 = self.PLOT_SETTINGS.x1
-            template.data.x2 = self.PLOT_SETTINGS.x2
-            template.data.y1 = self.PLOT_SETTINGS.y1
-            template.data.y2 = self.PLOT_SETTINGS.y2
-            template.box1.x1 = self.PLOT_SETTINGS.x1
-            template.box1.x2 = self.PLOT_SETTINGS.x2
-            template.box1.y1 = self.PLOT_SETTINGS.y1
-            template.box1.y2 = self.PLOT_SETTINGS.y2
-            template.xname.y = self.PLOT_SETTINGS.y2 + .02
-            template.yname.x = self.PLOT_SETTINGS.x2 + .01
-            template.xlabel1.y = self.PLOT_SETTINGS.y1
-            template.xlabel2.y = self.PLOT_SETTINGS.y2
-            template.xlabel1.texttable = self.PLOT_SETTINGS.tictable
-            template.xlabel2.texttable = self.PLOT_SETTINGS.tictable
-            template.xlabel1.textorientation = \
-                self.PLOT_SETTINGS.xticorientation
-            template.xlabel2.textorientation = \
-                self.PLOT_SETTINGS.xticorientation
-            template.ylabel1.x = self.PLOT_SETTINGS.x1
-            template.ylabel2.x = self.PLOT_SETTINGS.x2
-            template.ylabel1.texttable = self.PLOT_SETTINGS.tictable
-            template.ylabel2.texttable = self.PLOT_SETTINGS.tictable
-            template.ylabel1.textorientation = \
-                self.PLOT_SETTINGS.yticorientation
-            template.ylabel2.textorientation = \
-                self.PLOT_SETTINGS.yticorientation
-
-            if self.PLOT_SETTINGS.xtic1.y1 is not None:
-                template.xtic1.y1 = self.PLOT_SETTINGS.xtic1.y1
-                template.xtic1.priority = 1
-            if self.PLOT_SETTINGS.xtic1.y2 is not None:
-                template.xtic1.y2 = self.PLOT_SETTINGS.xtic1.y2
-                template.xtic1.priority = 1
-            if self.PLOT_SETTINGS.xtic2.y1 is not None:
-                template.xtic2.y1 = self.PLOT_SETTINGS.xtic2.y1
-                template.xtic2.priority = 1
-            if self.PLOT_SETTINGS.xtic2.y2 is not None:
-                template.xtic2.y2 = self.PLOT_SETTINGS.xtic2.y2
-                template.xtic2.priority = 1
-            if self.PLOT_SETTINGS.ytic1.x1 is not None:
-                template.ytic1.x1 = self.PLOT_SETTINGS.ytic1.x1
-                template.ytic1.priority = 1
-            if self.PLOT_SETTINGS.ytic1.x2 is not None:
-                template.ytic1.x2 = self.PLOT_SETTINGS.ytic1.x2
-                template.ytic1.priority = 1
-            if self.PLOT_SETTINGS.ytic2.x1 is not None:
-                template.ytic2.priority = 1
-                template.ytic2.x1 = self.PLOT_SETTINGS.ytic2.x1
-            if self.PLOT_SETTINGS.ytic2.x2 is not None:
-                template.ytic2.priority = 1
-                template.ytic2.x2 = self.PLOT_SETTINGS.ytic2.x2
-            template.legend.x1 = self.PLOT_SETTINGS.legend.x1
-            template.legend.x2 = self.PLOT_SETTINGS.legend.x2
-            template.legend.y1 = self.PLOT_SETTINGS.legend.y1
-            template.legend.y2 = self.PLOT_SETTINGS.legend.y2
-            try:
-                tmp = vcs.createtextorientation('crap22')
-            except Exception:
-                tmp = vcs.gettextorientation('crap22')
-            tmp.height = 12
-            # tmp.halign = 'center'
-            # template.legend.texttable = tmp
-            template.legend.textorientation = tmp
-
+            template = self.generateTemplate()
         else:
             if isinstance(template, vcs.template.P):
                 tid = template.name
@@ -826,7 +840,7 @@ class Portrait(object):
                 raise 'Error cannot understand what you mean by template=' + \
                     str(template)
 
-            template = vcs.createtemplate()
+            template = vcs.createtemplate(source=tid)
 
         # Do we use a predefined meshfill ?
         if meshfill is None:
@@ -847,7 +861,7 @@ class Portrait(object):
             meshfill.yticlabels2 = mtics
             if self.PLOT_SETTINGS.colormap is None:
                 self.set_colormap()
-            elif x.getcolormapname() != self.PLOT_SETTINGS.colormap:
+            elif self.x.getcolormapname() != self.PLOT_SETTINGS.colormap:
                 self.x.setcolormap(self.PLOT_SETTINGS.colormap)
 
             if self.PLOT_SETTINGS.levels is None:
@@ -861,7 +875,11 @@ class Portrait(object):
             if len(levs) > 1:
                 meshfill.levels = levs
                 if self.PLOT_SETTINGS.fillareacolors is None:
-                    cols = vcs.getcolors(levs, list(range(16, 40)), split=1)
+                    if self.PLOT_SETTINGS.colormap is None:
+                        # Default colormap only use range 16->40
+                        cols = vcs.getcolors(levs, list(range(16, 40)), split=1)
+                    else:
+                        cols = vcs.getcolors(levs, split=1)
                     meshfill.fillareacolors = cols
                 else:
                     meshfill.fillareacolors = self.PLOT_SETTINGS.fillareacolors
@@ -1080,7 +1098,7 @@ class Portrait(object):
                     if p not in self.dummies and \
                             p not in self.auto_dummies and \
                             p not in axes_param:
-                        txt = x.createtext(
+                        txt = self.x.createtext(
                             None,
                             self.PLOT_SETTINGS.parametertable.name,
                             None,
@@ -1219,737 +1237,4 @@ class Portrait(object):
             self.x.plot(tmptxt, bg=self.bg)
 
     def set_colormap(self):
-        cols = (
-            100,
-            100,
-            100,
-            0,
-            0,
-            0,
-            83.9216,
-            83.9216,
-            83.9216,
-            30.9804,
-            30.9804,
-            30.9804,
-            100,
-            100,
-            100,
-            100,
-            100,
-            0,
-            0,
-            2.7451,
-            100,
-            0,
-            5.4902,
-            100,
-            0,
-            7.84314,
-            100,
-            0,
-            10.9804,
-            100,
-            0,
-            13.7255,
-            100,
-            0,
-            16.4706,
-            100,
-            0,
-            20.3922,
-            100,
-            0,
-            23.1373,
-            100,
-            0,
-            25.4902,
-            100,
-            0,
-            30.1961,
-            100,
-            0,
-            0,
-            47.451,
-            10.5882,
-            13.3333,
-            54.5098,
-            21.5686,
-            27.0588,
-            61.5686,
-            32.549,
-            40.7843,
-            68.6274,
-            43.5294,
-            54.5098,
-            76.0784,
-            48.6275,
-            60.7843,
-            79.2157,
-            53.7255,
-            67.451,
-            82.7451,
-            58.8235,
-            73.7255,
-            86.2745,
-            64.3137,
-            80.3922,
-            89.4118,
-            69.4118,
-            86.6667,
-            92.9412,
-            74.5098,
-            93.3333,
-            96.4706,
-            80,
-            100,
-            100,
-            100,
-            87.0588,
-            85.098,
-            100,
-            69.4118,
-            67.8431,
-            100,
-            52.1569,
-            50.9804,
-            100,
-            34.5098,
-            33.7255,
-            100,
-            17.2549,
-            16.8627,
-            100,
-            0,
-            0,
-            87.451,
-            0,
-            0,
-            74.902,
-            0,
-            0,
-            62.7451,
-            0,
-            0,
-            50.1961,
-            0,
-            0,
-            37.6471,
-            0,
-            0,
-            25.4902,
-            0,
-            0,
-            100,
-            100,
-            100,
-            0,
-            0,
-            47.451,
-            0.392157,
-            0.392157,
-            47.451,
-            0.784314,
-            0.784314,
-            47.8431,
-            1.17647,
-            1.17647,
-            48.2353,
-            1.56863,
-            1.56863,
-            48.2353,
-            1.96078,
-            1.96078,
-            48.6275,
-            2.35294,
-            2.7451,
-            49.0196,
-            2.7451,
-            3.13725,
-            49.0196,
-            3.13725,
-            3.52941,
-            49.4118,
-            3.52941,
-            3.92157,
-            49.8039,
-            3.92157,
-            4.31373,
-            49.8039,
-            4.31373,
-            5.09804,
-            50.1961,
-            4.70588,
-            5.4902,
-            50.5882,
-            5.09804,
-            5.88235,
-            50.5882,
-            5.4902,
-            6.27451,
-            50.9804,
-            5.88235,
-            6.66667,
-            51.3725,
-            6.27451,
-            7.45098,
-            51.3725,
-            6.66667,
-            7.84314,
-            51.7647,
-            7.05882,
-            8.23529,
-            52.1569,
-            7.45098,
-            8.62745,
-            52.1569,
-            7.84314,
-            9.01961,
-            52.549,
-            8.23529,
-            9.80392,
-            52.9412,
-            8.62745,
-            10.1961,
-            52.9412,
-            9.01961,
-            10.5882,
-            53.3333,
-            9.41177,
-            10.9804,
-            53.7255,
-            9.80392,
-            11.3725,
-            53.7255,
-            10.1961,
-            12.1569,
-            54.1176,
-            10.5882,
-            12.549,
-            54.5098,
-            10.9804,
-            12.9412,
-            54.5098,
-            11.3725,
-            13.3333,
-            54.902,
-            11.7647,
-            13.7255,
-            55.2941,
-            12.1569,
-            14.5098,
-            55.2941,
-            12.549,
-            14.902,
-            55.6863,
-            13.3333,
-            15.2941,
-            56.0784,
-            13.7255,
-            15.6863,
-            56.4706,
-            14.1176,
-            16.0784,
-            56.4706,
-            14.5098,
-            16.8627,
-            56.8627,
-            14.902,
-            17.2549,
-            57.2549,
-            15.2941,
-            17.6471,
-            57.2549,
-            15.6863,
-            18.0392,
-            57.6471,
-            16.0784,
-            18.4314,
-            58.0392,
-            16.4706,
-            19.2157,
-            58.0392,
-            16.8627,
-            19.6078,
-            58.4314,
-            17.2549,
-            20,
-            58.8235,
-            17.6471,
-            20.3922,
-            58.8235,
-            18.0392,
-            20.7843,
-            59.2157,
-            18.4314,
-            21.5686,
-            59.6078,
-            18.8235,
-            21.9608,
-            59.6078,
-            19.2157,
-            22.3529,
-            60,
-            19.6078,
-            22.7451,
-            60.3922,
-            20,
-            23.1373,
-            60.3922,
-            20.3922,
-            23.9216,
-            60.7843,
-            20.7843,
-            24.3137,
-            61.1765,
-            21.1765,
-            24.7059,
-            61.1765,
-            21.5686,
-            25.098,
-            61.5686,
-            21.9608,
-            25.4902,
-            61.9608,
-            22.3529,
-            26.2745,
-            61.9608,
-            22.7451,
-            26.6667,
-            62.3529,
-            23.1373,
-            27.0588,
-            62.7451,
-            23.5294,
-            27.451,
-            62.7451,
-            23.9216,
-            27.8431,
-            63.1373,
-            24.3137,
-            28.6275,
-            63.5294,
-            24.7059,
-            29.0196,
-            63.5294,
-            25.098,
-            29.4118,
-            63.9216,
-            25.4902,
-            29.8039,
-            64.3137,
-            25.8824,
-            30.1961,
-            64.3137,
-            26.6667,
-            30.9804,
-            64.7059,
-            27.0588,
-            31.3725,
-            65.098,
-            27.451,
-            31.7647,
-            65.4902,
-            27.8431,
-            32.1569,
-            65.4902,
-            28.2353,
-            32.549,
-            65.8824,
-            28.6275,
-            32.9412,
-            66.2745,
-            29.0196,
-            33.7255,
-            66.2745,
-            29.4118,
-            34.1176,
-            66.6667,
-            29.8039,
-            34.5098,
-            67.0588,
-            30.1961,
-            34.902,
-            67.0588,
-            30.5882,
-            35.2941,
-            67.451,
-            30.9804,
-            36.0784,
-            67.8431,
-            31.3725,
-            36.4706,
-            67.8431,
-            31.7647,
-            36.8627,
-            68.2353,
-            32.1569,
-            37.2549,
-            68.6274,
-            32.549,
-            37.6471,
-            68.6274,
-            32.9412,
-            38.4314,
-            69.0196,
-            33.3333,
-            38.8235,
-            69.4118,
-            33.7255,
-            39.2157,
-            69.4118,
-            34.1176,
-            39.6078,
-            69.8039,
-            34.5098,
-            40,
-            70.1961,
-            34.902,
-            40.7843,
-            70.1961,
-            35.2941,
-            41.1765,
-            70.5882,
-            35.6863,
-            41.5686,
-            70.9804,
-            36.0784,
-            41.9608,
-            70.9804,
-            36.4706,
-            42.3529,
-            71.3726,
-            36.8627,
-            43.1373,
-            71.7647,
-            37.2549,
-            43.5294,
-            71.7647,
-            37.6471,
-            43.9216,
-            72.1569,
-            38.0392,
-            44.3137,
-            72.549,
-            38.4314,
-            44.7059,
-            72.549,
-            38.8235,
-            45.4902,
-            72.9412,
-            39.2157,
-            45.8824,
-            73.3333,
-            40,
-            46.2745,
-            73.7255,
-            40.3922,
-            46.6667,
-            73.7255,
-            40.7843,
-            47.0588,
-            74.1176,
-            41.1765,
-            47.8431,
-            74.5098,
-            41.5686,
-            48.2353,
-            74.5098,
-            41.9608,
-            48.6275,
-            74.902,
-            42.3529,
-            49.0196,
-            75.2941,
-            42.7451,
-            49.4118,
-            75.2941,
-            43.1373,
-            50.1961,
-            75.6863,
-            43.5294,
-            50.5882,
-            76.0784,
-            43.9216,
-            50.9804,
-            76.0784,
-            44.3137,
-            51.3725,
-            76.4706,
-            44.7059,
-            51.7647,
-            76.8627,
-            45.098,
-            52.549,
-            76.8627,
-            45.4902,
-            52.9412,
-            77.2549,
-            45.8824,
-            53.3333,
-            77.6471,
-            46.2745,
-            53.7255,
-            77.6471,
-            46.6667,
-            54.1176,
-            78.0392,
-            47.0588,
-            54.902,
-            78.4314,
-            47.451,
-            55.2941,
-            78.4314,
-            47.8431,
-            55.6863,
-            78.8235,
-            48.2353,
-            56.0784,
-            79.2157,
-            48.6275,
-            56.4706,
-            79.2157,
-            49.0196,
-            57.2549,
-            79.6078,
-            49.4118,
-            57.6471,
-            80,
-            49.8039,
-            58.0392,
-            80,
-            50.1961,
-            58.4314,
-            80.3922,
-            50.5882,
-            58.8235,
-            80.7843,
-            50.9804,
-            59.6078,
-            80.7843,
-            51.3725,
-            60,
-            81.1765,
-            51.7647,
-            60.3922,
-            81.5686,
-            52.1569,
-            60.7843,
-            81.5686,
-            52.549,
-            61.1765,
-            81.9608,
-            53.3333,
-            61.9608,
-            82.3529,
-            53.7255,
-            62.3529,
-            82.7451,
-            54.1176,
-            62.7451,
-            82.7451,
-            54.5098,
-            63.1373,
-            83.1373,
-            54.902,
-            63.5294,
-            83.5294,
-            55.2941,
-            63.9216,
-            83.5294,
-            55.6863,
-            64.7059,
-            83.9216,
-            56.0784,
-            65.098,
-            84.3137,
-            56.4706,
-            65.4902,
-            84.3137,
-            56.8627,
-            65.8824,
-            84.7059,
-            57.2549,
-            66.2745,
-            85.098,
-            57.6471,
-            67.0588,
-            85.098,
-            58.0392,
-            67.451,
-            85.4902,
-            58.4314,
-            67.8431,
-            85.8824,
-            58.8235,
-            68.2353,
-            85.8824,
-            59.2157,
-            68.6274,
-            86.2745,
-            59.6078,
-            69.4118,
-            86.6667,
-            60,
-            69.8039,
-            86.6667,
-            60.3922,
-            70.1961,
-            87.0588,
-            60.7843,
-            70.5882,
-            87.451,
-            61.1765,
-            70.9804,
-            87.451,
-            61.5686,
-            71.7647,
-            87.8431,
-            61.9608,
-            72.1569,
-            88.2353,
-            62.3529,
-            72.549,
-            88.2353,
-            62.7451,
-            72.9412,
-            88.6274,
-            63.1373,
-            73.3333,
-            89.0196,
-            63.5294,
-            74.1176,
-            89.0196,
-            63.9216,
-            74.5098,
-            89.4118,
-            64.3137,
-            74.902,
-            89.8039,
-            64.7059,
-            75.2941,
-            89.8039,
-            65.098,
-            75.6863,
-            90.1961,
-            65.4902,
-            76.4706,
-            90.5882,
-            65.8824,
-            76.8627,
-            90.5882,
-            66.6667,
-            77.2549,
-            90.9804,
-            67.0588,
-            77.6471,
-            91.3726,
-            67.451,
-            78.0392,
-            91.7647,
-            67.8431,
-            78.8235,
-            91.7647,
-            68.2353,
-            79.2157,
-            92.1569,
-            68.6274,
-            79.6078,
-            92.549,
-            69.0196,
-            80,
-            92.549,
-            69.4118,
-            80.3922,
-            92.9412,
-            69.8039,
-            81.1765,
-            93.3333,
-            70.1961,
-            81.5686,
-            93.3333,
-            70.5882,
-            81.9608,
-            93.7255,
-            70.9804,
-            82.3529,
-            94.1176,
-            71.3726,
-            82.7451,
-            94.1176,
-            71.7647,
-            83.5294,
-            94.5098,
-            72.1569,
-            83.9216,
-            94.902,
-            72.549,
-            84.3137,
-            94.902,
-            72.9412,
-            84.7059,
-            95.2941,
-            73.3333,
-            85.098,
-            95.6863,
-            73.7255,
-            85.8824,
-            95.6863,
-            74.1176,
-            86.2745,
-            96.0784,
-            74.5098,
-            86.6667,
-            96.4706,
-            74.902,
-            87.0588,
-            96.4706,
-            75.2941,
-            87.451,
-            96.8627,
-            75.6863,
-            88.2353,
-            97.2549,
-            76.0784,
-            88.6274,
-            97.2549,
-            76.4706,
-            89.0196,
-            97.6471,
-            76.8627,
-            89.4118,
-            98.0392,
-            77.2549,
-            89.8039,
-            98.0392,
-            77.6471,
-            90.5882,
-            98.4314,
-            78.0392,
-            90.9804,
-            98.8235,
-            78.4314,
-            91.3726,
-            98.8235,
-            78.8235,
-            91.7647,
-            99.2157,
-            79.2157,
-            92.1569,
-            99.6078,
-            80,
-            92.9412,
-            100)
-
-        cols = MV2.reshape(cols, (len(cols) // 3, 3))
-
-        for i in range(cols.shape[0]):
-            co = self.x.getcolorcell(i)
-            if (co[0] != int(cols[i][0]) or co[1] != int(
-                    cols[i][1]) or co[2] != int(cols[i][2])):
-                self.x.setcolorcell(
-                    i, int(
-                        cols[i][0]), int(
-                        cols[i][1]), int(
-                        cols[i][2]))
-        return
+        self.x.setcolormap("bl_rd_12")
