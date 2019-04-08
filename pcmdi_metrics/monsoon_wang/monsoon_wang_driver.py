@@ -220,8 +220,12 @@ def monsoon_wang_runner(args):
 
     #########################################
 
-    egg_pth = pkg_resources.resource_filename(
-        pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
+    try:
+        egg_pth = pkg_resources.resource_filename(
+            pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
+    except Exception:
+        # python 2 seems to fail when ran in home directory of source?
+        egg_pth = os.path.join(os.getcwd(), "share", "pmp")
     globals = {}
     locals = {}
     exec(compile(open(os.path.join(egg_pth, "default_regions.py")).read(),

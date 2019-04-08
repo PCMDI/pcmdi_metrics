@@ -116,7 +116,11 @@ OUT = pcmdi_metrics.io.base.Base(
     os.path.abspath(
         args.results_dir),
     jsonFile())
-egg_pth = pkg_resources.resource_filename(pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
+try:
+    egg_pth = pkg_resources.resource_filename(pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
+except Exception:
+    # python 2 seems to fail when ran in home directory of source?
+    egg_pth = os.path.join(os.getcwd(), "share", "pmp")
 disclaimer = open(
     os.path.join(
         egg_pth,
