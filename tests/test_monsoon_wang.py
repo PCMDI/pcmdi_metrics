@@ -29,21 +29,19 @@ class MonsoonTest(unittest.TestCase):
     def testMonsoonWang(self):
 
         P = create_monsoon_wang_parser()
-        P.add_args_and_values(["--mp",
-                               "tests/monsoon/data/pr_1961_1999_MRI-CGCM3_regrid_MODS.nc",
+        P.add_args_and_values(["--test_data_path",
+                               "tests/monsoon/data/%(variable)_1961_1999_MRI-CGCM3_regrid_%(model).nc",
                                "--reference_data_path",
                                "tests/monsoon/obs/pr_gpcp_79_07_mseas.nc",
                                "--mns",
                                "['xa',]",
                                "--results_dir",
                                "test_monsoon",
-                               "--outpj",
-                               "test_monsoon",
                                "--threshold=2.5"])
         args = P.get_parameter()
         monsoon_wang_runner(args)
 
-        test_file = "test_monsoon/out.json"
+        test_file = "test_monsoon/monsoon_wang.json"
         correct_file = "tests/monsoon/mpi.json"
 
         self.compareJsons(test_file, correct_file)
