@@ -77,7 +77,8 @@ aliases:
        rm -rf cdp
        cp -r ../../recipes/pcmdi_metrics .
        python ./prep_for_build.py -l 1.2
-       conda build $PKG_NAME $CHANNELS
+       conda build $PKG_NAME $CHANNELS --python=36
+       conda build $PKG_NAME $CHANNELS --python=27
        anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l $LABEL $CONDA_BLD_PATH/noarch/$PKG_NAME-*tar.bz2 --force
 
 
