@@ -18,8 +18,8 @@ requirements:
     - numpy
   run:
     - python {{ python }}
-    - vcs >=8.1
-    - vcsaddons >=8.1
+    - vcs >=8.0
+    - vcsaddons >=8.0
     - cdms2 >=3
     - genutil >=8.1
     - cdutil >=8.1
