@@ -3,9 +3,11 @@ which are:
 - onset pentad index: when fractional accumulation hit 20%
 - decay pentad index: when fractional accumulation hit 80%
 - slope: slope between onset and decay pentad time step indices
+- duration: duration of monsoon period as index
 calculated from cumulative pentad time series
 
-Jiwoo Lee, 2018-07
+Drafted: Jiwoo Lee, 2018-07
+Revised: Jiwoo Lee, 2019-05
 
 Note: Code for picking onset/decay index inspired by
 https://stackoverflow.com/questions/2236906/first-python-list-index-greater-than-x
