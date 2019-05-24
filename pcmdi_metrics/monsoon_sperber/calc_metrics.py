@@ -32,5 +32,5 @@ def sperber_metrics(d, region, debug=False):
     return {'frac_accum': frac_accum,
             'onset_index': onset_index,
             'decay_index': decay_index,
-            'slope': slope}
+            'slope': slope,
             'duration': duration}
