@@ -202,9 +202,12 @@ for model in models:
             model_path_list = [reference_data_path]
             # land fraction
             model_lf_path = reference_data_lf_path
-            # dict
+            # dict for output JSON
             if reference_data_name not in list(monsoon_stat_dic['REF'].keys()):
                 monsoon_stat_dic['REF'][reference_data_name] = {}
+            # dict for plottng
+            dict_obs_composite = {}
+            dict_obs_composite[reference_data_name] = {}
         else:  # for rest of models
             var = varModel
             UnitsAdjust = ModUnitsAdjust
@@ -221,7 +224,7 @@ for model in models:
                 pass
             else:
                 model_lf_path = modpath_lf(model=model.upper())
-            # dict
+            # dict for output JSON
             if model not in list(monsoon_stat_dic['RESULTS'].keys()):
                 monsoon_stat_dic['RESULTS'][model] = {}
 
@@ -428,6 +431,7 @@ for model in models:
                             fout.write(pentad_time_series_cumsum,
                                        id=region+'_'+str(year)+'_cumsum')
 
+                        """
                         if plot:
                             # Add grey line for individual year in plot
                             if year == startYear:
@@ -437,8 +441,9 @@ for model in models:
                             ax[region].plot(
                                 np.array(pentad_time_series_cumsum),
                                 c='grey', label=label)
+                        """
 
-                        # Save for following composite
+                        # Append individual year: save for following composite
                         list_pentad_time_series[region].append(
                             pentad_time_series)
                         list_pentad_time_series_cumsum[region].append(
@@ -448,7 +453,9 @@ for model in models:
                 # --- Year loop end
                 fc.close()
 
-                # --- Monsoon region loop start without year loop
+                # -------------------------------------------------
+                # Loop start: Monsoon region without year: Composite
+                # -------------------------------------------------
                 if debug:
                     print('debug: composite start')
 
@@ -468,9 +475,17 @@ for model in models:
                     composite_pentad_time_series.setAxis(0, axis0)
                     composite_pentad_time_series_cumsum.setAxis(0, axis0)
 
+                    # - - - - - - - - - - -
                     # Metrics for composite
+                    # - - - - - - - - - - -
                     metrics_result = sperber_metrics(
                         composite_pentad_time_series_cumsum, region, debug=debug)
+
+                    # Normalized cummulative pentad time series
+                    composite_pentad_time_series_cumsum_normalized = metrics_result['frac_accum']
+                    if model == 'obs':
+                        dict_obs_composite[reference_data_name] = {}
+                        dict_obs_composite[reference_data_name][region] = composite_pentad_time_series_cumsum_normalized
 
                     # Archive as dict for JSON
                     if model == 'obs':
@@ -492,8 +507,8 @@ for model in models:
                                    id=region+'_comp')
                         fout.write(composite_pentad_time_series_cumsum,
                                    id=region+'_comp_cumsum')
-                        fout.write(
-                            metrics_result['frac_accum'], id=region+'_comp_cumsum_frac')
+                        fout.write(composite_pentad_time_series_cumsum_normalized,
+                                   id=region+'_comp_cumsum_fraction')
                         if region == list_monsoon_regions[-1]:
                             fout.close()
 
@@ -501,7 +516,8 @@ for model in models:
                     if plot:
                         ax[region].plot(
                             # np.array(composite_pentad_time_series),
-                            np.array(composite_pentad_time_series_cumsum),
+                            #np.array(composite_pentad_time_series_cumsum),
+                            np.array(composite_pentad_time_series_cumsum_normalized),
                             c='red',
                             label='Composite')
                         ax[region].set_title(region)
