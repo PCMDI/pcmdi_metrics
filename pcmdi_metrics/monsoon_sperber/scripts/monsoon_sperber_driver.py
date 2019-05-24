@@ -191,46 +191,42 @@ if includeOBS:
 
 for model in models:
     print(' ----- ', model, ' ---------------------')
-
     try:
-
+        # Conditions depending obs or model
         if model == 'obs':
             var = varOBS
             UnitsAdjust = ObsUnitsAdjust
             syear = osyear
             eyear = oeyear
-
+            # variable data
             model_path_list = [reference_data_path]
+            # land fraction
             model_lf_path = reference_data_lf_path
-
+            # dict
             if reference_data_name not in list(monsoon_stat_dic['REF'].keys()):
                 monsoon_stat_dic['REF'][reference_data_name] = {}
-
         else:  # for rest of models
             var = varModel
             UnitsAdjust = ModUnitsAdjust
             syear = msyear
             eyear = meyear
-
-            if model not in list(monsoon_stat_dic['RESULTS'].keys()):
-                monsoon_stat_dic['RESULTS'][model] = {}
-
+            # variable data
             model_path_list = os.popen(
                 'ls '+modpath(model=model, exp=exp, realization=realization,
-                              variable=var)).readlines()
-
-            if debug:
-                print('debug: model_path_list: ', model_path_list)
-
+                 variable=var)).readlines()
+            if debug: print('debug: model_path_list: ', model_path_list)
+            # land fraction
             model_lf_path = modpath_lf(model=model)
             if os.path.isfile(model_lf_path):
                 pass
             else:
                 model_lf_path = modpath_lf(model=model.upper())
+            # dict
+            if model not in list(monsoon_stat_dic['RESULTS'].keys()):
+                monsoon_stat_dic['RESULTS'][model] = {}
 
-        print(model_lf_path)
-
-        # Read model's land fraction
+        # Read land fraction
+        print('lf_path: ',  model_lf_path)
         f_lf = cdms2.open(model_lf_path)
         lf = f_lf('sftlf', latitude=(-90, 90))
         f_lf.close()
@@ -239,17 +235,15 @@ for model in models:
         # Loop start - Realization
         # -------------------------------------------------
         for model_path in model_path_list:
-
             timechk1 = time.time()
             try:
                 if model == 'obs':
                     run = 'obs'
                 else:
                     run = model_path.split('/')[-1].split('.')[3]
-
+                    # dict
                     if run not in monsoon_stat_dic['RESULTS'][model]:
                         monsoon_stat_dic['RESULTS'][model][run] = {}
-
                 print(' --- ', run, ' ---')
                 print(model_path)
 
@@ -289,7 +283,7 @@ for model in models:
                     print('debug: endMonth: ', type(endMonth), endMonth)
                     endYear = startYear + 1
 
-                # Archive individual year pentad time series for composite
+                # Prepare archiving individual year pentad time series for composite
                 list_pentad_time_series = {}
                 list_pentad_time_series_cumsum = {}  # Cumulative time series
                 for region in list_monsoon_regions:
@@ -303,7 +297,8 @@ for model in models:
                         mip, model, exp,
                         run, 'monsoon_sperber', startYear, endYear)
                     fout = cdms2.open(os.path.join(
-                        outdir(output_type='diagnostic_results'), output_filename+'.nc'), 'w')
+                        outdir(output_type='diagnostic_results'),
+                        output_filename+'.nc'), 'w')
 
                 # Plotting setup
                 if plot:
@@ -340,8 +335,7 @@ for model in models:
                            time=(cdtime.comptime(year, 1, 1, 0, 0, 0),
                                  cdtime.comptime(year, 12, 31, 23, 59, 59)),
                            latitude=(-90, 90))
-
-                    # unit change
+                    # unit adjust
                     if UnitsAdjust[0]:
                         """ Below two lines are identical to following:
                         # d = MV2.multiply(d, 86400.)
@@ -349,8 +343,7 @@ for model in models:
                         """
                         d = getattr(MV2, UnitsAdjust[1])(d, UnitsAdjust[2])
                         d.units = units
-
-                    # land only
+                    # variable for over land only
                     d_land = model_land_only(model, d, lf, debug=debug)
 
                     print('check: year, d.shape: ', year, d.shape)
@@ -363,9 +356,10 @@ for model in models:
                         if region in ['GoG', 'NAmo']:
                             # all grid point rainfall
                             d_sub = d(regions_specs[region]['domain'])
-                        else:  # land-only rainfall
+                        else:
+                            # land-only rainfall
                             d_sub = d_land(regions_specs[region]['domain'])
-                        # area average
+                        # Area average
                         d_sub_aave = cdutil.averager(
                             d_sub, axis='xy', weights='weighted')
 
