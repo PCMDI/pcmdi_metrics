@@ -28,7 +28,9 @@ def sperber_metrics(d, region, debug=False):
         frac_accum) if v >= decay_threshold)
     slope = (frac_accum[decay_index] - frac_accum[onset_index]) \
         / float(decay_index - onset_index)
+    duration = decay_index - onset_index + 1
     return {'frac_accum': frac_accum,
             'onset_index': onset_index,
             'decay_index': decay_index,
             'slope': slope}
+            'duration': duration}

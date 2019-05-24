@@ -435,7 +435,8 @@ for model in models:
                             else:
                                 label = ''
                             ax[region].plot(
-                                np.array(pentad_time_series_cumsum), c='grey', label=label)
+                                np.array(pentad_time_series_cumsum),
+                                c='grey', label=label)
 
                         # Save for following composite
                         list_pentad_time_series[region].append(
@@ -473,24 +474,17 @@ for model in models:
 
                     # Archive as dict for JSON
                     if model == 'obs':
-                        if region not in list(monsoon_stat_dic['REF'][reference_data_name].keys()):
-                            monsoon_stat_dic['REF'][reference_data_name][region] = {}
-                        monsoon_stat_dic['REF'][reference_data_name][region]['onset_index'] = \
-                            metrics_result['onset_index']
-                        monsoon_stat_dic['REF'][reference_data_name][region]['decay_index'] = \
-                            metrics_result['decay_index']
-                        monsoon_stat_dic['REF'][reference_data_name][region]['slope'] = \
-                            metrics_result['slope']
+                        dict_head = monsoon_stat_dic['REF'][reference_data_name]
                     else:
-                        if region not in list(monsoon_stat_dic['RESULTS'][model][run].keys()):
-                            monsoon_stat_dic['RESULTS'][model][run][region] = {
-                            }
-                        monsoon_stat_dic['RESULTS'][model][run][region]['onset_index'] = \
-                            metrics_result['onset_index']
-                        monsoon_stat_dic['RESULTS'][model][run][region]['decay_index'] = \
-                            metrics_result['decay_index']
-                        monsoon_stat_dic['RESULTS'][model][run][region]['slope'] = \
-                            metrics_result['slope']
+                        dict_head = monsoon_stat_dic['RESULTS'][model][run]
+                    # generate key if not there
+                    if region not in list(dict_head.keys()):
+                        dict_head[region] = {}
+                    # generate keys and save for statistics
+                    dict_head[region]['onset_index'] = metrics_result['onset_index']
+                    dict_head[region]['decay_index'] = metrics_result['decay_index']
+                    dict_head[region]['slope'] = metrics_result['slope']
+                    dict_head[region]['duration'] = metrics_result['duration']
 
                     # Archice in netCDF file
                     if nc_out:
