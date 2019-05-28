@@ -323,7 +323,9 @@ for model in models:
                         print('plot: region', region, 'nrows',
                               nrows, 'ncols', ncols, 'index', i+1)
                         if nrows > 1 and math.ceil((i+1)/float(ncols)) < nrows:
-                            ax[region].set_xticks([])
+                            #ax[region].set_xticks([])
+                            #ax[region].spines['bottom'].set_visible(True)
+                            ax[region].set_xticklabels([])
 
                     fig.text(0.5, 0.04, 'pentad count', ha='center')
                     fig.text(0.03, 0.5, 'pentad precip mm/d',
