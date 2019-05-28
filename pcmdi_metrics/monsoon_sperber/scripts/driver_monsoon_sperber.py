@@ -484,7 +484,7 @@ for model in models:
                     # Normalized cummulative pentad time series
                     composite_pentad_time_series_cumsum_normalized = metrics_result['frac_accum']
                     if model == 'obs':
-                        dict_obs_composite[reference_data_name] = {}
+                        dict_obs_composite[reference_data_name][region] = {}
                         dict_obs_composite[reference_data_name][region] = composite_pentad_time_series_cumsum_normalized
 
                     # Archive as dict for JSON
@@ -514,19 +514,32 @@ for model in models:
 
                     # Add line in plot
                     if plot:
+                        if model != 'obs':
+                            # model
+                            ax[region].plot(
+                                #np.array(composite_pentad_time_series),
+                                #np.array(composite_pentad_time_series_cumsum),
+                                np.array(composite_pentad_time_series_cumsum_normalized),
+                                c='red',
+                                label=model)
+                                #label='Composite')
+                        # obs
                         ax[region].plot(
-                            # np.array(composite_pentad_time_series),
-                            #np.array(composite_pentad_time_series_cumsum),
-                            np.array(composite_pentad_time_series_cumsum_normalized),
-                            c='red',
-                            label='Composite')
+                            np.array(dict_obs_composite[reference_data_name][region]),
+                            c='blue',
+                            label=reference_data_name)
+                        # title
                         ax[region].set_title(region)
                         if region == list_monsoon_regions[0]:
                             ax[region].legend(loc=2)
                         if region == list_monsoon_regions[-1]:
+                            if model == 'obs':
+                                data_name = 'OBS: '+reference_data_name
+                            else:
+                                data_name = ', '.join([mip, model, exp, run])
                             fig.suptitle(
                                 'Precipitation pentad time series\n' +
-                                ', '.join([mip, model, exp, run, str(startYear)+'-'+str(endYear)]))
+                                ', '.join([data_name, str(startYear)+'-'+str(endYear)]))
                             plt.subplots_adjust(top=0.85)
                             plt.savefig(os.path.join(
                                 outdir(output_type='graphics'), output_filename+'.png'))
