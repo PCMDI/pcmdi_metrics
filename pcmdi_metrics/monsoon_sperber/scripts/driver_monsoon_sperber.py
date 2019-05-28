@@ -323,12 +323,12 @@ for model in models:
                         print('plot: region', region, 'nrows',
                               nrows, 'ncols', ncols, 'index', i+1)
                         if nrows > 1 and math.ceil((i+1)/float(ncols)) < nrows:
-                            #ax[region].set_xticks([])
-                            #ax[region].spines['bottom'].set_visible(True)
                             ax[region].set_xticklabels([])
+                        if ncols > 1 and (i+1) % 2 == 0:
+                            ax[region].set_yticklabels([])
 
                     fig.text(0.5, 0.04, 'pentad count', ha='center')
-                    fig.text(0.03, 0.5, 'pentad precip mm/d',
+                    fig.text(0.03, 0.5, 'accumulative pentad precip fraction',
                              va='center', rotation='vertical')
 
                 # -------------------------------------------------
@@ -345,8 +345,8 @@ for model in models:
                     # unit adjust
                     if UnitsAdjust[0]:
                         """ Below two lines are identical to following:
-                        # d = MV2.multiply(d, 86400.)
-                        # d.units = 'mm/d'
+                        d = MV2.multiply(d, 86400.)
+                        d.units = 'mm/d'
                         """
                         d = getattr(MV2, UnitsAdjust[1])(d, UnitsAdjust[2])
                         d.units = units
