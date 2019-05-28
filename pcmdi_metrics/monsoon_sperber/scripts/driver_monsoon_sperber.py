@@ -525,11 +525,25 @@ for model in models:
                                 c='red',
                                 label=model)
                                 #label='Composite')
+                            for idx in [metrics_result['onset_index'], metrics_result['decay_index']]:
+                                ax[region].axvline(
+                                    x=idx,
+                                    ymin=0,
+                                    ymax=composite_pentad_time_series_cumsum_normalized[idx],
+                                    c='red', ls='--')
                         # obs
                         ax[region].plot(
                             np.array(dict_obs_composite[reference_data_name][region]),
                             c='blue',
                             label=reference_data_name)
+                        for idx in [
+                            monsoon_stat_dic['REF'][reference_data_name][region]['onset_index'], 
+                            monsoon_stat_dic['REF'][reference_data_name][region]['decay_index']]:
+                            ax[region].axvline(
+                                x=idx,
+                                ymin=0,
+                                ymax=dict_obs_composite[reference_data_name][region][idx],
+                                c='blue', ls='--')
                         # title
                         ax[region].set_title(region)
                         if region == list_monsoon_regions[0]:
