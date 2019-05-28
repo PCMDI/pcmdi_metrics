@@ -552,9 +552,10 @@ for model in models:
                             if model == 'obs':
                                 data_name = 'OBS: '+reference_data_name
                             else:
-                                data_name = ', '.join([mip, model, exp, run])
+                                data_name = ', '.join([mip.upper(), model, exp, run])
                             fig.suptitle(
                                 'Precipitation pentad time series\n' +
+                                'Monsoon domain composite accumulations\n' +
                                 ', '.join([data_name, str(startYear)+'-'+str(endYear)]))
                             plt.subplots_adjust(top=0.85)
                             plt.savefig(os.path.join(
