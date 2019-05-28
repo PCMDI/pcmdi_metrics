@@ -313,11 +313,13 @@ for model in models:
                         nrows = 1
                         ncols = 1
 
-                    fig = plt.figure()
+                    fig = plt.figure(figsize=[6.4, 6.4])
                     plt.subplots_adjust(hspace=0.25)
 
                     for i, region in enumerate(list_monsoon_regions):
                         ax[region] = plt.subplot(nrows, ncols, i+1)
+                        ax[region].set_ylim(0,1) 
+                        ax[region].margins(x=0)
                         print('plot: region', region, 'nrows',
                               nrows, 'ncols', ncols, 'index', i+1)
                         if nrows > 1 and math.ceil((i+1)/float(ncols)) < nrows:
