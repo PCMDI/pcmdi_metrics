@@ -163,7 +163,7 @@ jobs:
       - run: *create_conda_env
       - save_cache:
           key: linux_py2_2019-05-30
-          paths: /Users/distiller/miniconda
+          paths: /home/circleci/miniconda
       - run: *setup_pmp
       - run: *run_pmp_tests
       - store_artifacts:
@@ -191,7 +191,7 @@ jobs:
       - run: *create_conda_env
       - save_cache:
           key: linux_py3_2019-05-30
-          paths: /Users/distiller/miniconda
+          paths: /home/circleci/miniconda
       - run: *setup_pmp
       - run: *run_pmp_tests
       - run: *conda_upload
