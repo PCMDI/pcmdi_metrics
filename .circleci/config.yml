@@ -104,10 +104,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - macos_py2_2019-05-30
+            - macos_py2_2019-06-01
       - run: *create_conda_env
       - save_cache:
-          key: macos_py2_2019-05-30
+          key: macos_py2_2019-06-01
           paths: /Users/distiller/miniconda
       - run: *setup_pmp
       - run: *run_pmp_tests
@@ -132,10 +132,10 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - macos_py3_2019-05-30
+            - macos_py3_2019-06-01
       - run: *create_conda_env
       - save_cache:
-          key: macos_py3_2019-05-30
+          key: macos_py3_2019-06-01
           paths: /Users/distiller/miniconda
       - run: *setup_pmp
       - run: *run_pmp_tests
@@ -159,11 +159,11 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - linux_py2_2019-05-30
+            - linux_py2_2019-06-01
       - run: *create_conda_env
       - save_cache:
-          key: linux_py2_2019-05-30
-          paths: /Users/distiller/miniconda
+          key: linux_py2_2019-06-01
+          paths: /home/circleci/miniconda
       - run: *setup_pmp
       - run: *run_pmp_tests
       - store_artifacts:
@@ -187,11 +187,11 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - linux_py3_2019-05-30
+            - linux_py3_2019-06-01
       - run: *create_conda_env
       - save_cache:
-          key: linux_py3_2019-05-30
-          paths: /Users/distiller/miniconda
+          key: linux_py3_2019-06-01
+          paths: /home/circleci/miniconda
       - run: *setup_pmp
       - run: *run_pmp_tests
       - run: *conda_upload
