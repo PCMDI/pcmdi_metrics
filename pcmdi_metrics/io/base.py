@@ -16,6 +16,8 @@ import sys
 import shlex
 import datetime
 from pcmdi_metrics import LOG_LEVEL
+import copy
+import re
 
 
 value = 0
@@ -204,6 +206,18 @@ def generateProvenance():
         sep=":",
         index=-1)
     return prov
+
+
+def sort_human(input_list):
+    lst = copy.copy(input_list)
+
+    def convert(text):
+        return int(text) if text.isdigit() else text
+
+    def alphanum(key):
+        return [convert(c) for c in re.split('([0-9]+)', key)]
+    lst.sort(key=alphanum)
+    return lst
 
 
 def scrap(data, axis=0):
@@ -574,13 +588,14 @@ class JSONs(object):
                 out[tuple(ids)] = 9.99e20
 
     def __init__(self, files=[], structure=[], ignored_keys=[],
-                 oneVariablePerFile=True):
+                 oneVariablePerFile=True, sortHuman=True):
         self.json_version = 3.0
         self.json_struct = structure
         self.data = {}
         self.axes = None
         self.ignored_keys = ignored_keys
         self.oneVariablePerFile = oneVariablePerFile
+        self.sortHuman = sortHuman
         if len(files) == 0:
             raise Exception("You need to pass at least one file")
 
@@ -631,8 +646,12 @@ class JSONs(object):
             0, len(self.json_struct) - 1, self.data, values)
         autoBounds = cdms2.getAutoBounds()
         cdms2.setAutoBounds("off")
+        if self.sortHuman:
+            sortFunc = sort_human
+        else:
+            sortFunc = sorted
         for i, nm in enumerate(self.json_struct):
-            axes.append(cdms2.createAxis(sorted(list(values[i])), id=nm))
+            axes.append(cdms2.createAxis(sortFunc(list(values[i])), id=nm))
         self.axes = axes
         cdms2.setAutoBounds(autoBounds)
         return self.axes
