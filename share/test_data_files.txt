@@ -1,2 +1,4 @@
-http://uvcdat.llnl.gov/cdat/pmp
-60582c6986451ffd4925a303c4f0040a sample_data_pr_CMCC.nc
+https://cdat.llnl.gov/cdat/pmp
+60582c6986451ffd4925a303c4f0040a  sample_data_pr_CMCC.nc
+37acc58e3ba0acd6b35ad3439ee96453  test_monsoon_sperber_input.nc
+3731b19e00226bb6a482c27e19bc1d91  test_monsoon_sperber_input_lf.nc
