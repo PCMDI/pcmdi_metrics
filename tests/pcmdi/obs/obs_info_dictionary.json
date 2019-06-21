@@ -61,7 +61,8 @@
             "RefTrackingDate": "Tue Jul 12 18:08:51 2011",
             "filename": "ta_ERA40_000001-000012_ac.nc",
             "period": "",
-            "shape": "(3, 23, 73, 144)"
+            "shape": "(3, 23, 73, 144)",
+            "subpath": "%(root)/atmos/mon/ta/ERA40/ac/%(filename)"
         },
         "default": "ERA40"
     },
@@ -73,7 +74,8 @@
             "RefTrackingDate": "Thu Jan 16 16:11:10 2014",
             "filename": "tas_pcmdi-metrics_Amon_ERAINT_198901-200911-clim.nc",
             "period": "198901-200911",
-            "shape": "(12, 121, 240)"
+            "shape": "(12, 121, 240)",
+            "template": "atmos/mon/%(variable)/%(reference)/%(ac)/%(filename)"
         },
         "default": "ERAINT"
     },
