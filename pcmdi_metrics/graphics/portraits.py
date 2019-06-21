@@ -11,8 +11,8 @@ import time
 from genutil import StringConstructor
 import os
 import pkg_resources
-pmp_egg_path = pkg_resources.resource_filename(pkg_resources.Requirement.parse("pcmdi_metrics"), "share")
-
+pmp_egg_path = pkg_resources.resource_filename(
+    pkg_resources.Requirement.parse("pcmdi_metrics"), "share")
 
 
 def is_dark_color_type(R, G, B, A):
@@ -147,11 +147,11 @@ class Portrait(object):
         else:
             self.x = vcs.init()
         scr_file = os.path.join(
-        pmp_egg_path,
-        "pmp",
-        "graphics",
-        'vcs',
-        'portraits.scr')
+            pmp_egg_path,
+            "pmp",
+            "graphics",
+            'vcs',
+            'portraits.scr')
         self.x.scriptrun(scr_file)
         self.verbose = False  # output files looked for to the screen
         self.files_structure = files_structure
@@ -888,7 +888,8 @@ class Portrait(object):
                 if self.PLOT_SETTINGS.fillareacolors is None:
                     if self.PLOT_SETTINGS.colormap is None:
                         # Default colormap only use range 16->40
-                        cols = vcs.getcolors(levs, list(range(144, 156)), split=1)
+                        cols = vcs.getcolors(
+                            levs, list(range(144, 156)), split=1)
                     else:
                         cols = vcs.getcolors(levs, split=1)
                     meshfill.fillareacolors = cols
@@ -1053,7 +1054,8 @@ class Portrait(object):
                     M[:, :, 1, 2] = X + .5
                 M = MV2.reshape(M, (sh[0] * sh[1], 2, 3))
             else:
-                raise RuntimeError("Portrait plot support only up to 4 subcells at the moment")
+                raise RuntimeError(
+                    "Portrait plot support only up to 4 subcells at the moment")
         else:
             if isinstance(meshfill, vcs.meshfill.P):
                 tid = mesh.id
@@ -1068,7 +1070,8 @@ class Portrait(object):
             mesh = M
 
         raveled = MV2.ravel(data)
-        self.x.plot(raveled, mesh, template, meshfill, bg=self.bg, continents=0)
+        self.x.plot(raveled, mesh, template, meshfill,
+                    bg=self.bg, continents=0)
 
         # If required plot values
         if self.PLOT_SETTINGS.values.show:
