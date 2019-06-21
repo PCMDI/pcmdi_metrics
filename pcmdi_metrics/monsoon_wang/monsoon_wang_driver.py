@@ -8,27 +8,22 @@ from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 import pcmdi_metrics
 import collections
-import glob
 import pkg_resources
+import genutil
 
 
 def create_monsoon_wang_parser():
     P = PMPParser()
 
-    P.use("--modpath")
     P.use("--modnames")
     P.use("--results_dir")
     P.use("--reference_data_path")
+    P.use("--test_data_path")
 
-    P.add_argument("--outpj", "--outpathjsons",
-                   type=str,
-                   dest='outpathjsons',
-                   default='.',
-                   help="Output path for jsons")
     P.add_argument("--outnj", "--outnamejson",
                    type=str,
-                   dest='jsonname',
-                   default='out.json',
+                   dest='outnamejson',
+                   default='monsoon_wang.json',
                    help="Output path for jsons")
     P.add_argument("-e", "--experiment",
                    type=str,
@@ -52,73 +47,24 @@ def create_monsoon_wang_parser():
                    default=2.5 / 86400.,
                    type=float,
                    help="Threshold for a hit when computing skill score")
+
     return P
 
 
 def monsoon_wang_runner(args):
     # args = P.parse_args(sys.argv[1:])
-    modpath = args.modpath
-    outpathjsons = args.outpathjsons
+    modpath = genutil.StringConstructor(args.test_data_path)
+    modpath.variable = args.modvar
     outpathdata = args.results_dir
     if isinstance(args.modnames, str):
         mods = eval(args.modnames)
     else:
         mods = args.modnames
 
-    json_filename = args.jsonname
+    json_filename = args.outnamejson
 
     if json_filename == 'CMIP_MME':
         json_filename = '/MPI_' + args.mip + '_' + args.experiment
-
-    if args.mip == 'CMIP5' and args.experiment == 'historical' and mods is None:
-        mods = [
-            'ACCESS1-0',
-            'ACCESS1-3',
-            'bcc-csm1-1',
-            'bcc-csm1-1-m',
-            'BNU-ESM',
-            'CanCM4',
-            'CanESM2',
-            'CCSM4',
-            'CESM1-BGC',
-            'CESM1-CAM5',
-            'CESM1-FASTCHEM',
-            'CESM1-WACCM',
-            'CMCC-CESM',
-            'CMCC-CM',
-            'CMCC-CMS',
-            'CNRM-CM5-2',
-            'CNRM-CM5',
-            'CSIRO-Mk3-6-0',
-            'FGOALS-g2',
-            'FIO-ESM',
-            'GFDL-CM2p1',
-            'GFDL-CM3',
-            'GFDL-ESM2G',
-            'GFDL-ESM2M',
-            'GISS-E2-H',
-            'GISS-E2-H-CC',
-            'GISS-E2-R',
-            'GISS-E2-R-CC',
-            'HadCM3',
-            'HadGEM2-AO',
-            'HadGEM2-CC',
-            'HadGEM2-ES',
-            'inmcm4',
-            'IPSL-CM5A-LR',
-            'IPSL-CM5A-MR',
-            'IPSL-CM5B-LR',
-            'MIROC4h',
-            'MIROC5',
-            'MIROC-ESM',
-            'MIROC-ESM-CHEM',
-            'MPI-ESM-LR',
-            'MPI-ESM-MR',
-            'MPI-ESM-P',
-            'MRI-CGCM3',
-            'MRI-ESM1',
-            'NorESM1-M',
-            'NorESM1-ME']
 
     # VAR IS FIXED TO BE PRECIP FOR CALCULATING MONSOON PRECIPITATION INDICES
     var = args.modvar
@@ -150,78 +96,38 @@ def monsoon_wang_runner(args):
         pass
 
     # SETUP WHERE TO OUTPUT RESULTS (json)
-    jout = outpathjsons
+    jout = outpathdata
     try:
         os.makedirs(nout)
     except BaseException:
         pass
 
-    modpathall = modpath.replace('MODS', '*')
-    lst = glob.glob(modpathall)
-    # CONFIRM DATA FOR MODS IS AVAIL AND REMOVE THOSE IT IS NOT
-
     gmods = []  # "Got" these MODS
-    for mod in mods:
-        for l in lst:
-            l1 = modpath.replace('MODS', mod)
-            if os.path.isfile(l1) is True:
-                if mod not in gmods:
-                    gmods.append(mod)
+    for i, mod in enumerate(mods):
+        modpath.model = mod
+        for k in modpath.keys():
+            try:
+                val = getattr(args, k)
+            except Exception:
+                continue
+            if not isinstance(val, (list, tuple)):
+                setattr(modpath, k, val)
+            else:
+                setattr(modpath, k, val[i])
+        l1 = modpath()
+        if os.path.isfile(l1) is True:
+            gmods.append(mod)
 
-    if args.experiment == 'historical' and mods is None:
-        gmods = [
-            'ACCESS1-0',
-            'ACCESS1-3',
-            'bcc-csm1-1',
-            'bcc-csm1-1-m',
-            'BNU-ESM',
-            'CanCM4',
-            'CanESM2',
-            'CCSM4',
-            'CESM1-BGC',
-            'CESM1-CAM5',
-            'CESM1-FASTCHEM',
-            'CESM1-WACCM',
-            'CMCC-CESM',
-            'CMCC-CM',
-            'CMCC-CMS',
-            'CNRM-CM5-2',
-            'CNRM-CM5',
-            'CSIRO-Mk3-6-0',
-            'FGOALS-g2',
-            'FIO-ESM',
-            'GFDL-CM2p1',
-            'GFDL-CM3',
-            'GFDL-ESM2G',
-            'GFDL-ESM2M',
-            'GISS-E2-H',
-            'GISS-E2-H-CC',
-            'GISS-E2-R',
-            'GISS-E2-R-CC',
-            'HadCM3',
-            'HadGEM2-AO',
-            'HadGEM2-CC',
-            'HadGEM2-ES',
-            'inmcm4',
-            'IPSL-CM5A-LR',
-            'IPSL-CM5A-MR',
-            'IPSL-CM5B-LR',
-            'MIROC4h',
-            'MIROC5',
-            'MIROC-ESM',
-            'MIROC-ESM-CHEM',
-            'MPI-ESM-LR',
-            'MPI-ESM-MR',
-            'MPI-ESM-P',
-            'MRI-CGCM3',
-            'MRI-ESM1',
-            'NorESM1-M',
-            'NorESM1-ME']
-
+    if len(gmods) == 0:
+        raise RuntimeError("No model file found!")
     #########################################
 
-    egg_pth = pkg_resources.resource_filename(
-        pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
+    try:
+        egg_pth = pkg_resources.resource_filename(
+            pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
+    except Exception:
+        # python 2 seems to fail when ran in home directory of source?
+        egg_pth = os.path.join(os.getcwd(), "share", "pmp")
     globals = {}
     locals = {}
     exec(compile(open(os.path.join(egg_pth, "default_regions.py")).read(),
@@ -230,8 +136,18 @@ def monsoon_wang_runner(args):
     doms = ['AllMW', 'AllM', 'NAMM', 'SAMM', 'NAFM', 'SAFM', 'ASM', 'AUSM']
 
     mpi_stats_dic = {}
-    for mod in gmods:
-        modelFile = modpath.replace('MODS', mod)
+    for i, mod in enumerate(gmods):
+        modpath.model = mod
+        for k in modpath.keys():
+            try:
+                val = getattr(args, k)
+            except Exception:
+                continue
+            if not isinstance(val, (list, tuple)):
+                setattr(modpath, k, val)
+            else:
+                setattr(modpath, k, val[i])
+        modelFile = modpath()
 
         mpi_stats_dic[mod] = {}
 
