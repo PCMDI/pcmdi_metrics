@@ -9,6 +9,10 @@ import glob
 import numpy
 import time
 from genutil import StringConstructor
+import os
+import pkg_resources
+pmp_egg_path = pkg_resources.resource_filename(
+    pkg_resources.Requirement.parse("pcmdi_metrics"), "share")
 
 
 def is_dark_color_type(R, G, B, A):
@@ -78,15 +82,6 @@ class Plot_defaults(object):
 
     logo = property(getlogo, setlogo)
 
-    def _repr_png_(self):
-        import tempfile
-        tmp = tempfile.mktemp() + ".png"
-        self.x.png(tmp)
-        f = open(tmp, "rb")
-        st = f.read()
-        f.close()
-        return st
-
     def __init__(self):
         self.x1 = .12
         self.x2 = .84
@@ -151,6 +146,13 @@ class Portrait(object):
             self.x = kw["x"]
         else:
             self.x = vcs.init()
+        scr_file = os.path.join(
+            pmp_egg_path,
+            "pmp",
+            "graphics",
+            'vcs',
+            'portraits.scr')
+        self.x.scriptrun(scr_file)
         self.verbose = False  # output files looked for to the screen
         self.files_structure = files_structure
         self.exclude = exclude
@@ -815,6 +817,15 @@ class Portrait(object):
         template.legend.textorientation = tmp
         return template
 
+    def _repr_png_(self):
+        import tempfile
+        tmp = tempfile.mktemp() + ".png"
+        self.x.png(tmp)
+        f = open(tmp, "rb")
+        st = f.read()
+        f.close()
+        return st
+
     def plot(self, data=None, mesh=None, template=None,
              meshfill=None, x=None, bg=0, multiple=1.1):
         self.bg = bg
@@ -877,7 +888,8 @@ class Portrait(object):
                 if self.PLOT_SETTINGS.fillareacolors is None:
                     if self.PLOT_SETTINGS.colormap is None:
                         # Default colormap only use range 16->40
-                        cols = vcs.getcolors(levs, list(range(16, 40)), split=1)
+                        cols = vcs.getcolors(
+                            levs, list(range(144, 156)), split=1)
                     else:
                         cols = vcs.getcolors(levs, split=1)
                     meshfill.fillareacolors = cols
@@ -1041,6 +1053,9 @@ class Portrait(object):
                     M[:, :, 0, 2] = Y + .5
                     M[:, :, 1, 2] = X + .5
                 M = MV2.reshape(M, (sh[0] * sh[1], 2, 3))
+            else:
+                raise RuntimeError(
+                    "Portrait plot support only up to 4 subcells at the moment")
         else:
             if isinstance(meshfill, vcs.meshfill.P):
                 tid = mesh.id
@@ -1055,7 +1070,8 @@ class Portrait(object):
             mesh = M
 
         raveled = MV2.ravel(data)
-        self.x.plot(raveled, mesh, template, meshfill, bg=self.bg)
+        self.x.plot(raveled, mesh, template, meshfill,
+                    bg=self.bg, continents=0)
 
         # If required plot values
         if self.PLOT_SETTINGS.values.show:
@@ -1232,7 +1248,7 @@ class Portrait(object):
                 self.PLOT_SETTINGS.values.text.string).take(pick)[
                 :, 0].tolist()
             tmptxt.color = color
-            self.x.plot(tmptxt, bg=self.bg)
+            self.x.plot(tmptxt, bg=self.bg, continents=0)
 
     def set_colormap(self):
         self.x.setcolormap("bl_rd_12")
