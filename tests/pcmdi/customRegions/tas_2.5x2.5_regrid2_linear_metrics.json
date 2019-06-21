@@ -668,7 +668,7 @@
         },
         "TROPICS": {
             "domain": {
-                "TROPICS": "cdutil.region.domain(latitude=(-30.0, 30, 'ccb'))"
+                "TROPICS": "cdutil.region.domain(latitude=(-30.0, 30))"
             },
             "id": "TROPICS"
         },
@@ -681,7 +681,7 @@
         },
         "NHEX": {
             "domain": {
-                "NHEX": "cdutil.region.domain(latitude=(30.0, 90, 'ccb'))"
+                "NHEX": "cdutil.region.domain(latitude=(30.0, 90))"
             },
             "id": "NHEX"
         },
@@ -701,7 +701,7 @@
         },
         "SHEX": {
             "domain": {
-                "SHEX": "cdutil.region.domain(latitude=(-90.0, -30, 'ccb'))"
+                "SHEX": "cdutil.region.domain(latitude=(-90.0, -30))"
             },
             "id": "SHEX"
         }
@@ -809,47 +809,43 @@
     "provenance": {
         "platform": {
             "OS": "Linux",
-            "Version": "4.13.0-19-generic",
+            "Version": "4.13.0-39-generic",
             "Name": "drdoom"
         },
         "userId": "doutriaux1",
         "osAccess": false,
-        "commandLine": "/home/doutriaux1/anaconda2/envs/nightly2/bin/pcmdi_metrics_driver.py -p /git/pcmdi_metrics/tests/pcmdi/region_specs_test.py",
-        "date": "2017-12-21 15:30:29",
+        "commandLine": "/home/doutriaux1/anaconda2/envs/cdat_test/bin/pcmdi_metrics_driver.py -p /git/pcmdi_metrics/tests/pcmdi/region_specs_test.py",
+        "date": "2018-04-26 11:08:26",
         "conda": {
-            "Platform": "linux-64",
-            "Version": "4.3.30",
-            "IsPrivate": "False",
-            "envVersion": "4.3.30",
-            "buildVersion": "3.0.28",
+            "Version": "4.5.0",
+            "buildVersion": "3.7.2",
             "PythonVersion": "2.7.14.final.0",
-            "RootEnvironment": "/home/doutriaux1/anaconda2  (writable)",
-            "DefaultEnvironment": "/home/doutriaux1/anaconda2/envs/nightly2"
+            "Platform": "linux-64"
         },
         "packages": {
-            "cdms": "2.12.2017.11.30.06.06.14b9b9380c14680498a0ba8e9aefb4c84d2756be",
-            "CDP": "1.1.0",
-            "cdtime": "2017.11.15",
-            "cdutil": "2.12.2017.11.16.21.46.e717f782e07d0a187f2b616a408103af20ceb57f",
+            "cdms": "3.0",
+            "CDP": "1.3.3",
+            "cdtime": "3.0",
+            "cdutil": "8.0",
             "clapack": "3.2.1",
             "lapack": "3.6.1",
-            "esmf": "7.0.0",
-            "esmpy": "7.0.0",
-            "genutil": "2017.11.15",
+            "esmf": "7.1.0r",
+            "esmpy": "7.1.0r",
+            "genutil": "8.0",
             "python": "2.7.14",
-            "matplotlib": "2.1.1",
+            "matplotlib": "2.2.2",
             "mesalib": "17.2.0",
-            "numpy": "1.13.3",
-            "vcs": "2.12.2017.12.14.17.01.99491e457b26e4e5fbb875e5ba75e7265f5e5b1b",
-            "vtk": "7.1.0.2.12",
+            "numpy": "1.14.2",
+            "vcs": "8.0",
+            "vtk": "8.0.1.8.0.2018.04.09.07.58.g9a839a5",
             "blas": null,
-            "PMP": "ga6c40fd",
+            "PMP": "geb4d089",
             "PMPObs": null
         },
         "openGL": {
             "vendor": "X.Org",
-            "renderer": "AMD TURKS (DRM 2.50.0 / 4.13.0-19-generic, LLVM 5.0.0)",
-            "version": "3.0 Mesa 17.2.2",
+            "renderer": "AMD TURKS (DRM 2.50.0 / 4.13.0-39-generic, LLVM 5.0.0)",
+            "version": "3.0 Mesa 17.2.8",
             "shading language version": "1.30",
             "GLX": {
                 "client": {

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import print_function
 
 import unittest
 import os
@@ -57,10 +58,10 @@ class TestGraphics(unittest.TestCase):
             src = os.path.join(self.basedir,os.path.basename(fnm))
         if not pngPathSet:
             fnm = os.path.join(self.pngsdir,fnm)
-        print "Test file  :",fnm
-        print "Source file:",src
+        print("Test file  :",fnm)
+        print("Source file:",src)
         if not pngReady:
-            self.x.png(fnm,width=self.x.bgX,height=self.x.bgY,units="pixels")
+            self.x.png(fnm,width=self.x.width, height=self.x.height, units="pixels")
         ret = checkimage.check_result_image(fnm,src,threshold, update_baseline=self.update)
         self.assertEqual(ret,0)
         return ret
@@ -88,5 +89,5 @@ class TestGraphics(unittest.TestCase):
                 "json",
                 "v1.0",
                 "*.json"))
-        print "JFILES:",json_files
+        print("JFILES:",json_files)
         return pcmdi_metrics.pcmdi.io.JSONs(json_files)
