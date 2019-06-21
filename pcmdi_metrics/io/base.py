@@ -8,7 +8,7 @@ import MV2
 import cdms2
 import hashlib
 import numpy
-import collections
+from collections import OrderedDict, Mapping
 import pcmdi_metrics
 import cdp.cdp_io
 import subprocess
@@ -16,6 +16,8 @@ import sys
 import shlex
 import datetime
 from pcmdi_metrics import LOG_LEVEL
+import copy
+import re
 
 
 value = 0
@@ -29,6 +31,23 @@ try:
     basestring  # noqa
 except Exception:
     basestring = str
+
+
+# Convert cdms MVs to json
+def MV2Json(data, dic={}, struct=None):
+    if struct is None:
+        struct = []
+    if not isinstance(data, cdms2.tvariable.TransientVariable) and dic != {}:
+        raise RuntimeError("MV2Json needs a cdms2 transient variable as input")
+    if not isinstance(data, cdms2.tvariable.TransientVariable):
+        return data, struct  # we reach the end
+    else:
+        axis = data.getAxis(0)
+        if axis.id not in struct:
+            struct.append(axis.id)
+        for i, name in enumerate(axis):
+            dic[name], _ = MV2Json(data[i], {}, struct)
+    return dic, struct
 
 
 # Group merged axes
@@ -54,7 +73,7 @@ def groupAxes(axes, ids=None, separator="_"):
 # cdutil region object need a serializer
 def update_dict(d, u):
     for k, v in u.items():
-        if isinstance(v, collections.Mapping):
+        if isinstance(v, Mapping):
             r = update_dict(d.get(k, {}), v)
             d[k] = r
         else:
@@ -86,9 +105,9 @@ def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
 
 
 def generateProvenance():
-    prov = collections.OrderedDict()
+    prov = OrderedDict()
     platform = os.uname()
-    platfrm = collections.OrderedDict()
+    platfrm = OrderedDict()
     platfrm["OS"] = platform[0]
     platfrm["Version"] = platform[2]
     platfrm["Name"] = platform[1]
@@ -108,7 +127,7 @@ def generateProvenance():
     prov["osAccess"] = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
     prov["commandLine"] = " ".join(sys.argv)
     prov["date"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    prov["conda"] = collections.OrderedDict()
+    prov["conda"] = OrderedDict()
     pairs = {
         'Platform': 'platform ',
         'Version': 'conda version ',
@@ -138,7 +157,7 @@ def generateProvenance():
         'vcs': 'vcs ',
         'vtk': 'vtk-cdat ',
     }
-    prov["packages"] = collections.OrderedDict()
+    prov["packages"] = OrderedDict()
     populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
     pairs = {
         'vcs': 'vcs-nox ',
@@ -157,11 +176,11 @@ def generateProvenance():
         "version": "OpenGL version string",
         "shading language version": "OpenGL shading language version string",
     }
-    prov["openGL"] = collections.OrderedDict()
+    prov["openGL"] = OrderedDict()
     populate_prov(prov["openGL"], "glxinfo", pairs, sep=":", index=-1)
     prov["openGL"]["GLX"] = {
-        "server": collections.OrderedDict(),
-        "client": collections.OrderedDict()}
+        "server": OrderedDict(),
+        "client": OrderedDict()}
     pairs = {
         "version": "GLX version",
     }
@@ -187,6 +206,18 @@ def generateProvenance():
         sep=":",
         index=-1)
     return prov
+
+
+def sort_human(input_list):
+    lst = copy.copy(input_list)
+
+    def convert(text):
+        return int(text) if text.isdigit() else text
+
+    def alphanum(key):
+        return [convert(c) for c in re.split('([0-9]+)', key)]
+    lst.sort(key=alphanum)
+    return lst
 
 
 def scrap(data, axis=0):
@@ -280,7 +311,6 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             data["json_structure"] = json_structure
             f = open(file_name, 'w')
             data["provenance"] = generateProvenance()
-#           data["user_notes"] = "BLAH"
             json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 
@@ -558,13 +588,14 @@ class JSONs(object):
                 out[tuple(ids)] = 9.99e20
 
     def __init__(self, files=[], structure=[], ignored_keys=[],
-                 oneVariablePerFile=True):
+                 oneVariablePerFile=True, sortHuman=True):
         self.json_version = 3.0
         self.json_struct = structure
         self.data = {}
         self.axes = None
         self.ignored_keys = ignored_keys
         self.oneVariablePerFile = oneVariablePerFile
+        self.sortHuman = sortHuman
         if len(files) == 0:
             raise Exception("You need to pass at least one file")
 
@@ -615,8 +646,12 @@ class JSONs(object):
             0, len(self.json_struct) - 1, self.data, values)
         autoBounds = cdms2.getAutoBounds()
         cdms2.setAutoBounds("off")
+        if self.sortHuman:
+            sortFunc = sort_human
+        else:
+            sortFunc = sorted
         for i, nm in enumerate(self.json_struct):
-            axes.append(cdms2.createAxis(sorted(list(values[i])), id=nm))
+            axes.append(cdms2.createAxis(sortFunc(list(values[i])), id=nm))
         self.axes = axes
         cdms2.setAutoBounds(autoBounds)
         return self.axes

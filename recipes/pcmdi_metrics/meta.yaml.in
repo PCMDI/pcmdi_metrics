@@ -18,12 +18,12 @@ requirements:
     - numpy
   run:
     - python {{ python }}
-    - vcs >=2.10
-    - vcsaddons >=2.10
-    - cdms2 >=2.10
-    - genutil >=2.10
-    - cdutil >=2.10
-    - cdp >=1.3.2
+    - vcs >=8.0
+    - vcsaddons >=8.0
+    - cdms2 >=3
+    - genutil >=8.1
+    - cdutil >=8.1
+    - cdp
     - matplotlib
     - numpy
     - cia
