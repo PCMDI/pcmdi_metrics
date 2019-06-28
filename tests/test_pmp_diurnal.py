@@ -39,11 +39,11 @@ class DiurnalTest(basepmp.PMPTest):
             print("Checking variable {} is correct".format(v))
             test = test_out(v)
             good = good_out(v)
-            self.assertSame(test,good)
+            self.assertSame(test, good)
         
-    def testDiurnaliComputeDailyMean(self):
+    def testDiurnaliComputeStdOfDailyMean(self):
         data_pth = cdat_info.get_sampledata_path()
-        cmd = '{}computeDailyMeans.py --num_workers=1 --mp {} --rd test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'.format(self.runner, data_pth)
+        cmd = '{}computeStdOfDailyMeans.py --num_workers=1 --mp {} --rd test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'.format(self.runner, data_pth)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
 
@@ -77,26 +77,25 @@ class DiurnalTest(basepmp.PMPTest):
         good = json.load(good)
         self.assertEqual(test["RESULTS"],good["RESULTS"])
         """
-    def teestCompositeDiurnalStatistics(self):
+    def testCompositeDiurnalStatistics(self):
         data_pth = cdat_info.get_sampledata_path()
         cmd = '{}compositeDiurnalStatistics.py --num_workers=1 --mp {} --rd test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'.format(self.runner, data_pth)
-        print("CCOOOMOMMOMONFDFDDFFDSASFGFDSAFGFFGSDFFGFSG", cmd)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_diurnal_avg.nc")
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_diurnal_std.nc")
         self.compare_nc("results/nc/pr_CMCC_LocalSolarTimes.nc")
 
-    def teestStd_of_hourlyvalues(self):
+    def testStd_of_hourlyvalues(self):
         self.runJsoner("std_of_hourlyvalues.py","pr_Jul_1999-2005_std_of_hourlymeans.json","diurnal_std")
 
-    def teestStd_of_meandiurnalcycle(self):
+    def testStd_of_meandiurnalcycle(self):
         self.runJsoner("std_of_meandiurnalcycle.py","pr_Jul_1999-2005_std_of_meandiurnalcyc.json","diurnal_avg")
 
-    def teestSavg_fourier(self):
+    def testSavg_fourier(self):
         self.runJsoner("savg_fourier.py","pr_Jul_1999-2005_savg_DiurnalFourier.json","S")
 
-    def teestfourierDiurnalGridpoints(self):
+    def testfourierDiurnalGridpoints(self):
         cmd = '{}fourierDiurnalGridpoints.py --num_workers=1 --mp tests/diurnal/results/nc --rd test_data/results/ascii'.format(self.runner)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
