@@ -97,7 +97,7 @@ class OutputMetrics(object):
                 setattr(self.out_file, key, getattr(self.parameter, key))
             if hasattr(self, key):
                 setattr(self.out_file, key, getattr(self, key))
-            
+
         DataSet.apply_custom_keys(self.out_file, self.parameter.custom_keys, self.var)
 
     def add_region(self, region):
