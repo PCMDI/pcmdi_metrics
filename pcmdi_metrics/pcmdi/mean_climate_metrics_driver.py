@@ -66,7 +66,8 @@ class PMPDriver(object):
                 self.output_metric.add_region(self.region)
                 # Runs obs vs obs, obs vs model, or model vs model
                 self.run_reference_and_test_comparison()
-            self.output_metric.write_on_exit()
+                self.output_metric.setup_out_file()
+                self.output_metric.write_on_exit()
 
     def load_obs_dict(self):
         ''' Loads obs_info_dictionary.json and appends
@@ -181,6 +182,7 @@ class PMPDriver(object):
                 try:
                     tst = self.determine_obs_or_model(test_data_set_is_obs,
                                                       test, self.parameter.test_data_path)
+                    self.output_metric.obs_or_model = tst.obs_or_model
                 # TODO Make this a custom exception. This exception is for
                 # when a model doesn't have sftlf for a given region
                 except RuntimeError:

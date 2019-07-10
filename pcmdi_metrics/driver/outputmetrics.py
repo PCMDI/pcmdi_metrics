@@ -90,6 +90,14 @@ class OutputMetrics(object):
         self.out_file.realm = self.realm
         self.out_file.table = self.table_realm
         self.out_file.case_id = self.parameter.case_id
+        if hasattr(self, "obs_or_model"):
+            self.out_file.model_version = self.obs_or_model
+        for key in self.out_file.keys():
+            if hasattr(self.parameter, key):
+                setattr(self.out_file, key, getattr(self.parameter, key))
+            if hasattr(self, key):
+                setattr(self.out_file, key, getattr(self, key))
+            
         DataSet.apply_custom_keys(self.out_file, self.parameter.custom_keys, self.var)
 
     def add_region(self, region):
@@ -291,5 +299,6 @@ class OutputMetrics(object):
             self.out_file.write(self.metrics_dictionary,
                                 json_structure=["model", "reference", "rip", "region", "statistic", "season"],
                                 indent=4,
-                                separators=(',', ': '))
+                                separators=(',', ': '),
+                                mode="r+")
             self.out_file.write(self.metrics_dictionary, type='txt')

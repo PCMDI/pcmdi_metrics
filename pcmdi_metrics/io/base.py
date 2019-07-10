@@ -278,7 +278,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
     def read(self):
         pass
 
-    def write(self, data, type='json', *args, **kwargs):
+    def write(self, data, type='json', mode="w", *args, **kwargs):
         self.type = type.lower()
         file_name = self()
         dir_path = os.path.split(file_name)[0]
@@ -309,8 +309,13 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                     del(kwargs[k])
             data["json_version"] = json_version
             data["json_structure"] = json_structure
-            f = open(file_name, 'w')
-            out_dict = OrderedDict({"provenance": generateProvenance()})
+
+            if mode == "r+" and os.path.exists(file_name):
+                f = open(file_name)
+                out_dict = json.load(f)
+            else:
+                out_dict = OrderedDict({"provenance": generateProvenance()})
+            f = open(file_name, "w")
             out_dict.update(data)
             json.dump(out_dict, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()

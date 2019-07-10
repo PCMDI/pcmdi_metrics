@@ -89,6 +89,10 @@ metrics_output_path = os.path.join(
 test_clims_interpolated_output = os.path.join(
     'pcmdi_install_test_results',
     'interpolated_model_clims')
+
+# Filename template for json files:
+output_json_template = "%(variable)%(level)_%(model_version)_%(target_grid_name)_%(regrid_tool)_%(regrid_method)_metricsssss"
+
 # FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
 filename_output_template = "%(variable)%(level)_" + \
         "%(model_version)_%(table)_historical_%(realization)_%(period)" + \
