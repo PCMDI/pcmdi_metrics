@@ -1,5 +1,5 @@
 # output directory
-results_dir = '$OUTPUT_DIR$/diurnal'
+results_dir = '$OUTPUT_DIR$/diurnal/nc'
 
 # input directory
 modpath = '$INPUT_DIR$/example_data/atm/3hr/pr/'

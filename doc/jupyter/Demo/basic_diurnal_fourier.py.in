@@ -1,11 +1,12 @@
 # output directory
-results_dir = '$OUTPUT_DIR$/diurnal/json'
+results_dir = '$OUTPUT_DIR$/diurnal/ascii'
 
 # input directory which is actually the output of previous driver
 modpath = '$OUTPUT_DIR$/diurnal/nc'
 
 # filenames template
-filename_template = 'pr_%(model)_Jul_%(firstyear)-%(lastyear)_std_of_dailymeans.nc'
+filename_template = 'pr_%(model)_Jul_%(firstyear)-%(lastyear)_diurnal_avg.nc'
+filename_template_std = 'pr_%(model)_Jul_%(firstyear)-%(lastyear)_diurnal_std.nc'
 
 # model to use
 model = 'IPSL-CM5A-LR'
