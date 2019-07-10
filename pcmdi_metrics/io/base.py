@@ -310,8 +310,9 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             data["json_version"] = json_version
             data["json_structure"] = json_structure
             f = open(file_name, 'w')
-            data["provenance"] = generateProvenance()
-            json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kwargs)
+            out_dict = OrderedDict({"provenance": generateProvenance()})
+            out_dict.update(data)
+            json.dump(out_dict, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 
         elif self.type in ['asc', 'ascii', 'txt']:
