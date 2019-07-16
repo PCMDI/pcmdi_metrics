@@ -59,6 +59,7 @@ class PMPDriver(object):
                                                self.obs_dict, sftlf=self.sftlf)
 
             for region in self.regions_dict[self.var]:
+                logging.getLogger("pcmdi_metrics").info("REGION: {}".format(region))
                 self.region = self.create_region(region)
                 # Need to add the region to the output dict now b/c
                 # otherwise if done later, sometimes it's not added due to
@@ -150,6 +151,7 @@ class PMPDriver(object):
 
     def run_reference_and_test_comparison(self):
         '''  Does the (obs or model) vs (obs or model) comparison. '''
+
         reference_data_set = self.parameter.reference_data_set
         test_data_set = self.parameter.test_data_set
 
@@ -179,6 +181,7 @@ class PMPDriver(object):
                 continue
 
             for test in test_data_set:
+                logging.getLogger("pcmdi_metrics").info("TEST DATA IS: {}".format(test))
                 try:
                     tst = self.determine_obs_or_model(test_data_set_is_obs,
                                                       test, self.parameter.test_data_path)
@@ -187,10 +190,16 @@ class PMPDriver(object):
                 # when a model doesn't have sftlf for a given region
                 except RuntimeError:
                     continue
+                except Exception as err:
+                    logging.getLogger("pcmdi_metrics").info("Unexpected error:".format(err))
+                    break
 
                 try:
                     self.output_metric.calculate_and_output_metrics(ref, tst)
                 except RuntimeError:
+                    continue
+                except Exception as err:
+                    logging.getLogger("pcmdi_metrics").info("Unexpected error in calculate output metrics:".format(err))
                     break
 
     def is_data_set_obs(self, data_set):
