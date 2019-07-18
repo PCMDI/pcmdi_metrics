@@ -302,4 +302,3 @@ class OutputMetrics(object):
                                 indent=4,
                                 separators=(',', ': '),
                                 mode="r+")
-            #self.out_file.write(self.metrics_dictionary, type='txt')
