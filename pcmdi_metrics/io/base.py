@@ -11,10 +11,6 @@ import numpy
 from collections import OrderedDict, Mapping
 import pcmdi_metrics
 import cdp.cdp_io
-import subprocess
-import sys
-import shlex
-import datetime
 from pcmdi_metrics import LOG_LEVEL
 import copy
 import re
@@ -81,130 +77,14 @@ def update_dict(d, u):
     return d
 
 
-# Platform
-def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
-    try:
-        p = subprocess.Popen(
-            shlex.split(cmd),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-    except Exception:
-        return
-    out, stde = p.communicate()
-    if stde != '':
-        return
-    for strBit in out.splitlines():
-        for key, value in pairs.items():
-            if value in strBit:
-                prov[key] = strBit.split(sep)[index].strip()
-    if fill_missing is not False:
-        for k in pairs:
-            if k not in prov:
-                prov[k] = fill_missing
-    return
-
-
 def generateProvenance():
-    prov = OrderedDict()
-    platform = os.uname()
-    platfrm = OrderedDict()
-    platfrm["OS"] = platform[0]
-    platfrm["Version"] = platform[2]
-    platfrm["Name"] = platform[1]
-    prov["platform"] = platfrm
-    try:
-        logname = os.getlogin()
-    except Exception:
-        try:
-            import pwd
-            logname = pwd.getpwuid(os.getuid())[0]
-        except Exception:
-            try:
-                logname = os.environ.get('LOGNAME', 'unknown')
-            except Exception:
-                logname = 'unknown-loginname'
-    prov["userId"] = logname
-    prov["osAccess"] = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
-    prov["commandLine"] = " ".join(sys.argv)
-    prov["date"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    prov["conda"] = OrderedDict()
-    pairs = {
-        'Platform': 'platform ',
-        'Version': 'conda version ',
-        'IsPrivate': 'conda is private ',
-        'envVersion': 'conda-env version ',
-        'buildVersion': 'conda-build version ',
-        'PythonVersion': 'python version ',
-        'RootEnvironment': 'root environment ',
-        'DefaultEnvironment': 'default environment '
-    }
-    populate_prov(prov["conda"], "conda info", pairs, sep=":", index=-1)
-    pairs = {
-        'blas': 'blas',
-        'CDP': 'cdp ',
-        'cdms': 'cdms2 ',
-        'cdtime': 'cdtime ',
-        'cdutil': 'cdutil ',
-        'clapack': 'clapack ',
-        'esmf': 'esmf ',
-        'esmpy': 'esmpy ',
-        'genutil': 'genutil ',
-        'lapack': 'lapack ',
+    extra_pairs = {
         'matplotlib': 'matplotlib ',
-        'mesalib': 'mesalib ',
-        'numpy': 'numpy ',
-        'python': 'python ',
-        'vcs': 'vcs ',
-        'vtk': 'vtk-cdat ',
+        'scipy': 'scipy'
     }
-    prov["packages"] = OrderedDict()
-    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
-    pairs = {
-        'vcs': 'vcs-nox ',
-        'vtk': 'vtk-cdat-nox ',
-    }
-    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
-    pairs = {
-        'PMP': 'pcmdi_metrics',
-        'PMPObs': 'pcmdi_metrics_obs',
-    }
-    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
-    # TRying to capture glxinfo
-    pairs = {
-        "vendor": "OpenGL vendor string",
-        "renderer": "OpenGL renderer string",
-        "version": "OpenGL version string",
-        "shading language version": "OpenGL shading language version string",
-    }
-    prov["openGL"] = OrderedDict()
-    populate_prov(prov["openGL"], "glxinfo", pairs, sep=":", index=-1)
-    prov["openGL"]["GLX"] = {
-        "server": OrderedDict(),
-        "client": OrderedDict()}
-    pairs = {
-        "version": "GLX version",
-    }
-    populate_prov(prov["openGL"]["GLX"], "glxinfo", pairs, sep=":", index=-1)
-    pairs = {
-        "vendor": "server glx vendor string",
-        "version": "server glx version string",
-    }
-    populate_prov(
-        prov["openGL"]["GLX"]["server"],
-        "glxinfo",
-        pairs,
-        sep=":",
-        index=-1)
-    pairs = {
-        "vendor": "client glx vendor string",
-        "version": "client glx version string",
-    }
-    populate_prov(
-        prov["openGL"]["GLX"]["client"],
-        "glxinfo",
-        pairs,
-        sep=":",
-        index=-1)
+    prov = cdat_info.generateProvenance(extra_pairs=extra_pairs)
+    prov["packages"]["PMP"] = pcmdi_metrics.version.__git_tag_describe__
+    prov["packages"]["PMPObs"] = None  # For now
     return prov
 
 
