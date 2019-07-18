@@ -84,7 +84,7 @@ def generateProvenance():
     }
     prov = cdat_info.generateProvenance(extra_pairs=extra_pairs)
     prov["packages"]["PMP"] = pcmdi_metrics.version.__git_tag_describe__
-    prov["packages"]["PMPObs"] = None  # For now
+    prov["packages"]["PMPObs"] = "See 'References' key below, for detailed obs provenance information."
     return prov
 
 
