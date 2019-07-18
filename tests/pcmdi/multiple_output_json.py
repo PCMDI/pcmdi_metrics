@@ -8,11 +8,11 @@ import os
 # RUN IDENTIFICATION
 # DEFINES A SUBDIRECTORY TO METRICS OUTPUT RESULTS SO MULTIPLE CASES CAN
 # BE COMPARED
-case_id = 'installationTest'
+case_id = 'multipleJsons'
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF
 # CLIMATOLOGY FILENAME
-test_data_set = ['GFDL-ESM2G']
+test_data_set = ['GFDL-ESM2G', "GFDL-ESM2G-copy"]
 
 # dictionary of keywords for simulation description that you want to save
 # or remap
@@ -22,28 +22,23 @@ simulation_description_mapping = {
     "SimTrackingDate": "creation_date"}
 
 # VARIABLES AND OBSERVATIONS TO USE
-vars = ['tos', 'tas']
+vars = ['tas']
 
 # MODEL SPECIFC PARAMETERS
 model_tweaks = {
-    # Keys are model accronym or None which applies to all model entries
     None: {
-        # Variables name mapping
-        "variable_mapping": {"tos": "tos"},
-    },
-    "GFDL-ESM2G": {
         "variable_mapping": {"tas": "tas_ac"},
     },
 }
 
 # REGIONS ON WHICH WE WANT TO RUN METRICS (var specific)
 # Here we run glb for both but also terre and ocean for tas (only)
-regions = {"tas": [None, "terre", "ocean"], "tos": [None]}
+#regions = {"tas": [None, "terre", "ocean"], "tos": [None]}
 # USER CAN CUSTOMIZE REGIONS VALUES NMAES
-regions_values = {"terre": 100.0}
+#regions_values = {"terre": 100.0}
 
 # Observations to use at the moment "default" or "alternate"
-reference_data_set = ['all']
+reference_data_set = ['default']
 ext = '.nc'
 
 # INTERPOLATION OPTIONS
@@ -60,7 +55,7 @@ period = '198501-200512'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
-save_test_clims = True  # True or False
+save_test_clims = False
 
 # DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 
