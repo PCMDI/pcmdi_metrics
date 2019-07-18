@@ -55,8 +55,6 @@ class PMPDriver(object):
                     'Variable %s not in obs_dict' % self.var)
                 continue
 
-            self.output_metric = OutputMetrics(self.parameter, self.var_name_long,
-                                               self.obs_dict, sftlf=self.sftlf)
 
             for region in self.regions_dict[self.var]:
                 logging.getLogger("pcmdi_metrics").info("REGION: {}".format(region))
@@ -64,11 +62,11 @@ class PMPDriver(object):
                 # Need to add the region to the output dict now b/c
                 # otherwise if done later, sometimes it's not added due to
                 # premature break in the for loops for reference and test.
-                self.output_metric.add_region(self.region)
                 # Runs obs vs obs, obs vs model, or model vs model
+                #self.output_metric = OutputMetrics(self.parameter, self.var_name_long,
+                #                                self.obs_dict, sftlf=self.sftlf)
+                #self.output_metric.add_region(self.region)
                 self.run_reference_and_test_comparison()
-                self.output_metric.setup_out_file()
-                self.output_metric.write_on_exit()
 
     def load_obs_dict(self):
         ''' Loads obs_info_dictionary.json and appends
@@ -151,7 +149,6 @@ class PMPDriver(object):
 
     def run_reference_and_test_comparison(self):
         '''  Does the (obs or model) vs (obs or model) comparison. '''
-
         reference_data_set = self.parameter.reference_data_set
         test_data_set = self.parameter.test_data_set
 
@@ -182,6 +179,9 @@ class PMPDriver(object):
 
             for test in test_data_set:
                 logging.getLogger("pcmdi_metrics").info("TEST DATA IS: {}".format(test))
+                self.output_metric = OutputMetrics(self.parameter, self.var_name_long,
+                                                self.obs_dict, sftlf=self.sftlf)
+                self.output_metric.add_region(self.region)
                 try:
                     tst = self.determine_obs_or_model(test_data_set_is_obs,
                                                       test, self.parameter.test_data_path)
@@ -194,6 +194,7 @@ class PMPDriver(object):
                     logging.getLogger("pcmdi_metrics").info("Unexpected error:".format(err))
                     break
 
+                
                 try:
                     self.output_metric.calculate_and_output_metrics(ref, tst)
                 except RuntimeError:

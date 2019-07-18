@@ -316,7 +316,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             else:
                 out_dict = OrderedDict({"provenance": generateProvenance()})
             f = open(file_name, "w")
-            out_dict.update(data)
+            update_dict(out_dict, data)
             json.dump(out_dict, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 

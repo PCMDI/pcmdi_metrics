@@ -291,6 +291,7 @@ class OutputMetrics(object):
 
     def write_on_exit(self):
         ''' Output the metrics_dictionary as a json and text file. '''
+        self.setup_out_file()
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
         if len(self.metrics_def_dictionary) == 0:
             raise RuntimeError("No results generated, cannot write to file")
@@ -301,4 +302,4 @@ class OutputMetrics(object):
                                 indent=4,
                                 separators=(',', ': '),
                                 mode="r+")
-            self.out_file.write(self.metrics_dictionary, type='txt')
+            #self.out_file.write(self.metrics_dictionary, type='txt')
