@@ -197,6 +197,9 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                 out_dict = OrderedDict({"provenance": generateProvenance()})
             f = open(file_name, "w")
             update_dict(out_dict, data)
+            if "yaml" in out_dict["provenance"]["conda"]:
+                out_dict["yaml"] = out_dict["provenance"]["conda"]["yaml"]
+                del(out_dict["provenance"]["conda"]["yaml"])
             json.dump(out_dict, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 
