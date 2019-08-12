@@ -1,5 +1,5 @@
 # output directory
-results_dir = '$OUTPUT_DIR$/diurnal/nc
+results_dir = '$OUTPUT_DIR$/diurnal/nc'
 
 # input directory which is actually the output of previous driver
 modpath = '$OUTPUT_DIR$/diurnal/nc'
