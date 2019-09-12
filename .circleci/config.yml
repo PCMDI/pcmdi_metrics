@@ -102,9 +102,9 @@ jobs:
       FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - macos_py2_2019-06-01
+    #- restore_cache:
+    #     keys:
+    #       - macos_py2_2019-06-01
       - run: *create_conda_env
       - save_cache:
           key: macos_py2_2019-06-01
@@ -128,9 +128,9 @@ jobs:
       FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - macos_py3_2019-06-01
+    #- restore_cache:
+    #      keys:
+    #        - macos_py3_2019-06-01
       - run: *create_conda_env
       - save_cache:
           key: macos_py3_2019-06-01
@@ -154,9 +154,9 @@ jobs:
       FFMPEG: "ffmpeg"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - linux_py2_2019-06-01
+    #- restore_cache:
+    #     keys:
+    #       - linux_py2_2019-06-01
       - run: *create_conda_env
       - save_cache:
           key: linux_py2_2019-06-01
@@ -182,9 +182,9 @@ jobs:
       COVERAGE_PKGS: "coverage coveralls"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - linux_py3_2019-06-01
+    #- restore_cache:
+    #     keys:
+    #       - linux_py3_2019-06-01
       - run: *create_conda_env
       - save_cache:
           key: linux_py3_2019-06-01
