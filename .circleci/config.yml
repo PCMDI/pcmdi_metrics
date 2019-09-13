@@ -54,7 +54,7 @@ aliases:
        source activate cdat
        python run_tests.py -H -v2 $COVERAGE
        RESULT=$?
-       echo "*** $PY_VER test result: ${RESULT}"
+       echo "** $PY_VER test result: ${RESULT}"
 
   - &run_coveralls
     name: run_coveralls
