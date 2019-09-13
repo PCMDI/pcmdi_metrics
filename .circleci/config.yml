@@ -94,7 +94,7 @@ aliases:
 jobs:
   macos_pmp_py2:
     macos:
-      xcode: "9.2.0"
+      xcode: "10.2.0"
     environment:
       WORKDIR: "test_macos_pmp_py2"
       OS: "osx-64"
@@ -120,7 +120,7 @@ jobs:
 
   macos_pmp_py3:
     macos:
-      xcode: "9.2.0"
+      xcode: "10.2.0"
     environment:
       WORKDIR: "test_macos_pmp_py3"
       OS: "osx-64"
