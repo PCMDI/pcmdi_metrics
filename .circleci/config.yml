@@ -16,7 +16,7 @@ aliases:
   - &create_conda_env
     name: create_conda_env
     environment:
-       PKGS: "'cdms2<3.1.2.2019' vcs vcsaddons mesalib matplotlib scipy cia testsrunner 'proj4<5' 'vtk-cdat>8.1' libnetcdf=4.6.2"
+       PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner 'proj4<5' 'vtk-cdat>8.1' libnetcdf=4.6.2"
        CHANNELS: "-c cdat/label/nightly -c conda-forge -c pcmdi"
     command: |
       if [ -d ${HOME}/miniconda ]; then

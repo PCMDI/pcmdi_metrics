@@ -31,7 +31,6 @@ requirements:
     - jupyterlab
     - nb_conda
     - nb_conda_kernels
-    - cdms2 <3.1.2.2019
 
 
 
