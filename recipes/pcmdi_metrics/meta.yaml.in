@@ -18,8 +18,8 @@ requirements:
     - numpy
   run:
     - python {{ python }}
-    - vcs >=8.0
-    - vcsaddons >=8.0
+    - vcs >=8.1
+    - vcsaddons >=8.1
     - cdms2 >=3
     - genutil >=8.1
     - cdutil >=8.1
@@ -28,6 +28,11 @@ requirements:
     - numpy
     - cia
     - proj4 <5
+    - jupyterlab
+    - nb_conda
+    - nb_conda_kernels
+    _ cdms2 <3.1.2.2019
+
 
 
 about:

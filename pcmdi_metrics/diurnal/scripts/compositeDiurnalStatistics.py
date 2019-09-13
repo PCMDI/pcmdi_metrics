@@ -36,8 +36,12 @@ def compute(params):
     outunits = 'mm/d'
     startime = 1.5  # GMT value for starting time-of-day
 
-    reverted = template.reverse(os.path.basename(fileName))
-    dataname = reverted["model"]
+    dataname = params.args.model
+    if dataname is None or dataname.find("*") != -1:
+        # model not passed or passed as *
+        reverted = template.reverse(os.path.basename(fileName))
+        print("REVERYING", reverted, dataname)
+        dataname = reverted["model"]
     if dataname not in args.skip:
         try:
             print('Data source:', dataname)
@@ -48,10 +52,10 @@ def compute(params):
             iYear = 0
             for year in range(args.firstyear, args.lastyear + 1):
                 print('Year %s:' % year)
-                startTime = cdtime.comptime(year, month, 1, 1, 30)
+                startTime = cdtime.comptime(year, month)
                 # Last possible second to get all tpoints
                 finishtime = startTime.add(
-                    1, cdtime.Month).add(-1.5, cdtime.Hour).add(.1, cdtime.Second)
+                    1, cdtime.Month).add(-1, cdtime.Minute)
                 print('Reading %s from %s for time interval %s to %s ...' % (varbname, fileName, startTime, finishtime))
                 # Transient variable stores data for current year's month.
                 tvarb = f(varbname, time=(startTime, finishtime))
@@ -62,16 +66,18 @@ def compute(params):
                 # metadata from first-year file:
                 if year == args.firstyear:
                     tc = tvarb.getTime().asComponentTime()
+                    print("DATA FROM:", tc[0], "to", tc[-1])
                     day1 = cdtime.comptime(tc[0].year, tc[0].month)
+                    day1 = tc[0]
                     firstday = tvarb(
                         time=(
                             day1,
                             day1.add(
-                                1,
+                                1.,
                                 cdtime.Day),
                             "con"))
                     dimensions = firstday.shape
-                    # print '  Shape = ', dimensions
+                    print('  Shape = ', dimensions)
                     # Number of time points in the selected month for one year
                     N = dimensions[0]
                     nlats = dimensions[1]
@@ -101,9 +107,10 @@ def compute(params):
                 for iGMT in range(N):
                     hour = iGMT * deltaH + startime
                     print('  Choosing timepoints with GMT %5.2f ...' % hour)
+                    print("days per mo :", dayspermo)
                     # Transient-variable slice: every Nth tpoint gets all of
                     # the current GMT's tpoints for current year:
-                    tvslice[iGMT] = tvarb[iGMT:tvarb.shape[0]:N]
+                    tvslice[iGMT] = tvarb[iGMT::N]
                     concatenation[iGMT, iYear *
                                   dayspermo: (iYear +
                                               1) *

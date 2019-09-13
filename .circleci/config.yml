@@ -16,7 +16,7 @@ aliases:
   - &create_conda_env
     name: create_conda_env
     environment:
-       PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner 'proj4<5' 'vtk-cdat>8.1' libnetcdf=4.6.2"
+       PKGS: "'cdms2<3.1.2.2019' vcs vcsaddons mesalib matplotlib scipy cia testsrunner 'proj4<5' 'vtk-cdat>8.1' libnetcdf=4.6.2"
        CHANNELS: "-c cdat/label/nightly -c conda-forge -c pcmdi"
     command: |
       if [ -d ${HOME}/miniconda ]; then
@@ -102,9 +102,9 @@ jobs:
       FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - macos_py2_2019-06-01
+    #- restore_cache:
+    #     keys:
+    #       - macos_py2_2019-06-01
       - run: *create_conda_env
       - save_cache:
           key: macos_py2_2019-06-01
@@ -126,20 +126,17 @@ jobs:
       OS: "osx-64"
       PY_VER: "py3"
       FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
-      COVERAGE: "-c tests/coverage.json --coverage-from-egg"
-      COVERAGE_PKGS: "coverage coveralls"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - macos_py3_2019-06-01
+    #- restore_cache:
+    #      keys:
+    #        - macos_py3_2019-06-01
       - run: *create_conda_env
       - save_cache:
           key: macos_py3_2019-06-01
           paths: /Users/distiller/miniconda
       - run: *setup_pmp
       - run: *run_pmp_tests
-      - run: *run_coveralls
       - store_artifacts:
           path: tests_html
           destination: tests_html
@@ -157,9 +154,9 @@ jobs:
       FFMPEG: "ffmpeg"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - linux_py2_2019-06-01
+    #- restore_cache:
+    #     keys:
+    #       - linux_py2_2019-06-01
       - run: *create_conda_env
       - save_cache:
           key: linux_py2_2019-06-01
@@ -185,9 +182,9 @@ jobs:
       COVERAGE_PKGS: "coverage coveralls"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - linux_py3_2019-06-01
+    #- restore_cache:
+    #     keys:
+    #       - linux_py3_2019-06-01
       - run: *create_conda_env
       - save_cache:
           key: linux_py3_2019-06-01
@@ -208,10 +205,8 @@ workflows:
   version: 2
   pcmdi_metrics:
     jobs:
+      - macos_pmp_py3
       - macos_pmp_py2
-      - macos_pmp_py3:
-           requires:
-              - macos_pmp_py2
       - linux_pmp_py2
       - linux_pmp_py3:
            requires:

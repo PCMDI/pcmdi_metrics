@@ -33,8 +33,13 @@ def compute(params):
     template = populateStringConstructor(args.filename_template, args)
     template.variable = varbname
 
-    reverted = template.reverse(os.path.basename(fileName))
-    dataname = reverted["model"]
+    dataname = params.args.model
+    if dataname is None or dataname.find("*") != -1:
+        # model not passed or passed as *
+        reverted = template.reverse(os.path.basename(fileName))
+        dataname = reverted["model"]
+    print('Data source:', dataname)
+    print('Opening %s ...' % fileName)
     if dataname not in args.skip:
         try:
             print('Data source:', dataname)
