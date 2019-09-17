@@ -44,6 +44,8 @@ aliases:
        export PATH=${HOME}/miniconda/bin:$PATH
        source activate cdat
        python setup.py install
+       conda list
+       conda list --verbose cdms2
 
   - &run_pmp_tests
     name: run_pmp_tests
