@@ -34,7 +34,7 @@ aliases:
         if [[ $PY_VER = "py2" ]]; then
             conda create -q -n cdat $CHANNELS "python<3" $PKGS $FFMPEG
         else
-            conda create -q -n cdat $CHANNELS "python=3.6" $PKGS $FFMPEG $COVERAGE_PKGS
+            conda create -q -n cdat $CHANNELS "python=3.7" $PKGS $FFMPEG $COVERAGE_PKGS
         fi
       fi
 
@@ -208,8 +208,8 @@ workflows:
   pcmdi_metrics:
     jobs:
       - macos_pmp_py3
-      #- macos_pmp_py2
-      #- linux_pmp_py2
-      #- linux_pmp_py3:
-      #     requires:
-      #        - linux_pmp_py2
+      - macos_pmp_py2
+      - linux_pmp_py2
+      - linux_pmp_py3:
+           requires:
+              - linux_pmp_py2
