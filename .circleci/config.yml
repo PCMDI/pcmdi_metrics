@@ -5,14 +5,6 @@ checkout:
     - ./ci-support/checkout_merge_commit.sh
         
 aliases:
-
-  - &setup_miniconda
-    name: setup_miniconda
-    command: |
-      mkdir -p workspace
-      git clone -b validateNightly git@github.com:CDAT/cdat workspace/cdat --depth=1
-      python workspace/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3.6'
-      
   - &create_conda_env
     name: create_conda_env
     environment:
