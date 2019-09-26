@@ -868,8 +868,8 @@ class Portrait(object):
             meshfill.datawc_y2 = data.shape[0] - .5
             meshfill.mesh = self.PLOT_SETTINGS.draw_mesh
             meshfill.missing = self.PLOT_SETTINGS.missing_color
-            meshfill.xticlabels2 = mtics
-            meshfill.yticlabels2 = mtics
+            meshfill.xticlabels2 = meshfill.xticlabels1
+            meshfill.yticlabels2 = meshfill.yticlabels1
             if self.PLOT_SETTINGS.colormap is None:
                 self.set_colormap()
             elif self.x.getcolormapname() != self.PLOT_SETTINGS.colormap:
