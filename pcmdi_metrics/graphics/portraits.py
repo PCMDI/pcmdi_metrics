@@ -786,11 +786,11 @@ class Portrait(object):
             template.xtic1.y2 = self.PLOT_SETTINGS.xtic1.y2
             template.xtic1.priority = 1
         if self.PLOT_SETTINGS.xtic2.y1 is not None:
-            template.xtic2.y1 = self.PLOT_SETTINGS.xtic2.y1
-            template.xtic2.priority = 1
+            template.xmintic2.y1 = self.PLOT_SETTINGS.xtic2.y1
+            template.xmintic2.priority = 1
         if self.PLOT_SETTINGS.xtic2.y2 is not None:
-            template.xtic2.y2 = self.PLOT_SETTINGS.xtic2.y2
-            template.xtic2.priority = 1
+            template.xmintic2.y2 = self.PLOT_SETTINGS.xtic2.y2
+            template.xmintic2.priority = 1
         if self.PLOT_SETTINGS.ytic1.x1 is not None:
             template.ytic1.x1 = self.PLOT_SETTINGS.ytic1.x1
             template.ytic1.priority = 1
@@ -798,11 +798,11 @@ class Portrait(object):
             template.ytic1.x2 = self.PLOT_SETTINGS.ytic1.x2
             template.ytic1.priority = 1
         if self.PLOT_SETTINGS.ytic2.x1 is not None:
-            template.ytic2.priority = 1
-            template.ytic2.x1 = self.PLOT_SETTINGS.ytic2.x1
+            template.ymintic2.priority = 1
+            template.ymintic2.x1 = self.PLOT_SETTINGS.ytic2.x1
         if self.PLOT_SETTINGS.ytic2.x2 is not None:
-            template.ytic2.priority = 1
-            template.ytic2.x2 = self.PLOT_SETTINGS.ytic2.x2
+            template.ymintic2.priority = 1
+            template.ymintic2.x2 = self.PLOT_SETTINGS.ytic2.x2
         template.legend.x1 = self.PLOT_SETTINGS.legend.x1
         template.legend.x2 = self.PLOT_SETTINGS.legend.x2
         template.legend.y1 = self.PLOT_SETTINGS.legend.y1
@@ -870,6 +870,8 @@ class Portrait(object):
             meshfill.missing = self.PLOT_SETTINGS.missing_color
             meshfill.xticlabels2 = meshfill.xticlabels1
             meshfill.yticlabels2 = meshfill.yticlabels1
+            meshfill.xmtics2 = mtics
+            meshfill.ymtics2 = mtics
             if self.PLOT_SETTINGS.colormap is None:
                 self.set_colormap()
             elif self.x.getcolormapname() != self.PLOT_SETTINGS.colormap:
