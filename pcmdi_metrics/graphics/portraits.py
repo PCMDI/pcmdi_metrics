@@ -8,6 +8,7 @@ import genutil
 import glob
 import numpy
 import time
+import datetime
 from genutil import StringConstructor
 import os
 import pkg_resources
@@ -1152,9 +1153,11 @@ class Portrait(object):
                                     txt.y = dic['y']
                             self.x.plot(txt, bg=self.bg, continents=0)
             if self.PLOT_SETTINGS.time_stamp is not None:
-                sp = time.ctime().split()
-                sp = sp[:3] + [sp[-1]]
-                self.PLOT_SETTINGS.time_stamp.string = ''.join(sp)
+                #sp = time.ctime().split()
+                #sp = sp[:3] + [sp[-1]]
+                #self.PLOT_SETTINGS.time_stamp.string = ''.join(sp)
+                sp = "{:v%Y%m%d}".format(datetime.datetime.now())
+                self.PLOT_SETTINGS.time_stamp.string = sp
                 self.x.plot(
                     self.PLOT_SETTINGS.time_stamp,
                     bg=self.bg,
