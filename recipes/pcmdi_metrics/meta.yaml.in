@@ -27,7 +27,7 @@ requirements:
     - matplotlib
     - numpy
     - cia
-    - proj4 <5
+    - proj4
     - jupyterlab
     - nb_conda
     - nb_conda_kernels

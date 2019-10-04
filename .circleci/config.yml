@@ -66,9 +66,9 @@ aliases:
        PKG_NAME: "pcmdi_metrics"
        LABEL: "nightly"
     command: |
-       if [[ $CIRCLE_BRANCH != 'master' ]]; then
-          exit 0
-       fi
+       #if [[ $CIRCLE_BRANCH != 'master' ]]; then
+       #   exit 0
+       #fi
        export PATH=${HOME}/miniconda/bin:$PATH
        mkdir conda-bld
        cd conda-bld
@@ -80,7 +80,8 @@ aliases:
        cd conda-recipes
        rm -rf cdp
        cp -r ../../recipes/pcmdi_metrics .
-       python ./prep_for_build.py -l 1.2
+       #python ./prep_for_build.py -l 1.2
+       python ./prep_for_build.py -l 1.2 -b $CIRCLE_BRANCH
        conda build $PKG_NAME $CHANNELS
        anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l $LABEL $CONDA_BLD_PATH/noarch/$PKG_NAME-*tar.bz2 --force
 
