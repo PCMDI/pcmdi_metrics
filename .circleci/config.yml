@@ -66,9 +66,9 @@ aliases:
        PKG_NAME: "pcmdi_metrics"
        LABEL: "nightly"
     command: |
-       #if [[ $CIRCLE_BRANCH != 'master' ]]; then
-       #   exit 0
-       #fi
+       if [[ $CIRCLE_BRANCH != 'master' ]]; then
+          exit 0
+       fi
        export PATH=${HOME}/miniconda/bin:$PATH
        mkdir conda-bld
        cd conda-bld
