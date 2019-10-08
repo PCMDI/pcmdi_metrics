@@ -5,18 +5,10 @@ checkout:
     - ./ci-support/checkout_merge_commit.sh
         
 aliases:
-
-  - &setup_miniconda
-    name: setup_miniconda
-    command: |
-      mkdir -p workspace
-      git clone -b validateNightly git@github.com:CDAT/cdat workspace/cdat --depth=1
-      python workspace/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3.6'
-      
   - &create_conda_env
     name: create_conda_env
     environment:
-       PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner 'proj4<5' 'vtk-cdat>8.1' libnetcdf=4.6.2"
+       PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner proj4 vtk-cdat libnetcdf=4.6.2"
        CHANNELS: "-c cdat/label/nightly -c conda-forge -c pcmdi"
     command: |
       if [ -d ${HOME}/miniconda ]; then
@@ -44,6 +36,8 @@ aliases:
        export PATH=${HOME}/miniconda/bin:$PATH
        source activate cdat
        python setup.py install
+       conda list
+       conda list --verbose cdms2
 
   - &run_pmp_tests
     name: run_pmp_tests
@@ -55,6 +49,7 @@ aliases:
        python run_tests.py -H -v2 $COVERAGE
        RESULT=$?
        echo "*** $PY_VER test result: ${RESULT}"
+    no_output_timeout: 30m
 
   - &run_coveralls
     name: run_coveralls
@@ -85,16 +80,15 @@ aliases:
        cd conda-recipes
        rm -rf cdp
        cp -r ../../recipes/pcmdi_metrics .
-       python ./prep_for_build.py -l 1.2
-       conda build $PKG_NAME $CHANNELS --python=37
-       conda build $PKG_NAME $CHANNELS --python=27
+       #python ./prep_for_build.py -l 1.2
+       python ./prep_for_build.py -l 1.2 -b $CIRCLE_BRANCH
+       conda build $PKG_NAME $CHANNELS
        anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l $LABEL $CONDA_BLD_PATH/noarch/$PKG_NAME-*tar.bz2 --force
-
 
 jobs:
   macos_pmp_py2:
     macos:
-      xcode: "9.2.0"
+      xcode: "10.2.0"
     environment:
       WORKDIR: "test_macos_pmp_py2"
       OS: "osx-64"
@@ -102,9 +96,9 @@ jobs:
       FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - macos_py2_2019-06-01
+    #- restore_cache:
+    #     keys:
+    #       - macos_py2_2019-06-01
       - run: *create_conda_env
       - save_cache:
           key: macos_py2_2019-06-01
@@ -120,26 +114,23 @@ jobs:
 
   macos_pmp_py3:
     macos:
-      xcode: "9.2.0"
+      xcode: "10.2.0"
     environment:
       WORKDIR: "test_macos_pmp_py3"
       OS: "osx-64"
       PY_VER: "py3"
       FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
-      COVERAGE: "-c tests/coverage.json --coverage-from-egg"
-      COVERAGE_PKGS: "coverage coveralls"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - macos_py3_2019-06-01
+    #- restore_cache:
+    #      keys:
+    #        - macos_py3_2019-06-01
       - run: *create_conda_env
       - save_cache:
           key: macos_py3_2019-06-01
           paths: /Users/distiller/miniconda
       - run: *setup_pmp
       - run: *run_pmp_tests
-      - run: *run_coveralls
       - store_artifacts:
           path: tests_html
           destination: tests_html
@@ -157,9 +148,9 @@ jobs:
       FFMPEG: "ffmpeg"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - linux_py2_2019-06-01
+    #- restore_cache:
+    #     keys:
+    #       - linux_py2_2019-06-01
       - run: *create_conda_env
       - save_cache:
           key: linux_py2_2019-06-01
@@ -185,9 +176,9 @@ jobs:
       COVERAGE_PKGS: "coverage coveralls"
     steps:
       - checkout
-      - restore_cache:
-          keys:
-            - linux_py3_2019-06-01
+    #- restore_cache:
+    #     keys:
+    #       - linux_py3_2019-06-01
       - run: *create_conda_env
       - save_cache:
           key: linux_py3_2019-06-01
