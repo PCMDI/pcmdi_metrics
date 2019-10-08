@@ -1,0 +1,26 @@
+# output directory
+results_dir = '$OUTPUT_DIR$/diurnal/json'
+
+# input directory which is actually the output of previous driver
+modpath = '$OUTPUT_DIR$/diurnal/nc'
+
+# model to use
+model = 'IPSL-CM5A-LR'
+experiment = 'historical'
+realization = 'r1i1p1'
+
+# Month to use
+month = 7
+
+# Period
+firstyear = 1997 # included
+lastyear = 1999  # included
+
+# Latitudes/longitudes to use
+lat1 = -50.
+lat2 = 50.
+lon1 = 0.
+lon2 = 360.
+
+# Number of workers
+num_workers = 4

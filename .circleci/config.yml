@@ -5,67 +5,71 @@ checkout:
     - ./ci-support/checkout_merge_commit.sh
         
 aliases:
-
-  - &setup_miniconda
-    name: setup_miniconda
-    command: |
-      mkdir -p workspace
-      git clone -b validateNightly git@github.com:CDAT/cdat workspace/cdat --depth=1
-      python workspace/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3'
-      
   - &create_conda_env
     name: create_conda_env
     environment:
-       PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner 'proj4<5' 'vtk-cdat>8.1'"
+       PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner proj4 vtk-cdat libnetcdf=4.6.2"
        CHANNELS: "-c cdat/label/nightly -c conda-forge -c pcmdi"
     command: |
-       export PATH=$WORKDIR/miniconda/bin:$PATH
-       conda config --set always_yes yes --set changeps1 no
-       conda update -y -q conda
-       conda config --set anaconda_upload no
-       if [[ $PY_VER = "py2" ]]; then
-          conda create -q -n $PY_VER $CHANNELS "python<3" $PKGS $FFMPEG
-       else
-          conda create -q -n $PY_VER $CHANNELS "python=3.6" $PKGS $FFMPEG $COVERAGE_PKGS
-       fi
+      if [ -d ${HOME}/miniconda ]; then
+        export PATH=$HOME/miniconda/bin:$PATH
+        echo "Found miniconda directory"
+      else
+        mkdir -p workspace
+        git clone -b validateNightly git@github.com:CDAT/cdat workspace/cdat --depth=1
+        python workspace/cdat/scripts/install_miniconda.py -w ${HOME} -p 'py3.7'
+        echo "miniconda directory not found, installing conda"
+        export PATH=${HOME}/miniconda/bin:$PATH
+        conda config --set always_yes yes --set changeps1 no
+        conda update -y -q conda
+        conda config --set anaconda_upload no
+        if [[ $PY_VER = "py2" ]]; then
+            conda create -q -n cdat $CHANNELS "python<3" $PKGS $FFMPEG
+        else
+            conda create -q -n cdat $CHANNELS "python=3.7" $PKGS $FFMPEG $COVERAGE_PKGS
+        fi
+      fi
 
   - &setup_pmp
     name: setup_pmp
     command: |
-       export PATH=$WORKDIR/miniconda/bin:$PATH
-       source activate $PY_VER
+       export PATH=${HOME}/miniconda/bin:$PATH
+       source activate cdat
        python setup.py install
+       conda list
+       conda list --verbose cdms2
 
   - &run_pmp_tests
     name: run_pmp_tests
     command: |
-       export PATH=$WORKDIR/miniconda/bin:$PATH
+       export PATH=${HOME}/miniconda/bin:$PATH
        export CDAT_ANONYMOUS_LOG=False
        export CDAT_SETUP_PATH=${HOME}
-       source activate $PY_VER
+       source activate cdat
        python run_tests.py -H -v2 $COVERAGE
        RESULT=$?
-       echo "*** $PY_VER test result: "${RESULT}
+       echo "*** $PY_VER test result: ${RESULT}"
+    no_output_timeout: 30m
 
   - &run_coveralls
     name: run_coveralls
     command: |
-       export PATH=$WORKDIR/miniconda/bin:$PATH
-       source activate $PY_VER
+       export PATH=${HOME}/miniconda/bin:$PATH
+       source activate cdat
        coveralls
        source deactivate
 
   - &conda_upload
     name: conda_upload
     environment:
-       CHANNELS: "-c cdat-forge -c conda-forge -c cdat -c pcmdi"
+       CHANNELS: "-c cdat/label/nightly -c conda-forge -c pcmdi"
        PKG_NAME: "pcmdi_metrics"
        LABEL: "nightly"
     command: |
        if [[ $CIRCLE_BRANCH != 'master' ]]; then
           exit 0
        fi
-       export PATH=${HOME}/project/$WORKDIR/miniconda/bin:$PATH
+       export PATH=${HOME}/miniconda/bin:$PATH
        mkdir conda-bld
        cd conda-bld
        conda install conda-build anaconda-client
@@ -76,15 +80,15 @@ aliases:
        cd conda-recipes
        rm -rf cdp
        cp -r ../../recipes/pcmdi_metrics .
-       python ./prep_for_build.py -l 1.2
-       conda build $PKG_NAME $CHANNELS --python=36
+       #python ./prep_for_build.py -l 1.2
+       python ./prep_for_build.py -l 1.2 -b $CIRCLE_BRANCH
+       conda build $PKG_NAME $CHANNELS
        anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l $LABEL $CONDA_BLD_PATH/noarch/$PKG_NAME-*tar.bz2 --force
-
 
 jobs:
   macos_pmp_py2:
     macos:
-      xcode: "9.2.0"
+      xcode: "10.2.0"
     environment:
       WORKDIR: "test_macos_pmp_py2"
       OS: "osx-64"
@@ -92,8 +96,13 @@ jobs:
       FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
     steps:
       - checkout
-      - run: *setup_miniconda
+    #- restore_cache:
+    #     keys:
+    #       - macos_py2_2019-06-01
       - run: *create_conda_env
+      - save_cache:
+          key: macos_py2_2019-06-01
+          paths: /Users/distiller/miniconda
       - run: *setup_pmp
       - run: *run_pmp_tests
       - store_artifacts:
@@ -105,21 +114,23 @@ jobs:
 
   macos_pmp_py3:
     macos:
-      xcode: "9.2.0"
+      xcode: "10.2.0"
     environment:
       WORKDIR: "test_macos_pmp_py3"
       OS: "osx-64"
       PY_VER: "py3"
       FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
-      COVERAGE: "-c tests/coverage.json --coverage-from-egg"
-      COVERAGE_PKGS: "coverage coveralls"
     steps:
       - checkout
-      - run: *setup_miniconda
+    #- restore_cache:
+    #      keys:
+    #        - macos_py3_2019-06-01
       - run: *create_conda_env
+      - save_cache:
+          key: macos_py3_2019-06-01
+          paths: /Users/distiller/miniconda
       - run: *setup_pmp
       - run: *run_pmp_tests
-      - run: *run_coveralls
       - store_artifacts:
           path: tests_html
           destination: tests_html
@@ -137,8 +148,13 @@ jobs:
       FFMPEG: "ffmpeg"
     steps:
       - checkout
-      - run: *setup_miniconda
+    #- restore_cache:
+    #     keys:
+    #       - linux_py2_2019-06-01
       - run: *create_conda_env
+      - save_cache:
+          key: linux_py2_2019-06-01
+          paths: /home/circleci/miniconda
       - run: *setup_pmp
       - run: *run_pmp_tests
       - store_artifacts:
@@ -160,8 +176,13 @@ jobs:
       COVERAGE_PKGS: "coverage coveralls"
     steps:
       - checkout
-      - run: *setup_miniconda
+    #- restore_cache:
+    #     keys:
+    #       - linux_py3_2019-06-01
       - run: *create_conda_env
+      - save_cache:
+          key: linux_py3_2019-06-01
+          paths: /home/circleci/miniconda
       - run: *setup_pmp
       - run: *run_pmp_tests
       - run: *conda_upload

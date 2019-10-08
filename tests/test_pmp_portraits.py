@@ -10,8 +10,11 @@ import vcs
 import sys
 import pkg_resources
 one = pkg_resources.Requirement.parse("pcmdi_metrics")
-print("ONE:",one)
-egg_pth = pkg_resources.resource_filename(one, "share/pmp")
+try:
+    egg_pth = pkg_resources.resource_filename(one, "share/pmp")
+except Exception:
+    # python 2 seems to fail when ran in home directory of source?
+    egg_pth = os.path.join(os.getcwd(), "share", "pmp")
 
 class TestPortraits(basepmpgraphics.TestGraphics):
     def __init__(self,*args,**kargs):

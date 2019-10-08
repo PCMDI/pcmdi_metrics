@@ -611,7 +611,10 @@ def runClim(A):
         s.setAxis(0, t)
         # copy orignal attributes
         for att, value in store_attributes(V).items():
-            setattr(s, att, value)
+            try:
+                setattr(s, att, value)
+            except Exception:
+                pass
         f.write(s, dtype=data.dtype)
         f.close()
         if A.verbose:
