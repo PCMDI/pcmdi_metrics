@@ -130,13 +130,8 @@ models = param.modnames
 
 # Include all models if conditioned
 if ('all' in [m.lower() for m in models]) or (models == 'all'):
-    models = [p.split('.')[1]
-        for p in glob.glob(modpath(
-            mip=mip,
-            exp=exp,
-            model='*',
-            realization='*',
-            variable=var))]
+    models = ([p.split('.')[1] for p in glob.glob(modpath(
+                mip=mip, exp=exp, model='*', realization='*', variable=var))])
     # remove duplicates
     models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
 
@@ -187,7 +182,7 @@ else:
     lon2g = 180
 
 # =================================================
-# Time period adjustment 
+# Time period adjustment
 # -------------------------------------------------
 start_time = cdtime.comptime(msyear, 1, 1, 0, 0)
 end_time = cdtime.comptime(meyear, 12, 31, 23, 59)
@@ -262,11 +257,11 @@ if obs_compare:
         result_dict['REF']['obs'] = {}
     if 'defaultReference' not in list(result_dict['REF']['obs'].keys()):
         result_dict['REF']['obs']['defaultReference'] = {}
-    if 'source' not in list(
-        result_dict['REF']['obs']['defaultReference'].keys()):
+    if ('source' not in list(
+            result_dict['REF']['obs']['defaultReference'].keys())):
         result_dict['REF']['obs']['defaultReference']['source'] = {}
-    if mode not in list(
-        result_dict['REF']['obs']['defaultReference'].keys()):
+    if( mode not in list(
+            result_dict['REF']['obs']['defaultReference'].keys())):
         result_dict['REF']['obs']['defaultReference'][mode] = {}
 
     result_dict['REF']['obs']['defaultReference']['source'] = obs_path
@@ -281,8 +276,8 @@ if obs_compare:
     for season in seasons:
         debug_print('season: '+season, debug)
 
-        if season not in list(
-            result_dict['REF']['obs']['defaultReference'][mode].keys()):
+        if (season not in list(
+                result_dict['REF']['obs']['defaultReference'][mode].keys())):
             result_dict['REF']['obs']['defaultReference'][mode][season] = {}
 
         dict_head_obs = result_dict['REF']['obs']['defaultReference'][mode][season]
@@ -368,8 +363,8 @@ for model in models:
         result_dict['RESULTS'][model] = {}
 
     model_path_list = os.popen(
-        'ls '+modpath(mip=mip, exp=exp, model=model, realization=realization,
-        variable=var)).readlines()
+            'ls '+modpath(mip=mip, exp=exp, model=model, realization=realization,
+            variable=var)).readlines()
 
     model_path_list = sort_human(model_path_list)
 
@@ -377,7 +372,7 @@ for model in models:
 
     # Find where run can be gripped from given filename template for modpath
     run_in_modpath = modpath(mip=mip, exp=exp, model=model, realization=realization,
-        variable=var).split('/')[-1].split('.').index(realization)
+            variable=var).split('/')[-1].split('.').index(realization)
 
     # -------------------------------------------------
     # Run
@@ -418,7 +413,7 @@ for model in models:
             # - - - - - - - - - - - - - - - - - - - - - - - - -
             for season in seasons:
                 debug_print('season: '+season, debug)
-                
+
                 if (season not in list(
                         result_dict['RESULTS'][model][run]['defaultReference'][mode].keys())):
                     result_dict['RESULTS'][model][run]['defaultReference'][mode][season] = {}
@@ -474,7 +469,7 @@ for model in models:
                     # Linear regression to have extended global map; teleconnection purpose
                     eof_lr_cbf, slope_cbf, intercept_cbf = linear_regression_on_globe_for_teleconnection(
                         cbf_pc, model_timeseries_season, stdv_cbf_pc,
-                        #cbf_pc, model_timeseries_season_regrid, stdv_cbf_pc,
+                        # cbf_pc, model_timeseries_season_regrid, stdv_cbf_pc,
                         RmDomainMean, EofScaling, debug=debug)
 
                     # Extract subdomain for statistics
@@ -482,12 +477,12 @@ for model in models:
 
                     # Calculate fraction of variance explained by cbf pc
                     frac_cbf = gain_pcs_fraction(
-                        #model_timeseries_season_regrid_subdomain,  # regridded model anomaly space
+                        # model_timeseries_season_regrid_subdomain,  # regridded model anomaly space
                         model_timeseries_season_subdomain,  # native grid model anomaly space
                         eof_lr_cbf_subdomain,
                         cbf_pc/stdv_cbf_pc, debug=debug)
 
-                    #### SENSITIVITY TEST ####
+                    # SENSITIVITY TEST ---
                     # Calculate fraction of variance explained by cbf pc (on regrid domain)
                     frac_cbf_regrid = gain_pcs_fraction(
                         model_timeseries_season_regrid_subdomain,
@@ -500,24 +495,25 @@ for model in models:
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
                     # Metrics results -- statistics to JSON
                     dict_head, eof_lr_cbf = calc_stats_save_dict(
-                        dict_head, eof_lr_cbf_subdomain, eof_lr_cbf, slope_cbf, cbf_pc, stdv_cbf_pc, frac_cbf,
-                        region_subdomain,
-                        eof_obs[season], eof_lr_obs[season], stdv_pc_obs[season],
-                        obs_compare=obs_compare, method='cbf', debug=debug)
+                            dict_head, eof_lr_cbf_subdomain, eof_lr_cbf, slope_cbf,
+                            cbf_pc, stdv_cbf_pc, frac_cbf,
+                            region_subdomain,
+                            eof_obs[season], eof_lr_obs[season], stdv_pc_obs[season],
+                            obs_compare=obs_compare, method='cbf', debug=debug)
 
                     # Set output file name for NetCDF and plot images
                     output_filename = '_'.join([
-                        mode, var, 'EOF'+str(eofn_mod), season, mip,
-                        model, exp, run, fq, realm,
-                        str(msyear)+'-'+str(meyear)])
+                            mode, var, 'EOF'+str(eofn_mod), season, mip,
+                            model, exp, run, fq, realm,
+                            str(msyear)+'-'+str(meyear)])
                     if EofScaling:
                         output_filename += '_EOFscaled'
 
                     # Diagnostics results -- data to NetCDF
                     # Save global map, pc timeseries, and fraction in NetCDF output
                     output_nc_file = os.path.join(
-                        outdir(output_type='diagnostic_results'),
-                        output_filename)
+                            outdir(output_type='diagnostic_results'),
+                            output_filename)
                     if nc_out:
                         write_nc_output(output_nc_file+'_cbf', eof_lr_cbf,
                             cbf_pc, frac_cbf, slope_cbf, intercept_cbf)
@@ -576,15 +572,15 @@ for model in models:
                         eof = eof_list[n]
                         pc = pc_list[n]
                         frac = frac_list[n]
-    
+
                         # Calculate stdv of pc time series
                         stdv_pc = calcSTD(pc)
-    
+
                         # Linear regression to have extended global map:
                         eof_lr, slope, intercept = linear_regression_on_globe_for_teleconnection(
                             pc, model_timeseries_season, stdv_pc,
                             RmDomainMean, EofScaling, debug=debug)
-    
+
                         # - - - - - - - - - - - - - - - - - - - - - - - - -
                         # Record results
                         # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -614,7 +610,7 @@ for model in models:
                             str(msyear)+'-'+str(meyear)])
                         if EofScaling:
                             output_filename += '_EOFscaled'
-        
+
                         # Diagnostics results -- data to NetCDF
                         # Save global map, pc timeseries, and fraction in NetCDF output
                         output_nc_file = os.path.join(
@@ -645,7 +641,6 @@ for model in models:
                                      eof_lr(longitude=(lon1g, lon2g)), frac,
                                      output_img_file+'_teleconnection')
 
-
                         # - - - - - - - - - - - - - - - - - - - - - - - - -
                         # EOF swap diagnosis
                         # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -656,7 +651,8 @@ for model in models:
                     # Find best matching eofs with different criteria
                     best_matching_eofs_rms = rms_list.index(min(rms_list))+1
                     best_matching_eofs_cor = cor_list.index(max(cor_list))+1
-                    if CBF: best_matching_eofs_tcor = tcor_list.index(max(tcor_list))+1
+                    if CBF:
+                        best_matching_eofs_tcor = tcor_list.index(max(tcor_list))+1
 
                     # Save the best matching information to JSON
                     dict_head = result_dict['RESULTS'][model][run]['defaultReference'][mode][season]
