@@ -390,11 +390,11 @@ for model in models:
 
             if run not in list(result_dict['RESULTS'][model].keys()):
                 result_dict['RESULTS'][model][run] = {}
-            if 'defaultReference' not in list(
-                result_dict['RESULTS'][model][run].keys()):
+            if ('defaultReference' not in list(
+                    result_dict['RESULTS'][model][run].keys())):
                 result_dict['RESULTS'][model][run]['defaultReference'] = {}
-            if mode not in list(
-                result_dict['RESULTS'][model][run]['defaultReference'].keys()):
+            if (mode not in list(
+                    result_dict['RESULTS'][model][run]['defaultReference'].keys())):
                 result_dict['RESULTS'][model][run]['defaultReference'][mode] = {}
             result_dict['RESULTS'][model][run]['defaultReference'][mode]['target_model_eofs'] = eofn_mod
 
