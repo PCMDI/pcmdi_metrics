@@ -57,6 +57,7 @@ import pcmdi_metrics
 import pkg_resources
 import sys
 
+"""
 libfiles = [
     'lib_variability_mode.py',
     'argparse_functions.py',
@@ -68,6 +69,18 @@ libfiles = [
 for lib in libfiles:
     exec(compile(open(os.path.join('../lib/', lib)).read(),
                  os.path.join('../lib/', lib), 'exec'))
+"""
+
+from pcmdi_metrics.variability_mode.lib import (
+    AddParserArgument, VariabilityModeCheck, YearCheck,
+    calc_stats_save_dict, calcTCOR, calcSTD,
+    eof_analysis_get_variance_mode,
+    linear_regression_on_globe_for_teleconnection,
+    gain_pseudo_pcs, gain_pcs_fraction, adjust_timeseries,
+    model_land_mask_out,
+    tree, write_nc_output, get_domain_range, read_data_in, debug_print, sort_human,
+    plot_map
+)
 
 regions_specs = {}
 egg_pth = pkg_resources.resource_filename(
