@@ -1,6 +1,8 @@
 import cdutil
 import genutil
 import MV2
+from time import gmtime, strftime
+
 
 # from pcmdi_metrics.variability_mode.lib import debug_print
 
@@ -153,4 +155,5 @@ def calcSTDmap(a):
 
 def debug_print(string, debug):
     if debug:
-        print('debug: '+nowtime()+' '+string)
+        nowtime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+        print('debug: '+nowtime+' '+string)

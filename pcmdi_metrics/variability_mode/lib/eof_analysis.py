@@ -1,5 +1,6 @@
 from __future__ import print_function
 from eofs.cdms import Eof
+from time import gmtime, strftime
 import cdms2
 import cdutil
 import genutil
@@ -396,4 +397,5 @@ def get_residual_timeseries(timeseries_ano, mode, region_subdomain, RmDomainMean
 
 def debug_print(string, debug):
     if debug:
-        print('debug: '+nowtime()+' '+string)
+        nowtime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+        print('debug: '+nowtime+' '+string)

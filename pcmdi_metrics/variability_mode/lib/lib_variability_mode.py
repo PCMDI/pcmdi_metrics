@@ -85,12 +85,8 @@ def read_data_in(
 
 def debug_print(string, debug):
     if debug:
-        print('debug: '+nowtime()+' '+string)
-
-
-def nowtime():
-    timestr = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-    return timestr
+        nowtime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+        print('debug: '+nowtime+' '+string)
 
 
 def sort_human(input_list):
