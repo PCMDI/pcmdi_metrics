@@ -337,9 +337,9 @@ if obs_compare:
             output_img_file_obs = os.path.join(
                 outdir(output_type='graphics'),
                 output_filename_obs)
-            #plot_map(mode, '[REF] '+obs_name, osyear, oeyear, season,
-            #         eof_obs[season], frac_obs[season],
-            #         output_img_file_obs+'_org_eof')
+            # plot_map(mode, '[REF] '+obs_name, osyear, oeyear, season,
+            #          eof_obs[season], frac_obs[season],
+            #          output_img_file_obs+'_org_eof')
             plot_map(mode, '[REF] '+obs_name, osyear, oeyear, season,
                      eof_lr_obs[season](region_subdomain),
                      frac_obs[season], output_img_file_obs)
@@ -629,11 +629,11 @@ for model in models:
                             outdir(output_type='graphics'),
                             output_filename)
                         if plot:
-                            #plot_map(mode,
-                            #         mip.upper()+' '+model+' ('+run+')',
-                            #         msyear, meyear, season,
-                            #         eof, frac,
-                            #         output_img_file+'_org_eof')
+                            # plot_map(mode,
+                            #          mip.upper()+' '+model+' ('+run+')',
+                            #          msyear, meyear, season,
+                            #          eof, frac,
+                            #          output_img_file+'_org_eof')
                             plot_map(mode,
                                      mip.upper()+' '+model+' ('+run+')',
                                      msyear, meyear, season,

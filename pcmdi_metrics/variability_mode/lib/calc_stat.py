@@ -36,7 +36,6 @@ def calc_stats_save_dict(
     # . . . . . . . . . . . . . . . . . . . . . . . . .
     if obs_compare:
 
-        #if method == 'eof':
         if method in ['eof', 'cbf']:
             ref_grid_global = eof_lr_obs.getGrid()
             # Regrid (interpolation, model grid to ref grid)
@@ -46,13 +45,6 @@ def calc_stats_save_dict(
             debug_print('regrid end', debug)
             # Extract subdomain
             eof_model = eof_model_global(region_subdomain)
-        """
-        elif method == 'cbf':
-            # Regrid not needed
-            eof_model_global = eof_lr.copy()
-            # Extract subdomain
-            eof_model = eof_model_global(region_subdomain)
-        """
 
         # Spatial correlation weighted by area ('generate' option for weights)
         cor = calcSCOR(eof_model, eof_obs)
