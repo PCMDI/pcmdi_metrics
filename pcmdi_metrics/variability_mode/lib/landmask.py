@@ -14,7 +14,7 @@ def model_land_mask_out(model, model_timeseries, model_lf_path):
         f_lf = cdms2.open(model_lf_path)
         lf = f_lf('sftlf', latitude=(-90, 90))
         f_lf.close()
-    except:
+    except Exception:
         # Estimate landmask
         lf = estimate_landmask(model_timeseries)
 

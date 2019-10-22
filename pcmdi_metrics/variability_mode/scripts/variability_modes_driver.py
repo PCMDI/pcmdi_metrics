@@ -48,6 +48,15 @@ from __future__ import print_function
 from argparse import RawTextHelpFormatter
 from genutil import StringConstructor
 from shutil import copyfile
+from pcmdi_metrics.variability_mode.lib import (
+    AddParserArgument, VariabilityModeCheck, YearCheck,
+    calc_stats_save_dict, calcTCOR, calcSTD,
+    eof_analysis_get_variance_mode,
+    linear_regression_on_globe_for_teleconnection,
+    gain_pseudo_pcs, gain_pcs_fraction, adjust_timeseries,
+    model_land_mask_out,
+    tree, write_nc_output, get_domain_range, read_data_in, debug_print, sort_human,
+    plot_map)
 import cdtime
 import glob
 import json
@@ -57,30 +66,6 @@ import pcmdi_metrics
 import pkg_resources
 import sys
 
-"""
-libfiles = [
-    'lib_variability_mode.py',
-    'argparse_functions.py',
-    'calc_stat.py',
-    'eof_analysis.py',
-    'landmask.py',
-    'plot_map.py']
-
-for lib in libfiles:
-    exec(compile(open(os.path.join('../lib/', lib)).read(),
-                 os.path.join('../lib/', lib), 'exec'))
-"""
-
-from pcmdi_metrics.variability_mode.lib import (
-    AddParserArgument, VariabilityModeCheck, YearCheck,
-    calc_stats_save_dict, calcTCOR, calcSTD,
-    eof_analysis_get_variance_mode,
-    linear_regression_on_globe_for_teleconnection,
-    gain_pseudo_pcs, gain_pcs_fraction, adjust_timeseries,
-    model_land_mask_out,
-    tree, write_nc_output, get_domain_range, read_data_in, debug_print, sort_human,
-    plot_map
-)
 
 regions_specs = {}
 egg_pth = pkg_resources.resource_filename(
@@ -222,8 +207,6 @@ result_dict = tree()
 # Set metrics output JSON file
 json_filename = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
                           mip, exp, fq, realm, str(msyear)+'-'+str(meyear)])
-if EofScaling:
-    output_filename += '_EOFscaled'
 
 json_file = os.path.join(outdir(output_type='metrics_results'), json_filename + '.json')
 json_file_org = os.path.join(
@@ -376,8 +359,8 @@ for model in models:
         result_dict['RESULTS'][model] = {}
 
     model_path_list = os.popen(
-            'ls '+modpath(mip=mip, exp=exp, model=model, realization=realization,
-                variable=var)).readlines()
+        'ls '+modpath(mip=mip, exp=exp, model=model, realization=realization,
+        variable=var)).readlines()
 
     model_path_list = sort_human(model_path_list)
 
@@ -385,7 +368,7 @@ for model in models:
 
     # Find where run can be gripped from given filename template for modpath
     run_in_modpath = modpath(mip=mip, exp=exp, model=model, realization=realization,
-                variable=var).split('/')[-1].split('.').index(realization)
+        variable=var).split('/')[-1].split('.').index(realization)
 
     # -------------------------------------------------
     # Run
