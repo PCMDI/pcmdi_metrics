@@ -54,8 +54,8 @@ modnames = ['ACCESS1-0', 'ACCESS1-3', 'BCC-CSM1-1', 'BCC-CSM1-1-M', 'BNU-ESM',
 # modnames = ['all']
 modnames = ['ACCESS1-0']
 
-realization = '*'  # realizations
-# realization = 'r1i1p1'
+# realization = '*'  # realizations
+realization = 'r1i1p1'
 
 varModel = 'psl'
 ModUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa
