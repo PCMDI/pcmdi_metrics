@@ -55,7 +55,7 @@ modnames = ['ACCESS1-0', 'ACCESS1-3', 'BCC-CSM1-1', 'BCC-CSM1-1-M', 'BNU-ESM',
 modnames = ['all']
 # modnames = ['ACCESS1-0', 'ACCESS1-3']
 
-realization = '*' # realizations
+realization = '*'  # realizations
 # realization = 'r1i1p1'
 
 varModel = 'psl'

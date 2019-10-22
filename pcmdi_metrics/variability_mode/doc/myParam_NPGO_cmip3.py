@@ -18,7 +18,7 @@ seasons = ['monthly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
 EofScaling = False  # Convert EOF pattern as unit variance (default=False)
-landmask = True # Maskout land region thus consider only ocean grid (default=False)
+landmask = True  # Maskout land region thus consider only ocean grid (default=False)
 
 ConvEOF = True  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
@@ -68,7 +68,7 @@ modnames = [
 # modnames = ['giss_model_e_h']
 modnames = ['all']
 
-realization = '*' # realizations
+realization = '*'  # realizations
 # realization = 'run1'
 
 varModel = 'ts'

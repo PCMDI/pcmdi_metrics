@@ -13,11 +13,11 @@ realm = 'atm'
 # Analysis Options
 # -------------------------------------------------
 variability_mode = 'NAM'  # Available domains: NAM, NAO, SAM, PNA, PDO
-seasons = ['DJF', 'MAM', 'JJA', 'SON', 'monthly'] # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
+seasons = ['DJF', 'MAM', 'JJA', 'SON', 'monthly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
 EofScaling = False  # Convert EOF pattern as unit variance (default=False)
-landmask = False # Maskout land region thus consider only ocean grid (default=False)
+landmask = False  # Maskout land region thus consider only ocean grid (default=False)
 
 ConvEOF = True  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
@@ -43,7 +43,7 @@ modpath = '/work/lee1043/ESGF/xmls/%(mip)/historical/mon/%(variable)/%(mip).%(mo
 modnames = ['all']
 # modnames = ['IPSL-CM6A-LR']
 
-realization = '*' # realizations
+realization = '*'  # realizations
 # realization = 'r1i1p1f1'
 
 varModel = 'psl'

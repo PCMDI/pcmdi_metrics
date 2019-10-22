@@ -44,7 +44,7 @@ modpath = '/work/lee1043/ESGF/xmls/%(mip)/historical/mon/%(variable)/%(mip).%(mo
 modnames = ['all']
 # modnames = ['IPSL-CM6A-LR']
 
-realization = '*' # realizations
+realization = '*'  # realizations
 # realization = 'r1i1p1f1'
 
 varModel = 'psl'

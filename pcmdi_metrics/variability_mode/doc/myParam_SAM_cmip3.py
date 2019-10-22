@@ -13,11 +13,11 @@ realm = 'atm'
 # Analysis Options
 # -------------------------------------------------
 variability_mode = 'SAM'  # Available domains: NAM, NAO, SAM, PNA, PDO
-seasons = ['DJF', 'MAM', 'JJA', 'SON', 'monthly'] # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
+seasons = ['DJF', 'MAM', 'JJA', 'SON', 'monthly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
 EofScaling = False  # Convert EOF pattern as unit variance (default=False)
-landmask = False # Maskout land region thus consider only ocean grid (default=False)
+landmask = False  # Maskout land region thus consider only ocean grid (default=False)
 
 ConvEOF = True  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
@@ -67,7 +67,7 @@ modnames = ['all']
 
 # modnames = ['giss_model_e_h']
 
-realization = '*' # realizations
+realization = '*'  # realizations
 # realization = 'run1'
 
 varModel = 'psl'
