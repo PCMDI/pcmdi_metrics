@@ -7,6 +7,8 @@ import MV2
 import numpy as np
 import sys
 
+from pcmdi_metrics.variability_mode.lib import debug_print
+
 
 def eof_analysis_get_variance_mode(
         mode, timeseries, eofn, eofn_max=None,
@@ -390,3 +392,8 @@ def get_residual_timeseries(timeseries_ano, mode, region_subdomain, RmDomainMean
             timeseries_residual = timeseries_ano
     # return result
     return timeseries_residual
+
+
+def debug_print(string, debug):
+    if debug:
+        print('debug: '+nowtime()+' '+string)

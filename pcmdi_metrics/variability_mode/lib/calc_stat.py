@@ -2,6 +2,8 @@ import cdutil
 import genutil
 import MV2
 
+from pcmdi_metrics.variability_mode.lib import debug_print
+
 
 def calc_stats_save_dict(
         dict_head, eof, eof_lr, slope, pc, stdv_pc, frac,
@@ -147,3 +149,8 @@ def calcSTDmap(a):
     wts = cdutil.area_weights(a)
     std = genutil.statistics.std(a, axis='xy', weights=wts)
     return float(std)
+
+
+def debug_print(string, debug):
+    if debug:
+        print('debug: '+nowtime()+' '+string)
