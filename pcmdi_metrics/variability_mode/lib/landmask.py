@@ -1,56 +1,90 @@
-def model_land_mask_out(mip,model,model_timeseries):
-  import genutil
-  import numpy as NP
-  import MV2
-  #-------------------------------------------------
-  # Extract SST (mask out land region)
-  #- - - - - - - - - - - - - - - - - - - - - - - - -
-  # Read model's land fraction
-  model_lf_path = param.modpath_lf.replace('MOD',model)
-  f_lf = cdms.open(model_lf_path)
-  lf = f_lf('sftlf', latitude=(-90,90))
+import cdms2
+import cdutil
+import copy
+import genutil
+import numpy as np
+import MV2
 
-  # Check land fraction variable to see if it meets criteria (0 for ocean, 100 for land, no missing value)
-  #lf[ lf == lf.missing_value ] = 0
-  lat = lf.getAxis(0) 
-  lon = lf.getAxis(1)
-  lf_id = lf.id
 
-  lf = MV2.array(lf.filled(0.))
+def model_land_mask_out(model, model_timeseries, model_lf_path):
+    """
+    Note: Extract SST (mask out land region)
+    """
+    try:
+        # Read model's land fraction
+        f_lf = cdms2.open(model_lf_path)
+        lf = f_lf('sftlf', latitude=(-90, 90))
+        f_lf.close()
+    except:
+        # Estimate landmask
+        lf = estimate_landmask(model_timeseries)
 
-  lf.setAxis(0, lat)
-  lf.setAxis(1, lon)
-  lf.id = lf_id
+    # Check land fraction variable to see if it meet criteria
+    # (0 for ocean, 100 for land, no missing value)
+    lf_axes = lf.getAxisList()
+    lf_id = lf.id
 
-  if NP.max(lf) == 1.:
-    lf = lf * 100
+    lf = MV2.array(lf.filled(0.))
+    lf.setAxisList(lf_axes)
+    lf.id = lf_id
 
-  # Matching dimension
-  model_timeseries, lf_timeConst = genutil.grower(model_timeseries, lf)
+    # In case landfraction is in range of 0-1 (ratio), convert it to 0-100 (%)
+    if np.max(lf) == 1.:
+        lf = lf * 100
 
-  #opt1 = True
-  opt1 = False
+    # Matching dimension
+    model_timeseries, lf_timeConst = genutil.grower(model_timeseries, lf)
 
-  if opt1: # Masking out partial land grids as well
-    model_timeseries_masked = NP.ma.masked_where(lf_timeConst>0, model_timeseries) # mask out land even fractional (leave only pure ocean grid)
-  else: # Masking out only full land grid but use weighting for partial land grids
-    model_timeseries_masked = NP.ma.masked_where(lf_timeConst==100, model_timeseries) # mask out pure land grids
-    if model == 'EC-EARTH':
-      model_timeseries_masked = NP.ma.masked_where(lf_timeConst>=90, model_timeseries) # mask out over 90% land grids for models those consider river as part of land-sea fraction. So far only 'EC-EARTH' does..
-    lf2 = (100.-lf)/100.
-    model_timeseries,lf2_timeConst = genutil.grower(model_timeseries,lf2) # Matching dimension
-    model_timeseries_masked = model_timeseries_masked * lf2_timeConst # consider land fraction like as weighting
+    # full_grid_only = True
+    full_grid_only = False
 
-  # Retrive dimension coordinate ---
+    if full_grid_only:  # Masking out partial land grids as well
+        # Mask out land even fractional (leave only pure ocean grid)
+        model_timeseries_masked = np.ma.masked_where(
+            lf_timeConst > 0, model_timeseries)
+    else:  # Mask out only full land grid & use weighting for partial land grid
+        model_timeseries_masked = np.ma.masked_where(
+            lf_timeConst == 100, model_timeseries)  # mask out pure land grids
+        # Special case treatment
+        if model == 'EC-EARTH':
+            # Mask out over 90% land grids for models those consider river as
+            # part of land-sea fraction. So far only 'EC-EARTH' does..
+            model_timeseries_masked = np.ma.masked_where(
+                lf_timeConst >= 90, model_timeseries)
+        lf2 = (100.-lf)/100.
+        model_timeseries, lf2_timeConst = genutil.grower(
+            model_timeseries, lf2)  # Matching dimension
+        model_timeseries_masked = model_timeseries_masked * \
+            lf2_timeConst  # consider land fraction like as weighting
 
-  time = model_timeseries.getTime()
-  lat = model_timeseries.getLatitude()
-  lon = model_timeseries.getLongitude()
+    # Retrive dimension coordinate ---
+    model_axes = model_timeseries.getAxisList()
+    model_timeseries_masked.setAxisList(model_axes)
 
-  model_timeseries_masked.setAxis(0,time)
-  model_timeseries_masked.setAxis(1,lat)
-  model_timeseries_masked.setAxis(2,lon)
+    return(model_timeseries_masked)
 
-  model_timeseries = model_timeseries_masked
 
-  return(model_timeseries)
+def estimate_landmask(d):
+    print('Estimate landmask')
+    n = 1
+    sft = cdutil.generateLandSeaMask(d(*(slice(0, 1),) * n)) * 100.0
+    sft[:] = sft.filled(100.0)
+    d2 = sft
+    d2.setAxis(0, d.getAxis(1))
+    d2.setAxis(1, d.getAxis(2))
+    d2.id = 'sftlf'
+    return d2
+
+
+def sea_ice_adjust(data_array):
+    """
+    Note: Replace temperature below -1.8 C to -1.8 C (sea-ice adjustment)
+    input
+    - data_array: cdms2 array
+    output
+    - data_array: cdms2 array (adjusted)
+    """
+    data_mask = copy.copy(data_array.mask)
+    data_array[data_array < -1.8] = -1.8
+    data_array.mask = data_mask
+    return data_array

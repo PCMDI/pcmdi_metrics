@@ -1,122 +1,149 @@
-import argparse
-from argparse import RawTextHelpFormatter
-import sys
-import string
+def AddParserArgument(P):
+    # Load pre-defined parsers
+    P.use("--mip")
+    P.use("--exp")
+    P.use("--results_dir")
+    P.use("--reference_data_path")
+    P.use("--modpath")
+    # Add parsers
+    P.add_argument("--frequency", default="mo")
+    P.add_argument("--realm", default="atm")
+    P.add_argument("--reference_data_name",
+                   type=str,
+                   help="Name of reference data set")
+    P.add_argument("-v", "--variability_mode",
+                   type=str,
+                   default='NAO',
+                   help="Mode of variability: NAM, NAO, SAM, PNA, PDO\n"
+                        "- NAM: Northern Annular Mode\n"
+                        "- NAO: Northern Atlantic Oscillation\n"
+                        "- SAM: Southern Annular Mode\n"
+                        "- PNA: Pacific North American Pattern\n"
+                        "- PDO: Pacific Decadal Oscillation\n"
+                        "(Note: Case insensitive)")
+    P.add_argument("--seasons",
+                   type=list,
+                   default=None,
+                   help="List of seasons")
+    P.add_argument("--modnames",
+                   type=list,
+                   default=None,
+                   help="List of models. ['all'] for every available models")
+    P.add_argument("-r", "--realization",
+                   type=str,
+                   default="r1i1p1",
+                   help="Consider all accessible realizations as idividual\n"
+                        "- r1i1p1: default, consider only 'r1i1p1' member\n"
+                        "          Or, specify realization, e.g, r3i1p1'\n"
+                        "- *: consider all available realizations")
+    P.add_argument("--modpath_lf",
+                   type=str,
+                   dest='modpath_lf',
+                   help="Directory path to model land fraction field")
+    P.add_argument("--varOBS",
+                   type=str,
+                   help="Name of variable in reference data")
+    P.add_argument("--varModel",
+                   type=str,
+                   help="Name of variable in model(s)")
+    P.add_argument("--eofn_obs",
+                   type=int,
+                   default=1,
+                   help="EOF mode from observation as reference")
+    P.add_argument("--eofn_mod",
+                   type=int,
+                   default=1,
+                   help="EOF mode from model")
+    P.add_argument("--osyear",
+                   type=int,
+                   default=1900,
+                   help="Start year for reference data")
+    P.add_argument("--oeyear",
+                   type=int,
+                   default=2005,
+                   help="End year for reference data")
+    P.add_argument("--msyear",
+                   type=int,
+                   default=1900,
+                   help="Start year for model(s)")
+    P.add_argument("--meyear",
+                   type=int,
+                   default=2005,
+                   help="End year for model(s)")
 
-def AddParserArgument(parser):
-  parser.add_argument("-m", "--model",
-                      type = str,
-                      help = "Give specific model name or 'all'\n"
-                             "(CAUTION!!: Case Sensitive for specific model name)")
-  parser.add_argument("-v", "--variability_mode",
-                      type = str,
-                      help = "Mode of variability: NAM, NAO, SAM, PNA, PDO\n"
-                             "where:\n"
-                             "      NAM: Northern Annular Mode\n"
-                             "      NAO: Northern Atlantic Oscillation\n"
-                             "      SAM: Southern Annular Mode\n"
-                             "      PNA: Pacific North American Pattern\n"
-                             "      PDO: Pacific Decadal Oscillation\n"
-                             "(Case Insensitive)")
-  parser.add_argument("-s", "--season",
-                      type = str,
-                      default = 'DJF',
-                      help = "Season for mode of variability\n"
-                             "- Available options: DJF (default), MAM, JJA, SON or all\n"
-                             "- Variability mode PDO's definition is not based on season,\n"
-                             "  thus season will be corrected to 'monthly' automatically\n"
-                             "(Case Insensitive)")
-  parser.add_argument("-y", "--year",
-                      default = '1900,2005',
-                      help = "Start and end year for the analysis time period\n"
-                             "- Usage: 1900,2005 (default)\n"
-                             "  (CAUTION: DO NOT INCLUDE SPACE btw numbers)")
-  parser.add_argument("-r", "--realization",
-                      type = str,
-                      default = 'r1i1p1',
-                      help = "Consider all accessible realizations as idividual\n"
-                             "- r1i1p1: default, consider only one member which is 'r1i1p1'\n"
-                             "          Or, you can give specific realization, e.g, r3i1p1'\n"
-                             "- all: consider all available realizations")
-  parser.add_argument("-eofn_o", "--eof_ordinal_number_for_observation",
-                      type = int,
-                      default = '1',
-                      help = "EOF mode from observation as reference\n"
-                             "Default is 1, which takes first variance mode of EOF")
-  parser.add_argument("-eofn_m", "--eof_ordinal_number_for_model",
-                      type = int,
-                      default = '1',
-                      help = "EOF mode from model\n"
-                             "Default is 1, which takes first variance mode of EOF")
-  parser.add_argument("-b", "--basedir",
-                      type = str,
-                      help = "Root directory below which subdirectories of individual simulations are expected")
-  parser.add_argument("-o", "--outdir",
-                      type = str,
-                      default = './result',
-                      help = "Output directory (default = ./result)\n"
-                             "(CAUTION!!: Case Sensitive)")
-  parser.add_argument("-d", "--debug",
-                      type = bool,
-                      default = False,
-                      help = "Option for debug: False (defualt) or True")
-  return parser
+    P.add_argument("--ObsUnitsAdjust",
+                   type=tuple,
+                   default=(False, 0, 0),
+                   help="For unit adjust for OBS dataset. For example:\n"
+                        "- (True, 'divide', 100.0)  # Pa to hPa\n"
+                        "- (True, 'subtract', 273.15)  # degK to degC\n"
+                        "- (False, 0, 0) # No adjustment (default)")
+    P.add_argument("--ModUnitsAdjust",
+                   type=tuple,
+                   default=(False, 0, 0),
+                   help="For unit adjust for model dataset. For example:\n"
+                        "- (True, 'divide', 100.0)  # Pa to hPa\n"
+                        "- (True, 'subtract', 273.15)  # degK to degC\n"
+                        "- (False, 0, 0) # No adjustment (default)")
 
-def ModelCheck(model):
-  if model is None:
-    parser.error('MODEL is NOT defined')
-  else:
-    if model.upper() == 'ALL':
-      print 'consider entire models'
-      models = [ 'all' ] # need to catch all available models here....
+    # Switches
+    P.add_argument("-d", "--debug",
+                   type=bool,
+                   default=False,
+                   help="Option for debug: True / False (defualt)")
+
+    P.add_argument("--RemoveDomainMean",
+                   type=bool,
+                   default=True,
+                   help="Option for Remove Domain Mean from each time step: True (defualt)/ False")
+    P.add_argument("--EofScaling",
+                   type=bool,
+                   default=False,
+                   help="Option for Consider EOF with unit variance: True / False (default)")
+    P.add_argument("--landmask",
+                   type=bool,
+                   default=False,
+                   help="Option for maskout land region: True / False (default)")
+    P.add_argument("--ConvEOF",
+                   type=bool,
+                   default=False,
+                   help="Option for Calculate Conventioanl EOF for model: True / False (default)")
+    P.add_argument("--CBF",
+                   type=bool,
+                   default=True,
+                   help="Option for Calculate Common Basis Function (CBF) for model: True (default) / False")
+    P.add_argument("--nc_out",
+                   type=bool,
+                   default=True,
+                   help="Option for generate netCDF file output: True (default) / False")
+    P.add_argument("--plot",
+                   type=bool,
+                   default=True,
+                   help="Option for generate individual plots: True (default) / False")
+    P.add_argument("--update_json",
+                   type=bool,
+                   default=True,
+                   help="Option for update existing JSON file: True (i.e., update) (default) / False (i.e., overwrite)")
+
+    return P
+
+
+def VariabilityModeCheck(mode, P):
+    if mode is None:
+        P.error('VARIABILITY_MODE is NOT defined')
     else:
-      models = [ args.model ]
-    return models
-  
-def VariabilityModeCheck(mode):
-  if mode is None:
-    parser.error('VARIABILITY_MODE is NOT defined')
-  else:
-    if mode.upper() not in ['NAM', 'NAO', 'SAM', 'PNA', 'PDO']:
-      parser.error('Given VARIABILITY_MODE, "'+mode+'", is NOT correct. Please refer help document by using "-h" option')
-    mode = string.upper(mode)
-    return mode
+        if mode.upper() not in ['NAM', 'NAO', 'SAM', 'PNA', 'PDO', 'NPO', 'NPGO']:
+            P.error(
+                ''.join(['Given VARIABILITY_MODE, ',
+                         mode,
+                         ', is NOT correct. ',
+                         'Please refer help document by using "-h" option']))
+        return mode.upper()
 
-def SeasonCheck(season):
-  if season.upper() == 'ALL':
-    seasons = [ 'DJF', 'MAM', 'JJA', 'SON' ]
-  else:
-    if mode in ['NAM', 'NAO', 'SAM', 'PNA' ]:
-      if season.upper() in [ 'DJF', 'MAM', 'JJA', 'SON' ]:
-        seasons = [ season.upper() ]
-      elif season.lower() in ['monthly']:
-        seasons = [ season.lower() ]
-      else:
-        parser.error('Given SEASON, "'+season+'", is NOT available with given VARIABILITY_MODE, '+mode)
-  if mode in ['PDO']:
-    if season.lower() in ['monthly']:
-      seasons = [ season.lower() ]
+
+def YearCheck(syear, eyear, P):
+    if syear >= eyear:
+        P.error('Given starting year, '+str(syear) +
+                ', is later than given ending year, '+str(eyear))
     else:
-      print 'CAUTION!! PDO calculation is not based on season. Season was automatically set to "monthly"'
-      seasons = [ 'monthly' ]
-  return seasons
-
-def YearCheck(year):
-  try:
-    syear = int(year.split(',')[0])
-    eyear = int(year.split(',')[1])
-  except:
-    parser.error('Given YEAR, "'+str(year)+'", is NOT correct. Please refer help document by using "-h" option')
-
-  if syear >= eyear:
-    parser.error('Given YEAR, "'+str(year)+'", is NOT correct. Starting year is later than ending year.\n'+
-                 'Please refer help document by using "-h" option')
-  return syear, eyear
-
-def RealizationCheck(realization):
-  if realization.lower() == 'all':
-    runs = '*'
-  else:
-    runs = realization.lower()
-  return(runs)
-
+        pass
