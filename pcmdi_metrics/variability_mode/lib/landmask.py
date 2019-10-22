@@ -1,6 +1,5 @@
 import cdms2
 import cdutil
-import copy
 import genutil
 import numpy as np
 import MV2
@@ -74,17 +73,3 @@ def estimate_landmask(d):
     d2.setAxis(1, d.getAxis(2))
     d2.id = 'sftlf'
     return d2
-
-
-def sea_ice_adjust(data_array):
-    """
-    Note: Replace temperature below -1.8 C to -1.8 C (sea-ice adjustment)
-    input
-    - data_array: cdms2 array
-    output
-    - data_array: cdms2 array (adjusted)
-    """
-    data_mask = copy.copy(data_array.mask)
-    data_array[data_array < -1.8] = -1.8
-    data_array.mask = data_mask
-    return data_array

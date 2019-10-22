@@ -96,3 +96,16 @@ def sort_human(input_list):
     tmp_list.sort(key=alphanum)
     return tmp_list
 
+
+def sea_ice_adjust(data_array):
+    """
+    Note: Replace temperature below -1.8 C to -1.8 C (sea-ice adjustment)
+    input
+    - data_array: cdms2 array
+    output
+    - data_array: cdms2 array (adjusted)
+    """
+    data_mask = copy.copy(data_array.mask)
+    data_array[data_array < -1.8] = -1.8
+    data_array.mask = data_mask
+    return data_array
