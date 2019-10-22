@@ -10,7 +10,7 @@ case_id = 'amip5_test'
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF
 # CLIMATOLOGY FILENAME
 # AMIP5 MODELS
-model_versions = [
+test_data_set = [
     'CNRM-CM5',
     'CanAM4',
     'ACCESS1-3',
@@ -58,13 +58,13 @@ vars = [
     'tas']
 
 # Observations to use at the moment "default" or "alternate"
-ref = 'all'
+reference_data_set = 'all'
 # ref = ['default']  #,'alternate','ref3']
 ext = '.xml'  # '.nc'
 ext = '.nc'
 
 # INTERPOLATION OPTIONS
-targetGrid = '2.5x2.5'  # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
+target_grid = '2.5x2.5'  # OPTIONS: '2.5x2.5' or an actual cdms2 grid object
 regrid_tool = 'esmf'  # 'regrid2' # OPTIONS: 'regrid2','esmf'
 # OPTIONS: 'linear','conservative', only if tool is esmf
 regrid_method = 'linear'
@@ -77,7 +77,7 @@ period = '1980-2005'
 realization = 'r1i1p1'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
-save_mod_clims = True  # True or False
+save_test_clims = True  # True or False
 
 # DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
 
@@ -87,14 +87,14 @@ save_mod_clims = True  # True or False
 filename_template = "%(variable)_%(model_version)_Amon_amip_r1i1p1_198001-200512-clim.nc"
 
 # ROOT PATH FOR MODELS CLIMATOLOGIES
-mod_data_path = '/work/gleckler1/processed_data/cmip5clims_metrics_package-amip/'
+test_data_path = '/work/gleckler1/processed_data/cmip5clims_metrics_package-amip/'
 # ROOT PATH FOR OBSERVATIONS
-obs_data_path = '/work/gleckler1/processed_data/metrics_package/obs/'
+reference_data_path = '/work/gleckler1/processed_data/metrics_package/obs/'
 # DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = '/work/gleckler1/processed_data/metrics_package/metrics_results/" +\
         "cmip5clims_metrics_package-amip'
 # DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES
-model_clims_interpolated_output = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims-amip/'
+test_clims_interpolated_output = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims-amip/'
 # FILENAME FOR INTERPOLATED CLIMATOLGIES OUTPUT
 filename_output_template = "cmip5.%(model_version).amip.r1i1p1.mo.%(table_realm)." +\
     "%(variable)%(level).ver-1.%(period).interpolated.%(regridMethod).%(targetGridName).AC%(ext)"

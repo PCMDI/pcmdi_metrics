@@ -1,0 +1,14 @@
+{
+    "--update": {
+        "action": "store_true", 
+        "default": false, 
+        "help": "update baselines", 
+        "type": null
+    }, 
+    "--traceback": {
+        "action": "store_true", 
+        "default": false, 
+        "help": "show traceback on test failures", 
+        "type": null
+    }
+}
