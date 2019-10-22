@@ -14,7 +14,7 @@ realm = 'atm'
 # Analysis Options
 # -------------------------------------------------
 variability_mode = 'NPGO'  # Available domains: NAM, NAO, SAM, PNA, PDO
-#seasons = ['monthly', 'yearly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
+# seasons = ['monthly', 'yearly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 seasons = ['monthly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
@@ -35,7 +35,7 @@ ObsUnitsAdjust = (False, 0, 0)  # degC
 
 osyear = 1900
 oeyear = 2005
-eofn_obs = 2 
+eofn_obs = 2
 
 # =================================================
 # Models

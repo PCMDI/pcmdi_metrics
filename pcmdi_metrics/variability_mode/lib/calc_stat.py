@@ -63,7 +63,7 @@ def calc_stats_save_dict(
                 # Calc cor again
                 cor = calcSCOR(eof_model, eof_obs)
                 cor_glo = calcSCOR(eof_model_global, eof_lr_obs)
- 
+
         # RMS (uncentered) difference
         rms = calcRMS(eof_model, eof_obs)
         rms_glo = calcRMS(

@@ -34,7 +34,7 @@ ObsUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa; or (False, 0, 0)
 
 osyear = 1900
 oeyear = 2005
-eofn_obs = 2 
+eofn_obs = 2
 
 # =================================================
 # Models

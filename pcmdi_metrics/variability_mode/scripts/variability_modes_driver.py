@@ -260,7 +260,7 @@ if obs_compare:
     if ('source' not in list(
             result_dict['REF']['obs']['defaultReference'].keys())):
         result_dict['REF']['obs']['defaultReference']['source'] = {}
-    if( mode not in list(
+    if(mode not in list(
             result_dict['REF']['obs']['defaultReference'].keys())):
         result_dict['REF']['obs']['defaultReference'][mode] = {}
 
@@ -364,7 +364,7 @@ for model in models:
 
     model_path_list = os.popen(
             'ls '+modpath(mip=mip, exp=exp, model=model, realization=realization,
-            variable=var)).readlines()
+                variable=var)).readlines()
 
     model_path_list = sort_human(model_path_list)
 
@@ -372,7 +372,7 @@ for model in models:
 
     # Find where run can be gripped from given filename template for modpath
     run_in_modpath = modpath(mip=mip, exp=exp, model=model, realization=realization,
-            variable=var).split('/')[-1].split('.').index(realization)
+                variable=var).split('/')[-1].split('.').index(realization)
 
     # -------------------------------------------------
     # Run
@@ -417,12 +417,14 @@ for model in models:
                 if (season not in list(
                         result_dict['RESULTS'][model][run]['defaultReference'][mode].keys())):
                     result_dict['RESULTS'][model][run]['defaultReference'][mode][season] = {}
-                result_dict['RESULTS'][model][run]['defaultReference'][mode][season]['period'] = str(msyear)+'-'+str(meyear)
+                result_dict['RESULTS'][model][run]['defaultReference'][mode][season]['period'] = (
+                        str(msyear)+'-'+str(meyear))
 
                 # Time series adjustment (remove annual cycle, seasonal mean (if needed),
                 # and subtracting domain (or global) mean of each time step)
                 debug_print('time series adjustment', debug)
-                model_timeseries_season = adjust_timeseries(model_timeseries, mode, season, region_subdomain, RmDomainMean)
+                model_timeseries_season = adjust_timeseries(
+                        model_timeseries, mode, season, region_subdomain, RmDomainMean)
 
                 # Extract subdomain
                 debug_print('extract subdomain', debug)
@@ -516,7 +518,7 @@ for model in models:
                             output_filename)
                     if nc_out:
                         write_nc_output(output_nc_file+'_cbf', eof_lr_cbf,
-                            cbf_pc, frac_cbf, slope_cbf, intercept_cbf)
+                                cbf_pc, frac_cbf, slope_cbf, intercept_cbf)
 
                     # Graphics -- plot map image to PNG
                     output_img_file = os.path.join(
@@ -646,7 +648,8 @@ for model in models:
                         # - - - - - - - - - - - - - - - - - - - - - - - - -
                         rms_list.append(dict_head['rms'])
                         cor_list.append(dict_head['cor'])
-                        if CBF: tcor_list.append(dict_head['tcor_cbf_vs_eof_pc'])
+                        if CBF:
+                            tcor_list.append(dict_head['tcor_cbf_vs_eof_pc'])
 
                     # Find best matching eofs with different criteria
                     best_matching_eofs_rms = rms_list.index(min(rms_list))+1

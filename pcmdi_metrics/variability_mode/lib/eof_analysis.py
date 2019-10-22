@@ -9,7 +9,7 @@ import sys
 
 
 def eof_analysis_get_variance_mode(
-        mode, timeseries, eofn, eofn_max=None, 
+        mode, timeseries, eofn, eofn_max=None,
         debug=False, EofScaling=False,
         save_multiple_eofs=False):
     """
