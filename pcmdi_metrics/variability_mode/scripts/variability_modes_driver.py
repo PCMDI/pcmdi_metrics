@@ -48,8 +48,6 @@ from __future__ import print_function
 from argparse import RawTextHelpFormatter
 from genutil import StringConstructor
 from shutil import copyfile
-import cdms2
-import cdutil
 import cdtime
 import glob
 import json
@@ -421,8 +419,8 @@ for model in models:
             for season in seasons:
                 debug_print('season: '+season, debug)
                 
-                if season not in list(
-                    result_dict['RESULTS'][model][run]['defaultReference'][mode].keys()):
+                if (season not in list(
+                        result_dict['RESULTS'][model][run]['defaultReference'][mode].keys())):
                     result_dict['RESULTS'][model][run]['defaultReference'][mode][season] = {}
                 result_dict['RESULTS'][model][run]['defaultReference'][mode][season]['period'] = str(msyear)+'-'+str(meyear)
 
@@ -440,8 +438,8 @@ for model in models:
                 # - - - - - - - - - - - - - - - - - - - - - - - - -
                 if CBF and obs_compare:
 
-                    if 'cbf' not in list(
-                        result_dict['RESULTS'][model][run]['defaultReference'][mode][season].keys()):
+                    if ('cbf' not in list(
+                            result_dict['RESULTS'][model][run]['defaultReference'][mode][season].keys())):
                         result_dict['RESULTS'][model][run]['defaultReference'][mode][season]['cbf'] = {}
                     dict_head = result_dict['RESULTS'][model][run]['defaultReference'][mode][season]['cbf']
                     debug_print('CBF approach start', debug)
@@ -569,8 +567,8 @@ for model in models:
 
                     for n in range(0, eofn_mod_max):
                         eofs = 'eof'+str(n+1)
-                        if eofs not in list(
-                            result_dict['RESULTS'][model][run]['defaultReference'][mode][season].keys()):
+                        if (eofs not in list(
+                                result_dict['RESULTS'][model][run]['defaultReference'][mode][season].keys())):
                             result_dict['RESULTS'][model][run]['defaultReference'][mode][season][eofs] = {}
                             dict_head = result_dict['RESULTS'][model][run]['defaultReference'][mode][season][eofs]
 
@@ -664,7 +662,8 @@ for model in models:
                     dict_head = result_dict['RESULTS'][model][run]['defaultReference'][mode][season]
                     dict_head['best_matching_model_eofs__rms'] = best_matching_eofs_rms
                     dict_head['best_matching_model_eofs__cor'] = best_matching_eofs_cor
-                    if CBF: dict_head['best_matching_model_eofs__tcor_cbf_vs_eof_pc'] = best_matching_eofs_tcor
+                    if CBF:
+                        dict_head['best_matching_model_eofs__tcor_cbf_vs_eof_pc'] = best_matching_eofs_tcor
 
                     debug_print('conventional eof end', debug)
 
