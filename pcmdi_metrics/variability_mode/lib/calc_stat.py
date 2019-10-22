@@ -2,7 +2,7 @@ import cdutil
 import genutil
 import MV2
 
-from pcmdi_metrics.variability_mode.lib import debug_print
+# from pcmdi_metrics.variability_mode.lib import debug_print
 
 
 def calc_stats_save_dict(
