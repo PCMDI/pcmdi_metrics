@@ -5,7 +5,7 @@ import os
 # Background Information
 # -------------------------------------------------
 mip = 'cmip6'
-#exp = 'piControl'
+# exp = 'piControl'
 exp = 'historical'
 frequency = 'mo'
 realm = 'atm'
@@ -14,7 +14,7 @@ realm = 'atm'
 # Analysis Options
 # -------------------------------------------------
 variability_mode = 'PDO'  # Available domains: NAM, NAO, SAM, PNA, PDO
-#seasons = ['monthly', 'yearly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
+# seasons = ['monthly', 'yearly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 seasons = ['monthly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
@@ -44,10 +44,10 @@ modpath = '/work/lee1043/ESGF/xmls/%(mip)/historical/mon/%(variable)/%(mip).%(mo
 modpath_lf = '/work/lee1043/ESGF/xmls/%(mip)/historical/fx/sftlf/%(mip).%(model).historical.r0i0p0.fx.sftlf.xml'
 
 modnames = ['all']
-#modnames = ['ACCESS1-0', 'ACCESS1-3']
+# modnames = ['ACCESS1-0', 'ACCESS1-3']
 
 realization = '*' # realizations
-#realization = 'r1i1p1f1'
+# realization = 'r1i1p1f1'
 
 varModel = 'ts'
 ModUnitsAdjust = (True, 'subtract', 273.15)  # degK to degC

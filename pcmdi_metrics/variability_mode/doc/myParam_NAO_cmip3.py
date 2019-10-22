@@ -13,7 +13,6 @@ realm = 'atm'
 # Analysis Options
 # -------------------------------------------------
 variability_mode = 'NAO'  # Available domains: NAM, NAO, SAM, PNA, PDO
-#seasons = ['DJF', 'MAM', 'JJA', 'SON', 'monthly', 'yearly'] # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 seasons = ['DJF', 'MAM', 'JJA', 'SON', 'monthly'] # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
@@ -39,7 +38,6 @@ eofn_obs = 1
 # =================================================
 # Models
 # -------------------------------------------------
-#modpath = '/export_backup/gleckler1/processing/xmls/%(exp)/%(variable)/%(variable).%(model).%(realization).xml'
 modpath = '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)/%(variable).%(model).%(realization).xml'
 
 modnames = [
@@ -94,15 +92,10 @@ modnames = [
 ]
 
 modnames = ['all']
-
-#modnames = ['giss_model_e_h']
-#modnames = ['CESM1-BGC']
-#modnames = ['EC-EARTH']
-#modnames = ['CSIRO-Mk3-6-0']
+# modnames = ['CSIRO-Mk3-6-0']
 
 realization = '*' # realizations
-#realization = 'r1i1p1'
-#realization = 'run1'
+# realization = 'run1'
 
 varModel = 'psl'
 ModUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa
@@ -117,7 +110,6 @@ eofn_mod = 1
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 results_dir = os.path.join(
     '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
-    #'/work/lee1043/imsi/result_test',
     '%(output_type)/variability_modes/%(mip)/%(exp)',
     case_id,
     '%(variability_mode)/%(reference_data_name)')

@@ -13,7 +13,6 @@ realm = 'atm'
 # Analysis Options
 # -------------------------------------------------
 variability_mode = 'PNA'  # Available domains: NAM, NAO, SAM, PNA, PDO
-#seasons = ['DJF', 'MAM', 'JJA', 'SON', 'monthly', 'yearly'] # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 seasons = ['DJF', 'MAM', 'JJA', 'SON', 'monthly'] # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
@@ -39,36 +38,7 @@ eofn_obs = 1
 # =================================================
 # Models
 # -------------------------------------------------
-#modpath = '/export_backup/gleckler1/processing/xmls/%(exp)/%(variable)/%(variable).%(model).%(realization).xml'
 modpath = '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)/%(variable).%(model).%(realization).xml'
-
-modnames = [
-    'bcc_cm1',
-    'bccr_bcm2_0',
-    'cccma_cgcm3_1',
-    'cccma_cgcm3_1_t63',
-    'cnrm_cm3',
-    'csiro_mk3_0',
-    'csiro_mk3_5',
-    'gfdl_cm2_0',
-    'gfdl_cm2_1',
-    'giss_aom',
-    'giss_model_e_h',
-    'giss_model_e_r',
-    'iap_fgoals1_0_g',
-    'ingv_echam4',
-    'inmcm3_0',
-    'ipsl_cm4',
-    'miroc3_2_hires',
-    'miroc3_2_medres',
-    'miub_echo_g',
-    'mpi_echam5',
-    'mri_cgcm2_3_2a',
-    'ncar_ccsm3_0',
-    'ncar_pcm1',
-    'ukmo_hadcm3',
-    'ukmo_hadgem1'
-]
 
 modnames = [
     'bccr_bcm2_0',
@@ -94,15 +64,10 @@ modnames = [
 ]
 
 modnames = ['all']
-
-#modnames = ['giss_model_e_h']
-#modnames = ['CESM1-BGC']
-#modnames = ['EC-EARTH']
-#modnames = ['CSIRO-Mk3-6-0']
+# modnames = ['giss_model_e_h']
 
 realization = '*' # realizations
-#realization = 'r1i1p1'
-#realization = 'run1'
+# realization = 'run1'
 
 varModel = 'psl'
 ModUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa

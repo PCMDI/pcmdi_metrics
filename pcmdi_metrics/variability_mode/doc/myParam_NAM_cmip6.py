@@ -5,7 +5,6 @@ import os
 # Background Information
 # -------------------------------------------------
 mip = 'cmip6'
-#exp = 'piControl'
 exp = 'historical'
 frequency = 'mo'
 realm = 'atm'
@@ -42,7 +41,7 @@ eofn_obs = 1
 modpath = '/work/lee1043/ESGF/xmls/%(mip)/historical/mon/%(variable)/%(mip).%(model).historical.%(realization).mon.%(variable).xml'
 
 modnames = ['all']
-#modnames = ['IPSL-CM6A-LR']
+# modnames = ['IPSL-CM6A-LR']
 
 realization = '*' # realizations
 # realization = 'r1i1p1f1'

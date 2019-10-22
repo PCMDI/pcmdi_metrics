@@ -5,7 +5,7 @@ import os
 # Background Information
 # -------------------------------------------------
 mip = 'cmip6'
-#exp = 'piControl'
+# exp = 'piControl'
 exp = 'historical'
 frequency = 'mo'
 realm = 'atm'
@@ -45,10 +45,10 @@ modpath_lf = '/work/lee1043/ESGF/xmls/%(mip)/historical/fx/sftlf/%(mip).%(model)
 
 modnames = ['all']
 
-#modnames = ['ACCESS1-0', 'ACCESS1-3']
+# modnames = ['ACCESS1-0', 'ACCESS1-3']
 
 realization = '*' # realizations
-#realization = 'r1i1p1f1'
+# realization = 'r1i1p1f1'
 
 varModel = 'ts'
 ModUnitsAdjust = (True, 'subtract', 273.15)  # degK to degC

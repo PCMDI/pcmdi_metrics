@@ -13,7 +13,7 @@ realm = 'atm'
 # Analysis Options
 # -------------------------------------------------
 variability_mode = 'PDO'  # Available domains: NAM, NAO, SAM, PNA, PDO
-#seasons = ['monthly', 'yearly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
+# seasons = ['monthly', 'yearly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 seasons = ['monthly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
@@ -39,7 +39,6 @@ eofn_obs = 1
 # =================================================
 # Models
 # -------------------------------------------------
-#modpath = '/export_backup/gleckler1/processing/xmls/%(exp)/%(variable)/%(variable).%(model).%(realization).xml'
 modpath = '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)/%(variable).%(model).%(realization).xml'
 modpath_lf = '/work/lee1043/ESGF/xmls/%(mip)/historical/fx/sftlf/%(mip).%(model).historical.r0i0p0.fx.sftlf.xml'
 
@@ -66,11 +65,11 @@ modnames = [
     'ukmo_hadgem1',
 ]
 
-#modnames = ['giss_model_e_h']
+# modnames = ['giss_model_e_h']
 modnames = ['all']
 
 realization = '*' # realizations
-#realization = 'run1'
+# realization = 'run1'
 
 varModel = 'ts'
 ModUnitsAdjust = (True, 'subtract', 273.15)  # degK to degC
@@ -96,4 +95,4 @@ plot = True  # Create map graphics
 # -------------------------------------------------
 update_json = True  # False
 debug = False  # False
-#debug = True  # False
+# debug = True  # False
