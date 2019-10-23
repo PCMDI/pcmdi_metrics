@@ -39,8 +39,12 @@ eofn_obs = 1
 # =================================================
 # Models
 # -------------------------------------------------
-modpath = '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)/%(variable).%(model).%(realization).xml'
-modpath_lf = '/work/lee1043/ESGF/xmls/%(mip)/historical/fx/sftlf/%(mip).%(model).historical.r0i0p0.fx.sftlf.xml'
+modpath = os.path.join(
+    '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)',
+    '%(variable).%(model).%(realization).xml')
+modpath_lf = os.path.join(
+    '/work/lee1043/ESGF/xmls/%(mip)/historical/fx/sftlf',
+    '%(mip).%(model).historical.r0i0p0.fx.sftlf.xml')
 
 modnames = [
     'bccr_bcm2_0',

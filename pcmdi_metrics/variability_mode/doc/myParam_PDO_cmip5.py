@@ -40,7 +40,10 @@ eofn_obs = 1
 # =================================================
 # Models
 # -------------------------------------------------
-modpath = '/work/lee1043/ESGF/xmls/%(mip)/historical/mon/%(variable)/%(mip).%(model).historical.%(realization).mon.%(variable).xml'
+modpath = os.path.join(
+    '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)',
+    '%(mip).%(model).%(exp).%(realization).mon.%(variable).xml')
+
 modpath_lf = '/work/lee1043/ESGF/xmls/%(mip)/historical/fx/sftlf/%(mip).%(model).historical.r0i0p0.fx.sftlf.xml'
 
 modnames = ['ACCESS1-0', 'ACCESS1-3', 'BCC-CSM1-1', 'BCC-CSM1-1-M', 'BNU-ESM',

@@ -26,7 +26,9 @@ CBF = True  # Calculate Common Basis Function (CBF) for model
 # Observation
 # -------------------------------------------------
 reference_data_name = 'NOAA-CIRES_20CR'
-reference_data_path = '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/mon/psl/20CR/gn/v20190221/psl_mon_20CR_BE_gn_187101-201212.nc'
+reference_data_path = os.path.join(
+    '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/mon/psl/20CR/gn/v20190221',
+    'psl_mon_20CR_BE_gn_187101-201212.nc')
 
 varOBS = 'psl'
 ObsUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa; or (False, 0, 0)
@@ -38,7 +40,9 @@ eofn_obs = 1
 # =================================================
 # Models
 # -------------------------------------------------
-modpath = '/work/lee1043/ESGF/xmls/%(mip)/historical/mon/%(variable)/%(mip).%(model).historical.%(realization).mon.%(variable).xml'
+modpath = os.path.join(
+    '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)',
+    '%(mip).%(model).%(exp).%(realization).mon.%(variable).xml')
 
 modnames = ['ACCESS1-0', 'ACCESS1-3', 'BCC-CSM1-1', 'BCC-CSM1-1-M', 'BNU-ESM',
             'CanCM4', 'CanESM2', 'CCSM4', 'CESM1-BGC', 'CESM1-CAM5', 'CESM1-FASTCHEM', 'CESM1-WACCM',
