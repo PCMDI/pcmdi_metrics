@@ -82,7 +82,7 @@ eofn_mod = 1
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 results_dir = os.path.join(
     '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
-    #'/work/lee1043/imsi/result_test',
+    # '/work/lee1043/imsi/result_test',
     '%(output_type)/variability_modes/%(mip)/%(exp)',
     case_id,
     '%(variability_mode)/%(reference_data_name)')

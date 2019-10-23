@@ -41,34 +41,6 @@ eofn_obs = 1
 modpath = '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)/%(variable).%(model).%(realization).xml'
 
 modnames = [
-    'bcc_cm1',
-    'bccr_bcm2_0',
-    'cccma_cgcm3_1',
-    'cccma_cgcm3_1_t63',
-    'cnrm_cm3',
-    'csiro_mk3_0',
-    'csiro_mk3_5',
-    'gfdl_cm2_0',
-    'gfdl_cm2_1',
-    'giss_aom',
-    'giss_model_e_h',
-    'giss_model_e_r',
-    'iap_fgoals1_0_g',
-    'ingv_echam4',
-    'inmcm3_0',
-    'ipsl_cm4',
-    'miroc3_2_hires',
-    'miroc3_2_medres',
-    'miub_echo_g',
-    'mpi_echam5',
-    'mri_cgcm2_3_2a',
-    'ncar_ccsm3_0',
-    'ncar_pcm1',
-    'ukmo_hadcm3',
-    'ukmo_hadgem1'
-]
-
-modnames = [
     'bccr_bcm2_0',
     'cccma_cgcm3_1',
     'cccma_cgcm3_1_t63',
@@ -110,7 +82,7 @@ eofn_mod = 1
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 results_dir = os.path.join(
     '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
-    #'/work/lee1043/imsi/result_test',
+    # '/work/lee1043/imsi/result_test',
     '%(output_type)/variability_modes/%(mip)/%(exp)',
     case_id,
     '%(variability_mode)/%(reference_data_name)')
