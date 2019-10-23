@@ -7,7 +7,8 @@ import vcs
 import genutil
 import glob
 import numpy
-import time
+# import time
+import datetime
 from genutil import StringConstructor
 import os
 import pkg_resources
@@ -786,11 +787,11 @@ class Portrait(object):
             template.xtic1.y2 = self.PLOT_SETTINGS.xtic1.y2
             template.xtic1.priority = 1
         if self.PLOT_SETTINGS.xtic2.y1 is not None:
-            template.xtic2.y1 = self.PLOT_SETTINGS.xtic2.y1
-            template.xtic2.priority = 1
+            template.xmintic2.y1 = self.PLOT_SETTINGS.xtic2.y1
+            template.xmintic2.priority = 1
         if self.PLOT_SETTINGS.xtic2.y2 is not None:
-            template.xtic2.y2 = self.PLOT_SETTINGS.xtic2.y2
-            template.xtic2.priority = 1
+            template.xmintic2.y2 = self.PLOT_SETTINGS.xtic2.y2
+            template.xmintic2.priority = 1
         if self.PLOT_SETTINGS.ytic1.x1 is not None:
             template.ytic1.x1 = self.PLOT_SETTINGS.ytic1.x1
             template.ytic1.priority = 1
@@ -798,11 +799,11 @@ class Portrait(object):
             template.ytic1.x2 = self.PLOT_SETTINGS.ytic1.x2
             template.ytic1.priority = 1
         if self.PLOT_SETTINGS.ytic2.x1 is not None:
-            template.ytic2.priority = 1
-            template.ytic2.x1 = self.PLOT_SETTINGS.ytic2.x1
+            template.ymintic2.priority = 1
+            template.ymintic2.x1 = self.PLOT_SETTINGS.ytic2.x1
         if self.PLOT_SETTINGS.ytic2.x2 is not None:
-            template.ytic2.priority = 1
-            template.ytic2.x2 = self.PLOT_SETTINGS.ytic2.x2
+            template.ymintic2.priority = 1
+            template.ymintic2.x2 = self.PLOT_SETTINGS.ytic2.x2
         template.legend.x1 = self.PLOT_SETTINGS.legend.x1
         template.legend.x2 = self.PLOT_SETTINGS.legend.x2
         template.legend.y1 = self.PLOT_SETTINGS.legend.y1
@@ -868,8 +869,10 @@ class Portrait(object):
             meshfill.datawc_y2 = data.shape[0] - .5
             meshfill.mesh = self.PLOT_SETTINGS.draw_mesh
             meshfill.missing = self.PLOT_SETTINGS.missing_color
-            meshfill.xticlabels2 = mtics
-            meshfill.yticlabels2 = mtics
+            meshfill.xticlabels2 = meshfill.xticlabels1
+            meshfill.yticlabels2 = meshfill.yticlabels1
+            meshfill.xmtics2 = mtics
+            meshfill.ymtics2 = mtics
             if self.PLOT_SETTINGS.colormap is None:
                 self.set_colormap()
             elif self.x.getcolormapname() != self.PLOT_SETTINGS.colormap:
@@ -1150,9 +1153,11 @@ class Portrait(object):
                                     txt.y = dic['y']
                             self.x.plot(txt, bg=self.bg, continents=0)
             if self.PLOT_SETTINGS.time_stamp is not None:
-                sp = time.ctime().split()
-                sp = sp[:3] + [sp[-1]]
-                self.PLOT_SETTINGS.time_stamp.string = ''.join(sp)
+                # sp = time.ctime().split()
+                # sp = sp[:3] + [sp[-1]]
+                # self.PLOT_SETTINGS.time_stamp.string = ''.join(sp)
+                sp = "{:v%Y%m%d}".format(datetime.datetime.now())
+                self.PLOT_SETTINGS.time_stamp.string = sp
                 self.x.plot(
                     self.PLOT_SETTINGS.time_stamp,
                     bg=self.bg,
