@@ -62,6 +62,7 @@ from pcmdi_metrics.monsoon_sperber import sperber_metrics
 def tree():
     return defaultdict(tree)
 
+
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
@@ -178,7 +179,7 @@ egg_pth = pkg_resources.resource_filename(
     pkg_resources.Requirement.parse("pcmdi_metrics"),
     "share/pmp")
 exec(compile(open(os.path.join(egg_pth, "default_regions.py")).read(),
-    os.path.join(egg_pth, "default_regions.py"), 'exec'))
+             os.path.join(egg_pth, "default_regions.py"), 'exec'))
 
 if includeOBS:
     models.insert(0, 'obs')
