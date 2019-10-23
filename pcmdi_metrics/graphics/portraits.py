@@ -7,7 +7,7 @@ import vcs
 import genutil
 import glob
 import numpy
-import time
+# import time
 import datetime
 from genutil import StringConstructor
 import os
