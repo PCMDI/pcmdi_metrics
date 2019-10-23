@@ -312,7 +312,7 @@ if obs_compare:
             mode, var, 'EOF'+str(eofn_obs), season, 'obs',
             str(osyear)+'-'+str(oeyear)])
         if EofScaling:
-            output_filename += '_EOFscaled'
+            output_filename_obs += '_EOFscaled'
 
         # Save global map, pc timeseries, and fraction in NetCDF output
         if nc_out:
