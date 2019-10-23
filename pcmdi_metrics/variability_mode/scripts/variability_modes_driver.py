@@ -359,15 +359,16 @@ for model in models:
         result_dict['RESULTS'][model] = {}
 
     model_path_list = os.popen(
-        'ls '+modpath(mip=mip, exp=exp, model=model, realization=realization,
-        variable=var)).readlines()
+        'ls ' + modpath(
+            mip=mip, exp=exp, model=model, realization=realization, variable=var)).readlines()
 
     model_path_list = sort_human(model_path_list)
 
     debug_print('model_path_list: '+str(model_path_list), debug)
 
     # Find where run can be gripped from given filename template for modpath
-    run_in_modpath = modpath(mip=mip, exp=exp, model=model, realization=realization,
+    run_in_modpath = modpath(
+        mip=mip, exp=exp, model=model, realization=realization,
         variable=var).split('/')[-1].split('.').index(realization)
 
     # -------------------------------------------------
@@ -513,7 +514,8 @@ for model in models:
                             outdir(output_type='diagnostic_results'),
                             output_filename)
                     if nc_out:
-                        write_nc_output(output_nc_file+'_cbf', eof_lr_cbf,
+                        write_nc_output(
+                            output_nc_file+'_cbf', eof_lr_cbf,
                             cbf_pc, frac_cbf, slope_cbf, intercept_cbf)
 
                     # Graphics -- plot map image to PNG
