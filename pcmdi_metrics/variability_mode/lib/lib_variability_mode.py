@@ -90,11 +90,16 @@ def debug_print(string, debug):
 
 
 def sort_human(input_list):
-    tmp_list = copy.copy(input_list)
-    convert = lambda text: float(text) if text.isdigit() else text
-    alphanum = lambda key: [convert(c) for c in re.split('([-+]?[0-9]*\.?[0-9]*)', key)]
-    tmp_list.sort(key=alphanum)
-    return tmp_list
+    lst = copy.copy(input_list)
+
+    def convert(text):
+        return int(text) if text.isdigit() else text
+
+    def alphanum(key):
+        return [convert(c) for c in re.split('([0-9]+)', key)]
+
+    lst.sort(key=alphanum)
+    return lst
 
 
 def sea_ice_adjust(data_array):
