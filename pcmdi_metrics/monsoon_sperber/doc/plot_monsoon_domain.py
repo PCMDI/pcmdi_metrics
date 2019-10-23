@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
 
-def draw_screen_poly( lats, lons, m):
-    x, y = m( lons, lats )
-    xy = zip(x,y)
-    poly = Polygon( list(xy), facecolor='red', alpha=0.4,
-                    edgecolor='red', linewidth=2)
+def draw_screen_poly(lats, lons, m):
+    x, y = m(lons, lats)
+    xy = zip(x, y)
+    poly = Polygon(list(xy), facecolor='red', alpha=0.4,
+                   edgecolor='red', linewidth=2)
     plt.gca().add_patch(poly)
 
 
@@ -46,6 +46,6 @@ for region in regions:
     lon = (min(lons[region]) + max(lons[region])) / 2.
     lat = (min(lats[region]) + max(lats[region])) / 2.
     x, y = m(lon, lat)
-    plt.text(x, y, region, fontsize=12,fontweight='bold', ha='center', va='center')
+    plt.text(x, y, region, fontsize=12, fontweight='bold', ha='center', va='center')
 
 plt.savefig('monsoon_domain_map.png')

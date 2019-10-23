@@ -13,7 +13,7 @@ realm = 'atm'
 # Observation
 # -------------------------------------------------
 reference_data_name = 'GPCP-1-3'
-#reference_data_path = '/p/user_pub/pmp/pmp_results/tree_v0.3/pmp_v1.1.2/data/PMPObs/PMPObs_v1.3/atmos/day/pr/GPCP-1-3/gn/v20180816/pr_day_GPCP-1-3_BE_gn_19961002-20170101.nc'  # noqa
+# reference_data_path = '/p/user_pub/pmp/pmp_results/tree_v0.3/pmp_v1.1.2/data/PMPObs/PMPObs_v1.3/atmos/day/pr/GPCP-1-3/gn/v20180816/pr_day_GPCP-1-3_BE_gn_19961002-20170101.nc'  # noqa
 reference_data_path = '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/day/pr/GPCP-1-3/gn/v20190225/pr_day_GPCP-1-3_BE_gn_19961002-20170101.nc'  # noqa
 reference_data_lf_path = '/work/lee1043/DATA/LandSeaMask_1x1_NCL/NCL_LandSeaMask_rewritten.nc'  # noqa
 
@@ -36,7 +36,7 @@ modnames = ['ACCESS1-0', 'ACCESS1-3', 'BCC-CSM1-1', 'BCC-CSM1-1-M', 'BNU-ESM', '
 modnames = ['ACCESS1-0']
 
 realization = 'r1i1p1'
-#realization = '*'
+# realization = '*'
 
 varModel = 'pr'
 ModUnitsAdjust = (True, 'multiply', 86400.0)  # kg m-2 s-1 to mm day-1

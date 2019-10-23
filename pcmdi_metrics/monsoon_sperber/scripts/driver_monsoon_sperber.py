@@ -58,6 +58,10 @@ from pcmdi_metrics.monsoon_sperber import model_land_only
 from pcmdi_metrics.monsoon_sperber import divide_chunks_advanced, interp1d
 from pcmdi_metrics.monsoon_sperber import sperber_metrics
 
+
+def tree():
+    return defaultdict(tree)
+
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
@@ -144,9 +148,6 @@ update_json = param.update_json
 # =================================================
 # Declare dictionary for .json record
 # -------------------------------------------------
-def tree():
-    return defaultdict(tree)
-
 monsoon_stat_dic = tree()
 
 # Define output json file
@@ -172,19 +173,12 @@ if 'RESULTS' not in list(monsoon_stat_dic.keys()):
 # =================================================
 # Loop start for given models
 # -------------------------------------------------
-"""
-regions_specs = {}
-exec(compile(open(os.path.join(sys.prefix, "share",
-                               "pmp", "default_regions.py")).read(),
-             os.path.join(sys.prefix, "share", "pmp",
-                          "default_regions.py"), 'exec'))
-"""
 regions_specs = {}
 egg_pth = pkg_resources.resource_filename(
-    pkg_resources.Requirement.parse("pcmdi_metrics"), 
+    pkg_resources.Requirement.parse("pcmdi_metrics"),
     "share/pmp")
 exec(compile(open(os.path.join(egg_pth, "default_regions.py")).read(),
-os.path.join(egg_pth, "default_regions.py"), 'exec'))
+    os.path.join(egg_pth, "default_regions.py"), 'exec'))
 
 if includeOBS:
     models.insert(0, 'obs')
@@ -215,9 +209,11 @@ for model in models:
             eyear = meyear
             # variable data
             model_path_list = os.popen(
-                'ls '+modpath(model=model, exp=exp, realization=realization,
-                 variable=var)).readlines()
-            if debug: print('debug: model_path_list: ', model_path_list)
+                'ls ' + modpath(
+                     model=model, exp=exp, realization=realization,
+                     variable=var)).readlines()
+            if debug:
+                print('debug: model_path_list: ', model_path_list)
             # land fraction
             model_lf_path = modpath_lf(model=model)
             if os.path.isfile(model_lf_path):
@@ -318,7 +314,7 @@ for model in models:
 
                     for i, region in enumerate(list_monsoon_regions):
                         ax[region] = plt.subplot(nrows, ncols, i+1)
-                        ax[region].set_ylim(0,1) 
+                        ax[region].set_ylim(0, 1)
                         ax[region].margins(x=0)
                         print('plot: region', region, 'nrows',
                               nrows, 'ncols', ncols, 'index', i+1)
@@ -521,12 +517,11 @@ for model in models:
                         if model != 'obs':
                             # model
                             ax[region].plot(
-                                #np.array(composite_pentad_time_series),
-                                #np.array(composite_pentad_time_series_cumsum),
+                                # np.array(composite_pentad_time_series),
+                                # np.array(composite_pentad_time_series_cumsum),
                                 np.array(composite_pentad_time_series_cumsum_normalized),
                                 c='red',
                                 label=model)
-                                #label='Composite')
                             for idx in [metrics_result['onset_index'], metrics_result['decay_index']]:
                                 ax[region].axvline(
                                     x=idx,
@@ -538,9 +533,9 @@ for model in models:
                             np.array(dict_obs_composite[reference_data_name][region]),
                             c='blue',
                             label=reference_data_name)
-                        for idx in [
-                            monsoon_stat_dic['REF'][reference_data_name][region]['onset_index'], 
-                            monsoon_stat_dic['REF'][reference_data_name][region]['decay_index']]:
+                        for idx in ([
+                                monsoon_stat_dic['REF'][reference_data_name][region]['onset_index'],
+                                monsoon_stat_dic['REF'][reference_data_name][region]['decay_index']]):
                             ax[region].axvline(
                                 x=idx,
                                 ymin=0,

@@ -23,8 +23,6 @@ def AddParserArgument(P):
     P.add_argument("--varModel",
                    type=str,
                    help="Name of variable in model(s)")
-
-
     P.add_argument("--ObsUnitsAdjust",
                    type=tuple,
                    default=(False, 0, 0),
