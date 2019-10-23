@@ -514,7 +514,7 @@ for model in models:
                             output_filename)
                     if nc_out:
                         write_nc_output(output_nc_file+'_cbf', eof_lr_cbf,
-                                cbf_pc, frac_cbf, slope_cbf, intercept_cbf)
+                            cbf_pc, frac_cbf, slope_cbf, intercept_cbf)
 
                     # Graphics -- plot map image to PNG
                     output_img_file = os.path.join(
