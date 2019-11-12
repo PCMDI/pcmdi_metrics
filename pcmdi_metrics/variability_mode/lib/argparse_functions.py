@@ -1,11 +1,19 @@
 def AddParserArgument(P):
     # Load pre-defined parsers
-    P.use("--mip")
-    P.use("--exp")
+    #P.use("--mip")
+    #P.use("--exp")
     P.use("--results_dir")
     P.use("--reference_data_path")
     P.use("--modpath")
     # Add parsers
+    P.add_argument("--mip",
+                   type=str,
+                   default="cmip5",
+                   help="A WCRP MIP project such as CMIP3 and CMIP5")
+    P.add_argument("--exp",
+                   type=str,
+                   default="historical",
+                   help="An experiment such as AMIP, historical or pi-contorl")
     P.add_argument("--frequency", default="mo")
     P.add_argument("--realm", default="atm")
     P.add_argument("--reference_data_name",
@@ -22,13 +30,15 @@ def AddParserArgument(P):
                         "- PDO: Pacific Decadal Oscillation\n"
                         "(Note: Case insensitive)")
     P.add_argument("--seasons",
-                   type=list,
+                   type=str,
+                   nargs='+',
                    default=None,
                    help="List of seasons")
     P.add_argument("--modnames",
-                   type=list,
+                   type=str,
+                   nargs='+',
                    default=None,
-                   help="List of models. ['all'] for every available models")
+                   help="List of models. 'all' for every available models")
     P.add_argument("-r", "--realization",
                    type=str,
                    default="r1i1p1",
