@@ -56,6 +56,7 @@ from pcmdi_metrics.variability_mode.lib import (
     gain_pseudo_pcs, gain_pcs_fraction, adjust_timeseries,
     model_land_mask_out,
     tree, write_nc_output, get_domain_range, read_data_in, debug_print, sort_human,
+    mov_metrics_to_json,
     plot_map)
 import cdtime
 import glob
@@ -673,15 +674,9 @@ for model in models:
             # ================================================================
             # Dictionary to JSON: overwrite JSON during model_realization loop
             # ----------------------------------------------------------------
-            JSON = pcmdi_metrics.io.base.Base(
-                outdir(output_type='metrics_results'),
-                json_filename)
-            JSON.write(
-                result_dict,
-                json_structure=[
-                    "model", "realization", "reference",
-                    "mode", "season", "method", "statistic"],
-                sort_keys=True, indent=4, separators=(',', ': '))
+            json_filename_tmp = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
+                                          mip, exp, fq, realm, model, run, str(msyear)+'-'+str(meyear)])
+            mov_metrics_to_json(outdir, json_filename_tmp, result_dict, model=model, run=run)
 
         except Exception as err:
             if debug:
