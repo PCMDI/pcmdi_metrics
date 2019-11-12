@@ -6,6 +6,7 @@ import cdtime
 import cdutil
 import copy
 import MV2
+import pcmdi_metrics
 import re
 
 
@@ -114,3 +115,32 @@ def sea_ice_adjust(data_array):
     data_array[data_array < -1.8] = -1.8
     data_array.mask = data_mask
     return data_array
+
+
+def mov_metrics_to_json(outdir, json_filename, result_dict, model=None, run=None):
+    # Open JSON
+    JSON = pcmdi_metrics.io.base.Base(
+        outdir(output_type='metrics_results'),
+        json_filename)
+    # Dict for JSON
+    if model == None and run == None:
+        result_dict_to_json = result_dict
+    else:
+        # Preserve only needed dict branch
+        result_dict_to_json = result_dict.copy()
+        models_in_dict = list(result_dict_to_json['RESULTS'].keys())
+        for m in models_in_dict:
+            if m == model:
+                runs_in_model_dict = list(result_dict_to_json['RESULTS'][m].keys())
+                for r in runs_in_model_dict:
+                    if r != run:
+                        del result_dict_to_json['RESULTS'][m][r]
+            else:
+                del result_dict_to_json['RESULTS'][m]
+    # Write selected dict to JSON
+    JSON.write(
+        result_dict_to_json,
+        json_structure=[
+            "model", "realization", "reference",
+            "mode", "season", "method", "statistic"],
+        sort_keys=True, indent=4, separators=(',', ': '))
