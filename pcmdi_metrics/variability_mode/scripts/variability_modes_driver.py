@@ -88,6 +88,10 @@ mip = param.mip
 exp = param.exp
 fq = param.frequency
 realm = param.realm
+print('mip:', mip)
+print('exp:', exp)
+print('fq:', fq)
+print('realm:', realm)
 
 # On/off switches
 obs_compare = True  # Statistics against observation
@@ -149,12 +153,6 @@ outdir = StringConstructor(str(outdir_template(
     output_type='%(output_type)',
     mip=mip, exp=exp, variability_mode=mode, reference_data_name=obs_name)))
 
-# Create output directory
-for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
-    if not os.path.exists(outdir(output_type=output_type)):
-        os.makedirs(outdir(output_type=output_type))
-    print(outdir(output_type=output_type))
-
 # Debug
 debug = param.debug
 
@@ -198,6 +196,14 @@ except NameError:
 # Region control
 # -------------------------------------------------
 region_subdomain = get_domain_range(mode, regions_specs)
+
+# =================================================
+# Create output directories
+# -------------------------------------------------
+for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
+    if not os.path.exists(outdir(output_type=output_type)):
+        os.makedirs(outdir(output_type=output_type))
+    print(outdir(output_type=output_type))
 
 # =================================================
 # Set dictionary for .json record
