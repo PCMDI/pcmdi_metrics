@@ -123,7 +123,7 @@ def mov_metrics_to_json(outdir, json_filename, result_dict, model=None, run=None
         outdir(output_type='metrics_results'),
         json_filename)
     # Dict for JSON
-    if (model == None and run == None):
+    if (model is None and run is None):
         result_dict_to_json = result_dict
     else:
         # Preserve only needed dict branch
