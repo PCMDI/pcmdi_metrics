@@ -4,3 +4,4 @@ from .eof_analysis import eof_analysis_get_variance_mode, arbitrary_checking, li
 from .landmask import model_land_mask_out, estimate_landmask  # noqa
 from .lib_variability_mode import tree, write_nc_output, get_domain_range, read_data_in, debug_print, sort_human, sea_ice_adjust, mov_metrics_to_json  # noqa
 from .plot_map import plot_map  # noqa
+from .dict_merge import dict_merge
