@@ -42,7 +42,8 @@ for j, json_file in enumerate(json_files):
         dict_merge(dict_final, dict_tmp)
     f.close()
 
-final_json_filename = json_file_template(mode=mode, eof=eof, mip=mip, exp=exp, model='all', run='all', syear='1900', eyear='2005')
+final_json_filename = json_file_template(
+    mode=mode, eof=eof, mip=mip, exp=exp, model='all', run='all', syear='1900', eyear='2005')
 final_json_file = os.path.join(json_file_dir, final_json_filename)
 
 with open(final_json_file, 'w') as fp:
