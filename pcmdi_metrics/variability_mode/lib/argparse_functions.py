@@ -130,11 +130,17 @@ def AddParserArgument(P):
                    type=bool,
                    default=True,
                    help="Option for generate individual plots: True (default) / False")
+    P.add_argument("--no_nc_out_obs",
+                   dest='nc_out_obs', action='store_false',
+                   help="Turn off netCDF generating for obs")
+    P.add_argument("--no_plot_obs",
+                   dest='plot_obs', action='store_false',
+                   help="Turn off plot generating for obs")
     P.add_argument("--update_json",
                    type=bool,
                    default=True,
                    help="Option for update existing JSON file: True (i.e., update) (default) / False (i.e., overwrite)")
-
+    P.set_defaults(nc_out_obs=True, plot_obs=True)
     return P
 
 
