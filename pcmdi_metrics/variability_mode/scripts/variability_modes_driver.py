@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 # Modes of Variability Metrics
 - Calculate metrics for modes of varibility from archive of CMIP models
