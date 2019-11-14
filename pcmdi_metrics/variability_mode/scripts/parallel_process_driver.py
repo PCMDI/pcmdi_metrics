@@ -1,7 +1,7 @@
 from __future__ import print_function
 from argparse import RawTextHelpFormatter
 from genutil import StringConstructor
-from subprocess import Popen, PIPE
+from subprocess import Popen
 
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument, VariabilityModeCheck)
@@ -77,13 +77,12 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
     print(outdir(output_type=output_type))
 
 # =================================================
-# Generates list of command 
+# Generates list of command
 # -------------------------------------------------
 param_file = '../doc/myParam_'+mode+'_'+mip+'.py'
 
 if debug:
     param_file = '../doc/myParam_test.py'
-    #models = models[:10]
     print('number of models (debug mode):', len(models))
 
 cmds_list = []
@@ -115,7 +114,7 @@ for p, cmd in enumerate(cmds_list):
     log_file = os.path.join(log_dir, log_filename)
     with open(log_file+"_stdout.txt", "wb") as out, open(log_file+"_stderr.txt", "wb") as err:
         procs_list.append(Popen(cmd, stdout=out, stderr=err))
-    if ((p >0 and p % num_workers == 0) or (p == len(cmds_list)-1)):
+    if ((p > 0 and p % num_workers == 0) or (p == len(cmds_list)-1)):
         print('wait...')
         for proc in procs_list:
             proc.wait()
