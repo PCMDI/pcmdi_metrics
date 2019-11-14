@@ -1,4 +1,11 @@
 from __future__ import print_function
+
+import os
+# Must be done before any CDAT library is called.
+# https://github.com/CDAT/cdat/issues/2213
+if 'UVCDAT_ANONYMOUS_LOG' not in os.environ:
+    os.environ['UVCDAT_ANONYMOUS_LOG'] = 'no'
+
 from eofs.cdms import Eof
 from time import gmtime, strftime
 import cdms2

@@ -1,3 +1,9 @@
+import os
+# Must be done before any CDAT library is called.
+# https://github.com/CDAT/cdat/issues/2213
+if 'UVCDAT_ANONYMOUS_LOG' not in os.environ:
+    os.environ['UVCDAT_ANONYMOUS_LOG'] = 'no'
+
 import cdms2
 import cdutil
 import genutil

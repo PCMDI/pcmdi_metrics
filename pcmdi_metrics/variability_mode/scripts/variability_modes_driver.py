@@ -67,6 +67,10 @@ import pcmdi_metrics
 import pkg_resources
 import sys
 
+# Must be done before any CDAT library is called.
+# https://github.com/CDAT/cdat/issues/2213
+if 'UVCDAT_ANONYMOUS_LOG' not in os.environ:
+    os.environ['UVCDAT_ANONYMOUS_LOG'] = 'no'
 
 regions_specs = {}
 egg_pth = pkg_resources.resource_filename(
@@ -103,9 +107,14 @@ EofScaling = param.EofScaling  # If True, consider EOF with unit variance
 RmDomainMean = param.RemoveDomainMean  # If True, remove Domain Mean of each time step
 LandMask = param.landmask  # If True, maskout land region thus consider only over ocean
 
-nc_out = param.nc_out  # Record NetCDF output
-plot = param.plot  # Generate plots
+nc_out_obs = param.nc_out_obs  # Record NetCDF output
+plot_obs = param.plot_obs  # Generate plots
+nc_out_model = param.nc_out  # Record NetCDF output
+plot_model = param.plot  # Generate plots
 update_json = param.update_json
+
+print('nc_out_obs, plot_obs:', nc_out_obs, plot_obs)
+print('nc_out_model, plot_model:', nc_out_model, plot_model)
 
 # Check given mode of variability
 mode = VariabilityModeCheck(param.variability_mode, P)
@@ -139,6 +148,7 @@ if ('all' in [m.lower() for m in models]) or (models == 'all'):
     models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
 
 print('models:', models)
+print('number of models:', len(models))
 
 # Realizations
 realization = param.realization
@@ -322,7 +332,7 @@ if obs_compare:
             output_filename_obs += '_EOFscaled'
 
         # Save global map, pc timeseries, and fraction in NetCDF output
-        if nc_out:
+        if nc_out_obs:
             output_nc_file_obs = os.path.join(
                 outdir(output_type='diagnostic_results'),
                 output_filename_obs)
@@ -331,7 +341,7 @@ if obs_compare:
                 frac_obs[season], slope_obs, intercept_obs)
 
         # Plotting
-        if plot:
+        if plot_obs:
             output_img_file_obs = os.path.join(
                 outdir(output_type='graphics'),
                 output_filename_obs)
@@ -520,7 +530,7 @@ for model in models:
                     output_nc_file = os.path.join(
                             outdir(output_type='diagnostic_results'),
                             output_filename)
-                    if nc_out:
+                    if nc_out_model:
                         write_nc_output(
                             output_nc_file+'_cbf', eof_lr_cbf,
                             cbf_pc, frac_cbf, slope_cbf, intercept_cbf)
@@ -529,7 +539,7 @@ for model in models:
                     output_img_file = os.path.join(
                         outdir(output_type='graphics'),
                         output_filename)
-                    if plot:
+                    if plot_model:
                         plot_map(mode,
                                  mip.upper()+' '+model+' ('+run+')'+' - CBF',
                                  msyear, meyear, season,
@@ -623,7 +633,7 @@ for model in models:
                         output_nc_file = os.path.join(
                             outdir(output_type='diagnostic_results'),
                             output_filename)
-                        if nc_out:
+                        if nc_out_model:
                             write_nc_output(
                                 output_nc_file, eof_lr, pc, frac, slope, intercept)
 
@@ -631,7 +641,7 @@ for model in models:
                         output_img_file = os.path.join(
                             outdir(output_type='graphics'),
                             output_filename)
-                        if plot:
+                        if plot_model:
                             # plot_map(mode,
                             #          mip.upper()+' '+model+' ('+run+')',
                             #          msyear, meyear, season,
