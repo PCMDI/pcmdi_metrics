@@ -146,8 +146,13 @@ def compute(params):
             LSTs.setAxis(0, comptime)
             LSTs.setAxis(1, modellats)
             LSTs.setAxis(2, modellons)
-            avgoutfile = ('%s_%s_%s_%s-%s_diurnal_avg.nc') % (varbname,
-                                                              dataname, monthname,
+
+
+            outName = os.path.basename(fileName)
+            outName = outName.replace('.xml','')
+
+            avgoutfile = ('%s.%s.%s-%s.diurnalAvg.nc') % (
+                                                              outName, monthname,
                                                               str(args.firstyear), str(args.lastyear))
             stdoutfile = ('%s_%s_%s_%s-%s_diurnal_std.nc') % (varbname,
                                                               dataname, monthname, str(
