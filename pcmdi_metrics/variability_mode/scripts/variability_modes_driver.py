@@ -69,6 +69,10 @@ import pcmdi_metrics
 import pkg_resources
 import sys
 
+# To avoid below error
+# OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+
 # Must be done before any CDAT library is called.
 # https://github.com/CDAT/cdat/issues/2213
 if 'UVCDAT_ANONYMOUS_LOG' not in os.environ:
@@ -189,6 +193,9 @@ if mode in ['PDO', 'NPGO']:
 else:
     lon1g = -180
     lon2g = 180
+
+# parallel
+parallel = param.parallel
 
 # =================================================
 # Time period adjustment
@@ -684,7 +691,7 @@ for model in models:
                     debug_print('conventional eof end', debug)
 
             # ================================================================
-            # Dictionary to JSON: overwrite JSON during model_realization loop
+            # Dictionary to JSON: individual JSON during model_realization loop
             # ----------------------------------------------------------------
             json_filename_tmp = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
                                           mip, exp, fq, realm, model, run, str(msyear)+'-'+str(meyear)])
@@ -696,6 +703,14 @@ for model in models:
             else:
                 print('warning: faild for ', model, run, err)
                 pass
+
+if not parallel:
+    # ================================================================
+    # Dictionary to JSON: collective JSON at the end of model_realization loop
+    # ----------------------------------------------------------------
+    json_filename_all = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
+                                  mip, exp, fq, realm, 'allModels', 'allRuns', str(msyear)+'-'+str(meyear)])
+    mov_metrics_to_json(outdir, json_filename_tmp, result_dict)
 
 if not debug:
     sys.exit('done')
