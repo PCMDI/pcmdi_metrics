@@ -130,6 +130,11 @@ def AddParserArgument(P):
                    type=bool,
                    default=True,
                    help="Option for generate individual plots: True (default) / False")
+    P.add_argument("--parallel",
+                   type=bool,
+                   dest='parallel',
+                   default=False,
+                   help="Option for running code in parallel mode: True / False (default)")
     P.add_argument("--no_nc_out_obs",
                    dest='nc_out_obs', action='store_false',
                    help="Turn off netCDF generating for obs")
