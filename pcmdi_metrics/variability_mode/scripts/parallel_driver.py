@@ -128,6 +128,7 @@ num_workers = 10
 print("Start : %s" % time.ctime())
 
 # submit tasks and wait for subset of tasks to complete
+procs_list = []
 for p, cmd in enumerate(cmds_list):
     print(p, cmd)
     model = cmd[-1]
