@@ -148,17 +148,28 @@ def compute(params):
             LSTs.setAxis(2, modellons)
 
 
+
+#           avgoutfile = ('%s_%s_%s_%s-%s_diurnal_avg.nc') % (varbname,
+#                                                             dataname, monthname,
+#                                                             str(args.firstyear), str(args.lastyear))
+#           stdoutfile = ('%s_%s_%s_%s-%s_diurnal_std.nc') % (varbname,
+#                                                             dataname, monthname, str(
+#                                                                 args.firstyear),
+#                                                             str(args.lastyear))
             outName = os.path.basename(fileName)
             outName = outName.replace('.xml','')
+            outName = outName.replace('.nc','')
+            outName = outName.replace('.','_')
 
-            avgoutfile = ('%s.%s.%s-%s.diurnalAvg.nc') % (
+            avgoutfile  = ('%s_%s_%s_%s_diurnalAvg.nc') % (
                                                               outName, monthname,
                                                               str(args.firstyear), str(args.lastyear))
-            stdoutfile = ('%s_%s_%s_%s-%s_diurnal_std.nc') % (varbname,
-                                                              dataname, monthname, str(
+            stdoutfile = ('%s_%s_%s_%s_diurnalStd.nc') % (
+                                                              outName, monthname, str(
                                                                   args.firstyear),
                                                               str(args.lastyear))
             LSToutfile = ('%s_%s_LocalSolarTimes.nc' % (varbname, dataname))
+
             if not os.path.exists(args.results_dir):
                 os.makedirs(args.results_dir)
             f = cdms2.open(
