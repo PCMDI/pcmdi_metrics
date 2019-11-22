@@ -160,6 +160,7 @@ def compute(params):
             outName = outName.replace('.xml','')
             outName = outName.replace('.nc','')
             outName = outName.replace('.','_')
+            dataname_tmp = dataname.replace('.','_')
 
             avgoutfile  = ('%s_%s_%s_%s_diurnalAvg.nc') % (
                                                               outName, monthname,
@@ -168,7 +169,7 @@ def compute(params):
                                                               outName, monthname, str(
                                                                   args.firstyear),
                                                               str(args.lastyear))
-            LSToutfile = ('%s_%s_LocalSolarTimes.nc' % (varbname, dataname))
+            LSToutfile = ('%s_%s_LocalSolarTimes.nc' % (varbname, dataname_tmp))
 
             if not os.path.exists(args.results_dir):
                 os.makedirs(args.results_dir)
