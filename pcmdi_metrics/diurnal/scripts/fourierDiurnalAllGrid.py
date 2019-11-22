@@ -40,6 +40,11 @@ template_LST = populateStringConstructor(args.filename_template_LST, args)
 template_LST.month = monthname
 
 LSTfiles = glob.glob(os.path.join(args.modpath, template_LST()))
+
+print('modpath ', args.modpath)
+print('filename_template ', args.filename_template)
+print('filename_template_LST ', args.filename_template_LST)
+
 print("LSTFILES:", LSTfiles)
 print("TMPL", template_LST())
 for LSTfile in LSTfiles:
