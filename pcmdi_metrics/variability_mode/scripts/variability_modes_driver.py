@@ -370,6 +370,13 @@ if obs_compare:
         dict_head_obs['stdv_pc'] = stdv_pc_obs[season]
         dict_head_obs['frac'] = float(frac_obs[season])
 
+        # Mean
+        mean_obs = cdutil.averager(eof_obs[season], axis='yx', weights='weighted')
+        mean_glo_obs = cdutil.averager(eof_lr_obs[season], axis='yx', weights='weighted')
+        dict_head_obs['mean'] = float(mean_obs)
+        dict_head_obs['mean_glo'] = float(mean_glo_obs)
+        debug_print('obs mean end', debug)
+
         # North test -- make this available as option later...
         # execfile('../north_test.py')
 
@@ -710,7 +717,7 @@ if not parallel:
     # ----------------------------------------------------------------
     json_filename_all = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
                                   mip, exp, fq, realm, 'allModels', 'allRuns', str(msyear)+'-'+str(meyear)])
-    mov_metrics_to_json(outdir, json_filename_tmp, result_dict)
+    mov_metrics_to_json(outdir, json_filename_all, result_dict)
 
 if not debug:
     sys.exit('done')
