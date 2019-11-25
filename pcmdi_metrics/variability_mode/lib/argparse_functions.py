@@ -1,3 +1,5 @@
+import datetime
+
 def AddParserArgument(P):
     # Load pre-defined parsers
     # P.use("--mip")
@@ -95,6 +97,11 @@ def AddParserArgument(P):
                         "- (True, 'divide', 100.0)  # Pa to hPa\n"
                         "- (True, 'subtract', 273.15)  # degK to degC\n"
                         "- (False, 0, 0) # No adjustment (default)")
+    P.add_argument("--case_id",
+                   type=str,
+                   dest="case_id",
+                   default="{:v%Y%m%d}".format(datetime.datetime.now()),
+                   help="version as date, e.g., v20191116 (yyyy-mm-dd)")
 
     # Switches
     P.add_argument("-d", "--debug",
