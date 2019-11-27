@@ -164,11 +164,14 @@ print('realization: ', realization)
 eofn_obs = int(param.eofn_obs)
 eofn_mod = int(param.eofn_mod)
 
+# case id
+case_id = param.case_id
+
 # Output
 outdir_template = param.process_templated_argument("results_dir")
 outdir = StringConstructor(str(outdir_template(
     output_type='%(output_type)',
-    mip=mip, exp=exp, variability_mode=mode, reference_data_name=obs_name)))
+    mip=mip, exp=exp, variability_mode=mode, reference_data_name=obs_name, case_id=case_id)))
 
 # Debug
 debug = param.debug
