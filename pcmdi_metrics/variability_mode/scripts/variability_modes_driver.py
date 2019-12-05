@@ -667,12 +667,12 @@ for model in models:
                             #          eof, frac,
                             #          output_img_file+'_org_eof')
                             plot_map(mode,
-                                     mip.upper()+' '+model+' ('+run+')',
+                                     mip.upper()+' '+model+' ('+run+') - EOF'+str(n+1),
                                      msyear, meyear, season,
                                      eof_lr(region_subdomain), frac,
                                      output_img_file)
                             plot_map(mode+'_teleconnection',
-                                     mip.upper()+' '+model+' ('+run+')',
+                                     mip.upper()+' '+model+' ('+run+') - EOF'+str(n+1),
                                      msyear, meyear, season,
                                      eof_lr(longitude=(lon1g, lon2g)), frac,
                                      output_img_file+'_teleconnection')
