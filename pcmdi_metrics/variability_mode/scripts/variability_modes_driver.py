@@ -358,9 +358,13 @@ for model in models:
     if model not in list(result_dict['RESULTS'].keys()):
         result_dict['RESULTS'][model] = {}
 
+    """
     model_path_list = os.popen(
         'ls ' + modpath(
             mip=mip, exp=exp, model=model, realization=realization, variable=var)).readlines()
+    """
+    model_path_list = glob.glob(modpath(
+		mip=mip, exp=exp, model=model, realization=realization, variable=var))
 
     model_path_list = sort_human(model_path_list)
 
