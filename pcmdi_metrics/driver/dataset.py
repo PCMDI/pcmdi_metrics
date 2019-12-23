@@ -118,7 +118,11 @@ class DataSet(with_metaclass(abc.ABCMeta, object)):
     @staticmethod
     def load_path_as_file_obj(name):
         ''' Returns a File object for the file named name. '''
-        egg_pth = pkg_resources.resource_filename(pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
+        try:
+            egg_pth = pkg_resources.resource_filename(pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
+        except Exception:
+            # python 2 seems to fail when ran in home directory of source?
+            egg_pth = os.path.join(os.getcwd(), "share", "pmp")
         file_path = os.path.join(egg_pth, name)
         opened_file = None
         try:

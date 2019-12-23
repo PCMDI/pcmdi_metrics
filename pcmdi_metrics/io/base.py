@@ -8,14 +8,12 @@ import MV2
 import cdms2
 import hashlib
 import numpy
-import collections
+from collections import OrderedDict, Mapping
 import pcmdi_metrics
 import cdp.cdp_io
-import subprocess
-import sys
-import shlex
-import datetime
 from pcmdi_metrics import LOG_LEVEL
+import copy
+import re
 
 
 value = 0
@@ -31,29 +29,47 @@ except Exception:
     basestring = str
 
 
+# Convert cdms MVs to json
+def MV2Json(data, dic={}, struct=None):
+    if struct is None:
+        struct = []
+    if not isinstance(data, cdms2.tvariable.TransientVariable) and dic != {}:
+        raise RuntimeError("MV2Json needs a cdms2 transient variable as input")
+    if not isinstance(data, cdms2.tvariable.TransientVariable):
+        return data, struct  # we reach the end
+    else:
+        axis = data.getAxis(0)
+        if axis.id not in struct:
+            struct.append(axis.id)
+        for i, name in enumerate(axis):
+            dic[name], _ = MV2Json(data[i], {}, struct)
+    return dic, struct
+
+
 # Group merged axes
-def groupAxes(axes, final=[], ids=None, separator="_"):
-    if axes == []:
-        return cdms2.createAxis(final, id=separator.join(ids))
-    if final == []:
-        final = [val for val in axes[0]]
+def groupAxes(axes, ids=None, separator="_"):
+    if ids is None:
         ids = [ax.id for ax in axes]
-        return groupAxes(axes[1:], final, ids)
-    axis = axes[0]
-    original_length = len(final)
-    final = final * len(axis)
-    idx = 0
-    for val in axis:
-        for i in range(original_length):
-            final[idx] = "{}{}{}".format(final[idx], separator, val)
-            idx += 1
-    return groupAxes(axes[1:], final, ids)
+    if len(ids) != len(axes):
+        raise RuntimeError("You need to pass as many ids as axes")
+    final = []
+    while len(axes) > 0:
+        axis = axes.pop(-1)
+        if final == []:
+            final = [str(v) for v in axis]
+        else:
+            tmp = final
+            final = []
+            for v1 in axis:
+                for v2 in tmp:
+                    final += ["{}{}{}".format(v1, separator, v2)]
+    return cdms2.createAxis(final, id=separator.join(ids))
 
 
 # cdutil region object need a serializer
 def update_dict(d, u):
     for k, v in u.items():
-        if isinstance(v, collections.Mapping):
+        if isinstance(v, Mapping):
             r = update_dict(d.get(k, {}), v)
             d[k] = r
         else:
@@ -61,131 +77,54 @@ def update_dict(d, u):
     return d
 
 
-# Platform
-def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
-    try:
-        p = subprocess.Popen(
-            shlex.split(cmd),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-    except Exception:
-        return
-    out, stde = p.communicate()
-    if stde != '':
-        return
-    for strBit in out.splitlines():
-        for key, value in pairs.items():
-            if value in strBit:
-                prov[key] = strBit.split(sep)[index].strip()
-    if fill_missing is not False:
-        for k in pairs:
-            if k not in prov:
-                prov[k] = fill_missing
-    return
-
-
 def generateProvenance():
-    prov = collections.OrderedDict()
-    platform = os.uname()
-    platfrm = collections.OrderedDict()
-    platfrm["OS"] = platform[0]
-    platfrm["Version"] = platform[2]
-    platfrm["Name"] = platform[1]
-    prov["platform"] = platfrm
-    try:
-        logname = os.getlogin()
-    except Exception:
-        try:
-            import pwd
-            logname = pwd.getpwuid(os.getuid())[0]
-        except Exception:
-            try:
-                logname = os.environ.get('LOGNAME', 'unknown')
-            except Exception:
-                logname = 'unknown-loginname'
-    prov["userId"] = logname
-    prov["osAccess"] = bool(os.access('/', os.W_OK) * os.access('/', os.R_OK))
-    prov["commandLine"] = " ".join(sys.argv)
-    prov["date"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    prov["conda"] = collections.OrderedDict()
-    pairs = {
-        'Platform': 'platform ',
-        'Version': 'conda version ',
-        'IsPrivate': 'conda is private ',
-        'envVersion': 'conda-env version ',
-        'buildVersion': 'conda-build version ',
-        'PythonVersion': 'python version ',
-        'RootEnvironment': 'root environment ',
-        'DefaultEnvironment': 'default environment '
-    }
-    populate_prov(prov["conda"], "conda info", pairs, sep=":", index=-1)
-    pairs = {
-        'blas': 'blas',
-        'CDP': 'cdp ',
-        'cdms': 'cdms2 ',
-        'cdtime': 'cdtime ',
-        'cdutil': 'cdutil ',
-        'clapack': 'clapack ',
-        'esmf': 'esmf ',
-        'esmpy': 'esmpy ',
-        'genutil': 'genutil ',
-        'lapack': 'lapack ',
+    extra_pairs = {
         'matplotlib': 'matplotlib ',
-        'mesalib': 'mesalib ',
-        'numpy': 'numpy ',
-        'python': 'python ',
-        'vcs': 'vcs ',
-        'vtk': 'vtk-cdat ',
+        'scipy': 'scipy'
     }
-    prov["packages"] = collections.OrderedDict()
-    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
-    pairs = {
-        'vcs': 'vcs-nox ',
-        'vtk': 'vtk-cdat-nox ',
-    }
-    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
-    pairs = {
-        'PMP': 'pcmdi_metrics',
-        'PMPObs': 'pcmdi_metrics_obs',
-    }
-    populate_prov(prov["packages"], "conda list", pairs, fill_missing=None)
-    # TRying to capture glxinfo
-    pairs = {
-        "vendor": "OpenGL vendor string",
-        "renderer": "OpenGL renderer string",
-        "version": "OpenGL version string",
-        "shading language version": "OpenGL shading language version string",
-    }
-    prov["openGL"] = collections.OrderedDict()
-    populate_prov(prov["openGL"], "glxinfo", pairs, sep=":", index=-1)
-    prov["openGL"]["GLX"] = {
-        "server": collections.OrderedDict(),
-        "client": collections.OrderedDict()}
-    pairs = {
-        "version": "GLX version",
-    }
-    populate_prov(prov["openGL"]["GLX"], "glxinfo", pairs, sep=":", index=-1)
-    pairs = {
-        "vendor": "server glx vendor string",
-        "version": "server glx version string",
-    }
-    populate_prov(
-        prov["openGL"]["GLX"]["server"],
-        "glxinfo",
-        pairs,
-        sep=":",
-        index=-1)
-    pairs = {
-        "vendor": "client glx vendor string",
-        "version": "client glx version string",
-    }
-    populate_prov(
-        prov["openGL"]["GLX"]["client"],
-        "glxinfo",
-        pairs,
-        sep=":",
-        index=-1)
+    prov = cdat_info.generateProvenance(extra_pairs=extra_pairs)
+    prov["packages"]["PMP"] = pcmdi_metrics.version.__git_tag_describe__
+    prov["packages"]["PMPObs"] = "See 'References' key below, for detailed obs provenance information."
     return prov
+
+
+def sort_human(input_list):
+    lst = copy.copy(input_list)
+
+    def convert(text):
+        return int(text) if text.isdigit() else text
+
+    def alphanum(key):
+        return [convert(c) for c in re.split('([0-9]+)', key)]
+    lst.sort(key=alphanum)
+    return lst
+
+
+def scrap(data, axis=0):
+    originalOrder = data.getOrder(ids=True)
+    if axis not in ['x', 'y', 'z', 't'] and not isinstance(axis, int):
+        order = "({})...".format(axis)
+    else:
+        order = "{}...".format(axis)
+    new = data(order=order)
+    axes = new.getAxisList()  # Save for later
+    new = MV2.array(new.asma())  # lose dims
+    for i in range(new.shape[0] - 1, -1, -1):
+        tmp = new[i]
+        if not isinstance(tmp, (float, numpy.float)) and tmp.mask.all():
+            a = new[:i]
+            b = new[i + 1:]
+            if b.shape[0] == 0:
+                new = a
+            else:
+                new = MV2.concatenate((a, b))
+    newAxis = []
+    for v in new.getAxis(0):
+        newAxis.append(axes[0][int(v)])
+    ax = cdms2.createAxis(newAxis, id=axes[0].id)
+    axes[0] = ax
+    new.setAxisList(axes)
+    return new(order=originalOrder)
 
 
 class CDMSDomainsEncoder(json.JSONEncoder):
@@ -219,7 +158,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
     def read(self):
         pass
 
-    def write(self, data, type='json', *args, **kwargs):
+    def write(self, data, type='json', mode="w", *args, **kwargs):
         self.type = type.lower()
         file_name = self()
         dir_path = os.path.split(file_name)[0]
@@ -250,10 +189,20 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                     del(kwargs[k])
             data["json_version"] = json_version
             data["json_structure"] = json_structure
-            f = open(file_name, 'w')
-            data["provenance"] = generateProvenance()
-#           data["user_notes"] = "BLAH"
-            json.dump(data, f, cls=CDMSDomainsEncoder, *args, **kwargs)
+
+            if mode == "r+" and os.path.exists(file_name):
+                f = open(file_name)
+                out_dict = json.load(f)
+            else:
+                out_dict = OrderedDict({"provenance": generateProvenance()})
+            f = open(file_name, "w")
+            update_dict(out_dict, data)
+            if "yaml" in out_dict["provenance"]["conda"]:
+                out_dict["YAML"] = out_dict["provenance"]["conda"]["yaml"]
+                del(out_dict["provenance"]["conda"]["yaml"])
+#               out_dict = OrderedDict({"provenance": generateProvenance()})
+
+            json.dump(out_dict, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 
         elif self.type in ['asc', 'ascii', 'txt']:
@@ -523,20 +472,21 @@ class JSONs(object):
                 try:
                     vals = vals[k]
                 except Exception:
-                    vals = 1.e20
+                    vals = 9.99e20
             try:
                 out[tuple(ids)] = float(vals)
             except Exception:
-                out[tuple(ids)] = 1.e20
+                out[tuple(ids)] = 9.99e20
 
     def __init__(self, files=[], structure=[], ignored_keys=[],
-                 oneVariablePerFile=True):
+                 oneVariablePerFile=True, sortHuman=True):
         self.json_version = 3.0
         self.json_struct = structure
         self.data = {}
         self.axes = None
         self.ignored_keys = ignored_keys
         self.oneVariablePerFile = oneVariablePerFile
+        self.sortHuman = sortHuman
         if len(files) == 0:
             raise Exception("You need to pass at least one file")
 
@@ -587,18 +537,43 @@ class JSONs(object):
             0, len(self.json_struct) - 1, self.data, values)
         autoBounds = cdms2.getAutoBounds()
         cdms2.setAutoBounds("off")
+        if self.sortHuman:
+            sortFunc = sort_human
+        else:
+            sortFunc = sorted
         for i, nm in enumerate(self.json_struct):
-            axes.append(cdms2.createAxis(sorted(list(values[i])), id=nm))
+            axes.append(cdms2.createAxis(sortFunc(list(values[i])), id=nm))
         self.axes = axes
         cdms2.setAutoBounds(autoBounds)
         return self.axes
 
     def __call__(self, merge=[], **kargs):
         """ Returns the array of values"""
+        # First clean up kargs
+        if "merge" in kargs:
+            merge = kargs["merge"]
+            del(kargs["merge"])
+        order = None
+        axes_ids = self.getAxisIds()
+        if "order" in kargs:
+            # If it's an actual axis assume that it's what user wants
+            # Otherwise it's an out order keyword
+            if "order" not in axes_ids:
+                order = kargs["order"]
+                del(kargs["order"])
         ab = cdms2.getAutoBounds()
         cdms2.setAutoBounds("off")
         axes = self.getAxisList()
-        axes_ids = self.getAxisIds()
+        if merge != []:
+            if isinstance(merge[0], str):
+                merge = [merge, ]
+        if merge != []:
+            for merger in merge:
+                for merge_axis_id in merger:
+                    if merge_axis_id not in axes_ids:
+                        raise RuntimeError(
+                            "You requested to merge axis is '{}' which is not valid. Axes: {}".format(
+                                merge_axis_id, axes_ids))
         sh = []
         ids = []
         used_ids = []
@@ -611,9 +586,6 @@ class JSONs(object):
 
         # first let's see which vars are actually asked for
         # for now assume all keys means restriction on dims
-        if "merge" in kargs:
-            merge = kargs["merge"]
-            del(kargs["merge"])
         if not isinstance(merge, (list, tuple)):
             raise RuntimeError(
                 "merge keyword must be a list of dimensions to merge together")
@@ -652,8 +624,15 @@ class JSONs(object):
 
         # Ok at this point we need to take care of merged axes
         # First let's create the merged axes
-        new_axes = [groupAxes([self.getAxis(x) for x in merger])
-                    for merger in merge]
+        axes_to_group = []
+        for merger in merge:
+            merged_axes = []
+            for axid in merger:
+                for ax in axes:
+                    if ax.id == axid:
+                        merged_axes.append(ax)
+            axes_to_group.append(merged_axes)
+        new_axes = [groupAxes(grp_axes) for grp_axes in axes_to_group]
         sh2 = list(sh)
         for merger in merge:
             for merger in merge:  # loop through all possible merging
@@ -714,7 +693,15 @@ class JSONs(object):
                     sub += 1
                 else:
                     outData.setAxis(index - sub, new_axes[setMergedAxis])
-        outData = MV2.masked_greater(outData, 9.e19)
+        outData = MV2.masked_greater(outData, 9.98e20)
         outData.id = "pmp"
+        if order is not None:
+            myorder = "".join(["({})".format(nm) for nm in order])
+            outData = outData(order=myorder)
+        # Merge needs cleaning for extra dims crated
+        if merge != []:
+            for i in range(outData.ndim):
+                outData = scrap(outData, axis=i)
+        outData = MV2.masked_greater(outData, 9.9e19)
         cdms2.setAutoBounds(ab)
         return outData

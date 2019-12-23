@@ -17,6 +17,7 @@ parser = PMPParser(description='Parallelize a driver over some arguments')
 parser.add_argument("--driver", help="driver to prallelize")
 parser.add_argument("--bash", help="generate a bash script rather than running in parallel", action="store_true")
 parser.use("num_workers")
+parser.add_argument("--granularize")
 p = parser.get_parameter()
 
 param_name = parser.view_args().parameters
