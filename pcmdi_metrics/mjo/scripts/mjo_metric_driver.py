@@ -204,6 +204,7 @@ for model in models:
             # variable data
             model_path_list = glob.glob(
         		modpath(mip=mip, exp=exp, model=model, realization=realization, variable=var))
+            model_path_list = sorted(model_path_list)
             if debug: print('debug: model_path_list: ', model_path_list)
             # dict for output JSON
             if model not in list(mjo_stat_dic['RESULTS'].keys()):
