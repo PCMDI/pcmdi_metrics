@@ -1,15 +1,18 @@
 """
 Code written by Jiwoo Lee, LLNL. Feb. 2019
 Inspired by Daehyun Kim and Min-Seop Ahn's MJO metrics.
+
 Reference:
 Ahn, MS., Kim, D., Sperber, K.R. et al. Clim Dyn (2017) 49: 4023.
 https://doi.org/10.1007/s00382-017-3558-4 
+
 Auspices:
 This work was performed under the auspices of the U.S. Department of
 Energy by Lawrence Livermore National Laboratory under Contract
 DE-AC52-07NA27344. Lawrence Livermore National Laboratory is operated by
 Lawrence Livermore National Security, LLC, for the U.S. Department of Energy,
 National Nuclear Security Administration under Contract DE-AC52-07NA27344.
+
 Disclaimer:
 This document was prepared as an account of work sponsored by an
 agency of the United States government. Neither the United States government
@@ -41,21 +44,13 @@ import pcmdi_metrics
 import sys
 import time
 
+from pcmdi_metrics.mjo.lib import (
+    AddParserArgument, YearCheck,
+    mjo_metric_ewr_calculation)
 
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
 from shutil import copyfile
-
-libfiles = ['lib_mjo.py',
-             'mjo_metric_calc.py', 
-             'argparse_functions.py', 
-             'debug_chk_plot.py'] 
-
-for lib in libfiles: 
-    exec(compile(open(os.path.join('../lib/', lib)).read(),
-                 os.path.join('../lib/', lib), 'exec')) 
-
-print('debug: check1')
 
 # =================================================
 # Hard coded options... will be moved out later
@@ -73,8 +68,6 @@ P = pcmdi_metrics.driver.pmp_parser.PMPParser(
     formatter_class=RawTextHelpFormatter)
 P = AddParserArgument(P)
 param = P.get_parameter()
-
-print('debug: check2')
 
 # Pre-defined options
 mip = param.mip
@@ -150,8 +143,6 @@ ObsUnitsAdjust = param.ObsUnitsAdjust
 
 # JSON update
 update_json = param.update_json
-
-print('debug: check3')
 
 # =================================================
 # Declare dictionary for .json record
