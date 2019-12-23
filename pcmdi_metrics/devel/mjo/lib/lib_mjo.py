@@ -207,7 +207,7 @@ def generate_axes_and_decorate(Power, NT, NL):
     return Power, ff, ss
 
 
-def output_power_spectra(Power, ff, ss):
+def output_power_spectra(NL, NT, Power, ff, ss):
     """
     Below code taken and modified from Daehyun Kim's Fortran code (MSD/level_2/sample/stps/stps.sea.f.sample)
     """
