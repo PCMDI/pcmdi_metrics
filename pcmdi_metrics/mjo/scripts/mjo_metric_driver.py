@@ -202,11 +202,6 @@ for model in models:
             syear = msyear
             eyear = meyear
             # variable data
-            """
-            model_path_list = os.popen(
-                'ls '+modpath(mip=mip, model=model, exp=exp, realization=realization,
-                 variable=var)).readlines()
-            """
             model_path_list = glob.glob(
         		modpath(mip=mip, exp=exp, model=model, realization=realization, variable=var))
             if debug: print('debug: model_path_list: ', model_path_list)
