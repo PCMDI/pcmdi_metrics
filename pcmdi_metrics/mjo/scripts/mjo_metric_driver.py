@@ -46,7 +46,7 @@ import time
 
 from pcmdi_metrics.mjo.lib import (
     AddParserArgument, YearCheck,
-    mjo_metric_ewr_calculation)
+    mjo_metric_ewr_calculation, mjo_metrics_to_json)
 
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
@@ -151,7 +151,7 @@ update_json = param.update_json
 def tree():
     return defaultdict(tree)
 
-mjo_stat_dic = tree()
+result_dict = tree()
 
 # Define output json file
 json_filename = '_'.join(['mjo_stat',
@@ -165,13 +165,13 @@ if os.path.isfile(json_file) and os.stat(json_file).st_size > 0:
     copyfile(json_file, json_file_org)
     if update_json:
         fj = open(json_file)
-        mjo_stat_dic = json.loads(fj.read())
+        result_dict = json.loads(fj.read())
         fj.close()
 
-if 'REF' not in list(mjo_stat_dic.keys()):
-    mjo_stat_dic['REF'] = {}
-if 'RESULTS' not in list(mjo_stat_dic.keys()):
-    mjo_stat_dic['RESULTS'] = {}
+if 'REF' not in list(result_dict.keys()):
+    result_dict['REF'] = {}
+if 'RESULTS' not in list(result_dict.keys()):
+    result_dict['RESULTS'] = {}
 
 # =================================================
 # Loop start for given models
@@ -191,8 +191,8 @@ for model in models:
             # variable data
             model_path_list = [reference_data_path]
             # dict for output JSON
-            if reference_data_name not in list(mjo_stat_dic['REF'].keys()):
-                mjo_stat_dic['REF'][reference_data_name] = {}
+            if reference_data_name not in list(result_dict['REF'].keys()):
+                result_dict['REF'][reference_data_name] = {}
             # dict for plottng
             dict_obs_composite = {}
             dict_obs_composite[reference_data_name] = {}
@@ -207,8 +207,8 @@ for model in models:
             model_path_list = sorted(model_path_list)
             if debug: print('debug: model_path_list: ', model_path_list)
             # dict for output JSON
-            if model not in list(mjo_stat_dic['RESULTS'].keys()):
-                mjo_stat_dic['RESULTS'][model] = {}
+            if model not in list(result_dict['RESULTS'].keys()):
+                result_dict['RESULTS'][model] = {}
 
         # -------------------------------------------------
         # Loop start - Realization
@@ -221,8 +221,8 @@ for model in models:
                 else:
                     run = model_path.split('/')[-1].split('.')[3]
                     # dict
-                    if run not in mjo_stat_dic['RESULTS'][model]:
-                        mjo_stat_dic['RESULTS'][model][run] = {}
+                    if run not in result_dict['RESULTS'][model]:
+                        result_dict['RESULTS'][model][run] = {}
                 print(' --- ', run, ' ---')
                 print(model_path)
 
@@ -236,26 +236,35 @@ for model in models:
 
                 # Archive as dict for JSON
                 if model == 'obs':
-                    mjo_stat_dic['REF'][reference_data_name] = metrics_result
+                    result_dict['REF'][reference_data_name] = metrics_result
                 else:
-                    mjo_stat_dic['RESULTS'][model][run] = metrics_result
+                    result_dict['RESULTS'][model][run] = metrics_result
                     # Nomalized East power by observation (E/O ratio)
-                    mjo_stat_dic['RESULTS'][model][run]['east_power_normalized_by_observation'] = (
-                        mjo_stat_dic['RESULTS'][model][run]['east_power'] / 
-                        mjo_stat_dic['REF'][reference_data_name]['east_power'])
+                    result_dict['RESULTS'][model][run]['east_power_normalized_by_observation'] = (
+                        result_dict['RESULTS'][model][run]['east_power'] / 
+                        result_dict['REF'][reference_data_name]['east_power'])
                 # Output to JSON
                 # =================================================
                 # Write dictionary to json file
                 # (let the json keep overwritten in model loop)
                 # -------------------------------------------------
+                """
                 JSON = pcmdi_metrics.io.base.Base(outdir(output_type='metrics_results'), json_filename)
-                JSON.write(mjo_stat_dic,
+                JSON.write(result_dict,
                            json_structure=["model",
                                            "realization",
                                            "metric"],
                            sort_keys=True,
                            indent=4,
                            separators=(',', ': '))
+                """
+                # ================================================================
+                # Dictionary to JSON: individual JSON during model_realization loop
+                # ----------------------------------------------------------------
+                json_filename_tmp = '_'.join([
+                    'mjo_stat',
+                    mip, exp, fq, realm, model, run, str(msyear)+'-'+str(meyear)])
+                mjo_metrics_to_json(outdir, json_filename_tmp, result_dict, model=model, run=run)
 
             except Exception as err:
                 if debug:
