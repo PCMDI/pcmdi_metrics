@@ -96,9 +96,10 @@ models = param.modnames
 
 # List up all available models if 'all' given in models
 if ('all' in [m.lower() for m in models]) or (models == 'all'):
-    models = [p.split('.')[1]
+    models = [p.split('/')[-1].split('.')[2]
         for p in glob.glob(modpath(
             mip=mip,
+            exp=exp,
             model='*',
             realization='*',
             variable=varModel))]
