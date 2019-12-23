@@ -1,3 +1,5 @@
+import os
+
 libfiles = ['lib_mjo.py',
             'plot_wavenumber_frequency_power.py',
             'debug_chk_plot.py']
@@ -8,8 +10,11 @@ for lib in libfiles:
 
 
 def mjo_metric_ewr_calculation(
+    mip, model, exp, run,
     debug, plot, nc_out, cmmGrid, degX,
     UnitsAdjust, inputfile, var, startYear, endYear,
+    segmentLength,
+    outdir,
     ):
 
 
