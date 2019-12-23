@@ -15,7 +15,7 @@ def AddParserArgument(P):
     P.add_argument("--exp",
                    type=str,
                    default="historical",
-                   help="An experiment such as AMIP, historical or pi-contorl")
+                   help="An experiment such as amip, historical or piContorl")
     P.add_argument("--frequency", default="mo")
     P.add_argument("--realm", default="atm")
     P.add_argument("--reference_data_name",
