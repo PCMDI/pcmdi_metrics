@@ -145,6 +145,10 @@ ObsUnitsAdjust = param.ObsUnitsAdjust
 # JSON update
 update_json = param.update_json
 
+# parallel
+parallel = param.parallel
+print('parallel:', parallel)
+
 # =================================================
 # Declare dictionary for .json record
 # -------------------------------------------------
@@ -244,20 +248,6 @@ for model in models:
                         result_dict['RESULTS'][model][run]['east_power'] / 
                         result_dict['REF'][reference_data_name]['east_power'])
                 # Output to JSON
-                # =================================================
-                # Write dictionary to json file
-                # (let the json keep overwritten in model loop)
-                # -------------------------------------------------
-                """
-                JSON = pcmdi_metrics.io.base.Base(outdir(output_type='metrics_results'), json_filename)
-                JSON.write(result_dict,
-                           json_structure=["model",
-                                           "realization",
-                                           "metric"],
-                           sort_keys=True,
-                           indent=4,
-                           separators=(',', ': '))
-                """
                 # ================================================================
                 # Dictionary to JSON: individual JSON during model_realization loop
                 # ----------------------------------------------------------------
@@ -265,6 +255,19 @@ for model in models:
                     'mjo_stat',
                     mip, exp, fq, realm, model, run, str(msyear)+'-'+str(meyear)])
                 mjo_metrics_to_json(outdir, json_filename_tmp, result_dict, model=model, run=run)
+                # =================================================
+                # Write dictionary to json file
+                # (let the json keep overwritten in model loop)
+                # -------------------------------------------------
+                if not parallel:
+                    JSON = pcmdi_metrics.io.base.Base(outdir(output_type='metrics_results'), json_filename)
+                    JSON.write(result_dict,
+                               json_structure=["model",
+                                               "realization",
+                                               "metric"],
+                               sort_keys=True,
+                               indent=4,
+                               separators=(',', ': '))
 
             except Exception as err:
                 if debug:
@@ -281,7 +284,6 @@ for model in models:
             print('warning: faild for ', model, err)
             pass
 # --- Model loop end
-
 
 if not debug: 
     sys.exit('done') 
