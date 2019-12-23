@@ -226,8 +226,11 @@ for model in models:
                 print(model_path)
 
                 metrics_result = mjo_metric_ewr_calculation(
+                    mip, model, exp, run,
                     debug, plot, nc_out, cmmGrid, degX,
                     UnitsAdjust, model_path, var, syear, eyear,
+                    segmentLength,
+                    outdir,
                     )
 
                 # Archive as dict for JSON
