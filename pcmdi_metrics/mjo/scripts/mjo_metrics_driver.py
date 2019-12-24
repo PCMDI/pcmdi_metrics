@@ -4,7 +4,7 @@ Inspired by Daehyun Kim and Min-Seop Ahn's MJO metrics.
 
 Reference:
 Ahn, MS., Kim, D., Sperber, K.R. et al. Clim Dyn (2017) 49: 4023.
-https://doi.org/10.1007/s00382-017-3558-4 
+https://doi.org/10.1007/s00382-017-3558-4
 
 Auspices:
 This work was performed under the auspices of the U.S. Department of
@@ -39,14 +39,8 @@ from pcmdi_metrics.mjo.lib import (
     mjo_metric_ewr_calculation, mjo_metrics_to_json)
 from shutil import copyfile
 
-import cdms2
-import cdtime
-import cdutil
-import datetime
 import glob
 import json
-import MV2
-import numpy as np
 import os
 import pcmdi_metrics
 import sys
@@ -64,9 +58,9 @@ if 'UVCDAT_ANONYMOUS_LOG' not in os.environ:
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-#cmmGrid = False 
+# cmmGrid = False
 cmmGrid = True
-segmentLength = 180  # number of time step for each segment (in day, in this case), need to keep this number as even number?
+segmentLength = 180  # number of time step for each segment (in day, in this case)
 degX = 2.5  # grid distance for common grid (in degree)
 
 # =================================================
@@ -107,12 +101,12 @@ models = param.modnames
 # List up all available models if 'all' given in models
 if ('all' in [m.lower() for m in models]) or (models == 'all'):
     models = [p.split('/')[-1].split('.')[2]
-        for p in glob.glob(modpath(
-            mip=mip,
-            exp=exp,
-            model='*',
-            realization='*',
-            variable=varModel))]
+                 for p in glob.glob(modpath(
+                     mip=mip,
+                     exp=exp,
+                     model='*',
+                     realization='*',
+                     variable=varModel))]
     # remove duplicates
     models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
 
@@ -168,8 +162,11 @@ print('parallel:', parallel)
 # =================================================
 # Declare dictionary for .json record
 # -------------------------------------------------
+
+
 def tree():
     return defaultdict(tree)
+
 
 result_dict = tree()
 
@@ -223,9 +220,10 @@ for model in models:
             eyear = meyear
             # variable data
             model_path_list = glob.glob(
-        		modpath(mip=mip, exp=exp, model=model, realization=realization, variable=var))
+                modpath(mip=mip, exp=exp, model=model, realization=realization, variable=var))
             model_path_list = sorted(model_path_list)
-            if debug: print('debug: model_path_list: ', model_path_list)
+            if debug:
+                print('debug: model_path_list: ', model_path_list)
             # dict for output JSON
             if model not in list(result_dict['RESULTS'].keys()):
                 result_dict['RESULTS'][model] = {}
@@ -262,7 +260,7 @@ for model in models:
                     # Nomalized East power by observation (E/O ratio)
                     if includeOBS:
                         result_dict['RESULTS'][model][run]['east_power_normalized_by_observation'] = (
-                            result_dict['RESULTS'][model][run]['east_power'] / 
+                            result_dict['RESULTS'][model][run]['east_power'] /
                             result_dict['REF'][reference_data_name]['east_power'])
                 # Output to JSON
                 # ================================================================

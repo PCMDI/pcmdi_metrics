@@ -364,7 +364,7 @@ for model in models:
             mip=mip, exp=exp, model=model, realization=realization, variable=var)).readlines()
     """
     model_path_list = glob.glob(modpath(
-		mip=mip, exp=exp, model=model, realization=realization, variable=var))
+        mip=mip, exp=exp, model=model, realization=realization, variable=var))
 
     model_path_list = sort_human(model_path_list)
 
