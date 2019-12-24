@@ -9,12 +9,14 @@ parallel=yes
 
 num_workers=20
 
-mips="cmip5 cmip6"
+#mips="cmip5 cmip6"
+mips="cmip5"
 
 if [ $parallel == no ]; then
     echo 'parallel no'
     for mip in $mips; do
-        ./mjo_metric_driver.py -p ../doc/myParam_${mip}.py >& log.${mip}.txt &
+        python -u mjo_metrics_driver.py -p ../doc/myParam_${mip}.py >& log.${mip}.txt &
+        #python -u mjo_metrics_driver.py -p ../doc/myParam_${mip}.py --modnames ACCESS1-0 --realization r1i1p1 >& log.${mip}.txt &
         disown
     done
 elif [ $parallel == yes ]; then
