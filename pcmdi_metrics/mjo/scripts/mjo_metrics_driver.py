@@ -54,7 +54,14 @@ import pcmdi_metrics
 import sys
 import time
 
+# To avoid below error
+# OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
+# Must be done before any CDAT library is called.
+# https://github.com/CDAT/cdat/issues/2213
+if 'UVCDAT_ANONYMOUS_LOG' not in os.environ:
+    os.environ['UVCDAT_ANONYMOUS_LOG'] = 'no'
 
 # =================================================
 # Hard coded options... will be moved out later
