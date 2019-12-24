@@ -14,6 +14,7 @@ import glob
 import os
 import pcmdi_metrics
 import sys
+import time
 
 # To avoid below error
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
