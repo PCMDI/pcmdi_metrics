@@ -1,8 +1,10 @@
 import os
 import vcs
 
+
 def debug_chk_plot(
-    d_seg_x_ano, Power, OEE, segment_year, daSeaCyc, segment_ano_year):
+        d_seg_x_ano, Power, OEE, segment_year,
+        daSeaCyc, segment_ano_year):
 
     if not os.path.exists('debug'):
         os.makedirs('debug')

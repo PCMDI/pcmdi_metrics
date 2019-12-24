@@ -1,6 +1,5 @@
-import cdms2    
+import cdms2
 import glob
-import MV2
 import os
 
 from plot_wavenumber_frequency_power import plot_power

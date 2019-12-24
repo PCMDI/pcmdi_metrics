@@ -6,9 +6,10 @@ import os
 from plot_wavenumber_frequency_power import plot_power
 from lib_mjo import calculate_ewr
 
+
 def main():
 
-    #mip = 'cmip5'
+    # mip = 'cmip5'
     mip = 'cmip6'
     exp = 'historical'
     version = 'v20190710'
@@ -23,8 +24,8 @@ def main():
     models_list = list(dict.fromkeys(models_list))
     # remove obs
     models_list.remove('obs')
-     
-    #models_list = models_list[0:1]
+
+    # models_list = models_list[0:1]
     print(models_list)
 
     for model in models_list:
@@ -39,15 +40,16 @@ def main():
                 d = f('power')
                 d_runs.append(d)
                 f.close()
-            except:
-                print(model, run, 'cannnot load')
+            except Exception as err:
+                print(model, run, 'cannnot load:', err)
                 pass
             if run == runs_list[-1]:
                 num_runs = len(d_runs)
                 # ensemble mean
-                d_avg = MV2.average(d_runs, axis=0)  
+                d_avg = MV2.average(d_runs, axis=0)
                 d_avg.setAxisList(d.getAxisList())
-                title = mip.upper()+': '+model+' ('+str(num_runs)+' runs mean) \n Pr, NDJFMA, '+period+', common grid (2.5x2.5deg)'
+                title = (mip.upper()+': '+model+' ('+str(num_runs)
+                         +' runs mean) \n Pr, NDJFMA, '+period+', common grid (2.5x2.5deg)')
                 # E/W ratio
                 ewr, eastPower, westPower = calculate_ewr(d_avg)
                 # plot prepare
