@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Code written by Jiwoo Lee, LLNL. Feb. 2019
 Inspired by Daehyun Kim and Min-Seop Ahn's MJO metrics.
