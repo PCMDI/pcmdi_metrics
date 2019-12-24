@@ -1,5 +1,18 @@
+import cdms2
+import cdtime
+import MV2
+import numpy as np
 import os
 
+from lib_mjo import (
+    subSliceSegment, unit_conversion, Remove_dailySeasonalCycle,
+    interp2commonGrid, get_daily_ano_segment, space_time_spectrum,
+    generate_axes_and_decorate, output_power_spectra, calculate_ewr,
+    write_netcdf_output)
+from plot_wavenumber_frequency_power import plot_power
+from debug_chk_plot import debug_chk_plot
+
+"""
 libfiles = ['lib_mjo.py',
             'plot_wavenumber_frequency_power.py',
             'debug_chk_plot.py']
@@ -7,26 +20,26 @@ libfiles = ['lib_mjo.py',
 for lib in libfiles:
     exec(compile(open(os.path.join('../lib/', lib)).read(),
                  os.path.join('../lib/', lib), 'exec'))
-
+"""
 
 def mjo_metric_ewr_calculation(
     mip, model, exp, run,
     debug, plot, nc_out, cmmGrid, degX,
     UnitsAdjust, inputfile, var, startYear, endYear,
     segmentLength,
-    outdir,
-    ):
+    outdir):
 
     # Open file to read daily dataset
-    if debug: print('debug: open file')
+    if debug:
+        print('debug: open file')
     f = cdms2.open(inputfile)
     d = f[var]
     tim = d.getTime()
     comTim = tim.asComponentTime()
-    calendar = tim.calendar
 
     # Get starting and ending year and month
-    if debug: print('debug: check time')
+    if debug:
+        print('debug: check time')
     first_time = comTim[0]
     last_time = comTim[-1]
 
@@ -42,9 +55,10 @@ def mjo_metric_ewr_calculation(
         NL = int(360/degX)
     NT = segmentLength  # number of time step for each segment (need to be an even number)
 
-    if debug: endYear = startYear+2
-    if debug: print('debug: startYear, endYear:', startYear, endYear)
-    if debug: print('debug: NL, NT:', NL, NT)
+    if debug: 
+        endYear = startYear+2
+        print('debug: startYear, endYear:', startYear, endYear)
+        print('debug: NL, NT:', NL, NT)
 
     #
     # Get daily climatology on each grid, then remove it to get anomaly
@@ -63,7 +77,7 @@ def mjo_metric_ewr_calculation(
         segment[year] = unit_conversion(segment[year], UnitsAdjust)
         # Get climatology of daily seasonal cycle
         daSeaCyc = MV2.add(
-            MV2.divide(segment[year],float(numYear)),
+            MV2.divide(segment[year], float(numYear)),
             daSeaCyc)
     # Remove daily seasonal cycle from each segment
     if numYear > 1:
@@ -76,7 +90,7 @@ def mjo_metric_ewr_calculation(
     """
     Handle each segment (i.e. each year) separately.
     1. Get daily time series (3D: time and spatial 2D)
-    2. Meridionally average (2D: time and spatial, i.e., longitude) 
+    2. Meridionally average (2D: time and spatial, i.e., longitude)
     3. Get anomaly by removing time mean of the segment
     4. Proceed 2-D FFT to get power.
     Then get multi-year averaged power after the year loop.
@@ -85,7 +99,8 @@ def mjo_metric_ewr_calculation(
     Power = np.zeros((numYear, NT + 1, NL + 1), np.float)
 
     # Year loop for space-time spectrum calculation
-    if debug: print('debug: year loop start')
+    if debug:
+        print('debug: year loop start')
     for n, year in enumerate(range(startYear, endYear)):
         print('chk: year:', year)
         d_seg = segment_ano[year]
@@ -95,7 +110,8 @@ def mjo_metric_ewr_calculation(
         # Subregion, meridional average, and remove segment time mean
         d_seg_x_ano = get_daily_ano_segment(d_seg)
         # Compute space-time spectrum
-        if debug: print('debug: compute space-time spectrum')
+        if debug:
+            print('debug: compute space-time spectrum')
         Power[n, :, :] = space_time_spectrum(d_seg_x_ano)
 
     # Multi-year averaged power
@@ -134,7 +150,7 @@ def mjo_metric_ewr_calculation(
         fout = os.path.join(
             outdir(output_type='graphics'),
             output_filename)
-        title = mip.upper()+': '+model+' ('+run+') \n'+var.capitalize()+', NDJFMA '+str(startYear)+'-'+str(endYear) 
+        title = mip.upper()+': '+model+' ('+run+') \n'+var.capitalize()+', NDJFMA '+str(startYear)+'-'+str(endYear)
         if cmmGrid:
             title += ', common grid (2.5x2.5deg)'
         plot_power(OEE, title, fout, ewr)
