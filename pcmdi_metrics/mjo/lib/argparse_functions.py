@@ -95,10 +95,9 @@ def AddParserArgument(P):
                    help="Option for update existing JSON file: True (i.e., update) (default) / False (i.e., overwrite)")
     # Parallel
     P.add_argument("--parallel",
-                   type=bool,
+                   action="store_true",
                    dest='parallel',
-                   default=False,
-                   help="Option for running code in parallel mode: True / False (default)")
+                   help="Turn on the parallel mode for running code using multiple CPUs")
     P.add_argument("--includeOBS", dest="includeOBS",
                    help="include observation", action="store_true")
     P.add_argument("--no_OBS", dest="includeOBS",
@@ -107,7 +106,7 @@ def AddParserArgument(P):
                    default=1,
                    help="Start year for model data set")  
     # Defaults
-    P.set_defaults(includeOBS=True)
+    P.set_defaults(includeOBS=True, parallel=False)
     return P
 
 
