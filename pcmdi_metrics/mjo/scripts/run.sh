@@ -9,8 +9,8 @@ parallel=yes
 
 num_workers=20
 
-#mips="cmip5 cmip6"
-mips="cmip5"
+mips="cmip5 cmip6"
+#mips="cmip5"
 
 if [ $parallel == no ]; then
     echo 'parallel no'
