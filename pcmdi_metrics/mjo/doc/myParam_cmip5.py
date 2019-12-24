@@ -28,8 +28,6 @@ ObsUnitsAdjust = (False, 0, 0, 0, 0)
 osyear = 1997
 oeyear = 2010
 
-includeOBS = True
-
 # =================================================
 # Models
 # -------------------------------------------------
@@ -57,10 +55,10 @@ meyear = 2004
 # -------------------------------------------------
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 results_dir = os.path.join(
-    #'/work/lee1043/imsi/result_test',
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
+    '/work/lee1043/imsi/result_test',
+    #'/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
     '%(output_type)', 'mjo',
-    mip, exp, case_id)
+    '%(mip)', '%(exp)', '%(case_id)')
 nc_out = True  # Write output in NetCDF
 plot = True  # Create map graphics
 

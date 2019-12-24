@@ -17,7 +17,6 @@ def mjo_metric_ewr_calculation(
     outdir,
     ):
 
-
     # Open file to read daily dataset
     if debug: print('debug: open file')
     f = cdms2.open(inputfile)
@@ -150,7 +149,7 @@ def mjo_metric_ewr_calculation(
 
     # Debug checking plot
     if debug and plot:
-        debug_chk_plot()
+        debug_chk_plot(d_seg_x_ano, Power, OEE, segment[year], daSeaCyc, segment_ano[year])
 
     f.close()
     return metrics_result

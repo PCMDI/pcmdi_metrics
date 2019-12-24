@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 Code written by Jiwoo Lee, LLNL. Feb. 2019
 Inspired by Daehyun Kim and Min-Seop Ahn's MJO metrics.
@@ -31,6 +33,14 @@ for advertising or product endorsement purposes.
 """
 
 from __future__ import print_function
+from argparse import RawTextHelpFormatter
+from collections import defaultdict
+from genutil import StringConstructor
+from pcmdi_metrics.mjo.lib import (
+    AddParserArgument, YearCheck,
+    mjo_metric_ewr_calculation, mjo_metrics_to_json)
+from shutil import copyfile
+
 import cdms2
 import cdtime
 import cdutil
@@ -44,13 +54,7 @@ import pcmdi_metrics
 import sys
 import time
 
-from pcmdi_metrics.mjo.lib import (
-    AddParserArgument, YearCheck,
-    mjo_metric_ewr_calculation, mjo_metrics_to_json)
 
-from argparse import RawTextHelpFormatter
-from collections import defaultdict
-from shutil import copyfile
 
 # =================================================
 # Hard coded options... will be moved out later
@@ -83,6 +87,7 @@ varOBS = param.varOBS
 nc_out = param.nc_out  # Record NetCDF output
 plot = param.plot  # Generate plots
 includeOBS = param.includeOBS  # Loop run for OBS or not
+print("includeOBS:", includeOBS)
 
 # Path to reference data
 reference_data_name = param.reference_data_name
@@ -112,8 +117,14 @@ print('models:', models)
 realization = param.realization
 print('realization: ', realization)
 
+# case id
+case_id = param.case_id
+
 # Output
-outdir = param.process_templated_argument("results_dir")
+outdir_template = param.process_templated_argument("results_dir")
+outdir = StringConstructor(str(outdir_template(
+    output_type='%(output_type)',
+    mip=mip, exp=exp, case_id=case_id)))
 
 # Create output directory
 for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
@@ -244,9 +255,10 @@ for model in models:
                 else:
                     result_dict['RESULTS'][model][run] = metrics_result
                     # Nomalized East power by observation (E/O ratio)
-                    result_dict['RESULTS'][model][run]['east_power_normalized_by_observation'] = (
-                        result_dict['RESULTS'][model][run]['east_power'] / 
-                        result_dict['REF'][reference_data_name]['east_power'])
+                    if includeOBS:
+                        result_dict['RESULTS'][model][run]['east_power_normalized_by_observation'] = (
+                            result_dict['RESULTS'][model][run]['east_power'] / 
+                            result_dict['REF'][reference_data_name]['east_power'])
                 # Output to JSON
                 # ================================================================
                 # Dictionary to JSON: individual JSON during model_realization loop
