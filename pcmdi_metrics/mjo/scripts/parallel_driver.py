@@ -80,7 +80,7 @@ debug = param.debug
 print('debug:', debug)
 
 # number of tasks to submit at the same time
-#num_workers = 20
+# num_workers = 20
 num_workers = param.num_workers
 
 # =================================================
@@ -108,18 +108,16 @@ for m, model in enumerate(models):
         modpath(mip=mip, exp=exp, model=model, realization="*", variable=var))
     # sort in nice way
     model_path_list = sort_human(model_path_list)
-    #if debug:
-    #    print('model_path_list:', model_path_list)
     # Find where run can be gripped from given filename template for modpath
     run_in_modpath = modpath(mip=mip, exp=exp, model=model, realization=realization,
-        variable=var).split('/')[-1].split('.').index(realization)
+                             variable=var).split('/')[-1].split('.').index(realization)
     # Collect available runs
     runs_list = [model_path.split('/')[-1].split('.')[run_in_modpath] for model_path in model_path_list]
     if debug:
         print('runs_list (all):', runs_list)
     # Check if given run member is included. If not for all runs and given run member is not included,
     # take alternative run
-    if realization is not "*":
+    if realization != "*":
         if realization in runs_list:
             runs_list = [realization]
         else:

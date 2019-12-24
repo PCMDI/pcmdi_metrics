@@ -27,8 +27,9 @@ def interp2commonGrid(d, dlat, debug=False):
     nlat = int(180/dlat)
     grid = cdms2.createGaussianGrid(nlat, xorigin=0.0, order="yx")
     d2 = d.regrid(grid, regridTool='regrid2', mkCyclic=True)
-    d2 = d2(latitude=(-10,10))
-    if debug: print('debug: d2.shape:', d2.shape)
+    d2 = d2(latitude=(-10, 10))
+    if debug:
+        print('debug: d2.shape:', d2.shape)
     return d2
 
 
@@ -40,11 +41,11 @@ def subSliceSegment(d, year, mon, day, length):
     - d: cdms array
     - year: segment starting year (integer)
     - mon: segment starting month (integer)
-    - day: segement starting day (integer)   
+    - day: segement starting day (integer)
     - length: segment length (integer)
     """
     tim = d.getTime()
-    comTim = tim.asComponentTime() 
+    comTim = tim.asComponentTime()
     h = comTim[0].hour
     m = comTim[0].minute
     s = comTim[0].second
@@ -75,7 +76,7 @@ def Remove_dailySeasonalCycle(d, d_cyc):
 def get_daily_ano_segment(d_seg):
     """
     Note: 1. Get daily time series (3D: time and spatial 2D)
-          2. Meridionally average (2D: time and spatial, i.e., longitude) 
+          2. Meridionally average (2D: time and spatial, i.e., longitude)
           3. Get anomaly by removing time mean of the segment
     input
     - d_seg: cdms2 data
@@ -84,7 +85,7 @@ def get_daily_ano_segment(d_seg):
     """
     cdms2.setAutoBounds('on')
     # sub region
-    d_seg = d_seg(latitude=(-10,10))
+    d_seg = d_seg(latitude=(-10, 10))
     # Get meridional average (3d (t, y, x) to 2d (t, y))
     d_seg_x = cdutil.averager(d_seg, axis='y', weights='weighted')
     # Get time-average in the segment on each longitude grid
@@ -100,7 +101,8 @@ def space_time_spectrum(d_seg_x_ano):
     - d: 2d cdms MV2 array (t (time), n (space))
     output
     - p: 2d array for power
-    NOTE: Below code taken from https://github.com/CDAT/wk/blob/2b953281c7a4c5d0ac2d79fcc3523113e31613d5/WK/process.py#L188
+    NOTE: Below code taken from
+    https://github.com/CDAT/wk/blob/2b953281c7a4c5d0ac2d79fcc3523113e31613d5/WK/process.py#L188
     """
     # Number of grid in longitude axis, and timestep for each segment
     NTSub = d_seg_x_ano.shape[0]  # NTSub
@@ -108,9 +110,9 @@ def space_time_spectrum(d_seg_x_ano):
     # Tapering
     d_seg_x_ano = taper(d_seg_x_ano) 
     # Power sepctrum analysis
-    EE = np.fft.fft2(d_seg_x_ano, axes=(1,0)) / float(NL) / float(NTSub)
+    EE = np.fft.fft2(d_seg_x_ano, axes=(1, 0)) / float(NL) / float(NTSub)
     # Now the array EE(n,t) contains the (complex) space-time spectrum.
-    """ 
+    """
     Create array PEE(NL+1,NT/2+1) which contains the (real) power spectrum.
     Note how the PEE array is arranged into a different order to EE.
     In this code, PEE is "Power", and its multiyear average will be "power"
@@ -140,9 +142,9 @@ def taper(data):
     window = signal.tukey(len(data))
     data2 = data.copy()
     for i in range(0, len(data)):
-        data2[i]=MV2.multiply(data[i][:], window[i])
+        data2[i] = MV2.multiply(data[i][:], window[i])
     return data2
-    
+
 
 def decorate_2d_array_axes(
     a, y, x,
@@ -171,7 +173,7 @@ def decorate_2d_array_axes(
     X.id = x_id
     X.units = x_units
     # Makes it an MV2 with axis and id (id come sfrom orignal data id)
-    a = MV2.array(a, axes=(Y,X), id=a_id)
+    a = MV2.array(a, axes=(Y, X), id=a_id)
     return a
 
 
@@ -189,7 +191,7 @@ def generate_axes_and_decorate(Power, NT, NL):
     """
     # frequency
     ff = []
-    for t in range(0,NT+1):
+    for t in range(0, NT+1):
         ff.append(float(t-NT/2)/float(NT))
     ff = MV2.array(ff)
     ff.id = 'frequency'
@@ -215,12 +217,12 @@ def output_power_spectra(NL, NT, Power, ff, ss):
     """
     # The corresponding frequencies, ff, and wavenumbers, ss, are:-
     PEE = Power
-    OEE = np.zeros((21,11))
+    OEE = np.zeros((21, 11))
     for n in range(int(NL/2), int(NL/2)+1+10):
         nn = n - int(NL/2)
         for t in range(int(NT/2)-10, int(NT/2+1+10)):
             tt = -(int(NT/2)+1)+11+t
-            OEE[tt,nn] = PEE[t,n]
+            OEE[tt, nn] = PEE[t, n]
     a = list((ff[i] for i in range(int(NT/2)-10, int(NT/2)+1+10)))
     b = list((ss[i] for i in range(int(NL/2), int(NL/2)+1+10)))
     a = MV2.array(a)
@@ -231,7 +233,7 @@ def output_power_spectra(NL, NT, Power, ff, ss):
         a_id='power', y_id=ff.id, x_id=ss.id,
         y_units=ff.units, x_units=ss.units)
     # Transpose for visualization
-    OEE = MV2.transpose(OEE, (1,0))
+    OEE = MV2.transpose(OEE, (1, 0))
     OEE.id = 'power'
     return OEE
 
@@ -243,7 +245,7 @@ def write_netcdf_output(d, fname):
     - d: array
     - fname: string. directory path and name of the netcd file, without .nc
     """
-    fo = cdms2.open(fname+'.nc','w')
+    fo = cdms2.open(fname+'.nc', 'w')
     fo.write(d)
     fo.close()
 
@@ -257,10 +259,10 @@ def calculate_ewr(OEE):
     Actual ranges of frequency and wavenumber have been checked and applied.
     """
     east_power_domain = OEE(
-        zonalwavenumber=(1,3),
+        zonalwavenumber=(1, 3),
         frequency=(0.0166667, 0.0333333))
     west_power_domain = OEE(
-        zonalwavenumber=(1,3),
+        zonalwavenumber=(1, 3),
         frequency=(-0.0333333,-0.0166667))
     eastPower = np.average(np.array(east_power_domain))
     westPower = np.average(np.array(west_power_domain))
