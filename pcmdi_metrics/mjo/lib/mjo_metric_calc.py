@@ -4,13 +4,13 @@ import MV2
 import numpy as np
 import os
 
-from lib_mjo import (
+from .lib_mjo import (
     subSliceSegment, unit_conversion, Remove_dailySeasonalCycle,
     interp2commonGrid, get_daily_ano_segment, space_time_spectrum,
     generate_axes_and_decorate, output_power_spectra, calculate_ewr,
     write_netcdf_output)
-from plot_wavenumber_frequency_power import plot_power
-from debug_chk_plot import debug_chk_plot
+from .plot_wavenumber_frequency_power import plot_power
+from .debug_chk_plot import debug_chk_plot
 
 """
 libfiles = ['lib_mjo.py',
