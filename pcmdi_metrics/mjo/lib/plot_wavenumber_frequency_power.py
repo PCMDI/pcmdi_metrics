@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import os
 
+
 def plot_power(d, title, fout, ewr=None):
 
     y = d.getAxis(0)[:]
@@ -14,37 +15,39 @@ def plot_power(d, title, fout, ewr=None):
     BIGGER_SIZE = 15
     plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
     plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
-    plt.rc('xtick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
-    plt.rc('ytick', labelsize=MEDIUM_SIZE)    # fontsize of the tick labels
+    plt.rc('xtick', labelsize=MEDIUM_SIZE)   # fontsize of the tick labels
+    plt.rc('ytick', labelsize=MEDIUM_SIZE)   # fontsize of the tick labels
     plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
     
     # plot
-    fig = plt.figure(figsize=(8,4))
-    cs = plt.contourf(x,y,d,
-        levels=[0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014, 0.016, 0.018, 0.020, 0.022, 0.024, 0.026, 0.028, 0.03, 0.032],
+    plt.figure(figsize=(8, 4))
+    cs = plt.contourf(
+        x, y, d,
+        levels=[0.002, 0.004, 0.006, 0.008, 0.01, 0.012, 0.014, 0.016,
+                0.018, 0.020, 0.022, 0.024, 0.026, 0.028, 0.03, 0.032],
         cmap=plt.get_cmap('jet'),
-        #cmap=plt.get_cmap('viridis'),
         extend='both')
     cs.cmap.set_under('w')
     # y-axis range
-    plt.ylim(0,6)
+    plt.ylim(0, 6)
     # eastward annotation
     plt.text(0.01, 5.5, 'Eastward', horizontalalignment='center', fontsize=12)
     plt.annotate('', xy=(0.001, 5.3), xycoords='data', xytext=(0.02, 5.3),
-            arrowprops=dict(arrowstyle="<|-", color='black', linewidth=3))
+                 arrowprops=dict(arrowstyle="<|-", color='black', linewidth=3))
     # westward annotation
     plt.text(-0.01, 5.5, 'Westward', horizontalalignment='center', fontsize=12)
     plt.annotate('', xy=(-0.001, 5.3), xycoords='data', xytext=(-0.02, 5.3),
-            arrowprops=dict(arrowstyle="<|-", color='black', linewidth=3))
+                 arrowprops=dict(arrowstyle="<|-", color='black', linewidth=3))
     # vertical line at 0 to distingush east and west
     plt.axvline(x=0, linestyle='dotted', color='black', linewidth=1)
     # east-west power ratio annotation
     if ewr is not None:
-        plt.text(0.044, 5.5,
-            'EWR = '+str(round(ewr,2)),
+        plt.text(
+            0.044, 5.5,
+            'EWR = '+str(round(ewr, 2)),
             horizontalalignment='center',
-            fontsize=12, 
+            fontsize=12,
             bbox=dict(facecolor='white', alpha=0.5))
     currentAxis = plt.gca()
     currentAxis.add_patch(Rectangle((0.0166667, 1), 0.0333333-0.0166667, 2, edgecolor='black', ls='--', fill=None))
@@ -78,7 +81,7 @@ if __name__ == "__main__":
     """
 
     imgdir = '.'
-    
+
     f = cdms2.open(os.path.join(datadir, ncfile))
     d = f('power')
     fout = os.path.join(imgdir, pngfilename)
