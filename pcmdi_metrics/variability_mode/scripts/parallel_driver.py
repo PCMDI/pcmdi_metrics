@@ -13,6 +13,7 @@ import glob
 import os
 import pcmdi_metrics
 import sys
+import time
 
 # To avoid below error
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
@@ -122,7 +123,8 @@ if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 
 # number of tasks to submit at the same time
-num_workers = 10
+num_workers = 5
+#num_workers = 10
 #num_workers = 30
 
 print("Start : %s" % time.ctime())
