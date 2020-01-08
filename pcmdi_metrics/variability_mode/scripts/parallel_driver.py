@@ -6,7 +6,7 @@ from genutil import StringConstructor
 from subprocess import Popen
 
 from pcmdi_metrics.variability_mode.lib import (
-    AddParserArgument, VariabilityModeCheck)
+    AddParserArgument, VariabilityModeCheck, sort_human)
 
 import datetime
 import glob
@@ -57,7 +57,7 @@ models = param.modnames
 
 # Include all models if conditioned
 if ('all' in [m.lower() for m in models]) or (models == 'all'):
-    models = ([p.split('.')[1] for p in glob.glob(modpath(
+    models = ([p.split('/')[-1].split('.')[2] for p in glob.glob(modpath(
                 mip=mip, exp=exp, model='*', realization='*', variable=var))])
     # remove duplicates
     models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
@@ -104,13 +104,45 @@ if debug:
 
 cmds_list = []
 for m, model in enumerate(models):
-    cmd = ['python', 'variability_modes_driver.py',
-           '-p', param_file,
-           '--case_id', case_id]
-    if m > 0:
-        cmd += ['--no_nc_out_obs', '--no_plot_obs']
-    cmd += ['--modnames', model]
-    cmds_list.append(cmd)
+    print(' ----- model: ', model, ' ---------------------')
+    # Find all xmls for the given model
+    model_path_list = glob.glob(
+        #modpath(mip=mip, exp=exp, model=model, realization=realization, variable=var))
+        modpath(mip=mip, exp=exp, model=model, realization="*", variable=var))
+    # sort in nice way
+    model_path_list = sort_human(model_path_list)
+    #if debug:
+    #    print('model_path_list:', model_path_list)
+    # Find where run can be gripped from given filename template for modpath
+    run_in_modpath = modpath(mip=mip, exp=exp, model=model, realization=realization,
+        variable=var).split('/')[-1].split('.').index(realization)
+    # Collect available runs
+    runs_list = [model_path.split('/')[-1].split('.')[run_in_modpath] for model_path in model_path_list]
+    if debug:
+        print('runs_list (all):', runs_list)
+    # Check if given run member is included. If not for all runs and given run member is not included,
+    # take alternative run
+    if realization is not "*":
+        if realization in runs_list:
+            runs_list = [realization]
+        else:
+            runs_list = runs_list[0:1]
+        if debug:
+            print('runs_list (revised):', runs_list)
+    for r, run in enumerate(runs_list):
+        cmd = ['python', 'variability_modes_driver.py',
+               '-p', param_file,
+               '--case_id', case_id,
+               '--mip', mip,
+               '--exp', exp,
+               '--modnames', model,
+               '--realization', run]
+        if m > 0 or r > 0:
+            cmd += ['--no_nc_out_obs', '--no_plot_obs']
+        cmds_list.append(cmd)
+
+#for cmd in cmds_list:
+#    print(cmd)
 
 # =================================================
 # Run subprocesses in parallel
