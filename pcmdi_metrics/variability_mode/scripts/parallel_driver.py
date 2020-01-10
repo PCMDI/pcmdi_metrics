@@ -57,7 +57,8 @@ models = param.modnames
 
 # Include all models if conditioned
 if ('all' in [m.lower() for m in models]) or (models == 'all'):
-    models = ([p.split('/')[-1].split('.')[2] for p in glob.glob(modpath(
+    model_index_path = param.modpath.split('/')[-1].split('.').index("%(model)")
+    models = ([p.split('/')[-1].split('.')[model_index_path] for p in glob.glob(modpath(
                 mip=mip, exp=exp, model='*', realization='*', variable=var))])
     # remove duplicates
     models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
