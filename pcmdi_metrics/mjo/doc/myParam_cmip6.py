@@ -31,12 +31,12 @@ oeyear = 2010
 # =================================================
 # Models
 # -------------------------------------------------
-modpath = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20191223/%(mip)/%(exp)/atmos/day/%(variable)/%(mip).%(exp).%(model).%(realization).day.%(variable).xml'
+modpath = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200116/%(mip)/%(exp)/atmos/day/%(variable)/%(mip).%(exp).%(model).%(realization).day.%(variable).xml'
 
-#modnames = ['ACCESS1-0']
+# modnames = ['ACCESS1-0']
 modnames = 'all'
 
-#realization = 'r1i1p1'
+# realization = 'r1i1p1'
 realization = '*'
 
 varModel = 'pr'
@@ -51,8 +51,8 @@ meyear = 2004
 # -------------------------------------------------
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 results_dir = os.path.join(
-    '/work/lee1043/imsi/result_test',
-    #'/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
+    # '/work/lee1043/imsi/result_test',
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
     '%(output_type)', 'mjo',
     '%(mip)', '%(exp)', '%(case_id)')
 nc_out = True  # Write output in NetCDF

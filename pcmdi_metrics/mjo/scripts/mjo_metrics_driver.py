@@ -48,7 +48,7 @@ import time
 
 # To avoid below error
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
+# os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
 # Must be done before any CDAT library is called.
 # https://github.com/CDAT/cdat/issues/2213
@@ -98,15 +98,11 @@ modpath = param.process_templated_argument("modpath")
 # Check given model option
 models = param.modnames
 
-# List up all available models if 'all' given in models
+# Include all models if conditioned
 if ('all' in [m.lower() for m in models]) or (models == 'all'):
-    models = [p.split('/')[-1].split('.')[2]
-                 for p in glob.glob(modpath(
-                     mip=mip,
-                     exp=exp,
-                     model='*',
-                     realization='*',
-                     variable=varModel))]
+    model_index_path = param.modpath.split('/')[-1].split('.').index("%(model)")
+    models = ([p.split('/')[-1].split('.')[model_index_path] for p in glob.glob(modpath(
+                mip=mip, exp=exp, model='*', realization='*', variable=varModel))])
     # remove duplicates
     models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
 

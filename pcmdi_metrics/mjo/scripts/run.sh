@@ -21,8 +21,10 @@ if [ $parallel == no ]; then
     done
 elif [ $parallel == yes ]; then
     echo 'parallel yes'
+    modnames="all"
+    realization="all"
     for mip in $mips; do
-        ./parallel_driver.py -p ../doc/myParam_${mip}.py --num_workers $num_workers >& log.parallel.${mip}.txt &
+        python -u ./parallel_driver.py -p ../doc/myParam_${mip}.py --num_workers $num_workers --modnames $modnames --realization $realization  >& log.parallel.${mip}.txt &
         disown
     done
 fi
