@@ -18,7 +18,7 @@ import time
 
 # To avoid below error
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
-#os.environ['OPENBLAS_NUM_THREADS'] = '1'
+# os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
 # Must be done before any CDAT library is called.
 # https://github.com/CDAT/cdat/issues/2213
@@ -51,7 +51,8 @@ models = param.modnames
 
 # Include all models if conditioned
 if ('all' in [m.lower() for m in models]) or (models == 'all'):
-    models = ([p.split('/')[-1].split('.')[2] for p in glob.glob(modpath(
+    model_index_path = param.modpath.split('/')[-1].split('.').index("%(model)")
+    models = ([p.split('/')[-1].split('.')[model_index_path] for p in glob.glob(modpath(
                 mip=mip, exp=exp, model='*', realization='*', variable=var))])
     # remove duplicates
     models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
@@ -156,7 +157,7 @@ print("Start : %s" % time.ctime())
 # submit tasks and wait for subset of tasks to complete
 procs_list = []
 for p, cmd in enumerate(cmds_list):
-    print(p, cmd)
+    print(p, ':',  ' '.join(cmd))
     model = cmd[7]
     run = cmd[9]
     log_filename = '_'.join(['log_mjo', mip, exp, model, run, case_id])

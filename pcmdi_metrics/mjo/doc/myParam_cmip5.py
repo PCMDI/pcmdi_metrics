@@ -31,15 +31,13 @@ oeyear = 2010
 # =================================================
 # Models
 # -------------------------------------------------
-modpath = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20191223/%(mip)/%(exp)/atmos/day/%(variable)/%(mip).%(exp).%(model).%(realization).day.%(variable).xml'
+modpath = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200116/%(mip)/%(exp)/atmos/day/%(variable)/%(mip).%(exp).%(model).%(realization).day.%(variable).xml'
 
-modnames = ['ACCESS1-0', 'ACCESS1-3', 'BCC-CSM1-1', 'BCC-CSM1-1-M', 'BNU-ESM', 'CanCM4', 'CanESM2', 'CCSM4', 'CESM1-BGC', 'CESM1-CAM5', 'CESM1-FASTCHEM', 'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS', 'CNRM-CM5', 'CSIRO-Mk3-6-0', 'EC-EARTH', 'FGOALS-g2', 'GFDL-CM3', 'GFDL-ESM2G', 'GFDL-ESM2M', 'GISS-E2-H', 'GISS-E2-R', 'HadGEM2-AO', 'HadGEM2-CC', 'HadGEM2-ES', 'INMCM4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR', 'IPSL-CM5B-LR', 'MIROC-ESM', 'MIROC-ESM-CHEM', 'MIROC4h', 'MIROC5', 'MPI-ESM-MR', 'MPI-ESM-P', 'MRI-CGCM3', 'MRI-ESM1', 'NorESM1-M']  # noqa
+modnames = ['ACCESS1-0']
+# modnames = 'all'
 
-#modnames = ['ACCESS1-0']
-modnames = 'all'
-
-#realization = 'r1i1p1'
-realization = '*'
+realization = 'r1i1p1'
+# realization = '*'
 
 varModel = 'pr'
 ModUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
@@ -53,8 +51,8 @@ meyear = 2004
 # -------------------------------------------------
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 results_dir = os.path.join(
-    '/work/lee1043/imsi/result_test',
-    #'/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
+    # '/work/lee1043/imsi/result_test',
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
     '%(output_type)', 'mjo',
     '%(mip)', '%(exp)', '%(case_id)')
 nc_out = True  # Write output in NetCDF
