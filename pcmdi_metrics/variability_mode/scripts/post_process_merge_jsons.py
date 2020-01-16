@@ -11,10 +11,13 @@ import os
 
 
 def main():
-    mips = ['cmip5', 'cmip6']
-    exps = ['historical']
+    #mips = ['cmip5', 'cmip6']
+    #mips = ['cmip6']
+    mips = ['cmip3']
+    #exps = ['historical']
+    exps = ['20c3m', 'amip']
     modes = ['NAM', 'NAO', 'PNA', 'SAM', 'NPO', 'PDO', 'NPGO']
-    case_id = 'v20191125'
+    case_id = 'v20200110'
     syear = 1900
     eyear = 2005
     #pmprdir = '/work/lee1043/imsi/result_test'

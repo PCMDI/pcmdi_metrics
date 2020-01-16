@@ -166,8 +166,9 @@ print("Start : %s" % time.ctime())
 procs_list = []
 for p, cmd in enumerate(cmds_list):
     print(p, cmd)
-    model = cmd[-1]
-    log_filename = '_'.join(['log_variability_mode', mode, mip, exp, model, case_id])
+    model = cmd[11]
+    run = cmd[13]
+    log_filename = '_'.join(['log_variability_mode', mode, mip, exp, model, run, case_id])
     log_file = os.path.join(log_dir, log_filename)
     with open(log_file+"_stdout.txt", "wb") as out, open(log_file+"_stderr.txt", "wb") as err:
         procs_list.append(Popen(cmd, stdout=out, stderr=err))

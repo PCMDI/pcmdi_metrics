@@ -7,6 +7,7 @@ set -ax
 
 ver=`date +"%Y%m%d"`
 mips='cmip3 cmip5 cmip6'
+mips='cmip6'
 modes='NAM NAO PNA SAM PDO NPO NPGO'
 
 for mip in $mips; do
