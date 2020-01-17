@@ -1,5 +1,6 @@
 from __future__ import print_function
 from collections import defaultdict
+from datetime import datetime
 from time import gmtime, strftime
 import cdms2
 import cdtime
@@ -49,6 +50,9 @@ def read_data_in(
     data_timeseries = f(var_in_data, time=(start_time, end_time), latitude=(-90, 90))
     cdutil.setTimeBoundsMonthly(data_timeseries)
 
+    # missing data check
+    check_missing_data(data_timeseries) 
+
     if UnitsAdjust[0]:
         data_timeseries = getattr(MV2, UnitsAdjust[1])(
             data_timeseries, UnitsAdjust[2])
@@ -82,6 +86,18 @@ def read_data_in(
     f.close()
 
     return data_timeseries, data_syear, data_eyear
+
+
+def check_missing_data(d):
+    time = d.getTime().asComponentTime()
+    num_tstep = d.shape[0]
+    months_between = diff_month(datetime(time[-1].year,time[-1].month, 1), datetime(time[0].year,time[0].month,1))
+    if num_tstep < months_between:
+        raise ValueError("ERROR: check_missing_data: num_data_timestep, expected_num_timestep:", num_tstep, months_between)
+
+
+def diff_month(d1, d2):
+    return (d1.year - d2.year) * 12 + d1.month - d2.month
 
 
 def debug_print(string, debug):
