@@ -38,7 +38,7 @@ for mip in $mips; do
     #fi
     for exp in $exps; do
         for mode in $modes; do
-            echo $mip $mode $case_id
+            echo $mip $exp $mode $case_id
             ./parallel_driver.py -p ../doc/myParam_${mode}_${mip}.py --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode >& ./log/log.${mip}.${mode}.all.v${ver}.txt & 
             disown
             sleep 1
