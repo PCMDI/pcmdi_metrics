@@ -150,7 +150,7 @@ for m, model in enumerate(models):
 # -------------------------------------------------
 # log dir
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-log_dir = "./log_"+case_id
+log_dir = "./log/"+case_id
 
 if not os.path.exists(log_dir):
     os.makedirs(log_dir)
