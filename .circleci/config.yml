@@ -25,6 +25,7 @@ aliases:
        conda activate base
        conda config --add channels conda-forge --force
        conda config --add channels cdat/label/nightly --force
+       conda config --add channels pcmdi/label/nightly --force
        conda config --set channel_priority strict
        BUILD_SCRIPT="$WORKDIR/conda-recipes/build_tools/conda_build.py"
        python $BUILD_SCRIPT -w $WORKDIR -p $PKG_NAME --build_version $BUILD_VARIANT_VER -o $ORG --do_build
@@ -33,7 +34,7 @@ aliases:
     name: setup_run_tests
     environment:
        PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner proj4 vtk-cdat"
-       CHANNELS: "-c cdat/label/nightly -c pcmdi/label/nightly -c pcmdi -c conda-forge"
+       CHANNELS: "-c pcmdi/label/nightly -c pcmdi -c cdat/label/nightly -c conda-forge"
     command: |
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
