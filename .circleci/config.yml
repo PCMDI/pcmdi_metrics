@@ -1,209 +1,231 @@
 version: 2
 
-checkout:
-  post:
-    - ./ci-support/checkout_merge_commit.sh
-        
 aliases:
-  - &create_conda_env
-    name: create_conda_env
+  - &setup_miniconda
+    name: setup_miniconda
+    command: |
+       mkdir -p workspace
+       git clone -b validateNightly git@github.com:CDAT/cdat workspace/cdat
+       # install_miniconda.py installs miniconda3 under $WORKDIR/miniconda
+       python workspace/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3'
+
+  - &conda_rerender
+    name: conda_rerender
+    command: |
+       git clone https://github.com/CDAT/conda-recipes.git $WORKDIR/conda-recipes 
+       source $WORKDIR/miniconda/etc/profile.d/conda.sh
+       conda activate base
+       BUILD_SCRIPT="$WORKDIR/conda-recipes/build_tools/conda_build.py"
+       python $BUILD_SCRIPT -w $WORKDIR -l $LAST_STABLE -B 0 -p $PKG_NAME -b $CIRCLE_BRANCH -o $ORG --do_rerender
+
+  - &conda_build
+    name: conda_build
+    command: |
+       source $WORKDIR/miniconda/etc/profile.d/conda.sh
+       conda activate base
+       conda config --add channels conda-forge --force
+       conda config --add channels cdat/label/nightly --force
+       conda config --set channel_priority strict
+       BUILD_SCRIPT="$WORKDIR/conda-recipes/build_tools/conda_build.py"
+       python $BUILD_SCRIPT -w $WORKDIR -p $PKG_NAME --build_version $BUILD_VARIANT_VER -o $ORG --do_build
+
+  - &setup_run_tests
+    name: setup_run_tests
     environment:
-       PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner proj4 vtk-cdat libnetcdf=4.6.2"
-       CHANNELS: "-c cdat/label/nightly -c conda-forge -c pcmdi"
+       PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner proj4 vtk-cdat"
+       CHANNELS: "-c cdat/label/nightly -c pcmdi/label/nightly -c pcmdi -c conda-forge"
     command: |
-      if [ -d ${HOME}/miniconda ]; then
-        export PATH=$HOME/miniconda/bin:$PATH
-        echo "Found miniconda directory"
-      else
-        mkdir -p workspace
-        git clone -b validateNightly git@github.com:CDAT/cdat workspace/cdat --depth=1
-        python workspace/cdat/scripts/install_miniconda.py -w ${HOME} -p 'py3.7'
-        echo "miniconda directory not found, installing conda"
-        export PATH=${HOME}/miniconda/bin:$PATH
-        conda config --set always_yes yes --set changeps1 no
-        conda update -y -q conda
-        conda config --set anaconda_upload no
-        if [[ $PY_VER = "py2" ]]; then
-            conda create -q -n cdat $CHANNELS "python<3" $PKGS $FFMPEG
-        else
-            conda create -q -n cdat $CHANNELS "python=3.7" $PKGS $FFMPEG $COVERAGE_PKGS
-        fi
-      fi
-
-  - &setup_pmp
-    name: setup_pmp
-    command: |
-       export PATH=${HOME}/miniconda/bin:$PATH
-       source activate cdat
-       python setup.py install
+       source $WORKDIR/miniconda/etc/profile.d/conda.sh
+       conda activate base
+       conda create -y -n $ENV_NAME --use-local $CHANNELS "$CONDA_PY_VER" $PKG_NAME $PKGS $COVERAGE_PKGS
+       conda activate $ENV_NAME
        conda list
-       conda list --verbose cdms2
 
-  - &run_pmp_tests
-    name: run_pmp_tests
+  - &run_tests
+    name: run_tests
     command: |
-       export PATH=${HOME}/miniconda/bin:$PATH
-       export CDAT_ANONYMOUS_LOG=False
-       export CDAT_SETUP_PATH=${HOME}
-       source activate cdat
+       source $WORKDIR/miniconda/etc/profile.d/conda.sh
+       conda activate $ENV_NAME
        python run_tests.py -H -v2 $COVERAGE
-       RESULT=$?
-       echo "*** $PY_VER test result: ${RESULT}"
-    no_output_timeout: 30m
+       conda deactivate
+
+  - &conda_upload
+    name: conda_upload
+    command: |
+       if [[ $CIRCLE_BRANCH != "master" ]]; then
+          exit 0
+       fi
+       source $WORKDIR/miniconda/etc/profile.d/conda.sh
+       conda activate base
+       UPLOAD_OPTIONS="-t $CONDA_UPLOAD_TOKEN upload -u $USER -l $LABEL"
+       anaconda $UPLOAD_OPTIONS $WORKDIR/miniconda/conda-bld/noarch/$PKG_NAME-$VERSION.`date +%Y*`0.tar.bz2 --force
 
   - &run_coveralls
     name: run_coveralls
     command: |
-       export PATH=${HOME}/miniconda/bin:$PATH
-       source activate cdat
+       source $WORKDIR/miniconda/etc/profile.d/conda.sh
+       conda activate $ENV_NAME
        coveralls
-       source deactivate
+       conda deactivate
 
-  - &conda_upload
-    name: conda_upload
-    environment:
-       CHANNELS: "-c cdat/label/nightly -c conda-forge -c pcmdi"
-       PKG_NAME: "pcmdi_metrics"
-       LABEL: "nightly"
-    command: |
-       if [[ $CIRCLE_BRANCH != 'master' ]]; then
-          exit 0
-       fi
-       export PATH=${HOME}/miniconda/bin:$PATH
-       mkdir conda-bld
-       cd conda-bld
-       conda install conda-build anaconda-client
-       conda config --set anaconda_upload no
-       export CONDA_BLD_PATH=`pwd`/build_conda
-       mkdir build_conda
-       git clone git://github.com/cdat/conda-recipes
-       cd conda-recipes
-       rm -rf cdp
-       cp -r ../../recipes/pcmdi_metrics .
-       #python ./prep_for_build.py -l 1.2
-       python ./prep_for_build.py -l 1.2 -b $CIRCLE_BRANCH
-       conda build $PKG_NAME $CHANNELS
-       anaconda -t $CONDA_UPLOAD_TOKEN upload -u pcmdi -l $LABEL $CONDA_BLD_PATH/noarch/$PKG_NAME-*tar.bz2 --force
 
 jobs:
-  macos_pmp_py2:
-    macos:
-      xcode: "10.2.0"
-    environment:
-      WORKDIR: "test_macos_pmp_py2"
-      OS: "osx-64"
-      PY_VER: "py2"
-      FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
-    steps:
-      - checkout
-    #- restore_cache:
-    #     keys:
-    #       - macos_py2_2019-06-01
-      - run: *create_conda_env
-      - save_cache:
-          key: macos_py2_2019-06-01
-          paths: /Users/distiller/miniconda
-      - run: *setup_pmp
-      - run: *run_pmp_tests
-      - store_artifacts:
-          path: tests_html
-          destination: tests_html
-      - store_artifacts:
-          path: tests_png
-          destination: tests_png
+   macos_setup:
+      macos:
+         xcode: "11.3.0"
+      environment:
+         WORKDIR: /Users/distiller/project/macos_build
+         PKG_NAME: "pcmdi_metrics"
+         ORG: "PCMDI"
+         REPO_NAME: "pcmdi_metrics"
+         LAST_STABLE: "1.2"
+         BUILD_VARIANT_VER: "noarch"
+      steps:
+         - checkout
+         - run: *setup_miniconda
+         - run: *conda_rerender
+         - run: *conda_build
+         - persist_to_workspace:
+              root: .
+              paths: 
+                 - macos_build
 
-  macos_pmp_py3:
-    macos:
-      xcode: "10.2.0"
-    environment:
-      WORKDIR: "test_macos_pmp_py3"
-      OS: "osx-64"
-      PY_VER: "py3"
-      FFMPEG: "'ffmpeg>4' 'libpng>1.6.34'"
-    steps:
-      - checkout
-    #- restore_cache:
-    #      keys:
-    #        - macos_py3_2019-06-01
-      - run: *create_conda_env
-      - save_cache:
-          key: macos_py3_2019-06-01
-          paths: /Users/distiller/miniconda
-      - run: *setup_pmp
-      - run: *run_pmp_tests
-      - store_artifacts:
-          path: tests_html
-          destination: tests_html
-      - store_artifacts:
-          path: tests_png
-          destination: tests_png
+   linux_setup:
+      machine:
+         image: circleci/classic:latest
+      environment:
+         WORKDIR: /home/circleci/project/linux_build
+         PKG_NAME: "pcmdi_metrics"
+         ORG: "PCMDI"
+         REPO_NAME: "pcmdi_metrics"
+         LAST_STABLE: "1.2"
+         BUILD_VARIANT_VER: "noarch"
+      steps:
+         - checkout
+         - run: *setup_miniconda
+         - run: *conda_rerender
+         - run: *conda_build
+         - persist_to_workspace:
+              root: .
+              paths:
+                 - linux_build
 
-  linux_pmp_py2:
-    machine:
-      image: circleci/classic:latest
-    environment:
-      WORKDIR: "test_linux_pmp_py2"
-      OS: "linux-64"
-      PY_VER: "py2"
-      FFMPEG: "ffmpeg"
-    steps:
-      - checkout
-    #- restore_cache:
-    #     keys:
-    #       - linux_py2_2019-06-01
-      - run: *create_conda_env
-      - save_cache:
-          key: linux_py2_2019-06-01
-          paths: /home/circleci/miniconda
-      - run: *setup_pmp
-      - run: *run_pmp_tests
-      - store_artifacts:
-          path: tests_html
-          destination: tests_html
-      - store_artifacts:
-          path: tests_png
-          destination: tests_png
+   macos_pmp_py2:
+      macos:
+         xcode: "11.3.0"
+      environment:
+         WORKDIR: /Users/distiller/project/macos_build
+         PKG_NAME: "pcmdi_metrics"
+         REPO_NAME: "pcmdi_metrics"
+         ENV_NAME: "test_pmp"
+         CONDA_PY_VER: "python<3"
+      steps:
+         - checkout
+         - attach_workspace:
+              at: .
+         - run: *setup_run_tests
+         - run: *run_tests
+         - store_artifacts:
+              path: tests_html
+              destination: tests_html
 
-  linux_pmp_py3:
-    machine:
-      image: circleci/classic:latest
-    environment:
-      WORKDIR: "test_linux_pmp_py3"
-      OS: "linux-64"
-      PY_VER: "py3"
-      FFMPEG: "ffmpeg"
-      COVERAGE: "-c tests/coverage.json --coverage-from-egg"
-      COVERAGE_PKGS: "coverage coveralls"
-    steps:
-      - checkout
-    #- restore_cache:
-    #     keys:
-    #       - linux_py3_2019-06-01
-      - run: *create_conda_env
-      - save_cache:
-          key: linux_py3_2019-06-01
-          paths: /home/circleci/miniconda
-      - run: *setup_pmp
-      - run: *run_pmp_tests
-      - run: *conda_upload
-      - run: *run_coveralls
-      - store_artifacts:
-          path: tests_html
-          destination: tests_html
-      - store_artifacts:
-          path: tests_png
-          destination: tests_png
+   macos_pmp_py37:
+      macos:
+         xcode: "11.3.0"
+      environment:
+         WORKDIR: /Users/distiller/project/macos_build
+         PKG_NAME: "pcmdi_metrics"
+         REPO_NAME: "pcmdi_metrics"
+         ENV_NAME: "test_pmp"
+         CONDA_PY_VER: "python>=3.7,<3.8"
+      steps:
+         - checkout
+         - attach_workspace:
+              at: .
+         - run: *setup_run_tests
+         - run: *run_tests
+         - store_artifacts:
+              path: tests_html
+              destination: tests_html
 
+   linux_pmp_py2:
+      machine:
+         image: circleci/classic:latest
+      environment:
+         WORKDIR: /home/circleci/project/linux_build
+         PKG_NAME: "pcmdi_metrics"
+         REPO_NAME: "pcmdi_metrics"
+         ENV_NAME: "test_pmp"
+         CONDA_PY_VER: "python<3"
+      steps:
+         - checkout
+         - attach_workspace:
+              at: .
+         - run: *setup_run_tests
+         - run: *run_tests
+         - store_artifacts:
+              path: tests_html
+              destination: tests_html
+
+   linux_pmp_py37:
+      machine:
+         image: circleci/classic:latest
+      environment:
+         WORKDIR: /home/circleci/project/linux_build
+         PKG_NAME: "pcmdi_metrics"
+         REPO_NAME: "pcmdi_metrics"
+         ENV_NAME: "test_pmp"
+         CONDA_PY_VER: "python>=3.7,<3.8"
+         COVERAGE: "-c tests/coverage.json --coverage-from-egg"
+         COVERAGE_PKGS: "coverage coveralls"
+      steps:
+         - checkout
+         - attach_workspace:
+              at: .
+         - run: *setup_run_tests
+         - run: *run_tests
+         - run: *run_coveralls
+         - store_artifacts:
+              path: tests_html
+              destination: tests_html
+
+   upload:
+      machine:
+         image: circleci/classic:latest
+      environment:
+         WORKDIR: /home/circleci/project/linux_build
+         PKG_NAME: "pcmdi_metrics"
+         VERSION: "1.2"
+         USER: "pcmdi"
+         LABEL: "nightly"
+      steps:
+         - attach_workspace:
+              at: .
+         - run: pwd
+         - run: *conda_upload
 
 workflows:
-  version: 2
-  pcmdi_metrics:
-    jobs:
-      - macos_pmp_py2
-      - macos_pmp_py3:
-           requires:
-              - macos_pmp_py2
-      - linux_pmp_py2
-      - linux_pmp_py3:
-           requires:
-              - linux_pmp_py2
+   version: 2
+   pmp:
+      jobs:
+         - macos_setup
+         - linux_setup
+         - macos_pmp_py2:
+              requires:
+                 - macos_setup
+         - macos_pmp_py37:
+              requires:
+                 - macos_setup
+         - linux_pmp_py2:
+              requires:
+                 - linux_setup
+         - linux_pmp_py37:
+              requires:
+                 - linux_setup
+         - upload:
+              requires:
+                 - macos_pmp_py2
+                 - macos_pmp_py37
+                 - linux_pmp_py2
+                 - linux_pmp_py37
+
