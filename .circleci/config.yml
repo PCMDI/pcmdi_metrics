@@ -12,7 +12,7 @@ aliases:
   - &conda_rerender
     name: conda_rerender
     command: |
-       git clone https://github.com/CDAT/conda-recipes.git $WORKDIR/conda-recipes 
+       git clone -b update_build_tools https://github.com/CDAT/conda-recipes.git $WORKDIR/conda-recipes 
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
        BUILD_SCRIPT="$WORKDIR/conda-recipes/build_tools/conda_build.py"
