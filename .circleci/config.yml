@@ -130,7 +130,7 @@ jobs:
               path: tests_html
               destination: tests_html
 
-   macos_pmp_py37:
+   macos_pmp_py3:
       macos:
          xcode: "11.3.0"
       environment:
@@ -168,7 +168,7 @@ jobs:
               path: tests_html
               destination: tests_html
 
-   linux_pmp_py37:
+   linux_pmp_py3:
       machine:
          image: circleci/classic:latest
       environment:
@@ -215,19 +215,19 @@ workflows:
          - macos_pmp_py2:
               requires:
                  - macos_setup
-         - macos_pmp_py37:
+         - macos_pmp_py3:
               requires:
                  - macos_setup
          - linux_pmp_py2:
               requires:
                  - linux_setup
-         - linux_pmp_py37:
+         - linux_pmp_py3:
               requires:
                  - linux_setup
          - upload:
               requires:
                  - macos_pmp_py2
-                 - macos_pmp_py37
+                 - macos_pmp_py3
                  - linux_pmp_py2
-                 - linux_pmp_py37
+                 - linux_pmp_py3
 
