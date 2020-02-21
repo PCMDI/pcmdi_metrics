@@ -46,7 +46,7 @@ eofn_obs = 1
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)',
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/%(mip)/%(exp)',
     '%(variable).%(model).%(realization).xml')
 modpath_lf = os.path.join(
     '/work/lee1043/ESGF/xmls/%(mip)/historical/fx/sftlf',

@@ -33,7 +33,7 @@ debug = False  # False
 # -------------------------------------------------
 reference_data_name = 'NOAA-CIRES_20CR'
 reference_data_path = os.path.join(
-    '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/mon/psl/20CR/gn/v20190221',
+    '/p/user_pub/PCMDIobs/PCMDIobs2.0-beta/atmos/mon/psl/20CR/gn/v20200206',
     'psl_mon_20CR_BE_gn_187101-201212.nc')
 
 varOBS = 'psl'
@@ -47,7 +47,7 @@ eofn_obs = 1
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)',
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/%(mip)/%(exp)',
     '%(variable).%(model).%(realization).xml')
 
 modnames = [
