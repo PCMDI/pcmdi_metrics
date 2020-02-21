@@ -47,12 +47,12 @@ eofn_obs = 2
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200116',
+    '/p/user_pub/PCMDIobs/PCMDIobs2.0-beta/atmos/mon/psl/20CR/gn/v20200206',
     '%(mip)/%(exp)/atmos/mon/%(variable)',
     '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
 
 modpath_lf = os.path.join(
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200116',
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200219',
     '%(mip)/historical/atmos/fx/sftlf/%(mip).historical.%(model).r0i0p0.fx.sftlf.xml')
 
 modnames = ['all']
