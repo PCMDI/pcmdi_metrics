@@ -6,8 +6,8 @@ from matplotlib.patches import Polygon
 def draw_screen_poly( lats, lons, m):
     x, y = m( lons, lats )
     xy = zip(x,y)
-    poly = Polygon( list(xy), facecolor='red', alpha=0.4,
-                    edgecolor='red', linewidth=2)
+    poly = Polygon( list(xy), facecolor='steelblue', alpha=0.4,
+                    edgecolor='k', linewidth=2)
     plt.gca().add_patch(poly)
 
 
