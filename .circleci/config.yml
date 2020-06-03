@@ -5,7 +5,7 @@ aliases:
     name: setup_miniconda
     command: |
        mkdir -p workspace
-       git clone -b validateNightly git@github.com:CDAT/cdat workspace/cdat
+       git clone -b validateNightlyNew git@github.com:CDAT/cdat workspace/cdat
        # install_miniconda.py installs miniconda3 under $WORKDIR/miniconda
        python workspace/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3'
 
@@ -33,12 +33,19 @@ aliases:
   - &setup_run_tests
     name: setup_run_tests
     environment:
-       PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner proj4 vtk-cdat"
+       #PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner proj4 vtk-cdat"
+       PKGS: "scipy cia testsrunner"
        CHANNELS: "-c pcmdi/label/nightly -c pcmdi -c cdat/label/nightly -c conda-forge"
     command: |
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
-       conda create -y -n $ENV_NAME --use-local $CHANNELS "$CONDA_PY_VER" $PKG_NAME $PKGS $COVERAGE_PKGS
+       if [[ `uname` == "Linux" ]]; then
+          MESA="mesalib=18.3.1"
+       else
+          MESA="mesalib=17.3.9"
+       fi
+       echo "conda create -y -n $ENV_NAME --use-local $CHANNELS \"$CONDA_PY_VER\" $PKG_NAME $MESA $PKGS $COVERAGE_PKGS \"$LIBNETCDF\""
+       conda create -y -n $ENV_NAME --use-local $CHANNELS "$CONDA_PY_VER" $PKG_NAME $MESA $PKGS $COVERAGE_PKGS "$LIBNETCDF"
        conda activate $ENV_NAME
        conda list
 
@@ -53,9 +60,6 @@ aliases:
   - &conda_upload
     name: conda_upload
     command: |
-       if [[ $CIRCLE_BRANCH != "master" ]]; then
-          exit 0
-       fi
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
        UPLOAD_OPTIONS="-t $CONDA_UPLOAD_TOKEN upload -u $USER -l $LABEL"
@@ -73,7 +77,7 @@ aliases:
 jobs:
    macos_setup:
       macos:
-         xcode: "11.3.0"
+         xcode: "11.4.0"
       environment:
          WORKDIR: /Users/distiller/project/macos_build
          PKG_NAME: "pcmdi_metrics"
@@ -111,28 +115,9 @@ jobs:
               paths:
                  - linux_build
 
-   macos_pmp_py2:
+   macos_pmp_py37:
       macos:
-         xcode: "11.3.0"
-      environment:
-         WORKDIR: /Users/distiller/project/macos_build
-         PKG_NAME: "pcmdi_metrics"
-         REPO_NAME: "pcmdi_metrics"
-         ENV_NAME: "test_pmp"
-         CONDA_PY_VER: "python<3"
-      steps:
-         - checkout
-         - attach_workspace:
-              at: .
-         - run: *setup_run_tests
-         - run: *run_tests
-         - store_artifacts:
-              path: tests_html
-              destination: tests_html
-
-   macos_pmp_py3:
-      macos:
-         xcode: "11.3.0"
+         xcode: "11.4.0"
       environment:
          WORKDIR: /Users/distiller/project/macos_build
          PKG_NAME: "pcmdi_metrics"
@@ -149,26 +134,7 @@ jobs:
               path: tests_html
               destination: tests_html
 
-   linux_pmp_py2:
-      machine:
-         image: circleci/classic:latest
-      environment:
-         WORKDIR: /home/circleci/project/linux_build
-         PKG_NAME: "pcmdi_metrics"
-         REPO_NAME: "pcmdi_metrics"
-         ENV_NAME: "test_pmp"
-         CONDA_PY_VER: "python<3"
-      steps:
-         - checkout
-         - attach_workspace:
-              at: .
-         - run: *setup_run_tests
-         - run: *run_tests
-         - store_artifacts:
-              path: tests_html
-              destination: tests_html
-
-   linux_pmp_py3:
+   linux_pmp_py37:
       machine:
          image: circleci/classic:latest
       environment:
@@ -212,22 +178,14 @@ workflows:
       jobs:
          - macos_setup
          - linux_setup
-         - macos_pmp_py2:
+         - macos_pmp_py37:
               requires:
                  - macos_setup
-         - macos_pmp_py3:
-              requires:
-                 - macos_setup
-         - linux_pmp_py2:
-              requires:
-                 - linux_setup
-         - linux_pmp_py3:
+         - linux_pmp_py37:
               requires:
                  - linux_setup
          - upload:
               requires:
-                 - macos_pmp_py2
                  - macos_pmp_py3
-                 - linux_pmp_py2
                  - linux_pmp_py3
 
