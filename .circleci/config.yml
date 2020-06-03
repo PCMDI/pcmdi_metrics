@@ -124,6 +124,7 @@ jobs:
          REPO_NAME: "pcmdi_metrics"
          ENV_NAME: "test_pmp"
          CONDA_PY_VER: "python>=3.7,<3.8"
+         LIBNETCDF: "libnetcdf=*=nompi_*"
       steps:
          - checkout
          - attach_workspace:
@@ -143,6 +144,7 @@ jobs:
          REPO_NAME: "pcmdi_metrics"
          ENV_NAME: "test_pmp"
          CONDA_PY_VER: "python>=3.7,<3.8"
+         LIBNETCDF: "libnetcdf=*=nompi_*"
          #COVERAGE: "-c tests/coverage.json --coverage-from-egg"
          COVERAGE: "-c tests/coverage.json --coverage-from-repo"
          COVERAGE_PKGS: "coverage coveralls"
