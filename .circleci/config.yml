@@ -186,6 +186,6 @@ workflows:
                  - linux_setup
          - upload:
               requires:
-                 - macos_pmp_py3
-                 - linux_pmp_py3
+                 - macos_pmp_py37
+                 - linux_pmp_py37
 
