@@ -146,15 +146,15 @@ jobs:
          CONDA_PY_VER: "python>=3.7,<3.8"
          LIBNETCDF: "libnetcdf=*=nompi_*"
          #COVERAGE: "-c tests/coverage.json --coverage-from-egg"
-         COVERAGE: "-c tests/coverage.json --coverage-from-repo"
-         COVERAGE_PKGS: "coverage coveralls"
+         #COVERAGE: "-c tests/coverage.json --coverage-from-repo"
+         #COVERAGE_PKGS: "coverage coveralls"
       steps:
          - checkout
          - attach_workspace:
               at: .
          - run: *setup_run_tests
          - run: *run_tests
-         - run: *run_coveralls
+         #- run: *run_coveralls
          - store_artifacts:
               path: tests_html
               destination: tests_html
