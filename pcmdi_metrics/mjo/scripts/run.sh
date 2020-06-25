@@ -15,8 +15,7 @@ mips="cmip5 cmip6"
 if [ $parallel == no ]; then
     echo 'parallel no'
     for mip in $mips; do
-        python -u mjo_metrics_driver.py -p ../doc/myParam_${mip}.py >& log.${mip}.txt &
-        #python -u mjo_metrics_driver.py -p ../doc/myParam_${mip}.py --modnames ACCESS1-0 --realization r1i1p1 >& log.${mip}.txt &
+        python -u mjo_metrics_driver.py -p ../doc/myParam_mjo.py --mip ${mip} >& log.${mip}.txt &
         disown
     done
 elif [ $parallel == yes ]; then
@@ -24,7 +23,7 @@ elif [ $parallel == yes ]; then
     modnames="all"
     realization="all"
     for mip in $mips; do
-        python -u ./parallel_driver.py -p ../doc/myParam_${mip}.py --num_workers $num_workers --modnames $modnames --realization $realization  >& log.parallel.${mip}.txt &
+        python -u ./parallel_driver.py -p ../doc/myParam_mjo.py --mip ${mip} --num_workers $num_workers --modnames $modnames --realization $realization  >& log.parallel.${mip}.txt &
         disown
     done
 fi

@@ -95,7 +95,7 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
 # =================================================
 # Generates list of command
 # -------------------------------------------------
-param_file = '../doc/myParam_'+mip+'.py'
+param_file = '../doc/myParam_mjo.py'
 
 if debug:
     param_file = '../doc/myParam_test.py'
@@ -129,6 +129,7 @@ for m, model in enumerate(models):
         cmd = ['python', 'mjo_metrics_driver.py',
                '-p', param_file,
                '--case_id', case_id,
+               '--mip', mip,
                '--modnames', model,
                '--realization', run,
                '--parallel']
@@ -158,8 +159,8 @@ print("Start : %s" % time.ctime())
 procs_list = []
 for p, cmd in enumerate(cmds_list):
     print(p, ':',  ' '.join(cmd))
-    model = cmd[7]
-    run = cmd[9]
+    model = cmd[9]
+    run = cmd[11]
     log_filename = '_'.join(['log_mjo', mip, exp, model, run, case_id])
     log_file = os.path.join(log_dir, log_filename)
     with open(log_file+"_stdout.txt", "wb") as out, open(log_file+"_stderr.txt", "wb") as err:

@@ -1,19 +1,35 @@
 import datetime
 import os
 
+
+def find_latest(path):
+    dir_list = [p for p in glob.glob(path+"/v????????")]
+    return sorted(dir_list)[-1]
+
+
 # =================================================
 # Background Information
 # -------------------------------------------------
-mip = 'cmip6'
+mip = 'cmip5'
 exp = 'historical'
 frequency = 'da'
 realm = 'atm'
+
+#=================================================
+# Miscellaneous
+#-------------------------------------------------
+debug = False
+#debug = True
+
+nc_out = True
+plot = True  # Create map graphics
+update_json = True
 
 # =================================================
 # Observation
 # -------------------------------------------------
 reference_data_name = 'GPCP-1-3'
-reference_data_path = '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/day/pr/GPCP-1-3/gn/v20190225/pr_day_GPCP-1-3_BE_gn_19961002-20170101.nc'  # noqa
+reference_data_path = '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/day/pr/GPCP-1-3/gn/v20200402/pr_day_GPCP-1-3_BE_gn_v20200402_19961002-20170101.nc'  # noqa
 
 varOBS = 'pr'
 ObsUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
@@ -31,13 +47,16 @@ oeyear = 2010
 # =================================================
 # Models
 # -------------------------------------------------
-modpath = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200116/%(mip)/%(exp)/atmos/day/%(variable)/%(mip).%(exp).%(model).%(realization).day.%(variable).xml'
+modpath = os.path.join(
+    find_latest('/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest'),
+    '%(mip)/%(exp)/%(realm)/day/%(variable)',
+    '%(mip).%(exp).%(model).%(realization).day.%(variable).xml')
 
-# modnames = ['ACCESS1-0']
-modnames = 'all'
+modnames = ['ACCESS1-0']
+# modnames = 'all'
 
-# realization = 'r1i1p1'
-realization = '*'
+realization = 'r1i1p1'
+# realization = '*'
 
 varModel = 'pr'
 ModUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
@@ -50,16 +69,12 @@ meyear = 2004
 # Output
 # -------------------------------------------------
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
+
+if debug:
+    pmprdir = '/work/lee1043/imsi/result_test'
+
 results_dir = os.path.join(
-    # '/work/lee1043/imsi/result_test',
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
+    pmprdir,
     '%(output_type)', 'mjo',
     '%(mip)', '%(exp)', '%(case_id)')
-nc_out = True  # Write output in NetCDF
-plot = True  # Create map graphics
-
-# =================================================
-# Miscellaneous
-# -------------------------------------------------
-debug = False
-update_json = True
