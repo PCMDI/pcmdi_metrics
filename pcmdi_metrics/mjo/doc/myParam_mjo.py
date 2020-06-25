@@ -24,7 +24,7 @@ debug = False
 
 nc_out = True
 plot = True  # Create map graphics
-update_json = True
+update_json = False
 
 # =================================================
 # Observation

@@ -21,6 +21,7 @@ def plot_power(d, title, fout, ewr=None):
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
     
     # plot
+    plt.switch_backend('agg')  # backend plotting
     plt.figure(figsize=(8, 4))
     cs = plt.contourf(
         x, y, d,
