@@ -53,9 +53,11 @@ models = param.modnames
 if ('all' in [m.lower() for m in models]) or (models == 'all'):
     model_index_path = param.modpath.split('/')[-1].split('.').index("%(model)")
     models = ([p.split('/')[-1].split('.')[model_index_path] for p in glob.glob(modpath(
-                mip=mip, exp=exp, model='*', realization='*', variable=var))])
+                mip=mip, exp=exp, realm='atmos', model='*', realization='*', variable=var))])
     # remove duplicates
     models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
+    print('param.modpath:', param.modpath)
+    print('model_index_path:', model_index_path)
 
 print('models:', models)
 print('number of models:', len(models))
@@ -106,11 +108,11 @@ for m, model in enumerate(models):
     print(' ----- model: ', model, ' ---------------------')
     # Find all xmls for the given model
     model_path_list = glob.glob(
-        modpath(mip=mip, exp=exp, model=model, realization="*", variable=var))
+        modpath(mip=mip, exp=exp, realm='atmos', model=model, realization="*", variable=var))
     # sort in nice way
     model_path_list = sort_human(model_path_list)
     # Find where run can be gripped from given filename template for modpath
-    run_in_modpath = modpath(mip=mip, exp=exp, model=model, realization=realization,
+    run_in_modpath = modpath(mip=mip, exp=exp, realm='atmos', model=model, realization=realization,
                              variable=var).split('/')[-1].split('.').index(realization)
     # Collect available runs
     runs_list = [model_path.split('/')[-1].split('.')[run_in_modpath] for model_path in model_path_list]

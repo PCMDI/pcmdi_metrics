@@ -216,7 +216,7 @@ for model in models:
             eyear = meyear
             # variable data
             model_path_list = glob.glob(
-                modpath(mip=mip, exp=exp, model=model, realization=realization, variable=var))
+                modpath(mip=mip, exp=exp, realm='atmos', model=model, realization=realization, variable=var))
             model_path_list = sorted(model_path_list)
             if debug:
                 print('debug: model_path_list: ', model_path_list)
