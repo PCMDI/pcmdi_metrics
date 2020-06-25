@@ -279,7 +279,7 @@ for model in models:
                                sort_keys=True,
                                indent=4,
                                separators=(',', ': '))
-
+                print('Done')
             except Exception as err:
                 if debug:
                     raise
