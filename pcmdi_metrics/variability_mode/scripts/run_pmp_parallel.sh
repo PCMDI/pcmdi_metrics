@@ -12,16 +12,19 @@ case_id="v"`date +"%Y%m%d"`
 #case_id="v20191115"
 
 #mips='cmip3 cmip5 cmip6'
-mips='cmip5 cmip6'
+#mips='cmip5 cmip6'
 #mips='cmip5'
-#mips='cmip6'
+mips='cmip6'
 #mips='cmip3'
 
 #exps='20c3m amip'
-#exps='historical amip'
+#exps='20c3m'
 exps='historical amip'
+#exps='historical'
 
 modes='NAM NAO PNA SAM PDO NPO NPGO'
+#modes='NAM NAO PNA SAM NPO'
+#modes='NPGO'
 
 modnames='all'
 
@@ -39,7 +42,7 @@ for mip in $mips; do
     for exp in $exps; do
         for mode in $modes; do
             echo $mip $exp $mode $case_id
-            ./parallel_driver.py -p ../doc/myParam_${mode}_${mip}.py --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode >& ./log/log.${mip}.${mode}.all.v${ver}.txt & 
+            ./parallel_driver.py -p ../doc/myParam_${mode}_${mip}.py --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode >& ./log/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
             disown
             sleep 1
         done

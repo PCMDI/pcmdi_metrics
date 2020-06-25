@@ -156,7 +156,8 @@ if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 
 # number of tasks to submit at the same time
-num_workers = 5
+num_workers = 3
+#num_workers = 5
 #num_workers = 10
 #num_workers = 30
 
