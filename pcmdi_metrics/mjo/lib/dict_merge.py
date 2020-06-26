@@ -30,7 +30,9 @@ def dict_merge(dct, merge_dct):
     """
     # for k, v in merge_dct.iteritems():
     for k, v in merge_dct.items():
-        if len(merge_dct[k].keys()) != 0:
+        if isinstance(v, dict) and len(v.keys()) == 0:
+            pass
+        else:
             if ((k in dct and isinstance(dct[k], dict) and
                     isinstance(merge_dct[k], collections.Mapping))):
                 dict_merge(dct[k], merge_dct[k])
