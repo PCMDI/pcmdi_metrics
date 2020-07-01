@@ -38,7 +38,7 @@ aliases:
     command: |
        source $BASH_ENV
        mkdir -p $WORKDIR
-       git clone -b validateNightlyNew https://github.com/CDAT/cdat.git $WORKDIR/cdat
+       git clone https://github.com/CDAT/cdat.git $WORKDIR/cdat
        # install_miniconda.py installs miniconda3 under $WORKDIR/miniconda
        python $WORKDIR/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3'
 
