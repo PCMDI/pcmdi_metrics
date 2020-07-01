@@ -9,12 +9,13 @@ from lib_mjo import calculate_ewr
 
 def main():
 
-    # mip = 'cmip5'
+    #mip = 'cmip5'
     mip = 'cmip6'
     exp = 'historical'
-    version = 'v20190710'
+    version = 'v20200625'
     period = '1985-2004'
     datadir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/mjo/'+mip+'/historical/'+version
+    imgdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/graphics/mjo/'+mip+'/historical/'+version
 
     ncfile_list = glob.glob(os.path.join(datadir, '*.nc'))
 
@@ -53,7 +54,6 @@ def main():
                 # E/W ratio
                 ewr, eastPower, westPower = calculate_ewr(d_avg)
                 # plot prepare
-                imgdir = '/work/lee1043/imsi/result_test/mjo_metrics/average_test'
                 pngfilename = ncfile.split('.nc')[0].replace(run, 'average')
                 fout = os.path.join(imgdir, pngfilename)
                 # plot
