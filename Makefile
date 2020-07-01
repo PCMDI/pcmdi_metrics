@@ -31,7 +31,7 @@ coverage_opt = -c tests/coverage.json --coverage-from-egg
 endif
 
 # TODO change back to master
-conda_recipes_branch ?= build_tool_update
+conda_recipes_branch ?= master
 
 conda_base = $(patsubst %/bin/conda,%,$(conda))
 conda_activate = $(conda_base)/bin/activate
