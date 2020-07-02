@@ -65,12 +65,24 @@ conda-rerender: setup-build
 		-b $(branch) --do_rerender --conda_env $(conda_env) --ignore_conda_missmatch \
 		--conda_activate $(conda_activate) --organization $(organization)
 
+conda-local-rerender: setup-build 
+	python $(workdir)/$(build_script) -w $(workdir) -l $(last_stable) -B 0 -p $(pkg_name) \
+		-b $(branch) --do_rerender --conda_env $(conda_env) --ignore_conda_missmatch \
+		--conda_activate $(conda_activate) --organization $(organization) --local_repo=$(local_repo)
+
 conda-build:
 	mkdir -p $(artifact_dir)
 
 	python $(workdir)/$(build_script) -w $(workdir) -p $(pkg_name) --build_version noarch \
 		--do_build --conda_env $(conda_env) --extra_channels $(extra_channels) \
 		--conda_activate $(conda_activate) $(conda_build_extra)
+
+conda-local-build:
+	mkdir -p $(artifact_dir)
+
+	python $(workdir)/$(build_script) -w $(workdir) -p $(pkg_name) --build_version noarch \
+		--do_build --conda_env $(conda_env) --extra_channels $(extra_channels) \
+		--conda_activate $(conda_activate) $(conda_build_extra) --local_repo=$(local_repo)
 
 conda-upload:
 	source $(conda_activate) $(conda_env); \

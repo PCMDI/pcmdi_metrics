@@ -183,7 +183,7 @@ class PMPDriver(object):
                 except RuntimeError:
                     continue
                 except Exception as err:
-                    logging.getLogger("pcmdi_metrics").info("Unexpected error:".format(err))
+                    logging.getLogger("pcmdi_metrics").info("Unexpected error: {e}".format(e=err))
                     break
 
                 try:
@@ -191,7 +191,8 @@ class PMPDriver(object):
                 except RuntimeError:
                     continue
                 except Exception as err:
-                    logging.getLogger("pcmdi_metrics").info("Unexpected error in calculate output metrics:".format(err))
+                    err_msg = "Unexpected error in calculate output metrics: {e}".format(e=err)
+                    logging.getLogger("pcmdi_metrics").info(err_msg)
                     break
 
     def is_data_set_obs(self, data_set):
