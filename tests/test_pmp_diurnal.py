@@ -44,6 +44,7 @@ class DiurnalTest(basepmp.PMPTest):
     def testDiurnaliComputeStdOfDailyMean(self):
         data_pth = cdat_info.get_sampledata_path()
         cmd = '{}computeStdOfDailyMeans.py --num_workers=1 --mp {} --rd test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'.format(self.runner, data_pth)
+        print(cmd)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
 
@@ -51,6 +52,7 @@ class DiurnalTest(basepmp.PMPTest):
 
     def testFourierDiurnalAllGrid(self):
         cmd = '{}fourierDiurnalAllGrid.py --num_workers=1 --mp tests/diurnal/results/nc --rd test_data/results/nc -m7'.format(self.runner)
+        print(cmd)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_tmean.nc")
@@ -62,9 +64,11 @@ class DiurnalTest(basepmp.PMPTest):
 
     def runJsoner(self,script,json_file,ext):
         cmd = '{}{} --num_workers=1 --region_name=TROPICS --lat1=-30. --lat2=30. --lon1=0. --lon2=360 --mp tests/diurnal/results/nc --rd test_data/results/jsons -m7 -t "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_{}.nc"'.format(self.runner, script, ext)
+        print(cmd)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
         cmd = '{}{} --append --mp tests/diurnal/results/nc --rd test_data/results/jsons -m7 -t "pr_%(model)_%(month)_%(firstyear)-%(lastyear)_{}.nc"'.format(self.runner, script, ext)
+        print(cmd)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
         good = open("tests/diurnal/results/json/{}".format(json_file))
@@ -80,6 +84,7 @@ class DiurnalTest(basepmp.PMPTest):
     def testCompositeDiurnalStatistics(self):
         data_pth = cdat_info.get_sampledata_path()
         cmd = '{}compositeDiurnalStatistics.py --num_workers=1 --mp {} --rd test_data/results/nc -t "sample_data_pr_%(model).nc" -m7'.format(self.runner, data_pth)
+        print(cmd)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
         self.compare_nc("results/nc/pr_CMCC_Jul_1999-2005_diurnal_avg.nc")
@@ -97,6 +102,7 @@ class DiurnalTest(basepmp.PMPTest):
 
     def testfourierDiurnalGridpoints(self):
         cmd = '{}fourierDiurnalGridpoints.py --num_workers=1 --mp tests/diurnal/results/nc --rd test_data/results/ascii'.format(self.runner)
+        print(cmd)
         p = subprocess.Popen(shlex.split(cmd))
         p.communicate()
         self.assertTrue(os.path.exists("test_data/results/ascii/pr_Jul_1999-2005_fourierDiurnalGridPoints.asc"))

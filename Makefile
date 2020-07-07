@@ -18,13 +18,18 @@ endif
 
 last_stable ?= 1.2
 
-conda_env ?= base
-workdir ?= $(PWD)/workspace
+conda_env ?= build-pcmdi-metrics
 branch ?= $(shell git rev-parse --abbrev-ref HEAD)
 extra_channels ?= pcmdi/label/nightly pcmdi cdat/label/nightly conda-forge
-conda ?= $(or $(CONDA_EXE),$(shell find /opt/*conda*/bin $(HOME)/*conda* -type f -iname conda))
+conda ?= $(or $(CONDA_EXE),$(shell find /opt/*conda*/bin $(HOME)/*conda*/bin -type f -iname conda))
 artifact_dir ?= $(PWD)/artifacts
 conda_env_filename ?= spec-file
+
+ifeq ($(wildcard .tempdir),)
+workdir := $(shell mktemp -t build_$(pkg_name) -d > .tempdir)
+endif
+
+workdir := $(shell cat .tempdir)
 
 ifeq ($(coverage),1)
 coverage_opt = -c tests/coverage.json --coverage-from-egg
@@ -54,6 +59,11 @@ ifeq ($(wildcard $(workdir)/conda-recipes),)
 else
 	cd $(workdir)/conda-recipes; git pull
 endif
+
+clean:
+	rm -rf $(shell cat .tempdir)
+
+	rm -f .tempdir
 
 setup-tests:
 	source $(conda_activate) base; conda create -y -n $(conda_env) --use-local \
