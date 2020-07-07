@@ -19,6 +19,7 @@ import os
 
 from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor
 
+
 def main():
     P.add_argument("-t", "--filename_template",
                    default="pr_%(model)_%(month)_%(firstyear)-%(lastyear)_diurnal_avg.nc",

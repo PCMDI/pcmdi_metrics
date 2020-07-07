@@ -87,8 +87,8 @@ def main():
     args = P.get_parameter()
     month = args.month
     monthname = monthname_d[month]
-    startyear = args.firstyear
-    finalyear = args.lastyear
+    startyear = args.firstyear  # noqa: F841
+    finalyear = args.lastyear  # noqa: F841
 
     template = populateStringConstructor(args.filename_template, args)
     template.month = monthname

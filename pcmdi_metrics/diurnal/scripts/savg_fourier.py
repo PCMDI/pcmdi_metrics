@@ -57,8 +57,7 @@ def main():
     monthname = monthname_d[month]
     startyear = args.firstyear
     finalyear = args.lastyear
-    years = "%s-%s" % (startyear, finalyear)
-
+    years = "%s-%s" % (startyear, finalyear)  # noqa: F841
 
     print('Specifying latitude / longitude domain of interest ...')
     # TRMM (observed) domain:
@@ -79,16 +78,13 @@ def main():
     # Functions to convert phase between angle-in-radians and hours, for
     # either a 12- or 24-hour clock, i.e. for clocktype = 12 or 24:
 
-
     def hrs_to_rad(hours, clocktype):
         import MV2
         return 2 * MV2.pi * hours / clocktype
 
-
     def rad_to_hrs(phase, clocktype):
         import MV2
         return phase * clocktype / 2 / MV2.pi
-
 
     def vectoravg(hr1, hr2, clocktype):
         'Function to test vector-averaging of two time values:'
@@ -100,19 +96,18 @@ def main():
                    MV2.cos(hrs_to_rad(hr2, clocktype))) / 2
         return rad_to_hrs(MV2.arctan2(sin_avg, cos_avg), clocktype)
 
-
     def spacevavg(tvarb1, tvarb2, sftlf, model):
         '''
-            Given a "root filename" and month/year specifications, vector-average lat/lon arrays in an (amplitude, phase)
-            pair of input data files. Each input data file contains diurnal (24h), semidiurnal (12h) and terdiurnal (8h)
-            Fourier harmonic components of the composite mean day/night cycle.
+        Given a "root filename" and month/year specifications, vector-average lat/lon arrays in an (amplitude, phase)
+        pair of input data files. Each input data file contains diurnal (24h), semidiurnal (12h) and terdiurnal (8h)
+        Fourier harmonic components of the composite mean day/night cycle.
 
-            Vector-averaging means we consider the input data to be readings on an 8-, 12- or 24-hour clock and separately
-            average the Cartesian components (called "cosine" and "sine" below). Then the averaged components are combined
-            back into amplitude and phase values and returned.
+        Vector-averaging means we consider the input data to be readings on an 8-, 12- or 24-hour clock and separately
+        average the Cartesian components (called "cosine" and "sine" below). Then the averaged components are combined
+        back into amplitude and phase values and returned.
 
-            Space-averaging is done globally, as well as separately for land and ocean areas.
-            '''
+        Space-averaging is done globally, as well as separately for land and ocean areas.
+        '''
 
         glolf = cdutil.averager(sftlf, axis='xy')
         print('  Global mean land fraction = %5.3f' % glolf)
@@ -196,7 +191,6 @@ def main():
             outD['harmonic' + str(harmonic)]['amp_avg_ocn'] = amp_avg_ocn
             outD['harmonic' + str(harmonic)]['pha_avg_ocn'] = pha_avg_ocn
         return outD
-
 
     print('Preparing to write output to JSON file ...')
     if not os.path.exists(args.results_dir):

@@ -55,7 +55,8 @@ def main():
                     # Last possible second to get all tpoints
                     finishtime = startTime.add(
                         1, cdtime.Month).add(-1, cdtime.Minute)
-                    print('Reading %s from %s for time interval %s to %s ...' % (varbname, fileName, startTime, finishtime))
+                    print('Reading %s from %s for time interval %s to %s ...' % (varbname, fileName, startTime,
+                                                                                 finishtime))
                     # Transient variable stores data for current year's month.
                     tvarb = f(varbname, time=(startTime, finishtime, "ccn"))
                     # *HARD-CODES conversion from kg/m2/sec to mm/day.
@@ -136,8 +137,8 @@ def main():
 
     # -------------------------------------
 
-    monthname = monthname_d[month]
-    nYears = finalyear - startyear + 1
+    monthname = monthname_d[month]  # noqa: F841
+    nYears = finalyear - startyear + 1  # noqa: F841
     # Character strings for starting and ending day/GMT (*HARD-CODES
     # particular GMT timepoints*):
     # *WARNING* GMT timepoints are actually (0, 3, 6,..., 21) in the original TRMM/Obs4MIPs data, despite character

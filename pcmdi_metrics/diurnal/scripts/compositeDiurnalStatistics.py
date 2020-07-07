@@ -58,7 +58,8 @@ def main():
                     # Last possible second to get all tpoints
                     finishtime = startTime.add(
                         1, cdtime.Month).add(-1, cdtime.Minute)
-                    print('Reading %s from %s for time interval %s to %s ...' % (varbname, fileName, startTime, finishtime))
+                    print('Reading %s from %s for time interval %s to %s ...' % (varbname, fileName, startTime,
+                                                                                 finishtime))
                     # Transient variable stores data for current year's month.
                     tvarb = f(varbname, time=(startTime, finishtime))
                     # *HARD-CODES conversion from kg/m2/sec to mm/day.
@@ -185,14 +186,14 @@ def main():
     print('done')
     args = P.get_parameter()
 
-    month = args.month
-    monthname = monthname_d[args.month]
+    month = args.month  # noqa: F841
+    monthname = monthname_d[args.month]  # noqa: F841
 
     # -------------------------------------HARD-CODED INPUT (add to command line later?):
 
     # These models have been processed already (or tried and found wanting,
     # e.g. problematic time coordinates):
-    skipMe = args.skip
+    skipMe = args.skip  # noqa: F841
 
     # Choose only one ensemble member per model, with the following ensemble-member code (for definitions, see
     # http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf):

@@ -18,6 +18,7 @@ import os
 from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor
 from pcmdi_metrics.diurnal.fourierFFT import fastFT
 
+
 def main():
     P.add_argument("-t", "--filename_template",
                    default="pr_%(model)_%(month)_%(firstyear)-%(lastyear)_diurnal_avg.nc",
@@ -53,7 +54,7 @@ def main():
     monthname = monthname_d[month]
     startyear = args.firstyear
     finalyear = args.lastyear
-    yearrange = "%s-%s" % (startyear, finalyear)
+    yearrange = "%s-%s" % (startyear, finalyear)  # noqa: F841
 
     template = populateStringConstructor(args.filename_template, args)
     template.month = monthname
@@ -73,7 +74,6 @@ def main():
     if not os.path.exists(os.path.dirname(ascname)):
         os.makedirs(os.path.dirname(ascname))
     fasc = open(ascname, "w")
-
 
     gridptlats = [float(x) for x in args.lats]
     gridptlons = [float(x) for x in args.lons]
@@ -109,8 +109,8 @@ def main():
 
         modellats = LSTs.getLatitude()
         modellons = LSTs.getLongitude()
-        latbounds = modellats.getBounds()
-        lonbounds = modellons.getBounds()
+        latbounds = modellats.getBounds()  # noqa: F841
+        lonbounds = modellons.getBounds()  # noqa: F841
 
         # Gridpoints selected above may be offset slightly from points in full
         # grid ...
