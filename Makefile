@@ -18,7 +18,7 @@ endif
 
 last_stable ?= 1.2
 
-conda_env ?= base
+conda_env ?= build-pcmdi-metrics
 workdir ?= $(PWD)/workspace
 branch ?= $(shell git rev-parse --abbrev-ref HEAD)
 extra_channels ?= pcmdi/label/nightly pcmdi cdat/label/nightly conda-forge
