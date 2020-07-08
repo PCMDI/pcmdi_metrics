@@ -1,25 +1,9 @@
 version: 2.1
 
 parameters:
-   pkg_name:
-      type: string
-      default: "pcmdi_metrics"
-   repo_name:
-      type: string
-      default: "pcmdi_metrics"
-   last_stable:
-      type: string
-      default: "1.2"
-   user:
-      type: string
-      default: "pcmdi"
    label:
       type: string
       default: "nightly"
-   env_name:
-      type: string
-      default: "test_pcmdi_metrics"
-
 
 aliases:
   - &setup_env
@@ -48,7 +32,7 @@ aliases:
        source $BASH_ENV
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
-       make conda-rerender conda=$WORKDIR/miniconda/bin/conda workdir=$WORKDIR last_stable=$LAST_STABLE branch=$CIRCLE_BRANCH
+       make conda-rerender workdir=$WORKDIR branch=$CIRCLE_BRANCH
 
   - &conda_build
     name: conda_build
@@ -58,7 +42,7 @@ aliases:
        conda activate base
        os=`uname`
        artifacts_dir="artifacts/artifacts.${os}.noarch"
-       make conda-build conda=$WORKDIR/miniconda/bin/conda workdir=$WORKDIR artifact_dir=$PWD/$artifacts_dir
+       make conda-build workdir=$WORKDIR artifact_dir=$artifacts_dir
 
   - &setup_run_tests
     name: setup_run_tests
@@ -68,16 +52,15 @@ aliases:
        conda activate base
        export CONDA_PY_VER="python=$PY_VER"
        export LIBNETCDF_VER="libnetcdf=*=${LIBNETCDF}_*"
-       make setup-tests conda=$WORKDIR/miniconda/bin/conda conda_env=$ENV_NAME extra_pkgs="$CONDA_PY_VER $LIBNETCDF_VER $COVERAGE_PKGS"
-       make conda-dump-env conda=$WORKDIR/miniconda/bin/conda conda_env=$ENV_NAME artifact_dir=$PWD/spec_artifacts conda_env_filename=$CIRCLE_JOB
+       make setup-tests workdir=$WORKDIR extra_pkgs="$CONDA_PY_VER $LIBNETCDF_VER $COVERAGE_PKGS"
+       make conda-dump-env workdir=$WORKDIR artifact_dir=$PWD/spec_artifacts conda_env_filename=$CIRCLE_JOB
 
   - &run_tests
     name: run_tests
     command: |
        source $BASH_ENV
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
-       conda activate $ENV_NAME
-       make run-tests conda=$WORKDIR/miniconda/bin/conda conda_env=$ENV_NAME
+       make run-tests workdir=$WORKDIR
 
   - &conda_upload
     name: conda_upload
@@ -85,17 +68,16 @@ aliases:
        source $BASH_ENV
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
-       UPLOAD_OPTIONS="conda_upload_token=$CONDA_UPLOAD_TOKEN user=$USER label=$LABEL"
-       make conda-upload $UPLOAD_OPTIONS conda=$WORKDIR/miniconda/bin/conda artifact_dir="$PWD/artifacts/*Linux*/"
+       UPLOAD_OPTIONS="conda_upload_token=$CONDA_UPLOAD_TOKEN"
+       make conda-upload workdir=$WORKDIR $UPLOAD_OPTIONS artifact_dir="artifacts/*Linux*/"
 
   - &run_coveralls
     name: run_coveralls
     command: |
        source $BASH_ENV
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
-       conda activate $ENV_NAME
-       coveralls
-       conda deactivate
+       conda activate base
+       make run-coveralls workdir=$WORKDIR
 
 executors:
    linux:
@@ -111,10 +93,6 @@ jobs:
          os:
             type: executor
       executor: << parameters.os >>
-      environment:
-         PKG_NAME: << pipeline.parameters.pkg_name >>
-         REPO_NAME: << pipeline.parameters.repo_name >>
-         LAST_STABLE: << pipeline.parameters.last_stable >>
       steps:
          - checkout
          - run: *setup_env
@@ -137,8 +115,6 @@ jobs:
             type: string
       executor: << parameters.os >>
       environment:
-         PKG_NAME: << pipeline.parameters.pkg_name >>
-         ENV_NAME: << pipeline.parameters.env_name >>
          PY_VER: << parameters.py_ver >>
          LIBNETCDF: << parameters.libnetcdf >>
       steps:
@@ -160,7 +136,6 @@ jobs:
       machine:
          image: circleci/classic:latest
       environment:
-         USER: << pipeline.parameters.user >>
          LABEL: << pipeline.parameters.label >>
       steps:
          - checkout
@@ -181,10 +156,8 @@ workflows:
               matrix:
                  parameters:
                     os: [ linux, macos ]
-                    # py_ver: [ "3.6", "3.7", "3.8"]
-                    py_ver: [ "3.7" ]
-                    # libnetcdf: [ "nompi", "mpi_mpich", "mpi_openmpi" ]
-                    libnetcdf: [ "nompi" ]
+                    py_ver: [ "3.6", "3.7", "3.8"]
+                    libnetcdf: [ "nompi", "mpi_mpich", "mpi_openmpi" ]
               name: test-<< matrix.os >>-<< matrix.py_ver >>-<< matrix.libnetcdf >>
               requires:
                  - build-<< matrix.os >>
