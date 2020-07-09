@@ -9,12 +9,12 @@ print(lst)
 models = set([])
 model_runs = set([])
 
-for l in sorted(lst):
-    print(l)
-    mip = l.split('/')[-1].split('.')[0]
-    model = l.split('/')[-1].split('.')[1]
-    exp = l.split('/')[-1].split('.')[2]
-    run = l.split('/')[-1].split('.')[3]
+for el in sorted(lst):
+    print(el)
+    mip = el.split('/')[-1].split('.')[0]
+    model = el.split('/')[-1].split('.')[1]
+    exp = el.split('/')[-1].split('.')[2]
+    run = el.split('/')[-1].split('.')[3]
     models.add(model)
     model_runs.add(model+'_'+run)
 
