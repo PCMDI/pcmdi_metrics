@@ -1,193 +1,171 @@
-version: 2
+version: 2.1
+
+parameters:
+   label:
+      type: string
+      default: "nightly"
 
 aliases:
+  - &setup_env
+    name: setup_env
+    command: |
+       if [[ `uname` == "Darwin" ]]; then
+          echo 'export WORKDIR=/Users/distiller/project/workdir/macos' >> $BASH_ENV
+       else
+          echo 'export WORKDIR=/home/circleci/project/workdir/linux' >> $BASH_ENV
+       fi
+       source $BASH_ENV
+       mkdir -p $WORKDIR
+
   - &setup_miniconda
     name: setup_miniconda
     command: |
-       mkdir -p workspace
-       git clone -b validateNightlyNew git@github.com:CDAT/cdat workspace/cdat
+       source $BASH_ENV
+       mkdir -p $WORKDIR
+       git clone https://github.com/CDAT/cdat.git $WORKDIR/cdat
        # install_miniconda.py installs miniconda3 under $WORKDIR/miniconda
-       python workspace/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3'
+       python $WORKDIR/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3'
 
   - &conda_rerender
     name: conda_rerender
     command: |
-       git clone https://github.com/CDAT/conda-recipes.git $WORKDIR/conda-recipes 
+       source $BASH_ENV
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
-       BUILD_SCRIPT="$WORKDIR/conda-recipes/build_tools/conda_build.py"
-       python $BUILD_SCRIPT -w $WORKDIR -l $LAST_STABLE -B 0 -p $PKG_NAME -b $CIRCLE_BRANCH -o $ORG --do_rerender
+       make conda-rerender workdir=$WORKDIR branch=$CIRCLE_BRANCH
 
   - &conda_build
     name: conda_build
     command: |
+       source $BASH_ENV
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
-       conda config --add channels conda-forge --force
-       conda config --add channels cdat/label/nightly --force
-       conda config --add channels pcmdi/label/nightly --force
-       conda config --set channel_priority strict
-       BUILD_SCRIPT="$WORKDIR/conda-recipes/build_tools/conda_build.py"
-       python $BUILD_SCRIPT -w $WORKDIR -p $PKG_NAME --build_version $BUILD_VARIANT_VER -o $ORG --do_build
+       os=`uname`
+       artifacts_dir="artifacts/artifacts.${os}.noarch"
+       make conda-build workdir=$WORKDIR artifact_dir=$artifacts_dir
 
   - &setup_run_tests
     name: setup_run_tests
-    environment:
-       #PKGS: "vcs vcsaddons mesalib matplotlib scipy cia testsrunner proj4 vtk-cdat"
-       PKGS: "scipy cia testsrunner"
-       CHANNELS: "-c pcmdi/label/nightly -c pcmdi -c cdat/label/nightly -c conda-forge"
     command: |
+       source $BASH_ENV
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
-       if [[ `uname` == "Linux" ]]; then
-          MESA="mesalib=18.3.1"
-       else
-          MESA="mesalib=17.3.9"
-       fi
-       echo "conda create -y -n $ENV_NAME --use-local $CHANNELS \"$CONDA_PY_VER\" $PKG_NAME $MESA $PKGS $COVERAGE_PKGS \"$LIBNETCDF\""
-       conda create -y -n $ENV_NAME --use-local $CHANNELS "$CONDA_PY_VER" $PKG_NAME $MESA $PKGS $COVERAGE_PKGS "$LIBNETCDF"
-       conda activate $ENV_NAME
-       conda list
+       export CONDA_PY_VER="python=$PY_VER"
+       export LIBNETCDF_VER="libnetcdf=*=${LIBNETCDF}_*"
+       make setup-tests workdir=$WORKDIR extra_pkgs="$CONDA_PY_VER $LIBNETCDF_VER $COVERAGE_PKGS"
+       make conda-dump-env workdir=$WORKDIR artifact_dir=$PWD/spec_artifacts conda_env_filename=$CIRCLE_JOB
 
   - &run_tests
     name: run_tests
     command: |
+       source $BASH_ENV
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
-       conda activate $ENV_NAME
-       python run_tests.py -H -v2 $COVERAGE
-       conda deactivate
+       make run-tests workdir=$WORKDIR
 
   - &conda_upload
     name: conda_upload
     command: |
+       source $BASH_ENV
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
-       UPLOAD_OPTIONS="-t $CONDA_UPLOAD_TOKEN upload -u $USER -l $LABEL"
-       anaconda $UPLOAD_OPTIONS $WORKDIR/miniconda/conda-bld/noarch/$PKG_NAME-$VERSION.`date +%Y*`0.tar.bz2 --force
+       UPLOAD_OPTIONS="conda_upload_token=$CONDA_UPLOAD_TOKEN"
+       make conda-upload workdir=$WORKDIR $UPLOAD_OPTIONS artifact_dir="artifacts/*Linux*/"
 
   - &run_coveralls
     name: run_coveralls
     command: |
+       source $BASH_ENV
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
-       conda activate $ENV_NAME
-       coveralls
-       conda deactivate
+       conda activate base
+       make run-coveralls workdir=$WORKDIR
 
-
-jobs:
-   macos_setup:
+executors:
+   linux:
+      machine:
+         image: circleci/classic:latest
+   macos:
       macos:
          xcode: "11.4.0"
-      environment:
-         WORKDIR: /Users/distiller/project/macos_build
-         PKG_NAME: "pcmdi_metrics"
-         ORG: "PCMDI"
-         REPO_NAME: "pcmdi_metrics"
-         LAST_STABLE: "1.2"
-         BUILD_VARIANT_VER: "noarch"
+
+jobs:
+   build:
+      parameters:
+         os:
+            type: executor
+      executor: << parameters.os >>
       steps:
          - checkout
+         - run: *setup_env
          - run: *setup_miniconda
          - run: *conda_rerender
          - run: *conda_build
          - persist_to_workspace:
               root: .
               paths: 
-                 - macos_build
+                 - workdir
+                 - artifacts
 
-   linux_setup:
-      machine:
-         image: circleci/classic:latest
+   test:
+      parameters:
+         os:
+            type: executor
+         py_ver: 
+            type: string
+         libnetcdf: 
+            type: string
+      executor: << parameters.os >>
       environment:
-         WORKDIR: /home/circleci/project/linux_build
-         PKG_NAME: "pcmdi_metrics"
-         ORG: "PCMDI"
-         REPO_NAME: "pcmdi_metrics"
-         LAST_STABLE: "1.2"
-         BUILD_VARIANT_VER: "noarch"
-      steps:
-         - checkout
-         - run: *setup_miniconda
-         - run: *conda_rerender
-         - run: *conda_build
-         - persist_to_workspace:
-              root: .
-              paths:
-                 - linux_build
-
-   macos_pmp_py37:
-      macos:
-         xcode: "11.4.0"
-      environment:
-         WORKDIR: /Users/distiller/project/macos_build
-         PKG_NAME: "pcmdi_metrics"
-         REPO_NAME: "pcmdi_metrics"
-         ENV_NAME: "test_pmp"
-         CONDA_PY_VER: "python>=3.7,<3.8"
-         LIBNETCDF: "libnetcdf=*=nompi_*"
+         PY_VER: << parameters.py_ver >>
+         LIBNETCDF: << parameters.libnetcdf >>
       steps:
          - checkout
          - attach_workspace:
               at: .
+         - run: echo "LIBNETCDF=$LIBNETCDF" >> $BASH_ENV
+         - run: *setup_env
          - run: *setup_run_tests
          - run: *run_tests
          - store_artifacts:
               path: tests_html
               destination: tests_html
-
-   linux_pmp_py37:
-      machine:
-         image: circleci/classic:latest
-      environment:
-         WORKDIR: /home/circleci/project/linux_build
-         PKG_NAME: "pcmdi_metrics"
-         REPO_NAME: "pcmdi_metrics"
-         ENV_NAME: "test_pmp"
-         CONDA_PY_VER: "python>=3.7,<3.8"
-         LIBNETCDF: "libnetcdf=*=nompi_*"
-         #COVERAGE: "-c tests/coverage.json --coverage-from-egg"
-         #COVERAGE: "-c tests/coverage.json --coverage-from-repo"
-         #COVERAGE_PKGS: "coverage coveralls"
-      steps:
-         - checkout
-         - attach_workspace:
-              at: .
-         - run: *setup_run_tests
-         - run: *run_tests
-         #- run: *run_coveralls
          - store_artifacts:
-              path: tests_html
-              destination: tests_html
+              path: spec_artifacts
+              destination: spec_artifacts
 
    upload:
       machine:
          image: circleci/classic:latest
       environment:
-         WORKDIR: /home/circleci/project/linux_build
-         PKG_NAME: "pcmdi_metrics"
-         VERSION: "1.2"
-         USER: "pcmdi"
-         LABEL: "nightly"
+         LABEL: << pipeline.parameters.label >>
       steps:
+         - checkout
          - attach_workspace:
               at: .
-         - run: pwd
+         - run: *setup_env
          - run: *conda_upload
 
 workflows:
-   version: 2
-   pmp:
+   pcmdi_metrics:
       jobs:
-         - macos_setup
-         - linux_setup
-         - macos_pmp_py37:
+         - build:
+              matrix:
+                 parameters:
+                    os: [ linux, macos ]
+              name: build-<< matrix.os >>
+         - test:
+              matrix:
+                 parameters:
+                    os: [ linux, macos ]
+                    py_ver: [ "3.6", "3.7", "3.8"]
+                    libnetcdf: [ "nompi", "mpi_mpich", "mpi_openmpi" ]
+              name: test-<< matrix.os >>-<< matrix.py_ver >>-<< matrix.libnetcdf >>
               requires:
-                 - macos_setup
-         - linux_pmp_py37:
-              requires:
-                 - linux_setup
+                 - build-<< matrix.os >>
+
          - upload:
               requires:
-                 - macos_pmp_py37
-                 - linux_pmp_py37
+                 - test
+              filters:
+                 branches:
+                    only: master
 
