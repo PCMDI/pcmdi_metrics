@@ -12,16 +12,6 @@ from .lib_mjo import (
 from .plot_wavenumber_frequency_power import plot_power
 from .debug_chk_plot import debug_chk_plot
 
-"""
-libfiles = ['lib_mjo.py',
-            'plot_wavenumber_frequency_power.py',
-            'debug_chk_plot.py']
-
-for lib in libfiles:
-    exec(compile(open(os.path.join('../lib/', lib)).read(),
-                 os.path.join('../lib/', lib), 'exec'))
-"""
-
 
 def mjo_metric_ewr_calculation(mip, model, exp, run,
                                debug, plot, nc_out, cmmGrid, degX,
@@ -57,7 +47,7 @@ def mjo_metric_ewr_calculation(mip, model, exp, run,
     NT = segmentLength  # number of time step for each segment (need to be an even number)
 
     if debug:
-        endYear = startYear+2
+        endYear = startYear + 2
         print('debug: startYear, endYear:', startYear, endYear)
         print('debug: NL, NT:', NL, NT)
 
