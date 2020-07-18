@@ -5,19 +5,20 @@ import os
 from plot_wavenumber_frequency_power import plot_power
 from lib_mjo import calculate_ewr
 
+
 def main():
 
-    #mip = 'cmip5'
+    # mip = 'cmip5'
     mip = 'cmip6'
     exp = 'historical'
     version = 'v20190710'
     period = '1985-2004'
     datadir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/mjo/'+mip+'/historical/'+version
     imgdir = '/work/lee1043/imsi/result_test/mjo_metrics/plot_test'
-    #imgdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/graphics/mjo/'+mip+'/historical/'+version
+    # imgdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/graphics/mjo/'+mip+'/historical/'+version
 
     if not os.path.exists(imgdir):
-        os.makedirs(imgdir) 
+        os.makedirs(imgdir)
 
     ncfile_list = glob.glob(os.path.join(datadir, '*.nc'))
 
@@ -27,8 +28,7 @@ def main():
     models_list = list(dict.fromkeys(models_list))
     # remove obs
     models_list.remove('obs')
-     
-    #models_list = models_list[0:1]
+
     print(models_list)
 
     for model in models_list:
@@ -51,7 +51,7 @@ def main():
                 fout = os.path.join(imgdir, pngfilename)
                 # plot
                 plot_power(d, title, fout, ewr)
-            except:
+            except Exception:
                 print(model, run, 'cannnot load')
                 pass
 

@@ -4,7 +4,7 @@ Inspired by Daehyun Kim and Min-Seop Ahn's MJO metrics.
 
 Reference:
 Ahn, MS., Kim, D., Sperber, K.R. et al. Clim Dyn (2017) 49: 4023.
-https://doi.org/10.1007/s00382-017-3558-4 
+https://doi.org/10.1007/s00382-017-3558-4
 """
 from __future__ import print_function
 import cdms2
@@ -108,7 +108,7 @@ def space_time_spectrum(d_seg_x_ano):
     NTSub = d_seg_x_ano.shape[0]  # NTSub
     NL = d_seg_x_ano.shape[1]  # NL
     # Tapering
-    d_seg_x_ano = taper(d_seg_x_ano) 
+    d_seg_x_ano = taper(d_seg_x_ano)
     # Power sepctrum analysis
     EE = np.fft.fft2(d_seg_x_ano, axes=(1, 0)) / float(NL) / float(NTSub)
     # Now the array EE(n,t) contains the (complex) space-time spectrum.
@@ -146,10 +146,9 @@ def taper(data):
     return data2
 
 
-def decorate_2d_array_axes(
-    a, y, x,
-    a_id=None, y_id=None, x_id=None,
-    y_units=None, x_units=None):
+def decorate_2d_array_axes(a, y, x,
+                           a_id=None, y_id=None, x_id=None,
+                           y_units=None, x_units=None):
     """
     Note: Decorate array with given axes
     input
@@ -263,7 +262,7 @@ def calculate_ewr(OEE):
         frequency=(0.0166667, 0.0333333))
     west_power_domain = OEE(
         zonalwavenumber=(1, 3),
-        frequency=(-0.0333333,-0.0166667))
+        frequency=(-0.0333333, -0.0166667))
     eastPower = np.average(np.array(east_power_domain))
     westPower = np.average(np.array(west_power_domain))
     ewr = eastPower / westPower

@@ -1,4 +1,4 @@
-import cdms2    
+import cdms2
 import glob
 import MV2
 import os
@@ -8,8 +8,7 @@ from lib_mjo import calculate_ewr
 
 
 def main():
-
-    #mip = 'cmip5'
+    # mip = 'cmip5'
     mip = 'cmip6'
     exp = 'historical'
     version = 'v20200625'
@@ -49,8 +48,8 @@ def main():
                 # ensemble mean
                 d_avg = MV2.average(d_runs, axis=0)
                 d_avg.setAxisList(d.getAxisList())
-                title = (mip.upper()+': '+model+' ('+str(num_runs)
-                         +' runs mean) \n Pr, NDJFMA, '+period+', common grid (2.5x2.5deg)')
+                title = (mip.upper() + ': ' + model + ' (' + str(num_runs) +
+                         ' runs mean) \n Pr, NDJFMA, ' + period + ', common grid (2.5x2.5deg)')
                 # E/W ratio
                 ewr, eastPower, westPower = calculate_ewr(d_avg)
                 # plot prepare

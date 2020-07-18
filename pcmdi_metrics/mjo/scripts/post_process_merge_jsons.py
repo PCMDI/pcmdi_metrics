@@ -12,13 +12,13 @@ import os
 
 def main():
     mips = ["cmip5", "cmip6"]
-    #mips = ["cmip5"]
-    #mips = ["cmip6"]
+    # mips = ["cmip5"]
+    # mips = ["cmip6"]
 
     exps = ["historical"]
 
     pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
-    #pmprdir = "/work/lee1043/imsi/result_test"
+    # pmprdir = "/work/lee1043/imsi/result_test"
 
     for mip in mips:
         for exp in exps:

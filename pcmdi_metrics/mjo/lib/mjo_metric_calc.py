@@ -22,12 +22,13 @@ for lib in libfiles:
                  os.path.join('../lib/', lib), 'exec'))
 """
 
-def mjo_metric_ewr_calculation(
-    mip, model, exp, run,
-    debug, plot, nc_out, cmmGrid, degX,
-    UnitsAdjust, inputfile, var, startYear, endYear,
-    segmentLength,
-    outdir):
+
+def mjo_metric_ewr_calculation(mip, model, exp, run,
+                               debug, plot, nc_out, cmmGrid, degX,
+                               UnitsAdjust, inputfile, var,
+                               startYear, endYear,
+                               segmentLength,
+                               outdir):
 
     # Open file to read daily dataset
     if debug:
@@ -55,7 +56,7 @@ def mjo_metric_ewr_calculation(
         NL = int(360/degX)
     NT = segmentLength  # number of time step for each segment (need to be an even number)
 
-    if debug: 
+    if debug:
         endYear = startYear+2
         print('debug: startYear, endYear:', startYear, endYear)
         print('debug: NL, NT:', NL, NT)

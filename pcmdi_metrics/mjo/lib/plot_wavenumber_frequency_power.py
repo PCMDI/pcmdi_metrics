@@ -8,7 +8,7 @@ def plot_power(d, title, fout, ewr=None):
 
     y = d.getAxis(0)[:]
     x = d.getAxis(1)[:]
-    
+
     # adjust font size
     SMALL_SIZE = 8
     MEDIUM_SIZE = 13
@@ -19,7 +19,7 @@ def plot_power(d, title, fout, ewr=None):
     plt.rc('ytick', labelsize=MEDIUM_SIZE)   # fontsize of the tick labels
     plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
     plt.rc('figure', titlesize=BIGGER_SIZE)  # fontsize of the figure title
-    
+
     # plot
     plt.switch_backend('agg')  # backend plotting
     plt.figure(figsize=(8, 4))

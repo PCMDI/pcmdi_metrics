@@ -16,11 +16,11 @@ exp = 'historical'
 frequency = 'da'
 realm = 'atm'
 
-#=================================================
+# =================================================
 # Miscellaneous
-#-------------------------------------------------
+# -------------------------------------------------
 debug = False
-#debug = True
+# debug = True
 
 nc_out = True
 plot = True  # Create map graphics
