@@ -4,7 +4,7 @@ import os
 # =================================================
 # Background Information
 # -------------------------------------------------
-#mip = 'cmip5'
+# mip = 'cmip5'
 mip = 'cmip6'
 exp = 'historical'
 frequency = 'mo'

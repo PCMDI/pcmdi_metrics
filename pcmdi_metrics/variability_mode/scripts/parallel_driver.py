@@ -108,22 +108,21 @@ for m, model in enumerate(models):
     print(' ----- model: ', model, ' ---------------------')
     # Find all xmls for the given model
     model_path_list = glob.glob(
-        #modpath(mip=mip, exp=exp, model=model, realization=realization, variable=var))
         modpath(mip=mip, exp=exp, model=model, realization="*", variable=var))
     # sort in nice way
     model_path_list = sort_human(model_path_list)
-    #if debug:
-    #    print('model_path_list:', model_path_list)
+    if debug:
+        print('model_path_list:', model_path_list)
     # Find where run can be gripped from given filename template for modpath
     run_in_modpath = modpath(mip=mip, exp=exp, model=model, realization=realization,
-        variable=var).split('/')[-1].split('.').index(realization)
+                             variable=var).split('/')[-1].split('.').index(realization)
     # Collect available runs
     runs_list = [model_path.split('/')[-1].split('.')[run_in_modpath] for model_path in model_path_list]
     if debug:
         print('runs_list (all):', runs_list)
     # Check if given run member is included. If not for all runs and given run member is not included,
     # take alternative run
-    if realization is not "*":
+    if realization != "*":
         if realization in runs_list:
             runs_list = [realization]
         else:
@@ -142,8 +141,9 @@ for m, model in enumerate(models):
             cmd += ['--no_nc_out_obs', '--no_plot_obs']
         cmds_list.append(cmd)
 
-#for cmd in cmds_list:
-#    print(cmd)
+if debug:
+    for cmd in cmds_list:
+        print(cmd)
 
 # =================================================
 # Run subprocesses in parallel
@@ -156,10 +156,10 @@ if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 
 # number of tasks to submit at the same time
-num_workers = 3
-#num_workers = 5
-#num_workers = 10
-#num_workers = 30
+# num_workers = 3
+# num_workers = 5
+num_workers = 10
+# num_workers = 30
 
 print("Start : %s" % time.ctime())
 

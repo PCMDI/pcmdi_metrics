@@ -61,6 +61,7 @@ from pcmdi_metrics.variability_mode.lib import (
     mov_metrics_to_json,
     plot_map)
 import cdtime
+import cdutil
 import glob
 import json
 import MV2

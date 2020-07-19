@@ -51,7 +51,7 @@ def read_data_in(
     cdutil.setTimeBoundsMonthly(data_timeseries)
 
     # missing data check
-    check_missing_data(data_timeseries) 
+    check_missing_data(data_timeseries)
 
     if UnitsAdjust[0]:
         data_timeseries = getattr(MV2, UnitsAdjust[1])(
@@ -91,9 +91,11 @@ def read_data_in(
 def check_missing_data(d):
     time = d.getTime().asComponentTime()
     num_tstep = d.shape[0]
-    months_between = diff_month(datetime(time[-1].year,time[-1].month, 1), datetime(time[0].year,time[0].month,1))
+    months_between = diff_month(datetime(time[-1].year, time[-1].month, 1),
+                                datetime(time[0].year, time[0].month, 1))
     if num_tstep < months_between:
-        raise ValueError("ERROR: check_missing_data: num_data_timestep, expected_num_timestep:", num_tstep, months_between)
+        raise ValueError("ERROR: check_missing_data: num_data_timestep, expected_num_timestep:",
+                         num_tstep, months_between)
 
 
 def diff_month(d1, d2):
