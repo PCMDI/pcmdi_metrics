@@ -128,7 +128,7 @@ models = param.modnames
 
 # Include all models if conditioned
 if ('all' in [m.lower() for m in models]) or (models == 'all'):
-    models = ([p.split('.')[1] for p in glob.glob(modpath(
+    models = ([p.split('/')[-1].split('.')[1] for p in glob.glob(modpath(
                 mip=mip, exp=exp, model='*', realization='*', variable=var))])
     # remove duplicates
     models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
@@ -358,9 +358,13 @@ for model in models:
     if model not in list(result_dict['RESULTS'].keys()):
         result_dict['RESULTS'][model] = {}
 
+    """
     model_path_list = os.popen(
         'ls ' + modpath(
             mip=mip, exp=exp, model=model, realization=realization, variable=var)).readlines()
+    """
+    model_path_list = glob.glob(modpath(
+        mip=mip, exp=exp, model=model, realization=realization, variable=var))
 
     model_path_list = sort_human(model_path_list)
 
