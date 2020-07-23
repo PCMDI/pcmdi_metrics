@@ -135,7 +135,7 @@ def sea_ice_adjust(data_array):
     return data_array
 
 
-def mov_metrics_to_json(outdir, json_filename, result_dict, model=None, run=None):
+def variability_metrics_to_json(outdir, json_filename, result_dict, model=None, run=None):
     # Open JSON
     JSON = pcmdi_metrics.io.base.Base(
         outdir(output_type='metrics_results'),

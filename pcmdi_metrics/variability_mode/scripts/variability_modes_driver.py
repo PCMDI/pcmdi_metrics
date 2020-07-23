@@ -58,7 +58,7 @@ from pcmdi_metrics.variability_mode.lib import (
     gain_pseudo_pcs, gain_pcs_fraction, adjust_timeseries,
     model_land_mask_out,
     tree, write_nc_output, get_domain_range, read_data_in, debug_print, sort_human,
-    mov_metrics_to_json,
+    variability_metrics_to_json,
     plot_map)
 import cdtime
 import cdutil
@@ -707,7 +707,7 @@ for model in models:
             # ----------------------------------------------------------------
             json_filename_tmp = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
                                           mip, exp, fq, realm, model, run, str(msyear)+'-'+str(meyear)])
-            mov_metrics_to_json(outdir, json_filename_tmp, result_dict, model=model, run=run)
+            variability_metrics_to_json(outdir, json_filename_tmp, result_dict, model=model, run=run)
 
         except Exception as err:
             if debug:
@@ -722,7 +722,7 @@ if not parallel:
     # ----------------------------------------------------------------
     json_filename_all = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
                                   mip, exp, fq, realm, 'allModels', 'allRuns', str(msyear)+'-'+str(meyear)])
-    mov_metrics_to_json(outdir, json_filename_all, result_dict)
+    variability_metrics_to_json(outdir, json_filename_all, result_dict)
 
 if not debug:
     sys.exit('done')
