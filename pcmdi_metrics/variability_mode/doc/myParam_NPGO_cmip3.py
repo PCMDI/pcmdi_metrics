@@ -24,6 +24,12 @@ ConvEOF = True  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
 
 # =================================================
+# Miscellaneous
+# -------------------------------------------------
+update_json = True  # False
+debug = False  # False
+
+# =================================================
 # Observation
 # -------------------------------------------------
 reference_data_name = 'HadISSTv1.1'
@@ -40,7 +46,7 @@ eofn_obs = 2
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)',
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/%(mip)/%(exp)',
     '%(variable).%(model).%(realization).xml')
 modpath_lf = os.path.join(
     '/work/lee1043/ESGF/xmls/%(mip)/historical/fx/sftlf',
@@ -86,17 +92,17 @@ eofn_mod = 2
 # Output
 # -------------------------------------------------
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
+
+if debug:
+    pmprdir = '/work/lee1043/imsi/result_test'
+
 results_dir = os.path.join(
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
-    '%(output_type)/variability_modes/%(mip)/%(exp)',
-    case_id,
-    '%(variability_mode)/%(reference_data_name)')
+    pmprdir,
+    '%(output_type)', 'variability_modes',
+    '%(mip)', '%(exp)',
+    '%(case_id)',
+    '%(variability_mode)', '%(reference_data_name)')
+
 nc_out = True  # Write output in NetCDF
 plot = True  # Create map graphics
-
-# =================================================
-# Miscellaneous
-# -------------------------------------------------
-update_json = True  # False
-debug = False  # False
-# debug = True  # False

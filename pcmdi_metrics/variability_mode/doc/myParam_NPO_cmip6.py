@@ -24,11 +24,17 @@ ConvEOF = True  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
 
 # =================================================
+# Miscellaneous
+# -------------------------------------------------
+update_json = True  # False
+debug = False  # False
+
+# =================================================
 # Observation
 # -------------------------------------------------
 reference_data_name = 'NOAA-CIRES_20CR'
 reference_data_path = os.path.join(
-    '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/mon/psl/20CR/gn/v20190221',
+    '/p/user_pub/PCMDIobs/PCMDIobs2.0-beta/atmos/mon/psl/20CR/gn/v20200206',
     'psl_mon_20CR_BE_gn_187101-201212.nc')
 
 varOBS = 'psl'
@@ -42,8 +48,9 @@ eofn_obs = 2
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)',
-    '%(mip).%(model).%(exp).%(realization).mon.%(variable).xml')
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200224',
+    '%(mip)/%(exp)/atmos/mon/%(variable)',
+    '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
 
 modnames = ['all']
 # modnames = ['IPSL-CM6A-LR']
@@ -62,16 +69,17 @@ eofn_mod = 2
 # Output
 # -------------------------------------------------
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
+
+if debug:
+    pmprdir = '/work/lee1043/imsi/result_test'
+
 results_dir = os.path.join(
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
-    '%(output_type)/variability_modes/%(mip)/%(exp)',
-    case_id,
-    '%(variability_mode)/%(reference_data_name)')
+    pmprdir,
+    '%(output_type)', 'variability_modes',
+    '%(mip)', '%(exp)',
+    '%(case_id)',
+    '%(variability_mode)', '%(reference_data_name)')
+
 nc_out = True  # Write output in NetCDF
 plot = True  # Create map graphics
-
-# =================================================
-# Miscellaneous
-# -------------------------------------------------
-update_json = True  # False
-debug = False  # False

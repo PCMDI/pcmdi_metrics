@@ -25,6 +25,12 @@ ConvEOF = True  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
 
 # =================================================
+# Miscellaneous
+# -------------------------------------------------
+update_json = True  # False
+debug = False  # False
+
+# =================================================
 # Observation
 # -------------------------------------------------
 reference_data_name = 'HadISSTv1.1'
@@ -41,10 +47,13 @@ eofn_obs = 2
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)',
-    '%(mip).%(model).%(exp).%(realization).mon.%(variable).xml')
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200116',
+    '%(mip)/%(exp)/atmos/mon/%(variable)',
+    '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
 
-modpath_lf = '/work/lee1043/ESGF/xmls/%(mip)/historical/fx/sftlf/%(mip).%(model).historical.r0i0p0.fx.sftlf.xml'
+modpath_lf = os.path.join(
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200116',
+    '%(mip)/historical/atmos/fx/sftlf/%(mip).historical.%(model).r0i0p0.fx.sftlf.xml')
 
 modnames = ['ACCESS1-0', 'ACCESS1-3', 'BCC-CSM1-1', 'BCC-CSM1-1-M', 'BNU-ESM',
             'CanCM4', 'CanESM2', 'CCSM4', 'CESM1-BGC', 'CESM1-CAM5', 'CESM1-FASTCHEM', 'CESM1-WACCM',
@@ -74,16 +83,17 @@ eofn_mod = 2
 # Output
 # -------------------------------------------------
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
+
+if debug:
+    pmprdir = '/work/lee1043/imsi/result_test'
+
 results_dir = os.path.join(
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
-    '%(output_type)/variability_modes/%(mip)/%(exp)',
-    case_id,
-    '%(variability_mode)/%(reference_data_name)')
+    pmprdir,
+    '%(output_type)', 'variability_modes',
+    '%(mip)', '%(exp)',
+    '%(case_id)',
+    '%(variability_mode)', '%(reference_data_name)')
+
 nc_out = True  # Write output in NetCDF
 plot = True  # Create map graphics
-
-# =================================================
-# Miscellaneous
-# -------------------------------------------------
-update_json = True  # False
-debug = False  # False
