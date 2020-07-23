@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 # Modes of Variability Metrics
 - Calculate metrics for modes of varibility from archive of CMIP models
@@ -56,8 +58,10 @@ from pcmdi_metrics.variability_mode.lib import (
     gain_pseudo_pcs, gain_pcs_fraction, adjust_timeseries,
     model_land_mask_out,
     tree, write_nc_output, get_domain_range, read_data_in, debug_print, sort_human,
+    mov_metrics_to_json,
     plot_map)
 import cdtime
+import cdutil
 import glob
 import json
 import MV2
@@ -66,6 +70,14 @@ import pcmdi_metrics
 import pkg_resources
 import sys
 
+# To avoid below error
+# OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+
+# Must be done before any CDAT library is called.
+# https://github.com/CDAT/cdat/issues/2213
+if 'UVCDAT_ANONYMOUS_LOG' not in os.environ:
+    os.environ['UVCDAT_ANONYMOUS_LOG'] = 'no'
 
 regions_specs = {}
 egg_pth = pkg_resources.resource_filename(
@@ -88,6 +100,10 @@ mip = param.mip
 exp = param.exp
 fq = param.frequency
 realm = param.realm
+print('mip:', mip)
+print('exp:', exp)
+print('fq:', fq)
+print('realm:', realm)
 
 # On/off switches
 obs_compare = True  # Statistics against observation
@@ -98,9 +114,14 @@ EofScaling = param.EofScaling  # If True, consider EOF with unit variance
 RmDomainMean = param.RemoveDomainMean  # If True, remove Domain Mean of each time step
 LandMask = param.landmask  # If True, maskout land region thus consider only over ocean
 
-nc_out = param.nc_out  # Record NetCDF output
-plot = param.plot  # Generate plots
+nc_out_obs = param.nc_out_obs  # Record NetCDF output
+plot_obs = param.plot_obs  # Generate plots
+nc_out_model = param.nc_out  # Record NetCDF output
+plot_model = param.plot  # Generate plots
 update_json = param.update_json
+
+print('nc_out_obs, plot_obs:', nc_out_obs, plot_obs)
+print('nc_out_model, plot_model:', nc_out_model, plot_model)
 
 # Check given mode of variability
 mode = VariabilityModeCheck(param.variability_mode, P)
@@ -128,12 +149,14 @@ models = param.modnames
 
 # Include all models if conditioned
 if ('all' in [m.lower() for m in models]) or (models == 'all'):
-    models = ([p.split('/')[-1].split('.')[1] for p in glob.glob(modpath(
+    model_index_path = param.modpath.split('/')[-1].split('.').index("%(model)")
+    models = ([p.split('/')[-1].split('.')[model_index_path] for p in glob.glob(modpath(
                 mip=mip, exp=exp, model='*', realization='*', variable=var))])
     # remove duplicates
     models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
 
 print('models:', models)
+print('number of models:', len(models))
 
 # Realizations
 realization = param.realization
@@ -143,17 +166,14 @@ print('realization: ', realization)
 eofn_obs = int(param.eofn_obs)
 eofn_mod = int(param.eofn_mod)
 
+# case id
+case_id = param.case_id
+
 # Output
 outdir_template = param.process_templated_argument("results_dir")
 outdir = StringConstructor(str(outdir_template(
     output_type='%(output_type)',
-    mip=mip, exp=exp, variability_mode=mode, reference_data_name=obs_name)))
-
-# Create output directory
-for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
-    if not os.path.exists(outdir(output_type=output_type)):
-        os.makedirs(outdir(output_type=output_type))
-    print(outdir(output_type=output_type))
+    mip=mip, exp=exp, variability_mode=mode, reference_data_name=obs_name, case_id=case_id)))
 
 # Debug
 debug = param.debug
@@ -179,6 +199,10 @@ else:
     lon1g = -180
     lon2g = 180
 
+# parallel
+parallel = param.parallel
+print('parallel:', parallel)
+
 # =================================================
 # Time period adjustment
 # -------------------------------------------------
@@ -198,6 +222,14 @@ except NameError:
 # Region control
 # -------------------------------------------------
 region_subdomain = get_domain_range(mode, regions_specs)
+
+# =================================================
+# Create output directories
+# -------------------------------------------------
+for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
+    if not os.path.exists(outdir(output_type=output_type)):
+        os.makedirs(outdir(output_type=output_type))
+    print(outdir(output_type=output_type))
 
 # =================================================
 # Set dictionary for .json record
@@ -315,7 +347,7 @@ if obs_compare:
             output_filename_obs += '_EOFscaled'
 
         # Save global map, pc timeseries, and fraction in NetCDF output
-        if nc_out:
+        if nc_out_obs:
             output_nc_file_obs = os.path.join(
                 outdir(output_type='diagnostic_results'),
                 output_filename_obs)
@@ -324,7 +356,7 @@ if obs_compare:
                 frac_obs[season], slope_obs, intercept_obs)
 
         # Plotting
-        if plot:
+        if plot_obs:
             output_img_file_obs = os.path.join(
                 outdir(output_type='graphics'),
                 output_filename_obs)
@@ -344,6 +376,13 @@ if obs_compare:
         dict_head_obs['stdv_pc'] = stdv_pc_obs[season]
         dict_head_obs['frac'] = float(frac_obs[season])
 
+        # Mean
+        mean_obs = cdutil.averager(eof_obs[season], axis='yx', weights='weighted')
+        mean_glo_obs = cdutil.averager(eof_lr_obs[season], axis='yx', weights='weighted')
+        dict_head_obs['mean'] = float(mean_obs)
+        dict_head_obs['mean_glo'] = float(mean_glo_obs)
+        debug_print('obs mean end', debug)
+
         # North test -- make this available as option later...
         # execfile('../north_test.py')
 
@@ -358,13 +397,8 @@ for model in models:
     if model not in list(result_dict['RESULTS'].keys()):
         result_dict['RESULTS'][model] = {}
 
-    """
-    model_path_list = os.popen(
-        'ls ' + modpath(
-            mip=mip, exp=exp, model=model, realization=realization, variable=var)).readlines()
-    """
-    model_path_list = glob.glob(modpath(
-        mip=mip, exp=exp, model=model, realization=realization, variable=var))
+    model_path_list = glob.glob(
+        modpath(mip=mip, exp=exp, model=model, realization=realization, variable=var))
 
     model_path_list = sort_human(model_path_list)
 
@@ -517,7 +551,7 @@ for model in models:
                     output_nc_file = os.path.join(
                             outdir(output_type='diagnostic_results'),
                             output_filename)
-                    if nc_out:
+                    if nc_out_model:
                         write_nc_output(
                             output_nc_file+'_cbf', eof_lr_cbf,
                             cbf_pc, frac_cbf, slope_cbf, intercept_cbf)
@@ -526,7 +560,7 @@ for model in models:
                     output_img_file = os.path.join(
                         outdir(output_type='graphics'),
                         output_filename)
-                    if plot:
+                    if plot_model:
                         plot_map(mode,
                                  mip.upper()+' '+model+' ('+run+')'+' - CBF',
                                  msyear, meyear, season,
@@ -620,7 +654,7 @@ for model in models:
                         output_nc_file = os.path.join(
                             outdir(output_type='diagnostic_results'),
                             output_filename)
-                        if nc_out:
+                        if nc_out_model:
                             write_nc_output(
                                 output_nc_file, eof_lr, pc, frac, slope, intercept)
 
@@ -628,19 +662,19 @@ for model in models:
                         output_img_file = os.path.join(
                             outdir(output_type='graphics'),
                             output_filename)
-                        if plot:
+                        if plot_model:
                             # plot_map(mode,
                             #          mip.upper()+' '+model+' ('+run+')',
                             #          msyear, meyear, season,
                             #          eof, frac,
                             #          output_img_file+'_org_eof')
                             plot_map(mode,
-                                     mip.upper()+' '+model+' ('+run+')',
+                                     mip.upper()+' '+model+' ('+run+') - EOF'+str(n+1),
                                      msyear, meyear, season,
                                      eof_lr(region_subdomain), frac,
                                      output_img_file)
                             plot_map(mode+'_teleconnection',
-                                     mip.upper()+' '+model+' ('+run+')',
+                                     mip.upper()+' '+model+' ('+run+') - EOF'+str(n+1),
                                      msyear, meyear, season,
                                      eof_lr(longitude=(lon1g, lon2g)), frac,
                                      output_img_file+'_teleconnection')
@@ -669,17 +703,11 @@ for model in models:
                     debug_print('conventional eof end', debug)
 
             # ================================================================
-            # Dictionary to JSON: overwrite JSON during model_realization loop
+            # Dictionary to JSON: individual JSON during model_realization loop
             # ----------------------------------------------------------------
-            JSON = pcmdi_metrics.io.base.Base(
-                outdir(output_type='metrics_results'),
-                json_filename)
-            JSON.write(
-                result_dict,
-                json_structure=[
-                    "model", "realization", "reference",
-                    "mode", "season", "method", "statistic"],
-                sort_keys=True, indent=4, separators=(',', ': '))
+            json_filename_tmp = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
+                                          mip, exp, fq, realm, model, run, str(msyear)+'-'+str(meyear)])
+            mov_metrics_to_json(outdir, json_filename_tmp, result_dict, model=model, run=run)
 
         except Exception as err:
             if debug:
@@ -687,6 +715,14 @@ for model in models:
             else:
                 print('warning: faild for ', model, run, err)
                 pass
+
+if not parallel:
+    # ================================================================
+    # Dictionary to JSON: collective JSON at the end of model_realization loop
+    # ----------------------------------------------------------------
+    json_filename_all = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
+                                  mip, exp, fq, realm, 'allModels', 'allRuns', str(msyear)+'-'+str(meyear)])
+    mov_metrics_to_json(outdir, json_filename_all, result_dict)
 
 if not debug:
     sys.exit('done')
