@@ -151,7 +151,7 @@ if debug:
 # -------------------------------------------------
 # log dir
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-log_dir = os.path.join("log", mip, exp, case_id)
+log_dir = os.path.join("log", mip, exp, case_id, mode)
 
 if not os.path.exists(log_dir):
     os.makedirs(log_dir)
