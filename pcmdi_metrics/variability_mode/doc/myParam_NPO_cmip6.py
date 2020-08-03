@@ -34,8 +34,8 @@ debug = False  # False
 # -------------------------------------------------
 reference_data_name = 'NOAA-CIRES_20CR'
 reference_data_path = os.path.join(
-    '/p/user_pub/PCMDIobs/PCMDIobs2.0-beta/atmos/mon/psl/20CR/gn/v20200206',
-    'psl_mon_20CR_BE_gn_187101-201212.nc')
+    '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707',
+    'psl_mon_20CR_BE_gn_v20200707_187101-201212.nc')
 
 varOBS = 'psl'
 ObsUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa; or (False, 0, 0)
@@ -48,7 +48,7 @@ eofn_obs = 2
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200224',
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200801',
     '%(mip)/%(exp)/atmos/mon/%(variable)',
     '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
 

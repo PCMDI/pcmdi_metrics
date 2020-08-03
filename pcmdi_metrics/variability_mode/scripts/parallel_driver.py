@@ -136,7 +136,8 @@ for m, model in enumerate(models):
                '--mip', mip,
                '--exp', exp,
                '--modnames', model,
-               '--realization', run]
+               '--realization', run,
+               '--parallel', 'True']
         if m > 0 or r > 0:
             cmd += ['--no_nc_out_obs', '--no_plot_obs']
         cmds_list.append(cmd)
@@ -156,9 +157,9 @@ if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 
 # number of tasks to submit at the same time
-# num_workers = 3
+num_workers = 3
 # num_workers = 5
-num_workers = 10
+# num_workers = 10
 # num_workers = 30
 
 print("Start : %s" % time.ctime())
