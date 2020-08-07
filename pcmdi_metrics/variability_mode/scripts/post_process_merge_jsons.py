@@ -14,14 +14,19 @@ def main():
     # mips = ['cmip5', 'cmip6']
     mips = ['cmip6']
     # mips = ['cmip3']
-    # exps = ['historical', 'amip']
-    exps = ['historical']
+
+    exps = ['historical', 'amip']
+    # exps = ['historical']
     # exps = ['20c3m', 'amip']
+
     modes = ['NAM', 'NAO', 'PNA', 'SAM', 'NPO', 'PDO', 'NPGO']
+
     # case_id = 'v20200221'
-    case_id = 'v20200225'
+    case_id = 'v20200803'
+
     syear = 1900
     eyear = 2005
+
     # pmprdir = '/work/lee1043/imsi/result_test'
     pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
 
