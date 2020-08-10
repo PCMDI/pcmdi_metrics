@@ -18,7 +18,8 @@ def mjo_metric_ewr_calculation(mip, model, exp, run,
                                UnitsAdjust, inputfile, var,
                                startYear, endYear,
                                segmentLength,
-                               outdir):
+                               outdir,
+                               season="NDJFMA"):
 
     # Open file to read daily dataset
     if debug:
@@ -34,11 +35,12 @@ def mjo_metric_ewr_calculation(mip, model, exp, run,
     first_time = comTim[0]
     last_time = comTim[-1]
 
-    # Adjust years to consider only when continous NDJFMA is available
-    if first_time > cdtime.comptime(startYear, 11, 1):
-        startYear += 1
-    if last_time < cdtime.comptime(endYear, 4, 30):
-        endYear -= 1
+    if season == "NDJFMA":
+        # Adjust years to consider only when continous NDJFMA is available
+        if first_time > cdtime.comptime(startYear, 11, 1):
+            startYear += 1
+        if last_time < cdtime.comptime(endYear, 4, 30):
+            endYear -= 1
 
     # Number of grids for 2d fft input
     NL = len(d.getLongitude())  # number of grid in x-axis (longitude)
@@ -55,7 +57,10 @@ def mjo_metric_ewr_calculation(mip, model, exp, run,
     # Get daily climatology on each grid, then remove it to get anomaly
     #
     numYear = endYear - startYear
-    mon = 11
+    if season == "NDJFMA":
+        mon = 11
+    elif season == "MJJASO":
+        mon = 5
     day = 1
     # Store each year's segment in a dictionary: segment[year]
     segment = {}
@@ -119,9 +124,9 @@ def mjo_metric_ewr_calculation(mip, model, exp, run,
     print('west power: ', westPower)
 
     # Output
-    output_filename = "{}_{}_{}_{}_{}_{}-{}".format(
+    output_filename = "{}_{}_{}_{}_{}_{}-{}_{}".format(
         mip, model, exp,
-        run, 'mjo', startYear, endYear)
+        run, 'mjo', startYear, endYear, season)
     if cmmGrid:
         output_filename += '_cmmGrid'
 
@@ -141,7 +146,7 @@ def mjo_metric_ewr_calculation(mip, model, exp, run,
         fout = os.path.join(
             outdir(output_type='graphics'),
             output_filename)
-        title = mip.upper()+': '+model+' ('+run+') \n'+var.capitalize()+', NDJFMA '+str(startYear)+'-'+str(endYear)
+        title = mip.upper()+': '+model+' ('+run+') \n'+var.capitalize()+', '+season+' '+str(startYear)+'-'+str(endYear)
         if cmmGrid:
             title += ', common grid (2.5x2.5deg)'
         plot_power(OEE, title, fout, ewr)

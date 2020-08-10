@@ -237,27 +237,36 @@ for model in models:
                     # dict
                     if run not in result_dict['RESULTS'][model]:
                         result_dict['RESULTS'][model][run] = {}
+    
                 print(' --- ', run, ' ---')
                 print(model_path)
 
-                metrics_result = mjo_metric_ewr_calculation(
-                    mip, model, exp, run,
-                    debug, plot, nc_out, cmmGrid, degX,
-                    UnitsAdjust, model_path, var, syear, eyear,
-                    segmentLength,
-                    outdir,
-                    )
+                for season in ["NDJFMA", "MJJASO"]:
+                    print(' -- ', season, ' --')
+                    if model == 'obs':
+                        result_dict['REF'][reference_data_name][season] = {}
+                    else:
+                        result_dict['RESULTS'][model][run][season] = {}
 
-                # Archive as dict for JSON
-                if model == 'obs':
-                    result_dict['REF'][reference_data_name] = metrics_result
-                else:
-                    result_dict['RESULTS'][model][run] = metrics_result
-                    # Nomalized East power by observation (E/O ratio)
-                    if includeOBS:
-                        result_dict['RESULTS'][model][run]['east_power_normalized_by_observation'] = (
-                            result_dict['RESULTS'][model][run]['east_power'] /
-                            result_dict['REF'][reference_data_name]['east_power'])
+                    # Calculate metric
+                    metrics_result = mjo_metric_ewr_calculation(
+                        mip, model, exp, run,
+                        debug, plot, nc_out, cmmGrid, degX,
+                        UnitsAdjust, model_path, var, syear, eyear,
+                        segmentLength,
+                        outdir,
+                        season=season)
+    
+                    # Archive as dict for JSON
+                    if model == 'obs':
+                        result_dict['REF'][reference_data_name][season] = metrics_result
+                    else:
+                        result_dict['RESULTS'][model][run][season] = metrics_result
+                        # Nomalized East power by observation (E/O ratio)
+                        if includeOBS:
+                            result_dict['RESULTS'][model][run][season]['east_power_normalized_by_observation'] = (
+                                result_dict['RESULTS'][model][run][season]['east_power'] /
+                                result_dict['REF'][reference_data_name][season]['east_power'])
                 # Output to JSON
                 # ================================================================
                 # Dictionary to JSON: individual JSON during model_realization loop
@@ -275,6 +284,7 @@ for model in models:
                     JSON.write(result_dict,
                                json_structure=["model",
                                                "realization",
+                                               "season",
                                                "metric"],
                                sort_keys=True,
                                indent=4,
