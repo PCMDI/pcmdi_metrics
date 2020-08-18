@@ -19,8 +19,6 @@ def main():
     # exps = ['historical']
     # exps = ['20c3m', 'amip']
 
-    modes = ['NAM', 'NAO', 'PNA', 'SAM', 'NPO', 'PDO', 'NPGO']
-
     # case_id = 'v20200221'
     case_id = 'v20200803'
 
@@ -32,6 +30,12 @@ def main():
 
     for mip in mips:
         for exp in exps:
+
+            if exp == 'amip':
+                modes = ['NAM', 'NAO', 'PNA', 'SAM', 'NPO']
+            else:
+                modes = ['NAM', 'NAO', 'PNA', 'SAM', 'NPO', 'PDO', 'NPGO']
+
             for mode in modes:
                 # eof
                 if mode in ['NPO', 'NPGO']:
