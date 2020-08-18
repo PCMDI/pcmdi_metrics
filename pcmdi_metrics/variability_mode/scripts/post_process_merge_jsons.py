@@ -19,8 +19,7 @@ def main():
     # exps = ['historical']
     # exps = ['20c3m', 'amip']
 
-    # case_id = 'v20200221'
-    case_id = 'v20200803'
+    case_id = 'v20200817'
 
     syear = 1900
     eyear = 2005
@@ -48,7 +47,11 @@ def main():
                 else:
                     obs = 'NOAA-CIRES_20CR'
                 # json merge
-                merge_json(mode, eof, mip, exp, case_id, obs, syear, eyear, pmprdir)
+                try:
+                    merge_json(mode, eof, mip, exp, case_id, obs, syear, eyear, pmprdir)
+                except:
+                    print('ERROR: ', mip, exp, mode)
+                    pass
 
 
 def merge_json(mode, eof, mip, exp, case_id, obs, syear, eyear, pmprdir):

@@ -47,9 +47,12 @@ for mip in $mips; do
         else
             modes_list=$modes
         fi
+        # Log dir
+        mkdir -p ./log/$mip/$exp/$case_id
+        # Run
         for mode in $modes_list; do
             echo $mip $exp $mode $case_id
-            ./parallel_driver.py -p ../doc/myParam_${mode}_${mip}.py --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode >& ./log/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
+            ./parallel_driver.py -p ../doc/myParam_${mode}_${mip}.py --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode >& ./log/$mip/$exp/$case_id/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
             disown
             sleep 1
         done
