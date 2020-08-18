@@ -22,9 +22,7 @@ mips='cmip6'
 exps='historical amip'
 #exps='historical'
 
-modes='NAM NAO PNA SAM PDO NPO NPGO'
-#modes='NAM NAO PNA SAM NPO'
-#modes='NPGO'
+modes='all'
 
 modnames='all'
 
@@ -40,7 +38,16 @@ for mip in $mips; do
     #    #modnames="EC-Earth3 EC-Earth3-Veg"
     #fi
     for exp in $exps; do
-        for mode in $modes; do
+        if [ $modes == 'all' ]; then
+            if [ $exp == 'historical' ]; then
+                modes_list='NAM NAO PNA SAM PDO NPO NPGO'
+            elif [ $exp == 'amip' ]; then
+                modes_list='NAM NAO PNA SAM NPO'
+            fi
+        else
+            modes_list=$modes
+        fi
+        for mode in $modes_list; do
             echo $mip $exp $mode $case_id
             ./parallel_driver.py -p ../doc/myParam_${mode}_${mip}.py --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode >& ./log/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
             disown

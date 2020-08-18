@@ -1,5 +1,12 @@
 import datetime
+import glob
 import os
+
+
+def find_latest(path):
+    dir_list = [p for p in glob.glob(path+"/v????????")]
+    return sorted(dir_list)[-1]
+
 
 # =================================================
 # Background Information
@@ -41,7 +48,8 @@ reference_data_path = os.path.join(
 
 # varOBS = 'sst'
 varOBS = 'ts'
-ObsUnitsAdjust = (False, 0, 0)  # degC
+# ObsUnitsAdjust = (False, 0, 0)  # degC
+ModUnitsAdjust = (True, 'subtract', 273.15)  # degK to degC
 
 osyear = 1900
 oeyear = 2005
@@ -51,12 +59,12 @@ eofn_obs = 1
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200801',
+    find_latest('/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest'),
     '%(mip)/%(exp)/atmos/mon/%(variable)',
     '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
 
 modpath_lf = os.path.join(
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200801',
+    find_latest('/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest'),
     '%(mip)/historical/atmos/fx/sftlf/%(mip).historical.%(model).r0i0p0.fx.sftlf.xml')
 
 modnames = ['all']

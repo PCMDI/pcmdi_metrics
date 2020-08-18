@@ -1,5 +1,12 @@
 import datetime
+import glob
 import os
+
+
+def find_latest(path):
+    dir_list = [p for p in glob.glob(path+"/v????????")]
+    return sorted(dir_list)[-1]
+
 
 # =================================================
 # Background Information
@@ -48,7 +55,7 @@ eofn_obs = 1
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200801',
+    find_latest('/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest'),
     '%(mip)/%(exp)/atmos/mon/%(variable)',
     '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
 
