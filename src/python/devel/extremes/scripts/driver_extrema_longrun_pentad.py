@@ -56,20 +56,24 @@ var_file = '/work/cmip5-test/new/historical/atmos/day/pr/cmip5.GFDL-CM3.historic
 #var_file = '/work/cmip-dyn/CMIP5/CMIP/' + exp + '/atmos/day/pr/'
 var_file = '/export/gleckler1/XMLS/work/cmip-dyn/CMIP5/CMIP/historical/atmos/day/pr/CMIP5.CMIP.historical.NOAA-GFDL.GFDL-CM3.r1i1p1.day.pr.atmos.glb-2d-gu.v20120227.0000000.0.xml'
 
+var_file = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200815/cmip6/historical/atmos/day/pr/cmip6.historical.IPSL-CM6A-LR.r1i1p1f1.day.pr.xml'
+
+
 latitude = 'latitude'
 mod_name = 'GFDL-CM3'
+mod_name = 'IPSL-CM6A'
 #exp = 'historical'
 mip = 'cmip5'
 
 lat = 'latitude'
 pathout = '/export/gleckler1/processing/metrics_package/my_test/mfw_extremes/'
 pathout = '/p/user_pub/pmp/pmp_results/tree_v0.3/pmp_v1.1.2/diagnostic_results/extremes/' + exp
-pathout = args.results_dir 
-modpaths = args.modpaths
+#pathout = args.results_dir 
+#modpaths = args.modpaths
 #outpathdata = args.results_dir
 testrun = 'y'
 
-pcmdi_operations = True
+pcmdi_operations = False #True
 
 if pcmdi_operations == True:
   mod_rip = {}
@@ -82,10 +86,13 @@ if pcmdi_operations == True:
    mod_rip[mod]= []
    for m in modpaths:
      if m.find(mod) !=-1: mod_rip[mod].append(m.split('.')[5])
-for mod in gmods:
- for run in mod_rip[mod]:
+
+#for mod in gmods:
+# for run in mod_rip[mod]:
 #var=sys.argv[1]
 #f=cdms.open(sys.argv[3])
+
+for mod in [mod_name]:
     f = cdms.open(var_file)
     
     dtmp = f[var]
@@ -147,7 +154,7 @@ for mod in gmods:
     time=MV.zeros((y2-y0+1),MV.float)
     
     # Calculate annual extrema
-    #print "starting annual y1 y2 and time.shape ", y1,' ',y2,' ', time.shape
+    print("starting annual y1 y2 and time.shape ", y1,' ',y2,' ', time.shape)
     y1=y0
     m1=1 # January
     d1=1
@@ -173,7 +180,7 @@ for mod in gmods:
     # print "b e tim[b] and tim[e] ", b," ",e," ", tim[b]," ", tim[e]
       s1=f.getslab(var,tim[b],tim[e])
       bb = atime.time()
-    # print 'time to read year and slab shape ', bb-aa,' ', s1.shape
+      print('time to read year and slab shape ', int(y1),bb-aa,' ', s1.shape)
     
     # w =sys.stdin.readline()
     
