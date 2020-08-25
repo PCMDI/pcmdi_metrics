@@ -58,12 +58,13 @@ var_file = '/export/gleckler1/XMLS/work/cmip-dyn/CMIP5/CMIP/historical/atmos/day
 
 var_file = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200815/cmip6/historical/atmos/day/pr/cmip6.historical.IPSL-CM6A-LR.r1i1p1f1.day.pr.xml'
 
+var_file = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200822/cmip6/historical/atmos/day/pr/cmip6.historical.GFDL-CM4.r1i1p1f1.day.pr.xml'
 
 latitude = 'latitude'
-mod_name = 'GFDL-CM3'
-mod_name = 'IPSL-CM6A'
+mod_name = 'GFDL-CM4'
+#mod_name = 'IPSL-CM6A'
 #exp = 'historical'
-mip = 'cmip5'
+mip = 'cmip6'
 
 lat = 'latitude'
 pathout = '/export/gleckler1/processing/metrics_package/my_test/mfw_extremes/'
@@ -71,7 +72,6 @@ pathout = '/p/user_pub/pmp/pmp_results/tree_v0.3/pmp_v1.1.2/diagnostic_results/e
 #pathout = args.results_dir 
 #modpaths = args.modpaths
 #outpathdata = args.results_dir
-testrun = 'y'
 
 pcmdi_operations = False #True
 
