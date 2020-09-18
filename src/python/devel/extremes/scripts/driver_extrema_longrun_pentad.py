@@ -15,6 +15,8 @@
 
 import  MV2 as MV, cdtime,os, cdms2 as cdms, sys, string 
 from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
+#from pcmdi_metrics.driver.pmp_parser.PMPParser import PMPParser
+
 import pcmdi_metrics
 import collections
 import glob
@@ -31,44 +33,70 @@ P = PMPParser()
 #P.use("--modpath")
 #P.use("--modnames")
 P.use("--results_dir")
+#P.use("--test_data_set")
 #P.use("--reference_data_path")
 
-P.add_argument("-e", "--exp",
+P.add_argument("-e", "--experiment",
                type=str,
-               dest='experiment',
-               default='historical',
+               dest='exp',
+               default=None, #'amip', #'historical',
                help="AMIP, historical or picontrol")
 
-P.add_argument("--modpaths",
-               type=list,
-               dest='modpaths',
+P.add_argument("--modpath",
+               type=str,
+               dest='modpath',
                default=None,
-               help="List of path+files")
+               help="path+file")
+
+P.add_argument("--realization",
+               type=str,
+               dest='realization',
+               default=None,
+               help="path+file")
+
+P.add_argument("--mod_name",
+               type=str,
+               dest='mod_name',
+               default=None,
+               help="path+file")
 
 args = P.get_parameter()
-exp = args.experiment
-modpaths = args.modpaths
+exp = args.exp
+rn = args.realization
+mod = args.mod_name
+
+#mod = args.test_data_set
+
+print('EXP IS ', exp)
+
+modpath = args.modpath
+print('MODELPATH IS ', modpath)
+
 
 print("PRINT P.view_args() = ",P.view_args())
 
 var = 'pr'
-var_file = '/work/cmip5-test/new/historical/atmos/day/pr/cmip5.GFDL-CM3.historical.r1i1p1.day.atmos.day.pr.000000.v20120227.xml' 
-#var_file = '/work/cmip-dyn/CMIP5/CMIP/' + exp + '/atmos/day/pr/'
-var_file = '/export/gleckler1/XMLS/work/cmip-dyn/CMIP5/CMIP/historical/atmos/day/pr/CMIP5.CMIP.historical.NOAA-GFDL.GFDL-CM3.r1i1p1.day.pr.atmos.glb-2d-gu.v20120227.0000000.0.xml'
 
-var_file = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200815/cmip6/historical/atmos/day/pr/cmip6.historical.IPSL-CM6A-LR.r1i1p1f1.day.pr.xml'
+'''
+var_file = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200822/cmip6/historical/atmos/day/pr/cmip6.historical.GFDL-ESM4.r1i1p1f1.day.pr.xml'
+var_file = '/export/gleckler1/processing/metrics_package/my_test/mfw_extremes/cmip6.historical.GFDL-CM4.r1i1p1f1.mon.pr_smalldomain.nc'
+'''
 
-var_file = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200822/cmip6/historical/atmos/day/pr/cmip6.historical.GFDL-CM4.r1i1p1f1.day.pr.xml'
+var_file = modpath
+
 
 latitude = 'latitude'
 mod_name = 'GFDL-CM4'
-#mod_name = 'IPSL-CM6A'
+mod_name = mod
 #exp = 'historical'
 mip = 'cmip6'
 
 lat = 'latitude'
-pathout = '/export/gleckler1/processing/metrics_package/my_test/mfw_extremes/'
-pathout = '/p/user_pub/pmp/pmp_results/tree_v0.3/pmp_v1.1.2/diagnostic_results/extremes/' + exp
+
+##pathout = '/export/gleckler1/processing/metrics_package/my_test/mfw_extremes/'
+##pathout = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/daily_extremes/' + mip + '/' + exp
+pathout = args.results_dir
+
 #pathout = args.results_dir 
 #modpaths = args.modpaths
 #outpathdata = args.results_dir
@@ -86,11 +114,6 @@ if pcmdi_operations == True:
    mod_rip[mod]= []
    for m in modpaths:
      if m.find(mod) !=-1: mod_rip[mod].append(m.split('.')[5])
-
-#for mod in gmods:
-# for run in mod_rip[mod]:
-#var=sys.argv[1]
-#f=cdms.open(sys.argv[3])
 
 for mod in [mod_name]:
     f = cdms.open(var_file)
@@ -113,6 +136,8 @@ for mod in [mod_name]:
      if tt.calendar=='noleap':cdtime.DefaultCalendar=cdtime.NoLeapCalendar
      if tt.calendar=='proleptic_gregorian':cdtime.DefaultCalendar=cdtime.GregorianCalendar
      if tt.calendar=='standard':cdtime.DefaultCalendar=cdtime.StandardCalendar
+
+     cdtime._cdtime.DefaultCalendar = cdtime.DefaultCalendar
     
     output=cdms.open(pathout + '/' + var+'_max_pentad_'+mod_name+'.nc','w')
     #output.execute_line="python "+ " ".join(sys.argv)
@@ -316,7 +341,10 @@ for mod in [mod_name]:
     output.write(daily_max)
     
     print("DONE WITH MAM")
-    
+
+    output.close()
+
+'''    
     # Calculate SON extrema
     print("starting SON")
     y1=y0
@@ -362,7 +390,7 @@ for mod in [mod_name]:
     daily_max.setdimattribute(0,'units','years since 00-01-01 00:00:00')
     daily_max.id=var+'_SON_daily_max'
     output.write(daily_max)
-    print("done with MAM")
+    print("done with SON")
     
     # Calculate JJA extrema
     print("starting JJA")
@@ -410,5 +438,8 @@ for mod in [mod_name]:
     daily_max.id=var+'_JJA_daily_max'
     output.write(daily_max)
     print("DONE WITH JJA")
-    
+   
     output.close()
+
+'''
+
