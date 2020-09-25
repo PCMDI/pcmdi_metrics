@@ -342,9 +342,9 @@ for mod in [mod_name]:
     
     print("DONE WITH MAM")
 
-    output.close()
+#   output.close()
 
-'''    
+#'''    
     # Calculate SON extrema
     print("starting SON")
     y1=y0
@@ -441,5 +441,5 @@ for mod in [mod_name]:
    
     output.close()
 
-'''
+#'''
 
