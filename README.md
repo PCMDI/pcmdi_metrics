@@ -13,7 +13,7 @@ PCMDI metrics package (PMP)
 
 The PCMDI metrics package is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons emphasize metrics of large- to global-scale annual cycle and both tropcial and extra-tropical modes of variability. Ongoing work in v1.x development branches include established statistics for ENSO, MJO, regional monsoons, and high frequency characteristics of simulated precipitation. 
 
-**PCMDI uses the PMP to produce CMIP [simulation summaries](https://cmec.llnl.gov/results/physical.html).** 
+**PCMDI uses the PMP to produce [quick-look simulation summaries across generations of CMIP](https://cmec.llnl.gov/results/physical.html) ** 
 
 The metrics package consists of four parts: 1) Analysis software, 2) an observationally-based database of global (or near global, land or ocean) annual cycle climatologies, 3) a database of performance metrics computed for CMIP models and 4) package documentation (in preparation).
 
