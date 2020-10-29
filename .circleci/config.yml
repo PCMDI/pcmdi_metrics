@@ -69,7 +69,7 @@ aliases:
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
        UPLOAD_OPTIONS="conda_upload_token=$CONDA_UPLOAD_TOKEN"
-       make conda-upload workdir=$WORKDIR $UPLOAD_OPTIONS artifact_dir="$PWD/artifacts/*Linux*/
+       make conda-upload workdir=$WORKDIR $UPLOAD_OPTIONS artifact_dir="$PWD/artifacts/*Linux*/"
 
   - &run_coveralls
     name: run_coveralls
@@ -156,7 +156,8 @@ workflows:
               matrix:
                  parameters:
                     os: [ linux]  #, macos ]
-                    py_ver: [ "3.6", "3.7", "3.8"]
+#                    py_ver: [ "3.6", "3.7", "3.8"]
+                    py_ver: [ "3.6"]
                     libnetcdf: [ "nompi", "mpi_mpich", "mpi_openmpi" ]
               name: test-<< matrix.os >>-<< matrix.py_ver >>-<< matrix.libnetcdf >>
               requires:
