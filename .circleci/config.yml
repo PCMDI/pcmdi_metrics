@@ -155,7 +155,7 @@ workflows:
          - test:
               matrix:
                  parameters:
-                    os: [ linux, macos ]
+                    os: [ linux]  #, macos ]
                     py_ver: [ "3.6", "3.7", "3.8"]
                     libnetcdf: [ "nompi", "mpi_mpich", "mpi_openmpi" ]
               name: test-<< matrix.os >>-<< matrix.py_ver >>-<< matrix.libnetcdf >>
