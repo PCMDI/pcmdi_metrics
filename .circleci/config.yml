@@ -69,7 +69,7 @@ aliases:
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
        UPLOAD_OPTIONS="conda_upload_token=$CONDA_UPLOAD_TOKEN"
-       make conda-upload workdir=$WORKDIR $UPLOAD_OPTIONS artifact_dir="artifacts/*Linux*/"
+       make conda-upload workdir=$WORKDIR $UPLOAD_OPTIONS artifact_dir="$PWD/artifacts/*Linux*/
 
   - &run_coveralls
     name: run_coveralls
