@@ -42,7 +42,7 @@ aliases:
        conda activate base
        os=`uname`
        artifacts_dir="artifacts/artifacts.${os}.noarch"
-       make conda-build workdir=$WORKDIR artifact_dir=$artifacts_dir
+       make conda-build workdir=$WORKDIR artifact_dir=$PWD/$artifacts_dir
 
   - &setup_run_tests
     name: setup_run_tests
@@ -150,12 +150,13 @@ workflows:
          - build:
               matrix:
                  parameters:
-                    os: [ linux, macos ]
+#                    os: [ linux, macos ]
+                    os: [ linux ]
               name: build-<< matrix.os >>
          - test:
               matrix:
                  parameters:
-                    os: [ linux]  #, macos ]
+                    os: [ linux ]  #, macos ]
 #                    py_ver: [ "3.6", "3.7", "3.8"]
                     py_ver: [ "3.6"]
                     libnetcdf: [ "nompi", "mpi_mpich", "mpi_openmpi" ]
