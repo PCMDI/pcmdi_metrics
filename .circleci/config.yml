@@ -149,12 +149,13 @@ workflows:
                  parameters:
                     os: [ linux, macos ]
                     py_ver: [ "3.6", "3.7", "3.8" ]
-                    libnetcdf: [ "nompi", "mpi_openmpi" ]
-                    # libnetcdf: [ "nompi", "mpi_mpich", "mpi_openmpi" ]
+                    libnetcdf: [ "nompi", "mpi_mpich", "mpi_openmpi" ]
               name: test-<< matrix.os >>-<< matrix.py_ver >>-<< matrix.libnetcdf >>
               requires:
                  - build-<< matrix.os >>
          - upload:
               requires:
                  - test
-
+              filters:
+                 branches:
+                    only: master
