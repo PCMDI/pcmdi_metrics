@@ -43,8 +43,8 @@ aliases:
        os=`uname`
        artifacts_dir="artifacts/artifacts.${os}.noarch"
        make conda-build workdir=$WORKDIR artifact_dir=$PWD/$artifacts_dir
-       echo "XXX artifacts_dir: ${artifacts_dir}"
-       ls -l ${artifacts_dir}
+       echo "XXX artifacts_dir: $PWD/${artifacts_dir}"
+       ls -l ${PWD}/${artifacts_dir}
 
   - &setup_run_tests
     name: setup_run_tests
