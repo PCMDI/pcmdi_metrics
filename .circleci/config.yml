@@ -1,10 +1,5 @@
 version: 2.1
 
-parameters:
-   label:
-      type: string
-      default: "nightly"
-
 aliases:
   - &setup_env
     name: setup_env
@@ -21,7 +16,6 @@ aliases:
     name: setup_miniconda
     command: |
        source $BASH_ENV
-       mkdir -p $WORKDIR
        git clone https://github.com/CDAT/cdat.git $WORKDIR/cdat
        # install_miniconda.py installs miniconda3 under $WORKDIR/miniconda
        python $WORKDIR/cdat/scripts/install_miniconda.py -w $WORKDIR -p 'py3'
@@ -32,7 +26,7 @@ aliases:
        source $BASH_ENV
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
-       make conda-rerender workdir=$WORKDIR branch=$CIRCLE_BRANCH
+       make conda-rerender workdir=$WORKDIR conda_build_env=base branch=$CIRCLE_BRANCH
 
   - &conda_build
     name: conda_build
@@ -42,9 +36,7 @@ aliases:
        conda activate base
        os=`uname`
        artifacts_dir="artifacts/artifacts.${os}.noarch"
-       make conda-build workdir=$WORKDIR artifact_dir=$PWD/$artifacts_dir
-       echo "XXX artifacts_dir: $PWD/${artifacts_dir}"
-       ls -l ${PWD}/${artifacts_dir}
+       make conda-build workdir=$WORKDIR conda_build_env=base artifact_dir=$PWD/$artifacts_dir
 
   - &setup_run_tests
     name: setup_run_tests
@@ -71,10 +63,7 @@ aliases:
        source $WORKDIR/miniconda/etc/profile.d/conda.sh
        conda activate base
        UPLOAD_OPTIONS="conda_upload_token=$CONDA_UPLOAD_TOKEN"
-       echo "XXX artifacts_dir: $PWD/artifacts/*Linux*/"
-       ls -l $PWD/artifacts/*Linux*/
        make conda-upload workdir=$WORKDIR $UPLOAD_OPTIONS artifact_dir="$PWD/artifacts/*Linux*/"
-    no_output_timeout: 5m
 
   - &run_coveralls
     name: run_coveralls
@@ -129,10 +118,15 @@ jobs:
          - run: echo "LIBNETCDF=$LIBNETCDF" >> $BASH_ENV
          - run: *setup_env
          - run: *setup_run_tests
+         - run: *get_testdata
          - run: *run_tests
+         - run: *make_doc_test
          - store_artifacts:
               path: tests_html
               destination: tests_html
+         - store_artifacts:
+              path: tests_png
+              destination: tests_png
          - store_artifacts:
               path: spec_artifacts
               destination: spec_artifacts
@@ -140,8 +134,6 @@ jobs:
    upload:
       machine:
          image: circleci/classic:latest
-      environment:
-         LABEL: << pipeline.parameters.label >>
       steps:
          - checkout
          - attach_workspace:
@@ -158,22 +150,20 @@ workflows:
 #                    os: [ linux, macos ]
                     os: [ linux ]
               name: build-<< matrix.os >>
-##         - test:
-##              matrix:
-##                 parameters:
-##                    os: [ linux ]
-#                    py_ver: [ "3.6", "3.7", "3.8"]
-##                    py_ver: [ "3.6"]
-#                    libnetcdf: [ "nompi", "mpi_mpich", "mpi_openmpi" ]
-##                    libnetcdf: [ "nompi" ]
-##              name: test-<< matrix.os >>-<< matrix.py_ver >>-<< matrix.libnetcdf >>
-##              requires:
-##                 - build-<< matrix.os >>
-
+         - test:
+              matrix:
+                 parameters:
+#                    os: [ linux, macos ]
+                    os: [ linux ]
+#                    py_ver: [ "3.6", "3.7", "3.8" ]
+                    py_ver: [ "3.6" ]
+#                    libnetcdf: [ "nompi", "mpi_openmpi" ]
+                    libnetcdf: [ "nompi" ]
+                    # libnetcdf: [ "nompi", "mpi_mpich", "mpi_openmpi" ]
+              name: test-<< matrix.os >>-<< matrix.py_ver >>-<< matrix.libnetcdf >>
+              requires:
+                 - build-<< matrix.os >>
          - upload:
               requires:
-                 - build
-#             filters:
-#                branches:
-#                   only: master
+                 - test
 
