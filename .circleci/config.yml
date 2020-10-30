@@ -74,6 +74,7 @@ aliases:
        echo "XXX artifacts_dir: $PWD/artifacts/*Linux*/"
        ls -l $PWD/artifacts/*Linux*/
        make conda-upload workdir=$WORKDIR $UPLOAD_OPTIONS artifact_dir="$PWD/artifacts/*Linux*/"
+    no_output_timeout: 5m
 
   - &run_coveralls
     name: run_coveralls
