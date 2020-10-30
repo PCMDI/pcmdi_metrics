@@ -118,15 +118,10 @@ jobs:
          - run: echo "LIBNETCDF=$LIBNETCDF" >> $BASH_ENV
          - run: *setup_env
          - run: *setup_run_tests
-         - run: *get_testdata
          - run: *run_tests
-         - run: *make_doc_test
          - store_artifacts:
               path: tests_html
               destination: tests_html
-         - store_artifacts:
-              path: tests_png
-              destination: tests_png
          - store_artifacts:
               path: spec_artifacts
               destination: spec_artifacts
