@@ -96,7 +96,7 @@ setup-tests:
 conda-rerender: setup-build 
 	python $(workdir)/$(build_script) -w $(workdir) -l $(last_stable) -B 0 -p $(pkg_name) \
 		-b $(branch) --do_rerender --conda_env $(conda_build_env) --ignore_conda_missmatch \
-		--conda_activate $(conda_activate)
+		--conda_activate $(conda_activate) --organization $(organization)
 
 conda-build:
 	mkdir -p $(artifact_dir)
