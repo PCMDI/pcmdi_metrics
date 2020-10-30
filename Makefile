@@ -115,8 +115,7 @@ conda-dump-env:
 	source $(conda_activate) $(conda_test_env); conda list --explicit > $(artifact_dir)/$(conda_env_filename).txt
 
 run-tests:
-	source $(conda_activate) $(conda_test_env); python run_tests.py -n 4 -H -v2 --timeout=100000 \
-		--checkout-baseline --no-vtk-ui
+	source $(conda_activate) $(conda_test_env); python run_tests.py -H -v2 $(coverage_opt)
 
 run-doc-test:
 	source $(conda_activate) $(conda_test_env); cd docs; make doctest;
