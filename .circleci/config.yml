@@ -158,17 +158,17 @@ workflows:
 #                    os: [ linux, macos ]
                     os: [ linux ]
               name: build-<< matrix.os >>
-         - test:
-              matrix:
-                 parameters:
-                    os: [ linux ]
+##         - test:
+##              matrix:
+##                 parameters:
+##                    os: [ linux ]
 #                    py_ver: [ "3.6", "3.7", "3.8"]
-                    py_ver: [ "3.6"]
+##                    py_ver: [ "3.6"]
 #                    libnetcdf: [ "nompi", "mpi_mpich", "mpi_openmpi" ]
-                    libnetcdf: [ "nompi" ]
-              name: test-<< matrix.os >>-<< matrix.py_ver >>-<< matrix.libnetcdf >>
-              requires:
-                 - build-<< matrix.os >>
+##                    libnetcdf: [ "nompi" ]
+##              name: test-<< matrix.os >>-<< matrix.py_ver >>-<< matrix.libnetcdf >>
+##              requires:
+##                 - build-<< matrix.os >>
 
          - upload:
               requires:
