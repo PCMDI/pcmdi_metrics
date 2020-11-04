@@ -20,23 +20,27 @@ Quantifying the Agreement Between Observed and Simulated Extratropical Modes of
 Interannual Variability. Climate Dynamics.
 https://doi.org/10.1007/s00382-018-4355-4
 
-## Code Dependencies
+## Instruction
+
+#### Code Dependencies
   - [PMP](https://github.com/PCMDI/pcmdi_metrics)
   - [CDAT](http://cdat.llnl.gov/)
   - [eofs](http://ajdawson.github.io/eofs/)
   - scipy
 
-## Usage
+#### Usage
 `python variability_modes_driver.py -p param_demo/myParam_demo_NAM.py`
 
-### Auspices
+## NOTE
+
+#### Auspices
 This work was performed under the auspices of the U.S. Department of
 Energy by Lawrence Livermore National Laboratory under Contract
 DE-AC52-07NA27344. Lawrence Livermore National Laboratory is operated by
 Lawrence Livermore National Security, LLC, for the U.S. Department of Energy,
 National Nuclear Security Administration under Contract DE-AC52-07NA27344.
 
-### Disclaimer
+#### Disclaimer
 This document was prepared as an account of work sponsored by an
 agency of the United States government. Neither the United States government
 nor Lawrence Livermore National Security, LLC, nor any of their employees
