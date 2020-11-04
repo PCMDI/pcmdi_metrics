@@ -1,6 +1,7 @@
 # Extra-tropical Modes of Variability
 
-Explore Extra-tropical Modes of Variability in Climate Models. The code calculates metrics for modes of varibility from archive of CMIP models.
+## DESCRIPTION
+This code is written to examine extratropical modes of variability in Earth System Models. The code calculates metrics for following modes of varibility from CMIP models.
 - Author: Jiwoo Lee (lee1043@llnl.gov), PCMDI, LLNL
 
 #### EOF1 based variability modes
@@ -20,7 +21,7 @@ Quantifying the Agreement Between Observed and Simulated Extratropical Modes of
 Interannual Variability. Climate Dynamics.
 https://doi.org/10.1007/s00382-018-4355-4
 
-## Instruction
+## HOW TO USE
 
 #### Code Dependencies
   - [PMP](https://github.com/PCMDI/pcmdi_metrics)
