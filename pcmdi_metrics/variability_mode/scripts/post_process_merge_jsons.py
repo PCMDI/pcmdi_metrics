@@ -19,7 +19,7 @@ def main():
     # exps = ['historical']
     # exps = ['20c3m', 'amip']
 
-    case_id = 'v20200817'
+    case_id = 'v20200818'
 
     syear = 1900
     eyear = 2005
