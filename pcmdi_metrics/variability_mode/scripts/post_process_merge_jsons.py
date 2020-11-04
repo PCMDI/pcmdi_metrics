@@ -49,8 +49,8 @@ def main():
                 # json merge
                 try:
                     merge_json(mode, eof, mip, exp, case_id, obs, syear, eyear, pmprdir)
-                except:
-                    print('ERROR: ', mip, exp, mode)
+                except Exception as err:
+                    print('ERROR: ', mip, exp, mode, err)
                     pass
 
 
