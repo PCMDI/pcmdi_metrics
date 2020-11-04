@@ -27,9 +27,9 @@ https://doi.org/10.1007/s00382-018-4355-4
   - [PMP](https://github.com/PCMDI/pcmdi_metrics)
   - [CDAT](http://cdat.llnl.gov/)
   - [eofs](http://ajdawson.github.io/eofs/)
-  - scipy
+  - [scipy](https://www.scipy.org/)
 
-#### Usage
+#### Usage Example
 `python variability_modes_driver.py -p param_demo/myParam_demo_NAM.py`
 
 ## NOTE
