@@ -130,7 +130,7 @@ for m, model in enumerate(models):
         if debug:
             print('runs_list (revised):', runs_list)
     for r, run in enumerate(runs_list):
-        cmd = ['python', 'variability_modes_driver.py',
+        cmd = ['python', '../scripts/variability_modes_driver.py',
                '-p', param_file,
                '--case_id', case_id,
                '--mip', mip,
