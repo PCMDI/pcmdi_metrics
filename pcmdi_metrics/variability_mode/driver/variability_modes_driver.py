@@ -114,6 +114,10 @@ EofScaling = param.EofScaling  # If True, consider EOF with unit variance
 RmDomainMean = param.RemoveDomainMean  # If True, remove Domain Mean of each time step
 LandMask = param.landmask  # If True, maskout land region thus consider only over ocean
 
+print('EofScaling:', EofScaling)
+print('RmDomainMean:', RmDomainMean)
+print('LandMask:', LandMask)
+
 nc_out_obs = param.nc_out_obs  # Record NetCDF output
 plot_obs = param.plot_obs  # Generate plots
 nc_out_model = param.nc_out  # Record NetCDF output
@@ -405,9 +409,10 @@ for model in models:
     debug_print('model_path_list: '+str(model_path_list), debug)
 
     # Find where run can be gripped from given filename template for modpath
-    run_in_modpath = modpath(
-        mip=mip, exp=exp, model=model, realization=realization,
-        variable=var).split('/')[-1].split('.').index(realization)
+    if realization == "*":
+        run_in_modpath = modpath(
+            mip=mip, exp=exp, model=model, realization=realization,
+            variable=var).split('/')[-1].split('.').index(realization)
 
     # -------------------------------------------------
     # Run
@@ -415,7 +420,10 @@ for model in models:
     for model_path in model_path_list:
 
         try:
-            run = (model_path.split('/')[-1]).split('.')[run_in_modpath]
+            if realization == "*":
+                run = (model_path.split('/')[-1]).split('.')[run_in_modpath]
+            else:
+                run = realization
             print(' --- ', run, ' ---')
 
             if run not in list(result_dict['RESULTS'][model].keys()):
