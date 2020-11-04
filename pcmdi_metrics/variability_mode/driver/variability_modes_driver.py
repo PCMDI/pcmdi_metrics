@@ -710,9 +710,9 @@ for model in models:
 
                     debug_print('conventional eof end', debug)
 
-            # ================================================================
+            # =================================================================
             # Dictionary to JSON: individual JSON during model_realization loop
-            # ----------------------------------------------------------------
+            # -----------------------------------------------------------------
             json_filename_tmp = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
                                           mip, exp, fq, realm, model, run, str(msyear)+'-'+str(meyear)])
             variability_metrics_to_json(outdir, json_filename_tmp, result_dict, model=model, run=run)
@@ -724,10 +724,10 @@ for model in models:
                 print('warning: faild for ', model, run, err)
                 pass
 
-if not parallel:
-    # ================================================================
-    # Dictionary to JSON: collective JSON at the end of model_realization loop
-    # ----------------------------------------------------------------
+# ========================================================================
+# Dictionary to JSON: collective JSON at the end of model_realization loop
+# ------------------------------------------------------------------------
+if not parallel and (len(models) > 1):
     json_filename_all = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
                                   mip, exp, fq, realm, 'allModels', 'allRuns', str(msyear)+'-'+str(meyear)])
     variability_metrics_to_json(outdir, json_filename_all, result_dict)
