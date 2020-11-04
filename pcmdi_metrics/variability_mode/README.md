@@ -2,7 +2,6 @@
 
 ## DESCRIPTION
 This code is written to examine extratropical modes of variability in Earth System Models. The code calculates metrics for following modes of varibility from CMIP models.
-- Author: Jiwoo Lee (lee1043@llnl.gov), PCMDI, LLNL
 
 #### EOF1 based variability modes
 - NAM: Northern Annular Mode
@@ -16,7 +15,8 @@ This code is written to examine extratropical modes of variability in Earth Syst
 - NPGO: North Pacific Gyre Oscillation (2nd EOFs of PDO domain)
 
 #### Reference
-Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
+- Author: Jiwoo Lee (lee1043@llnl.gov), PCMDI, LLNL
+- Publication: Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
 Quantifying the Agreement Between Observed and Simulated Extratropical Modes of
 Interannual Variability. Climate Dynamics.
 https://doi.org/10.1007/s00382-018-4355-4
