@@ -30,7 +30,7 @@ https://doi.org/10.1007/s00382-018-4355-4
   - [scipy](https://www.scipy.org/)
 
 #### Usage Example
-`python variability_modes_driver.py -p param_demo/myParam_demo_NAM.py`
+`python variability_modes_driver.py -p param/myParam_demo_NAM.py`
 
 ## NOTE
 
