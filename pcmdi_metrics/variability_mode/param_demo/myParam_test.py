@@ -4,8 +4,7 @@ import os
 # =================================================
 # Background Information
 # -------------------------------------------------
-# mip = 'cmip5'
-mip = 'cmip6'
+mip = 'cmip5'
 exp = 'historical'
 frequency = 'mo'
 realm = 'atm'
@@ -13,7 +12,7 @@ realm = 'atm'
 # =================================================
 # Analysis Options
 # -------------------------------------------------
-variability_mode = 'NAM'  # Available domains: NAM, NAO, SAM, PNA, PDO
+variability_mode = 'NAO'  # Available domains: NAM, NAO, SAM, PNA, PDO
 seasons = ['DJF']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
@@ -34,8 +33,8 @@ debug = True  # False
 # -------------------------------------------------
 reference_data_name = 'NOAA-CIRES_20CR'
 reference_data_path = os.path.join(
-    '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/mon/psl/20CR/gn/v20190221',
-    'psl_mon_20CR_BE_gn_187101-201212.nc')
+    '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707',
+    'psl_mon_20CR_BE_gn_v20200707_187101-201212.nc')
 
 varOBS = 'psl'
 ObsUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa; or (False, 0, 0)
@@ -53,12 +52,12 @@ modpath = os.path.join(
     '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
 
 # modnames = ['all']
-# modnames = ['ACCESS1-0']
-modnames = ['EC-Earth3']
+modnames = ['ACCESS1-0', 'ACCESS1-3']
+# modnames = ['EC-Earth3']
 
-# realization = '*'  # realizations
+realization = '*'  # realizations
 # realization = 'r1i1p1'
-realization = 'r14i1p1f1'
+# realization = 'r14i1p1f1'
 
 varModel = 'psl'
 ModUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa
@@ -74,7 +73,7 @@ case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
 
 if debug:
-    pmprdir = '/work/lee1043/imsi/result_test'
+    pmprdir = '/work/lee1043/temporary/result_test'
 
 results_dir = os.path.join(
     pmprdir,
