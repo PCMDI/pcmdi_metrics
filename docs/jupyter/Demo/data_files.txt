@@ -1,0 +1,8 @@
+https://pcmdiweb.llnl.gov/pss/pmpdata/
+0af0ddd3e998579c0e8773b24981331a  PCMDIobs2.0/atmos/mon/pr/GPCP-2-3/gn/v20190301//pr_mon_GPCP-2-3_BE_gn_197901-201803.nc
+146eec5e8a734fedbbdd0909921530f2  pmpobs_v1.0/atm/mo/rlut/CERES/ac/rlut_CERES_000001-000012_ac.nc
+bad136e97d7f13dc5af4ac019c8ca9c2  example_data/atm/mo/rlut/ac/CMIP5.historical.ACCESS1-0.r1i1p1.mon.rlut.198101-200512.AC.v20190225.nc
+ec61d7bf2f8480f8e7a18af62d61deff  example_data/atm/mo/rlut/ac/CMIP5.historical.CSIRO-Mk3-6-0.r1i1p1.mon.rlut.198101-200512.AC.v20190225.nc
+9f5938a7750156ef76905f8872fd0aee  example_data/atm/mo/pr/CMIP5.CMIP.historical.CNRM-CERFACS.CNRM-CM5-2.r1i1p1.mon.pr.atmos.glb-2d-gu.v20130401.0000000.0.nc
+080a39fb6861cb320d29eb5a6dbc9859  example_data/atm/mo/pr/CMIP5.CMIP.historical.NSF-DOE-NCAR.CESM1-WACCM.r1i1p1.mon.pr.atmos.glb-2d-gu.v20130314.0000000.0.nc
+eab076619d05c886648f33d507f4a721  example_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc
