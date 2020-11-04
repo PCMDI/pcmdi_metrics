@@ -3,18 +3,18 @@
 Explore Extra-tropical Modes of Variability in Climate Models. The code calculates metrics for modes of varibility from archive of CMIP models.
 - Author: Jiwoo Lee (lee1043@llnl.gov), PCMDI, LLNL
 
-### EOF1 based variability modes
+#### EOF1 based variability modes
 - NAM: Northern Annular Mode
 - NAO: Northern Atlantic Oscillation
 - SAM: Southern Annular Mode
 - PNA: Pacific North American Pattern
 - PDO: Pacific Decadal Oscillation
 
-### EOF2 based variability modes
+#### EOF2 based variability modes
 - NPO: North Pacific Oscillation (2nd EOFs of PNA domain)
 - NPGO: North Pacific Gyre Oscillation (2nd EOFs of PDO domain)
 
-## Reference
+#### Reference
 Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
 Quantifying the Agreement Between Observed and Simulated Extratropical Modes of
 Interannual Variability. Climate Dynamics.
@@ -26,14 +26,17 @@ https://doi.org/10.1007/s00382-018-4355-4
   - [eofs](http://ajdawson.github.io/eofs/)
   - scipy
 
-## Auspices
+## Usage
+`python variability_modes_driver.py -p param_demo/myParam_demo_NAM.py`
+
+### Auspices
 This work was performed under the auspices of the U.S. Department of
 Energy by Lawrence Livermore National Laboratory under Contract
 DE-AC52-07NA27344. Lawrence Livermore National Laboratory is operated by
 Lawrence Livermore National Security, LLC, for the U.S. Department of Energy,
 National Nuclear Security Administration under Contract DE-AC52-07NA27344.
 
-## Disclaimer
+### Disclaimer
 This document was prepared as an account of work sponsored by an
 agency of the United States government. Neither the United States government
 nor Lawrence Livermore National Security, LLC, nor any of their employees
