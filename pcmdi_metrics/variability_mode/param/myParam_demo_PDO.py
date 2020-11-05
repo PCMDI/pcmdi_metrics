@@ -50,10 +50,8 @@ modpath_lf = os.path.join(
     '/p/css03/cmip5_css02/data/cmip5/output1/CSIRO-BOM/ACCESS1-0/amip/fx/atmos/fx/r0i0p0/sftlf/1/',
     'sftlf_fx_ACCESS1-0_amip_r0i0p0.nc')
 
-#modnames = ['all']
 modnames = ['ACCESS1-0']
 
-#realization = '*'  # realizations
 realization = 'r1i1p1'
 
 varModel = 'ts'

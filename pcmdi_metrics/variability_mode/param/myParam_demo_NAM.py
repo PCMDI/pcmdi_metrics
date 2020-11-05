@@ -15,10 +15,6 @@ realm = 'atm'
 variability_mode = 'NAM'  # Available domains: NAM, NAO, SAM, PNA, PDO
 seasons = ['DJF']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
-#RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
-#EofScaling = False  # Convert EOF pattern as unit variance (default=False)
-#landmask = False  # Maskout land region thus consider only ocean grid (default=False)
-
 ConvEOF = True  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
 
@@ -46,18 +42,12 @@ eofn_obs = 1
 # =================================================
 # Models
 # -------------------------------------------------
-#modpath = os.path.join(
-#    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20201031',
-#    '%(mip)/%(exp)/atmos/mon/%(variable)',
-#    '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
-
 modpath = os.path.join(
     '/p/css03/cmip5_css02/data/cmip5/output1/CSIRO-BOM/ACCESS1-0/historical/mon/atmos/Amon/r1i1p1/psl/1',
     'psl_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc')
 
 modnames = ['ACCESS1-0']
 
-# realization = '*'  # realizations
 realization = 'r1i1p1'
 
 varModel = 'psl'
