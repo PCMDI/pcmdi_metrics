@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,18 +12,12 @@
   
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -34,6 +29,10 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="PMPParser" href="pmpparser.html" />
@@ -51,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PCMDI Metrics
+            <a href="index.html" class="icon icon-home"> PCMDI Metrics
           
 
           
@@ -74,7 +73,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -86,7 +84,6 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">PCMDI metrics package (PMP)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install-using-anaconda.html">Install using Anaconda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="using-the-package.html">Using the Package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ipsl-corner.html">IPSL Corner</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">PMP using CDP Guide</a><ul>
@@ -103,7 +100,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -142,7 +138,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
       <li>PMP using CDP Guide</li>
     
@@ -172,13 +168,13 @@
 <h3>What changed<a class="headerlink" href="#what-changed" title="Permalink to this headline">¶</a></h3>
 <p>Vocabulary for the parameter has changed to account for the new paradigm of reference data set vs test data set, instead of just observation vs model. <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/wiki/PMPParser#default-arguments">See here</a></p>
 <p>All other cdp related stuff is in the <code class="docutils literal notranslate"><span class="pre">src/python/pcmdi/scripts/driver/</span></code> folder. This include the <code class="docutils literal notranslate"><span class="pre">pmp_parser</span></code>, which is no longer in <code class="docutils literal notranslate"><span class="pre">src/python/pcmdi/</span></code>.</p>
-<p>The majority of the work was done to the <code class="docutils literal notranslate"><span class="pre">pcmdi_metrics_driver.py</span></code>, which is now named <code class="docutils literal notranslate"><span class="pre">pcmdi_metrics_driver_legacy.py</span></code>. The new driver is now named <code class="docutils literal notranslate"><span class="pre">pcmdi_metrics_driver.py</span></code>. Both are executable via the command line. The next section details the changes done to the driver.</p>
+<p>The majority of the work was done to the <strong>pcmdi_metrics_driver.py</strong>, which is now named <strong>pcmdi_metrics_driver_legacy.py</strong>. The new driver is now named <strong>pcmdi_metrics_driver.py</strong>. Both are executable via the command line. The next section details the changes done to the driver.</p>
 </div>
 <div class="section" id="changes-to-the-driver">
 <h3>Changes to the driver<a class="headerlink" href="#changes-to-the-driver" title="Permalink to this headline">¶</a></h3>
 <p>Though not a requirement of cdp, the driver is now programmed in an object-oriented fashion. There are many good reasons to this, which you can see by googling it. Below is an explanation of the classes, which are located in <code class="docutils literal notranslate"><span class="pre">src/python/pcmdi/scripts/driver/</span></code>.</p>
 <ul class="simple">
-<li><p><strong>PMPParameter</strong>: Inherits from <code class="docutils literal notranslate"><span class="pre">CDPParameter</span></code>. Contains the stuff that’s usually in a Python parameter script. Eventually, we want to add error checking to the <code class="docutils literal notranslate"><span class="pre">heck_values()</span></code> function.</p></li>
+<li><p><strong>PMPParameter</strong>: Inherits from <code class="docutils literal notranslate"><span class="pre">CDPParameter</span></code>. Contains the stuff that’s usually in a Python parameter script. Eventually, we want to add error checking to the <code class="docutils literal notranslate"><span class="pre">check_values()</span></code> function.</p></li>
 <li><p><strong>PMPParser</strong>: Inherits from <code class="docutils literal notranslate"><span class="pre">CDPParser</span></code>, which it based on <code class="docutils literal notranslate"><span class="pre">ArgumentParser</span></code>. You can add/remove/change the arguments in the <code class="docutils literal notranslate"><span class="pre">load_default_args()</span></code> function if needed.</p></li>
 <li><p><strong>DataSet</strong>: One of the largest forthcoming changes to pmp is that observations and models can be used interchangeably. To do so, both must be of the same class, which is <code class="docutils literal notranslate"><span class="pre">DataSet</span></code>. <code class="docutils literal notranslate"><span class="pre">DataSet</span></code> is an abstract class that acts as an <a class="reference external" href="https://en.wikipedia.org/wiki/Interface_(computing)#Programming_to_the_interface">interface</a>, with some functionality through static methods. Each <code class="docutils literal notranslate"><span class="pre">DataSet</span></code> object also has an attribute of type <code class="docutils literal notranslate"><span class="pre">pmp_io</span></code>.</p></li>
 <li><p><strong>Model</strong>: A concrete version of <code class="docutils literal notranslate"><span class="pre">DataSet</span></code>. Looking at this from the legacy code, this is all of the stuff in the <code class="docutils literal notranslate"><span class="pre">model_versions</span></code> loop. It just does stuff related to <code class="docutils literal notranslate"><span class="pre">_model_file</span></code>, which was called <code class="docutils literal notranslate"><span class="pre">MODEL</span></code> in the legacy version.</p></li>
@@ -211,19 +207,11 @@
 
   <div role="contentinfo">
     <p>
-        
         &copy; Copyright 2020 PCMDI
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -234,6 +222,7 @@
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

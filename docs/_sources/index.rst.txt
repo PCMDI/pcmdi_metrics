@@ -23,7 +23,6 @@ Users of the current release (v1.2) will need to contact the PMP developers (pcm
 
    self
    install
-   install-using-anaconda
    using-the-package
    ipsl-corner
    pmp-using-cdp-guide

@@ -12,14 +12,14 @@ Vocabulary for the parameter has changed to account for the new paradigm of refe
 
 All other cdp related stuff is in the ``src/python/pcmdi/scripts/driver/`` folder. This include the ``pmp_parser``, which is no longer in ``src/python/pcmdi/``. 
 
-The majority of the work was done to the ``pcmdi_metrics_driver.py``, which is now named ``pcmdi_metrics_driver_legacy.py``. The new driver is now named ``pcmdi_metrics_driver.py``. Both are executable via the command line. The next section details the changes done to the driver.
+The majority of the work was done to the **pcmdi_metrics_driver.py**, which is now named **pcmdi_metrics_driver_legacy.py**. The new driver is now named **pcmdi_metrics_driver.py**. Both are executable via the command line. The next section details the changes done to the driver.
 
 Changes to the driver
 ---------------------
 
 Though not a requirement of cdp, the driver is now programmed in an object-oriented fashion. There are many good reasons to this, which you can see by googling it. Below is an explanation of the classes, which are located in ``src/python/pcmdi/scripts/driver/``.
 
-* **PMPParameter**: Inherits from ``CDPParameter``. Contains the stuff that's usually in a Python parameter script. Eventually, we want to add error checking to the ``heck_values()`` function.
+* **PMPParameter**: Inherits from ``CDPParameter``. Contains the stuff that's usually in a Python parameter script. Eventually, we want to add error checking to the ``check_values()`` function.
 
 * **PMPParser**: Inherits from ``CDPParser``, which it based on ``ArgumentParser``. You can add/remove/change the arguments in the ``load_default_args()`` function if needed.
 

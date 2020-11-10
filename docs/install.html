@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,18 +12,12 @@
   
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -34,9 +29,13 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Install using Anaconda" href="install-using-anaconda.html" />
+    <link rel="next" title="Using the Package" href="using-the-package.html" />
     <link rel="prev" title="PCMDI metrics package (PMP)" href="index.html" /> 
 </head>
 
@@ -51,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PCMDI Metrics
+            <a href="index.html" class="icon icon-home"> PCMDI Metrics
           
 
           
@@ -74,7 +73,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -86,10 +84,16 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">PCMDI metrics package (PMP)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Install</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#anaconda-installation-recommended">Anaconda installation (recommended)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#anaconda-installation-recommended">Anaconda installation (recommended)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#all-platforms-system-requirements">All Platforms System Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bypassing-firewalls">Bypassing firewalls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#installing-the-pcmdi-metrics-package-pmp">Installing the PCMDI Metrics Package (PMP)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#getting-the-latest-nightly-of-pmp-and-cdat-recommended">Getting the latest nightly of PMP and CDAT (recommended)</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="install-using-anaconda.html">Install using Anaconda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-from-source">Install from Source</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="using-the-package.html">Using the Package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ipsl-corner.html">IPSL Corner</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
@@ -99,7 +103,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -138,7 +141,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
       <li>Install</li>
     
@@ -164,10 +167,63 @@
 <p>We offer two paths to install the PCMDI Metrics package. The recommended method is to install the Anaconda package and then install PCMDI Metrics using our conda channel. Alternatively, the older, more complex build method (from the source install method) is also supported, and used by developers contributing to the Github repository.</p>
 <div class="section" id="anaconda-installation-recommended">
 <h2>Anaconda installation (recommended)<a class="headerlink" href="#anaconda-installation-recommended" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="install-using-anaconda.html#install-anaconda"><span class="std std-ref">Install using Anaconda</span></a> - Installation instructions for Anaconda users</p></li>
+<p>A primary advantage of the Anaconda install path is that it is user-centric. This allows users on super computing systems with limited permissions to fully configure their local PMP install. We offer an installation for anaconda users under linux-64 or osx-64. Support for Windows is not available yet.</p>
+<p>Anaconda package: <a class="reference external" href="https://anaconda.org/PCMDI/pcmdi_metrics/files">https://anaconda.org/PCMDI/pcmdi_metrics/files</a></p>
+<div class="section" id="all-platforms-system-requirements">
+<h3>All Platforms System Requirements<a class="headerlink" href="#all-platforms-system-requirements" title="Permalink to this headline">¶</a></h3>
+<blockquote>
+<div><ul>
+<li><p>Install the <a class="reference external" href="https://www.anaconda.com/products/individual#Downloads">Anaconda for Python 3.7</a> package (we recommend installing this for each user)</p></li>
+<li><p>Make sure anaconda is in your PATH (assuming anaconda is installed in ${HOME}/anaconda</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">PATH=${HOME}/anaconda/bin:${PATH}</span></code> for [ba]sh</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">setenv</span> <span class="pre">PATH</span> <span class="pre">${HOME}/anaconda/bin:${PATH}</span></code> for [t]csh</p></li>
 </ul>
-<p>A primary advantage of the Anaconda install path is that it is user-centric. This allows users on super computing systems with limited permissions to fully configure their local PMP install</p>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p>Make sure you have no environment variables set from an old UV-CDAT installation in your PATH/PYTHONPATH,LD_LIBRARY_PATH etc</p>
+<p>To learn more about conda environments see: <a class="reference external" href="http://conda.pydata.org/docs/using/envs.html">http://conda.pydata.org/docs/using/envs.html</a></p>
+</div>
+<div class="section" id="bypassing-firewalls">
+<h3>Bypassing firewalls<a class="headerlink" href="#bypassing-firewalls" title="Permalink to this headline">¶</a></h3>
+<p>If your institution has tight ssl certificate/security issues try:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">config</span> <span class="o">--</span><span class="nb">set</span> <span class="n">ssl_verify</span> <span class="kc">False</span>
+<span class="n">binstar</span> <span class="n">config</span> <span class="o">--</span><span class="nb">set</span> <span class="n">ssl_verify</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="installing-the-pcmdi-metrics-package-pmp">
+<h3>Installing the PCMDI Metrics Package (PMP)<a class="headerlink" href="#installing-the-pcmdi-metrics-package-pmp" title="Permalink to this headline">¶</a></h3>
+<p>Using the conda package manager, you can install the PCMDI Metrics package from the PCMDI conda channel. Your environment must contain <a class="reference external" href="https://cdat.llnl.gov/">CDAT</a>. See <a class="reference external" href="https://github.com/CDAT/cdat/wiki/install">CDAT Install</a> for more instructions.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">source</span> <span class="n">activate</span> <span class="p">[</span><span class="n">YOUR_CDAT_ENABLED_CONDA_ENVIRONMENT</span><span class="p">]</span>
+<span class="n">conda</span> <span class="n">install</span> <span class="n">pcmdi_metrics</span> <span class="o">-</span><span class="n">c</span> <span class="n">cdat</span><span class="o">-</span><span class="n">forge</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="getting-the-latest-nightly-of-pmp-and-cdat-recommended">
+<h3>Getting the latest nightly of PMP and CDAT (recommended)<a class="headerlink" href="#getting-the-latest-nightly-of-pmp-and-cdat-recommended" title="Permalink to this headline">¶</a></h3>
+<p>These commands create a new conda environment containing the nightly builds of PMP and CDAT:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="p">[</span><span class="n">YOUR_ENV_NAME_HERE</span><span class="p">]</span> <span class="o">-</span><span class="n">c</span> <span class="n">cdat</span><span class="o">/</span><span class="n">label</span><span class="o">/</span><span class="n">nightly</span> <span class="o">-</span><span class="n">c</span> <span class="n">pcmdi</span><span class="o">/</span><span class="n">label</span><span class="o">/</span><span class="n">nightly</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="o">-</span><span class="n">c</span> <span class="n">cdat</span> <span class="n">pcmdi_metrics</span>
+<span class="n">source</span> <span class="n">activate</span> <span class="p">[</span><span class="n">YOUR_ENV_NAME_HERE</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="install-from-source">
+<h2>Install from Source<a class="headerlink" href="#install-from-source" title="Permalink to this headline">¶</a></h2>
+<p>In some cases, it may be necessary to install PMP via the source code. Some example instructions are provided here to clone the pcmdi_metrics repo, install PMP from a branch, and run tests.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">test_pcmdi</span> <span class="o">-</span><span class="n">c</span> <span class="n">cdat</span><span class="o">/</span><span class="n">label</span><span class="o">/</span><span class="n">v8</span><span class="o">.</span><span class="mf">2.1</span> <span class="o">-</span><span class="n">c</span> <span class="n">pcmdi</span><span class="o">/</span><span class="n">label</span><span class="o">/</span><span class="n">nightly</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">cdat</span> <span class="n">pcmdi_metrics</span> <span class="n">testsrunner</span>
+<span class="n">conda</span> <span class="n">activate</span> <span class="n">test_pcmdi</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">pcmdi</span><span class="o">/</span><span class="n">pcmdi_metrics</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">pcmdi_metrics</span>
+<span class="n">git</span> <span class="n">checkout</span> <span class="o">-</span><span class="n">b</span> <span class="o">&lt;</span><span class="n">your</span> <span class="n">branch</span><span class="o">&gt;</span>
+<span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
+<span class="n">python</span> <span class="n">run_tests</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">H</span> <span class="o">-</span><span class="n">v</span> <span class="mi">2</span>
+</pre></div>
+</div>
 </div>
 </div>
 
@@ -179,7 +235,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="install-using-anaconda.html" class="btn btn-neutral float-right" title="Install using Anaconda" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="using-the-package.html" class="btn btn-neutral float-right" title="Using the Package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral float-left" title="PCMDI metrics package (PMP)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -191,19 +247,11 @@
 
   <div role="contentinfo">
     <p>
-        
         &copy; Copyright 2020 PCMDI
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -214,6 +262,7 @@
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {

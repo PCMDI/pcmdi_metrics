@@ -11,16 +11,18 @@ Indexation of the metric results
 --------------------------------
 
 The philosophy of the Metrics Garden is to allow crossing the results of various simulations and metrics on the portrait plots by:
+
 * storing all the results on the same database
 * and fetching the results we want (on request from the UI) for display
  
-Following this, an important issue is to store the metric results with the appropriate indexation (set of keywords) on the database, so that we can find them afterwards. The indexation has to be univocal. In attached file [(see wiki page)](https://github.com/PCMDI/wgne-wgcm_metrics/wiki/Reference-Syntax-indexation) , you will find the set of keywords we identified as necessary to index the results. As you will see, we require much more information than what is currently available in the output json files. This is largely inspired from the CMIP5 DRS, and we already know that the CMIP6 DRS will be potentially different... anyway, the present document aims at opening discussions on this issue and we will be very happy to discuss it with you.
- The question here is to see with you guys if extending the information provided by the PCMDI-MP is something that could be interesting for you as well (notably for the information related to the reference and the metric). We could discuss this issue together, at least to define the good practices to develop this aspect within the PCMDI-MP.
+Following this, an important issue is to store the metric results with the appropriate indexation (set of keywords) on the database, so that we can find them afterwards. The indexation has to be univocal. In attached file `(see wiki page) <https://github.com/PCMDI/wgne-wgcm_metrics/wiki/Reference-Syntax-indexation>`_, you will find the set of keywords we identified as necessary to index the results. As you will see, we require much more information than what is currently available in the output json files. This is largely inspired from the CMIP5 DRS, and we already know that the CMIP6 DRS will be potentially different... anyway, the present document aims at opening discussions on this issue and we will be very happy to discuss it with you.
+
+The question here is to see with you guys if extending the information provided by the PCMDI-MP is something that could be interesting for you as well (notably for the information related to the reference and the metric). We could discuss this issue together, at least to define the good practices to develop this aspect within the PCMDI-MP.
 
 Adding new metrics
 ------------------
 
- Another issue is to add a collection of metrics to document the mean state of the model. We are looking for the following metrics:
+Another issue is to add a collection of metrics to document the mean state of the model. We are looking for the following metrics:
 
 * latitude of the subtropical jets (in progress)
 * ENSO metrics (with Eric)
@@ -30,7 +32,7 @@ Adding new metrics
 * metrics for the land surfaces (work in progress with the ORCHIDEE people)
  
 Among all those, what are the plans at PCMDI to include additionnal metrics to the PCMDI-MP (like the ENSO Metrics of Eric)? We can discuss about a little bit of coordination, both for the metrics and the references that will be added in the obs directory.
- We will create an "ipsl" directory within the "metrics" module, where we will add all the diagnostics developed at IPSL (in parallel of the "wgne" module, so that we don't interfere with what you guys do).
+We will create an "ipsl" directory within the "metrics" module, where we will add all the diagnostics developed at IPSL (in parallel of the "wgne" module, so that we don't interfere with what you guys do).
 
 Miscellaneous
 -------------
@@ -42,7 +44,7 @@ Miscellaneous
 Future developments and challenges
 ----------------------------------
 
- In the future, the question is also whether we could plan to calculate metrics derived from temporal or spatio-temporal analysis (spectrums, EOFs) ; the aim would be to have metrics for the main variability modes (AO-NAO, PNA...), weather regimes and QBO (to give some examples). Is it in the plans of the PCMDI to develop the package to handle time series (longer than the 12 months of the annual cycle)?
+In the future, the question is also whether we could plan to calculate metrics derived from temporal or spatio-temporal analysis (spectrums, EOFs) ; the aim would be to have metrics for the main variability modes (AO-NAO, PNA...), weather regimes and QBO (to give some examples). Is it in the plans of the PCMDI to develop the package to handle time series (longer than the 12 months of the annual cycle)?
 
 If we want to describe a given metric and that this description is univocal,
 we have to give enough information on the numerical experiment (or

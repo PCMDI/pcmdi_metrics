@@ -1,7 +1,8 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -11,18 +12,12 @@
   
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
   
   
   
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -34,10 +29,14 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="IPSL Corner" href="ipsl-corner.html" />
-    <link rel="prev" title="Install using Anaconda" href="install-using-anaconda.html" /> 
+    <link rel="prev" title="Install" href="install.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -51,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PCMDI Metrics
+            <a href="index.html" class="icon icon-home"> PCMDI Metrics
           
 
           
@@ -74,7 +73,6 @@
           
         </div>
 
-        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -86,7 +84,6 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">PCMDI metrics package (PMP)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install-using-anaconda.html">Install using Anaconda</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Using the Package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#getting-started">GETTING STARTED</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#user-guide-pmp-v1-1">USER GUIDE PMP v1.1</a><ul>
@@ -96,7 +93,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#demos">Demos</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#running-the-pmp-climate-statistics">Running the PMP climate statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-the-pmp-climate-statistics-deprecated">Running the PMP climate statistics (deprecated)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reading-the-summary-statistics-produced-by-the-pmp">Reading the summary statistics produced by the PMP</a></li>
 </ul>
 </li>
@@ -110,7 +107,6 @@
             
           
         </div>
-        
       </div>
     </nav>
 
@@ -149,7 +145,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><a href="index.html">Docs</a> &raquo;</li>
         
       <li>Using the Package</li>
     
@@ -180,9 +176,9 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ which python
 </pre></div>
 </div>
-<p>This should point you to something like: {HOMEDIRECTORY}/anaconda2/bin/python, where the {HOMEDIRECTORY} is where you installed the PMP using the anaconda instructions.  If instead you are pointed to /usr/bin/python, this is the default python installed on your computer and it means the PMP is not yet recognized in your current window.  If that is the case, make sure anaconda is in your ${PATH} and if necessary revisit the instructions for installing the PMP with Anaconda.</p>
+<p>This should point you to something like: <code class="docutils literal notranslate"><span class="pre">{HOMEDIRECTORY}/anaconda2/bin/python</span></code>, where the <code class="docutils literal notranslate"><span class="pre">{HOMEDIRECTORY}</span></code> is where you installed the PMP using the anaconda instructions.  If instead you are pointed to <code class="docutils literal notranslate"><span class="pre">/usr/bin/python</span></code>, this is the default python installed on your computer and it means the PMP is not yet recognized in your current window.  If that is the case, make sure anaconda is in your <code class="docutils literal notranslate"><span class="pre">${PATH}</span></code> and if necessary revisit the instructions for installing the PMP with Anaconda.</p>
 <p>Next try:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ which pcmdi_metrics_driver.py
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ which mean_climate_metrics_driver.py
 </pre></div>
 </div>
 <p>If this file is found, there is a good chance you have your PMP environment set up properly, so you can proceed to working with some of the demos below.</p>
@@ -209,21 +205,21 @@ The primary functionality of the PMP v1.1 is to compute a wide range of climatol
 <div class="section" id="preparing-model-data-for-use-with-the-pmp">
 <h3>Preparing model data for use with the PMP<a class="headerlink" href="#preparing-model-data-for-use-with-the-pmp" title="Permalink to this headline">¶</a></h3>
 <p>The key to being able to operate the PMP is that all climate model output must closely match the data conventions of CMIP. If a model’s output was processed with CMOR, it will almost certainly be readably by the PMP. Without this, there are a number of technical details a user will have to be cognizant of to ensure their data can be read by the PMP. There is some flexibility - it is possible for a user to keep their own variable names and units. The primary analysis in the PMP v1.1 is on the climatological annual cycle, and it is currently assumed a user already routinely computes these (code for this will be provided in v1.2). It is expected that the 12-month climatological time series is in a single netCDF file with variable dimensions (12, latitude, longitude) starting in January and ending in December. In v1.1 the PMP relies on the time index (0-11 in Python) in the climatologies so the datum and units of the time axis are not important.</p>
-<p>If the 12 month annual cycle climatology is not in a single file, there is a powerful UV-CDAT utility (cdscan) included in the PMP that can be used to “span in time” across multiple files. cdscan is a command line operation that can be used to create an xml that can be read by the PMP (via CDMS).   See <a class="reference external" href="http://uvcdat.llnl.gov/documentation/cdms/cdms_7.html">http://uvcdat.llnl.gov/documentation/cdms/cdms_7.html</a></p>
-<p>The PMP observational database is organized very similar to how CMIP model output is organized on the ESGF.  Users should contact the PMP developers (<a class="reference external" href="mailto:pcmdi-metrics&#37;&#52;&#48;llnl&#46;gov">pcmdi-metrics<span>&#64;</span>llnl<span>&#46;</span>gov</a>) to obtain a copy.  Additional datasets can be added to the database provided they are done so in a way that adheres to the directory structure of the database.  Once they are added, for local execution of the PMP a simple script (<a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/master/src/python/pcmdi/scripts/build_obs_meta_dictionary.py">https://github.com/PCMDI/pcmdi_metrics/blob/master/src/python/pcmdi/scripts/build_obs_meta_dictionary.py</a>) needs to be updated and executed.  For collaborators wishing to contribute new observations into the master PMP, a GIT branch should be created with a pull request.</p>
+<p>If the 12 month annual cycle climatology is not in a single file, there is a powerful UV-CDAT utility (cdscan) included in the PMP that can be used to “span in time” across multiple files. cdscan is a command line operation that can be used to create an xml that can be read by the PMP (via CDMS). See <a class="reference external" href="http://uvcdat.llnl.gov/documentation/cdms/cdms_7.html">http://uvcdat.llnl.gov/documentation/cdms/cdms_7.html</a></p>
+<p>The PMP observational database is organized very similar to how CMIP model output is organized on the ESGF.  Users should contact the PMP developers (<a class="reference external" href="mailto:pcmdi-metrics&#37;&#52;&#48;llnl&#46;gov">pcmdi-metrics<span>&#64;</span>llnl<span>&#46;</span>gov</a>) to obtain a copy.  Additional datasets can be added to the database provided they are done so in a way that adheres to the directory structure of the database.  Once they are added, for local execution of the PMP a <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/master/src/python/pcmdi/scripts/build_obs_meta_dictionary.py">simple script</a> needs to be updated and executed.  For collaborators wishing to contribute new observations into the master PMP, a GIT branch should be created with a pull request.</p>
 <p>With the model and observational data are properly structured and organized, the next step is to set up a parameter file. This parameter file is a python “.py” file where the user specifies the file/directory structure of both the model and observational data as well as the variables for which the user wants to compute summary statistics. There are other options set in this file such as the target grid resolution, whether or not the user wants to save the interpolated climatologies, compute statistics over ocean only, etc.   Output is saved as a “json” file, an internationally recognized lightweight data-interchange format that is easy to read and write (json.org).  For our purposes, it is especially powerful as a simple database for organizing the summary statistics computed by the PMP and enabling them to be easily read in python.
 As example script is provided described in the demo package described below.</p>
 </div>
 </div>
 <div class="section" id="demos">
 <h2>Demos<a class="headerlink" href="#demos" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="running-the-pmp-climate-statistics">
-<h3>Running the PMP climate statistics<a class="headerlink" href="#running-the-pmp-climate-statistics" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="running-the-pmp-climate-statistics-deprecated">
+<h3>Running the PMP climate statistics (deprecated)<a class="headerlink" href="#running-the-pmp-climate-statistics-deprecated" title="Permalink to this headline">¶</a></h3>
 <p>The PMP v1.1 summary statistics are executed with a parameter file as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$  pcmdi_metrics_driver.py -p /MY_PATH/my_parameter_file.py
 </pre></div>
 </div>
-<p>Where “my_parameter_file.py” is your customized input parameter file and “MY_PATH” is the location of the parameter file.</p>
+<p>Where <code class="docutils literal notranslate"><span class="pre">my_parameter_file.py</span></code> is your customized input parameter file and <code class="docutils literal notranslate"><span class="pre">MY_PATH</span></code> is the location of the parameter file.</p>
 <p>Before setting up your own input parameter file, we suggest you run our first demo which highlights the function of parameter file with a simple test case, and then uses this to execute the PMP.  With the PMP properly installed, you should be able to execute the following command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pmp_demo_1.py
 </pre></div>
@@ -249,7 +245,7 @@ As example script is provided described in the demo package described below.</p>
         <a href="ipsl-corner.html" class="btn btn-neutral float-right" title="IPSL Corner" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="install-using-anaconda.html" class="btn btn-neutral float-left" title="Install using Anaconda" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="install.html" class="btn btn-neutral float-left" title="Install" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -258,19 +254,11 @@ As example script is provided described in the demo package described below.</p>
 
   <div role="contentinfo">
     <p>
-        
         &copy; Copyright 2020 PCMDI
 
     </p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -281,6 +269,7 @@ As example script is provided described in the demo package described below.</p>
 
   </div>
   
+
 
   <script type="text/javascript">
       jQuery(function () {
