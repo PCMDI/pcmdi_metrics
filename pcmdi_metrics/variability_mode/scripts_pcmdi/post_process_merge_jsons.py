@@ -24,7 +24,7 @@ def main():
     syear = 1900
     eyear = 2005
 
-    # pmprdir = '/work/lee1043/imsi/result_test'
+    # pmprdir = '/work/lee1043/temporary/result_test'
     pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
 
     for mip in mips:

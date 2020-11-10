@@ -97,11 +97,14 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
 # =================================================
 # Generates list of command
 # -------------------------------------------------
-param_file = '../doc/myParam_'+mode+'_'+mip+'.py'
+param_dir = '../../../sample_setups/pcmdi_parameter_files/variability_modes'
+param_filename = 'myParam_'+mode+'_'+mip+'.py'
 
 if debug:
-    param_file = '../doc/myParam_test.py'
+    param_filename = 'myParam_test.py'
     print('number of models (debug mode):', len(models))
+
+param_file = os.path.join(param_dir, param_filename)
 
 cmds_list = []
 for m, model in enumerate(models):

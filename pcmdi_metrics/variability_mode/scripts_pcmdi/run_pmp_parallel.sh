@@ -28,6 +28,8 @@ modnames='all'
 
 realization='all'
 
+param_dir='../../../sample_setups/pcmdi_parameter_files/variability_modes'
+
 for mip in $mips; do
     #if [ $mip == 'cmip5' ]; then
     #    realization='r1i1p1'
@@ -52,7 +54,7 @@ for mip in $mips; do
         # Run
         for mode in $modes_list; do
             echo $mip $exp $mode $case_id
-            ./parallel_driver.py -p ../param_pcmdi/myParam_${mode}_${mip}.py --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode >& ./log/$mip/$exp/$case_id/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
+            ./parallel_driver.py -p ${param_dir}/myParam_${mode}_${mip}.py --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode >& ./log/$mip/$exp/$case_id/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
             disown
             sleep 1
         done
