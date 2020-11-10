@@ -141,23 +141,21 @@ def variability_metrics_to_json(outdir, json_filename, result_dict, model=None, 
         outdir(output_type='metrics_results'),
         json_filename)
     # Dict for JSON
-    if (model is None and run is None):
-        result_dict_to_json = result_dict
-    else:
-        # Preserve only needed dict branch
-        result_dict_to_json = result_dict.copy()
-        models_in_dict = list(result_dict_to_json['RESULTS'].keys())
+    json_dict = copy.deepcopy(result_dict)
+    if (model is not None or run is not None):
+        # Preserve only needed dict branch -- delete rest keys
+        models_in_dict = list(json_dict['RESULTS'].keys())
         for m in models_in_dict:
             if m == model:
-                runs_in_model_dict = list(result_dict_to_json['RESULTS'][m].keys())
+                runs_in_model_dict = list(json_dict['RESULTS'][m].keys())
                 for r in runs_in_model_dict:
-                    if r != run:
-                        del result_dict_to_json['RESULTS'][m][r]
+                    if (r != run and run is not None):
+                        del json_dict['RESULTS'][m][r]
             else:
-                del result_dict_to_json['RESULTS'][m]
+                del json_dict['RESULTS'][m]
     # Write selected dict to JSON
     JSON.write(
-        result_dict_to_json,
+        json_dict,
         json_structure=[
             "model", "realization", "reference",
             "mode", "season", "method", "statistic"],

@@ -20,6 +20,7 @@ EofScaling = False  # Convert EOF pattern as unit variance (default=False)
 landmask = False  # Maskout land region thus consider only ocean grid (default=False)
 
 ConvEOF = True  # Calculate conventioanl EOF for model
+ConvEOF = False  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
 
 # =================================================
@@ -39,7 +40,7 @@ reference_data_path = os.path.join(
 varOBS = 'psl'
 ObsUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa; or (False, 0, 0)
 
-osyear = 1900
+osyear = 1990
 oeyear = 2005
 eofn_obs = 1
 
@@ -55,14 +56,14 @@ modpath = os.path.join(
 modnames = ['ACCESS1-0', 'ACCESS1-3']
 # modnames = ['EC-Earth3']
 
-realization = '*'  # realizations
-# realization = 'r1i1p1'
+# realization = '*'  # realizations
+realization = 'r1i1p1'
 # realization = 'r14i1p1f1'
 
 varModel = 'psl'
 ModUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa
 
-msyear = 1900
+msyear = 1990
 meyear = 2005
 eofn_mod = 1
 
