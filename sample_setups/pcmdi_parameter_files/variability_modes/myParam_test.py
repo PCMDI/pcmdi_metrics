@@ -20,7 +20,6 @@ EofScaling = False  # Convert EOF pattern as unit variance (default=False)
 landmask = False  # Maskout land region thus consider only ocean grid (default=False)
 
 ConvEOF = True  # Calculate conventioanl EOF for model
-ConvEOF = False  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
 
 # =================================================
