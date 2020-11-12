@@ -5,6 +5,7 @@ import os
 # Background Information
 # -------------------------------------------------
 mip = 'cmip5'
+# exp = 'piControl'
 exp = 'historical'
 frequency = 'mo'
 realm = 'atm'
@@ -12,7 +13,7 @@ realm = 'atm'
 # =================================================
 # Analysis Options
 # -------------------------------------------------
-variability_mode = 'NAM'  # Available domains: NAM, NAO, SAM, PNA, PDO
+variability_mode = 'NPO'  # Available domains: NAM, NAO, SAM, PNA, PDO
 seasons = ['DJF', 'MAM', 'JJA', 'SON', 'monthly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
@@ -21,6 +22,12 @@ landmask = False  # Maskout land region thus consider only ocean grid (default=F
 
 ConvEOF = True  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
+
+# =================================================
+# Miscellaneous
+# -------------------------------------------------
+update_json = True  # False
+debug = False  # False
 
 # =================================================
 # Observation
@@ -35,14 +42,15 @@ ObsUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa; or (False, 0, 0)
 
 osyear = 1900
 oeyear = 2005
-eofn_obs = 1
+eofn_obs = 2
 
 # =================================================
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)',
-    '%(mip).%(model).%(exp).%(realization).mon.%(variable).xml')
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200116',
+    '%(mip)/%(exp)/atmos/mon/%(variable)',
+    '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
 
 modnames = ['ACCESS1-0', 'ACCESS1-3', 'BCC-CSM1-1', 'BCC-CSM1-1-M', 'BNU-ESM',
             'CanCM4', 'CanESM2', 'CCSM4', 'CESM1-BGC', 'CESM1-CAM5', 'CESM1-FASTCHEM', 'CESM1-WACCM',
@@ -56,7 +64,7 @@ modnames = ['ACCESS1-0', 'ACCESS1-3', 'BCC-CSM1-1', 'BCC-CSM1-1-M', 'BNU-ESM',
             'MPI-ESM-LR', 'MPI-ESM-MR', 'MPI-ESM-P', 'NorESM1-M', 'NorESM1-ME']
 
 modnames = ['all']
-# modnames = ['ACCESS1-0']
+# modnames = ['ACCESS1-0', 'ACCESS1-3']
 
 realization = '*'  # realizations
 # realization = 'r1i1p1'
@@ -66,22 +74,23 @@ ModUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa
 
 msyear = 1900
 meyear = 2005
-eofn_mod = 1
+eofn_mod = 2
 
 # =================================================
 # Output
 # -------------------------------------------------
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
+
+if debug:
+    pmprdir = '/work/lee1043/imsi/result_test'
+
 results_dir = os.path.join(
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
-    '%(output_type)/variability_modes/%(mip)/%(exp)',
-    case_id,
-    '%(variability_mode)/%(reference_data_name)')
+    pmprdir,
+    '%(output_type)', 'variability_modes',
+    '%(mip)', '%(exp)',
+    '%(case_id)',
+    '%(variability_mode)', '%(reference_data_name)')
+
 nc_out = True  # Write output in NetCDF
 plot = True  # Create map graphics
-
-# =================================================
-# Miscellaneous
-# -------------------------------------------------
-update_json = True  # False
-debug = False  # False
