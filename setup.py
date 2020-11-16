@@ -102,7 +102,7 @@ data_files = (
                                           'share/pcmdi/PMPLogo_1359x1146px_300dpi.png',
                                           'share/pcmdi/PMPLogo_500x421px_72dpi.png'
                                          ]),
-              ('share/pmp', ('doc/obs_info_dictionary.json',
+              ('share/pmp', ('docs/obs_info_dictionary.json',
                                'share/pcmdi_metrics_table',
                                'share/disclaimer.txt',
                                'share/test_data_files.txt',
