@@ -4,8 +4,7 @@ import os
 # =================================================
 # Background Information
 # -------------------------------------------------
-mip = 'cmip6'
-# exp = 'piControl'
+mip = 'cmip5'
 exp = 'historical'
 frequency = 'mo'
 realm = 'atm'
@@ -13,8 +12,8 @@ realm = 'atm'
 # =================================================
 # Analysis Options
 # -------------------------------------------------
-variability_mode = 'NPO'  # Available domains: NAM, NAO, SAM, PNA, PDO
-seasons = ['DJF', 'MAM', 'JJA', 'SON', 'monthly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
+variability_mode = 'NAO'  # Available domains: NAM, NAO, SAM, PNA, PDO
+seasons = ['DJF']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
 EofScaling = False  # Convert EOF pattern as unit variance (default=False)
@@ -24,54 +23,64 @@ ConvEOF = True  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
 
 # =================================================
+# Miscellaneous
+# -------------------------------------------------
+update_json = True  # False
+debug = True  # False
+
+# =================================================
 # Observation
 # -------------------------------------------------
 reference_data_name = 'NOAA-CIRES_20CR'
 reference_data_path = os.path.join(
-    '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/mon/psl/20CR/gn/v20190221',
-    'psl_mon_20CR_BE_gn_187101-201212.nc')
+    '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707',
+    'psl_mon_20CR_BE_gn_v20200707_187101-201212.nc')
 
 varOBS = 'psl'
 ObsUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa; or (False, 0, 0)
 
-osyear = 1900
+osyear = 1990
 oeyear = 2005
-eofn_obs = 2
+eofn_obs = 1
 
 # =================================================
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    '/work/lee1043/ESGF/xmls/%(mip)/%(exp)/mon/%(variable)',
-    '%(mip).%(model).%(exp).%(realization).mon.%(variable).xml')
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200116',
+    '%(mip)/%(exp)/atmos/mon/%(variable)',
+    '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
 
-modnames = ['all']
-# modnames = ['IPSL-CM6A-LR']
+# modnames = ['all']
+modnames = ['ACCESS1-0', 'ACCESS1-3']
+# modnames = ['EC-Earth3']
 
-realization = '*'  # realizations
-# realization = 'r1i1p1f1'
+# realization = '*'  # realizations
+realization = 'r1i1p1'
+# realization = 'r14i1p1f1'
 
 varModel = 'psl'
 ModUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa
 
-msyear = 1900
+msyear = 1990
 meyear = 2005
-eofn_mod = 2
+eofn_mod = 1
 
 # =================================================
 # Output
 # -------------------------------------------------
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
+
+if debug:
+    pmprdir = '/work/lee1043/temporary/result_test'
+
 results_dir = os.path.join(
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
-    '%(output_type)/variability_modes/%(mip)/%(exp)',
-    case_id,
-    '%(variability_mode)/%(reference_data_name)')
+    pmprdir,
+    '%(output_type)', 'variability_modes',
+    '%(mip)', '%(exp)',
+    '%(case_id)',
+    '%(variability_mode)', '%(reference_data_name)')
+
 nc_out = True  # Write output in NetCDF
 plot = True  # Create map graphics
-
-# =================================================
-# Miscellaneous
-# -------------------------------------------------
-update_json = True  # False
-debug = False  # False
