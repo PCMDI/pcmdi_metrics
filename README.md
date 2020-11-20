@@ -1,7 +1,6 @@
 gh-pages
-This branch hosts the online documentation for the PCMDI Metrics packages.
-
-Instructions for updating documentation:
+--------
+This branch hosts the online documentation for the PCMDI Metrics packages. Provided here are instructions for updating the documentation.
 
 Checking out and making changes to the docs branch:
 ---------------------------------------------------
@@ -23,7 +22,7 @@ make clean
 make html
 ```
 The `make clean` command is optional and deletes the existing docs/build folder, which is populated by `make html`.
-To view your changes locally, open pcmdi_metrics/docs/build/html/index.html with a browser. If it does not build as expected, first try running "make clean" before building again.
+To view your changes locally, open pcmdi_metrics/docs/build/html/index.html with a browser. If it does not build as expected, first try running `make clean` before building again.
 
 Build for github
 ----------------
@@ -39,7 +38,7 @@ make clean
 make html
 cp -r build/html/* . 
 ```
-After building, you then have to "git add" all the files you copied from build/html and commit before pushing. This includes \*html, \*inv, and \*js files, along with the _sources and _static folders (which are currently listed in .gitignore, so you have to make sure to add them)
+After building, you then have to "git add" all the files you copied from build/html and commit before pushing. This includes \*html, \*inv, and \*js files, along with the \_sources and \_static folders (which are currently listed in .gitignore, so you have to make sure to add them)
 For example:
 ```
 git add source/*rst *html *inv *js _static _sources
