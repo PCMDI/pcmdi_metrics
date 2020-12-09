@@ -127,6 +127,8 @@ def scrap(data, axis=0):
     return new(order=originalOrder)
 
 
+
+
 class CDMSDomainsEncoder(json.JSONEncoder):
     def default(self, o):
         components = o.components()[0].kargs
@@ -225,6 +227,108 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         logging.getLogger("pcmdi_metrics").info(
             'Results saved to a %s file: %s' %
             (type, file_name))
+
+    def write_cmec(self, *args, **kwargs):
+        """Converts json file to cmec compliant format."""
+
+        file_name = self()
+        # load json file
+        try:
+            f = open(file_name, "r")
+            data = json.load(f)
+            f.close()
+        except Exception:
+            logging.getLogger("pcmdi_metrics").error(
+                'Could not load metrics file: %s' % file_name)
+
+        # create dimensions
+        cmec_data = {"DIMENSIONS": {}, "SCHEMA": {}}
+        cmec_data["DIMENSIONS"] = {"dimensions": {}, "json_structure": []}
+        cmec_data["SCHEMA"] = {"name": "CMEC", "package": "PMP", "version": "v1"}
+
+        # copy other fields except results
+        for key in data:
+            if key not in ["json_structure", "RESULTS"]:
+                cmec_data[key] = data[key]
+
+        # move json structure
+        cmec_data["DIMENSIONS"]["json_structure"] = data["json_structure"]
+
+        # Remove unwanted keys
+        def recursive_pop(json_dict, keylist):
+            """Removes instances of a key in a nested dictionary.
+            Args:
+                json_dict (dict): dictionary to pop from
+                keylist (list): list of keys to remove
+            """
+            new_dict = json_dict.copy()
+            for key in json_dict:
+                if key in keylist:
+                    new_dict.pop(key)
+                elif isinstance(new_dict[key],dict):
+                    tmp_dict = recursive_pop(new_dict[key], keylist)
+                    new_dict[key] = tmp_dict
+            return new_dict
+        cmec_data["RESULTS"] = recursive_pop(data["RESULTS"], ["source"])
+
+        # Delete extra results fields if present (mean climate)
+        model_meta = {}
+        extra_fields = [
+                        "units",
+                        "SimulationDescription",
+                        "InputClimatologyFileName",
+                        "InputClimatologyMD5",
+                        "InputRegionFileName",
+                        "InputRegionMD5"]
+
+        for key in cmec_data["RESULTS"]:
+            model_meta[key] = {}
+            for field in extra_fields:
+                if field in cmec_data["RESULTS"][key]:
+                    model_meta[key][field] = cmec_data["RESULTS"][key].pop(field, None)
+
+        if model_meta:
+            cmec_data["SimulationDescription"] = model_meta
+
+        # Recursively replace "" with "Unspecified"
+        def recursive_replace(json_dict, key1, key2):
+            new_dict = json_dict.copy()
+            for key in json_dict:
+                if isinstance(new_dict[key],dict):
+                    tmp_dict = recursive_replace(new_dict[key], key1, key2)
+                    new_dict[key] = tmp_dict
+                if key == key1:
+                    new_dict[key2] = new_dict.pop(key)
+            return new_dict
+        cmec_data = recursive_replace(cmec_data, "", "Unspecified")
+
+        # Populate dimensions fields
+        def get_dimensions(json_dict, json_structure):
+            keylist = {}
+            level = 0
+            while level < len(json_structure):
+                if isinstance(json_dict, dict):
+                    first_key = list(json_dict.items())[0][0]
+                    dim = json_structure[level]
+                    if dim == "statistic":
+                        keys = [key for key in json_dict]
+                        keylist[dim] = {"indices": keys}
+                    else:
+                        keys = {key: {} for key in json_dict}
+                        keylist[dim] = keys
+                    json_dict = json_dict[first_key]
+                level += 1
+            return keylist
+        dimensions = get_dimensions(cmec_data["RESULTS"].copy(), data["json_structure"])
+        cmec_data["DIMENSIONS"]["dimensions"] = dimensions
+
+        cmec_file_name = file_name.replace(".json", "_cmec.json")
+        f_cmec = open(cmec_file_name, "w")
+        json.dump(cmec_data, f_cmec, cls=CDMSDomainsEncoder, *args, **kwargs)
+        f_cmec.close()
+        logging.getLogger("pcmdi_metrics").info(
+            'CMEC results saved to a %s file: %s' %
+            ('json', cmec_file_name))
 
     def get(self, var, var_in_file=None,
             region={}, *args, **kwargs):
