@@ -302,7 +302,7 @@ class OutputMetrics(object):
                                 indent=4,
                                 separators=(',', ': '),
                                 mode="r+")
-            if cmec_flag:
+            if cmec_flag is True:
                 logging.getLogger("pcmdi_metrics").info(
                     'CMEC conversion: %s' % self.out_file().replace('.json', '_cmec.json'))
                 self.out_file.write_cmec(indent=4, separators=(',', ': '))

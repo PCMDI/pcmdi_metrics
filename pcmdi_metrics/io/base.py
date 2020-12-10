@@ -127,8 +127,6 @@ def scrap(data, axis=0):
     return new(order=originalOrder)
 
 
-
-
 class CDMSDomainsEncoder(json.JSONEncoder):
     def default(self, o):
         components = o.components()[0].kargs
@@ -265,11 +263,11 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             for key in json_dict:
                 if key in keylist:
                     new_dict.pop(key)
-                elif isinstance(new_dict[key],dict):
+                elif isinstance(new_dict[key], dict):
                     tmp_dict = recursive_pop(new_dict[key], keylist)
                     new_dict[key] = tmp_dict
             return new_dict
-        cmec_data["RESULTS"] = recursive_pop(data["RESULTS"], ["source"])
+        cmec_data["RESULTS"] = recursive_pop(data["RESULTS"], ["source", "metadata"])
 
         # Delete extra results fields if present (mean climate)
         model_meta = {}
@@ -294,7 +292,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         def recursive_replace(json_dict, key1, key2):
             new_dict = json_dict.copy()
             for key in json_dict:
-                if isinstance(new_dict[key],dict):
+                if isinstance(new_dict[key], dict):
                     tmp_dict = recursive_replace(new_dict[key], key1, key2)
                     new_dict[key] = tmp_dict
                 if key == key1:
