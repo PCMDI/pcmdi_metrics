@@ -173,7 +173,10 @@ class OutputMetrics(object):
         if self.check_save_test_clim(ref):
             self.output_interpolated_model_climatologies(test, test_data)
 
-        self.write_on_exit(self.parameter.cmec)
+        if hasattr(self.parameter, 'cmec'):
+            self.write_on_exit(self.parameter.cmec)
+        else:
+            self.write_on_exit(False)
 
     def set_grid_in_metrics_dictionary(self, test_data):
         ''' Set the grid in metrics_dictionary. '''
