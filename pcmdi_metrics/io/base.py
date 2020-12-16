@@ -300,6 +300,17 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             return new_dict
         cmec_data = recursive_replace(cmec_data, "", "Unspecified")
 
+        # Convert metrics to float
+        def update_type(json_dict, type1, type2):
+            for key in json_dict:
+                if isinstance(json_dict[key], dict):
+                    tmp_dict = update_type(json_dict[key], type1, type2)
+                    json_dict[key] = tmp_dict
+                elif (isinstance(json_dict[key], type1) and key != "attributes"):
+                    json_dict[key] = type2(json_dict[key])
+            return json_dict
+        cmec_data["RESULTS"] = update_type(cmec_data["RESULTS"], str, float)
+
         # Populate dimensions fields
         def get_dimensions(json_dict, json_structure):
             keylist = {}
