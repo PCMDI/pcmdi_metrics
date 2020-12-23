@@ -105,13 +105,13 @@ model_tweaks = {
 
 # Region definitions
 regions_specs = {'Nino34': {'value':0.,'domain':cdutil.region.domain(latitude=(-5.,5.), longitude=(190.,240.))},
-       'ocean' : {'value':0.,'domain':cdutil.region.domain(latitude=(-90.,90))},
-       'land' : {'value':100.,'domain':cdutil.region.domain(latitude=(-90.,90))},
-       'ocean_50S50N' : {'value':0.,'domain':cdutil.region.domain(latitude=(-50.,50))},
-       'ocean_50S20S' : {'value':0.,'domain':cdutil.region.domain(latitude=(-50.,-20))},
+      'ocean' : {'value':0.,'domain':cdutil.region.domain(latitude=(-90.,90))},
+      'land' : {'value':100.,'domain':cdutil.region.domain(latitude=(-90.,90))},
+      'ocean_50S50N' : {'value':0.,'domain':cdutil.region.domain(latitude=(-50.,50))},
+      'ocean_50S20S' : {'value':0.,'domain':cdutil.region.domain(latitude=(-50.,-20))},
       'ocean_20S20N': {'value':0.,'domain':cdutil.region.domain(latitude=(-20.,20))},
-       'ocean_20N50N' : {'value':0.,'domain':cdutil.region.domain(latitude=(20.,50))},
-       'ocean_50N90N' : {'value':0.,'domain':cdutil.region.domain(latitude=(50.,90))},
+      'ocean_20N50N' : {'value':0.,'domain':cdutil.region.domain(latitude=(20.,50))},
+      'ocean_50N90N' : {'value':0.,'domain':cdutil.region.domain(latitude=(50.,90))},
       '90S50S' : {'value':None,'domain':cdutil.region.domain(latitude=(-90.,-50))},
       '50S20S' : {'value':None,'domain':cdutil.region.domain(latitude=(-50.,-20))},
       '20S20N': {'value':None,'domain':cdutil.region.domain(latitude=(-20.,20))},
@@ -122,8 +122,8 @@ regions_specs = {'Nino34': {'value':0.,'domain':cdutil.region.domain(latitude=(-
       'NHEX_ocean' : {'value':0.,'domain':cdutil.region.domain(latitude=(0.,90))},
       'SHEX_ocean' : {'value':0.,'domain':cdutil.region.domain(latitude=(-90.,0))},
       'NHEX_land' : {'value':100.,'domain':cdutil.region.domain(latitude=(20.,90))},
-      'SHEX_land' : {'value':100.,'domain':cdutil.region.domain(latitude=(-90.,-20.))}}
-      'GLOBAL' : {'value':0.,'domain':cdutil.region.domain(latitude=(-90.,90.))}
+      'SHEX_land' : {'value':100.,'domain':cdutil.region.domain(latitude=(-90.,-20.))},
+      'GLOBAL' : {'value':0.,'domain':cdutil.region.domain(latitude=(-90.,90.))}}
 
 # Select regions to run here. Non-specified variables will use default regions.
 regions = {'tas': [None, 'land','ocean', 'ocean_50S50N','NHEX_land','SHEX_land'],
@@ -132,7 +132,7 @@ regions = {'tas': [None, 'land','ocean', 'ocean_50S50N','NHEX_land','SHEX_land']
         'psl': [None,'ocean', 'ocean_50S50N','NHEX_ocean','SHEX_ocean'],
         'sfcWind': [None,'ocean', 'ocean_50S50N','NHEX_ocean','SHEX_ocean'],
         'ts': [None,'ocean', 'ocean_50S50N','NHEX_ocean','SHEX_ocean'],
-         'tos': [None]}
+        'tos': [None]}
 
 ## USER CAN CUSTOMIZE REGIONS VALUES NAMES
 #regions_values = {'land':100.,'ocean':0.}
