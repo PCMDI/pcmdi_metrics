@@ -58,5 +58,5 @@ output_filename_template = MIP + '.'+ exp + '.' + '%(model).'+ rn + '.mon.' + '%
 
 results_dir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/' + MIP + '/' + exp + '/' + ver + '/%(variable)'
 
-#num_workers = 15 
-#granularize = ["model", "variable"]
+num_workers = 15 
+granularize = ["model", "variable"]
