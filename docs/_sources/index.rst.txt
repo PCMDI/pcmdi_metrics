@@ -23,7 +23,8 @@ Users of the current release (v1.2) will need to contact the PMP developers (pcm
 
    Technical-overview
    install-using-anaconda
-   using-the-package
+   Supporting-data
+   demo-meanclimate
    pmp-using-cdp-guide
    pmpparser
 
