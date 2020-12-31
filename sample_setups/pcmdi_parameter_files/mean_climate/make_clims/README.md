@@ -17,3 +17,7 @@ PROTOTYPING /EZCLIM (requires additional development)
 -------------------
 python basicClim.py -p basicClim_inputparam.py
 
+
+PROTOTYPING /EZCLIM2 (requires additional development)
+--------------------
+
