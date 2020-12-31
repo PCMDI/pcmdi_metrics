@@ -31,6 +31,16 @@ P.add_argument(
         help='Defines outfile',
         required=False)
 P.add_argument(
+        '--outpath',
+        dest='outpath',
+        help='Defines outpath',
+        required=False)
+P.add_argument(
+        '--outfilename',
+        dest='outfilename',
+        help='Defines outfilename',
+        required=False)
+P.add_argument(
         '--start',
         dest='start',
         help='Defines start year and month',
@@ -45,6 +55,8 @@ args = P.get_parameter()
 
 infile = args.infile
 outfile = args.outfile
+outpath = args.outpath
+outfilename = args.outfilename
 var = args.var
 start = args.start
 end = args.end
@@ -52,6 +64,6 @@ end = args.end
 print('end is ', end)
 
 print('var is ', var)
-clim_calc(var,infile,outfile,start,end)
+clim_calc(var,infile,outfile,outpath,outfilename,start,end)
 #'''
 #'''

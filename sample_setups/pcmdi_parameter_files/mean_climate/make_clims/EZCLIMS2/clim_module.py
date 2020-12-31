@@ -1,11 +1,24 @@
-def clim_calc(var, infile,outfile,start,end):
+def clim_calc(var, infile,outfile,outdir,outfilename,start,end):
    import cdms2
    import cdutil
    import cdtime 
+   import datetime
+   import os
+
+   ver = datetime.datetime.now().strftime('v%Y%m%d') 
+
    l = infile
+   tmp = l.split('/')
+   infilename = tmp[len(tmp)-1]
+
    f = cdms2.open(l)
    atts = f.listglobal()
    outfd = outfile
+
+   if outdir is not None and outfilename is not None: outfd = outdir + outfilename
+   if outdir is not None and outfilename is None: outfd = outdir + infilename
+
+   print('outfd is ', outfd)
 
    seperate_clims = 'y'
 
@@ -51,8 +64,8 @@ def clim_calc(var, infile,outfile,start,end):
 
    for s in ['AC','DJF','MAM','JJA','SON']:
 
-    addf = '.' + start_yr_str + start_mo_str + '-' + end_yr_str + end_mo_str + '.' + s + '.nc'
-    if seperate_clims == 'y':  out = outfd.replace('.nc',addf)
+    addf = '.' + start_yr_str + start_mo_str + '-' + end_yr_str + end_mo_str + '.' + s + '.' + ver + '.nc'
+    if seperate_clims == 'y':  out = outfd.replace('.xml',addf)
     if seperate_clims == 'n':  out = outfd.replace('climo.nc',s+'.nc')
     if s == 'AC': do = d_ac
     if s == 'DJF': do = d_djf
@@ -60,6 +73,17 @@ def clim_calc(var, infile,outfile,start,end):
     if s == 'JJA': do = d_jja
     if s == 'SON': do = d_son
     do.id = var
+
+### MKDIRS AS NEEDED
+    lst = outdir.split('/')
+    s = '/'
+    for l in range(len(lst)):
+     d = s.join(lst[0:l])
+     print(d)
+     try:
+      os.mkdir(d)
+     except:
+      pass
 
     g = cdms2.open(out,'w+')
     g.write(do)
