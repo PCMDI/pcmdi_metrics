@@ -1,6 +1,7 @@
-def clim_calc(var, infile,outfile):
+def clim_calc(var, infile,outfile,start,end):
    import cdms2
    import cdutil
+   import cdtime 
    l = infile
    f = cdms2.open(l)
    atts = f.listglobal()
@@ -8,16 +9,35 @@ def clim_calc(var, infile,outfile):
 
    seperate_clims = 'y'
 
-   d = f(var) 
-   t = d.getTime()
-   c = t.asComponentTime()
-   start_yr = str(c[0].year)
-   start_mo = str(c[0].month)
-   end_yr = str(c[len(c)-1].year)
-   end_mo = str(c[len(c)-1].month)
+### DEFAULT CLIM - BASED ON ENTIRE TIME SERIES
+   if start == end == None: 
+    d = f(var) 
+    t = d.getTime()
+    c = t.asComponentTime()
+    start_yr_str = str(c[0].year)
+    start_mo_str = str(c[0].month)
+    end_yr_str = str(c[len(c)-1].year)
+    end_mo_str = str(c[len(c)-1].month)
+    start_yr_int = int(c[0].year)
+    start_mo_int = int(c[0].month)
+    end_yr_int = int(c[len(c)-1].year)
+    end_mo_int = int(c[len(c)-1].month)
+### USER DEFINED PERIOD
+   else:
+    start_mo = int(start.split('-')[1])
+    start_yr = int(start.split('-')[0])
+    end_mo = int(end.split('-')[1])
+    end_yr = int(end.split('-')[0])
+    start_yr_str = str(start_yr)
+    start_mo_str = str(start_mo)
+    end_yr_str = str(end_yr)
+    end_mo_str = str(end_mo)
+    d = f(var,time=(cdtime.comptime(start_yr,start_mo),cdtime.comptime(end_yr,end_mo)))
 
-   if start_mo not in ['11','12']: start_mo = '0' + start_mo
-   if end_mo not in ['11','12']: end_mo = '0' + end_mo
+   print("start_yr_str is ", start_yr_str)
+
+   if start_mo_str not in ['11','12']: start_mo_str = '0' + start_mo_str
+   if end_mo_str not in ['11','12']: end_mo_str = '0' + end_mo_str
 
    d_ac =   cdutil.ANNUALCYCLE.climatology(d).astype('Float32')
    d_djf =  cdutil.DJF.climatology(d)(squeeze=1).astype('Float32')
@@ -31,7 +51,7 @@ def clim_calc(var, infile,outfile):
 
    for s in ['AC','DJF','MAM','JJA','SON']:
 
-    addf = '.' + start_yr + start_mo + '-' + end_yr + end_mo + '.' + s + '.nc'
+    addf = '.' + start_yr_str + start_mo_str + '-' + end_yr_str + end_mo_str + '.' + s + '.nc'
     if seperate_clims == 'y':  out = outfd.replace('.nc',addf)
     if seperate_clims == 'n':  out = outfd.replace('climo.nc',s+'.nc')
     if s == 'AC': do = d_ac

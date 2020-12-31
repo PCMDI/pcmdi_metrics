@@ -30,14 +30,28 @@ P.add_argument(
         dest='outfile',
         help='Defines outfile',
         required=False)
+P.add_argument(
+        '--start',
+        dest='start',
+        help='Defines start year and month',
+        required=False)
+P.add_argument(
+        '--end',
+        dest='end',
+        help='Defines end year and month',
+        required=False)
 
 args = P.get_parameter()
 
 infile = args.infile
 outfile = args.outfile
 var = args.var
+start = args.start
+end = args.end
+
+print('end is ', end)
 
 print('var is ', var)
-clim_calc(var,infile,outfile)
+clim_calc(var,infile,outfile,start,end)
 #'''
 #'''
