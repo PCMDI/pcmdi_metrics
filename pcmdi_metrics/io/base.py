@@ -252,64 +252,46 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         # move json structure
         cmec_data["DIMENSIONS"]["json_structure"] = data["json_structure"]
 
-        # Remove unwanted keys
-        def recursive_pop(json_dict, keylist):
-            """Removes instances of a key in a nested dictionary.
-            Args:
-                json_dict (dict): dictionary to pop from
-                keylist (list): list of keys to remove
-            """
+        # recursively process json
+        def recursive_replace(json_dict, extra_fields):
             new_dict = json_dict.copy()
-            for key in json_dict:
-                if key in keylist:
-                    new_dict.pop(key)
-                elif isinstance(new_dict[key], dict):
-                    tmp_dict = recursive_pop(new_dict[key], keylist)
-                    new_dict[key] = tmp_dict
-            return new_dict
-        cmec_data["RESULTS"] = recursive_pop(data["RESULTS"], ["source", "metadata"])
 
-        # Delete extra results fields if present (mean climate)
-        model_meta = {}
+            if "" in new_dict:
+                new_dict["Unspecified"] = new_dict.pop("")
+
+            for key in new_dict:
+                if key != "attributes":
+                    if isinstance(new_dict[key], dict):
+                        # move extra fields into attributes key
+                        atts = {}
+                        for field in extra_fields:
+                            if field in new_dict[key]:
+                                atts[field] = new_dict[key].pop(field, None)
+                        if atts:
+                            new_dict[key]["attributes"] = atts
+                        # process sub-dictionary
+                        tmp_dict = recursive_replace(new_dict[key], extra_fields)
+                        new_dict[key] = tmp_dict
+                    # convert string metrics to float
+                    if (isinstance(new_dict[key], str)):
+                        new_dict[key] = float(new_dict[key])
+            return new_dict
+
         extra_fields = [
+                        "source",
+                        "metadata",
                         "units",
                         "SimulationDescription",
                         "InputClimatologyFileName",
                         "InputClimatologyMD5",
                         "InputRegionFileName",
-                        "InputRegionMD5"]
-
-        for key in cmec_data["RESULTS"]:
-            model_meta[key] = {}
-            for field in extra_fields:
-                if field in cmec_data["RESULTS"][key]:
-                    model_meta[key][field] = cmec_data["RESULTS"][key].pop(field, None)
-
-        if model_meta:
-            cmec_data["SimulationDescription"] = model_meta
-
-        # Recursively replace "" with "Unspecified"
-        def recursive_replace(json_dict, key1, key2):
-            new_dict = json_dict.copy()
-            for key in json_dict:
-                if isinstance(new_dict[key], dict):
-                    tmp_dict = recursive_replace(new_dict[key], key1, key2)
-                    new_dict[key] = tmp_dict
-                if key == key1:
-                    new_dict[key2] = new_dict.pop(key)
-            return new_dict
-        cmec_data = recursive_replace(cmec_data, "", "Unspecified")
-
-        # Convert metrics to float
-        def update_type(json_dict, type1, type2):
-            for key in json_dict:
-                if isinstance(json_dict[key], dict):
-                    tmp_dict = update_type(json_dict[key], type1, type2)
-                    json_dict[key] = tmp_dict
-                elif (isinstance(json_dict[key], type1) and key != "attributes"):
-                    json_dict[key] = type2(json_dict[key])
-            return json_dict
-        cmec_data["RESULTS"] = update_type(cmec_data["RESULTS"], str, float)
+                        "InputRegionMD5",
+                        "best_matching_model_eofs__cor",
+                        "best_matching_model_eofs__rms",
+                        "best_matching_model_eofs__tcor_cbf_vs_eof_pc",
+                        "period",
+                        "target_model_eofs"]
+        cmec_data["RESULTS"] = recursive_replace(data["RESULTS"], extra_fields)
 
         # Populate dimensions fields
         def get_dimensions(json_dict, json_structure):
@@ -318,12 +300,14 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             while level < len(json_structure):
                 if isinstance(json_dict, dict):
                     first_key = list(json_dict.items())[0][0]
+                    if first_key == "attributes":
+                        first_key = list(json_dict.items())[1][0]
                     dim = json_structure[level]
                     if dim == "statistic":
                         keys = [key for key in json_dict]
                         keylist[dim] = {"indices": keys}
                     else:
-                        keys = {key: {} for key in json_dict}
+                        keys = {key: {} for key in json_dict if key != "attributes"}
                         keylist[dim] = keys
                     json_dict = json_dict[first_key]
                 level += 1

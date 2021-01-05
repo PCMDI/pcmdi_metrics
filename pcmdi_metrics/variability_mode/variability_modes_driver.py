@@ -127,6 +127,11 @@ update_json = param.update_json
 print('nc_out_obs, plot_obs:', nc_out_obs, plot_obs)
 print('nc_out_model, plot_model:', nc_out_model, plot_model)
 
+cmec = False
+if hasattr(param, 'cmec'):
+    cmec = param.cmec # Generate CMEC compliant json
+print('CMEC:' + str(cmec))
+
 # Check given mode of variability
 mode = VariabilityModeCheck(param.variability_mode, P)
 print('mode:', mode)
@@ -715,13 +720,13 @@ for model in models:
             # -----------------------------------------------------------------
             json_filename_tmp = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
                                           mip, exp, fq, realm, model, run, str(msyear)+'-'+str(meyear)])
-            variability_metrics_to_json(outdir, json_filename_tmp, result_dict, model=model, run=run)
+            variability_metrics_to_json(outdir, json_filename_tmp, result_dict, model=model, run=run, cmec_flag=cmec)
 
         except Exception as err:
             if debug:
                 raise
             else:
-                print('warning: faild for ', model, run, err)
+                print('warning: failed for ', model, run, err)
                 pass
 
 # ========================================================================
@@ -730,7 +735,7 @@ for model in models:
 if not parallel and (len(models) > 1):
     json_filename_all = '_'.join(['var', 'mode', mode, 'EOF'+str(eofn_mod), 'stat',
                                   mip, exp, fq, realm, 'allModels', 'allRuns', str(msyear)+'-'+str(meyear)])
-    variability_metrics_to_json(outdir, json_filename_all, result_dict)
+    variability_metrics_to_json(outdir, json_filename_all, result_dict, cmec_flag=cmec)
 
 if not debug:
     sys.exit('done')
