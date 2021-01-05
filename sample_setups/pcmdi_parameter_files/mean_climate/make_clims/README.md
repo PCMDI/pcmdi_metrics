@@ -1,23 +1,18 @@
 
-CURRENTLY OPERATIONAL 
----------------------
+EXAMPLE Climatolgy Calculations with the PMP 
+--------------------------------------------
 
-nohup parallelize_driver.py --driver pcmdi_compute_climatologies.py -p cmip_clims_param.py > cmip5.amip.
-rad.v20200423.txt &
+As with other PMP calculations input can be sent via a parameter file (using -p), via command line, or some combination of both with the command line entries overriding any common inputs in the parameter file. 
 
-As an alternative to using dask via the parallelize_driver, an equivalent simple parallelization can be accomplished as follows:
+Simple examples:
 
-THIS IS NOT WORKING!
+>  python ./clim_calc_driver.py -p clim_calc_cmip_inparam.py --start 1980-01 --end 2005-12
 
+This computes the climatology for the model with the "infile" included in clim_calc_cmip_inparam.py 
 
-Additionally, pcmdi_compute_climatologies.py, includes an option to use CMOR to write climatologies, and to store climatological time bounds that reflect the actual time coordinate.  However, neither of these options are currently in use, and their inclusion considerably complicates this script.  Efforts are underway to simplify the climatology code (below).
+> python ./clim_calc_driver.py -p clim_calc_obs_inparam.py --outpath ./testout
 
+This compute the climatology for the observational dataset included in clim_calc_obs_inparam.py.  With no start and end included, the climatology is computed for the entire time seres.  
 
-PROTOTYPING /EZCLIM (requires additional development)
--------------------
-python basicClim.py -p basicClim_inputparam.py
-
-
-PROTOTYPING /EZCLIM2 (requires additional development)
---------------------
+There are several options for defining the output directory and filename.
 

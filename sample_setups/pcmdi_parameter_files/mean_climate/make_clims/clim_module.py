@@ -24,7 +24,7 @@ def clim_calc(var, infile,outfile,outdir,outfilename,start,end):
    if outdir is not None and outfilename is not None: outfd = outdir + outfilename
 
 ## outdir PROVIDED BY USER, BUT filename IS TAKEN FROM infilename WITH CLIM MODIFICATIONS SUFFIX ADDED BELOW
-   if outdir is not None and outfilename is None: outfd = outdir + infilename
+   if outdir is not None and outfilename is None: outfd = outdir + '/' + infilename
 
    if outdir is None and outfilename is None:    # WORKING!!!
         outfd = outfile
