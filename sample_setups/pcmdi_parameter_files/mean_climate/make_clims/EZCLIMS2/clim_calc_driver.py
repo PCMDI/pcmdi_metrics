@@ -28,17 +28,17 @@ P.add_argument(
 P.add_argument(
         '--outfile',
         dest='outfile',
-        help='Defines outfile',
+        help='Defines output path and filename',
         required=False)
 P.add_argument(
         '--outpath',
         dest='outpath',
-        help='Defines outpath',
+        help='Defines outpath only',
         required=False)
 P.add_argument(
         '--outfilename',
         dest='outfilename',
-        help='Defines outfilename',
+        help='Defines out filename only',
         required=False)
 P.add_argument(
         '--start',

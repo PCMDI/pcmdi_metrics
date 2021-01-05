@@ -11,14 +11,29 @@ def clim_calc(var, infile,outfile,outdir,outfilename,start,end):
    tmp = l.split('/')
    infilename = tmp[len(tmp)-1]
 
+   print('infilename is ', infilename)
+
    f = cdms2.open(l)
    atts = f.listglobal()
    outfd = outfile
 
+
+### CONTROL OF OUTPUT DIRECTORY AND FILE
+
+## outdir AND outfilename PROVIDED BY USER
    if outdir is not None and outfilename is not None: outfd = outdir + outfilename
+
+## outdir PROVIDED BY USER, BUT filename IS TAKEN FROM infilename WITH CLIM MODIFICATIONS SUFFIX ADDED BELOW
    if outdir is not None and outfilename is None: outfd = outdir + infilename
 
+   if outdir is None and outfilename is None:    # WORKING!!!
+        outfd = outfile
+        
    print('outfd is ', outfd)
+   print('outdir is ', outdir)
+
+######
+
 
    seperate_clims = 'y'
 
@@ -65,7 +80,13 @@ def clim_calc(var, infile,outfile,outdir,outfilename,start,end):
    for s in ['AC','DJF','MAM','JJA','SON']:
 
     addf = '.' + start_yr_str + start_mo_str + '-' + end_yr_str + end_mo_str + '.' + s + '.' + ver + '.nc'
-    if seperate_clims == 'y':  out = outfd.replace('.xml',addf)
+#   if seperate_clims == 'y': 
+    print('outfd is ', outfd)
+    out = outfd
+    out = out.replace('.xml',addf)
+    out = out.replace('.nc',addf)
+    print('out is ', out)
+
     if seperate_clims == 'n':  out = outfd.replace('climo.nc',s+'.nc')
     if s == 'AC': do = d_ac
     if s == 'DJF': do = d_djf
@@ -75,7 +96,9 @@ def clim_calc(var, infile,outfile,outdir,outfilename,start,end):
     do.id = var
 
 ### MKDIRS AS NEEDED
-    lst = outdir.split('/')
+#   print(outdir)
+#   print(outdir.split('/'))
+    lst = outfd.split('/')
     s = '/'
     for l in range(len(lst)):
      d = s.join(lst[0:l])
@@ -84,7 +107,7 @@ def clim_calc(var, infile,outfile,outdir,outfilename,start,end):
       os.mkdir(d)
      except:
       pass
-
+  
     g = cdms2.open(out,'w+')
     g.write(do)
 
