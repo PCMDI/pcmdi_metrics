@@ -255,7 +255,6 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         # recursively process json
         def recursive_replace(json_dict, extra_fields):
             new_dict = json_dict.copy()
-
             # replace blank keys with unspecified
             if "" in new_dict:
                 new_dict["Unspecified"] = new_dict.pop("")
@@ -292,6 +291,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                         "best_matching_model_eofs__tcor_cbf_vs_eof_pc",
                         "period",
                         "target_model_eofs"]
+        # clean up formatting in RESULTS section
         cmec_data["RESULTS"] = recursive_replace(data["RESULTS"], extra_fields)
 
         # Populate dimensions fields
