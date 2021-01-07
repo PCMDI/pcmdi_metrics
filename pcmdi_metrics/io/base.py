@@ -256,6 +256,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         def recursive_replace(json_dict, extra_fields):
             new_dict = json_dict.copy()
 
+            # replace blank keys with unspecified
             if "" in new_dict:
                 new_dict["Unspecified"] = new_dict.pop("")
 
