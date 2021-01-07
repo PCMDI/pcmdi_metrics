@@ -129,7 +129,7 @@ print('nc_out_model, plot_model:', nc_out_model, plot_model)
 
 cmec = False
 if hasattr(param, 'cmec'):
-    cmec = param.cmec # Generate CMEC compliant json
+    cmec = param.cmec  # Generate CMEC compliant json
 print('CMEC:' + str(cmec))
 
 # Check given mode of variability
