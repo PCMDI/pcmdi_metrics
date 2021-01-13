@@ -135,7 +135,7 @@ def sea_ice_adjust(data_array):
     return data_array
 
 
-def variability_metrics_to_json(outdir, json_filename, result_dict, model=None, run=None):
+def variability_metrics_to_json(outdir, json_filename, result_dict, model=None, run=None, cmec_flag=False):
     # Open JSON
     JSON = pcmdi_metrics.io.base.Base(
         outdir(output_type='metrics_results'),
@@ -160,3 +160,6 @@ def variability_metrics_to_json(outdir, json_filename, result_dict, model=None, 
             "model", "realization", "reference",
             "mode", "season", "method", "statistic"],
         sort_keys=True, indent=4, separators=(',', ': '))
+    if cmec_flag:
+        print("Writing cmec file")
+        JSON.write_cmec(indent=4, separators=(',', ': '))
