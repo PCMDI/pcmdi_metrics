@@ -27,7 +27,7 @@ The summary statistics available with the PMP can be run independently or as a c
 
 $ mean_climate_statistics.py --model CESM2 --variable pr 
 
-Here, the "--model" option implemented in the PMP using argparse as is the "--variable" option used to specify "pr" (precipitation). 
+Here, the "---model" option implemented in the PMP using argparse as is the "---variable" option used to specify "pr" (precipitation). 
 
 Because there are often many parameters to set before executing a PMP code, routine operation often involves setting the input options in an "input parameter" python file.  This is similiar to a "namelist" text file used in other climate analysis packages but having the input parameters set in a python file enables us to leverage the power of python.  So, for the about example: ::
 
