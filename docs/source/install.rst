@@ -4,7 +4,8 @@
 Installation
 *******
 
-The supported method for the PMP is via Anaconda.  The source code is also available to developers via the PMP Github repository.   
+The supported method for installing the PMP within a local environment is via `Anaconda <https://conda.io/en/latest/>`.
+The source code is also available to developers via the PMP Github repository.   
 
 Anaconda installation (recommended)
 ===================================

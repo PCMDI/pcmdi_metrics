@@ -4,12 +4,12 @@ Technical Overview
 Summary
 =======
 
-The PMP provides a diverse suite of analysis utilities each of which produce summary statistics that gauge the consistency between climate model simulations and available observations.  The primary application of the PMP is to evaluate simulations from the `Coupled Model Intercomparison Project (CMIP) <https://www.wcrp-climate.org/wgcm-cmip>`_ but it can also be used to provide objective performance ssummaries during the model development process as well as selected research purposes.  The notes below provide a brief summary of some of the key aspects of the PMP design.  
+The PMP provides a diverse suite of analysis utilities each of which produce summary statistics that gauge the consistency between climate model simulations and available observations.  The primary application of the PMP is to evaluate simulations from the `Coupled Model Intercomparison Project (CMIP) <https://www.wcrp-climate.org/wgcm-cmip>`_.  It can also be used to provide objective performance summaries during the model development process as well as selected research purposes.  The notes below provide a brief summary of some of the key aspects of the PMP design.  
 
 Software framework and dependancies
 -----------------------------------
 
-Most of the PMP is based on `Python <https://www.python.org/>`_ 3 and built upon the Climate Data Analysis Tools (`CDAT <https://cdat.llnl.gov>`_).  The key component of CDAT used by the PMP is the Community Data Management System (`CDMS <https://cdms.readthedocs.io/en/latest/manual/cdms_1.html>`_) which provides access to a powerful collection of climate specific utilites.           
+Most of the PMP is based on `Python 3 <https://www.python.org/>`_ and built upon the Climate Data Analysis Tools (`CDAT <https://cdat.llnl.gov>`_).  The key component of CDAT used by the PMP is the Community Data Management System (`CDMS <https://cdms.readthedocs.io/en/latest/manual/cdms_1.html>`_) which provides access to a powerful collection of climate specific utilites, inclduing cdutil, genutil and cdtime.           
 
 
 Input/Output format
@@ -25,13 +25,13 @@ Basic Operation
 
 The summary statistics available with the PMP can be run independently or as a collective (the later to be available via the next PMP version).  The python standard `argparse libary <https://docs.python.org/3/library/argparse.html>`_  is used in all cases, enabling the inclusion of user-friendly interface options.  Here is a simple mock-up example of how argeparse is used from the unix command prompt ($): ::
 
-$ mean_climate_statistics.py --model CESM2 --variable pr 
+$ mean_climate_driver.py -p e3sm_parameterfile.py --variable pr 
 
-Here, the "---model" option implemented in the PMP using argparse as is the "---variable" option used to specify "pr" (precipitation). 
+Here, "---variable" option is used to specify "pr" (precipitation). 
 
 Because there are often many parameters to set before executing a PMP code, routine operation often involves setting the input options in an "input parameter" python file.  This is similiar to a "namelist" text file used in other climate analysis packages but having the input parameters set in a python file enables us to leverage the power of python.  So, for the about example: ::
 
-$ mean_climate_statistics.py -p input_parameters.py
+$ mean_climate_driver.py -p input_parameters.py
 
 where the "-p" switch indicates an input parameter file will be used, here with the following contents: ::
 
@@ -41,11 +41,11 @@ $ variable pr
 
 The above use of setting input parameters on the command line or in an input file is possible with the argparse function.  However, there are circumstances where users of the PMP may want to use a combination of both (command line and input file) for the same execution.  To enable this option we make use of the Community Diagnostics Package (`CDP <https://github.com/CDAT/cdp>`_) which enables parameters set in a file to be overridden by the command line. For example: ::
 
-$ mean_climate_statistics.py -p input_parameters.py --model E3SM1.0
+$ mean_climate_driver.py -p input_parameters.py --model E3SM1.0
 
 is equivalent to: ::
 
-$ mean_climate_statistics.py --model E3SM1.0 --variable pr
+$ mean_climate_driver.py --model E3SM1.0 --variable pr
  
 The ability to use command line options in combination with input parameter files (with the former overrridding options set in the later) provides a tremendous convenience in setting up large jobs.
 

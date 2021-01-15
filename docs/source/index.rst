@@ -11,11 +11,10 @@ The PMP is used to provide "quick-look" objective comparisons of Earth System Mo
 
 PCMDI uses the PMP to produce `quick-look simulation summaries across generations of CMIP <https://cmec.llnl.gov/results/physical.html>`_
 
-The metrics package consists of four parts: 1) Analysis software, 2) an observationally-based database, 3) a database of performance metrics computed for CMIP models and 4) package documentation.
 
-The package expects model data to be `CF-compliant <http://cfconventions.org/>`_. To successfully use the package some input data "conditioning" may be required. We provide several demo scripts within the package.
+The PMP expects model data to be `CF-compliant <http://cfconventions.org/>`_, otherwise, to successfully use the package may require some input data "conditioning". 
 
-Users of the current release (v1.2) will need to contact the PMP developers (pcmdi-metrics@llnl.gov) to obtain supporting datasets and get started using the package.
+A suite of demo scripts and interactive Jupyter notebooks are provided with this documentation.
 
 .. toctree::
    :maxdepth: 1
