@@ -14,7 +14,7 @@ PCMDI uses the PMP to produce `quick-look simulation summaries across generation
 
 The PMP expects model data to be `CF-compliant <http://cfconventions.org/>`_, otherwise, to successfully use the package may require some input data "conditioning". 
 
-A suite of demo scripts and interactive Jupyter notebooks are provided with this documentation.
+A suite of demo scripts and interactive Jupyter notebooks are provided with this documentation. 
 
 .. toctree::
    :maxdepth: 1
@@ -35,7 +35,7 @@ An overview for using the package and template scripts are detailed on the :ref:
 
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
 
-PMP versions
+PMP versions 
 ============
 
 v1.2 - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal cycle and intermittency of precipitation, Sperber and Wang Monsoon metrics
