@@ -44,10 +44,4 @@ Here, the "---variable" option is used to specify "pr" (precipitation) with othe
 The python standard `argparse libary <https://docs.python.org/3/library/argparse.html>`_  is used in all cases, enabling the inclusion of user-friendly interface options.  As in the above examples, this enables us to set input parameters on the command line or in an input file.  However, there are circumstances where users of the PMP may want to use a combination of both (command line and input file) for the same execution with the command line overriding anything set in the parameter file. To enable this option we make use of the Community Diagnostics Package (`CDP <https://github.com/CDAT/cdp>`_).  The ability to use command line options in combination with input parameter files (with the former overrridding options set in the later) provides a tremendous convenience in setting up large jobs.
 
 
-Getting Started
----------------
-
-Future developments and challenges
-----------------------------------
-
 

@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="PMP using CDP Guide" href="pmp-using-cdp-guide.html" /> 
+    <link rel="prev" title="CLIVAR 2020 ENSO Metrics" href="clivar-enso-metrics.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,8 +86,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Technical-overview.html">Technical Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install-using-anaconda.html">Install using Anaconda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Supporting-data.html">Retrieving data for demos and use of the PMP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="demo-meanclimate.html">Mean Climate demos</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="metrics-overview.html">PMP summary statistics: documentation and demos</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">PMPParser</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installing-pmpparser">Installing PMPParser</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#information">Information</a><ul>
@@ -97,7 +96,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#how-to-use-pmpparser-in-your-driver">How to use PMPParser in your driver</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reading-in-a-list-from-the-command-line">Reading in a list from the command line</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#reading-in-a-dictionary-from-the-command-line">Reading in a dictionary from the command line</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reading-in-a-dictionary-from-the-command-line">Reading in a dictionary from the command line</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#more-parser-info">More Parser Info</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -322,6 +324,30 @@
 </pre></div>
 </div>
 <p>results in <code class="docutils literal notranslate"><span class="pre">parameter.regions</span></code> being <code class="docutils literal notranslate"><span class="pre">{'tos':</span> <span class="pre">[None],</span> <span class="pre">'tas':</span> <span class="pre">[None,</span> <span class="pre">'terre',</span> <span class="pre">'ocean']}</span></code></p>
+<div class="section" id="more-parser-info">
+<h4>More Parser Info<a class="headerlink" href="#more-parser-info" title="Permalink to this headline">¶</a></h4>
+<p>This guide is intended to bring developers (and maybe users) up to speed with the changes done when refactoring pmp to use cdp. If you don’t know what cdp is, look <a class="reference external" href="https://github.com/UV-CDAT/CDP">here</a>.</p>
+<div class="section" id="what-changed">
+<h5>What changed<a class="headerlink" href="#what-changed" title="Permalink to this headline">¶</a></h5>
+<p>Vocabulary for the parameter has changed to account for the new paradigm of reference data set vs test data set, instead of just observation vs model. <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/wiki/PMPParser#default-arguments">See here</a></p>
+<p>All other cdp related stuff is in the <code class="docutils literal notranslate"><span class="pre">src/python/pcmdi/scripts/driver/</span></code> folder. This include the <code class="docutils literal notranslate"><span class="pre">pmp_parser</span></code>, which is no longer in <code class="docutils literal notranslate"><span class="pre">src/python/pcmdi/</span></code>.</p>
+<p>The majority of the work was done to the <code class="docutils literal notranslate"><span class="pre">pcmdi_metrics_driver.py</span></code>, which is now named <code class="docutils literal notranslate"><span class="pre">pcmdi_metrics_driver_legacy.py</span></code>. The new driver is now named <code class="docutils literal notranslate"><span class="pre">pcmdi_metrics_driver.py</span></code>. Both are executable via the command line. The next section details the changes done to the driver.</p>
+</div>
+<div class="section" id="changes-to-the-driver">
+<h5>Changes to the driver<a class="headerlink" href="#changes-to-the-driver" title="Permalink to this headline">¶</a></h5>
+<p>Though not a requirement of cdp, the driver is now programmed in an object-oriented fashion. There are many good reasons to this, which you can see by googling it. Below is an explanation of the classes, which are located in <code class="docutils literal notranslate"><span class="pre">src/python/pcmdi/scripts/driver/</span></code>.</p>
+<ul class="simple">
+<li><p><strong>PMPParameter</strong>: Inherits from <code class="docutils literal notranslate"><span class="pre">CDPParameter</span></code>. Contains the stuff that’s usually in a Python parameter script. Eventually, we want to add error checking to the <code class="docutils literal notranslate"><span class="pre">heck_values()</span></code> function.</p></li>
+<li><p><strong>PMPParser</strong>: Inherits from <code class="docutils literal notranslate"><span class="pre">CDPParser</span></code>, which it based on <code class="docutils literal notranslate"><span class="pre">ArgumentParser</span></code>. You can add/remove/change the arguments in the <code class="docutils literal notranslate"><span class="pre">load_default_args()</span></code> function if needed.</p></li>
+<li><p><strong>DataSet</strong>: One of the largest forthcoming changes to pmp is that observations and models can be used interchangeably. To do so, both must be of the same class, which is <code class="docutils literal notranslate"><span class="pre">DataSet</span></code>. <code class="docutils literal notranslate"><span class="pre">DataSet</span></code> is an abstract class that acts as an <a class="reference external" href="https://en.wikipedia.org/wiki/Interface_(computing)#Programming_to_the_interface">interface</a>, with some functionality through static methods. Each <code class="docutils literal notranslate"><span class="pre">DataSet</span></code> object also has an attribute of type <code class="docutils literal notranslate"><span class="pre">pmp_io</span></code>.</p></li>
+<li><p><strong>Model</strong>: A concrete version of <code class="docutils literal notranslate"><span class="pre">DataSet</span></code>. Looking at this from the legacy code, this is all of the stuff in the <code class="docutils literal notranslate"><span class="pre">model_versions</span></code> loop. It just does stuff related to <code class="docutils literal notranslate"><span class="pre">_model_file</span></code>, which was called <code class="docutils literal notranslate"><span class="pre">MODEL</span></code> in the legacy version.</p></li>
+<li><p><strong>Observation</strong>: Another concrete version of <code class="docutils literal notranslate"><span class="pre">DataSet</span></code>. Looking at this from the legacy code, this is all of the stuff in the <code class="docutils literal notranslate"><span class="pre">refs</span></code> loop. It just does stuff related to <code class="docutils literal notranslate"><span class="pre">_obs_file</span></code>, which was called <code class="docutils literal notranslate"><span class="pre">OBS</span></code> in the legacy version.</p></li>
+<li><p><strong>PMPDriver</strong>: Inherits from <code class="docutils literal notranslate"><span class="pre">CDPDriver</span></code>. Has a <code class="docutils literal notranslate"><span class="pre">PMPParser</span></code> to get command line arguments. Composed of three functions, <code class="docutils literal notranslate"><span class="pre">check_parameter()</span></code>, <code class="docutils literal notranslate"><span class="pre">run_diags()</span></code>, <code class="docutils literal notranslate"><span class="pre">export()</span></code>. <code class="docutils literal notranslate"><span class="pre">check_parameter()</span></code> checks that the <code class="docutils literal notranslate"><span class="pre">self.parameter</span></code> has all of the stuff needed for this driver. <code class="docutils literal notranslate"><span class="pre">run_diags()</span></code> runs the diags. <code class="docutils literal notranslate"><span class="pre">export()</span></code> should export the results, but doesn’t do that yet because that’s already done in <code class="docutils literal notranslate"><span class="pre">run_diags</span></code> (but eventually will do it).</p></li>
+<li><p><strong>RunDiags</strong>: The actual work for <code class="docutils literal notranslate"><span class="pre">PMPDriver.run_diags()</span></code> is done by this class. <strong>This is where the main functionality is</strong>. This loops through all of the <code class="docutils literal notranslate"><span class="pre">vars</span></code>, <code class="docutils literal notranslate"><span class="pre">regions</span></code>, <code class="docutils literal notranslate"><span class="pre">reference_data_set</span></code> and <code class="docutils literal notranslate"><span class="pre">test_data_set</span></code> in that order. This also determines if the comparison is obs vs obs, obs vs model, or model vs model.</p></li>
+<li><p><strong>OutputMetrics</strong> When <code class="docutils literal notranslate"><span class="pre">RunDiags</span></code> gets the data from <code class="docutils literal notranslate"><span class="pre">Model</span></code> or <code class="docutils literal notranslate"><span class="pre">Observation</span></code> (via <code class="docutils literal notranslate"><span class="pre">DataSet.get()</span></code>), these get sent to <code class="docutils literal notranslate"><span class="pre">OutputMetrics</span></code> which creates the <code class="docutils literal notranslate"><span class="pre">metrics_dictionary</span></code>, computes the metrics needed, and outputs the results. Also has an <code class="docutils literal notranslate"><span class="pre">out_file</span></code> and <code class="docutils literal notranslate"><span class="pre">clim_file</span></code>, which were respectively <code class="docutils literal notranslate"><span class="pre">OUT</span></code> and <code class="docutils literal notranslate"><span class="pre">CLIM</span></code> previously.</p></li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -335,7 +361,7 @@
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="pmp-using-cdp-guide.html" class="btn btn-neutral float-left" title="PMP using CDP Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="clivar-enso-metrics.html" class="btn btn-neutral float-left" title="CLIVAR 2020 ENSO Metrics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
