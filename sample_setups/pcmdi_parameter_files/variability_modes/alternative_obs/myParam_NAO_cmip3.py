@@ -4,17 +4,16 @@ import os
 # =================================================
 # Background Information
 # -------------------------------------------------
-mip = 'cmip5'
-# exp = 'piControl'
-exp = 'historical'
+mip = 'cmip3'
+exp = '20c3m'
 frequency = 'mo'
 realm = 'atm'
 
 # =================================================
 # Analysis Options
 # -------------------------------------------------
-variability_mode = 'NPO'  # Available domains: NAM, NAO, SAM, PNA, PDO
-seasons = ['DJF', 'MAM', 'JJA', 'SON', 'monthly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
+variability_mode = 'NAO'  # Available domains: NAM, NAO, SAM, PNA, PDO
+seasons = ['DJF', 'MAM', 'JJA', 'SON']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
 EofScaling = False  # Convert EOF pattern as unit variance (default=False)
@@ -32,49 +31,60 @@ debug = False  # False
 # =================================================
 # Observation
 # -------------------------------------------------
-reference_data_name = 'NOAA-CIRES_20CR'
+reference_data_name = 'ERA20C'
 reference_data_path = os.path.join(
-    '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707',
-    'psl_mon_20CR_BE_gn_v20200707_187101-201212.nc')
+    '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/ERA-20C/gn/v20200707',
+    'psl_mon_ERA-20C_BE_gn_v20200707_190001-201012.nc')
 
 varOBS = 'psl'
 ObsUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa; or (False, 0, 0)
 
 osyear = 1900
 oeyear = 2005
-eofn_obs = 2
+eofn_obs = 1
 
 # =================================================
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200116',
-    '%(mip)/%(exp)/atmos/mon/%(variable)',
-    '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/%(mip)/%(exp)',
+    '%(variable).%(model).%(realization).xml')
 
-modnames = ['ACCESS1-0', 'ACCESS1-3', 'BCC-CSM1-1', 'BCC-CSM1-1-M', 'BNU-ESM',
-            'CanCM4', 'CanESM2', 'CCSM4', 'CESM1-BGC', 'CESM1-CAM5', 'CESM1-FASTCHEM', 'CESM1-WACCM',
-            'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS', 'CNRM-CM5', 'CNRM-CM5-2', 'CSIRO-Mk3-6-0',
-            'EC-EARTH', 'FGOALS-g2', 'FGOALS-s2', 'FIO-ESM', 'FIO-ESM',
-            'GFDL-CM2p1', 'GFDL-CM3', 'GFDL-ESM2G', 'GFDL-ESM2M',
-            'GISS-E2-H', 'GISS-E2-H-CC', 'GISS-E2-R', 'GISS-E2-R-CC',
-            'HadCM3', 'HadGEM2-AO', 'HadGEM2-CC', 'HadGEM2-ES',
-            'INMCM4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR', 'IPSL-CM5B-LR',
-            'MIROC-ESM', 'MIROC-ESM-CHEM', 'MIROC4h', 'MIROC5',
-            'MPI-ESM-LR', 'MPI-ESM-MR', 'MPI-ESM-P', 'NorESM1-M', 'NorESM1-ME']
+modnames = [
+    'bccr_bcm2_0',
+    'cccma_cgcm3_1',
+    'cccma_cgcm3_1_t63',
+    'cnrm_cm3',
+    'gfdl_cm2_0',
+    'gfdl_cm2_1',
+    'giss_aom',
+    'giss_model_e_h',
+    'giss_model_e_r',
+    'iap_fgoals1_0_g',
+    'ingv_echam4',
+    'inmcm3_0',
+    'ipsl_cm4',
+    'miroc3_2_hires',
+    'miroc3_2_medres',
+    'miub_echo_g',
+    'mpi_echam5',
+    'mri_cgcm2_3_2a',
+    'ukmo_hadcm3',
+    'ukmo_hadgem1',
+]
 
 modnames = ['all']
-# modnames = ['ACCESS1-0', 'ACCESS1-3']
+# modnames = ['CSIRO-Mk3-6-0']
 
 realization = '*'  # realizations
-# realization = 'r1i1p1'
+# realization = 'run1'
 
 varModel = 'psl'
 ModUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa
 
 msyear = 1900
 meyear = 2005
-eofn_mod = 2
+eofn_mod = 1
 
 # =================================================
 # Output

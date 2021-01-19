@@ -12,25 +12,28 @@ case_id="v"`date +"%Y%m%d"`
 #case_id="v20191115"
 
 #mips='cmip3 cmip5 cmip6'
-#mips='cmip5 cmip6'
+mips='cmip5 cmip6'
 #mips='cmip5'
-mips='cmip6'
+#mips='cmip6'
 #mips='cmip3'
 
 #exps='20c3m amip'
 #exps='20c3m'
-exps='historical amip'
-#exps='historical'
+#exps='historical amip'
+exps='historical'
 
 modes='all'
+#modes='SAM'
 
 modnames='all'
 
 realization='all'
 
-param_dir='../../../sample_setups/pcmdi_parameter_files/variability_modes'
+#param_dir='../../../sample_setups/pcmdi_parameter_files/variability_modes'
+param_dir='../../../sample_setups/pcmdi_parameter_files/variability_modes/alternative_obs'
 
 for mip in $mips; do
+    echo $mip
     #if [ $mip == 'cmip5' ]; then
     #    realization='r1i1p1'
     #    #modnames="BNU-ESM CESM1-FASTCHEM CMCC-CM FGOALS-g2 HadCM3 HadGEM2-CC IPSL-CM5A-LR IPSL-CM5A-MR MIROC4h MIROC5 MPI-ESM-LR MPI-ESM-MR"
@@ -41,7 +44,7 @@ for mip in $mips; do
     #fi
     for exp in $exps; do
         if [ $modes == 'all' ]; then
-            if [ $exp == 'historical' ]; then
+            if [ $exp == 'historical' ] || [ $exp == '20c3m' ]; then
                 modes_list='NAM NAO PNA SAM PDO NPO NPGO'
             elif [ $exp == 'amip' ]; then
                 modes_list='NAM NAO PNA SAM NPO'
@@ -54,7 +57,7 @@ for mip in $mips; do
         # Run
         for mode in $modes_list; do
             echo $mip $exp $mode $case_id
-            ./parallel_driver.py -p ${param_dir}/myParam_${mode}_${mip}.py --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode >& ./log/$mip/$exp/$case_id/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
+            python ./parallel_driver.py -p ${param_dir}/myParam_${mode}_${mip}.py --param_dir $param_dir --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode >& ./log/$mip/$exp/$case_id/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
             disown
             sleep 1
         done
