@@ -1,7 +1,7 @@
 .. _using-the-package:
 
 *****************
-PMP summary statistics: documentation and demos
+Documentation and Demos
 *****************
 
 
