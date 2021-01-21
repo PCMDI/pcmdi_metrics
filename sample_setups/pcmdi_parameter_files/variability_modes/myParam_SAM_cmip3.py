@@ -13,7 +13,7 @@ realm = 'atm'
 # Analysis Options
 # -------------------------------------------------
 variability_mode = 'SAM'  # Available domains: NAM, NAO, SAM, PNA, PDO
-seasons = ['DJF', 'MAM', 'JJA', 'SON', 'monthly']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
+seasons = ['DJF', 'MAM', 'JJA', 'SON']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
 EofScaling = False  # Convert EOF pattern as unit variance (default=False)
@@ -74,8 +74,9 @@ modnames = [
 ]
 
 modnames = ['all']
-
 # modnames = ['giss_model_e_h']
+# modnames = ["ncar_ccsm3_0", "ingv_echam4", "miroc3_2_hires", "ukmo_hadgem1"]
+modnames = ["ncar_ccsm3_0"]
 
 realization = '*'  # realizations
 # realization = 'run1'

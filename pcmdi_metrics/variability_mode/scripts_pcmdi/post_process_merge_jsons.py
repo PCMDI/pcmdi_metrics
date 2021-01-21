@@ -12,21 +12,22 @@ import os
 
 def main():
     # mips = ['cmip5', 'cmip6']
-    # mips = ['cmip6']
-    mips = ['cmip3']
+    mips = ['cmip6']
+    # mips = ['cmip3']
 
-    exps = ['historical', 'amip']
+    # exps = ['historical', 'amip']
     # exps = ['historical']
-    exps = ['20c3m', 'amip']
+    exps = ['amip']
+    # exps = ['20c3m', 'amip']
+    # exps = ['20c3m']
 
-    #case_id = 'v20200818'
     case_id = 'v20210119'
 
     syear = 1900
     eyear = 2005
 
     obs_selection = 'default'
-    #obs_selection = 'alternative'
+    # obs_selection = 'alternative'
 
     # pmprdir = '/work/lee1043/temporary/result_test'
     pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
@@ -36,10 +37,10 @@ def main():
 
             if exp == 'amip':
                 modes = ['NAM', 'NAO', 'PNA', 'SAM', 'NPO']
-                modes = ['SAM']
+                # modes = ['SAM']
             else:
                 modes = ['NAM', 'NAO', 'PNA', 'SAM', 'NPO', 'PDO', 'NPGO']
-                modes = ['SAM']
+                # modes = ['SAM']
 
             for mode in modes:
                 # eof
