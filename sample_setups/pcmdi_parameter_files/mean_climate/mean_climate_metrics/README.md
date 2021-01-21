@@ -11,3 +11,10 @@ left as the defaults. Options from the parameter file can be overwritten in the 
 
 Usage:  
 `mean_climate_driver.py -p e3sm_parameterfile.py <-other options>`
+
+### Calculations across multi-model ensembles
+
+Simple parallelization done via bash script:
+
+ 'bash MIP_EXP_all.bash'
+
