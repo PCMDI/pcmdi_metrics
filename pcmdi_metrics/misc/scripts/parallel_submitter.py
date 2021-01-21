@@ -12,7 +12,7 @@ def parallel_submitter(cmd_list, log_dir, logfilename_list, num_workers=3):
 
     Inputs:
     
-    - cmd_list: python list of commend lines, e.g.,
+    - cmd_list: python list of command lines, e.g.,
      ['python abc.py -p ../../test_param.py -m model1',
       'python abc.py -p ../../test_param.py -m model2',
        :
@@ -45,10 +45,10 @@ def parallel_submitter(cmd_list, log_dir, logfilename_list, num_workers=3):
     # submit tasks and wait for subset of tasks to complete
     procs_list = []
     for p, cmd in enumerate(cmds_list):
-        print(p, cmd)
+        print(p, ':', cmd)
         log_file = os.path.join(log_dir, logfilename_list[p])
         with open(log_file+"_stdout.txt", "wb") as out, open(log_file+"_stderr.txt", "wb") as err:
-            procs_list.append(Popen(cmd, stdout=out, stderr=err))
+            procs_list.append(Popen(cmd.split(' '), stdout=out, stderr=err))
         if ((p > 0 and p % num_workers == 0) or (p == len(cmds_list)-1)):
             print('wait...')
             for proc in procs_list:
