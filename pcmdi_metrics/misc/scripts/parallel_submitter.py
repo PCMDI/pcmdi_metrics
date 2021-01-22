@@ -5,7 +5,7 @@ import os
 import time
 
 
-def parallel_submitter(cmd_list, log_dir, logfilename_list, num_workers=3):
+def parallel_submitter(cmd_list, log_dir='logs/', logfilename_list=None, num_workers=3):
     """
     Run subprocesses in parallel
 
@@ -19,12 +19,14 @@ def parallel_submitter(cmd_list, log_dir, logfilename_list, num_workers=3):
 
     - log_dir: string for directory path for log files, e.g., 
       '/a/b'
+      default = 'logs/'
      
     - logfilename_list: python list of pull path of log files, e.g., 
      ['log_model1',
       'log_model2',
        :
       'log_model100']
+     In case it was not given, automatically generated as 'log_process_N' (N: process index number)
      
     - num_workers: integer number that limits how many process to be submitted at one time
        default = 3
@@ -45,7 +47,12 @@ def parallel_submitter(cmd_list, log_dir, logfilename_list, num_workers=3):
     procs_list = []
     for p, cmd in enumerate(cmd_list):
         print(p, ':', cmd)
-        log_file = os.path.join(log_dir, logfilename_list[p])
+
+        if logfilename_list is None:
+            log_file = os.path.join(log_dir, 'log_process_'+str(p))
+        else:
+            log_file = os.path.join(log_dir, logfilename_list[p])
+
         with open(log_file+"_stdout.txt", "wb") as out, open(log_file+"_stderr.txt", "wb") as err:
             procs_list.append(Popen(cmd.split(' '), stdout=out, stderr=err))
         if ((p > 0 and p % num_workers == 0) or (p == len(cmd_list)-1)):
