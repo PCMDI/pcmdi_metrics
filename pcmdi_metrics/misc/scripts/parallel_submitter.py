@@ -43,12 +43,12 @@ def parallel_submitter(cmd_list, log_dir, logfilename_list, num_workers=3):
     
     # submit tasks and wait for subset of tasks to complete
     procs_list = []
-    for p, cmd in enumerate(cmds_list):
+    for p, cmd in enumerate(cmd_list):
         print(p, ':', cmd)
         log_file = os.path.join(log_dir, logfilename_list[p])
         with open(log_file+"_stdout.txt", "wb") as out, open(log_file+"_stderr.txt", "wb") as err:
             procs_list.append(Popen(cmd.split(' '), stdout=out, stderr=err))
-        if ((p > 0 and p % num_workers == 0) or (p == len(cmds_list)-1)):
+        if ((p > 0 and p % num_workers == 0) or (p == len(cmd_list)-1)):
             print('wait...')
             for proc in procs_list:
                 proc.wait()
