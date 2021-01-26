@@ -15,7 +15,7 @@ test_data_path = '$INPUT_DIR$/example_data/atm/mo/pr/CMIP5.CMIP.historical.%(mod
 # ROOT PATH FOR OBSERVATIONS
 # Note that atm/mo/%(variable)/ac will be added to this
 #reference_data_path = '../../../tests/monsoon/obs/pr_gpcp_79_07_mseas.nc'
-reference_data_path = '$INPUT_DIR$/PCMDIobs2.0/atmos/mon/pr/GPCP-2-3/gn/v20190301/pr_mon_GPCP-2-3_BE_gn_197901-201803.nc'
+reference_data_path = '$INPUT_DIR$/PCMDIobs2/atmos/mon/pr/GPCP-2-3/gn/v20200707/pr_mon_GPCP-2-3_BE_gn_v20200707_197901-201907.nc'
 
 # DIRECTORY WHERE TO PUT RESULTS
 results_dir = '$OUTPUT_DIR$/monsoon_wang'
