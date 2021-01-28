@@ -116,10 +116,10 @@ def clim_calc(var, infile, outfile, outdir, outfilename, start, end):
         lst = outfd.split('/')
         s = '/'
         for ll in range(len(lst)):
-            d = s.join(lst[0:ll])
+            d = s.join(lst[0:ll+1])
             try:
                 os.mkdir(d)
-            except IndexError:
+            except OSError:
                 pass
 
         g = cdms2.open(out, 'w+')
