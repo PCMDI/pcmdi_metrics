@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; PCMDI Metrics 1.2.1 documentation</title>
+  <title>Install using Anaconda &mdash; PCMDI Metrics 1.2.1 documentation</title>
   
 
   
@@ -83,10 +83,9 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="Technical-overview.html">Technical Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install-using-anaconda.html">Install using Anaconda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Supporting-data.html">Retrieving data for demos and use of the PMP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics-overview.html">Documentation and Demos</a></li>
-<li class="toctree-l1"><a class="reference internal" href="pmpparser.html">PMPParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pmpparser.html">Miscellaneous</a></li>
 </ul>
 
             
@@ -133,7 +132,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Installation</li>
+      <li>Install using Anaconda</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -152,16 +151,57 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="installation">
-<span id="install"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>The supported method for installing the PMP within a local environment is via <cite>Anaconda &lt;https://conda.io/en/latest/&gt;</cite>.
-The source code is also available to developers via the PMP Github repository.</p>
-<div class="section" id="anaconda-installation-recommended">
-<h2>Anaconda installation (recommended)<a class="headerlink" href="#anaconda-installation-recommended" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p><a class="reference internal" href="install-using-anaconda.html#install-anaconda"><span class="std std-ref">Install using Anaconda</span></a> - Installation instructions for Anaconda users</p></li>
+  <div class="section" id="install-using-anaconda">
+<span id="install"></span><h1>Install using Anaconda<a class="headerlink" href="#install-using-anaconda" title="Permalink to this headline">¶</a></h1>
+<p>We offer an installation for anaconda users under linux-64 or osx-64.
+Support for Windows is not available yet.</p>
+<p><a class="reference external" href="https://anaconda.org/PCMDI/pcmdi_metrics/files">https://anaconda.org/PCMDI/pcmdi_metrics/files</a></p>
+<div class="section" id="all-platforms-system-requirements">
+<h2>All Platforms System Requirements<a class="headerlink" href="#all-platforms-system-requirements" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p>Install the <a class="reference external" href="https://www.anaconda.com/products/individual#Downloads">Anaconda for Python 3.7</a> package (we recommend installing this for each user)</p></li>
+<li><dl class="simple">
+<dt>Make sure anaconda is in your PATH (assuming anaconda is installed in ${HOME}/anaconda</dt><dd><ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">export</span> <span class="pre">PATH=${HOME}/anaconda/bin:${PATH}</span></code> # for [ba]sh</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">setenv</span> <span class="pre">PATH</span> <span class="pre">${HOME}/anaconda/bin:${PATH}</span></code> # for [t]csh</p></li>
 </ul>
-<p>A primary advantage of the Anaconda install path is that it is user-centric. This allows users on super computing systems with limited permissions to fully configure their local PMP install</p>
+</dd>
+</dl>
+</li>
+</ul>
+</div></blockquote>
+<p>Make sure you have no environment variables set from an old UV-CDAT installation in your PATH/PYTHONPATH,LD_LIBRARY_PATH etc</p>
+</div>
+<div class="section" id="bypassing-firewalls">
+<h2>Bypassing firewalls<a class="headerlink" href="#bypassing-firewalls" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>If your institution has tight ssl certificate/security issues try:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">config</span> <span class="pre">--set</span> <span class="pre">ssl_verify</span> <span class="pre">False</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">binstar</span> <span class="pre">config</span> <span class="pre">--set</span> <span class="pre">ssl_verify</span> <span class="pre">False</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="installing-the-pcmdi-metrics-package-pmp">
+<h2>Installing the PCMDI Metrics Package (PMP)<a class="headerlink" href="#installing-the-pcmdi-metrics-package-pmp" title="Permalink to this headline">¶</a></h2>
+<dl class="simple">
+<dt>Using the conda package manager, you can install the PCMDI Metrics package from the PCMDI conda channel, and from an environment containing [CDAT](<a class="reference external" href="https://cdat.llnl.gov/">https://cdat.llnl.gov/</a>).</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">[YOUR_CDAT_ENABLED_CONDA_ENVIRONMENT]</span></code> (See <a class="reference external" href="https://github.com/CDAT/cdat/wiki/install">CDAT Install</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">pcmdi_metrics</span> <span class="pre">-c</span> <span class="pre">cdat-forge</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<div class="section" id="getting-the-latest-nightly-of-pmp-and-cdat">
+<h2>Getting the latest nightly of PMP and CDAT<a class="headerlink" href="#getting-the-latest-nightly-of-pmp-and-cdat" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">[YOUR_ENV_NAME_HERE]</span> <span class="pre">-c</span> <span class="pre">cdat/label/nightly</span> <span class="pre">-c</span> <span class="pre">pcmdi/label/nightly</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">-c</span> <span class="pre">cdat</span> <span class="pre">pcmdi_metrics</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">[YOUR_ENV_NAME_HERE]</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>To learn more about conda environments see: <a class="reference external" href="http://conda.pydata.org/docs/using/envs.html">http://conda.pydata.org/docs/using/envs.html</a></p>
 </div>
 </div>
 
