@@ -85,7 +85,7 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Technical-overview.html">Technical Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install-using-anaconda.html">Install using Anaconda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install using Anaconda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Supporting-data.html">Retrieving data for demos and use of the PMP</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="metrics-overview.html">Documentation and Demos</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="metrics-overview.html#overview">Overview</a><ul class="current">
@@ -99,7 +99,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pmpparser.html">PMPParser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pmpparser.html">Miscellaneous</a></li>
 </ul>
 
             
@@ -171,7 +171,16 @@
 <span id="using-the-package"></span><h1>Mean Climate<a class="headerlink" href="#mean-climate" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
-<p>A combination of static examples/doc and notebooks</p>
+<p>The mean climate summary statistics are some of the most routine analysis available from the PMP.  At the same time, because of the number of options available they do require some preparation in advance of the analysis, including:</p>
+<ul class="simple">
+<li><p>Setting observational climatologies</p></li>
+<li><p>Preparation of model climatologies</p></li>
+<li><p>Construction of an input parameter file</p></li>
+</ul>
+<div class="section" id="observational-climatologies">
+<h3>Observational climatologies<a class="headerlink" href="#observational-climatologies" title="Permalink to this headline">¶</a></h3>
+<p>A database of <a class="reference external" href="https://github.com/PCMDI/PCMDIobs-cmor-tables/blob/master/catalogue/pcmdiobs2_clims_byVar_catalogue_v20201210.json">observational climatologies</a> is available to users of the PMP. To obtain this, please contact the PMP user group (<a class="reference external" href="mailto:pcmdi-metrics&#37;&#52;&#48;llnl&#46;gov">pcmdi-metrics<span>&#64;</span>llnl<span>&#46;</span>gov</a>) and you will promptly provided with the database.  A subset of this database is available via the demo data made available for the PMP tutorials via a <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_0_download_data.ipynb">jupyter notebook demo</a> or via the version of python included as part of the PMP environment.</p>
+</div>
 </div>
 </div>
 
