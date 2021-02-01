@@ -12,7 +12,7 @@ case_id = 'basicTest'
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF
 # CLIMATOLOGY FILENAME
-test_data_set = ['ACCESS1-0', 'CSIRO-Mk3-6-0']
+test_data_set = ['ACCESS1-0', 'CanCM4']
 
 
 # VARIABLES TO USE
@@ -34,7 +34,7 @@ regrid_method_ocn = 'linear'
 
 # Templates for climatology files
 # %(param) will subsitute param with values in this file
-filename_template = "CMIP5.historical.%(model_version).r1i1p1.mon.%(variable).198101-200512.AC.v20190225.nc"
+filename_template = "cmip5.historical.%(model_version).r1i1p1.mon.%(variable).198101-200512.AC.v20200426.nc"
 
 # filename template for landsea masks ('sftlf')
 sftlf_filename_template = "sftlf_%(model_version).nc"
@@ -43,7 +43,7 @@ generate_sftlf = True # if land surface type mask cannot be found, generate one
 
 pth = os.path.dirname(__file__)
 # ROOT PATH FOR MODELS CLIMATOLOGIES
-test_data_path = '$INPUT_DIR$/example_data/atm/mo/rlut/ac/'
+test_data_path = '$INPUT_DIR$/CMIP5_demo_clims/'
 # ROOT PATH FOR OBSERVATIONS
 # Note that atm/mo/%(variable)/ac will be added to this
 reference_data_path = '$INPUT_DIR$/PCMDIobs2_clims'
