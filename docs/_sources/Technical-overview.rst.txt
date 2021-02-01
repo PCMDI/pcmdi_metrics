@@ -23,25 +23,22 @@ The PMP statistics are output in `JSON format <https://www.json.org/json-en.html
 Basic Operation
 ---------------
 
-The summary statistics available with the PMP can be run independently or as a collective (the later to be available via the next PMP version).  Here is a simple mock-up example of how argeparse is used from the unix command prompt ($): ::
+The summary statistics available with the PMP can be run independently or as a collective (the later to be available via the next PMP version).  Here is a glimpse of how the mean climate statistics are executed from the unix command prompt ($): ::
 
 $ mean_climate_driver.py -p e3sm_parameterfile.py 
 
-Because there are often many parameters to set before executing a PMP code, routine operation often involves setting the input options in an "input parameter" python file such as the file following the "-p" flag.  This is similiar to a "namelist" text file used in other climate analysis packages but having the input parameters set in a python file enables us to leverage the power of python. The contents of this file might look something like this ($): ::
+Because there are often multiple parameters to set before executing a PMP code, routine operation often involves setting these options in an "input parameter" python file such as the filename immediately following the "-p" flag above.  The PMP input parameter files are similiar to a "namelist" text file used in other climate analysis packages but having the input parameters set in a python file enables us to leverage the power of python. For example, the contents of an input parameter file might look something like this ($): ::
 
 $ more input_parameters.py
-$ model CESM2
-$ variable pr
+$ test_data_set = ['ACCESS-1-0','CESM2']
+$ period = '1981-2005'
 
-
-Additional functionality is shown in another example command ($): ::
+which includes both a string variable (period) and a python list (test_data_set). Other python objects can be included in input parameter files, notably python dictionaries.  Additional functionality is shown in another example command ($): ::
 
 $ mean_climate_driver.py -p e3sm_parameterfile.py --variable pr 
 
 Here, the "---variable" option is used to specify "pr" (precipitation) with other options included in the file after the "-p" flag.  
 
 
-The python standard `argparse libary <https://docs.python.org/3/library/argparse.html>`_  is used in all cases, enabling the inclusion of user-friendly interface options.  As in the above examples, this enables us to set input parameters on the command line or in an input file.  However, there are circumstances where users of the PMP may want to use a combination of both (command line and input file) for the same execution with the command line overriding anything set in the parameter file. To enable this option we make use of the Community Diagnostics Package (`CDP <https://github.com/CDAT/cdp>`_).  The ability to use command line options in combination with input parameter files (with the former overrridding options set in the later) provides a tremendous convenience in setting up large jobs.
-
-
+The python standard `argparse libary <https://docs.python.org/3/library/argparse.html>`_  is implicitly used in all cases, enabling the inclusion of user-friendly interface options.  As in the above example, this allows users to set input parameters on the command line **or** in an input file.  However, there are circumstances where users of the PMP may want to use a combination of both (an input parameter file and command line setting) for the same execution. This useful combination is possible with the standard argeparse library however with limited functionality.  We make use of the Community Diagnostics Package (`CDP <https://github.com/CDAT/cdp>`_) to enable prioritization between the two input possibilities.  The CDP enables us to use command line options in combination with input parameter files, with the command line inputs overrridding options set in the parameter files.  This provides convenience in setting up and maintaining large jobs. Examples of the combined use of parameter files and command line inputs are included in the PMP demos.
 

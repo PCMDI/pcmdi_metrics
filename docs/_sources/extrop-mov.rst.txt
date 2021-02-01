@@ -7,6 +7,6 @@ Extra-tropical modes of variability
 Overview
 ========
 
-bla bla...
+Coming soon ...
 
 

@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Documentation and Demos" href="metrics-overview.html" />
-    <link rel="prev" title="Technical Overview" href="Technical-overview.html" /> 
+    <link rel="prev" title="Install using Anaconda" href="install.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -85,6 +85,7 @@
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="Technical-overview.html">Technical Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install using Anaconda</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Retrieving data for demos and use of the PMP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics-overview.html">Documentation and Demos</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pmpparser.html">Miscellaneous</a></li>
@@ -154,9 +155,9 @@
            <div itemprop="articleBody">
             
   <div class="section" id="retrieving-data-for-demos-and-use-of-the-pmp">
-<span id="using-the-package"></span><h1>Retrieving data for demos and use of the PMP<a class="headerlink" href="#retrieving-data-for-demos-and-use-of-the-pmp" title="Permalink to this headline">¶</a></h1>
-<p>Sample model and observational data are provided via a <a class="reference external" href="https://github.com/acordonez/pcmdi_metrics/blob/645_notebooks/doc/jupyter/Demo/Demo_0_download_data.ipynb">jupyter notebook demo</a>.</p>
-<p>For users that are unfamiliar with Jupyter notebooks or just want to download the sample data, without interactively running the demo, you can download the data by launching python from a PMP environment created from conda.</p>
+<h1>Retrieving data for demos and use of the PMP<a class="headerlink" href="#retrieving-data-for-demos-and-use-of-the-pmp" title="Permalink to this headline">¶</a></h1>
+<p>Sample model and observational data are provided via a <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_0_download_data.ipynb">jupyter notebook demo</a>.  This is the first of multiple PMP demos. It enables a user to download all sample data before running the other demos that provide interactive examples of the different summary statistics provided by the PMP.  More info is available for <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/README.md">preparing to run these notebooks</a>.</p>
+<p>For users that are unfamiliar with Jupyter notebooks or just want to download the sample data without interactively running the demo, you can download the data by launching python from a PMP environment created from conda.</p>
 <p>you can then enter the following</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
 <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;https://pcmdiweb.llnl.gov/pss/pmpdata/cmec_tutorial_files.txt&quot;</span><span class="p">)</span>
@@ -164,7 +165,7 @@
    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>You can then specify where you want to store the demo data locally:</p>
+<p>A location where you want to store the demo data locally can be set:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">demo_data_directory</span> <span class="o">=</span> <span class="s1">&#39;MyDemoPath&#39;</span>
 </pre></div>
 </div>
@@ -173,7 +174,7 @@
 <span class="n">cdat_info</span><span class="o">.</span><span class="n">download_sample_data_files</span><span class="p">(</span><span class="s2">&quot;data_files.txt&quot;</span><span class="p">,</span> <span class="n">demo_data_directory</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The PMP demo data is used for multiple demos. It is ~300MB. The best way to run these demos is via Jupyter notebooks.</p>
+<p>The PMP demo data is used for multiple demos. It is ~300MB. The best way to run these demos is via Jupyter notebooks.  Running this initial demo for downloading sample data also on-the-fly creates demo parameter files with the user selection of the demo_data_directory.</p>
 </div>
 
 
@@ -187,7 +188,7 @@
         <a href="metrics-overview.html" class="btn btn-neutral float-right" title="Documentation and Demos" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="Technical-overview.html" class="btn btn-neutral float-left" title="Technical Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="install.html" class="btn btn-neutral float-left" title="Install using Anaconda" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

@@ -21,7 +21,7 @@ A suite of demo scripts and interactive Jupyter notebooks are provided with this
    :caption: Contents:
 
    Technical-overview
-   install-using-anaconda
+   install
    Supporting-data
    metrics-overview
    pmpparser
