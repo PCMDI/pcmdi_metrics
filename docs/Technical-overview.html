@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Technical Overview &mdash; PCMDI Metrics 1.2.1 documentation</title>
+  <title>Usage Overview &mdash; PCMDI Metrics 1.2.1 documentation</title>
   
 
   
@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Retrieving data for demos and use of the PMP" href="Supporting-data.html" />
+    <link rel="next" title="Install using Anaconda" href="install.html" />
     <link rel="prev" title="PCMDI Metrics Package (PMP)" href="index.html" /> 
 </head>
 
@@ -84,7 +84,7 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Technical Overview</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#summary">Summary</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#software-framework-and-dependancies">Software framework and dependancies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#input-output-format">Input/Output format</a></li>
@@ -93,6 +93,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install using Anaconda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Supporting-data.html">Retrieving data for demos and use of the PMP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics-overview.html">Documentation and Demos</a></li>
 <li class="toctree-l1"><a class="reference internal" href="pmpparser.html">Miscellaneous</a></li>
@@ -142,7 +143,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Technical Overview</li>
+      <li>Usage Overview</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -161,8 +162,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="technical-overview">
-<h1>Technical Overview<a class="headerlink" href="#technical-overview" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="usage-overview">
+<h1>Usage Overview<a class="headerlink" href="#usage-overview" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>The PMP provides a diverse suite of analysis utilities each of which produce summary statistics that gauge the consistency between climate model simulations and available observations.  The primary application of the PMP is to evaluate simulations from the <a class="reference external" href="https://www.wcrp-climate.org/wgcm-cmip">Coupled Model Intercomparison Project (CMIP)</a>.  It can also be used to provide objective performance summaries during the model development process as well as selected research purposes.  The notes below provide a brief summary of some of the key aspects of the PMP design.</p>
@@ -177,17 +178,17 @@
 </div>
 <div class="section" id="basic-operation">
 <h3>Basic Operation<a class="headerlink" href="#basic-operation" title="Permalink to this headline">¶</a></h3>
-<p>The summary statistics available with the PMP can be run independently or as a collective (the later to be available via the next PMP version).  Here is a glimpse of how the mean climate statistics are executed from the unix command prompt ($):</p>
+<p>The summary statistics available with the PMP can be run independently or as a collective (the later to be available via the next PMP version).  Here is a glimpse of how the mean climate statistics are executed from the unix command prompt:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mean_climate_driver.py -p e3sm_parameterfile.py
 </pre></div>
 </div>
-<p>Because there are often multiple parameters to set before executing a PMP code, routine operation often involves setting these options in an “input parameter” python file such as the filename immediately following the “-p” flag above.  The PMP input parameter files are similiar to a “namelist” text file used in other climate analysis packages but having the input parameters set in a python file enables us to leverage the power of python. For example, the contents of an input parameter file might look something like this ($):</p>
+<p>Because there are often multiple parameters to set before executing a PMP code, routine operation often involves setting these options in an “input parameter” python file such as the filename immediately following the “-p” flag above.  The PMP input parameter files are similiar to a “namelist” text file used in other climate analysis packages but having the input parameters set in a python file enables us to leverage the power of python. For example, the contents of an input parameter file might look something like this:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ more input_parameters.py
 $ test_data_set = [&#39;ACCESS-1-0&#39;,&#39;CESM2&#39;]
 $ period = &#39;1981-2005&#39;
 </pre></div>
 </div>
-<p>which includes both a string variable (period) and a python list (test_data_set). Other python objects can be included in input parameter files, notably python dictionaries.  Additional functionality is shown in another example command ($):</p>
+<p>which includes both a string variable (period) and a python list (test_data_set). Other python objects can be included in input parameter files, notably python dictionaries.  Additional functionality is shown in another example command:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ mean_climate_driver.py -p e3sm_parameterfile.py --variable pr
 </pre></div>
 </div>
@@ -205,7 +206,7 @@ $ period = &#39;1981-2005&#39;
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="Supporting-data.html" class="btn btn-neutral float-right" title="Retrieving data for demos and use of the PMP" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="install.html" class="btn btn-neutral float-right" title="Install using Anaconda" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral float-left" title="PCMDI Metrics Package (PMP)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

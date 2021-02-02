@@ -84,7 +84,7 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="Technical-overview.html">Technical Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Technical-overview.html">Usage Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">Install using Anaconda</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Supporting-data.html">Retrieving data for demos and use of the PMP</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="metrics-overview.html">Documentation and Demos</a><ul class="current">
@@ -179,7 +179,34 @@
 </ul>
 <div class="section" id="observational-climatologies">
 <h3>Observational climatologies<a class="headerlink" href="#observational-climatologies" title="Permalink to this headline">¶</a></h3>
-<p>A database of <a class="reference external" href="https://github.com/PCMDI/PCMDIobs-cmor-tables/blob/master/catalogue/pcmdiobs2_clims_byVar_catalogue_v20201210.json">observational climatologies</a> is available to users of the PMP. To obtain this, please contact the PMP user group (<a class="reference external" href="mailto:pcmdi-metrics&#37;&#52;&#48;llnl&#46;gov">pcmdi-metrics<span>&#64;</span>llnl<span>&#46;</span>gov</a>) and you will promptly provided with the database.  A subset of this database is available via the demo data made available for the PMP tutorials via a <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_0_download_data.ipynb">jupyter notebook demo</a> or via the version of python included as part of the PMP environment.</p>
+<p>A database of <a class="reference external" href="https://github.com/PCMDI/PCMDIobs-cmor-tables/blob/master/catalogue/pcmdiobs2_clims_byVar_catalogue_v20201210.json">observational climatologies</a> is available to users of the PMP. To obtain this, please contact the PMP user group (<a class="reference external" href="mailto:pcmdi-metrics&#37;&#52;&#48;llnl&#46;gov">pcmdi-metrics<span>&#64;</span>llnl<span>&#46;</span>gov</a>) and you will be promptly provided with the database.  A subset of this database is available via the demo data made available for the PMP tutorials via a <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_0_download_data.ipynb">jupyter notebook demo</a>.  Once you have downloaded this demo data you can interactively run the mean climate and other demos.</p>
+<p>The <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_1_mean_climate.ipynb">mean climate notebook</a> provides a series of examples that demonstrate the options available.</p>
+</div>
+<div class="section" id="preparation-of-model-climatologies">
+<h3>Preparation of model climatologies<a class="headerlink" href="#preparation-of-model-climatologies" title="Permalink to this headline">¶</a></h3>
+<p>Sample model climatologies are available as part of the PMP demo database noted above and are used for the mean climate notebook. However, if a user wants to create and use their own model climatologies the a simple example is provide in the mean climate notebook itself or the <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/tree/master/sample_setups/pcmdi_parameter_files/mean_climate/make_clims">PMP github repository</a>.</p>
+</div>
+<div class="section" id="construction-of-an-input-paramater-file">
+<h3>Construction of an input paramater file<a class="headerlink" href="#construction-of-an-input-paramater-file" title="Permalink to this headline">¶</a></h3>
+<p>The PMP mean climate metrics can be controlled via an input parameter file, the command line, or both.  With the command line only it is executed via:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mean_climate_driver</span><span class="o">.</span><span class="n">py</span>  <span class="o">-</span><span class="n">p</span> <span class="n">basic_param</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>or as a combination of an input parameter file and the command line, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mean_climate_driver</span><span class="o">.</span><span class="n">py</span>  <span class="o">-</span><span class="n">p</span> <span class="n">basic_param</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="nb">vars</span> <span class="n">rlut</span> <span class="n">pr</span>
+</pre></div>
+</div>
+<p>where the list of variables to run the analysis on includes the variables ‘rlut’ (outgoing TOA longwave radiation) and ‘pr’ (precipitation).</p>
+<p>Because there are a minimum of 5(?) parameters to be set with the mean climate statistics.</p>
+<p>SOME DISCUSSION HERE ON THE MINIMUM SET OF INPUT PARAMETERS.</p>
+<p>In addition to the minimum set of parameters noted above, the following summarizes additional options than can be controlled for the mean climate:</p>
+<ul class="simple">
+<li><p>Select regridding option</p></li>
+<li><p>Define a different set of regions</p></li>
+<li><p>Provide or estimate a land-sea mask</p></li>
+<li><p>Define regional masking (e.g., land-only or ocean-only)</p></li>
+<li><p>Select to output (or not) interpolate climatologies including masking</p></li>
+</ul>
 </div>
 </div>
 </div>

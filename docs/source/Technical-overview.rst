@@ -1,4 +1,4 @@
-Technical Overview
+Usage Overview
 ***********
 
 Summary
@@ -23,19 +23,19 @@ The PMP statistics are output in `JSON format <https://www.json.org/json-en.html
 Basic Operation
 ---------------
 
-The summary statistics available with the PMP can be run independently or as a collective (the later to be available via the next PMP version).  Here is a glimpse of how the mean climate statistics are executed from the unix command prompt ($): ::
+The summary statistics available with the PMP can be run independently or as a collective (the later to be available via the next PMP version).  Here is a glimpse of how the mean climate statistics are executed from the unix command prompt: ::
 
-$ mean_climate_driver.py -p e3sm_parameterfile.py 
+    $ mean_climate_driver.py -p e3sm_parameterfile.py 
 
-Because there are often multiple parameters to set before executing a PMP code, routine operation often involves setting these options in an "input parameter" python file such as the filename immediately following the "-p" flag above.  The PMP input parameter files are similiar to a "namelist" text file used in other climate analysis packages but having the input parameters set in a python file enables us to leverage the power of python. For example, the contents of an input parameter file might look something like this ($): ::
+Because there are often multiple parameters to set before executing a PMP code, routine operation often involves setting these options in an "input parameter" python file such as the filename immediately following the "-p" flag above.  The PMP input parameter files are similiar to a "namelist" text file used in other climate analysis packages but having the input parameters set in a python file enables us to leverage the power of python. For example, the contents of an input parameter file might look something like this: ::
 
-$ more input_parameters.py
-$ test_data_set = ['ACCESS-1-0','CESM2']
-$ period = '1981-2005'
+    $ more input_parameters.py
+    $ test_data_set = ['ACCESS-1-0','CESM2']
+    $ period = '1981-2005'
 
-which includes both a string variable (period) and a python list (test_data_set). Other python objects can be included in input parameter files, notably python dictionaries.  Additional functionality is shown in another example command ($): ::
+which includes both a string variable (period) and a python list (test_data_set). Other python objects can be included in input parameter files, notably python dictionaries.  Additional functionality is shown in another example command: ::
 
-$ mean_climate_driver.py -p e3sm_parameterfile.py --variable pr 
+   $ mean_climate_driver.py -p e3sm_parameterfile.py --variable pr 
 
 Here, the "---variable" option is used to specify "pr" (precipitation) with other options included in the file after the "-p" flag.  
 

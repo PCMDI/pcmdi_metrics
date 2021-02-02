@@ -1,4 +1,4 @@
-.. _using-the-package:
+.. _metrics-overview:
 
 *****************
 Documentation and Demos
