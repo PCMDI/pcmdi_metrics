@@ -7,6 +7,8 @@
 PCMDI Metrics Package (PMP)
 ***************************
 
+*The content of this site is currently being expanded to include examples for all of the PMP summary statistic functionality*
+
 The PMP is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  Currently, the comparisons emphasize metrics of large- to global-scale annual cycle and both tropcial and extra-tropical modes of variability. Ongoing work in v1.x development branches include established statistics for ENSO, MJO, regional monsoons, and high frequency characteristics of simulated precipitation. 
 
 PCMDI uses the PMP to produce `quick-look simulation summaries across generations of CMIP <https://cmec.llnl.gov/results/physical.html>`_
