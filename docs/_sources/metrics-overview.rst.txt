@@ -14,6 +14,7 @@ We provide documentation along with demos to assist users of the PMP.  Most demo
    :maxdepth: 1
 
    mean-climate
+   subdaily-precipitation
    extrop-mov
    clivar-enso-metrics
 

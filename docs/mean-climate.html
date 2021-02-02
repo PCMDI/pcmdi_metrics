@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Extra-tropical modes of variability" href="extrop-mov.html" />
+    <link rel="next" title="Sub-daily precipitation" href="subdaily-precipitation.html" />
     <link rel="prev" title="Documentation and Demos" href="metrics-overview.html" /> 
 </head>
 
@@ -93,6 +93,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="subdaily-precipitation.html">Sub-daily precipitation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="extrop-mov.html">Extra-tropical modes of variability</a></li>
 <li class="toctree-l3"><a class="reference internal" href="clivar-enso-metrics.html">CLIVAR 2020 ENSO Metrics</a></li>
 </ul>
@@ -196,16 +197,27 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mean_climate_driver</span><span class="o">.</span><span class="n">py</span>  <span class="o">-</span><span class="n">p</span> <span class="n">basic_param</span><span class="o">.</span><span class="n">py</span> <span class="o">--</span><span class="nb">vars</span> <span class="n">rlut</span> <span class="n">pr</span>
 </pre></div>
 </div>
-<p>where the list of variables to run the analysis on includes the variables ‘rlut’ (outgoing TOA longwave radiation) and ‘pr’ (precipitation).</p>
-<p>Because there are a minimum of 5(?) parameters to be set with the mean climate statistics.</p>
-<p>SOME DISCUSSION HERE ON THE MINIMUM SET OF INPUT PARAMETERS.</p>
-<p>In addition to the minimum set of parameters noted above, the following summarizes additional options than can be controlled for the mean climate:</p>
+<p>where the list of variables to run the analysis on includes the variables ‘rlut’ (outgoing TOA longwave radiation) and ‘pr’ (precipitation).  The following parameters need to be set by the user either in a parameter file or on the command line:</p>
 <ul class="simple">
-<li><p>Select regridding option</p></li>
-<li><p>Define a different set of regions</p></li>
+<li><p>test_data_set</p></li>
+<li><p>vars</p></li>
+<li><p>reference_data_set</p></li>
+<li><p>target_grid</p></li>
+<li><p>regrid_tool</p></li>
+<li><p>filename_template</p></li>
+<li><p>test_data_path</p></li>
+<li><p>reference_data_path</p></li>
+<li><p>metric_output_path</p></li>
+</ul>
+<p>The output of the mean climate summary statistics are saved in a JSON file.  <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/master/sample_setups/jsons/mean_climate/CMIP5/historical/v20190724/tas/ACCESS1-0.tas.CMIP5.historical.regrid2.2p5x2p5.v20190724.json">An example result</a> demonstrates that multiple statistics are computed for different conditions including regions and seasons. The resulting JSON files include the data, software and hardware information on how the summary statistics.</p>
+<p>In addition to the minimum set of parameters noted above, the following additional options than can be controlled for the mean climate:</p>
+<ul class="simple">
+<li><p>Select regridding method option</p></li>
+<li><p>Define a different set of regions to compute the statistics.</p></li>
 <li><p>Provide or estimate a land-sea mask</p></li>
-<li><p>Define regional masking (e.g., land-only or ocean-only)</p></li>
-<li><p>Select to output (or not) interpolate climatologies including masking</p></li>
+<li><p>Define regional masking (e.g., global land-only, global ocean-only,tropical land)</p></li>
+<li><p>Select to output (or not) interpolated climatologies including masking</p></li>
+<li><p>Output results for each model into the same JSON file or into model-specific JSON files</p></li>
 </ul>
 </div>
 </div>
@@ -219,7 +231,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="extrop-mov.html" class="btn btn-neutral float-right" title="Extra-tropical modes of variability" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="subdaily-precipitation.html" class="btn btn-neutral float-right" title="Sub-daily precipitation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="metrics-overview.html" class="btn btn-neutral float-left" title="Documentation and Demos" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
