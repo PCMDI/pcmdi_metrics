@@ -31,7 +31,7 @@ GETTING STARTED
 ===============
 Installation requirements and instructions are available on the :ref:`install` page
 
-An overview for using the package and template scripts are detailed on the :ref:`metrics-overview` page
+An overview of the summary statistics available via the package are summarized with interactive Jupyter notebooks in the :ref:`metrics-overview` page
 
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
 
