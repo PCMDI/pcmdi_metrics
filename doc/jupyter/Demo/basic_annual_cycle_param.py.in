@@ -16,4 +16,4 @@ end = '2018-12'
 infile = '$INPUT_DIR$/PCMDIobs2/atmos/mon/rlut/CERES-EBAF-4-1/gn/v20200707/rlut_mon_CERES-EBAF-4-1_BE_gn_v20200707_200301-201812.nc'
 
 # DIRECTORY WHERE TO PUT RESULTS
-outfile = '$OUTPUT_DIR/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.nc'
+outfile = '$OUTPUT_DIR$/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.nc'
