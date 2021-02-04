@@ -14,7 +14,7 @@ The PMP is used to provide "quick-look" objective comparisons of Earth System Mo
 PCMDI uses the PMP to produce `quick-look simulation summaries across generations of CMIP <https://cmec.llnl.gov/results/physical.html>`_
 
 
-The PMP expects model data to be `CF-compliant <http://cfconventions.org/>`_, otherwise, to successfully use the package may require some input data "conditioning". 
+The PMP expects model data to be `CF-compliant <http://cfconventions.org/>`_, otherwise, to successfully use the package may require some input data conditioning. 
 
 A suite of demo scripts and interactive Jupyter notebooks are provided with this documentation. 
 
