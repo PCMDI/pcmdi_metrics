@@ -7,13 +7,13 @@ Mean Climate
 Overview
 ========
 
-The mean climate summary statistics are some of the most routine analysis available from the PMP.  At the same time, because of the number of options available they do require some preparation in advance of the analysis, including:
+The mean climate summary statistics are some of the most routine analysis available from the PMP.  Because it is quasi-operationally applied to large numbers of simulations and under different conditions, the current mode of opertation is fairly general.  Before it can be applied some prepration is needed for the following:    
 
 * Setting-up observational climatologies
 
-* Preparation of model climatologies 
+* Construction of model climatologies 
 
-* Construction of an input parameter file  
+* Construction of an input parameter file to run the desired operations  
 
 
 Each of these steps are included in the `mean climate notebook <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_1_mean_climate.ipynb>`_ along with a series of examples that demonstrate the options. These steps are also summarized below.
@@ -22,9 +22,11 @@ Each of these steps are included in the `mean climate notebook <https://github.c
 Observational climatologies
 ###########################
 
-A database of `observational climatologies is available to users of the PMP. To obtain this, please contact the PMP user group (pcmdi-metrics@llnl.gov) and you will be promptly provided with the database.  A subset of this database is available via the demo data made available for the PMP tutorials via a `jupyter notebook demo <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_0_download_data.ipynb>`_.  Once you have downloaded this demo data you can interactively run the mean climate and other demos.  
+A subset of the observational climatologies used for the PMP's mean climate metrics is available via a `jupyter notebook demo <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_0_download_data.ipynb>`_.  Once you have run this demo or downloaded this demo data you can interactively run the mean climate and other demos.  The complete database of `observational climatologies is available to users of the PMP. To obtain this, please contact the PMP user group (pcmdi-metrics@llnl.gov) and you will be promptly provided with the database.
 
-The PMP's mean climate summary statistics can be applied many fields and in most cases there is more than one reference data set available.  To accomodate this, as noted above the observational climatologies used by the PMP are managed via `a simple catalogue in the form of a JSON file <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/pcmdiobs2_clims_byVar_catalogue_v20201210.json>`_.  For many of the variables there are 'default' and 'alternate1' datasets and for some there is also an 'alternate2'.  Note: To simplify the use of the different options in the mean climate, the mean_climate_driver.py (see below) expects to be pointed to such a JSON file that summarizes the database. Currently, if a user wants to add additional observational data this can be done by including it in the JSON cataloge. Note: this most be done carefully to ensure the file retains compliant JSON structure.       
+The PMP's mean climate summary statistics can be applied to many fields and in most cases there is more than one reference data set available.  To accomodate this, the observational climatologies used by the PMP are managed via `a simple catalogue in the form of a JSON file <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/pcmdiobs2_clims_byVar_catalogue_v20201210.json>`_.  For many of the variables there are 'default' and 'alternate1' datasets and for some there is also an 'alternate2'.  To simplify the use of the different options in the mean climate, the mean_climate_driver.py (see below) expects to be pointed to observational catalogue.  Currently, if a user wants to add additional observational data this can be done by including it in the JSON cataloge. However, this most be done carefully to ensure the file retains JSON compliant structure.       
+
+The latest observational climatology catalogue is included as part of the PMP so it does not need to be explicitly idenified when using the mean_climate_driver.py (unless the catalogue has been modified to include new observations).  However, as described below, the user must provide the path to the observational database is located. As indicated in the catalogue, the actual database does incorporate a directory structure and defined filenames - these should not be modified.  
 
 
  
@@ -50,12 +52,12 @@ where the list of variables (vars) to run the analysis on includes 'rlut' (outgo
 
 * **vars**: a python list of variables to apply the summary statistics, e.g., ['pr', 'rlut', 'tas']
 * **test_data_set**: a python list of runs or models, e.g., ['ACCESS-1-0', 'CESM1']
-* **filename_template**: template that is applicable for the runs in test_data_set, e.g., "CMIP5.historical.%(model_version).r1i1p1.mon.%(variable).198101-200512.AC.v20190225.nc" where "model_version" and "variable" will include the lists in test_data_set and vars.
+* **filename_template**: template that is applicable for the runs in test_data_set, e.g., "CMIP5.historical.%(model_version).r1i1p1.mon.%(variable).198101-200512.AC.v20190225.nc" where "model_version" and "variable" will be analyzed for each of the entries in test_data_set and vars.
 * **test_data_path**: the path/template where the test_data resides, e.g.: 
 * **reference_data_set**: a python list that specifies 'default', 'alternate1', 'alternate2' or 'all', e.g., ['default']
-* **reference_data_path**: the root path to the PMP climatology database
-* **target_grid**:
-* **regrid_tool**: options include 
+* **reference_data_path**: the root path to the observational climatology database, e.g., '~/demo_data/PCMDIobs2_clims/'
+* **target_grid**: '2.5x2.5' or an actual cdms2 grid object
+* **regrid_tool**: options include 'esmf' and 'regrid2'  
 * **metric_output_path**:
 
 The output of the mean climate summary statistics are saved in a JSON file.  `An example result <https://github.com/PCMDI/pcmdi_metrics/blob/master/sample_setups/jsons/mean_climate/CMIP5/historical/v20190724/tas/ACCESS1-0.tas.CMIP5.historical.regrid2.2p5x2p5.v20190724.json>`_ demonstrates that multiple statistics are computed for different conditions including regions and seasons. The resulting JSON files include the data, software and hardware information on how the summary statistics.  
