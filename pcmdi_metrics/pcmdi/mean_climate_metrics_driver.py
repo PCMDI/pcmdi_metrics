@@ -408,4 +408,11 @@ def create_mean_climate_parser():
         help='Provide a short description to help identify this run of the PMP mean climate.',
         required=False)
 
+    parser.add_argument(
+        '--cmec',
+        dest='cmec',
+        help='True to save metrics in CMEC format',
+        default=False,
+        required=False)
+
     return parser

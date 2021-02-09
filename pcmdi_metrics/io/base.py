@@ -226,6 +226,104 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             'Results saved to a %s file: %s' %
             (type, file_name))
 
+    def write_cmec(self, *args, **kwargs):
+        """Converts json file to cmec compliant format."""
+
+        file_name = self()
+        # load json file
+        try:
+            f = open(file_name, "r")
+            data = json.load(f)
+            f.close()
+        except Exception:
+            logging.getLogger("pcmdi_metrics").error(
+                'Could not load metrics file: %s' % file_name)
+
+        # create dimensions
+        cmec_data = {"DIMENSIONS": {}, "SCHEMA": {}}
+        cmec_data["DIMENSIONS"] = {"dimensions": {}, "json_structure": []}
+        cmec_data["SCHEMA"] = {"name": "CMEC", "package": "PMP", "version": "v1"}
+
+        # copy other fields except results
+        for key in data:
+            if key not in ["json_structure", "RESULTS"]:
+                cmec_data[key] = data[key]
+
+        # move json structure
+        cmec_data["DIMENSIONS"]["json_structure"] = data["json_structure"]
+
+        # recursively process json
+        def recursive_replace(json_dict, extra_fields):
+            new_dict = json_dict.copy()
+            # replace blank keys with unspecified
+            if "" in new_dict:
+                new_dict["Unspecified"] = new_dict.pop("")
+
+            for key in new_dict:
+                if key != "attributes":
+                    if isinstance(new_dict[key], dict):
+                        # move extra fields into attributes key
+                        atts = {}
+                        for field in extra_fields:
+                            if field in new_dict[key]:
+                                atts[field] = new_dict[key].pop(field, None)
+                        if atts:
+                            new_dict[key]["attributes"] = atts
+                        # process sub-dictionary
+                        tmp_dict = recursive_replace(new_dict[key], extra_fields)
+                        new_dict[key] = tmp_dict
+                    # convert string metrics to float
+                    if (isinstance(new_dict[key], str)):
+                        new_dict[key] = float(new_dict[key])
+            return new_dict
+
+        extra_fields = [
+                        "source",
+                        "metadata",
+                        "units",
+                        "SimulationDescription",
+                        "InputClimatologyFileName",
+                        "InputClimatologyMD5",
+                        "InputRegionFileName",
+                        "InputRegionMD5",
+                        "best_matching_model_eofs__cor",
+                        "best_matching_model_eofs__rms",
+                        "best_matching_model_eofs__tcor_cbf_vs_eof_pc",
+                        "period",
+                        "target_model_eofs"]
+        # clean up formatting in RESULTS section
+        cmec_data["RESULTS"] = recursive_replace(data["RESULTS"], extra_fields)
+
+        # Populate dimensions fields
+        def get_dimensions(json_dict, json_structure):
+            keylist = {}
+            level = 0
+            while level < len(json_structure):
+                if isinstance(json_dict, dict):
+                    first_key = list(json_dict.items())[0][0]
+                    if first_key == "attributes":
+                        first_key = list(json_dict.items())[1][0]
+                    dim = json_structure[level]
+                    if dim == "statistic":
+                        keys = [key for key in json_dict]
+                        keylist[dim] = {"indices": keys}
+                    else:
+                        keys = {key: {} for key in json_dict if key != "attributes"}
+                        keylist[dim] = keys
+                    json_dict = json_dict[first_key]
+                level += 1
+            return keylist
+        dimensions = get_dimensions(cmec_data["RESULTS"].copy(), data["json_structure"])
+        cmec_data["DIMENSIONS"]["dimensions"] = dimensions
+
+        cmec_file_name = file_name.replace(".json", "_cmec.json")
+        f_cmec = open(cmec_file_name, "w")
+        json.dump(cmec_data, f_cmec, cls=CDMSDomainsEncoder, *args, **kwargs)
+        f_cmec.close()
+        logging.getLogger("pcmdi_metrics").info(
+            'CMEC results saved to a %s file: %s' %
+            ('json', cmec_file_name))
+
     def get(self, var, var_in_file=None,
             region={}, *args, **kwargs):
         self.variable = var
