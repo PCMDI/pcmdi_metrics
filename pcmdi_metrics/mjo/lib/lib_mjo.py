@@ -311,4 +311,4 @@ def mjo_metrics_to_json(outdir, json_filename, result_dict, model=None, run=None
             "model", "realization", "metric"],
         sort_keys=True, indent=4, separators=(',', ': '))
     if cmec_flag:
-            JSON.write_cmec(indent=4, separators=(',', ': '))
+        JSON.write_cmec(indent=4, separators=(',', ': '))
