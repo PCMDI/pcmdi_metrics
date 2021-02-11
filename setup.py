@@ -63,6 +63,7 @@ scripts = ['pcmdi_metrics/pcmdi/scripts/mean_climate_driver.py',
            'pcmdi_metrics/misc/scripts/get_pmp_data.py',
            'pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py',
            'pcmdi_metrics/monsoon_sperber/scripts/driver_monsoon_sperber.py',
+           'pcmdi_metrics/mjo/scripts/mjo_metrics_driver.py'
            ]
 # scripts += glob.glob("pcmdi_metrics/diurnal/scripts/*.py")
 
