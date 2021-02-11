@@ -13,10 +13,9 @@ The PMP is used to provide "quick-look" objective comparisons of Earth System Mo
 
 PCMDI uses the PMP to produce `quick-look simulation summaries across generations of CMIP <https://cmec.llnl.gov/results/physical.html>`_
 
-
 The PMP expects model data to be `CF-compliant <http://cfconventions.org/>`_, otherwise, to successfully use the package may require some input data conditioning. 
 
-A suite of demo scripts and interactive Jupyter notebooks are provided with this documentation. 
+`A suite of demo scripts and interactive Jupyter notebooks are provided with this documentation <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/README.md>`_ 
 
 .. toctree::
    :maxdepth: 1
@@ -37,13 +36,3 @@ An overview of the summary statistics available via the package are summarized w
 
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
 
-PMP versions 
-============
-
-v1.2 - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal cycle and intermittency of precipitation, Sperber and Wang Monsoon metrics
-
-v1.1.2 - Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added.   Extensive provenance information incorporated into json files.
-
-v1.1 - First public release, emphasizing climatological statistics, with development branches for ENSO and regional monsoon precipitation indices
-
-v1.0 - Prototype version of the PMP
