@@ -25,9 +25,9 @@ Users of the current release (v1.2) will need to contact the PMP developers (pcm
 GETTING STARTED
 ----------------
 
-Installation requirements and instructions are available on the [Install](https://github.com/PCMDI/pcmdi_metrics/wiki/Install-using-Anaconda) page
+Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
 
-An overview for using the package and template scripts are detailed on the [Using-the-package](https://github.com/PCMDI/pcmdi_metrics/wiki/Using-the-package) page
+An overview for using the package and template scripts are detailed on the [Using-the-package](http://pcmdi.github.io/pcmdi_metrics/) page
 
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
 
