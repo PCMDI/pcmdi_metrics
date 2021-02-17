@@ -157,8 +157,8 @@ def monsoon_wang_runner(args):
         d_orig = f(var)
 
         annrange_mod, mpi_mod = mpd(d_orig)
-        annrange_mod = annrange_mod.regrid(obsgrid)
-        mpi_mod = mpi_mod.regrid(obsgrid)
+        annrange_mod = annrange_mod.regrid(obsgrid, regridTool=‘regrid2’, regridMethod=‘conserve’, mkCyclic=True)
+        mpi_mod = mpi_mod.regrid(obsgrid, regridTool=‘regrid2’, regridMethod=‘conserve’, mkCyclic=True)
 
         for dom in doms:
 
