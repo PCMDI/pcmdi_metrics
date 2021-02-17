@@ -34,7 +34,7 @@ Some installation support for CMIP participating modeling groups is available: p
 PMP versions
 ------------
 
-v1.2 - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal cycle and intermittency of precipitation, Sperber and Wang Monsoon metrics
+v1.2 - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal cycle and intermittency of precipitation, sample monsoon metrics
 
 v1.1.2 - Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added.   Extensive provenance information incorporated into json files.
 
