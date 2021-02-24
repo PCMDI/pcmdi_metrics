@@ -1,0 +1,26 @@
+import os
+
+#
+#  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY:
+#
+#
+
+# ROOT PATH FOR MODELS CLIMATOLOGIES
+modnames = ['ACCESS1-0','CanCM4']
+modpath = '$INPUT_DIR$/CMIP5_demo_clims/cmip5.historical.%(model)-0.r1i1p1.mon.pr.198101-200512.AC.v20200426.nc'
+varModel = 'pr'
+ModUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
+units = 'mm/d'
+msyear = 1985
+meyear = 2004
+
+# ROOT PATH FOR OBSERVATIONS
+reference_data_name = 'GPCP-2-3'
+reference_data_path = '$INPUT_DIR$/PCMDIobs2_clims/atmos/pr/GPCP-2-3/pr_mon_GPCP-2-3_BE_gn_197901-201907.v20200421.AC.nc'
+varOBS = 'pr'
+ObsUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
+osyear = 1997
+oeyear = 2010
+
+# DIRECTORY WHERE TO PUT RESULTS
+results_dir = '$OUTPUT_DIR$/mjo'
