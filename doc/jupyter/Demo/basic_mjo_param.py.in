@@ -5,6 +5,8 @@ import os
 #
 #
 
+case_id = 'Ex1'
+
 # ROOT PATH FOR MODELS CLIMATOLOGIES
 modnames = ['ACCESS1-0','CanCM4']
 modpath = '$INPUT_DIR$/CMIP5_demo_clims/cmip5.historical.%(model)-0.r1i1p1.mon.pr.198101-200512.AC.v20200426.nc'
@@ -16,11 +18,16 @@ meyear = 2004
 
 # ROOT PATH FOR OBSERVATIONS
 reference_data_name = 'GPCP-2-3'
-reference_data_path = '$INPUT_DIR$/PCMDIobs2_clims/atmos/pr/GPCP-2-3/pr_mon_GPCP-2-3_BE_gn_197901-201907.v20200421.AC.nc'
+reference_data_path = '$INPUT_DIR$/PCMDIobs2/atmos/day/pr/GPCP-IP/gn/v20200719/pr_day_GPCP-IP_BE_gn_v20200719_19980101-19981231.nc'
 varOBS = 'pr'
 ObsUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
-osyear = 1997
-oeyear = 2010
+osyear = 1998
+oeyear = 1998
 
 # DIRECTORY WHERE TO PUT RESULTS
-results_dir = '$OUTPUT_DIR$/mjo'
+results_dir = '$OUTPUT_DIR$/mjo/%(case_id)'
+
+# MISCELLANEOUS
+nc_out = False
+plot = False  # Create map graphics
+update_json = False
