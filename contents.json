@@ -1,0 +1,7 @@
+{
+    "module": {
+        "name": "PMP",
+        "long_name": "PCMDI Metrics Package"
+    },
+    "contents": ["pmp_mov.json"]
+}
