@@ -290,7 +290,9 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                         "best_matching_model_eofs__rms",
                         "best_matching_model_eofs__tcor_cbf_vs_eof_pc",
                         "period",
-                        "target_model_eofs"]
+                        "target_model_eofs",
+                        "analysis_time_window_end_year",
+                        "analysis_time_window_start_year"]
         # clean up formatting in RESULTS section
         cmec_data["RESULTS"] = recursive_replace(data["RESULTS"], extra_fields)
 
@@ -301,6 +303,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             while level < len(json_structure):
                 if isinstance(json_dict, dict):
                     first_key = list(json_dict.items())[0][0]
+                    # skip over attributes key when building dimensions
                     if first_key == "attributes":
                         first_key = list(json_dict.items())[1][0]
                     dim = json_structure[level]

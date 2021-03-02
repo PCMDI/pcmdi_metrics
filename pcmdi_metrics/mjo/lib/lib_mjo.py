@@ -284,7 +284,7 @@ def unit_conversion(data, UnitsAdjust):
     return data
 
 
-def mjo_metrics_to_json(outdir, json_filename, result_dict, model=None, run=None):
+def mjo_metrics_to_json(outdir, json_filename, result_dict, model=None, run=None, cmec_flag=False):
     # Open JSON
     JSON = pcmdi_metrics.io.base.Base(
         outdir(output_type='metrics_results'),
@@ -310,3 +310,5 @@ def mjo_metrics_to_json(outdir, json_filename, result_dict, model=None, run=None
         json_structure=[
             "model", "realization", "metric"],
         sort_keys=True, indent=4, separators=(',', ': '))
+    if cmec_flag:
+        JSON.write_cmec(indent=4, separators=(',', ': '))
