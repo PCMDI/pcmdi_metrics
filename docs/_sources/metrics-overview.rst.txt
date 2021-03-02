@@ -17,5 +17,7 @@ We provide documentation along with demos to assist users of the PMP.  Most demo
    subdaily-precipitation
    extrop-mov
    clivar-enso-metrics
+   mjo
+   monsoon
 
 
