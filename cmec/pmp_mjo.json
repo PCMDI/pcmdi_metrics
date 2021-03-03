@@ -1,7 +1,7 @@
 {
     "settings": {
         "name": "mjo",
-        "driver": "pmp_mjo_driver.sh",
+        "driver": "cmec/pmp_mjo_driver.sh",
         "async": null,
         "long_name": "PMP Madden-Julian Oscillation Metrics",
         "description": "Madden-Julian Oscillation metrics for earth system models",

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd $CMEC_CODE_DIR
+cd $CMEC_CODE_DIR/cmec
 
 tmp_param=$CMEC_WK_DIR/mjo_param.py
 

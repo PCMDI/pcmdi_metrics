@@ -69,8 +69,10 @@ for item in settings:
 
     if item in ["test_data_path", "modpath"]:
         val = os.path.join(model_dir, val)
-    elif item in ["reference_data_path"]:
+    elif item in ["reference_data_path","custom_observations"]:
         val = os.path.join(obs_dir, val)
+    elif item in ["metrics_output_path"]:
+        val = os.path.join(wk_dir, val)
 
     # write parameters to file
     if isinstance(val,str):
