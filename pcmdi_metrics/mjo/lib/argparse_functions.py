@@ -116,7 +116,7 @@ def AddParserArgument(P):
                    default=1,
                    help="Start year for model data set")
     # Defaults
-    P.set_defaults(includeOBS=True, parallel=False)
+    P.set_defaults(includeOBS=True, parallel=False, cmec=False)
     return P
 
 
