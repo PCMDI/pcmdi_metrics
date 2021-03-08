@@ -40,7 +40,7 @@ results_dir = os.path.join(
     "%(case_id)")
 
 # OUTPUT OPTIONS    
-nc_out = False  # Write output in NetCDF
-plot = False  # Create map graphics
+nc_out = True  # Write output in NetCDF
+plot = True  # Create map graphics
 update_json = True  # False
 
