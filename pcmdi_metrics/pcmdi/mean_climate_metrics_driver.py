@@ -411,7 +411,16 @@ def create_mean_climate_parser():
     parser.add_argument(
         '--cmec',
         dest='cmec',
-        help='True to save metrics in CMEC format',
+        action='store_true',
+        help='Save metrics in CMEC format',
+        default=False,
+        required=False)
+
+    parser.add_argument(
+        '--no_cmec',
+        dest='cmec',
+        action='store_false',
+        help='Option to not save metrics in CMEC format',
         default=False,
         required=False)
 
