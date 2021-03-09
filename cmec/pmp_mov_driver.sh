@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd $CMEC_CODE_DIR/cmec
+cd $CMEC_CODE_DIR
 
 tmp_param=$CMEC_WK_DIR/variability_modes_param.py
 

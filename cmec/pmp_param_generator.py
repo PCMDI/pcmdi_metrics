@@ -46,6 +46,15 @@ param_file.write("import glob\n")
 param_file.write("import os\n")
 param_file.write("\n")
 
+# Overwrite some specific metrics settings
+if pmp_config == "mean_climate":
+    settings["test_data_path"] = model_dir
+    settings["reference_data_path"] = obs_dir
+    settings["metrics_output_path"] = wk_dir
+
+# Universal setting for all metrics
+settings["cmec"] = True
+
 for item in settings:
     val = settings[item]
     # JSON doesn't support several data types, including tuples,
@@ -67,12 +76,10 @@ for item in settings:
         elif ((val == 'false') or (val == 'False')):
             val = False
 
-    if item in ["test_data_path", "modpath"]:
+    if item in ["modpath"]:
         val = os.path.join(model_dir, val)
-    elif item in ["reference_data_path","custom_observations"]:
+    elif item in ["custom_observations"]:
         val = os.path.join(obs_dir, val)
-    elif item in ["metrics_output_path"]:
-        val = os.path.join(wk_dir, val)
 
     # write parameters to file
     if isinstance(val,str):
