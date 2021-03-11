@@ -14,6 +14,17 @@ import glob
 import json
 import os
 import sys
+from pcmdi_metrics.io.base import Base
+
+def generate_climatology(fntemp, var, period, ext, case_id, realization):
+    M = Base(fntemp)
+    M.variable = var
+    M.period = ""
+    M.ext = "nc"
+    M.case_id = ""
+    M.realization = ""
+    print(M)
+
 
 config_json = sys.argv[1]
 out_file_name = sys.argv[2]
@@ -57,6 +68,8 @@ settings["cmec"] = True
 
 # Generate climatologies if selected
 if settings["generate_climatology"]:
+    var = settings["vars"]
+
     generate_climatology(os.path.join(model_dir,filename_template))
 
 for item in settings:
