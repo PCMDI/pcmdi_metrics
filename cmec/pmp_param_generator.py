@@ -55,6 +55,10 @@ if pmp_config == "mean_climate":
 # Universal setting for all metrics
 settings["cmec"] = True
 
+# Generate climatologies if selected
+if settings["generate_climatology"]:
+    generate_climatology(os.path.join(model_dir,filename_template))
+
 for item in settings:
     val = settings[item]
     # JSON doesn't support several data types, including tuples,
@@ -67,7 +71,7 @@ for item in settings:
         # get dictionary
         elif (val[0] == '{') and (val[-1] == '}'):
             val = eval(val)
-        # get functions
+        # get function calls, assumed to end with )
         elif (val[-1] == ')'):
             val = eval(val)
         # also possible someone wrote a bool as a string:
