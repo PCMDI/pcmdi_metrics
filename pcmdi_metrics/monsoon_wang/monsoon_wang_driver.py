@@ -47,7 +47,17 @@ def create_monsoon_wang_parser():
                    default=2.5 / 86400.,
                    type=float,
                    help="Threshold for a hit when computing skill score")
-
+    P.add_argument("--cmec",
+                    dest="cmec",
+                    default=False,
+                    action="store_true",
+                    help="Use to save CMEC format metrics JSON")
+    P.add_argument("--no_cmec",
+                    dest="cmec",
+                    default=False,
+                    action="store_false",
+                    help="Do not save CMEC format metrics JSON")
+    P.set_defaults(cmec=False)
     return P
 
 
@@ -70,6 +80,9 @@ def monsoon_wang_runner(args):
     var = args.modvar
     thr = args.threshold
     sig_digits = '.3f'
+
+    # Get flag for CMEC output
+    cmec = args.cmec
 
     #########################################
     # PMP monthly default PR obs
@@ -226,3 +239,6 @@ def monsoon_wang_runner(args):
         separators=(
             ',',
             ': '))
+    if cmec:
+        print("Writing cmec file")
+        OUT.write_cmec(indent=4, separators=(',', ': '))
