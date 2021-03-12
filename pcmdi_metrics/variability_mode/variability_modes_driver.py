@@ -738,4 +738,4 @@ if not parallel and (len(models) > 1):
     variability_metrics_to_json(outdir, json_filename_all, result_dict, cmec_flag=cmec)
 
 if not debug:
-    sys.exit('done')
+    sys.exit(0)
