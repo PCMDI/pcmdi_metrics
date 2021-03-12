@@ -155,8 +155,14 @@ def AddParserArgument(P):
                    help="Option for update existing JSON file: True (i.e., update) (default) / False (i.e., overwrite)")
     P.add_argument("--cmec",
                    dest='cmec',
+                   action='store_true',
                    default=False,
-                   help='Option to save metrics in CMEC format: True / False (default)')
+                   help='Save metrics in CMEC format')
+    P.add_argument("--no_cmec",
+                   dest='cmec',
+                   action='store_false',
+                   default=False,
+                   help='Option to not save metrics in CMEC format')
     P.set_defaults(nc_out_obs=True, plot_obs=True)
     return P
 
