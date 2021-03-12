@@ -44,9 +44,9 @@ def parallel_submitter(cmd_list, log_dir='logs/', logfilename_list=None, num_wor
     """
 
     os.makedirs(log_dir, exist_ok=True)
-    
+
     print("Start : %s" % time.ctime())
-    
+
     # submit tasks and wait for subset of tasks to complete
     procs_list = []
     for p, cmd in enumerate(cmd_list):
@@ -65,7 +65,7 @@ def parallel_submitter(cmd_list, log_dir='logs/', logfilename_list=None, num_wor
                 proc.wait()
             print("Tasks end : %s" % time.ctime())
             procs_list = []
-    
+
     # tasks done
     print("End : %s" % time.ctime())
-    print("Parallel process completed") 
+    print("Parallel process completed")
