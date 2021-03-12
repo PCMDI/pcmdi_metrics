@@ -9,29 +9,29 @@ def parallel_submitter(cmd_list, log_dir='logs/', logfilename_list=None, num_wor
     """
     Run subprocesses in parallel
 
-    Import (after installing PMP): 
-    
-    >> from pcmdi_metrics.misc.scripts import parallel_submitter 
+    Import (after installing PMP):
+
+    >> from pcmdi_metrics.misc.scripts import parallel_submitter
 
     Inputs:
-    
+
     - cmd_list: python list of command lines, e.g.,
      ['python abc.py -p ../../test_param.py -m model1',
       'python abc.py -p ../../test_param.py -m model2',
        :
       'python abc.py -p ../../test_param.py -m model100']
 
-    - log_dir: string for directory path for log files, e.g., 
+    - log_dir: string for directory path for log files, e.g.,
       '/a/b'
       default = 'logs/'
-     
-    - logfilename_list: python list of pull path of log files, e.g., 
+
+    - logfilename_list: python list of pull path of log files, e.g.,
      ['log_model1',
       'log_model2',
        :
       'log_model100']
      In case it was not given, automatically generated as 'log_process_N' (N: process index number)
-     
+
     - num_workers: integer number that limits how many process to be submitted at one time
        default = 3
 
@@ -40,7 +40,6 @@ def parallel_submitter(cmd_list, log_dir='logs/', logfilename_list=None, num_wor
     - processes running in parallel
     - log files in log_dir
     - Each process generates two log files: stdout and stderr
-    
     """
 
     os.makedirs(log_dir, exist_ok=True)
