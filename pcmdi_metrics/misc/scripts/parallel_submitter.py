@@ -9,6 +9,10 @@ def parallel_submitter(cmd_list, log_dir='logs/', logfilename_list=None, num_wor
     """
     Run subprocesses in parallel
 
+    Import (after installing PMP): 
+    
+    >> from pcmdi_metrics.misc.scripts import parallel_submitter 
+
     Inputs:
     
     - cmd_list: python list of command lines, e.g.,
