@@ -53,10 +53,10 @@ import time
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
 from shutil import copyfile
-from pcmdi_metrics.monsoon_sperber import AddParserArgument, YearCheck
-from pcmdi_metrics.monsoon_sperber import model_land_only
-from pcmdi_metrics.monsoon_sperber import divide_chunks_advanced, interp1d
-from pcmdi_metrics.monsoon_sperber import sperber_metrics
+from pcmdi_metrics.monsoon_sperber.lib import AddParserArgument, YearCheck
+from pcmdi_metrics.monsoon_sperber.lib import model_land_only
+from pcmdi_metrics.monsoon_sperber.lib import divide_chunks_advanced, interp1d
+from pcmdi_metrics.monsoon_sperber.lib import sperber_metrics
 
 
 def tree():
