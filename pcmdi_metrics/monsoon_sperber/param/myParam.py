@@ -10,10 +10,15 @@ frequency = 'da'
 realm = 'atm'
 
 # =================================================
+# Miscellaneous
+# -------------------------------------------------
+update_json = True
+debug = False
+
+# =================================================
 # Observation
 # -------------------------------------------------
 reference_data_name = 'GPCP-1-3'
-# reference_data_path = '/p/user_pub/pmp/pmp_results/tree_v0.3/pmp_v1.1.2/data/PMPObs/PMPObs_v1.3/atmos/day/pr/GPCP-1-3/gn/v20180816/pr_day_GPCP-1-3_BE_gn_19961002-20170101.nc'  # noqa
 reference_data_path = '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/day/pr/GPCP-1-3/gn/v20190225/pr_day_GPCP-1-3_BE_gn_19961002-20170101.nc'  # noqa
 reference_data_lf_path = '/work/lee1043/DATA/LandSeaMask_1x1_NCL/NCL_LandSeaMask_rewritten.nc'  # noqa
 
@@ -48,19 +53,17 @@ meyear = 1999
 # =================================================
 # Output
 # -------------------------------------------------
-# case_id = "{:v%Y%m%d-%H%M}".format(datetime.datetime.now())
+pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-# results_dir = '/work/lee1043/imsi/result_test/%(output_type)/monsoon/monsoon_sperber/'+case_id
+
+if debug:
+    pmprdir = '/work/lee1043/imsi/result_test'
+    case_id = "{:v%Y%m%d-%H%M}".format(datetime.datetime.now())
+
 results_dir = os.path.join(
-    '/work/lee1043/imsi/result_test',
-    #'/p/user_pub/pmp/pmp_results/pmp_v1.1.2',
+    pmprdir,
     '%(output_type)', 'monsoon', 'monsoon_sperber',
     mip, exp, case_id)
+
 nc_out = True  # Write output in NetCDF
 plot = True  # Create map graphics
-
-# =================================================
-# Miscellaneous
-# -------------------------------------------------
-update_json = True
-debug = False
