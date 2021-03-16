@@ -55,19 +55,7 @@ if pmp_config == "mean_climate":
 
 # Universal setting for all metrics
 settings["cmec"] = True
-
-# Generate climatologies if selected
-#if False:
-#    #settings["generate_climatology"]:
-#    #var = settings["vars"]
-#    filename_template = settings["filename_template"]
-#    S = genutil.StringConstructor(filename_template)
-#    for v in settings['vars']:
-#        for m in settings['test_data_set']:
-#            S.variable = v
-#            S.model = m
-#            print(S())
-#    sys.exit(0)
+settings["results_dir"] = wk_dir
 
 for item in settings:
     val = settings[item]
