@@ -53,10 +53,10 @@ import time
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
 from shutil import copyfile
-from pcmdi_metrics.monsoon_sperber import AddParserArgument, YearCheck
-from pcmdi_metrics.monsoon_sperber import model_land_only
-from pcmdi_metrics.monsoon_sperber import divide_chunks_advanced, interp1d
-from pcmdi_metrics.monsoon_sperber import sperber_metrics
+from pcmdi_metrics.monsoon_sperber.lib import AddParserArgument, YearCheck
+from pcmdi_metrics.monsoon_sperber.lib import model_land_only
+from pcmdi_metrics.monsoon_sperber.lib import divide_chunks_advanced, interp1d
+from pcmdi_metrics.monsoon_sperber.lib import sperber_metrics
 
 
 def tree():
@@ -319,8 +319,8 @@ for model in models:
                     for i, region in enumerate(list_monsoon_regions):
                         ax[region] = plt.subplot(nrows, ncols, i+1)
                         ax[region].set_ylim(0, 1)
-                        #ax[region].set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1]) 
-                        #ax[region].set_xticks([0, 10, 20, 30, 40, 50, 60, 70]) 
+                        # ax[region].set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+                        # ax[region].set_xticks([0, 10, 20, 30, 40, 50, 60, 70])
                         ax[region].margins(x=0)
                         print('plot: region', region, 'nrows',
                               nrows, 'ncols', ncols, 'index', i+1)
