@@ -179,10 +179,10 @@ P.add_argument(
 
 args = P.get_parameter()
 
-infiletemplate = args.infile
-outfiletemplate = args.outfile
-outpath = args.outpath
-outfilenametemplate = args.outfilename
+infile_template = args.infile
+outfile_template = args.outfile
+outpath_template = args.outpath
+outfilename_template = args.outfilename
 varlist = args.vars
 start = args.start
 end = args.end
@@ -190,17 +190,21 @@ end = args.end
 print('start and end are ', start, ' ', end)
 print('variable list: ', varlist)
 
-infile_cons = StringConstructor(infiletemplate)
-outfile_cons = StringConstructor(outfiletemplate)
-outfilename_cons = StringConstructor(outfilenametemplate)
+InFile = StringConstructor(infile_template)
+OutFile = StringConstructor(outfile_template)
+OutFileName = StringConstructor(outfilename_template)
+OutPath = StringConstructor(outpath_template)
 
 for var in varlist:
     # Build filenames
-    infile_cons.variable = var
-    outfile_cons.variable = var
-    outfilename_cons.variable = var
-    infile = infile_cons()
-    outfile = outfile_cons()
-    outfilename = outfilename_cons()
+    InFile.variable = var
+    OutFile.variable = var
+    OutFileName.variable = var
+    OutPath.variable = var
+    infile = InFile()
+    outfile = OutFile()
+    outfilename = OutFileName()
+    outpath = OutPath()
 
+    # calculate climatologies for this variable
     clim_calc(var, infile, outfile, outpath, outfilename, start, end)
