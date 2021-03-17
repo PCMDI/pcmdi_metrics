@@ -6,7 +6,7 @@ import os
 #
 
 # VARIABLES TO USE
-var = 'rlut'
+vars = ['rlut']
 
 # START AND END DATES FOR CLIMATOLOGY
 start = '2003-01' 
