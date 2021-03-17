@@ -93,6 +93,16 @@ def AddParserArgument(P):
                    type=bool,
                    default=True,
                    help="Option for update existing JSON file: True (i.e., update) (default) / False (i.e., overwrite)")
+    P.add_argument("--cmec",
+                   dest='cmec',
+                   action='store_true',
+                   default=False,
+                   help='Option to save metrics in CMEC format')
+    P.add_argument("--no_cmec",
+                   dest='cmec',
+                   action='store_false',
+                   default=False,
+                   help='Option to not save metrics in CMEC format')
     # Parallel
     P.add_argument("--parallel",
                    action="store_true",
@@ -106,7 +116,7 @@ def AddParserArgument(P):
                    default=1,
                    help="Start year for model data set")
     # Defaults
-    P.set_defaults(includeOBS=True, parallel=False)
+    P.set_defaults(includeOBS=True, parallel=False, cmec=False)
     return P
 
 
