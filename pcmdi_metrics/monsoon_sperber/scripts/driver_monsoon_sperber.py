@@ -600,4 +600,4 @@ for model in models:
 # --- Model loop end
 
 if not debug:
-    sys.exit('done')
+    sys.exit(0)
