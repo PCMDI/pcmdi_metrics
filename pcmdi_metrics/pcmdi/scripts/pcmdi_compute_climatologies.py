@@ -1,6 +1,7 @@
 import cdms2
 import datetime
 import pcmdi_metrics
+from genutil import StringConstructor
 
 ver = datetime.datetime.now().strftime('v%Y%m%d')
 
@@ -140,9 +141,10 @@ P = pcmdi_metrics.driver.pmp_parser.PMPMetricsParser()
 
 
 P.add_argument(
-        '--var',
-        dest='var',
-        help='Defines var',
+        '--vars',
+        dest='vars',
+        help='List of variables',
+        nargs='+',
         required=False)
 P.add_argument(
         '--infile',
@@ -177,15 +179,28 @@ P.add_argument(
 
 args = P.get_parameter()
 
-infile = args.infile
-outfile = args.outfile
+infiletemplate = args.infile
+outfiletemplate = args.outfile
 outpath = args.outpath
-outfilename = args.outfilename
-var = args.var
+outfilenametemplate = args.outfilename
+varlist = args.vars
 start = args.start
 end = args.end
 
 print('start and end are ', start, ' ', end)
-print('var is ', var)
+print('variable list: ', varlist)
 
-clim_calc(var, infile, outfile, outpath, outfilename, start, end)
+infile_cons = StringConstructor(infiletemplate)
+outfile_cons = StringConstructor(outfiletemplate)
+outfilename_cons = StringConstructor(outfilenametemplate)
+
+for var in varlist:
+    # Build filenames
+    infile_cons.variable = var
+    outfile_cons.variable = var
+    outfilename_cons.variable = var
+    infile = infile_cons()
+    outfile = outfile_cons()
+    outfilename = outfilename_cons()
+
+    clim_calc(var, infile, outfile, outpath, outfilename, start, end)
