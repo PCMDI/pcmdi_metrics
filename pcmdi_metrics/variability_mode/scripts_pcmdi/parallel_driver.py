@@ -32,9 +32,9 @@ P = pcmdi_metrics.driver.pmp_parser.PMPParser(
         formatter_class=RawTextHelpFormatter)
 P = AddParserArgument(P)
 P.add_argument("--param_dir",
-                   type=str,
-                   default=None,
-                   help="directory for parameter files")
+               type=str,
+               default=None,
+               help="directory for parameter files")
 param = P.get_parameter()
 
 # Pre-defined options
@@ -192,4 +192,5 @@ for p, cmd in enumerate(cmds_list):
 
 # tasks done
 print("End : %s" % time.ctime())
-sys.exit('DONE')
+sys.exit(0)
+
