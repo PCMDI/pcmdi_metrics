@@ -9,7 +9,7 @@ import os
 import pcmdi_metrics
 import basepmp
 from collections import defaultdict
-from pcmdi_metrics.monsoon_sperber import model_land_only, divide_chunks_advanced, sperber_metrics
+from pcmdi_metrics.monsoon_sperber.lib import model_land_only, divide_chunks_advanced, sperber_metrics
 import cdat_info
 
 
