@@ -1,0 +1,46 @@
+import os
+
+#
+#  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY:
+#
+#
+
+# MODEL VARIABLES THAT MUST BE SET
+mip = 'cmip5'
+exp = 'historical'
+frequency = 'da'
+realm = 'atm'
+realization = 'r1i1p1'
+
+# MODEL VERSIONS AND ROOT PATH
+modnames = ['ACCESS1-0']
+modpath = '~/Metrics/demo_data/pr.day.ACCESS1-0.historical.r1i1p1.20000101-20051231.nc'
+modpath_lf = '~/Metrics/demo_data/sftlf_fx_ACCESS1-0_historical_r0i0p0.nc' # land fraction mask
+
+varModel = 'pr'
+ModUnitsAdjust = (True, 'multiply', 86400.0)  # kg m-2 s-1 to mm day-1
+units = 'mm/d'
+
+msyear = 2000
+meyear = 2002
+
+# ROOT PATH FOR OBSERVATIONS
+reference_data_path = '~/Metrics/demo_data/pr_day_GPCP-1-3_BE_gn_v20200924_19961002-20170101.nc'
+reference_data_name = 'GPCP-1-3'
+reference_data_lf_path = '~/Metrics/demo_data/NCL_LandSeaMask_rewritten.nc'  # land fraction mask
+
+varOBS = 'pr'
+ObsUnitsAdjust = (True, 'multiply', 86400.0)  # kg m-2 s-1 to mm day-1
+
+osyear = 1996
+oeyear = 1998
+
+includeOBS = True
+
+# DIRECTORY WHERE TO PUT RESULTS
+results_dir = 'demo_output/monsoon_sperber/Ex1'
+
+# OUTPUT OPTIONS
+update_json = False
+nc_out = False  # Write output in NetCDF
+plot = False  # Create map graphics
