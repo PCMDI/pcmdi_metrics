@@ -79,6 +79,6 @@ def AddParserArgument(P):
 
 def YearCheck(syear, eyear, P):
     if syear >= eyear:
-        P.error('Given starting year {}  is later than given ending year,\ {}'.format(syear, eyear))
+        P.error('Given starting year {} is later than or same as the given ending year,\ {}'.format(syear, eyear))
     else:
         pass

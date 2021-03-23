@@ -52,6 +52,7 @@ import time
 
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
+from glob import glob
 from shutil import copyfile
 from pcmdi_metrics.monsoon_sperber.lib import AddParserArgument, YearCheck
 from pcmdi_metrics.monsoon_sperber.lib import model_land_only
@@ -212,10 +213,7 @@ for model in models:
             syear = msyear
             eyear = meyear
             # variable data
-            model_path_list = os.popen(
-                'ls ' + modpath(
-                     model=model, exp=exp, realization=realization,
-                     variable=var)).readlines()
+            model_path_list = glob(modpath(model=model, exp=exp, realization=realization, variable=var))
             if debug:
                 print('debug: model_path_list: ', model_path_list)
             # land fraction
@@ -243,7 +241,11 @@ for model in models:
                 if model == 'obs':
                     run = 'obs'
                 else:
-                    run = model_path.split('/')[-1].split('.')[3]
+                    if realization in ['all', 'All', 'ALL', '*']:
+                        run_index = modpath.split('.').index('%(realization)')
+                        run = model_path.split('/')[-1].split('.')[run_index]
+                    else:
+                        run = realization
                     # dict
                     if run not in monsoon_stat_dic['RESULTS'][model]:
                         monsoon_stat_dic['RESULTS'][model][run] = {}
