@@ -20,7 +20,7 @@ realm = 'atm'
 # =================================================
 # Analysis Options
 # -------------------------------------------------
-variability_mode = 'PNA'  # Available domains: NAM, NAO, SAM, PNA, PDO
+variability_mode = 'NPO'  # Available domains: NAM, NAO, SAM, PNA, PDO
 seasons = ['DJF', 'MAM', 'JJA', 'SON']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
@@ -39,17 +39,17 @@ debug = False  # False
 # =================================================
 # Observation
 # -------------------------------------------------
-reference_data_name = 'NOAA-CIRES_20CR'
+reference_data_name = 'ERA20C'
 reference_data_path = os.path.join(
-    '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707',
-    'psl_mon_20CR_BE_gn_v20200707_187101-201212.nc')
+    '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/ERA-20C/gn/v20200707',
+    'psl_mon_ERA-20C_BE_gn_v20200707_190001-201012.nc')
 
 varOBS = 'psl'
 ObsUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa; or (False, 0, 0)
 
 osyear = 1900
 oeyear = 2005
-eofn_obs = 1
+eofn_obs = 2
 
 # =================================================
 # Models
@@ -70,7 +70,7 @@ ModUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa
 
 msyear = 1900
 meyear = 2005
-eofn_mod = 1
+eofn_mod = 2
 
 # =================================================
 # Output

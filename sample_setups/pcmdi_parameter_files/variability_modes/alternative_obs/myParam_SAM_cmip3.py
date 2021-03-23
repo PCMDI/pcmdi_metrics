@@ -1,26 +1,18 @@
 import datetime
-import glob
 import os
-
-
-def find_latest(path):
-    dir_list = [p for p in glob.glob(path+"/v????????")]
-    return sorted(dir_list)[-1]
-
 
 # =================================================
 # Background Information
 # -------------------------------------------------
-mip = 'cmip6'
-# exp = 'piControl'
-exp = 'historical'
+mip = 'cmip3'
+exp = '20c3m'
 frequency = 'mo'
 realm = 'atm'
 
 # =================================================
 # Analysis Options
 # -------------------------------------------------
-variability_mode = 'PNA'  # Available domains: NAM, NAO, SAM, PNA, PDO
+variability_mode = 'SAM'  # Available domains: NAM, NAO, SAM, PNA, PDO
 seasons = ['DJF', 'MAM', 'JJA', 'SON']  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 RemoveDomainMean = True  # Remove Domain Mean from each time step (default=True)
@@ -39,15 +31,15 @@ debug = False  # False
 # =================================================
 # Observation
 # -------------------------------------------------
-reference_data_name = 'NOAA-CIRES_20CR'
+reference_data_name = 'ERA20C'
 reference_data_path = os.path.join(
-    '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707',
-    'psl_mon_20CR_BE_gn_v20200707_187101-201212.nc')
+    '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/ERA-20C/gn/v20200707',
+    'psl_mon_ERA-20C_BE_gn_v20200707_190001-201012.nc')
 
 varOBS = 'psl'
 ObsUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa; or (False, 0, 0)
 
-osyear = 1900
+osyear = 1955
 oeyear = 2005
 eofn_obs = 1
 
@@ -55,15 +47,38 @@ eofn_obs = 1
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    find_latest('/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest'),
-    '%(mip)/%(exp)/atmos/mon/%(variable)',
-    '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
+    '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/%(mip)/%(exp)',
+    '%(variable).%(model).%(realization).xml')
+
+modnames = [
+    'bccr_bcm2_0',
+    'cccma_cgcm3_1',
+    'cccma_cgcm3_1_t63',
+    'cnrm_cm3',
+    'gfdl_cm2_0',
+    'gfdl_cm2_1',
+    'giss_aom',
+    'giss_model_e_h',
+    'giss_model_e_r',
+    'iap_fgoals1_0_g',
+    'ingv_echam4',
+    'inmcm3_0',
+    'ipsl_cm4',
+    'miroc3_2_hires',
+    'miroc3_2_medres',
+    'miub_echo_g',
+    'mpi_echam5',
+    'mri_cgcm2_3_2a',
+    'ukmo_hadcm3',
+    'ukmo_hadgem1',
+]
 
 modnames = ['all']
-# modnames = ['IPSL-CM6A-LR']
+
+# modnames = ['giss_model_e_h']
 
 realization = '*'  # realizations
-# realization = 'r1i1p1f1'
+# realization = 'run1'
 
 varModel = 'psl'
 ModUnitsAdjust = (True, 'divide', 100.0)  # Pa to hPa
