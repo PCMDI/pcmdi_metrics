@@ -40,8 +40,9 @@ filename_template = "cmip5.historical.%(model_version).r1i1p1.mon.%(variable).19
 sftlf_filename_template = "sftlf_%(model_version).nc"
 generate_sftlf = True # if land surface type mask cannot be found, generate one
 
+# Region
+regions = {"rlut": ["Global"]}
 
-pth = os.path.dirname(__file__)
 # ROOT PATH FOR MODELS CLIMATOLOGIES
 test_data_path = '$INPUT_DIR$/CMIP5_demo_clims/'
 # ROOT PATH FOR OBSERVATIONS
