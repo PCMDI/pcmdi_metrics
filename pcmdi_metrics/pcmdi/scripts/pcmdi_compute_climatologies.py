@@ -1,6 +1,7 @@
 import cdms2
 import datetime
 import pcmdi_metrics
+from genutil import StringConstructor
 
 ver = datetime.datetime.now().strftime('v%Y%m%d')
 
@@ -140,9 +141,10 @@ P = pcmdi_metrics.driver.pmp_parser.PMPMetricsParser()
 
 
 P.add_argument(
-        '--var',
-        dest='var',
-        help='Defines var',
+        '--vars',
+        dest='vars',
+        help='List of variables',
+        nargs='+',
         required=False)
 P.add_argument(
         '--infile',
@@ -177,15 +179,32 @@ P.add_argument(
 
 args = P.get_parameter()
 
-infile = args.infile
-outfile = args.outfile
-outpath = args.outpath
-outfilename = args.outfilename
-var = args.var
+infile_template = args.infile
+outfile_template = args.outfile
+outpath_template = args.outpath
+outfilename_template = args.outfilename
+varlist = args.vars
 start = args.start
 end = args.end
 
 print('start and end are ', start, ' ', end)
-print('var is ', var)
+print('variable list: ', varlist)
 
-clim_calc(var, infile, outfile, outpath, outfilename, start, end)
+InFile = StringConstructor(infile_template)
+OutFile = StringConstructor(outfile_template)
+OutFileName = StringConstructor(outfilename_template)
+OutPath = StringConstructor(outpath_template)
+
+for var in varlist:
+    # Build filenames
+    InFile.variable = var
+    OutFile.variable = var
+    OutFileName.variable = var
+    OutPath.variable = var
+    infile = InFile()
+    outfile = OutFile()
+    outfilename = OutFileName()
+    outpath = OutPath()
+
+    # calculate climatologies for this variable
+    clim_calc(var, infile, outfile, outpath, outfilename, start, end)

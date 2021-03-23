@@ -128,7 +128,6 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
     print(outdir(output_type=output_type))
 
 # Generate CMEC compliant json
-cmec = False
 if hasattr(param, 'cmec'):
     cmec = param.cmec
 print('CMEC: ' + str(cmec))

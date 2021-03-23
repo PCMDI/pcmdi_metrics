@@ -6,25 +6,25 @@ import os
 #
 
 case_id = 'Ex1'
+realization = 'r6i1p1'
+mip = 'cmip5'
 
 # ROOT PATH FOR MODELS CLIMATOLOGIES
-modnames = ['ACCESS1-0']
-#modpath = '/Users/ordonez4/Metrics/demo_data/pr.day.ACCESS1-0.historical.r1i1p1.20000101-20051231.nc'
-modpath = '~/Metrics/demo_data/pr_day_ACCESS1-0_historical_r1i1p1_20000101-20051231.nc'
+modnames = ['GISS-E2-H']
+modpath = 'demo_data/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_%(model)_historical_r6i1p1_20000101-20051231.nc'
 varModel = 'pr'
 ModUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
 units = 'mm/d'
 msyear = 2000
-meyear = 2005
+meyear = 2002
 
 # ROOT PATH FOR OBSERVATIONS
-reference_data_name = 'GPCP-1-3'
-#reference_data_path = '/Users/ordonez4/Metrics/demo_data/pr_day_GPCP-1-3_BE_gn_v20200924_19961002-20170101.nc'
-reference_data_path = '~/Metrics/demo_data/pr_day_GPCP-1-3_BE_gn_v20200924_19961002-20170101.nc'
+reference_data_name = 'GPCP-IP'
+reference_data_path = 'demo_data/PCMDIobs2/atmos/day/pr/GPCP-IP/gn/v20200719/pr.day.GPCP-IP.BE.gn.v20200719.1998-1999.xml'
 varOBS = 'pr'
 ObsUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
-osyear = 1996
-oeyear = 2017
+osyear = 1998
+oeyear = 1999
 
 # DIRECTORY WHERE TO PUT RESULTS
 results_dir = 'demo_output/mjo/%(case_id)'
