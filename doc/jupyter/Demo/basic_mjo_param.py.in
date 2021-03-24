@@ -6,23 +6,24 @@ import os
 #
 
 case_id = 'Ex1'
+realization = 'r6i1p1'
 
 # ROOT PATH FOR MODELS CLIMATOLOGIES
-modnames = ['ACCESS1-0','CanCM4']
-modpath = '$INPUT_DIR$/CMIP5_demo_clims/cmip5.historical.%(model)-0.r1i1p1.mon.pr.198101-200512.AC.v20200426.nc'
+modnames = ['GISS-E2-H']
+modpath = '$INPUT_DIR$/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_%(model)_historical_r6i1p1_20000101-20051231.nc'
 varModel = 'pr'
 ModUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
 units = 'mm/d'
-msyear = 1985
-meyear = 2004
+msyear = 2000
+meyear = 2002
 
 # ROOT PATH FOR OBSERVATIONS
-reference_data_name = 'GPCP-2-3'
-reference_data_path = '$INPUT_DIR$/PCMDIobs2/atmos/day/pr/GPCP-IP/gn/v20200719/pr_day_GPCP-IP_BE_gn_v20200719_19980101-19981231.nc'
+reference_data_name = 'GPCP-IP'
+reference_data_path = '$INPUT_DIR$/PCMDIobs2/atmos/day/pr/GPCP-IP/gn/v20200719/pr.day.GPCP-IP.BE.gn.v20200719.1998-1999.xml'
 varOBS = 'pr'
 ObsUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
 osyear = 1998
-oeyear = 1998
+oeyear = 1999
 
 # DIRECTORY WHERE TO PUT RESULTS
 results_dir = '$OUTPUT_DIR$/mjo/%(case_id)'
