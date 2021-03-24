@@ -7,7 +7,6 @@ import os
 
 case_id = 'Ex1'
 realization = 'r6i1p1'
-mip = 'cmip5'
 
 # ROOT PATH FOR MODELS CLIMATOLOGIES
 modnames = ['GISS-E2-H']
