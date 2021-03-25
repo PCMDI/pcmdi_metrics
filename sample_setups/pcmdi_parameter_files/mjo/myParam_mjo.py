@@ -19,8 +19,8 @@ realm = 'atm'
 # =================================================
 # Miscellaneous
 # -------------------------------------------------
-# debug = False
-debug = True
+debug = False
+# debug = True
 
 nc_out = True
 plot = True  # Create map graphics
