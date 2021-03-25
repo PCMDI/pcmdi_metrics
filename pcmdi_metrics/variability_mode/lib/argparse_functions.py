@@ -1,11 +1,22 @@
+import datetime
+
+
 def AddParserArgument(P):
     # Load pre-defined parsers
-    P.use("--mip")
-    P.use("--exp")
+    # P.use("--mip")
+    # P.use("--exp")
     P.use("--results_dir")
     P.use("--reference_data_path")
     P.use("--modpath")
     # Add parsers
+    P.add_argument("--mip",
+                   type=str,
+                   default="cmip5",
+                   help="A WCRP MIP project such as CMIP3 and CMIP5")
+    P.add_argument("--exp",
+                   type=str,
+                   default="historical",
+                   help="An experiment such as amip, historical or piContorl")
     P.add_argument("--frequency", default="mo")
     P.add_argument("--realm", default="atm")
     P.add_argument("--reference_data_name",
@@ -22,13 +33,15 @@ def AddParserArgument(P):
                         "- PDO: Pacific Decadal Oscillation\n"
                         "(Note: Case insensitive)")
     P.add_argument("--seasons",
-                   type=list,
+                   type=str,
+                   nargs='+',
                    default=None,
                    help="List of seasons")
     P.add_argument("--modnames",
-                   type=list,
+                   type=str,
+                   nargs='+',
                    default=None,
-                   help="List of models. ['all'] for every available models")
+                   help="List of models. 'all' for every available models")
     P.add_argument("-r", "--realization",
                    type=str,
                    default="r1i1p1",
@@ -85,6 +98,11 @@ def AddParserArgument(P):
                         "- (True, 'divide', 100.0)  # Pa to hPa\n"
                         "- (True, 'subtract', 273.15)  # degK to degC\n"
                         "- (False, 0, 0) # No adjustment (default)")
+    P.add_argument("--case_id",
+                   type=str,
+                   dest="case_id",
+                   default="{:v%Y%m%d}".format(datetime.datetime.now()),
+                   help="version as date, e.g., v20191116 (yyyy-mm-dd)")
 
     # Switches
     P.add_argument("-d", "--debug",
@@ -120,11 +138,32 @@ def AddParserArgument(P):
                    type=bool,
                    default=True,
                    help="Option for generate individual plots: True (default) / False")
+    P.add_argument("--parallel",
+                   type=bool,
+                   dest='parallel',
+                   default=False,
+                   help="Option for running code in parallel mode: True / False (default)")
+    P.add_argument("--no_nc_out_obs",
+                   dest='nc_out_obs', action='store_false',
+                   help="Turn off netCDF generating for obs")
+    P.add_argument("--no_plot_obs",
+                   dest='plot_obs', action='store_false',
+                   help="Turn off plot generating for obs")
     P.add_argument("--update_json",
                    type=bool,
                    default=True,
                    help="Option for update existing JSON file: True (i.e., update) (default) / False (i.e., overwrite)")
-
+    P.add_argument("--cmec",
+                   dest='cmec',
+                   action='store_true',
+                   default=False,
+                   help='Save metrics in CMEC format')
+    P.add_argument("--no_cmec",
+                   dest='cmec',
+                   action='store_false',
+                   default=False,
+                   help='Option to not save metrics in CMEC format')
+    P.set_defaults(nc_out_obs=True, plot_obs=True)
     return P
 
 

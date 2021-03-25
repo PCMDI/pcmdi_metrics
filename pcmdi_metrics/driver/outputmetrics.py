@@ -173,7 +173,10 @@ class OutputMetrics(object):
         if self.check_save_test_clim(ref):
             self.output_interpolated_model_climatologies(test, test_data)
 
-        self.write_on_exit()
+        if hasattr(self.parameter, 'cmec'):
+            self.write_on_exit(self.parameter.cmec)
+        else:
+            self.write_on_exit(False)
 
     def set_grid_in_metrics_dictionary(self, test_data):
         ''' Set the grid in metrics_dictionary. '''
@@ -289,7 +292,7 @@ class OutputMetrics(object):
         return not self.parameter.dry_run and hasattr(self.parameter, 'save_test_clims') \
                and self.parameter.save_test_clims is True and ref.obs_or_model == reference_data_set[0]  # noqa
 
-    def write_on_exit(self):
+    def write_on_exit(self, cmec_flag):
         ''' Output the metrics_dictionary as a json and text file. '''
         self.setup_out_file()
         self.metrics_dictionary['METRICS'] = self.metrics_def_dictionary
@@ -302,3 +305,7 @@ class OutputMetrics(object):
                                 indent=4,
                                 separators=(',', ': '),
                                 mode="r+")
+            if cmec_flag is True:
+                logging.getLogger("pcmdi_metrics").info(
+                    'CMEC conversion: %s' % self.out_file().replace('.json', '_cmec.json'))
+                self.out_file.write_cmec(indent=4, separators=(',', ': '))

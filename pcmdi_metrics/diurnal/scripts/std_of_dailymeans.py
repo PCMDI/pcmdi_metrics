@@ -83,12 +83,23 @@ def main():
     P.add_argument("-t", "--filename_template",
                    default="pr_%(model)_%(month)_%(firstyear)-%(lastyear)_std_of_dailymeans.nc")
     P.add_argument("--model", default="*")
+    P.add_argument("--cmec",
+                   dest='cmec',
+                   action='store_true',
+                   default=False,
+                   help="Use to save metrics in CMEC JSON format")
+    P.add_argument("--no_cmec",
+                   dest='cmec',
+                   action='store_false',
+                   default=False,
+                   help="Use to disable saving metrics in CMEC JSON format")
 
     args = P.get_parameter()
     month = args.month
     monthname = monthname_d[month]
     startyear = args.firstyear  # noqa: F841
     finalyear = args.lastyear  # noqa: F841
+    cmec = args.cmec
 
     template = populateStringConstructor(args.filename_template, args)
     template.month = monthname
@@ -159,6 +170,9 @@ def main():
         separators=(
             ',',
             ': '))
+    if cmec:
+        print("Writing cmec file")
+        OUT.write_cmec(indent=4, separators=(',', ': '))
     print('done')
 
 

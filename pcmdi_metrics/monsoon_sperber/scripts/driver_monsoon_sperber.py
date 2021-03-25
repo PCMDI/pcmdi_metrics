@@ -53,10 +53,10 @@ import time
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
 from shutil import copyfile
-from pcmdi_metrics.monsoon_sperber import AddParserArgument, YearCheck
-from pcmdi_metrics.monsoon_sperber import model_land_only
-from pcmdi_metrics.monsoon_sperber import divide_chunks_advanced, interp1d
-from pcmdi_metrics.monsoon_sperber import sperber_metrics
+from pcmdi_metrics.monsoon_sperber.lib import AddParserArgument, YearCheck
+from pcmdi_metrics.monsoon_sperber.lib import model_land_only
+from pcmdi_metrics.monsoon_sperber.lib import divide_chunks_advanced, interp1d
+from pcmdi_metrics.monsoon_sperber.lib import sperber_metrics
 
 
 def tree():
@@ -181,6 +181,9 @@ egg_pth = pkg_resources.resource_filename(
 exec(compile(open(os.path.join(egg_pth, "default_regions.py")).read(),
              os.path.join(egg_pth, "default_regions.py"), 'exec'))
 
+# =================================================
+# Loop start for given models
+# -------------------------------------------------
 if includeOBS:
     models.insert(0, 'obs')
 
@@ -293,7 +296,7 @@ for model in models:
                 # Write individual year time series for each monsoon domain
                 # in a netCDF file
                 if nc_out:
-                    output_filename = "{}_{}_{}_{}_{}_{}_{}".format(
+                    output_filename = "{}_{}_{}_{}_{}_{}-{}".format(
                         mip, model, exp,
                         run, 'monsoon_sperber', startYear, endYear)
                     fout = cdms2.open(os.path.join(
@@ -316,6 +319,8 @@ for model in models:
                     for i, region in enumerate(list_monsoon_regions):
                         ax[region] = plt.subplot(nrows, ncols, i+1)
                         ax[region].set_ylim(0, 1)
+                        # ax[region].set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+                        # ax[region].set_xticks([0, 10, 20, 30, 40, 50, 60, 70])
                         ax[region].margins(x=0)
                         print('plot: region', region, 'nrows',
                               nrows, 'ncols', ncols, 'index', i+1)
@@ -595,4 +600,4 @@ for model in models:
 # --- Model loop end
 
 if not debug:
-    sys.exit('done')
+    sys.exit(0)

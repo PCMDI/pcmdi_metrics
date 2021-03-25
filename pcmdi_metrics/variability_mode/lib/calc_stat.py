@@ -33,6 +33,14 @@ def calc_stats_save_dict(
     # Add to dictionary for json output
     dict_head['frac'] = float(frac)
     dict_head['stdv_pc'] = stdv_pc
+    debug_print('frac and stdv_pc end', debug)
+
+    # Mean
+    mean = cdutil.averager(eof, axis='yx', weights='weighted')
+    mean_glo = cdutil.averager(eof_lr, axis='yx', weights='weighted')
+    dict_head['mean'] = float(mean)
+    dict_head['mean_glo'] = float(mean_glo)
+    debug_print('mean end', debug)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - -
     # OBS statistics, save as dictionary
@@ -113,10 +121,17 @@ def calcRMS(a, b):
     return float(result)
 
 
-def calcRMSc(a, b):
+def calcRMSc(a, b, NormalizeByOwnSTDV=True):
     # Calculate centered root mean square (RMS) difference
     # Reference: Taylor 2001 Journal of Geophysical Research, 106:7183-7192
     # a, b: cdms 2d variables on the same grid (lat, lon)
+    # NormalizeByOwnSTDV: True (default) or False. Normalize pattern by its own standard deviation
+    if NormalizeByOwnSTDV:
+        # Normalize pattern by its standard deviation to have unit variance
+        a = a / calcSTDmap(a)
+        b = b / calcSTDmap(b)
+    # Get centered rmsc by using rms function
+    # that consider removing bias by mean subtraction
     result = genutil.statistics.rms(
         a, b, axis='xy', centered=1, weights='weighted')
     return float(result)
