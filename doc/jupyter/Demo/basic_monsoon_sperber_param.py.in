@@ -8,32 +8,32 @@ import os
 # MODEL VARIABLES THAT MUST BE SET
 mip = 'cmip5'
 exp = 'historical'
-frequency = 'da'
-realm = 'atm'
-realization = 'r1i1p1'
+#frequency = 'da'
+#realm = 'atm'
+#realization = 'r6i1p1'
 
 # MODEL VERSIONS AND ROOT PATH
-modnames = ['ACCESS1-0']
-modpath = '~/Metrics/demo_data/pr.day.ACCESS1-0.historical.r1i1p1.20000101-20051231.nc'
-modpath_lf = '~/Metrics/demo_data/sftlf_fx_ACCESS1-0_historical_r0i0p0.nc' # land fraction mask
+modnames = ['GISS-E2-H']
+modpath = '$INPUT_DIR$/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc'
+modpath_lf = '$INPUT_DIR$/CMIP5_demo_data/cmip5.historical.GISS-E2-H.sftlf.nc' # land fraction mask
 
 varModel = 'pr'
 ModUnitsAdjust = (True, 'multiply', 86400.0)  # kg m-2 s-1 to mm day-1
 units = 'mm/d'
 
 msyear = 2000
-meyear = 2002
+meyear = 2005
 
 # ROOT PATH FOR OBSERVATIONS
-reference_data_path = '~/Metrics/demo_data/pr_day_GPCP-1-3_BE_gn_v20200924_19961002-20170101.nc'
-reference_data_name = 'GPCP-1-3'
-reference_data_lf_path = '~/Metrics/demo_data/NCL_LandSeaMask_rewritten.nc'  # land fraction mask
+reference_data_path = '$INPUT_DIR$/PCMDIobs2/atmos/day/pr/GPCP-IP/gn/v20200719/pr.day.GPCP-IP.BE.gn.v20200719.1998-1999.xml'
+reference_data_name = 'GPCP-IP'
+reference_data_lf_path = '$INPUT_DIR$/misc_data/sftlf.GPCP-IP.1x1.nc'  # land fraction mask
 
 varOBS = 'pr'
 ObsUnitsAdjust = (True, 'multiply', 86400.0)  # kg m-2 s-1 to mm day-1
 
-osyear = 1996
-oeyear = 1998
+osyear = 1998
+oeyear = 1999
 
 includeOBS = True
 
