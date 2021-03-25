@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" 
+"""
 Calculate monsoon metrics
 
 Jiwoo Lee (lee1043@llnl.gov)
