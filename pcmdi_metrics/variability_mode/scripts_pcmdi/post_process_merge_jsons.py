@@ -15,14 +15,19 @@ def main():
     mips = ['cmip6']
     # mips = ['cmip3']
 
-    exps = ['historical', 'amip']
+    # exps = ['historical', 'amip']
     # exps = ['historical']
+    exps = ['amip']
     # exps = ['20c3m', 'amip']
+    # exps = ['20c3m']
 
-    case_id = 'v20200818'
+    case_id = 'v20210119'
 
     syear = 1900
     eyear = 2005
+
+    obs_selection = 'default'
+    # obs_selection = 'alternative'
 
     # pmprdir = '/work/lee1043/temporary/result_test'
     pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
@@ -32,8 +37,10 @@ def main():
 
             if exp == 'amip':
                 modes = ['NAM', 'NAO', 'PNA', 'SAM', 'NPO']
+                # modes = ['SAM']
             else:
                 modes = ['NAM', 'NAO', 'PNA', 'SAM', 'NPO', 'PDO', 'NPGO']
+                # modes = ['SAM']
 
             for mode in modes:
                 # eof
@@ -43,9 +50,15 @@ def main():
                     eof = 'EOF1'
                 # obs name
                 if mode in ['PDO', 'NPGO']:
-                    obs = 'HadISSTv1.1'
+                    if obs_selection == 'default':
+                        obs = 'HadISSTv1.1'
+                    elif obs_selection == 'alternative':
+                        obs = 'HadISSTv2.1'
                 else:
-                    obs = 'NOAA-CIRES_20CR'
+                    if obs_selection == 'default':
+                        obs = 'NOAA-CIRES_20CR'
+                    elif obs_selection == 'alternative':
+                        obs = 'ERA20C'
                 # json merge
                 try:
                     merge_json(mode, eof, mip, exp, case_id, obs, syear, eyear, pmprdir)
