@@ -36,7 +36,7 @@ def mjo_metric_ewr_calculation(mip, model, exp, run,
     last_time = comTim[-1]
 
     if season == "NDJFMA":
-        # Adjust years to consider only when continous NDJFMA is available
+        # Adjust years to consider only when continuous NDJFMA is available
         if first_time > cdtime.comptime(startYear, 11, 1):
             startYear += 1
         if last_time < cdtime.comptime(endYear, 4, 30):
@@ -56,11 +56,12 @@ def mjo_metric_ewr_calculation(mip, model, exp, run,
     #
     # Get daily climatology on each grid, then remove it to get anomaly
     #
-    numYear = endYear - startYear
     if season == "NDJFMA":
         mon = 11
+        numYear = endYear - startYear
     elif season == "MJJASO":
         mon = 5
+        numYear = endYear - startYear + 1
     day = 1
     # Store each year's segment in a dictionary: segment[year]
     segment = {}
