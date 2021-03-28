@@ -246,7 +246,7 @@ for model in models:
                     # dict
                     if run not in result_dict['RESULTS'][model]:
                         result_dict['RESULTS'][model][run] = {}
-    
+
                 print(' --- ', run, ' ---')
                 print(model_path)
 
@@ -265,7 +265,7 @@ for model in models:
                         segmentLength,
                         outdir,
                         season=season)
-    
+
                     # Archive as dict for JSON
                     if model == 'obs':
                         result_dict['REF'][reference_data_name][season] = metrics_result
