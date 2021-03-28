@@ -56,7 +56,7 @@ realization = param.realization
 print('realization: ', realization)
 
 # Metrics Collection
-mc_name = param.metricsCollection 
+mc_name = param.metricsCollection
 dict_mc = defCollection(mc_name)
 list_metric = sorted(dict_mc['metrics_list'].keys())
 print('mc_name:', mc_name)
@@ -75,7 +75,7 @@ netcdf_name_template = param.process_templated_argument("netcdf_name")
 
 print('outdir:', str(outdir_template(
     output_type='%(output_type)',
-    mip=mip, exp=exp, metricsCollection=mc_name))) 
+    mip=mip, exp=exp, metricsCollection=mc_name)))
 print('netcdf_path:', netcdf_path)
 
 # Switches
@@ -132,7 +132,8 @@ for obs in list_obs:
         #
         # finding variable name in file
         #
-        try: var_in_file = dict_var[var]['var_name']
+        try:
+            var_in_file = dict_var[var]['var_name']
         except:
             print('\033[95m' + str(var) + " is not available for " + str(obs) + " or unscripted" + '\033[0m')
         else:
@@ -144,7 +145,7 @@ for obs in list_obs:
             try:
                 # finding file for 'obs', 'var'
                 file_name = param.reference_data_path[obs].replace('VAR', var0)
-                file_areacell = None ## temporary for now
+                file_areacell = None  # temporary for now
                 try:
                     file_landmask = param.reference_data_lf_path[obs]
                 except:
@@ -178,7 +179,8 @@ for obs in list_obs:
                                       'path + filename_area': list_areacell, 'areaname': list_name_area,
                                       'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
             except:
-                print('\033[95m' + 'Observation dataset' + str(obs) + " is not given for variable " + str(var) + '\033[0m')
+                print('\033[95m' + 'Observation dataset' + str(obs) + 
+                      " is not given for variable " + str(var) + '\033[0m')
 
 print('PMPdriver: dict_obs readin end')
 
@@ -230,7 +232,7 @@ for mod in models:
 
         if debug:
             print('list_variables:', list_variables)
-    
+
         try:
             for var in list_variables:
                 print(' --- var: ', var, ' ---')
@@ -257,7 +259,8 @@ for mod in models:
                 file_areacell = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, variable=areacell_in_file))
                 if not os.path.isfile(file_areacell):
                     file_areacell = None
-                file_landmask = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, variable=dict_var['landmask']['var_name']))
+                file_landmask = get_file(modpath_lf(mip=mip, realm=realm2,
+                                                    model=mod, variable=dict_var['landmask']['var_name']))
                 # -- TEMPORARY --
                 if mip == 'cmip6':
                     if mod in ['IPSL-CM6A-LR', 'CNRM-CM6-1']:
@@ -270,7 +273,7 @@ for mod in models:
                         file_landmask = "/work/lee1043/ESGF/CMIP5/BNU-ESM/sftlf_fx_BNU-ESM_historical_r0i0p0.nc"
                     elif mod == "HadCM3":
                         # Inconsistent lat/lon between sftlf and other variables
-                        file_landmask = None 
+                        file_landmask = None
                         # Inconsistent grid between areacella and tauu (probably staggering grid system)
                         file_areacell = None
                 # -- TEMPORARY END --
@@ -290,20 +293,22 @@ for mod in models:
                         list(), list(), list(), list(), list()
                     for var1 in var_in_file:
                         areacell_in_file, realm = find_realm(var1)
-                        modpath_tmp = get_file(modpath(mip=mip, exp=exp, realm=realm, model=mod, realization=realization, variable=var1))
-                        #modpath_lf_tmp = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, variable=dict_var['landmask']['var_name']))
+                        modpath_tmp = get_file(modpath(mip=mip, exp=exp, realm=realm, model=mod, 
+                                                       realization=realization, variable=var1))
+                        # modpath_lf_tmp = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, variable=dict_var['landmask']['var_name']))
                         if not os.path.isfile(modpath_tmp):
                             modpath_tmp = None
-                        #if not os.path.isfile(modpath_lf_tmp):
-                        #    modpath_lf_tmp = None
-                        file_areacell_tmp = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, variable=areacell_in_file))
+                        # if not os.path.isfile(modpath_lf_tmp):
+                        #     modpath_lf_tmp = None
+                        file_areacell_tmp = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, 
+                                                                variable=areacell_in_file))
                         print("file_areacell_tmp:", file_areacell_tmp)
                         if not os.path.isfile(file_areacell_tmp):
                             file_areacell_tmp = None
                         list_files.append(modpath_tmp)
                         list_areacell.append(file_areacell_tmp)
                         list_name_area.append(areacell_in_file)
-                        #list_landmask.append(modpath_lf_tmp)
+                        # list_landmask.append(modpath_lf_tmp)
                         list_landmask.append(file_landmask)
                         list_name_land.append(landmask_in_file)
                 else:
@@ -353,8 +358,10 @@ for mod in models:
             """
 
             # Prepare netcdf file setup
-            json_name = json_name_template(mip=mip, exp=exp, metricsCollection=mc_name, case_id=case_id, model=mod, realization=run)
-            netcdf_name = netcdf_name_template(mip=mip, exp=exp, metricsCollection=mc_name, case_id=case_id, model=mod, realization=run)
+            json_name = json_name_template(mip=mip, exp=exp, metricsCollection=mc_name,
+                                           case_id=case_id, model=mod, realization=run)
+            netcdf_name = netcdf_name_template(mip=mip, exp=exp, metricsCollection=mc_name,
+                                               case_id=case_id, model=mod, realization=run)
             netcdf = os.path.join(netcdf_path, netcdf_name)
 
             if debug:
@@ -366,8 +373,9 @@ for mod in models:
             # Computes the metric collection
             print("\n### Compute the metric collection ###\n")
             cdms2.setAutoBounds('on')
-            dict_metric[mod][run], dict_dive[mod][run] = ComputeCollection(mc_name, dictDatasets, mod_run, netcdf=param.nc_out,
-                                                     netcdf_name=netcdf, debug=debug)
+            dict_metric[mod][run], dict_dive[mod][run] = ComputeCollection(
+                mc_name, dictDatasets, mod_run, netcdf=param.nc_out,
+                netcdf_name=netcdf, debug=debug)
             if debug:
                 print('file_name:', file_name)
                 print('list_files:', list_files)
@@ -389,5 +397,5 @@ print('PMPdriver: model loop end')
 # =================================================
 # OUTPUT METRICS TO JSON FILE (for all simulations)
 # -------------------------------------------------
-#json_name = json_name_template(mip=mip, exp=exp, metricsCollection=mc_name, model='all', realization='all')
-#metrics_to_json(mc_name, dict_obs, dict_metric, dict_dive, egg_pth, outdir, json_name)
+# json_name = json_name_template(mip=mip, exp=exp, metricsCollection=mc_name, model='all', realization='all')
+# metrics_to_json(mc_name, dict_obs, dict_metric, dict_dive, egg_pth, outdir, json_name)

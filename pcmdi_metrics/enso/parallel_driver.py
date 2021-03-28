@@ -9,17 +9,14 @@ Usage example:
 """
 
 from __future__ import print_function
-from argparse import RawTextHelpFormatter
 from genutil import StringConstructor
 from subprocess import Popen
 
 from PMPdriver_lib import AddParserArgument
 from PMPdriver_lib import sort_human
 
-import datetime
 import glob
 import os
-import pcmdi_metrics
 import sys
 import time
 
@@ -108,12 +105,13 @@ for model in models:
         modpath(mip=mip, exp=exp, model=model, realization="*", variable='ts'))
     # sort in nice way
     model_path_list = sort_human(model_path_list)
-    #if debug:
+    # if debug:
     #    print('model_path_list:', model_path_list)
     try:
         # Find where run can be gripped from given filename template for modpath
-        run_in_modpath = modpath(mip=mip, exp=exp, model=model, realization=realization,
-            variable='ts').split('/')[-1].split('.').index(realization)
+        run_in_modpath = modpath(
+            mip=mip, exp=exp, model=model,
+            realization=realization, variable='ts').split('/')[-1].split('.').index(realization)
         # Collect available runs
         runs_list = [model_path.split('/')[-1].split('.')[run_in_modpath] for model_path in model_path_list]
     except:
@@ -123,7 +121,7 @@ for model in models:
         print('runs_list (all):', runs_list)
     # Check if given run member is included. If not for all runs and given run member is not included,
     # take alternative run
-    if realization is not "*":
+    if realization != "*":
         if realization in runs_list:
             runs_list = [realization]
         else:
@@ -154,9 +152,9 @@ if not os.path.exists(log_dir):
 
 # number of tasks to submit at the same time
 num_workers = 7
-#num_workers = 10
-#num_workers = 30
-#num_workers = 25
+# num_workers = 10
+# num_workers = 30
+# num_workers = 25
 
 print("Start : %s" % time.ctime())
 

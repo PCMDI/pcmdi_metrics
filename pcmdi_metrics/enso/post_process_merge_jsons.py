@@ -12,19 +12,19 @@ import os
 
 def main():
     mips = ["cmip5", "cmip6"]
-    #mips = ["cmip5"]
-    #mips = ["cmip6"]
-    #mips = ["obs2obs"]
+    # mips = ["cmip5"]
+    # mips = ["cmip6"]
+    # mips = ["obs2obs"]
 
     exps = ["historical"]
 
-    #MCs = ["ENSO_perf", "ENSO_tel", "ENSO_proc", "test_tel"]
+    # MCs = ["ENSO_perf", "ENSO_tel", "ENSO_proc", "test_tel"]
     MCs = ["ENSO_perf", "ENSO_tel", "ENSO_proc"]
-    #MCs = ["ENSO_tel"]
-    #MCs = ["test_tel"]
+    # MCs = ["ENSO_tel"]
+    # MCs = ["test_tel"]
 
     pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
-    #pmprdir = "/work/lee1043/imsi/result_test"
+    # pmprdir = "/work/lee1043/imsi/result_test"
 
     for mip in mips:
         for exp in exps:
@@ -52,7 +52,8 @@ def merge_jsons(mip, exp, case_id, metricsCollection, pmprdir):
         os.path.join(
             json_file_dir,
             json_file_template(
-                mip=mip, exp=exp, metricsCollection=metricsCollection, case_id=case_id, model='*', realization='*')+'.json')))
+                mip=mip, exp=exp, metricsCollection=metricsCollection, 
+                case_id=case_id, model='*', realization='*') + '.json')))
 
     # Remove diveDown JSONs and previously generated merged JSONs if included
     json_files_revised = copy.copy(json_files)

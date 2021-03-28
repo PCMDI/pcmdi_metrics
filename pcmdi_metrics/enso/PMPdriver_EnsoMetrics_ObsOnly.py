@@ -4,7 +4,6 @@
 # -------------------------------------------------
 from __future__ import print_function
 
-import cdms2
 import glob
 import json
 import os
@@ -14,9 +13,7 @@ import sys
 from genutil import StringConstructor
 from PMPdriver_lib import AddParserArgument
 from PMPdriver_lib import metrics_to_json
-from PMPdriver_lib import sort_human
-from PMPdriver_lib import find_realm, get_file
-from EnsoMetrics.EnsoCollectionsLib import CmipVariables, defCollection, ReferenceObservations
+from EnsoMetrics.EnsoCollectionsLib import defCollection, ReferenceObservations
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection, ComputeCollection_ObsOnly
 
 # To avoid below error when using multi cores
@@ -56,7 +53,7 @@ realization = param.realization
 print('realization: ', realization)
 
 # Metrics Collection
-mc_name = param.metricsCollection 
+mc_name = param.metricsCollection
 dict_mc = defCollection(mc_name)
 list_metric = sorted(dict_mc['metrics_list'].keys())
 print('mc_name:', mc_name)
@@ -75,7 +72,7 @@ netcdf_name_template = param.process_templated_argument("netcdf_name")
 
 print('outdir:', str(outdir_template(
     output_type='%(output_type)',
-    mip=mip, exp=exp, metricsCollection=mc_name))) 
+    mip=mip, exp=exp, metricsCollection=mc_name)))
 print('netcdf_path:', netcdf_path)
 
 # Switches
@@ -132,7 +129,8 @@ for obs in list_obs:
         #
         # finding variable name in file
         #
-        try: var_in_file = dict_var[var]['var_name']
+        try:
+            var_in_file = dict_var[var]['var_name']
         except:
             print('\033[95m' + str(var) + " is not available for " + str(obs) + " or unscripted" + '\033[0m')
         else:
@@ -143,8 +141,8 @@ for obs in list_obs:
 
             try:
                 # finding file for 'obs', 'var'
-                file_name = param.reference_data_path[obs].replace('VAR',var0)
-                file_areacell = None ## temporary for now
+                file_name = param.reference_data_path[obs].replace('VAR', var0)
+                file_areacell = None  ## temporary for now
                 try:
                     file_landmask = param.reference_data_lf_path[obs]
                 except:
@@ -160,7 +158,7 @@ for obs in list_obs:
                 # if var_in_file is a list (like for thf) all variables should be read from the same realm
                 if isinstance(var_in_file, list):
                     list_files = list()
-                    list_files = [param.reference_data_path[obs].replace('VAR',var1) for var1 in var_in_file]
+                    list_files = [param.reference_data_path[obs].replace('VAR', var1) for var1 in var_in_file]
                     list_areacell = [file_areacell for var1 in var_in_file]
                     list_name_area = [areacell_in_file for var1 in var_in_file]
                     try:
@@ -178,11 +176,12 @@ for obs in list_obs:
                                       'path + filename_area': list_areacell, 'areaname': list_name_area,
                                       'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
             except:
-                print('\033[95m' + 'Observation dataset' + str(obs) + " is not given for variable " + str(var) + '\033[0m')
+                print('\033[95m' + 'Observation dataset' + str(obs) + 
+                      " is not given for variable " + str(var) + '\033[0m')
 
 print('PMPdriver: dict_obs readin end')
 
-# Prepare computing the metric collection (OBS to OBS) 
+# Prepare computing the metric collection (OBS to OBS)
 dictDatasets = {'observations': dict_obs}
 netcdf_path = "/work/lee1043/imsi/result_test/enso_metric/test_obs2obs_yann"
 netcdf_name = 'YANN_PLANTON_' + mc_name + "_OBSNAME"
@@ -198,7 +197,7 @@ if debug:
 
 sys.exit("TEST")
 
-# Compute the metric collection (OBS to OBS) 
+# Compute the metric collection (OBS to OBS)
 dict_metric, dict_dive = ComputeCollection_ObsOnly(mc_name, dictDatasets, debug=True, netcdf=True, netcdf_name=netcdf)
 if debug:
     print('dict_metric:')
@@ -209,5 +208,4 @@ outdir = netcdf_path
 json_name = netcdf_name
 metrics_to_json(mc_name, dict_obs, dict_metric, dict_dive, egg_pth, outdir, json_name, mod=mod, run=run)
 
-stop
 sys.exit("TEST")

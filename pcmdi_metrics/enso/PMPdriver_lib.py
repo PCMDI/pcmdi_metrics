@@ -7,7 +7,6 @@ import collections
 import datetime
 import glob
 import os
-import sys
 import pcmdi_metrics
 import re
 
@@ -16,9 +15,6 @@ def AddParserArgument():
 
     P = PMPParser() # Includes all default options
 
-    #P.use("--mip")
-    #P.use("--exp")
-    
     P.add_argument("--mip",
                    type=str,
                    default="cmip5",
@@ -91,7 +87,7 @@ def sort_human(input_list):
     return tmp_list
 
 
-# Dictionary to save result 
+# Dictionary to save result
 def tree(): return defaultdict(tree)
 
 
@@ -104,7 +100,8 @@ def metrics_to_json(mc_name, dict_obs, dict_metric, dict_dive, egg_pth, outdir, 
             "disclaimer.txt")).read()
 
     if mc_name == 'MC1':
-        reference = "The statistics in this file are based on Bellenger, H et al. Clim Dyn (2014) 42:1999-2018. doi:10.1007/s00382-013-1783-z"
+        reference = ("The statistics in this file are based on Bellenger et al."
+                     + "Clim Dyn (2014) 42:1999-2018. doi:10.1007/s00382-013-1783-z")
     elif mc_name == 'ENSO_perf':
         reference = "MC for ENSO Performance..."
     elif mc_name == 'ENSO_tel':
@@ -114,7 +111,7 @@ def metrics_to_json(mc_name, dict_obs, dict_metric, dict_dive, egg_pth, outdir, 
     else:
         reference = mc_name
 
-    enso_stat_dic = tree() # Use tree dictionary to avoid declearing everytime
+    enso_stat_dic = tree()  # Use tree dictionary to avoid declearing everytime
 
     # First JSON for metrics results
     enso_stat_dic['obs'] = dict_obs
@@ -164,11 +161,11 @@ def metrics_to_json(mc_name, dict_obs, dict_metric, dict_dive, egg_pth, outdir, 
 def find_realm(varname):
     if varname in ["tos", "tauuo", "zos", "areacello", "SSH", "ssh"]:
         realm = "ocean"
-        #realm = "Omon"
+        # realm = "Omon"
         areacell_in_file = "areacello"
     else:
         realm = "atmos"
-        #realm = "Amon"
+        # realm = "Amon"
         areacell_in_file = "areacella"
     return areacell_in_file, realm
 
