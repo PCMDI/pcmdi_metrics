@@ -317,5 +317,4 @@ for model in models:
             pass
 # --- Model loop end
 
-if not debug:
-    sys.exit(0)
+sys.exit(0)

@@ -49,7 +49,7 @@ def mjo_metric_ewr_calculation(mip, model, exp, run,
     NT = segmentLength  # number of time step for each segment (need to be an even number)
 
     if debug:
-        endYear = startYear + 2
+        # endYear = startYear + 2
         print('debug: startYear, endYear:', startYear, endYear)
         print('debug: NL, NT:', NL, NT)
 
@@ -80,11 +80,12 @@ def mjo_metric_ewr_calculation(mip, model, exp, run,
     if numYear > 1:
         for year in range(startYear, endYear):
             segment_ano[year] = Remove_dailySeasonalCycle(segment[year], daSeaCyc)
+    else:
+        segment_ano[year] = segment[year]
 
-    #
-    # Space-time power spectra
-    #
     """
+    Space-time power spectra
+
     Handle each segment (i.e. each year) separately.
     1. Get daily time series (3D: time and spatial 2D)
     2. Meridionally average (2D: time and spatial, i.e., longitude)
