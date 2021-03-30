@@ -238,7 +238,11 @@ for model in models:
                 if model == 'obs':
                     run = reference_data_name
                 else:
-                    run = model_path.split('/')[-1].split('.')[3]
+                    if realization in ['all', 'All', 'ALL', '*']:
+                        run_index = modpath.split('.').index('%(realization)')
+                        run = model_path.split('/')[-1].split('.')[run_index]
+                    else:
+                        run = realization
                     # dict
                     if run not in result_dict['RESULTS'][model]:
                         result_dict['RESULTS'][model][run] = {}
