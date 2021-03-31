@@ -19,3 +19,12 @@ The jupyter dashboard will be launched in your browser. From there, navigate to 
 
 ## Copying commands from notebooks  
 The mean climate notebook contains command line examples that can be copied from the notebook, customized, and run in the terminal. These commands are found in cells with a *%%bash* header.
+
+## What's in the notebooks  
+Demo 0: Set data and output directories. Download sample data and use cdscan to create xml. Generate parameter files.    
+Demo 1: Run the Mean Climate driver and explore the many options for customization.  
+Demo 1a: Learn how to create annual climatology files for running the mean climate driver with custom data.  
+Demo 2: Run the Monsoon (Wang) driver and its options.  
+Demo 3: Demonstrates the full workflow for running the Diurnal Cycle metrics.  
+Demo 4: Install scipy and eofs in the kernel environment, run the modes of variability driver with the NAM, and view an output image.  
+Demo 5: Run the MJO driver with options and view an output image.  
