@@ -18,7 +18,7 @@ If the notebook is being run on a remote server, [set up an SSH tunnel](https://
 The jupyter dashboard will be launched in your browser. From there, navigate to Demo_0_download_data.ipynb. This notebook must be run first because it populates the demo data and parameter files for the later demos. The other notebooks can be run in any order. For more help with running notebooks, consult the [documentation](https://jupyter.readthedocs.io/en/latest/running.html#running).  
 
 ## Copying commands from notebooks  
-The mean climate notebook contains command line examples that can be copied from the notebook, customized, and run in the terminal. These commands are found in cells with a *%%bash* header.
+The notebooks listed below contain command line examples that can be copied from the notebook, customized, and run in the terminal. These commands are found in cells with a *%%bash* header.
 
 ## What's in the notebooks  
 [Demo 0](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_0_download_data.ipynb): Set data and output directories. Download sample data and use cdscan to create xml. Generate parameter files.    
