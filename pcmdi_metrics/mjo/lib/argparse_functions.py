@@ -91,7 +91,7 @@ def AddParserArgument(P):
                    help="Option for generate individual plots: True (default) / False")
     P.add_argument("--update_json",
                    type=bool,
-                   default=True,
+                   default=False,
                    help="Option for update existing JSON file: True (i.e., update) (default) / False (i.e., overwrite)")
     P.add_argument("--cmec",
                    dest='cmec',
