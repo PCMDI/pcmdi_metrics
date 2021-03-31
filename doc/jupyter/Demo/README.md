@@ -1,6 +1,6 @@
 # Jupyter notebook demos  
 
-These notebooks provide some basic examples for 3 PMP modules (mean climate, monsoon (wang), and diurnal cycle). They demonstrate how to use both input parameter files and the command line to generate metrics. Parameter files are generated from the \*.py.in templates by running the Demo_0_download_data.ipynb notebook.
+These notebooks provide some basic examples for running the PMP metrics modules. They demonstrate how to use both input parameter files and the command line to generate metrics. Parameter files are generated from the \*.py.in templates by running the Demo_0_download_data.ipynb notebook.
 
 ## Environment  
 PCMDI metrics package should be installed. Consult [the documentation](http://pcmdi.github.io/pcmdi_metrics/install-using-anaconda.html) for more help.   
