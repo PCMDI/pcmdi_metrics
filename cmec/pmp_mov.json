@@ -41,9 +41,9 @@
         "ConvEOF": true,
         "CBF": true,
         "modnames": [
-            "ACCESS1-0"
+            "all"
         ],
-        "modpath": "psl_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc",
+        "modpath": "psl_Amon_%(model)_historical_r1i1p1_185001-200512.nc",
         "varModel": "psl",
         "ModUnitsAdjust": "(True, 'divide', 100.0)",
         "msyear": 1900,

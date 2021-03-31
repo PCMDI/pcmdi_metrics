@@ -27,9 +27,9 @@
     "default_parameters": {
         "case_id": "basicTestMJO",
         "modnames": [
-            "CanCM4"
+            "all"
         ],
-        "modpath": "cmip5.historical.CanCM4.r1i1p1.mon.pr.198101-200512.AC.v20200426.nc",
+        "modpath": "cmip5.historical.%(model).r1i1p1.mon.pr.198101-200512.AC.v20200426.nc",
         "varModel": "pr",
         "msyear": 1985,
         "meyear": 2004,
