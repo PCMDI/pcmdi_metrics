@@ -30,8 +30,7 @@ print(obs_dir)
 
 # getenv returns a string 'None' when no variable set
 if obs_dir == "None":
-    print("Error: $CMEC_OBS_DATA is not set")
-    sys.exit(1)
+    print("$CMEC_OBS_DATA is not set")
 
 try:
     with open(config_json) as config:
@@ -56,9 +55,13 @@ if pmp_config == "mean_climate":
 
 # Universal setting for all metrics
 settings["cmec"] = True
-settings["results_dir"] = wk_dir
 
-if "test_data_set" not in settings:
+if pmp_config == "diurnal_cycle":
+    settings["modpath"] = model_dir
+else:
+    settings["results_dir"] = wk_dir
+
+"""if "test_data_set" not in settings:
     # See what model folders exist in model directory
     model_list = os.listdir(model_dir)
     test_data_set = []
@@ -87,7 +90,7 @@ if "vars" not in settings:
         for varname in var:
             if varname in filename_template:
                 filename_template.replace(varname,"%(variable)")
-
+"""
 
 for item in settings:
     val = settings[item]
