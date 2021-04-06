@@ -27,7 +27,7 @@ meyear = 2005
 # ROOT PATH FOR OBSERVATIONS
 reference_data_path = '$INPUT_DIR$/PCMDIobs2/atmos/day/pr/GPCP-IP/gn/v20200719/pr.day.GPCP-IP.BE.gn.v20200719.1998-1999.xml'
 reference_data_name = 'GPCP-IP'
-reference_data_lf_path = '$INPUT_DIR$/misc_data/sftlf.GPCP-IP.1x1.nc'  # land fraction mask
+reference_data_lf_path = '$INPUT_DIR$/misc_demo_data/fx/sftlf.GPCP-IP.1x1.nc'  # land fraction mask
 
 varOBS = 'pr'
 ObsUnitsAdjust = (True, 'multiply', 86400.0)  # kg m-2 s-1 to mm day-1
