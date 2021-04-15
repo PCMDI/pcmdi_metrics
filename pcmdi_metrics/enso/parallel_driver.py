@@ -13,7 +13,7 @@ from genutil import StringConstructor
 from subprocess import Popen
 
 from PMPdriver_lib import AddParserArgument
-from PMPdriver_lib import sort_human
+from pcmdi_metrics.variability_mode.lib import sort_human
 
 import glob
 import os

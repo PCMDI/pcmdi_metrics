@@ -2,15 +2,11 @@ from __future__ import print_function
 from collections import defaultdict
 from pcmdi_metrics.driver.pmp_parser import PMPParser
 
-import copy
 import collections
 import datetime
 import glob
 import os
 import pcmdi_metrics
-import re
-
-from pcmdi_metrics.variability_mode.lib import sort_human
 
 
 def AddParserArgument():
