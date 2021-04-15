@@ -52,7 +52,7 @@ def merge_jsons(mip, exp, case_id, metricsCollection, pmprdir):
         os.path.join(
             json_file_dir,
             json_file_template(
-                mip=mip, exp=exp, metricsCollection=metricsCollection, 
+                mip=mip, exp=exp, metricsCollection=metricsCollection,
                 case_id=case_id, model='*', realization='*') + '.json')))
 
     # Remove diveDown JSONs and previously generated merged JSONs if included

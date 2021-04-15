@@ -14,7 +14,8 @@ from genutil import StringConstructor
 from PMPdriver_lib import AddParserArgument
 from PMPdriver_lib import metrics_to_json
 from EnsoMetrics.EnsoCollectionsLib import defCollection, ReferenceObservations
-from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection, ComputeCollection_ObsOnly
+# from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
+from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection_ObsOnly
 
 # To avoid below error when using multi cores
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
@@ -142,7 +143,7 @@ for obs in list_obs:
             try:
                 # finding file for 'obs', 'var'
                 file_name = param.reference_data_path[obs].replace('VAR', var0)
-                file_areacell = None  ## temporary for now
+                file_areacell = None  # temporary for now
                 try:
                     file_landmask = param.reference_data_lf_path[obs]
                 except:
@@ -176,7 +177,7 @@ for obs in list_obs:
                                       'path + filename_area': list_areacell, 'areaname': list_name_area,
                                       'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
             except:
-                print('\033[95m' + 'Observation dataset' + str(obs) + 
+                print('\033[95m' + 'Observation dataset' + str(obs) +
                       " is not given for variable " + str(var) + '\033[0m')
 
 print('PMPdriver: dict_obs readin end')
@@ -195,8 +196,6 @@ if debug:
     with open("dict_obs_" + mc_name + ".json", "w") as f_dict_obs:
         json.dump(dict_obs, f_dict_obs, indent=4, sort_keys=True)
 
-sys.exit("TEST")
-
 # Compute the metric collection (OBS to OBS)
 dict_metric, dict_dive = ComputeCollection_ObsOnly(mc_name, dictDatasets, debug=True, netcdf=True, netcdf_name=netcdf)
 if debug:
@@ -206,6 +205,4 @@ if debug:
 # OUTPUT METRICS TO JSON FILE (per simulation)
 outdir = netcdf_path
 json_name = netcdf_name
-metrics_to_json(mc_name, dict_obs, dict_metric, dict_dive, egg_pth, outdir, json_name, mod=mod, run=run)
-
-sys.exit("TEST")
+metrics_to_json(mc_name, dict_obs, dict_metric, dict_dive, egg_pth, outdir, json_name, mod='obs', run='test')

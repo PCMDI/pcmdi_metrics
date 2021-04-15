@@ -10,10 +10,12 @@ import os
 import pcmdi_metrics
 import re
 
+from pcmdi_metrics.variability_mode.lib import sort_human
+
 
 def AddParserArgument():
 
-    P = PMPParser() # Includes all default options
+    P = PMPParser()  # Includes all default options
 
     P.add_argument("--mip",
                    type=str,
@@ -77,18 +79,10 @@ def AddParserArgument():
                    const=True, default=True,
                    type=bool,
                    help="Option for generate netCDF file output: True (default) / False")
-    
+
     param = P.get_parameter()
 
     return param
-
-
-def sort_human(input_list):
-    tmp_list = copy.copy(input_list)
-    convert = lambda text: float(text) if text.isdigit() else text
-    alphanum = lambda key: [convert(c) for c in re.split('([-+]?[0-9]*\.?[0-9]*)', key)]
-    tmp_list.sort(key=alphanum)
-    return tmp_list
 
 
 # Dictionary to save result
@@ -104,8 +98,8 @@ def metrics_to_json(mc_name, dict_obs, dict_metric, dict_dive, egg_pth, outdir, 
             "disclaimer.txt")).read()
 
     if mc_name == 'MC1':
-        reference = ("The statistics in this file are based on Bellenger et al."
-                     + "Clim Dyn (2014) 42:1999-2018. doi:10.1007/s00382-013-1783-z")
+        reference = ("The statistics in this file are based on Bellenger et al. " +
+                     "Clim Dyn (2014) 42:1999-2018. doi:10.1007/s00382-013-1783-z")
     elif mc_name == 'ENSO_perf':
         reference = "MC for ENSO Performance..."
     elif mc_name == 'ENSO_tel':
