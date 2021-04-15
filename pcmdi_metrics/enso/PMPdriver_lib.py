@@ -69,6 +69,10 @@ def AddParserArgument():
                    const=True, default=False,
                    type=bool,
                    help="Option for debug: True / False (defualt)")
+    P.add_argument("--obs_cmor", nargs='?',
+                   const=True, default=False,
+                   type=bool,
+                   help="Use CMORized reference database?: True / False (defualt)")
     P.add_argument("--nc_out", nargs='?',
                    const=True, default=True,
                    type=bool,

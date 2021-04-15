@@ -82,6 +82,9 @@ print('netcdf_path:', netcdf_path)
 debug = param.debug
 print('debug:', debug)
 
+obs_cmor = param.obs_cmor
+print('obs_cmor:', obs_cmor)
+
 # =================================================
 # Prepare loop iteration
 # -------------------------------------------------
@@ -340,7 +343,7 @@ for mod in models:
                     'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
 
                 print('PMPdriver: var loop end')
-            
+
             # dictionary needed by EnsoMetrics.ComputeMetricsLib.ComputeCollection
             dictDatasets = {'model': dict_mod, 'observations': dict_obs}
             print('dictDatasets:')
@@ -370,12 +373,18 @@ for mod in models:
                 print('netcdf_name:', netcdf_name)
                 print('json_name:', json_name)
 
+            if obs_cmor:
+                obs_interpreter = "CMIP"
+            else:
+                obs_interpreter = None
+
             # Computes the metric collection
             print("\n### Compute the metric collection ###\n")
             cdms2.setAutoBounds('on')
             dict_metric[mod][run], dict_dive[mod][run] = ComputeCollection(
                 mc_name, dictDatasets, mod_run, netcdf=param.nc_out,
-                netcdf_name=netcdf, debug=debug)
+                netcdf_name=netcdf, debug=debug, obs_interpreter=obs_interpreter)
+
             if debug:
                 print('file_name:', file_name)
                 print('list_files:', list_files)
