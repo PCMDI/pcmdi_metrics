@@ -174,19 +174,20 @@ for obs in list_obs:
 
                         #file_name = os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var0]["template"])
 
-                        # Temporary -- manually find correct file
-                        # Given info: obs, var0
-                        print('obs, var0:', obs, var0)
+                        # Temporary -- manually find correct file using given info: obs, var0
+                        if debug:
+                            print('obs, var0:', obs, var0)
                         file_list_tmp = [a for a in getListOfFiles(obs_cmor_path) if var0 in a and obs in a]
                         if len(file_list_tmp) > 0:
-                            file_name = sorted([a for a in getListOfFiles(obs_cmor_path) if var0 in a and obs in a])[-1]  # temporary until catalogue fixed
+                            file_name = file_list_tmp[-1]  # temporary until catalogue fixed
                         else:
                             file_name = None
 
                     else:
                         file_name = None
 
-                    print('file_name:', file_name)
+                    if debug:
+                        print('file_name:', file_name)
                 else:
                     file_name = param.reference_data_path[obs].replace('VAR', var0)
                 file_areacell = None  # temporary for now
@@ -415,12 +416,6 @@ for mod in models:
                                                case_id=case_id, model=mod, realization=run)
             netcdf = os.path.join(netcdf_path, netcdf_name)
 
-            if debug:
-                print('file_name:', file_name)
-                print('list_files:', list_files)
-                print('netcdf_name:', netcdf_name)
-                print('json_name:', json_name)
-
             if obs_cmor:
                 obs_interpreter = "CMIP"
             else:
@@ -437,6 +432,7 @@ for mod in models:
                 print('file_name:', file_name)
                 print('list_files:', list_files)
                 print('netcdf_name:', netcdf_name)
+                print('json_name:', json_name)
                 print('dict_metric:')
                 print(json.dumps(dict_metric, indent=4, sort_keys=True))
 
