@@ -351,15 +351,9 @@ for mod in models:
                         modpath_tmp = get_file(modpath(mip=mip, exp=exp, realm=realm, model=mod, 
                                                        realization=realization, variable=var1))
                         # modpath_lf_tmp = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, variable=dict_var['landmask']['var_name']))
-                        if not os.path.isfile(modpath_tmp):
-                            modpath_tmp = None
-                        # if not os.path.isfile(modpath_lf_tmp):
-                        #     modpath_lf_tmp = None
                         file_areacell_tmp = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, 
                                                                 variable=areacell_in_file))
                         print("file_areacell_tmp:", file_areacell_tmp)
-                        if not os.path.isfile(file_areacell_tmp):
-                            file_areacell_tmp = None
                         list_files.append(modpath_tmp)
                         list_areacell.append(file_areacell_tmp)
                         list_name_area.append(areacell_in_file)
@@ -367,11 +361,6 @@ for mod in models:
                         list_landmask.append(file_landmask)
                         list_name_land.append(landmask_in_file)
                 else:
-                    if not os.path.isfile(file_name):
-                        file_name = None
-                    if file_landmask is not None:
-                        if not os.path.isfile(file_landmask):
-                            file_landmask = None
                     list_files = file_name
                     list_areacell = file_areacell
                     list_name_area = areacell_in_file
