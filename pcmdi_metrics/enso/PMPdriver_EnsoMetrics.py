@@ -23,6 +23,24 @@ from pcmdi_metrics.variability_mode.lib import sort_human
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
 
+
+def getListOfFiles(dirName):
+    # create a list of file and sub directories 
+    # names in the given directory 
+    listOfFile = os.listdir(dirName)
+    allFiles = list()
+    # Iterate over all the entries
+    for entry in listOfFile:
+        # Create full path
+        fullPath = os.path.join(dirName, entry)
+        # If entry is a directory then get the list of files in this directory 
+        if os.path.isdir(fullPath):
+            allFiles = allFiles + getListOfFiles(fullPath)
+        else:
+            allFiles.append(fullPath)
+                
+    return allFiles        
+
 # =================================================
 # Collect user defined options
 # -------------------------------------------------
@@ -85,6 +103,11 @@ print('debug:', debug)
 obs_cmor = param.obs_cmor
 print('obs_cmor:', obs_cmor)
 
+obs_cmor_path = param.obs_cmor_path
+print('obs_cmor_path:', obs_cmor_path)
+
+obs_catalogue_json = param.obs_catalogue
+
 # =================================================
 # Prepare loop iteration
 # -------------------------------------------------
@@ -100,7 +123,8 @@ print('egg_pth:', egg_pth)
 for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
     if not os.path.exists(outdir(output_type=output_type)):
         os.makedirs(outdir(output_type=output_type))
-    print(outdir(output_type=output_type))
+    print('output directory for '+ output_type + ':' + 
+          outdir(output_type=output_type))
 
 # list of variables
 list_variables = list()
@@ -110,17 +134,23 @@ for metric in list_metric:
         if var not in list_variables:
             list_variables.append(var)
 list_variables = sorted(list_variables)
-print(list_variables)
+print('list_variables:', list_variables)
 
 # list of observations
 list_obs = list()
-for metric in list_metric:
-    dict_var_obs = dict_mc['metrics_list'][metric]['obs_name']
-    for var in dict_var_obs.keys():
-        for obs in dict_var_obs[var]:
-            if obs not in list_obs:
-                list_obs.append(obs)
+if obs_cmor and obs_catalogue_json != None:
+    with open(obs_catalogue_json) as jobs:
+        obs_catalogue_dict = json.loads(jobs.read())
+    list_obs = list(obs_catalogue_dict.keys()) 
+else:
+    for metric in list_metric:
+        dict_var_obs = dict_mc['metrics_list'][metric]['obs_name']
+        for var in dict_var_obs.keys():
+            for obs in dict_var_obs[var]:
+                if obs not in list_obs:
+                    list_obs.append(obs)
 list_obs = sorted(list_obs)
+print('list_obs:', list_obs)
 
 #
 # finding file and variable name in file for each observations dataset
@@ -128,9 +158,18 @@ list_obs = sorted(list_obs)
 dict_obs = dict()
 
 for obs in list_obs:
-    # be sure to add your datasets to EnsoCollectionsLib.ReferenceObservations if needed
-    dict_var = ReferenceObservations(obs)['variable_name_in_file']
+    if obs_cmor:
+        dict_var = CmipVariables()["variable_name_in_file"]
+        #if obs_catalogue_json != None:
+        #    list_variables_tmp = list(obs_catalogue_dict[obs].keys())
+        #    print(obs, "list_variables:", list_variables_tmp)
+    else:
+        # be sure to add your datasets to EnsoCollectionsLib.ReferenceObservations if needed
+        dict_var = ReferenceObservations(obs)['variable_name_in_file']
+        #list_variables_tmp = list_variables
+
     dict_obs[obs] = dict()
+    #for var in list_variables_tmp:
     for var in list_variables:
         #
         # finding variable name in file
@@ -145,9 +184,29 @@ for obs in list_obs:
             else:
                 var0 = var_in_file
 
-            try:
+            #try:
                 # finding file for 'obs', 'var'
-                file_name = param.reference_data_path[obs].replace('VAR', var0)
+                if obs_cmor and obs_catalogue_json != None:
+
+                    if var0 in list(obs_catalogue_dict[obs].keys()):
+
+                        #file_name = os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var0]["template"])
+
+                        # Temporary -- manually find correct file
+                        # Given info: obs, var0
+                        print('obs, var0:', obs, var0)
+                        file_list_tmp = [a for a in getListOfFiles(obs_cmor_path) if var0 in a and obs in a]
+                        if len(file_list_tmp) > 0:
+                            file_name = sorted([a for a in getListOfFiles(obs_cmor_path) if var0 in a and obs in a])[-1]  # temporary until catalogue fixed
+                        else:
+                            file_name = None
+
+                    else:
+                        file_name = None
+
+                    print('file_name:', file_name)
+                else:
+                    file_name = param.reference_data_path[obs].replace('VAR', var0)
                 file_areacell = None  # temporary for now
                 try:
                     file_landmask = param.reference_data_lf_path[obs]
@@ -164,7 +223,12 @@ for obs in list_obs:
                 # if var_in_file is a list (like for thf) all variables should be read from the same realm
                 if isinstance(var_in_file, list):
                     list_files = list()
-                    list_files = [param.reference_data_path[obs].replace('VAR', var1) for var1 in var_in_file]
+                    if obs_cmor and obs_catalogue_json != None:
+                        #list_files = [os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var1]["template"]) for var1 in var_in_file]
+                        for var1 in var_in_file:
+                            list_files.append(sorted([a for a in getListOfFiles(obs_cmor_path) if var1 in a and obs in a])[-1])  # temporary until catalogue fixed
+                    else:
+                        list_files = [param.reference_data_path[obs].replace('VAR', var1) for var1 in var_in_file]
                     list_areacell = [file_areacell for var1 in var_in_file]
                     list_name_area = [areacell_in_file for var1 in var_in_file]
                     try:
@@ -181,9 +245,9 @@ for obs in list_obs:
                 dict_obs[obs][var] = {'path + filename': list_files, 'varname': var_in_file,
                                       'path + filename_area': list_areacell, 'areaname': list_name_area,
                                       'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
-            except:
-                print('\033[95m' + 'Observation dataset' + str(obs) + 
-                      " is not given for variable " + str(var) + '\033[0m')
+            #except:
+            #    print('\033[95m' + 'Observation dataset' + str(obs) + 
+            #          " is not given for variable " + str(var) + '\033[0m')
 
 print('PMPdriver: dict_obs readin end')
 

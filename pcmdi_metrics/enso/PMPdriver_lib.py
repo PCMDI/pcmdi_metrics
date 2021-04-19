@@ -62,6 +62,16 @@ def AddParserArgument():
                    dest="case_id",
                    default="{:v%Y%m%d}".format(datetime.datetime.now()),
                    help="version as date, e.g., v20191116 (yyyy-mm-dd)")
+    P.add_argument("--obs_catalogue",
+                   type=str,
+                   default=None,
+                   dest='obs_catalogue',
+                   help="obs_catalogue JSON file for CMORized observation, default is None")
+    P.add_argument("--obs_cmor_path",
+                   type=str,
+                   default=None,
+                   dest='obs_cmor_path',
+                   help="Directory path for CMORized observation dataset, default is None")
     # Switches
     P.add_argument("-d", "--debug", nargs='?',
                    const=True, default=False,

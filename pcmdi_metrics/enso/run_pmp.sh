@@ -7,16 +7,18 @@ ver=`date +"%Y%m%d-%H%M"`
 
 #mips='cmip5 cmip6'
 #mips='cmip5'
-mips='obs2obs'
+mips='cmip6'
+#mips='obs2obs'
 
-MCs='ENSO_perf ENSO_tel ENSO_proc'
-#MCs='ENSO_perf'
+#MCs='ENSO_perf ENSO_tel ENSO_proc'
+MCs='ENSO_perf'
 #MCs='ENSO_tel'
 #MCs='ENSO_proc'
 
 #param_file='my_Param_ENSO.py'
+param_file='my_Param_ENSO_pmpobs.py'
 #param_file='my_Param_ENSO_obs2obs.py'
-param_file='my_Param_ENSO_obs2obs_combinedDataSource.py'
+#param_file='my_Param_ENSO_obs2obs_combinedDataSource.py'
 
 mkdir -p log
 
