@@ -234,6 +234,9 @@ for obs in list_obs:
             #    print('\033[95m' + 'Observation dataset' + str(obs) + 
             #          " is not given for variable " + str(var) + '\033[0m')
 
+    if len(list(dict_obs[obs].keys())) == 0:
+        del dict_obs[obs]
+
 print('PMPdriver: dict_obs readin end')
 
 # =================================================
