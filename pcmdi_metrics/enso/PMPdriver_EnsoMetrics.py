@@ -14,7 +14,7 @@ import sys
 from genutil import StringConstructor
 from PMPdriver_lib import AddParserArgument
 from PMPdriver_lib import metrics_to_json
-from PMPdriver_lib import find_realm, get_file
+from PMPdriver_lib import find_realm, get_file, getListOfFiles
 from EnsoMetrics.EnsoCollectionsLib import CmipVariables, defCollection, ReferenceObservations
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
 from pcmdi_metrics.variability_mode.lib import sort_human
@@ -22,24 +22,6 @@ from pcmdi_metrics.variability_mode.lib import sort_human
 # To avoid below error when using multi cores
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
 os.environ['OPENBLAS_NUM_THREADS'] = '1'
-
-
-def getListOfFiles(dirName):
-    # create a list of file and sub directories 
-    # names in the given directory 
-    listOfFile = os.listdir(dirName)
-    allFiles = list()
-    # Iterate over all the entries
-    for entry in listOfFile:
-        # Create full path
-        fullPath = os.path.join(dirName, entry)
-        # If entry is a directory then get the list of files in this directory 
-        if os.path.isdir(fullPath):
-            allFiles = allFiles + getListOfFiles(fullPath)
-        else:
-            allFiles.append(fullPath)
-                
-    return allFiles        
 
 # =================================================
 # Collect user defined options
@@ -242,9 +224,11 @@ for obs in list_obs:
                     list_name_area = areacell_in_file
                     list_landmask = file_landmask
                     list_name_land = landmask_in_file
-                dict_obs[obs][var] = {'path + filename': list_files, 'varname': var_in_file,
-                                      'path + filename_area': list_areacell, 'areaname': list_name_area,
-                                      'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
+                    
+                if list_files is not None:
+                    dict_obs[obs][var] = {'path + filename': list_files, 'varname': var_in_file,
+                                        'path + filename_area': list_areacell, 'areaname': list_name_area,
+                                        'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
             #except:
             #    print('\033[95m' + 'Observation dataset' + str(obs) + 
             #          " is not given for variable " + str(var) + '\033[0m')
