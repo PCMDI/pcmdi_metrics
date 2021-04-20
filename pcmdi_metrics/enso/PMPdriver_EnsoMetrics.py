@@ -348,14 +348,12 @@ for mod in models:
                         areacell_in_file, realm = find_realm(var1)
                         modpath_tmp = get_file(modpath(mip=mip, exp=exp, realm=realm, model=mod, 
                                                        realization=realization, variable=var1))
-                        # modpath_lf_tmp = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, variable=dict_var['landmask']['var_name']))
                         file_areacell_tmp = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, 
                                                                 variable=areacell_in_file))
                         print("file_areacell_tmp:", file_areacell_tmp)
                         list_files.append(modpath_tmp)
                         list_areacell.append(file_areacell_tmp)
                         list_name_area.append(areacell_in_file)
-                        # list_landmask.append(modpath_lf_tmp)
                         list_landmask.append(file_landmask)
                         list_name_land.append(landmask_in_file)
                 else:
