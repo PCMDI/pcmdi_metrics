@@ -312,8 +312,6 @@ for mod in models:
                 #
                 file_name = get_file(modpath(mip=mip, realm=realm, exp=exp, model=mod, realization=run, variable=var0))
                 file_areacell = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, variable=areacell_in_file))
-                if not os.path.isfile(file_areacell):
-                    file_areacell = None
                 file_landmask = get_file(modpath_lf(mip=mip, realm=realm2,
                                                     model=mod, variable=dict_var['landmask']['var_name']))
                 # -- TEMPORARY --
