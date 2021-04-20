@@ -16,7 +16,7 @@ MCs='ENSO_perf'
 #MCs='ENSO_proc'
 
 #param_file='my_Param_ENSO.py'
-param_file='my_Param_ENSO_pmpobs.py'
+param_file='my_Param_ENSO_PCMDIobs.py'
 #param_file='my_Param_ENSO_obs2obs.py'
 #param_file='my_Param_ENSO_obs2obs_combinedDataSource.py'
 
