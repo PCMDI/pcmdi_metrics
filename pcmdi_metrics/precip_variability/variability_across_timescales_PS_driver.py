@@ -2,6 +2,7 @@ import cdms2 as cdms
 import MV2 as MV
 import glob
 import numpy as np
+import copy
 import os
 from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 from pcmdi_metrics.precip_variability.lib import (
@@ -14,10 +15,6 @@ from pcmdi_metrics.precip_variability.lib import (
     RedNoiseSignificanceLevel,
     StandardDeviation,
 )
-
-# Make output directory
-if not (os.path.isdir(outdir)):
-    os.makedirs(outdir)
 
 # Read parameters
 P = PMPParser()
@@ -54,6 +51,10 @@ for ifl in range(len(file_list)):
         data.append(model + "." + ens)
 print("# of data:", len(data))
 print(data)
+
+# Make output directory
+if not (os.path.isdir(outdir)):
+    os.makedirs(outdir)
 
 # Regridding -> Anomaly -> Power spectra -> Write
 syr = prd[0]
