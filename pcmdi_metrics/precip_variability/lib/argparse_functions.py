@@ -50,4 +50,3 @@ def AddParserArgument(P):
                    default=None,
                    help="length of overlap between segments in power spectra")
     return P
-

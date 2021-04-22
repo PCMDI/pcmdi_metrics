@@ -67,10 +67,16 @@ for id, dat in enumerate(data):
         ldy = 31
     print(dat, cal)
     for iyr in range(syr, eyr + 1):
-        do = f[id](
-            var,
-            time=(str(iyr) + "-1-1 0:0:0", str(iyr) + "-12-" + str(ldy) + " 23:59:59"),
-        ) * float(fac)
+        do = (
+            f[id](
+                var,
+                time=(
+                    str(iyr) + "-1-1 0:0:0",
+                    str(iyr) + "-12-" + str(ldy) + " 23:59:59",
+                ),
+            )
+            * float(fac)
+        )
 
         # Regridding
         rgtmp = Regrid2deg(do)
