@@ -11,7 +11,7 @@ def find_latest(path):
 # =================================================
 # Background Information
 # -------------------------------------------------
-mip = 'cmip6'  # cmip5, cmip6
+mip = 'CLIVAR_LE'  # cmip5, cmip6
 exp = 'historical'  # historical, piControl
 
 # =================================================
@@ -35,23 +35,16 @@ obs_catalogue = "/p/user_pub/PCMDIobs/catalogue/pcmdiobs_monthly_bySource_catalo
 # =================================================
 # Models
 # -------------------------------------------------
-modpath = os.path.join(
-    find_latest('/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest'),
-    '%(mip)/%(exp)/%(realm)/mon/%(variable)',
-    '%(mip).%(exp).%(model).%(realization).mon.%(variable).xml')
+modpath = '/work/lee1043/ESGF/ESG_NCAR/%(mip)/%(model)/mon/%(variable)/rewrite/%(variable)_%(realm)_%(model)_%(exp)_%(realization)_????01-200512_rewrite.nc'
+modpath_lf = '/work/lee1043/ESGF/ESG_NCAR/CESM_LE/mon/%(realm)/%(variable)/b.e11.B20TRC5CNBDRD.f09_g16.002.cam.h0.%(variable).????01-200512.nc'
 
-modpath_lf = os.path.join(
-    find_latest('/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest'),
-    '%(mip)/historical/%(realm)/fx/%(variable)',
-    '%(mip).historical.%(model).r0i0p0.fx.%(variable).xml')
-
-modnames = ['all']
+modnames = ['CESM1-CAM5']
 
 if debug:
-    modnames = ['IPSL-CM6A-LR']
+    modnames = ['CESM1-CAM5']
 
-realization = 'r1i1p1f1'  # r1i1p1 (cmip5), r1i1p1f1 (cmip6), * (all)
-# realization = '*'
+realization = 'r1i1p1'  # r1i1p1 (cmip5), r1i1p1f1 (cmip6), * (all)
+#realization = '*'
 
 # =================================================
 # Metrics Collection

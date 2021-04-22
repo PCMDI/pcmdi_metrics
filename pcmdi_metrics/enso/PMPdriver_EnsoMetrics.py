@@ -14,7 +14,8 @@ import sys
 from genutil import StringConstructor
 from PMPdriver_lib import AddParserArgument
 from PMPdriver_lib import metrics_to_json
-from PMPdriver_lib import find_realm, get_file, getListOfFiles
+from PMPdriver_lib import find_realm, get_file
+from PMPdriver_lib import CLIVAR_LargeEnsemble_Variables 
 from EnsoMetrics.EnsoCollectionsLib import CmipVariables, defCollection, ReferenceObservations
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
 from pcmdi_metrics.variability_mode.lib import sort_human
@@ -172,8 +173,8 @@ for obs in list_obs:
 
                     if var0 in list(obs_catalogue_dict[obs].keys()):
 
-                        #file_name = os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var0]["template"])
-
+                        file_name = os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var0]["template"])
+                        """
                         # Temporary -- manually find correct file using given info: obs, var0
                         if debug:
                             print('obs, var0:', obs, var0)
@@ -182,7 +183,7 @@ for obs in list_obs:
                             file_name = file_list_tmp[-1]  # temporary until catalogue fixed
                         else:
                             file_name = None
-
+                        """
                     else:
                         file_name = None
 
@@ -207,9 +208,11 @@ for obs in list_obs:
                 if isinstance(var_in_file, list):
                     list_files = list()
                     if obs_cmor and obs_catalogue_json != None:
-                        #list_files = [os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var1]["template"]) for var1 in var_in_file]
+                        list_files = [os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var1]["template"]) for var1 in var_in_file]
+                        """
                         for var1 in var_in_file:
                             list_files.append(sorted([a for a in getListOfFiles(obs_cmor_path) if var1 in a and obs in a])[-1])  # temporary until catalogue fixed
+                        """
                     else:
                         list_files = [param.reference_data_path[obs].replace('VAR', var1) for var1 in var_in_file]
                     list_areacell = [file_areacell for var1 in var_in_file]
@@ -244,7 +247,10 @@ print('PMPdriver: dict_obs readin end')
 # -------------------------------------------------
 # finding file and variable name in file for each observations dataset
 dict_metric, dict_dive = dict(), dict()
-dict_var = CmipVariables()['variable_name_in_file']
+if "CLIVAR_LE" == mip:
+    dict_var = CLIVAR_LargeEnsemble_Variables()['variable_name_in_file']
+else:
+    dict_var = CmipVariables()['variable_name_in_file']
 
 print('models:', models)
 
@@ -254,21 +260,28 @@ for mod in models:
     dict_mod = {mod: {}}
     dict_metric[mod], dict_dive[mod] = dict(), dict()
 
+    realm, areacell_in_file = find_realm('ts', mip)
+
     model_path_list = glob.glob(
-        modpath(mip=mip, exp=exp, realm='atmos', model=mod, realization=realization, variable='ts'))
+        modpath(mip=mip, exp=exp, realm=realm, model=mod, realization=realization, variable='ts'))
 
     model_path_list = sort_human(model_path_list)
     if debug:
+        print('modpath:', modpath(mip=mip, exp=exp, realm=realm, model=mod, realization=realization, variable='ts'))
         print('model_path_list:', model_path_list)
 
     # Find where run can be gripped from given filename template for modpath
     print('realization:', realization)
     try:
-        run_in_modpath = modpath(mip=mip, exp=exp, realm='atmos',  model=mod, realization=realization,
-            variable='ts').split('/')[-1].split('.').index(realization)
+        if mip == "CLIVAR_LE":
+            inline_separator = '_'
+        else:
+            inline_separator = '.'
+        run_in_modpath = modpath(mip=mip, exp=exp, realm=realm, model=mod, realization=realization,
+            variable='ts').split('/')[-1].split(inline_separator).index(realization)
         print('run_in_modpath:', run_in_modpath)
         # Collect available runs
-        runs_list = [model_path.split('/')[-1].split('.')[run_in_modpath] for model_path in model_path_list]
+        runs_list = [model_path.split('/')[-1].split(inline_separator)[run_in_modpath] for model_path in model_path_list]
     except:
         if realization not in ["all", "*"]:
             runs_list = [realization]
@@ -299,7 +312,7 @@ for mod in models:
                 else:
                     var0 = var_in_file
                 # finding variable type (atmos or ocean)
-                areacell_in_file, realm = find_realm(var0)
+                realm, areacell_in_file = find_realm(var0, mip)
                 if realm == 'Amon':
                     realm2 = 'atmos'
                 elif realm == 'Omon':
@@ -345,7 +358,7 @@ for mod in models:
                     list_areacell, list_files, list_landmask, list_name_area, list_name_land = \
                         list(), list(), list(), list(), list()
                     for var1 in var_in_file:
-                        areacell_in_file, realm = find_realm(var1)
+                        realm, areacell_in_file = find_realm(var1, mip)
                         modpath_tmp = get_file(modpath(mip=mip, exp=exp, realm=realm, model=mod, 
                                                        realization=realization, variable=var1))
                         file_areacell_tmp = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, 

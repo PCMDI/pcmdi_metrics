@@ -162,16 +162,20 @@ def metrics_to_json(mc_name, dict_obs, dict_metric, dict_dive, egg_pth, outdir, 
         sort_keys=True)
 
 
-def find_realm(varname):
+def find_realm(varname, mip):
     if varname in ["tos", "tauuo", "zos", "areacello", "SSH", "ssh"]:
-        realm = "ocean"
-        # realm = "Omon"
+        if mip == "CLIVAR_LE":
+            realm = "Omon"
+        else:
+            realm = "ocean"
         areacell_in_file = "areacello"
     else:
-        realm = "atmos"
-        # realm = "Amon"
+        if mip == "CLIVAR_LE":
+            realm = "Amon"
+        else:
+            realm = "atmos"
         areacell_in_file = "areacella"
-    return areacell_in_file, realm
+    return realm, areacell_in_file
 
 
 def get_file(path):
@@ -193,6 +197,7 @@ def get_file(path):
     return path_to_return
 
 
+"""
 def getListOfFiles(dirName):
     # create a list of file and sub directories 
     # names in the given directory 
@@ -209,3 +214,53 @@ def getListOfFiles(dirName):
             allFiles.append(fullPath)
                 
     return allFiles    
+"""
+
+
+def CLIVAR_LargeEnsemble_Variables():
+    dict_cmip_variables = {
+        'reference': 'http://cfconventions.org/Data/cf-standard-names/46/build/cf-standard-name-table.html',
+        'variable_name_in_file': {
+            # line keys:
+            # '<internal_metrics_variable_name>':{'var_name':'<var_name_in_file>','cf_name':<as per ref above>,
+            #                                     'cf_unit':'<unit_in_file>'}
+            # areacell
+            'areacell': {'var_name': 'areacella', 'cf_name': 'cell_area', 'cf_units': 'm2'},
+            # landmask
+            'landmask': {'var_name': 'sftlf', 'cf_name': 'cell_area', 'cf_units': '1'},
+            # latent heat flux (on ocean grid or ocean points only)
+            'lhf': {'var_name': 'hfls', 'cf_name': 'surface_upward_latent_heat_flux', 'cf_units': 'W m-2'},
+            # longwave radiation computed from these variables IN THAT ORDER (on ocean grid or ocean points only)
+            # lwr = rlds - rlus
+            # sometimes lwr is included in the datasets in a variable called 'rls'
+            'lwr': {'var_name': 'flns', 'cf_name': 'net_longwave_flux_at_surface', 'cf_units': 'W m-2'},
+            # Rainfall Flux
+            'pr': {'var_name': 'pr', 'cf_name': 'precipitation_flux', 'cf_units': 'kg m-2 s-1'},
+            # Sea Level Pressure
+            'slp': {'var_name': 'psl', 'cf_name': 'air_pressure_at_sea_level', 'cf_units': 'Pa'},
+            # sensible heat flux (on ocean grid or ocean points only)
+            'shf': {'var_name': 'hfss', 'cf_name': 'surface_upward_sensible_heat_flux', 'cf_units': 'W m-2'},
+            # sea surface height
+            'ssh': {'var_name': 'ssh', 'cf_name': 'Sea Surface Height', 'cf_units': 'm'},
+            # sea surface temperature
+            'sst': {'var_name': 'ts', 'cf_name': 'surface_temperature', 'cf_units': 'K'},
+            # shortwave radiation computed from these variables IN THAT ORDER
+            # swr = rsds - rsus
+            # sometimes swr is included in the datasets in a variable called 'rss'
+            'swr': {'var_name': 'fsns', 'cf_name': 'net_shortwave_flux_at_surface', 'cf_units': 'W m-2'},
+            # zonal surface wind stress
+            'taux': {'var_name': 'tauu', 'cf_name': 'surface_downward_eastward_stress', 'cf_units': 'Pa'},
+            # total heat flux computed from these variables IN THAT ORDER
+            # tfh = hfls + hfss + rlds - rlus + rsds - rsus
+            # sometimes rls = rlds - rlus and rss = rsds - rsus
+            # sometimes thf is included in the datasets in a variable called 'hfds', 'netflux', 'thflx',...
+            'thf': {
+                'var_name': ['hfls', 'hfss', 'flns', 'fsns'],
+                'cf_name': ['surface_upward_latent_heat_flux', 'surface_upward_sensible_heat_flux',
+                            'net_longwave_flux_at_surface',
+                            'net_shortwave_flux_at_surface'],
+                'cf_units': 'W m-2', 'algebric_calculation': ['plus', 'plus', 'plus', 'plus']
+            },
+        },
+    }
+    return dict_cmip_variables
