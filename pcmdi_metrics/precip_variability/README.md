@@ -1,17 +1,22 @@
 # Precip variability across time scales
 
 ## Driver code:
-variability_across_timescales_PS_3hr_driver.py
+./variability_across_timescales_PS_3hr_driver.py   
 
 ## Parameter codes:
-variability_across_timescales_PS_3hr_params_cmip5.py   
-variability_across_timescales_PS_3hr_params_cmip6.py   
-variability_across_timescales_PS_3hr_params_IMERG.py   
-variability_across_timescales_PS_3hr_params_TRMM.py   
-variability_across_timescales_PS_3hr_params_CMORPH.py
+./param/variability_across_timescales_PS_3hr_params_IMERG.py   
+./param/variability_across_timescales_PS_3hr_params_TRMM.py   
+./param/variability_across_timescales_PS_3hr_params_CMORPH.py   
+./param/variability_across_timescales_PS_3hr_params_cmip5.py   
+./param/variability_across_timescales_PS_3hr_params_cmip6.py  
+
+## Run scripts:
+./scripts_pcmdi/run_obs.bash   
+./scripts_pcmdi/run_cmip5.bash   
+./scripts_pcmdi/run_cmip6.bash   
 
 ## Area average code:
-calc_ps_3hr_area.mean.pkl.py
+./scripts_pcmdi/calc_ps_3hr_area.mean.pkl.py   
 
 ## Frequency average code:
-calc_ps_3hr_area.freq.mean.pkl.json.py
+./scripts_pcmdi/calc_ps_3hr_area.freq.mean.pkl.json.py   
