@@ -12,7 +12,7 @@ from __future__ import print_function
 from genutil import StringConstructor
 from subprocess import Popen
 
-from PMPdriver_lib import AddParserArgument
+from PMPdriver_lib import AddParserArgument, find_realm
 from pcmdi_metrics.variability_mode.lib import sort_human
 
 import glob
@@ -49,8 +49,12 @@ print('models:', models)
 
 # Include all models if conditioned
 if ('all' in [m.lower() for m in models]) or (models == 'all'):
-    model_index_path = param.modpath.split('/')[-1].split('.').index("%(model)")
-    models = ([p.split('/')[-1].split('.')[model_index_path] for p in glob.glob(modpath(
+    if mip == "CLIVAR_LE":
+        inline_separator = '_'
+    else:
+        inline_separator = '.'
+    model_index_path = param.modpath.split('/')[-1].split(inline_separator).index("%(model)")
+    models = ([p.split('/')[-1].split(inline_separator)[model_index_path] for p in glob.glob(modpath(
                 mip=mip, exp=exp, model='*', realization='*', variable='ts'))])
     # remove duplicates
     models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
@@ -94,26 +98,30 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
 # -------------------------------------------------
 if mip == "obs2obs":
     param_file = './my_Param_ENSO_obs2obs.py'
+if mip == "CLIVAR_LE":
+    param_file = './my_Param_ENSO_PCMDIobs_CLIVAR_LE.py'
 else:
-    param_file = './my_Param_ENSO.py'
+    param_file = './my_Param_ENSO_PCMDIobs.py'
 
 cmds_list = []
 for model in models:
     print(' ----- model: ', model, ' ---------------------')
     # Find all xmls for the given model
+    realm, areacell_in_file = find_realm('ts', mip)
     model_path_list = glob.glob(
-        modpath(mip=mip, exp=exp, model=model, realization="*", variable='ts'))
+        modpath(mip=mip, exp=exp, realm=realm, model=model, realization="*", variable='ts'))
     # sort in nice way
     model_path_list = sort_human(model_path_list)
-    # if debug:
-    #    print('model_path_list:', model_path_list)
+    if debug:
+        print('model_path_list:', model_path_list)
     try:
         # Find where run can be gripped from given filename template for modpath
-        run_in_modpath = modpath(
-            mip=mip, exp=exp, model=model,
-            realization=realization, variable='ts').split('/')[-1].split('.').index(realization)
+        run_in_modpath = modpath(mip=mip, exp=exp, realm=realm, model=model, realization=realization,
+            variable='ts').split('/')[-1].split(inline_separator).index(realization)
+        if debug:
+            print('run_in_modpath:', run_in_modpath)
         # Collect available runs
-        runs_list = [model_path.split('/')[-1].split('.')[run_in_modpath] for model_path in model_path_list]
+        runs_list = [model_path.split('/')[-1].split(inline_separator)[run_in_modpath] for model_path in model_path_list]
     except:
         if realization not in ["*", "all"]:
             runs_list = [realization]

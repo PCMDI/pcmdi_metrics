@@ -13,10 +13,12 @@ case_id="v"`date +"%Y%m%d"`
 #mips='cmip5 cmip6'
 #mips='cmip5'
 #mips='cmip6'
-mips='obs2obs'
+mips='CLIVAR_LE'
+#mips='obs2obs'
 
-MCs='ENSO_perf ENSO_tel ENSO_proc'
+#MCs='ENSO_perf ENSO_tel ENSO_proc'
 #MCs='ENSO_perf'
+MCs='ENSO_tel ENSO_proc'
 #MCs='ENSO_tel'
 #MCs='ENSO_proc'
 
@@ -31,11 +33,13 @@ for mip in $mips; do
     if [ $mip == 'cmip5' ]; then
         #realization='r1i1p1'
         #modnames="BNU-ESM HadCM3"
-        param_file='my_Param_ENSO.py'
+        param_file='my_Param_ENSO_PCMDIobs.py'
     elif [ $mip == 'cmip6' ]; then
         #realization='r1i1p1f1'
         #modnames="BCC-ESM1 CESM2 CESM2-FV2 CESM2-WACCM CESM2-WACCM-FV2 GFDL-CM4 GFDL-ESM4 MRI-ESM2-0"
-        param_file='my_Param_ENSO.py'
+        param_file='my_Param_ENSO_PCMDIobs.py'
+    elif [ $mip == 'CLIVAR_LE' ]; then
+        param_file='my_Param_ENSO_PCMDIobs_CLIVAR_LE.py'
     elif [ $mip == 'obs2obs' ]; then
         param_file='my_Param_ENSO_obs2obs.py'
     fi

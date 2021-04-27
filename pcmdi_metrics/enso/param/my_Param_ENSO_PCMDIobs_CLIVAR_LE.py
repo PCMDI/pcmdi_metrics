@@ -17,8 +17,8 @@ exp = 'historical'  # historical, piControl
 # =================================================
 # Miscellaneous
 # -------------------------------------------------
-# debug = False
-debug = True
+debug = False
+# debug = True
 nc_out = True
 
 # =================================================
@@ -39,12 +39,11 @@ modpath = '/work/lee1043/ESGF/ESG_NCAR/%(mip)/%(model)/mon/%(variable)/rewrite/%
 modpath_lf = '/work/lee1043/ESGF/ESG_NCAR/CESM_LE/mon/%(realm)/%(variable)/b.e11.B20TRC5CNBDRD.f09_g16.002.cam.h0.%(variable).????01-200512.nc'
 
 modnames = ['CESM1-CAM5']
+realization = '*'
 
 if debug:
     modnames = ['CESM1-CAM5']
-
-realization = 'r1i1p1'  # r1i1p1 (cmip5), r1i1p1f1 (cmip6), * (all)
-#realization = '*'
+    realization = 'r1i1p1'  # r1i1p1 (cmip5), r1i1p1f1 (cmip6), * (all)
 
 # =================================================
 # Metrics Collection
