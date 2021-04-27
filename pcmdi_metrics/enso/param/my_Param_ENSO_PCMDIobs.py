@@ -17,8 +17,8 @@ exp = 'historical'  # historical, piControl
 # =================================================
 # Miscellaneous
 # -------------------------------------------------
-debug = False
-# debug = True
+# debug = False
+debug = True
 nc_out = True
 
 # =================================================
@@ -45,8 +45,11 @@ modpath_lf = os.path.join(
     '%(mip)/historical/%(realm)/fx/%(variable)',
     '%(mip).historical.%(model).r0i0p0.fx.%(variable).xml')
 
-modnames = ['all']
-realization = '*'
+modnames = ['IPSL-CM6A-LR']
+realization = 'r1i1p1f1'
+
+# modnames = ['all']
+# realization = '*'
 
 if debug:
     modnames = ['IPSL-CM6A-LR']

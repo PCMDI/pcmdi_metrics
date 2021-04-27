@@ -453,3 +453,5 @@ print('PMPdriver: model loop end')
 # -------------------------------------------------
 # json_name = json_name_template(mip=mip, exp=exp, metricsCollection=mc_name, model='all', realization='all')
 # metrics_to_json(mc_name, dict_obs, dict_metric, dict_dive, egg_pth, outdir, json_name)
+
+sys.exit(0)
