@@ -31,6 +31,10 @@ P = pcmdi_metrics.driver.pmp_parser.PMPParser(
         description='Runs PCMDI Modes of Variability Computations',
         formatter_class=RawTextHelpFormatter)
 P = AddParserArgument(P)
+P.add_argument("--param_dir",
+               type=str,
+               default=None,
+               help="directory for parameter files")
 param = P.get_parameter()
 
 # Pre-defined options
@@ -97,7 +101,9 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
 # =================================================
 # Generates list of command
 # -------------------------------------------------
-param_dir = '../../../sample_setups/pcmdi_parameter_files/variability_modes'
+param_dir = param.param_dir
+if param_dir is None:
+    param_dir = '../../../sample_setups/pcmdi_parameter_files/variability_modes'
 param_filename = 'myParam_'+mode+'_'+mip+'.py'
 
 if debug:
@@ -154,7 +160,7 @@ if debug:
 # -------------------------------------------------
 # log dir
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-log_dir = os.path.join("log", mip, exp, case_id, mode)
+log_dir = os.path.join("log", mip, exp, case_id, mode, obs_name)
 
 if not os.path.exists(log_dir):
     os.makedirs(log_dir)
@@ -173,7 +179,7 @@ for p, cmd in enumerate(cmds_list):
     print(p, cmd)
     model = cmd[11]
     run = cmd[13]
-    log_filename = '_'.join(['log_variability_mode', mode, mip, exp, model, run, case_id])
+    log_filename = '_'.join(['log_variability_mode', mode, mip, exp, model, run, case_id, obs_name])
     log_file = os.path.join(log_dir, log_filename)
     with open(log_file+"_stdout.txt", "wb") as out, open(log_file+"_stderr.txt", "wb") as err:
         procs_list.append(Popen(cmd, stdout=out, stderr=err))
@@ -186,4 +192,4 @@ for p, cmd in enumerate(cmds_list):
 
 # tasks done
 print("End : %s" % time.ctime())
-sys.exit('DONE')
+sys.exit(0)

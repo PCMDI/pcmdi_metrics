@@ -51,6 +51,16 @@ def main():
                    default="cmip5.%(model).%(experiment).r0i0p0.fx.atm.fx.sftlf.%(version).latestX.xml",
                    help="template for sftlf file names")
     P.add_argument("--model", default="*")
+    P.add_argument("--cmec",
+                   dest='cmec',
+                   action='store_true',
+                   default=False,
+                   help="Use to save metrics in CMEC JSON format")
+    P.add_argument("--no_cmec",
+                   dest='cmec',
+                   action='store_false',
+                   default=False,
+                   help="Use to disable saving metrics in CMEC JSON format")
 
     args = P.get_parameter()
     month = args.month
@@ -58,6 +68,7 @@ def main():
     startyear = args.firstyear
     finalyear = args.lastyear
     years = "%s-%s" % (startyear, finalyear)  # noqa: F841
+    cmec = args.cmec
 
     print('Specifying latitude / longitude domain of interest ...')
     # TRMM (observed) domain:
@@ -287,6 +298,9 @@ def main():
         separators=(
             ',',
             ': '))
+    if cmec:
+        print("Writing cmec file")
+        OUT.write_cmec(indent=4, separators=(',', ': '))
     print('done')
 
 
