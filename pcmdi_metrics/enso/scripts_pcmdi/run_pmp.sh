@@ -17,6 +17,8 @@ MCs='ENSO_tel ENSO_proc'
 #MCs='ENSO_tel'
 #MCs='ENSO_proc'
 
+$param_dir='../param'
+
 #param_file='my_Param_ENSO.py'
 #param_file='my_Param_ENSO_PCMDIobs.py'
 param_file='my_Param_ENSO_PCMDIobs_CLIVAR_LE.py'
@@ -28,7 +30,7 @@ mkdir -p log
 for mip in $mips; do
     for MC in $MCs; do
         echo $mip $MC
-        python PMPdriver_EnsoMetrics.py -p $param_file --mip ${mip} --metricsCollection ${MC} >& log/log.${mip}.${MC}.all.v${ver}.txt &
+        python enso_driver.py -p $param_dir/$param_file --mip ${mip} --metricsCollection ${MC} >& log/log.${mip}.${MC}.all.v${ver}.txt &
         disown
     done
 done

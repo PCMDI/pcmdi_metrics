@@ -22,6 +22,8 @@ MCs='ENSO_tel ENSO_proc'
 #MCs='ENSO_tel'
 #MCs='ENSO_proc'
 
+$param_dir='../param'
+
 modnames='all'
 #modnames='IPSL-CM5A-LR'
 
@@ -46,7 +48,7 @@ for mip in $mips; do
 
     for MC in $MCs; do
         echo $mip $MC $realization $case_id
-        python -u ./parallel_driver.py -p $param_file --mip $mip --case_id=$case_id --modnames $modnames --metricsCollection $MC --realization $realization >& log/$case_id/log_parallel.${mip}.${MC}.all.${case_id}.txt &
+        python -u ./parallel_driver.py -p $param_dir/$param_file --mip $mip --case_id=$case_id --modnames $modnames --metricsCollection $MC --realization $realization >& log/$case_id/log_parallel.${mip}.${MC}.all.${case_id}.txt &
         disown
         sleep 1
     done

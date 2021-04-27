@@ -12,7 +12,7 @@ from __future__ import print_function
 from genutil import StringConstructor
 from subprocess import Popen
 
-from PMPdriver_lib import AddParserArgument, find_realm
+from pcmdi_metrics.enso.lib import AddParserArgument, find_realm
 from pcmdi_metrics.variability_mode.lib import sort_human
 
 import glob
@@ -97,11 +97,11 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
 # Generates list of command
 # -------------------------------------------------
 if mip == "obs2obs":
-    param_file = './my_Param_ENSO_obs2obs.py'
+    param_file = '../param/my_Param_ENSO_obs2obs.py'
 if mip == "CLIVAR_LE":
-    param_file = './my_Param_ENSO_PCMDIobs_CLIVAR_LE.py'
+    param_file = '../param/my_Param_ENSO_PCMDIobs_CLIVAR_LE.py'
 else:
-    param_file = './my_Param_ENSO_PCMDIobs.py'
+    param_file = '../param/my_Param_ENSO_PCMDIobs.py'
 
 cmds_list = []
 for model in models:
@@ -137,7 +137,7 @@ for model in models:
         if debug:
             print('runs_list (revised):', runs_list)
     for run in runs_list:
-        cmd = ['python', 'PMPdriver_EnsoMetrics.py',
+        cmd = ['python', 'enso_driver.py',
                '-p', param_file,
                '--mip', mip, '--metricsCollection', mc_name,
                '--case_id', case_id,
