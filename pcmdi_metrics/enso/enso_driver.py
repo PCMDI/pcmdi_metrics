@@ -167,23 +167,11 @@ for obs in list_obs:
             else:
                 var0 = var_in_file
 
-            #try:
+            try:
                 # finding file for 'obs', 'var'
                 if obs_cmor and obs_catalogue_json != None:
-
                     if var0 in list(obs_catalogue_dict[obs].keys()):
-
                         file_name = os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var0]["template"])
-                        """
-                        # Temporary -- manually find correct file using given info: obs, var0
-                        if debug:
-                            print('obs, var0:', obs, var0)
-                        file_list_tmp = [a for a in getListOfFiles(obs_cmor_path) if var0 in a and obs in a]
-                        if len(file_list_tmp) > 0:
-                            file_name = file_list_tmp[-1]  # temporary until catalogue fixed
-                        else:
-                            file_name = None
-                        """
                     else:
                         file_name = None
 
@@ -233,9 +221,9 @@ for obs in list_obs:
                     dict_obs[obs][var] = {'path + filename': list_files, 'varname': var_in_file,
                                         'path + filename_area': list_areacell, 'areaname': list_name_area,
                                         'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
-            #except:
-            #    print('\033[95m' + 'Observation dataset' + str(obs) + 
-            #          " is not given for variable " + str(var) + '\033[0m')
+            except:
+                print('\033[95m' + 'Observation dataset' + str(obs) + 
+                      " is not given for variable " + str(var) + '\033[0m')
 
     if len(list(dict_obs[obs].keys())) == 0:
         del dict_obs[obs]
