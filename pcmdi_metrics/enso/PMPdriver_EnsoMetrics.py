@@ -12,10 +12,10 @@ import pkg_resources
 import sys
 
 from genutil import StringConstructor
-from PMPdriver_lib import AddParserArgument
-from PMPdriver_lib import metrics_to_json
-from PMPdriver_lib import find_realm, get_file
-from PMPdriver_lib import CLIVAR_LargeEnsemble_Variables 
+from pcmdi_metrics.enso.lib import AddParserArgument
+from pcmdi_metrics.enso.lib import metrics_to_json
+from pcmdi_metrics.enso.lib import find_realm, get_file
+from pcmdi_metrics.enso.lib import CLIVAR_LargeEnsemble_Variables 
 from EnsoMetrics.EnsoCollectionsLib import CmipVariables, defCollection, ReferenceObservations
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
 from pcmdi_metrics.variability_mode.lib import sort_human

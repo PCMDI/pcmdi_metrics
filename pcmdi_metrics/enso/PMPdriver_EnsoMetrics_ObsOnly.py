@@ -11,8 +11,8 @@ import pkg_resources
 import sys
 
 from genutil import StringConstructor
-from PMPdriver_lib import AddParserArgument
-from PMPdriver_lib import metrics_to_json
+from pcmdi_metrics.enso.lib import AddParserArgument
+from pcmdi_metrics.enso.lib import metrics_to_json
 from EnsoMetrics.EnsoCollectionsLib import defCollection, ReferenceObservations
 # from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection_ObsOnly
