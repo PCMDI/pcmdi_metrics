@@ -7,15 +7,18 @@ tmp_param=$CMEC_WK_DIR/diurnal_param.py
 python $CMEC_CODE_DIR/pmp_param_generator.py \
 $CMEC_CONFIG_DIR/cmec.json $tmp_param "diurnal_cycle"
 
+set diurnal_log=$CMEC_WK_DIR/pmp_diurnal_cycle.log.txt
+printf "\nlog: " $diurnal_log
+
 if [[ $? = 0 ]]; then
     cmec_json=$CMEC_CONFIG_DIR/cmec.json
 
     printf "\ncomputeStdOfDailyMeans\n"
 
-    computeStdOfDailyMeans.py -p $tmp_param --results_dir $CMEC_WK_DIR/nc
+    computeStdOfDailyMeans.py -p $tmp_param --results_dir $CMEC_WK_DIR/nc > $diurnal_log
 
     printf "\nstd_of_dailymeans\n"
-    std_of_dailymeans.py -p $tmp_param -t 'pr_%(model)_%(month)_%(firstyear)-%(lastyear)_std_of_dailymeans.nc' --results_dir $CMEC_WK_DIR/json --modpath $CMEC_WK_DIR/nc
+    std_of_dailymeans.py -p $tmp_param -t 'pr_%(model)_%(month)_%(firstyear)-%(lastyear)_std_of_dailymeans.nc' --results_dir $CMEC_WK_DIR/json --modpath $CMEC_WK_DIR/nc >> $diurnal_log3
 
     printf "\ncompositeDiurnalStatistics\n"
     compositeDiurnalStatistics.py -p $tmp_param --results_dir $CMEC_WK_DIR/nc

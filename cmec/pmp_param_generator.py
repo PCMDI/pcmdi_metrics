@@ -24,13 +24,12 @@ wk_dir = os.getenv("CMEC_WK_DIR",default=None)
 model_dir = os.getenv("CMEC_MODEL_DATA",default=None)
 obs_dir = os.getenv("CMEC_OBS_DATA",default=None)
 
-print(wk_dir)
-print(model_dir)
-print(obs_dir)
-
 # getenv returns a string 'None' when no variable set
 if obs_dir == "None":
     print("$CMEC_OBS_DATA is not set")
+    if pmp_config in ["mean_climate","variability_modes","monsoon_wang","mjo"]:
+        print("Error: PMP/{} requires obs directory".format(pmp_config))
+        sys.exit(1)
 
 try:
     with open(config_json) as config:
@@ -41,6 +40,7 @@ except json.decoder.JSONDecodeError:
 
 param_file = open(out_file_name, "w")
 
+# Add commonly used packages to param header
 param_file.write("import datetime\n")
 param_file.write("import glob\n")
 param_file.write("import os\n")
@@ -53,44 +53,18 @@ if pmp_config == "mean_climate":
     settings["metrics_output_path"] = wk_dir
     # also hard code interpolated field output path to wk_dir
 
-# Universal setting for all metrics
-settings["cmec"] = True
+if pmp_config in ["variability_modes", "mjo","monsoon_wang"]:
+    settings["modpath"] = os.path.join(model_dir,settings["modpath"])
+    settings["reference_data_path"] = os.path.join(obs_dir,settings["reference_data_path"])
 
 if pmp_config == "diurnal_cycle":
     settings["modpath"] = model_dir
 else:
+    # other metrics can have single results dir set
     settings["results_dir"] = wk_dir
 
-"""if "test_data_set" not in settings:
-    # See what model folders exist in model directory
-    model_list = os.listdir(model_dir)
-    test_data_set = []
-    for model in model_list:
-        fpath = os.path.join(model_dir,model)
-        if os.path.isdir(fpath):
-            test_data_set.append(model)
-    # Derive filename template
-    if "filename_template" not in settings:
-        var_name = os.path.join(fpath,os.path.listdir(fpath)[0])
-        test_name = os.listdir(var_name)[0]
-    if "%(model)" not in filename_template:
-        test_name.replace(model,"%(model)")
-        filename_template = "%(model)/"+test_name
-
-# TODO: also check aliases
-if "vars" not in settings:
-    # build variable list from directories in model directory
-    varlist = os.listdir(model_dir)
-    var = []
-    for item in varlist:
-        if item != "fx" and os.path.isdir(os.path.join(model_dir,item)):
-            var.append(item)
-    settings["vars"] = var
-    if "filename_template" not in settings:
-        for varname in var:
-            if varname in filename_template:
-                filename_template.replace(varname,"%(variable)")
-"""
+# Universal setting for all metrics
+settings["cmec"] = True
 
 for item in settings:
     val = settings[item]

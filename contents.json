@@ -9,6 +9,7 @@
         "cmec/pmp_mov.json",
         "cmec/pmp_mjo.json",
         "cmec/pmp_mean_climate.json",
-        "cmec/pmp_diurnal_cycle.json"
+        "cmec/pmp_diurnal_cycle.json",
+        "cmec/pmp_monsoon_wang.json"
     ]
 }
