@@ -25,7 +25,8 @@ nc_out = True
 # Observation
 # -------------------------------------------------
 reference_data_lf_path = {
-    'GPCPv2.3': '/work/lee1043/DATA/GPCP/gpcp_25_lsmask.nc'
+    'GPCPv2.3': '/work/lee1043/DATA/GPCP/gpcp_25_lsmask.nc',
+    'GPCP-2-3': '/work/lee1043/DATA/GPCP/gpcp_25_lsmask.nc'
 }
 
 obs_cmor = True
