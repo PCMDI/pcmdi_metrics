@@ -24,8 +24,9 @@ pmp_vars['mjo']['fx'] = ['sftlf']
 pmp_vars['diurnal']['3hr'] = ['pr']
 pmp_vars['diurnal']['fx'] = ['sftlf']
 
-pmp_vars['enso']['mon'] = ['pr','psl','tas','tauu','tauv'],
-pmp_vars['enso']['fx'] = ['sftlf']
+pmp_vars['enso']['mon'] = ['pr', 'psl', 'zos', 'ts', 'tauu','tauv',
+                           'hfls', 'hfss', 'rlds', 'rlus', 'rsds', 'rsus']
+pmp_vars['enso']['fx'] = ['sftlf', 'areacella']
 
 pmp_vars['mean_climate']['mon'] = ['ta', 'ua', 'va', 'zg', 'hur', 'hus',
                                    'pr', 'prw', 'psl', 'sfcWind', 'tas',

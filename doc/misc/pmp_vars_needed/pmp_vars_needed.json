@@ -9,16 +9,22 @@
     },
     "enso":{
         "fx":[
-            "sftlf"
+            "sftlf",
+            "areacella"
         ],
         "mon":[
-            [
-                "pr",
-                "psl",
-                "tas",
-                "tauu",
-                "tauv"
-            ]
+            "pr",
+            "psl",
+            "zos",
+            "ts",
+            "tauu",
+            "tauv",
+            "hfls",
+            "hfss",
+            "rlds",
+            "rlus",
+            "rsds",
+            "rsus"
         ]
     },
     "mean_climate":{
