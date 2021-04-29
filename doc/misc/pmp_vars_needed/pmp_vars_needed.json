@@ -9,22 +9,22 @@
     },
     "enso":{
         "fx":[
-            "sftlf",
-            "areacella"
+            "areacella",
+            "sftlf"
         ],
         "mon":[
-            "pr",
-            "psl",
-            "zos",
-            "ts",
-            "tauu",
-            "tauv",
             "hfls",
             "hfss",
+            "pr",
+            "psl",
             "rlds",
             "rlus",
             "rsds",
-            "rsus"
+            "rsus",
+            "tauu",
+            "tauv",
+            "ts",
+            "zos"
         ]
     },
     "mean_climate":{
@@ -32,32 +32,32 @@
             "sftlf"
         ],
         "mon":[
-            "ta",
-            "ua",
-            "va",
-            "zg",
             "hur",
+            "hurs",
             "hus",
+            "huss",
             "pr",
             "prw",
             "psl",
-            "sfcWind",
-            "tas",
-            "huss",
-            "hurs",
-            "tauu",
-            "tauv",
+            "rlds",
+            "rltcre",
+            "rlus",
             "rlut",
+            "rlutcs",
+            "rsds",
             "rsdt",
+            "rstcre",
+            "rsus",
             "rsut",
             "rsutcs",
-            "rlutcs",
-            "rltcre",
-            "rstcre",
-            "rsds",
-            "rlds",
-            "rlus",
-            "rsus"
+            "sfcWind",
+            "ta",
+            "tas",
+            "tauu",
+            "tauv",
+            "ua",
+            "va",
+            "zg"
         ]
     },
     "mjo":{
@@ -86,8 +86,8 @@
             "sftlf"
         ],
         "mon":[
-            "ts",
-            "psl"
+            "psl",
+            "ts"
         ]
     }
 }
