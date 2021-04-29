@@ -1,7 +1,6 @@
 import cdms2 as cdms
 import MV2 as MV
 import glob
-import numpy as np
 import copy
 import os
 from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
@@ -74,8 +73,7 @@ for id, dat in enumerate(data):
                     str(iyr) + "-1-1 0:0:0",
                     str(iyr) + "-12-" + str(ldy) + " 23:59:59",
                 ),
-            )
-            * float(fac)
+            ) * float(fac)
         )
 
         # Regridding
@@ -131,7 +129,8 @@ for id, dat in enumerate(data):
     rn.setAxisList((frq, lat, lon))
     sig95.setAxisList((frq, lat, lon))
     out = cdms.open(
-        outdir + "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc", "w"
+        outdir + "PS_pr." + str(dfrq) + "_regrid.180x90_" +
+        dat + "_unforced.nc", "w"
     )
     out.write(freqs, id="freqs")
     out.write(ps, id="power")
@@ -160,7 +159,8 @@ for id, dat in enumerate(data):
     lon = drg.getLongitude()
     std.setAxisList((lat, lon))
     out = cdms.open(
-        outdir + "STD_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc", "w"
+        outdir + "STD_pr." + str(dfrq) + "_regrid.180x90_" +
+        dat + "_unforced.nc", "w"
     )
     out.write(std, id="std")
     out.close()

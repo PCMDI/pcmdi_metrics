@@ -1,6 +1,5 @@
 import cdms2 as cdms
 import MV2 as MV
-import numpy as np
 import pickle
 import glob
 import cdutil
@@ -36,15 +35,12 @@ for ifc, frc in enumerate(frcs):
     psdm[frc] = {}
     for im, mip in enumerate(mips):
         dir = (
-            "/work/ahn6/pr/variability_across_timescales/power_spectrum/"
-            + ver
-            + "/data/"
-            + mip
-            + "/"
+            "/work/ahn6/pr/variability_across_timescales/power_spectrum/"+ver+"/data/"+mip+"/"
         )
         if frc == "forced":
             file_list = sorted(
-                set(glob.glob(dir + "PS*")) - set(glob.glob(dir + "PS*_unforced.nc"))
+                set(glob.glob(dir + "PS*")) -
+                set(glob.glob(dir + "PS*_unforced.nc"))
             )
         elif frc == "unforced":
             file_list = sorted(set(glob.glob(dir + "PS*_unforced.nc")))
@@ -91,19 +87,24 @@ for ifc, frc in enumerate(frcs):
                         dmask = d
 
                     if "50S50N" in dom:
-                        am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
+                        am = cdutil.averager(
+                            dmask(latitude=(-50, 50)), axis="xy")
                     if "30N50N" in dom:
-                        am = cdutil.averager(dmask(latitude=(30, 50)), axis="xy")
+                        am = cdutil.averager(
+                            dmask(latitude=(30, 50)), axis="xy")
                     if "30S30N" in dom:
-                        am = cdutil.averager(dmask(latitude=(-30, 30)), axis="xy")
+                        am = cdutil.averager(
+                            dmask(latitude=(-30, 30)), axis="xy")
                     if "50S30S" in dom:
-                        am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy")
+                        am = cdutil.averager(
+                            dmask(latitude=(-50, -30)), axis="xy")
 
                     psdm[frc][mip][dat][var][dom] = am.tolist()
 
 outdir = "/work/ahn6/pr/variability_across_timescales/power_spectrum/" + ver + "/data"
 if not (os.path.isdir(outdir)):
     os.makedirs(outdir)
-outfile = open(outdir + "/PS_pr.3hr_regrid.180x90_area.mean_obs.cmip5.cmip6.pkl", "wb")
+outfile = open(
+    outdir + "/PS_pr.3hr_regrid.180x90_area.mean_obs.cmip5.cmip6.pkl", "wb")
 pickle.dump(psdm, outfile)
 outfile.close()

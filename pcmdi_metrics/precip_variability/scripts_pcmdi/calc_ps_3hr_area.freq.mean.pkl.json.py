@@ -24,7 +24,8 @@ frqs_unforced = [
 ]
 
 indir = "/work/ahn6/pr/variability_across_timescales/power_spectrum/" + ver + "/data/"
-infile = open(indir + "PS_pr.3hr_regrid.180x90_area.mean_obs.cmip5.cmip6.pkl", "rb")
+infile = open(
+    indir + "PS_pr.3hr_regrid.180x90_area.mean_obs.cmip5.cmip6.pkl", "rb")
 psdm = pickle.load(infile)
 
 psdmfm = copy.deepcopy(psdm)
@@ -59,38 +60,40 @@ for frc in psdm.keys():
                             idx2 = prdday_to_frq3hridx(180, frequency)
                             idx1 = prdday_to_frq3hridx(183, frequency)
                             amfm = cdutil.averager(
-                                am[idx1 : idx2 + 1], weights="unweighted"
+                                am[idx1: idx2 + 1], weights="unweighted"
                             )
                         elif frq == "annual":  # 360day=<pr=<366day
                             idx2 = prdday_to_frq3hridx(360, frequency)
                             idx1 = prdday_to_frq3hridx(366, frequency)
                             amfm = cdutil.averager(
-                                am[idx1 : idx2 + 1], weights="unweighted"
+                                am[idx1: idx2 + 1], weights="unweighted"
                             )
                         elif frq == "sub-daily":  # pr<1day
                             idx1 = prdday_to_frq3hridx(1, frequency)
-                            amfm = cdutil.averager(am[idx1 + 1 :], weights="unweighted")
+                            amfm = cdutil.averager(
+                                am[idx1 + 1:], weights="unweighted")
                         elif frq == "synoptic":  # 1day=<pr<20day
                             idx2 = prdday_to_frq3hridx(1, frequency)
                             idx1 = prdday_to_frq3hridx(20, frequency)
                             amfm = cdutil.averager(
-                                am[idx1 + 1 : idx2 + 1], weights="unweighted"
+                                am[idx1 + 1: idx2 + 1], weights="unweighted"
                             )
                         elif frq == "sub-seasonal":  # 20day=<pr<90day
                             idx2 = prdday_to_frq3hridx(20, frequency)
                             idx1 = prdday_to_frq3hridx(90, frequency)
                             amfm = cdutil.averager(
-                                am[idx1 + 1 : idx2 + 1], weights="unweighted"
+                                am[idx1 + 1: idx2 + 1], weights="unweighted"
                             )
                         elif frq == "seasonal-annual":  # 90day=<pr<365day
                             idx2 = prdday_to_frq3hridx(90, frequency)
                             idx1 = prdday_to_frq3hridx(365, frequency)
                             amfm = cdutil.averager(
-                                am[idx1 + 1 : idx2 + 1], weights="unweighted"
+                                am[idx1 + 1: idx2 + 1], weights="unweighted"
                             )
                         elif frq == "interannual":  # 365day=<pr
                             idx2 = prdday_to_frq3hridx(365, frequency)
-                            amfm = cdutil.averager(am[: idx2 + 1], weights="unweighted")
+                            amfm = cdutil.averager(
+                                am[: idx2 + 1], weights="unweighted")
 
                         psdmfm[frc][mip][dat][var][dom][frq] = amfm.tolist()
 

@@ -6,9 +6,9 @@ import numpy as np
 from regrid2 import Regridder
 from scipy import signal
 from scipy.stats import chi2
-import scipy.interpolate as interp
 import pandas as pd
 import math
+
 
 # ==================================================================================
 def Regrid2deg(d):
@@ -70,7 +70,8 @@ def ClimAnom(d, ntd, syr, eyr):
                 )
             )
             yrtmpseg = MV.reshape(
-                yrtmp, (int(yrtmp.shape[0] / ntd), ntd, yrtmp.shape[1], yrtmp.shape[2])
+                yrtmp, (int(yrtmp.shape[0] / ntd), ntd,
+                        yrtmp.shape[1], yrtmp.shape[2])
             )
             if yrtmpseg.shape[0] == 365:
                 dseg[iyr, 0:59] = yrtmpseg[0:59]
@@ -94,7 +95,8 @@ def ClimAnom(d, ntd, syr, eyr):
                 )
             )
             yrtmpseg = MV.reshape(
-                yrtmp, (int(yrtmp.shape[0] / ntd), ntd, yrtmp.shape[1], yrtmp.shape[2])
+                yrtmp, (int(yrtmp.shape[0] / ntd), ntd,
+                        yrtmp.shape[1], yrtmp.shape[2])
             )
             dseg[iyr] = yrtmpseg
     # Missing value (In case, missing value is changed)
@@ -118,7 +120,8 @@ def ClimAnom(d, ntd, syr, eyr):
             if yrtmp.shape[0] == 365 * ntd:
                 anom = np.append(
                     anom,
-                    (np.delete(dseg[iyr], 59, axis=0) - np.delete(clim, 59, axis=0)),
+                    (np.delete(dseg[iyr], 59, axis=0) -
+                     np.delete(clim, 59, axis=0)),
                 )
             else:
                 anom = np.append(anom, (dseg[iyr] - clim))
@@ -220,7 +223,8 @@ def rednoise(VAR, NUMHAR, R1):
     RN = []
     for K in range(NUMHAR):
         RN.append(
-            WHITENOISE * (TOP / (BOT - R1X2 * float(math.cos(math.pi * K / NUMHAR))))
+            WHITENOISE *
+            (TOP / (BOT - R1X2 * float(math.cos(math.pi * K / NUMHAR))))
         )
     return RN
 
