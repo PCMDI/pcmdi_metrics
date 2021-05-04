@@ -1,0 +1,36 @@
+import os
+
+#
+#  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY:
+#
+#
+
+# MODELS
+mip = 'cmip6'  # cmip5, cmip6
+exp = 'historical'  # historical, piControl
+modpath = '$INPUT_DIR$/%(mip).%(exp).%(model).%(realization).mon.%(variable).xml'
+
+modpath_lf = '$INPUT_DIR$/%(mip).historical.%(model).r0i0p0.fx.%(variable).xml'
+
+modnames = ['IPSL-CM6A-LR']
+realization = 'r1i1p1f1'
+
+# OBSERVATIONS
+reference_data_lf_path = {
+    'GPCPv2.3': '$INPUT_DIR$/...'
+}
+
+obs_cmor = True
+obs_cmor_path = "$INPUT_DIR$/PCMDIobs2"
+obs_catalogue = "$INPUT_DIR$/PCMDIobs/catalogue/pcmdiobs_monthly_bySource_catalogue_v20210422.json"
+
+# METRICS COLLECTION
+metricsCollection = 'ENSO_perf'  # ENSO_perf, ENSO_tel, ENSO_proc
+
+# OUTPUT
+case_id = 'basicTestEnso'
+results_dir = os.path.join('$OUTPUT_DIR',case_id)
+
+json_name = '%(mip)_%(exp)_%(metricsCollection)_%(case_id)_%(model)_%(realization)'
+netcdf_name = json_name
+nc_out = False
