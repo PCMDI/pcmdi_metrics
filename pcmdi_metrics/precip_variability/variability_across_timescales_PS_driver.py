@@ -9,9 +9,6 @@ from pcmdi_metrics.precip_variability.lib import (
     Regrid2deg,
     ClimAnom,
     Powerspectrum,
-    lag1_autocorrelation,
-    rednoise,
-    RedNoiseSignificanceLevel,
     StandardDeviation,
 )
 
