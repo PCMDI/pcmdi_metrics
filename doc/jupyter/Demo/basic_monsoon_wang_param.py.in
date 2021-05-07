@@ -18,4 +18,4 @@ reference_data_path = '$INPUT_DIR$/PCMDIobs2/atmos/mon/pr/GPCP-2-3/gn/v20200707/
 results_dir = '$OUTPUT_DIR$/monsoon_wang'
 
 # Threshold
-threshold = 2.5
+threshold = 2.5 / 86400
