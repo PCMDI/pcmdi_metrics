@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source $CONDA_ROOT/etc/profile.d/conda.sh
+conda activate cmec_pcmdi_metrics
+
 cd $CMEC_WK_DIR
 
 tmp_param=$CMEC_WK_DIR/diurnal_param.py

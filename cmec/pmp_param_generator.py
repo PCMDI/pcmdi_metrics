@@ -13,8 +13,10 @@ import datetime
 import glob
 import json
 import os
+import subprocess
 import sys
 import genutil
+from pcmdi_metrics.io.base import Base
 
 config_json = sys.argv[1]
 out_file_name = sys.argv[2]
@@ -51,7 +53,44 @@ if pmp_config == "mean_climate":
     settings["test_data_path"] = model_dir
     settings["reference_data_path"] = obs_dir
     settings["metrics_output_path"] = wk_dir
+
     # also hard code interpolated field output path to wk_dir
+
+    if settings["compute_climatologies"]:
+        print("\nGenerating climatologies")
+        filename_template = settings["filename_template"]
+        modellist = settings["test_data_set"]
+        varlist = settings["vars"]
+        realization = settings.get("realization","")
+        period = settings.get("period","")
+        model_file = Base(model_dir, filename_template)
+        model_file.period = period
+        model_file.realization = realization
+        out_base = os.path.join(wk_dir,"AC")
+        os.mkdir(out_base)
+
+        for model in modellist:
+            for var in varlist:
+                model_file.model_version = model
+                model_file.variable = var
+                cmd = ["pcmdi_compute_climatologies.py","--infile",model_file(),"--outpath",out_base,"--var",var]
+                outfilename = out_base + "/pcmdi_compute_climatologies_{0}_{1}.log".format(model,var)
+                with open (outfilename,"w") as outfile:
+                    subprocess.run(cmd, env=os.environ.copy(), stdout=outfile)
+
+        # Get the date strings from the climo files for the filename template
+        settings["test_data_path"] = out_base
+        filelist = os.listdir(out_base)
+        try:
+            for file in filelist:
+                if ".AC." in file:
+                    suffix = file[-30:]
+                    break
+            settings["filename_template"] = os.path.basename(filename_template)[:-3] + suffix
+            print("Success in generating climatologies\n")
+        except TypeError:
+            print("Error: Could not find climatologies.")
+            sys.exit(1)
 
 if pmp_config in ["variability_modes", "mjo","monsoon_wang"]:
     settings["modpath"] = os.path.join(model_dir,settings["modpath"])
