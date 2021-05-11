@@ -143,16 +143,11 @@ dict_obs = dict()
 for obs in list_obs:
     if obs_cmor:
         dict_var = CmipVariables()["variable_name_in_file"]
-        #if obs_catalogue_json != None:
-        #    list_variables_tmp = list(obs_catalogue_dict[obs].keys())
-        #    print(obs, "list_variables:", list_variables_tmp)
     else:
         # be sure to add your datasets to EnsoCollectionsLib.ReferenceObservations if needed
         dict_var = ReferenceObservations(obs)['variable_name_in_file']
-        #list_variables_tmp = list_variables
 
     dict_obs[obs] = dict()
-    #for var in list_variables_tmp:
     for var in list_variables:
         #
         # finding variable name in file
@@ -197,10 +192,6 @@ for obs in list_obs:
                     list_files = list()
                     if obs_cmor and obs_catalogue_json != None:
                         list_files = [os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var1]["template"]) for var1 in var_in_file]
-                        """
-                        for var1 in var_in_file:
-                            list_files.append(sorted([a for a in getListOfFiles(obs_cmor_path) if var1 in a and obs in a])[-1])  # temporary until catalogue fixed
-                        """
                     else:
                         list_files = [param.reference_data_path[obs].replace('VAR', var1) for var1 in var_in_file]
                     list_areacell = [file_areacell for var1 in var_in_file]
