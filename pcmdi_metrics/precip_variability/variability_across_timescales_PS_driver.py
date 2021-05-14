@@ -3,6 +3,7 @@ import MV2 as MV
 import glob
 import copy
 import os
+import sys
 from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 from pcmdi_metrics.precip_variability.lib import (
     AddParserArgument,

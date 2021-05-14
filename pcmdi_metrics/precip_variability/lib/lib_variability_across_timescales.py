@@ -193,7 +193,7 @@ def Powerspectrum(d, nperseg, noverlap):
 
     # print('Complete power spectra with segment of', nperseg)
     print("Complete power spectra ( nps=", nps, ")")
-    
+
     # Decorate arrays with dimensions
     freqs = MV.array(freqs)
     psd = MV.array(psd)
@@ -206,7 +206,7 @@ def Powerspectrum(d, nperseg, noverlap):
     psd.setAxisList((frq, lat, lon))
     rn.setAxisList((frq, lat, lon))
     sig95.setAxisList((frq, lat, lon))
-    
+
     return freqs, psd, rn, sig95
 
 
@@ -277,6 +277,6 @@ def StandardDeviation(d, axis):
     std = MV.array(std)
     lat = d.getLatitude()
     lon = d.getLongitude()
-    std.setAxisList((lat, lon))    
+    std.setAxisList((lat, lon))
 
     return std
