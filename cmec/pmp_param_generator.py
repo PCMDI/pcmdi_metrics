@@ -54,7 +54,7 @@ if pmp_config == "mean_climate":
     settings["reference_data_path"] = obs_dir
     settings["metrics_output_path"] = wk_dir
 
-    # also hard code interpolated field output path to wk_dir
+    # TODO: also hard code interpolated field output path to wk_dir
 
     if settings["compute_climatologies"]:
         print("\nGenerating climatologies")
@@ -88,6 +88,7 @@ if pmp_config == "mean_climate":
                     break
             settings["filename_template"] = os.path.basename(filename_template)[:-3] + suffix
             print("Success in generating climatologies\n")
+            # TODO : Should also link sftlf file in AC folder if exists
         except TypeError:
             print("Error: Could not find climatologies.")
             sys.exit(1)
