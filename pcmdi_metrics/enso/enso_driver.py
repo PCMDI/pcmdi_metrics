@@ -224,18 +224,20 @@ print('PMPdriver: dict_obs readin end')
 # =================================================
 # Loop for Models 
 # -------------------------------------------------
-# finding file and variable name in file for each observations dataset
 dict_metric, dict_dive = dict(), dict()
-if "CLIVAR_LE" == mip:
-    dict_var = CLIVAR_LargeEnsemble_Variables()['variable_name_in_file']
-else:
-    dict_var = CmipVariables()['variable_name_in_file']
 
 print('models:', models)
 
 for mod in models:
     print(' ----- model: ', mod, ' ---------------------')
     print('PMPdriver: var loop start for model ', mod)
+
+    # finding file and variable name in file for each observations dataset
+    if "CLIVAR_LE" == mip and model in ['CESM1-CAM5']:
+        dict_var = CLIVAR_LargeEnsemble_Variables()['variable_name_in_file']
+    else:
+        dict_var = CmipVariables()['variable_name_in_file']
+
     dict_mod = {mod: {}}
     dict_metric[mod], dict_dive[mod] = dict(), dict()
 
