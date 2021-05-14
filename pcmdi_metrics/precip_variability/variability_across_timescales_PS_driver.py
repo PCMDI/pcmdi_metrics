@@ -110,7 +110,6 @@ for id, dat in enumerate(data):
         out.write(ps, id="power")
         out.write(rn, id="rednoise")
         out.write(sig95, id="sig95")
-        out.close()
 
     # STD of total
     std = StandardDeviation(drg, 0)
