@@ -193,6 +193,20 @@ def Powerspectrum(d, nperseg, noverlap):
 
     # print('Complete power spectra with segment of', nperseg)
     print("Complete power spectra ( nps=", nps, ")")
+
+    # Decorate arrays with dimensions
+    freqs = MV.array(freqs)
+    psd = MV.array(psd)
+    rn = MV.array(rn)
+    sig95 = MV.array(sig95)
+    frq = cdms.createAxis(range(len(freqs)), id="frequency")
+    lat = d.getLatitude()
+    lon = d.getLongitude()
+    freqs.setAxis(0, frq)
+    psd.setAxisList((frq, lat, lon))
+    rn.setAxisList((frq, lat, lon))
+    sig95.setAxisList((frq, lat, lon))
+
     return freqs, psd, rn, sig95
 
 
@@ -258,4 +272,11 @@ def StandardDeviation(d, axis):
     std = genutil.statistics.std(d, axis=axis)
 
     print("Complete calculating Standard deviation")
+
+    # Decorate arrays with dimensions
+    std = MV.array(std)
+    lat = d.getLatitude()
+    lon = d.getLongitude()
+    std.setAxisList((lat, lon))
+
     return std

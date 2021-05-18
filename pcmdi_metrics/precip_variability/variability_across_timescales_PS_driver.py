@@ -3,6 +3,7 @@ import MV2 as MV
 import glob
 import copy
 import os
+import sys
 from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 from pcmdi_metrics.precip_variability.lib import (
     AddParserArgument,
@@ -84,80 +85,42 @@ for id, dat in enumerate(data):
     # Anomaly
     if dfrq == "day":
         ntd = 1
-    if dfrq == "3hr":
+    elif dfrq == "3hr":
         ntd = 8
+    else:
+        sys.exit("ERROR: dfrq "+dfrq+" is not defined!")
     clim, anom = ClimAnom(drg, ntd, syr, eyr)
 
     # Power spectum of total
     freqs, ps, rn, sig95 = Powerspectrum(drg, nperseg, noverlap)
     # Write data (nc file)
-    freqs = MV.array(freqs)
-    ps = MV.array(ps)
-    rn = MV.array(rn)
-    sig95 = MV.array(sig95)
-    frq = cdms.createAxis(range(len(freqs)), id="frequency")
-    lat = drg.getLatitude()
-    lon = drg.getLongitude()
-    freqs.setAxis(0, frq)
-    ps.setAxisList((frq, lat, lon))
-    rn.setAxisList((frq, lat, lon))
-    sig95.setAxisList((frq, lat, lon))
-    out = cdms.open(
-        outdir + "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc", "w"
-    )
-    out.write(freqs, id="freqs")
-    out.write(ps, id="power")
-    out.write(rn, id="rednoise")
-    out.write(sig95, id="sig95")
-    out.close()
+    outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc"
+    with cdms.open(os.path.join(outdir, outfilename), "w") as out:
+        out.write(freqs, id="freqs")
+        out.write(ps, id="power")
+        out.write(rn, id="rednoise")
+        out.write(sig95, id="sig95")
 
     # Power spectum of anomaly
     freqs, ps, rn, sig95 = Powerspectrum(anom, nperseg, noverlap)
     # Write data (nc file)
-    freqs = MV.array(freqs)
-    ps = MV.array(ps)
-    rn = MV.array(rn)
-    sig95 = MV.array(sig95)
-    frq = cdms.createAxis(range(len(freqs)), id="frequency")
-    lat = drg.getLatitude()
-    lon = drg.getLongitude()
-    freqs.setAxis(0, frq)
-    ps.setAxisList((frq, lat, lon))
-    rn.setAxisList((frq, lat, lon))
-    sig95.setAxisList((frq, lat, lon))
-    out = cdms.open(
-        outdir + "PS_pr." + str(dfrq) + "_regrid.180x90_" +
-        dat + "_unforced.nc", "w"
-    )
-    out.write(freqs, id="freqs")
-    out.write(ps, id="power")
-    out.write(rn, id="rednoise")
-    out.write(sig95, id="sig95")
-    out.close()
+    outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
+    with cdms.open(os.path.join(outdir, outfilename), "w") as out:
+        out.write(freqs, id="freqs")
+        out.write(ps, id="power")
+        out.write(rn, id="rednoise")
+        out.write(sig95, id="sig95")
 
     # STD of total
     std = StandardDeviation(drg, 0)
     # Write data (nc file)
-    std = MV.array(std)
-    lat = drg.getLatitude()
-    lon = drg.getLongitude()
-    std.setAxisList((lat, lon))
-    out = cdms.open(
-        outdir + "STD_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc", "w"
-    )
-    out.write(std, id="std")
-    out.close()
+    outfilename = "STD_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc"
+    with cdms.open(os.path.join(outdir, outfilename), "w") as out:
+        out.write(std, id="std")
 
     # STD of anomaly
     std = StandardDeviation(anom, 0)
     # Write data (nc file)
-    std = MV.array(std)
-    lat = drg.getLatitude()
-    lon = drg.getLongitude()
-    std.setAxisList((lat, lon))
-    out = cdms.open(
-        outdir + "STD_pr." + str(dfrq) + "_regrid.180x90_" +
-        dat + "_unforced.nc", "w"
-    )
-    out.write(std, id="std")
-    out.close()
+    outfilename = "STD_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
+    with cdms.open(os.path.join(outdir, outfilename), "w") as out:
+        out.write(std, id="std")
