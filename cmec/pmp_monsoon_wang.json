@@ -21,17 +21,13 @@
             "description": "GPCP 2.3 prepared for PMPObs (ODS-v2.1.0)"
         }
     },
-    "coordinates": {
-        "max_time_range": "1mon"
-    },
     "default_parameters": {
         "case_id": "monsoon_wang",
         "modnames": [
             "CanCM4"
         ],
-        "test_data_path": "cmip5.historical.%(model).r1i1p1.mon.pr.198101-200512.AC.v20200426.nc",
-        "reference_data_name": "GPCP-2-3",
-        "reference_data_path": "pr_mon_GPCP-2-3_BE_gn_v20200707_197901-201907.nc",
-        "threshold": 2.5
+        "test_data_path": "CMIP5_demo_clims/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200512.AC.v20200426.nc",
+        "reference_data_path": "PCMDIobs2/atmos/mon/pr/GPCP-2-3/gn/v20200707/pr_mon_GPCP-2-3_BE_gn_v20200707_197901-201907.nc",
+        "threshold": 0.00002894
     }
 }

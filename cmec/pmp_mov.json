@@ -25,12 +25,9 @@
             "long_name": "Monthly NOAA-CIRES 20th Century Reanalysis V2"
         },
         "HadISSTv1.1": {
-            "version": 1.1
+            "version": 1.1,
+            "long_name": "Hadley Centre Global Sea Ice and Sea Surface Temperature"
         }
-    },
-    "coordinates": {
-        "min_time_range": "1mon",
-        "max_time_range": "1mon"
     },
     "default_parameters": {
         "case_id": "basicTestMOV",
@@ -41,16 +38,16 @@
         "ConvEOF": true,
         "CBF": true,
         "modnames": [
-            "all"
+            "ACCESS1-0"
         ],
-        "modpath": "psl_Amon_%(model)_historical_r1i1p1_185001-200512.nc",
+        "modpath": "CMIP5_demo_data/psl_Amon_%(model)_historical_r1i1p1_185001-200512.nc",
         "varModel": "psl",
         "ModUnitsAdjust": "(True, 'divide', 100.0)",
         "msyear": 1900,
         "meyear": 2005,
         "eofn_mod": 1,
         "reference_data_name": "NOAA-20CR",
-        "reference_data_path": "psl_mon_20CR_BE_gn_v20200707_187101-201212.nc",
+        "reference_data_path": "PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707/psl_mon_20CR_BE_gn_v20200707_187101-201212.nc",
         "varOBS": "psl",
         "ObsUnitsAdjust": "(True, 'divide', 100.0)",
         "osyear": 1900,

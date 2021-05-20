@@ -15,9 +15,6 @@
         }
     },
     "obslist": null,
-    "coordinates": {
-        "max_time_range": "3hr"
-    },
     "default_parameters": {
         "model": "IPSL-CM5A-LR",
         "filename_template": "pr_3hr_%(model)_%(experiment)_%(realization)_5x5_1997-1999.nc",
