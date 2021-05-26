@@ -233,7 +233,7 @@ for mod in models:
     print('PMPdriver: var loop start for model ', mod)
 
     # finding file and variable name in file for each observations dataset
-    if "CLIVAR_LE" == mip and model in ['CESM1-CAM5']:
+    if "CLIVAR_LE" == mip and mod in ['CESM1-CAM5']:
         dict_var = CLIVAR_LargeEnsemble_Variables()['variable_name_in_file']
     else:
         dict_var = CmipVariables()['variable_name_in_file']
