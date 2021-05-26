@@ -2,9 +2,6 @@
 # =================================================
 # Dependencies
 # -------------------------------------------------
-from __future__ import print_function
-from _typeshed import NoneType
-
 import cdms2
 import glob
 import json
