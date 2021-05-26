@@ -3,6 +3,7 @@
 # Dependencies
 # -------------------------------------------------
 from __future__ import print_function
+from _typeshed import NoneType
 
 import cdms2
 import glob
@@ -167,6 +168,8 @@ for obs in list_obs:
                 if obs_cmor and obs_catalogue_json != None:
                     if var0 in list(obs_catalogue_dict[obs].keys()):
                         file_name = os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var0]["template"])
+                        if not os.path.isfile(file_name):
+                            file_name = None
                     else:
                         file_name = None
 
@@ -191,9 +194,14 @@ for obs in list_obs:
                 if isinstance(var_in_file, list):
                     list_files = list()
                     if obs_cmor and obs_catalogue_json != None:
-                        list_files = [os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var1]["template"]) for var1 in var_in_file]
+                        for var1 in var_in_file:
+                            file_name1 = os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var1]["template"])
+                            if not os.path.isfile(file_name1):
+                                file_name1 = None
                     else:
-                        list_files = [param.reference_data_path[obs].replace('VAR', var1) for var1 in var_in_file]
+                        for var1 in var_in_file:
+                            file_name1 = param.reference_data_path[obs].replace('VAR', var1)
+                    list_files.append(file_name1)
                     list_areacell = [file_areacell for var1 in var_in_file]
                     list_name_area = [areacell_in_file for var1 in var_in_file]
                     try:
