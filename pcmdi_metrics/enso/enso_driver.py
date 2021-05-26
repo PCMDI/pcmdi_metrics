@@ -143,16 +143,11 @@ dict_obs = dict()
 for obs in list_obs:
     if obs_cmor:
         dict_var = CmipVariables()["variable_name_in_file"]
-        #if obs_catalogue_json != None:
-        #    list_variables_tmp = list(obs_catalogue_dict[obs].keys())
-        #    print(obs, "list_variables:", list_variables_tmp)
     else:
         # be sure to add your datasets to EnsoCollectionsLib.ReferenceObservations if needed
         dict_var = ReferenceObservations(obs)['variable_name_in_file']
-        #list_variables_tmp = list_variables
 
     dict_obs[obs] = dict()
-    #for var in list_variables_tmp:
     for var in list_variables:
         #
         # finding variable name in file
@@ -197,10 +192,6 @@ for obs in list_obs:
                     list_files = list()
                     if obs_cmor and obs_catalogue_json != None:
                         list_files = [os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var1]["template"]) for var1 in var_in_file]
-                        """
-                        for var1 in var_in_file:
-                            list_files.append(sorted([a for a in getListOfFiles(obs_cmor_path) if var1 in a and obs in a])[-1])  # temporary until catalogue fixed
-                        """
                     else:
                         list_files = [param.reference_data_path[obs].replace('VAR', var1) for var1 in var_in_file]
                     list_areacell = [file_areacell for var1 in var_in_file]
@@ -233,18 +224,20 @@ print('PMPdriver: dict_obs readin end')
 # =================================================
 # Loop for Models 
 # -------------------------------------------------
-# finding file and variable name in file for each observations dataset
 dict_metric, dict_dive = dict(), dict()
-if "CLIVAR_LE" == mip:
-    dict_var = CLIVAR_LargeEnsemble_Variables()['variable_name_in_file']
-else:
-    dict_var = CmipVariables()['variable_name_in_file']
 
 print('models:', models)
 
 for mod in models:
     print(' ----- model: ', mod, ' ---------------------')
     print('PMPdriver: var loop start for model ', mod)
+
+    # finding file and variable name in file for each observations dataset
+    if "CLIVAR_LE" == mip and model in ['CESM1-CAM5']:
+        dict_var = CLIVAR_LargeEnsemble_Variables()['variable_name_in_file']
+    else:
+        dict_var = CmipVariables()['variable_name_in_file']
+
     dict_mod = {mod: {}}
     dict_metric[mod], dict_dive[mod] = dict(), dict()
 
