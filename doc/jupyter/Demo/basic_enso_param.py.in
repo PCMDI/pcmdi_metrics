@@ -14,16 +14,12 @@ modpath = '$INPUT_DIR$/CMIP5_demo_data/%(var)_Amon_%(model)_historical_%(realiza
 modpath_lf = '$INPUT_DIR$/CMIP5_demo_data/sftlf_fx_%(model)_amip_r0i0p0.nc'
 
 # OBSERVATIONS
-reference_data_path = {
-    'ERA-Interim': '$INPUT_DIR$/PCMDIobs2/atmos/mon/VAR/ERA-INT/gn/v20200707/VAR_mon_ERA-INT_BE_gn_v20200707_198901-201001.nc',
-    'HadISST': '$INPUT_DIR$/PCMDIobs2/atmos/mon/ts/HadISST-1-1/gn/v20200707',
-    'Tropflux': '$INPUT_DIR$/PCMDIobs2/atmos/mon/VAR/TropFlux-1-0/gn/v20200707/VAR_mon_TropFlux-1-0_BE_gn_v20200707_197901-201707.nc',
-    'GPCPv2.3': '$INPUT_DIR$/PCMDIobs2/atmos/mon/pr/GPCP-2-3/gn/v20200707/pr_mon_GPCP-2-3_BE_gn_v20200707_197901-201907.nc',
-    'AVISO': '$INPUT_DIR$/PCMDIobs2/ocean/mon/VAR/AVISO-1-0/gn/v20200707/VAR_mon_AVISO-1-0_BE_gn_v20200707_199301-201812.nc'
-}
-reference_data_lf_path = {
-    'GPCPv2.3': '$INPUT_DIR$/gpcp_25_lsmask.nc'
-}
+obs_cmor = True
+obs_cmor_path = "enso_data/PCMDIobs2"
+obs_catalogue = "pcmdiobs-CEM2020_monthly_bySource_catalogue_v20210422.json"
+#reference_data_lf_path = {
+#    'GPCPv2.3': '$INPUT_DIR$/gpcp_25_lsmask.nc'
+#}
 
 # METRICS COLLECTION
 metricsCollection = 'ENSO_perf'  # ENSO_perf, ENSO_tel, ENSO_proc
