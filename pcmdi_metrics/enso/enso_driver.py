@@ -121,7 +121,7 @@ print('list_variables:', list_variables)
 list_obs = list()
 if obs_cmor and obs_catalogue_json != None:
     with open(obs_catalogue_json) as jobs:
-        obs_catalogue_dict = json.loads(jobs.read())
+        obs_catalogue_dict = json.load(jobs)
     list_obs = list(obs_catalogue_dict.keys()) 
 else:
     for metric in list_metric:
