@@ -16,6 +16,7 @@ import os
 import subprocess
 import sys
 import genutil
+import make_climatologies
 from pcmdi_metrics.io.base import Base
 
 def check_for_opt(key,settings):
@@ -66,42 +67,7 @@ if __name__ == '__main__':
 
         if check_for_opt("compute_climatologies",settings):
             print("\nGenerating climatologies")
-            filename_template = settings["filename_template"]
-            modellist = settings["test_data_set"]
-            varlist = settings["vars"]
-            realization = settings.get("realization","")
-            period = settings.get("period","")
-            model_file = Base(model_dir, filename_template)
-            model_file.period = period
-            model_file.realization = realization
-            out_base = os.path.join(wk_dir,"AC")
-            os.mkdir(out_base)
-
-            for model in modellist:
-                for var in varlist:
-                    model_file.model_version = model
-                    model_file.variable = var
-                    cmd = ["pcmdi_compute_climatologies.py","--infile",model_file(),"--outpath",out_base,"--var",var]
-                    outfilename = out_base + "/pcmdi_compute_climatologies_{0}_{1}.log".format(model,var)
-                    with open (outfilename,"w") as outfile:
-                        subprocess.run(cmd, env=os.environ.copy(), stdout=outfile)
-
-            # Get the date strings from the climo files for the filename template
-            settings["test_data_path"] = out_base
-            filelist = os.listdir(out_base)
-            try:
-                for file in filelist:
-                    if ".AC." in file:
-                        suffix = file[-30:]
-                        break
-                settings["filename_template"] = os.path.basename(filename_template)[:-3] + suffix
-                print("Success in generating climatologies\n")
-            except TypeError:
-                print("Error: Could not find climatologies.")
-                sys.exit(1)
-            # TODO : Should also link sftlf file in AC folder if exists
-            if check_for_opt("sftlf_filename_template",settings):
-                sftlf=settings["sftlf_filename_template"]
+            settings = make_climatologies(settings,model_dir,wk_dir)
 
     if pmp_config == "monsoon_wang":
         settings["test_data_path"] = os.path.join(model_dir,settings["test_data_path"])
