@@ -17,7 +17,7 @@ exp = 'historical'  # historical, piControl
 # =================================================
 # Miscellaneous
 # -------------------------------------------------
-#debug = False
+# debug = False
 debug = True
 nc_out = True
 
@@ -25,15 +25,15 @@ nc_out = True
 # Observation
 # -------------------------------------------------
 reference_data_path = {
-    'ERA-Interim': '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/VAR/ERA-INT/gn/v20200707/VAR_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc',
+    'ERA-Interim': '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/VAR/ERA-INT/gn/v20200707/VAR_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc',  # noqa
     'HadISST': '/work/lee1043/DATA/HadISSTv1.1/HadISSTv1.1.xml',
     'OISST': '/work/lee1043/DATA/OISST/xmls/OISST_tos_mo.xml',
     'Tropflux': '/work/lee1043/DATA/TropFlux/monthly/xmls/Tropflux_VAR_mo.xml',
-    # 'Tropflux': '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/mon/VAR/TropFlux-1-0/gn/v20190912/VAR_mon_TropFlux-1-0_BE_gn_197901-201707.nc',
+    # 'Tropflux': '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/mon/VAR/TropFlux-1-0/gn/v20190912/VAR_mon_TropFlux-1-0_BE_gn_197901-201707.nc',  # noqa
     # 'OAFlux': '/work/lee1043/DATA/OAFlux/xmls/OAFlux_VAR_mo.xml',
     'GPCPv2.3': '/p/user_pub/pmp/pmp_obs_preparation/orig/data/GPCP_v2.3_mon_jwl/precip.mon.mean.nc',
-    # 'GPCPv2.3': '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/mon/pr/GPCP-2-3/gn/v20200117/pr_mon_GPCP-2-3_BE_gn_197901-201907.nc',
-    # 'AVISO': '/p/user_pub/PCMDIobs/PCMDIobs2.1/ocean/mon/zos/AVISO-1-0/gn/v20190912/zos_mon_AVISO-1-0_BE_gn_199210-201012.nc',
+    # 'GPCPv2.3': '/p/user_pub/PCMDIobs/PCMDIobs2.0/atmos/mon/pr/GPCP-2-3/gn/v20200117/pr_mon_GPCP-2-3_BE_gn_197901-201907.nc',  # noqa
+    # 'AVISO': '/p/user_pub/PCMDIobs/PCMDIobs2.1/ocean/mon/zos/AVISO-1-0/gn/v20190912/zos_mon_AVISO-1-0_BE_gn_199210-201012.nc',  # noqa
     'AVISO': '/work/lee1043/DATA/AVISO/sla_aviso_199301-201812.xml',
 }
 

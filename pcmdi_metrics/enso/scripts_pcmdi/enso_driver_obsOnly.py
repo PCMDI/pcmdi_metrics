@@ -132,7 +132,7 @@ for obs in list_obs:
         #
         try:
             var_in_file = dict_var[var]['var_name']
-        except:
+        except Exception:
             print('\033[95m' + str(var) + " is not available for " + str(obs) + " or unscripted" + '\033[0m')
         else:
             if isinstance(var_in_file, list):
@@ -146,15 +146,15 @@ for obs in list_obs:
                 file_areacell = None  # temporary for now
                 try:
                     file_landmask = param.reference_data_lf_path[obs]
-                except:
+                except Exception:
                     file_landmask = None
                 try:
                     areacell_in_file = dict_var['areacell']['var_name']
-                except:
+                except Exception:
                     areacell_in_file = None
                 try:
                     landmask_in_file = dict_var['landmask']['var_name']
-                except:
+                except Exception:
                     landmask_in_file = None
                 # if var_in_file is a list (like for thf) all variables should be read from the same realm
                 if isinstance(var_in_file, list):
@@ -164,7 +164,7 @@ for obs in list_obs:
                     list_name_area = [areacell_in_file for var1 in var_in_file]
                     try:
                         list_landmask = [param.reference_data_lf_path[obs] for var1 in var_in_file]
-                    except:
+                    except Exception:
                         list_landmask = None
                     list_name_land = [landmask_in_file for var1 in var_in_file]
                 else:
@@ -176,7 +176,7 @@ for obs in list_obs:
                 dict_obs[obs][var] = {'path + filename': list_files, 'varname': var_in_file,
                                       'path + filename_area': list_areacell, 'areaname': list_name_area,
                                       'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
-            except:
+            except Exception:
                 print('\033[95m' + 'Observation dataset' + str(obs) +
                       " is not given for variable " + str(var) + '\033[0m')
 

@@ -36,8 +36,12 @@ obs_catalogue = "/p/user_pub/PCMDIobs/catalogue/pcmdiobs_monthly_bySource_catalo
 # =================================================
 # Models
 # -------------------------------------------------
-modpath = '/work/lee1043/ESGF/ESG_NCAR/%(mip)/%(model)/mon/%(variable)/rewrite/%(variable)_%(realm)_%(model)_%(exp)_%(realization)_????01-200512_rewrite.nc'
-modpath_lf = '/work/lee1043/ESGF/ESG_NCAR/CESM_LE/mon/%(realm)/%(variable)/b.e11.B20TRC5CNBDRD.f09_g16.002.cam.h0.%(variable).????01-200512.nc'
+modpath = os.path.join('/work/lee1043/ESGF/ESG_NCAR',
+                       '%(mip)/%(model)/mon/%(variable)/rewrite',
+                       '%(variable)_%(realm)_%(model)_%(exp)_%(realization)_????01-200512_rewrite.nc')
+modpath_lf = os.path.join('/work/lee1043/ESGF/ESG_NCAR',
+                          'CESM_LE/mon/%(realm)/%(variable)',
+                          'b.e11.B20TRC5CNBDRD.f09_g16.002.cam.h0.%(variable).????01-200512.nc')
 
 modnames = ['CESM1-CAM5']
 realization = '*'

@@ -182,7 +182,7 @@ def get_file(path):
     file_list = glob.glob(path)
     print("path: ", path)
     print("file_list: ", file_list)
-    
+
     if len(file_list) > 1:
         print("Multiple files detected in get_file function. file_list: ", file_list)
         path_to_return = sorted(file_list)[0]
@@ -190,10 +190,10 @@ def get_file(path):
         path_to_return = file_list[0]
     elif len(file_list) == 0:
         path_to_return = path
-        
+
     if not os.path.isfile(path_to_return):
         path_to_return = None
-        
+
     return path_to_return
 
 

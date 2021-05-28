@@ -13,7 +13,7 @@ from genutil import StringConstructor
 from pcmdi_metrics.enso.lib import AddParserArgument
 from pcmdi_metrics.enso.lib import metrics_to_json
 from pcmdi_metrics.enso.lib import find_realm, get_file
-from pcmdi_metrics.enso.lib import CLIVAR_LargeEnsemble_Variables 
+from pcmdi_metrics.enso.lib import CLIVAR_LargeEnsemble_Variables
 from EnsoMetrics.EnsoCollectionsLib import CmipVariables, defCollection, ReferenceObservations
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
 from pcmdi_metrics.variability_mode.lib import sort_human
@@ -104,7 +104,7 @@ print('egg_pth:', egg_pth)
 for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
     if not os.path.exists(outdir(output_type=output_type)):
         os.makedirs(outdir(output_type=output_type))
-    print('output directory for '+ output_type + ':' + 
+    print('output directory for ' + output_type + ':' +
           outdir(output_type=output_type))
 
 # list of variables
@@ -119,10 +119,10 @@ print('list_variables:', list_variables)
 
 # list of observations
 list_obs = list()
-if obs_cmor and obs_catalogue_json != None:
+if obs_cmor and obs_catalogue_json is not None:
     with open(obs_catalogue_json) as jobs:
         obs_catalogue_dict = json.load(jobs)
-    list_obs = list(obs_catalogue_dict.keys()) 
+    list_obs = list(obs_catalogue_dict.keys())
 else:
     for metric in list_metric:
         dict_var_obs = dict_mc['metrics_list'][metric]['obs_name']
@@ -152,7 +152,7 @@ for obs in list_obs:
         #
         try:
             var_in_file = dict_var[var]['var_name']
-        except:
+        except Exception:
             print('\033[95m' + str(var) + " is not available for " + str(obs) + " or unscripted" + '\033[0m')
         else:
             if isinstance(var_in_file, list):
@@ -162,7 +162,7 @@ for obs in list_obs:
 
             try:
                 # finding file for 'obs', 'var'
-                if obs_cmor and obs_catalogue_json != None:
+                if obs_cmor and obs_catalogue_json is not None:
                     if var0 in list(obs_catalogue_dict[obs].keys()):
                         file_name = os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var0]["template"])
                         if not os.path.isfile(file_name):
@@ -177,20 +177,20 @@ for obs in list_obs:
                 file_areacell = None  # temporary for now
                 try:
                     file_landmask = param.reference_data_lf_path[obs]
-                except:
+                except Exception:
                     file_landmask = None
                 try:
                     areacell_in_file = dict_var['areacell']['var_name']
-                except:
+                except Exception:
                     areacell_in_file = None
                 try:
                     landmask_in_file = dict_var['landmask']['var_name']
-                except:
+                except Exception:
                     landmask_in_file = None
                 # if var_in_file is a list (like for thf) all variables should be read from the same realm
                 if isinstance(var_in_file, list):
                     list_files = list()
-                    if obs_cmor and obs_catalogue_json != None:
+                    if obs_cmor and obs_catalogue_json is not None:
                         for var1 in var_in_file:
                             file_name1 = os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var1]["template"])
                             if not os.path.isfile(file_name1):
@@ -203,7 +203,7 @@ for obs in list_obs:
                     list_name_area = [areacell_in_file for var1 in var_in_file]
                     try:
                         list_landmask = [param.reference_data_lf_path[obs] for var1 in var_in_file]
-                    except:
+                    except Exception:
                         list_landmask = None
                     list_name_land = [landmask_in_file for var1 in var_in_file]
                 else:
@@ -212,13 +212,13 @@ for obs in list_obs:
                     list_name_area = areacell_in_file
                     list_landmask = file_landmask
                     list_name_land = landmask_in_file
-                    
+
                 if list_files is not None:
                     dict_obs[obs][var] = {'path + filename': list_files, 'varname': var_in_file,
-                                        'path + filename_area': list_areacell, 'areaname': list_name_area,
-                                        'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
-            except:
-                print('\033[95m' + 'Observation dataset' + str(obs) + 
+                                          'path + filename_area': list_areacell, 'areaname': list_name_area,
+                                          'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
+            except Exception:
+                print('\033[95m' + 'Observation dataset' + str(obs) +
                       " is not given for variable " + str(var) + '\033[0m')
 
     if len(list(dict_obs[obs].keys())) == 0:
@@ -227,7 +227,7 @@ for obs in list_obs:
 print('PMPdriver: dict_obs readin end')
 
 # =================================================
-# Loop for Models 
+# Loop for Models
 # -------------------------------------------------
 dict_metric, dict_dive = dict(), dict()
 
@@ -264,11 +264,12 @@ for mod in models:
         else:
             inline_separator = '.'
         run_in_modpath = modpath(mip=mip, exp=exp, realm=realm, model=mod, realization=realization,
-            variable='ts').split('/')[-1].split(inline_separator).index(realization)
+                                 variable='ts').split('/')[-1].split(inline_separator).index(realization)
         print('run_in_modpath:', run_in_modpath)
         # Collect available runs
-        runs_list = [model_path.split('/')[-1].split(inline_separator)[run_in_modpath] for model_path in model_path_list]
-    except:
+        runs_list = [model_path.split('/')[-1].split(inline_separator)[run_in_modpath]
+                     for model_path in model_path_list]
+    except Exception:
         if realization not in ["all", "*"]:
             runs_list = [realization]
 
@@ -316,9 +317,11 @@ for mod in models:
                 # -- TEMPORARY --
                 if mip == 'cmip6':
                     if mod in ['IPSL-CM6A-LR', 'CNRM-CM6-1']:
-                        file_landmask = '/work/lee1043/ESGF/CMIP6/CMIP/'+mod+'/sftlf_fx_'+mod+'_historical_r1i1p1f1_gr.nc'
+                        file_landmask = ('/work/lee1043/ESGF/CMIP6/CMIP/' + mod +
+                                         '/sftlf_fx_' + mod + '_historical_r1i1p1f1_gr.nc')
                     elif mod in ['GFDL-ESM4']:
-                        file_landmask = modpath_lf(mip=mip, realm="atmos", model='GFDL-CM4', variable=dict_var['landmask']['var_name'])
+                        file_landmask = modpath_lf(mip=mip, realm="atmos", model='GFDL-CM4',
+                                                   variable=dict_var['landmask']['var_name'])
                 if mip == 'cmip5':
                     if mod == "BNU-ESM":
                         # Incorrect latitude in original sftlf fixed
@@ -332,22 +335,22 @@ for mod in models:
                 """
                 try:
                     areacell_in_file = dict_var['areacell']['var_name']
-                except:
+                except Exception:
                     areacell_in_file = None
                 """
                 try:
                     landmask_in_file = dict_var['landmask']['var_name']
-                except:
+                except Exception:
                     landmask_in_file = None
-        
+
                 if isinstance(var_in_file, list):
                     list_areacell, list_files, list_landmask, list_name_area, list_name_land = \
                         list(), list(), list(), list(), list()
                     for var1 in var_in_file:
                         realm, areacell_in_file = find_realm(var1, mip)
-                        modpath_tmp = get_file(modpath(mip=mip, exp=exp, realm=realm, model=mod, 
+                        modpath_tmp = get_file(modpath(mip=mip, exp=exp, realm=realm, model=mod,
                                                        realization=realization, variable=var1))
-                        file_areacell_tmp = get_file(modpath_lf(mip=mip, realm=realm2, model=mod, 
+                        file_areacell_tmp = get_file(modpath_lf(mip=mip, realm=realm2, model=mod,
                                                                 variable=areacell_in_file))
                         print("file_areacell_tmp:", file_areacell_tmp)
                         list_files.append(modpath_tmp)
@@ -368,7 +371,6 @@ for mod in models:
                     # Temporay control of areacello for models with zos on gr instead on gn
                     if mod in ['BCC-ESM1', 'CESM2', 'CESM2-FV2', 'CESM2-WACCM', 'CESM2-WACCM-FV2',
                                'GFDL-CM4', 'GFDL-ESM4', 'MRI-ESM2-0',  # cmip6
-                               #'BCC-CSM1-1', 'BCC-CSM1-1-M', 'EC-EARTH', 'GFDL-CM3', 'GISS-E2-R',
                                'BCC-CSM1-1', 'BCC-CSM1-1-M', 'GFDL-CM3', 'GISS-E2-R',
                                'MRI-CGCM3']:  # cmip5
                         list_areacell = None
@@ -426,7 +428,7 @@ for mod in models:
             # OUTPUT METRICS TO JSON FILE (per simulation)
             metrics_to_json(mc_name, dict_obs, dict_metric, dict_dive, egg_pth, outdir, json_name, mod=mod, run=run)
 
-        except Exception as e: 
+        except Exception as e:
             print('failed for ', mod, run)
             print(e)
             if not debug:

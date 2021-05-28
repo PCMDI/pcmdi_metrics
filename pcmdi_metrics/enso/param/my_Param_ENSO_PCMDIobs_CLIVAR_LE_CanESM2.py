@@ -36,7 +36,9 @@ obs_catalogue = "/p/user_pub/PCMDIobs/catalogue/pcmdiobs_monthly_bySource_catalo
 # =================================================
 # Models
 # -------------------------------------------------
-modpath = '/work/lee1043/ESGF/ESG_NCAR/%(mip)/%(model)/mon/%(variable)/rewrite/%(variable)_%(realm)_%(model)_%(exp)_%(realization)_????01-200512_rewrite.nc'
+modpath = os.path.join('/work/lee1043/ESGF/ESG_NCAR',
+                       '%(mip)/%(model)/mon/%(variable)/rewrite',
+                       '%(variable)_%(realm)_%(model)_%(exp)_%(realization)_????01-200512_rewrite.nc')
 modpath_lf = os.path.join(
     find_latest('/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest'),
     'cmip5/historical/%(realm)/fx/%(variable)',
