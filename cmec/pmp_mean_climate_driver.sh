@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source $CONDA_ROOT/etc/profile.d/conda.sh
-conda activate test_pcmdi
+conda activate cmec_pcmdi_metrics
 
 cd $CMEC_WK_DIR
 

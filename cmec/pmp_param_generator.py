@@ -16,8 +16,7 @@ import os
 import subprocess
 import sys
 import genutil
-import make_climatologies
-from pcmdi_metrics.io.base import Base
+from climatologies import make_climatologies
 
 def check_for_opt(key,settings):
     result = False
