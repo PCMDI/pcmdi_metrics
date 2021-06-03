@@ -43,13 +43,15 @@ if [[ $? = 0 ]]; then
     std_of_hourlyvalues.py \
     -p $tmp_param \
     --results_dir $CMEC_WK_DIR/json \
-    --modpath $CMEC_WK_DIR/nc
+    --modpath $CMEC_WK_DIR/nc \
+    --filename_template 'pr_%(model)_%(month)_%(firstyear)-%(lastyear)_diurnal_std.nc'
 
     printf "\nstd_of_meandiurnalcycle\n"
     std_of_meandiurnalcycle.py \
     -p $tmp_param \
     --results_dir $CMEC_WK_DIR/json \
-    --modpath $CMEC_WK_DIR/nc
+    --modpath $CMEC_WK_DIR/nc \
+    --filename_template 'pr_%(model)_%(month)_%(firstyear)-%(lastyear)_diurnal_avg.nc'
 
     printf "\nfourierDiurnalAllGrid\n"
     fourierDiurnalAllGrid.py \
