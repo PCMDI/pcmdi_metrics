@@ -26,7 +26,7 @@ metricsCollection = 'ENSO_perf'  # ENSO_perf, ENSO_tel, ENSO_proc
 
 # OUTPUT
 case_id = 'basicTestEnso'
-results_dir = os.path.join('$OUTPUT_DIR$',case_id)
+results_dir = os.path.join('$OUTPUT_DIR$',case_id, metricsCollection)
 
 json_name = '%(mip)_%(exp)_%(metricsCollection)_%(case_id)_%(model)_%(realization)'
 netcdf_name = json_name
