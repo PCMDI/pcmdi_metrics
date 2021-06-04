@@ -16,7 +16,7 @@ modpath_lf = '$INPUT_DIR$/CMIP5_demo_data/sftlf_fx_%(model)_amip_r0i0p0.nc'
 # OBSERVATIONS
 obs_cmor = True
 obs_cmor_path = "$INPUT_DIR$/PCMDIobs2"
-obs_catalogue = "demo_data/pcmdiobs-CEM2020_monthly_bySource_catalogue_v20210422.json"
+obs_catalogue = "demo_data/pcmdiobs-CEM2020_monthly_bySource_catalogue_v20210422_demo.json"
 #reference_data_lf_path = {
 #    'GPCPv2.3': '$INPUT_DIR$/gpcp_25_lsmask.nc'
 #}
