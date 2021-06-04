@@ -248,7 +248,6 @@ def CLIVAR_LargeEnsemble_Variables():
     return dict_cmip_variables
 
 
-
 def sort_human(input_list):
     lst = copy.copy(input_list)
 
