@@ -14,9 +14,9 @@ from pcmdi_metrics.enso.lib import AddParserArgument
 from pcmdi_metrics.enso.lib import metrics_to_json
 from pcmdi_metrics.enso.lib import find_realm, get_file
 from pcmdi_metrics.enso.lib import CLIVAR_LargeEnsemble_Variables
+from pcmdi_metrics.enso.lib import sort_human
 from EnsoMetrics.EnsoCollectionsLib import CmipVariables, defCollection, ReferenceObservations
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
-from pcmdi_metrics.variability_mode.lib import sort_human
 
 # To avoid below error when using multi cores
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
