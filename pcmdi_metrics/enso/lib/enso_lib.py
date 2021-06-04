@@ -3,10 +3,12 @@ from collections import defaultdict
 from pcmdi_metrics.driver.pmp_parser import PMPParser
 
 import collections
+import copy
 import datetime
 import glob
 import os
 import pcmdi_metrics
+import re
 
 
 def AddParserArgument():
@@ -244,3 +246,17 @@ def CLIVAR_LargeEnsemble_Variables():
         },
     }
     return dict_cmip_variables
+
+
+
+def sort_human(input_list):
+    lst = copy.copy(input_list)
+
+    def convert(text):
+        return int(text) if text.isdigit() else text
+
+    def alphanum(key):
+        return [convert(c) for c in re.split('([0-9]+)', key)]
+
+    lst.sort(key=alphanum)
+    return lst
