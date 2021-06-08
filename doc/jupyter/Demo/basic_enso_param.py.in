@@ -1,0 +1,30 @@
+import os
+
+#
+#  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY:
+#
+#
+
+# MODELS
+modnames = ['ACCESS1-0']
+mip = 'cmip5'  # cmip5, cmip6
+exp = 'historical'  # historical, piControl
+realization = 'r1i1p1'
+modpath = '$INPUT_DIR$/CMIP5_demo_data/%(variable)_Amon_%(model)_historical_%(realization)_185001-200512.nc'
+modpath_lf = '$INPUT_DIR$/CMIP5_demo_data/sftlf_fx_%(model)_amip_r0i0p0.nc'
+
+# OBSERVATIONS
+obs_cmor = True
+obs_cmor_path = "$INPUT_DIR$/PCMDIobs2"
+obs_catalogue = "demo_data/pcmdiobs-CEM2020_monthly_bySource_catalogue_v20210422_demo.json"
+
+# METRICS COLLECTION
+metricsCollection = 'ENSO_perf'  # ENSO_perf, ENSO_tel, ENSO_proc
+
+# OUTPUT
+case_id = 'basicTestEnso'
+results_dir = os.path.join('$OUTPUT_DIR$',case_id, metricsCollection)
+
+json_name = '%(mip)_%(exp)_%(metricsCollection)_%(case_id)_%(model)_%(realization)'
+netcdf_name = json_name
+nc_out = False
