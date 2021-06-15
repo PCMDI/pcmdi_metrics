@@ -1,7 +1,7 @@
 {
     "settings": {
         "name": "variability_modes",
-        "driver": "cmec/pmp_mov_driver.sh",
+        "driver": "cmec/mov/pmp_mov_driver.sh",
         "async": null,
         "long_name": "PMP Modes of Variability Metrics",
         "description": "Calculate metrics for modes of variability in earth system models.",

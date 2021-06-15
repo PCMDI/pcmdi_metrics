@@ -1,10 +1,10 @@
 {
     "settings": {
-        "name": "mjo",
-        "driver": "cmec/pmp_mjo_driver.sh",
+        "name": "monsoon_sperber",
+        "driver": "cmec/monsoon_sperber/pmp_monsoon_sperber_driver.sh",
         "async": null,
-        "long_name": "PMP Madden-Julian Oscillation Metrics",
-        "description": "Madden-Julian Oscillation metrics for earth system models",
+        "long_name": "PMP Monsoon (Sperber) Metrics",
+        "description": "Monsoon (Sperber) metrics for earth system models",
         "runtime": {"PCMDI Metrics Package": "1.2", "CDAT": "8.2.1"}
     },
     "varlist": {
@@ -22,25 +22,28 @@
         }
     },
     "default_parameters": {
-        "case_id": "mjo_demo",
+        "mip": "cmip5",
+        "exp": "historical",
         "modnames": [
             "GISS-E2-H"
         ],
-        "modpath": "CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_%(model)_historical_r6i1p1_20000101-20051231.nc",
+        "modpath": "CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc",
+        "modpath_lf": "CMIP5_demo_data/cmip5.historical.GISS-E2-H.sftlf.nc",
         "varModel": "pr",
+        "ModUnitsAdjust": "(True, 'multiply', 86400.0)",
+        "units": "mm/d",
         "msyear": 2000,
-        "meyear": 2002,
-        "ModUnitsAdjust": "(True, 'multiply', 86400.0, 'mm d-1')",
-        "units": "mm/day",
+        "meyear": 2005,
         "reference_data_name": "GPCP-IP",
         "reference_data_path": "PCMDIobs2/atmos/day/pr/GPCP-IP/gn/v20200719/pr.day.GPCP-IP.BE.gn.v20200719.1998-1999.xml",
+        "reference_data_lf_path": "misc_demo_data/fx/sftlf.GPCP-IP.1x1.nc",
         "varOBS": "pr",
-        "ObsUnitsAdjust": "(True, 'multiply', 86400.0, 'mm d-1')",
+        "ObsUnitsAdjust": "(True, 'multiply', 86400.0)",
         "osyear": 1998,
         "oeyear": 1999,
-        "units": "mm/d",
+        "includeOBS": true,
+        "update_json": false,
         "nc_out": false,
-        "plot": false,
-        "update_json": false
+        "plot": false
     }
 }

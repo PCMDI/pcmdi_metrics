@@ -6,11 +6,11 @@
         "runtime": {"PCMDI Metrics Package": "1.2", "CDAT": "8.2.1"}
     },
     "contents": [
-        "cmec/pmp_mov.json",
-        "cmec/pmp_mjo.json",
-        "cmec/pmp_mean_climate.json",
-        "cmec/pmp_diurnal_cycle.json",
-        "cmec/pmp_monsoon_wang.json",
-        "cmec/pmp_monsoon_sperber.json"
+        "cmec/mov/pmp_mov.json",
+        "cmec/mjo/pmp_mjo.json",
+        "cmec/mean_climate/pmp_mean_climate.json",
+        "cmec/diurnal_cycle/pmp_diurnal_cycle.json",
+        "cmec/monsoon_wang/pmp_monsoon_wang.json",
+        "cmec/monsoon_sperber/pmp_monsoon_sperber.json"
     ]
 }

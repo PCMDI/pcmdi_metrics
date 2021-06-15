@@ -1,7 +1,7 @@
 {
     "settings": {
         "name": "diurnal_cycle",
-        "driver": "cmec/pmp_diurnal_cycle_driver.sh",
+        "driver": "cmec/diurnal_cycle/pmp_diurnal_cycle_driver.sh",
         "async": "cdp.cdp_run.multiprocess",
         "long_name": "Diurnal Cycle",
         "description": "Diurnal Cycle metrics for earth system models",

@@ -1,7 +1,7 @@
 {
     "settings": {
         "name": "monsoon_wang",
-        "driver": "cmec/pmp_monsoon_wang_driver.sh",
+        "driver": "cmec/monsoon_wang/pmp_monsoon_wang_driver.sh",
         "async": null,
         "long_name": "PMP Monsoon (Wang) Metrics",
         "description": "Monsoon (Wang) metrics for earth system models",

@@ -1,10 +1,10 @@
 {
     "settings": {
-        "name": "monsoon_sperber",
-        "driver": "cmec/pmp_monsoon_sperber_driver.sh",
+        "name": "mjo",
+        "driver": "cmec/mjo/pmp_mjo_driver.sh",
         "async": null,
-        "long_name": "PMP Monsoon (Sperber) Metrics",
-        "description": "Monsoon (Sperber) metrics for earth system models",
+        "long_name": "PMP Madden-Julian Oscillation Metrics",
+        "description": "Madden-Julian Oscillation metrics for earth system models",
         "runtime": {"PCMDI Metrics Package": "1.2", "CDAT": "8.2.1"}
     },
     "varlist": {
@@ -22,28 +22,25 @@
         }
     },
     "default_parameters": {
-        "mip": "cmip5",
-        "exp": "historical",
+        "case_id": "mjo_demo",
         "modnames": [
             "GISS-E2-H"
         ],
-        "modpath": "CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc",
-        "modpath_lf": "CMIP5_demo_data/cmip5.historical.GISS-E2-H.sftlf.nc",
+        "modpath": "CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_%(model)_historical_r6i1p1_20000101-20051231.nc",
         "varModel": "pr",
-        "ModUnitsAdjust": "(True, 'multiply', 86400.0)",
-        "units": "mm/d",
         "msyear": 2000,
-        "meyear": 2005,
+        "meyear": 2002,
+        "ModUnitsAdjust": "(True, 'multiply', 86400.0, 'mm d-1')",
+        "units": "mm/day",
         "reference_data_name": "GPCP-IP",
         "reference_data_path": "PCMDIobs2/atmos/day/pr/GPCP-IP/gn/v20200719/pr.day.GPCP-IP.BE.gn.v20200719.1998-1999.xml",
-        "reference_data_lf_path": "misc_demo_data/fx/sftlf.GPCP-IP.1x1.nc",
         "varOBS": "pr",
-        "ObsUnitsAdjust": "(True, 'multiply', 86400.0)",
+        "ObsUnitsAdjust": "(True, 'multiply', 86400.0, 'mm d-1')",
         "osyear": 1998,
         "oeyear": 1999,
-        "includeOBS": true,
-        "update_json": false,
+        "units": "mm/d",
         "nc_out": false,
-        "plot": false
+        "plot": false,
+        "update_json": false
     }
 }

@@ -1,7 +1,7 @@
 {
     "settings": {
         "name": "mean_climate",
-        "driver": "cmec/pmp_mean_climate_driver.sh",
+        "driver": "cmec/mean_climate/pmp_mean_climate_driver.sh",
         "async": null,
         "long_name": "PMP mean climate metrics",
         "description": "Mean climate metrics for earth system models",

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-source $CONDA_ROOT/etc/profile.d/conda.sh
-conda activate cmec_pcmdi_metrics
+source $CONDA_SOURCE
+conda activate $CONDA_ENV_ROOT/_CMEC_pcmdi_metrics
 
 cd $CMEC_WK_DIR
 
 tmp_param=$CMEC_WK_DIR/diurnal_param.py
 
-python $CMEC_CODE_DIR/pmp_param_generator.py \
+python $CMEC_CODE_DIR/../scripts/pmp_param_generator.py \
 $CMEC_CONFIG_DIR/cmec.json $tmp_param "diurnal_cycle"
 
 if [[ $? = 0 ]]; then
@@ -66,6 +66,8 @@ if [[ $? = 0 ]]; then
     --results_dir $CMEC_WK_DIR/json \
     --modpath $CMEC_WK_DIR/nc \
     -t 'pr_%(model)_%(month)_%(firstyear)-%(lastyear)_S.nc'
+
+    python $CMEC_CODE_DIR/diurnal_cycle_output.py
 
 else
     printf "Failure in PMP/diurnal_cycle parameter file generation"
