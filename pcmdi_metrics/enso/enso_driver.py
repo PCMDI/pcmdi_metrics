@@ -219,8 +219,8 @@ for obs in list_obs:
                     if debug:
                         print('list_files:', list_files)
                     dict_obs[obs_name][var] = {'path + filename': list_files, 'varname': var_in_file,
-                                          'path + filename_area': list_areacell, 'areaname': list_name_area,
-                                          'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
+                                               'path + filename_area': list_areacell, 'areaname': list_name_area,
+                                               'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
             except Exception:
                 print('\033[95m' + 'Observation dataset ' + str(obs) +
                       " is not given for variable " + str(var) + '\033[0m')

@@ -272,8 +272,14 @@ def match_obs_name(obs):
         'HadISST-1-1': 'HadISST',
         'TropFlux-1-0': 'Tropflux'
     }
-    # Defined in ENSO code: ['20CRv2', '20CRv3', 'AVISO', 'CFSR', 'CMAP', 'ERA-Interim', 'ERSSTv5', 'GODAS', 'GPCPv2.3', 'HadISST', 'NCEP2', 'OAFlux', 'OISST', 'ORAS4', 'SODA3.4.2', 'Tropflux']
-    # Used from obs catalogue: ['20CR', 'AVISO-1-0', 'CERES-EBAF-4-0', 'CERES-EBAF-4-1', 'CMAP-V1902', 'ERA-20C', 'ERA-40', 'ERA-5', 'ERA-INT', 'GPCP-2-3', 'HadISST-1-1', 'ISCCP', 'REMSS-PRW-v07r01', 'TRMM-3B43v-7', 'TropFlux-1-0']
+    """
+    in ENSO package: ['20CRv2', '20CRv3', 'AVISO', 'CFSR', 'CMAP', 'ERA-Interim', 'ERSSTv5',
+                      'GODAS', 'GPCPv2.3', 'HadISST', 'NCEP2',
+                      'OAFlux', 'OISST', 'ORAS4', 'SODA3.4.2', 'Tropflux']
+    in PMPobs catalogue: ['20CR', 'AVISO-1-0', 'CERES-EBAF-4-0', 'CERES-EBAF-4-1', 'CMAP-V1902',
+                          'ERA-20C', 'ERA-40', 'ERA-5', 'ERA-INT', 'GPCP-2-3', 'HadISST-1-1',
+                          'ISCCP', 'REMSS-PRW-v07r01', 'TRMM-3B43v-7', 'TropFlux-1-0']
+    """
 
     if obs in list(dict_obs_name.keys()):
         obs_name = dict_obs_name[obs]
