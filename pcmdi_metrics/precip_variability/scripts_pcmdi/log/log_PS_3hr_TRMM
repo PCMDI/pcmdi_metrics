@@ -591,8 +591,8 @@ Complete regridding from (2920, 90, 180) to (2920, 90, 180)
 Complete regridding from (2920, 90, 180) to (2920, 90, 180)
 2019 (55512, 90, 180)
 Complete calculating climatology and anomaly for calendar of gregorian
-/export/ahn6/anaconda3/envs/pmp_v20200601/lib/python3.8/site-packages/pcmdi_metrics-v1.2.1_643_g70b7a40-py3.8.egg/pcmdi_metrics/precip_variability/lib/lib_variability_across_timescales.py:198: UserWarning: Warning: converting a masked element to nan.
-Complete power spectra ( nps= 2.0 )
-Complete power spectra ( nps= 2.0 )
-Complete calculating Standard deviation
-Complete calculating Standard deviation
+/export/ahn6/anaconda3/envs/pmp_v20200601/lib/python3.8/site-packages/pcmdi_metrics-v1.2.1_661_g108009d-py3.8.egg/pcmdi_metrics/precip_variability/lib/lib_variability_across_timescales.py:229: UserWarning: Warning: converting a masked element to nan.
+Complete power spectra (segment:  29200  nps: 2.0 )
+Complete domain and frequency average of spectral power
+Complete power spectra (segment:  29200  nps: 2.0 )
+Complete domain and frequency average of spectral power

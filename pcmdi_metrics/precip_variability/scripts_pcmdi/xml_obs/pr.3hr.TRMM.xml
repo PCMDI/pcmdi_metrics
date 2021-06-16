@@ -7,7 +7,7 @@
 	directory	="/work/ahn6/obs/TRMM/TRMM_3B42.7/3hr_2deg/"
 	calendar	="gregorian"
 	history	="
-[2021-4-22 8:12:48] /export/ahn6/anaconda3/envs/pmp_v20200601/bin/cdscan -x ./xml_obs/pr.3hr.TRMM.xml /work/ahn6/obs/TRMM/TRMM_3B42.7/3hr_2deg/TRMM_3B42.7_2deg_3hr_199801.nc /work/ahn6/obs/TRMM/TRMM_3B42.7/3hr_2deg/TRMM_3B42.7_2deg_3hr_199802.nc /work/ahn6/obs/TRMM/TRMM_3B42. ..."
+[2021-6-16 8:7:17] /export/ahn6/anaconda3/envs/pmp_v20200601/bin/cdscan -x ./xml_obs/pr.3hr.TRMM.xml /work/ahn6/obs/TRMM/TRMM_3B42.7/3hr_2deg/TRMM_3B42.7_2deg_3hr_199801.nc /work/ahn6/obs/TRMM/TRMM_3B42.7/3hr_2deg/TRMM_3B42.7_2deg_3hr_199802.nc /work/ahn6/obs/TRMM/TRMM_3B42. ..."
 	>
 	<axis
 		id	="bound"

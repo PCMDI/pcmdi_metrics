@@ -1,6 +1,7 @@
 import cdms2 as cdms
 import MV2 as MV
 import glob
+import json
 import copy
 import os
 import sys
@@ -10,8 +11,9 @@ from pcmdi_metrics.precip_variability.lib import (
     Regrid2deg,
     ClimAnom,
     Powerspectrum,
-    StandardDeviation,
+    Avg_PS_DomFrq,
 )
+
 
 # Read parameters
 P = PMPParser()
@@ -53,7 +55,7 @@ print(data)
 if not (os.path.isdir(outdir)):
     os.makedirs(outdir)
 
-# Regridding -> Anomaly -> Power spectra -> Write
+# Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
 syr = prd[0]
 eyr = prd[1]
 for id, dat in enumerate(data):
@@ -93,6 +95,8 @@ for id, dat in enumerate(data):
 
     # Power spectum of total
     freqs, ps, rn, sig95 = Powerspectrum(drg, nperseg, noverlap)
+    # Domain & Frequency average
+    psdmfm_forced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, 'forced')
     # Write data (nc file)
     outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc"
     with cdms.open(os.path.join(outdir, outfilename), "w") as out:
@@ -103,24 +107,23 @@ for id, dat in enumerate(data):
 
     # Power spectum of anomaly
     freqs, ps, rn, sig95 = Powerspectrum(anom, nperseg, noverlap)
+    # Domain & Frequency average
+    psdmfm_unforced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, 'unforced')
     # Write data (nc file)
-    outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
+    outfilename = "PS_pr." + \
+        str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
     with cdms.open(os.path.join(outdir, outfilename), "w") as out:
         out.write(freqs, id="freqs")
         out.write(ps, id="power")
         out.write(rn, id="rednoise")
         out.write(sig95, id="sig95")
 
-    # STD of total
-    std = StandardDeviation(drg, 0)
-    # Write data (nc file)
-    outfilename = "STD_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc"
-    with cdms.open(os.path.join(outdir, outfilename), "w") as out:
-        out.write(std, id="std")
-
-    # STD of anomaly
-    std = StandardDeviation(anom, 0)
-    # Write data (nc file)
-    outfilename = "STD_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
-    with cdms.open(os.path.join(outdir, outfilename), "w") as out:
-        out.write(std, id="std")
+    # Write data (json file)
+    psdmfm = {}
+    psdmfm['forced'] = psdmfm_forced['forced']
+    psdmfm['unforced'] = psdmfm_unforced['unforced']
+    outfilename = "PS_pr." + \
+        str(dfrq) + "_regrid.180x90_area.freq.mean_" + dat + ".json"
+    with open(os.path.join(outdir, outfilename), "w") as out:
+        json.dump(psdmfm, out, sort_keys=True,
+                  indent=4, separators=(",", ": "))

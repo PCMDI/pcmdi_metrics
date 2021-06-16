@@ -8,6 +8,7 @@ from scipy import signal
 from scipy.stats import chi2
 import pandas as pd
 import math
+import sys
 
 
 # ==================================================================================
@@ -34,7 +35,10 @@ def Regrid2deg(d):
     drg.setAxisList((time, lat, lon))
 
     # Missing value (In case, missing value is changed after regridding)
-    drg[drg >= d.missing_value] = d.missing_value
+    if d.missing_value > 0:
+        drg[drg >= d.missing_value] = d.missing_value
+    else:
+        drg[drg <= d.missing_value] = d.missing_value
     mask = np.array(drg == d.missing_value)
     drg.mask = mask
 
@@ -48,7 +52,7 @@ def ClimAnom(d, ntd, syr, eyr):
     Calculate climatoloty and anomaly with data higher frequency than daily
     Input
     - d: cdms variabl
-    - ntd: number of time steps per a day (daily: 1, 3-hourly: 8)
+    - ntd: number of time steps per day (daily: 1, 3-hourly: 8)
     - syr: analysis start year
     - eyr: analysis end year
     Output
@@ -99,8 +103,12 @@ def ClimAnom(d, ntd, syr, eyr):
                         yrtmp.shape[1], yrtmp.shape[2])
             )
             dseg[iyr] = yrtmpseg
+
     # Missing value (In case, missing value is changed)
-    dseg[dseg >= d.missing_value] = d.missing_value
+    if d.missing_value > 0:
+        dseg[dseg >= d.missing_value] = d.missing_value
+    else:
+        dseg[dseg <= d.missing_value] = d.missing_value
     mask = np.array(dseg == d.missing_value)
     dseg.mask = mask
 
@@ -128,8 +136,12 @@ def ClimAnom(d, ntd, syr, eyr):
     else:
         for iyr, year in enumerate(range(syr, eyr + 1)):
             anom = np.append(anom, (dseg[iyr] - clim))
+
     # Missing value (In case, missing value is changed after np.append)
-    anom[anom >= d.missing_value] = d.missing_value
+    if d.missing_value > 0:
+        anom[anom >= d.missing_value] = d.missing_value
+    else:
+        anom[anom <= d.missing_value] = d.missing_value
     mask = np.array(anom == d.missing_value)
     anom.mask = mask
 
@@ -163,8 +175,12 @@ def Powerspectrum(d, nperseg, noverlap):
     """
     # Fill missing date using interpolation
     dnp = np.array(d)
+
     # Missing value (In case, missing value is changed after np.array)
-    dnp[dnp >= d.missing_value] = d.missing_value
+    if d.missing_value > 0:
+        dnp[dnp >= d.missing_value] = d.missing_value
+    else:
+        dnp[dnp <= d.missing_value] = d.missing_value
     dnp[dnp == d.missing_value] = np.nan
     dfm = np.zeros((d.shape[0], d.shape[1], d.shape[2]), np.float)
     for iy in range(d.shape[1]):
@@ -191,9 +207,6 @@ def Powerspectrum(d, nperseg, noverlap):
             nu = 2 * nps
             sig95[:, iy, ix] = RedNoiseSignificanceLevel(nu, rn[:, iy, ix])
 
-    # print('Complete power spectra with segment of', nperseg)
-    print("Complete power spectra ( nps=", nps, ")")
-
     # Decorate arrays with dimensions
     freqs = MV.array(freqs)
     psd = MV.array(psd)
@@ -207,6 +220,7 @@ def Powerspectrum(d, nperseg, noverlap):
     rn.setAxisList((frq, lat, lon))
     sig95.setAxisList((frq, lat, lon))
 
+    print("Complete power spectra (segment: ", nperseg, " nps:", nps, ")")
     return freqs, psd, rn, sig95
 
 
@@ -262,21 +276,129 @@ def RedNoiseSignificanceLevel(nu, rn, p=0.050):
 
 
 # ==================================================================================
-def StandardDeviation(d, axis):
+def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
     """
+    Domain and Frequency average of spectral power
     Input
-    - d: cdms variable
+    - d: spectral power with lon, lat, and frequency dimensions (cdms)
+    - ntd: number of time steps per day (daily: 1, 3-hourly: 8)
+    - frequency: frequency
+    - dat: model name
+    - mip: mip name
+    - frc: forced or unforced
     Output
-    - std: standard deviation
+    - psdmfm: Domain and Frequency averaged of spectral power (json)
     """
-    std = genutil.statistics.std(d, axis=axis)
+    domains = ["Total_50S50N", "Ocean_50S50N", "Land_50S50N",
+               "Total_30N50N", "Ocean_30N50N", "Land_30N50N",
+               "Total_30S30N", "Ocean_30S30N", "Land_30S30N",
+               "Total_50S30S", "Ocean_50S30S", "Land_50S30S"]
 
-    print("Complete calculating Standard deviation")
+    if ntd == 8:  # 3-hourly data
+        frqs_forced = ["semi-diurnal", "diurnal", "semi-annual", "annual"]
+        frqs_unforced = ["sub-daily", "synoptic",
+                         "sub-seasonal", "seasonal-annual", "interannual"]
+    elif ntd == 1:  # daily data
+        frqs_forced = ["semi-annual", "annual"]
+        frqs_unforced = ["synoptic", "sub-seasonal",
+                         "seasonal-annual", "interannual"]
+    else:
+        sys.exit("ERROR: ntd "+ntd+" is not defined!")
 
-    # Decorate arrays with dimensions
-    std = MV.array(std)
-    lat = d.getLatitude()
-    lon = d.getLongitude()
-    std.setAxisList((lat, lon))
+    if frc == "forced":
+        frqs = frqs_forced
+    elif frc == "unforced":
+        frqs = frqs_unforced
+    else:
+        sys.exit("ERROR: frc "+frc+" is not defined!")
 
-    return std
+    var = 'power'
+
+    psdmfm = {}
+    psdmfm[frc] = {}
+    psdmfm[frc][mip] = {}
+    psdmfm[frc][mip][dat] = {}
+    psdmfm[frc][mip][dat][var] = {}
+
+    mask = cdutil.generateLandSeaMask(d[0])
+    d, mask2 = genutil.grower(d, mask)
+    d_ocean = MV.masked_where(mask2 == 1.0, d)
+    d_land = MV.masked_where(mask2 == 0.0, d)
+
+    for dom in domains:
+        psdmfm[frc][mip][dat][var][dom] = {}
+
+        if "Ocean" in dom:
+            dmask = d_ocean
+        elif "Land" in dom:
+            dmask = d_land
+        else:
+            dmask = d
+
+        if "50S50N" in dom:
+            am = cdutil.averager(
+                dmask(latitude=(-50, 50)), axis="xy")
+        if "30N50N" in dom:
+            am = cdutil.averager(
+                dmask(latitude=(30, 50)), axis="xy")
+        if "30S30N" in dom:
+            am = cdutil.averager(
+                dmask(latitude=(-30, 30)), axis="xy")
+        if "50S30S" in dom:
+            am = cdutil.averager(
+                dmask(latitude=(-50, -30)), axis="xy")
+        am = np.array(am)
+
+        for frq in frqs:
+            if (frq == 'semi-diurnal'):  # pr=0.5day
+                idx = prdday_to_frqidx(0.5, frequency, ntd)
+                amfm = am[idx]
+            elif (frq == 'diurnal'):  # pr=1day
+                idx = prdday_to_frqidx(1, frequency, ntd)
+                amfm = am[idx]
+            elif (frq == 'semi-annual'):  # 180day=<pr=<183day
+                idx2 = prdday_to_frqidx(180, frequency, ntd)
+                idx1 = prdday_to_frqidx(183, frequency, ntd)
+                amfm = np.amax(am[idx1-5:idx2+5])
+            elif (frq == 'annual'):  # 360day=<pr=<366day
+                idx2 = prdday_to_frqidx(360, frequency, ntd)
+                idx1 = prdday_to_frqidx(366, frequency, ntd)
+                amfm = np.amax(am[idx1-5:idx2+5])
+            elif (frq == 'sub-daily'):  # pr<1day
+                idx1 = prdday_to_frqidx(1, frequency, ntd)
+                amfm = cdutil.averager(am[idx1+1:], weights='unweighted')
+            elif (frq == 'synoptic'):  # 1day=<pr<20day
+                idx2 = prdday_to_frqidx(1, frequency, ntd)
+                idx1 = prdday_to_frqidx(20, frequency, ntd)
+                amfm = cdutil.averager(am[idx1+1:idx2+1], weights='unweighted')
+            elif (frq == 'sub-seasonal'):  # 20day=<pr<90day
+                idx2 = prdday_to_frqidx(20, frequency, ntd)
+                idx1 = prdday_to_frqidx(90, frequency, ntd)
+                amfm = cdutil.averager(am[idx1+1:idx2+1], weights='unweighted')
+            elif (frq == 'seasonal-annual'):  # 90day=<pr<365day
+                idx2 = prdday_to_frqidx(90, frequency, ntd)
+                idx1 = prdday_to_frqidx(365, frequency, ntd)
+                amfm = cdutil.averager(am[idx1+1:idx2+1], weights='unweighted')
+            elif (frq == 'interannual'):  # 365day=<pr
+                idx2 = prdday_to_frqidx(365, frequency, ntd)
+                amfm = cdutil.averager(am[:idx2+1], weights='unweighted')
+            psdmfm[frc][mip][dat][var][dom][frq] = amfm.tolist()
+
+    print("Complete domain and frequency average of spectral power")
+    return psdmfm
+
+
+# ==================================================================================
+def prdday_to_frqidx(prdday, frequency, ntd):
+    """
+    Find frequency index from input period
+    Input
+    - prdday: period (day)
+    - frequency: frequency
+    - ntd: number of time steps per day (daily: 1, 3-hourly: 8)
+    Output
+    - idx: frequency index
+    """
+    frq = 1.0 / (float(prdday) * ntd)
+    idx = (np.abs(frequency - frq)).argmin()
+    return int(idx)

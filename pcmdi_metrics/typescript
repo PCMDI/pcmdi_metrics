@@ -1,0 +1,22 @@
+Script started on Wed 21 Apr 2021 05:56:43 PM PDT
+[?1034h[ahn6@gates:~/PCMDI/pcmdi_metrics/pcmdi_metrics] ll
+total 12
+drwxr-x--- 4 ahn6 climate   45 Apr 19 16:13 devel
+drwxr-x--- 3 ahn6 climate   78 Apr 19 16:13 diurnal
+drwxr-x--- 2 ahn6 climate  150 Apr 19 16:13 driver
+drwxr-x--- 3 ahn6 climate   58 Apr 19 16:13 graphics
+-rw-r----- 1 ahn6 climate  617 Apr 19 16:13 __init__.py
+drwxr-x--- 2 ahn6 climate   40 Apr 19 16:13 io
+drwxr-x--- 3 ahn6 climate   21 Apr 19 16:13 misc
+drwxr-x--- 5 ahn6 climate   81 Apr 19 16:13 mjo
+drwxr-x--- 6 ahn6 climate   75 Apr 19 16:13 monsoon_sperber
+drwxr-x--- 3 ahn6 climate  106 Apr 19 16:13 monsoon_wang
+drwxr-x--- 3 ahn6 climate 4096 Apr 19 16:13 pcmdi
+drwxr-x--- 6 ahn6 climate  162 Apr 21 17:56 precip_variability
+-rw-r----- 1 ahn6 climate    0 Apr 21 17:56 typescript
+drwxr-x--- 5 ahn6 climate  122 Apr 19 16:13 variability_mode
+-rw-r----- 1 ahn6 climate  126 Apr 21 17:26 version.py
+[ahn6@gates:~/PCMDI/pcmdi_metrics/pcmdi_metrics] ^C
+[ahn6@gates:~/PCMDI/pcmdi_metrics/pcmdi_metrics] exit
+
+Script done on Wed 21 Apr 2021 05:56:49 PM PDT
