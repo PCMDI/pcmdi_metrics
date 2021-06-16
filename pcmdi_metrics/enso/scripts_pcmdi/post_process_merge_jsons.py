@@ -11,11 +11,11 @@ import os
 
 
 def main():
-    mips = ["cmip5", "cmip6"]
+    # mips = ["cmip5", "cmip6"]
     # mips = ["cmip5"]
-    # mips = ["cmip6"]
+    mips = ["cmip6"]
     # mips = ["obs2obs"]
-    mips = ["CLIVAR_LE"]
+    # mips = ["CLIVAR_LE"]
 
     exps = ["historical"]
 
