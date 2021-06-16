@@ -15,6 +15,7 @@ from pcmdi_metrics.enso.lib import metrics_to_json
 from pcmdi_metrics.enso.lib import find_realm, get_file
 from pcmdi_metrics.enso.lib import CLIVAR_LargeEnsemble_Variables
 from pcmdi_metrics.enso.lib import sort_human
+from pcmdi_metrics.enso.lib import match_obs_name
 from EnsoMetrics.EnsoCollectionsLib import CmipVariables, defCollection, ReferenceObservations
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
 
@@ -141,11 +142,13 @@ dict_obs = dict()
 for obs in list_obs:
     if obs_cmor:
         dict_var = CmipVariables()["variable_name_in_file"]
+        obs_name = match_obs_name(obs)
     else:
         # be sure to add your datasets to EnsoCollectionsLib.ReferenceObservations if needed
         dict_var = ReferenceObservations(obs)['variable_name_in_file']
+        obs_name = obs
 
-    dict_obs[obs] = dict()
+    dict_obs[obs_name] = dict()
     for var in list_variables:
         #
         # finding variable name in file
@@ -190,15 +193,14 @@ for obs in list_obs:
                 # if var_in_file is a list (like for thf) all variables should be read from the same realm
                 if isinstance(var_in_file, list):
                     list_files = list()
-                    if obs_cmor and obs_catalogue_json is not None:
-                        for var1 in var_in_file:
+                    for var1 in var_in_file:
+                        if obs_cmor and obs_catalogue_json is not None:
                             file_name1 = os.path.join(obs_cmor_path, obs_catalogue_dict[obs][var1]["template"])
                             if not os.path.isfile(file_name1):
                                 file_name1 = None
-                    else:
-                        for var1 in var_in_file:
+                        else:
                             file_name1 = param.reference_data_path[obs].replace('VAR', var1)
-                    list_files.append(file_name1)
+                        list_files.append(file_name1)
                     list_areacell = [file_areacell for var1 in var_in_file]
                     list_name_area = [areacell_in_file for var1 in var_in_file]
                     try:
@@ -214,15 +216,17 @@ for obs in list_obs:
                     list_name_land = landmask_in_file
 
                 if list_files is not None:
-                    dict_obs[obs][var] = {'path + filename': list_files, 'varname': var_in_file,
+                    if debug:
+                        print('list_files:', list_files)
+                    dict_obs[obs_name][var] = {'path + filename': list_files, 'varname': var_in_file,
                                           'path + filename_area': list_areacell, 'areaname': list_name_area,
                                           'path + filename_landmask': list_landmask, 'landmaskname': list_name_land}
             except Exception:
-                print('\033[95m' + 'Observation dataset' + str(obs) +
+                print('\033[95m' + 'Observation dataset ' + str(obs) +
                       " is not given for variable " + str(var) + '\033[0m')
 
-    if len(list(dict_obs[obs].keys())) == 0:
-        del dict_obs[obs]
+    if len(list(dict_obs[obs_name].keys())) == 0:
+        del dict_obs[obs_name]
 
 print('PMPdriver: dict_obs readin end')
 
