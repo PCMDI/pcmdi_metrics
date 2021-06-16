@@ -2,26 +2,31 @@ import json
 import os
 
 wkdir = os.getenv("CMEC_WK_DIR")
-
+modeldata = os.getenv("CMEC_MODEL_DATA")
+obsdata = os.getenv("CMEC_OBS_DATA")
+ascii_data = os.listdir(os.path.join(wkdir,"ascii"))
+json_data = os.listdir(os.path.join(wkdir,"json"))
+nc_data = os.listdir(os.path.join(wkdir,"nc"))
 fname = os.path.join(wkdir,"output.json")
 
 output = {
-	"index": "",
-	"html": "",
+	"html": {}
 	"metrics": {},
 	"data": {},
 	"plots": {},
 	"provenance": {
 		"environment": {},
-		"modeldata": "",
-		"obsdata": "",
+		"modeldata": modeldata,
+		"obsdata": obsdata,
 		"log": ""
 		}
 }
 
-ascii_data = os.listdir(os.path.join(wkdir,"ascii"))
-json_data = os.listdir(os.path.join(wkdir,"json"))
-nc_data = os.listdir(os.path.join(wkdir,"nc"))
+with open(json_data[0],"r") as tmp_json:
+	tmp = json.load(tmp_json)
+envir = tmp["provenance"]["packages"]
+envir.pop("PMPObs")
+output["provenance"]["environment"] = envir
 
 for item in ascii_data:
 	fullpath = os.path.join(wkdir,"ascii",item)
