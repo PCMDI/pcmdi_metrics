@@ -10,7 +10,6 @@ Usage example:
 
 from __future__ import print_function
 from genutil import StringConstructor
-from subprocess import Popen
 
 from pcmdi_metrics.enso.lib import AddParserArgument, find_realm
 from pcmdi_metrics.variability_mode.lib import sort_human
@@ -19,7 +18,6 @@ from pcmdi_metrics.misc.scripts import parallel_submitter
 import glob
 import os
 import sys
-import time
 
 # =================================================
 # Collect user defined options
