@@ -14,9 +14,3 @@
 ./scripts_pcmdi/run_obs.bash   
 ./scripts_pcmdi/run_cmip5.bash   
 ./scripts_pcmdi/run_cmip6.bash   
-
-## Area average code:
-./scripts_pcmdi/calc_ps_3hr_area.mean.pkl.py   
-
-## Frequency average code:
-./scripts_pcmdi/calc_ps_3hr_area.freq.mean.pkl.json.py   
