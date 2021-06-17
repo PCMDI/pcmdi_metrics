@@ -17,7 +17,6 @@ from pcmdi_metrics.misc.scripts import parallel_submitter
 
 import glob
 import os
-import sys
 
 # =================================================
 # Collect user defined options

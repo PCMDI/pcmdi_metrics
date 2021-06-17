@@ -102,7 +102,7 @@ if debug:
 param_file = os.path.join(param_dir, param_filename)
 
 cmds_list = list()
-logfilename_list = list() 
+logfilename_list = list()
 for m, model in enumerate(models):
     print(' ----- model: ', model, ' ---------------------')
     # Find all xmls for the given model
