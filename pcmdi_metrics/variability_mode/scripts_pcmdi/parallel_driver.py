@@ -12,7 +12,6 @@ from pcmdi_metrics.misc.scripts import parallel_submitter
 import glob
 import os
 import pcmdi_metrics
-import sys
 
 # =================================================
 # Collect user defined options
@@ -102,7 +101,8 @@ if debug:
 
 param_file = os.path.join(param_dir, param_filename)
 
-cmds_list = []
+cmds_list = list()
+logfilename_list = list() 
 for m, model in enumerate(models):
     print(' ----- model: ', model, ' ---------------------')
     # Find all xmls for the given model
@@ -142,7 +142,7 @@ for m, model in enumerate(models):
             cmd += ['--no_nc_out_obs', '--no_plot_obs']
         cmds_list.append(cmd)
         # log file for each process
-        logfilename = '_'.join(['log_variability_mode', mode, mip, exp, model, run, case_id, obs_name]) 
+        logfilename = '_'.join(['log_variability_mode', mode, mip, exp, model, run, case_id, obs_name])
         logfilename_list.append(logfilename)
 
 if debug:
@@ -162,6 +162,6 @@ num_workers = 3
 # num_workers = 10
 # num_workers = 30
 
-parallel_sumitter(cmds_list, log_dir=log_dir,
-                  logfilename_list=logfilename_list,
-                  num_workers=num_workers)
+parallel_submitter(cmds_list, log_dir=log_dir,
+                   logfilename_list=logfilename_list,
+                   num_workers=num_workers)

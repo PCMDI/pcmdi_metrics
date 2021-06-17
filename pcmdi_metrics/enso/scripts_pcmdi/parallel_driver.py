@@ -160,6 +160,6 @@ num_workers = 7
 # num_workers = 30
 # num_workers = 25
 
-parallel_sumitter(cmds_list, log_dir=log_dir,
-                  logfilename_list=logfilename_list,
-                  num_workers=num_workers)
+parallel_submitter(cmds_list, log_dir=log_dir,
+                   logfilename_list=logfilename_list,
+                   num_workers=num_workers)

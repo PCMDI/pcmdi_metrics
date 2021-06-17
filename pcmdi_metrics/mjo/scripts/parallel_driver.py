@@ -3,7 +3,6 @@
 from __future__ import print_function
 from argparse import RawTextHelpFormatter
 from genutil import StringConstructor
-from subprocess import Popen
 
 from pcmdi_metrics.mjo.lib import AddParserArgument
 from pcmdi_metrics.variability_mode.lib import sort_human
@@ -12,7 +11,6 @@ from pcmdi_metrics.misc.scripts import parallel_submitter
 import glob
 import os
 import pcmdi_metrics
-import sys
 
 # =================================================
 # Collect user defined options
@@ -92,7 +90,8 @@ if debug:
     param_file = '../doc/myParam_test.py'
     print('number of models (debug mode):', len(models))
 
-cmds_list = []
+cmds_list = list()
+logfilename_list = list()
 for m, model in enumerate(models):
     print(' ----- model: ', model, ' ---------------------')
     # Find all xmls for the given model
@@ -145,6 +144,6 @@ if debug:
 log_dir = outdir(output_type='log')
 os.makedirs(log_dir, exist_ok=True)
 
-parallel_sumitter(cmds_list, log_dir=log_dir,
-                  logfilename_list=logfilename_list,
-                  num_workers=num_workers)
+parallel_submitter(cmds_list, log_dir=log_dir,
+                   logfilename_list=logfilename_list,
+                   num_workers=num_workers)

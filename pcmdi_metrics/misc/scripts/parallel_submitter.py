@@ -54,7 +54,7 @@ def parallel_sumitter(cmd_list, log_dir='./logs', logfilename_list=None, num_wor
     os.makedirs(log_dir, exist_ok=True)
 
     if num_workers is None:
-        num_workers = int(os.cpu_count() * 0.2)  # default: use 20% of all available CPUs 
+        num_workers = int(os.cpu_count() * 0.2)  # default: use 20% of all available CPUs
 
     print('Number of employed CPUs for subprocesses:', num_workers)
     print("Parallel process start: %s" % time.ctime())
@@ -86,25 +86,25 @@ def parallel_sumitter(cmd_list, log_dir='./logs', logfilename_list=None, num_wor
                     if index != len(cmd_list)-1:
                         print("Launching next process in cmd_list: %s" % time.ctime())
                 else:
-                    time.sleep(2) # set this so the CPU does not go crazy
+                    time.sleep(2)  # set this so the CPU does not go crazy
 
-    # DONE 
+    # DONE
     print("Parallel process completed: %s" % time.ctime())
 
 
-def check_for_done(l):
-    for i, p in enumerate(l):
+def check_for_done(processes):
+    for i, p in enumerate(processes):
         if p.poll() is not None:
             return True, i  # subprocess finished
     return False, False  # suprocess not finished
 
 
 def main():
-    cmd_list = ['expr 1 + ' + str(r) for r in range(1,10)]
-    logfilename_list = ['log_' + str(r) for r in range(1,10)]
+    cmd_list = ['expr 1 + ' + str(r) for r in range(1, 10)]
+    logfilename_list = ['log_' + str(r) for r in range(1, 10)]
     for (process, log_file) in zip(cmd_list, logfilename_list):
         print(process, '\t', log_file)
-    num_workers = 2 
+    num_workers = 2
     parallel_sumitter(cmd_list, logfilename_list=logfilename_list, num_workers=num_workers)
 
 
