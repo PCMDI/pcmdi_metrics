@@ -5,16 +5,14 @@ from argparse import RawTextHelpFormatter
 from genutil import StringConstructor
 from subprocess import Popen
 
-from pcmdi_metrics.mjo.lib import (
-    AddParserArgument)
+from pcmdi_metrics.mjo.lib import AddParserArgument
 from pcmdi_metrics.variability_mode.lib import sort_human
+from pcmdi_metrics.misc.scripts import parallel_submitter
 
-import datetime
 import glob
 import os
 import pcmdi_metrics
 import sys
-import time
 
 # =================================================
 # Collect user defined options
