@@ -154,9 +154,7 @@ if debug:
 # -------------------------------------------------
 # log dir
 log_dir = outdir(output_type='log')
-
-if not os.path.exists(log_dir):
-    os.makedirs(log_dir)
+os.makedirs(log_dir, exist_ok=True)
 
 # number of tasks to submit at the same time
 num_workers = 3

@@ -16,15 +16,6 @@ import pcmdi_metrics
 import sys
 import time
 
-# To avoid below error
-# OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-
-# Must be done before any CDAT library is called.
-# https://github.com/CDAT/cdat/issues/2213
-if 'UVCDAT_ANONYMOUS_LOG' not in os.environ:
-    os.environ['UVCDAT_ANONYMOUS_LOG'] = 'no'
-
 # =================================================
 # Collect user defined options
 # -------------------------------------------------
@@ -128,6 +119,7 @@ for m, model in enumerate(models):
         if debug:
             print('runs_list (revised):', runs_list)
     for r, run in enumerate(runs_list):
+        # command line for queue
         cmd = ['python', 'mjo_metrics_driver.py',
                '-p', param_file,
                '--case_id', case_id,
@@ -138,42 +130,23 @@ for m, model in enumerate(models):
         if m > 0 or r > 0:
             cmd += ['--no_OBS']
         cmds_list.append(cmd)
+        # log file for each process
+        logfilename = '_'.join(['log_mjo', mip, exp, model, run, case_id])
+        logfilename_list.append(logfilename)
 
-print('cmds_list:')
-for cmd_list in cmds_list:
-    print(' '.join(cmd_list))
-print('num_models:', len(models))
-print('num cmds_list:', len(cmds_list))
+if debug:
+    for cmd_list in cmds_list:
+        print(' '.join(cmd_list))
+    print('num models:', len(models))
+    print('num cmds_list:', len(cmds_list))
 
 # =================================================
 # Run subprocesses in parallel
 # -------------------------------------------------
 # log dir
-case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-log_dir = os.path.join("log", mip, exp, case_id)
+log_dir = outdir(output_type='log')
+os.makedirs(log_dir, exist_ok=True)
 
-if not os.path.exists(log_dir):
-    os.makedirs(log_dir)
-
-print("Start : %s" % time.ctime())
-
-# submit tasks and wait for subset of tasks to complete
-procs_list = []
-for p, cmd in enumerate(cmds_list):
-    print(p, ':',  ' '.join(cmd))
-    model = cmd[9]
-    run = cmd[11]
-    log_filename = '_'.join(['log_mjo', mip, exp, model, run, case_id])
-    log_file = os.path.join(log_dir, log_filename)
-    with open(log_file+"_stdout.txt", "wb") as out, open(log_file+"_stderr.txt", "wb") as err:
-        procs_list.append(Popen(cmd, stdout=out, stderr=err))
-    if ((p > 0 and p % num_workers == 0) or (p == len(cmds_list)-1)):
-        print('wait...')
-        for proc in procs_list:
-            proc.wait()
-        print("Tasks end : %s" % time.ctime())
-        procs_list = []
-
-# tasks done
-print("End : %s" % time.ctime())
-sys.exit('DONE')
+parallel_sumitter(cmds_list, log_dir=log_dir,
+                  logfilename_list=logfilename_list,
+                  num_workers=num_workers)
