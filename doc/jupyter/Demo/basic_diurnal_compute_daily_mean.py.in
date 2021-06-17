@@ -2,7 +2,7 @@
 results_dir = '$OUTPUT_DIR$/diurnal/nc'
 
 # input directory
-modpath = '$INPUT_DIR$/example_data/atm/3hr/pr/'
+modpath = '$INPUT_DIR$/misc_demo_data/atm/3hr/pr/'
 
 # filenames template
 filename_template = 'pr_3hr_%(model)_%(experiment)_%(realization)_5x5_1997-1999.nc'

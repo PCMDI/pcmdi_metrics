@@ -11,7 +11,7 @@ if "--enable-devel" in sys.argv:
 else:
     install_dev = False
 
-Version = "1.2"
+Version = "2.0"
 p = subprocess.Popen(
     ("git",
      "describe",
@@ -63,8 +63,24 @@ scripts = ['pcmdi_metrics/pcmdi/scripts/mean_climate_driver.py',
            'pcmdi_metrics/misc/scripts/get_pmp_data.py',
            'pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py',
            'pcmdi_metrics/monsoon_sperber/scripts/driver_monsoon_sperber.py',
+           'pcmdi_metrics/mjo/scripts/mjo_metrics_driver.py',
+           'pcmdi_metrics/variability_mode/variability_modes_driver.py',
+           'pcmdi_metrics/enso/enso_driver.py'
            ]
-scripts += glob.glob("pcmdi_metrics/diurnal/scripts/*.py")
+# scripts += glob.glob("pcmdi_metrics/diurnal/scripts/*.py")
+
+entry_points = {
+    "console_scripts": [
+        "compositeDiurnalStatistics.py = pcmdi_metrics.diurnal.scripts.compositeDiurnalStatistics:main",
+        "computeStdOfDailyMeans.py = pcmdi_metrics.diurnal.scripts.computeStdOfDailyMeans:main",
+        "fourierDiurnalAllGrid.py = pcmdi_metrics.diurnal.scripts.fourierDiurnalAllGrid:main",
+        "fourierDiurnalGridpoints.py = pcmdi_metrics.diurnal.scripts.fourierDiurnalGridpoints:main",
+        "savg_fourier.py = pcmdi_metrics.diurnal.scripts.savg_fourier:main",
+        "std_of_dailymeans.py = pcmdi_metrics.diurnal.scripts.std_of_dailymeans:main",
+        "std_of_hourlyvalues.py = pcmdi_metrics.diurnal.scripts.std_of_hourlyvalues:main",
+        "std_of_meandiurnalcycle.py = pcmdi_metrics.diurnal.scripts.std_of_meandiurnalcycle:main",
+    ],
+}
 
 demo_files = glob.glob("demo/*/*")
 print("demo files")
@@ -134,7 +150,8 @@ setup(name='pcmdi_metrics',
       url='http://github.com/PCMDI/pcmdi_metrics',
       packages=packages,
       scripts=scripts,
-      data_files=data_files
+      data_files=data_files,
+      entry_points=entry_points,
       # include_dirs = [numpy.lib.utils.get_include()],
       #  ext_modules = [
       #               Extension('pcmdi_metrics.exts',

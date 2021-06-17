@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-""" Calculate monsoon metrics
+"""
+Calculate monsoon metrics
 
 Jiwoo Lee (lee1043@llnl.gov)
 
@@ -46,16 +47,23 @@ import MV2
 import numpy as np
 import os
 import pcmdi_metrics
+import pkg_resources
 import sys
 import time
 
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
+from glob import glob
 from shutil import copyfile
-from pcmdi_metrics.monsoon_sperber import AddParserArgument, YearCheck
-from pcmdi_metrics.monsoon_sperber import model_land_only
-from pcmdi_metrics.monsoon_sperber import divide_chunks_advanced, interp1d
-from pcmdi_metrics.monsoon_sperber import sperber_metrics
+from pcmdi_metrics.monsoon_sperber.lib import AddParserArgument, YearCheck
+from pcmdi_metrics.monsoon_sperber.lib import model_land_only
+from pcmdi_metrics.monsoon_sperber.lib import divide_chunks_advanced, interp1d
+from pcmdi_metrics.monsoon_sperber.lib import sperber_metrics
+
+
+def tree():
+    return defaultdict(tree)
+
 
 # =================================================
 # Hard coded options... will be moved out later
@@ -104,12 +112,13 @@ realization = param.realization
 print('realization: ', realization)
 
 # Output
-outdir = param.results_dir
-print('outdir: ', outdir)
+outdir = param.process_templated_argument("results_dir")
 
 # Create output directory
-if not os.path.exists(outdir):
-    os.makedirs(outdir)
+for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
+    if not os.path.exists(outdir(output_type=output_type)):
+        os.makedirs(outdir(output_type=output_type))
+    print(outdir(output_type=output_type))
 
 # Debug
 debug = param.debug
@@ -142,20 +151,14 @@ update_json = param.update_json
 # =================================================
 # Declare dictionary for .json record
 # -------------------------------------------------
-
-
-def tree():
-    return defaultdict(tree)
-
-
 monsoon_stat_dic = tree()
 
 # Define output json file
 json_filename = '_'.join(['monsoon_sperber_stat',
                           mip, exp, fq, realm, str(msyear)+'-'+str(meyear)])
-json_file = os.path.join(outdir, json_filename + '.json')
+json_file = os.path.join(outdir(output_type='metrics_results'), json_filename + '.json')
 json_file_org = os.path.join(
-    outdir, '_'.join([json_filename, 'org', str(os.getpid())])+'.json')
+    outdir(output_type='metrics_results'), '_'.join([json_filename, 'org', str(os.getpid())])+'.json')
 
 # Save pre-existing json file against overwriting
 if os.path.isfile(json_file) and os.stat(json_file).st_size > 0:
@@ -174,56 +177,58 @@ if 'RESULTS' not in list(monsoon_stat_dic.keys()):
 # Loop start for given models
 # -------------------------------------------------
 regions_specs = {}
-exec(compile(open(os.path.join(sys.prefix, "share",
-                               "pmp", "default_regions.py")).read(),
-             os.path.join(sys.prefix, "share", "pmp",
-                          "default_regions.py"), 'exec'))
+egg_pth = pkg_resources.resource_filename(
+    pkg_resources.Requirement.parse("pcmdi_metrics"),
+    "share/pmp")
+exec(compile(open(os.path.join(egg_pth, "default_regions.py")).read(),
+             os.path.join(egg_pth, "default_regions.py"), 'exec'))
 
+# =================================================
+# Loop start for given models
+# -------------------------------------------------
 if includeOBS:
     models.insert(0, 'obs')
 
 for model in models:
     print(' ----- ', model, ' ---------------------')
-
     try:
-
+        # Conditions depending obs or model
         if model == 'obs':
             var = varOBS
             UnitsAdjust = ObsUnitsAdjust
             syear = osyear
             eyear = oeyear
-
+            # variable data
             model_path_list = [reference_data_path]
+            # land fraction
             model_lf_path = reference_data_lf_path
-
+            # dict for output JSON
             if reference_data_name not in list(monsoon_stat_dic['REF'].keys()):
                 monsoon_stat_dic['REF'][reference_data_name] = {}
-
+            # dict for plottng
+            dict_obs_composite = {}
+            dict_obs_composite[reference_data_name] = {}
         else:  # for rest of models
             var = varModel
             UnitsAdjust = ModUnitsAdjust
             syear = msyear
             eyear = meyear
-
-            if model not in list(monsoon_stat_dic['RESULTS'].keys()):
-                monsoon_stat_dic['RESULTS'][model] = {}
-
-            model_path_list = os.popen(
-                'ls '+modpath(model=model, exp=exp, realization=realization,
-                              variable=var)).readlines()
-
+            # variable data
+            model_path_list = glob(modpath(model=model, exp=exp, realization=realization, variable=var))
             if debug:
                 print('debug: model_path_list: ', model_path_list)
-
+            # land fraction
             model_lf_path = modpath_lf(model=model)
             if os.path.isfile(model_lf_path):
                 pass
             else:
                 model_lf_path = modpath_lf(model=model.upper())
+            # dict for output JSON
+            if model not in list(monsoon_stat_dic['RESULTS'].keys()):
+                monsoon_stat_dic['RESULTS'][model] = {}
 
-        print(model_lf_path)
-
-        # Read model's land fraction
+        # Read land fraction
+        print('lf_path: ',  model_lf_path)
         f_lf = cdms2.open(model_lf_path)
         lf = f_lf('sftlf', latitude=(-90, 90))
         f_lf.close()
@@ -232,17 +237,19 @@ for model in models:
         # Loop start - Realization
         # -------------------------------------------------
         for model_path in model_path_list:
-
             timechk1 = time.time()
             try:
                 if model == 'obs':
                     run = 'obs'
                 else:
-                    run = model_path.split('/')[-1].split('.')[3]
-
+                    if realization in ['all', 'All', 'ALL', '*']:
+                        run_index = modpath.split('.').index('%(realization)')
+                        run = model_path.split('/')[-1].split('.')[run_index]
+                    else:
+                        run = realization
+                    # dict
                     if run not in monsoon_stat_dic['RESULTS'][model]:
                         monsoon_stat_dic['RESULTS'][model][run] = {}
-
                 print(' --- ', run, ' ---')
                 print(model_path)
 
@@ -282,7 +289,7 @@ for model in models:
                     print('debug: endMonth: ', type(endMonth), endMonth)
                     endYear = startYear + 1
 
-                # Archive individual year pentad time series for composite
+                # Prepare archiving individual year pentad time series for composite
                 list_pentad_time_series = {}
                 list_pentad_time_series_cumsum = {}  # Cumulative time series
                 for region in list_monsoon_regions:
@@ -292,11 +299,12 @@ for model in models:
                 # Write individual year time series for each monsoon domain
                 # in a netCDF file
                 if nc_out:
-                    output_filename = "{}_{}_{}_{}_{}_{}_{}".format(
+                    output_filename = "{}_{}_{}_{}_{}_{}-{}".format(
                         mip, model, exp,
                         run, 'monsoon_sperber', startYear, endYear)
                     fout = cdms2.open(os.path.join(
-                        outdir, output_filename+'.nc'), 'w')
+                        outdir(output_type='diagnostic_results'),
+                        output_filename+'.nc'), 'w')
 
                 # Plotting setup
                 if plot:
@@ -308,18 +316,24 @@ for model in models:
                         nrows = 1
                         ncols = 1
 
-                    fig = plt.figure()
+                    fig = plt.figure(figsize=[6.4, 6.4])
                     plt.subplots_adjust(hspace=0.25)
 
                     for i, region in enumerate(list_monsoon_regions):
                         ax[region] = plt.subplot(nrows, ncols, i+1)
+                        ax[region].set_ylim(0, 1)
+                        # ax[region].set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+                        # ax[region].set_xticks([0, 10, 20, 30, 40, 50, 60, 70])
+                        ax[region].margins(x=0)
                         print('plot: region', region, 'nrows',
                               nrows, 'ncols', ncols, 'index', i+1)
                         if nrows > 1 and math.ceil((i+1)/float(ncols)) < nrows:
-                            ax[region].set_xticks([])
+                            ax[region].set_xticklabels([])
+                        if ncols > 1 and (i+1) % 2 == 0:
+                            ax[region].set_yticklabels([])
 
                     fig.text(0.5, 0.04, 'pentad count', ha='center')
-                    fig.text(0.03, 0.5, 'pentad precip mm/d',
+                    fig.text(0.03, 0.5, 'accumulative pentad precip fraction',
                              va='center', rotation='vertical')
 
                 # -------------------------------------------------
@@ -333,17 +347,15 @@ for model in models:
                            time=(cdtime.comptime(year, 1, 1, 0, 0, 0),
                                  cdtime.comptime(year, 12, 31, 23, 59, 59)),
                            latitude=(-90, 90))
-
-                    # unit change
+                    # unit adjust
                     if UnitsAdjust[0]:
                         """ Below two lines are identical to following:
-                        # d = MV2.multiply(d, 86400.)
-                        # d.units = 'mm/d'
+                        d = MV2.multiply(d, 86400.)
+                        d.units = 'mm/d'
                         """
                         d = getattr(MV2, UnitsAdjust[1])(d, UnitsAdjust[2])
                         d.units = units
-
-                    # land only
+                    # variable for over land only
                     d_land = model_land_only(model, d, lf, debug=debug)
 
                     print('check: year, d.shape: ', year, d.shape)
@@ -356,9 +368,10 @@ for model in models:
                         if region in ['GoG', 'NAmo']:
                             # all grid point rainfall
                             d_sub = d(regions_specs[region]['domain'])
-                        else:  # land-only rainfall
+                        else:
+                            # land-only rainfall
                             d_sub = d_land(regions_specs[region]['domain'])
-                        # area average
+                        # Area average
                         d_sub_aave = cdutil.averager(
                             d_sub, axis='xy', weights='weighted')
 
@@ -427,6 +440,7 @@ for model in models:
                             fout.write(pentad_time_series_cumsum,
                                        id=region+'_'+str(year)+'_cumsum')
 
+                        """
                         if plot:
                             # Add grey line for individual year in plot
                             if year == startYear:
@@ -434,9 +448,11 @@ for model in models:
                             else:
                                 label = ''
                             ax[region].plot(
-                                np.array(pentad_time_series_cumsum), c='grey', label=label)
+                                np.array(pentad_time_series_cumsum),
+                                c='grey', label=label)
+                        """
 
-                        # Save for following composite
+                        # Append individual year: save for following composite
                         list_pentad_time_series[region].append(
                             pentad_time_series)
                         list_pentad_time_series_cumsum[region].append(
@@ -446,7 +462,9 @@ for model in models:
                 # --- Year loop end
                 fc.close()
 
-                # --- Monsoon region loop start without year loop
+                # -------------------------------------------------
+                # Loop start: Monsoon region without year: Composite
+                # -------------------------------------------------
                 if debug:
                     print('debug: composite start')
 
@@ -466,30 +484,31 @@ for model in models:
                     composite_pentad_time_series.setAxis(0, axis0)
                     composite_pentad_time_series_cumsum.setAxis(0, axis0)
 
+                    # - - - - - - - - - - -
                     # Metrics for composite
+                    # - - - - - - - - - - -
                     metrics_result = sperber_metrics(
                         composite_pentad_time_series_cumsum, region, debug=debug)
 
+                    # Normalized cummulative pentad time series
+                    composite_pentad_time_series_cumsum_normalized = metrics_result['frac_accum']
+                    if model == 'obs':
+                        dict_obs_composite[reference_data_name][region] = {}
+                        dict_obs_composite[reference_data_name][region] = composite_pentad_time_series_cumsum_normalized
+
                     # Archive as dict for JSON
                     if model == 'obs':
-                        if region not in list(monsoon_stat_dic['REF'][reference_data_name].keys()):
-                            monsoon_stat_dic['REF'][reference_data_name][region] = {}
-                        monsoon_stat_dic['REF'][reference_data_name][region]['onset_index'] = \
-                            metrics_result['onset_index']
-                        monsoon_stat_dic['REF'][reference_data_name][region]['decay_index'] = \
-                            metrics_result['decay_index']
-                        monsoon_stat_dic['REF'][reference_data_name][region]['slope'] = \
-                            metrics_result['slope']
+                        dict_head = monsoon_stat_dic['REF'][reference_data_name]
                     else:
-                        if region not in list(monsoon_stat_dic['RESULTS'][model][run].keys()):
-                            monsoon_stat_dic['RESULTS'][model][run][region] = {
-                            }
-                        monsoon_stat_dic['RESULTS'][model][run][region]['onset_index'] = \
-                            metrics_result['onset_index']
-                        monsoon_stat_dic['RESULTS'][model][run][region]['decay_index'] = \
-                            metrics_result['decay_index']
-                        monsoon_stat_dic['RESULTS'][model][run][region]['slope'] = \
-                            metrics_result['slope']
+                        dict_head = monsoon_stat_dic['RESULTS'][model][run]
+                    # generate key if not there
+                    if region not in list(dict_head.keys()):
+                        dict_head[region] = {}
+                    # generate keys and save for statistics
+                    dict_head[region]['onset_index'] = metrics_result['onset_index']
+                    dict_head[region]['decay_index'] = metrics_result['decay_index']
+                    dict_head[region]['slope'] = metrics_result['slope']
+                    dict_head[region]['duration'] = metrics_result['duration']
 
                     # Archice in netCDF file
                     if nc_out:
@@ -497,35 +516,63 @@ for model in models:
                                    id=region+'_comp')
                         fout.write(composite_pentad_time_series_cumsum,
                                    id=region+'_comp_cumsum')
-                        fout.write(
-                            metrics_result['frac_accum'], id=region+'_comp_cumsum_frac')
+                        fout.write(composite_pentad_time_series_cumsum_normalized,
+                                   id=region+'_comp_cumsum_fraction')
                         if region == list_monsoon_regions[-1]:
                             fout.close()
 
                     # Add line in plot
                     if plot:
+                        if model != 'obs':
+                            # model
+                            ax[region].plot(
+                                # np.array(composite_pentad_time_series),
+                                # np.array(composite_pentad_time_series_cumsum),
+                                np.array(composite_pentad_time_series_cumsum_normalized),
+                                c='red',
+                                label=model)
+                            for idx in [metrics_result['onset_index'], metrics_result['decay_index']]:
+                                ax[region].axvline(
+                                    x=idx,
+                                    ymin=0,
+                                    ymax=composite_pentad_time_series_cumsum_normalized[idx],
+                                    c='red', ls='--')
+                        # obs
                         ax[region].plot(
-                            # np.array(composite_pentad_time_series),
-                            np.array(composite_pentad_time_series_cumsum),
-                            c='red',
-                            label='Composite')
+                            np.array(dict_obs_composite[reference_data_name][region]),
+                            c='blue',
+                            label=reference_data_name)
+                        for idx in ([
+                                monsoon_stat_dic['REF'][reference_data_name][region]['onset_index'],
+                                monsoon_stat_dic['REF'][reference_data_name][region]['decay_index']]):
+                            ax[region].axvline(
+                                x=idx,
+                                ymin=0,
+                                ymax=dict_obs_composite[reference_data_name][region][idx],
+                                c='blue', ls='--')
+                        # title
                         ax[region].set_title(region)
                         if region == list_monsoon_regions[0]:
                             ax[region].legend(loc=2)
                         if region == list_monsoon_regions[-1]:
+                            if model == 'obs':
+                                data_name = 'OBS: '+reference_data_name
+                            else:
+                                data_name = ', '.join([mip.upper(), model, exp, run])
                             fig.suptitle(
                                 'Precipitation pentad time series\n' +
-                                ', '.join([mip, model, exp, run, str(startYear)+'-'+str(endYear)]))
+                                'Monsoon domain composite accumulations\n' +
+                                ', '.join([data_name, str(startYear)+'-'+str(endYear)]))
                             plt.subplots_adjust(top=0.85)
                             plt.savefig(os.path.join(
-                                outdir, output_filename+'.png'))
+                                outdir(output_type='graphics'), output_filename+'.png'))
                             plt.close()
 
                 # =================================================
                 # Write dictionary to json file
                 # (let the json keep overwritten in model loop)
                 # -------------------------------------------------
-                JSON = pcmdi_metrics.io.base.Base(outdir, json_filename)
+                JSON = pcmdi_metrics.io.base.Base(outdir(output_type='metrics_results'), json_filename)
                 JSON.write(monsoon_stat_dic,
                            json_structure=["model",
                                            "realization",
@@ -556,4 +603,4 @@ for model in models:
 # --- Model loop end
 
 if not debug:
-    sys.exit('done')
+    sys.exit(0)

@@ -6,7 +6,7 @@ from matplotlib.patches import Polygon
 def draw_screen_poly(lats, lons, m):
     x, y = m(lons, lats)
     xy = zip(x, y)
-    poly = Polygon(xy, facecolor='red', alpha=0.4,
+    poly = Polygon(list(xy), facecolor='red', alpha=0.4,
                    edgecolor='red', linewidth=2)
     plt.gca().add_patch(poly)
 
@@ -38,10 +38,14 @@ plt.figure(figsize=(12, 6))
 
 m = Basemap(lon_0=0)
 m.drawmapboundary(fill_color='aqua')
-m.fillcontinents(color='grey', lake_color='aqua')
+m.fillcontinents(color='coral', lake_color='aqua')
 m.drawcoastlines()
 
 for region in regions:
     draw_screen_poly(lats[region], lons[region], m)
+    lon = (min(lons[region]) + max(lons[region])) / 2.
+    lat = (min(lats[region]) + max(lats[region])) / 2.
+    x, y = m(lon, lat)
+    plt.text(x, y, region, fontsize=12, fontweight='bold', ha='center', va='center')
 
 plt.savefig('monsoon_domain_map.png')

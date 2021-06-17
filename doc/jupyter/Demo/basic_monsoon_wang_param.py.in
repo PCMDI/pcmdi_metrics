@@ -6,22 +6,16 @@ import os
 #
 
 # LIST OF MODEL VERSIONS TO BE TESTED
-modnames = ['CNRM-CERFACS.CNRM-CM5-2',' NSF-DOE-NCAR.CESM1-WACCM']
+modnames = ['CanCM4']
 
-pth = os.path.dirname(__file__)
 # ROOT PATH FOR MODELS CLIMATOLOGIES
-#test_data_path = '../../../tests/monsoon/data/pr_1961_1999_MRI-CGCM3_regrid_MODS.nc'
-test_data_path = '$INPUT_DIR$/example_data/atm/mo/pr/CMIP5.CMIP.historical.%(model).r1i1p1.mon.pr.atmos.glb-2d-gu.v%(version).0000000.0.nc'
+test_data_path = '$INPUT_DIR$/CMIP5_demo_clims/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200512.AC.v20200426.nc'
+
 # ROOT PATH FOR OBSERVATIONS
-# Note that atm/mo/%(variable)/ac will be added to this
-#reference_data_path = '../../../tests/monsoon/obs/pr_gpcp_79_07_mseas.nc'
-reference_data_path = '$INPUT_DIR$/PCMDIobs2.0/atmos/mon/pr/GPCP-2-3/gn/v20190301/pr_mon_GPCP-2-3_BE_gn_197901-201803.nc'
+reference_data_path = '$INPUT_DIR$/PCMDIobs2/atmos/mon/pr/GPCP-2-3/gn/v20200707/pr_mon_GPCP-2-3_BE_gn_v20200707_197901-201907.nc'
 
 # DIRECTORY WHERE TO PUT RESULTS
 results_dir = '$OUTPUT_DIR$/monsoon_wang'
 
-# Version for each model
-version = ['20130401', '20130314']
-
 # Threshold
-threshold = 2.5
+threshold = 2.5 / 86400
