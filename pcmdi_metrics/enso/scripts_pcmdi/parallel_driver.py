@@ -137,7 +137,7 @@ for model in models:
                '--case_id', case_id,
                '--modnames', model,
                '--realization', run]
-        cmds_list.append(cmd)
+        cmds_list.append(' '.join(cmd))
         # log file for each process
         logfilename = '_'.join(['log_enso', mc_name, mip, exp, model, run, case_id])
         logfilename_list.append(logfilename)
