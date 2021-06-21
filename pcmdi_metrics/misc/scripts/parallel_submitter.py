@@ -105,7 +105,7 @@ def main():
     for (process, log_file) in zip(cmd_list, logfilename_list):
         print(process, '\t', log_file)
     num_workers = 2
-    parallel_sumitter(cmd_list, logfilename_list=logfilename_list, num_workers=num_workers)
+    parallel_submitter(cmd_list, logfilename_list=logfilename_list, num_workers=num_workers)
 
 
 if __name__ == "__main__":
