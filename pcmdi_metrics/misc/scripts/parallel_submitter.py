@@ -3,7 +3,7 @@ import subprocess
 import time
 
 
-def parallel_sumitter(cmd_list, log_dir='./logs', logfilename_list=None, num_workers=None):
+def parallel_submitter(cmd_list, log_dir='./logs', logfilename_list=None, num_workers=None):
     """
     Run subprocesses in parallel
 
