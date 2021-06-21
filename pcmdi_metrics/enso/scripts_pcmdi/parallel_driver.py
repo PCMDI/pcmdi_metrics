@@ -10,24 +10,13 @@ Usage example:
 
 from __future__ import print_function
 from genutil import StringConstructor
-from subprocess import Popen
 
 from pcmdi_metrics.enso.lib import AddParserArgument, find_realm
 from pcmdi_metrics.variability_mode.lib import sort_human
+from pcmdi_metrics.misc.scripts import parallel_submitter
 
 import glob
 import os
-import sys
-import time
-
-# To avoid below error
-# OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
-os.environ['OPENBLAS_NUM_THREADS'] = '1'
-
-# Must be done before any CDAT library is called.
-# https://github.com/CDAT/cdat/issues/2213
-if 'UVCDAT_ANONYMOUS_LOG' not in os.environ:
-    os.environ['UVCDAT_ANONYMOUS_LOG'] = 'no'
 
 # =================================================
 # Collect user defined options
@@ -106,6 +95,7 @@ else:
     param_file = '../param/my_Param_ENSO_PCMDIobs.py'
 
 cmds_list = []
+logfilename_list = []
 for model in models:
     print(' ----- model: ', model, ' ---------------------')
     # Find all xmls for the given model
@@ -140,6 +130,7 @@ for model in models:
         if debug:
             print('runs_list (revised):', runs_list)
     for run in runs_list:
+        # command line for queue
         cmd = ['enso_driver.py',
                '-p', param_file,
                '--mip', mip, '--metricsCollection', mc_name,
@@ -147,6 +138,9 @@ for model in models:
                '--modnames', model,
                '--realization', run]
         cmds_list.append(cmd)
+        # log file for each process
+        logfilename = '_'.join(['log_enso', mc_name, mip, exp, model, run, case_id])
+        logfilename_list.append(logfilename)
 
 if debug:
     for cmd in cmds_list:
@@ -156,10 +150,8 @@ if debug:
 # Run subprocesses in parallel
 # -------------------------------------------------
 # log dir
-log_dir = os.path.join("log", case_id, mc_name)
-
-if not os.path.exists(log_dir):
-    os.makedirs(log_dir)
+log_dir = outdir(output_type='log')
+os.makedirs(log_dir, exist_ok=True)
 
 # number of tasks to submit at the same time
 # num_workers = 7
@@ -168,27 +160,6 @@ num_workers = 15
 # num_workers = 30
 # num_workers = 25
 
-print("Start : %s" % time.ctime())
-
-# submit tasks and wait for subset of tasks to complete
-procs_list = []
-for p, cmd in enumerate(cmds_list):
-    timenow = time.ctime()
-    print(timenow, p, ' '.join(cmd))
-    model = cmd[-3]
-    run = cmd[-1]
-    log_filename = '_'.join(['log_enso', mc_name, mip, exp, model, run, case_id])
-    log_file = os.path.join(log_dir, log_filename)
-    with open(log_file+"_stdout.txt", "wb") as out, open(log_file+"_stderr.txt", "wb") as err:
-        procs_list.append(Popen(cmd, stdout=out, stderr=err))
-        time.sleep(1)
-    if ((p > 0 and p % num_workers == 0) or (p == len(cmds_list)-1)):
-        print('wait...')
-        for proc in procs_list:
-            proc.wait()
-        print("Tasks end : %s" % time.ctime())
-        procs_list = []
-
-# tasks done
-print("End : %s" % time.ctime())
-sys.exit('DONE')
+parallel_submitter(cmds_list, log_dir=log_dir,
+                   logfilename_list=logfilename_list,
+                   num_workers=num_workers)
