@@ -126,7 +126,7 @@ for m, model in enumerate(models):
                '--parallel']
         if m > 0 or r > 0:
             cmd += ['--no_OBS']
-        cmds_list.append(cmd)
+        cmds_list.append(' '.join(cmd))
         # log file for each process
         logfilename = '_'.join(['log_mjo', mip, exp, model, run, case_id])
         logfilename_list.append(logfilename)

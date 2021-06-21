@@ -140,14 +140,14 @@ for m, model in enumerate(models):
                '--parallel', 'True']
         if m > 0 or r > 0:
             cmd += ['--no_nc_out_obs', '--no_plot_obs']
-        cmds_list.append(cmd)
+        cmds_list.append(' '.join(cmd))
         # log file for each process
         logfilename = '_'.join(['log_variability_mode', mode, mip, exp, model, run, case_id, obs_name])
         logfilename_list.append(logfilename)
 
 if debug:
     for cmd in cmds_list:
-        print(cmd)
+        print(' '.join(cmd))
 
 # =================================================
 # Run subprocesses in parallel
