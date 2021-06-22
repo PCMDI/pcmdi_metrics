@@ -3,7 +3,7 @@ import MV2 as MV
 import cdutil
 import genutil
 import numpy as np
-from regrid2 import Regridder
+from regrid2 import Horizontal
 from scipy import signal
 from scipy.stats import chi2
 import pandas as pd
@@ -23,7 +23,7 @@ def Regrid2deg(d):
     # Regridding
     tgrid = cdms.createUniformGrid(-89, 90, 2.0, 0, 180, 2.0, order="yx")
     orig_grid = d.getGrid()
-    regridFunc = Regridder(orig_grid, tgrid)
+    regridFunc = Horizontal(orig_grid, tgrid)
     drg = MV.zeros((d.shape[0], tgrid.shape[0], tgrid.shape[1]), MV.float)
     for it in range(d.shape[0]):
         drg[it] = regridFunc(d[it])
@@ -182,7 +182,7 @@ def Powerspectrum(d, nperseg, noverlap):
     else:
         dnp[dnp <= d.missing_value] = d.missing_value
     dnp[dnp == d.missing_value] = np.nan
-    dfm = np.zeros((d.shape[0], d.shape[1], d.shape[2]), np.float)
+    dfm = np.zeros((d.shape[0], d.shape[1], d.shape[2]), np.float64)
     for iy in range(d.shape[1]):
         for ix in range(d.shape[2]):
             yp = pd.Series(dnp[:, iy, ix])
@@ -198,8 +198,8 @@ def Powerspectrum(d, nperseg, noverlap):
     nps = max(
         np.floor(((dfm.shape[0] - nperseg) / (nperseg - noverlap)) + 1), 1
     )  # Number of power spectra
-    rn = np.zeros((psd.shape[0], psd.shape[1], psd.shape[2]), np.float)
-    sig95 = np.zeros((psd.shape[0], psd.shape[1], psd.shape[2]), np.float)
+    rn = np.zeros((psd.shape[0], psd.shape[1], psd.shape[2]), np.float64)
+    sig95 = np.zeros((psd.shape[0], psd.shape[1], psd.shape[2]), np.float64)
     for iy in range(psd.shape[1]):
         for ix in range(psd.shape[2]):
             r1 = np.array(lag1_autocorrelation(dfm[:, iy, ix]))
@@ -359,11 +359,11 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
             elif (frq == 'semi-annual'):  # 180day=<pr=<183day
                 idx2 = prdday_to_frqidx(180, frequency, ntd)
                 idx1 = prdday_to_frqidx(183, frequency, ntd)
-                amfm = np.amax(am[idx1-5:idx2+5])
+                amfm = np.amax(am[idx1:idx2+1])
             elif (frq == 'annual'):  # 360day=<pr=<366day
                 idx2 = prdday_to_frqidx(360, frequency, ntd)
                 idx1 = prdday_to_frqidx(366, frequency, ntd)
-                amfm = np.amax(am[idx1-5:idx2+5])
+                amfm = np.amax(am[idx1:idx2+1])
             elif (frq == 'sub-daily'):  # pr<1day
                 idx1 = prdday_to_frqidx(1, frequency, ntd)
                 amfm = cdutil.averager(am[idx1+1:], weights='unweighted')

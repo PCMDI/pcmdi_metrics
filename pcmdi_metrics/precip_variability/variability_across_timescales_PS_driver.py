@@ -5,7 +5,7 @@ import json
 import copy
 import os
 import sys
-from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
+from pcmdi_metrics.driver.pmp_parser import PMPParser
 from pcmdi_metrics.precip_variability.lib import (
     AddParserArgument,
     Regrid2deg,
@@ -20,6 +20,7 @@ P = PMPParser()
 P = AddParserArgument(P)
 args = P.get_parameter()
 mip = args.mip
+
 mod = args.mod
 var = args.var
 dfrq = args.frq
@@ -35,7 +36,7 @@ print(prd)
 print(nperseg, noverlap)
 
 # Read data
-file_list = sorted(glob.glob(modpath + "*" + mod + "*"))
+file_list = sorted(glob.glob(os.path.join(modpath, "*" + mod + "*")))
 f = []
 data = []
 for ifl in range(len(file_list)):

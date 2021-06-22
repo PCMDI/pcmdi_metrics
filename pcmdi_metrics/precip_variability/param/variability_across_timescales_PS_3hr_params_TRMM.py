@@ -12,10 +12,12 @@ infile = "TRMM_3B42.7_*.nc"
 
 # outdir = '/work/ahn6/pr/variability_across_timescales/power_spectrum/'+ver+'/data/'+mip+'/'
 outdir = (
-    "/work/ahn6/pr/variability_across_timescales/power_spectrum/"+ver+"_test/data/"+mip+"/"
+#    "/work/ahn6/pr/variability_across_timescales/power_spectrum/"+ver+"_test/data/"+mip+"/"
+    "/work/ahn6/pr/variability_across_timescales/power_spectrum/"+ver+"_test/data/"+mip
 )
 
-xmldir = "./xml_obs/"
+#xmldir = "./xml_obs/"
+xmldir = "./xml_obs"
 if not (os.path.isdir(xmldir)):
     os.makedirs(xmldir)
 os.system(
