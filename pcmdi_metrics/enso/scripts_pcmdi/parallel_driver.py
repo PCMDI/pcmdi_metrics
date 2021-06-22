@@ -142,9 +142,10 @@ for model in models:
         logfilename = '_'.join(['log_enso', mc_name, mip, exp, model, run, case_id])
         logfilename_list.append(logfilename)
 
-if debug:
-    for cmd in cmds_list:
-        print(' '.join(cmd))
+print(' --- jobs to submit ---')
+for cmd in cmds_list:
+    print(cmd)
+print(' --- end of jobs to submit ---')
 
 # =================================================
 # Run subprocesses in parallel
