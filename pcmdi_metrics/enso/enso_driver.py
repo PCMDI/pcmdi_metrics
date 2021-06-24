@@ -234,6 +234,7 @@ print('PMPdriver: dict_obs readin end')
 # =================================================
 # Loop for Models
 # -------------------------------------------------
+print("Process start: %s" % time.ctime())
 dict_metric, dict_dive = dict(), dict()
 
 print('models:', models)
@@ -440,6 +441,7 @@ for mod in models:
                 pass
 
 print('PMPdriver: model loop end')
+print("Process end: %s" % time.ctime())
 
 # =================================================
 # OUTPUT METRICS TO JSON FILE (for all simulations)
