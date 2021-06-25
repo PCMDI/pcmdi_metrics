@@ -8,6 +8,7 @@ import json
 import os
 import pkg_resources
 import sys
+import time
 
 from genutil import StringConstructor
 from pcmdi_metrics.enso.lib import AddParserArgument
