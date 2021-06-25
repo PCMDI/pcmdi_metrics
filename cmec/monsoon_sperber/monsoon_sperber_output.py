@@ -29,6 +29,7 @@ output = {
 	"metrics": {},
 	"data": {},
 	"plots": {},
+	"parameter_file": "monsoon_sperber_param.py",
 	"provenance": {
 		"environment": {},
 		"modeldata": modeldata,

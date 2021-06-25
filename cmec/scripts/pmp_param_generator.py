@@ -82,8 +82,9 @@ if __name__ == '__main__':
 
     if pmp_config == "diurnal_cycle":
         settings["modpath"] = model_dir
-    else:
+    elif pmp_config in ["mjo","monsoon_sperber","monsoon_wang","variability_modes"]:
         # other metrics can have single results dir set
+        #settings["results_dir"] = wk_dir + "/%(output_type)/"
         settings["results_dir"] = wk_dir
 
     # Universal setting for all metrics

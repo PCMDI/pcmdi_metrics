@@ -7,11 +7,12 @@ cd $CMEC_WK_DIR
 
 tmp_param=$CMEC_WK_DIR/mjo_param.py
 
-python $CMEC_CODE_DIR/scripts/pmp_param_generator.py \
+python $CMEC_CODE_DIR/../scripts/pmp_param_generator.py \
 $CMEC_CONFIG_DIR/cmec.json $tmp_param "mjo"
 
 if [[ $? = 0 ]]; then
     mjo_metrics_driver.py -p $tmp_param
+    python $CMEC_CODE_DIR/mjo_output.py
 else
     echo "Failure in PMP/mjo parameter file generation"
 fi
