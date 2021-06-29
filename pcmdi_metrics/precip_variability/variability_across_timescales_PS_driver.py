@@ -133,15 +133,16 @@ for id, dat in enumerate(data):
     psdmfm[dat]['unforced'] = psdmfm_unforced
     outfilename = "PS_pr." + \
         str(dfrq) + "_regrid.180x90_area.freq.mean_" + dat + ".json"
-    JSON = pcmdi_metrics.io.base.Base(
-        outdir(output_type='metrics_results'), outfilename)
-    JSON.write(psdmfm,
-               json_structure=["model+realization",
-                               "variability type",
-                               "domain",
-                               "frequency"],
-               sort_keys=True,
-               indent=4,
-               separators=(',', ': '))
-#     if cmec:
-#         JSON.write_cmec(indent=4, separators=(',', ': '))
+    with cdms.open(os.path.join(outdir(output_type='metrics_results'), outfilename), "w") as out:
+        JSON = pcmdi_metrics.io.base.Base(
+            outdir(output_type='metrics_results'), outfilename)
+        JSON.write(psdmfm,
+                   json_structure=["model+realization",
+                                   "variability type",
+                                   "domain",
+                                   "frequency"],
+                   sort_keys=True,
+                   indent=4,
+                   separators=(',', ': '))
+        if cmec:
+            JSON.write_cmec(indent=4, separators=(',', ': '))
