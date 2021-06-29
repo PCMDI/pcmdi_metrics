@@ -54,4 +54,16 @@ def AddParserArgument(P):
                    dest='noverlap',
                    default=None,
                    help="length of overlap between segments in power spectra")
+    P.add_argument("--cmec",
+                   dest="cmec",
+                   default=False,
+                   action="store_true",
+                   help="Use to save CMEC format metrics JSON")
+    P.add_argument("--no_cmec",
+                   dest="cmec",
+                   default=False,
+                   action="store_false",
+                   help="Do not save CMEC format metrics JSON")
+    P.set_defaults(cmec=False)
+
     return P

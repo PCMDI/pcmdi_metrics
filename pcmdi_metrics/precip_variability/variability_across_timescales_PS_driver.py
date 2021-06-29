@@ -35,6 +35,9 @@ print(mod)
 print(prd)
 print(nperseg, noverlap)
 
+# Get flag for CMEC output
+cmec = param.cmec
+
 # Create output directory
 case_id = param.case_id
 outdir_template = param.process_templated_argument("results_dir")
@@ -127,10 +130,11 @@ for id, dat in enumerate(data):
         out.write(sig95, id="sig95")
 
     # Write data (json file)
-    psdmfm = {}
-    psdmfm[dat] = {}
-    psdmfm[dat]['forced'] = psdmfm_forced
-    psdmfm[dat]['unforced'] = psdmfm_unforced
+    psdmfm = {'RESULTS': {}}
+    psdmfm['RESULTS'][dat] = {}
+    psdmfm['RESULTS'][dat]['forced'] = psdmfm_forced
+    psdmfm['RESULTS'][dat]['unforced'] = psdmfm_unforced
+
     outfilename = "PS_pr." + \
         str(dfrq) + "_regrid.180x90_area.freq.mean_" + dat + ".json"
     JSON = pcmdi_metrics.io.base.Base(
@@ -143,5 +147,5 @@ for id, dat in enumerate(data):
                sort_keys=True,
                indent=4,
                separators=(',', ': '))
-#     if cmec:
-#         JSON.write_cmec(indent=4, separators=(',', ': '))
+    if cmec:
+        JSON.write_cmec(indent=4, separators=(',', ': '))
