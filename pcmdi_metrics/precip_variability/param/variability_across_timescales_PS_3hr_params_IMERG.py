@@ -25,7 +25,7 @@ os.system(
 )
 
 modpath = xmldir
-mod = dat
+mod = var + "." + frq + "." + dat + ".xml"
 prd = [2001, 2019]  # analysis period
 fac = 24  # factor to make unit of [mm/day]
 nperseg = 10 * 365 * 8  # length of segment in power spectra (~10yrs)
