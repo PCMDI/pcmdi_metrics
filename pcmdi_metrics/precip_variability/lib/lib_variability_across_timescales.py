@@ -312,21 +312,14 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
     else:
         sys.exit("ERROR: frc "+frc+" is not defined!")
 
-    var = 'power'
-
-    psdmfm = {}
-    psdmfm[frc] = {}
-    psdmfm[frc][mip] = {}
-    psdmfm[frc][mip][dat] = {}
-    psdmfm[frc][mip][dat][var] = {}
-
     mask = cdutil.generateLandSeaMask(d[0])
     d, mask2 = genutil.grower(d, mask)
     d_ocean = MV.masked_where(mask2 == 1.0, d)
     d_land = MV.masked_where(mask2 == 0.0, d)
 
+    psdmfm = {}
     for dom in domains:
-        psdmfm[frc][mip][dat][var][dom] = {}
+        psdmfm[dom] = {}
 
         if "Ocean" in dom:
             dmask = d_ocean
@@ -382,7 +375,7 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
             elif (frq == 'interannual'):  # 365day=<pr
                 idx2 = prdday_to_frqidx(365, frequency, ntd)
                 amfm = cdutil.averager(am[:idx2+1], weights='unweighted')
-            psdmfm[frc][mip][dat][var][dom][frq] = amfm.tolist()
+            psdmfm[dom][frq] = amfm.tolist()
 
     print("Complete domain and frequency average of spectral power")
     return psdmfm

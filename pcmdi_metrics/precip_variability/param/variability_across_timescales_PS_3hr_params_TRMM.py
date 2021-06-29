@@ -1,3 +1,4 @@
+import datetime
 import os
 
 mip = "obs"
@@ -10,14 +11,12 @@ ver = "v20210123"
 indir = "/work/ahn6/obs/TRMM/TRMM_3B42.7/3hr_2deg/"
 infile = "TRMM_3B42.7_*.nc"
 
-# outdir = '/work/ahn6/pr/variability_across_timescales/power_spectrum/'+ver+'/data/'+mip+'/'
-outdir = (
-#    "/work/ahn6/pr/variability_across_timescales/power_spectrum/"+ver+"_test/data/"+mip+"/"
-    "/work/ahn6/pr/variability_across_timescales/power_spectrum/"+ver+"_test/data/"+mip
-)
+case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+pmpdir = "/work/ahn6/pr/variability_across_timescales/power_spectrum/"+ver+"_test/"
+results_dir = os.path.join(
+    pmpdir, '%(output_type)', 'precip_variability', '%(mip)', '%(case_id)')
 
-#xmldir = "./xml_obs/"
-xmldir = "./xml_obs"
+xmldir = "./xml_obs/"
 if not (os.path.isdir(xmldir)):
     os.makedirs(xmldir)
 os.system(

@@ -5,6 +5,8 @@ import json
 import copy
 import os
 import sys
+import pcmdi_metrics
+from genutil import StringConstructor
 from pcmdi_metrics.driver.pmp_parser import PMPParser
 from pcmdi_metrics.precip_variability.lib import (
     AddParserArgument,
@@ -18,22 +20,31 @@ from pcmdi_metrics.precip_variability.lib import (
 # Read parameters
 P = PMPParser()
 P = AddParserArgument(P)
-args = P.get_parameter()
-mip = args.mip
-
-mod = args.mod
-var = args.var
-dfrq = args.frq
-modpath = args.modpath
-outdir = args.outdir
-prd = args.prd
-fac = args.fac
-nperseg = args.nperseg
-noverlap = args.noverlap
+param = P.get_parameter()
+mip = param.mip
+mod = param.mod
+var = param.var
+dfrq = param.frq
+modpath = param.modpath
+prd = param.prd
+fac = param.fac
+nperseg = param.nperseg
+noverlap = param.noverlap
 print(modpath)
 print(mod)
 print(prd)
 print(nperseg, noverlap)
+
+# Create output directory
+case_id = param.case_id
+outdir_template = param.process_templated_argument("results_dir")
+outdir = StringConstructor(str(outdir_template(
+    output_type='%(output_type)',
+    mip=mip, case_id=case_id)))
+for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
+    if not os.path.exists(outdir(output_type=output_type)):
+        os.makedirs(outdir(output_type=output_type))
+    print(outdir(output_type=output_type))
 
 # Read data
 file_list = sorted(glob.glob(os.path.join(modpath, "*" + mod + "*")))
@@ -51,10 +62,6 @@ for ifl in range(len(file_list)):
         data.append(model + "." + ens)
 print("# of data:", len(data))
 print(data)
-
-# Make output directory
-if not (os.path.isdir(outdir)):
-    os.makedirs(outdir)
 
 # Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
 syr = prd[0]
@@ -100,7 +107,7 @@ for id, dat in enumerate(data):
     psdmfm_forced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, 'forced')
     # Write data (nc file)
     outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc"
-    with cdms.open(os.path.join(outdir, outfilename), "w") as out:
+    with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
         out.write(freqs, id="freqs")
         out.write(ps, id="power")
         out.write(rn, id="rednoise")
@@ -113,7 +120,7 @@ for id, dat in enumerate(data):
     # Write data (nc file)
     outfilename = "PS_pr." + \
         str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
-    with cdms.open(os.path.join(outdir, outfilename), "w") as out:
+    with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
         out.write(freqs, id="freqs")
         out.write(ps, id="power")
         out.write(rn, id="rednoise")
@@ -121,10 +128,20 @@ for id, dat in enumerate(data):
 
     # Write data (json file)
     psdmfm = {}
-    psdmfm['forced'] = psdmfm_forced['forced']
-    psdmfm['unforced'] = psdmfm_unforced['unforced']
+    psdmfm[dat] = {}
+    psdmfm[dat]['forced'] = psdmfm_forced
+    psdmfm[dat]['unforced'] = psdmfm_unforced
     outfilename = "PS_pr." + \
         str(dfrq) + "_regrid.180x90_area.freq.mean_" + dat + ".json"
-    with open(os.path.join(outdir, outfilename), "w") as out:
-        json.dump(psdmfm, out, sort_keys=True,
-                  indent=4, separators=(",", ": "))
+    JSON = pcmdi_metrics.io.base.Base(
+        outdir(output_type='metrics_results'), outfilename)
+    JSON.write(psdmfm,
+               json_structure=["model+realization",
+                               "variability type",
+                               "domain",
+                               "frequency"],
+               sort_keys=True,
+               indent=4,
+               separators=(',', ': '))
+#     if cmec:
+#         JSON.write_cmec(indent=4, separators=(',', ': '))

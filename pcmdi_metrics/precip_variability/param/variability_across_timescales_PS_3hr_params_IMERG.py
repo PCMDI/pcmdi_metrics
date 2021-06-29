@@ -1,3 +1,4 @@
+import datetime
 import os
 
 mip = "obs"
@@ -11,10 +12,10 @@ ver = "v20210123"
 indir = "/work/ahn6/obs/IMERG/IMERG_Final.Run_V06B/3hr.center_2deg/"
 infile = "IMERG_Final.Run.V06B_*.nc"
 
-# outdir = '/work/ahn6/pr/variability_across_timescales/power_spectrum/'+ver+'/data/'+mip+'/'
-outdir = (
-    "/work/ahn6/pr/variability_across_timescales/power_spectrum/"+ver+"_test/data/"+mip+"/"
-)
+case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+pmpdir = "/work/ahn6/pr/variability_across_timescales/power_spectrum/"+ver+"_test/"
+results_dir = os.path.join(
+    pmpdir, '%(output_type)', 'precip_variability', '%(mip)', '%(case_id)')
 
 xmldir = "./xml_obs/"
 if not (os.path.isdir(xmldir)):

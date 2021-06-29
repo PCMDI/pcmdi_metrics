@@ -24,11 +24,16 @@ def AddParserArgument(P):
                    dest='modpath',
                    default=None,
                    help="data directory path")
-    P.add_argument("--outdir",
+    P.add_argument("--results_dir",
                    type=str,
-                   dest='outdir',
+                   dest='results_dir',
                    default=None,
-                   help="output directory path")
+                   help="results directory path")
+    P.add_argument("--case_id",
+                   type=str,
+                   dest='case_id',
+                   default=None,
+                   help="case_id with date")
     P.add_argument("--prd",
                    type=str,
                    dest='prd',
