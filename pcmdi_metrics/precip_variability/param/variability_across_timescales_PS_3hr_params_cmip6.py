@@ -1,4 +1,5 @@
 import datetime
+import os
 
 mip = "cmip6"
 exp = "historical"

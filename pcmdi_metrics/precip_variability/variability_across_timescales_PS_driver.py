@@ -1,7 +1,6 @@
 import cdms2 as cdms
 import MV2 as MV
 import glob
-import json
 import copy
 import os
 import sys
