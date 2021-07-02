@@ -54,6 +54,11 @@ def AddParserArgument(P):
                    dest='noverlap',
                    default=None,
                    help="length of overlap between segments in power spectra")
+    P.add_argument("--ref",
+                   type=str,
+                   dest='ref',
+                   default=None,
+                   help="reference data path")
     P.add_argument("--cmec",
                    dest="cmec",
                    default=False,
