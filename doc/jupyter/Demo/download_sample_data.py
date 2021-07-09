@@ -1,13 +1,15 @@
 import glob
 
-def generate_parameter_files(demo_data_directory, demo_output_directory):
+def generate_parameter_files(demo_data_directory, demo_output_directory, filenames=[]):
     # This prepares the various parameter files used in the demo notebooks 
     # to reflect where you downloaded the data
     sub_dict = {
         "INPUT_DIR": demo_data_directory,
         "OUTPUT_DIR": demo_output_directory
     }
-    for name in glob.glob("*.in"):
+    if len(filenames) < 1:
+        filenames = glob.glob("*.in")
+    for name in filenames:
         with open(name) as template_file:
             print("Preparing parameter file: {}".format(name[:-3]))
             template = template_file.read()
