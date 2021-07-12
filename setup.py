@@ -11,7 +11,7 @@ if "--enable-devel" in sys.argv:
 else:
     install_dev = False
 
-Version = "1.2"
+Version = "2.0"
 p = subprocess.Popen(
     ("git",
      "describe",
@@ -64,7 +64,8 @@ scripts = ['pcmdi_metrics/pcmdi/scripts/mean_climate_driver.py',
            'pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py',
            'pcmdi_metrics/monsoon_sperber/scripts/driver_monsoon_sperber.py',
            'pcmdi_metrics/mjo/scripts/mjo_metrics_driver.py',
-           'pcmdi_metrics/variability_mode/variability_modes_driver.py'
+           'pcmdi_metrics/variability_mode/variability_modes_driver.py',
+           'pcmdi_metrics/enso/enso_driver.py'
            ]
 # scripts += glob.glob("pcmdi_metrics/diurnal/scripts/*.py")
 
