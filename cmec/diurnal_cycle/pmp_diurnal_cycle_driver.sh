@@ -67,8 +67,6 @@ if [[ $? = 0 ]]; then
     --modpath $CMEC_WK_DIR/nc \
     -t 'pr_%(model)_%(month)_%(firstyear)-%(lastyear)_S.nc'
 
-    python $CMEC_CODE_DIR/diurnal_cycle_output.py
-
 else
     printf "Failure in PMP/diurnal_cycle parameter file generation"
 fi

@@ -12,7 +12,6 @@ $CMEC_CONFIG_DIR/cmec.json $tmp_param "variability_modes"
 
 if [[ $? = 0 ]]; then
     variability_modes_driver.py -p $tmp_param
-    python $CMEC_CODE_DIR/mov_output.py
 else
     echo "Failure in PMP/variability_modes"
 fi
