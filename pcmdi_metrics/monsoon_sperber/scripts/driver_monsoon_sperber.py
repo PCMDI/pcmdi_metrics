@@ -82,15 +82,15 @@ P = pcmdi_metrics.driver.pmp_parser.PMPParser(
     formatter_class=RawTextHelpFormatter)
 P = AddParserArgument(P)
 P.add_argument("--cmec",
-                dest="cmec",
-                default=False,
-                action="store_true",
-                help="Use to save CMEC format metrics JSON")
+               dest="cmec",
+               default=False,
+               action="store_true",
+               help="Use to save CMEC format metrics JSON")
 P.add_argument("--no_cmec",
-                dest="cmec",
-                default=False,
-                action="store_false",
-                help="Do not save CMEC format metrics JSON")
+               dest="cmec",
+               default=False,
+               action="store_false",
+               help="Do not save CMEC format metrics JSON")
 P.set_defaults(cmec=False)
 param = P.get_parameter()
 
@@ -104,7 +104,7 @@ realm = param.realm
 nc_out = param.nc_out  # Record NetCDF output
 plot = param.plot  # Generate plots
 includeOBS = param.includeOBS  # Loop run for OBS or not
-cmec = param.cmec # CMEC formatted JSON
+cmec = param.cmec  # CMEC formatted JSON
 
 # Path to reference data
 reference_data_name = param.reference_data_name
@@ -594,7 +594,7 @@ for model in models:
                            indent=4,
                            separators=(',', ': '))
                 if cmec:
-                    JSON.write_cmec(indent=4, separators=(',',': '))
+                    JSON.write_cmec(indent=4, separators=(',', ': '))
 
             except Exception as err:
                 if debug:
