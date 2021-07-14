@@ -257,8 +257,8 @@ def compute_metrics(Var, dm, do):
         cor_mo_l.append(format(cor_mo, '.2f'))
         mae_mo_l.append(format(mae_mo * conv, sig_digits))
         bias_mo_l.append(format(bias_mo * conv, sig_digits))
-        stdObs_xy_mo_l.append(format(stdObs_xy_mo * conv,sig_digits))
-        std_xy_mo_l.append(format(std_xy_mo * conv,sig_digits))
+        stdObs_xy_mo_l.append(format(stdObs_xy_mo * conv, sig_digits))
+        std_xy_mo_l.append(format(std_xy_mo * conv, sig_digits))
         meanObs_xy_mo_l.append(format(meanObs_xy_mo * conv, sig_digits))
         mean_xy_mo_l.append(format(mean_xy_mo * conv, sig_digits))
 
@@ -276,7 +276,7 @@ def compute_metrics(Var, dm, do):
     metrics_dictionary['rms_xy']['CalendarMonths'] = rms_mo_l
     metrics_dictionary['rmsc_xy']['CalendarMonths'] = rmsc_mo_l
     metrics_dictionary['cor_xy']['CalendarMonths'] = cor_mo_l
-    metrics_dictionary['mae_xy']['CalendarMonths'] =  mae_mo_l
+    metrics_dictionary['mae_xy']['CalendarMonths'] = mae_mo_l
     metrics_dictionary['std-obs_xy']['CalendarMonths'] = stdObs_xy_mo_l
     metrics_dictionary['std_xy']['CalendarMonths'] = std_xy_mo_l
     metrics_dictionary['mean-obs_xy']['CalendarMonths'] = meanObs_xy_mo_l
