@@ -1,0 +1,33 @@
+{
+    "settings": {
+        "name": "monsoon_wang",
+        "driver": "cmec/monsoon_wang/pmp_monsoon_wang_driver.sh",
+        "async": null,
+        "long_name": "PMP Monsoon (Wang) Metrics",
+        "description": "Monsoon (Wang) metrics for earth system models",
+        "runtime": {"PCMDI Metrics Package": "1.2", "CDAT": "8.2.1"}
+    },
+    "varlist": {
+        "pr": {
+            "long_name": "Precipitation",
+            "units": "kg m-2 s-1",
+            "frequency": "mon"
+        }
+    },
+    "obslist": {
+        "GPCP-2-3": {
+            "version": "2-3",
+            "long_name": "GPCP 2-3 Merged Precipitation",
+            "description": "GPCP 2.3 prepared for PMPObs (ODS-v2.1.0)"
+        }
+    },
+    "default_parameters": {
+        "case_id": "monsoon_wang",
+        "modnames": [
+            "CanCM4"
+        ],
+        "test_data_path": "CMIP5_demo_clims/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200512.AC.v20200426.nc",
+        "reference_data_path": "PCMDIobs2/atmos/mon/pr/GPCP-2-3/gn/v20200707/pr_mon_GPCP-2-3_BE_gn_v20200707_197901-201907.nc",
+        "threshold": 0.00002894
+    }
+}

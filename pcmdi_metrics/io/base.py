@@ -307,12 +307,8 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                     if first_key == "attributes":
                         first_key = list(json_dict.items())[1][0]
                     dim = json_structure[level]
-                    if dim == "statistic":
-                        keys = [key for key in json_dict]
-                        keylist[dim] = {"indices": keys}
-                    else:
-                        keys = {key: {} for key in json_dict if key != "attributes"}
-                        keylist[dim] = keys
+                    keys = {key: {} for key in json_dict if key != "attributes"}
+                    keylist[dim] = keys
                     json_dict = json_dict[first_key]
                 level += 1
             return keylist
