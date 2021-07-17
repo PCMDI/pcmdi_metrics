@@ -35,8 +35,9 @@ def AddParserArgument(P):
                    default=None,
                    help="case_id with date")
     P.add_argument("--prd",
-                   type=str,
+                   type=int,
                    dest='prd',
+                   nargs='+',
                    default=None,
                    help="list of start- and end-year for analysis")
     P.add_argument("--fac",
@@ -45,12 +46,12 @@ def AddParserArgument(P):
                    default=None,
                    help="factor to make unit of [mm/day]")
     P.add_argument("--nperseg",
-                   type=str,
+                   type=int,
                    dest='nperseg',
                    default=None,
                    help="length of segment in power spectra")
     P.add_argument("--noverlap",
-                   type=str,
+                   type=int,
                    dest='noverlap',
                    default=None,
                    help="length of overlap between segments in power spectra")

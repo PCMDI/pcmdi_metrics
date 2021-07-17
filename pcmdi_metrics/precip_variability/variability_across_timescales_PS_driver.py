@@ -66,6 +66,7 @@ print("# of data:", len(data))
 print(data)
 
 # Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
+psdmfm = {'RESULTS': {}}
 syr = prd[0]
 eyr = prd[1]
 for id, dat in enumerate(data):
@@ -129,7 +130,6 @@ for id, dat in enumerate(data):
         out.write(sig95, id="sig95")
 
     # Write data (json file)
-    psdmfm = {'RESULTS': {}}
     psdmfm['RESULTS'][dat] = {}
     psdmfm['RESULTS'][dat]['forced'] = psdmfm_forced
     psdmfm['RESULTS'][dat]['unforced'] = psdmfm_unforced
