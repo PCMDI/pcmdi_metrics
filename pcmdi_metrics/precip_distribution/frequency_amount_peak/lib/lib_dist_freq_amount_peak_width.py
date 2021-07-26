@@ -18,6 +18,8 @@ def Regrid2deg(d):
     """
     # Regridding
     tgrid = cdms.createUniformGrid(-89, 90, 2.0, 0, 180, 2.0, order="yx")
+#     tgrid = cdms.createUniformGrid(-89.5, 180, 1.0, 0, 360, 1.0, order="yx")
+#     tgrid = cdms.createUniformGrid(-89.75, 360, 0.5, 0, 720, 0.5, order="yx")
     orig_grid = d.getGrid()
     regridFunc = Horizontal(orig_grid, tgrid)
     drg = MV.zeros((d.shape[0], tgrid.shape[0], tgrid.shape[1]), MV.float)
@@ -50,7 +52,7 @@ def getDailyCalendarMonth(d, mon):
     - d: cdms variable
     - mon: month (e.g., 'JAN', 'FEB', 'MAR', ...)
     Output
-    - drg: cdms variable with 2deg horizontal resolution
+    - calmo: cdms variable concatenated for specific month
     """
     a = d.getTime()
     a.designateTime()
@@ -64,13 +66,12 @@ def getDailyCalendarMonth(d, mon):
         if calmo is None:
             calmo = tmp
         else:
-            calmo = MV.concatenate((calmo, tmp), axis=2)
+            calmo = MV.concatenate((calmo, tmp), axis=0)
     return calmo
 
 
 # ==================================================================================
-def CalcBinStructure(pdata1, bincrates):
-    sp1 = pdata1.shape
+def CalcBinStructure(pdata1):
     L = 2.5e6  # % w/m2. latent heat of vaporization of water
     wm2tommd = 1./L*3600*24  # % conversion from w/m2 to mm/d
     pmax = pdata1.max()/wm2tommd
@@ -107,6 +108,12 @@ def CalcBinStructure(pdata1, bincrates):
         binr = np.exp(binrlog)/L*3600*24
     bincrates = np.append(0, (binl+binr)/2)  # % we'll use this for plotting.
 
+    axbin = cdms.createAxis(range(len(binl)), id='bin')
+    binl = MV.array(binl)
+    binr = MV.array(binr)
+    binl.setAxis(0, axbin)
+    binr.setAxis(0, axbin)
+
     return binl, binr, bincrates
 
 
@@ -114,31 +121,43 @@ def CalcBinStructure(pdata1, bincrates):
 def MakeDists(pdata, binl):
     # This is called from within makeraindist.
     # Caclulate distributions
-    pds = pdata.shape
-    nlat = pds[1]
-    nlon = pds[2]
-    nd = pds[0]
+    nlat = pdata.shape[1]
+    nlon = pdata.shape[2]
+    nd = pdata.shape[0]
     bins = np.append(0, binl)
-    n = np.empty((nlat, nlon, len(binl)))
+    n = np.empty((len(binl), nlat, nlon))
     binno = np.empty(pdata.shape)
     for ilon in range(nlon):
         for ilat in range(nlat):
             # this is the histogram - we'll get frequency from this
             thisn, thisbin = np.histogram(pdata[:, ilat, ilon], bins)
-            n[ilat, ilon, :] = thisn
+            n[:, ilat, ilon] = thisn
             # these are the bin locations. we'll use these for the amount dist
-            binno[ilat, ilon, :] = np.digitize(pdata[:, ilat, ilon], bins)
+            binno[:, ilat, ilon] = np.digitize(pdata[:, ilat, ilon], bins)
     # Calculate the number of days with non-missing data, for normalization
     ndmat = np.tile(np.expand_dims(
-        np.nansum(n, axis=2), axis=2), (1, 1, len(bins)-1))
+        np.nansum(n, axis=0), axis=0), (len(bins)-1, 1, 1))
     thisppdfmap = n/ndmat
     # Iterate back over the bins and add up all the precip - this will be the rain amount distribution.
     # This step is probably the limiting factor and might be able to be made more efficient - I had a clever trick in matlab, but it doesn't work in python
     testpamtmap = np.empty(thisppdfmap.shape)
     for ibin in range(len(bins)-1):
-        testpamtmap[:, :, ibin] = (pdata*(ibin == binno)).sum(axis=2)
+        testpamtmap[ibin, :, :] = (pdata*(ibin == binno)).sum(axis=0)
     thispamtmap = testpamtmap/ndmat
-    return thisppdfmap, thispamtmap
+
+    axbin = cdms.createAxis(range(len(binl)), id='bin')
+    lat = pdata.getLatitude()
+    lon = pdata.getLongitude()
+    thisppdfmap = MV.array(thisppdfmap)
+    thisppdfmap.setAxisList((axbin, lat, lon))
+    thispamtmap = MV.array(thispamtmap)
+    thispamtmap.setAxisList((axbin, lat, lon))
+
+    axbinbound = cdms.createAxis(range(len(thisbin)), id='binbound')
+    thisbin = MV.array(thisbin)
+    thisbin.setAxis(0, axbinbound)
+
+    return thisppdfmap, thispamtmap, thisbin
 
 
 # ==================================================================================
@@ -202,7 +221,7 @@ def AvgDomain(d):
     Input
     - d: cdms variable
     Output
-    - ddom: Domain averaged of data (json)
+    - ddom: Domain averaged data (json)
     """
     domains = ["Total_50S50N", "Ocean_50S50N", "Land_50S50N",
                "Total_30N50N", "Ocean_30N50N", "Land_30N50N",

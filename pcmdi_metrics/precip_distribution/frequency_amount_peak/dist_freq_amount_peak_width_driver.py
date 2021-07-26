@@ -33,8 +33,7 @@ import cdutil
 import collections
 import datetime
 from genutil import StringConstructor
-
-# from pcmdi_metrics.driver.pmp_parser import PMPParser
+from pcmdi_metrics.driver.pmp_parser import PMPParser
 # from pcmdi_metrics.precip_variability.lib import (
 #     AddParserArgument,
 #     Regrid2deg,
@@ -42,9 +41,9 @@ from genutil import StringConstructor
 #     Powerspectrum,
 #     Avg_PS_DomFrq,
 # )
-with open('./lib/argparse_functions.py') as source_file:
+with open('../lib/argparse_functions.py') as source_file:
     exec(source_file.read())
-with open('./lib/lib_dist_freq_amount_peak_width.py') as source_file:
+with open('../lib/lib_dist_freq_amount_peak_width.py') as source_file:
     exec(source_file.read())
 
 # Read parameters
@@ -54,16 +53,13 @@ param = P.get_parameter()
 mip = param.mip
 mod = param.mod
 var = param.var
-dfrq = param.frq
+# dfrq = param.frq
 modpath = param.modpath
 prd = param.prd
 fac = param.fac
-nperseg = param.nperseg
-noverlap = param.noverlap
 print(modpath)
 print(mod)
 print(prd)
-print(nperseg, noverlap)
 
 # Get flag for CMEC output
 cmec = param.cmec
@@ -76,7 +72,10 @@ outdir = StringConstructor(str(outdir_template(
     mip=mip, case_id=case_id)))
 for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
     if not os.path.exists(outdir(output_type=output_type)):
-        os.makedirs(outdir(output_type=output_type))
+        try:
+            os.makedirs(outdir(output_type=output_type))
+        except:
+            pass
     print(outdir(output_type=output_type))
 
 version = case_id
@@ -130,23 +129,20 @@ for id, dat in enumerate(data):
             drg = MV.concatenate((drg, rgtmp))
         print(iyr, drg.shape)
 
-    lat = drg.getLatitude()[:]
-    lon = drg.getLongitude()[:]
-
     # Month separation
     months = ['ALL', 'JAN', 'FEB', 'MAR', 'APR', 'MAY',
               'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
 
-    amtpeakmap = np.empty((13, len(lat), len(lon)))
-    amtwidthmap = np.empty((13, len(lat), len(lon)))
-    pdfpeakmap = np.empty((13, len(lat), len(lon)))
-    pdfwidthmap = np.empty((13, len(lat), len(lon)))
+    pdfpeakmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
+    pdfwidthmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
+    amtpeakmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
+    amtwidthmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
     for im, mon in enumerate(months):
 
         if mon == 'ALL':
             dmon = drg
-        else
-        dmon = getDailyCalendarMonth(drg, mon)
+        else:
+            dmon = getDailyCalendarMonth(drg, mon)
 
         print(dat, mon, dmon.shape)
 
@@ -156,34 +152,82 @@ for id, dat in enumerate(data):
         binl, binr, bincrates = CalcBinStructure(pdata1)
 
         # Calculate distributions
-        ppdfmap, pamtmap = MakeDists(pdata1, binl)
+        ppdfmap, pamtmap, bins = MakeDists(pdata1, binl)
 
         # Calculate the metrics for the distribution at each grid point
-        for i in range(len(lon)):
-            for j in range(len(lat)):
+        for i in range(drg.shape[2]):
+            for j in range(drg.shape[1]):
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(
-                    pamtmap[j, i, :], bincrates)
-                amtpeakmap[im, j, i] = rainpeak
-                amtwidthmap[im, j, i] = rainwidth
-                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(
-                    ppdfmap[j, i, :], bincrates)
+                    ppdfmap[:, j, i], bincrates)
                 pdfpeakmap[im, j, i] = rainpeak
                 pdfwidthmap[im, j, i] = rainwidth
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(
+                    pamtmap[:, j, i], bincrates)
+                amtpeakmap[im, j, i] = rainpeak
+                amtwidthmap[im, j, i] = rainwidth
+
+    # Make Spatial pattern of distributions with separated months
+        if im == 0:
+            pdfmapmon = np.expand_dims(ppdfmap, axis=0)
+            amtmapmon = np.expand_dims(pamtmap, axis=0)
+        else:
+            pdfmapmon = MV.concatenate(
+                (pdfmapmon, np.expand_dims(ppdfmap, axis=0)), axis=0)
+            amtmapmon = MV.concatenate(
+                (amtmapmon, np.expand_dims(pamtmap, axis=0)), axis=0)
+
+    axmon = cdms.createAxis(range(len(months)), id='month')
+    axbin = cdms.createAxis(range(len(binl)), id='bin')
+    lat = drg.getLatitude()
+    lon = drg.getLongitude()
+    pdfmapmon.setAxisList((axmon, axbin, lat, lon))
+    amtmapmon.setAxisList((axmon, axbin, lat, lon))
 
     # Domain average
-    metrics['RESULTS'][dat]['amtpeak'] = AvgDomain(amtpeakmap)
-    metrics['RESULTS'][dat]['amtwidth'] = AvgDomain(amtwidthmap)
+    pdfpeakmap = MV.array(pdfpeakmap)
+    pdfwidthmap = MV.array(pdfwidthmap)
+    amtpeakmap = MV.array(amtpeakmap)
+    amtwidthmap = MV.array(amtwidthmap)
+    pdfpeakmap.setAxisList((axmon, lat, lon))
+    pdfwidthmap.setAxisList((axmon, lat, lon))
+    amtpeakmap.setAxisList((axmon, lat, lon))
+    amtwidthmap.setAxisList((axmon, lat, lon))
+    metrics['RESULTS'][dat] = {}
     metrics['RESULTS'][dat]['pdfpeak'] = AvgDomain(pdfpeakmap)
     metrics['RESULTS'][dat]['pdfwidth'] = AvgDomain(pdfwidthmap)
+    metrics['RESULTS'][dat]['amtpeak'] = AvgDomain(amtpeakmap)
+    metrics['RESULTS'][dat]['amtwidth'] = AvgDomain(amtwidthmap)
 
-    # Write data (json file)
-    outfilename = "dist_freq.amount_peak.width_regrid.180x90_area.mean_" + dat + ".json"
+    # Write data (nc file for spatial pattern of distributions)
+    outfilename = "dist_freq.amount_regrid.180x90_" + dat + ".nc"
+#     outfilename = "dist_freq.amount_regrid.360x180_" + dat + ".nc"
+#     outfilename = "dist_freq.amount_regrid.720x360_" + dat + ".nc"
+    with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
+        out.write(pdfmapmon, id="pdf")
+        out.write(amtmapmon, id="amt")
+        out.write(bins, id="binbounds")
+
+    # Write data (nc file for spatial pattern of metrics)
+    outfilename = "dist_freq.amount_peak.width_regrid.180x90_" + dat + ".nc"
+#     outfilename = "dist_freq.amount_peak.width_regrid.360x180_" + dat + ".nc"
+#     outfilename = "dist_freq.amount_peak.width_regrid.720x360_" + dat + ".nc"
+    with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
+        out.write(pdfpeakmap, id="pdfpeak")
+        out.write(pdfwidthmap, id="pdfwidth")
+        out.write(amtpeakmap, id="amtpeak")
+        out.write(amtwidthmap, id="amtwidth")
+
+    # Write data (json file for area averaged metrics)
+    outfilename = "dist_freq.amount_peak.width_area.mean_regrid.180x90_" + dat + ".json"
+#     outfilename = "dist_freq.amount_peak.width_area.mean_regrid.360x180_" + dat + ".json"
+#     outfilename = "dist_freq.amount_peak.width_area.mean_regrid.720x360_" + dat + ".json"
     JSON = pcmdi_metrics.io.base.Base(
         outdir(output_type='metrics_results'), outfilename)
-    JSON.write(psdmfm,
+    JSON.write(metrics,
                json_structure=["model+realization",
                                "metrics",
-                               "domain"],
+                               "domain",
+                               "month"],
                sort_keys=True,
                indent=4,
                separators=(',', ': '))

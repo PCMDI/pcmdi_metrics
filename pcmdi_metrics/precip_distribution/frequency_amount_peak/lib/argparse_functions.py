@@ -45,16 +45,6 @@ def AddParserArgument(P):
                    dest='fac',
                    default=None,
                    help="factor to make unit of [mm/day]")
-    P.add_argument("--nperseg",
-                   type=int,
-                   dest='nperseg',
-                   default=None,
-                   help="length of segment in power spectra")
-    P.add_argument("--noverlap",
-                   type=int,
-                   dest='noverlap',
-                   default=None,
-                   help="length of overlap between segments in power spectra")
     P.add_argument("--ref",
                    type=str,
                    dest='ref',
