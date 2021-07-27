@@ -8,6 +8,7 @@ import sys
 def portrait_plot(data, 
                   xaxis_labels,
                   yaxis_labels,
+                  fig=None, ax=None,
                   annotate=False, annotate_data=None, annotate_fontsize=15,
                   figsize=(12,10), vrange=(-3,3),
                   xaxis_fontsize=15, yaxis_fontsize=15,
@@ -24,6 +25,8 @@ def portrait_plot(data,
     - `data`: 2d numpy array, a list of 2d numpy arrays, or a 3d numpy array (i.e. stacked 2d numpy arrays)
     - `xaxis_labels`: list of strings, labels for xaixs
     - `yaxis_labels`: list of strings, labels for yaxis
+    - `fig`: `matplotlib.figure` instance to which the portrait plot is plotted.  If not provided, use current axes or create a new one.  Optional.
+    - `ax`: `matplotlib.axes.Axes` instance to which the portrait plot is plotted.  If not provided, use current axes or create a new one.  Optional.
     - `annotate`: bool, default=False, add annotating text if true, but work only for heatmap style map (i.e., no triangles)
     - `annotate_data`: 2d numpy array, default=None. If None, the image's data is used.  Optional. 
     - `annotate_fontsize`: number (int/float), default=15. Font size for annotation
@@ -70,11 +73,13 @@ def portrait_plot(data,
     if debug:
         print('data.shape:', data.shape)
 
+    """
     if data.shape[-1] != len(xaxis_labels):
         sys.exit('Error: Number of elements in xaxis_label mismatchs to the data')
 
     if data.shape[-2] != len(yaxis_labels):
         sys.exit('Error: Number of elements in yaxis_label mismatchs to the data')
+    """
 
     if (type(data) == np.ndarray):
         data = np.squeeze(data)
@@ -97,7 +102,9 @@ def portrait_plot(data,
     # ----------------
     # Ready to plot!!
     # ----------------
-    fig, ax = plt.subplots(figsize=figsize)
+    if fig is None and ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+
     vmin = min(vrange)
     vmax = max(vrange)
 
@@ -125,7 +132,7 @@ def portrait_plot(data,
     elif num_divide == 2:
         upper = data[0]
         lower = data[1]
-        ax, cbar = triamatrix_wrap_up(upper, lower, ax, 
+        ax, cbar = triamatrix_wrap_up(upper, lower, ax,
                                       xaxis_labels=xaxis_labels, 
                                       yaxis_labels=yaxis_labels,
                                       cmap=cmap,
@@ -138,7 +145,8 @@ def portrait_plot(data,
         right = data[1]
         bottom = data[2]
         left = data[3]
-        ax, cbar = quatromatrix(top, right, bottom, left, ax=ax,
+        ax, cbar = quatromatrix(top, right, bottom, left,
+                                ax=ax,
                                 tripcolorkw={"cmap": cmap,
                                              "vmin": vmin, "vmax": vmax,
                                              "edgecolors":'k', "linewidth":0.5},
@@ -199,7 +207,7 @@ def heatmap(data, row_labels, col_labels, ax=None,
         All other arguments are forwarded to `imshow`.
     """
 
-    if not ax:
+    if ax is None:
         ax = plt.gca()
         
     if invert_yaxis:
@@ -347,7 +355,7 @@ def triamatrix(a, ax, rot=0, cmap="viridis", **kwargs):
 # ----------------------------------------------------------------------
 def quatromatrix(top, right, bottom, left, ax=None, tripcolorkw={}, 
                  xaxis_labels=None, yaxis_labels=None, invert_yaxis=True):
-    if not ax: 
+    if ax is None: 
         ax = plt.gca()
     
     n = left.shape[0] 
@@ -379,10 +387,12 @@ def quatromatrix(top, right, bottom, left, ax=None, tripcolorkw={},
     
     if xaxis_labels is not None:
         x_loc = list_between_elements(np.arange(left.shape[1]+1))
-        plt.xticks(x_loc, xaxis_labels)
+        ax.set_xticks(x_loc)
+        ax.set_xticklabels(xaxis_labels)
     if yaxis_labels is not None:
         y_loc = list_between_elements(np.arange(left.shape[0]+1))
-        plt.yticks(y_loc, yaxis_labels)
+        ax.set_yticks(y_loc)
+        ax.set_yticklabels(yaxis_labels)
     
     cbar = ax.figure.colorbar(tripcolor, ax=ax)
        
