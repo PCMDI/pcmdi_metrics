@@ -24,6 +24,9 @@ def parallel_plot(data, metric_names, model_names, model_highlights=list(),
     - figsize: tuple (two numbers), default=(15,5), image size
     - xtick_labels: list, default=None, list of strings that to use as metric names (optional)
     - colormap: string, default='viridis', matplotlib colormap
+
+    Author: Jiwoo Lee @ LLNL (2021. 7)
+    Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
     """
     params = {'legend.fontsize': 'large',
               'axes.labelsize': 'x-large',
