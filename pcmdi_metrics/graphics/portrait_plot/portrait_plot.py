@@ -128,6 +128,7 @@ def portrait_plot(data,
 
     # [2] Two triangle portrait plot
     elif num_divide == 2:
+        # data order is upper, lower
         upper = data[0]
         lower = data[1]
         ax, cbar = triamatrix_wrap_up(upper, lower, ax,
@@ -139,6 +140,7 @@ def portrait_plot(data,
 
     # [4] Four triangle portrait plot
     elif num_divide == 4:
+        # data order is clockwise from top: top, right, bottom, left
         top = data[0]
         right = data[1]
         bottom = data[2]
