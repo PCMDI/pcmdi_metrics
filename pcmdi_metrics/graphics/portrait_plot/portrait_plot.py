@@ -23,8 +23,8 @@ def portrait_plot(data,
     Parameters
     ----------
     - `data`: 2d numpy array, a list of 2d numpy arrays, or a 3d numpy array (i.e. stacked 2d numpy arrays)
-    - `xaxis_labels`: list of strings, labels for xaixs
-    - `yaxis_labels`: list of strings, labels for yaxis
+    - `xaxis_labels`: list of strings, labels for xaixs. Number of list element must consistent to x-axis, or 0 (empty list) to turn off xaxis tick labels
+    - `yaxis_labels`: list of strings, labels for yaxis. Number of list element must consistent to y-axis, or 0 (empty list) to turn off yaxis tick labels
     - `fig`: `matplotlib.figure` instance to which the portrait plot is plotted.  If not provided, use current axes or create a new one.  Optional.
     - `ax`: `matplotlib.axes.Axes` instance to which the portrait plot is plotted.  If not provided, use current axes or create a new one.  Optional.
     - `annotate`: bool, default=False, add annotating text if true, but work only for heatmap style map (i.e., no triangles)
@@ -73,13 +73,11 @@ def portrait_plot(data,
     if debug:
         print('data.shape:', data.shape)
 
-    """
-    if data.shape[-1] != len(xaxis_labels):
+    if data.shape[-1] != len(xaxis_labels) and len(xaxis_labels) > 0:
         sys.exit('Error: Number of elements in xaxis_label mismatchs to the data')
 
-    if data.shape[-2] != len(yaxis_labels):
+    if data.shape[-2] != len(yaxis_labels) and len(yaxis_labels) > 0:
         sys.exit('Error: Number of elements in yaxis_label mismatchs to the data')
-    """
 
     if (type(data) == np.ndarray):
         data = np.squeeze(data)
