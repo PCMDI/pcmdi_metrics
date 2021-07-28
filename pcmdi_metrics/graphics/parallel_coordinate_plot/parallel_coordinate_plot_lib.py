@@ -6,25 +6,32 @@ import numpy as np
 
 
 def parallel_plot(data, metric_names, model_names, model_highlights=list(),
+                  fig=None, ax=None, figsize=(15, 5),
                   show_boxplot=True, show_violin=True, title=None, identify_all_models=True,
-                  filename='test', figsize=(15, 5),
-                  xtick_labels=None, colormap='viridis'):
+                  xtick_labels=None, colormap='viridis', legend_off=False):
     """
-    Input
-    -----
-    - data: 2-d numpy array for metrics
-    - metric_names: list, names of metrics for individual vertical axes (axis=1)
-    - model_names: list, name of models for markers/lines (axis=0)
-    - model_highlights: list, default=None, List of models to highlight as lines
-    - show_boxplot: bool, default=True, show box and wiskers plot
-    - show_violin: bool, default=True, show violin plot
-    - title: string, default=None, plot title
-    - identify_all_models: bool, default=True. Show and identify all models using markers
-    - filename: string, default='test', file name for saving the plot
-    - figsize: tuple (two numbers), default=(15,5), image size
-    - xtick_labels: list, default=None, list of strings that to use as metric names (optional)
-    - colormap: string, default='viridis', matplotlib colormap
+    Parameters
+    ----------
+    - `data`: 2-d numpy array for metrics
+    - `metric_names`: list, names of metrics for individual vertical axes (axis=1)
+    - `model_names`: list, name of models for markers/lines (axis=0)
+    - `model_highlights`: list, default=None, List of models to highlight as lines
+    - `fig`: `matplotlib.figure` instance to which the portrait plot is plotted.  If not provided, use current axes or create a new one.  Optional.
+    - `ax`: `matplotlib.axes.Axes` instance to which the portrait plot is plotted.  If not provided, use current axes or create a new one.  Optional.
+    - `figsize`: tuple (two numbers), default=(15,5), image size
+    - `show_boxplot`: bool, default=True, show box and wiskers plot
+    - `show_violin`: bool, default=True, show violin plot
+    - `title`: string, default=None, plot title
+    - `identify_all_models`: bool, default=True. Show and identify all models using markers
+    - `xtick_labels`: list, default=None, list of strings that to use as metric names (optional)
+    - `colormap`: string, default='viridis', matplotlib colormap
+    - `legend_off`: bool, default=False, turn off legend
 
+    Return
+    ------
+    - `fig`: matplotlib component for figure
+    - `ax`: matplotlib component for axis
+    
     Author: Jiwoo Lee @ LLNL (2021. 7)
     Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
     """
@@ -78,20 +85,23 @@ def parallel_plot(data, metric_names, model_names, model_highlights=list(),
               'ytick.labelsize': ytick_labelsize}
     pylab.rcParams.update(params)
 
-    fig, host = plt.subplots(figsize=figsize)
+    if fig is None and ax is None:
+        fig, ax = plt.subplots(figsize=figsize)
+    else:
+        ax = ax
 
-    axes = [host] + [host.twinx() for i in range(N - 1)]
+    axes = [ax] + [ax.twinx() for i in range(N - 1)]
 
-    for i, ax in enumerate(axes):
-        ax.set_ylim(ymins[i], ymaxs[i])
-        ax.spines['top'].set_visible(False)
-        ax.spines['bottom'].set_visible(False)
-        if ax == host:
-            ax.spines["left"].set_position(("data", i))
-        if ax != host:
-            ax.spines['left'].set_visible(False)
-            ax.yaxis.set_ticks_position('right')
-            ax.spines["right"].set_position(("data", i))
+    for i, ax_y in enumerate(axes):
+        ax_y.set_ylim(ymins[i], ymaxs[i])
+        ax_y.spines['top'].set_visible(False)
+        ax_y.spines['bottom'].set_visible(False)
+        if ax_y == ax:
+            ax_y.spines["left"].set_position(("data", i))
+        if ax_y != ax:
+            ax_y.spines['left'].set_visible(False)
+            ax_y.yaxis.set_ticks_position('right')
+            ax_y.spines["right"].set_position(("data", i))
 
     # Population distribuion on each vertical axis
     if show_boxplot or show_violin:
@@ -100,7 +110,7 @@ def parallel_plot(data, metric_names, model_names, model_highlights=list(),
 
         # Box plot
         if show_boxplot:
-            box = host.boxplot(y_filtered, positions=range(N), 
+            box = ax.boxplot(y_filtered, positions=range(N), 
                                patch_artist=True, widths=0.15)
             for item in ['boxes', 'whiskers', 'fliers', 'medians', 'caps']:
                 plt.setp(box[item], color='darkgrey')
@@ -109,7 +119,7 @@ def parallel_plot(data, metric_names, model_names, model_highlights=list(),
 
         # Violin plot
         if show_violin:
-            violin = host.violinplot(y_filtered, positions=range(N),
+            violin = ax.violinplot(y_filtered, positions=range(N),
                                      showmeans=False, showmedians=False, showextrema=False)
             for pc in violin['bodies']:
                 pc.set_facecolor('lightgrey')
@@ -125,28 +135,27 @@ def parallel_plot(data, metric_names, model_names, model_highlights=list(),
     for j, model in enumerate(model_names):
         # to just draw straight lines between the axes:
         if model in model_highlights:
-            host.plot(range(N), zs[j,:], '-',
+            ax.plot(range(N), zs[j,:], '-',
                       c=colors[j],
                       label=model, lw=3)
         else:
             if identify_all_models:
-                host.plot(range(N), zs[j,:], markers[j],
+                ax.plot(range(N), zs[j,:], markers[j],
                           c=colors[j],
                           label=model,
                           clip_on=False)        
 
-    host.set_xlim(-0.5, N - 0.5)
-    host.set_xticks(range(N))
+    ax.set_xlim(-0.5, N - 0.5)
+    ax.set_xticks(range(N))
     if xtick_labels is not None:
-        host.set_xticklabels(xtick_labels, fontsize=xtick_labelsize)
+        ax.set_xticklabels(xtick_labels, fontsize=xtick_labelsize)
     else:
-        host.set_xticklabels(metric_names, fontsize=xtick_labelsize)
-    host.tick_params(axis='x', which='major', pad=7)
-    host.spines['right'].set_visible(False)
-    host.set_title(title, fontsize=18)
-    host.legend(loc='upper center', ncol=6, bbox_to_anchor=(0.5, -0.14))
+        ax.set_xticklabels(metric_names, fontsize=xtick_labelsize)
+    ax.tick_params(axis='x', which='major', pad=7)
+    ax.spines['right'].set_visible(False)
+    ax.set_title(title, fontsize=18)
 
-    if 'png' != filename.split('.')[-1]:
-        filename += '.png'
+    if not legend_off:
+        ax.legend(loc='upper center', ncol=6, bbox_to_anchor=(0.5, -0.14))
 
-    plt.savefig(filename, bbox_inches="tight")
+    return fig, ax
