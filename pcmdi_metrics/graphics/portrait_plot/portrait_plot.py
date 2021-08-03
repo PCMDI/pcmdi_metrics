@@ -16,6 +16,8 @@ def portrait_plot(data,
                   cbarlabel=None,
                   cbar_label_fontsize=15,
                   cbar_tick_fontsize=12,
+                  cbar_kw={},
+                  missing_color='grey',
                   invert_yaxis=True,
                   box_as_square=False,
                   debug=False):
@@ -38,6 +40,8 @@ def portrait_plot(data,
     - `cbarlabel`: string, default=None, label for colorbar
     - `cbar_label_fontsize`: number, default=15, font size for colorbar labels
     - `cbar_tick_fontsize`: number, default=12, font size for colorbar tick labels
+    - `cbar_kw`: A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
+    - `missing_color`: color, default="grey", `matplotlib.axes.Axes.set_facecolor` parameter
     - `invert_yaxis`: bool, default=True, place y=0 at top on the plot
     - `box_as_square`: bool, default=False, make each box as square
     - `debug`: bool, default=False, if true print more message when running that help debugging
@@ -97,23 +101,29 @@ def portrait_plot(data,
     if num_divide not in [1, 2, 4]:
         sys.exit('Error: Number of (stacked) array is not 1, 2, or 4.')
 
+    # Mask out nan data
+    data = np.ma.masked_invalid(data)
+
     # ----------------
     # Ready to plot!!
     # ----------------
     if fig is None and ax is None:
         fig, ax = plt.subplots(figsize=figsize)
 
+    ax.set_facecolor(missing_color)
+    #ax.set_facecolor((1.0, 0.47, 0.42))
+
     vmin = min(vrange)
     vmax = max(vrange)
 
     # [1] Heatmap-style portrait plot (no triangles)
     if num_divide == 1:
-        ax, cbar, im = heatmap(data, yaxis_labels, xaxis_labels,
-                               ax=ax,
-                               invert_yaxis=invert_yaxis,
-                               cmap=cmap,
-                               vmin=vmin, vmax=vmax,
-                               edgecolors='k', linewidth=0.5)
+        ax, im = heatmap(data, yaxis_labels, xaxis_labels,
+                         ax=ax,
+                         invert_yaxis=invert_yaxis,
+                         cmap=cmap,
+                         vmin=vmin, vmax=vmax,
+                         edgecolors='k', linewidth=0.5)
         if annotate:
             if annotate_data is not None:
                 if (annotate_data.shape != data.shape):
@@ -131,12 +141,12 @@ def portrait_plot(data,
         # data order is upper, lower
         upper = data[0]
         lower = data[1]
-        ax, cbar = triamatrix_wrap_up(upper, lower, ax,
-                                      xaxis_labels=xaxis_labels, 
-                                      yaxis_labels=yaxis_labels,
-                                      cmap=cmap,
-                                      vmin=vmin, vmax=vmax,
-                                      invert_yaxis=invert_yaxis)
+        ax, im = triamatrix_wrap_up(upper, lower, ax,
+                                    xaxis_labels=xaxis_labels, 
+                                    yaxis_labels=yaxis_labels,
+                                    cmap=cmap,
+                                    vmin=vmin, vmax=vmax,
+                                    invert_yaxis=invert_yaxis)
 
     # [4] Four triangle portrait plot
     elif num_divide == 4:
@@ -145,14 +155,17 @@ def portrait_plot(data,
         right = data[1]
         bottom = data[2]
         left = data[3]
-        ax, cbar = quatromatrix(top, right, bottom, left,
-                                ax=ax,
-                                tripcolorkw={"cmap": cmap,
-                                             "vmin": vmin, "vmax": vmax,
-                                             "edgecolors":'k', "linewidth":0.5},
-                                xaxis_labels=xaxis_labels, 
-                                yaxis_labels=yaxis_labels,
-                                invert_yaxis=invert_yaxis)
+        ax, im = quatromatrix(top, right, bottom, left,
+                              ax=ax,
+                              tripcolorkw={"cmap": cmap,
+                                           "vmin": vmin, "vmax": vmax,
+                                           "edgecolors":'k', "linewidth":0.5},
+                              xaxis_labels=xaxis_labels, 
+                              yaxis_labels=yaxis_labels,
+                              invert_yaxis=invert_yaxis)
+
+    # Create colorbar
+    cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
 
     # Let the horizontal axes labeling appear on top.
     ax.tick_params(top=True, bottom=False,
@@ -180,11 +193,11 @@ def portrait_plot(data,
 
 # ======================================================================
 # Portrait plot 1: heatmap-style (no triangle)
-# (Revised from: https://matplotlib.org/devdocs/gallery/images_contours_and_fields/image_annotated_heatmap.html)
+# (Inspired from: https://matplotlib.org/devdocs/gallery/images_contours_and_fields/image_annotated_heatmap.html)
 # ----------------------------------------------------------------------
 def heatmap(data, row_labels, col_labels, ax=None,
             invert_yaxis=False,
-            cbar_kw={}, **kwargs):
+            **kwargs):
     """
     Create a heatmap from a numpy array and two lists of labels.
 
@@ -201,8 +214,6 @@ def heatmap(data, row_labels, col_labels, ax=None,
         not provided, use current axes or create a new one.  Optional.
     invert_yaxis
         A bool to decide top-down or bottom-up order on y-axis
-    cbar_kw
-        A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
     **kwargs
         All other arguments are forwarded to `imshow`.
     """
@@ -216,9 +227,6 @@ def heatmap(data, row_labels, col_labels, ax=None,
     # Plot the heatmap
     im = ax.pcolormesh(data, **kwargs)
 
-    # Create colorbar
-    cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
-
     # Show all ticks and label them with the respective list entries.
     ax.set_xticks(np.arange(data.shape[1])+.5, minor=False)
     ax.set_yticks(np.arange(data.shape[0])+.5, minor=False)
@@ -226,7 +234,7 @@ def heatmap(data, row_labels, col_labels, ax=None,
     ax.set_yticklabels(row_labels)
     ax.tick_params(which="minor", bottom=False, left=False)
 
-    return ax, cbar, im
+    return ax, im
 
 
 def annotate_heatmap(im, ax,
@@ -294,12 +302,10 @@ def annotate_heatmap(im, ax,
             text = ax.text(j+.5, i+.5, valfmt(annotate_data[i, j], None), **kw)
             texts.append(text)
 
-    return texts
-
 
 # ======================================================================
 # Portrait plot 2 (two triangles)
-# (Revised from: https://stackoverflow.com/questions/44291155/plotting-two-distance-matrices-together-on-same-plot)
+# (Inspired from: https://stackoverflow.com/questions/44291155/plotting-two-distance-matrices-together-on-same-plot)
 # ----------------------------------------------------------------------
 def triamatrix_wrap_up(upper, lower, ax, xaxis_labels, yaxis_labels, 
                        cmap="viridis", vmin=-3, vmax=3,
@@ -323,9 +329,7 @@ def triamatrix_wrap_up(upper, lower, ax, xaxis_labels, yaxis_labels,
     ax.set_xticklabels(xaxis_labels)
     ax.set_yticklabels(yaxis_labels)
 
-    cbar = ax.figure.colorbar(im1, ax=ax)
-
-    return ax, cbar
+    return ax, im1
 
 
 def triatpos(pos=(0, 0), rot=0):
@@ -351,7 +355,7 @@ def triamatrix(a, ax, rot=0, cmap="viridis", **kwargs):
 
 # ======================================================================
 # Portrait plot 4 (four triangles)
-# (Revised from: https://stackoverflow.com/questions/44666679/something-like-plt-matshow-but-with-triangles)
+# (Inspired from: https://stackoverflow.com/questions/44666679/something-like-plt-matshow-but-with-triangles)
 # ----------------------------------------------------------------------
 def quatromatrix(top, right, bottom, left, ax=None, tripcolorkw={}, 
                  xaxis_labels=None, yaxis_labels=None, invert_yaxis=True):
@@ -393,10 +397,8 @@ def quatromatrix(top, right, bottom, left, ax=None, tripcolorkw={},
         y_loc = list_between_elements(np.arange(left.shape[0]+1))
         ax.set_yticks(y_loc)
         ax.set_yticklabels(yaxis_labels)
-    
-    cbar = ax.figure.colorbar(tripcolor, ax=ax)
-       
-    return ax, cbar
+           
+    return ax, tripcolor
 
 
 def list_between_elements(a):
@@ -408,3 +410,48 @@ def list_between_elements(a):
         except:
             pass
     return a_between
+
+
+# ======================================================================
+# Portrait plot legend (four/two triangles)
+# ======================================================================
+def add_legned_4triangels(ax, box_x, box_y, box_size, labels=['TOP', 'RIGHT', 'BOTTOM', 'LEFT'], lw=1):
+    ax.add_patch(plt.Polygon([[box_x, box_y], 
+                              [box_x + box_size/2., box_y + box_size/2], 
+                              [box_x + box_size, box_y]], 
+                             color="k", fill=False, clip_on=False, lw=lw))
+    ax.add_patch(plt.Polygon([[box_x + box_size, box_y], 
+                              [box_x + box_size/2., box_y + box_size/2], 
+                              [box_x + box_size, box_y + box_size]], 
+                             color="k", fill=False, clip_on=False, lw=lw))
+    ax.add_patch(plt.Polygon([[box_x + box_size, box_y + box_size], 
+                              [box_x + box_size/2., box_y + box_size/2], 
+                              [box_x, box_y + box_size]], 
+                             color="k", fill=False, clip_on=False, lw=lw))
+    ax.add_patch(plt.Polygon([[box_x, box_y], 
+                              [box_x + box_size/2., box_y + box_size/2], 
+                              [box_x, box_y + box_size]], 
+                             color="k", fill=False, clip_on=False, lw=lw))
+
+    ax.text(box_x + box_size*0.5, box_y + box_size*0.2, labels[0], ha='center', va='center', fontsize=14)
+    ax.text(box_x + box_size*0.8, box_y + box_size*0.5, labels[1], ha='center', va='center', fontsize=14)
+    ax.text(box_x + box_size*0.5, box_y + box_size*0.8, labels[2], ha='center', va='center', fontsize=14)
+    ax.text(box_x + box_size*0.2, box_y + box_size*0.5, labels[3], ha='center', va='center', fontsize=14)
+    
+    return ax
+
+
+def add_legned_2triangels(ax, box_x, box_y, box_size, labels=['UPPER', 'LOWER'], lw=1):
+    ax.add_patch(plt.Polygon([[box_x, box_y], 
+                              [box_x, box_y + box_size], 
+                              [box_x + box_size, box_y]], 
+                             color="k", fill=False, clip_on=False, lw=lw))
+    ax.add_patch(plt.Polygon([[box_x + box_size, box_y + box_size], 
+                              [box_x, box_y + box_size], 
+                              [box_x + box_size, box_y]], 
+                             color="k", fill=False, clip_on=False, lw=lw))
+
+    ax.text(box_x + box_size*0.05, box_y + box_size*0.2, labels[0], ha='left', va='center', fontsize=14)
+    ax.text(box_x + box_size*0.95, box_y + box_size*0.8, labels[1], ha='right', va='center', fontsize=14)
+    
+    return ax
