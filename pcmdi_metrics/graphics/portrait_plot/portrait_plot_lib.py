@@ -1,3 +1,4 @@
+from pcmdi_metrics.graphics import add_logo
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -20,6 +21,12 @@ def portrait_plot(data,
                   missing_color='grey',
                   invert_yaxis=True,
                   box_as_square=False,
+                  legend_on=False,
+                  legend_labels=None,
+                  legend_box_xy=None,
+                  legend_box_size=None,
+                  logo_rect=None, 
+                  logo_off=False,
                   debug=False):
     """
     Parameters
@@ -44,6 +51,12 @@ def portrait_plot(data,
     - `missing_color`: color, default="grey", `matplotlib.axes.Axes.set_facecolor` parameter
     - `invert_yaxis`: bool, default=True, place y=0 at top on the plot
     - `box_as_square`: bool, default=False, make each box as square
+    - `legend_on`: bool, default=False, show legend (only for 2 or 4 triangles portrait plot)
+    - `legend_labels`: list of strings, legend labels for triangls
+    - `legend_box_xy`: tuple of numbers, position of legend box's upper-left corner (lower-left if `invert_yaxis=False`)
+    - `legend_box_size`: number, size of legend box
+    - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes. All quantities are in fractions of figure width and height.  Optional
+    - `logo_off`: bool, default=False, turn off PMP logo
     - `debug`: bool, default=False, if true print more message when running that help debugging
 
     Return
@@ -185,8 +198,20 @@ def portrait_plot(data,
                            fontsize=cbar_label_fontsize)
         cbar.ax.tick_params(labelsize=cbar_tick_fontsize)
 
+    # Legend
+    if legend_on:
+        if legend_labels is None:
+            sys.exit("Error: legend_labels was not provided.")
+        else:
+            add_legend(num_divide, ax, legend_box_xy, legend_box_size, labels=legend_labels)
+
     if box_as_square:
         ax.set_aspect("equal")
+
+    if not logo_off:
+        if logo_rect is None:
+            logo_rect = [0.9, 0.15, 0.15, 0.15]
+        fig, ax = add_logo(fig, ax, logo_rect)
 
     return fig, ax, cbar
 
@@ -415,43 +440,45 @@ def list_between_elements(a):
 # ======================================================================
 # Portrait plot legend (four/two triangles)
 # ======================================================================
-def add_legned_4triangels(ax, box_x, box_y, box_size, labels=['TOP', 'RIGHT', 'BOTTOM', 'LEFT'], lw=1):
-    ax.add_patch(plt.Polygon([[box_x, box_y], 
-                              [box_x + box_size/2., box_y + box_size/2], 
-                              [box_x + box_size, box_y]], 
-                             color="k", fill=False, clip_on=False, lw=lw))
-    ax.add_patch(plt.Polygon([[box_x + box_size, box_y], 
-                              [box_x + box_size/2., box_y + box_size/2], 
-                              [box_x + box_size, box_y + box_size]], 
-                             color="k", fill=False, clip_on=False, lw=lw))
-    ax.add_patch(plt.Polygon([[box_x + box_size, box_y + box_size], 
-                              [box_x + box_size/2., box_y + box_size/2], 
-                              [box_x, box_y + box_size]], 
-                             color="k", fill=False, clip_on=False, lw=lw))
-    ax.add_patch(plt.Polygon([[box_x, box_y], 
-                              [box_x + box_size/2., box_y + box_size/2], 
-                              [box_x, box_y + box_size]], 
-                             color="k", fill=False, clip_on=False, lw=lw))
-
-    ax.text(box_x + box_size*0.5, box_y + box_size*0.2, labels[0], ha='center', va='center', fontsize=14)
-    ax.text(box_x + box_size*0.8, box_y + box_size*0.5, labels[1], ha='center', va='center', fontsize=14)
-    ax.text(box_x + box_size*0.5, box_y + box_size*0.8, labels[2], ha='center', va='center', fontsize=14)
-    ax.text(box_x + box_size*0.2, box_y + box_size*0.5, labels[3], ha='center', va='center', fontsize=14)
-    
-    return ax
-
-
-def add_legned_2triangels(ax, box_x, box_y, box_size, labels=['UPPER', 'LOWER'], lw=1):
-    ax.add_patch(plt.Polygon([[box_x, box_y], 
-                              [box_x, box_y + box_size], 
-                              [box_x + box_size, box_y]], 
-                             color="k", fill=False, clip_on=False, lw=lw))
-    ax.add_patch(plt.Polygon([[box_x + box_size, box_y + box_size], 
-                              [box_x, box_y + box_size], 
-                              [box_x + box_size, box_y]], 
-                             color="k", fill=False, clip_on=False, lw=lw))
-
-    ax.text(box_x + box_size*0.05, box_y + box_size*0.2, labels[0], ha='left', va='center', fontsize=14)
-    ax.text(box_x + box_size*0.95, box_y + box_size*0.8, labels[1], ha='right', va='center', fontsize=14)
-    
-    return ax
+def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1):
+    if box_xy is None:
+        box_x = ax.get_xlim()[1] * 1.25
+        box_y = ax.get_ylim()[1]
+    if box_size is None:
+        box_size = 1.5
+    if num_divide == 4:
+        if labels is None:
+            labels=['TOP', 'RIGHT', 'BOTTOM', 'LEFT']
+        ax.add_patch(plt.Polygon([[box_x, box_y], 
+                                [box_x + box_size/2., box_y + box_size/2], 
+                                [box_x + box_size, box_y]], 
+                                color="k", fill=False, clip_on=False, lw=lw))
+        ax.add_patch(plt.Polygon([[box_x + box_size, box_y], 
+                                [box_x + box_size/2., box_y + box_size/2], 
+                                [box_x + box_size, box_y + box_size]], 
+                                color="k", fill=False, clip_on=False, lw=lw))
+        ax.add_patch(plt.Polygon([[box_x + box_size, box_y + box_size], 
+                                [box_x + box_size/2., box_y + box_size/2], 
+                                [box_x, box_y + box_size]], 
+                                color="k", fill=False, clip_on=False, lw=lw))
+        ax.add_patch(plt.Polygon([[box_x, box_y], 
+                                [box_x + box_size/2., box_y + box_size/2], 
+                                [box_x, box_y + box_size]], 
+                                color="k", fill=False, clip_on=False, lw=lw))
+        ax.text(box_x + box_size*0.5, box_y + box_size*0.2, labels[0], ha='center', va='center', fontsize=14)
+        ax.text(box_x + box_size*0.8, box_y + box_size*0.5, labels[1], ha='center', va='center', fontsize=14)
+        ax.text(box_x + box_size*0.5, box_y + box_size*0.8, labels[2], ha='center', va='center', fontsize=14)
+        ax.text(box_x + box_size*0.2, box_y + box_size*0.5, labels[3], ha='center', va='center', fontsize=14)
+    elif num_divide == 2:
+        if labels is None:
+            labels=['UPPER', 'LOWER']    
+        ax.add_patch(plt.Polygon([[box_x, box_y], 
+                                [box_x, box_y + box_size], 
+                                [box_x + box_size, box_y]], 
+                                color="k", fill=False, clip_on=False, lw=lw))
+        ax.add_patch(plt.Polygon([[box_x + box_size, box_y + box_size], 
+                                [box_x, box_y + box_size], 
+                                [box_x + box_size, box_y]], 
+                                color="k", fill=False, clip_on=False, lw=lw))
+        ax.text(box_x + box_size*0.05, box_y + box_size*0.2, labels[0], ha='left', va='center', fontsize=14)
+        ax.text(box_x + box_size*0.95, box_y + box_size*0.8, labels[1], ha='right', va='center', fontsize=14)
