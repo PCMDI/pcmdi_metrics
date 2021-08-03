@@ -11,10 +11,11 @@ def portrait_plot(data,
                   yaxis_labels,
                   fig=None, ax=None,
                   annotate=False, annotate_data=None, annotate_fontsize=15,
-                  figsize=(12,10), vrange=(-3,3),
+                  figsize=(12,10), vrange=None,
                   xaxis_fontsize=15, yaxis_fontsize=15,
                   cmap="RdBu_r",
-                  cbarlabel=None,
+                  cmap_bounds=None,
+                  cbar_label=None,
                   cbar_label_fontsize=15,
                   cbar_tick_fontsize=12,
                   cbar_kw={},
@@ -40,11 +41,12 @@ def portrait_plot(data,
     - `annotate_data`: 2d numpy array, default=None. If None, the image's data is used.  Optional. 
     - `annotate_fontsize`: number (int/float), default=15. Font size for annotation
     - `figsize`: tuple of two numbers, default=(12, 10), figure size
-    - `vrange`: tuple of two numbers, default=(-3, 3), range of value for colorbar
+    - `vrange`: tuple of two numbers, range of value for colorbar.  Optional.
     - `xaxis_fontsize`: number, default=15, font size for xaxis tick labels
     - `yaxis_fontsize`: number, default=15, font size for yaxis tick labels
     - `cmap`: string, default="RdBu_r", name of matplotlib colormap
-    - `cbarlabel`: string, default=None, label for colorbar
+    - `cmap_bounds`: list of numbers.  If given, discrete colors are applied.  Optional.
+    - `cbar_label`: string, default=None, label for colorbar
     - `cbar_label_fontsize`: number, default=15, font size for colorbar labels
     - `cbar_tick_fontsize`: number, default=12, font size for colorbar tick labels
     - `cbar_kw`: A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
@@ -124,10 +126,20 @@ def portrait_plot(data,
         fig, ax = plt.subplots(figsize=figsize)
 
     ax.set_facecolor(missing_color)
-    #ax.set_facecolor((1.0, 0.47, 0.42))
 
-    vmin = min(vrange)
-    vmax = max(vrange)
+    if vrange is None:
+        vmin = np.nanmin(data)
+        vmax = np.nanmax(data)
+    else:
+        vmin = min(vrange)
+        vmax = max(vrange)
+
+    # Normalize colorbar
+    if cmap_bounds is None:
+        norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
+    else:
+        cmap = plt.get_cmap(cmap)
+        norm = matplotlib.colors.BoundaryNorm(cmap_bounds, cmap.N, **cbar_kw)
 
     # [1] Heatmap-style portrait plot (no triangles)
     if num_divide == 1:
@@ -135,8 +147,9 @@ def portrait_plot(data,
                          ax=ax,
                          invert_yaxis=invert_yaxis,
                          cmap=cmap,
-                         vmin=vmin, vmax=vmax,
-                         edgecolors='k', linewidth=0.5)
+                         #vmin=vmin, vmax=vmax,
+                         edgecolors='k', linewidth=0.5,
+                         norm=norm)
         if annotate:
             if annotate_data is not None:
                 if (annotate_data.shape != data.shape):
@@ -158,8 +171,9 @@ def portrait_plot(data,
                                     xaxis_labels=xaxis_labels, 
                                     yaxis_labels=yaxis_labels,
                                     cmap=cmap,
-                                    vmin=vmin, vmax=vmax,
-                                    invert_yaxis=invert_yaxis)
+                                    #vmin=vmin, vmax=vmax,
+                                    invert_yaxis=invert_yaxis,
+                                    norm=norm)
 
     # [4] Four triangle portrait plot
     elif num_divide == 4:
@@ -170,12 +184,13 @@ def portrait_plot(data,
         left = data[3]
         ax, im = quatromatrix(top, right, bottom, left,
                               ax=ax,
-                              tripcolorkw={"cmap": cmap,
-                                           "vmin": vmin, "vmax": vmax,
+                              tripcolorkw={"cmap": cmap, "norm": norm,
+                                           #"vmin": vmin, "vmax": vmax,
                                            "edgecolors":'k', "linewidth":0.5},
                               xaxis_labels=xaxis_labels, 
                               yaxis_labels=yaxis_labels,
-                              invert_yaxis=invert_yaxis)
+                              invert_yaxis=invert_yaxis,
+                             )
 
     # Create colorbar
     cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
@@ -193,8 +208,8 @@ def portrait_plot(data,
     plt.setp(ax.get_yticklabels(), fontsize=yaxis_fontsize)
 
     # Label for colorbar
-    if cbarlabel is not None:
-        cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom",
+    if cbar_label is not None:
+        cbar.ax.set_ylabel(cbar_label, rotation=-90, va="bottom",
                            fontsize=cbar_label_fontsize)
         cbar.ax.tick_params(labelsize=cbar_tick_fontsize)
 
@@ -333,11 +348,12 @@ def annotate_heatmap(im, ax,
 # (Inspired from: https://stackoverflow.com/questions/44291155/plotting-two-distance-matrices-together-on-same-plot)
 # ----------------------------------------------------------------------
 def triamatrix_wrap_up(upper, lower, ax, xaxis_labels, yaxis_labels, 
-                       cmap="viridis", vmin=-3, vmax=3,
+                       cmap="viridis", vmin=-3, vmax=3, norm=None,
                        invert_yaxis=True):
 
     # Colorbar range
-    norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
+    if norm is None:
+        norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
 
     # Triangles
     im1 = triamatrix(upper, ax, rot=270, cmap=cmap, norm=norm, edgecolors='k', lw=0.5)
@@ -444,8 +460,12 @@ def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1):
     if box_xy is None:
         box_x = ax.get_xlim()[1] * 1.25
         box_y = ax.get_ylim()[1]
+    else:
+        box_x, box_y = box_xy
+
     if box_size is None:
         box_size = 1.5
+
     if num_divide == 4:
         if labels is None:
             labels=['TOP', 'RIGHT', 'BOTTOM', 'LEFT']
