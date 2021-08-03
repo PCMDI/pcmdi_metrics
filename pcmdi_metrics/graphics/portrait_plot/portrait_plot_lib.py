@@ -485,10 +485,10 @@ def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1):
                                 [box_x + box_size/2., box_y + box_size/2], 
                                 [box_x, box_y + box_size]], 
                                 color="k", fill=False, clip_on=False, lw=lw))
-        ax.text(box_x + box_size*0.5, box_y + box_size*0.2, labels[0], ha='center', va='center', fontsize=14)
-        ax.text(box_x + box_size*0.8, box_y + box_size*0.5, labels[1], ha='center', va='center', fontsize=14)
-        ax.text(box_x + box_size*0.5, box_y + box_size*0.8, labels[2], ha='center', va='center', fontsize=14)
-        ax.text(box_x + box_size*0.2, box_y + box_size*0.5, labels[3], ha='center', va='center', fontsize=14)
+        ax.text(box_x + box_size * 0.5, box_y + box_size * 0.2, labels[0], ha='center', va='center', fontsize=14)
+        ax.text(box_x + box_size * 0.8, box_y + box_size * 0.5, labels[1], ha='center', va='center', fontsize=14)
+        ax.text(box_x + box_size * 0.5, box_y + box_size * 0.8, labels[2], ha='center', va='center', fontsize=14)
+        ax.text(box_x + box_size * 0.2, box_y + box_size * 0.5, labels[3], ha='center', va='center', fontsize=14)
     elif num_divide == 2:
         if labels is None:
             labels=['UPPER', 'LOWER']    
@@ -500,5 +500,5 @@ def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1):
                                 [box_x, box_y + box_size], 
                                 [box_x + box_size, box_y]], 
                                 color="k", fill=False, clip_on=False, lw=lw))
-        ax.text(box_x + box_size*0.05, box_y + box_size*0.2, labels[0], ha='left', va='center', fontsize=14)
-        ax.text(box_x + box_size*0.95, box_y + box_size*0.8, labels[1], ha='right', va='center', fontsize=14)
+        ax.text(box_x + box_size * 0.05, box_y + box_size * 0.2, labels[0], ha='left', va='center', fontsize=14)
+        ax.text(box_x + box_size * 0.95, box_y + box_size * 0.8, labels[1], ha='right', va='center', fontsize=14)
