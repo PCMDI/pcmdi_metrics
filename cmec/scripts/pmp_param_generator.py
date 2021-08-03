@@ -61,8 +61,7 @@ if __name__ == '__main__':
         settings["test_data_path"] = model_dir
         settings["reference_data_path"] = obs_dir
         settings["metrics_output_path"] = wk_dir
-
-        # TODO: also hard code interpolated field output path to wk_dir
+        settings["test_clims_interpolated_output"] = os.path.join(wk_dir,"interpolated_outputconda ")
 
         if check_for_opt("compute_climatologies",settings):
             print("\nGenerating climatologies")

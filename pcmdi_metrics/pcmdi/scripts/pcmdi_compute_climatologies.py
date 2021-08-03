@@ -49,7 +49,7 @@ def clim_calc(var, infile, outfile, outdir, outfilename, start, end):
     seperate_clims = 'y'
 
 # DEFAULT CLIM - BASED ON ENTIRE TIME SERIES
-    if (start is None) and (end is None):
+    if (start == end) is None:
         d = f(var)
         t = d.getTime()
         c = t.asComponentTime()
@@ -57,10 +57,6 @@ def clim_calc(var, infile, outfile, outdir, outfilename, start, end):
         start_mo_str = str(c[0].month)
         end_yr_str = str(c[len(c)-1].year)
         end_mo_str = str(c[len(c)-1].month)
-        start_yr = int(start_yr_str)
-        start_mo = int(start_mo_str)
-        end_yr = int(end_yr_str)
-        end_mo = int(end_mo_str)
 
 # USER DEFINED PERIOD
     else:
