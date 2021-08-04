@@ -19,14 +19,13 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
     - `metric_names`: list, names of metrics for individual vertical axes (axis=1)
     - `model_names`: list, name of models for markers/lines (axis=0)
     - `model_highlights`: list, default=None, List of models to highlight as lines
-    - `fig`: `matplotlib.figure` instance to which the portrait plot is plotted.  If not provided, use current axes or create a new one.  Optional.
-    - `ax`: `matplotlib.axes.Axes` instance to which the portrait plot is plotted.  If not provided, use current axes or create a new one.  Optional.
+    - `fig`: `matplotlib.figure` instance to which the parallel coordinate plot is plotted.  If not provided, use current axes or create a new one.  Optional.
+    - `ax`: `matplotlib.axes.Axes` instance to which the parallel coordinate plot is plotted.  If not provided, use current axes or create a new one.  Optional.
     - `figsize`: tuple (two numbers), default=(15,5), image size
     - `show_boxplot`: bool, default=True, show box and wiskers plot
     - `show_violin`: bool, default=True, show violin plot
     - `title`: string, default=None, plot title
     - `identify_all_models`: bool, default=True. Show and identify all models using markers
-    - `xtick_labels`: list, default=None, list of strings that to use as metric names (optional)
     - `xtick_labelsize`: number, fontsize for x-axis tick labels (optional)
     - `ytick_labelsize`: number, fontsize for x-axis tick labels (optional)
     - `colormap`: string, default='viridis', matplotlib colormap
@@ -56,9 +55,6 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
     if data.shape[1] != len(metric_names):
         sys.exit('Error: data.shape[1], ' + str(data.shape[1])
                  +', mismatch to len(metric_names), ' + str(len(metric_names)))
-    if xtick_labels != None:
-        if len(xtick_labels) != len(metric_names):
-            sys.exit('Error: xtick_labels has different number than metric_names')
 
     # Data to plot
     ys = data  # stacked y-axis values
@@ -77,11 +73,7 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
 
     # Prepare plot
     if N > 20:
-        if xtick_labels is not None:
-            if xtick_labelsize is None:
-                xtick_labelsize = 'medium'
-        else:
-            if xtick_labelsize is None:
+        if xtick_labelsize is None:
                 xtick_labelsize = 'large'
         if ytick_labelsize is None:
             ytick_labelsize = 'large'
@@ -159,10 +151,7 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
 
     ax.set_xlim(-0.5, N - 0.5)
     ax.set_xticks(range(N))
-    if xtick_labels is not None:
-        ax.set_xticklabels(xtick_labels, fontsize=xtick_labelsize)
-    else:
-        ax.set_xticklabels(metric_names, fontsize=xtick_labelsize)
+    ax.set_xticklabels(metric_names, fontsize=xtick_labelsize)
     ax.tick_params(axis='x', which='major', pad=7)
     ax.spines['right'].set_visible(False)
     ax.set_title(title, fontsize=18)
