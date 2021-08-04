@@ -4,12 +4,14 @@ import matplotlib.pyplot as plt
 import matplotlib.pylab as pylab
 import numpy as np
 import urllib.request
+import sys
 
 
 def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=list(),
                              fig=None, ax=None, figsize=(15, 5),
                              show_boxplot=True, show_violin=True, title=None, identify_all_models=True,
-                             xtick_labels=None, colormap='viridis', legend_off=False, logo_rect=None, logo_off=False):
+                             xtick_labels=None, xtick_labelsize=None, ytick_labelsize=None,
+                             colormap='viridis', legend_off=False, logo_rect=None, logo_off=False):
     """
     Parameters
     ----------
@@ -25,6 +27,8 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
     - `title`: string, default=None, plot title
     - `identify_all_models`: bool, default=True. Show and identify all models using markers
     - `xtick_labels`: list, default=None, list of strings that to use as metric names (optional)
+    - `xtick_labelsize`: number, fontsize for x-axis tick labels (optional)
+    - `ytick_labelsize`: number, fontsize for x-axis tick labels (optional)
     - `colormap`: string, default='viridis', matplotlib colormap
     - `legend_off`: bool, default=False, turn off legend
     - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes. All quantities are in fractions of figure width and height.  Optional
@@ -74,13 +78,18 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
     # Prepare plot
     if N > 20:
         if xtick_labels is not None:
-            xtick_labelsize = 'medium'
+            if xtick_labelsize is None:
+                xtick_labelsize = 'medium'
         else:
-            xtick_labelsize = 'large'
-        ytick_labelsize = 'large'
+            if xtick_labelsize is None:
+                xtick_labelsize = 'large'
+        if ytick_labelsize is None:
+            ytick_labelsize = 'large'
     else:
-        xtick_labelsize = 'x-large'
-        ytick_labelsize = 'x-large'
+        if xtick_labelsize is None:
+            xtick_labelsize = 'x-large'
+        if ytick_labelsize is None:
+            ytick_labelsize = 'x-large'
     params = {'legend.fontsize': 'large',
               'axes.labelsize': 'x-large',
               'axes.titlesize': 'x-large',
