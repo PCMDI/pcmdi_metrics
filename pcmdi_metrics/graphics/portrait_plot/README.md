@@ -1,3 +1,5 @@
+<body style="background-color:white;">
+
 Portrait plot using matplotlib
 
 - Example Usage:
@@ -6,3 +8,5 @@ Portrait plot using matplotlib
   - Mean Climate
 
     ![plot](./mean_clim_portrait_plot_4seasons.png)
+
+</body>
