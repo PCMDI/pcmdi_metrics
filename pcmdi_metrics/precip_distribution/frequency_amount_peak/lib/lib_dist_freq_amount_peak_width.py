@@ -8,18 +8,21 @@ import sys
 
 
 # ==================================================================================
-def Regrid2deg(d):
+def Regrid(d, resdeg):
     """
-    Regrid to 2deg (180lon*90lat) horizontal resolution
+    Regridding horizontal resolution
     Input
     - d: cdms variable
+    - resdeg: list of target horizontal resolution [degree] for lon and lat (e.g., [4, 4])
     Output
-    - drg: cdms variable with 2deg horizontal resolution
+    - drg: cdms variable with target horizontal resolution
     """
     # Regridding
-    tgrid = cdms.createUniformGrid(-89, 90, 2.0, 0, 180, 2.0, order="yx")
-#     tgrid = cdms.createUniformGrid(-89.5, 180, 1.0, 0, 360, 1.0, order="yx")
-#     tgrid = cdms.createUniformGrid(-89.75, 360, 0.5, 0, 720, 0.5, order="yx")
+    nx = 360/res[0]
+    ny = 180/res[1]
+    sy = -90 + resdeg[1]/2
+    tgrid = cdms.createUniformGrid(
+        sy, ny, resdeg[1], 0, nx, resdeg[0], order="yx")
     orig_grid = d.getGrid()
     regridFunc = Horizontal(orig_grid, tgrid)
     drg = MV.zeros((d.shape[0], tgrid.shape[0], tgrid.shape[1]), MV.float)

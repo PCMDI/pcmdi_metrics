@@ -20,3 +20,7 @@ results_dir = os.path.join(
 
 prd = [1985, 2004]  # analysis period
 fac = 86400  # factor to make unit of [mm/day]
+# res = [0.5, 0.5]  # target horizontal resolution [degree] for interporation (lon, lat)
+# res = [1, 1]  # target horizontal resolution [degree] for interporation (lon, lat)
+# res = [2, 2]  # target horizontal resolution [degree] for interporation (lon, lat)
+res = [4, 4]  # target horizontal resolution [degree] for interporation (lon, lat)

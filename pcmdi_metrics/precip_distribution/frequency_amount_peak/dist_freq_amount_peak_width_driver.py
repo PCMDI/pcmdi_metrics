@@ -57,9 +57,13 @@ var = param.var
 modpath = param.modpath
 prd = param.prd
 fac = param.fac
+res = param.res
+nx_intp = int(360/res[0])
+ny_intp = int(180/res[1])
 print(modpath)
 print(mod)
 print(prd)
+print(nx_intp, 'x', ny_intp)
 
 # Get flag for CMEC output
 cmec = param.cmec
@@ -122,7 +126,7 @@ for id, dat in enumerate(data):
         )
 
         # Regridding
-        rgtmp = Regrid2deg(do)
+        rgtmp = Regrid(do, res)
         if iyr == syr:
             drg = copy.deepcopy(rgtmp)
         else:
@@ -199,18 +203,16 @@ for id, dat in enumerate(data):
     metrics['RESULTS'][dat]['amtwidth'] = AvgDomain(amtwidthmap)
 
     # Write data (nc file for spatial pattern of distributions)
-    outfilename = "dist_freq.amount_regrid.180x90_" + dat + ".nc"
-#     outfilename = "dist_freq.amount_regrid.360x180_" + dat + ".nc"
-#     outfilename = "dist_freq.amount_regrid.720x360_" + dat + ".nc"
+    outfilename = "dist_freq.amount_regrid." + \
+        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
     with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
         out.write(pdfmapmon, id="pdf")
         out.write(amtmapmon, id="amt")
         out.write(bins, id="binbounds")
 
     # Write data (nc file for spatial pattern of metrics)
-    outfilename = "dist_freq.amount_peak.width_regrid.180x90_" + dat + ".nc"
-#     outfilename = "dist_freq.amount_peak.width_regrid.360x180_" + dat + ".nc"
-#     outfilename = "dist_freq.amount_peak.width_regrid.720x360_" + dat + ".nc"
+    outfilename = "dist_freq.amount_peak.width_regrid." + \
+        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
     with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
         out.write(pdfpeakmap, id="pdfpeak")
         out.write(pdfwidthmap, id="pdfwidth")
@@ -218,9 +220,8 @@ for id, dat in enumerate(data):
         out.write(amtwidthmap, id="amtwidth")
 
     # Write data (json file for area averaged metrics)
-    outfilename = "dist_freq.amount_peak.width_area.mean_regrid.180x90_" + dat + ".json"
-#     outfilename = "dist_freq.amount_peak.width_area.mean_regrid.360x180_" + dat + ".json"
-#     outfilename = "dist_freq.amount_peak.width_area.mean_regrid.720x360_" + dat + ".json"
+    outfilename = "dist_freq.amount_peak.width_area.mean_regrid." + \
+        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".json"
     JSON = pcmdi_metrics.io.base.Base(
         outdir(output_type='metrics_results'), outfilename)
     JSON.write(metrics,

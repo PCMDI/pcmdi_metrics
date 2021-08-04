@@ -45,6 +45,12 @@ def AddParserArgument(P):
                    dest='fac',
                    default=None,
                    help="factor to make unit of [mm/day]")
+    P.add_argument("--res",
+                   type=int,
+                   dest='res',
+                   nargs='+',
+                   default=None,
+                   help="list of target horizontal resolution [degree] for interporation (lon, lat)")
     P.add_argument("--ref",
                    type=str,
                    dest='ref',
