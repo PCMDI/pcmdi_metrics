@@ -426,6 +426,9 @@ def quatromatrix(top, right, bottom, left, ax=None, tripcolorkw={},
         C = np.c_[left.flatten(), bottom.flatten(), 
                   right.flatten(), top.flatten()].flatten()
 
+    # Prevent coloring missing data
+    C = np.ma.array(C, mask=np.isnan(C))
+
     tripcolor = ax.tripcolor(A[:,0], A[:,1], Tr, facecolors=C, **tripcolorkw)
     
     ax.margins(0)
