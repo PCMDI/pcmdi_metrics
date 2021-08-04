@@ -1,3 +1,8 @@
 Portrait plot using matplotlib
 
-![plot](./ mean_clim_portrait_plot_4seasons.png)
+- Example Usage:
+- Practical Usage
+
+  - Mean Climate
+
+    ![plot](./mean_clim_portrait_plot_4seasons.png)
