@@ -10,7 +10,6 @@
 import os
 import sys
 import cdms2 as cdms
-import cdtime
 import MV2 as MV
 import numpy as np
 import glob
@@ -121,6 +120,8 @@ for id, dat in enumerate(data):
     # Month separation
     months = ['ALL', 'JAN', 'FEB', 'MAR', 'APR', 'MAY',
               'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+    
+    ndymon = [365, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
     # Open nc file for writing data of spatial pattern of cumulated fractions with separated month
     outfilename = "dist_cumfrac_regrid." + \
@@ -139,48 +140,56 @@ for id, dat in enumerate(data):
         # Calculate unevenness              
         nyr = eyr-syr+1
         cfy = np.full((nyr, dmon.shape[1], dmon.shape[2]), np.nan)
-        pfracyr = np.full((nyr, dmon.shape[0], dmon.shape[1], dmon.shape[2]), np.nan)
-        print('cfy.shape ', cfy.shape)
+        prdyfracyr = np.full((nyr, dmon.shape[1], dmon.shape[2]), np.nan)
+        pfracyr = np.full((nyr, ndymon[im], dmon.shape[1], dmon.shape[2]), np.nan)
 
         for iyr, year in enumerate(range(syr, eyr + 1)):       
-            thisyear = dmon(time=(cdtime.comptime(year,1,1),(cdtime.comptime(year+1,1,1))))
+            thisyear = dmon(time=(str(year) + "-1-1 0:0:0", str(year) + "-12-" + str(ldy) + " 23:59:59"))
             print(year, thisyear.shape)
-#             thisyear = thisyear.filled()  #np.array(thisyear)
-            pfrac, ndhy = oneyear(thisyear)
+            thisyear = thisyear.filled()  #np.array(thisyear)
+            pfrac, ndhy, prdyfrac, sdii = oneyear(thisyear)
             cfy[iyr,:,:]=ndhy
-            pfracyr[iyr,:,:,:]=pfrac
+            prdyfracyr[iyr,:,:]=prdyfrac
+            pfracyr[iyr,:,:,:]=pfrac[:ndymon[im],:,:]
+            print(year, 'pfrac.shape is ', pfrac.shape, ', but', pfrac[:ndymon[im],:,:].shape, ' is used')
             
         ndm=np.nanmedian(cfy,axis=0) # ignore years with zero precip
         missingfrac = (np.sum(np.isnan(cfy),axis=0)/nyr)
         ndm[np.where(missingfrac > missingthresh)] = np.nan
+        prdyfracm=np.nanmedian(prdyfracyr,axis=0)
         
         pfracm=np.nanmedian(pfracyr,axis=0)
-        axbin = cdms.createAxis(range(1, dmon.shape[0]+1), id='cumday')
+        axbin = cdms.createAxis(range(1, ndymon[im]+1), id='cumday')
         lat = dmon.getLatitude()
         lon = dmon.getLongitude()
         pfracm = MV.array(pfracm)
         pfracm.setAxisList((axbin, lat, lon))
-        outcumfrac.write(pfracm, id="cumfrac"+mon)
+        outcumfrac.write(pfracm, id="cumfrac_"+mon)
         
     # Make Spatial pattern with separated months
         if im == 0:
             ndmmon = np.expand_dims(ndm, axis=0)
+            prdyfracmmon = np.expand_dims(prdyfracm, axis=0)
         else:
-            ndmmon = MV.concatenate(
-                (ndmmon, np.expand_dims(ndm, axis=0)), axis=0)
+            ndmmon = MV.concatenate((ndmmon, np.expand_dims(ndm, axis=0)), axis=0)
+            prdyfracmmon = MV.concatenate((prdyfracmmon, np.expand_dims(prdyfracm, axis=0)), axis=0)
             
     # Domain average
     axmon = cdms.createAxis(range(len(months)), id='month')
     ndmmon = MV.array(ndmmon)
+    prdyfracmmon = MV.array(prdyfracmmon)
     ndmmon.setAxisList((axmon, lat, lon))
+    prdyfracmmon.setAxisList((axmon, lat, lon))
     metrics['RESULTS'][dat] = {}
     metrics['RESULTS'][dat]['unevenness'] = AvgDomain(ndmmon)
+    metrics['RESULTS'][dat]['prdyfrac'] = AvgDomain(prdyfracmmon)
 
     # Write data (nc file for spatial pattern of metrics)
     outfilename = "dist_cumfrac_unevenness_regrid." + \
         str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
     with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
         out.write(ndmmon, id="unevenness")
+        out.write(prdyfracmmon, id="prdyfrac")
         
     # Write data (json file for area averaged metrics)
     outfilename = "dist_cumfrac_unevenness_area.mean_regrid." + \

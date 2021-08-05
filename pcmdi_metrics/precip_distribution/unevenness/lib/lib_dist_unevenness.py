@@ -88,6 +88,7 @@ def oneyear(thisyear):
     ptotnp[np.where(ptotnp == 0)]=np.nan
     pfrac = cum_sum / np.tile(ptotnp[np.newaxis,:,:],[nd,1,1])
     ndhy = np.full((dims[1],dims[2]),np.nan)
+    prdays = np.full((dims[1],dims[2]),np.nan)
     x=np.linspace(0,nd,num=nd+1,endpoint=True)
     z=np.array([0.0])
     for ij in range(dims[1]):
@@ -96,8 +97,16 @@ def oneyear(thisyear):
             y=np.concatenate([z,p])
             ndh=np.interp(0.5,y,x)
             ndhy[ij,ik]=ndh
+            if np.sum(np.isnan(p)) == nd:
+                prdays[ij,ik] = np.nan
+            else:
+                prdays[ij,ik] = np.where(p == 1.0)[0][0]+1
+                
     ndhy[np.where(missingfrac > missingthresh)] = np.nan
-    return pfrac, ndhy 
+    prdyfrac = prdays/nd
+    sdii = ptot/prdays
+
+    return pfrac, ndhy, prdyfrac, sdii
 
 
 # ==================================================================================
