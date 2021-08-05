@@ -26,6 +26,8 @@ def portrait_plot(data,
                   legend_labels=None,
                   legend_box_xy=None,
                   legend_box_size=None,
+                  legend_lw=1,
+                  legend_fontsize=14,
                   logo_rect=None, 
                   logo_off=False,
                   debug=False):
@@ -55,8 +57,10 @@ def portrait_plot(data,
     - `box_as_square`: bool, default=False, make each box as square
     - `legend_on`: bool, default=False, show legend (only for 2 or 4 triangles portrait plot)
     - `legend_labels`: list of strings, legend labels for triangls
-    - `legend_box_xy`: tuple of numbers, position of legend box's upper-left corner (lower-left if `invert_yaxis=False`)
+    - `legend_box_xy`: tuple of numbers, position of legend box's upper-left corner (lower-left if `invert_yaxis=False`), in `axes` coordinate
     - `legend_box_size`: number, size of legend box
+    - `legend_lw`: number, line width of legend, default=1
+    - `legend_fontsize`: number, font size for legend, default=14
     - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes. All quantities are in fractions of figure width and height.  Optional
     - `logo_off`: bool, default=False, turn off PMP logo
     - `debug`: bool, default=False, if true print more message when running that help debugging
@@ -218,7 +222,8 @@ def portrait_plot(data,
         if legend_labels is None:
             sys.exit("Error: legend_labels was not provided.")
         else:
-            add_legend(num_divide, ax, legend_box_xy, legend_box_size, labels=legend_labels)
+            add_legend(num_divide, ax, legend_box_xy, legend_box_size,
+                       labels=legend_labels, lw=legend_lw, fontsize=legend_fontsize)
 
     if box_as_square:
         ax.set_aspect("equal")
@@ -459,12 +464,14 @@ def list_between_elements(a):
 # ======================================================================
 # Portrait plot legend (four/two triangles)
 # ======================================================================
-def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1):
+def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1, fontsize=14):
     if box_xy is None:
         box_x = ax.get_xlim()[1] * 1.25
         box_y = ax.get_ylim()[1]
     else:
-        box_x, box_y = box_xy
+        # Convert axes coordinate to data coordinate
+        # Ref: https://matplotlib.org/stable/tutorials/advanced/transforms_tutorial.html
+        box_x, box_y = ax.transLimits.inverted().transform(box_xy)
 
     if box_size is None:
         box_size = 1.5
@@ -488,10 +495,10 @@ def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1):
                                 [box_x + box_size/2., box_y + box_size/2], 
                                 [box_x, box_y + box_size]], 
                                 color="k", fill=False, clip_on=False, lw=lw))
-        ax.text(box_x + box_size * 0.5, box_y + box_size * 0.2, labels[0], ha='center', va='center', fontsize=14)
-        ax.text(box_x + box_size * 0.8, box_y + box_size * 0.5, labels[1], ha='center', va='center', fontsize=14)
-        ax.text(box_x + box_size * 0.5, box_y + box_size * 0.8, labels[2], ha='center', va='center', fontsize=14)
-        ax.text(box_x + box_size * 0.2, box_y + box_size * 0.5, labels[3], ha='center', va='center', fontsize=14)
+        ax.text(box_x + box_size * 0.5, box_y + box_size * 0.2, labels[0], ha='center', va='center', fontsize=fontsize)
+        ax.text(box_x + box_size * 0.8, box_y + box_size * 0.5, labels[1], ha='center', va='center', fontsize=fontsize)
+        ax.text(box_x + box_size * 0.5, box_y + box_size * 0.8, labels[2], ha='center', va='center', fontsize=fontsize)
+        ax.text(box_x + box_size * 0.2, box_y + box_size * 0.5, labels[3], ha='center', va='center', fontsize=fontsize)
     elif num_divide == 2:
         if labels is None:
             labels=['UPPER', 'LOWER']    
@@ -503,5 +510,5 @@ def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1):
                                 [box_x, box_y + box_size], 
                                 [box_x + box_size, box_y]], 
                                 color="k", fill=False, clip_on=False, lw=lw))
-        ax.text(box_x + box_size * 0.05, box_y + box_size * 0.2, labels[0], ha='left', va='center', fontsize=14)
-        ax.text(box_x + box_size * 0.95, box_y + box_size * 0.8, labels[1], ha='right', va='center', fontsize=14)
+        ax.text(box_x + box_size * 0.05, box_y + box_size * 0.2, labels[0], ha='left', va='center', fontsize=fontsize)
+        ax.text(box_x + box_size * 0.95, box_y + box_size * 0.8, labels[1], ha='right', va='center', fontsize=fontsize)
