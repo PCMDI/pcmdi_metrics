@@ -1,0 +1,60 @@
+{
+    "settings": {
+        "name": "variability_modes",
+        "driver": "cmec/mov/pmp_mov_driver.sh",
+        "async": null,
+        "long_name": "PMP Modes of Variability Metrics",
+        "description": "Calculate metrics for modes of variability in earth system models.",
+        "runtime": {"PCMDI Metrics Package": "1.2", "CDAT": "8.2.1", "python": ["eofs", "scipy"]}
+    },
+    "varlist": {
+        "psl": {
+            "long_name": "Sea Level Pressure",
+            "units": "Pa",
+            "frequency": "mon"
+        },
+        "ts": {
+            "long_name": "Surface Temperature",
+            "units": "K",
+            "frquency": "mon"
+        }
+    },
+    "obslist": {
+        "NOAA-CIRES_20CR": {
+            "version": 2006,
+            "long_name": "Monthly NOAA-CIRES 20th Century Reanalysis V2"
+        },
+        "HadISSTv1.1": {
+            "version": 1.1,
+            "long_name": "Hadley Centre Global Sea Ice and Sea Surface Temperature"
+        }
+    },
+    "default_parameters": {
+        "case_id": "basicTestMOV",
+        "variability_mode": "NAM",
+        "seasons": [
+            "DJF"
+        ],
+        "ConvEOF": true,
+        "CBF": true,
+        "modnames": [
+            "ACCESS1-0"
+        ],
+        "modpath": "CMIP5_demo_data/psl_Amon_%(model)_historical_r1i1p1_185001-200512.nc",
+        "varModel": "psl",
+        "ModUnitsAdjust": "(True, 'divide', 100.0)",
+        "msyear": 1900,
+        "meyear": 2005,
+        "eofn_mod": 1,
+        "reference_data_name": "NOAA-20CR",
+        "reference_data_path": "PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707/psl_mon_20CR_BE_gn_v20200707_187101-201212.nc",
+        "varOBS": "psl",
+        "ObsUnitsAdjust": "(True, 'divide', 100.0)",
+        "osyear": 1900,
+        "oeyear": 2005,
+        "eofn_obs": 1,
+        "nc_out": false,
+        "plot": false,
+        "update_json": true
+    }
+}
