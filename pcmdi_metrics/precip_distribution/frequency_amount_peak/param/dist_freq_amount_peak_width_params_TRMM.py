@@ -7,8 +7,8 @@ var = "pr"
 frq = "day"
 ver = "v20210717"
 
-icndir = "/work/ahn6/obs/TRMM/TRMM_3B42.7/3hr_rewrite/"
-infile = "TRMM_3B42.7_0.25deg_3hr_*.nc"
+indir = "/work/ahn6/obs/TRMM/TRMM_3B42.7/day/"
+infile = "TRMM_3B42.7_*.nc"
 #indir = "/work/ahn6/obs/TRMM/TRMM_3B42.7/day_download/disc2.gesdisc.eosdis.nasa.gov/data/TRMM_L3/TRMM_3B42_Daily.7/*/*/"
 #infile = "3B42_Daily.*.nc4"
 

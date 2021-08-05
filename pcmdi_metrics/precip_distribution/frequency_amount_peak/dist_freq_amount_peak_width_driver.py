@@ -29,17 +29,16 @@ import numpy as np
 import glob
 import copy
 import pcmdi_metrics
-import cdutil
-import collections
-import datetime
 from genutil import StringConstructor
 from pcmdi_metrics.driver.pmp_parser import PMPParser
-# from pcmdi_metrics.precip_variability.lib import (
+# from pcmdi_metrics.precip_distribution.frequency_amount_peak.lib import (
 #     AddParserArgument,
-#     Regrid2deg,
-#     ClimAnom,
-#     Powerspectrum,
-#     Avg_PS_DomFrq,
+#     Regrid,
+#     getDailyCalendarMonth, 
+#     CalcBinStructure, 
+#     MakeDists, 
+#     CalcRainMetrics, 
+#     AvgDomain
 # )
 with open('../lib/argparse_functions.py') as source_file:
     exec(source_file.read())
@@ -103,7 +102,7 @@ for ifl in range(len(file_list)):
 print("# of data:", len(data))
 print(data)
 
-# Regridding -> Month separation -> Distribution -> Domain average -> Metrics -> Write
+# Regridding -> Month separation -> Distribution -> Metrics -> Domain average -> Write
 metrics = {'RESULTS': {}}
 syr = prd[0]
 eyr = prd[1]
