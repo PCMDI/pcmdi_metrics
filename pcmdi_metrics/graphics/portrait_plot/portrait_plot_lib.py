@@ -6,12 +6,12 @@ import matplotlib.collections as collections
 import sys
 
 
-def portrait_plot(data, 
+def portrait_plot(data,
                   xaxis_labels,
                   yaxis_labels,
                   fig=None, ax=None,
                   annotate=False, annotate_data=None, annotate_fontsize=15,
-                  figsize=(12,10), vrange=None,
+                  figsize=(12, 10), vrange=None,
                   xaxis_fontsize=15, yaxis_fontsize=15,
                   cmap="RdBu_r",
                   cmap_bounds=None,
@@ -28,19 +28,24 @@ def portrait_plot(data,
                   legend_box_size=None,
                   legend_lw=1,
                   legend_fontsize=14,
-                  logo_rect=None, 
+                  logo_rect=None,
                   logo_off=False,
                   debug=False):
     """
     Parameters
     ----------
     - `data`: 2d numpy array, a list of 2d numpy arrays, or a 3d numpy array (i.e. stacked 2d numpy arrays)
-    - `xaxis_labels`: list of strings, labels for xaixs. Number of list element must consistent to x-axis, or 0 (empty list) to turn off xaxis tick labels
-    - `yaxis_labels`: list of strings, labels for yaxis. Number of list element must consistent to y-axis, or 0 (empty list) to turn off yaxis tick labels
-    - `fig`: `matplotlib.figure` instance to which the portrait plot is plotted.  If not provided, use current axes or create a new one.  Optional.
-    - `ax`: `matplotlib.axes.Axes` instance to which the portrait plot is plotted.  If not provided, use current axes or create a new one.  Optional.
-    - `annotate`: bool, default=False, add annotating text if true, but work only for heatmap style map (i.e., no triangles)
-    - `annotate_data`: 2d numpy array, default=None. If None, the image's data is used.  Optional. 
+    - `xaxis_labels`: list of strings, labels for xaixs. Number of list element must consistent to x-axis,
+                      or 0 (empty list) to turn off xaxis tick labels
+    - `yaxis_labels`: list of strings, labels for yaxis. Number of list element must consistent to y-axis,
+                      or 0 (empty list) to turn off yaxis tick labels
+    - `fig`: `matplotlib.figure` instance to which the portrait plot is plotted.
+             If not provided, use current axes or create a new one.  Optional.
+    - `ax`: `matplotlib.axes.Axes` instance to which the portrait plot is plotted.
+            If not provided, use current axes or create a new one.  Optional.
+    - `annotate`: bool, default=False, add annotating text if true,
+                  but work only for heatmap style map (i.e., no triangles)
+    - `annotate_data`: 2d numpy array, default=None. If None, the image's data is used.  Optional.
     - `annotate_fontsize`: number (int/float), default=15. Font size for annotation
     - `figsize`: tuple of two numbers, default=(12, 10), figure size
     - `vrange`: tuple of two numbers, range of value for colorbar.  Optional.
@@ -57,11 +62,13 @@ def portrait_plot(data,
     - `box_as_square`: bool, default=False, make each box as square
     - `legend_on`: bool, default=False, show legend (only for 2 or 4 triangles portrait plot)
     - `legend_labels`: list of strings, legend labels for triangls
-    - `legend_box_xy`: tuple of numbers, position of legend box's upper-left corner (lower-left if `invert_yaxis=False`), in `axes` coordinate
+    - `legend_box_xy`: tuple of numbers, position of legend box's upper-left corner
+                       (lower-left if `invert_yaxis=False`), in `axes` coordinate
     - `legend_box_size`: number, size of legend box
     - `legend_lw`: number, line width of legend, default=1
     - `legend_fontsize`: number, font size for legend, default=14
-    - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the the PMP logo. All quantities are in fractions of figure width and height.  Optional
+    - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the the PMP logo.
+                   All quantities are in fractions of figure width and height.  Optional
     - `logo_off`: bool, default=False, turn off PMP logo
     - `debug`: bool, default=False, if true print more message when running that help debugging
 
@@ -70,7 +77,7 @@ def portrait_plot(data,
     - `fig`: matplotlib component for figure
     - `ax`: matplotlib component for axis
     - `cbar`: matplotlib component for colorbar
-    
+
     Author: Jiwoo Lee @ LLNL (2021. 7)
     """
 
@@ -151,7 +158,6 @@ def portrait_plot(data,
                          ax=ax,
                          invert_yaxis=invert_yaxis,
                          cmap=cmap,
-                         #vmin=vmin, vmax=vmax,
                          edgecolors='k', linewidth=0.5,
                          norm=norm)
         if annotate:
@@ -172,10 +178,9 @@ def portrait_plot(data,
         upper = data[0]
         lower = data[1]
         ax, im = triamatrix_wrap_up(upper, lower, ax,
-                                    xaxis_labels=xaxis_labels, 
+                                    xaxis_labels=xaxis_labels,
                                     yaxis_labels=yaxis_labels,
                                     cmap=cmap,
-                                    #vmin=vmin, vmax=vmax,
                                     invert_yaxis=invert_yaxis,
                                     norm=norm)
 
@@ -189,19 +194,17 @@ def portrait_plot(data,
         ax, im = quatromatrix(top, right, bottom, left,
                               ax=ax,
                               tripcolorkw={"cmap": cmap, "norm": norm,
-                                           #"vmin": vmin, "vmax": vmax,
-                                           "edgecolors":'k', "linewidth":0.5},
-                              xaxis_labels=xaxis_labels, 
+                                           "edgecolors": 'k', "linewidth": 0.5},
+                              xaxis_labels=xaxis_labels,
                               yaxis_labels=yaxis_labels,
-                              invert_yaxis=invert_yaxis,
-                             )
+                              invert_yaxis=invert_yaxis)
 
     # Create colorbar
     cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
 
     # Let the horizontal axes labeling appear on top.
     ax.tick_params(top=True, bottom=False,
-                    labeltop=True, labelbottom=False)
+                   labeltop=True, labelbottom=False)
 
     # Rotate the tick labels and set their alignment.
     plt.setp(ax.get_xticklabels(),
@@ -352,7 +355,7 @@ def annotate_heatmap(im, ax,
 # Portrait plot 2 (two triangles)
 # (Inspired from: https://stackoverflow.com/questions/44291155/plotting-two-distance-matrices-together-on-same-plot)
 # ----------------------------------------------------------------------
-def triamatrix_wrap_up(upper, lower, ax, xaxis_labels, yaxis_labels, 
+def triamatrix_wrap_up(upper, lower, ax, xaxis_labels, yaxis_labels,
                        cmap="viridis", vmin=-3, vmax=3, norm=None,
                        invert_yaxis=True):
 
@@ -361,8 +364,8 @@ def triamatrix_wrap_up(upper, lower, ax, xaxis_labels, yaxis_labels,
         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
 
     # Triangles
-    im1 = triamatrix(upper, ax, rot=270, cmap=cmap, norm=norm, edgecolors='k', lw=0.5)
-    im2 = triamatrix(lower, ax, rot=90, cmap=cmap, norm=norm, edgecolors='k', lw=0.5)
+    im = triamatrix(upper, ax, rot=270, cmap=cmap, norm=norm, edgecolors='k', lw=0.5)
+    im = triamatrix(lower, ax, rot=90, cmap=cmap, norm=norm, edgecolors='k', lw=0.5)
     ax.set_xlim(-.5, upper.shape[1]-.5)
     ax.set_ylim(-.5, upper.shape[0]-.5)
 
@@ -375,7 +378,7 @@ def triamatrix_wrap_up(upper, lower, ax, xaxis_labels, yaxis_labels,
     ax.set_xticklabels(xaxis_labels)
     ax.set_yticklabels(yaxis_labels)
 
-    return ax, im1
+    return ax, im
 
 
 def triatpos(pos=(0, 0), rot=0):
@@ -392,7 +395,7 @@ def triamatrix(a, ax, rot=0, cmap="viridis", **kwargs):
     segs = []
     for i in range(a.shape[0]):
         for j in range(a.shape[1]):
-            segs.append(triatpos((j,i), rot=rot))
+            segs.append(triatpos((j, i), rot=rot))
     col = collections.PolyCollection(segs, cmap=cmap, **kwargs)
     col.set_array(a.flatten())
     ax.add_collection(col)
@@ -403,12 +406,12 @@ def triamatrix(a, ax, rot=0, cmap="viridis", **kwargs):
 # Portrait plot 4 (four triangles)
 # (Inspired from: https://stackoverflow.com/questions/44666679/something-like-plt-matshow-but-with-triangles)
 # ----------------------------------------------------------------------
-def quatromatrix(top, right, bottom, left, ax=None, tripcolorkw={}, 
+def quatromatrix(top, right, bottom, left, ax=None, tripcolorkw={},
                  xaxis_labels=None, yaxis_labels=None, invert_yaxis=True):
-    if ax is None: 
+    if ax is None:
         ax = plt.gca()
-    
-    n = left.shape[0] 
+
+    n = left.shape[0]
     m = left.shape[1]
 
     a = np.array([[0, 0], [0, 1], [.5, .5], [1, 0], [1, 1]])
@@ -420,24 +423,24 @@ def quatromatrix(top, right, bottom, left, ax=None, tripcolorkw={},
     for i in range(n):
         for j in range(m):
             k = i * m + j
-            A[k*5:(k+1)*5, :] = np.c_[a[:,0]+j, a[:,1]+i]
+            A[k*5:(k+1)*5, :] = np.c_[a[:, 0]+j, a[:, 1]+i]
             Tr[k*4:(k+1)*4, :] = tr + k * 5
             
     if invert_yaxis:
         ax.invert_yaxis()
-        C = np.c_[left.flatten(), top.flatten(), 
-                  right.flatten(), bottom.flatten()].flatten()        
+        C = np.c_[left.flatten(), top.flatten(),
+                  right.flatten(), bottom.flatten()].flatten()
     else:
-        C = np.c_[left.flatten(), bottom.flatten(), 
+        C = np.c_[left.flatten(), bottom.flatten(),
                   right.flatten(), top.flatten()].flatten()
 
     # Prevent coloring missing data
     C = np.ma.array(C, mask=np.isnan(C))
 
-    tripcolor = ax.tripcolor(A[:,0], A[:,1], Tr, facecolors=C, **tripcolorkw)
-    
+    tripcolor = ax.tripcolor(A[:, 0], A[:, 1], Tr, facecolors=C, **tripcolorkw)
+
     ax.margins(0)
-    
+
     if xaxis_labels is not None:
         x_loc = list_between_elements(np.arange(left.shape[1]+1))
         ax.set_xticks(x_loc)
@@ -446,7 +449,7 @@ def quatromatrix(top, right, bottom, left, ax=None, tripcolorkw={},
         y_loc = list_between_elements(np.arange(left.shape[0]+1))
         ax.set_yticks(y_loc)
         ax.set_yticklabels(yaxis_labels)
-           
+
     return ax, tripcolor
 
 
@@ -456,7 +459,7 @@ def list_between_elements(a):
         try:
             tmp = (a[i] + a[i+1])/2.
             a_between.append(tmp)
-        except:
+        except Exception:
             pass
     return a_between
 
@@ -478,22 +481,22 @@ def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1, fo
 
     if num_divide == 4:
         if labels is None:
-            labels=['TOP', 'RIGHT', 'BOTTOM', 'LEFT']
-        ax.add_patch(plt.Polygon([[box_x, box_y], 
-                                [box_x + box_size/2., box_y + box_size/2], 
-                                [box_x + box_size, box_y]], 
+            labels = ['TOP', 'RIGHT', 'BOTTOM', 'LEFT']
+        ax.add_patch(plt.Polygon([[box_x, box_y],
+                                [box_x + box_size/2., box_y + box_size/2],
+                                [box_x + box_size, box_y]],
                                 color="k", fill=False, clip_on=False, lw=lw))
-        ax.add_patch(plt.Polygon([[box_x + box_size, box_y], 
-                                [box_x + box_size/2., box_y + box_size/2], 
-                                [box_x + box_size, box_y + box_size]], 
+        ax.add_patch(plt.Polygon([[box_x + box_size, box_y],
+                                [box_x + box_size/2., box_y + box_size/2],
+                                [box_x + box_size, box_y + box_size]],
                                 color="k", fill=False, clip_on=False, lw=lw))
-        ax.add_patch(plt.Polygon([[box_x + box_size, box_y + box_size], 
-                                [box_x + box_size/2., box_y + box_size/2], 
-                                [box_x, box_y + box_size]], 
+        ax.add_patch(plt.Polygon([[box_x + box_size, box_y + box_size],
+                                [box_x + box_size/2., box_y + box_size/2],
+                                [box_x, box_y + box_size]],
                                 color="k", fill=False, clip_on=False, lw=lw))
-        ax.add_patch(plt.Polygon([[box_x, box_y], 
-                                [box_x + box_size/2., box_y + box_size/2], 
-                                [box_x, box_y + box_size]], 
+        ax.add_patch(plt.Polygon([[box_x, box_y],
+                                [box_x + box_size/2., box_y + box_size/2],
+                                [box_x, box_y + box_size]],
                                 color="k", fill=False, clip_on=False, lw=lw))
         ax.text(box_x + box_size * 0.5, box_y + box_size * 0.2, labels[0], ha='center', va='center', fontsize=fontsize)
         ax.text(box_x + box_size * 0.8, box_y + box_size * 0.5, labels[1], ha='center', va='center', fontsize=fontsize)

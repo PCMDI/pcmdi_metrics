@@ -12,10 +12,12 @@ def read_mean_clim_json_files(json_list, stats, regions, mip=None, debug=False):
     - `regions`: list of string, where each element is region to extract from the JSON
     - `mip`: string, category for mip, e.g., 'cmip6'.  Optional
     - `debug`: bool, default=False, enable few print statements to help debug
-    
+
     Returns
     -------
-    - `df_dict`: dictionary that has [stat][season][region] hierarchy structure storing pandas dataframe for metric numbers (Rows: models, Columns: variables (i.e., 2d array)
+    - `df_dict`: dictionary that has [stat][season][region] hierarchy structure
+                 storing pandas dataframe for metric numbers
+                 (Rows: models, Columns: variables (i.e., 2d array)
     - `var_list`: list of string, all variables from JSON files
     - `var_unit_list`: list of string, all variables and its units from JSON files
     """
@@ -38,7 +40,7 @@ def read_mean_clim_json_files(json_list, stats, regions, mip=None, debug=False):
         with open(json_file) as fj:
             results_dict[var] = json.load(fj)
         unit = extract_unit(var, results_dict[var])
-        var_unit = var + " [" + unit + "]"   
+        var_unit = var + " [" + unit + "]"
         var_unit_list.append(var_unit)
     if debug:
         print("var_unit_list:", var_unit_list)
@@ -75,37 +77,35 @@ def extract_data(results_dict, var_list, region, stat, season, mip):
     Return a pandas dataframe for metric numbers at given region/stat/season.
     Rows: models, Columns: variables (i.e., 2d array)
     """
-    try:
+    if 'rlut' in list(results_dict['rlut']['RESULTS'].keys()):
         model_list = sorted(list(results_dict['rlut']['RESULTS'].keys()))
-    except:
+    else:
         model_list = sorted(list(results_dict[var_list[0]]['RESULTS'].keys()))
-    
+
     data_list = []
     for model in model_list:
-        try:
+        if 'rlut' in list(results_dict['rlut']['RESULTS'].keys()):
             run_list = list(results_dict['rlut']['RESULTS'][model]['default'].keys())
-        except:
+        else:
             run_list = list(results_dict[var_list[0]]['RESULTS'][model]['default'].keys())
-            
+
         run_list.remove('source')
         for run in run_list:
             tmp_list = []
             for var in var_list:
                 try:
                     tmp = float(results_dict[var]['RESULTS'][model]['default'][run][region][stat][season])
-                except:
+                except Exception:
                     tmp = None
                 tmp_list.append(tmp)
             if mip is None:
                 data_list.append([model, run, model+'_'+run] + tmp_list)
             else:
                 data_list.append([mip, model, run, model+'_'+run] + tmp_list)
-
     if mip is None:
         data_list_column_names = ['model', 'run', 'model_run'] + var_list
     else:
         data_list_column_names = ['mip', 'model', 'run', 'model_run'] + var_list
-
     # Convert data in pythin dict to pandas dataframe format
     df = pd.DataFrame(columns=data_list_column_names, data=data_list)
     return df
@@ -116,8 +116,8 @@ def normalize_by_median(data, axis=0):
     Parameters
     ----------
     - `data`: 2d numpy array
-    - `axis`: 0 (normalize each column) or 1 (normalize each row), default=0 
-    
+    - `axis`: 0 (normalize each column) or 1 (normalize each row), default=0
+
     Return
     ------
     - `data_nor`: 2d numpy array
