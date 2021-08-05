@@ -61,7 +61,7 @@ def portrait_plot(data,
     - `legend_box_size`: number, size of legend box
     - `legend_lw`: number, line width of legend, default=1
     - `legend_fontsize`: number, font size for legend, default=14
-    - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes. All quantities are in fractions of figure width and height.  Optional
+    - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the the PMP logo. All quantities are in fractions of figure width and height.  Optional
     - `logo_off`: bool, default=False, turn off PMP logo
     - `debug`: bool, default=False, if true print more message when running that help debugging
 

@@ -8,7 +8,7 @@ def add_logo(fig, ax, rect=None):
     Parameters
     ----------
     - `fig`: `matplotlib.figure` instance to which the portrait plot is plotted.  If not provided, use current axes or create a new one.  Optional.
-    - `rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes. All quantities are in fractions of figure width and height.
+    - `rect`: sequence of float. The dimensions [left, bottom, width, height] of the logo. All quantities are in fractions of figure width and height.
 
     Return
     ------
