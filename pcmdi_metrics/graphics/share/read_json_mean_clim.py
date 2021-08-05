@@ -21,6 +21,7 @@ def read_mean_clim_json_files(json_list, stats, regions, mip=None, debug=False):
     """
     # Find variables
     var_list = sorted([p.split('/')[-1].split('.')[0] for p in json_list])
+
     # Simple re-order variables
     if 'zg-500' in var_list and 'sfcWind' in var_list:
         var_list.remove('zg-500')
@@ -36,7 +37,7 @@ def read_mean_clim_json_files(json_list, stats, regions, mip=None, debug=False):
     for var, json_file in zip(var_list, json_list):
         with open(json_file) as fj:
             results_dict[var] = json.load(fj)
-        unit = get_unit(var, results_dict[var])
+        unit = extract_unit(var, results_dict[var])
         var_unit = var + " [" + unit + "]"   
         var_unit_list.append(var_unit)
     if debug:
@@ -57,19 +58,19 @@ def read_mean_clim_json_files(json_list, stats, regions, mip=None, debug=False):
         for season in seasons:
             df_dict[stat][season] = {}
             for region in regions:
-                df_dict[stat][season][region] = get_data(results_dict, var_list,
-                                                         region, stat, season, mip)
+                df_dict[stat][season][region] = extract_data(results_dict, var_list,
+                                                             region, stat, season, mip)
 
     return df_dict, var_list, var_unit_list
 
 
-def get_unit(var, results_dict_var):
+def extract_unit(var, results_dict_var):
     model_list = sorted(list(results_dict_var['RESULTS'].keys()))
     units = results_dict_var['RESULTS'][model_list[0]]["units"]
     return units
 
 
-def get_data(results_dict, var_list, region, stat, season, mip):
+def extract_data(results_dict, var_list, region, stat, season, mip):
     """
     Return a pandas dataframe for metric numbers at given region/stat/season.
     Rows: models, Columns: variables (i.e., 2d array)
