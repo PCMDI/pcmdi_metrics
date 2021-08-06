@@ -58,10 +58,11 @@ if __name__ == '__main__':
 
     # Overwrite some specific metrics settings
     if pmp_config == "mean_climate":
+        if "case_id" in settings:
         settings["test_data_path"] = model_dir
         settings["reference_data_path"] = obs_dir
         settings["metrics_output_path"] = wk_dir
-        settings["test_clims_interpolated_output"] = os.path.join(wk_dir,"interpolated_output")
+        settings["test_clims_interpolated_output"] = os.path.join(wk_dir,"test_clims")
 
         if check_for_opt("compute_climatologies",settings):
             print("\nGenerating climatologies")
@@ -81,9 +82,9 @@ if __name__ == '__main__':
 
     if pmp_config == "diurnal_cycle":
         settings["modpath"] = model_dir
-    elif pmp_config in ["mjo","monsoon_sperber","monsoon_wang","variability_modes"]:
+
+    if pmp_config in ["mjo","monsoon_sperber","monsoon_wang","variability_modes"]:
         # other metrics can have single results dir set
-        #settings["results_dir"] = wk_dir + "/%(output_type)/"
         settings["results_dir"] = wk_dir
 
     # Universal setting for all metrics

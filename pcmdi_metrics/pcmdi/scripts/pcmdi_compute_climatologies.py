@@ -78,11 +78,11 @@ def clim_calc(var, infile, outfile, outdir, outfilename, start, end):
     if end_mo_str not in ['11', '12']:
         end_mo_str = '0' + end_mo_str
 
-    d_ac = cdutil.ANNUALCYCLE.climatology(d).astype('Float32')
-    d_djf = cdutil.DJF.climatology(d)(squeeze=1).astype('Float32')
-    d_jja = cdutil.JJA.climatology(d)(squeeze=1).astype('Float32')
-    d_son = cdutil.SON.climatology(d)(squeeze=1).astype('Float32')
-    d_mam = cdutil.MAM.climatology(d)(squeeze=1).astype('Float32')
+    d_ac = cdutil.ANNUALCYCLE.climatology(d).astype('float32')
+    d_djf = cdutil.DJF.climatology(d)(squeeze=1).astype('float32')
+    d_jja = cdutil.JJA.climatology(d)(squeeze=1).astype('float32')
+    d_son = cdutil.SON.climatology(d)(squeeze=1).astype('float32')
+    d_mam = cdutil.MAM.climatology(d)(squeeze=1).astype('float32')
 
     for v in [d_ac, d_djf, d_jja, d_son, d_mam]:
 
