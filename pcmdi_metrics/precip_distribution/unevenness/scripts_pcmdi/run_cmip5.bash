@@ -11,8 +11,8 @@ for model in `ls /p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/$
 do
   i=$(($i+1))
   echo $i $model
-#   nohup python -u ../dist_freq_amount_peak_width_driver.py -p ../param/dist_freq_amount_peak_width_params_${mip}.py --mod $model  > ./log/log_$model &
-  nohup python -u ../dist_freq_amount_peak_width_driver.py -p ../param/dist_freq_amount_peak_width_params_${mip}.py --mod $model  > ./log/log_${model}_90x45 &
+#  nohup python -u ../dist_unevenness_driver.py -p ../param/dist_unevenness_params_${mip}.py --mod $model  > ./log/log_${model}_180x90 &
+  nohup python -u ../dist_unevenness_driver.py -p ../param/dist_unevenness_params_${mip}.py --mod $model  > ./log/log_${model}_90x45 &
   echo $i 'run'
   if [ $(($i%$maxjob)) -eq 0 ]; then
     echo 'wait'

@@ -141,15 +141,17 @@ for id, dat in enumerate(data):
         nyr = eyr-syr+1
         cfy = np.full((nyr, dmon.shape[1], dmon.shape[2]), np.nan)
         prdyfracyr = np.full((nyr, dmon.shape[1], dmon.shape[2]), np.nan)
+        sdiiyr = np.full((nyr, dmon.shape[1], dmon.shape[2]), np.nan)
         pfracyr = np.full((nyr, ndymon[im], dmon.shape[1], dmon.shape[2]), np.nan)
 
         for iyr, year in enumerate(range(syr, eyr + 1)):       
             thisyear = dmon(time=(str(year) + "-1-1 0:0:0", str(year) + "-12-" + str(ldy) + " 23:59:59"))
             print(year, thisyear.shape)
-            thisyear = thisyear.filled()  #np.array(thisyear)
-            pfrac, ndhy, prdyfrac, sdii = oneyear(thisyear)
+            thisyear = thisyear.filled(np.nan)  #np.array(thisyear)
+            pfrac, ndhy, prdyfrac, sdii = oneyear(thisyear, missingthresh)
             cfy[iyr,:,:]=ndhy
             prdyfracyr[iyr,:,:]=prdyfrac
+            sdiiyr[iyr,:,:]=sdii
             pfracyr[iyr,:,:,:]=pfrac[:ndymon[im],:,:]
             print(year, 'pfrac.shape is ', pfrac.shape, ', but', pfrac[:ndymon[im],:,:].shape, ' is used')
             
@@ -157,6 +159,7 @@ for id, dat in enumerate(data):
         missingfrac = (np.sum(np.isnan(cfy),axis=0)/nyr)
         ndm[np.where(missingfrac > missingthresh)] = np.nan
         prdyfracm=np.nanmedian(prdyfracyr,axis=0)
+        sdiim=np.nanmedian(sdiiyr,axis=0)
         
         pfracm=np.nanmedian(pfracyr,axis=0)
         axbin = cdms.createAxis(range(1, ndymon[im]+1), id='cumday')
@@ -170,19 +173,24 @@ for id, dat in enumerate(data):
         if im == 0:
             ndmmon = np.expand_dims(ndm, axis=0)
             prdyfracmmon = np.expand_dims(prdyfracm, axis=0)
+            sdiimmon = np.expand_dims(sdiim, axis=0)
         else:
             ndmmon = MV.concatenate((ndmmon, np.expand_dims(ndm, axis=0)), axis=0)
             prdyfracmmon = MV.concatenate((prdyfracmmon, np.expand_dims(prdyfracm, axis=0)), axis=0)
+            sdiimmon = MV.concatenate((sdiimmon, np.expand_dims(sdiim, axis=0)), axis=0)
             
     # Domain average
     axmon = cdms.createAxis(range(len(months)), id='month')
     ndmmon = MV.array(ndmmon)
-    prdyfracmmon = MV.array(prdyfracmmon)
     ndmmon.setAxisList((axmon, lat, lon))
+    prdyfracmmon = MV.array(prdyfracmmon)
     prdyfracmmon.setAxisList((axmon, lat, lon))
+    sdiimmon = MV.array(sdiimmon)
+    sdiimmon.setAxisList((axmon, lat, lon))
     metrics['RESULTS'][dat] = {}
     metrics['RESULTS'][dat]['unevenness'] = AvgDomain(ndmmon)
     metrics['RESULTS'][dat]['prdyfrac'] = AvgDomain(prdyfracmmon)
+    metrics['RESULTS'][dat]['sdii'] = AvgDomain(sdiimmon)
 
     # Write data (nc file for spatial pattern of metrics)
     outfilename = "dist_cumfrac_unevenness_regrid." + \
@@ -190,6 +198,7 @@ for id, dat in enumerate(data):
     with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
         out.write(ndmmon, id="unevenness")
         out.write(prdyfracmmon, id="prdyfrac")
+        out.write(sdiimmon, id="sdii")
         
     # Write data (json file for area averaged metrics)
     outfilename = "dist_cumfrac_unevenness_area.mean_regrid." + \

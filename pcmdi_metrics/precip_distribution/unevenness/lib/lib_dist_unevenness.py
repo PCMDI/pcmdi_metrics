@@ -74,7 +74,7 @@ def getDailyCalendarMonth(d, mon):
 
 
 # ==================================================================================
-def oneyear(thisyear):
+def oneyear(thisyear, missingthresh):
     # Given one year of precip data, calculate the number of days for half of precipitation
     # Ignore years with zero precip (by setting them to NaN).
     # thisyear is one year of data, (an np array) with the time variable in the leftmost dimension
@@ -97,10 +97,10 @@ def oneyear(thisyear):
             y=np.concatenate([z,p])
             ndh=np.interp(0.5,y,x)
             ndhy[ij,ik]=ndh
-            if np.sum(np.isnan(p)) == nd:
+            if missingfrac[ij,ik] > missingthresh or np.sum(np.isnan(p))/nd > missingthresh:
                 prdays[ij,ik] = np.nan
             else:
-                prdays[ij,ik] = np.where(p == 1.0)[0][0]+1
+                prdays[ij,ik] = np.where(p >= 1)[0][0]+1
                 
     ndhy[np.where(missingfrac > missingthresh)] = np.nan
     prdyfrac = prdays/nd
