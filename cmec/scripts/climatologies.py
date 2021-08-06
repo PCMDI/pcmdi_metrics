@@ -22,7 +22,7 @@ def make_climatologies(settings,model_dir,wk_dir):
             model_file.variable = var
             cmd = ["pcmdi_compute_climatologies.py","--infile",model_file(),"--outpath",out_base,"--var",var]
             suffix = "pcmdi_compute_climatologies_{0}_{1}.log".format(model,var)
-            outfilename = os.path.join(out_base,suffx)
+            outfilename = os.path.join(out_base,suffix)
             with open (outfilename,"w") as outfile:
                 subprocess.run(cmd, env=os.environ.copy(), stdout=outfile)
 

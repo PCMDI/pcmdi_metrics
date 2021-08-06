@@ -5,12 +5,12 @@ wkdir = os.getenv("CMEC_WK_DIR")
 modeldata = os.getenv("CMEC_MODEL_DATA")
 obsdata = os.getenv("CMEC_OBS_DATA")
 out_data = os.listdir(wkdir)
-json_data = [f for f in out_data where f.endswith(".json")]
-log_path = [f for f in out_data where ".log" in f][0]
+json_data = [f for f in out_data if f.endswith(".json")]
+log_path = [f for f in out_data if ".log" in f][0]
 fname = os.path.join(wkdir,"output.json")
 
 output = {
-	"html": {}
+	"html": {},
 	"metrics": {},
 	"data": {},
 	"plots": {},

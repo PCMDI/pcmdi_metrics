@@ -12,6 +12,8 @@ $CMEC_CONFIG_DIR/cmec.json $tmp_param "monsoon_sperber"
 
 if [[ $? = 0 ]]; then
     driver_monsoon_sperber.py -p $tmp_param
+
+    # write output.json
     python $CMEC_CODE_DIR/monsoon_sperber_output.py
 else
     echo "Failure in PMP/monsoon_sperber parameter file generation"

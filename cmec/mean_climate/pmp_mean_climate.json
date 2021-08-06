@@ -22,7 +22,7 @@
         }
     },
     "default_parameters": {
-        "case_id": "basicTestMeanClimate",
+        "case_id": "mean_climate_demo",
         "test_data_set": [
             "ACCESS1-0", "CanCM4"
         ],
