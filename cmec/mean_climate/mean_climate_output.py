@@ -1,3 +1,9 @@
+"""
+mean_climate_output.py
+Create and populate the output.json metadata file that
+documents the cmec-driver pipeline outputs for the
+Mean Climate metrics.
+"""
 import json
 import os
 
@@ -45,22 +51,25 @@ if os.path.exists(int_out):
 data.update(int_dict)
 
 # AC files
+# TODO: Need to pair files with model name and variable
 ac_out = os.path.join(wkdir,"AC")
 ac_data = {}
 if os.path.exists(ac_out):
-	ac_list = sorted(os.listdir(ac_out))
+	ac_list = sorted([
+		f for f in os.listdir(ac_out) if any(s in f for s in [".SON.",".DJf.",".MAM.",".JJA.",".AC."])])
 	for item in ac_list:
-		item_split = item.split(".")
-		model = item_split[2]
-		var = item_split[5]
-		season = item_split[7]
+		print(item)
+		season = item.split(".")[-3]
+		#model = item_split[2]
+		#var = item_split[5]
+		#season = item_split[-3]
 		season_desc = "Seasonal"
 		if season == "AC":
 			season_desc = "Annual"
-		ac_data[[model,var,season].join("_")]={
+		ac_data[item]={
 			"filename": "AC/" + item,
-			"long_name": [model,var,season].join(" ") + " climatology",
-			"description": season_desc + " climatology for model " + model + "and variable " + var
+			"long_name":  " climatology",
+			"description": season_desc + " climatology for model"
 		}
 data.update(ac_data)
 

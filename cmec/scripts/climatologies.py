@@ -23,6 +23,7 @@ def make_climatologies(settings,model_dir,wk_dir):
             cmd = ["pcmdi_compute_climatologies.py","--infile",model_file(),"--outpath",out_base,"--var",var]
             suffix = "pcmdi_compute_climatologies_{0}_{1}.log".format(model,var)
             outfilename = os.path.join(out_base,suffix)
+            #TODO: Check return status
             with open (outfilename,"w") as outfile:
                 subprocess.run(cmd, env=os.environ.copy(), stdout=outfile)
 
@@ -42,8 +43,8 @@ def make_climatologies(settings,model_dir,wk_dir):
 
     # Link sftlf file in AC folder if exists,
     # since it is the new model folder.
-    if settings["generate_sftlf"] is False:
-        sftlf=settings["sftlf_filename_template"]
+    if settings.get("generate_sftlf",False) is False:
+        sftlf=settings.get("sftlf_filename_template","sftlf_%(model_version).nc")
         s = genutil.StringConstructor(sftlf)
         for model in modellist:
             s.model_verion = model
