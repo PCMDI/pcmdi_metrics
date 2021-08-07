@@ -47,7 +47,7 @@ def portrait_plot(data,
                   but work only for heatmap style map (i.e., no triangles)
     - `annotate_data`: 2d numpy array, default=None. If None, the image's data is used.  Optional.
     - `annotate_fontsize`: number (int/float), default=15. Font size for annotation
-    - `figsize`: tuple of two numbers, default=(12, 10), figure size
+    - `figsize`: tuple of two numbers (width, height), default=(12, 10), figure size in inches
     - `vrange`: tuple of two numbers, range of value for colorbar.  Optional.
     - `xaxis_fontsize`: number, default=15, font size for xaxis tick labels
     - `yaxis_fontsize`: number, default=15, font size for yaxis tick labels
@@ -84,51 +84,15 @@ def portrait_plot(data,
     # ----------------
     # Prepare plotting
     # ----------------
-    # In case data was given as list of arrays, convert it to numpy (stacked) array
-    if (type(data) == list):
-        if debug:
-            print('data type is list')
-            print('len(data):', len(data))
-        if (len(data) == 1):  # list has only 1 array as element
-            if ((type(data[0]) == np.ndarray) and (len(data[0].shape) == 2)):
-                data = data[0]
-                num_divide = 1
-            else:
-                sys.exit('Error: Element of given list is not in np.ndarray type')
-        else:  # list has more than 1 arrays as elements
-            data = np.stack(data)
-            num_divide = len(data)
-            
-    # Now, data is expected to be be a numpy array (whether given or converted from list)
-    if debug:
-        print('data.shape:', data.shape)
+    data, num_divide = prepare_data(data, xaxis_labels, yaxis_labels, debug)
 
-    if data.shape[-1] != len(xaxis_labels) and len(xaxis_labels) > 0:
-        sys.exit('Error: Number of elements in xaxis_label mismatchs to the data')
-
-    if data.shape[-2] != len(yaxis_labels) and len(yaxis_labels) > 0:
-        sys.exit('Error: Number of elements in yaxis_label mismatchs to the data')
-
-    if (type(data) == np.ndarray):
-        data = np.squeeze(data)
-        if len(data.shape) == 2:
-            num_divide = 1
-        elif len(data.shape) == 3:
-            num_divide = data.shape[0]
-        else:
-            print('data.shape:', data.shape)
-            sys.exit('Error: data.shape is not right')
-    else:
-        sys.exit('Error: Converted or given data is not in np.ndarray type')
-    
-    if debug:
-        print('num_divide:', num_divide)
-    
     if num_divide not in [1, 2, 4]:
         sys.exit('Error: Number of (stacked) array is not 1, 2, or 4.')
 
-    # Mask out nan data
-    data = np.ma.masked_invalid(data)
+    if annotate:
+        annotate_data, num_divide_annotate = prepare_data(annotate_data, xaxis_labels, yaxis_labels, debug)
+        if num_divide_annotate != num_divide:
+            sys.exit('Error: annotate_data does not have same size as data')
 
     # ----------------
     # Ready to plot!!
@@ -237,6 +201,56 @@ def portrait_plot(data,
         fig, ax = add_logo(fig, ax, logo_rect)
 
     return fig, ax, cbar
+
+
+# ======================================================================
+# Prepare data
+# ----------------------------------------------------------------------
+def prepare_data(data, xaxis_labels, yaxis_labels, debug):
+    # In case data was given as list of arrays, convert it to numpy (stacked) array
+    if (type(data) == list):
+        if debug:
+            print('data type is list')
+            print('len(data):', len(data))
+        if (len(data) == 1):  # list has only 1 array as element
+            if ((type(data[0]) == np.ndarray) and (len(data[0].shape) == 2)):
+                data = data[0]
+                num_divide = 1
+            else:
+                sys.exit('Error: Element of given list is not in np.ndarray type')
+        else:  # list has more than 1 arrays as elements
+            data = np.stack(data)
+            num_divide = len(data)
+
+    # Now, data is expected to be be a numpy array (whether given or converted from list)
+    if debug:
+        print('data.shape:', data.shape)
+
+    if data.shape[-1] != len(xaxis_labels) and len(xaxis_labels) > 0:
+        sys.exit('Error: Number of elements in xaxis_label mismatchs to the data')
+
+    if data.shape[-2] != len(yaxis_labels) and len(yaxis_labels) > 0:
+        sys.exit('Error: Number of elements in yaxis_label mismatchs to the data')
+
+    if (type(data) == np.ndarray):
+        data = np.squeeze(data)
+        if len(data.shape) == 2:
+            num_divide = 1
+        elif len(data.shape) == 3:
+            num_divide = data.shape[0]
+        else:
+            print('data.shape:', data.shape)
+            sys.exit('Error: data.shape is not right')
+    else:
+        sys.exit('Error: Converted or given data is not in np.ndarray type')
+
+    if debug:
+        print('num_divide:', num_divide)
+
+    # Mask out nan data
+    data = np.ma.masked_invalid(data)
+
+    return data, num_divide
 
 
 # ======================================================================
@@ -498,10 +512,14 @@ def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1, fo
                                 [box_x + box_size/2., box_y + box_size/2],
                                 [box_x, box_y + box_size]],
                                 color="k", fill=False, clip_on=False, lw=lw))
-        ax.text(box_x + box_size * 0.5, box_y + box_size * 0.2, labels[0], ha='center', va='center', fontsize=fontsize)
-        ax.text(box_x + box_size * 0.8, box_y + box_size * 0.5, labels[1], ha='center', va='center', fontsize=fontsize)
-        ax.text(box_x + box_size * 0.5, box_y + box_size * 0.8, labels[2], ha='center', va='center', fontsize=fontsize)
-        ax.text(box_x + box_size * 0.2, box_y + box_size * 0.5, labels[3], ha='center', va='center', fontsize=fontsize)
+        ax.text(box_x + box_size * 0.5, box_y + box_size * 0.2, labels[0],
+                ha='center', va='center', fontsize=fontsize)
+        ax.text(box_x + box_size * 0.8, box_y + box_size * 0.5, labels[1],
+                ha='center', va='center', fontsize=fontsize)
+        ax.text(box_x + box_size * 0.5, box_y + box_size * 0.8, labels[2],
+                ha='center', va='center', fontsize=fontsize)
+        ax.text(box_x + box_size * 0.2, box_y + box_size * 0.5, labels[3],
+                ha='center', va='center', fontsize=fontsize)
     elif num_divide == 2:
         if labels is None:
             labels=['UPPER', 'LOWER']    
@@ -513,5 +531,7 @@ def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1, fo
                                 [box_x, box_y + box_size], 
                                 [box_x + box_size, box_y]], 
                                 color="k", fill=False, clip_on=False, lw=lw))
-        ax.text(box_x + box_size * 0.05, box_y + box_size * 0.2, labels[0], ha='left', va='center', fontsize=fontsize)
-        ax.text(box_x + box_size * 0.95, box_y + box_size * 0.8, labels[1], ha='right', va='center', fontsize=fontsize)
+        ax.text(box_x + box_size * 0.05, box_y + box_size * 0.2, labels[0],
+                ha='left', va='center', fontsize=fontsize)
+        ax.text(box_x + box_size * 0.95, box_y + box_size * 0.8, labels[1],
+                ha='right', va='center', fontsize=fontsize)
