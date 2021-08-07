@@ -24,14 +24,6 @@ def read_mean_clim_json_files(json_list, stats, regions, mip=None, debug=False):
     # Find variables
     var_list = sorted([p.split('/')[-1].split('.')[0] for p in json_list])
 
-    # Simple re-order variables
-    if 'zg-500' in var_list and 'sfcWind' in var_list:
-        var_list.remove('zg-500')
-        idx_sfcWind = var_list.index('sfcWind')
-        var_list.insert(idx_sfcWind+1, 'zg-500')
-    if debug:
-        print("var_list:", var_list)
-
     # Read JSON and get unit for each variable
     results_dict = {}  # merged dict by reading all JSON files
     var_unit_list = []
@@ -61,7 +53,7 @@ def read_mean_clim_json_files(json_list, stats, regions, mip=None, debug=False):
             df_dict[stat][season] = {}
             for region in regions:
                 df_dict[stat][season][region] = extract_data(results_dict, var_list,
-                                                             region, stat, season, mip)
+                                                             region, stat, season, mip, debug)
 
     return df_dict, var_list, var_unit_list
 
@@ -72,7 +64,7 @@ def extract_unit(var, results_dict_var):
     return units
 
 
-def extract_data(results_dict, var_list, region, stat, season, mip):
+def extract_data(results_dict, var_list, region, stat, season, mip, debug=False):
     """
     Return a pandas dataframe for metric numbers at given region/stat/season.
     Rows: models, Columns: variables (i.e., 2d array)
@@ -89,6 +81,9 @@ def extract_data(results_dict, var_list, region, stat, season, mip):
         else:
             run_list = list(results_dict[var_list[0]]['RESULTS'][model]['default'].keys())
 
+        if debug:
+            print('model, run_list:', model, run_list)
+
         run_list.remove('source')
         for run in run_list:
             tmp_list = []
@@ -97,6 +92,8 @@ def extract_data(results_dict, var_list, region, stat, season, mip):
                     tmp = float(results_dict[var]['RESULTS'][model]['default'][run][region][stat][season])
                 except Exception:
                     tmp = None
+                if debug:
+                    print('model, run, season, var, tmp:', model, run, season, var, tmp)
                 tmp_list.append(tmp)
             if mip is None:
                 data_list.append([model, run, model+'_'+run] + tmp_list)
