@@ -32,7 +32,7 @@ def make_climatologies(settings,model_dir,wk_dir):
     ext = os.path.basename(filename_template)[-3:]
     trim = 30 # default for '.nc'
     if ext == 'xml':
-        trim = -31
+        trim = -29
     try:
         for file in filelist:
             if ".AC." in file:
