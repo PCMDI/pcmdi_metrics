@@ -58,7 +58,6 @@ def getDailyCalendarMonth(d, mon):
     - calmo: cdms variable concatenated for specific month
     """
     a = d.getTime()
-    a.designateTime()
     cdutil.setTimeBoundsDaily(a)
     indices, bounds, starts = cdutil.monthBasedSlicer(a, [mon, ])
     calmo = None

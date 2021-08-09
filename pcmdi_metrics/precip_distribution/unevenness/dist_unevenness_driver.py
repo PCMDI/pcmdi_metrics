@@ -3,7 +3,7 @@
 # This code is based on below and modified for PMP
 ##########################################################################
 # Python code to diagnose the unevenness of precipitation
-# This script diagnoses the unevenness of precipitation according to the number of heaviest days of precipitation per year it takes to get half of total precipitation ([Pendergrass and Knutti 2018](https://doi.org/10.1029/2018GL080298)). 
+# This script diagnoses the unevenness of precipitation according to the number of heaviest days of precipitation per year it takes to get half of total precipitation ([Pendergrass and Knutti 2018](https://doi.org/10.1029/2018GL080298)).
 # Given one year of precip data, calculate the number of days for half of precipitation
 # Ignore years with zero precip (by setting them to NaN).
 ##########################################################################
@@ -21,8 +21,8 @@ from pcmdi_metrics.driver.pmp_parser import PMPParser
 # from pcmdi_metrics.precip_distribution.unevenness.lib import (
 #     AddParserArgument,
 #     Regrid,
-#     getDailyCalendarMonth, 
-#     oneyear, 
+#     getDailyCalendarMonth,
+#     oneyear,
 #     AvgDomain
 # )
 with open('../lib/argparse_functions.py') as source_file:
@@ -52,7 +52,7 @@ print(nx_intp, 'x', ny_intp)
 # Get flag for CMEC output
 cmec = param.cmec
 
-missingthresh = 0.3 # threshold of missing data fraction at which a year is thrown out 
+missingthresh = 0.3  # threshold of missing data fraction at which a year is thrown out
 
 # Create output directory
 case_id = param.case_id
@@ -120,14 +120,18 @@ for id, dat in enumerate(data):
     # Month separation
     months = ['ALL', 'JAN', 'FEB', 'MAR', 'APR', 'MAY',
               'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-    
-    ndymon = [365, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+    if "360" in cal:
+        ndymon = [360, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30]
+    else:
+        ndymon = [365, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
     # Open nc file for writing data of spatial pattern of cumulated fractions with separated month
     outfilename = "dist_cumfrac_regrid." + \
         str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
-    outcumfrac=cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w")
-    
+    outcumfrac = cdms.open(os.path.join(
+        outdir(output_type='diagnostic_results'), outfilename), "w")
+
     for im, mon in enumerate(months):
 
         if mon == 'ALL':
@@ -137,48 +141,54 @@ for id, dat in enumerate(data):
 
         print(dat, mon, dmon.shape)
 
-        # Calculate unevenness              
+        # Calculate unevenness
         nyr = eyr-syr+1
         cfy = np.full((nyr, dmon.shape[1], dmon.shape[2]), np.nan)
         prdyfracyr = np.full((nyr, dmon.shape[1], dmon.shape[2]), np.nan)
         sdiiyr = np.full((nyr, dmon.shape[1], dmon.shape[2]), np.nan)
-        pfracyr = np.full((nyr, ndymon[im], dmon.shape[1], dmon.shape[2]), np.nan)
+        pfracyr = np.full(
+            (nyr, ndymon[im], dmon.shape[1], dmon.shape[2]), np.nan)
 
-        for iyr, year in enumerate(range(syr, eyr + 1)):       
-            thisyear = dmon(time=(str(year) + "-1-1 0:0:0", str(year) + "-12-" + str(ldy) + " 23:59:59"))
+        for iyr, year in enumerate(range(syr, eyr + 1)):
+            thisyear = dmon(time=(str(year) + "-1-1 0:0:0",
+                                  str(year) + "-12-" + str(ldy) + " 23:59:59"))
             print(year, thisyear.shape)
-            thisyear = thisyear.filled(np.nan)  #np.array(thisyear)
+            thisyear = thisyear.filled(np.nan)  # np.array(thisyear)
             pfrac, ndhy, prdyfrac, sdii = oneyear(thisyear, missingthresh)
-            cfy[iyr,:,:]=ndhy
-            prdyfracyr[iyr,:,:]=prdyfrac
-            sdiiyr[iyr,:,:]=sdii
-            pfracyr[iyr,:,:,:]=pfrac[:ndymon[im],:,:]
-            print(year, 'pfrac.shape is ', pfrac.shape, ', but', pfrac[:ndymon[im],:,:].shape, ' is used')
-            
-        ndm=np.nanmedian(cfy,axis=0) # ignore years with zero precip
-        missingfrac = (np.sum(np.isnan(cfy),axis=0)/nyr)
+            cfy[iyr, :, :] = ndhy
+            prdyfracyr[iyr, :, :] = prdyfrac
+            sdiiyr[iyr, :, :] = sdii
+            pfracyr[iyr, :, :, :] = pfrac[:ndymon[im], :, :]
+            print(year, 'pfrac.shape is ', pfrac.shape, ', but',
+                  pfrac[:ndymon[im], :, :].shape, ' is used')
+
+        ndm = np.nanmedian(cfy, axis=0)  # ignore years with zero precip
+        missingfrac = (np.sum(np.isnan(cfy), axis=0)/nyr)
         ndm[np.where(missingfrac > missingthresh)] = np.nan
-        prdyfracm=np.nanmedian(prdyfracyr,axis=0)
-        sdiim=np.nanmedian(sdiiyr,axis=0)
-        
-        pfracm=np.nanmedian(pfracyr,axis=0)
+        prdyfracm = np.nanmedian(prdyfracyr, axis=0)
+        sdiim = np.nanmedian(sdiiyr, axis=0)
+
+        pfracm = np.nanmedian(pfracyr, axis=0)
         axbin = cdms.createAxis(range(1, ndymon[im]+1), id='cumday')
         lat = dmon.getLatitude()
         lon = dmon.getLongitude()
         pfracm = MV.array(pfracm)
         pfracm.setAxisList((axbin, lat, lon))
         outcumfrac.write(pfracm, id="cumfrac_"+mon)
-        
+
     # Make Spatial pattern with separated months
         if im == 0:
             ndmmon = np.expand_dims(ndm, axis=0)
             prdyfracmmon = np.expand_dims(prdyfracm, axis=0)
             sdiimmon = np.expand_dims(sdiim, axis=0)
         else:
-            ndmmon = MV.concatenate((ndmmon, np.expand_dims(ndm, axis=0)), axis=0)
-            prdyfracmmon = MV.concatenate((prdyfracmmon, np.expand_dims(prdyfracm, axis=0)), axis=0)
-            sdiimmon = MV.concatenate((sdiimmon, np.expand_dims(sdiim, axis=0)), axis=0)
-            
+            ndmmon = MV.concatenate(
+                (ndmmon, np.expand_dims(ndm, axis=0)), axis=0)
+            prdyfracmmon = MV.concatenate(
+                (prdyfracmmon, np.expand_dims(prdyfracm, axis=0)), axis=0)
+            sdiimmon = MV.concatenate(
+                (sdiimmon, np.expand_dims(sdiim, axis=0)), axis=0)
+
     # Domain average
     axmon = cdms.createAxis(range(len(months)), id='month')
     ndmmon = MV.array(ndmmon)
@@ -199,7 +209,7 @@ for id, dat in enumerate(data):
         out.write(ndmmon, id="unevenness")
         out.write(prdyfracmmon, id="prdyfrac")
         out.write(sdiimmon, id="sdii")
-        
+
     # Write data (json file for area averaged metrics)
     outfilename = "dist_cumfrac_unevenness_area.mean_regrid." + \
         str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".json"

@@ -58,7 +58,6 @@ def getDailyCalendarMonth(d, mon):
     - calmo: cdms variable concatenated for specific month
     """
     a = d.getTime()
-    a.designateTime()
     cdutil.setTimeBoundsDaily(a)
     indices, bounds, starts = cdutil.monthBasedSlicer(a, [mon, ])
     calmo = None
@@ -78,30 +77,32 @@ def oneyear(thisyear, missingthresh):
     # Given one year of precip data, calculate the number of days for half of precipitation
     # Ignore years with zero precip (by setting them to NaN).
     # thisyear is one year of data, (an np array) with the time variable in the leftmost dimension
-    dims=thisyear.shape
-    nd=dims[0]
-    missingfrac = (np.sum(np.isnan(thisyear),axis=0)/nd)
-    ptot=np.sum(thisyear,axis=0)
-    sortandflip=-np.sort(-thisyear,axis=0)
-    cum_sum=np.cumsum(sortandflip,axis=0)
-    ptotnp=np.array(ptot)
-    ptotnp[np.where(ptotnp == 0)]=np.nan
-    pfrac = cum_sum / np.tile(ptotnp[np.newaxis,:,:],[nd,1,1])
-    ndhy = np.full((dims[1],dims[2]),np.nan)
-    prdays = np.full((dims[1],dims[2]),np.nan)
-    x=np.linspace(0,nd,num=nd+1,endpoint=True)
-    z=np.array([0.0])
+    dims = thisyear.shape
+    nd = dims[0]
+    missingfrac = (np.sum(np.isnan(thisyear), axis=0)/nd)
+    ptot = np.sum(thisyear, axis=0)
+    sortandflip = -np.sort(-thisyear, axis=0)
+    cum_sum = np.cumsum(sortandflip, axis=0)
+    ptotnp = np.array(ptot)
+    ptotnp[np.where(ptotnp == 0)] = np.nan
+    pfrac = cum_sum / np.tile(ptotnp[np.newaxis, :, :], [nd, 1, 1])
+    ndhy = np.full((dims[1], dims[2]), np.nan)
+    prdays = np.full((dims[1], dims[2]), np.nan)
+    x = np.linspace(0, nd, num=nd+1, endpoint=True)
+    z = np.array([0.0])
     for ij in range(dims[1]):
         for ik in range(dims[2]):
-            p=pfrac[:,ij,ik]
-            y=np.concatenate([z,p])
-            ndh=np.interp(0.5,y,x)
-            ndhy[ij,ik]=ndh
-            if missingfrac[ij,ik] > missingthresh or np.sum(np.isnan(p))/nd > missingthresh:
-                prdays[ij,ik] = np.nan
+            p = pfrac[:, ij, ik]
+            y = np.concatenate([z, p])
+            ndh = np.interp(0.5, y, x)
+            ndhy[ij, ik] = ndh
+            if np.isnan(ptotnp[ij, ik]):
+                prdays[ij, ik] = np.nan
             else:
-                prdays[ij,ik] = np.where(p >= 1)[0][0]+1
-                
+                # For the case, pfrac does not reach 1 (maybe due to regridding)
+                # prdays[ij,ik] = np.where(y >= 1)[0][0]
+                prdays[ij, ik] = np.nanargmax(y)
+
     ndhy[np.where(missingfrac > missingthresh)] = np.nan
     prdyfrac = prdays/nd
     sdii = ptot/prdays
