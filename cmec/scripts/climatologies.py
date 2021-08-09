@@ -23,17 +23,20 @@ def make_climatologies(settings,model_dir,wk_dir):
             cmd = ["pcmdi_compute_climatologies.py","--infile",model_file(),"--outpath",out_base,"--var",var]
             suffix = "pcmdi_compute_climatologies_{0}_{1}.log".format(model,var)
             outfilename = os.path.join(out_base,suffix)
-            #TODO: Check return status
             with open (outfilename,"w") as outfile:
-                subprocess.run(cmd, env=os.environ.copy(), stdout=outfile)
+                subprocess.run(cmd, env=os.environ.copy(), stdout=outfile, check=True)
 
     # Get the date strings from the climo files for the filename template
     settings["test_data_path"] = out_base
     filelist = os.listdir(out_base)
+    ext = os.path.basename(filename_template)[-3:]
+    trim = 30 # default for '.nc'
+    if ext == 'xml':
+        trim = -31
     try:
         for file in filelist:
             if ".AC." in file:
-                suffix = file[-30:]
+                suffix = file[trim:]
                 break
         settings["filename_template"] = os.path.basename(filename_template)[:-3] + suffix
         print("Success in generating climatologies\n")
@@ -50,6 +53,8 @@ def make_climatologies(settings,model_dir,wk_dir):
             sftlf_src = os.path.join(model_dir,s)
             sftlf_dst = os.path.join(out_base,s)
             if os.path.exists(sftlf_src):
+                # Make any subdirectories from sftlf template
+                os.makedirs(os.path.dirname(sftlf_dst),exist_ok=True)
                 os.symlink(sftlf_src,sftlf_dst)
 
     return settings
