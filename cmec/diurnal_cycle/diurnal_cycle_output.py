@@ -10,7 +10,7 @@ nc_data = os.listdir(os.path.join(wkdir,"nc"))
 fname = os.path.join(wkdir,"output.json")
 
 output = {
-	"html": {}
+	"html": {},
 	"metrics": {},
 	"data": {},
 	"plots": {},
@@ -22,7 +22,7 @@ output = {
 		}
 }
 
-with open(json_data[0],"r") as tmp_json:
+with open(os.path.join(wkdir,"json",json_data[0]),"r") as tmp_json:
 	tmp = json.load(tmp_json)
 envir = tmp["provenance"]["packages"]
 envir.pop("PMPObs")

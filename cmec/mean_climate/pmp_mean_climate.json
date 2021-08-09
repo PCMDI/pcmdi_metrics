@@ -35,6 +35,8 @@
         "regrid_tool": "regrid2",
         "regrid_method": "linear",
         "regrid_tool_ocn": "esmf",
-        "regrid_method_ocn": "linear"
+        "regrid_method_ocn": "linear",
+        "save_test_clims": false,
+        "filename_output_template": "%(model_version)_%(variable)_%(region).nc"
     }
 }

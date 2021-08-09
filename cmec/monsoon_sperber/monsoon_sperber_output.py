@@ -50,7 +50,7 @@ output = {
     }
 
 # Read an existing metrics json to get environment info
-with open(json_list[0],"r") as tmp_json:
+with open(os.path.join(wkdir,json_list[0]),"r") as tmp_json:
     tmp = json.load(tmp_json)
 envir = tmp["provenance"]["packages"]
 envir.pop("PMPObs")
