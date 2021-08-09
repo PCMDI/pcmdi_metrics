@@ -49,7 +49,7 @@ def clim_calc(var, infile, outfile, outdir, outfilename, start, end):
     seperate_clims = 'y'
 
 # DEFAULT CLIM - BASED ON ENTIRE TIME SERIES
-    if start is None and end is None:
+    if (start is None) and (end is None):
         d = f(var)
         t = d.getTime()
         c = t.asComponentTime()
