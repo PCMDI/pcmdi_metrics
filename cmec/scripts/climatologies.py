@@ -45,11 +45,11 @@ def make_climatologies(settings,model_dir,wk_dir):
     # since it is the new model folder.
     if settings.get("generate_sftlf",False) is False:
         sftlf=settings.get("sftlf_filename_template","sftlf_%(model_version).nc")
-        s = genutil.StringConstructor(sftlf)
         for model in modellist:
-            s.model_verion = model
-            sftlf_src = os.path.join(model_dir,s())
-            sftlf_dst = os.path.join(out_base,s())
-            os.symlink(sftlf_src,sftlf_dst)
+            s = sftlf.replace("%(model_version)",model)
+            sftlf_src = os.path.join(model_dir,s)
+            sftlf_dst = os.path.join(out_base,s)
+            if os.path.exists(sftlf_src):
+                os.symlink(sftlf_src,sftlf_dst)
 
     return settings
