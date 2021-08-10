@@ -3,13 +3,15 @@ import json
 import pandas as pd
 
 
-def read_mean_clim_json_files(json_list, stats, regions, mip=None, debug=False):
+def read_mean_clim_json_files(json_list,
+                              regions=None, stats=None, 
+                              mip=None, debug=False):
     """
     Parameters
     ----------
     - `json_list`: list of string, where each element is for path/file for PMP output JSON files
-    - `stats`: list of string, where each element is statistic to extract from the JSON
-    - `regions`: list of string, where each element is region to extract from the JSON
+    - `regions`: list of string, where each element is region to extract from the JSON.  Optional
+    - `stats`: list of string, where each element is statistic to extract from the JSON.  Optional
     - `mip`: string, category for mip, e.g., 'cmip6'.  Optional
     - `debug`: bool, default=False, enable few print statements to help debug
 
@@ -20,20 +22,30 @@ def read_mean_clim_json_files(json_list, stats, regions, mip=None, debug=False):
                  (Rows: models, Columns: variables (i.e., 2d array)
     - `var_list`: list of string, all variables from JSON files
     - `var_unit_list`: list of string, all variables and its units from JSON files
+    - `regions`: list of string, regions
+    - `stats`: list of string, statistics
     """
-    # Find variables
-    var_list = sorted([p.split('/')[-1].split('.')[0] for p in json_list])
-
     # Read JSON and get unit for each variable
     results_dict = {}  # merged dict by reading all JSON files
+    var_list = []
     var_unit_list = []
+    
+    regions = None
+    stats = None
 
-    for var, json_file in zip(var_list, json_list):
+    for json_file in json_list:
         with open(json_file) as fj:
-            results_dict[var] = json.load(fj)
+            dict_temp = json.load(fj)
+        var = dict_temp['Variable']['id']
+        if 'level' in list(dict_temp['Variable'].keys()):
+            var += '-' + str(int(dict_temp['Variable']['level']/100.))  # Pa to hPa
+        results_dict[var] = dict_temp
         unit = extract_unit(var, results_dict[var])
         var_unit = var + " [" + unit + "]"
-        var_unit_list.append(var_unit)
+        var_list.append(var)
+        var_unit_list.append(var_unit) 
+        if regions is None and stats is None:
+            regions, stats = extract_region_stat(var, results_dict[var])
     if debug:
         print("var_unit_list:", var_unit_list)
 
@@ -55,13 +67,27 @@ def read_mean_clim_json_files(json_list, stats, regions, mip=None, debug=False):
                 df_dict[stat][season][region] = extract_data(results_dict, var_list,
                                                              region, stat, season, mip, debug)
 
-    return df_dict, var_list, var_unit_list
+    return df_dict, var_list, var_unit_list, regions, stats
 
 
 def extract_unit(var, results_dict_var):
     model_list = sorted(list(results_dict_var['RESULTS'].keys()))
     units = results_dict_var['RESULTS'][model_list[0]]["units"]
     return units
+
+
+def extract_region_stat(var, results_dict_var):
+    model_list = sorted(list(
+        results_dict_var['RESULTS'].keys()))
+    run_list = sorted(list(
+        results_dict_var['RESULTS'][model_list[0]]["default"].keys()))
+    if 'source' in run_list:
+        run_list.remove('source')
+    region_list = sorted(list(
+        results_dict_var['RESULTS'][model_list[0]]["default"][run_list[0]].keys()))
+    stat_list = sorted(list(
+        results_dict_var['RESULTS'][model_list[0]]["default"][run_list[0]][region_list[0]].keys()))
+    return region_list, stat_list
 
 
 def extract_data(results_dict, var_list, region, stat, season, mip, debug=False):
