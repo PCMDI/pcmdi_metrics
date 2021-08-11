@@ -99,10 +99,8 @@ def clim_calc(var, infile, outfile, outdir, outfilename, start, end):
         if seperate_clims == 'y':
             print('outfd is ', outfd)
             out = outfd
-            if out.endswith('.xml'):
-                out = out.replace('.xml', addf)
-            else:
-                out = out.replace('.nc', addf)
+            out = out.replace('.nc', addf)
+            out = out.replace('.xml', addf)
             print('out is ', out)
 
         if seperate_clims == 'n':
