@@ -82,7 +82,7 @@ for eof in ['1','2','3']:
 				data.update(tmp)
 
 				#CBF
-				result_file_tmp = result_file.replace(".png","_cbf.png")
+				result_file_tmp = result_file.replace(".nc","_cbf.nc")
 				if result_file_tmp in nc_list:
 					tmp={
 						"_".join([mod,"EOF"+eof,season]): {
@@ -135,7 +135,7 @@ for eof in ['1','2','3']:
 				result_file_tmp = result_file.replace(".png","_cbf_teleconnection.png")
 				if result_file_tmp in png_list:
 					tmp = {
-						"_".join([mod,"EOF"+eof,season,"cbf"]): {
+						"_".join([mod,"EOF"+eof,season,"cbf teleconnection"]): {
 							"filename": result_file_tmp,
 							"long_name": " ".join([mod,"EOF",eof,season,"cbf teleconnection map"]),
 							"description": "Common basis function teleconnection map for model "+mod+" EOF "+eof
