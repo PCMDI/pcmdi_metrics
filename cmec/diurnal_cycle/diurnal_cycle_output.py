@@ -1,3 +1,9 @@
+"""
+diurnal_cycle_output.py
+Create and populate the output.json metadata file that
+documents the cmec-driver pipeline outputs for the
+Diurnal metrics.
+"""
 import json
 import os
 
