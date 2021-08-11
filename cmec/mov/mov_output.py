@@ -52,13 +52,13 @@ result_file = [f for f in json_list if (name_seg in f) and ("_cmec" not in f)][0
 desc = {
 	"Modes of Variability metrics": {
 		"filename": result_file,
-		"long_name": "",
-		"description": ""
+		"long_name": variability_mode+" statistics",
+		"description": variability_mode+" statistics for different EOF modes in CMEC formatted JSON"
 	},
 	"Modes of Variability metrics cmec": {
 		"filename": result_file.split(".")[0]+"_cmec.json",
-		"long_name": "",
-		"description": ""
+		"long_name": variability_mode+" statistics CMEC format",
+		"description": variability_mode+" statistics for different EOF modes"
 	}
 }
 
@@ -83,7 +83,7 @@ for eof in ['1','2','3']:
 
 				#CBF
 				result_file_tmp = result_file.replace(".png","_cbf.png")
-				if result_file_tmp in png_list:
+				if result_file_tmp in nc_list:
 					tmp={
 						"_".join([mod,"EOF"+eof,season]): {
 							"filename": result_file,
@@ -113,7 +113,7 @@ for eof in ['1','2','3']:
 					tmp = {
 						"_".join([mod,"EOF"+eof,season,"teleconnection"]): {
 							"filename": result_file_tmp,
-							"long_name": " ".join([mod,"EOF",eof,season,"teleconnection map"])
+							"long_name": " ".join([mod,"EOF",eof,season,"teleconnection map"]),
 							"description": "Extended global teleconnection map for model "+mod+" EOF "+eof
 						}
 					}
@@ -125,8 +125,20 @@ for eof in ['1','2','3']:
 					tmp = {
 						"_".join([mod,"EOF"+eof,season,"cbf"]): {
 							"filename": result_file_tmp,
-							"long_name": " ".join([mod,"EOF",eof,season,"cbf","map"])
+							"long_name": " ".join([mod,"EOF",eof,season,"cbf","map"]),
 							"description": "Common basis function map for model "+mod+" EOF "+eof
+						}
+					}
+					plots.update(tmp)
+
+				# CBF teleconnection plots
+				result_file_tmp = result_file.replace(".png","_cbf_teleconnection.png")
+				if result_file_tmp in png_list:
+					tmp = {
+						"_".join([mod,"EOF"+eof,season,"cbf"]): {
+							"filename": result_file_tmp,
+							"long_name": " ".join([mod,"EOF",eof,season,"cbf teleconnection map"]),
+							"description": "Common basis function teleconnection map for model "+mod+" EOF "+eof
 						}
 					}
 					plots.update(tmp)
