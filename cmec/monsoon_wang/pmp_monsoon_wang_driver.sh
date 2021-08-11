@@ -14,7 +14,7 @@ if [[ $? = 0 ]]; then
     mpindex_compute.py -p $tmp_param
 
     # write output.json
-    python $CMEC_CODE_DIR/monsoon_wang.py
+    python $CMEC_CODE_DIR/monsoon_wang_output.py
 else
     echo "Failure in PMP/monsoon_wang parameter file generation"
 fi
