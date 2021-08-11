@@ -1,3 +1,9 @@
+"""
+mov_output.py
+Create and populate the output.json metadata file that
+documents the cmec-driver pipeline outputs for the
+Modes of Variability metrics.
+"""
 import json
 import os
 
@@ -71,7 +77,7 @@ for eof in ['1','2','3']:
 		for mod in modnames:
 			name_seg = "_".join([variability_mode,varModel,"EOF"+eof,season,mip,mod])
 			if nc_out_model:
-				result_file = [f for f in nc_list if name_seg in f and "_cbf" not in f][0]
+				result_file = [f for f in nc_list if ((name_seg in f) and ("_cbf" not in f))][0]
 				tmp={
 					"_".join([mod,"EOF"+eof,season]): {
 						"filename": result_file,
@@ -85,7 +91,7 @@ for eof in ['1','2','3']:
 				result_file_tmp = result_file.replace(".nc","_cbf.nc")
 				if result_file_tmp in nc_list:
 					tmp={
-						"_".join([mod,"EOF"+eof,season]): {
+						"_".join([mod,"EOF"+eof,season,"cbf"]): {
 							"filename": result_file,
 							"long_name": " ".join([mod,season,variability_mode,"EOF",eof,"CBF data"]),
 							"description": "Common Basis Function approach global map, PC timeseries, and fraction for "+mod+" EOF "+eof
