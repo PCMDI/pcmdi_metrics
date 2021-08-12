@@ -29,9 +29,7 @@ def read_mean_clim_json_files(json_list,
     results_dict = {}  # merged dict by reading all JSON files
     var_list = []
     var_unit_list = []
-    
-    regions = None
-    stats = None
+    regions_all = []
 
     for json_file in json_list:
         with open(json_file) as fj:
@@ -43,11 +41,15 @@ def read_mean_clim_json_files(json_list,
         unit = extract_unit(var, results_dict[var])
         var_unit = var + " [" + unit + "]"
         var_list.append(var)
-        var_unit_list.append(var_unit) 
-        if regions is None and stats is None:
-            regions, stats = extract_region_stat(var, results_dict[var])
+        var_unit_list.append(var_unit)
+        regions_all.extend(extract_region(var, results_dict[var]))
+        if stats is None:
+            stats = extract_stat(var, results_dict[var])
     if debug:
         print("var_unit_list:", var_unit_list)
+
+    if regions is None:
+        regions = list(set(regions_all))  # Remove duplicates
 
     # Archive pandas dataframe in returning dictionary
     df_dict = {}
@@ -74,6 +76,15 @@ def extract_unit(var, results_dict_var):
     model_list = sorted(list(results_dict_var['RESULTS'].keys()))
     units = results_dict_var['RESULTS'][model_list[0]]["units"]
     return units
+
+def extract_region(var, results_dict_var):
+    region_list, stat_list = extract_region_stat(var, results_dict_var)
+    return region_list
+
+
+def extract_stat(var, results_dict_var):
+    region_list, stat_list = extract_region_stat(var, results_dict_var)
+    return stat_list
 
 
 def extract_region_stat(var, results_dict_var):
