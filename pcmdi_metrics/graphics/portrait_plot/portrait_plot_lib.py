@@ -90,9 +90,13 @@ def portrait_plot(data,
         sys.exit('Error: Number of (stacked) array is not 1, 2, or 4.')
 
     if annotate:
-        annotate_data, num_divide_annotate = prepare_data(annotate_data, xaxis_labels, yaxis_labels, debug)
-        if num_divide_annotate != num_divide:
-            sys.exit('Error: annotate_data does not have same size as data')
+        if annotate_data is None:
+            annotate_data = data
+            num_divide_annotate = num_divide
+        else:
+            annotate_data, num_divide_annotate = prepare_data(annotate_data, xaxis_labels, yaxis_labels, debug)
+            if num_divide_annotate != num_divide:
+                sys.exit('Error: annotate_data does not have same size as data')
 
     # ----------------
     # Ready to plot!!
