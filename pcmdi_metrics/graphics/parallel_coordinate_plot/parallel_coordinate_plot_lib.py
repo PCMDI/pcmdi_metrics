@@ -131,9 +131,9 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
                 pc.set_alpha(0.8)
     
     # Line or marker
-    num_color = 10
+    num_color = 20
     colors = [plt.get_cmap(colormap)(c) for c in np.linspace(0, 1, num_color)]
-    marker_types = ['o', 's', '*', '^', 'X', 'D']
+    marker_types = ['o', 's', '*', '^', 'X', 'D', 'p']
     markers = list(flatten([[marker] * len(colors) for marker in marker_types]))
     colors *= len(marker_types)
     for j, model in enumerate(model_names):
