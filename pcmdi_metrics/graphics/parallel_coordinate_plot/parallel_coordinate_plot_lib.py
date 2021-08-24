@@ -11,7 +11,7 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
                              fig=None, ax=None, figsize=(15, 5),
                              show_boxplot=True, show_violin=True, title=None, identify_all_models=True,
                              xtick_labels=None, xtick_labelsize=None, ytick_labelsize=None,
-                             colormap='viridis', legend_off=False, logo_rect=None, logo_off=False):
+                             colormap='viridis', num_color=20, legend_off=False, logo_rect=None, logo_off=False):
     """
     Parameters
     ----------
@@ -29,6 +29,7 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
     - `xtick_labelsize`: number, fontsize for x-axis tick labels (optional)
     - `ytick_labelsize`: number, fontsize for x-axis tick labels (optional)
     - `colormap`: string, default='viridis', matplotlib colormap
+    - `num_color`: integer, default=20, how many color to use.
     - `legend_off`: bool, default=False, turn off legend
     - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes. All quantities are in fractions of figure width and height.  Optional
     - `logo_off`: bool, default=False, turn off PMP logo
@@ -131,7 +132,6 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
                 pc.set_alpha(0.8)
     
     # Line or marker
-    num_color = 20
     colors = [plt.get_cmap(colormap)(c) for c in np.linspace(0, 1, num_color)]
     marker_types = ['o', 's', '*', '^', 'X', 'D', 'p']
     markers = list(flatten([[marker] * len(colors) for marker in marker_types]))
