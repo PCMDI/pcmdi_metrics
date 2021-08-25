@@ -32,6 +32,8 @@ def read_mean_clim_json_files(json_list,
     regions_all = []
 
     for json_file in json_list:
+        if debug:
+            print('json_file:', json_file)
         with open(json_file) as fj:
             dict_temp = json.load(fj)
         var = dict_temp['Variable']['id']
