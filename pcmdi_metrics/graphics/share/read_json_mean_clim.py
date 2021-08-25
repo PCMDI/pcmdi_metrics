@@ -158,6 +158,6 @@ def normalize_by_median(data, axis=0):
     ------
     - `data_nor`: 2d numpy array
     """
-    median = np.nanmedian(data, axis=0)
+    median = np.nanmedian(data, axis=axis)
     data_nor = (data - median) / median
     return data_nor
