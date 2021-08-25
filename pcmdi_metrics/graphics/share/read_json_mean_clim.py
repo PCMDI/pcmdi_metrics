@@ -1,6 +1,7 @@
 import numpy as np
 import json
 import pandas as pd
+import sys
 
 
 def read_mean_clim_json_files(json_list,
@@ -159,5 +160,10 @@ def normalize_by_median(data, axis=0):
     - `data_nor`: 2d numpy array
     """
     median = np.nanmedian(data, axis=axis)
-    data_nor = (data - median) / median
+    if axis == 0:
+        data_nor = (data - median) / median
+    elif axis == 1:
+        data_nor = (data - median[:, np.newaxis]) / median[:, np.newaxis] 
+    else:
+        sys.exit('Error: given axis option is not available')
     return data_nor
