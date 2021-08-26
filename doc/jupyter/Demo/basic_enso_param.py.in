@@ -15,7 +15,7 @@ modpath_lf = '$INPUT_DIR$/CMIP5_demo_data/sftlf_fx_%(model)_amip_r0i0p0.nc'
 
 # OBSERVATIONS
 obs_cmor = True
-obs_cmor_path = "$INPUT_DIR$/PCMDIobs2"
+obs_cmor_path = "$INPUT_DIR$/obs4MIPs_PCMDI_monthly"
 obs_catalogue = "demo_data/obs4MIPs_PCMDI-CEM2021_monthly_bySource_catalogue_v20210805_demo.json"
 
 # METRICS COLLECTION
