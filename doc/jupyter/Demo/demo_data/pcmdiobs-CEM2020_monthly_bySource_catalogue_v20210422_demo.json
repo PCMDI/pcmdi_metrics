@@ -1,0 +1,180 @@
+{
+    "AVISO-1-0": {
+        "zos": {
+            "CMIP_CMOR_TABLE": "Omon",
+            "MD5sum": "50dfba202220048192f8b3092ac4f60b",
+            "RefName": "AVISO-1-0",
+            "RefTrackingDate": "Thu Apr 22 10:34:12 2021",
+            "filename": "zos_mon_AVISO-1-0_BE_gn_v20210422_199301-201912.nc",
+            "period": "199301-201912",
+            "shape": "(324, 720, 1440)",
+            "template": "ocean/mon/zos/AVISO-1-0/gn/v20210422/zos_mon_AVISO-1-0_BE_gn_v20210422_199301-201912.nc"
+        }
+    },
+    "ERA-INT": {
+        "hfls": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "931115171bd83691053ada406daf60a3",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:17:48 2020",
+            "filename": "hfls_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/hfls/ERA-INT/gn/v20200707/hfls_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "hfss": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "6aa1e0d9f239b68ab218b0155e23acdd",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:17:57 2020",
+            "filename": "hfss_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/hfss/ERA-INT/gn/v20200707/hfss_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "pr": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "596bccd7f74acf87130da23360dbb433",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:18:14 2020",
+            "filename": "pr_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/pr/ERA-INT/gn/v20200707/pr_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "psl": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "c25c6e044f72bf0bf04ce9f373b0b765",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:18:05 2020",
+            "filename": "psl_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/psl/ERA-INT/gn/v20200707/psl_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "rlds": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "76dcae175a8ff42777845d99263e93ea",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:18:30 2020",
+            "filename": "rlds_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/rlds/ERA-INT/gn/v20200707/rlds_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "rlus": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "b39190423e9ec4874da0bb0672670a79",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:18:22 2020",
+            "filename": "rlus_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/rlus/ERA-INT/gn/v20200707/rlus_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "rsds": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "4b6d51361cfb64fa3c2c8832eac701af",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:18:38 2020",
+            "filename": "rsds_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/rsds/ERA-INT/gn/v20200707/rsds_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "rsus": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "5148ad12cad32475f0c6102de3b44b80",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:18:46 2020",
+            "filename": "rsus_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/rsus/ERA-INT/gn/v20200707/rsus_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "sfcWind": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "68c612decadbc820eb478297523b0c07",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:18:55 2020",
+            "filename": "sfcWind_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/sfcWind/ERA-INT/gn/v20200707/sfcWind_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "tauu": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "b3f3638e211b5b0090565c0ce9859324",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:19:22 2020",
+            "filename": "tauu_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/tauu/ERA-INT/gn/v20200707/tauu_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "tauv": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "b4979b789e23c1e4f9af92817c8b3889",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:19:32 2020",
+            "filename": "tauv_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/tauv/ERA-INT/gn/v20200707/tauv_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "ts": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "fc8d87f5f3f791125b63570fdf23abf4",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:19:39 2020",
+            "filename": "ts_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/ts/ERA-INT/gn/v20200707/ts_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "uas": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "9dd9c9d291fc7589277cea1ec848b387",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:19:04 2020",
+            "filename": "uas_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/uas/ERA-INT/gn/v20200707/uas_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        },
+        "vas": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "2e30ab7a3b3840a5e8649e9cce4aa1e9",
+            "RefName": "ERA-INT",
+            "RefTrackingDate": "Tue Jul  7 11:19:13 2020",
+            "filename": "vas_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "atmos/mon/vas/ERA-INT/gn/v20200707/vas_mon_ERA-INT_BE_gn_v20200707_197901-201903.nc"
+        }
+    },
+    "GPCP-2-3": {
+        "pr": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "b6741c3f979b77a23509778f3a28403d",
+            "RefName": "GPCP-2-3",
+            "RefTrackingDate": "Tue Jul  7 11:15:25 2020",
+            "filename": "pr_mon_GPCP-2-3_BE_gn_v20200707_197901-201907.nc",
+            "period": "197901-201907",
+            "shape": "(487, 72, 144)",
+            "template": "atmos/mon/pr/GPCP-2-3/gn/v20200707/pr_mon_GPCP-2-3_BE_gn_v20200707_197901-201907.nc"
+        }
+    },
+    "HadISST-1-1": {
+        "ts": {
+            "CMIP_CMOR_TABLE": "Amon",
+            "MD5sum": "4c983e9fc232f1348dc950abd1900ec5",
+            "RefName": "HadISST-1-1",
+            "RefTrackingDate": "Thu Apr 22 10:31:26 2021",
+            "filename": "ts_mon_HadISST-1-1_BE_gn_v20210422_187001-201907.nc",
+            "period": "187001-201907",
+            "shape": "(1795, 180, 360)",
+            "template": "atmos/mon/ts/HadISST-1-1/gn/v20210422/ts_mon_HadISST-1-1_BE_gn_v20210422_187001-201907.nc"
+        }
+    }
+}
