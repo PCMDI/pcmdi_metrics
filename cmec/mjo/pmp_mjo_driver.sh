@@ -12,6 +12,9 @@ $CMEC_CONFIG_DIR/cmec.json $tmp_param "mjo"
 
 if [[ $? = 0 ]]; then
     mjo_metrics_driver.py -p $tmp_param
+
+    # write output.json
+    python $CMEC_CODE_DIR/mjo_output.py
 else
     echo "Failure in PMP/mjo parameter file generation"
 fi
