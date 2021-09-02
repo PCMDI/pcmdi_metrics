@@ -58,7 +58,6 @@ if __name__ == '__main__':
 
     # Overwrite some specific metrics settings
     if pmp_config == "mean_climate":
-        if "case_id" in settings:
         settings["test_data_path"] = model_dir
         settings["reference_data_path"] = obs_dir
         settings["metrics_output_path"] = wk_dir
