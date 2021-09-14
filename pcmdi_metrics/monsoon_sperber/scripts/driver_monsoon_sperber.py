@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-""" Calculate monsoon metrics
+"""
+Calculate monsoon metrics
 
 Jiwoo Lee (lee1043@llnl.gov)
 
@@ -52,11 +53,12 @@ import time
 
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
+from glob import glob
 from shutil import copyfile
-from pcmdi_metrics.monsoon_sperber import AddParserArgument, YearCheck
-from pcmdi_metrics.monsoon_sperber import model_land_only
-from pcmdi_metrics.monsoon_sperber import divide_chunks_advanced, interp1d
-from pcmdi_metrics.monsoon_sperber import sperber_metrics
+from pcmdi_metrics.monsoon_sperber.lib import AddParserArgument, YearCheck
+from pcmdi_metrics.monsoon_sperber.lib import model_land_only
+from pcmdi_metrics.monsoon_sperber.lib import divide_chunks_advanced, interp1d
+from pcmdi_metrics.monsoon_sperber.lib import sperber_metrics
 
 
 def tree():
@@ -79,6 +81,17 @@ P = pcmdi_metrics.driver.pmp_parser.PMPParser(
     description='Runs PCMDI Monsoon Sperber Computations',
     formatter_class=RawTextHelpFormatter)
 P = AddParserArgument(P)
+P.add_argument("--cmec",
+               dest="cmec",
+               default=False,
+               action="store_true",
+               help="Use to save CMEC format metrics JSON")
+P.add_argument("--no_cmec",
+               dest="cmec",
+               default=False,
+               action="store_false",
+               help="Do not save CMEC format metrics JSON")
+P.set_defaults(cmec=False)
 param = P.get_parameter()
 
 # Pre-defined options
@@ -91,6 +104,7 @@ realm = param.realm
 nc_out = param.nc_out  # Record NetCDF output
 plot = param.plot  # Generate plots
 includeOBS = param.includeOBS  # Loop run for OBS or not
+cmec = param.cmec  # CMEC formatted JSON
 
 # Path to reference data
 reference_data_name = param.reference_data_name
@@ -181,6 +195,9 @@ egg_pth = pkg_resources.resource_filename(
 exec(compile(open(os.path.join(egg_pth, "default_regions.py")).read(),
              os.path.join(egg_pth, "default_regions.py"), 'exec'))
 
+# =================================================
+# Loop start for given models
+# -------------------------------------------------
 if includeOBS:
     models.insert(0, 'obs')
 
@@ -209,10 +226,7 @@ for model in models:
             syear = msyear
             eyear = meyear
             # variable data
-            model_path_list = os.popen(
-                'ls ' + modpath(
-                     model=model, exp=exp, realization=realization,
-                     variable=var)).readlines()
+            model_path_list = glob(modpath(model=model, exp=exp, realization=realization, variable=var))
             if debug:
                 print('debug: model_path_list: ', model_path_list)
             # land fraction
@@ -240,7 +254,11 @@ for model in models:
                 if model == 'obs':
                     run = 'obs'
                 else:
-                    run = model_path.split('/')[-1].split('.')[3]
+                    if realization in ['all', 'All', 'ALL', '*']:
+                        run_index = modpath.split('.').index('%(realization)')
+                        run = model_path.split('/')[-1].split('.')[run_index]
+                    else:
+                        run = realization
                     # dict
                     if run not in monsoon_stat_dic['RESULTS'][model]:
                         monsoon_stat_dic['RESULTS'][model][run] = {}
@@ -293,7 +311,7 @@ for model in models:
                 # Write individual year time series for each monsoon domain
                 # in a netCDF file
                 if nc_out:
-                    output_filename = "{}_{}_{}_{}_{}_{}_{}".format(
+                    output_filename = "{}_{}_{}_{}_{}_{}-{}".format(
                         mip, model, exp,
                         run, 'monsoon_sperber', startYear, endYear)
                     fout = cdms2.open(os.path.join(
@@ -316,6 +334,8 @@ for model in models:
                     for i, region in enumerate(list_monsoon_regions):
                         ax[region] = plt.subplot(nrows, ncols, i+1)
                         ax[region].set_ylim(0, 1)
+                        # ax[region].set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
+                        # ax[region].set_xticks([0, 10, 20, 30, 40, 50, 60, 70])
                         ax[region].margins(x=0)
                         print('plot: region', region, 'nrows',
                               nrows, 'ncols', ncols, 'index', i+1)
@@ -573,6 +593,8 @@ for model in models:
                            sort_keys=True,
                            indent=4,
                            separators=(',', ': '))
+                if cmec:
+                    JSON.write_cmec(indent=4, separators=(',', ': '))
 
             except Exception as err:
                 if debug:
@@ -595,4 +617,4 @@ for model in models:
 # --- Model loop end
 
 if not debug:
-    sys.exit('done')
+    sys.exit(0)
