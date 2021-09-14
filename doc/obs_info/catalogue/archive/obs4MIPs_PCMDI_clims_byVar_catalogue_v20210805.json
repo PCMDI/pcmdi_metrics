@@ -7,7 +7,8 @@
             "filename": "hfls_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "hfls/ERA-INT/v20210804/hfls_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "hfls/ERA-INT/latest/hfls_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "TropFlux-1-0": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -16,7 +17,8 @@
             "filename": "hfls_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 60, 350)",
-            "template": "hfls/TropFlux-1-0/v20210804/hfls_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "hfls/TropFlux-1-0/latest/hfls_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         }
     },
     "hfns": {
@@ -27,7 +29,8 @@
             "filename": "hfns_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 60, 350)",
-            "template": "hfns/TropFlux-1-0/v20210804/hfns_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "hfns/TropFlux-1-0/latest/hfns_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         }
     },
     "hfss": {
@@ -38,7 +41,8 @@
             "filename": "hfss_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "hfss/ERA-INT/v20210804/hfss_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "hfss/ERA-INT/latest/hfss_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "TropFlux-1-0": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -47,7 +51,8 @@
             "filename": "hfss_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 60, 350)",
-            "template": "hfss/TropFlux-1-0/v20210804/hfss_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "hfss/TropFlux-1-0/latest/hfss_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         }
     },
     "hur": {
@@ -58,7 +63,8 @@
             "filename": "hur_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 19, 121, 240)",
-            "template": "hur/ERA-INT/v20210804/hur_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "hur/ERA-INT/latest/hur_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         }
     },
     "hus": {
@@ -69,7 +75,8 @@
             "filename": "hus_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 19, 121, 240)",
-            "template": "hus/ERA-INT/v20210804/hus_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "hus/ERA-INT/latest/hus_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "default": "ERA-INT"
     },
@@ -81,7 +88,8 @@
             "filename": "pr_mon_CMAP-V1902_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 72, 144)",
-            "template": "pr/CMAP-V1902/v20210804/pr_mon_CMAP-V1902_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "pr/CMAP-V1902/latest/pr_mon_CMAP-V1902_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "ERA-INT": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -90,7 +98,8 @@
             "filename": "pr_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "pr/ERA-INT/v20210804/pr_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "pr/ERA-INT/latest/pr_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "GPCP-2-3": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -99,7 +108,8 @@
             "filename": "pr_mon_GPCP-2-3_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 72, 144)",
-            "template": "pr/GPCP-2-3/v20210804/pr_mon_GPCP-2-3_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "pr/GPCP-2-3/latest/pr_mon_GPCP-2-3_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "TRMM-3B43v-7": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -108,7 +118,8 @@
             "filename": "pr_mon_TRMM-3B43v-7_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 400, 1440)",
-            "template": "pr/TRMM-3B43v-7/v20210804/pr_mon_TRMM-3B43v-7_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "pr/TRMM-3B43v-7/latest/pr_mon_TRMM-3B43v-7_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "TRMM-3B43v-7",
         "alternate2": "CMAP-V1902",
@@ -122,7 +133,8 @@
             "filename": "prw_mon_REMSS-PRW-v07r01_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "prw/REMSS-PRW-v07r01/v20210804/prw_mon_REMSS-PRW-v07r01_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "prw/REMSS-PRW-v07r01/latest/prw_mon_REMSS-PRW-v07r01_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "default": "REMSS-PRW-v07r01"
     },
@@ -134,7 +146,8 @@
             "filename": "psl_mon_20CR_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 91, 180)",
-            "template": "psl/20CR/v20210804/psl_mon_20CR_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "psl/20CR/latest/psl_mon_20CR_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "ERA-20C": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -143,7 +156,8 @@
             "filename": "psl_mon_ERA-20C_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 181, 360)",
-            "template": "psl/ERA-20C/v20210804/psl_mon_ERA-20C_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "psl/ERA-20C/latest/psl_mon_ERA-20C_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "ERA-5": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -152,7 +166,8 @@
             "filename": "psl_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "psl/ERA-5/v20210805/psl_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc"
+            "template": "psl/ERA-5/latest/psl_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
+            "version": "latest"
         },
         "ERA-INT": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -161,7 +176,8 @@
             "filename": "psl_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "psl/ERA-INT/v20210804/psl_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "psl/ERA-INT/latest/psl_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "ERA-INT",
         "default": "ERA-5"
@@ -174,7 +190,8 @@
             "filename": "rlds_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rlds/CERES-EBAF-4-1/v20210804/rlds_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rlds/CERES-EBAF-4-1/latest/rlds_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "ERA-INT": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -183,7 +200,8 @@
             "filename": "rlds_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "rlds/ERA-INT/v20210804/rlds_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rlds/ERA-INT/latest/rlds_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "default": "CERES-EBAF-4-1"
     },
@@ -195,7 +213,8 @@
             "filename": "rldscs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rldscs/CERES-EBAF-4-1/v20210804/rldscs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rldscs/CERES-EBAF-4-1/latest/rldscs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "default": "CERES-EBAF-4-1"
     },
@@ -207,7 +226,8 @@
             "filename": "rltcre_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rltcre/CERES-EBAF-4-0/v20210804/rltcre_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rltcre/CERES-EBAF-4-0/latest/rltcre_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "CERES-EBAF-4-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -216,7 +236,8 @@
             "filename": "rltcre_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rltcre/CERES-EBAF-4-1/v20210804/rltcre_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rltcre/CERES-EBAF-4-1/latest/rltcre_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "CERES-EBAF-4-0",
         "default": "CERES-EBAF-4-1"
@@ -229,7 +250,8 @@
             "filename": "rlus_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rlus/CERES-EBAF-4-0/v20210804/rlus_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rlus/CERES-EBAF-4-0/latest/rlus_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "CERES-EBAF-4-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -238,7 +260,8 @@
             "filename": "rlus_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rlus/CERES-EBAF-4-1/v20210804/rlus_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rlus/CERES-EBAF-4-1/latest/rlus_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "ERA-INT": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -247,7 +270,8 @@
             "filename": "rlus_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "rlus/ERA-INT/v20210804/rlus_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rlus/ERA-INT/latest/rlus_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "CERES-EBAF-4-0",
         "default": "CERES-EBAF-4-1"
@@ -260,7 +284,8 @@
             "filename": "rlut_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rlut/CERES-EBAF-4-0/v20210804/rlut_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rlut/CERES-EBAF-4-0/latest/rlut_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "CERES-EBAF-4-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -269,7 +294,8 @@
             "filename": "rlut_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rlut/CERES-EBAF-4-1/v20210804/rlut_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rlut/CERES-EBAF-4-1/latest/rlut_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "CERES-EBAF-4-0",
         "default": "CERES-EBAF-4-1"
@@ -282,7 +308,8 @@
             "filename": "rlutcs_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rlutcs/CERES-EBAF-4-0/v20210804/rlutcs_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rlutcs/CERES-EBAF-4-0/latest/rlutcs_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "CERES-EBAF-4-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -291,7 +318,8 @@
             "filename": "rlutcs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rlutcs/CERES-EBAF-4-1/v20210804/rlutcs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rlutcs/CERES-EBAF-4-1/latest/rlutcs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "CERES-EBAF-4-0",
         "default": "CERES-EBAF-4-1"
@@ -304,7 +332,8 @@
             "filename": "rsds_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsds/CERES-EBAF-4-0/v20210804/rsds_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsds/CERES-EBAF-4-0/latest/rsds_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "CERES-EBAF-4-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -313,7 +342,8 @@
             "filename": "rsds_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsds/CERES-EBAF-4-1/v20210804/rsds_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsds/CERES-EBAF-4-1/latest/rsds_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "ERA-INT": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -322,7 +352,8 @@
             "filename": "rsds_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "rsds/ERA-INT/v20210804/rsds_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsds/ERA-INT/latest/rsds_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "CERES-EBAF-4-0",
         "default": "CERES-EBAF-4-1"
@@ -335,7 +366,8 @@
             "filename": "rsdscs_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsdscs/CERES-EBAF-4-0/v20210804/rsdscs_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsdscs/CERES-EBAF-4-0/latest/rsdscs_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "CERES-EBAF-4-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -344,7 +376,8 @@
             "filename": "rsdscs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsdscs/CERES-EBAF-4-1/v20210804/rsdscs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsdscs/CERES-EBAF-4-1/latest/rsdscs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "CERES-EBAF-4-0",
         "default": "CERES-EBAF-4-1"
@@ -357,7 +390,8 @@
             "filename": "rsdt_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsdt/CERES-EBAF-4-1/v20210804/rsdt_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsdt/CERES-EBAF-4-1/latest/rsdt_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "default": "CERES-EBAF-4-1"
     },
@@ -369,7 +403,8 @@
             "filename": "rstcre_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rstcre/CERES-EBAF-4-0/v20210804/rstcre_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rstcre/CERES-EBAF-4-0/latest/rstcre_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "CERES-EBAF-4-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -378,7 +413,8 @@
             "filename": "rstcre_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rstcre/CERES-EBAF-4-1/v20210804/rstcre_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rstcre/CERES-EBAF-4-1/latest/rstcre_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "CERES-EBAF-4-0",
         "default": "CERES-EBAF-4-1"
@@ -391,7 +427,8 @@
             "filename": "rsus_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsus/CERES-EBAF-4-0/v20210804/rsus_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsus/CERES-EBAF-4-0/latest/rsus_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "CERES-EBAF-4-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -400,7 +437,8 @@
             "filename": "rsus_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsus/CERES-EBAF-4-1/v20210804/rsus_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsus/CERES-EBAF-4-1/latest/rsus_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "ERA-INT": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -409,7 +447,8 @@
             "filename": "rsus_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "rsus/ERA-INT/v20210804/rsus_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsus/ERA-INT/latest/rsus_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "CERES-EBAF-4-0",
         "default": "CERES-EBAF-4-1"
@@ -422,7 +461,8 @@
             "filename": "rsuscs_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsuscs/CERES-EBAF-4-0/v20210804/rsuscs_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsuscs/CERES-EBAF-4-0/latest/rsuscs_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "CERES-EBAF-4-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -431,7 +471,8 @@
             "filename": "rsuscs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsuscs/CERES-EBAF-4-1/v20210804/rsuscs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsuscs/CERES-EBAF-4-1/latest/rsuscs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         }
     },
     "rsut": {
@@ -442,7 +483,8 @@
             "filename": "rsut_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsut/CERES-EBAF-4-0/v20210804/rsut_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsut/CERES-EBAF-4-0/latest/rsut_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "CERES-EBAF-4-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -451,7 +493,8 @@
             "filename": "rsut_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsut/CERES-EBAF-4-1/v20210804/rsut_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsut/CERES-EBAF-4-1/latest/rsut_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "CERES-EBAF-4-0",
         "default": "CERES-EBAF-4-1"
@@ -464,7 +507,8 @@
             "filename": "rsutcs_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsutcs/CERES-EBAF-4-0/v20210804/rsutcs_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsutcs/CERES-EBAF-4-0/latest/rsutcs_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "CERES-EBAF-4-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -473,7 +517,8 @@
             "filename": "rsutcs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rsutcs/CERES-EBAF-4-1/v20210804/rsutcs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rsutcs/CERES-EBAF-4-1/latest/rsutcs_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "CERES-EBAF-4-0",
         "default": "CERES-EBAF-4-1"
@@ -486,7 +531,8 @@
             "filename": "rt_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rt/CERES-EBAF-4-0/v20210804/rt_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rt/CERES-EBAF-4-0/latest/rt_mon_CERES-EBAF-4-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "CERES-EBAF-4-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -495,7 +541,8 @@
             "filename": "rt_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "rt/CERES-EBAF-4-1/v20210804/rt_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "rt/CERES-EBAF-4-1/latest/rt_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         }
     },
     "sfcWind": {
@@ -506,7 +553,8 @@
             "filename": "sfcWind_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "sfcWind/ERA-INT/v20210804/sfcWind_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "sfcWind/ERA-INT/latest/sfcWind_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "REMSS-PRW-v07r01": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -515,7 +563,8 @@
             "filename": "sfcWind_mon_REMSS-PRW-v07r01_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "sfcWind/REMSS-PRW-v07r01/v20210804/sfcWind_mon_REMSS-PRW-v07r01_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "sfcWind/REMSS-PRW-v07r01/latest/sfcWind_mon_REMSS-PRW-v07r01_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "ERA-INT",
         "default": "REMSS-PRW-v07r01"
@@ -528,7 +577,8 @@
             "filename": "ta_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
             "period": "200301-201812",
             "shape": "(12, 37, 180, 360)",
-            "template": "ta/ERA-5/v20210805/ta_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc"
+            "template": "ta/ERA-5/latest/ta_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
+            "version": "latest"
         },
         "ERA-INT": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -537,7 +587,8 @@
             "filename": "ta_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 19, 121, 240)",
-            "template": "ta/ERA-INT/v20210804/ta_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "ta/ERA-INT/latest/ta_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate2": "ERA-INT",
         "default": "ERA-5"
@@ -550,7 +601,8 @@
             "filename": "tas_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "tas/ERA-5/v20210805/tas_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc"
+            "template": "tas/ERA-5/latest/tas_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
+            "version": "latest"
         },
         "TropFlux-1-0": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -559,7 +611,8 @@
             "filename": "tas_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 60, 350)",
-            "template": "tas/TropFlux-1-0/v20210804/tas_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "tas/TropFlux-1-0/latest/tas_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "default": "ERA-5"
     },
@@ -571,7 +624,8 @@
             "filename": "tauu_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "tauu/ERA-INT/v20210804/tauu_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "tauu/ERA-INT/latest/tauu_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "TropFlux-1-0": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -580,7 +634,8 @@
             "filename": "tauu_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 60, 350)",
-            "template": "tauu/TropFlux-1-0/v20210804/tauu_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "tauu/TropFlux-1-0/latest/tauu_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "default": "ERA-INT"
     },
@@ -592,7 +647,8 @@
             "filename": "tauv_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "tauv/ERA-INT/v20210804/tauv_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "tauv/ERA-INT/latest/tauv_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "TropFlux-1-0": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -601,7 +657,8 @@
             "filename": "tauv_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 60, 350)",
-            "template": "tauv/TropFlux-1-0/v20210804/tauv_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "tauv/TropFlux-1-0/latest/tauv_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "default": "ERA-INT"
     },
@@ -613,7 +670,8 @@
             "filename": "ts_mon_20CR_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 94, 192)",
-            "template": "ts/20CR/v20210804/ts_mon_20CR_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "ts/20CR/latest/ts_mon_20CR_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "ERA-20C": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -622,7 +680,8 @@
             "filename": "ts_mon_ERA-20C_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 181, 360)",
-            "template": "ts/ERA-20C/v20210804/ts_mon_ERA-20C_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "ts/ERA-20C/latest/ts_mon_ERA-20C_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "ERA-5": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -631,7 +690,8 @@
             "filename": "ts_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "ts/ERA-5/v20210805/ts_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc"
+            "template": "ts/ERA-5/latest/ts_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
+            "version": "latest"
         },
         "ERA-INT": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -640,7 +700,8 @@
             "filename": "ts_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "ts/ERA-INT/v20210804/ts_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "ts/ERA-INT/latest/ts_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "HadISST-1-1": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -649,7 +710,8 @@
             "filename": "ts_mon_HadISST-1-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
-            "template": "ts/HadISST-1-1/v20210804/ts_mon_HadISST-1-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "ts/HadISST-1-1/latest/ts_mon_HadISST-1-1_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "TropFlux-1-0": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -658,7 +720,8 @@
             "filename": "ts_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 60, 350)",
-            "template": "ts/TropFlux-1-0/v20210804/ts_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "ts/TropFlux-1-0/latest/ts_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "HadISST-1-1",
         "default": "ERA-5"
@@ -671,7 +734,8 @@
             "filename": "ua_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
             "period": "200301-201812",
             "shape": "(12, 37, 180, 360)",
-            "template": "ua/ERA-5/v20210805/ua_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc"
+            "template": "ua/ERA-5/latest/ua_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
+            "version": "latest"
         },
         "ERA-INT": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -680,7 +744,8 @@
             "filename": "ua_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 19, 121, 240)",
-            "template": "ua/ERA-INT/v20210804/ua_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "ua/ERA-INT/latest/ua_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "ERA-INT",
         "default": "ERA-5"
@@ -693,7 +758,8 @@
             "filename": "uas_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "uas/ERA-INT/v20210804/uas_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "uas/ERA-INT/latest/uas_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "ERA-INT"
     },
@@ -705,7 +771,8 @@
             "filename": "va_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
             "period": "200301-201812",
             "shape": "(12, 37, 180, 360)",
-            "template": "va/ERA-5/v20210805/va_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc"
+            "template": "va/ERA-5/latest/va_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
+            "version": "latest"
         },
         "ERA-INT": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -714,7 +781,8 @@
             "filename": "va_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 19, 121, 240)",
-            "template": "va/ERA-INT/v20210804/va_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "va/ERA-INT/latest/va_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "ERA-INT",
         "default": "ERA-5"
@@ -727,7 +795,8 @@
             "filename": "vas_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 241, 480)",
-            "template": "vas/ERA-INT/v20210804/vas_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "vas/ERA-INT/latest/vas_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate2": "ERA-INT"
     },
@@ -739,7 +808,8 @@
             "filename": "zg_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
             "period": "200301-201812",
             "shape": "(12, 37, 180, 360)",
-            "template": "zg/ERA-5/v20210805/zg_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc"
+            "template": "zg/ERA-5/latest/zg_mon_ERA-5_PCMDI_1x1.200301-201812.AC.v20210805.nc",
+            "version": "latest"
         },
         "ERA-INT": {
             "CMIP_CMOR_TABLE": "Amon",
@@ -748,7 +818,8 @@
             "filename": "zg_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 19, 121, 240)",
-            "template": "zg/ERA-INT/v20210804/zg_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "zg/ERA-INT/latest/zg_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "alternate1": "ERA-INT",
         "default": "ERA-5"
@@ -761,7 +832,8 @@
             "filename": "zos_mon_AVISO-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
             "period": "200301-201812",
             "shape": "(12, 720, 1440)",
-            "template": "zos/AVISO-1-0/v20210804/zos_mon_AVISO-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "zos/AVISO-1-0/latest/zos_mon_AVISO-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "version": "latest"
         },
         "default": "AVISO-1-0"
     }
