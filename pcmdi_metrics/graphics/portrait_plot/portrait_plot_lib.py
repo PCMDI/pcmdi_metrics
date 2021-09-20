@@ -78,7 +78,7 @@ def portrait_plot(data,
     ------
     - `fig`: matplotlib component for figure
     - `ax`: matplotlib component for axis
-    - `cbar`: matplotlib component for colorbar
+    - `cbar`: matplotlib component for colorbar (not returned if colorbar_off=True)
 
     Author: Jiwoo Lee @ LLNL (2021. 7)
     """
@@ -169,17 +169,6 @@ def portrait_plot(data,
                               yaxis_labels=yaxis_labels,
                               invert_yaxis=invert_yaxis)
 
-
-    if not colorbar_off:
-        # Create colorbar
-        cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
-
-        # Label for colorbar
-        if cbar_label is not None:
-            cbar.ax.set_ylabel(cbar_label, rotation=-90, va="bottom",
-                               fontsize=cbar_label_fontsize)
-            cbar.ax.tick_params(labelsize=cbar_tick_fontsize)
-
     # Let the horizontal axes labeling appear on top.
     ax.tick_params(top=True, bottom=False,
                    labeltop=True, labelbottom=False)
@@ -208,7 +197,19 @@ def portrait_plot(data,
             logo_rect = [0.9, 0.15, 0.15, 0.15]
         fig, ax = add_logo(fig, ax, logo_rect)
 
-    return fig, ax, cbar
+    if not colorbar_off:
+        # Create colorbar
+        cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
+
+        # Label for colorbar
+        if cbar_label is not None:
+            cbar.ax.set_ylabel(cbar_label, rotation=-90, va="bottom",
+                               fontsize=cbar_label_fontsize)
+            cbar.ax.tick_params(labelsize=cbar_tick_fontsize)
+
+        return fig, ax, cbar
+    else:
+        return fig, ax
 
 
 # ======================================================================
