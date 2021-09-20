@@ -19,6 +19,7 @@ def portrait_plot(data,
                   cbar_label_fontsize=15,
                   cbar_tick_fontsize=12,
                   cbar_kw={},
+                  colorbar_off=False,
                   missing_color='grey',
                   invert_yaxis=True,
                   box_as_square=False,
@@ -57,6 +58,7 @@ def portrait_plot(data,
     - `cbar_label_fontsize`: number, default=15, font size for colorbar labels
     - `cbar_tick_fontsize`: number, default=12, font size for colorbar tick labels
     - `cbar_kw`: A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
+    - `colorbar_off`: Trun off colorbar if True.  Optional.
     - `missing_color`: color, default="grey", `matplotlib.axes.Axes.set_facecolor` parameter
     - `invert_yaxis`: bool, default=True, place y=0 at top on the plot
     - `box_as_square`: bool, default=False, make each box as square
@@ -167,8 +169,16 @@ def portrait_plot(data,
                               yaxis_labels=yaxis_labels,
                               invert_yaxis=invert_yaxis)
 
-    # Create colorbar
-    cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
+
+    if not colorbar_off:
+        # Create colorbar
+        cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
+
+        # Label for colorbar
+        if cbar_label is not None:
+            cbar.ax.set_ylabel(cbar_label, rotation=-90, va="bottom",
+                               fontsize=cbar_label_fontsize)
+            cbar.ax.tick_params(labelsize=cbar_tick_fontsize)
 
     # Let the horizontal axes labeling appear on top.
     ax.tick_params(top=True, bottom=False,
@@ -181,12 +191,6 @@ def portrait_plot(data,
 
     # Set font size for yaxis tick labels
     plt.setp(ax.get_yticklabels(), fontsize=yaxis_fontsize)
-
-    # Label for colorbar
-    if cbar_label is not None:
-        cbar.ax.set_ylabel(cbar_label, rotation=-90, va="bottom",
-                           fontsize=cbar_label_fontsize)
-        cbar.ax.tick_params(labelsize=cbar_tick_fontsize)
 
     # Legend
     if legend_on:
