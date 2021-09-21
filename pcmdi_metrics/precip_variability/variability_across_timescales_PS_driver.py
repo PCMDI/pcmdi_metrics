@@ -47,10 +47,10 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
     if not os.path.exists(outdir(output_type=output_type)):
         try:
             os.makedirs(outdir(output_type=output_type))
-        except:
+        except FileExistsError:
             pass
-    print(outdir(output_type=output_type))   
-    
+    print(outdir(output_type=output_type))
+
 # Read data
 file_list = sorted(glob.glob(os.path.join(modpath, "*" + mod + "*")))
 f = []
