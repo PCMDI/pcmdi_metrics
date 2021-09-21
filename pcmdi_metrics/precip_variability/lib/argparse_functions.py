@@ -39,7 +39,7 @@ def AddParserArgument(P):
                    dest='prd',
                    nargs='+',
                    default=None,
-                   help="list of start- and end-year for analysis")
+                   help="start- and end-year for analysis (e.g., 1985 2004)")
     P.add_argument("--fac",
                    type=str,
                    dest='fac',
