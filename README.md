@@ -3,7 +3,7 @@
 
 PCMDI metrics package (PMP)
 ======
-[![stable version](https://img.shields.io/badge/stable%20version-v1.2-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.2)
+[![stable version](https://img.shields.io/badge/stable%20version-v2.0-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.0)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1414560.svg)](https://doi.org/10.5281/zenodo.1414560)
 [![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/installer/conda.svg)](https://conda.anaconda.org/pcmdi)
