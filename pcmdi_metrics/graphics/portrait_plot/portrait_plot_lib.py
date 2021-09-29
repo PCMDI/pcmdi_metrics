@@ -11,6 +11,7 @@ def portrait_plot(data,
                   yaxis_labels,
                   fig=None, ax=None,
                   annotate=False, annotate_data=None, annotate_fontsize=15,
+                  annotate_format="{x:.2f}",
                   figsize=(12, 10), vrange=None,
                   xaxis_fontsize=15, yaxis_fontsize=15,
                   cmap="RdBu_r",
@@ -48,6 +49,7 @@ def portrait_plot(data,
                   but work only for heatmap style map (i.e., no triangles)
     - `annotate_data`: 2d numpy array, default=None. If None, the image's data is used.  Optional.
     - `annotate_fontsize`: number (int/float), default=15. Font size for annotation
+    - `annotate_format`: format for annotate value, default="{x:.2f}"
     - `figsize`: tuple of two numbers (width, height), default=(12, 10), figure size in inches
     - `vrange`: tuple of two numbers, range of value for colorbar.  Optional.
     - `xaxis_fontsize`: number, default=15, font size for xaxis tick labels
@@ -139,7 +141,7 @@ def portrait_plot(data,
             annotate_heatmap(im, ax=ax,
                              data=data,
                              annotate_data=annotate_data,
-                             valfmt="{x:.2f}", threshold=(2, -2),
+                             valfmt=annotate_format, threshold=(2, -2),
                              fontsize=annotate_fontsize)
 
     # [2] Two triangle portrait plot
