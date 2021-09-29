@@ -5,7 +5,7 @@ import sys
 
 
 def read_mean_clim_json_files(json_list,
-                              regions=None, stats=None, 
+                              regions=None, stats=None,
                               mip=None, debug=False):
     """
     Parameters
@@ -79,6 +79,7 @@ def extract_unit(var, results_dict_var):
     model_list = sorted(list(results_dict_var['RESULTS'].keys()))
     units = results_dict_var['RESULTS'][model_list[0]]["units"]
     return units
+
 
 def extract_region(var, results_dict_var):
     region_list, stat_list = extract_region_stat(var, results_dict_var)
@@ -163,7 +164,7 @@ def normalize_by_median(data, axis=0):
     if axis == 0:
         data_nor = (data - median) / median
     elif axis == 1:
-        data_nor = (data - median[:, np.newaxis]) / median[:, np.newaxis] 
+        data_nor = (data - median[:, np.newaxis]) / median[:, np.newaxis]
     else:
         sys.exit('Error: given axis option is not available')
     return data_nor

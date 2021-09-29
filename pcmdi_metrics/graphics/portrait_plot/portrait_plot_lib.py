@@ -293,7 +293,7 @@ def heatmap(data, row_labels, col_labels, ax=None,
 
     if ax is None:
         ax = plt.gca()
-        
+
     if invert_yaxis:
         ax.invert_yaxis()
 
@@ -346,7 +346,7 @@ def annotate_heatmap(im, ax,
     """
     if not isinstance(data, (list, np.ndarray)):
         data = im.get_array().reshape(im._meshHeight, im._meshWidth)
-        
+
     if annotate_data is None:
         annotate_data = data
 
@@ -450,7 +450,7 @@ def quatromatrix(top, right, bottom, left, ax=None, tripcolorkw={},
             k = i * m + j
             A[k*5:(k+1)*5, :] = np.c_[a[:, 0]+j, a[:, 1]+i]
             Tr[k*4:(k+1)*4, :] = tr + k * 5
-            
+
     if invert_yaxis:
         ax.invert_yaxis()
         C = np.c_[left.flatten(), top.flatten(),
@@ -508,21 +508,21 @@ def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1, fo
         if labels is None:
             labels = ['TOP', 'RIGHT', 'BOTTOM', 'LEFT']
         ax.add_patch(plt.Polygon([[box_x, box_y],
-                                [box_x + box_size/2., box_y + box_size/2],
-                                [box_x + box_size, box_y]],
-                                color="k", fill=False, clip_on=False, lw=lw))
+                                 [box_x + box_size/2., box_y + box_size/2],
+                                 [box_x + box_size, box_y]],
+                                 color="k", fill=False, clip_on=False, lw=lw))
         ax.add_patch(plt.Polygon([[box_x + box_size, box_y],
-                                [box_x + box_size/2., box_y + box_size/2],
-                                [box_x + box_size, box_y + box_size]],
-                                color="k", fill=False, clip_on=False, lw=lw))
+                                 [box_x + box_size/2., box_y + box_size/2],
+                                 [box_x + box_size, box_y + box_size]],
+                                 color="k", fill=False, clip_on=False, lw=lw))
         ax.add_patch(plt.Polygon([[box_x + box_size, box_y + box_size],
-                                [box_x + box_size/2., box_y + box_size/2],
-                                [box_x, box_y + box_size]],
-                                color="k", fill=False, clip_on=False, lw=lw))
+                                 [box_x + box_size/2., box_y + box_size/2],
+                                 [box_x, box_y + box_size]],
+                                 color="k", fill=False, clip_on=False, lw=lw))
         ax.add_patch(plt.Polygon([[box_x, box_y],
-                                [box_x + box_size/2., box_y + box_size/2],
-                                [box_x, box_y + box_size]],
-                                color="k", fill=False, clip_on=False, lw=lw))
+                                 [box_x + box_size/2., box_y + box_size/2],
+                                 [box_x, box_y + box_size]],
+                                 color="k", fill=False, clip_on=False, lw=lw))
         ax.text(box_x + box_size * 0.5, box_y + box_size * 0.2, labels[0],
                 ha='center', va='center', fontsize=fontsize)
         ax.text(box_x + box_size * 0.8, box_y + box_size * 0.5, labels[1],
@@ -533,15 +533,15 @@ def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1, fo
                 ha='center', va='center', fontsize=fontsize)
     elif num_divide == 2:
         if labels is None:
-            labels=['UPPER', 'LOWER']    
+            labels = ['UPPER', 'LOWER']
         ax.add_patch(plt.Polygon([[box_x, box_y], 
-                                [box_x, box_y + box_size], 
-                                [box_x + box_size, box_y]], 
-                                color="k", fill=False, clip_on=False, lw=lw))
+                                 [box_x, box_y + box_size], 
+                                 [box_x + box_size, box_y]], 
+                                 color="k", fill=False, clip_on=False, lw=lw))
         ax.add_patch(plt.Polygon([[box_x + box_size, box_y + box_size], 
-                                [box_x, box_y + box_size], 
-                                [box_x + box_size, box_y]], 
-                                color="k", fill=False, clip_on=False, lw=lw))
+                                 [box_x, box_y + box_size], 
+                                 [box_x + box_size, box_y]], 
+                                 color="k", fill=False, clip_on=False, lw=lw))
         ax.text(box_x + box_size * 0.05, box_y + box_size * 0.2, labels[0],
                 ha='left', va='center', fontsize=fontsize)
         ax.text(box_x + box_size * 0.95, box_y + box_size * 0.8, labels[1],

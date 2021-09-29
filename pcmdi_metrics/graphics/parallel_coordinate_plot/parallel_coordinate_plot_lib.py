@@ -3,7 +3,6 @@ from pcmdi_metrics.graphics import add_logo
 import matplotlib.pyplot as plt
 import matplotlib.pylab as pylab
 import numpy as np
-import urllib.request
 import sys
 
 
@@ -19,8 +18,10 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
     - `metric_names`: list, names of metrics for individual vertical axes (axis=1)
     - `model_names`: list, name of models for markers/lines (axis=0)
     - `model_highlights`: list, default=None, List of models to highlight as lines
-    - `fig`: `matplotlib.figure` instance to which the parallel coordinate plot is plotted.  If not provided, use current axes or create a new one.  Optional.
-    - `ax`: `matplotlib.axes.Axes` instance to which the parallel coordinate plot is plotted.  If not provided, use current axes or create a new one.  Optional.
+    - `fig`: `matplotlib.figure` instance to which the parallel coordinate plot is plotted.
+             If not provided, use current axes or create a new one.  Optional.
+    - `ax`: `matplotlib.axes.Axes` instance to which the parallel coordinate plot is plotted.
+            If not provided, use current axes or create a new one.  Optional.
     - `figsize`: tuple (two numbers), default=(15,5), image size
     - `show_boxplot`: bool, default=True, show box and wiskers plot
     - `show_violin`: bool, default=True, show violin plot
@@ -31,31 +32,32 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
     - `colormap`: string, default='viridis', matplotlib colormap
     - `num_color`: integer, default=20, how many color to use.
     - `legend_off`: bool, default=False, turn off legend
-    - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes. All quantities are in fractions of figure width and height.  Optional
+    - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes.
+                   All quantities are in fractions of figure width and height.  Optional
     - `logo_off`: bool, default=False, turn off PMP logo
 
     Return
     ------
     - `fig`: matplotlib component for figure
     - `ax`: matplotlib component for axis
-    
+
     Author: Jiwoo Lee @ LLNL (2021. 7)
     Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
     """
     params = {'legend.fontsize': 'large',
               'axes.labelsize': 'x-large',
-              'axes.titlesize':'x-large',
-              'xtick.labelsize':'x-large',
-              'ytick.labelsize':'x-large'}
+              'axes.titlesize': 'x-large',
+              'xtick.labelsize': 'x-large',
+              'ytick.labelsize': 'x-large'}
     pylab.rcParams.update(params)
 
     # Quick initial QC
     if data.shape[0] != len(model_names):
-        sys.exit('Error: data.shape[0], ' + str(data.shape[0])
-                 + ', mismatch to len(model_names), ' + str(len(model_names)))
+        sys.exit('Error: data.shape[0], ' + str(data.shape[0]) +
+                 ', mismatch to len(model_names), ' + str(len(model_names)))
     if data.shape[1] != len(metric_names):
-        sys.exit('Error: data.shape[1], ' + str(data.shape[1])
-                 +', mismatch to len(metric_names), ' + str(len(metric_names)))
+        sys.exit('Error: data.shape[1], ' + str(data.shape[1]) +
+                 ', mismatch to len(metric_names), ' + str(len(metric_names)))
 
     # Data to plot
     ys = data  # stacked y-axis values
@@ -75,7 +77,7 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
     # Prepare plot
     if N > 20:
         if xtick_labelsize is None:
-                xtick_labelsize = 'large'
+            xtick_labelsize = 'large'
         if ytick_labelsize is None:
             ytick_labelsize = 'large'
     else:
@@ -115,8 +117,8 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
 
         # Box plot
         if show_boxplot:
-            box = ax.boxplot(y_filtered, positions=range(N), 
-                               patch_artist=True, widths=0.15)
+            box = ax.boxplot(y_filtered, positions=range(N),
+                             patch_artist=True, widths=0.15)
             for item in ['boxes', 'whiskers', 'fliers', 'medians', 'caps']:
                 plt.setp(box[item], color='darkgrey')
             plt.setp(box["boxes"], facecolor='None')
@@ -125,12 +127,12 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
         # Violin plot
         if show_violin:
             violin = ax.violinplot(y_filtered, positions=range(N),
-                                     showmeans=False, showmedians=False, showextrema=False)
+                                   showmeans=False, showmedians=False, showextrema=False)
             for pc in violin['bodies']:
                 pc.set_facecolor('lightgrey')
                 pc.set_edgecolor('None')
                 pc.set_alpha(0.8)
-    
+
     # Line or marker
     colors = [plt.get_cmap(colormap)(c) for c in np.linspace(0, 1, num_color)]
     marker_types = ['o', 's', '*', '^', 'X', 'D', 'p']
@@ -139,15 +141,15 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
     for j, model in enumerate(model_names):
         # to just draw straight lines between the axes:
         if model in model_highlights:
-            ax.plot(range(N), zs[j,:], '-',
-                      c=colors[j],
-                      label=model, lw=3)
+            ax.plot(range(N), zs[j, :], '-',
+                    c=colors[j],
+                    label=model, lw=3)
         else:
             if identify_all_models:
-                ax.plot(range(N), zs[j,:], markers[j],
-                          c=colors[j],
-                          label=model,
-                          clip_on=False)        
+                ax.plot(range(N), zs[j, :], markers[j],
+                        c=colors[j],
+                        label=model,
+                        clip_on=False)
 
     ax.set_xlim(-0.5, N - 0.5)
     ax.set_xticks(range(N))
