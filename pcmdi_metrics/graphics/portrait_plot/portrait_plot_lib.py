@@ -534,13 +534,13 @@ def add_legend(num_divide, ax, box_xy=None, box_size=None, labels=None, lw=1, fo
     elif num_divide == 2:
         if labels is None:
             labels = ['UPPER', 'LOWER']
-        ax.add_patch(plt.Polygon([[box_x, box_y], 
-                                 [box_x, box_y + box_size], 
-                                 [box_x + box_size, box_y]], 
+        ax.add_patch(plt.Polygon([[box_x, box_y],
+                                 [box_x, box_y + box_size],
+                                 [box_x + box_size, box_y]],
                                  color="k", fill=False, clip_on=False, lw=lw))
-        ax.add_patch(plt.Polygon([[box_x + box_size, box_y + box_size], 
-                                 [box_x, box_y + box_size], 
-                                 [box_x + box_size, box_y]], 
+        ax.add_patch(plt.Polygon([[box_x + box_size, box_y + box_size],
+                                 [box_x, box_y + box_size],
+                                 [box_x + box_size, box_y]],
                                  color="k", fill=False, clip_on=False, lw=lw))
         ax.text(box_x + box_size * 0.05, box_y + box_size * 0.2, labels[0],
                 ha='left', va='center', fontsize=fontsize)
