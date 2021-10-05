@@ -1,4 +1,8 @@
-# Usage
+# Bar Chart for PMP Results
+
+Visualize PMP output in bar chart template is useful for quick checks on statistics.
+
+## Usage
 
 For one season:
 ```
