@@ -33,8 +33,8 @@ for o,p in opts:
     if o in ['-d','--domain']:
         dom=p
 
-print json_path,' ',season,' ', pathout,' ', exp,' ', var , ' ', dom
-print 'after args'
+print(json_path,' ',season,' ', pathout,' ', exp,' ', var , ' ', dom)
+print('after args')
 
 fj = open(json_path)
 dd = json.loads(fj.read())
