@@ -1,0 +1,21 @@
+https://pcmdiweb.llnl.gov/pss/pmpdata/
+9d92d486fe3963b29f4d4926e47eab8b  CMIP5_demo_clims/cmip5.historical.ACCESS1-0.r1i1p1.mon.pr.198101-200512.AC.v20200426.nc
+16fb29fa02cc8c68e170502bca145640  CMIP5_demo_clims/cmip5.historical.ACCESS1-0.r1i1p1.mon.rlut.198101-200512.AC.v20200426.nc
+71aea66241de722a75e26d8fe55a1a22  CMIP5_demo_clims/cmip5.historical.ACCESS1-0.r1i1p1.mon.zg.198101-200512.AC.v20200426.nc
+44cce7b8a402a1004ca53565ab378615  CMIP5_demo_clims/cmip5.historical.CanCM4.r1i1p1.mon.pr.198101-200512.AC.v20200426.nc
+40b2bfa71a3b7d2febb55652ef551001  CMIP5_demo_clims/cmip5.historical.CanCM4.r1i1p1.mon.rlut.198101-200512.AC.v20200426.nc
+8bb70ae9036280c79d4e305b801d8066  CMIP5_demo_clims/cmip5.historical.CanCM4.r1i1p1.mon.zg.198101-200512.AC.v20200426.nc
+1abfd5cbcceac61ac51fed2e2c398eed  CMIP5_demo_clims/cmip6.historical.MCM-UA-1-0.r1i1p1f1.mon.zg.198101-200512.AC.v20201119.nc
+d5e86e3680cce1a0004bbe9663d20cf6  CMIP5_demo_data/psl_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc
+dd810f1de8a5db5cddf6a0ab22717cdc  CMIP5_demo_data/sftlf_fx_ACCESS1-0_amip_r0i0p0.nc
+2c402715c026eb1d39ec8e450857ef6e  CMIP5_demo_data/ts_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc
+804a9542e3681917c9da7ba3d62503fa  PCMDIobs2_clims/atmos/rlut/CERES-EBAF-4-0/rlut_mon_CERES-EBAF-4-0_BE_gn_200003-201810.v20200421.AC.nc
+0358a26ade74574eb44a4c37fb0c59e1  PCMDIobs2_clims/atmos/rlut/CERES-EBAF-4-1/rlut_mon_CERES-EBAF-4-1_BE_gn_200301-201812.v20200421.AC.nc
+d773f68878d213db1c253417f7c7d380  PCMDIobs2_clims/atmos/pr/GPCP-2-3/pr_mon_GPCP-2-3_BE_gn_197901-201907.v20200421.AC.nc
+1a75c3fc6ca9f6dc1867898dcc8343e8  PCMDIobs2_clims/atmos/zg/ERA-INT/zg_mon_ERA-INT_BE_gn_198901-201001.v20200421.AC.nc
+8534afbd8ab49e7a48b64b1f92c813f9  PCMDIobs2/atmos/mon/rlut/CERES-EBAF-4-1/gn/v20200707/rlut_mon_CERES-EBAF-4-1_BE_gn_v20200707_200301-201812.nc
+b6741c3f979b77a23509778f3a28403d  PCMDIobs2/atmos/mon/pr/GPCP-2-3/gn/v20200707/pr_mon_GPCP-2-3_BE_gn_v20200707_197901-201907.nc
+fc21b9030f19abb3f752bd0bf8e42c00  PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707/psl_mon_20CR_BE_gn_v20200707_187101-201212.nc
+f74b3785195105e5b931b17f3e7eac19  PCMDIobs2/atmos/mon/ts/HadISST-1-1/gn/v20200707/ts_mon_HadISST-1-1_BE_gn_v20200707_187001-201907.nc
+1615175d54328d001b817c7e9cb56eeb  PCMDIobs2/atmos/day/pr/GPCP-IP/gn/v20200719/pr_day_GPCP-IP_BE_gn_v20200719_19980101-19981231.nc
+eab076619d05c886648f33d507f4a721  misc_demo_data/atm/3hr/pr/pr_3hr_IPSL-CM5A-LR_historical_r1i1p1_5x5_1997-1999.nc

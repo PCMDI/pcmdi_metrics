@@ -9,7 +9,7 @@ case_id = 'sampletest_140910'
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF
 # CLIMATOLOGY FILENAME
-model_versions = ['GFDL-CM4', ]  # ['GFDL-ESM2G',] ; # Model identifier
+test_data_set = ['GFDL-CM4', ]  # ['GFDL-ESM2G',] ; # Model identifier
 
 # Below are the STANDARD keys that the main code will be looking for
 period = '000101-000112'  # Model climatological period (if relevant)
@@ -60,10 +60,9 @@ vars = [
 
 # Observations to use 'default', 'alternate', 'all or specific enumerated
 # climatology e.g. 'ref3'
-ref = ['default']  # ,'all','alternate','ref3'
-
+reference_data_set = ['default']  # ,'all','alternate','ref3'
 # INTERPOLATION OPTIONS
-targetGrid = '2.5x2.5'  # Options: '2.5x2.5' or an actual cdms2 grid object
+target_grid = '2.5x2.5'  # Options: '2.5x2.5' or an actual cdms2 grid object
 regrid_tool = 'regrid2'  # Options: 'regrid2','esmf'
 # Options: 'linear','conservative', only if tool is esmf
 regrid_method = 'linear'
@@ -73,7 +72,24 @@ regrid_tool_ocn = 'esmf'
 regrid_method_ocn = 'linear'
 # Options: True or False (Save interpolated model climatologies used in
 # metrics calculations)
-save_mod_clims = True
+save_test_clims = True
+
+
+# REGIONAL STUDIES
+# USER CAN CREATE CUSTOM REGIONS
+import cdutil
+regions_specs = {"Nino34":
+                 {"value": 0.,
+                  "domain": cdutil.region.domain(latitude=(-5., 5., "ccb"), longitude=(190., 240., "ccb"))},
+                 "NAM": {"value": 0.,
+                         "domain": {'latitude': (0., 45.), 'longitude': (210., 310.)},
+                         }
+                 }
+# REGIONS ON WHICH WE WANT TO RUN METRICS (var specific)
+# Here we run "all" default regions (glb, NHEX, SHEX, TROP) for both
+# but also ocean and user defined Nino34 and NAME for tas (only)
+regions = {"tas": [None, "ocean", "Nino34", "NAM"], "tos": None}
+
 
 # DATA LOCATION: MODELS, OBS AND METRICS OUTPUT - AND TEMPLATES FOR MODEL OUTPUT CLIMATOLOGY FILES
 # Following are custom keys specific to your local system
@@ -93,10 +109,11 @@ custom_keys = {
 # %(realm)
 # %(table) # CMIP standard table id - e.g. Amon (Atmosphere monthly), Omon (Ocean monthly)
 # %(level) # extracted by driver from vars list defined above
-# %(model_version) # set by driver from model_versions list defined above
+# %(model_version) # set by driver from test_data_set list defined above
 # %(realization) # Model realization information - e.g. r1i1p1
 # %(period) # Time period of analysis
 # %(ext) # Output file extension
+# %(case_id) # Output file extension
 
 # Templates for input climatology files
 # TEMPLATE EXAMPLE (once constructed) :
@@ -111,17 +128,24 @@ sftlf_filename_template = "sftlf_%(model_version).nc"
 generate_sftlf = True
 
 # ROOT PATH FOR MODELS CLIMATOLOGIES
-mod_data_path = '/export/durack1/140701_metrics/test_new'
+test_data_path = '/export/durack1/140701_metrics/test_new'
 # ROOT PATH FOR OBSERVATIONS
-obs_data_path = '/export/durack1/140701_metrics/obs'
+reference_data_path = '/export/durack1/140701_metrics/obs'
 # DIRECTORY WHERE TO PUT RESULTS - will create case_id subdirectory
 metrics_output_path = '/export/durack1/140701_metrics/test_new'
 # DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES - will create
 # case_id subdirectory
-model_clims_interpolated_output = '/export/durack1/140701_metrics/test_new'
+test_clims_interpolated_output = '/export/durack1/140701_metrics/test_new'
 # FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
 filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_historical_" +\
     "%(realization)_%(period)_interpolated_%(regridMethod)_%(targetGridName)-clim%(ext)"
+
+# Observation json file can be customized and overwritten as follow:
+# Custom obs dictionary file
+custom_observations = os.path.abspath(
+    os.path.join(
+        reference_data_path,
+        "obs_info_dictionary.json"))
 
 # CUSTOM METRICS
 # The following examples allow users to plug in a set of custom metrics

@@ -1,0 +1,23 @@
+# output directory
+results_dir = '$OUTPUT_DIR$/diurnal/nc'
+
+# input directory
+modpath = '$INPUT_DIR$/misc_demo_data/atm/3hr/pr/'
+
+# filenames template
+filename_template = 'pr_3hr_%(model)_%(experiment)_%(realization)_5x5_1997-1999.nc'
+
+# model to use
+model = 'IPSL-CM5A-LR'
+experiment = 'historical'
+realization = 'r1i1p1'
+
+# Month to use
+month = 7
+
+# Period
+firstyear = 1997 # included
+lastyear = 1999  # included
+
+# Number of workers
+num_workers = 4

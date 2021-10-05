@@ -1,0 +1,46 @@
+import os
+
+#
+#  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY:
+#
+#
+
+# MODEL VARIABLES THAT MUST BE SET
+mip = 'cmip5'
+exp = 'historical'
+#frequency = 'da'
+#realm = 'atm'
+#realization = 'r6i1p1'
+
+# MODEL VERSIONS AND ROOT PATH
+modnames = ['GISS-E2-H']
+modpath = '$INPUT_DIR$/CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_GISS-E2-H_historical_r6i1p1_20000101-20051231.nc'
+modpath_lf = '$INPUT_DIR$/CMIP5_demo_data/cmip5.historical.GISS-E2-H.sftlf.nc' # land fraction mask
+
+varModel = 'pr'
+ModUnitsAdjust = (True, 'multiply', 86400.0)  # kg m-2 s-1 to mm day-1
+units = 'mm/d'
+
+msyear = 2000
+meyear = 2005
+
+# ROOT PATH FOR OBSERVATIONS
+reference_data_path = '$INPUT_DIR$/PCMDIobs2/atmos/day/pr/GPCP-IP/gn/v20200719/pr.day.GPCP-IP.BE.gn.v20200719.1998-1999.xml'
+reference_data_name = 'GPCP-IP'
+reference_data_lf_path = '$INPUT_DIR$/misc_demo_data/fx/sftlf.GPCP-IP.1x1.nc'  # land fraction mask
+
+varOBS = 'pr'
+ObsUnitsAdjust = (True, 'multiply', 86400.0)  # kg m-2 s-1 to mm day-1
+
+osyear = 1998
+oeyear = 1999
+
+includeOBS = True
+
+# DIRECTORY WHERE TO PUT RESULTS
+results_dir = 'demo_output/monsoon_sperber/Ex1'
+
+# OUTPUT OPTIONS
+update_json = False
+nc_out = False  # Write output in NetCDF
+plot = False  # Create map graphics

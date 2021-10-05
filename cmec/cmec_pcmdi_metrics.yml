@@ -1,0 +1,13 @@
+name: _CMEC_pcmdi_metrics
+channels:
+  - pcmdi/label/nightly
+  - cdat/label/v8.2.1
+  - conda-forge
+dependencies:
+  - python=3.7
+  - cdat
+  - mesalib=17.3.9
+  - libnetcdf[build=mpi_openmpi_*]
+  - pcmdi_metrics
+  - eofs
+  - scipy
