@@ -15,7 +15,8 @@ json_path = 'default'
 season = 'default'
 domain = 'NHEX'
 var = 'default'
-pathout = './'
+pathout = './example_plot'
+
 stat = 'bias'
 opts, pargs = getopt.getopt(args,letters,keywords)
 
