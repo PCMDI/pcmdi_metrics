@@ -24,7 +24,7 @@ for o,p in opts:
         json_path=p
     if o in ['-v','--var']:
         var = p
-    if o in ['-s','--season']: # djf / mam / jja / son / ann
+    if o in ['-s','--season']:  # djf / mam / jja / son / ann
         season=p
     if o in ['-o','--plotpath']:
         pathout=p
@@ -49,17 +49,17 @@ mods = dd['RESULTS'].keys()
 
 seasons = [season]
 if season == 'all':
-  seasons = ['ann', 'djf', 'mam', 'jja', 'son']
-  rects = {'ann':511, 'djf':512, 'mam':513, 'jja':514, 'son':515} # subplot location
-  fig = PLT.figure(figsize=(10,16)) # optimized figure size for five subplots
-  fig_filename = var + '_' + exp + '_bias_5panel_' + season + '_' + dom
+    seasons = ['ann', 'djf', 'mam', 'jja', 'son']
+    rects = {'ann':511, 'djf':512, 'mam':513, 'jja':514, 'son':515}  # subplot location
+    fig = PLT.figure(figsize=(10,16))  # optimized figure size for five subplots
+    fig_filename = var + '_' + exp + '_bias_5panel_' + season + '_' + dom
 else:
-  rects = {}
-  rects[season] = 111 # subplot location
-  fig = PLT.figure(figsize=(10,6)) # optimized figure size for one subplot
-  fig_filename = var + '_' + exp + '_bias_1panel_' + season + '_' + dom
+    rects = {}
+    rects[season] = 111  # subplot location
+    fig = PLT.figure(figsize=(10,6))  # optimized figure size for one subplot
+    fig_filename = var + '_' + exp + '_bias_1panel_' + season + '_' + dom
 
-fig.suptitle(var.title()+', '+(exp+', '+dom).upper(), size='x-large') # Giving title for the entire canvas
+fig.suptitle(var.title()+', '+(exp+', '+dom).upper(), size='x-large')  # Giving title for the entire canvas
 
 for season in seasons:
     all_mods = []
@@ -67,13 +67,13 @@ for season in seasons:
         bias = float(dd['RESULTS'][mod]["defaultReference"]['r1i1p1']['global']['bias_xy_'+season+'_'+dom])*unit_adj
         all_mods.append(bias)
     dia = BarChart(mods,all_mods,fig=fig, rect=rects[season])
-    dia._ax.set_title(season.upper()) # Give title for individual subplot
-    if season != seasons[-1]: # Hide x-axis labels for upper panels if plotting multiple panels
-      dia._ax.axes.xaxis.set_ticklabels([])
-      dia._ax.set_xlabel('')
+    dia._ax.set_title(season.upper())  # Give title for individual subplot
+    if season != seasons[-1]:  # Hide x-axis labels for upper panels if plotting multiple panels
+        dia._ax.axes.xaxis.set_ticklabels([])
+        dia._ax.set_xlabel('')
 
 if len(seasons) == 1:
-  fig.subplots_adjust(bottom=0.3) # Give more bottom margins to model name show up
+    fig.subplots_adjust(bottom=0.3)  # Give more bottom margins to model name show up
 
 PLT.savefig(pathout + '/' + fig_filename + '.png')
 
