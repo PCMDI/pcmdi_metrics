@@ -1,6 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as PLT
-import sys
+import matplotlib.pyplot as plt
+
 
 class BarChart(object):
 
@@ -12,7 +12,7 @@ class BarChart(object):
 
         # Canvas setup
         if fig is None:
-            fig = PLT.figure
+            fig = plt.figure
         ax = fig.add_subplot(rect)
 
         # Enable to control ax options outside of this file
@@ -24,12 +24,12 @@ class BarChart(object):
 
         # Array setup
         num_mods = len(mods)
-        x = np.linspace(0,num_mods-1,num_mods)
+        x = np.linspace(0, num_mods-1, num_mods)
         y = np.array(data) * unit_adjust
         labels = mods
 
         # Plotting
-        ax.bar(x,y,bottom=0,align='center')
+        ax.bar(x, y, bottom=0, align='center')
         ax.axhline(0, color='black')
 
         # Title and axis
@@ -38,10 +38,9 @@ class BarChart(object):
         ax.set_ylabel(unit)
         ax.set_xlim([-1., len(y) - 0.5])
         ax.set_ylim([y.min() * 1.1, y.max() * 1.1])
-        #ax.grid(True)
 
         # Axis labels
-        PLT.xticks(x,labels,rotation='vertical')  # Label x-axis as model names
+        plt.xticks(x, labels, rotation='vertical')  # Label x-axis as model names
 
         # Multi model mean / std. dev. / min / max
         yave = np.mean(y)
