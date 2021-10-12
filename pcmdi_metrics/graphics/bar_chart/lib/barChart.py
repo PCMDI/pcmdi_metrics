@@ -39,7 +39,7 @@ class BarChart(object):
         ylabel = stat
         if unit is not None:
             ylabel = stat + ', (' + unit + ')'
-        ax.set_ylabel(ylable)
+        ax.set_ylabel(ylabel)
         ax.set_xlim([-1., len(y) - 0.5])
         ax.set_ylim([y.min() * 1.1, y.max() * 1.1])
 
