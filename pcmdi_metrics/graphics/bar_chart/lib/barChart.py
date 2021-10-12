@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 class BarChart(object):
 
     def __init__(self, mods, data,
-                 unit='Unit needed here',
+                 stat,
+                 unit=None,
                  unit_adjust=1,
                  fig=None,
                  rect=111):
@@ -35,7 +36,10 @@ class BarChart(object):
         # Title and axis
         ax.set_title('Subtitle needed here')
         ax.set_xlabel('Models')
-        ax.set_ylabel(unit)
+        ylabel = stat
+        if unit is not None:
+            ylabel = stat + ', (' + unit + ')'
+        ax.set_ylabel(ylable)
         ax.set_xlim([-1., len(y) - 0.5])
         ax.set_ylim([y.min() * 1.1, y.max() * 1.1])
 
