@@ -1,40 +1,11 @@
 #!/usr/bin/env python
 
-import matplotlib.pyplot as plt
+import argparse
 import json
-import sys
+import matplotlib.pyplot as plt
 import os
-import getopt
 from pcmdi_metrics.graphics.bias_bar_chart import BarChart
 
-"""
-args = sys.argv[1:]
-letters = 'j:v:s:e:d:o:'
-keywords = ['json=', 'var=', 'season=', 'exp=', 'domain=', 'pathout=']
-json_path = 'default'
-season = 'default'
-domain = 'NHEX'
-var = 'default'
-pathout = './example_plot'
-
-stat = 'bias'
-opts, pargs = getopt.getopt(args, letters, keywords)
-
-for o, p in opts:
-    if o in ['-j', '--json']:
-        json_path = p
-    if o in ['-v', '--var']:
-        var = p
-    if o in ['-s', '--season']:  # djf / mam / jja / son / ann
-        season = p
-    if o in ['-o', '--pathout']:
-        pathout = p
-    if o in ['-e', '--exp']:
-        exp = p
-    if o in ['-d', '--domain']:
-        domain = p
-"""        
-import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-j", "--json", help="path for input json file")
 parser.add_argument("-v", "--var", help="variable")
