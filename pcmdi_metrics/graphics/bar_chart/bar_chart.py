@@ -4,7 +4,7 @@ import argparse
 import json
 import matplotlib.pyplot as plt
 import os
-from pcmdi_metrics.graphics.bias_bar_chart import BarChart
+from pcmdi_metrics.graphics.bar_chart import BarChart
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-j", "--json", help="path for input json file")
