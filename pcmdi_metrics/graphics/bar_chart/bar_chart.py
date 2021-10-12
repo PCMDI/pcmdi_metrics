@@ -7,6 +7,7 @@ import os
 import getopt
 from pcmdi_metrics.graphics.bias_bar_chart import BarChart
 
+"""
 args = sys.argv[1:]
 letters = 'j:v:s:e:d:o:'
 keywords = ['json=', 'var=', 'season=', 'exp=', 'domain=', 'pathout=']
@@ -32,6 +33,27 @@ for o, p in opts:
         exp = p
     if o in ['-d', '--domain']:
         domain = p
+"""        
+import argparse
+parser = argparse.ArgumentParser()
+parser.add_argument("-j", "--json", help="path for input json file")
+parser.add_argument("-v", "--var", help="variable")
+parser.add_argument("-s", "--season", help="season: djf, mam, jja, son, ann, or all")
+parser.add_argument("-o", "--pathout", help="directory path for output files")
+parser.add_argument("-e", "--exp", help="experiment")
+parser.add_argument("-d", "--domain", help="domain")
+parser.add_argument("--stat", help="statistics")
+args = parser.parse_args()
+
+print('args:', args)
+
+json_path = args.json
+var = args.var
+season = args.season
+pathout = args.pathout
+exp = args.exp
+domain = args.domain
+stat = args.stat
 
 print('json_path:', json_path)
 print('season:', season)
@@ -68,11 +90,11 @@ for season in seasons:
     all_mods = []
     for mod in mods:
         try:
-            tmp = float(dd['RESULTS'][mod]["default"]['r1i1p1'][domain][stat+'_xy'][season])  # current format
+            tmp = float(dd['RESULTS'][mod]["default"]['r1i1p1'][domain][stat][season])  # current format
         except Exception as err1:
             print(err1)
             try:
-                tmp = float(dd['RESULTS'][mod]["defaultReference"]['r1i1p1']['global'][stat+'_xy_'+season+'_'+domain])  # old format
+                tmp = float(dd['RESULTS'][mod]["defaultReference"]['r1i1p1']['global'][stat+'_'+season+'_'+domain])  # old format
             except Exception as err2:
                 print(err2)
                 tmp = None
