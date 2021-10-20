@@ -10,6 +10,8 @@ except Exception:
     basestring = str
     
 def path_to_default_args():
+    """Returns path to Default Common Input Arguments in package egg.
+    """
     egg_pth = pkg_resources.resource_filename(pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp")
     file_path = os.path.join(egg_pth, "DefArgsCIA.json")
     return file_path
