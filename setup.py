@@ -45,6 +45,10 @@ print("__git_tag_describe__ = '%s'" % descr, file=f)
 print("__git_sha1__ = '%s'" % commit, file=f)
 f.close()
 
+# Generate and install default arguments    
+p = subprocess.Popen(["python","setup_default_args.py"], cwd="share")
+p.communicate()
+
 portrait_files = ["pcmdi_metrics/graphics/share/portraits.scr", ]
 
 packages = {'pcmdi_metrics': 'src/python',
@@ -110,7 +114,8 @@ data_files = (
                                'share/disclaimer.txt',
                                'share/test_data_files.txt',
                                'share/cmip_model_list.json',
-                               'share/default_regions.py'
+                               'share/default_regions.py',
+                               'share/DefArgsCIA.json'
                             )),
               ('share/pmp/demo', demo_files),
              )
