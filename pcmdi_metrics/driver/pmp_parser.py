@@ -2,13 +2,13 @@ import cdp.cdp_parser
 import pcmdi_metrics.driver.pmp_parameter
 import pkg_resources
 import os
-import sys
 
 try:
     basestring  # noqa
 except Exception:
     basestring = str
-    
+
+
 def path_to_default_args():
     """Returns path to Default Common Input Arguments in package egg.
     """
