@@ -65,7 +65,8 @@ for season in seasons:
         except Exception as err1:
             print(err1)
             try:
-                tmp = float(dd['RESULTS'][mod]["defaultReference"]['r1i1p1']['global'][stat+'_'+season+'_'+domain])  # old format
+                tmp = float(
+                    dd['RESULTS'][mod]["defaultReference"]['r1i1p1']['global'][stat+'_'+season+'_'+domain])  # old format
             except Exception as err2:
                 print(err2)
                 tmp = None
