@@ -61,11 +61,14 @@ for season in seasons:
     all_mods = []
     for mod in mods:
         try:
-            tmp = float(dd['RESULTS'][mod]["default"]['r1i1p1'][domain][stat][season])  # current format
+            # current format
+            tmp = float(dd['RESULTS'][mod]["default"]['r1i1p1'][domain][stat][season])
         except Exception as err1:
             print(err1)
             try:
-                tmp = float(dd['RESULTS'][mod]["defaultReference"]['r1i1p1']['global'][stat+'_'+season+'_'+domain])  # old format
+                # old format
+                tmp = float(
+                    dd['RESULTS'][mod]["defaultReference"]['r1i1p1']['global'][stat+'_'+season+'_'+domain])
             except Exception as err2:
                 print(err2)
                 tmp = None
