@@ -15,6 +15,7 @@ dependencies:
   - genutil=8.2.1
   - cdutil=8.2.1
   - cdp=1.7.0
+  - eofs=1.4.0
   - proj4=6.1.1
   # Testing
   # ==================
