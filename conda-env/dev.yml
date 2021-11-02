@@ -10,6 +10,7 @@ dependencies:
   - pip=21.2.4
   - numpy=1.21.3
   - matplotlib=3.4.3
+  - cdat_info=8.2.1
   - cdms2=3.1.5
   - genutil=8.2.1
   - cdutil=8.2.1
