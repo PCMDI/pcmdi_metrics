@@ -3,7 +3,7 @@
 
 PCMDI metrics package (PMP)
 ======
-[![stable version](https://img.shields.io/badge/stable%20version-v2.0-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.0)
+[![stable version](https://img.shields.io/badge/stable%20version-v2.1-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1414560.svg)](https://doi.org/10.5281/zenodo.1414560)
 [![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/installer/conda.svg)](https://conda.anaconda.org/pcmdi)
@@ -34,11 +34,14 @@ Some installation support for CMIP participating modeling groups is available: p
 PMP versions
 ------------
 
-v1.2 - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal cycle and intermittency of precipitation, sample monsoon metrics
+v2.1.0 - CMEC driver interfaced added.
+
+v2.0 - New capabilities implemented: ENSO metrics, demos, documentations.
+
+v1.2 - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal cycle and intermittency of precipitation, sample monsoon metrics.
 
 v1.1.2 - Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added.   Extensive provenance information incorporated into json files.
 
-v1.1 - First public release, emphasizing climatological statistics, with development branches for ENSO and regional monsoon precipitation indices
+v1.1 - First public release, emphasizing climatological statistics, with development branches for ENSO and regional monsoon precipitation indices.
 
-v1.0 - Prototype version of the PMP
-
+v1.0 - Prototype version of the PMP.
