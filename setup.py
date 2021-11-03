@@ -45,7 +45,7 @@ print("__git_tag_describe__ = '%s'" % descr, file=f)
 print("__git_sha1__ = '%s'" % commit, file=f)
 f.close()
 
-# Generate and install default arguments    
+# Generate and install default arguments
 p = subprocess.Popen(["python","setup_default_args.py"], cwd="share")
 p.communicate()
 

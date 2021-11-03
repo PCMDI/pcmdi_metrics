@@ -9,13 +9,13 @@ project_id:   CMIP5  ! project id
 table_date:   17 July 2013 ! date this table was constructed
 
 missing_value: 1.e20      ! value used to indicate a missing value
-                          !   in arrays output by netCDF as 32-bit IEEE 
+                          !   in arrays output by netCDF as 32-bit IEEE
                           !   floating-point numbers (float or real)
 
-baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation 
+baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation
 product: output
 
-required_global_attributes: creation_date tracking_id contact ! space separated required global attribute 
+required_global_attributes: creation_date tracking_id contact ! space separated required global attribute
 
 forcings:   N/A Nat Ant GHG SD SI SA TO SO Oz LU Sl Vl SS Ds BC MD OC AA
 
@@ -59,7 +59,7 @@ expt_id_ok: 'AMIP plus 4K anomaly' 'amip4K'
 
 
 approx_interval:  30.000000     ! approximate spacing between successive time
-                          !   samples (in units of the output time 
+                          !   samples (in units of the output time
                           !   coordinate.
 
 generic_levels:   alevel alevhalf
@@ -78,8 +78,8 @@ long_name:        longitude
 ! Additional axis information:
 !----------------------------------
 out_name:         lon
-valid_min:        0.0         
-valid_max:        360.0 
+valid_min:        0.0
+valid_max:        360.0
 stored_direction: increasing
 type:             double
 must_have_bounds: yes
@@ -101,8 +101,8 @@ long_name:        latitude
 ! Additional axis information:
 !----------------------------------
 out_name:         lat
-valid_min:        -90.0         
-valid_max:        90.0 
+valid_min:        -90.0
+valid_max:        90.0
 stored_direction: increasing
 type:             double
 must_have_bounds: yes
@@ -128,7 +128,7 @@ out_name:         plev
 stored_direction: decreasing
 tolerance:        0.001
 type:             double
-requested:        100000. 92500. 85000. 70000. 60000. 50000. 40000. 30000. 25000. 20000. 15000. 10000. 7000. 5000. 3000. 2000. 1000.        ! space-separated list of requested coordinates 
+requested:        100000. 92500. 85000. 70000. 60000. 50000. 40000. 30000. 25000. 20000. 15000. 10000. 7000. 5000. 3000. 2000. 1000.        ! space-separated list of requested coordinates
 must_have_bounds: no
 !----------------------------------
 !
@@ -192,11 +192,11 @@ long_name:        height
 ! Additional axis information:
 !----------------------------------
 out_name:         height
-valid_min:        1.0         
-valid_max:        10.0 
+valid_min:        1.0
+valid_max:        10.0
 stored_direction: increasing
 type:             double
-value:            2.            ! of scalar (singleton) dimension 
+value:            2.            ! of scalar (singleton) dimension
 must_have_bounds: no
 !----------------------------------
 !
@@ -217,11 +217,11 @@ long_name:        height
 ! Additional axis information:
 !----------------------------------
 out_name:         height
-valid_min:        1.0         
-valid_max:        30.0 
+valid_min:        1.0
+valid_max:        30.0
 stored_direction: increasing
 type:             double
-value:            10.            ! of scalar (singleton) dimension 
+value:            10.            ! of scalar (singleton) dimension
 must_have_bounds: no
 !----------------------------------
 !
@@ -232,22 +232,22 @@ axis_entry: smooth_level
 !
 ! This coordinate is a hybrid height coordinate with units of meters (m).
 !  It increases upward.
-!  The values of a(k)*ztop, which appear in the formula below, should be stored as smooth_level. 
+!  The values of a(k)*ztop, which appear in the formula below, should be stored as smooth_level.
 !  Note that in the netCDF file the variable will be named "lev", not smooth_level.
 !
 !------------
 !
 ! Axis attributes:
-!----------------------------------	
+!----------------------------------
 standard_name:    atmosphere_sleve_coordinate
 units:            m
 axis:             Z
 positive:	      up
 long_name:        atmosphere smooth level vertical (SLEVE) coordinate
-!----------------------------------	
+!----------------------------------
 !
 ! Additional axis information:
-!----------------------------------	
+!----------------------------------
 out_name:         lev
 must_have_bounds: yes
 stored_direction: increasing
@@ -256,28 +256,28 @@ valid_max:        800000.
 formula:          z = a*ztop + b1*zsurf1 + b2*zsurf2
 z_factors:        a: a b1: b1 b2: b2 ztop: ztop zsurf1: zsurf1 zsurf2: zsurf2
 z_bounds_factors: a: a_bnds b1: b1_bnds b2: b2_bnds ztop: ztop zsurf1: zsurf1 zsurf2: zsurf2
-!----------------------------------	
+!----------------------------------
 !
 !============
 axis_entry: natural_log_pressure
 !============
 !
 !This coordinate is dimensionless and varies from near 0 at the surface and increases upward.
-!  The values of lev(k), which appears in the formula below, should be stored as natural_log_pressure.  
+!  The values of lev(k), which appears in the formula below, should be stored as natural_log_pressure.
 !  Note that in the netCDF file the variable will be named "lev", not natural_log_pressure.
 !
 !------------
 !
 ! Axis attributes:
-!----------------------------------	
+!----------------------------------
 standard_name:    atmosphere_ln_pressure_coordinate
 axis:             Z
 long_name:        atmosphere natural log pressure coordinate
 positive:	      down
-!----------------------------------	
+!----------------------------------
 !
 ! Additional axis information:
-!----------------------------------	
+!----------------------------------
 out_name:         lev
 must_have_bounds: yes
 stored_direction: decreasing
@@ -286,28 +286,28 @@ valid_max:        20.
 formula:          p = p0 * exp(-lev)
 z_factors:        p0: p0 lev: lev
 z_bounds_factors: p0: p0 lev: lev_bnds
-!----------------------------------	
+!----------------------------------
 !
 !============
 axis_entry: standard_sigma
 !============
 !
 ! This coordinate is dimensionless and varies from 0 at the model top to 1.0 at the surface.
-!  The values of sigma(k), which appears in the formula below, should be stored as standard_sigma.  
+!  The values of sigma(k), which appears in the formula below, should be stored as standard_sigma.
 !  Note that in the netCDF file the variable will be named "lev", not standard_sigma.
 !
 !------------
 !
 ! Axis attributes:
-!----------------------------------	
+!----------------------------------
 standard_name:    atmosphere_sigma_coordinate
 axis:             Z
 positive:         down
 long_name:        sigma coordinate
-!----------------------------------	
+!----------------------------------
 !
 ! Additional axis information:
-!----------------------------------	
+!----------------------------------
 out_name:         lev
 must_have_bounds: yes
 stored_direction: decreasing
@@ -316,7 +316,7 @@ valid_max:        1.0
 formula:          p = ptop + sigma*(ps - ptop)
 z_factors:        ptop: ptop sigma: lev ps: ps
 z_bounds_factors: ptop: ptop sigma: lev_bnds ps: ps
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -324,20 +324,20 @@ axis_entry:  standard_hybrid_sigma
 !============
 !
 ! This coordinate is dimensionless and varies from a small value at the model top to 1.0 at the surface.
-!  The values of a+ b, which appear in the formula below, should be stored as standard_hybrid_sigma.  
+!  The values of a+ b, which appear in the formula below, should be stored as standard_hybrid_sigma.
 !  Note that in the netCDF file the variable will be named "lev", not standard_hybrid_sigma.
 !
 !---------------------------------
 ! Axis attributes:
-!----------------------------------	
+!----------------------------------
 standard_name:    atmosphere_hybrid_sigma_pressure_coordinate
 units:            1
-axis:             Z 
+axis:             Z
 positive:         down
 long_name:        hybrid sigma pressure coordinate
 !----------------------------------
 ! Additional axis information:
-!----------------------------------	
+!----------------------------------
 out_name:         lev
 must_have_bounds: yes
 stored_direction: decreasing
@@ -346,7 +346,7 @@ valid_max:        1.0
 formula:          p = a*p0 + b*ps
 z_factors:        p0: p0 a: a b: b ps: ps
 z_bounds_factors: p0: p0 a: a_bnds b: b_bnds ps: ps
-!----------------------------------		
+!----------------------------------
 !
 !
 !============
@@ -354,22 +354,22 @@ axis_entry:  alternate_hybrid_sigma
 !============
 !
 ! This coordinate is dimensionless and varies from a small value at the model top to 1.0 at the surface.
-!  The values of ap/p0 + b, which appear in the formula below, should be stored as alternate_hybrid_sigma.  
+!  The values of ap/p0 + b, which appear in the formula below, should be stored as alternate_hybrid_sigma.
 !  Note that in the netCDF file the variable will be named "lev", not alternate_hybrid_sigma.
 !
 !------------
 !
 ! Axis attributes:
-!----------------------------------	
+!----------------------------------
 standard_name:    atmosphere_hybrid_sigma_pressure_coordinate
 units:            1
 axis:             Z
 positive:         down
 long_name:        hybrid sigma pressure coordinate
-!----------------------------------	
+!----------------------------------
 !
 ! Additional axis information:
-!----------------------------------	
+!----------------------------------
 out_name:         lev
 must_have_bounds: yes
 stored_direction: decreasing
@@ -378,7 +378,7 @@ valid_max:        1.0
 formula:          p = ap + b*ps
 z_factors:        ap: ap b: b ps: ps
 z_bounds_factors: ap: ap_bnds b: b_bnds ps: ps
-!----------------------------------		
+!----------------------------------
 !
 !
 !============
@@ -386,22 +386,22 @@ axis_entry:  hybrid_height
 !============
 !
 ! This coordinate has dimension of meters (m) and increases upward.
-!  The values of a which appear in the formula below, should be stored as hybrid_height.  
+!  The values of a which appear in the formula below, should be stored as hybrid_height.
 !  Note that in the netCDF file the variable will be named "lev", not hybrid_height.
 !
 !------------
 !
 ! Axis attributes:
-!----------------------------------	
+!----------------------------------
 standard_name:    atmosphere_hybrid_height_coordinate
 units:            m
-axis:             Z 
+axis:             Z
 positive:         up
 long_name:        hybrid height coordinate
-!----------------------------------	
+!----------------------------------
 !
 ! Additional axis information:
-!----------------------------------	
+!----------------------------------
 out_name:         lev
 must_have_bounds: yes
 stored_direction: increasing
@@ -409,7 +409,7 @@ valid_min:        0.0
 formula:          z = a + b*orog
 z_factors:        a: lev b: b orog: orog
 z_bounds_factors: a: lev_bnds b: b_bnds orog: orog
-!----------------------------------		
+!----------------------------------
 !
 ! ***************************************************************
 !
@@ -446,10 +446,10 @@ variable_entry: p0
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
-long_name:       vertical coordinate formula term: reference pressure 
+!----------------------------------
+long_name:       vertical coordinate formula term: reference pressure
 units:           Pa
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -459,10 +459,10 @@ variable_entry: ptop
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
-long_name:       pressure at top of model 
+!----------------------------------
+long_name:       pressure at top of model
 units:           Pa
-!----------------------------------	
+!----------------------------------
 !
 !
 !
@@ -472,15 +472,15 @@ variable_entry: a
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
+!----------------------------------
 long_name:   vertical coordinate formula term: a(k)
-!----------------------------------	
+!----------------------------------
 !
 ! Additional variable information:
-!----------------------------------	
+!----------------------------------
 dimensions:         alevel
 type:               double
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -489,15 +489,15 @@ variable_entry: b
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
+!----------------------------------
 long_name:   vertical coordinate formula term: b(k)
-!----------------------------------	
+!----------------------------------
 !
 ! Additional variable information:
-!----------------------------------	
+!----------------------------------
 dimensions:         alevel
 type:               double
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -507,15 +507,15 @@ variable_entry: a_bnds
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
+!----------------------------------
 long_name:   vertical coordinate formula term: a(k+1/2)
-!----------------------------------	
+!----------------------------------
 !
 ! Additional variable information:
-!----------------------------------	
+!----------------------------------
 dimensions:         alevel
 type:               double
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -525,12 +525,12 @@ variable_entry: b_bnds
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
+!----------------------------------
 long_name:   vertical coordinate formula term: b(k+1/2)
-!----------------------------------	
+!----------------------------------
 !
 ! Additional variable information:
-!----------------------------------	
+!----------------------------------
 dimensions:         alevel
 type:               double
 !----------------------------------
@@ -541,16 +541,16 @@ variable_entry: ap
 !============
 !
 ! Variable attributes:
-!----------------------------------	
+!----------------------------------
 long_name:   vertical coordinate formula term: ap(k)
 units:           Pa
-!----------------------------------	
+!----------------------------------
 !
 ! Additional variable information:
-!----------------------------------	
+!----------------------------------
 dimensions:         alevel
 type:               double
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -558,16 +558,16 @@ variable_entry: ap_bnds
 !============
 !
 ! Variable attributes:
-!----------------------------------	
+!----------------------------------
 long_name:   vertical coordinate formula term: ap(k+1/2)
 units:           Pa
-!----------------------------------	
+!----------------------------------
 !
 ! Additional variable information:
-!----------------------------------	
+!----------------------------------
 dimensions:         alevel
 type:               double
-!----------------------------------	
+!----------------------------------
 !
 !
 !============
@@ -577,10 +577,10 @@ variable_entry: ztop
 !------------
 !
 ! Variable attributes:
-!----------------------------------	
-long_name:       height of top of model 
+!----------------------------------
+long_name:       height of top of model
 units:           m
-!----------------------------------	
+!----------------------------------
 !
 !
 !
@@ -968,7 +968,7 @@ units:             kg m-2 s-1
 cell_methods:      time: mean
 cell_measures:     area: areacella
 long_name:         Surface Snow and Ice Sublimation Flux
-comment:           The snow and ice sublimation flux is the loss of snow and ice mass from the surface resulting from their conversion to water vapor that enters the atmosphere. 
+comment:           The snow and ice sublimation flux is the loss of snow and ice mass from the surface resulting from their conversion to water vapor that enters the atmosphere.
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
@@ -1464,7 +1464,7 @@ units:             kg m-2
 cell_methods:      time: mean
 cell_measures:     area: areacella
 long_name:         Condensed Water Path
-comment:           mass of condensed (liquid + ice) water in the column divided by the area of the column (not just the area of the cloudy portion of the column). Includes precipitating hydrometeors ONLY if the precipitating hydrometeor affects the calculation of radiative transfer in model.  
+comment:           mass of condensed (liquid + ice) water in the column divided by the area of the column (not just the area of the cloudy portion of the column). Includes precipitating hydrometeors ONLY if the precipitating hydrometeor affects the calculation of radiative transfer in model.
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
@@ -1490,7 +1490,7 @@ units:             kg m-2
 cell_methods:      time: mean
 cell_measures:     area: areacella
 long_name:         Ice Water Path
-comment:           mass of ice water in the column divided by the area of the column (not just the area of the cloudy portion of the column). Includes precipitating frozen hydrometeors ONLY if the precipitating hydrometeor affects the calculation of radiative transfer in model.  
+comment:           mass of ice water in the column divided by the area of the column (not just the area of the cloudy portion of the column). Includes precipitating frozen hydrometeors ONLY if the precipitating hydrometeor affects the calculation of radiative transfer in model.
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
@@ -1607,7 +1607,7 @@ units:             1
 cell_methods:      time: mean
 cell_measures:     area: areacella
 long_name:         Fraction of Time Shallow Convection Occurs
-comment:           Fraction of time that shallow convection occurs in the grid cell. 
+comment:           Fraction of time that shallow convection occurs in the grid cell.
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
@@ -1724,7 +1724,7 @@ units:             1
 cell_methods:      time: mean
 cell_measures:     area: areacella
 long_name:         Mass Fraction of Cloud Liquid Water
-comment:           Includes both large-scale and convective cloud.  Calculate as the mass of cloud liquid water in the grid cell divided by the mass of air (including the water in all phases) in the grid cells. Precipitating hydrometeors are included ONLY if the precipitating hydrometeors affect the calculation of radiative transfer in model.  
+comment:           Includes both large-scale and convective cloud.  Calculate as the mass of cloud liquid water in the grid cell divided by the mass of air (including the water in all phases) in the grid cells. Precipitating hydrometeors are included ONLY if the precipitating hydrometeors affect the calculation of radiative transfer in model.
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
@@ -1746,7 +1746,7 @@ units:             1
 cell_methods:      time: mean
 cell_measures:     area: areacella
 long_name:         Mass Fraction of Cloud Ice
-comment:           Includes both large-scale and convective cloud.  This is calculated as the mass of cloud ice in the grid cell divided by the mass of air (including the water in all phases) in the grid cell. It includes precipitating hydrometeors ONLY if the precipitating hydrometeors affect the calculation of radiative transfer in model.  
+comment:           Includes both large-scale and convective cloud.  This is calculated as the mass of cloud ice in the grid cell divided by the mass of air (including the water in all phases) in the grid cell. It includes precipitating hydrometeors ONLY if the precipitating hydrometeors affect the calculation of radiative transfer in model.
 !----------------------------------
 ! Additional variable information:
 !----------------------------------
@@ -1768,7 +1768,7 @@ units:             kg m-2 s-1
 cell_methods:      time: mean
 cell_measures:     area: areacella
 long_name:         Convective Mass Flux
-comment:           The net mass flux should represent the difference between the updraft and downdraft components.  The flux is computed as the mass divided by the area of the grid cell.  
+comment:           The net mass flux should represent the difference between the updraft and downdraft components.  The flux is computed as the mass divided by the area of the grid cell.
 !----------------------------------
 ! Additional variable information:
 !----------------------------------

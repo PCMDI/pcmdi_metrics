@@ -62,7 +62,7 @@ desc = {
 		"filename": result_file.split(".")[0]+"_cmec.json",
 		"long_name": "MJO model statistics (CMEC format)",
 		"description": "MJJASO and NDJFMA season MJO metrics in CMEC formatted JSON"
-	}	
+	}
 }
 
 # Add optional netcdf and plot info

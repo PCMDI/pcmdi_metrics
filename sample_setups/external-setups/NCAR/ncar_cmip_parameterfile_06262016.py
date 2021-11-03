@@ -1,19 +1,19 @@
 ################################################################################
 #  SAMPLE INPUT PARAMETER FILE FOR THE PCMDI METRICS PACKAGE (PMP V1.1)
-# 
+#
 
 import os
 
 ### USER SETTING #########################################
-#  CHANGE SETTING OF domain BY COMMENTING OUT UNWANTED OPTIONS 
+#  CHANGE SETTING OF domain BY COMMENTING OUT UNWANTED OPTIONS
 
-domain = None 
+domain = None
 #domain = "land"
 #domain = "ocean"
 
 ##########################################################
 
-## FIRST USE OF A PYTHON LIST, IN THIS CASE IT HAS ONLY ONE ENTRY 
+## FIRST USE OF A PYTHON LIST, IN THIS CASE IT HAS ONLY ONE ENTRY
 test_data_set = ['30L_cam5301_FAMIP.002','30L_cam5301_FAMIP.003']   # THIS IS A MANDETORY ENTRY FOR DOCUMENTING RESULTS
 
 test_data_set = ['eul128x256_d67iamip.ES01','f40.1979_amip.track1.1deg.001','30L_cam5301_FAMIP.002','30L_cam5301_FAMIP.003','f40.1979_amip.track1.T31.001','30L_cam5301_B03F2_taper2_D05_FAMIP','60Lcam5301_B11F2_FAMIP','f.e10.FAMIPC3.f09_f09.001','46L_cam5301_B03F2_taper2_D05_FAMIP']
@@ -37,7 +37,7 @@ reference_data_path = '/work/gleckler1/processed_data/obs/'
 
 ## DIRECTORY WHERE TO SAVE RESULTS
 case_id = 'simple-test1'
-metrics_output_path = './pmp-test-control/'  # USER CHOOSES, RESULTS STORED IN  metrics_output_path + case_id   
+metrics_output_path = './pmp-test-control/'  # USER CHOOSES, RESULTS STORED IN  metrics_output_path + case_id
 ###############################################################################
 
 ncar_cmip_direct_name_map = {'psl':'PSL','tas':'TREFHT','huss':'QREFHT','ua':'U','va':'V','ta':'T','pr':'PRECC','rlut':'FLUT','rsut':'SOLIN','rlutcs':'FLUTC','rsdtcs':'SOLIN','rsds':'FSDS','rlds':'FLDS','prw':'TMQ','zg':'Z3','tauu':'TAUX','tauv':'TAUY'}
@@ -52,7 +52,7 @@ regions = {"tas" : [None,"land","ocean"],
             "prw": [None,"land","ocean"],
                   }  #terre
 
-# OBSERVATIONS TO USE: CHOICES INCLUDE 'default','alternate1','alternate2',... AND ARE VARIABLE DEPENDENT 
+# OBSERVATIONS TO USE: CHOICES INCLUDE 'default','alternate1','alternate2',... AND ARE VARIABLE DEPENDENT
 reference_data_set = ['default']  #,'alternate1','alternate2']
 
 ## A PYTHON LIST OF VARIABLES TO COMPUTE STATISTICS
@@ -77,9 +77,9 @@ realization = 'r1i1p1' # REALIZATION
 regions = {"tas" : [None,"land","ocean"],
            "psl" : [None,"land","ocean"],
             "pr" : [domain],
-                  } 
+                  }
 
-generate_sftlf = True  # IF MODEL LAND SEA MASK NOT AVAILABLE AUTOMATICALLY (APPROXIMATE!) GENERATE IN AT TARGET RESoLUTION 
+generate_sftlf = True  # IF MODEL LAND SEA MASK NOT AVAILABLE AUTOMATICALLY (APPROXIMATE!) GENERATE IN AT TARGET RESoLUTION
 save_test_clims = True  # True - output interpolated model climatology  False - don't output
 
 test_clims_interpolated_output = './interpolated-output/'

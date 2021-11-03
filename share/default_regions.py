@@ -50,7 +50,7 @@ regions_specs = {
     'AUS': {'domain': cdutil.region.domain(latitude=(-20., -10.), longitude=(120., 150.))},
     # Sahel
     'Sahel': {'domain': cdutil.region.domain(latitude=(13., 18.), longitude=(-10., 10.))},
-    # Gulf of Guinea 
+    # Gulf of Guinea
     'GoG': {'domain': cdutil.region.domain(latitude=(0., 5.), longitude=(-10., 10.))},
     # North American monsoon
     'NAmo': {'domain': cdutil.region.domain(latitude=(20., 37.), longitude=(-112., -103.))},

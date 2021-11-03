@@ -9,7 +9,7 @@ import os
 vars = ['rlut']
 
 # START AND END DATES FOR CLIMATOLOGY
-start = '2003-01' 
+start = '2003-01'
 end = '2018-12'
 
 # INPUT DATASET - CAN BE MODEL OR OBSERVATIONS

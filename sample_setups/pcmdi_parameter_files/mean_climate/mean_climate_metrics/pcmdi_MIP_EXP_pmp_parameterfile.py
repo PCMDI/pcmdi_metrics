@@ -7,9 +7,9 @@ import os,sys
 ver = datetime.datetime.now().strftime('v%Y%m%d')
 
 ################################################################################
-#  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY: 
+#  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW BY:
 ################################################################################
-#  
+#
 case_id = 'regrid_testing_May2018'
 case_id = ver
 
@@ -70,7 +70,7 @@ vars = ['psl','tauu','tauv','tas','ta_850','ta_200','ua_850','ua_200','va_850','
 vars = ['tas','rlut','pr','ta_850','ta_200','ua_850','ua_200','va_850','va_200','zg_500']
 '''
 
-if regional == 'y': 
+if regional == 'y':
   vars = ['tas','ts','psl','sfcWind']  #,'tauu','tauv']   ## THESE DO NOT WORK WITH PARALLELIZATON
 #vars = ['tas']
 
@@ -145,7 +145,7 @@ if regional == 'y':
 #'''
 
 
-## USER CAN CUSTOMIZE REGIONS VALUES NAMES 
+## USER CAN CUSTOMIZE REGIONS VALUES NAMES
 #regions_values = {"land":100.,"ocean":0.}
 
 # Observations to use at the moment "default" or "alternate"
@@ -204,7 +204,7 @@ sftlf_filename_template = "cmip6.historical.%(model_version).sftlf.nc"   #"sftlf
 
 
 ## ROOT PATH FOR MODELS CLIMATOLOGIES
-test_data_path = '/work/gleckler1/processed_data/cmip5clims_metrics_package-' + exp + '/' 
+test_data_path = '/work/gleckler1/processed_data/cmip5clims_metrics_package-' + exp + '/'
 test_data_path = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/CMIP5/historical/v20190307/%(variable)/'
 test_data_path = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/CMIP5/historical/v20190307/%(variable)/'
 test_data_path = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/' + MIP + '/' + exp + '/' + modver + '/%(variable)/'
@@ -227,16 +227,16 @@ custom_observations = './pcmdiobs2_clims_byVar_catalogue_v20200615.json'
 
 
 print('CUSTOM OBS ARE ', custom_observations)
-if not os.path.exists(custom_observations): 
+if not os.path.exists(custom_observations):
  sys.exit()
 
 #######################################
-### DIRECTORY AND FILENAME FOR OUTPUTING METRICS RESULTS 
+### DIRECTORY AND FILENAME FOR OUTPUTING METRICS RESULTS
 ##BY INDIVIDUAL MODELS
 if metrics_in_single_file != 'y':
  metrics_output_path = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/metrics_results/mean_climate/' + MIP + '/' + exp + '/%(case_id)/%(variable)%(level)/' # INDIVIDUAL MOD FILES
- output_json_template = '%(model_version).%(variable)%(level).' + MIP + '.' + exp + '.%(regrid_method).' + target_grid_string + '.'  + case_id # INDIVIDUAL MOD FILES 
-##ALL MODELS IN ONE FILE 
+ output_json_template = '%(model_version).%(variable)%(level).' + MIP + '.' + exp + '.%(regrid_method).' + target_grid_string + '.'  + case_id # INDIVIDUAL MOD FILES
+##ALL MODELS IN ONE FILE
 if metrics_in_single_file == 'y':
  metrics_output_path = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/metrics_results/mean_climate/' + MIP + '/' + exp + '/%(case_id)/' # All SAME FILE
  output_json_template = '%(variable)%(level).' + MIP + '.' + exp + '.%(regrid_method).' + target_grid_string + '.'  + case_id # ALL SAME FILE
