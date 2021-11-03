@@ -16,7 +16,7 @@ dependencies:
   - cdutil=8.2.1
   - cdp=1.7.0
   - eofs=1.4.0
-  - proj4=6.1.1
+  - cartopy=0.20.1
   # Testing
   # ==================
   - pytest=6.2.5
