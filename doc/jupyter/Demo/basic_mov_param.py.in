@@ -43,4 +43,3 @@ results_dir = os.path.join(
 nc_out = True  # Write output in NetCDF
 plot = True  # Create map graphics
 update_json = True  # False
-

@@ -41,4 +41,3 @@ for l in lst:
 fout = open(var + '.' + mip + '.' + exp + '.' + verin + '.' + verout + '.bash',"w+")
 fout.writelines(lst1)
 fout.close()
-

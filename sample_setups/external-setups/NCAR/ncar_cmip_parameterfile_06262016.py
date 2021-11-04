@@ -97,5 +97,3 @@ if domain == 'ocean':
 if domain == None:
   filename_output_template = "%(variable)_%(model_version)_%_historical_" +\
     "%(realization)_%(period)_interpolated_%(regridMethod)_%(targetGridName)-clim%(ext)"
-
-

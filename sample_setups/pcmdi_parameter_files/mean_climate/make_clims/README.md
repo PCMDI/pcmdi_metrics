@@ -15,4 +15,3 @@ This computes the climatology for the model with the "infile" included in clim_c
 This compute the climatology for the observational dataset included in clim_calc_obs_inparam.py.  With no start and end included, the climatology is computed for the entire time seres.
 
 There are several options for defining the output directory and filename.
-

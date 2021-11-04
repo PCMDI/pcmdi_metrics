@@ -256,5 +256,3 @@ filename_output_template = MIP + ".%(model_version)." + exp + ".r1i1p1.mo.%(vari
 if regional == 'n':
  num_workers = 20  #17
  granularize = ["vars"]
-
-

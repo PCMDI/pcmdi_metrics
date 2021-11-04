@@ -169,6 +169,3 @@ for l in lst:
        g.write(d)
        g.close()
     f.close()
-
-
-

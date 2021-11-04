@@ -68,6 +68,3 @@ for run in runs:
       os.popen(cmd).readlines()
      except:
       pass
-
-
-

@@ -53,4 +53,3 @@ reference_data_path = 'demo_data/PCMDIobs2_clims'
 metrics_output_path = os.path.join(
     'demo_output',
     "%(case_id)")
-
