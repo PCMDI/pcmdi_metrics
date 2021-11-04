@@ -182,6 +182,12 @@ try:
     aux_mods = ""
     custom_names = {}
     aux_jsons = []
+
+    # FIXME: Should these be set?
+    mod_name = None
+    numexpts = None
+    ###############################
+
     if aux_json_path:
         print("==> Loading auxillary json file : " + aux_json_path)
         print("...")

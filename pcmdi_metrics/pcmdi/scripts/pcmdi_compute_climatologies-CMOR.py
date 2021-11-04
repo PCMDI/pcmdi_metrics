@@ -218,6 +218,13 @@ def dump_cmor(A, data, time, bounds, season):
     inst = checkCMORAttribute("institution")
     src = checkCMORAttribute("source")
     exp = checkCMORAttribute("experiment_id")
+
+    # FIXME: Should these be set?
+    realization_index = None
+    initialization_index = None
+    physics_index = None
+    ###############################
+
     xtra = {}
     for x in cmor_xtra_args:
         try:
@@ -317,9 +324,16 @@ def dump_cmor(A, data, time, bounds, season):
            "license":                 "CMIP6 model data produced by Lawrence Livermore PCMDI is licensed under a Creative Commons Attribution ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at https:///pcmdi.llnl.gov/. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law."
 }}
 """.format(
-            A.results_dir, exp, cal_name, r, i, p, inst.split()[0], src
+            A.results_dir,
+            exp,
+            cal_name,
+            realization_index,
+            initialization_index,
+            physics_index,
+            inst.split()[0],
+            src,
         )
-    )  # noqa
+    )
 
     tmp.flush()
     cmor.dataset_json(tmp.name)
