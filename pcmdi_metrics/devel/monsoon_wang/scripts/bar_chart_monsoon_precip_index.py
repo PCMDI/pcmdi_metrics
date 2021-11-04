@@ -7,15 +7,13 @@ import os
 import pdb  # , pdb.set_trace()
 import string
 import sys
-from argparse import RawTextHelpFormatter
-
+import pcmdi_metrics
 import matplotlib.pyplot as PLT
 import numpy as NP
 
 # from pcmdi_metrics.mean_climate_plots import BarChart
+from argparse import RawTextHelpFormatter
 from SeabarChart_mpl import BarChart
-
-import pcmdi_metrics
 from pcmdi_metrics.driver import pmp_parser
 
 test = False
