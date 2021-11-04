@@ -15,36 +15,41 @@ def tree():
     return defaultdict(tree)
 
 
-def write_nc_output(output_file_name,
-                    eofMap, pc, frac, slopeMap, interceptMap):
-    fout = cdms2.open(output_file_name+'.nc', 'w')
+def write_nc_output(output_file_name, eofMap, pc, frac, slopeMap, interceptMap):
+    fout = cdms2.open(output_file_name + ".nc", "w")
     # 1-d timeseries having time dimension: write time first
-    fout.write(pc, id='pc')
+    fout.write(pc, id="pc")
     # 2-d maps having no time axis
-    fout.write(eofMap, id='eof')
-    fout.write(slopeMap, id='slope')
-    fout.write(interceptMap, id='intercept')
+    fout.write(eofMap, id="eof")
+    fout.write(slopeMap, id="slope")
+    fout.write(interceptMap, id="intercept")
     # single number having no axis
-    fout.write(frac, id='frac')
+    fout.write(frac, id="frac")
     fout.close()
 
 
 def get_domain_range(mode, regions_specs):
-    if mode == 'NPGO':
-        mode_origin_domain = 'PDO'
-    elif mode == 'NPO':
-        mode_origin_domain = 'PNA'
+    if mode == "NPGO":
+        mode_origin_domain = "PDO"
+    elif mode == "NPO":
+        mode_origin_domain = "PNA"
     else:
         mode_origin_domain = mode
 
-    region_subdomain = regions_specs[mode_origin_domain]['domain']
+    region_subdomain = regions_specs[mode_origin_domain]["domain"]
     return region_subdomain
 
 
 def read_data_in(
-        path, var_in_data, var_to_consider,
-        start_time, end_time,
-        UnitsAdjust, LandMask, debug=False):
+    path,
+    var_in_data,
+    var_to_consider,
+    start_time,
+    end_time,
+    UnitsAdjust,
+    LandMask,
+    debug=False,
+):
 
     f = cdms2.open(path)
     data_timeseries = f(var_in_data, time=(start_time, end_time), latitude=(-90, 90))
@@ -54,10 +59,9 @@ def read_data_in(
     check_missing_data(data_timeseries)
 
     if UnitsAdjust[0]:
-        data_timeseries = getattr(MV2, UnitsAdjust[1])(
-            data_timeseries, UnitsAdjust[2])
+        data_timeseries = getattr(MV2, UnitsAdjust[1])(data_timeseries, UnitsAdjust[2])
 
-    if var_to_consider == 'ts' and LandMask:
+    if var_to_consider == "ts" and LandMask:
         # Replace temperature below -1.8 C to -1.8 C (sea ice)
         data_timeseries = sea_ice_adjust(data_timeseries)
 
@@ -76,12 +80,15 @@ def read_data_in(
         data_eyear = data_eyear - 1
 
     debug_print(
-        'data_syear: '+str(data_syear)+' data_eyear: '+str(data_eyear),
-        debug)
+        "data_syear: " + str(data_syear) + " data_eyear: " + str(data_eyear), debug
+    )
 
-    data_timeseries = data_timeseries(time=(
-        cdtime.comptime(data_syear, 1, 1, 0, 0, 0),
-        cdtime.comptime(data_eyear, 12, 31, 23, 59, 59)))
+    data_timeseries = data_timeseries(
+        time=(
+            cdtime.comptime(data_syear, 1, 1, 0, 0, 0),
+            cdtime.comptime(data_eyear, 12, 31, 23, 59, 59),
+        )
+    )
 
     f.close()
 
@@ -91,11 +98,16 @@ def read_data_in(
 def check_missing_data(d):
     time = d.getTime().asComponentTime()
     num_tstep = d.shape[0]
-    months_between = diff_month(datetime(time[-1].year, time[-1].month, 1),
-                                datetime(time[0].year, time[0].month, 1))
+    months_between = diff_month(
+        datetime(time[-1].year, time[-1].month, 1),
+        datetime(time[0].year, time[0].month, 1),
+    )
     if num_tstep < months_between:
-        raise ValueError("ERROR: check_missing_data: num_data_timestep, expected_num_timestep:",
-                         num_tstep, months_between)
+        raise ValueError(
+            "ERROR: check_missing_data: num_data_timestep, expected_num_timestep:",
+            num_tstep,
+            months_between,
+        )
 
 
 def diff_month(d1, d2):
@@ -105,7 +117,7 @@ def diff_month(d1, d2):
 def debug_print(string, debug):
     if debug:
         nowtime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-        print('debug: '+nowtime+' '+string)
+        print("debug: " + nowtime + " " + string)
 
 
 def sort_human(input_list):
@@ -115,7 +127,7 @@ def sort_human(input_list):
         return int(text) if text.isdigit() else text
 
     def alphanum(key):
-        return [convert(c) for c in re.split('([0-9]+)', key)]
+        return [convert(c) for c in re.split("([0-9]+)", key)]
 
     lst.sort(key=alphanum)
     return lst
@@ -135,31 +147,42 @@ def sea_ice_adjust(data_array):
     return data_array
 
 
-def variability_metrics_to_json(outdir, json_filename, result_dict, model=None, run=None, cmec_flag=False):
+def variability_metrics_to_json(
+    outdir, json_filename, result_dict, model=None, run=None, cmec_flag=False
+):
     # Open JSON
     JSON = pcmdi_metrics.io.base.Base(
-        outdir(output_type='metrics_results'),
-        json_filename)
+        outdir(output_type="metrics_results"), json_filename
+    )
     # Dict for JSON
     json_dict = copy.deepcopy(result_dict)
-    if (model is not None or run is not None):
+    if model is not None or run is not None:
         # Preserve only needed dict branch -- delete rest keys
-        models_in_dict = list(json_dict['RESULTS'].keys())
+        models_in_dict = list(json_dict["RESULTS"].keys())
         for m in models_in_dict:
             if m == model:
-                runs_in_model_dict = list(json_dict['RESULTS'][m].keys())
+                runs_in_model_dict = list(json_dict["RESULTS"][m].keys())
                 for r in runs_in_model_dict:
-                    if (r != run and run is not None):
-                        del json_dict['RESULTS'][m][r]
+                    if r != run and run is not None:
+                        del json_dict["RESULTS"][m][r]
             else:
-                del json_dict['RESULTS'][m]
+                del json_dict["RESULTS"][m]
     # Write selected dict to JSON
     JSON.write(
         json_dict,
         json_structure=[
-            "model", "realization", "reference",
-            "mode", "season", "method", "statistic"],
-        sort_keys=True, indent=4, separators=(',', ': '))
+            "model",
+            "realization",
+            "reference",
+            "mode",
+            "season",
+            "method",
+            "statistic",
+        ],
+        sort_keys=True,
+        indent=4,
+        separators=(",", ": "),
+    )
     if cmec_flag:
         print("Writing cmec file")
-        JSON.write_cmec(indent=4, separators=(',', ': '))
+        JSON.write_cmec(indent=4, separators=(",", ": "))

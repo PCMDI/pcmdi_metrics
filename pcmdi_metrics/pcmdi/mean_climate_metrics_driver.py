@@ -11,31 +11,32 @@ import ast
 
 
 class PMPDriver(object):
-
     def __init__(self, parameter):
         plog = logging.getLogger("pcmdi_metrics")
         plog.setLevel(LOG_LEVEL)
         # create file handler which logs messages
-        formatter = logging.Formatter('%%(levelname)s::%%(asctime)s::%%(name)s::%s:: %%(message)s' %
-                                      (parameter.case_id), datefmt="%Y-%m-%d %H:%M")
+        formatter = logging.Formatter(
+            "%%(levelname)s::%%(asctime)s::%%(name)s::%s:: %%(message)s"
+            % (parameter.case_id),
+            datefmt="%Y-%m-%d %H:%M",
+        )
         for h in plog.handlers:
             h.setFormatter(formatter)
 
-        fh = logging.FileHandler(
-            'pcmdi_metrics_driver.%s.log' % (parameter.case_id))
+        fh = logging.FileHandler("pcmdi_metrics_driver.%s.log" % (parameter.case_id))
         fh.setLevel(LOG_LEVEL)
         formatter = logging.Formatter(
-            '%(levelname)s::%(asctime)s:: %(message)s', datefmt="%Y-%m-%d %H:%M")
+            "%(levelname)s::%(asctime)s:: %(message)s", datefmt="%Y-%m-%d %H:%M"
+        )
         fh.setFormatter(formatter)
         plog.addHandler(fh)
         self.parameter = parameter
         self.obs_dict = {}
         self.regions_dict = {}
-        self.var = ''
+        self.var = ""
         self.output_metric = None
-        self.region = ''
-        self.sftlf = pcmdi_metrics.driver.dataset.DataSet.create_sftlf(
-            self.parameter)
+        self.region = ""
+        self.sftlf = pcmdi_metrics.driver.dataset.DataSet.create_sftlf(self.parameter)
         self.default_regions = []
         self.regions_specs = {}
 
@@ -43,16 +44,17 @@ class PMPDriver(object):
         self.run_diags()
 
     def run_diags(self):
-        ''' Runs the diagnostics. What did you think it did? '''
+        """Runs the diagnostics. What did you think it did?"""
         self.obs_dict = self.load_obs_dict()
         self.regions_dict = self.create_regions_dict()
 
         for self.var_name_long in self.parameter.vars:
-            self.var = self.var_name_long.split('_')[0]
+            self.var = self.var_name_long.split("_")[0]
 
             if self.var not in self.obs_dict:
                 logging.getLogger("pcmdi_metrics").error(
-                    'Variable %s not in obs_dict' % self.var)
+                    "Variable %s not in obs_dict" % self.var
+                )
                 continue
 
             for region in self.regions_dict[self.var]:
@@ -61,15 +63,16 @@ class PMPDriver(object):
                 self.run_reference_and_test_comparison()
 
     def load_obs_dict(self):
-        ''' Loads obs_info_dictionary.json and appends
-        custom_observations from the parameter file if needed. '''
-        obs_file_name = 'obs_info_dictionary.json'
+        """Loads obs_info_dictionary.json and appends
+        custom_observations from the parameter file if needed."""
+        obs_file_name = "obs_info_dictionary.json"
         obs_json_file = pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj(
-            obs_file_name)
+            obs_file_name
+        )
         obs_dict = json.loads(obs_json_file.read())
         obs_json_file.close()
 
-        if hasattr(self.parameter, 'custom_observations'):
+        if hasattr(self.parameter, "custom_observations"):
             # Can't use load_path_as_file_obj() b/c might not be in /share/
             cust_obs_json_file = open(self.parameter.custom_observations)
             obs_dict.update(json.load(cust_obs_json_file))
@@ -77,12 +80,12 @@ class PMPDriver(object):
         return obs_dict
 
     def create_regions_dict(self):
-        ''' Creates a dict from self.default_regions. '''
+        """Creates a dict from self.default_regions."""
         self.load_default_regions_and_regions_specs()
 
         regions_dict = {}
         for var_name_long in self.parameter.vars:
-            var = var_name_long.split('_')[0]
+            var = var_name_long.split("_")[0]
             regions = self.parameter.regions
             region = regions.get(var, self.default_regions)
             if not isinstance(region, (list, tuple)):
@@ -96,51 +99,58 @@ class PMPDriver(object):
         return regions_dict
 
     def load_default_regions_and_regions_specs(self):
-        ''' Gets the default_regions dict and regions_specs dict
-        from default_regions.py and stores them as attributes. '''
-        default_regions_file = \
+        """Gets the default_regions dict and regions_specs dict
+        from default_regions.py and stores them as attributes."""
+        default_regions_file = (
             pcmdi_metrics.driver.dataset.DataSet.load_path_as_file_obj(
-                'default_regions.py')
-        exec(compile(open(default_regions_file.name).read(),
-                     default_regions_file.name, 'exec'))
+                "default_regions.py"
+            )
+        )
+        exec(
+            compile(
+                open(default_regions_file.name).read(),
+                default_regions_file.name,
+                "exec",
+            )
+        )
         default_regions_file.close()
         try:
-            self.default_regions = locals()['default_regions']
-            self.regions_specs = locals()['regions_specs']
+            self.default_regions = locals()["default_regions"]
+            self.regions_specs = locals()["regions_specs"]
         except KeyError:
             logging.getLogger("pcmdi_metrics").error(
-                'Failed to open default_regions.py')
+                "Failed to open default_regions.py"
+            )
 
         region_values = self.parameter.regions_values
         region_values.update(getattr(self.parameter, "regions_values", {}))
         # Now need to edit regions_specs
         for region in region_values:
-            insert_dict = {'value': region_values[region]}
+            insert_dict = {"value": region_values[region]}
             if region in self.regions_specs:
                 self.regions_specs[region].update(insert_dict)
             else:
                 self.regions_specs[region] = insert_dict
-        self.regions_specs.update(getattr(self.parameter,
-                                          "regions_specs", {}))
+        self.regions_specs.update(getattr(self.parameter, "regions_specs", {}))
 
     def create_region(self, region):
-        ''' From the argument region, it gets that region from self.regions_specs
-        (which itself is loaded from default_regions.py) '''
+        """From the argument region, it gets that region from self.regions_specs
+        (which itself is loaded from default_regions.py)"""
         if isinstance(region, str):
             region_name = region
             region = self.regions_specs.get(
-                region_name,
-                self.regions_specs.get(region_name.lower()))
-            region['id'] = region_name
+                region_name, self.regions_specs.get(region_name.lower())
+            )
+            region["id"] = region_name
         elif region is None:
             # It's okay if region == None
             pass
         else:
-            raise Exception('Unknown region: %s' % region)
+            raise Exception("Unknown region: %s" % region)
         return region
 
     def run_reference_and_test_comparison(self):
-        '''  Does the (obs or model) vs (obs or model) comparison. '''
+        """Does the (obs or model) vs (obs or model) comparison."""
         reference_data_set = self.parameter.reference_data_set
         test_data_set = self.parameter.test_data_set
 
@@ -151,10 +161,12 @@ class PMPDriver(object):
         # themselves need to be modified.
         if reference_data_set_is_obs:
             reference_data_set = Observation.setup_obs_list_from_parameter(
-                reference_data_set, self.obs_dict, self.var)
+                reference_data_set, self.obs_dict, self.var
+            )
         if test_data_set_is_obs:
             test_data_set = Observation.setup_obs_list_from_parameter(
-                test_data_set, self.obs_dict, self.var)
+                test_data_set, self.obs_dict, self.var
+            )
 
         if len(reference_data_set) == 0:  # We did not find any ref!!!
             raise RuntimeError("No reference dataset found!")
@@ -162,8 +174,11 @@ class PMPDriver(object):
         # self.reference/self.test are either an obs or model
         for reference in reference_data_set:
             try:
-                ref = self.determine_obs_or_model(reference_data_set_is_obs,
-                                                  reference, self.parameter.reference_data_path)
+                ref = self.determine_obs_or_model(
+                    reference_data_set_is_obs,
+                    reference,
+                    self.parameter.reference_data_path,
+                )
             # TODO Make this a custom exception. This exception is for
             # when a model doesn't have sftlf for a given region
             except RuntimeError:
@@ -171,19 +186,23 @@ class PMPDriver(object):
 
             for test in test_data_set:
                 logging.getLogger("pcmdi_metrics").info("TEST DATA IS: {}".format(test))
-                self.output_metric = OutputMetrics(self.parameter, self.var_name_long,
-                                                   self.obs_dict, sftlf=self.sftlf)
+                self.output_metric = OutputMetrics(
+                    self.parameter, self.var_name_long, self.obs_dict, sftlf=self.sftlf
+                )
                 self.output_metric.add_region(self.region)
                 try:
-                    tst = self.determine_obs_or_model(test_data_set_is_obs,
-                                                      test, self.parameter.test_data_path)
+                    tst = self.determine_obs_or_model(
+                        test_data_set_is_obs, test, self.parameter.test_data_path
+                    )
                     self.output_metric.obs_or_model = tst.obs_or_model
                 # TODO Make this a custom exception. This exception is for
                 # when a model doesn't have sftlf for a given region
                 except RuntimeError:
                     continue
                 except Exception as err:
-                    logging.getLogger("pcmdi_metrics").info("Unexpected error: {e}".format(e=err))
+                    logging.getLogger("pcmdi_metrics").info(
+                        "Unexpected error: {e}".format(e=err)
+                    )
                     break
 
                 try:
@@ -191,13 +210,17 @@ class PMPDriver(object):
                 except RuntimeError:
                     continue
                 except Exception as err:
-                    err_msg = "Unexpected error in calculate output metrics: {e}".format(e=err)
+                    err_msg = (
+                        "Unexpected error in calculate output metrics: {e}".format(
+                            e=err
+                        )
+                    )
                     logging.getLogger("pcmdi_metrics").info(err_msg)
                     break
 
     def is_data_set_obs(self, data_set):
-        ''' Is data_set (which is either a test or reference) an obs? '''
-        if 'all' in data_set:
+        """Is data_set (which is either a test or reference) an obs?"""
+        if "all" in data_set:
             return True
         data_set_is_obs = True
         # If an element of data_set is not in the obs_dict, then
@@ -209,219 +232,255 @@ class PMPDriver(object):
         return data_set_is_obs
 
     def determine_obs_or_model(self, is_obs, ref_or_test, data_path):
-        ''' Actually create Observation or Module object
-        based on if ref_or_test is an obs or model. '''
+        """Actually create Observation or Module object
+        based on if ref_or_test is an obs or model."""
         if is_obs:
-            logging.getLogger("pcmdi_metrics").info(
-                '%s is an obs' % ref_or_test)
-            return Observation(self.parameter, self.var_name_long, self.region,
-                               ref_or_test, self.obs_dict, data_path, self.sftlf)
+            logging.getLogger("pcmdi_metrics").info("%s is an obs" % ref_or_test)
+            return Observation(
+                self.parameter,
+                self.var_name_long,
+                self.region,
+                ref_or_test,
+                self.obs_dict,
+                data_path,
+                self.sftlf,
+            )
         else:
-            logging.getLogger("pcmdi_metrics").info(
-                '%s is a model' % ref_or_test)
-            return Model(self.parameter, self.var_name_long, self.region,
-                         ref_or_test, self.obs_dict, data_path, self.sftlf)
+            logging.getLogger("pcmdi_metrics").info("%s is a model" % ref_or_test)
+            return Model(
+                self.parameter,
+                self.var_name_long,
+                self.region,
+                ref_or_test,
+                self.obs_dict,
+                data_path,
+                self.sftlf,
+            )
 
 
 def create_mean_climate_parser():
     parser = pcmdi_metrics.driver.pmp_parser.PMPMetricsParser()
     parser.add_argument(
-        '--case_id',
-        dest='case_id',
-        help='Defines a subdirectory to the metrics output, so multiple' +
-        'cases can be compared',
-        required=False)
+        "--case_id",
+        dest="case_id",
+        help="Defines a subdirectory to the metrics output, so multiple"
+        + "cases can be compared",
+        required=False,
+    )
 
     parser.add_argument(
-        '-v', '--vars',
+        "-v",
+        "--vars",
         type=str,
-        nargs='+',
-        dest='vars',
-        help='Variables to use',
-        required=False)
+        nargs="+",
+        dest="vars",
+        help="Variables to use",
+        required=False,
+    )
 
     parser.add_argument(
-        '--regions',
+        "--regions",
         type=ast.literal_eval,
-        dest='regions',
-        help='Regions on which to run the metrics',
-        required=False)
+        dest="regions",
+        help="Regions on which to run the metrics",
+        required=False,
+    )
 
     parser.add_argument(
-        '--regions_values',
+        "--regions_values",
         type=ast.literal_eval,
-        dest='regions_values',
-        help='Users can customize regions values names',
-        required=False)
+        dest="regions_values",
+        help="Users can customize regions values names",
+        required=False,
+    )
 
     parser.add_argument(
-        '-r', '--reference_data_set',
+        "-r",
+        "--reference_data_set",
         type=str,
-        nargs='+',
-        dest='reference_data_set',
-        help='List of observations or models that are used as a ' +
-        'reference against the test_data_set',
-        required=False)
+        nargs="+",
+        dest="reference_data_set",
+        help="List of observations or models that are used as a "
+        + "reference against the test_data_set",
+        required=False,
+    )
 
     parser.add_argument(
-        '--reference_data_path',
-        dest='reference_data_path',
-        help='Path for the reference climitologies',
-        required=False)
+        "--reference_data_path",
+        dest="reference_data_path",
+        help="Path for the reference climitologies",
+        required=False,
+    )
 
     parser.add_argument(
-        '-t', '--test_data_set',
+        "-t",
+        "--test_data_set",
         type=str,
-        nargs='+',
-        dest='test_data_set',
-        help='List of observations or models to test ' +
-        'against the reference_data_set',
-        required=False)
+        nargs="+",
+        dest="test_data_set",
+        help="List of observations or models to test "
+        + "against the reference_data_set",
+        required=False,
+    )
 
     parser.add_argument(
-        '--test_data_path',
-        dest='test_data_path',
-        help='Path for the test climitologies',
-        required=False)
+        "--test_data_path",
+        dest="test_data_path",
+        help="Path for the test climitologies",
+        required=False,
+    )
 
     parser.add_argument(
-        '--target_grid',
-        dest='target_grid',
+        "--target_grid",
+        dest="target_grid",
         help='Options are "2.5x2.5" or an actual cdms2 grid object',
-        required=False)
+        required=False,
+    )
 
     parser.add_argument(
-        '--regrid_tool',
-        dest='regrid_tool',
+        "--regrid_tool",
+        dest="regrid_tool",
         help='Options are "regrid2" or "esmf"',
-        required=False)
+        required=False,
+    )
 
     parser.add_argument(
-        '--regrid_method',
-        dest='regrid_method',
-        help='Options are "linear" or "conservative", ' +
-        'only if regrid_tool is "esmf"',
-        required=False)
+        "--regrid_method",
+        dest="regrid_method",
+        help='Options are "linear" or "conservative", '
+        + 'only if regrid_tool is "esmf"',
+        required=False,
+    )
 
     parser.add_argument(
-        '--regrid_tool_ocn',
-        dest='regrid_tool_ocn',
+        "--regrid_tool_ocn",
+        dest="regrid_tool_ocn",
         help='Options are "regrid2" or "esmf"',
-        required=False)
+        required=False,
+    )
 
     parser.add_argument(
-        '--regrid_method_ocn',
-        dest='regrid_method_ocn',
-        help='Options are "linear" or "conservative", ' +
-        'only if regrid_tool is "esmf"',
-        required=False)
+        "--regrid_method_ocn",
+        dest="regrid_method_ocn",
+        help='Options are "linear" or "conservative", '
+        + 'only if regrid_tool is "esmf"',
+        required=False,
+    )
 
     parser.add_argument(
-        '--period',
-        dest='period',
-        help='A simulation parameter',
-        required=False)
+        "--period", dest="period", help="A simulation parameter", required=False
+    )
 
     parser.add_argument(
-        '--realization',
-        dest='realization',
-        help='A simulation parameter',
-        required=False)
+        "--realization",
+        dest="realization",
+        help="A simulation parameter",
+        required=False,
+    )
 
     parser.add_argument(
-        '--simulation_description_mapping',
+        "--simulation_description_mapping",
         type=ast.literal_eval,
-        dest='simulation_description_mapping',
-        help='List of observations or models to test ' +
-        'against the reference_data_set',
+        dest="simulation_description_mapping",
+        help="List of observations or models to test "
+        + "against the reference_data_set",
         default={},
-        required=False)
+        required=False,
+    )
 
     parser.add_argument(
-        '--ext',
-        dest='ext',
-        help='Extension for the output files?',
-        required=False)
+        "--ext", dest="ext", help="Extension for the output files?", required=False
+    )
 
     parser.add_argument(
-        '--dry_run',
+        "--dry_run",
         # If input is 'True' or 'true', return True. Otherwise False.
-        type=lambda x: x.lower() == 'true',
-        dest='dry_run',
-        help='True if output is to be created, False otherwise',
-        required=False)
+        type=lambda x: x.lower() == "true",
+        dest="dry_run",
+        help="True if output is to be created, False otherwise",
+        required=False,
+    )
 
     parser.add_argument(
-        '--filename_template',
-        dest='filename_template',
-        help='Template for climatology files',
-        required=False)
+        "--filename_template",
+        dest="filename_template",
+        help="Template for climatology files",
+        required=False,
+    )
 
     parser.add_argument(
-        '--sftlf_filename_template',
-        dest='sftlf_filename_template',
+        "--sftlf_filename_template",
+        dest="sftlf_filename_template",
         help='Filename template for landsea masks ("sftlf")',
-        required=False)
+        required=False,
+    )
 
     parser.add_argument(
-        '--custom_observations',
-        dest='custom_observations',
-        help='Path to an alternative, custom observation file',
-        required=False)
+        "--custom_observations",
+        dest="custom_observations",
+        help="Path to an alternative, custom observation file",
+        required=False,
+    )
 
     parser.add_argument(
-        '--metrics_output_path',
-        dest='metrics_output_path',
-        help='Directory of where to put the results',
-        required=False)
+        "--metrics_output_path",
+        dest="metrics_output_path",
+        help="Directory of where to put the results",
+        required=False,
+    )
 
     parser.add_argument(
-        '--filename_output_template',
-        dest='filename_output_template',
-        help='Filename for the interpolated test climatologies',
-        required=False)
+        "--filename_output_template",
+        dest="filename_output_template",
+        help="Filename for the interpolated test climatologies",
+        required=False,
+    )
 
     parser.add_argument(
-        '--save_test_clims',
+        "--save_test_clims",
         # If input is 'True' or 'true', return True. Otherwise False.
-        type=lambda x: x.lower() == 'true',
-        dest='save_test_clims',
-        help='True if to save interpolated test climatologies,' +
-        ' otherwise False',
-        required=False)
+        type=lambda x: x.lower() == "true",
+        dest="save_test_clims",
+        help="True if to save interpolated test climatologies," + " otherwise False",
+        required=False,
+    )
 
     parser.add_argument(
-        '--test_clims_interpolated_output',
-        dest='test_clims_interpolated_output',
-        help='Directory of where to put the interpolated ' +
-        'test climatologies',
-        required=False)
+        "--test_clims_interpolated_output",
+        dest="test_clims_interpolated_output",
+        help="Directory of where to put the interpolated " + "test climatologies",
+        required=False,
+    )
 
     parser.add_argument(
-        '--output_json_template',
-        help='Filename template for results json files',
-        required=False)
+        "--output_json_template",
+        help="Filename template for results json files",
+        required=False,
+    )
 
     parser.add_argument(
-        '--user_notes',
-        dest='user_notes',
-        help='Provide a short description to help identify this run of the PMP mean climate.',
-        required=False)
+        "--user_notes",
+        dest="user_notes",
+        help="Provide a short description to help identify this run of the PMP mean climate.",
+        required=False,
+    )
 
     parser.add_argument(
-        '--cmec',
-        dest='cmec',
-        action='store_true',
-        help='Save metrics in CMEC format',
+        "--cmec",
+        dest="cmec",
+        action="store_true",
+        help="Save metrics in CMEC format",
         default=False,
-        required=False)
+        required=False,
+    )
 
     parser.add_argument(
-        '--no_cmec',
-        dest='cmec',
-        action='store_false',
-        help='Option to not save metrics in CMEC format',
+        "--no_cmec",
+        dest="cmec",
+        action="store_false",
+        help="Option to not save metrics in CMEC format",
         default=False,
-        required=False)
+        required=False,
+    )
 
     return parser

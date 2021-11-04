@@ -4,14 +4,14 @@ import os
 
 
 class OBS(pcmdi_metrics.io.base.Base):
+    def __init__(
+        self, root, var, obs_dic, reference="default", file_mask_template=None
+    ):
 
-    def __init__(self, root, var, obs_dic, reference="default",
-                 file_mask_template=None):
-
-        template = "%(realm)/%(frequency)/%(variable)/" +\
-            "%(reference)/%(ac)/%(filename)"
-        pcmdi_metrics.io.base.Base.__init__(
-            self, root, template, file_mask_template)
+        template = (
+            "%(realm)/%(frequency)/%(variable)/" + "%(reference)/%(ac)/%(filename)"
+        )
+        pcmdi_metrics.io.base.Base.__init__(self, root, template, file_mask_template)
         obs_name = obs_dic[var][reference]
         # usually send "default", "alternate", etc
         # but some case (sftlf) we send the actual name
@@ -21,30 +21,27 @@ class OBS(pcmdi_metrics.io.base.Base):
         obs_table = ref["CMIP_CMOR_TABLE"]
 
         if obs_table == "Omon":
-            self.realm = 'ocn'
-            self.frequency = 'mo'
-            self.ac = 'ac'
+            self.realm = "ocn"
+            self.frequency = "mo"
+            self.ac = "ac"
         elif obs_table == "fx":
-            self.realm = ''
-            self.frequency = 'fx'
-            self.ac = ''
+            self.realm = ""
+            self.frequency = "fx"
+            self.ac = ""
         else:
-            self.realm = 'atm'
-            self.frequency = 'mo'
-            self.ac = 'ac'
+            self.realm = "atm"
+            self.frequency = "mo"
+            self.ac = "ac"
         self.filename = ref["filename"]
         self.reference = obs_name
         self.variable = var
 
 
 class JSONs(pcmdi_metrics.io.base.JSONs):
-
     def __init__(self, files=[], ignored_keys=None):
         if ignored_keys is None:
             ignored_keys = ["SimulationDescription"]
-        super(
-            JSONs,
-            self).__init__(
+        super(JSONs, self).__init__(
             files,
             structure=[
                 "variable",
@@ -53,9 +50,10 @@ class JSONs(pcmdi_metrics.io.base.JSONs):
                 "rip",
                 "region",
                 "statistic",
-                "season"],
+                "season",
+            ],
             ignored_keys=ignored_keys,
-            )
+        )
 
     def addJson(self, filename):
         f = open(filename)
@@ -85,7 +83,7 @@ class JSONs(pcmdi_metrics.io.base.JSONs):
                 else:
                     json_version = "2.0"
                 break
-        if float(json_version) == 2.:
+        if float(json_version) == 2.0:
             json_struct = json_struct[1:]
         # Now update our stored results
         # First we need to figure out the variable read in
@@ -98,7 +96,7 @@ class JSONs(pcmdi_metrics.io.base.JSONs):
             else:
                 varnm = var["id"]
                 if "level" in var:
-                    varnm += "-%i" % int(var["level"] / 100.)
+                    varnm += "-%i" % int(var["level"] / 100.0)
             tmp_dict = {varnm: tmp_dict["RESULTS"]}
         else:
             tmp_dict = tmp_dict["RESULTS"]

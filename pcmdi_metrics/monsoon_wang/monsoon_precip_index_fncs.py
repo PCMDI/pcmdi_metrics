@@ -19,26 +19,27 @@ def compute_season(data, season_indices, weights):
 def mpd(data):
     """Monsoon precipitation intensity and annual range calculation
 
-           .. describe:: Input
+    .. describe:: Input
 
-               *  data
+        *  data
 
-                   * Assumes climatology array with 12 times step first one January
+            * Assumes climatology array with 12 times step first one January
 
-   """
+    """
     months_length = [
-        31.,
-        28.,
-        31.,
-        30.,
-        31.,
-        30.,
-        31.,
-        31.,
-        30.,
-        31.,
-        30.,
-        31.]
+        31.0,
+        28.0,
+        31.0,
+        30.0,
+        31.0,
+        30.0,
+        31.0,
+        31.0,
+        30.0,
+        31.0,
+        30.0,
+        31.0,
+    ]
     mjjas = compute_season(data, [4, 5, 6, 7, 8], months_length)
     ndjfm = compute_season(data, [10, 11, 0, 1, 2], months_length)
     ann = compute_season(data, list(range(12)), months_length)
@@ -46,7 +47,7 @@ def mpd(data):
     annrange = MV2.subtract(mjjas, ndjfm)
 
     lat = annrange.getAxis(0)
-    i, e = lat.mapInterval((-91, 0, 'con'))
+    i, e = lat.mapInterval((-91, 0, "con"))
     if i > e:  # reveresedlats
         tmp = i + 1
         i = e + 1
@@ -63,25 +64,24 @@ def mpd(data):
     return annrange, mpi
 
 
-def mpi_skill_scores(annrange_mod_dom, annrange_obs_dom,
-                     threshold=2.5 / 86400.):
+def mpi_skill_scores(annrange_mod_dom, annrange_obs_dom, threshold=2.5 / 86400.0):
     """Monsoon precipitation index skill score calculation
-       see Wang et al., doi:10.1007/s00382-010-0877-0
+    see Wang et al., doi:10.1007/s00382-010-0877-0
 
-         .. describe:: Input
+      .. describe:: Input
 
-             *  annrange_mod_dom
+          *  annrange_mod_dom
 
-                 * Model Values Range (summer - winter)
+              * Model Values Range (summer - winter)
 
-             *  annrange_obs_dom
+          *  annrange_obs_dom
 
-                 * Observations Values Range (summer - winter)
+              * Observations Values Range (summer - winter)
 
-             *  threshold [default is 2.5/86400.]
+          *  threshold [default is 2.5/86400.]
 
-                 * threshold in same units as inputs
- """
+              * threshold in same units as inputs
+    """
     mt = numpy.ma.greater(annrange_mod_dom, threshold)
     ot = numpy.ma.greater(annrange_obs_dom, threshold)
 
@@ -95,14 +95,14 @@ def mpi_skill_scores(annrange_mod_dom, annrange_obs_dom,
     falarmmap = xor * mt
     falarm = float(MV2.sum(falarmmap))
 
-    if (hit + missed + falarm) > 0.:
+    if (hit + missed + falarm) > 0.0:
         score = hit / (hit + missed + falarm)
     else:
-        score = 1.e20
+        score = 1.0e20
 
-    hitmap.id = 'hit'
-    missmap.id = 'miss'
-    falarmmap.id = 'false_alarm'
+    hitmap.id = "hit"
+    missmap.id = "miss"
+    falarmmap.id = "false_alarm"
 
     for a in [hitmap, missmap, falarmmap]:
         a.setAxisList(annrange_mod_dom.getAxisList())

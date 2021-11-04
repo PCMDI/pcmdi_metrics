@@ -13,9 +13,13 @@ import copy
 import distutils.spawn
 import stat
 
-parser = PMPParser(description='Parallelize a driver over some arguments')
+parser = PMPParser(description="Parallelize a driver over some arguments")
 parser.add_argument("--driver", help="driver to prallelize")
-parser.add_argument("--bash", help="generate a bash script rather than running in parallel", action="store_true")
+parser.add_argument(
+    "--bash",
+    help="generate a bash script rather than running in parallel",
+    action="store_true",
+)
 parser.use("num_workers")
 parser.add_argument("--granularize")
 p = parser.get_parameter()
@@ -35,11 +39,11 @@ def build(variables, parameters, params=[{}]):
     len_in = len(params)
     count = len(values)
     nparms = len(params)
-    while len(params) < count*nparms:
+    while len(params) < count * nparms:
         params += copy.deepcopy(params[:nparms])
     for i in range(len_in):
         for j in range(len(values)):
-            params[j*len_in+i][var] = values[j]
+            params[j * len_in + i][var] = values[j]
     return build(variables, parameters, params)
 
 
@@ -52,10 +56,14 @@ def build_command_lines(driver, parameters, matrix):
             if att[:2] == "__":
                 continue
             val = getattr(parameters, att)
-            if inspect.ismodule(val) or inspect.isbuiltin(val) or \
-               inspect.ismethod(val) or inspect.isfunction(val):
+            if (
+                inspect.ismodule(val)
+                or inspect.isbuiltin(val)
+                or inspect.ismethod(val)
+                or inspect.isfunction(val)
+            ):
                 continue
-            if att in ['granularize']:
+            if att in ["granularize"]:
                 continue
             if att in mydict:
                 val = mydict[att]
@@ -66,7 +74,10 @@ def build_command_lines(driver, parameters, matrix):
             cmd = "{}/bin/python {}".format(sys.prefix, cmd)
         elif distutils.spawn.find_executable(driver) is None:
             raise RuntimeError(
-                "cannot find driver: '{}', it does not appear to be an executable on your path either".format(driver))
+                "cannot find driver: '{}', it does not appear to be an executable on your path either".format(
+                    driver
+                )
+            )
         cmds.append(cmd)
     return cmds
 
@@ -82,7 +93,7 @@ def run_command(cmd):
 matrix = build(p.granularize, parameters)
 cmds = build_command_lines(p.driver, parameters, matrix)
 if p.bash:
-    bash_filename = os.path.splitext(os.path.basename(p.driver))[0]+"_bash.bash"
+    bash_filename = os.path.splitext(os.path.basename(p.driver))[0] + "_bash.bash"
     with open(bash_filename, "w") as fout:
         print("#!/usr/bin/env bash", file=fout)
         print("\n".join(cmds), file=fout)

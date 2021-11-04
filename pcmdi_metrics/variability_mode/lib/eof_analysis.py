@@ -12,9 +12,14 @@ import sys
 
 
 def eof_analysis_get_variance_mode(
-        mode, timeseries, eofn, eofn_max=None,
-        debug=False, EofScaling=False,
-        save_multiple_eofs=False):
+    mode,
+    timeseries,
+    eofn,
+    eofn_max=None,
+    debug=False,
+    EofScaling=False,
+    save_multiple_eofs=False,
+):
     """
     NOTE: Proceed EOF analysis
     Input
@@ -43,20 +48,20 @@ def eof_analysis_get_variance_mode(
         - solver
     """
     if debug:
-        print('Lib-EOF: timeseries.shape:', timeseries.shape)
-    debug_print('Lib-EOF: solver', debug)
+        print("Lib-EOF: timeseries.shape:", timeseries.shape)
+    debug_print("Lib-EOF: solver", debug)
 
     if eofn_max is None:
         eofn_max = eofn
         save_multiple_eofs = False
 
     # EOF (take only first variance mode...) ---
-    solver = Eof(timeseries, weights='area')
-    debug_print('Lib-EOF: eof', debug)
+    solver = Eof(timeseries, weights="area")
+    debug_print("Lib-EOF: eof", debug)
 
     # pcscaling=1 by default, return normalized EOFs
     eof = solver.eofsAsCovariance(neofs=eofn_max, pcscaling=1)
-    debug_print('Lib-EOF: pc', debug)
+    debug_print("Lib-EOF: pc", debug)
 
     if EofScaling:
         # pcscaling=1: scaled to unit variance
@@ -67,7 +72,7 @@ def eof_analysis_get_variance_mode(
 
     # fraction of explained variance
     frac = solver.varianceFraction()
-    debug_print('Lib-EOF: frac', debug)
+    debug_print("Lib-EOF: frac", debug)
 
     # For each EOFs...
     eof_list = []
@@ -84,17 +89,21 @@ def eof_analysis_get_variance_mode(
         reverse_sign = arbitrary_checking(mode, eof_Nth)
 
         if reverse_sign:
-            eof_Nth = MV2.multiply(eof_Nth, -1.)
-            pc_Nth = MV2.multiply(pc_Nth, -1.)
+            eof_Nth = MV2.multiply(eof_Nth, -1.0)
+            pc_Nth = MV2.multiply(pc_Nth, -1.0)
 
         # time axis
         pc_Nth.setAxis(0, timeseries.getTime())
 
         # Supplement NetCDF attributes
-        frac_Nth.units = 'ratio'
-        pc_Nth.comment = ''.join([
-            'Non-scaled time series for principal component of ',
-            str(eofn), 'th variance mode'])
+        frac_Nth.units = "ratio"
+        pc_Nth.comment = "".join(
+            [
+                "Non-scaled time series for principal component of ",
+                str(eofn),
+                "th variance mode",
+            ]
+        )
 
         # append to lists for returning
         eof_list.append(eof_Nth)
@@ -107,10 +116,10 @@ def eof_analysis_get_variance_mode(
         return eof_list, pc_list, frac_list, reverse_sign_list, solver
     else:
         # Remove unnecessary dimensions (make sure only taking requested eofs)
-        eof_Nth = eof_list[eofn-1]
-        pc_Nth = pc_list[eofn-1]
-        frac_Nth = frac_list[eofn-1]
-        reverse_sign_Nth = reverse_sign_list[eofn-1]
+        eof_Nth = eof_list[eofn - 1]
+        pc_Nth = pc_list[eofn - 1]
+        frac_Nth = frac_list[eofn - 1]
+        reverse_sign_Nth = reverse_sign_list[eofn - 1]
         return eof_Nth, pc_Nth, frac_Nth, reverse_sign_Nth, solver
 
 
@@ -127,22 +136,47 @@ def arbitrary_checking(mode, eof_Nth):
     """
     reverse_sign = False
     # Explicitly check average of geographical region for each mode
-    if mode == 'PDO':
-        if float(cdutil.averager(
-                 eof_Nth(latitude=(30, 40), longitude=(150, 180)),
-                 axis='xy', weights='weighted')) >= 0:
+    if mode == "PDO":
+        if (
+            float(
+                cdutil.averager(
+                    eof_Nth(latitude=(30, 40), longitude=(150, 180)),
+                    axis="xy",
+                    weights="weighted",
+                )
+            )
+            >= 0
+        ):
             reverse_sign = True
-    elif mode == 'PNA':
-        if float(cdutil.averager(eof_Nth(latitude=(80, 90)),
-                                 axis='xy', weights='weighted')) <= 0:
+    elif mode == "PNA":
+        if (
+            float(
+                cdutil.averager(
+                    eof_Nth(latitude=(80, 90)), axis="xy", weights="weighted"
+                )
+            )
+            <= 0
+        ):
             reverse_sign = True
-    elif mode == 'NAM' or mode == 'NAO':
-        if float(cdutil.averager(eof_Nth(latitude=(60, 80)),
-                                 axis='xy', weights='weighted')) >= 0:
+    elif mode == "NAM" or mode == "NAO":
+        if (
+            float(
+                cdutil.averager(
+                    eof_Nth(latitude=(60, 80)), axis="xy", weights="weighted"
+                )
+            )
+            >= 0
+        ):
             reverse_sign = True
-    elif mode == 'SAM':
-        if float(cdutil.averager(eof_Nth(latitude=(-60, -90)),
-                                 axis='xy', weights='weighted')) >= 0:
+    elif mode == "SAM":
+        if (
+            float(
+                cdutil.averager(
+                    eof_Nth(latitude=(-60, -90)), axis="xy", weights="weighted"
+                )
+            )
+            >= 0
+        ):
             reverse_sign = True
     else:  # Minimum sign control part was left behind for any future usage..
         if float(eof_Nth[-1][-1]) is not eof_Nth.missing:
@@ -156,30 +190,27 @@ def arbitrary_checking(mode, eof_Nth):
 
 
 def linear_regression_on_globe_for_teleconnection(
-        pc, model_timeseries, stdv_pc,
-        RmDomainMean, EofScaling, debug=False):
+    pc, model_timeseries, stdv_pc, RmDomainMean, EofScaling, debug=False
+):
     """
     - Reconstruct EOF fist mode including teleconnection purpose as well
     - Have confirmed that "eof_lr" is identical to "eof" over EOF domain (i.e., "subdomain")
     - Note that eof_lr has global field
     """
     if debug:
-        print('pc.shape, timeseries.shape:', pc.shape, model_timeseries.shape)
+        print("pc.shape, timeseries.shape:", pc.shape, model_timeseries.shape)
 
     # Linear regression to have extended global map; teleconnection purpose
-    slope, intercept = linear_regression(
-        pc, model_timeseries)
+    slope, intercept = linear_regression(pc, model_timeseries)
     if RmDomainMean:
-        eof_lr = MV2.add(MV2.multiply(
-            slope, stdv_pc), intercept)
+        eof_lr = MV2.add(MV2.multiply(slope, stdv_pc), intercept)
     else:
         if not EofScaling:
-            eof_lr = MV2.add(MV2.multiply(
-                slope, stdv_pc), intercept)
+            eof_lr = MV2.add(MV2.multiply(slope, stdv_pc), intercept)
         else:
             eof_lr = MV2.add(slope, intercept)
 
-    debug_print('linear regression done', debug)
+    debug_print("linear regression done", debug)
 
     return eof_lr, slope, intercept
 
@@ -217,23 +248,26 @@ def linear_regression(x, y):
     return slope, intercept
 
 
-def gain_pseudo_pcs(solver, field_to_be_projected, eofn, reverse_sign,
-                    EofScaling=False):
+def gain_pseudo_pcs(
+    solver, field_to_be_projected, eofn, reverse_sign, EofScaling=False
+):
     """
     NOTE: Given a data set, projects it onto the n-th EOF to generate a
           corresponding set of pseudo-PCs
     """
     if not EofScaling:
         pseudo_pcs = solver.projectField(
-            field_to_be_projected, neofs=eofn, eofscaling=0)
+            field_to_be_projected, neofs=eofn, eofscaling=0
+        )
     else:
         pseudo_pcs = solver.projectField(
-            field_to_be_projected, neofs=eofn, eofscaling=1)
+            field_to_be_projected, neofs=eofn, eofscaling=1
+        )
     # Get CBF PC (pseudo pcs in the code) for given eofs
     pseudo_pcs = pseudo_pcs[:, eofn - 1]
     # Arbitrary sign control, attempt to make all plots have the same sign
     if reverse_sign:
-        pseudo_pcs = MV2.multiply(pseudo_pcs, -1.)
+        pseudo_pcs = MV2.multiply(pseudo_pcs, -1.0)
     # return result
     return pseudo_pcs
 
@@ -252,34 +286,37 @@ def gain_pcs_fraction(full_field, eof_pattern, pcs, debug=False):
                 fraction of explained variance
     """
     # 1) Get total variacne ---
-    variance_total = genutil.statistics.variance(full_field, axis='t')
+    variance_total = genutil.statistics.variance(full_field, axis="t")
     variance_total_area_ave = cdutil.averager(
-        variance_total, axis='xy', weights='weighted')
+        variance_total, axis="xy", weights="weighted"
+    )
     # 2) Get variance for pseudo pattern ---
     # 2-1) Reconstruct field based on pseudo pattern
     if debug:
-        print('from gain_pcs_fraction:')
-        print('full_field.shape (before grower): ', full_field.shape)
-        print('eof_pattern.shape (before grower): ', eof_pattern.shape)
+        print("from gain_pcs_fraction:")
+        print("full_field.shape (before grower): ", full_field.shape)
+        print("eof_pattern.shape (before grower): ", eof_pattern.shape)
     # Extend eof_pattern (add 3rd dimension as time then copy same 2d value for all time step)
-    reconstructed_field = genutil.grower(full_field, eof_pattern)[1]  # Matching dimension (add time axis)
+    reconstructed_field = genutil.grower(full_field, eof_pattern)[
+        1
+    ]  # Matching dimension (add time axis)
     for t in range(0, len(pcs)):
         reconstructed_field[t] = MV2.multiply(reconstructed_field[t], pcs[t])
     # 2-2) Get variance of reconstructed field
-    variance_partial = genutil.statistics.variance(
-        reconstructed_field, axis='t')
+    variance_partial = genutil.statistics.variance(reconstructed_field, axis="t")
     variance_partial_area_ave = cdutil.averager(
-        variance_partial, axis='xy', weights='weighted')
+        variance_partial, axis="xy", weights="weighted"
+    )
     # 3) Calculate fraction ---
     fraction = MV2.divide(variance_partial_area_ave, variance_total_area_ave)
     # debugging
     if debug:
-        print('full_field.shape (after grower): ', full_field.shape)
-        print('reconstructed_field.shape: ', reconstructed_field.shape)
-        print('variance_partial_area_ave: ', variance_partial_area_ave)
-        print('variance_total_area_ave: ', variance_total_area_ave)
-        print('fraction: ', fraction)
-        print('from gain_pcs_fraction done')
+        print("full_field.shape (after grower): ", full_field.shape)
+        print("reconstructed_field.shape: ", reconstructed_field.shape)
+        print("variance_partial_area_ave: ", variance_partial_area_ave)
+        print("variance_total_area_ave: ", variance_total_area_ave)
+        print("fraction: ", fraction)
+        print("from gain_pcs_fraction done")
     # return result
     return fraction
 
@@ -298,7 +335,8 @@ def adjust_timeseries(timeseries, mode, season, region_subdomain, RmDomainMean):
     timeseries_ano = get_anomaly_timeseries(timeseries, season)
     # Calculate residual by subtracting domain (or global) average
     timeseries_season = get_residual_timeseries(
-        timeseries_ano, mode, region_subdomain, RmDomainMean=RmDomainMean)
+        timeseries_ano, mode, region_subdomain, RmDomainMean=RmDomainMean
+    )
     # return result
     return timeseries_season
 
@@ -313,29 +351,37 @@ def get_anomaly_timeseries(timeseries, season):
     - timeseries_ano: cdms variable
     """
     # Get anomaly field
-    if season == 'yearly':
+    if season == "yearly":
         timeseries_ano = cdutil.YEAR.departures(timeseries)
     else:
         # Special treat for DJF
-        if season == 'DJF':
+        if season == "DJF":
             # Input field must be monthly, starting at Jan and ending at Dec
             smon = timeseries.getTime().asComponentTime()[0].month
             emon = timeseries.getTime().asComponentTime()[-1].month
-            if (smon == 1 and emon == 12):
+            if smon == 1 and emon == 12:
                 # Truncate first Jan Feb and last Dec
                 timeseries = timeseries[2:-1, :, :]
             else:
-                sys.exit(' '.join([
-                    'ERROR: Starting month', str(smon),
-                    'and ending month', str(emon),
-                    'must be 1 and 12, respectively']))
+                sys.exit(
+                    " ".join(
+                        [
+                            "ERROR: Starting month",
+                            str(smon),
+                            "and ending month",
+                            str(emon),
+                            "must be 1 and 12, respectively",
+                        ]
+                    )
+                )
         # Reomove annual cycle
         timeseries_ano = cdutil.ANNUALCYCLE.departures(timeseries)
-        if season != 'monthly':
+        if season != "monthly":
             # Get seasonal mean time series
             # each season chunk should have 100% of data
             timeseries_ano = getattr(cdutil, season)(
-                timeseries_ano, criteriaarg=[1.0, None])
+                timeseries_ano, criteriaarg=[1.0, None]
+            )
     # return result
     return timeseries_ano
 
@@ -365,30 +411,28 @@ def get_residual_timeseries(timeseries_ano, mode, region_subdomain, RmDomainMean
     if RmDomainMean:
         # Get domain mean
         regional_ano_mean_timeseries = cdutil.averager(
-            timeseries_ano(region_subdomain),
-            axis='xy',
-            weights='weighted')
+            timeseries_ano(region_subdomain), axis="xy", weights="weighted"
+        )
         # Match dimension
-        timeseries_ano, regional_ano_mean_timeseries = \
-            genutil.grower(
-                timeseries_ano, regional_ano_mean_timeseries)
+        timeseries_ano, regional_ano_mean_timeseries = genutil.grower(
+            timeseries_ano, regional_ano_mean_timeseries
+        )
         # Subtract domain mean
-        timeseries_residual = MV2.subtract(
-            timeseries_ano, regional_ano_mean_timeseries)
+        timeseries_residual = MV2.subtract(timeseries_ano, regional_ano_mean_timeseries)
     else:
-        if mode in ['PDO', 'NPGO']:
+        if mode in ["PDO", "NPGO"]:
             # Get global mean
             global_ano_mean_timeseries = cdutil.averager(
-                timeseries_ano(latitude=(-60, 70)),
-                axis='xy',
-                weights='weighted')
+                timeseries_ano(latitude=(-60, 70)), axis="xy", weights="weighted"
+            )
             # Match dimension
-            timeseries_ano, global_ano_mean_timeseries = \
-                genutil.grower(
-                    timeseries_ano, global_ano_mean_timeseries)
+            timeseries_ano, global_ano_mean_timeseries = genutil.grower(
+                timeseries_ano, global_ano_mean_timeseries
+            )
             # Subtract global mean
             timeseries_residual = MV2.subtract(
-                timeseries_ano, global_ano_mean_timeseries)
+                timeseries_ano, global_ano_mean_timeseries
+            )
         else:
             timeseries_residual = timeseries_ano
     # return result
@@ -398,4 +442,4 @@ def get_residual_timeseries(timeseries_ano, mode, region_subdomain, RmDomainMean
 def debug_print(string, debug):
     if debug:
         nowtime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-        print('debug: '+nowtime+' '+string)
+        print("debug: " + nowtime + " " + string)

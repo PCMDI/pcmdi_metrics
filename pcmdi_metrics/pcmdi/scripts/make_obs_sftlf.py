@@ -24,9 +24,9 @@ cdm.setNetcdfDeflateLevelFlag(9)
 cdm.setAutoBounds(1)
 
 # JRA25
-infile = '/work/durack1/Shared/obs_data/pcmdi_metrics/197901/anl_land25.ctl'
+infile = "/work/durack1/Shared/obs_data/pcmdi_metrics/197901/anl_land25.ctl"
 f_h = cdm.open(infile)
-soilwhbl = f_h('soilwhbl')[0, 0, ...]
+soilwhbl = f_h("soilwhbl")[0, 0, ...]
 landMask = soilwhbl.mask
 lat = soilwhbl.getLatitude()
 lon = soilwhbl.getLongitude()
@@ -36,24 +36,22 @@ landMask = landMask * 100  # Convert to boolean fraction
 
 # Rename
 landMask = cdm.createVariable(
-    landMask,
-    id='sftlf',
-    axes=soilwhbl.getAxisList(),
-    typecode='float32')
+    landMask, id="sftlf", axes=soilwhbl.getAxisList(), typecode="float32"
+)
 landMask.original_name = "soilwhbl"
 landMask.associated_files = "baseURL: http://rda.ucar.edu/datasets/ds625.0"
 landMask.long_name = "Land Area Fraction"
 landMask.standard_name = "land_area_fraction"
 landMask.units = "%"
-landMask.setMissing(1.e20)
+landMask.setMissing(1.0e20)
 
 # Regrid to current obs data
-gridFile = '/clim_obs/obs/atm/mo/tas/JRA25/ac/tas_JRA25_000001-000012_ac.nc'
+gridFile = "/clim_obs/obs/atm/mo/tas/JRA25/ac/tas_JRA25_000001-000012_ac.nc"
 f_g = cdm.open(gridFile)
-grid = f_g('tas').getGrid()
-landMask = landMask.regrid(grid, regridTool='ESMF', regridMethod='linear')
+grid = f_g("tas").getGrid()
+landMask = landMask.regrid(grid, regridTool="ESMF", regridMethod="linear")
 f_g.close()
-landMask.id = 'sftlf'  # Rename
+landMask.id = "sftlf"  # Rename
 
 # Deal with interpolated values
 landMask[mv.greater(landMask, 75)] = 100  # Fix weird ocean values
@@ -66,26 +64,30 @@ landMask[mv.equal(landMask, 100)] = 0  # Convert ocean
 landMask[mv.equal(landMask, 50)] = 100  # Convert ocean
 
 # Create outfile and write
-outFile = 'sftlf_pcmdi-metrics_fx_NCAR-JRA25_197901-201401.nc'
+outFile = "sftlf_pcmdi-metrics_fx_NCAR-JRA25_197901-201401.nc"
 # Write variables to file
 if os.path.isfile(outFile):
     os.remove(outFile)
-fOut = cdm.open(outFile, 'w')
+fOut = cdm.open(outFile, "w")
 # Use function to write standard global atts
 globalAttWrite(fOut, options=None)
-fOut.pcmdi_metrics_version = '0.1-alpha'
-fOut.pcmdi_metrics_comment = 'This climatology was prepared by ' +\
-    'PCMDI for the metrics package and is ' +\
-    'intended for research purposes only'
-fOut.write(landMask.astype('float32'))
+fOut.pcmdi_metrics_version = "0.1-alpha"
+fOut.pcmdi_metrics_comment = (
+    "This climatology was prepared by "
+    + "PCMDI for the metrics package and is "
+    + "intended for research purposes only"
+)
+fOut.write(landMask.astype("float32"))
 fOut.close()
 f_h.close()
 
 # ERAInterim
-infile = '/work/durack1/Shared/obs_data/pcmdi_metrics/' +\
-    '141019_ERAInt-lsm_netcdf-atls03-20141019213028-36373-3245.nc'
+infile = (
+    "/work/durack1/Shared/obs_data/pcmdi_metrics/"
+    + "141019_ERAInt-lsm_netcdf-atls03-20141019213028-36373-3245.nc"
+)
 f_h = cdm.open(infile)
-lsm = f_h('lsm')[0, ...]
+lsm = f_h("lsm")[0, ...]
 landMask = np.array(lsm)
 lat = lsm.getLatitude()
 lon = lsm.getLongitude()
@@ -103,32 +105,30 @@ for count, att in enumerate(lat.attributes.keys()):
 newAxes[0] = newLat
 
 # Rename
-landMask = cdm.createVariable(
-    landMask,
-    id='sftlf',
-    axes=newAxes,
-    typecode='float32')
+landMask = cdm.createVariable(landMask, id="sftlf", axes=newAxes, typecode="float32")
 landMask.original_name = "lsm"
 landMask.associated_files = "baseURL: http://apps.ecmwf.int/datasets/' +\
         'data/interim_full_invariant/"
 landMask.long_name = "Land Area Fraction"
 landMask.standard_name = "land_area_fraction"
 landMask.units = "%"
-landMask.setMissing(1.e20)
+landMask.setMissing(1.0e20)
 
 # Create outfile and write
-outFile = 'sftlf_pcmdi-metrics_fx_ECMWF-ERAInterim_197901-201407.nc'
+outFile = "sftlf_pcmdi-metrics_fx_ECMWF-ERAInterim_197901-201407.nc"
 # Write variables to file
 if os.path.isfile(outFile):
     os.remove(outFile)
-fOut = cdm.open(outFile, 'w')
+fOut = cdm.open(outFile, "w")
 # Use function to write standard global atts
 globalAttWrite(fOut, options=None)
-fOut.pcmdi_metrics_version = '0.1-alpha'
-fOut.pcmdi_metrics_comment = 'This climatology was prepared by ' +\
-    'PCMDI for the metrics package and ' +\
-    'is intended for research purposes only'
-fOut.write(landMask.astype('float32'))
+fOut.pcmdi_metrics_version = "0.1-alpha"
+fOut.pcmdi_metrics_comment = (
+    "This climatology was prepared by "
+    + "PCMDI for the metrics package and "
+    + "is intended for research purposes only"
+)
+fOut.write(landMask.astype("float32"))
 fOut.close()
 f_h.close()
 
@@ -137,7 +137,7 @@ f_h.close()
 infile = '/work/durack1/Shared/obs_data/pcmdi_metrics/" +\
         "141021_ERA40_swvl1-netcdf-atls03-20141021145335-36433-5059.nc'
 f_h = cdm.open(infile)
-swvl1 = f_h('swvl1')[0, ...]
+swvl1 = f_h("swvl1")[0, ...]
 landMask = np.array(swvl1)
 lat = swvl1.getLatitude()
 lon = swvl1.getLongitude()
@@ -155,31 +155,28 @@ for count, att in enumerate(lat.attributes.keys()):
 newAxes[0] = newLat
 
 # Rename
-landMask = cdm.createVariable(
-    landMask,
-    id='sftlf',
-    axes=newAxes,
-    typecode='float32')
+landMask = cdm.createVariable(landMask, id="sftlf", axes=newAxes, typecode="float32")
 landMask.original_name = "lsm"
-landMask.associated_files = "baseURL: http://apps.ecmwf.int/" +\
-    "datasets/data/era40_daily/"
+landMask.associated_files = (
+    "baseURL: http://apps.ecmwf.int/" + "datasets/data/era40_daily/"
+)
 landMask.long_name = "Land Area Fraction"
 landMask.standard_name = "land_area_fraction"
 landMask.units = "%"
-landMask.setMissing(1.e20)
+landMask.setMissing(1.0e20)
 
 # Create outfile and write
-outFile = 'sftlf_pcmdi-metrics_fx_ECMWF-ERA40_195709-200208.nc'
+outFile = "sftlf_pcmdi-metrics_fx_ECMWF-ERA40_195709-200208.nc"
 # Write variables to file
 if os.path.isfile(outFile):
     os.remove(outFile)
-fOut = cdm.open(outFile, 'w')
+fOut = cdm.open(outFile, "w")
 # Use function to write standard global atts
 globalAttWrite(fOut, options=None)
-fOut.pcmdi_metrics_version = '0.1-alpha'
+fOut.pcmdi_metrics_version = "0.1-alpha"
 fOut.pcmdi_metrics_comment = 'This climatology was prepared by " +\
         "PCMDI for the metrics package and " +\
         "is intended for research purposes only'
-fOut.write(landMask.astype('float32'))
+fOut.write(landMask.astype("float32"))
 fOut.close()
 f_h.close()

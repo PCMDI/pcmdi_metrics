@@ -6,11 +6,27 @@ import numpy as np
 import sys
 
 
-def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=list(),
-                             fig=None, ax=None, figsize=(15, 5),
-                             show_boxplot=True, show_violin=True, title=None, identify_all_models=True,
-                             xtick_labels=None, xtick_labelsize=None, ytick_labelsize=None,
-                             colormap='viridis', num_color=20, legend_off=False, logo_rect=None, logo_off=False):
+def parallel_coordinate_plot(
+    data,
+    metric_names,
+    model_names,
+    model_highlights=list(),
+    fig=None,
+    ax=None,
+    figsize=(15, 5),
+    show_boxplot=True,
+    show_violin=True,
+    title=None,
+    identify_all_models=True,
+    xtick_labels=None,
+    xtick_labelsize=None,
+    ytick_labelsize=None,
+    colormap="viridis",
+    num_color=20,
+    legend_off=False,
+    logo_rect=None,
+    logo_off=False,
+):
     """
     Parameters
     ----------
@@ -44,20 +60,30 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
     Author: Jiwoo Lee @ LLNL (2021. 7)
     Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
     """
-    params = {'legend.fontsize': 'large',
-              'axes.labelsize': 'x-large',
-              'axes.titlesize': 'x-large',
-              'xtick.labelsize': 'x-large',
-              'ytick.labelsize': 'x-large'}
+    params = {
+        "legend.fontsize": "large",
+        "axes.labelsize": "x-large",
+        "axes.titlesize": "x-large",
+        "xtick.labelsize": "x-large",
+        "ytick.labelsize": "x-large",
+    }
     pylab.rcParams.update(params)
 
     # Quick initial QC
     if data.shape[0] != len(model_names):
-        sys.exit('Error: data.shape[0], ' + str(data.shape[0]) +
-                 ', mismatch to len(model_names), ' + str(len(model_names)))
+        sys.exit(
+            "Error: data.shape[0], "
+            + str(data.shape[0])
+            + ", mismatch to len(model_names), "
+            + str(len(model_names))
+        )
     if data.shape[1] != len(metric_names):
-        sys.exit('Error: data.shape[1], ' + str(data.shape[1]) +
-                 ', mismatch to len(metric_names), ' + str(len(metric_names)))
+        sys.exit(
+            "Error: data.shape[1], "
+            + str(data.shape[1])
+            + ", mismatch to len(metric_names), "
+            + str(len(metric_names))
+        )
 
     # Data to plot
     ys = data  # stacked y-axis values
@@ -77,19 +103,21 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
     # Prepare plot
     if N > 20:
         if xtick_labelsize is None:
-            xtick_labelsize = 'large'
+            xtick_labelsize = "large"
         if ytick_labelsize is None:
-            ytick_labelsize = 'large'
+            ytick_labelsize = "large"
     else:
         if xtick_labelsize is None:
-            xtick_labelsize = 'x-large'
+            xtick_labelsize = "x-large"
         if ytick_labelsize is None:
-            ytick_labelsize = 'x-large'
-    params = {'legend.fontsize': 'large',
-              'axes.labelsize': 'x-large',
-              'axes.titlesize': 'x-large',
-              'xtick.labelsize': xtick_labelsize,
-              'ytick.labelsize': ytick_labelsize}
+            ytick_labelsize = "x-large"
+    params = {
+        "legend.fontsize": "large",
+        "axes.labelsize": "x-large",
+        "axes.titlesize": "x-large",
+        "xtick.labelsize": xtick_labelsize,
+        "ytick.labelsize": ytick_labelsize,
+    }
     pylab.rcParams.update(params)
 
     if fig is None and ax is None:
@@ -101,65 +129,75 @@ def parallel_coordinate_plot(data, metric_names, model_names, model_highlights=l
 
     for i, ax_y in enumerate(axes):
         ax_y.set_ylim(ymins[i], ymaxs[i])
-        ax_y.spines['top'].set_visible(False)
-        ax_y.spines['bottom'].set_visible(False)
+        ax_y.spines["top"].set_visible(False)
+        ax_y.spines["bottom"].set_visible(False)
         if ax_y == ax:
             ax_y.spines["left"].set_position(("data", i))
         if ax_y != ax:
-            ax_y.spines['left'].set_visible(False)
-            ax_y.yaxis.set_ticks_position('right')
+            ax_y.spines["left"].set_visible(False)
+            ax_y.yaxis.set_ticks_position("right")
             ax_y.spines["right"].set_position(("data", i))
 
     # Population distribuion on each vertical axis
     if show_boxplot or show_violin:
         y = [zs[:, i] for i in range(N)]
-        y_filtered = [y_i[~np.isnan(y_i)] for y_i in y]  # Remove NaN value for box/violin plot
+        y_filtered = [
+            y_i[~np.isnan(y_i)] for y_i in y
+        ]  # Remove NaN value for box/violin plot
 
         # Box plot
         if show_boxplot:
-            box = ax.boxplot(y_filtered, positions=range(N),
-                             patch_artist=True, widths=0.15)
-            for item in ['boxes', 'whiskers', 'fliers', 'medians', 'caps']:
-                plt.setp(box[item], color='darkgrey')
-            plt.setp(box["boxes"], facecolor='None')
-            plt.setp(box["fliers"], markeredgecolor='darkgrey')
+            box = ax.boxplot(
+                y_filtered, positions=range(N), patch_artist=True, widths=0.15
+            )
+            for item in ["boxes", "whiskers", "fliers", "medians", "caps"]:
+                plt.setp(box[item], color="darkgrey")
+            plt.setp(box["boxes"], facecolor="None")
+            plt.setp(box["fliers"], markeredgecolor="darkgrey")
 
         # Violin plot
         if show_violin:
-            violin = ax.violinplot(y_filtered, positions=range(N),
-                                   showmeans=False, showmedians=False, showextrema=False)
-            for pc in violin['bodies']:
-                pc.set_facecolor('lightgrey')
-                pc.set_edgecolor('None')
+            violin = ax.violinplot(
+                y_filtered,
+                positions=range(N),
+                showmeans=False,
+                showmedians=False,
+                showextrema=False,
+            )
+            for pc in violin["bodies"]:
+                pc.set_facecolor("lightgrey")
+                pc.set_edgecolor("None")
                 pc.set_alpha(0.8)
 
     # Line or marker
     colors = [plt.get_cmap(colormap)(c) for c in np.linspace(0, 1, num_color)]
-    marker_types = ['o', 's', '*', '^', 'X', 'D', 'p']
+    marker_types = ["o", "s", "*", "^", "X", "D", "p"]
     markers = list(flatten([[marker] * len(colors) for marker in marker_types]))
     colors *= len(marker_types)
     for j, model in enumerate(model_names):
         # to just draw straight lines between the axes:
         if model in model_highlights:
-            ax.plot(range(N), zs[j, :], '-',
-                    c=colors[j],
-                    label=model, lw=3)
+            ax.plot(range(N), zs[j, :], "-", c=colors[j], label=model, lw=3)
         else:
             if identify_all_models:
-                ax.plot(range(N), zs[j, :], markers[j],
-                        c=colors[j],
-                        label=model,
-                        clip_on=False)
+                ax.plot(
+                    range(N),
+                    zs[j, :],
+                    markers[j],
+                    c=colors[j],
+                    label=model,
+                    clip_on=False,
+                )
 
     ax.set_xlim(-0.5, N - 0.5)
     ax.set_xticks(range(N))
     ax.set_xticklabels(metric_names, fontsize=xtick_labelsize)
-    ax.tick_params(axis='x', which='major', pad=7)
-    ax.spines['right'].set_visible(False)
+    ax.tick_params(axis="x", which="major", pad=7)
+    ax.spines["right"].set_visible(False)
     ax.set_title(title, fontsize=18)
 
     if not legend_off:
-        ax.legend(loc='upper center', ncol=6, bbox_to_anchor=(0.5, -0.14))
+        ax.legend(loc="upper center", ncol=6, bbox_to_anchor=(0.5, -0.14))
 
     if not logo_off:
         fig, ax = add_logo(fig, ax, logo_rect)

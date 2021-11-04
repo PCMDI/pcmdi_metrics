@@ -1,12 +1,10 @@
 import glob
 
+
 def generate_parameter_files(demo_data_directory, demo_output_directory, filenames=[]):
     # This prepares the various parameter files used in the demo notebooks
     # to reflect where you downloaded the data
-    sub_dict = {
-        "INPUT_DIR": demo_data_directory,
-        "OUTPUT_DIR": demo_output_directory
-    }
+    sub_dict = {"INPUT_DIR": demo_data_directory, "OUTPUT_DIR": demo_output_directory}
     if len(filenames) < 1:
         filenames = glob.glob("*.in")
     for name in filenames:
@@ -23,6 +21,7 @@ def generate_parameter_files(demo_data_directory, demo_output_directory, filenam
         print("demo_data_directory = '{}'".format(demo_data_directory), file=f)
         print("demo_output_directory = '{}'".format(demo_output_directory), file=f)
 
+
 if __name__ == "__main__":
     """Perform the same actions as Demo 0 notebook: Get the tutorial file list,
     download the sample data, and generate the parameter files."""
@@ -30,7 +29,7 @@ if __name__ == "__main__":
     import cdat_info
 
     r = requests.get("https://pcmdiweb.llnl.gov/pss/pmpdata/pmp_tutorial_files.txt")
-    with open("data_files.txt","wb") as f:
+    with open("data_files.txt", "wb") as f:
         f.write(r.content)
 
     demo_data_directory = "demo_data"
