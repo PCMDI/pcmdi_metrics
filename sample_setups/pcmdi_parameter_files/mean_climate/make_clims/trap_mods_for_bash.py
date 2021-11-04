@@ -37,11 +37,11 @@ pathout_base = (
 
 try:
     os.mkdir(pathout_base + verout)
-except:
+except Exception:
     pass
 try:
     os.mkdir(pathout_base + verout + "/" + var)
-except:
+except Exception:
     pass
 
 # pathout = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/' + mip + '/' + exp + '/' + verout + '/' + var + '/'
@@ -56,11 +56,11 @@ cmd0 = (
 )
 
 lst1 = []
-for l in lst:
+for i in lst:
     cmd = (
         "nohup "
         + cmd0
-        + l
+        + i
         + " --outpath "
         + pathout
         + " --var "

@@ -3,7 +3,7 @@ import json
 import os
 import sys
 
-import genutil
+import cdutil
 
 # ver = datetime.datetime.now().strftime('v%Y%m%d%I%M')
 ver = datetime.datetime.now().strftime("v%Y%m%d")
@@ -126,7 +126,9 @@ if regional == "n":
         [
             "va_200",
         ],
-        ["zg_500"],
+        [
+            "zg_500",
+        ],
         [
             "rlut",
         ],
@@ -157,7 +159,9 @@ if regional == "n":
         [
             "rldscs",
         ],
-        ["rsdscs"],
+        [
+            "rsdscs",
+        ],
         [
             "rltcre",
         ],
@@ -171,16 +175,11 @@ if regional == "n":
 
 # vars = [['pr',],['rlut',],]
 # vars = [['ts',],['psl',]]
-
-####################
 # vars = ['ts']
 
-####
-
-
-## MODEL SPECIFC PARAMETERS
+# MODEL SPECIFC PARAMETERS
 model_tweaks = {
-    ## Keys are model accronym or None which applies to all model entries
+    # Keys are model accronym or None which applies to all model entries
     None: {
         ## Variables name mapping
         "variable_mapping": {"rlwcrf1": "rlutcre1"},
@@ -192,9 +191,6 @@ model_tweaks = {
 
 
 # USER CUSTOMIZED REGIONS
-import cdutil
-
-#'''
 if regional == "y":
 
     regions_specs = {
@@ -267,8 +263,6 @@ if regional == "y":
         "ts": [None, "ocean", "ocean_50S50N", "NHEX_ocean", "SHEX_ocean"],
         "tos": [None],
     }
-#'''
-
 
 ## USER CAN CUSTOMIZE REGIONS VALUES NAMES
 # regions_values = {"land":100.,"ocean":0.}
@@ -304,9 +298,9 @@ realization = "r1i1p1"
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
 save_test_clims = True  # True or False
 
-## DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
-#################################################
-## Templates for climatology files
+# DATA LOCATION: MODELS, OBS AND METRICS OUTPUT
+# ---------------------------------------------
+# Templates for climatology files
 
 verd = "*"
 if exp == "amip":
@@ -352,9 +346,9 @@ if exp == "picontrol":
         "%(variable)_%(model_version)_%(table)_picontrol_%(exp)r1i1p1_01-12-clim.nc"
     )
 
-## Templates for MODEL land/sea mask (sftlf)
-## filename template for landsea masks ('sftlf')
-##sftlf_filename_template = "/work/gleckler1/processed_data/cmip5_fixed_fields/sftlf/sftlf_%(model_version).nc"
+# Templates for MODEL land/sea mask (sftlf)
+# filename template for landsea masks ('sftlf')
+# sftlf_filename_template = "/work/gleckler1/processed_data/cmip5_fixed_fields/sftlf/sftlf_%(model_version).nc"
 
 generate_sftlf = True  # ESTIMATE LAND SEA MASK IF NOT FOUND
 
@@ -404,7 +398,7 @@ if not os.path.exists(custom_observations):
 
 #######################################
 ### DIRECTORY AND FILENAME FOR OUTPUTING METRICS RESULTS
-##BY INDIVIDUAL MODELS
+## BY INDIVIDUAL MODELS
 if metrics_in_single_file != "y":
     metrics_output_path = (
         "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/metrics_results/mean_climate/"
@@ -423,7 +417,7 @@ if metrics_in_single_file != "y":
         + "."
         + case_id
     )  # INDIVIDUAL MOD FILES
-##ALL MODELS IN ONE FILE
+## ALL MODELS IN ONE FILE
 if metrics_in_single_file == "y":
     metrics_output_path = (
         "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/metrics_results/mean_climate/"

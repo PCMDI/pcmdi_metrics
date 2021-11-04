@@ -25,7 +25,7 @@ try:
     Version = "-".join(descr.split("-")[:-2])
     if Version == "":
         Version = descr
-except:
+except Exception:
     descr = Version
 
 p = subprocess.Popen(
@@ -36,7 +36,7 @@ p = subprocess.Popen(
 )
 try:
     commit = p.stdout.readlines()[0].split()[1].decode("utf-8")
-except:
+except Exception:
     commit = ""
 f = open("pcmdi_metrics/version.py", "w")
 print("__version__ = '%s'" % Version, file=f)

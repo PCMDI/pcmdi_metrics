@@ -7,6 +7,7 @@ import MV2
 from SeabarChart_mpl import BarChart
 
 from pcmdi_metrics.driver import pmp_parser
+from pcmdi_metrics.pcmdi.io import JSONs
 
 test = False
 # test = True
@@ -161,12 +162,11 @@ print("-----------------------------")
 
 print("==> Loading json file : " + json_path)
 print("...")
-from pcmdi_metrics.pcmdi.io import JSONs
 
 try:
     fj = open(json_path)
     fj.close()
-except:
+except Exception:
     json_path = json_path.replace("@VAR", variable)
 
 print("==> json file loaded")
@@ -191,7 +191,7 @@ try:
         inc = 1
         # -- Replace @VAR by var (if var was passed by the user)
         if variable:
-            for i in xrange(len(aux_jsons)):
+            for i in range(len(aux_jsons)):
                 aux_jsons[i] = aux_jsons[i].replace("@VAR", variable)
         # -- Loop on the files to reconstruct new mod names
         for aux_json in aux_jsons:
@@ -235,7 +235,7 @@ try:
             try:
                 numexp_fj = open(numexp_json)
                 numexp_fj.close()
-            except:
+            except Exception:
                 numexp_json = numexp_json.replace("@VAR", variable)
             numexp_fj = open(numexp_json)
             aux_jsons.append(numexp_json)
@@ -264,7 +264,7 @@ mods = sorted(mods, key=lambda s: s.lower())
 # !!!!!!!!
 tot_mods = mods
 if len(aux_jsons) > 0:
-    Jaux = JSONS(aux_jsons)
+    Jaux = JSONs(aux_jsons)
     dd_aux = Jaux()
     aux_mods = dd_aux.getAxisIndex(dd_aux.getAxisIndex("model"))
     tot_mods += aux_mods
