@@ -1,3 +1,9 @@
+import os
+
+import cdutil
+
+import pcmdi_metrics  # Or whatever your custom metrics package name is
+
 ##########################################################################
 #  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW:
 ##########################################################################
@@ -80,7 +86,6 @@ save_test_clims = True
 
 # REGIONAL STUDIES
 # USER CAN CREATE CUSTOM REGIONS
-import cdutil
 
 regions_specs = {
     "Nino34": {
@@ -162,10 +167,8 @@ custom_observations = os.path.abspath(
 # OUTPUT: dictionary
 # dict pairs are: { metrics_name:float }
 
-import pcmdi_metrics  # Or whatever your custom metrics package name is
 
 compute_custom_metrics = pcmdi_metrics.pcmdi.compute_metrics
-# or
 
 
 def mymax(slab, nm):

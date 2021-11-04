@@ -9,14 +9,10 @@ Usage:
     python pmp_param_generator.py <output_file_name> <config name>
 """
 
-import datetime
-import glob
 import json
 import os
-import subprocess
 import sys
 
-import genutil
 from climatologies import make_climatologies
 
 
