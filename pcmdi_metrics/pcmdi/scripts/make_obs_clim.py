@@ -21,7 +21,6 @@ from string import replace
 import cdms2 as cdm
 import cdtime as cdt
 import cdutil as cdu
-
 # sys.path.insert(1,'/export/durack1/git/pylib')
 from durolib import globalAttWrite, spyderClean
 from numpy.core.fromnumeric import shape
