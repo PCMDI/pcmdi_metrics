@@ -131,28 +131,28 @@ title = args.title
 yaxis_label = args.yaxis_label
 highlights = args.highlights
 
-print '-----------------------------'
-print '--'
-print '-- Working on:'
-print '-> json_path (-j) : ' + json_path
-print '-> aux_json_path (-aj) : ' + aux_json_path
-print '-> stat (-s) : ' + stat
-print '-> outpath (-o): ' + outpath
-print '-> experiment (-e) : ' + experiment
-print '-> variable (-v) : ' + variable
-print '-> domain (-d) : ' + domain
-print '-> reference (-r) : ' + reference
-print '-> customname (-cn) : ' + customname
-print '-> season (-seas) ' + season
-print '-> colors (-cl) ' + colors
-print '-> keywords (-kp) ' + keywords
-print '-> parameters (-p) ' + args.parameters
-print '-> yaxis_label (-yax) ' + yaxis_label
-print '-> highlights (-hi) ' + highlights
-print '-----------------------------'
+print('-----------------------------')
+print('--')
+print('-- Working on:')
+print('-> json_path (-j) : ' + json_path)
+print('-> aux_json_path (-aj) : ' + aux_json_path)
+print('-> stat (-s) : ' + stat)
+print('-> outpath (-o): ' + outpath)
+print('-> experiment (-e) : ' + experiment)
+print('-> variable (-v) : ' + variable)
+print('-> domain (-d) : ' + domain)
+print('-> reference (-r) : ' + reference)
+print('-> customname (-cn) : ' + customname)
+print('-> season (-seas) ' + season)
+print('-> colors (-cl) ' + colors)
+print('-> keywords (-kp) ' + keywords)
+print('-> parameters (-p) ' + args.parameters)
+print('-> yaxis_label (-yax) ' + yaxis_label)
+print('-> highlights (-hi) ' + highlights)
+print('-----------------------------')
 
-print '==> Loading json file : ' + json_path
-print '...'
+print('==> Loading json file : ' + json_path)
+print('...')
 from pcmdi_metrics.pcmdi.io import JSONs
 try:
  fj = open(json_path)
@@ -160,7 +160,7 @@ try:
 except:
  json_path = json_path.replace('@VAR', variable)
 
-print '==> json file loaded'
+print('==> json file loaded')
 
 # --> aux_json_path can be a path, a json_file;
 # --> It could also be possible to pass a list of json files:
@@ -174,8 +174,8 @@ try:
  custom_names = {}
  aux_jsons = []
  if aux_json_path:
-   print '==> Loading auxillary json file : ' + aux_json_path
-   print '...'
+   print('==> Loading auxillary json file : ' + aux_json_path)
+   print('...')
    # -- Case: aux_json_path contains multiple paths separated by commas (,)
    aux_jsons = str.split(aux_json_path, ',')
    aux_dd = dict(RESULTS=dict()); inc = 1
@@ -214,7 +214,7 @@ try:
        if new_mod_name:
           custom_names[mod_name] = new_mod_name
           #
-   print '==> Auxillary json file loaded'
+   print('==> Auxillary json file loaded')
  elif numexpts:
    # -- If the user gave a list of simulations via 'numexpts' in the parameter file:
       for numexp in numexpts:
@@ -242,7 +242,7 @@ try:
          numexp_fj.close()
 
 except Exception, err:
- print "ERROR READING IN Aux:", err
+ print("ERROR READING IN Aux:", err)
  pass
 
 J = JSONs([json_path, ])
@@ -291,9 +291,9 @@ if highlights:    plot_params.update( highlights=str.split(highlights,',') )
 if colors:        plot_params.update( colors=colors )
 if yaxis_label:   plot_params.update( yaxis_label=yaxis_label )
 
-print '==>'
-print '==> Starting loop on the seasons'
-print '==>'
+print('==>')
+print('==> Starting loop on the seasons')
+print('==>')
 
 # PJG changing seasons to monsoon domains
 seasons = ['AllM','SAFM','SAMM','NAMM','AUSM']   #,'NAFM','ASM']
@@ -301,22 +301,22 @@ rects = {'AllM':511, 'SAFM':512, 'SAMM':513, 'NAMM':514, 'AUSM':515} # subplot l
 
 
 for season in seasons:
-    print '-> Working on season : '+season
-    print '...'
+    print('-> Working on season : '+season)
+    print('...')
     all_mods = []
 #   uni = dd['RESULTS'][mods[0]]['units']  PJG ALWAYS PRECIP FOR MPI
     uni = 'mm/day'
     # -- Loop on the main json file results
     for mod in tot_mods:
-        print '-> Computing '+stat+' on '+mod
+        print('-> Computing '+stat+' on '+mod)
 #       Realization     = dd['RESULTS'][mod]['SimulationDescription']['Realization']
 #       bias = float(dd['RESULTS'][mod][reference][Realization][domain][stat +'_xy_'+season])*unit_adj
         bias = float(dd['RESULTS'][mod][season]['rmsn'])
         all_mods.append(bias)
     # -- Do the bar chart plot with BarChart (pcmdi_metrics.mean_climate_plots.BarChart)
-    print '==> Start the plotting...'
+    print('==> Start the plotting...')
     dia = BarChart(tot_mods,all_mods,uni, fig=fig, rect=rects[season], **plot_params)
-    print '==> BELOW plotting start...'
+    print('==> BELOW plotting start...')
     dia._ax.set_title(season.upper()) # Give title for individual subplot
     if season != seasons[-1]: # Hide x-axis labels for upper panels if plotting multiple panels
       dia._ax.axes.xaxis.set_ticklabels([])
@@ -326,8 +326,8 @@ if len(seasons) == 1:
   fig.subplots_adjust(bottom=0.3) # Give more bottom margins to model name show up
 
 PLT.savefig(outpath + '/' + fig_filename + '.png')
-print '==> Figure saved as : '+outpath + '/' + fig_filename + '.png'
-print '==> End of Bar Chart plot'
+print('==> Figure saved as : '+outpath + '/' + fig_filename + '.png')
+print('==> End of Bar Chart plot')
 if test:
     PLT.ion()
     PLT.show()
