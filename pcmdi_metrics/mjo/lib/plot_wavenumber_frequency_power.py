@@ -1,9 +1,10 @@
-import cdms2
 import copy
+import os
+
+import cdms2
 import matplotlib.cm
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
-import os
 
 
 def plot_power(d, title, fout, ewr=None):

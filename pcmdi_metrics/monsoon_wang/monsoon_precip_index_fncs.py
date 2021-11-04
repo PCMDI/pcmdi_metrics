@@ -1,5 +1,5 @@
-import numpy
 import MV2
+import numpy
 
 #  SEASONAL RANGE - USING ANNUAL CYCLE CLIMATOLGIES 0=Jan, 11=Dec
 

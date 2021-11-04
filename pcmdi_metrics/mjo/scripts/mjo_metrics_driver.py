@@ -31,23 +31,25 @@ for advertising or product endorsement purposes.
 """
 
 from __future__ import print_function
+
+import glob
+import json
+import os
+import sys
+import time
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
+from shutil import copyfile
+
 from genutil import StringConstructor
+
+import pcmdi_metrics
 from pcmdi_metrics.mjo.lib import (
     AddParserArgument,
     YearCheck,
     mjo_metric_ewr_calculation,
     mjo_metrics_to_json,
 )
-from shutil import copyfile
-
-import glob
-import json
-import os
-import pcmdi_metrics
-import sys
-import time
 
 # To avoid below error
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable

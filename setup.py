@@ -1,9 +1,11 @@
 from __future__ import print_function
-from setuptools import setup, find_packages
+
 import glob
-import subprocess
 import os
+import subprocess
 import sys
+
+from setuptools import find_packages, setup
 
 if "--enable-devel" in sys.argv:
     install_dev = True

@@ -11,13 +11,15 @@
 # -------------------------------------------------------------------------
 
 from __future__ import print_function
-import cdms2
-import MV2
-from pcmdi_metrics.diurnal.fourierFFT import fastAllGridFT
+
 import glob
 import os
 
-from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor
+import cdms2
+import MV2
+
+from pcmdi_metrics.diurnal.common import P, monthname_d, populateStringConstructor
+from pcmdi_metrics.diurnal.fourierFFT import fastAllGridFT
 
 
 def main():

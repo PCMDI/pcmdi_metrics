@@ -1,14 +1,15 @@
 from __future__ import print_function
-from collections import defaultdict
-from pcmdi_metrics.driver.pmp_parser import PMPParser
 
 import collections
 import copy
 import datetime
 import glob
 import os
-import pcmdi_metrics
 import re
+from collections import defaultdict
+
+import pcmdi_metrics
+from pcmdi_metrics.driver.pmp_parser import PMPParser
 
 
 def AddParserArgument():

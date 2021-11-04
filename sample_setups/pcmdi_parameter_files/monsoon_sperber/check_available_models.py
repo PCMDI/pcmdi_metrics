@@ -1,6 +1,7 @@
 from __future__ import print_function
-import os
+
 import glob
+import os
 
 pathin = "/work/lee1043/ESGF/xmls/cmip5/historical/day/pr"
 lst = glob.glob(os.path.join(pathin, "*.xml"))

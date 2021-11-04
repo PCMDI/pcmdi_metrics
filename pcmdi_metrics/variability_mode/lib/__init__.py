@@ -1,39 +1,39 @@
-from .argparse_functions import (
+from .argparse_functions import (  # noqa
     AddParserArgument,
     VariabilityModeCheck,
     YearCheck,
-)  # noqa
-from .calc_stat import (
+)
+from .calc_stat import (  # noqa
     calc_stats_save_dict,
     calcBias,
     calcRMS,
     calcRMSc,
     calcSCOR,
-    calcTCOR,
     calcSTD,
     calcSTDmap,
-)  # noqa
-from .eof_analysis import (
-    eof_analysis_get_variance_mode,
-    arbitrary_checking,
-    linear_regression_on_globe_for_teleconnection,
-    linear_regression,
-    gain_pseudo_pcs,
-    gain_pcs_fraction,
+    calcTCOR,
+)
+from .dict_merge import dict_merge  # noqa
+from .eof_analysis import (  # noqa
     adjust_timeseries,
+    arbitrary_checking,
+    eof_analysis_get_variance_mode,
+    gain_pcs_fraction,
+    gain_pseudo_pcs,
     get_anomaly_timeseries,
     get_residual_timeseries,
-)  # noqa
-from .landmask import model_land_mask_out, estimate_landmask  # noqa
-from .lib_variability_mode import (
-    tree,
-    write_nc_output,
+    linear_regression,
+    linear_regression_on_globe_for_teleconnection,
+)
+from .landmask import estimate_landmask, model_land_mask_out  # noqa
+from .lib_variability_mode import (  # noqa
+    debug_print,
     get_domain_range,
     read_data_in,
-    debug_print,
-    sort_human,
     sea_ice_adjust,
+    sort_human,
+    tree,
     variability_metrics_to_json,
-)  # noqa
+    write_nc_output,
+)
 from .plot_map import plot_map  # noqa
-from .dict_merge import dict_merge  # noqa

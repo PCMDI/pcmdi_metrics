@@ -1,23 +1,24 @@
+import os
+
 import cdms2
 import cdtime
 import MV2
 import numpy as np
-import os
 
+from .debug_chk_plot import debug_chk_plot
 from .lib_mjo import (
+    Remove_dailySeasonalCycle,
+    calculate_ewr,
+    generate_axes_and_decorate,
+    get_daily_ano_segment,
+    interp2commonGrid,
+    output_power_spectra,
+    space_time_spectrum,
     subSliceSegment,
     unit_conversion,
-    Remove_dailySeasonalCycle,
-    interp2commonGrid,
-    get_daily_ano_segment,
-    space_time_spectrum,
-    generate_axes_and_decorate,
-    output_power_spectra,
-    calculate_ewr,
     write_netcdf_output,
 )
 from .plot_wavenumber_frequency_power import plot_power
-from .debug_chk_plot import debug_chk_plot
 
 
 def mjo_metric_ewr_calculation(

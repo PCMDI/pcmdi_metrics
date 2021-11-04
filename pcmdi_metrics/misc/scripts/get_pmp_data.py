@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 from __future__ import print_function
-from pcmdi_metrics.driver.pmp_parser import PMPParser
-import tempfile
-import requests
+
 import os
+import tempfile
+
 import cdat_info
+import requests
+
+from pcmdi_metrics.driver.pmp_parser import PMPParser
 
 
 def download_file(download_url_root, name, local_filename):

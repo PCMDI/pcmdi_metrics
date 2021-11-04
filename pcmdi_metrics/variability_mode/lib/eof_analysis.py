@@ -1,12 +1,14 @@
 from __future__ import print_function
-from eofs.cdms import Eof
+
+import sys
 from time import gmtime, strftime
+
 import cdms2
 import cdutil
 import genutil
 import MV2
 import numpy as np
-import sys
+from eofs.cdms import Eof
 
 # from pcmdi_metrics.variability_mode.lib import debug_print
 

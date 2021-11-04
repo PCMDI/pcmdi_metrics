@@ -1,7 +1,9 @@
-import cdp.cdp_parser
-import pcmdi_metrics.driver.pmp_parameter
-import pkg_resources
 import os
+
+import cdp.cdp_parser
+import pkg_resources
+
+import pcmdi_metrics.driver.pmp_parameter
 
 try:
     basestring  # noqa

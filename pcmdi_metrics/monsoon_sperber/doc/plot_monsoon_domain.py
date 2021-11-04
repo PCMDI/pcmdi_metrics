@@ -1,6 +1,6 @@
-from mpl_toolkits.basemap import Basemap
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
+from mpl_toolkits.basemap import Basemap
 
 
 def draw_screen_poly(lats, lons, m):

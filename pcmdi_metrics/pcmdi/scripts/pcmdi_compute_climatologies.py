@@ -1,7 +1,9 @@
-import cdms2
 import datetime
-import pcmdi_metrics
+
+import cdms2
 from genutil import StringConstructor
+
+import pcmdi_metrics
 
 ver = datetime.datetime.now().strftime("v%Y%m%d")
 
@@ -13,11 +15,12 @@ cdms2.setNetcdfDeflateLevelFlag(0)
 
 
 def clim_calc(var, infile, outfile, outdir, outfilename, start, end):
-    import cdms2
-    import cdutil
-    import cdtime
     import datetime
     import os
+
+    import cdms2
+    import cdtime
+    import cdutil
 
     ver = datetime.datetime.now().strftime("v%Y%m%d")
 

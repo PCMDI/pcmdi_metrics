@@ -1,8 +1,8 @@
 import cdms2
 import cdutil
 import genutil
-import numpy as np
 import MV2
+import numpy as np
 
 
 def model_land_mask_out(model, model_timeseries, model_lf_path):

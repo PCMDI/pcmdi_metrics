@@ -7,13 +7,14 @@
 # PJD 171121 Attempting to fix issue with default missing for thetao and
 # CMOR Table being wrong
 
-import cdms2
 import gc
 import glob
 import json
 import os
 import sys
 import time
+
+import cdms2
 
 if len(sys.argv) > 1:
     data_path = sys.argv[1]

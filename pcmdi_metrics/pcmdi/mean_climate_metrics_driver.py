@@ -1,13 +1,14 @@
 #!/usr/bin/env python
-import logging
+import ast
 import json
-from pcmdi_metrics.driver.outputmetrics import OutputMetrics
-from pcmdi_metrics.driver.observation import Observation
-from pcmdi_metrics.driver.model import Model
+import logging
+
 import pcmdi_metrics.driver.dataset
 import pcmdi_metrics.driver.pmp_parser
 from pcmdi_metrics import LOG_LEVEL
-import ast
+from pcmdi_metrics.driver.model import Model
+from pcmdi_metrics.driver.observation import Observation
+from pcmdi_metrics.driver.outputmetrics import OutputMetrics
 
 
 class PMPDriver(object):

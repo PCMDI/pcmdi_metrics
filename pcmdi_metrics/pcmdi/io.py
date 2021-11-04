@@ -1,6 +1,7 @@
-import pcmdi_metrics
 import json
 import os
+
+import pcmdi_metrics
 
 
 class OBS(pcmdi_metrics.io.base.Base):

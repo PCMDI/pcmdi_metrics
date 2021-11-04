@@ -11,10 +11,11 @@ land-sea masks and land-only variables (as available)
 @author: durack1
 """
 import os
-from durolib import globalAttWrite
+
 import cdms2 as cdm
-import numpy as np
 import MV2 as mv
+import numpy as np
+from durolib import globalAttWrite
 
 # Set netcdf file criterion - turned on from default 0s
 cdm.setCompressionWarnings(0)  # Suppress warnings

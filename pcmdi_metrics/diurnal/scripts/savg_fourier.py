@@ -15,16 +15,19 @@
 # June 2017
 
 from __future__ import print_function
+
+import collections
+import glob
+import json
+import os
+
 import cdms2
 import cdutil
 import MV2
-import os
-import glob
-import pcmdi_metrics
-import collections
-import json
 import pkg_resources
-from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor
+
+import pcmdi_metrics
+from pcmdi_metrics.diurnal.common import P, monthname_d, populateStringConstructor
 
 
 def main():

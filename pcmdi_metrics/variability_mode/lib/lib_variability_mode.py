@@ -1,14 +1,17 @@
 from __future__ import print_function
+
+import copy
+import re
 from collections import defaultdict
 from datetime import datetime
 from time import gmtime, strftime
+
 import cdms2
 import cdtime
 import cdutil
-import copy
 import MV2
+
 import pcmdi_metrics
-import re
 
 
 def tree():

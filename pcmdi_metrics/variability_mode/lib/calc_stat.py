@@ -1,8 +1,8 @@
+from time import gmtime, strftime
+
 import cdutil
 import genutil
 import MV2
-from time import gmtime, strftime
-
 
 # from pcmdi_metrics.variability_mode.lib import debug_print
 

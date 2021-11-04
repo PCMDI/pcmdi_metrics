@@ -1,19 +1,19 @@
 from .argparse_functions import AddParserArgument, YearCheck  # noqa
 from .debug_chk_plot import debug_chk_plot  # noqa
-from .lib_mjo import (
-    interp2commonGrid,
-    subSliceSegment,
+from .dict_merge import dict_merge  # noqa
+from .lib_mjo import (  # noqa
     Remove_dailySeasonalCycle,
-    get_daily_ano_segment,
-    space_time_spectrum,
-    taper,
-    decorate_2d_array_axes,
-    output_power_spectra,
-    write_netcdf_output,
     calculate_ewr,
-    unit_conversion,
+    decorate_2d_array_axes,
+    get_daily_ano_segment,
+    interp2commonGrid,
     mjo_metrics_to_json,
-)  # noqa
+    output_power_spectra,
+    space_time_spectrum,
+    subSliceSegment,
+    taper,
+    unit_conversion,
+    write_netcdf_output,
+)
 from .mjo_metric_calc import mjo_metric_ewr_calculation  # noqa
 from .plot_wavenumber_frequency_power import plot_power  # noqa
-from .dict_merge import dict_merge  # noqa

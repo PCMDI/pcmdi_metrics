@@ -1,9 +1,11 @@
-from pcmdi_metrics.graphics import add_logo
-import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.collections as collections
 import sys
+
+import matplotlib
+import matplotlib.collections as collections
+import matplotlib.pyplot as plt
+import numpy as np
+
+from pcmdi_metrics.graphics import add_logo
 
 
 def portrait_plot(

@@ -1,6 +1,7 @@
-from os import path
-import matplotlib.pyplot as plt
 import urllib.request
+from os import path
+
+import matplotlib.pyplot as plt
 
 
 def add_logo(fig, ax, rect=None):

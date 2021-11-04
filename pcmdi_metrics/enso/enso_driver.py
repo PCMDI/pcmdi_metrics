@@ -2,27 +2,31 @@
 # =================================================
 # Dependencies
 # -------------------------------------------------
-import cdms2
 import glob
 import json
 import os
-import pkg_resources
 import sys
 import time
 
-from genutil import StringConstructor
-from pcmdi_metrics.enso.lib import AddParserArgument
-from pcmdi_metrics.enso.lib import metrics_to_json
-from pcmdi_metrics.enso.lib import find_realm, get_file
-from pcmdi_metrics.enso.lib import CLIVAR_LargeEnsemble_Variables
-from pcmdi_metrics.enso.lib import sort_human
-from pcmdi_metrics.enso.lib import match_obs_name
+import cdms2
+import pkg_resources
 from EnsoMetrics.EnsoCollectionsLib import (
     CmipVariables,
-    defCollection,
     ReferenceObservations,
+    defCollection,
 )
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
+from genutil import StringConstructor
+
+from pcmdi_metrics.enso.lib import (
+    AddParserArgument,
+    CLIVAR_LargeEnsemble_Variables,
+    find_realm,
+    get_file,
+    match_obs_name,
+    metrics_to_json,
+    sort_human,
+)
 
 # To avoid below error when using multi cores
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable

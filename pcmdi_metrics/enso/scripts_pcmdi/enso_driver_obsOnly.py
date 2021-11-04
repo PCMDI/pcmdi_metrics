@@ -7,16 +7,16 @@ from __future__ import print_function
 import glob
 import json
 import os
-import pkg_resources
 import sys
 
-from genutil import StringConstructor
-from pcmdi_metrics.enso.lib import AddParserArgument
-from pcmdi_metrics.enso.lib import metrics_to_json
-from EnsoMetrics.EnsoCollectionsLib import defCollection, ReferenceObservations
+import pkg_resources
+from EnsoMetrics.EnsoCollectionsLib import ReferenceObservations, defCollection
 
 # from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection_ObsOnly
+from genutil import StringConstructor
+
+from pcmdi_metrics.enso.lib import AddParserArgument, metrics_to_json
 
 # To avoid below error when using multi cores
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable

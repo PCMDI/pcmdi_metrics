@@ -25,8 +25,8 @@ def generate_parameter_files(demo_data_directory, demo_output_directory, filenam
 if __name__ == "__main__":
     """Perform the same actions as Demo 0 notebook: Get the tutorial file list,
     download the sample data, and generate the parameter files."""
-    import requests
     import cdat_info
+    import requests
 
     r = requests.get("https://pcmdiweb.llnl.gov/pss/pmpdata/pmp_tutorial_files.txt")
     with open("data_files.txt", "wb") as f:

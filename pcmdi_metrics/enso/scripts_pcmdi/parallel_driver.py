@@ -9,14 +9,15 @@ Usage example:
 """
 
 from __future__ import print_function
-from genutil import StringConstructor
-
-from pcmdi_metrics.enso.lib import AddParserArgument, find_realm
-from pcmdi_metrics.variability_mode.lib import sort_human
-from pcmdi_metrics.misc.scripts import parallel_submitter
 
 import glob
 import os
+
+from genutil import StringConstructor
+
+from pcmdi_metrics.enso.lib import AddParserArgument, find_realm
+from pcmdi_metrics.misc.scripts import parallel_submitter
+from pcmdi_metrics.variability_mode.lib import sort_human
 
 # =================================================
 # Collect user defined options

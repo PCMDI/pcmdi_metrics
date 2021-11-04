@@ -1,9 +1,9 @@
-import cdms2
 import glob
 import os
 
-from plot_wavenumber_frequency_power import plot_power
+import cdms2
 from lib_mjo import calculate_ewr
+from plot_wavenumber_frequency_power import plot_power
 
 
 def main():

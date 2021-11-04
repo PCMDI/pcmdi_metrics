@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 
-import cdms2
-import numpy
-import os
-from genutil import statistics
-from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
-from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
-import pcmdi_metrics
 import collections
-import pkg_resources
+import os
+
+import cdms2
 import genutil
+import numpy
+import pkg_resources
+from genutil import statistics
+
+import pcmdi_metrics
+from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
+from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 
 
 def create_monsoon_wang_parser():

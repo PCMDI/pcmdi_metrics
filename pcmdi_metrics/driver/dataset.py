@@ -1,12 +1,14 @@
 import abc
+import logging
 import os
 import sys
-import logging
-import cdutil
+
 import cdms2
+import cdutil
 import pkg_resources
-from pcmdi_metrics.io.base import Base
 from six import with_metaclass
+
+from pcmdi_metrics.io.base import Base
 
 
 class DataSet(with_metaclass(abc.ABCMeta, object)):

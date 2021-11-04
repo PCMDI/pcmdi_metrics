@@ -1,9 +1,11 @@
-from matplotlib.cbook import flatten
-from pcmdi_metrics.graphics import add_logo
-import matplotlib.pyplot as plt
-import matplotlib.pylab as pylab
-import numpy as np
 import sys
+
+import matplotlib.pylab as pylab
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.cbook import flatten
+
+from pcmdi_metrics.graphics import add_logo
 
 
 def parallel_coordinate_plot(

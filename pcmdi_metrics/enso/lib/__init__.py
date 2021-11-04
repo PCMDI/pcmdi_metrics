@@ -1,10 +1,10 @@
-from .enso_lib import (
+from .enso_lib import (  # noqa
     AddParserArgument,
-    tree,
-    metrics_to_json,
+    CLIVAR_LargeEnsemble_Variables,
     find_realm,
     get_file,
-    CLIVAR_LargeEnsemble_Variables,
-    sort_human,
     match_obs_name,
-)  # noqa
+    metrics_to_json,
+    sort_human,
+    tree,
+)

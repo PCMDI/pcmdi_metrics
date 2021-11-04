@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 from __future__ import print_function
-from pcmdi_metrics.driver.pmp_parser import PMPParser
-import subprocess
-import os
-import importlib
-import sys
-import inspect
-import tempfile
-import cdp
-import shlex
+
 import copy
 import distutils.spawn
+import importlib
+import inspect
+import os
+import shlex
 import stat
+import subprocess
+import sys
+import tempfile
+
+import cdp
+
+from pcmdi_metrics.driver.pmp_parser import PMPParser
 
 parser = PMPParser(description="Parallelize a driver over some arguments")
 parser.add_argument("--driver", help="driver to prallelize")

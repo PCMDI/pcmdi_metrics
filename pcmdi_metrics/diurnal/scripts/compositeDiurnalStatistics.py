@@ -13,21 +13,23 @@
 # 'GISS-E2-H', 'inmcm4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR',
 # 'MIROC4h',   'MIROC5',    'MIROC-ESM',  'MIROC-ESM-CHEM'
 
-from __future__ import print_function, division
+from __future__ import division, print_function
+
+import glob
+import multiprocessing as mp
+import os
+
 import cdms2
+import cdp
+import cdtime
 import genutil
 import MV2
-import os
-import glob
-import cdtime
-import cdp
-import multiprocessing as mp
 
 from pcmdi_metrics.diurnal.common import (
-    monthname_d,
-    P,
-    populateStringConstructor,
     INPUT,
+    P,
+    monthname_d,
+    populateStringConstructor,
 )
 
 

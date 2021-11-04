@@ -1,11 +1,13 @@
-import os
 import logging
-import MV2
-import cdutil
+import os
+
 import cdms2
-from pcmdi_metrics.io.base import Base
+import cdutil
+import MV2
+
 import pcmdi_metrics.driver.dataset
 from pcmdi_metrics import LOG_LEVEL
+from pcmdi_metrics.io.base import Base
 
 
 class Model(pcmdi_metrics.driver.dataset.DataSet):

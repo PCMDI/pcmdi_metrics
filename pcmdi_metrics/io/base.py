@@ -1,20 +1,21 @@
-import os
-import logging
-import json
-import genutil
-import cdat_info
-import cdutil
-import MV2
-import cdms2
-import hashlib
-import numpy
-from collections import OrderedDict, Mapping
-import pcmdi_metrics
-import cdp.cdp_io
-from pcmdi_metrics import LOG_LEVEL
 import copy
+import hashlib
+import json
+import logging
+import os
 import re
+from collections import Mapping, OrderedDict
 
+import cdat_info
+import cdms2
+import cdp.cdp_io
+import cdutil
+import genutil
+import MV2
+import numpy
+
+import pcmdi_metrics
+from pcmdi_metrics import LOG_LEVEL
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1

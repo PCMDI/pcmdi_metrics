@@ -36,29 +36,34 @@ for advertising or product endorsement purposes.
 
 from __future__ import print_function
 
-import cdms2
-import cdtime
-import cdutil
 import copy
 import json
 import math
-import matplotlib.pyplot as plt
-import MV2
-import numpy as np
 import os
-import pcmdi_metrics
-import pkg_resources
 import sys
 import time
-
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
 from glob import glob
 from shutil import copyfile
-from pcmdi_metrics.monsoon_sperber.lib import AddParserArgument, YearCheck
-from pcmdi_metrics.monsoon_sperber.lib import model_land_only
-from pcmdi_metrics.monsoon_sperber.lib import divide_chunks_advanced, interp1d
-from pcmdi_metrics.monsoon_sperber.lib import sperber_metrics
+
+import cdms2
+import cdtime
+import cdutil
+import matplotlib.pyplot as plt
+import MV2
+import numpy as np
+import pkg_resources
+
+import pcmdi_metrics
+from pcmdi_metrics.monsoon_sperber.lib import (
+    AddParserArgument,
+    YearCheck,
+    divide_chunks_advanced,
+    interp1d,
+    model_land_only,
+    sperber_metrics,
+)
 
 
 def tree():

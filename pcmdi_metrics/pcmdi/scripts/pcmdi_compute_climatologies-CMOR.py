@@ -1,15 +1,18 @@
 #!/usr/bin/env python
 from __future__ import print_function
+
+import glob
 import os
 import tempfile
+
 import cdms2
-import cdutil
-import numpy
-import cdtime
-from pcmdi_metrics.driver.pmp_parser import PMPParser
-import glob
-import genutil
 import cdp
+import cdtime
+import cdutil
+import genutil
+import numpy
+
+from pcmdi_metrics.driver.pmp_parser import PMPParser
 
 try:
     import cmor

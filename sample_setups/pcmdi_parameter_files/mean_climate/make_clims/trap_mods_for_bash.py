@@ -1,5 +1,6 @@
-import glob, os
 import datetime
+import glob
+import os
 
 var = "tas"
 exp = "historical"

@@ -1,18 +1,19 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import MV2
-import cdms2
-import vcs
-import genutil
-import glob
-import numpy
 
 # import time
 import datetime
-from genutil import StringConstructor
+import glob
 import os
+
+import cdms2
+import genutil
+import MV2
+import numpy
 import pkg_resources
+import vcs
+from genutil import StringConstructor
 
 pmp_egg_path = pkg_resources.resource_filename(
     pkg_resources.Requirement.parse("pcmdi_metrics"), "share"

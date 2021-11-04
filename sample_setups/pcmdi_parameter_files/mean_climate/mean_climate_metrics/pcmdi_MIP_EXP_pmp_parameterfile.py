@@ -1,7 +1,9 @@
-import genutil
 import datetime
 import json
-import os, sys
+import os
+import sys
+
+import genutil
 
 # ver = datetime.datetime.now().strftime('v%Y%m%d%I%M')
 ver = datetime.datetime.now().strftime("v%Y%m%d")

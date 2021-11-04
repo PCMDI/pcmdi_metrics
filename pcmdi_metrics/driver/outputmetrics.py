@@ -1,13 +1,14 @@
 import collections
 import logging
 import os
-import cdms2
-import pcmdi_metrics
-from pcmdi_metrics.io.base import Base
-from pcmdi_metrics.driver.observation import Observation
-from pcmdi_metrics.driver.dataset import DataSet
-from pcmdi_metrics import LOG_LEVEL
 
+import cdms2
+
+import pcmdi_metrics
+from pcmdi_metrics import LOG_LEVEL
+from pcmdi_metrics.driver.dataset import DataSet
+from pcmdi_metrics.driver.observation import Observation
+from pcmdi_metrics.io.base import Base
 
 try:
     basestring  # noqa

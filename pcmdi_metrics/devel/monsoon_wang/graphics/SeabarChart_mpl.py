@@ -1,7 +1,8 @@
-import numpy as np
-import matplotlib.pyplot as PLT
-import sys
 import pdb
+import sys
+
+import matplotlib.pyplot as PLT
+import numpy as np
 
 
 class BarChart(object):

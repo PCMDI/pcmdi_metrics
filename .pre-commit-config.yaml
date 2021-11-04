@@ -1,4 +1,4 @@
-exclude: "docs|node_modules|migrations|.git|.tox|sample_setups/jsons|tests/deprecated"
+exclude: "docs|node_modules|migrations|.git|.tox|sample_setups/(external-setups|jsons)|tests/deprecated"
 default_stages: [commit]
 fail_fast: true
 

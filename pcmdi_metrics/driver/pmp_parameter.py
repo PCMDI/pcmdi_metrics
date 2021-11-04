@@ -1,9 +1,10 @@
-import os
 import logging
+import os
+
 import cdp.cdp_parameter
-from pcmdi_metrics import LOG_LEVEL
 import genutil
 
+from pcmdi_metrics import LOG_LEVEL
 
 try:
     basestring  # noqa

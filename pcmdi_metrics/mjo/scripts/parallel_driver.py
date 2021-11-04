@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-from argparse import RawTextHelpFormatter
-from genutil import StringConstructor
-
-from pcmdi_metrics.mjo.lib import AddParserArgument
-from pcmdi_metrics.variability_mode.lib import sort_human
-from pcmdi_metrics.misc.scripts import parallel_submitter
 
 import glob
 import os
+from argparse import RawTextHelpFormatter
+
+from genutil import StringConstructor
+
 import pcmdi_metrics
+from pcmdi_metrics.misc.scripts import parallel_submitter
+from pcmdi_metrics.mjo.lib import AddParserArgument
+from pcmdi_metrics.variability_mode.lib import sort_human
 
 # =================================================
 # Collect user defined options

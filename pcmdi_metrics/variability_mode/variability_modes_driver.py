@@ -47,40 +47,43 @@ for advertising or product endorsement purposes.
 """
 
 from __future__ import print_function
+
+import glob
+import json
+import os
+import sys
 from argparse import RawTextHelpFormatter
-from genutil import StringConstructor
 from shutil import copyfile
+
+import cdtime
+import cdutil
+import MV2
+import pkg_resources
+from genutil import StringConstructor
+
+import pcmdi_metrics
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
     VariabilityModeCheck,
     YearCheck,
-    calc_stats_save_dict,
-    calcTCOR,
-    calcSTD,
-    eof_analysis_get_variance_mode,
-    linear_regression_on_globe_for_teleconnection,
-    gain_pseudo_pcs,
-    gain_pcs_fraction,
     adjust_timeseries,
-    model_land_mask_out,
-    tree,
-    write_nc_output,
-    get_domain_range,
-    read_data_in,
+    calc_stats_save_dict,
+    calcSTD,
+    calcTCOR,
     debug_print,
-    sort_human,
-    variability_metrics_to_json,
+    eof_analysis_get_variance_mode,
+    gain_pcs_fraction,
+    gain_pseudo_pcs,
+    get_domain_range,
+    linear_regression_on_globe_for_teleconnection,
+    model_land_mask_out,
     plot_map,
+    read_data_in,
+    sort_human,
+    tree,
+    variability_metrics_to_json,
+    write_nc_output,
 )
-import cdtime
-import cdutil
-import glob
-import json
-import MV2
-import os
-import pcmdi_metrics
-import pkg_resources
-import sys
 
 # To avoid below error
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable

@@ -2,8 +2,10 @@
 
 import argparse
 import json
-import matplotlib.pyplot as plt
 import os
+
+import matplotlib.pyplot as plt
+
 from pcmdi_metrics.graphics.bar_chart import BarChart
 
 parser = argparse.ArgumentParser()

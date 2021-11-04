@@ -12,20 +12,22 @@
 # ---> computeStdDailyMeansWrapped.py -i data -m7 --realization="r1i1p1" -t "sample_data_%(variable)_%(model).nc"
 
 from __future__ import print_function
+
+import glob
+import multiprocessing as mp
+import os
+
 import cdms2
+import cdp
 import cdtime
 import genutil
 import numpy.ma
-import os
-import glob
-import cdp
-import multiprocessing as mp
 
 from pcmdi_metrics.diurnal.common import (
-    monthname_d,
-    P,
-    populateStringConstructor,
     INPUT,
+    P,
+    monthname_d,
+    populateStringConstructor,
 )
 
 

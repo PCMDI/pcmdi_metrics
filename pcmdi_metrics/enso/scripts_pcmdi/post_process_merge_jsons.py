@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-from genutil import StringConstructor
-from pcmdi_metrics.variability_mode.lib import dict_merge
 
 import copy
 import glob
 import json
 import os
+
+from genutil import StringConstructor
+
+from pcmdi_metrics.variability_mode.lib import dict_merge
 
 
 def main():

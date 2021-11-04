@@ -1,8 +1,10 @@
-import cdms2 as cdms
-import pcmdi_metrics
 import collections
+
+import cdms2 as cdms
 import MV2
 from genutil import grower
+
+import pcmdi_metrics
 
 
 def compute_metrics(Var, dm, do):

@@ -1,7 +1,8 @@
-import numpy as np
 import json
-import pandas as pd
 import sys
+
+import numpy as np
+import pandas as pd
 
 
 def read_mean_clim_json_files(

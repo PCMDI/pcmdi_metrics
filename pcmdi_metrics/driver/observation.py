@@ -1,9 +1,10 @@
 import logging
-import MV2
-from pcmdi_metrics.io.base import Base
-from pcmdi_metrics.driver.dataset import DataSet
-from pcmdi_metrics import LOG_LEVEL
 
+import MV2
+
+from pcmdi_metrics import LOG_LEVEL
+from pcmdi_metrics.driver.dataset import DataSet
+from pcmdi_metrics.io.base import Base
 
 try:
     basestring  # noqa

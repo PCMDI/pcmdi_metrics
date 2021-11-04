@@ -15,22 +15,25 @@
 
 
 from __future__ import print_function
-import cdms2
-import cdutil
-import os
-import numpy.ma
-import pcmdi_metrics
+
 import collections
 import glob
-import cdp
 import json
-import pkg_resources
 import multiprocessing as mp
+import os
+
+import cdms2
+import cdp
+import cdutil
+import numpy.ma
+import pkg_resources
+
+import pcmdi_metrics
 from pcmdi_metrics.diurnal.common import (
-    monthname_d,
-    P,
-    populateStringConstructor,
     INPUT,
+    P,
+    monthname_d,
+    populateStringConstructor,
 )
 
 
