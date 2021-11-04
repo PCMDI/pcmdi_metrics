@@ -7,8 +7,6 @@ import os
 import pdb  # , pdb.set_trace()
 import string
 import sys
-
-# from pcmdi_metrics.mean_climate_plots import BarChart
 from argparse import RawTextHelpFormatter
 
 import matplotlib.pyplot as PLT
@@ -17,6 +15,8 @@ from SeabarChart_mpl import BarChart
 
 import pcmdi_metrics
 from pcmdi_metrics.driver import pmp_parser
+
+# from pcmdi_metrics.mean_climate_plots import BarChart
 
 test = False
 # test = True
