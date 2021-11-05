@@ -124,15 +124,15 @@ if __name__ == "__main__":
     ncfile = "cmip5_obs_historical_obs_mjo_1997-2010_cmmGrid.nc"
     title = "OBS (GPCP-1-3) \n Pr, NDJFMA, 1997-2010, common grid (2.5x2.5deg)"
     ewr = 2.494024187737836
-    pngfilename = "cmip5_obs_historical_GPCP-1-3_mjo_1997-2010_cmmGrid"
 
     """
     datadir = '/work/lee1043/imsi/result_test/diagnostic_results/mjo/cmip5/historical/v20190715'
     ncfile = 'cmip5_obs_historical_GPCP-1-2_mjo_1997-2010_cmmGrid.nc'
     title = 'OBS (GPCP-1-2) \n Pr, NDJFMA, 1997-2010, common grid (2.5x2.5deg)'
     ewr = 2.516746230344365
-    pngfilename = ncfile.split('.nc')[0]
     """
+
+    pngfilename = ncfile.split('.nc')[0]
 
     imgdir = "."
 
