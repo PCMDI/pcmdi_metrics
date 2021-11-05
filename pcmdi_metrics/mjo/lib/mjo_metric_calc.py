@@ -1,49 +1,29 @@
-import os
-
 import cdms2
 import cdtime
 import MV2
 import numpy as np
+import os
 
-from .debug_chk_plot import debug_chk_plot
-from .lib_mjo import (
-    Remove_dailySeasonalCycle,
-    calculate_ewr,
-    generate_axes_and_decorate,
-    get_daily_ano_segment,
-    interp2commonGrid,
-    output_power_spectra,
-    space_time_spectrum,
-    subSliceSegment,
-    unit_conversion,
+from pcmdi_metrics.mjo.lib import (
+    subSliceSegment, unit_conversion, Remove_dailySeasonalCycle,
+    interp2commonGrid, get_daily_ano_segment, space_time_spectrum,
+    generate_axes_and_decorate, output_power_spectra, calculate_ewr,
     write_netcdf_output,
-)
-from .plot_wavenumber_frequency_power import plot_power
+    plot_power,
+    debug_chk_plot)
 
 
-def mjo_metric_ewr_calculation(
-    mip,
-    model,
-    exp,
-    run,
-    debug,
-    plot,
-    nc_out,
-    cmmGrid,
-    degX,
-    UnitsAdjust,
-    inputfile,
-    var,
-    startYear,
-    endYear,
-    segmentLength,
-    outdir,
-    season="NDJFMA",
-):
+def mjo_metric_ewr_calculation(mip, model, exp, run,
+                               debug, plot, nc_out, cmmGrid, degX,
+                               UnitsAdjust, inputfile, var,
+                               startYear, endYear,
+                               segmentLength,
+                               outdir,
+                               season="NDJFMA"):
 
     # Open file to read daily dataset
     if debug:
-        print("debug: open file")
+        print('debug: open file')
     f = cdms2.open(inputfile)
     d = f[var]
     tim = d.getTime()
@@ -51,7 +31,7 @@ def mjo_metric_ewr_calculation(
 
     # Get starting and ending year and month
     if debug:
-        print("debug: check time")
+        print('debug: check time')
     first_time = comTim[0]
     last_time = comTim[-1]
 
@@ -65,13 +45,13 @@ def mjo_metric_ewr_calculation(
     # Number of grids for 2d fft input
     NL = len(d.getLongitude())  # number of grid in x-axis (longitude)
     if cmmGrid:
-        NL = int(360 / degX)
+        NL = int(360/degX)
     NT = segmentLength  # number of time step for each segment (need to be an even number)
 
     if debug:
         # endYear = startYear + 2
-        print("debug: startYear, endYear:", startYear, endYear)
-        print("debug: NL, NT:", NL, NT)
+        print('debug: startYear, endYear:', startYear, endYear)
+        print('debug: NL, NT:', NL, NT)
 
     #
     # Get daily climatology on each grid, then remove it to get anomaly
@@ -93,7 +73,9 @@ def mjo_metric_ewr_calculation(
         # units conversion
         segment[year] = unit_conversion(segment[year], UnitsAdjust)
         # Get climatology of daily seasonal cycle
-        daSeaCyc = MV2.add(MV2.divide(segment[year], float(numYear)), daSeaCyc)
+        daSeaCyc = MV2.add(
+            MV2.divide(segment[year], float(numYear)),
+            daSeaCyc)
     # Remove daily seasonal cycle from each segment
     if numYear > 1:
         for year in range(startYear, endYear):
@@ -116,9 +98,9 @@ def mjo_metric_ewr_calculation(
 
     # Year loop for space-time spectrum calculation
     if debug:
-        print("debug: year loop start")
+        print('debug: year loop start')
     for n, year in enumerate(range(startYear, endYear)):
-        print("chk: year:", year)
+        print('chk: year:', year)
         d_seg = segment_ano[year]
         # Regrid: interpolation to common grid
         if cmmGrid:
@@ -127,7 +109,7 @@ def mjo_metric_ewr_calculation(
         d_seg_x_ano = get_daily_ano_segment(d_seg)
         # Compute space-time spectrum
         if debug:
-            print("debug: compute space-time spectrum")
+            print('debug: compute space-time spectrum')
         Power[n, :, :] = space_time_spectrum(d_seg_x_ano)
 
     # Multi-year averaged power
@@ -139,61 +121,49 @@ def mjo_metric_ewr_calculation(
 
     # E/W ratio
     ewr, eastPower, westPower = calculate_ewr(OEE)
-    print("ewr: ", ewr)
-    print("east power: ", eastPower)
-    print("west power: ", westPower)
+    print('ewr: ', ewr)
+    print('east power: ', eastPower)
+    print('west power: ', westPower)
 
     # Output
     output_filename = "{}_{}_{}_{}_{}_{}-{}_{}".format(
-        mip, model, exp, run, "mjo", startYear, endYear, season
-    )
+        mip, model, exp,
+        run, 'mjo', startYear, endYear, season)
     if cmmGrid:
-        output_filename += "_cmmGrid"
+        output_filename += '_cmmGrid'
 
     # NetCDF output
     if nc_out:
-        if not os.path.exists(outdir(output_type="diagnostic_results")):
-            os.makedirs(outdir(output_type="diagnostic_results"))
-        fout = os.path.join(outdir(output_type="diagnostic_results"), output_filename)
+        if not os.path.exists(outdir(output_type='diagnostic_results')):
+            os.makedirs(outdir(output_type='diagnostic_results'))
+        fout = os.path.join(
+            outdir(output_type='diagnostic_results'),
+            output_filename)
         write_netcdf_output(OEE, fout)
 
     # Plot
     if plot:
-        if not os.path.exists(outdir(output_type="graphics")):
-            os.makedirs(outdir(output_type="graphics"))
-        fout = os.path.join(outdir(output_type="graphics"), output_filename)
-        title = (
-            mip.upper()
-            + ": "
-            + model
-            + " ("
-            + run
-            + ") \n"
-            + var.capitalize()
-            + ", "
-            + season
-            + " "
-            + str(startYear)
-            + "-"
-            + str(endYear)
-        )
+        if not os.path.exists(outdir(output_type='graphics')):
+            os.makedirs(outdir(output_type='graphics'))
+        fout = os.path.join(
+            outdir(output_type='graphics'),
+            output_filename)
+        title = mip.upper()+': '+model+' ('+run+') \n'+var.capitalize()+', '+season+' '+str(startYear)+'-'+str(endYear)
         if cmmGrid:
-            title += ", common grid (2.5x2.5deg)"
+            title += ', common grid (2.5x2.5deg)'
         plot_power(OEE, title, fout, ewr)
 
     # Output to JSON
     metrics_result = {}
-    metrics_result["east_power"] = eastPower
-    metrics_result["west_power"] = westPower
-    metrics_result["east_west_power_ratio"] = ewr
-    metrics_result["analysis_time_window_start_year"] = startYear
-    metrics_result["analysis_time_window_end_year"] = endYear
+    metrics_result['east_power'] = eastPower
+    metrics_result['west_power'] = westPower
+    metrics_result['east_west_power_ratio'] = ewr
+    metrics_result['analysis_time_window_start_year'] = startYear
+    metrics_result['analysis_time_window_end_year'] = endYear
 
     # Debug checking plot
     if debug and plot:
-        debug_chk_plot(
-            d_seg_x_ano, Power, OEE, segment[year], daSeaCyc, segment_ano[year]
-        )
+        debug_chk_plot(d_seg_x_ano, Power, OEE, segment[year], daSeaCyc, segment_ano[year])
 
     f.close()
     return metrics_result
