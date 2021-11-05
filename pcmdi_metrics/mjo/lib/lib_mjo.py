@@ -7,21 +7,20 @@ Ahn, MS., Kim, D., Sperber, K.R. et al. Clim Dyn (2017) 49: 4023.
 https://doi.org/10.1007/s00382-017-3558-4
 """
 
-import cdms2
-import cdtime
-import cdutil
-import MV2
-import numpy as np
-from scipy import signal
-
-import pcmdi_metrics
-
 import copy
 import os
 
+import cdms2
+import cdtime
+import cdutil
 import matplotlib.cm
 import matplotlib.pyplot as plt
+import MV2
+import numpy as np
 from matplotlib.patches import Rectangle
+from scipy import signal
+
+import pcmdi_metrics
 
 
 def interp2commonGrid(d, dlat, debug=False):

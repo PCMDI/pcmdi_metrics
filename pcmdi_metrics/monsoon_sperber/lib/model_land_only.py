@@ -1,8 +1,7 @@
-import genutil
-import MV2
-
 import cartopy.crs as ccrs
+import genutil
 import matplotlib.pyplot as plt
+import MV2
 
 
 def model_land_only(model, model_timeseries, lf, debug=False):
@@ -77,9 +76,7 @@ def plot_map(data, filename):
     lons = data.getLongitude()
     lats = data.getLatitude()
     ax = plt.axes(projection=ccrs.PlateCarree(central_longitude=180))
-    ax.contourf(lons, lats, data,
-                transform=ccrs.PlateCarree(),
-                cmap='viridis')
+    ax.contourf(lons, lats, data, transform=ccrs.PlateCarree(), cmap="viridis")
     ax.coastlines()
     ax.set_global()
     plt.savefig(filename)
