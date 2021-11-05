@@ -8,9 +8,9 @@ from pcmdi_metrics.mjo.lib import (
     subSliceSegment, unit_conversion, Remove_dailySeasonalCycle,
     interp2commonGrid, get_daily_ano_segment, space_time_spectrum,
     generate_axes_and_decorate, output_power_spectra, calculate_ewr,
-    write_netcdf_output,
-    plot_power,
-    debug_chk_plot)
+    write_netcdf_output)
+from .plot_wavenumber_frequency_power import plot_power
+from .debug_chk_plot import debug_chk_plot
 
 
 def mjo_metric_ewr_calculation(mip, model, exp, run,
@@ -28,6 +28,8 @@ def mjo_metric_ewr_calculation(mip, model, exp, run,
     d = f[var]
     tim = d.getTime()
     comTim = tim.asComponentTime()
+    lat = d.getLatitude()
+    lon = d.getLongitude()
 
     # Get starting and ending year and month
     if debug:
@@ -82,7 +84,11 @@ def mjo_metric_ewr_calculation(mip, model, exp, run,
             segment_ano[year] = Remove_dailySeasonalCycle(segment[year], daSeaCyc)
     else:
         segment_ano[year] = segment[year]
-
+    # Assign lat/lon to arrays
+    daSeaCyc.setAxis(1, lat)
+    daSeaCyc.setAxis(2, lon)
+    segment_ano[year].setAxis(1, lat)
+    segment_ano[year].setAxis(2, lon)
     """
     Space-time power spectra
 
