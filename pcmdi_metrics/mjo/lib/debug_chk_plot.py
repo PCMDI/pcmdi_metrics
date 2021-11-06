@@ -10,7 +10,7 @@ def debug_chk_plot(d_seg_x_ano, Power, OEE, segment_year, daSeaCyc, segment_ano_
     if not os.path.exists("debug"):
         os.makedirs("debug")
 
-    """
+    """ FIX ME ---
     x = vcs.init()
     x.plot(d_seg_x_ano)
     x.png('debug/d_seg_x_ano.png')
