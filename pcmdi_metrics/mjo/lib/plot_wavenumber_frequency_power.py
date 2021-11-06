@@ -118,7 +118,6 @@ def plot_power(d, title, fout, ewr=None):
     plt.savefig(fout + ".png")
 
 
-"""
 if __name__ == "__main__":
 
     datadir = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/mjo/cmip5/historical/v20190628"
@@ -131,7 +130,7 @@ if __name__ == "__main__":
     # title = 'OBS (GPCP-1-2) \n Pr, NDJFMA, 1997-2010, common grid (2.5x2.5deg)'
     # ewr = 2.516746230344365
 
-    pngfilename = ncfile.split('.nc')[0]
+    pngfilename = ncfile.split(".nc")[0]
 
     imgdir = "."
 
@@ -140,4 +139,3 @@ if __name__ == "__main__":
     fout = os.path.join(imgdir, pngfilename)
 
     plot_power(d, title, fout, ewr=ewr)
-"""

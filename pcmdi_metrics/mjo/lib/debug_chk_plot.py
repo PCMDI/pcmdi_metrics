@@ -58,5 +58,5 @@ def plot_map(data, filename):
     ax.xaxis.set_major_formatter(lon_formatter)
     ax.yaxis.set_major_formatter(lat_formatter)
     plt.colorbar(im)
-    ax.set_aspect('auto', adjustable=None)
+    ax.set_aspect("auto", adjustable=None)
     fig.savefig(filename)
