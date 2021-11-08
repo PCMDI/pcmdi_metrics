@@ -1,6 +1,6 @@
-from __future__ import print_function
-
+import cartopy.crs as ccrs
 import genutil
+import matplotlib.pyplot as plt
 import MV2
 
 
@@ -9,12 +9,7 @@ def model_land_only(model, model_timeseries, lf, debug=False):
     # Mask out over ocean grid
     # - - - - - - - - - - - - - - - - - - - - - - - - -
     if debug:
-        print("debug: plot for beforeMask start")
-        import vcs
-
-        x = vcs.init()
-        x.plot(model_timeseries)
-        x.png("_".join(["test", model, "beforeMask.png"]))
+        plot_map(model_timeseries[0], "_".join(["test", model, "beforeMask.png"]))
         print("debug: plot for beforeMask done")
 
     # Check land fraction variable to see if it meet criteria
@@ -71,10 +66,17 @@ def model_land_only(model, model_timeseries, lf, debug=False):
     model_timeseries_masked.setAxis(2, lon_c2)
 
     if debug:
-        x.clear()
-        x.plot(model_timeseries_masked)
-        x.png("_".join(["test", model, "afterMask.png"]))
-        x.close()
+        plot_map(model_timeseries_masked[0], "_".join(["test", model, "afterMask.png"]))
         print("debug: plot for afterMask done")
 
     return model_timeseries_masked
+
+
+def plot_map(data, filename):
+    lons = data.getLongitude()
+    lats = data.getLatitude()
+    ax = plt.axes(projection=ccrs.PlateCarree(central_longitude=180))
+    ax.contourf(lons, lats, data, transform=ccrs.PlateCarree(), cmap="viridis")
+    ax.coastlines()
+    ax.set_global()
+    plt.savefig(filename)

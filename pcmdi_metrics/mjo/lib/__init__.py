@@ -5,6 +5,7 @@ from .lib_mjo import (  # noqa
     Remove_dailySeasonalCycle,
     calculate_ewr,
     decorate_2d_array_axes,
+    generate_axes_and_decorate,
     get_daily_ano_segment,
     interp2commonGrid,
     mjo_metrics_to_json,

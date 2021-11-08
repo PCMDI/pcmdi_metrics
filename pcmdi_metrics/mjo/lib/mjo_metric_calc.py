@@ -5,8 +5,7 @@ import cdtime
 import MV2
 import numpy as np
 
-from .debug_chk_plot import debug_chk_plot
-from .lib_mjo import (
+from pcmdi_metrics.mjo.lib import (
     Remove_dailySeasonalCycle,
     calculate_ewr,
     generate_axes_and_decorate,
@@ -18,6 +17,8 @@ from .lib_mjo import (
     unit_conversion,
     write_netcdf_output,
 )
+
+from .debug_chk_plot import debug_chk_plot
 from .plot_wavenumber_frequency_power import plot_power
 
 
@@ -48,6 +49,8 @@ def mjo_metric_ewr_calculation(
     d = f[var]
     tim = d.getTime()
     comTim = tim.asComponentTime()
+    lat = d.getLatitude()
+    lon = d.getLongitude()
 
     # Get starting and ending year and month
     if debug:
@@ -100,7 +103,11 @@ def mjo_metric_ewr_calculation(
             segment_ano[year] = Remove_dailySeasonalCycle(segment[year], daSeaCyc)
     else:
         segment_ano[year] = segment[year]
-
+    # Assign lat/lon to arrays
+    daSeaCyc.setAxis(1, lat)
+    daSeaCyc.setAxis(2, lon)
+    segment_ano[year].setAxis(1, lat)
+    segment_ano[year].setAxis(2, lon)
     """
     Space-time power spectra
 
