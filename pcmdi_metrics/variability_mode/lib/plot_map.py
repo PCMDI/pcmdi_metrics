@@ -52,8 +52,7 @@ def plot_map(mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_n
 
     if "PDO" in mode or "NPGO" in mode:
         levels = [r/10 for r in list(range(-5, 6, 1))]
-        # maskout = "land"
-        maskout = None
+        maskout = "land"
     else:
         levels = list(range(-5, 6, 1))
         maskout = None
