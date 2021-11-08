@@ -1,5 +1,6 @@
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
+import cartopy
 import cartopy.crs as ccrs
 import matplotlib.path as mpath
 import matplotlib.pyplot as plt
@@ -44,24 +45,28 @@ def plot_map(mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_n
         + percentage
     )
 
-    if mode == 'PNA' and projection == "Lambert":
+    if mode in ['PNA', 'PDO', 'NPGO'] and projection == "Lambert":
         gridline = False
     else:
         gridline = True
 
     if "PDO" in mode or "NPGO" in mode:
         levels = [r/10 for r in list(range(-5, 6, 1))]
+        # maskout = "land"
+        maskout = None
     else:
         levels = list(range(-5, 6, 1))
+        maskout = None
 
     plot_map_cartopy(eof_Nth, output_file_name, title=plot_title, proj=projection,
-                     gridline=gridline, levels=levels)
+                     gridline=gridline, levels=levels, maskout=maskout)
 
 
 def plot_map_cartopy(
     data, filename, title=None, gridline=True, levels=None,
     proj='PlateCarree', data_area='global', 
     cmap='RdBu_r',
+    maskout=None,
     debug=False):
     """
     Parameters
@@ -82,6 +87,8 @@ def plot_map_cartopy(
         Spatial coverage area of data: global (default), regional
     cmap : str
         Matplotlib colormap name. See https://matplotlib.org/stable/gallery/color/colormap_reference.html for available options
+    maskout : str (optional)
+        Maskout: land, ocean
     debug: bool
         Switch for debugging print statements (default is False)
     """
@@ -197,13 +204,20 @@ def plot_map_cartopy(
     # Add colorbar
     posn = ax.get_position()
     cbar_ax = fig.add_axes([0, 0, 0.1, 0.1])
-    cbar_ax.set_position([posn.x0 + posn.width + 0.025, posn.y0,
-                          0.02, posn.height])
+    cbar_ax.set_position([posn.x0 + posn.width + 0.01, posn.y0,
+                          0.01, posn.height])
     cbar = plt.colorbar(im, cax=cbar_ax)
-    cbar.ax.tick_params(labelsize=12) 
+    cbar.ax.tick_params(labelsize=10)
 
     if proj == 'PlateCarree':
         ax.set_aspect('auto', adjustable=None)
+
+    # Maskout
+    if maskout is not None:
+        if maskout == "land":
+            ax.add_feature(cartopy.feature.LAND, zorder=100, edgecolor='k', facecolor='lightgrey')
+        if maskout == "ocean":
+            ax.add_feature(cartopy.feature.OCEAN, zorder=100, edgecolor='k', facecolor='lightgrey')
     
     # Done, save figure
     fig.savefig(filename)
