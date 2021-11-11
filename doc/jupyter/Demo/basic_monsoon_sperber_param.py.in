@@ -43,4 +43,4 @@ results_dir = 'demo_output/monsoon_sperber/Ex1'
 # OUTPUT OPTIONS
 update_json = False
 nc_out = False  # Write output in NetCDF
-plot = False  # Create map graphics
+plot = True  # Create map graphics
