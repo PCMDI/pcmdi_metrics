@@ -1,4 +1,4 @@
-#  put here the impor calls to expose whatever we want to the user
+#  put here the import calls to expose whatever we want to the user
 import logging
 
 LOG_LEVEL = logging.DEBUG
