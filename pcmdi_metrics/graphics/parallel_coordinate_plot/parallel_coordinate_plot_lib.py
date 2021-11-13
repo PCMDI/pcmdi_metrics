@@ -3,6 +3,8 @@ import sys
 import matplotlib.pylab as pylab
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import seaborn as sns
 from matplotlib.cbook import flatten
 
 from pcmdi_metrics.graphics import add_logo
@@ -28,6 +30,9 @@ def parallel_coordinate_plot(
     legend_off=False,
     logo_rect=None,
     logo_off=False,
+    model_names2=None,
+    group1_name="group1",
+    group2_name="group2",
 ):
     """
     Parameters
@@ -51,8 +56,11 @@ def parallel_coordinate_plot(
     - `num_color`: integer, default=20, how many color to use.
     - `legend_off`: bool, default=False, turn off legend
     - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes.
-                   All quantities are in fractions of figure width and height.  Optional
+                   All quantities are in fractions of figure width and height.  Optional.
     - `logo_off`: bool, default=False, turn off PMP logo
+    - `model_names2`: list of string, should be a subset of `model_names`.  If given, violin plot will be split into 2 groups. Optional.
+    - `group1_name`: string, needed for violin plot legend if splited to two groups, for the 1st group. Default is 'group1'.
+    - `group2_name`: string, needed for violin plot legend if splited to two groups, for the 2nd group. Default is 'group2'.
 
     Return
     ------
@@ -72,35 +80,17 @@ def parallel_coordinate_plot(
     pylab.rcParams.update(params)
 
     # Quick initial QC
-    if data.shape[0] != len(model_names):
-        sys.exit(
-            "Error: data.shape[0], "
-            + str(data.shape[0])
-            + ", mismatch to len(model_names), "
-            + str(len(model_names))
-        )
-    if data.shape[1] != len(metric_names):
-        sys.exit(
-            "Error: data.shape[1], "
-            + str(data.shape[1])
-            + ", mismatch to len(metric_names), "
-            + str(len(metric_names))
-        )
+    _quick_qc(data, model_names, metric_names, model_names2=model_names2)
 
-    # Data to plot
-    ys = data  # stacked y-axis values
-    N = ys.shape[1]  # number of vertical axis (i.e., =len(metric_names))
-    ymins = np.nanmin(ys, axis=0)
-    ymaxs = np.nanmax(ys, axis=0)
-    dys = ymaxs - ymins
-    ymins -= dys * 0.05  # add 5% padding below and above
-    ymaxs += dys * 0.05
-    dys = ymaxs - ymins
-
-    # Transform all data to be compatible with the main axis
-    zs = np.zeros_like(ys)
-    zs[:, 0] = ys[:, 0]
-    zs[:, 1:] = (ys[:, 1:] - ymins[1:]) / dys[1:] * dys[0] + ymins[0]
+    # Transform data for plotting
+    zs, N, ymins, ymaxs, df_stacked, df2_stacked = _data_transform(
+        data,
+        metric_names,
+        model_names,
+        model_names2=model_names2,
+        group1_name=group1_name,
+        group2_name=group2_name,
+    )
 
     # Prepare plot
     if N > 20:
@@ -159,17 +149,33 @@ def parallel_coordinate_plot(
 
         # Violin plot
         if show_violin:
-            violin = ax.violinplot(
-                y_filtered,
-                positions=range(N),
-                showmeans=False,
-                showmedians=False,
-                showextrema=False,
-            )
-            for pc in violin["bodies"]:
-                pc.set_facecolor("lightgrey")
-                pc.set_edgecolor("None")
-                pc.set_alpha(0.8)
+            if model_names2 is None:
+                # matplotlib for regular violin plot
+                violin = ax.violinplot(
+                    y_filtered,
+                    positions=range(N),
+                    showmeans=False,
+                    showmedians=False,
+                    showextrema=False,
+                )
+                for pc in violin["bodies"]:
+                    pc.set_facecolor("lightgrey")
+                    pc.set_edgecolor("None")
+                    pc.set_alpha(0.8)
+            else:
+                # seaborn for split violin plot
+                violin = sns.violinplot(
+                    data=df2_stacked,
+                    x="Metric",
+                    y="value",
+                    ax=ax,
+                    hue="group",
+                    split=True,
+                    linewidth=0.1,
+                    color="pink",
+                    scale="count",
+                    scale_hue=False,
+                )
 
     # Line or marker
     colors = [plt.get_cmap(colormap)(c) for c in np.linspace(0, 1, num_color)]
@@ -205,3 +211,102 @@ def parallel_coordinate_plot(
         fig, ax = add_logo(fig, ax, logo_rect)
 
     return fig, ax
+
+
+def _quick_qc(data, model_names, metric_names, model_names2=None):
+    # Quick initial QC
+    if data.shape[0] != len(model_names):
+        sys.exit(
+            "Error: data.shape[0], "
+            + str(data.shape[0])
+            + ", mismatch to len(model_names), "
+            + str(len(model_names))
+        )
+    if data.shape[1] != len(metric_names):
+        sys.exit(
+            "Error: data.shape[1], "
+            + str(data.shape[1])
+            + ", mismatch to len(metric_names), "
+            + str(len(metric_names))
+        )
+    if model_names2 is not None:
+        # Check: model_names2 should be a subset of model_names
+        for model in model_names2:
+            if model not in model_names:
+                sys.exit(
+                    "Error: model_names2 shoudl be a subset of model_names: "
+                    + model
+                    + " is not in model_names"
+                )
+    print("Passed a quick QC")
+
+
+def _data_transform(
+    data,
+    metric_names,
+    model_names,
+    model_names2=None,
+    group1_name="group1",
+    group2_name="group2",
+):
+    # Data to plot
+    ys = data  # stacked y-axis values
+    N = ys.shape[1]  # number of vertical axis (i.e., =len(metric_names))
+    ymins = np.nanmin(ys, axis=0)  # minimum (ignore nan value)
+    ymaxs = np.nanmax(ys, axis=0)  # maximum (ignore nan value)
+    dys = ymaxs - ymins
+    ymins -= dys * 0.05  # add 5% padding below and above
+    ymaxs += dys * 0.05
+    dys = ymaxs - ymins
+
+    # Transform all data to be compatible with the main axis
+    zs = np.zeros_like(ys)
+    zs[:, 0] = ys[:, 0]
+    zs[:, 1:] = (ys[:, 1:] - ymins[1:]) / dys[1:] * dys[0] + ymins[0]
+
+    if model_names2 is not None:
+        print("Models in the second group:", model_names2)
+
+    # Pandas dataframe for seaborn plotting
+    df_stacked = _to_pd_dataframe(
+        data,
+        metric_names,
+        model_names,
+        model_names2=model_names2,
+        group1_name=group1_name,
+        group2_name=group2_name,
+    )
+    df2_stacked = _to_pd_dataframe(
+        zs,
+        metric_names,
+        model_names,
+        model_names2=model_names2,
+        group1_name=group1_name,
+        group2_name=group2_name,
+    )
+
+    return zs, N, ymins, ymaxs, df_stacked, df2_stacked
+
+
+def _to_pd_dataframe(
+    data,
+    metric_names,
+    model_names,
+    model_names2=None,
+    group1_name="group1",
+    group2_name="group2",
+):
+    # Pandas dataframe for seaborn plotting
+    df = pd.DataFrame(data, columns=metric_names, index=model_names)
+    # Stack
+    df_stacked = df.stack().reset_index()
+    df_stacked = df_stacked.rename(
+        columns={"level_0": "Model", "level_1": "Metric", 0: "value"}
+    )
+    df_stacked = df_stacked.assign(group=group1_name)
+    if model_names2 is not None:
+        for model2 in model_names2:
+            df_stacked["group"] = np.where(
+                (df_stacked.Model == model2), group2_name, df_stacked.group
+            )
+    return df_stacked
