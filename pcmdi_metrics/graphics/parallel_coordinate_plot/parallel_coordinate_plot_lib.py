@@ -31,8 +31,8 @@ def parallel_coordinate_plot(
     logo_rect=None,
     logo_off=False,
     model_names2=None,
-    group1_name='group1', 
-    group2_name='group2',
+    group1_name="group1",
+    group2_name="group2",
 ):
     """
     Parameters
@@ -81,11 +81,15 @@ def parallel_coordinate_plot(
 
     # Quick initial QC
     _quick_qc(data, model_names, metric_names, model_names2=model_names2)
-            
+
     # Transform data for plotting
     zs, N, ymins, ymaxs, df_stacked, df2_stacked = _data_transform(
-        data, metric_names, model_names, model_names2=model_names2,
-        group1_name=group1_name, group2_name=group2_name,
+        data,
+        metric_names,
+        model_names,
+        model_names2=model_names2,
+        group1_name=group1_name,
+        group2_name=group2_name,
     )
 
     # Prepare plot
@@ -234,10 +238,17 @@ def _quick_qc(data, model_names, metric_names, model_names2=None):
                     + model
                     + " is not in model_names"
                 )
-    print('Passed a quick QC')
-        
-        
-def _data_transform(data, metric_names, model_names, model_names2=None, group1_name='group1', group2_name='group2'):
+    print("Passed a quick QC")
+
+
+def _data_transform(
+    data,
+    metric_names,
+    model_names,
+    model_names2=None,
+    group1_name="group1",
+    group2_name="group2",
+):
     # Data to plot
     ys = data  # stacked y-axis values
     N = ys.shape[1]  # number of vertical axis (i.e., =len(metric_names))
@@ -254,25 +265,48 @@ def _data_transform(data, metric_names, model_names, model_names2=None, group1_n
     zs[:, 1:] = (ys[:, 1:] - ymins[1:]) / dys[1:] * dys[0] + ymins[0]
 
     if model_names2 is not None:
-        print('Models in the second group:', model_names2)
-    
+        print("Models in the second group:", model_names2)
+
     # Pandas dataframe for seaborn plotting
-    df_stacked = _to_pd_dataframe(data, metric_names, model_names, model_names2=model_names2, 
-                                  group1_name=group1_name, group2_name=group2_name)
-    df2_stacked = _to_pd_dataframe(zs, metric_names, model_names, model_names2=model_names2, 
-                                   group1_name=group1_name, group2_name=group2_name)
+    df_stacked = _to_pd_dataframe(
+        data,
+        metric_names,
+        model_names,
+        model_names2=model_names2,
+        group1_name=group1_name,
+        group2_name=group2_name,
+    )
+    df2_stacked = _to_pd_dataframe(
+        zs,
+        metric_names,
+        model_names,
+        model_names2=model_names2,
+        group1_name=group1_name,
+        group2_name=group2_name,
+    )
 
     return zs, N, ymins, ymaxs, df_stacked, df2_stacked
 
 
-def _to_pd_dataframe(data, metric_names, model_names, model_names2=None, group1_name='group1', group2_name='group2'):
+def _to_pd_dataframe(
+    data,
+    metric_names,
+    model_names,
+    model_names2=None,
+    group1_name="group1",
+    group2_name="group2",
+):
     # Pandas dataframe for seaborn plotting
     df = pd.DataFrame(data, columns=metric_names, index=model_names)
     # Stack
     df_stacked = df.stack().reset_index()
-    df_stacked = df_stacked.rename(columns={"level_0": "Model", "level_1": "Metric", 0: "value"})
+    df_stacked = df_stacked.rename(
+        columns={"level_0": "Model", "level_1": "Metric", 0: "value"}
+    )
     df_stacked = df_stacked.assign(group=group1_name)
     if model_names2 is not None:
         for model2 in model_names2:
-            df_stacked['group'] = np.where((df_stacked.Model == model2), group2_name, df_stacked.group)
+            df_stacked["group"] = np.where(
+                (df_stacked.Model == model2), group2_name, df_stacked.group
+            )
     return df_stacked
