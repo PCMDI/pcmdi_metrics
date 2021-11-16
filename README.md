@@ -3,7 +3,7 @@
 
 PCMDI Metrics Package (PMP)
 ======
-[![stable version](https://img.shields.io/badge/stable%20version-v2.1.0-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.0)
+[![stable version](https://img.shields.io/badge/stable%20version-v2.1.1-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.1)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
 [![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/installer/conda.svg)](https://conda.anaconda.org/pcmdi)
@@ -34,6 +34,7 @@ Some installation support for CMIP participating modeling groups is available: p
 PMP versions
 ------------
 
+- v2.1.1 - Simplified dependent libraries and CI process
 - v2.1.0 - CMEC driver interfaced added.
 - v2.0 - New capabilities implemented: ENSO metrics, demos, documentations.
 - v1.2 - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal cycle and intermittency of precipitation, sample monsoon metrics.
