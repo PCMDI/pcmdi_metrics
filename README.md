@@ -5,7 +5,7 @@ PCMDI Metrics Package (PMP)
 ======
 [![stable version](https://img.shields.io/badge/stable%20version-v2.1.0-brightgreen.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.0)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
-[![DOI](https://zenodo.org/badge/10345204.svg)](https://zenodo.org/badge/latestdoi/10345204)
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
 [![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/installer/conda.svg)](https://conda.anaconda.org/pcmdi)
 [![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
 <!--[![CircleCI](https://circleci.com/gh/PCMDI/pcmdi_metrics.svg?style=svg)](https://circleci.com/gh/PCMDI/pcmdi_metrics) -->
