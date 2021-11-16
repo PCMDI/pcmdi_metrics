@@ -1,0 +1,30 @@
+{
+    "description": "<p>Self contained packages to run PCMDI Metrics</p>",
+    "license": "BSD-3-Clause License",
+    "title": "PCMDI/pcmdi_metrics: PMP Version 2.1.1",
+    "version": "v2.1.1",
+    "upload_type": "software",
+    "publication_date": "2021-11-16",
+    "creators": [
+        {
+            "affiliation": "Lawrence Livermore National Laboratory",
+            "name": "Jiwoo Lee"
+        },
+        {
+            "affiliation": "Lawrence Livermore National Laboratory",
+            "name": "Peter Gleckler"
+        },
+        {
+            "affiliation": "Lawrence Livermore National Laboratory",
+            "name": "Ana Ordonez"
+        },
+        {
+            "affiliation": "Lawrence Livermore National Laboratory",
+            "name": "Min-Seop Ahn"
+        },
+        {
+            "affiliation": "UC Davis",
+            "name": "Paul Ullrich"
+        }
+    ]
+}
