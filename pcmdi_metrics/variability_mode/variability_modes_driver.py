@@ -58,10 +58,10 @@ from shutil import copyfile
 import cdtime
 import cdutil
 import MV2
-import pkg_resources
 from genutil import StringConstructor
 
 import pcmdi_metrics
+from pcmdi_metrics import resources
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
     VariabilityModeCheck,
@@ -95,9 +95,7 @@ if "UVCDAT_ANONYMOUS_LOG" not in os.environ:
     os.environ["UVCDAT_ANONYMOUS_LOG"] = "no"
 
 regions_specs = {}
-egg_pth = pkg_resources.resource_filename(
-    pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp"
-)
+egg_pth = resources.resource_path()
 exec(
     compile(
         open(os.path.join(egg_pth, "default_regions.py")).read(),

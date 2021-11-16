@@ -1,9 +1,9 @@
 import os
 
 import cdp.cdp_parser
-import pkg_resources
 
 import pcmdi_metrics.driver.pmp_parameter
+from pcmdi_metrics import resources
 
 try:
     basestring  # noqa
@@ -13,9 +13,7 @@ except Exception:
 
 def path_to_default_args():
     """Returns path to Default Common Input Arguments in package egg."""
-    egg_pth = pkg_resources.resource_filename(
-        pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp"
-    )
+    egg_pth = resources.resource_path()
     file_path = os.path.join(egg_pth, "DefArgsCIA.json")
     return file_path
 
