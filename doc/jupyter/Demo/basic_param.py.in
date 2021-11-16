@@ -53,4 +53,3 @@ reference_data_path = '$INPUT_DIR$/obs4MIPs_PCMDI_clims'
 metrics_output_path = os.path.join(
     '$OUTPUT_DIR$',
     "%(case_id)")
-

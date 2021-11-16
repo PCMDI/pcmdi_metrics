@@ -1,34 +1,43 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-import MV2
-import cdms2
-import vcs
-import genutil
-import glob
-import numpy
+
 # import time
 import datetime
-from genutil import StringConstructor
+import glob
 import os
+
+import cdms2
+import genutil
+import MV2
+import numpy
 import pkg_resources
+import vcs
+from genutil import StringConstructor
+
 pmp_egg_path = pkg_resources.resource_filename(
-    pkg_resources.Requirement.parse("pcmdi_metrics"), "share")
+    pkg_resources.Requirement.parse("pcmdi_metrics"), "share"
+)
 
 
 def is_dark_color_type(R, G, B, A):
     """figure out if a color is dark or light alpha is ignored"""
     # Counting the perceptive luminance - human eye favors green color...
-    a = 1 - (0.299 * R + 0.587 * G + 0.114 * B) / 100.
-    return a > .5
+    a = 1 - (0.299 * R + 0.587 * G + 0.114 * B) / 100.0
+    return a > 0.5
 
 
 class Values(object):
-    __slots__ = ("show", "array", "text",
-                 "lightcolor", "darkcolor", "format")
+    __slots__ = ("show", "array", "text", "lightcolor", "darkcolor", "format")
 
-    def __init__(self, show=False, array=None,
-                 lightcolor="white", darkcolor="black", format="{0:.2f}"):
+    def __init__(
+        self,
+        show=False,
+        array=None,
+        lightcolor="white",
+        darkcolor="black",
+        format="{0:.2f}",
+    ):
         self.show = show
         self.array = array
         self.text = vcs.createtext()
@@ -66,13 +75,30 @@ class XYs(object):
 
 
 class Plot_defaults(object):
-    __slots__ = ["x1", "x2", "y1", "y2", "levels", "colormap",
-                 "fillareacolors", "legend", "_logo",
-                 "xticorientation", "yticorientation",
-                 "parameterorientation", "tictable",
-                 "parametertable", "draw_mesh", "values",
-                 "missing_color", "xtic1", "xtic2", "ytic1", "ytic2",
-                 "time_stamp"]
+    __slots__ = [
+        "x1",
+        "x2",
+        "y1",
+        "y2",
+        "levels",
+        "colormap",
+        "fillareacolors",
+        "legend",
+        "_logo",
+        "xticorientation",
+        "yticorientation",
+        "parameterorientation",
+        "tictable",
+        "parametertable",
+        "draw_mesh",
+        "values",
+        "missing_color",
+        "xtic1",
+        "xtic2",
+        "ytic1",
+        "ytic2",
+        "time_stamp",
+    ]
 
     def getlogo(self):
         return self._logo
@@ -84,36 +110,36 @@ class Plot_defaults(object):
     logo = property(getlogo, setlogo)
 
     def __init__(self):
-        self.x1 = .12
-        self.x2 = .84
-        self.y1 = .17
-        self.y2 = .8
+        self.x1 = 0.12
+        self.x2 = 0.84
+        self.y1 = 0.17
+        self.y2 = 0.8
         self.levels = None
         self.colormap = None
         self.fillareacolors = None
-        self.legend = XYs(.89, .91, self.y1, self.y2)
+        self.legend = XYs(0.89, 0.91, self.y1, self.y2)
         # X ticks
         self.xticorientation = vcs.createtextorientation()
         self.xticorientation.angle = 360 - 90
-        self.xticorientation.halign = 'right'
+        self.xticorientation.halign = "right"
         self.xticorientation.height = 10
         # Y ticks
         self.yticorientation = vcs.createtextorientation()
         self.yticorientation.angle = 0
-        self.yticorientation.halign = 'right'
+        self.yticorientation.halign = "right"
         self.yticorientation.height = 10
         # Ticks table
         self.tictable = vcs.createtexttable()
         # parameters text settings
         self.parameterorientation = vcs.createtextorientation()
         self.parameterorientation.angle = 0
-        self.parameterorientation.halign = 'center'
+        self.parameterorientation.halign = "center"
         self.parameterorientation.height = 20
         self.parametertable = vcs.createtexttable()
         # values in cell setting
         self.values = Values()
         # Defaults
-        self.draw_mesh = 'y'
+        self.draw_mesh = "y"
         self.missing_color = 3
         self.xtic1 = Ys(None, None)
         self.xtic2 = Ys(None, None)
@@ -124,9 +150,9 @@ class Plot_defaults(object):
         # Set the time stamp
         time_stamp = vcs.createtext()
         time_stamp.height = 10
-        time_stamp.halign = 'center'
-        time_stamp.path = 'right'
-        time_stamp.valign = 'half'
+        time_stamp.halign = "center"
+        time_stamp.path = "right"
+        time_stamp.valign = "half"
         time_stamp.x = [0.9]
         time_stamp.y = [0.96]
         self.time_stamp = time_stamp
@@ -134,25 +160,29 @@ class Plot_defaults(object):
 
 class Portrait(object):
     __slots_ = [
-        "verbose", "files_structure",
-        "exclude", "parameters_list",
-        "dummies", "auto_dummies", "grouped",
-        "slaves", "altered", "aliased",
-        "portrait_types", "PLOT_SETTINGS", "x", "bg"
+        "verbose",
+        "files_structure",
+        "exclude",
+        "parameters_list",
+        "dummies",
+        "auto_dummies",
+        "grouped",
+        "slaves",
+        "altered",
+        "aliased",
+        "portrait_types",
+        "PLOT_SETTINGS",
+        "x",
+        "bg",
     ]
 
     def __init__(self, files_structure=None, exclude=[], **kw):
-        ''' initialize the portrait object, from file structure'''
+        """initialize the portrait object, from file structure"""
         if "x" in kw:
             self.x = kw["x"]
         else:
             self.x = vcs.init()
-        scr_file = os.path.join(
-            pmp_egg_path,
-            "pmp",
-            "graphics",
-            'vcs',
-            'portraits.scr')
+        scr_file = os.path.join(pmp_egg_path, "pmp", "graphics", "vcs", "portraits.scr")
         self.x.scriptrun(scr_file)
         self.verbose = False  # output files looked for to the screen
         self.files_structure = files_structure
@@ -169,31 +199,27 @@ class Portrait(object):
         self.portrait_types = {}
         self.PLOT_SETTINGS = Plot_defaults()
         if files_structure is not None:
-            sp = files_structure.split('%(')
+            sp = files_structure.split("%(")
             for s in sp:
-                i = s.find(')')
+                i = s.find(")")
                 if i > -1:  # to avoid the leading path
                     val = s[:i]
                     if not (
-                        val in self.parameters_list or
-                            val in ['files_structure', 'exclude']):
+                        val in self.parameters_list
+                        or val in ["files_structure", "exclude"]
+                    ):
                         self.parameters_list.append(s[:i])
-        self.parameters_list.append('component')
-        self.parameters_list.append('statistic')
-        self.parameters_list.append('time_domain')
+        self.parameters_list.append("component")
+        self.parameters_list.append("statistic")
+        self.parameters_list.append("time_domain")
         for p in self.parameters_list:
             setattr(self, p, None)
         for k in list(kw.keys()):
             setattr(self, k, kw[k])
 
-    def alter_parameter(
-            self, parameter=None, x=None, y=None, size=None, color=None):
+    def alter_parameter(self, parameter=None, x=None, y=None, size=None, color=None):
         if parameter is not None:
-            self.altered[parameter] = {
-                'x': x,
-                'y': y,
-                'size': size,
-                'color': color}
+            self.altered[parameter] = {"x": x, "y": y, "size": size, "color": color}
         else:
             if color is not None:
                 self.PLOT_SETTINGS.parametertable.color = color
@@ -203,50 +229,44 @@ class Portrait(object):
     def string_construct(self, nms):
         n = nms[0]
         if n not in list(self.slaves.keys()):
-            t1 = [n + ' ' for nn in getattr(self, n)]
-            t2 = [str(nn) + ' ' for nn in getattr(self, n)]
+            t1 = [n + " " for nn in getattr(self, n)]
+            t2 = [str(nn) + " " for nn in getattr(self, n)]
         else:
             slavs = self.slaves[n]
-            nm = ''
+            nm = ""
             for i in slavs:
-                nm = nm + ' ' + i
-            t1 = [n + nm + ' ' for nn in getattr(self, n)]
+                nm = nm + " " + i
+            t1 = [n + nm + " " for nn in getattr(self, n)]
             v1 = [res for res in getattr(self, n)]
             vals = []
             for i in range(len(v1)):
-                tmp = ''
+                tmp = ""
                 for a in v1[i]:
-                    if not a == '':
-                        tmp += ' ' + str(a) + ' '
+                    if not a == "":
+                        tmp += " " + str(a) + " "
                     else:
-                        tmp += ' NONE' + ' '
+                        tmp += " NONE" + " "
                 vals.append(tmp)
             t2 = [nn for nn in vals]
         for n in nms[1:]:
             if n not in list(self.slaves.keys()):
-                t1 = [' ' + t + ' ' + n for t in t1 for nn in getattr(self, n)]
-                t2 = [
-                    ' ' +
-                    t +
-                    ' ' +
-                    str(nn) for t in t2 for nn in getattr(
-                        self,
-                        n)]
+                t1 = [" " + t + " " + n for t in t1 for nn in getattr(self, n)]
+                t2 = [" " + t + " " + str(nn) for t in t2 for nn in getattr(self, n)]
             else:
                 slavs = self.slaves[n]
-                nm = ' '
+                nm = " "
                 for i in slavs:
-                    nm = ' ' + nm + ' ' + i
+                    nm = " " + nm + " " + i
                 t1b = [n + nm for nn in getattr(self, n)]
                 v1 = [res for res in getattr(self, n)]
                 vals = []
                 for i in range(len(v1)):
-                    tmp = ''
+                    tmp = ""
                     for a in v1[i]:
-                        if not a == '':
-                            tmp += ' ' + str(a)
+                        if not a == "":
+                            tmp += " " + str(a)
                         else:
-                            tmp += ' NONE'
+                            tmp += " NONE"
                     vals.append(tmp)
                 t2b = [nn for nn in vals]
                 t1 = [t + tb for t in t1 for tb in t1b]
@@ -266,42 +286,42 @@ class Portrait(object):
         return t1, t2, t3
 
     def set(self, portrait_type, parameter=None, values=None):
-        if portrait_type.lower() == 'absolute':
-            if 'relative' in list(self.portrait_types.keys()):
-                del(self.portrait_types['relative'])
-        elif portrait_type.lower() == 'relative':
+        if portrait_type.lower() == "absolute":
+            if "relative" in list(self.portrait_types.keys()):
+                del self.portrait_types["relative"]
+        elif portrait_type.lower() == "relative":
             if not isinstance(parameter, str):
-                raise 'Parameter must be a string'
+                raise "Parameter must be a string"
             if not isinstance(values, (list, tuple)):
-                raise 'values must be a list or tuple'
-            self.portrait_types['relative'] = [parameter, values]
-        elif portrait_type.lower() == 'difference':
+                raise "values must be a list or tuple"
+            self.portrait_types["relative"] = [parameter, values]
+        elif portrait_type.lower() == "difference":
             if not isinstance(parameter, str):
-                raise 'Parameter must be a string'
+                raise "Parameter must be a string"
             if not isinstance(values, (list, tuple)):
-                raise 'values must be a list or tuple'
-            self.portrait_types['difference'] = [parameter, values]
-        elif portrait_type.lower() in ['mean', 'average']:
+                raise "values must be a list or tuple"
+            self.portrait_types["difference"] = [parameter, values]
+        elif portrait_type.lower() in ["mean", "average"]:
             if not isinstance(parameter, str):
-                raise 'Parameter must be a string'
+                raise "Parameter must be a string"
             if not isinstance(values, (list, tuple)):
-                raise 'values must be a list or tuple'
-            self.portrait_types['mean'] = [parameter, values]
+                raise "values must be a list or tuple"
+            self.portrait_types["mean"] = [parameter, values]
         else:
             raise RuntimeError(
-                'Error type:"%s" not supported at this time' %
-                (portrait_type))
+                'Error type:"%s" not supported at this time' % (portrait_type)
+            )
 
-    def dummy(self, parameter, which_dummy=''):
-        ''' Sets a parameter as dummy, i.e. all possible values will be used'''
-        val = getattr(self, which_dummy + 'dummies')
+    def dummy(self, parameter, which_dummy=""):
+        """Sets a parameter as dummy, i.e. all possible values will be used"""
+        val = getattr(self, which_dummy + "dummies")
         if parameter not in val:
             val.append(parameter)
-            setattr(self, which_dummy + 'dummies', val)
+            setattr(self, which_dummy + "dummies", val)
             setattr(self, parameter, None)
 
     def group(self, param1, param2):
-        ''' sets 2 multiple values of parameters on the same axis'''
+        """sets 2 multiple values of parameters on the same axis"""
         added = 0
         for i in range(len(self.grouped)):
             g = self.grouped[i]
@@ -316,16 +336,16 @@ class Portrait(object):
             self.grouped.append([param1, param2])
 
     def slave(self, master, slave):
-        ''' defines a parameter as a slave of a master parameter'''
+        """defines a parameter as a slave of a master parameter"""
         if master in list(self.slaves.keys()):
             v = self.slaves[master]
             if slave not in v:
                 v.append(slave)
-                self.dummy(slave, which_dummy='auto_')
+                self.dummy(slave, which_dummy="auto_")
                 self.slaves[master] = v
         else:
             self.slaves[master] = [slave]
-            self.dummy(slave, which_dummy='auto_')
+            self.dummy(slave, which_dummy="auto_")
 
     def alias(self, parameter, values):
         if isinstance(values, dict):
@@ -339,8 +359,9 @@ class Portrait(object):
                 oldvalue = ov
             n = len(oldvalue)
             if len(values) != n:
-                raise 'Error aliasing ' + parameter + ' you submitted ' + \
-                    str(len(values)) + ' aliases but it should be:' + str(n)
+                raise "Error aliasing " + parameter + " you submitted " + str(
+                    len(values)
+                ) + " aliases but it should be:" + str(n)
             dic = {}
             for i in range(n):
                 dic[oldvalue[i]] = values[i]
@@ -370,15 +391,15 @@ class Portrait(object):
         sp1 = t1.split()
         axis_names = []
         for i in range(len(t2)):
-            nm = ''
-            sp2 = t3[i].split('%%%')
+            nm = ""
+            sp2 = t3[i].split("%%%")
             for j in range(len(sp2)):
-                if not sp1[j] in self.dummies and not sp2[j] == 'NONE':
+                if not sp1[j] in self.dummies and not sp2[j] == "NONE":
                     # print sp2,j
-                    if not sp2[j][0] == '_':
-                        nm += ' ' + sp2[j]
+                    if not sp2[j][0] == "_":
+                        nm += " " + sp2[j]
                     else:
-                        nm += ' ' + sp2[j][1:]
+                        nm += " " + sp2[j][1:]
             axis_names.append(nm)
         dic = {}
         for i in range(len(axis_names)):
@@ -396,21 +417,21 @@ class Portrait(object):
     def rank(self, data, axis=0):
         if axis not in [0, 1]:
             if not isinstance(axis, str):
-                raise 'Ranking error, axis can only be 1 or 2 or name'
+                raise "Ranking error, axis can only be 1 or 2 or name"
             else:
                 nms = data.getAxisIds()
                 for i in range(len(nms)):
                     nm = nms[i]
-                    if axis in nm.split('___'):
+                    if axis in nm.split("___"):
                         axis = i
                 if axis not in [0, 1]:
-                    raise 'Ranking error, axis can only be 1 or 2 or name'
+                    raise "Ranking error, axis can only be 1 or 2 or name"
         if data.ndim > 2:
             raise "Ranking error, array can only be 2D"
 
         if axis == 1:
             data = MV2.transpose(data)
-        a0 = MV2.argsort(data.filled(1.E20), axis=0)
+        a0 = MV2.argsort(data.filled(1.0e20), axis=0)
         n = a0.shape[0]
         b = MV2.zeros(a0.shape, MV2.float)
         sh = a0[1].shape
@@ -427,7 +448,7 @@ class Portrait(object):
         n = MV2.count(b, 0)
         n.setAxis(0, b.getAxis(1))
         b, n = genutil.grower(b, n)
-        b = 100. * b / (n - 1)
+        b = 100.0 * b / (n - 1)
         b.setAxisList(data.getAxisList())
         if axis == 1:
             b = MV2.transpose(b)
@@ -437,19 +458,19 @@ class Portrait(object):
     def rank_nD(self, data, axis=0):
         if axis not in [0, 1]:
             if not isinstance(axis, str):
-                raise 'Ranking error, axis can only be 1 or 2 or name'
+                raise "Ranking error, axis can only be 1 or 2 or name"
             else:
                 nms = data.getAxisIds()
                 for i in range(len(nms)):
                     nm = nms[i]
-                    if axis in nm.split('___'):
+                    if axis in nm.split("___"):
                         axis = i
                 if axis not in [0, 1]:
-                    raise 'Ranking error, axis can only be 1 or 2 or name'
+                    raise "Ranking error, axis can only be 1 or 2 or name"
 
         if axis != 0:
-            data = data(order=(str(axis) + '...'))
-        a0 = MV2.argsort(data.filled(1.E20), axis=0)
+            data = data(order=(str(axis) + "..."))
+        a0 = MV2.argsort(data.filled(1.0e20), axis=0)
         n = a0.shape[0]
         b = MV2.zeros(a0.shape, MV2.float)
         sh = a0[1].shape
@@ -465,27 +486,27 @@ class Portrait(object):
         n = MV2.count(b, 0)
         n.setAxisList(b.getAxisList()[1:])
         b, n = genutil.grower(b, n)
-        b = 100. * b / (n - 1)
+        b = 100.0 * b / (n - 1)
         b.setAxisList(data.getAxisList())
         if axis != 0:
-            st = ''
+            st = ""
             for i in range(axis):
                 st += str(i + 1)
-            st += '0...'
+            st += "0..."
             data = data(order=st)
             b = b(order=st)
         return b
 
     def get(self):
-        if 'difference' in list(self.portrait_types.keys()):
-            d = self.portrait_types['difference']
+        if "difference" in list(self.portrait_types.keys()):
+            d = self.portrait_types["difference"]
             setattr(self, d[0], d[1][0])
             a1 = self._get()
             setattr(self, d[0], d[1][1])
             a2 = self._get()
             return a1 - a2
-        elif 'mean' in list(self.portrait_types.keys()):
-            d = self.portrait_types['mean']
+        elif "mean" in list(self.portrait_types.keys()):
+            d = self.portrait_types["mean"]
             setattr(self, d[0], d[1][0])
             # This picked up by flake8
             # probably needs double check
@@ -499,8 +520,8 @@ class Portrait(object):
             return self._get()
 
     def _get(self):
-        if 'relative' in list(self.portrait_types.keys()):
-            d = self.portrait_types['relative']
+        if "relative" in list(self.portrait_types.keys()):
+            d = self.portrait_types["relative"]
             vals = d[1]
             real_value = getattr(self, d[0])
             real = self.__get()
@@ -526,13 +547,13 @@ class Portrait(object):
             indices = MV2.reshape(indices, (sh[1], sh[2]))
             if not ((real.mask is None) or (real.mask is MV2.nomask)):
                 indices = MV2.masked_where(real.mask, indices)
-            a = MV2.masked_equal(a0, 1.e20)
+            a = MV2.masked_equal(a0, 1.0e20)
             a = MV2.count(a, 1)
             a = MV2.reshape(a, indices.shape)
             indices = indices / a * 100
             setattr(self, d[0], real_value)
             indices.setAxisList(real.getAxisList())
-# print indices.shape
+            # print indices.shape
             return indices
         else:
             return self.__get()
@@ -543,9 +564,7 @@ class Portrait(object):
         for p in self.parameters_list:
             if p not in self.dummies and p not in self.auto_dummies:
                 v = getattr(self, p)
-                if v is None \
-                        or \
-                        (isinstance(v, (list, tuple)) and len(v) > 1):
+                if v is None or (isinstance(v, (list, tuple)) and len(v) > 1):
                     already = 0
                     for pn in names:
                         if p == pn:
@@ -564,8 +583,9 @@ class Portrait(object):
                             names.append(p)
 
         if nfree != 2:
-            raise 'Error MUST end up with 2 multiple values ! (we have ' + str(
-                nfree) + ':' + str(names) + ')'
+            raise "Error MUST end up with 2 multiple values ! (we have " + str(
+                nfree
+            ) + ":" + str(names) + ")"
         # Now determines length of each axis
         axes_length = [1, 1]
         # First make sure with have 2 list of parameters
@@ -575,14 +595,12 @@ class Portrait(object):
             for n in names[i]:
                 v = getattr(self, n)
                 if v is None:
-                    if n == 'component':
+                    if n == "component":
                         axes_length[i] *= 28
-                    elif n == 'time_domain':
+                    elif n == "time_domain":
                         axes_length[i] *= 19
                     else:
-                        raise 'Error, ' + n + \
-                            ' is not defined correctly, please' + \
-                            ' specify which values you wish to extract'
+                        raise "Error, " + n + " is not defined correctly, please" + " specify which values you wish to extract"
                 else:
                     axes_length[i] *= len(v)
         # Creates the dummy array
@@ -611,7 +629,7 @@ class Portrait(object):
                                 s = slvs[js]
                                 setattr(F, s, slvs[js])
                     else:
-                        setattr(F, p, '*')
+                        setattr(F, p, "*")
                 else:
                     if p in list(self.slaves.keys()):
                         # vslvs = v[1:]
@@ -623,7 +641,7 @@ class Portrait(object):
                             s = slvs[js]
                             setattr(F, s, slvs[js])
             else:
-                setattr(F, p, '*')
+                setattr(F, p, "*")
 
         # fnms=F()
         nms = names[0] + names[1]
@@ -636,19 +654,19 @@ class Portrait(object):
             sp2 = t2[i].split()
             for j in range(n):
                 v = sp2[j]
-                if sp1[j] == 'time_domain':
+                if sp1[j] == "time_domain":
                     try:
                         v = int(v)
                     except Exception:
                         pass
-                if v == 'NONE':
-                    v = ''
+                if v == "NONE":
+                    v = ""
                 setattr(F, sp1[j], v)
             #  print 'Search string is:',fnms
             # f=os.popen('ls '+F()).readlines()
             # ip,op,ep=os.popen3('ls '+F())
             if self.verbose:
-                print('command line:', F())
+                print("command line:", F())
             # f=op.readlines()
             f = glob.glob(F())
             # print 'F is:',f
@@ -660,7 +678,7 @@ class Portrait(object):
                         files.pop(-1)
                         break
             if self.verbose:
-                print('files:', files)
+                print("files:", files)
             try:
                 # now we get the one value needed in this file
                 f = cdms2.open(files[0])
@@ -677,10 +695,7 @@ class Portrait(object):
                     for k in list(dic.keys()):
                         if dic[k] == F.time_domain:
                             time_domain = k
-                value = V(
-                    time_domain=time_domain,
-                    component=component,
-                    squeeze=1)
+                value = V(time_domain=time_domain, component=component, squeeze=1)
                 output[i] = value
                 # In case sometihng goes wrong (like modle not processed or
                 # inexsitant for this var, etc...)
@@ -688,7 +703,7 @@ class Portrait(object):
             except Exception:
                 pass
         output = MV2.reshape(output, (axes_length[0], axes_length[1]))
-        output.id = 'portrait plot'
+        output.id = "portrait plot"
 
         yaxis = self.makeaxis(names[0], axes_length[0])
         xaxis = self.makeaxis(names[1], axes_length[1])
@@ -706,27 +721,31 @@ class Portrait(object):
         y = cdms2.createAxis(list(range(len(ynm))))
 
         try:
-            del(x.name)
-            del(y.name)
-            del(output.name)
+            del x.name
+            del y.name
+            del output.name
         except Exception:
             pass
 
-        nm = '___'.join(xnm)
+        nm = "___".join(xnm)
         x.id = nm
         dic = {}
         for i in range(len(xnm)):
             dic[i] = xnm[i]
         x.names = repr(dic)
-        nm = '___'.join(ynm)
+        nm = "___".join(ynm)
         y.id = nm
-        y.original_id = output.getAxis(0,).id
+        y.original_id = output.getAxis(
+            0,
+        ).id
         output.setAxis(0, y)
         dic = {}
         for i in range(len(ynm)):
             dic[i] = ynm[i]
         y.names = repr(dic)
-        x.original_id = output.getAxis(1,).id
+        x.original_id = output.getAxis(
+            1,
+        ).id
         output.setAxis(1, x)
 
         return
@@ -736,22 +755,40 @@ class Portrait(object):
         # Now sets all the things for the template...
         # Sets a bunch of template attributes to off
         for att in [
-            'line1', 'line2', 'line3', 'line4',
-            'box2', 'box3', 'box4',
-            'min', 'max', 'mean',
-            'xtic1', 'xtic2',
-            'ytic1', 'ytic2',
-            'xvalue', 'yvalue', 'zvalue', 'tvalue',
-            'xunits', 'yunits', 'zunits', 'tunits',
-            'source', 'title', 'dataname',
+            "line1",
+            "line2",
+            "line3",
+            "line4",
+            "box2",
+            "box3",
+            "box4",
+            "min",
+            "max",
+            "mean",
+            "xtic1",
+            "xtic2",
+            "ytic1",
+            "ytic2",
+            "xvalue",
+            "yvalue",
+            "zvalue",
+            "tvalue",
+            "xunits",
+            "yunits",
+            "zunits",
+            "tunits",
+            "source",
+            "title",
+            "dataname",
         ]:
             a = getattr(template, att)
-            setattr(a, 'priority', 0)
+            setattr(a, "priority", 0)
         for att in [
-            'xname', 'yname',
+            "xname",
+            "yname",
         ]:
             a = getattr(template, att)
-            setattr(a, 'priority', 0)
+            setattr(a, "priority", 0)
 
         template.data.x1 = self.PLOT_SETTINGS.x1
         template.data.x2 = self.PLOT_SETTINGS.x2
@@ -761,24 +798,20 @@ class Portrait(object):
         template.box1.x2 = self.PLOT_SETTINGS.x2
         template.box1.y1 = self.PLOT_SETTINGS.y1
         template.box1.y2 = self.PLOT_SETTINGS.y2
-        template.xname.y = self.PLOT_SETTINGS.y2 + .02
-        template.yname.x = self.PLOT_SETTINGS.x2 + .01
+        template.xname.y = self.PLOT_SETTINGS.y2 + 0.02
+        template.yname.x = self.PLOT_SETTINGS.x2 + 0.01
         template.xlabel1.y = self.PLOT_SETTINGS.y1
         template.xlabel2.y = self.PLOT_SETTINGS.y2
         template.xlabel1.texttable = self.PLOT_SETTINGS.tictable
         template.xlabel2.texttable = self.PLOT_SETTINGS.tictable
-        template.xlabel1.textorientation = \
-            self.PLOT_SETTINGS.xticorientation
-        template.xlabel2.textorientation = \
-            self.PLOT_SETTINGS.xticorientation
+        template.xlabel1.textorientation = self.PLOT_SETTINGS.xticorientation
+        template.xlabel2.textorientation = self.PLOT_SETTINGS.xticorientation
         template.ylabel1.x = self.PLOT_SETTINGS.x1
         template.ylabel2.x = self.PLOT_SETTINGS.x2
         template.ylabel1.texttable = self.PLOT_SETTINGS.tictable
         template.ylabel2.texttable = self.PLOT_SETTINGS.tictable
-        template.ylabel1.textorientation = \
-            self.PLOT_SETTINGS.yticorientation
-        template.ylabel2.textorientation = \
-            self.PLOT_SETTINGS.yticorientation
+        template.ylabel1.textorientation = self.PLOT_SETTINGS.yticorientation
+        template.ylabel2.textorientation = self.PLOT_SETTINGS.yticorientation
 
         if self.PLOT_SETTINGS.xtic1.y1 is not None:
             template.xtic1.y1 = self.PLOT_SETTINGS.xtic1.y1
@@ -809,9 +842,9 @@ class Portrait(object):
         template.legend.y1 = self.PLOT_SETTINGS.legend.y1
         template.legend.y2 = self.PLOT_SETTINGS.legend.y2
         try:
-            tmp = vcs.createtextorientation('crap22')
+            tmp = vcs.createtextorientation("crap22")
         except Exception:
-            tmp = vcs.gettextorientation('crap22')
+            tmp = vcs.gettextorientation("crap22")
         tmp.height = 12
         # tmp.halign = 'center'
         # template.legend.texttable = tmp
@@ -820,6 +853,7 @@ class Portrait(object):
 
     def _repr_png_(self):
         import tempfile
+
         tmp = tempfile.mktemp() + ".png"
         self.x.png(tmp)
         f = open(tmp, "rb")
@@ -827,8 +861,16 @@ class Portrait(object):
         f.close()
         return st
 
-    def plot(self, data=None, mesh=None, template=None,
-             meshfill=None, x=None, bg=0, multiple=1.1):
+    def plot(
+        self,
+        data=None,
+        mesh=None,
+        template=None,
+        meshfill=None,
+        x=None,
+        bg=0,
+        multiple=1.1,
+    ):
         self.bg = bg
         # Create the vcs canvas
         if x is not None:
@@ -849,8 +891,9 @@ class Portrait(object):
             elif isinstance(template, str):
                 tid = template
             else:
-                raise 'Error cannot understand what you mean by template=' + \
-                    str(template)
+                raise "Error cannot understand what you mean by template=" + str(
+                    template
+                )
 
             template = vcs.createtemplate(source=tid)
 
@@ -858,15 +901,15 @@ class Portrait(object):
         if meshfill is None:
             mtics = {}
             for i in range(100):
-                mtics[i - .5] = ''
+                mtics[i - 0.5] = ""
             meshfill = vcs.createmeshfill()
             meshfill.xticlabels1 = eval(data.getAxis(1).names)
             meshfill.yticlabels1 = eval(data.getAxis(0).names)
 
-            meshfill.datawc_x1 = -.5
-            meshfill.datawc_x2 = data.shape[1] - .5
-            meshfill.datawc_y1 = -.5
-            meshfill.datawc_y2 = data.shape[0] - .5
+            meshfill.datawc_x1 = -0.5
+            meshfill.datawc_x2 = data.shape[1] - 0.5
+            meshfill.datawc_y1 = -0.5
+            meshfill.datawc_y2 = data.shape[0] - 0.5
             meshfill.mesh = self.PLOT_SETTINGS.draw_mesh
             meshfill.missing = self.PLOT_SETTINGS.missing_color
             meshfill.xticlabels2 = meshfill.xticlabels1
@@ -881,7 +924,7 @@ class Portrait(object):
             if self.PLOT_SETTINGS.levels is None:
                 min, max = vcs.minmax(data)
                 if max != 0:
-                    max = max + .000001
+                    max = max + 0.000001
                 levs = vcs.mkscale(min, max)
             else:
                 levs = self.PLOT_SETTINGS.levels
@@ -891,8 +934,7 @@ class Portrait(object):
                 if self.PLOT_SETTINGS.fillareacolors is None:
                     if self.PLOT_SETTINGS.colormap is None:
                         # Default colormap only use range 16->40
-                        cols = vcs.getcolors(
-                            levs, list(range(144, 156)), split=1)
+                        cols = vcs.getcolors(levs, list(range(144, 156)), split=1)
                     else:
                         cols = vcs.getcolors(levs, split=1)
                     meshfill.fillareacolors = cols
@@ -901,7 +943,7 @@ class Portrait(object):
 
             # Now creates the mesh associated
             n = int(multiple)
-            ntot = int((multiple - n) * 10 + .1)
+            ntot = int((multiple - n) * 10 + 0.1)
             sh = list(data.shape)
             sh.append(2)
             Indx = MV2.indices((sh[0], sh[1]))
@@ -911,84 +953,84 @@ class Portrait(object):
             if ntot == 1:
                 sh.append(4)
                 M = MV2.zeros(sh)
-                M[:, :, 0, 0] = Y - .5
-                M[:, :, 1, 0] = X - .5
-                M[:, :, 0, 1] = Y - .5
-                M[:, :, 1, 1] = X + .5
-                M[:, :, 0, 2] = Y + .5
-                M[:, :, 1, 2] = X + .5
-                M[:, :, 0, 3] = Y + .5
-                M[:, :, 1, 3] = X - .5
+                M[:, :, 0, 0] = Y - 0.5
+                M[:, :, 1, 0] = X - 0.5
+                M[:, :, 0, 1] = Y - 0.5
+                M[:, :, 1, 1] = X + 0.5
+                M[:, :, 0, 2] = Y + 0.5
+                M[:, :, 1, 2] = X + 0.5
+                M[:, :, 0, 3] = Y + 0.5
+                M[:, :, 1, 3] = X - 0.5
                 M = MV2.reshape(M, (sh[0] * sh[1], 2, 4))
             elif ntot == 2:
                 sh.append(3)
                 M = MV2.zeros(sh)
-                M[:, :, 0, 0] = Y - .5
-                M[:, :, 1, 0] = X - .5
-                M[:, :, 0, 1] = Y + .5 - (n - 1)
+                M[:, :, 0, 0] = Y - 0.5
+                M[:, :, 1, 0] = X - 0.5
+                M[:, :, 0, 1] = Y + 0.5 - (n - 1)
                 M[:, :, 1, 1] = X - 0.5 + (n - 1)
-                M[:, :, 0, 2] = Y + .5
-                M[:, :, 1, 2] = X + .5
+                M[:, :, 0, 2] = Y + 0.5
+                M[:, :, 1, 2] = X + 0.5
                 M = MV2.reshape(M, (sh[0] * sh[1], 2, 3))
             elif ntot == 3:
-                design = int((multiple - n) * 100 + .1)
+                design = int((multiple - n) * 100 + 0.1)
                 if design == 33:
                     sh.append(3)
                     M = MV2.zeros(sh)
                     if n == 1:
-                        M[:, :, 0, 0] = Y - .5
-                        M[:, :, 1, 0] = X - .5
-                        M[:, :, 0, 1] = Y + .5
+                        M[:, :, 0, 0] = Y - 0.5
+                        M[:, :, 1, 0] = X - 0.5
+                        M[:, :, 0, 1] = Y + 0.5
                         M[:, :, 1, 1] = X
-                        M[:, :, 0, 2] = Y + .5
-                        M[:, :, 1, 2] = X - .5
+                        M[:, :, 0, 2] = Y + 0.5
+                        M[:, :, 1, 2] = X - 0.5
                     elif n == 2:
-                        M[:, :, 0, 0] = Y - .5
-                        M[:, :, 1, 0] = X - .5
-                        M[:, :, 0, 1] = Y + .5
+                        M[:, :, 0, 0] = Y - 0.5
+                        M[:, :, 1, 0] = X - 0.5
+                        M[:, :, 0, 1] = Y + 0.5
                         M[:, :, 1, 1] = X
-                        M[:, :, 0, 2] = Y - .5
-                        M[:, :, 1, 2] = X + .5
+                        M[:, :, 0, 2] = Y - 0.5
+                        M[:, :, 1, 2] = X + 0.5
                     elif n == 3:
-                        M[:, :, 0, 0] = Y + .5
-                        M[:, :, 1, 0] = X + .5
-                        M[:, :, 0, 1] = Y + .5
+                        M[:, :, 0, 0] = Y + 0.5
+                        M[:, :, 1, 0] = X + 0.5
+                        M[:, :, 0, 1] = Y + 0.5
                         M[:, :, 1, 1] = X
-                        M[:, :, 0, 2] = Y - .5
-                        M[:, :, 1, 2] = X + .5
+                        M[:, :, 0, 2] = Y - 0.5
+                        M[:, :, 1, 2] = X + 0.5
                     M = MV2.reshape(M, (sh[0] * sh[1], 2, 3))
                 elif design == 32:
                     sh.append(5)
                     M = MV2.zeros(sh)
                     M[:, :, 0, 0] = Y
                     M[:, :, 1, 0] = X
-                    d = .5 / MV2.sqrt(3.)
+                    d = 0.5 / MV2.sqrt(3.0)
                     if n == 1:
-                        M[:, :, 0, 1] = Y + .5
+                        M[:, :, 0, 1] = Y + 0.5
                         M[:, :, 1, 1] = X
-                        M[:, :, 0, 2] = Y + .5
-                        M[:, :, 1, 2] = X - .5
+                        M[:, :, 0, 2] = Y + 0.5
+                        M[:, :, 1, 2] = X - 0.5
                         M[:, :, 0, 3] = Y - d
-                        M[:, :, 1, 3] = X - .5
+                        M[:, :, 1, 3] = X - 0.5
                         # dummy point for n==1 or 3
                         M[:, :, 0, 4] = Y
                         M[:, :, 1, 4] = X
                     if n == 2:
                         M[:, :, 0, 1] = Y - d
-                        M[:, :, 1, 1] = X - .5
-                        M[:, :, 0, 2] = Y - .5
-                        M[:, :, 1, 2] = X - .5
-                        M[:, :, 0, 3] = Y - .5
-                        M[:, :, 1, 3] = X + .5
+                        M[:, :, 1, 1] = X - 0.5
+                        M[:, :, 0, 2] = Y - 0.5
+                        M[:, :, 1, 2] = X - 0.5
+                        M[:, :, 0, 3] = Y - 0.5
+                        M[:, :, 1, 3] = X + 0.5
                         M[:, :, 0, 4] = Y - d
-                        M[:, :, 1, 4] = X + .5
+                        M[:, :, 1, 4] = X + 0.5
                     elif n == 3:
-                        M[:, :, 0, 1] = Y + .5
+                        M[:, :, 0, 1] = Y + 0.5
                         M[:, :, 1, 1] = X
-                        M[:, :, 0, 2] = Y + .5
-                        M[:, :, 1, 2] = X + .5
+                        M[:, :, 0, 2] = Y + 0.5
+                        M[:, :, 1, 2] = X + 0.5
                         M[:, :, 0, 3] = Y - d
-                        M[:, :, 1, 3] = X + .5
+                        M[:, :, 1, 3] = X + 0.5
                         # dummy point for n==1 or 3
                         M[:, :, 0, 4] = Y
                         M[:, :, 1, 4] = X
@@ -998,34 +1040,34 @@ class Portrait(object):
                     M = MV2.zeros(sh)
                     M[:, :, 0, 0] = Y
                     M[:, :, 1, 0] = X
-                    d = 1. / 3.
+                    d = 1.0 / 3.0
                     if n == 1:
-                        M[:, :, 0, 1] = Y + .5
+                        M[:, :, 0, 1] = Y + 0.5
                         M[:, :, 1, 1] = X
-                        M[:, :, 0, 2] = Y + .5
-                        M[:, :, 1, 2] = X - .5
+                        M[:, :, 0, 2] = Y + 0.5
+                        M[:, :, 1, 2] = X - 0.5
                         M[:, :, 0, 3] = Y - d
 
-                        M[:, :, 1, 3] = X - .5
+                        M[:, :, 1, 3] = X - 0.5
                         # dummy point for n==1 or 3
                         M[:, :, 0, 4] = Y
                         M[:, :, 1, 4] = X
                     if n == 2:
                         M[:, :, 0, 1] = Y - d
-                        M[:, :, 1, 1] = X - .5
-                        M[:, :, 0, 2] = Y - .5
-                        M[:, :, 1, 2] = X - .5
-                        M[:, :, 0, 3] = Y - .5
-                        M[:, :, 1, 3] = X + .5
+                        M[:, :, 1, 1] = X - 0.5
+                        M[:, :, 0, 2] = Y - 0.5
+                        M[:, :, 1, 2] = X - 0.5
+                        M[:, :, 0, 3] = Y - 0.5
+                        M[:, :, 1, 3] = X + 0.5
                         M[:, :, 0, 4] = Y - d
-                        M[:, :, 1, 4] = X + .5
+                        M[:, :, 1, 4] = X + 0.5
                     elif n == 3:
-                        M[:, :, 0, 1] = Y + .5
+                        M[:, :, 0, 1] = Y + 0.5
                         M[:, :, 1, 1] = X
-                        M[:, :, 0, 2] = Y + .5
-                        M[:, :, 1, 2] = X + .5
+                        M[:, :, 0, 2] = Y + 0.5
+                        M[:, :, 1, 2] = X + 0.5
                         M[:, :, 0, 3] = Y - d
-                        M[:, :, 1, 3] = X + .5
+                        M[:, :, 1, 3] = X + 0.5
                         # dummy point for n==1 or 3
                         M[:, :, 0, 4] = Y
                         M[:, :, 1, 4] = X
@@ -1036,45 +1078,46 @@ class Portrait(object):
                 M[:, :, 0, 0] = Y
                 M[:, :, 1, 0] = X
                 if n == 1:
-                    M[:, :, 0, 1] = Y + .5
-                    M[:, :, 1, 1] = X + .5
-                    M[:, :, 0, 2] = Y + .5
-                    M[:, :, 1, 2] = X - .5
+                    M[:, :, 0, 1] = Y + 0.5
+                    M[:, :, 1, 1] = X + 0.5
+                    M[:, :, 0, 2] = Y + 0.5
+                    M[:, :, 1, 2] = X - 0.5
                 elif n == 2:
-                    M[:, :, 0, 1] = Y + .5
-                    M[:, :, 1, 1] = X - .5
-                    M[:, :, 0, 2] = Y - .5
-                    M[:, :, 1, 2] = X - .5
+                    M[:, :, 0, 1] = Y + 0.5
+                    M[:, :, 1, 1] = X - 0.5
+                    M[:, :, 0, 2] = Y - 0.5
+                    M[:, :, 1, 2] = X - 0.5
                 elif n == 3:
-                    M[:, :, 0, 1] = Y - .5
-                    M[:, :, 1, 1] = X - .5
-                    M[:, :, 0, 2] = Y - .5
-                    M[:, :, 1, 2] = X + .5
+                    M[:, :, 0, 1] = Y - 0.5
+                    M[:, :, 1, 1] = X - 0.5
+                    M[:, :, 0, 2] = Y - 0.5
+                    M[:, :, 1, 2] = X + 0.5
                 elif n == 4:
-                    M[:, :, 0, 1] = Y - .5
-                    M[:, :, 1, 1] = X + .5
-                    M[:, :, 0, 2] = Y + .5
-                    M[:, :, 1, 2] = X + .5
+                    M[:, :, 0, 1] = Y - 0.5
+                    M[:, :, 1, 1] = X + 0.5
+                    M[:, :, 0, 2] = Y + 0.5
+                    M[:, :, 1, 2] = X + 0.5
                 M = MV2.reshape(M, (sh[0] * sh[1], 2, 3))
             else:
                 raise RuntimeError(
-                    "Portrait plot support only up to 4 subcells at the moment")
+                    "Portrait plot support only up to 4 subcells at the moment"
+                )
         else:
             if isinstance(meshfill, vcs.meshfill.P):
                 tid = mesh.id
             elif isinstance(meshfill, str):
                 tid = mesh
             else:
-                raise 'Error cannot understand what you mean by meshfill=' + \
-                    str(meshfill)
+                raise "Error cannot understand what you mean by meshfill=" + str(
+                    meshfill
+                )
             meshfill = vcs.createmeshfill(source=tid)
 
         if mesh is None:
             mesh = M
 
         raveled = MV2.ravel(data)
-        self.x.plot(raveled, mesh, template, meshfill,
-                    bg=self.bg, continents=0)
+        self.x.plot(raveled, mesh, template, meshfill, bg=self.bg, continents=0)
 
         # If required plot values
         if self.PLOT_SETTINGS.values.show:
@@ -1084,22 +1127,24 @@ class Portrait(object):
         # but only if n==1
         if n == 1:
             axes_param = []
-            for a in data.getAxis(0).id.split('___'):
+            for a in data.getAxis(0).id.split("___"):
                 axes_param.append(a)
-            for a in data.getAxis(1).id.split('___'):
+            for a in data.getAxis(1).id.split("___"):
                 axes_param.append(a)
             nparam = 0
             for p in self.parameters_list:
-                if p not in self.dummies and \
-                        p not in self.auto_dummies and \
-                        p not in axes_param:
+                if (
+                    p not in self.dummies
+                    and p not in self.auto_dummies
+                    and p not in axes_param
+                ):
                     nparam += 1
 
             if self.verbose:
-                print('NPARAM:', nparam)
+                print("NPARAM:", nparam)
             if nparam > 0:
                 for i in range(nparam):
-                    j = MV2.ceil(float(nparam) / (i + 1.))
+                    j = MV2.ceil(float(nparam) / (i + 1.0))
                     if j <= i:
                         break
                 npc = i  # number of lines
@@ -1107,50 +1152,50 @@ class Portrait(object):
                 if npc * npl < nparam:
                     npl += 1
                 # computes space between each line
-                dl = (.95 - template.data.y2) / npl
-                dc = .9 / npc
+                dl = (0.95 - template.data.y2) / npl
+                dc = 0.9 / npc
                 npci = 0  # counter for columns
                 npli = 0  # counter for lines
                 for p in self.parameters_list:
-                    if p not in self.dummies and \
-                            p not in self.auto_dummies and \
-                            p not in axes_param:
+                    if (
+                        p not in self.dummies
+                        and p not in self.auto_dummies
+                        and p not in axes_param
+                    ):
                         txt = self.x.createtext(
                             None,
                             self.PLOT_SETTINGS.parametertable.name,
                             None,
-                            self.PLOT_SETTINGS.parameterorientation.name)
+                            self.PLOT_SETTINGS.parameterorientation.name,
+                        )
                         value = getattr(self, p)
-                        if (isinstance(value, (list, tuple)) and
-                                len(value) == 1):
-                            txt.string = p + ':' + \
-                                str(self.makestring(p, value[0]))
+                        if isinstance(value, (list, tuple)) and len(value) == 1:
+                            txt.string = p + ":" + str(self.makestring(p, value[0]))
                             display = 1
                         elif isinstance(value, (str, int, float)):
-                            txt.string = p + ':' + \
-                                str(self.makestring(p, value))
+                            txt.string = p + ":" + str(self.makestring(p, value))
                             display = 1
                         else:
                             display = 0
 
                         if display:
                             # Now figures out where to put these...
-                            txt.x = [(npci) * dc + dc / 2. + .05]
-                            txt.y = [1. - (npli) * dl - dl / 2.]
+                            txt.x = [(npci) * dc + dc / 2.0 + 0.05]
+                            txt.y = [1.0 - (npli) * dl - dl / 2.0]
                             npci += 1
                             if npci >= npc:
                                 npci = 0
                                 npli += 1
                             if p in list(self.altered.keys()):
                                 dic = self.altered[p]
-                                if dic['size'] is not None:
-                                    txt.size = dic['size']
-                                if dic['color'] is not None:
-                                    txt.color = dic['color']
-                                if dic['x'] is not None:
-                                    txt.x = dic['x']
-                                if dic['y'] is not None:
-                                    txt.y = dic['y']
+                                if dic["size"] is not None:
+                                    txt.size = dic["size"]
+                                if dic["color"] is not None:
+                                    txt.color = dic["color"]
+                                if dic["x"] is not None:
+                                    txt.x = dic["x"]
+                                if dic["y"] is not None:
+                                    txt.y = dic["y"]
                             self.x.plot(txt, bg=self.bg, continents=0)
             if self.PLOT_SETTINGS.time_stamp is not None:
                 # sp = time.ctime().split()
@@ -1158,10 +1203,7 @@ class Portrait(object):
                 # self.PLOT_SETTINGS.time_stamp.string = ''.join(sp)
                 sp = "{:v%Y%m%d}".format(datetime.datetime.now())
                 self.PLOT_SETTINGS.time_stamp.string = sp
-                self.x.plot(
-                    self.PLOT_SETTINGS.time_stamp,
-                    bg=self.bg,
-                    continents=0)
+                self.x.plot(self.PLOT_SETTINGS.time_stamp, bg=self.bg, continents=0)
             if self.PLOT_SETTINGS.logo is not None:
                 self.PLOT_SETTINGS.logo.plot(self.x, bg=self.bg)
         return mesh, template, meshfill
@@ -1180,28 +1222,37 @@ class Portrait(object):
             indices = numpy.argwhere(numpy.ma.logical_not(data.mask))
             data = data.take(indices).filled(0)[:, 0]
             M = mesh.filled()[indices][:, 0]
-            raveled = raveled.take(indices).filled(0.)[:, 0]
+            raveled = raveled.take(indices).filled(0.0)[:, 0]
         else:
             M = mesh.filled()
 
         # Baricenters
         xcenters = numpy.average(M[:, 1], axis=-1)
         ycenters = numpy.average(M[:, 0], axis=-1)
-        self.PLOT_SETTINGS.values.text.viewport = [template.data.x1, template.data.x2,
-                                                   template.data.y1, template.data.y2]
-        if not numpy.allclose(meshfill.datawc_x1, 1.e20):
-            self.PLOT_SETTINGS.values.text.worldcoordinate = [meshfill.datawc_x1,
-                                                              meshfill.datawc_x2,
-                                                              meshfill.datawc_y1,
-                                                              meshfill.datawc_y2]
+        self.PLOT_SETTINGS.values.text.viewport = [
+            template.data.x1,
+            template.data.x2,
+            template.data.y1,
+            template.data.y2,
+        ]
+        if not numpy.allclose(meshfill.datawc_x1, 1.0e20):
+            self.PLOT_SETTINGS.values.text.worldcoordinate = [
+                meshfill.datawc_x1,
+                meshfill.datawc_x2,
+                meshfill.datawc_y1,
+                meshfill.datawc_y2,
+            ]
         else:
-            self.PLOT_SETTINGS.values.text.worldcoordinate = [M[:, 1].min(),
-                                                              M[:, 1].max(),
-                                                              M[:, 0].min(),
-                                                              M[:, 0].max()]
+            self.PLOT_SETTINGS.values.text.worldcoordinate = [
+                M[:, 1].min(),
+                M[:, 1].max(),
+                M[:, 0].min(),
+                M[:, 0].max(),
+            ]
 
         self.PLOT_SETTINGS.values.text.string = [
-            self.PLOT_SETTINGS.values.format.format(value) for value in data]
+            self.PLOT_SETTINGS.values.format.format(value) for value in data
+        ]
 
         # Now that we have the formatted values we need get the longest string
         lengths = [len(txt) for txt in self.PLOT_SETTINGS.values.text.string]
@@ -1220,9 +1271,10 @@ class Portrait(object):
         tmptxt.viewport = self.PLOT_SETTINGS.values.text.viewport
         # Now try to shrink until it fits
         extent = self.x.gettextextent(tmptxt)[0]
-        while ((extent[1] - extent[0]) / (bigX - smallX) > 1.01 or
-               (extent[3] - extent[2]) / (bigY - smallY) > 1.01) and \
-                tmptxt.height >= 1:
+        while (
+            (extent[1] - extent[0]) / (bigX - smallX) > 1.01
+            or (extent[3] - extent[2]) / (bigY - smallY) > 1.01
+        ) and tmptxt.height >= 1:
             tmptxt.height -= 1
             extent = self.x.gettextextent(tmptxt)[0]
         self.PLOT_SETTINGS.values.text.height = tmptxt.height
@@ -1234,9 +1286,7 @@ class Portrait(object):
             colormap = vcs._colorMap
         cmap = vcs.getcolormap(colormap)
         colors = meshfill.fillareacolors
-        dark_bins = [
-            is_dark_color_type(
-                *cmap.getcolorcell(color)) for color in colors]
+        dark_bins = [is_dark_color_type(*cmap.getcolorcell(color)) for color in colors]
 
         # Step 2: put values into bin (color where they land)
         bins = meshfill.levels[1:-1]
@@ -1244,14 +1294,22 @@ class Portrait(object):
         isdark = [dark_bins[indx] for indx in binned]
         tmptxt = vcs.createtext(
             Tt_source=self.PLOT_SETTINGS.values.text.Tt_name,
-            To_source=self.PLOT_SETTINGS.values.text.To_name)
-        for pick, color in [(numpy.argwhere(isdark), self.PLOT_SETTINGS.values.lightcolor),
-                            (numpy.argwhere(numpy.logical_not(isdark)), self.PLOT_SETTINGS.values.darkcolor)]:
+            To_source=self.PLOT_SETTINGS.values.text.To_name,
+        )
+        for pick, color in [
+            (numpy.argwhere(isdark), self.PLOT_SETTINGS.values.lightcolor),
+            (
+                numpy.argwhere(numpy.logical_not(isdark)),
+                self.PLOT_SETTINGS.values.darkcolor,
+            ),
+        ]:
             tmptxt.x = xcenters.take(pick)[:, 0].tolist()
             tmptxt.y = ycenters.take(pick)[:, 0].tolist()
-            tmptxt.string = numpy.array(
-                self.PLOT_SETTINGS.values.text.string).take(pick)[
-                :, 0].tolist()
+            tmptxt.string = (
+                numpy.array(self.PLOT_SETTINGS.values.text.string)
+                .take(pick)[:, 0]
+                .tolist()
+            )
             tmptxt.color = color
             self.x.plot(tmptxt, bg=self.bg, continents=0)
 

@@ -26,4 +26,3 @@ nohup mean_climate_driver.py -p pcmdi_MIP_EXP_pmp_parameterfile.py -v tauu > cmi
 nohup mean_climate_driver.py -p pcmdi_MIP_EXP_pmp_parameterfile.py -v psl > cmip6_hist_psl_v201217.log &
 nohup mean_climate_driver.py -p pcmdi_MIP_EXP_pmp_parameterfile.py -v sfcWind > cmip6_hist_sfcWind_v201217.log &
 nohup mean_climate_driver.py -p pcmdi_MIP_EXP_pmp_parameterfile.py -v prw > cmip6_hist_prw_v201217.log &
-

@@ -1,6 +1,7 @@
-from os import path
-import matplotlib.pyplot as plt
 import urllib.request
+from os import path
+
+import matplotlib.pyplot as plt
 
 
 def add_logo(fig, ax, rect=None):
@@ -20,15 +21,15 @@ def add_logo(fig, ax, rect=None):
         rect = [0.75, 0.75, 0.2, 0.2]
 
     # Download image if not exist -- later, change to use egg_path!
-    if not path.isfile('./pmp_logo.png'):
+    if not path.isfile("./pmp_logo.png"):
         # setting filename and image URL
-        filename = 'pmp_logo.png'
+        filename = "pmp_logo.png"
         image_url = "https://github.com/PCMDI/pcmdi_metrics/raw/master/share/pcmdi/PMPLogoText_1359x1146px_300dpi.png"
 
         # calling urlretrieve function to get resource
         urllib.request.urlretrieve(image_url, filename)
 
-    im = plt.imread('./pmp_logo.png')
+    im = plt.imread("./pmp_logo.png")
 
     # Place the image in the upper-right corner of the figure
     # --------------------------------------------------------
@@ -36,9 +37,9 @@ def add_logo(fig, ax, rect=None):
     # will shrink/grow as the figure is resized. Remove "zorder=-1" to place the
     # image in front of the axes.
     # rect in add_axes: [left, bottom, width, height], fractions of figure width and height
-    newax = fig.add_axes(rect, anchor='NE')
+    newax = fig.add_axes(rect, anchor="NE")
 
     newax.imshow(im)
-    newax.axis('off')
+    newax.axis("off")
 
     return fig, ax
