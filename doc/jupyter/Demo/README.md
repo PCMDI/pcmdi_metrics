@@ -29,3 +29,4 @@ The notebooks listed below contain command line examples that can be copied from
 [Demo 3](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_3_diurnal_cycle.ipynb): Demonstrates the full workflow for running the Diurnal Cycle metrics.  
 [Demo 4](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_4_modes_of_variability.ipynb): Install scipy and eofs in the kernel environment, run the modes of variability driver with the NAM, and view an output image.  
 [Demo 5](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_5_mjo_metrics.ipynb): Run the MJO driver with options and view an output image.  
+[Demo 6](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_6_ENSO.ipynb): Demonstrates how to run the three metrics collections in the ENSO metrics package.  
