@@ -25,6 +25,14 @@
         {
             "affiliation": "UC Davis",
             "name": "Paul Ullrich"
+        },
+        {
+            "affiliation": "Lawrence Livermore National Laboratory",
+            "name": "Tom Vo"
+        },
+        {
+            "affiliation": "Lawrence Livermore National Laboratory",
+            "name": "Jason Boutte"
         }
     ]
 }
