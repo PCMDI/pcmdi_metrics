@@ -24,7 +24,7 @@ def add_logo(fig, ax, rect=None):
     if not path.isfile("./pmp_logo.png"):
         # setting filename and image URL
         filename = "pmp_logo.png"
-        image_url = "https://github.com/PCMDI/pcmdi_metrics/raw/master/share/pcmdi/PMPLogoText_1359x1146px_300dpi.png"
+        image_url = "https://github.com/PCMDI/pcmdi_metrics/raw/main/share/pcmdi/PMPLogoText_1359x1146px_300dpi.png"
 
         # calling urlretrieve function to get resource
         urllib.request.urlretrieve(image_url, filename)
