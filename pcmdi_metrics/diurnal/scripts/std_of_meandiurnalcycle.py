@@ -24,9 +24,9 @@ import cdms2
 import cdp
 import cdutil
 import genutil
-import pkg_resources
 
 import pcmdi_metrics
+from pcmdi_metrics import resources
 from pcmdi_metrics.diurnal.common import (
     INPUT,
     P,
@@ -161,13 +161,7 @@ def main():
             stats_dic = metrics_dictionary["RESULTS"]
 
     OUT = pcmdi_metrics.io.base.Base(os.path.abspath(args.results_dir), jsonFile())
-    try:
-        egg_pth = pkg_resources.resource_filename(
-            pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp"
-        )
-    except Exception:
-        # python 2 seems to fail when ran in home directory of source?
-        egg_pth = os.path.join(os.getcwd(), "share", "pmp")
+    egg_pth = resources.resource_path()
     disclaimer = open(os.path.join(egg_pth, "disclaimer.txt")).read()
     metrics_dictionary["DISCLAIMER"] = disclaimer
     metrics_dictionary["REFERENCE"] = (
