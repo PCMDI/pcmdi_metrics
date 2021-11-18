@@ -1,7 +1,7 @@
 {
     "description": "<p>Self contained packages to run PCMDI Metrics</p>",
     "access_right": "open",
-    "license": "open",
+    "license": "cc-by",
     "title": "PCMDI/pcmdi_metrics: PMP Version 2.1.1",
     "version": "v2.1.1",
     "upload_type": "software",
