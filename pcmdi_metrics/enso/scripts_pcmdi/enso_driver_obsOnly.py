@@ -7,13 +7,12 @@ from __future__ import print_function
 import glob
 import json
 import os
-import sys
 
-import pkg_resources
 from EnsoMetrics.EnsoCollectionsLib import ReferenceObservations, defCollection
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection_ObsOnly
 from genutil import StringConstructor
 
+from pcmdi_metrics import resources
 from pcmdi_metrics.enso.lib import AddParserArgument, metrics_to_json
 
 # To avoid below error when using multi cores
@@ -100,12 +99,7 @@ print("debug:", debug)
 # Prepare loop iteration
 # -------------------------------------------------
 # Environmental setup
-try:
-    egg_pth = pkg_resources.resource_filename(
-        pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp"
-    )
-except Exception:
-    egg_pth = os.path.join(sys.prefix, "share", "pmp")
+egg_pth = resources.resource_path()
 print("egg_pth:", egg_pth)
 
 # Create output directory

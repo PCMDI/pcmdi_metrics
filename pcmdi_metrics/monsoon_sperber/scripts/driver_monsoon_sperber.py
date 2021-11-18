@@ -53,9 +53,9 @@ import cdutil
 import matplotlib.pyplot as plt
 import MV2
 import numpy as np
-import pkg_resources
 
 import pcmdi_metrics
+from pcmdi_metrics import resources
 from pcmdi_metrics.monsoon_sperber.lib import (
     AddParserArgument,
     YearCheck,
@@ -202,9 +202,7 @@ if "RESULTS" not in list(monsoon_stat_dic.keys()):
 # Loop start for given models
 # -------------------------------------------------
 regions_specs = {}
-egg_pth = pkg_resources.resource_filename(
-    pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp"
-)
+egg_pth = resources.resource_path()
 exec(
     compile(
         open(os.path.join(egg_pth, "default_regions.py")).read(),

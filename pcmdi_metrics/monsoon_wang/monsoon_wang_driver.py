@@ -6,10 +6,10 @@ import os
 import cdms2
 import genutil
 import numpy
-import pkg_resources
 from genutil import statistics
 
 import pcmdi_metrics
+from pcmdi_metrics import resources
 from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 
@@ -151,13 +151,7 @@ def monsoon_wang_runner(args):
         raise RuntimeError("No model file found!")
     #########################################
 
-    try:
-        egg_pth = pkg_resources.resource_filename(
-            pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp"
-        )
-    except Exception:
-        # python 2 seems to fail when ran in home directory of source?
-        egg_pth = os.path.join(os.getcwd(), "share", "pmp")
+    egg_pth = resources.resource_path()
     globals = {}
     locals = {}
     exec(

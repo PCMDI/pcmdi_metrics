@@ -9,7 +9,6 @@ import sys
 import time
 
 import cdms2
-import pkg_resources
 from EnsoMetrics.EnsoCollectionsLib import (
     CmipVariables,
     ReferenceObservations,
@@ -18,6 +17,7 @@ from EnsoMetrics.EnsoCollectionsLib import (
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
 from genutil import StringConstructor
 
+from pcmdi_metrics import resources
 from pcmdi_metrics.enso.lib import (
     AddParserArgument,
     CLIVAR_LargeEnsemble_Variables,
@@ -120,12 +120,7 @@ obs_catalogue_json = param.obs_catalogue
 # Prepare loop iteration
 # -------------------------------------------------
 # Environmental setup
-try:
-    egg_pth = pkg_resources.resource_filename(
-        pkg_resources.Requirement.parse("pcmdi_metrics"), "share/pmp"
-    )
-except Exception:
-    egg_pth = os.path.join(sys.prefix, "share", "pmp")
+egg_pth = resources.resource_path()
 print("egg_pth:", egg_pth)
 
 # Create output directory
