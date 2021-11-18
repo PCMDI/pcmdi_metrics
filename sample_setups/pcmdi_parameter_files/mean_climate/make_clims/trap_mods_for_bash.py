@@ -1,44 +1,84 @@
-import glob, os
 import datetime
+import glob
+import os
 
-var = 'tas'
-exp = 'historical'
-mip = 'cmip6'
-verin = 'v20201226'
-start = '1980-01'
-end = '2005-12'
+var = "tas"
+exp = "historical"
+mip = "cmip6"
+verin = "v20201226"
+start = "1980-01"
+end = "2005-12"
 
 #################
- 
-pin = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/' + verin + '/' + mip + '/' + exp + '/atmos/mon/' + var + '/'
 
-verout = datetime.datetime.now().strftime('v%Y%m%d')
+pin = (
+    "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/"
+    + verin
+    + "/"
+    + mip
+    + "/"
+    + exp
+    + "/atmos/mon/"
+    + var
+    + "/"
+)
 
-lst = glob.glob(pin + '*r1i1p1f1*.xml')
+verout = datetime.datetime.now().strftime("v%Y%m%d")
 
-pathout_base = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/' + mip + '/' + exp + '/'   
+lst = glob.glob(pin + "*r1i1p1f1*.xml")
+
+pathout_base = (
+    "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/"
+    + mip
+    + "/"
+    + exp
+    + "/"
+)
 
 try:
- os.mkdir(pathout_base + verout)
-except:
- pass
+    os.mkdir(pathout_base + verout)
+except Exception:
+    pass
 try:
- os.mkdir(pathout_base + verout + '/' + var)
-except:
- pass
+    os.mkdir(pathout_base + verout + "/" + var)
+except Exception:
+    pass
 
-#pathout = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/' + mip + '/' + exp + '/' + verout + '/' + var + '/'
-pathout = pathout_base + verout + '/' + var
+# pathout = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/' + mip + '/' + exp + '/' + verout + '/' + var + '/'
+pathout = pathout_base + verout + "/" + var
 
-cmd0 = "python ./clim_calc_driver.py -p clim_calc_cmip_inparam.py --start " + start + " --end " + end + " --infile " 
+cmd0 = (
+    "python ./clim_calc_driver.py -p clim_calc_cmip_inparam.py --start "
+    + start
+    + " --end "
+    + end
+    + " --infile "
+)
 
 lst1 = []
-for l in lst:
-  cmd = 'nohup ' + cmd0 + l + " --outpath " + pathout + ' --var ' + var + ' > log.' + mip + '.' + exp + '.' + var + '.' + verin + '.txt' + ' & \n'
-  print(cmd)
-  lst1.append(cmd)
+for i in lst:
+    cmd = (
+        "nohup "
+        + cmd0
+        + i
+        + " --outpath "
+        + pathout
+        + " --var "
+        + var
+        + " > log."
+        + mip
+        + "."
+        + exp
+        + "."
+        + var
+        + "."
+        + verin
+        + ".txt"
+        + " & \n"
+    )
+    print(cmd)
+    lst1.append(cmd)
 
-fout = open(var + '.' + mip + '.' + exp + '.' + verin + '.' + verout + '.bash',"w+")
+fout = open(var + "." + mip + "." + exp + "." + verin + "." + verout + ".bash", "w+")
 fout.writelines(lst1)
 fout.close()
-  

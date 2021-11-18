@@ -1,12 +1,13 @@
-import numpy as np
 import json
-import pandas as pd
 import sys
 
+import numpy as np
+import pandas as pd
 
-def read_mean_clim_json_files(json_list,
-                              regions=None, stats=None,
-                              mip=None, debug=False):
+
+def read_mean_clim_json_files(
+    json_list, regions=None, stats=None, mip=None, debug=False
+):
     """
     Parameters
     ----------
@@ -34,12 +35,12 @@ def read_mean_clim_json_files(json_list,
 
     for json_file in json_list:
         if debug:
-            print('json_file:', json_file)
+            print("json_file:", json_file)
         with open(json_file) as fj:
             dict_temp = json.load(fj)
-        var = dict_temp['Variable']['id']
-        if 'level' in list(dict_temp['Variable'].keys()):
-            var += '-' + str(int(dict_temp['Variable']['level']/100.))  # Pa to hPa
+        var = dict_temp["Variable"]["id"]
+        if "level" in list(dict_temp["Variable"].keys()):
+            var += "-" + str(int(dict_temp["Variable"]["level"] / 100.0))  # Pa to hPa
         results_dict[var] = dict_temp
         unit = extract_unit(var, results_dict[var])
         var_unit = var + " [" + unit + "]"
@@ -60,24 +61,32 @@ def read_mean_clim_json_files(json_list,
     for stat in stats:
         df_dict[stat] = {}
 
-        if stat in ['rms_devzm', 'rms_xyt', 'rms_y', 'std-obs_xy_devzm',
-                    'std-obs_xyt', 'std_xy_devzm', 'std_xyt']:
-            seasons = ['ann']
+        if stat in [
+            "rms_devzm",
+            "rms_xyt",
+            "rms_y",
+            "std-obs_xy_devzm",
+            "std-obs_xyt",
+            "std_xy_devzm",
+            "std_xyt",
+        ]:
+            seasons = ["ann"]
         else:
-            seasons = ['djf', 'mam', 'jja', 'son']
+            seasons = ["djf", "mam", "jja", "son"]
 
         for season in seasons:
             df_dict[stat][season] = {}
             for region in regions:
-                df_dict[stat][season][region] = extract_data(results_dict, var_list,
-                                                             region, stat, season, mip, debug)
+                df_dict[stat][season][region] = extract_data(
+                    results_dict, var_list, region, stat, season, mip, debug
+                )
 
     return df_dict, var_list, var_unit_list, regions, stats
 
 
 def extract_unit(var, results_dict_var):
-    model_list = sorted(list(results_dict_var['RESULTS'].keys()))
-    units = results_dict_var['RESULTS'][model_list[0]]["units"]
+    model_list = sorted(list(results_dict_var["RESULTS"].keys()))
+    units = results_dict_var["RESULTS"][model_list[0]]["units"]
     return units
 
 
@@ -92,16 +101,22 @@ def extract_stat(var, results_dict_var):
 
 
 def extract_region_stat(var, results_dict_var):
-    model_list = sorted(list(
-        results_dict_var['RESULTS'].keys()))
-    run_list = sorted(list(
-        results_dict_var['RESULTS'][model_list[0]]["default"].keys()))
-    if 'source' in run_list:
-        run_list.remove('source')
-    region_list = sorted(list(
-        results_dict_var['RESULTS'][model_list[0]]["default"][run_list[0]].keys()))
-    stat_list = sorted(list(
-        results_dict_var['RESULTS'][model_list[0]]["default"][run_list[0]][region_list[0]].keys()))
+    model_list = sorted(list(results_dict_var["RESULTS"].keys()))
+    run_list = sorted(
+        list(results_dict_var["RESULTS"][model_list[0]]["default"].keys())
+    )
+    if "source" in run_list:
+        run_list.remove("source")
+    region_list = sorted(
+        list(results_dict_var["RESULTS"][model_list[0]]["default"][run_list[0]].keys())
+    )
+    stat_list = sorted(
+        list(
+            results_dict_var["RESULTS"][model_list[0]]["default"][run_list[0]][
+                region_list[0]
+            ].keys()
+        )
+    )
     return region_list, stat_list
 
 
@@ -110,40 +125,46 @@ def extract_data(results_dict, var_list, region, stat, season, mip, debug=False)
     Return a pandas dataframe for metric numbers at given region/stat/season.
     Rows: models, Columns: variables (i.e., 2d array)
     """
-    if 'rlut' in list(results_dict['rlut']['RESULTS'].keys()):
-        model_list = sorted(list(results_dict['rlut']['RESULTS'].keys()))
+    if "rlut" in list(results_dict["rlut"]["RESULTS"].keys()):
+        model_list = sorted(list(results_dict["rlut"]["RESULTS"].keys()))
     else:
-        model_list = sorted(list(results_dict[var_list[0]]['RESULTS'].keys()))
+        model_list = sorted(list(results_dict[var_list[0]]["RESULTS"].keys()))
 
     data_list = []
     for model in model_list:
-        if 'rlut' in list(results_dict['rlut']['RESULTS'].keys()):
-            run_list = list(results_dict['rlut']['RESULTS'][model]['default'].keys())
+        if "rlut" in list(results_dict["rlut"]["RESULTS"].keys()):
+            run_list = list(results_dict["rlut"]["RESULTS"][model]["default"].keys())
         else:
-            run_list = list(results_dict[var_list[0]]['RESULTS'][model]['default'].keys())
+            run_list = list(
+                results_dict[var_list[0]]["RESULTS"][model]["default"].keys()
+            )
 
         if debug:
-            print('model, run_list:', model, run_list)
+            print("model, run_list:", model, run_list)
 
-        run_list.remove('source')
+        run_list.remove("source")
         for run in run_list:
             tmp_list = []
             for var in var_list:
                 try:
-                    tmp = float(results_dict[var]['RESULTS'][model]['default'][run][region][stat][season])
+                    tmp = float(
+                        results_dict[var]["RESULTS"][model]["default"][run][region][
+                            stat
+                        ][season]
+                    )
                 except Exception:
                     tmp = None
                 if debug:
-                    print('model, run, season, var, tmp:', model, run, season, var, tmp)
+                    print("model, run, season, var, tmp:", model, run, season, var, tmp)
                 tmp_list.append(tmp)
             if mip is None:
-                data_list.append([model, run, model+'_'+run] + tmp_list)
+                data_list.append([model, run, model + "_" + run] + tmp_list)
             else:
-                data_list.append([mip, model, run, model+'_'+run] + tmp_list)
+                data_list.append([mip, model, run, model + "_" + run] + tmp_list)
     if mip is None:
-        data_list_column_names = ['model', 'run', 'model_run'] + var_list
+        data_list_column_names = ["model", "run", "model_run"] + var_list
     else:
-        data_list_column_names = ['mip', 'model', 'run', 'model_run'] + var_list
+        data_list_column_names = ["mip", "model", "run", "model_run"] + var_list
     # Convert data in pythin dict to pandas dataframe format
     df = pd.DataFrame(columns=data_list_column_names, data=data_list)
     return df
@@ -166,5 +187,5 @@ def normalize_by_median(data, axis=0):
     elif axis == 1:
         data_nor = (data - median[:, np.newaxis]) / median[:, np.newaxis]
     else:
-        sys.exit('Error: given axis option is not available')
+        sys.exit("Error: given axis option is not available")
     return data_nor

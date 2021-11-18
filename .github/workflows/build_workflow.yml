@@ -1,82 +1,76 @@
 name: CI/CD Build Workflow
 
 on:
-    push:
-        branches: [master]
+  push:
+    branches: [main]
 
-    pull_request:
-        branches: [master]
+  pull_request:
+    branches: [main]
 
-    workflow_dispatch:
+  workflow_dispatch:
 
 jobs:
-    check-jobs-to-skip:
-        runs-on: ubuntu-latest
-        outputs:
-            should_skip: ${{ steps.skip_check.outputs.should_skip }}
-        steps:
-            - id: skip_check
-              uses: fkirc/skip-duplicate-actions@master
-              with:
-                  cancel_others: true
-                  paths_ignore: '["**/README.rst", "**/docs/**", "**/ISSUE_TEMPLATE/**", "**/pull_request_template.md", "**/.vscode/**"]'
+  check-jobs-to-skip:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          cancel_others: true
+          paths_ignore: '["**/README.md", "**/docs/**", "**/ISSUE_TEMPLATE/**", "**/pull_request_template.md", "**/.vscode/**"]'
 
-    pre-commit-hooks:
-        needs: check-jobs-to-skip
-        if: ${{ needs.check-jobs-to-skip.outputs.should_skip != 'true'}} || ${{ github.event_name == 'push' }}
-        runs-on: ubuntu-latest
-        timeout-minutes: 2
-        steps:
-            - name: Checkout Code Repository
-              uses: actions/checkout@v2
+  pre-commit-hooks:
+    needs: check-jobs-to-skip
+    if: ${{ needs.check-jobs-to-skip.outputs.should_skip != 'true'}} || ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v2
 
-            - name: Set up Python 3.9
-              uses: actions/setup-python@v2
-              with:
-                  python-version: 3.9
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
 
-            # Run all pre-commit hooks on all the files.
-            # Getting only staged files can be tricky in case a new PR is opened
-            # since the action is run on a branch in detached head state
-            - name: Install and Run Pre-commit
-              uses: pre-commit/action@v2.0.3
+      # Run all pre-commit hooks on all the files.
+      # Getting only staged files can be tricky in case a new PR is opened
+      # since the action is run on a branch in detached head state
+      - name: Install and Run Pre-commit
+        uses: pre-commit/action@v2.0.3
 
-    build:
-        needs: check-jobs-to-skip
-        if: ${{ needs.check-jobs-to-skip.outputs.should_skip != 'true'}} || ${{ github.event_name == 'push' }}
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                shell: bash -l {0}
-        timeout-minutes: 5
-        steps:
-            - uses: actions/checkout@v2
+  build:
+    needs: check-jobs-to-skip
+    if: ${{ needs.check-jobs-to-skip.outputs.should_skip != 'true'}} || ${{ github.event_name == 'push' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
 
-            - name: Cache Conda
-              uses: actions/cache@v2
-              env:
-                  # Increase this value to reset cache if conda/dev.yml has not changed in the workflow
-                  CACHE_NUMBER: 0
-              with:
-                  path: ~/conda_pkgs_dir
-                  key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-publish
+      - name: Cache Conda
+        uses: actions/cache@v2
+        env:
+          # Increase this value to reset cache if conda/dev.yml has not changed in the workflow
+          CACHE_NUMBER: 0
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-publish
 
-            - name: Set up Conda Environment
-              uses: conda-incubator/setup-miniconda@v2
-              with:
-                  activate-environment: "xcdat_dev"
-                  environment-file: conda-env/dev.yml
-                  channel-priority: strict
-                  auto-update-conda: true
-                  # IMPORTANT: This needs to be set for caching to work properly!
-                  use-only-tar-bz2: true
+      - name: Set up Conda Environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: "pcmdi_metrics_dev"
+          environment-file: conda-env/dev.yml
+          channel-priority: strict
+          auto-update-conda: true
+          # IMPORTANT: This needs to be set for caching to work properly!
+          use-only-tar-bz2: true
 
-            - name: Run Tests
-              run: |
-                  pytest
-
-            - name: Upload Coverage Report
-              uses: codecov/codecov-action@v1
-              with:
-                  file: "tests_coverage_reports/coverage.xml"
-                  fail_ci_if_error: true
+      - name: Run Tests
+        run: |
+          pytest

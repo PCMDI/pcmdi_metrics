@@ -28,4 +28,3 @@ any scripts to be called by user should go in here
 create as many subdirectories in here as you need to files in the subdirectories will be mapped to your package distribution as follow (example `share` directory
 
 files in data/share will be mapped to distrib/share/YOUR_PACKAGE
-

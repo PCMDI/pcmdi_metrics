@@ -1,148 +1,202 @@
 #!/usr/bin/env python
 from __future__ import print_function
+
+import glob
 import os
 import tempfile
+
 import cdms2
-import cdutil
-import numpy
-import cdtime
-from pcmdi_metrics.driver.pmp_parser import PMPParser
-import glob
-import genutil
 import cdp
+import cdtime
+import cdutil
+import genutil
+import numpy
+
+from pcmdi_metrics.driver.pmp_parser import PMPParser
 
 try:
     import cmor
+
     hasCMOR = True
 except Exception:
     hasCMOR = False
 
-parser = PMPParser(description='Generates Climatologies from files')
+parser = PMPParser(description="Generates Climatologies from files")
 
-cmor_xtra_args = ["contact", "references", "model_id",
-                  "institute_id", "forcing",
-                  "parent_experiment_id",
-                  "parent_experiment_rip",
-                  "realization", "comment", "history",
-                  "branch_time", "physics_version",
-                  "initialization_method",
-                  ]
+cmor_xtra_args = [
+    "contact",
+    "references",
+    "model_id",
+    "institute_id",
+    "forcing",
+    "parent_experiment_id",
+    "parent_experiment_rip",
+    "realization",
+    "comment",
+    "history",
+    "branch_time",
+    "physics_version",
+    "initialization_method",
+]
 
 
 def load_parser(parser):
-    p = parser.add_argument_group('processing')
+    p = parser.add_argument_group("processing")
     p.add_argument(
         "--verbose",
         action="store_true",
         dest="verbose",
         help="verbose output",
-        default=True)
+        default=True,
+    )
+    p.add_argument("--quiet", action="store_false", dest="verbose", help="quiet output")
     p.add_argument(
-        "--quiet",
-        action="store_false",
-        dest="verbose",
-        help="quiet output")
-    p.add_argument("-v", "--variable",
-                   dest="variable",
-                   default=None,
-                   # required=True,
-                   help="variable to use for climatology")
-    p.add_argument("-t", "--threshold",
-                   dest='threshold',
-                   default=.5,
-                   type=float,
-                   help="Threshold bellow which a season is considered as " +
-                   "not having enough data to be computed")
-    p.add_argument("-c", "--climatological_season",
-                   dest="seasons",
-                   default=["all"],
-                   nargs="*",
-                   choices=["djf", "DJF", "ann", "ANN", "all", "ALL",
-                            "mam", "MAM", "jja", "JJA", "son", "SON", "year",
-                            "YEAR"],
-                   help="Which season you wish to produce"
-                   )
-    p.add_argument("-s", "--start",
-                   dest="start",
-                   default=None,
-                   help="Start for climatology: date, value or index " +
-                   "as determined by -i arg")
-    p.add_argument("-e", "--end",
-                   dest="end",
-                   default=None,
-                   help="End for climatology: date, value or index " +
-                   "as determined by -I arg")
-    p.add_argument("-i", "--indexation-type",
-                   dest="index",
-                   default="date",
-                   choices=["date", "value", "index"],
-                   help="indexation type")
-    p.add_argument("-o", "--output_filename_template",
-                   help="template for output filename",
-                   default="%(variable)_PMP_%(model_id)_%(experiment_id)_" +
-                   "r%(realization)i%(initialization_method)p%(physics_version)" +
-                   "_%(start)-%(end)-clim-%(season).nc"
-                   )
-    p.add_argument("-f", "--filename_template",
-                   dest="filename_template",
-                   help="Input file template")
-    p.add_argument("-m", "--model",
-                   dest="model",
-                   help="Model Name")
-    p.add_argument("-b", "--bounds",
-                   action="store_true",
-                   dest="bounds",
-                   default=False,
-                   help="reset bounds to monthly")
-    p.add_argument("--mapping_dictionary", default={}, type=dict,
-                   help="A mapping dictionary to map undefnied parameters")
+        "-v",
+        "--variable",
+        dest="variable",
+        default=None,
+        # required=True,
+        help="variable to use for climatology",
+    )
+    p.add_argument(
+        "-t",
+        "--threshold",
+        dest="threshold",
+        default=0.5,
+        type=float,
+        help="Threshold bellow which a season is considered as "
+        + "not having enough data to be computed",
+    )
+    p.add_argument(
+        "-c",
+        "--climatological_season",
+        dest="seasons",
+        default=["all"],
+        nargs="*",
+        choices=[
+            "djf",
+            "DJF",
+            "ann",
+            "ANN",
+            "all",
+            "ALL",
+            "mam",
+            "MAM",
+            "jja",
+            "JJA",
+            "son",
+            "SON",
+            "year",
+            "YEAR",
+        ],
+        help="Which season you wish to produce",
+    )
+    p.add_argument(
+        "-s",
+        "--start",
+        dest="start",
+        default=None,
+        help="Start for climatology: date, value or index " + "as determined by -i arg",
+    )
+    p.add_argument(
+        "-e",
+        "--end",
+        dest="end",
+        default=None,
+        help="End for climatology: date, value or index " + "as determined by -I arg",
+    )
+    p.add_argument(
+        "-i",
+        "--indexation-type",
+        dest="index",
+        default="date",
+        choices=["date", "value", "index"],
+        help="indexation type",
+    )
+    p.add_argument(
+        "-o",
+        "--output_filename_template",
+        help="template for output filename",
+        default="%(variable)_PMP_%(model_id)_%(experiment_id)_"
+        + "r%(realization)i%(initialization_method)p%(physics_version)"
+        + "_%(start)-%(end)-clim-%(season).nc",
+    )
+    p.add_argument(
+        "-f",
+        "--filename_template",
+        dest="filename_template",
+        help="Input file template",
+    )
+    p.add_argument("-m", "--model", dest="model", help="Model Name")
+    p.add_argument(
+        "-b",
+        "--bounds",
+        action="store_true",
+        dest="bounds",
+        default=False,
+        help="reset bounds to monthly",
+    )
+    p.add_argument(
+        "--mapping_dictionary",
+        default={},
+        type=dict,
+        help="A mapping dictionary to map undefnied parameters",
+    )
     # parser.use("results_dir", p)
     parser.use("results_dir")
     parser.use("modpath")
     c = parser.add_argument_group("CMOR options")
-    c.add_argument("--use-cmor", dest="cmor",
-                   default=False, action="store_true")
-    c.add_argument("-D", "--drs",
-                   action="store_true",
-                   dest="drs",
-                   default=False,
-                   help="Use drs for output path"
-                   )
-    c.add_argument("-T", "--table",
-                   dest="table",
-                   nargs="+",
-                   help="CMOR table")
-    c.add_argument("-U", "--units",
-                   dest="units",
-                   help="variable(s) units")
-    c.add_argument("-V", "--cf-var",
-                   dest="cf_var",
-                   help="variable name in CMOR tables")
-    c.add_argument("-E", "--experiment_id", default=None,
-                   help="'experiment id' for this run (will try to get from input file",
-                   )
-    c.add_argument("-I", "--institution", default=None,
-                   help="'institution' for this run (will try to get from input file",
-                   )
-    c.add_argument("-S", "--source", default=None,
-                   help="'source' for this run (will try to get from input file",
-                   )
-    c.add_argument("-X", "--variable_extra_args", default="{}",
-                   help="Potential extra args to pass to cmor_variable call",
-                   )
+    c.add_argument("--use-cmor", dest="cmor", default=False, action="store_true")
+    c.add_argument(
+        "-D",
+        "--drs",
+        action="store_true",
+        dest="drs",
+        default=False,
+        help="Use drs for output path",
+    )
+    c.add_argument("-T", "--table", dest="table", nargs="+", help="CMOR table")
+    c.add_argument("-U", "--units", dest="units", help="variable(s) units")
+    c.add_argument("-V", "--cf-var", dest="cf_var", help="variable name in CMOR tables")
+    c.add_argument(
+        "-E",
+        "--experiment_id",
+        default=None,
+        help="'experiment id' for this run (will try to get from input file",
+    )
+    c.add_argument(
+        "-I",
+        "--institution",
+        default=None,
+        help="'institution' for this run (will try to get from input file",
+    )
+    c.add_argument(
+        "-S",
+        "--source",
+        default=None,
+        help="'source' for this run (will try to get from input file",
+    )
+    c.add_argument(
+        "-X",
+        "--variable_extra_args",
+        default="{}",
+        help="Potential extra args to pass to cmor_variable call",
+    )
 
     for x in cmor_xtra_args:
-        c.add_argument("--%s" % x, default=None,
-                       dest=x,
-                       help="'%s' for this run (will try to get from input file" % x
-                       )
+        c.add_argument(
+            "--%s" % x,
+            default=None,
+            dest=x,
+            help="'%s' for this run (will try to get from input file" % x,
+        )
 
 
 load_parser(parser)
 
 As = parser.get_parameters()
 
-parser = PMPParser(description='Generates Climatologies from files')
+parser = PMPParser(description="Generates Climatologies from files")
 load_parser(parser)
 
 for A in As:
@@ -164,6 +218,13 @@ def dump_cmor(A, data, time, bounds, season):
     inst = checkCMORAttribute("institution")
     src = checkCMORAttribute("source")
     exp = checkCMORAttribute("experiment_id")
+
+    # FIXME: Should these be set?
+    realization_index = None
+    initialization_index = None
+    physics_index = None
+    ###############################
+
     xtra = {}
     for x in cmor_xtra_args:
         try:
@@ -183,10 +244,12 @@ def dump_cmor(A, data, time, bounds, season):
         set_verbosity=cmor_verbose,
         exit_control=cmor.CMOR_NORMAL,
         #            logfile='logfile',
-        create_subdirectories=int(A.drs))
+        create_subdirectories=int(A.drs),
+    )
 
     tmp = tempfile.NamedTemporaryFile(mode="w")
-    tmp.write("""{{
+    tmp.write(
+        """{{
            "_control_vocabulary_file": "CMIP6_CV.json",
            "_AXIS_ENTRY_FILE":         "CMIP6_coordinate.json",
            "_FORMULA_VAR_FILE":        "CMIP6_formula_terms.json",
@@ -260,13 +323,22 @@ def dump_cmor(A, data, time, bounds, season):
            "output_file_template":    "<variable_id><table><source_id><experiment_id><_member_id><grid_label>",
            "license":                 "CMIP6 model data produced by Lawrence Livermore PCMDI is licensed under a Creative Commons Attribution ShareAlike 4.0 International License (https://creativecommons.org/licenses). Consult https://pcmdi.llnl.gov/CMIP6/TermsOfUse for terms of use governing CMIP6 output, including citation requirements and proper acknowledgment. Further information about this data, including some limitations, can be found via the further_info_url (recorded as a global attribute in this file) and at https:///pcmdi.llnl.gov/. The data producers and data providers make no warranty, either express or implied, including, but not limited to, warranties of merchantability and fitness for a particular purpose. All liabilities arising from the supply of the information (including any liability arising in negligence) are excluded to the fullest extent permitted by law."
 }}
-""".format(A.results_dir, exp, cal_name, r, i, p, inst.split()[0], src))  # noqa
+""".format(
+            A.results_dir,
+            exp,
+            cal_name,
+            realization_index,
+            initialization_index,
+            physics_index,
+            inst.split()[0],
+            src,
+        )
+    )
 
     tmp.flush()
     cmor.dataset_json(tmp.name)
     if not os.path.exists(A.table):
-        raise RuntimeError(
-            "No such file or directory for tables: %s" % A.table)
+        raise RuntimeError("No such file or directory for tables: %s" % A.table)
 
     print("Loading table: {}".format(os.path.abspath(A.table)))
     table_content = open(A.table).read().replace("time", "time2")
@@ -300,11 +372,12 @@ def dump_cmor(A, data, time, bounds, season):
             axvals = ax[:]
             axbnds = ax.getBounds()
             axunits = ax.units
-        ax_id = cmor.axis(table_entry=table_entry,
-                          units=axunits,
-                          coord_vals=axvals,
-                          cell_bounds=axbnds
-                          )
+        ax_id = cmor.axis(
+            table_entry=table_entry,
+            units=axunits,
+            coord_vals=axvals,
+            cell_bounds=axbnds,
+        )
         cmor_axes.append(ax_id)
     # Now create the variable itself
     if A.cf_var is not None:
@@ -319,13 +392,16 @@ def dump_cmor(A, data, time, bounds, season):
     kw = eval(A.variable_extra_args)
     if not isinstance(kw, dict):
         raise RuntimeError(
-            "invalid evaled type for -X args, should be evaled as a dict, e.g: -X '{\"positive\":\"up\"}'")
-    var_id = cmor.variable(table_entry=var_entry,
-                           units=units,
-                           axis_ids=cmor_axes,
-                           type=data.typecode(),
-                           missing_value=data.missing_value,
-                           **kw)
+            'invalid evaled type for -X args, should be evaled as a dict, e.g: -X \'{"positive":"up"}\''
+        )
+    var_id = cmor.variable(
+        table_entry=var_entry,
+        units=units,
+        axis_ids=cmor_axes,
+        type=data.typecode(),
+        missing_value=data.missing_value,
+        **kw,
+    )
 
     # And finally write the data
     data2 = data.filled(data.missing_value)
@@ -385,8 +461,8 @@ def runClim(A):
     }
 
     print("BEFORE RPOCESEED:", A.results_dir)
-#   print("A VAR:", A.variable)
-#   print("A REF:", A.reference)
+    #   print("A VAR:", A.variable)
+    #   print("A REF:", A.reference)
     results_dir = A.process_templated_argument("results_dir")
     print("RESDIR:", results_dir.template)
     A.results_dir = results_dir()
@@ -394,7 +470,8 @@ def runClim(A):
     print("HERE?", os.path.join(A.modpath, A.filename_template))
     print("A.variable", A.variable, A.model)
     filename_in = A.process_templated_argument(
-        os.path.join(A.modpath, A.filename_template))
+        os.path.join(A.modpath, A.filename_template)
+    )
 
     if A.verbose:
         print("filename in after templating:", filename_in())
@@ -408,9 +485,7 @@ def runClim(A):
     fvars = list(filein.variables.keys())
     v = A.variable
     if v not in fvars:
-        raise RuntimeError(
-            "Variable '%s' is not contained in input file(s)" %
-            v)
+        raise RuntimeError("Variable '%s' is not contained in input file(s)" % v)
     V = filein[v]
     tim = V.getTime().clone()
     # "monthly"
@@ -423,29 +498,30 @@ def runClim(A):
         if A.index == "index":  # index-based slicing
             if int(A.start) >= len(tim):
                 raise RuntimeError(
-                    "For variable %s you requested start time to be at index: %i but the file only has %i time steps" %
-                    (v, int(
-                        A.start), len(tim)))
+                    "For variable %s you requested start time to be at index: %i but the file only has %i time steps"
+                    % (v, int(A.start), len(tim))
+                )
             i0 = int(A.start)
         elif A.index == "value":  # actual value used for slicing
             v0 = float(A.start)
             try:
-                i0, tmp = tim.mapInterval((v0, v0), 'cob')
+                i0, tmp = tim.mapInterval((v0, v0), "cob")
             except Exception:
                 raise RuntimeError(
-                    "Could not find value %s for start time for variable %s" %
-                    (A.start, v))
+                    "Could not find value %s for start time for variable %s"
+                    % (A.start, v)
+                )
         elif A.index == "date":
             v0 = A.start
             # When too close from bounds it messes it up, adding a minute seems to help
             v0 = cdtime.s2c(A.start)
             v0 = v0.add(1, cdtime.Minute)
             try:
-                i0, tmp = tim.mapInterval((v0, v0), 'cob')
+                i0, tmp = tim.mapInterval((v0, v0), "cob")
             except Exception:
                 raise RuntimeError(
-                    "Could not find start time %s for variable: %s" %
-                    (A.start, v))
+                    "Could not find start time %s for variable: %s" % (A.start, v)
+                )
 
     if A.end is None:
         i1 = None
@@ -453,34 +529,38 @@ def runClim(A):
         if A.index == "index":  # index-based slicing
             if int(A.end) >= len(tim):
                 raise RuntimeError(
-                    "For variable %s you requested end time to be at index: %i but the file only has %i time steps" %
-                    (v, int(
-                        A.end), len(tim)))
+                    "For variable %s you requested end time to be at index: %i but the file only has %i time steps"
+                    % (v, int(A.end), len(tim))
+                )
             i1 = int(A.end)
         elif A.index == "value":  # actual value used for slicing
             v0 = float(A.end)
             try:
-                tmp, i1 = tim.mapInterval((v0, v0), 'cob')
+                tmp, i1 = tim.mapInterval((v0, v0), "cob")
             except Exception:
                 raise RuntimeError(
-                    "Could not find value %s for end time for variable %s" %
-                    (A.end, v))
+                    "Could not find value %s for end time for variable %s" % (A.end, v)
+                )
         elif A.index == "date":
             v0 = A.end
             # When too close from bounds it messes it up, adding a minute seems to help
             v0 = cdtime.s2c(A.end)
             v0 = v0.add(1, cdtime.Minute)
             try:
-                tmp, i1 = tim.mapInterval((v0, v0), 'cob')
+                tmp, i1 = tim.mapInterval((v0, v0), "cob")
             except Exception:
                 raise RuntimeError(
-                    "Could not find end time %s for variable: %s" %
-                    (A.end, v))
+                    "Could not find end time %s for variable: %s" % (A.end, v)
+                )
     # Read in data
     data = V(time=slice(i0, i1))
     if A.verbose:
-        print("DATA:", data.shape, data.getTime().asComponentTime()
-              [0], data.getTime().asComponentTime()[-1])
+        print(
+            "DATA:",
+            data.shape,
+            data.getTime().asComponentTime()[0],
+            data.getTime().asComponentTime()[-1],
+        )
     if A.bounds:
         cdutil.times.setTimeBoundsMonthly(data)
     # Now we can actually read and compute the climo
@@ -489,8 +569,7 @@ def runClim(A):
         seasons = ["djf", "mam", "jja", "son", "year", "ann"]
 
     for season in seasons:
-        s = season_function[season].climatology(
-            data, criteriaarg=[A.threshold, None])
+        s = season_function[season].climatology(data, criteriaarg=[A.threshold, None])
         g = season_function[season].get(data, criteriaarg=[A.threshold, None])
         # Ok we know we have monthly data
         # We want to tweak bounds
@@ -528,12 +607,18 @@ def runClim(A):
         y2 = cdtime.reltime(Tg[-1], T.units)
 
         # Mid year is:
-        yr = (y2.value + y1.value) / 2.
+        yr = (y2.value + y1.value) / 2.0
         y = cdtime.reltime(yr, T.units).tocomp(cal).year
 
         if A.verbose:
-            print("We found data from ", y1.tocomp(cal),
-                  "to", y2.tocomp(cal), "MID YEAR:", y)
+            print(
+                "We found data from ",
+                y1.tocomp(cal),
+                "to",
+                y2.tocomp(cal),
+                "MID YEAR:",
+                y,
+            )
             print("bounds:", b1.tocomp(cal), b2.tocomp(cal))
 
         values = []
@@ -545,7 +630,7 @@ def runClim(A):
             t = ts[ii]
             t.year = y
             values.append(t.torel(Tunits, cal).value)
-            if (s.shape[0] > 1):
+            if s.shape[0] > 1:
                 B1 = b1.tocomp(cal).add(ii, cdtime.Month)
                 B2 = b2.tocomp(cal).add(ii - s.shape[0] + 1, cdtime.Month)
             else:
@@ -562,8 +647,7 @@ def runClim(A):
             #    b2.year = b1.year+1
             if A.verbose:
                 print(B1.tocomp(cal), "<", t, "<", B2.tocomp(cal))
-            bounds.append([B1.torel(Tunits, cal).value,
-                           B2.torel(Tunits, cal).value])
+            bounds.append([B1.torel(Tunits, cal).value, B2.torel(Tunits, cal).value])
 
     fnmout = genutil.StringConstructor(A.output_filename_template)
 
@@ -581,7 +665,9 @@ def runClim(A):
         dump_cmor(A, s, values, bounds, season)
     else:
         if A.cmor and not hasCMOR:
-            print("Your Python does not have CMOR, using regular cdms to write out files")
+            print(
+                "Your Python does not have CMOR, using regular cdms to write out files"
+            )
         if not os.path.exists(A.results_dir):
             os.makedirs(A.results_dir)
         end_tc = tc[-1].add(1, cdtime.Month)
