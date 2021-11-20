@@ -9,11 +9,11 @@ import os
 vars = ['rlut']
 
 # START AND END DATES FOR CLIMATOLOGY
-start = '2003-01' 
+start = '2003-01'
 end = '2018-12'
 
 # INPUT DATASET - CAN BE MODEL OR OBSERVATIONS
-infile = '$INPUT_DIR$/PCMDIobs2/atmos/mon/rlut/CERES-EBAF-4-1/gn/v20200707/rlut_mon_CERES-EBAF-4-1_BE_gn_v20200707_200301-201812.nc'
+infile = '$INPUT_DIR$/obs4MIPs_PCMDI_monthly/NASA-LaRC/CERES-EBAF-4-1/mon/rlut/gn/v20210727/rlut_mon_CERES-EBAF-4-1_PCMDI_gn_200301-201812.nc'
 
 # DIRECTORY WHERE TO PUT RESULTS
 outfile = '$OUTPUT_DIR$/climo/rlut_mon_CERES-EBAF-4-1_BE_gn.nc'

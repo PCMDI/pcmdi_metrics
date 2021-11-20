@@ -1,0 +1,35 @@
+{
+    "pr": {
+        "CMORPH-1-0": {
+            "CMIP_CMOR_TABLE": "A3hr",
+            "MD5sum": "f75e094b1dd3994f37ace62975f5c357",
+            "RefTrackingDate": "Thu Aug  5 17:12:55 2021",
+            "filename": "pr_3hr_CMORPH-1-0_PCMDI_200101010000-201912312100.xml",
+            "period": "200101010000-201912312100",
+            "shape": "(55512, 90, 180)",
+            "template": "NOAA/CMORPH-1-0/3hr/pr/2x2/v20210730/pr_3hr_CMORPH-1-0_PCMDI_200101010000-201912312100.xml",
+            "version": "latest"
+        },
+        "IMERG-v06B-Final": {
+            "CMIP_CMOR_TABLE": "A3hr",
+            "MD5sum": "38e390eb8a2e7aca04956c02c1d86049",
+            "RefTrackingDate": "Thu Aug  5 17:13:13 2021",
+            "filename": "pr_3hr_IMERG-v06B-Final_PCMDI_200101010000-201912312100.xml",
+            "period": "200101010000-201912312100",
+            "shape": "(55512, 90, 180)",
+            "template": "NASA-GSFC/IMERG-v06B-Final/3hr/pr/2x2/v20210730/pr_3hr_IMERG-v06B-Final_PCMDI_200101010000-201912312100.xml",
+            "version": "latest"
+        },
+        "TRMM-3B43v-7": {
+            "CMIP_CMOR_TABLE": "A3hr",
+            "MD5sum": "34dcdee0429c326bae6d69e2b254b376",
+            "RefTrackingDate": "Thu Aug  5 17:13:34 2021",
+            "filename": "pr_3hr_TRMM-3B43v-7_PCMDI_199801010000-201912312100.xml",
+            "period": "199801010000-201912312100",
+            "shape": "(64280, 90, 180)",
+            "template": "NASA-GSFC/TRMM-3B43v-7/3hr/pr/2x2/v20210730/pr_3hr_TRMM-3B43v-7_PCMDI_199801010000-201912312100.xml",
+            "version": "latest"
+        },
+        "alternate1": "TRMM-3B43v-7"
+    }
+}

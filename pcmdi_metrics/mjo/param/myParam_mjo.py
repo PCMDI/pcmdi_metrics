@@ -4,17 +4,17 @@ import os
 
 
 def find_latest(path):
-    dir_list = [p for p in glob.glob(path+"/v????????")]
+    dir_list = [p for p in glob.glob(path + "/v????????")]
     return sorted(dir_list)[-1]
 
 
 # =================================================
 # Background Information
 # -------------------------------------------------
-mip = 'cmip5'
-exp = 'historical'
-frequency = 'da'
-realm = 'atm'
+mip = "cmip5"
+exp = "historical"
+frequency = "da"
+realm = "atm"
 
 # =================================================
 # Miscellaneous
@@ -29,11 +29,11 @@ update_json = False
 # =================================================
 # Observation
 # -------------------------------------------------
-reference_data_name = 'GPCP-1-3'
-reference_data_path = '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/day/pr/GPCP-1-3/gn/v20200707/pr_day_GPCP-1-3_BE_gn_v20200707_19961002-20170101.nc'  # noqa
+reference_data_name = "GPCP-1-3"
+reference_data_path = "/p/user_pub/PCMDIobs/PCMDIobs2/atmos/day/pr/GPCP-1-3/gn/v20200707/pr_day_GPCP-1-3_BE_gn_v20200707_19961002-20170101.nc"  # noqa
 
-varOBS = 'pr'
-ObsUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
+varOBS = "pr"
+ObsUnitsAdjust = (True, "multiply", 86400.0, "mm d-1")  # kg m-2 s-1 to mm day-1
 
 """
 reference_data_name = 'GPCP-1-2'
@@ -49,19 +49,20 @@ oeyear = 2010
 # Models
 # -------------------------------------------------
 modpath = os.path.join(
-    find_latest('/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest'),
-    '%(mip)/%(exp)/%(realm)/day/%(variable)',
-    '%(mip).%(exp).%(model).%(realization).day.%(variable).xml')
+    find_latest("/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest"),
+    "%(mip)/%(exp)/%(realm)/day/%(variable)",
+    "%(mip).%(exp).%(model).%(realization).day.%(variable).xml",
+)
 
-modnames = ['ACCESS1-0']
+modnames = ["ACCESS1-0"]
 # modnames = 'all'
 
-realization = 'r1i1p1'
+realization = "r1i1p1"
 # realization = '*'
 
-varModel = 'pr'
-ModUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
-units = 'mm/d'
+varModel = "pr"
+ModUnitsAdjust = (True, "multiply", 86400.0, "mm d-1")  # kg m-2 s-1 to mm day-1
+units = "mm/d"
 
 msyear = 1985
 meyear = 2004
@@ -70,12 +71,11 @@ meyear = 2004
 # Output
 # -------------------------------------------------
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-pmprdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2'
+pmprdir = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2"
 
 if debug:
-    pmprdir = '/work/lee1043/imsi/result_test'
+    pmprdir = "/work/lee1043/imsi/result_test"
 
 results_dir = os.path.join(
-    pmprdir,
-    '%(output_type)', 'mjo',
-    '%(mip)', '%(exp)', '%(case_id)')
+    pmprdir, "%(output_type)", "mjo", "%(mip)", "%(exp)", "%(case_id)"
+)

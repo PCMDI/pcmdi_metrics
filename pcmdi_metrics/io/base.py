@@ -1,20 +1,21 @@
-import os
-import logging
-import json
-import genutil
-import cdat_info
-import cdutil
-import MV2
-import cdms2
-import hashlib
-import numpy
-from collections import OrderedDict, Mapping
-import pcmdi_metrics
-import cdp.cdp_io
-from pcmdi_metrics import LOG_LEVEL
 import copy
+import hashlib
+import json
+import logging
+import os
 import re
+from collections import Mapping, OrderedDict
 
+import cdat_info
+import cdms2
+import cdp.cdp_io
+import cdutil
+import genutil
+import MV2
+import numpy
+
+import pcmdi_metrics
+from pcmdi_metrics import LOG_LEVEL
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
@@ -78,13 +79,12 @@ def update_dict(d, u):
 
 
 def generateProvenance():
-    extra_pairs = {
-        'matplotlib': 'matplotlib ',
-        'scipy': 'scipy'
-    }
+    extra_pairs = {"matplotlib": "matplotlib ", "scipy": "scipy"}
     prov = cdat_info.generateProvenance(extra_pairs=extra_pairs)
     prov["packages"]["PMP"] = pcmdi_metrics.version.__git_tag_describe__
-    prov["packages"]["PMPObs"] = "See 'References' key below, for detailed obs provenance information."
+    prov["packages"][
+        "PMPObs"
+    ] = "See 'References' key below, for detailed obs provenance information."
     return prov
 
 
@@ -95,14 +95,15 @@ def sort_human(input_list):
         return int(text) if text.isdigit() else text
 
     def alphanum(key):
-        return [convert(c) for c in re.split('([0-9]+)', key)]
+        return [convert(c) for c in re.split("([0-9]+)", key)]
+
     lst.sort(key=alphanum)
     return lst
 
 
 def scrap(data, axis=0):
     originalOrder = data.getOrder(ids=True)
-    if axis not in ['x', 'y', 'z', 't'] and not isinstance(axis, int):
+    if axis not in ["x", "y", "z", "t"] and not isinstance(axis, int):
         order = "({})...".format(axis)
     else:
         order = "{}...".format(axis)
@@ -113,7 +114,7 @@ def scrap(data, axis=0):
         tmp = new[i]
         if not isinstance(tmp, (float, numpy.float)) and tmp.mask.all():
             a = new[:i]
-            b = new[i + 1:]
+            b = new[i + 1 :]
             if b.shape[0] == 0:
                 new = a
             else:
@@ -130,22 +131,20 @@ def scrap(data, axis=0):
 class CDMSDomainsEncoder(json.JSONEncoder):
     def default(self, o):
         components = o.components()[0].kargs
-        args = ','.join(
-            ['%s=%s' % (key, val) for key, val in components.items()]
-        )
-        return {o.id: 'cdutil.region.domain(%s)' % args}
+        args = ",".join(["%s=%s" % (key, val) for key, val in components.items()])
+        return {o.id: "cdutil.region.domain(%s)" % args}
 
 
 class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
     def __init__(self, root, file_template, file_mask_template=None):
-        genutil.StringConstructor.__init__(self, root + '/' + file_template)
+        genutil.StringConstructor.__init__(self, root + "/" + file_template)
         self.target_grid = None
         self.mask = None
         self.target_mask = None
-        self.regrid_tool = 'esmf'
+        self.regrid_tool = "esmf"
         self.file_mask_template = file_mask_template
         self.root = root
-        self.type = ''
+        self.type = ""
         self.setup_cdms2()
 
     def __call__(self):
@@ -153,12 +152,12 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         if self.type in path:
             return path
         else:
-            return path + '.' + self.type
+            return path + "." + self.type
 
     def read(self):
         pass
 
-    def write(self, data, type='json', mode="w", *args, **kwargs):
+    def write(self, data, type="json", mode="w", *args, **kwargs):
         self.type = type.lower()
         file_name = self()
         dir_path = os.path.split(file_name)[0]
@@ -168,25 +167,24 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                 os.makedirs(dir_path)
             except Exception:
                 logging.getLogger("pcmdi_metrics").error(
-                    'Could not create output directory: %s' % dir_path)
+                    "Could not create output directory: %s" % dir_path
+                )
 
-        if self.type == 'json':
+        if self.type == "json":
             json_version = float(
-                kwargs.get(
-                    "json_version",
-                    data.get(
-                        "json_version",
-                        3.0)))
+                kwargs.get("json_version", data.get("json_version", 3.0))
+            )
             json_structure = kwargs.get(
-                "json_structure", data.get(
-                    "json_structure", None))
+                "json_structure", data.get("json_structure", None)
+            )
             if json_version >= 3.0 and json_structure is None:
                 raise Exception(
-                    "json_version 3.0 of PMP requires json_structure to be passed" +
-                    "to the write function or part of the dictionary dumped")
+                    "json_version 3.0 of PMP requires json_structure to be passed"
+                    + "to the write function or part of the dictionary dumped"
+                )
             for k in ["json_structure", "json_version"]:
                 if k in kwargs:
-                    del(kwargs[k])
+                    del kwargs[k]
             data["json_version"] = json_version
             data["json_structure"] = json_structure
 
@@ -199,32 +197,32 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             update_dict(out_dict, data)
             if "yaml" in out_dict["provenance"]["conda"]:
                 out_dict["YAML"] = out_dict["provenance"]["conda"]["yaml"]
-                del(out_dict["provenance"]["conda"]["yaml"])
-#               out_dict = OrderedDict({"provenance": generateProvenance()})
+                del out_dict["provenance"]["conda"]["yaml"]
+            #               out_dict = OrderedDict({"provenance": generateProvenance()})
 
             json.dump(out_dict, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 
-        elif self.type in ['asc', 'ascii', 'txt']:
-            f = open(file_name, 'w')
+        elif self.type in ["asc", "ascii", "txt"]:
+            f = open(file_name, "w")
             for key in list(data.keys()):
-                f.write('%s %s\n' % (key, data[key]))
+                f.write("%s %s\n" % (key, data[key]))
             f.close()
 
-        elif self.type == 'nc':
-            f = cdms2.open(file_name, 'w')
+        elif self.type == "nc":
+            f = cdms2.open(file_name, "w")
             f.write(data, *args, **kwargs)
             f.metrics_git_sha1 = pcmdi_metrics.__git_sha1__
             f.uvcdat_version = cdat_info.get_version()
             f.close()
 
         else:
-            logging.getLogger("pcmdi_metrics").error('Unknown type: %s' % type)
-            raise RuntimeError('Unknown type: %s' % type)
+            logging.getLogger("pcmdi_metrics").error("Unknown type: %s" % type)
+            raise RuntimeError("Unknown type: %s" % type)
 
         logging.getLogger("pcmdi_metrics").info(
-            'Results saved to a %s file: %s' %
-            (type, file_name))
+            "Results saved to a %s file: %s" % (type, file_name)
+        )
 
     def write_cmec(self, *args, **kwargs):
         """Converts json file to cmec compliant format."""
@@ -237,7 +235,8 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             f.close()
         except Exception:
             logging.getLogger("pcmdi_metrics").error(
-                'Could not load metrics file: %s' % file_name)
+                "Could not load metrics file: %s" % file_name
+            )
 
         # create dimensions
         cmec_data = {"DIMENSIONS": {}, "SCHEMA": {}}
@@ -273,26 +272,27 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                         tmp_dict = recursive_replace(new_dict[key], extra_fields)
                         new_dict[key] = tmp_dict
                     # convert string metrics to float
-                    if (isinstance(new_dict[key], str)):
+                    if isinstance(new_dict[key], str):
                         new_dict[key] = float(new_dict[key])
             return new_dict
 
         extra_fields = [
-                        "source",
-                        "metadata",
-                        "units",
-                        "SimulationDescription",
-                        "InputClimatologyFileName",
-                        "InputClimatologyMD5",
-                        "InputRegionFileName",
-                        "InputRegionMD5",
-                        "best_matching_model_eofs__cor",
-                        "best_matching_model_eofs__rms",
-                        "best_matching_model_eofs__tcor_cbf_vs_eof_pc",
-                        "period",
-                        "target_model_eofs",
-                        "analysis_time_window_end_year",
-                        "analysis_time_window_start_year"]
+            "source",
+            "metadata",
+            "units",
+            "SimulationDescription",
+            "InputClimatologyFileName",
+            "InputClimatologyMD5",
+            "InputRegionFileName",
+            "InputRegionMD5",
+            "best_matching_model_eofs__cor",
+            "best_matching_model_eofs__rms",
+            "best_matching_model_eofs__tcor_cbf_vs_eof_pc",
+            "period",
+            "target_model_eofs",
+            "analysis_time_window_end_year",
+            "analysis_time_window_start_year",
+        ]
         # clean up formatting in RESULTS section
         cmec_data["RESULTS"] = recursive_replace(data["RESULTS"], extra_fields)
 
@@ -307,15 +307,12 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                     if first_key == "attributes":
                         first_key = list(json_dict.items())[1][0]
                     dim = json_structure[level]
-                    if dim == "statistic":
-                        keys = [key for key in json_dict]
-                        keylist[dim] = {"indices": keys}
-                    else:
-                        keys = {key: {} for key in json_dict if key != "attributes"}
-                        keylist[dim] = keys
+                    keys = {key: {} for key in json_dict if key != "attributes"}
+                    keylist[dim] = keys
                     json_dict = json_dict[first_key]
                 level += 1
             return keylist
+
         dimensions = get_dimensions(cmec_data["RESULTS"].copy(), data["json_structure"])
         cmec_data["DIMENSIONS"]["dimensions"] = dimensions
 
@@ -324,28 +321,26 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         json.dump(cmec_data, f_cmec, cls=CDMSDomainsEncoder, *args, **kwargs)
         f_cmec.close()
         logging.getLogger("pcmdi_metrics").info(
-            'CMEC results saved to a %s file: %s' %
-            ('json', cmec_file_name))
+            "CMEC results saved to a %s file: %s" % ("json", cmec_file_name)
+        )
 
-    def get(self, var, var_in_file=None,
-            region={}, *args, **kwargs):
+    def get(self, var, var_in_file=None, region={}, *args, **kwargs):
         self.variable = var
         self.var_from_file = self.extract_var_from_file(
-            var, var_in_file, *args, **kwargs)
+            var, var_in_file, *args, **kwargs
+        )
 
         self.region = region
         if self.region is None:
             self.region = {}
-        self.value = self.region.get('value', None)
+        self.value = self.region.get("value", None)
 
         if self.is_masking():
             self.var_from_file = self.mask_var(self.var_from_file)
 
-        self.var_from_file = \
-            self.set_target_grid_and_mask_in_var(self.var_from_file)
+        self.var_from_file = self.set_target_grid_and_mask_in_var(self.var_from_file)
 
-        self.var_from_file = \
-            self.set_domain_in_var(self.var_from_file, self.region)
+        self.var_from_file = self.set_domain_in_var(self.var_from_file, self.region)
 
         return self.var_from_file
 
@@ -353,10 +348,10 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         if var_in_file is None:
             var_in_file = var
         # self.extension = 'nc'
-        var_file = cdms2.open(self(), 'r')
+        var_file = cdms2.open(self(), "r")
         for att in ["var_in_file,", "varInFile"]:
             if att in kwargs:
-                del(kwargs[att])
+                del kwargs[att]
         extracted_var = var_file(var_in_file, *args, **kwargs)
         var_file.close()
         return extracted_var
@@ -380,10 +375,14 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
     def set_target_grid_and_mask_in_var(self, var):
         if self.target_grid is not None:
-            var = var.regrid(self.target_grid, regridTool=self.regrid_tool,
-                             regridMethod=self.regrid_method, coordSys='deg',
-                             diag={}, periodicity=1
-                             )
+            var = var.regrid(
+                self.target_grid,
+                regridTool=self.regrid_tool,
+                regridMethod=self.regrid_method,
+                coordSys="deg",
+                diag={},
+                periodicity=1,
+            )
 
             if self.target_mask is not None:
                 if self.target_mask.shape != var.shape:
@@ -395,7 +394,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         return var
 
     def set_domain_in_var(self, var, region):
-        domain = region.get('domain', None)
+        domain = region.get("domain", None)
         if domain is not None:
             if isinstance(domain, dict):
                 var = var(**domain)
@@ -408,36 +407,37 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
     def set_file_mask_template(self):
         if isinstance(self.file_mask_template, basestring):
-            self.file_mask_template = Base(self.root, self.file_mask_template,
-                                           {'domain': self.region.get('domain', None)})
+            self.file_mask_template = Base(
+                self.root,
+                self.file_mask_template,
+                {"domain": self.region.get("domain", None)},
+            )
 
     def get_mask_from_var(self, var):
         try:
-            o_mask = self.file_mask_template.get('sftlf')
+            o_mask = self.file_mask_template.get("sftlf")
         except Exception:
-            o_mask = cdutil.generateLandSeaMask(
-                var, regridTool=self.regrid_tool).filled(1.) * 100.
+            o_mask = (
+                cdutil.generateLandSeaMask(var, regridTool=self.regrid_tool).filled(1.0)
+                * 100.0
+            )
             o_mask = MV2.array(o_mask)
             o_mask.setAxis(-1, var.getLongitude())
             o_mask.setAxis(-2, var.getLatitude())
         return o_mask
 
-    def set_target_grid(self, target, regrid_tool='esmf',
-                        regrid_method='linear'):
+    def set_target_grid(self, target, regrid_tool="esmf", regrid_method="linear"):
         self.regrid_tool = regrid_tool
         self.regrid_method = regrid_method
-        if target == '2.5x2.5':
-            self.target_grid = cdms2.createUniformGrid(
-                -88.875, 72, 2.5, 0, 144, 2.5
-            )
+        if target == "2.5x2.5":
+            self.target_grid = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
             self.target_grid_name = target
         elif cdms2.isGrid(target):
             self.target_grid = target
             self.target_grid_name = target
         else:
-            logging.getLogger("pcmdi_metrics").error(
-                'Unknown grid: %s' % target)
-            raise RuntimeError('Unknown grid: %s' % target)
+            logging.getLogger("pcmdi_metrics").error("Unknown grid: %s" % target)
+            raise RuntimeError("Unknown grid: %s" % target)
 
     def setup_cdms2(self):
         cdms2.setNetcdfShuffleFlag(0)  # Argument is either 0 or 1
@@ -445,7 +445,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         cdms2.setNetcdfDeflateLevelFlag(0)  # Argument is int between 0 and 9
 
     def hash(self, block_size=65536):
-        self_file = open(self(), 'rb')
+        self_file = open(self(), "rb")
         buffer = self_file.read(block_size)
         hasher = hashlib.md5()
         while len(buffer) > 0:
@@ -456,7 +456,6 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
 
 class JSONs(object):
-
     def addDict2Self(self, json_dict, json_struct, json_version):
         if float(json_version) == 1.0:
             V = json_dict[list(json_dict.keys())[0]]
@@ -464,8 +463,9 @@ class JSONs(object):
                 m = V[model]
                 for ref in list(m.keys()):
                     aref = m[ref]
-                    if not(isinstance(aref, dict) and
-                           "source" in aref):  # not an obs key
+                    if not (
+                        isinstance(aref, dict) and "source" in aref
+                    ):  # not an obs key
                         continue
                     reals = list(aref.keys())
                     src = reals.pop(reals.index("source"))
@@ -494,17 +494,14 @@ class JSONs(object):
                                         domain = "global"
                                     sp = new_key.split("_")
                                     stat = "_".join(sp[:-1])
-                                    stat_dict = areal2[region2 +
-                                                       domain].get(stat, {})
+                                    stat_dict = areal2[region2 + domain].get(stat, {})
                                     season = sp[-1]
                                     season_dict = stat_dict
                                     stat_dict[season] = reg[k]
                                     if stat in areal2[region2 + domain]:
-                                        areal2[region2 +
-                                               domain][stat].update(stat_dict)
+                                        areal2[region2 + domain][stat].update(stat_dict)
                                     else:
-                                        areal2[region2 +
-                                               domain][stat] = stat_dict
+                                        areal2[region2 + domain][stat] = stat_dict
                         # Now we can replace the realization with the correctly
                         # formatted one
                         aref[real] = areal2
@@ -516,8 +513,9 @@ class JSONs(object):
                 m = V[model]
                 for ref in list(m.keys()):
                     aref = m[ref]
-                    if not(isinstance(aref, dict) and
-                           "source" in aref):  # not an obs key
+                    if not (
+                        isinstance(aref, dict) and "source" in aref
+                    ):  # not an obs key
                         continue
                     reals = list(aref.keys())
                     src = reals.pop(reals.index("source"))
@@ -539,7 +537,7 @@ class JSONs(object):
                                 #    stat_dict[stat].update(season_dict)
                                 # else:
                                 #    stat_dict[stat]=season_dict
-                                del(reg[k])
+                                del reg[k]
                                 if stat in reg:
                                     reg[stat].update(season_dict)
                                 else:
@@ -554,19 +552,30 @@ class JSONs(object):
     def get_axes_values_recursive(self, depth, max_depth, data, values):
         for k in list(data.keys()):
             if k not in self.ignored_keys and (
-                    isinstance(data[k], dict) or depth == max_depth):
+                isinstance(data[k], dict) or depth == max_depth
+            ):
                 values[depth].add(k)
                 if depth != max_depth:
                     self.get_axes_values_recursive(
-                        depth + 1, max_depth, data[k], values)
+                        depth + 1, max_depth, data[k], values
+                    )
 
     def get_array_values_from_dict_recursive(self, out, ids, nms, axval, axes):
         if len(axes) > 0:
             for i, val in enumerate(axes[0][:]):
-                self.get_array_values_from_dict_recursive(out, list(ids) +
-                                                          [i, ], list(nms) +
-                                                          [axes[0].id], list(axval) +
-                                                          [val, ], axes[1:])
+                self.get_array_values_from_dict_recursive(
+                    out,
+                    list(ids)
+                    + [
+                        i,
+                    ],
+                    list(nms) + [axes[0].id],
+                    list(axval)
+                    + [
+                        val,
+                    ],
+                    axes[1:],
+                )
         else:
             vals = self.data
             for k in axval:
@@ -579,8 +588,14 @@ class JSONs(object):
             except Exception:
                 out[tuple(ids)] = 9.99e20
 
-    def __init__(self, files=[], structure=[], ignored_keys=[],
-                 oneVariablePerFile=True, sortHuman=True):
+    def __init__(
+        self,
+        files=[],
+        structure=[],
+        ignored_keys=[],
+        oneVariablePerFile=True,
+        sortHuman=True,
+    ):
         self.json_version = 3.0
         self.json_struct = structure
         self.data = {}
@@ -610,7 +625,7 @@ class JSONs(object):
             else:
                 varnm = var["id"]
                 if "level" in var:
-                    varnm += "-%i" % int(var["level"] / 100.)
+                    varnm += "-%i" % int(var["level"] / 100.0)
             tmp_dict = {varnm: tmp_dict["RESULTS"]}
         else:
             tmp_dict = tmp_dict["RESULTS"]
@@ -634,8 +649,7 @@ class JSONs(object):
         axes = []
         for a in self.json_struct:
             values.append(set())
-        self.get_axes_values_recursive(
-            0, len(self.json_struct) - 1, self.data, values)
+        self.get_axes_values_recursive(0, len(self.json_struct) - 1, self.data, values)
         autoBounds = cdms2.getAutoBounds()
         cdms2.setAutoBounds("off")
         if self.sortHuman:
@@ -649,11 +663,11 @@ class JSONs(object):
         return self.axes
 
     def __call__(self, merge=[], **kargs):
-        """ Returns the array of values"""
+        """Returns the array of values"""
         # First clean up kargs
         if "merge" in kargs:
             merge = kargs["merge"]
-            del(kargs["merge"])
+            del kargs["merge"]
         order = None
         axes_ids = self.getAxisIds()
         if "order" in kargs:
@@ -661,20 +675,24 @@ class JSONs(object):
             # Otherwise it's an out order keyword
             if "order" not in axes_ids:
                 order = kargs["order"]
-                del(kargs["order"])
+                del kargs["order"]
         ab = cdms2.getAutoBounds()
         cdms2.setAutoBounds("off")
         axes = self.getAxisList()
         if merge != []:
             if isinstance(merge[0], str):
-                merge = [merge, ]
+                merge = [
+                    merge,
+                ]
         if merge != []:
             for merger in merge:
                 for merge_axis_id in merger:
                     if merge_axis_id not in axes_ids:
                         raise RuntimeError(
                             "You requested to merge axis is '{}' which is not valid. Axes: {}".format(
-                                merge_axis_id, axes_ids))
+                                merge_axis_id, axes_ids
+                            )
+                        )
         sh = []
         ids = []
         used_ids = []
@@ -689,10 +707,13 @@ class JSONs(object):
         # for now assume all keys means restriction on dims
         if not isinstance(merge, (list, tuple)):
             raise RuntimeError(
-                "merge keyword must be a list of dimensions to merge together")
+                "merge keyword must be a list of dimensions to merge together"
+            )
 
         if len(merge) > 0 and not isinstance(merge[0], (list, tuple)):
-            merge = [merge, ]
+            merge = [
+                merge,
+            ]
 
         for axis_id in kargs:
             if axis_id not in ids:
@@ -703,18 +724,18 @@ class JSONs(object):
                 value = [value]
             if not isinstance(value, (list, tuple, slice)):
                 raise TypeError(
-                    "Invalid subsetting type for axis '%s', axes can only be subsetted by string,list or slice" %
-                    axis_id)
+                    "Invalid subsetting type for axis '%s', axes can only be subsetted by string,list or slice"
+                    % axis_id
+                )
             if isinstance(value, slice):
-                axes[index] = axes[index].subAxis(
-                    value.start, value.stop, value.step)
+                axes[index] = axes[index].subAxis(value.start, value.stop, value.step)
                 sh[index] = len(axes[index])
             else:  # ok it's a list
                 for v in value:
                     if v not in axes[index][:]:
                         raise ValueError(
-                            "Unkwown value '%s' for axis '%s'" %
-                            (v, axis_id))
+                            "Unkwown value '%s' for axis '%s'" % (v, axis_id)
+                        )
                 axis = cdms2.createAxis(value, id=axes[index].id)
                 axes[index] = axis
                 sh[index] = len(axis)

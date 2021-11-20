@@ -1,0 +1,42 @@
+{
+    "settings": {
+        "name": "mean_climate",
+        "driver": "cmec/mean_climate/pmp_mean_climate_driver.sh",
+        "async": null,
+        "long_name": "PMP mean climate metrics",
+        "description": "Mean climate metrics for earth system models",
+        "runtime": {"PCMDI Metrics Package": "1.2", "CDAT": "8.2.1"}
+    },
+    "varlist": {
+        "pr": {
+            "long_name": "precipitation_flux",
+            "units": "kg m-2 s-2",
+            "frequency": "mon"
+        }
+    },
+    "obslist": {
+        "GPCP-2-3": {
+            "version": "2-3",
+            "long_name": "GPCP 2-3 Merged Precipitation",
+            "description": "GPCP 2.3 prepared for PMPObs (ODS-v2.1.0)"
+        }
+    },
+    "default_parameters": {
+        "case_id": "mean_climate_demo",
+        "test_data_set": [
+            "ACCESS1-0", "CanCM4"
+        ],
+        "vars": ["rlut"],
+        "filename_template": "CMIP5_demo_clims/cmip5.historical.%(model_version).r1i1p1.mon.%(variable).198101-200512.AC.v20200426.nc",
+        "sftlf_filename_template": "sftlf_%(model_version).nc",
+        "generate_sftlf": true,
+        "reference_data_set": ["all"],
+        "target_grid": "2.5x2.5",
+        "regrid_tool": "regrid2",
+        "regrid_method": "linear",
+        "regrid_tool_ocn": "esmf",
+        "regrid_method_ocn": "linear",
+        "save_test_clims": false,
+        "filename_output_template": "%(model_version)_%(variable)_%(region).nc"
+    }
+}

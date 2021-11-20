@@ -1,0 +1,16 @@
+{
+    "module": {
+        "name": "PMP",
+        "long_name": "PCMDI Metrics Package",
+        "description": "The PCMDI Metrics Package (PMP) provides 'quick-look' objective comparisons of Earth System Models (ESMs) with one another and available observations",
+        "runtime": {"PCMDI Metrics Package": "1.2", "CDAT": "8.2.1"}
+    },
+    "contents": [
+        "cmec/mov/pmp_mov.json",
+        "cmec/mjo/pmp_mjo.json",
+        "cmec/mean_climate/pmp_mean_climate.json",
+        "cmec/diurnal_cycle/pmp_diurnal_cycle.json",
+        "cmec/monsoon_wang/pmp_monsoon_wang.json",
+        "cmec/monsoon_sperber/pmp_monsoon_sperber.json"
+    ]
+}

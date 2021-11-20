@@ -1,0 +1,46 @@
+{
+    "settings": {
+        "name": "mjo",
+        "driver": "cmec/mjo/pmp_mjo_driver.sh",
+        "async": null,
+        "long_name": "PMP Madden-Julian Oscillation Metrics",
+        "description": "Madden-Julian Oscillation metrics for earth system models",
+        "runtime": {"PCMDI Metrics Package": "1.2", "CDAT": "8.2.1"}
+    },
+    "varlist": {
+        "pr": {
+            "long_name": "Precipitation",
+            "units": "kg m-2 s-1",
+            "frequency": "day"
+        }
+    },
+    "obslist": {
+        "GPCP-IP": {
+            "version": "IP",
+            "long_name": "GPCP IP Merged Precipitation",
+            "description": "GPCP daily data prepared for PMPObs (ODS-v2.1.0)"
+        }
+    },
+    "default_parameters": {
+        "case_id": "mjo_demo",
+        "modnames": [
+            "GISS-E2-H"
+        ],
+        "modpath": "CMIP5_demo_timeseries/historical/atmos/day/pr/pr_day_%(model)_historical_r6i1p1_20000101-20051231.nc",
+        "varModel": "pr",
+        "msyear": 2000,
+        "meyear": 2002,
+        "ModUnitsAdjust": "(True, 'multiply', 86400.0, 'mm d-1')",
+        "units": "mm/day",
+        "reference_data_name": "GPCP-IP",
+        "reference_data_path": "PCMDIobs2/atmos/day/pr/GPCP-IP/gn/v20200719/pr.day.GPCP-IP.BE.gn.v20200719.1998-1999.xml",
+        "varOBS": "pr",
+        "ObsUnitsAdjust": "(True, 'multiply', 86400.0, 'mm d-1')",
+        "osyear": 1998,
+        "oeyear": 1999,
+        "units": "mm/d",
+        "nc_out": false,
+        "plot": false,
+        "update_json": false
+    }
+}
