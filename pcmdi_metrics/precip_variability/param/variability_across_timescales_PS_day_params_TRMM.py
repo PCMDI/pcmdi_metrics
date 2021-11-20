@@ -13,9 +13,10 @@ indir = "/work/ahn6/obs/TRMM/TRMM_3B42.7/day/"
 infile = "TRMM_3B42.7_*.nc"
 
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-pmpdir = "/work/ahn6/pr/variability_across_timescales/power_spectrum/"+ver+"_test/"
+pmpdir = "/work/ahn6/pr/variability_across_timescales/power_spectrum/" + ver + "_test/"
 results_dir = os.path.join(
-    pmpdir, '%(output_type)', 'precip_variability', '%(mip)', '%(case_id)')
+    pmpdir, "%(output_type)", "precip_variability", "%(mip)", "%(case_id)"
+)
 
 xmldir = "./xml_obs/"
 if not (os.path.isdir(xmldir)):
