@@ -16,9 +16,10 @@ indir = "/p/user_pub/PCMDIobs/obs4MIPs/NASA-GSFC/IMERG-v06B-Final/3hr/pr/2x2/v20
 infile = "*.nc"
 
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-pmpdir = "/work/ahn6/pr/variability_across_timescales/power_spectrum/"+ver+"_test/"
+pmpdir = "/work/ahn6/pr/variability_across_timescales/power_spectrum/" + ver + "_test/"
 results_dir = os.path.join(
-    pmpdir, '%(output_type)', 'precip_variability', '%(mip)', '%(case_id)')
+    pmpdir, "%(output_type)", "precip_variability", "%(mip)", "%(case_id)"
+)
 
 xmldir = "./xml_obs/"
 if not (os.path.isdir(xmldir)):
