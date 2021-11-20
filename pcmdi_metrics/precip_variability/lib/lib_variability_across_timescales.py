@@ -1,15 +1,14 @@
-import math
-import sys
-
 import cdms2 as cdms
+import MV2 as MV
 import cdutil
 import genutil
-import MV2 as MV
 import numpy as np
-import pandas as pd
 from regrid2 import Horizontal
 from scipy import signal
 from scipy.stats import chi2
+import pandas as pd
+import math
+import sys
 
 
 # ==================================================================================
@@ -75,7 +74,8 @@ def ClimAnom(d, ntd, syr, eyr):
                 )
             )
             yrtmpseg = MV.reshape(
-                yrtmp, (int(yrtmp.shape[0] / ntd), ntd, yrtmp.shape[1], yrtmp.shape[2])
+                yrtmp, (int(yrtmp.shape[0] / ntd), ntd,
+                        yrtmp.shape[1], yrtmp.shape[2])
             )
             if yrtmpseg.shape[0] == 365:
                 dseg[iyr, 0:59] = yrtmpseg[0:59]
@@ -99,7 +99,8 @@ def ClimAnom(d, ntd, syr, eyr):
                 )
             )
             yrtmpseg = MV.reshape(
-                yrtmp, (int(yrtmp.shape[0] / ntd), ntd, yrtmp.shape[1], yrtmp.shape[2])
+                yrtmp, (int(yrtmp.shape[0] / ntd), ntd,
+                        yrtmp.shape[1], yrtmp.shape[2])
             )
             dseg[iyr] = yrtmpseg
 
@@ -127,7 +128,8 @@ def ClimAnom(d, ntd, syr, eyr):
             if yrtmp.shape[0] == 365 * ntd:
                 anom = np.append(
                     anom,
-                    (np.delete(dseg[iyr], 59, axis=0) - np.delete(clim, 59, axis=0)),
+                    (np.delete(dseg[iyr], 59, axis=0) -
+                     np.delete(clim, 59, axis=0)),
                 )
             else:
                 anom = np.append(anom, (dseg[iyr] - clim))
@@ -249,7 +251,8 @@ def rednoise(VAR, NUMHAR, R1):
     RN = []
     for K in range(NUMHAR):
         RN.append(
-            WHITENOISE * (TOP / (BOT - R1X2 * float(math.cos(math.pi * K / NUMHAR))))
+            WHITENOISE *
+            (TOP / (BOT - R1X2 * float(math.cos(math.pi * K / NUMHAR))))
         )
     return RN
 
@@ -286,42 +289,28 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
     Output
     - psdmfm: Domain and Frequency averaged of spectral power (json)
     """
-    domains = [
-        "Total_50S50N",
-        "Ocean_50S50N",
-        "Land_50S50N",
-        "Total_30N50N",
-        "Ocean_30N50N",
-        "Land_30N50N",
-        "Total_30S30N",
-        "Ocean_30S30N",
-        "Land_30S30N",
-        "Total_50S30S",
-        "Ocean_50S30S",
-        "Land_50S30S",
-    ]
+    domains = ["Total_50S50N", "Ocean_50S50N", "Land_50S50N",
+               "Total_30N50N", "Ocean_30N50N", "Land_30N50N",
+               "Total_30S30N", "Ocean_30S30N", "Land_30S30N",
+               "Total_50S30S", "Ocean_50S30S", "Land_50S30S"]
 
     if ntd == 8:  # 3-hourly data
         frqs_forced = ["semi-diurnal", "diurnal", "semi-annual", "annual"]
-        frqs_unforced = [
-            "sub-daily",
-            "synoptic",
-            "sub-seasonal",
-            "seasonal-annual",
-            "interannual",
-        ]
+        frqs_unforced = ["sub-daily", "synoptic",
+                         "sub-seasonal", "seasonal-annual", "interannual"]
     elif ntd == 1:  # daily data
         frqs_forced = ["semi-annual", "annual"]
-        frqs_unforced = ["synoptic", "sub-seasonal", "seasonal-annual", "interannual"]
+        frqs_unforced = ["synoptic", "sub-seasonal",
+                         "seasonal-annual", "interannual"]
     else:
-        sys.exit("ERROR: ntd " + ntd + " is not defined!")
+        sys.exit("ERROR: ntd "+ntd+" is not defined!")
 
     if frc == "forced":
         frqs = frqs_forced
     elif frc == "unforced":
         frqs = frqs_unforced
     else:
-        sys.exit("ERROR: frc " + frc + " is not defined!")
+        sys.exit("ERROR: frc "+frc+" is not defined!")
 
     mask = cdutil.generateLandSeaMask(d[0])
     d, mask2 = genutil.grower(d, mask)
@@ -340,48 +329,52 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
             dmask = d
 
         if "50S50N" in dom:
-            am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
+            am = cdutil.averager(
+                dmask(latitude=(-50, 50)), axis="xy")
         if "30N50N" in dom:
-            am = cdutil.averager(dmask(latitude=(30, 50)), axis="xy")
+            am = cdutil.averager(
+                dmask(latitude=(30, 50)), axis="xy")
         if "30S30N" in dom:
-            am = cdutil.averager(dmask(latitude=(-30, 30)), axis="xy")
+            am = cdutil.averager(
+                dmask(latitude=(-30, 30)), axis="xy")
         if "50S30S" in dom:
-            am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy")
+            am = cdutil.averager(
+                dmask(latitude=(-50, -30)), axis="xy")
         am = np.array(am)
 
         for frq in frqs:
-            if frq == "semi-diurnal":  # pr=0.5day
+            if (frq == 'semi-diurnal'):  # pr=0.5day
                 idx = prdday_to_frqidx(0.5, frequency, ntd)
                 amfm = am[idx]
-            elif frq == "diurnal":  # pr=1day
+            elif (frq == 'diurnal'):  # pr=1day
                 idx = prdday_to_frqidx(1, frequency, ntd)
                 amfm = am[idx]
-            elif frq == "semi-annual":  # 180day=<pr=<183day
+            elif (frq == 'semi-annual'):  # 180day=<pr=<183day
                 idx2 = prdday_to_frqidx(180, frequency, ntd)
                 idx1 = prdday_to_frqidx(183, frequency, ntd)
-                amfm = np.amax(am[idx1 : idx2 + 1])
-            elif frq == "annual":  # 360day=<pr=<366day
+                amfm = np.amax(am[idx1:idx2+1])
+            elif (frq == 'annual'):  # 360day=<pr=<366day
                 idx2 = prdday_to_frqidx(360, frequency, ntd)
                 idx1 = prdday_to_frqidx(366, frequency, ntd)
-                amfm = np.amax(am[idx1 : idx2 + 1])
-            elif frq == "sub-daily":  # pr<1day
+                amfm = np.amax(am[idx1:idx2+1])
+            elif (frq == 'sub-daily'):  # pr<1day
                 idx1 = prdday_to_frqidx(1, frequency, ntd)
-                amfm = cdutil.averager(am[idx1 + 1 :], weights="unweighted")
-            elif frq == "synoptic":  # 1day=<pr<20day
+                amfm = cdutil.averager(am[idx1+1:], weights='unweighted')
+            elif (frq == 'synoptic'):  # 1day=<pr<20day
                 idx2 = prdday_to_frqidx(1, frequency, ntd)
                 idx1 = prdday_to_frqidx(20, frequency, ntd)
-                amfm = cdutil.averager(am[idx1 + 1 : idx2 + 1], weights="unweighted")
-            elif frq == "sub-seasonal":  # 20day=<pr<90day
+                amfm = cdutil.averager(am[idx1+1:idx2+1], weights='unweighted')
+            elif (frq == 'sub-seasonal'):  # 20day=<pr<90day
                 idx2 = prdday_to_frqidx(20, frequency, ntd)
                 idx1 = prdday_to_frqidx(90, frequency, ntd)
-                amfm = cdutil.averager(am[idx1 + 1 : idx2 + 1], weights="unweighted")
-            elif frq == "seasonal-annual":  # 90day=<pr<365day
+                amfm = cdutil.averager(am[idx1+1:idx2+1], weights='unweighted')
+            elif (frq == 'seasonal-annual'):  # 90day=<pr<365day
                 idx2 = prdday_to_frqidx(90, frequency, ntd)
                 idx1 = prdday_to_frqidx(365, frequency, ntd)
-                amfm = cdutil.averager(am[idx1 + 1 : idx2 + 1], weights="unweighted")
-            elif frq == "interannual":  # 365day=<pr
+                amfm = cdutil.averager(am[idx1+1:idx2+1], weights='unweighted')
+            elif (frq == 'interannual'):  # 365day=<pr
                 idx2 = prdday_to_frqidx(365, frequency, ntd)
-                amfm = cdutil.averager(am[: idx2 + 1], weights="unweighted")
+                amfm = cdutil.averager(am[:idx2+1], weights='unweighted')
             psdmfm[dom][frq] = amfm.tolist()
 
     print("Complete domain and frequency average of spectral power")
