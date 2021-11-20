@@ -19,5 +19,3 @@ do
     wait
   fi
 done
-
-
