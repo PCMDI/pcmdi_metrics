@@ -1,7 +1,7 @@
 # Precip variability across time scales
 
 ## Driver code:
-./variability_across_timescales_PS_3hr_driver.py   
+./variability_across_timescales_PS_driver.py   
 
 ## Parameter codes:
 ./param/variability_across_timescales_PS_3hr_params_IMERG.py   
