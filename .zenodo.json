@@ -1,38 +1,43 @@
 {
     "description": "<p>Self contained packages to run PCMDI Metrics</p>",
-    "license": "BSD-3-Clause License",
+    "access_right": "open",
+    "license": "cc-by",
     "title": "PCMDI/pcmdi_metrics: PMP Version 2.1.1",
     "version": "v2.1.1",
     "upload_type": "software",
-    "publication_date": "2021-11-16",
+    "publication_date": "2021-11-17",
     "creators": [
         {
+            "name": "Lee, Jiwoo",
             "affiliation": "Lawrence Livermore National Laboratory",
-            "name": "Jiwoo Lee"
+            "orcid": "0000-0002-0016-7199"
         },
         {
+            "name": "Gleckler, Peter",
             "affiliation": "Lawrence Livermore National Laboratory",
-            "name": "Peter Gleckler"
+            "orcid": "0000-0003-2816-6224"
         },
         {
-            "affiliation": "Lawrence Livermore National Laboratory",
-            "name": "Ana Ordonez"
+            "name": "Ordonez, Ana",
+            "affiliation": "Lawrence Livermore National Laboratory"
         },
         {
+            "name": "Ahn, Min-Seop",
             "affiliation": "Lawrence Livermore National Laboratory",
-            "name": "Min-Seop Ahn"
+            "orcid": "0000-0002-3308-7793"
         },
         {
+            "name": "Ullrich, Paul",
             "affiliation": "UC Davis",
-            "name": "Paul Ullrich"
+            "orcid": "0000-0003-4118-4590"
         },
         {
-            "affiliation": "Lawrence Livermore National Laboratory",
-            "name": "Tom Vo"
+            "name": "Vo, Tom",
+            "affiliation": "Lawrence Livermore National Laboratory"
         },
         {
-            "affiliation": "Lawrence Livermore National Laboratory",
-            "name": "Jason Boutte"
+            "name": "Boutte, Jason",
+            "affiliation": "Lawrence Livermore National Laboratory"
         }
     ]
 }
