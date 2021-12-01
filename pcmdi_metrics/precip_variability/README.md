@@ -1,5 +1,7 @@
 # Precip variability across time scales
 
+Reference: Ahn, M.-S., P. J. Gleckler, J. Lee, A. G. Pendergrass, and C. Jakob, 2021: Benchmarking Simulated Precipitation Variability across Timescales. Journal of Climate (under review)
+
 ## Driver code:
 - `variability_across_timescales_PS_driver.py`
 
