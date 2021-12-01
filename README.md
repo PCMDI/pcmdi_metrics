@@ -34,9 +34,11 @@ Some installation support for CMIP participating modeling groups is available: p
 PMP versions
 ------------
 
+- v2.2 - New metric implemented: precipitation variability across time scale
+- v2.1.2 - Minor update
 - v2.1.1 - Simplified dependent libraries and CI process
 - v2.1.0 - CMEC driver interfaced added.
-- v2.0 - New capabilities implemented: ENSO metrics, demos, documentations.
+- v2.0 - New capabilities: ENSO metrics, demos, and documentations.
 - v1.2 - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal cycle and intermittency of precipitation, sample monsoon metrics.
 - v1.1.2 - Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added.   Extensive provenance information incorporated into json files.
 - v1.1 - First public release, emphasizing climatological statistics, with development branches for ENSO and regional monsoon precipitation indices.
