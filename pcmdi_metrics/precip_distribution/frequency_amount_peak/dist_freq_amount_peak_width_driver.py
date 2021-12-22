@@ -22,7 +22,6 @@
 # See github.com/apendergrass for the latest info and updates.
 ##########################################################################
 import os
-import sys
 import cdms2 as cdms
 import MV2 as MV
 import numpy as np
@@ -73,11 +72,12 @@ outdir_template = param.process_templated_argument("results_dir")
 outdir = StringConstructor(str(outdir_template(
     output_type='%(output_type)',
     mip=mip, case_id=case_id)))
+
 for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
     if not os.path.exists(outdir(output_type=output_type)):
         try:
             os.makedirs(outdir(output_type=output_type))
-        except:
+        except FileExistsError:
             pass
     print(outdir(output_type=output_type))
 
@@ -172,11 +172,11 @@ for id, dat in enumerate(data):
 
         # Calculate the metrics for the distribution at each grid point
         for i in range(drg.shape[2]):
-            for j in range(drg.shape[1]):                
+            for j in range(drg.shape[1]):
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(
                     ppdfmap[:, j, i], bincrates)
                 pdfpeakmap[im, j, i] = rainpeak
-                pdfwidthmap[im, j, i] = rainwidth        
+                pdfwidthmap[im, j, i] = rainwidth
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(
                     pamtmap[:, j, i], bincrates)
                 amtpeakmap[im, j, i] = rainpeak

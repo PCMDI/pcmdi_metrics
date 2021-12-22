@@ -25,8 +25,8 @@ print('outdir: ', outpath)
 cmec = param.cmec
 
 var = 'pdf'
-res = '90x45'
-# res = '180x90'
+# res = '90x45'
+res = '180x90'
 # res = '360x180'
 # res = '720x360'
 
@@ -41,6 +41,7 @@ file_list = sorted(glob.glob(os.path.join(
 #     modpath, 'dist_freq.amount_regrid.'+res+'_*E3SM-1-0*.nc')))
 
 for model in file_list:
+    
     dist_mod = cdms.open(model)[var]
     ver = model.split("/")[6]
     mip = model.split("/")[9]

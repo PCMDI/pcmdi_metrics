@@ -140,7 +140,7 @@ def MakeDists(pdata, binl):
     ndmat = np.tile(np.expand_dims(
         np.nansum(n, axis=0), axis=0), (len(bins)-1, 1, 1))
     thisppdfmap = n/ndmat
-    thisppdfmap_tn = n
+    thisppdfmap_tn = thisppdfmap*ndmat
     # Iterate back over the bins and add up all the precip - this will be the rain amount distribution.
     # This step is probably the limiting factor and might be able to be made more efficient - I had a clever trick in matlab, but it doesn't work in python
     testpamtmap = np.empty(thisppdfmap.shape)
@@ -186,7 +186,7 @@ def CalcRainMetrics(pdistin, bincrates):
             thisp = theps[i]
             overp = (pdist-thisp)*(pdist > thisp)
             thefrac[i] = sum(overp)/sum(pdist)
-        ptilerain = np.interp(-tile, -thefrac, theps)        
+        ptilerain = np.interp(-tile, -thefrac, theps)
         # ptilerain/db ### check this against rain amount plot
         # ptilerain*100/db ### check this against rain frequency plot
         diffraintile = (pdist-ptilerain)
@@ -205,12 +205,12 @@ def CalcRainMetrics(pdistin, bincrates):
         beforelast = alli[0][len(alli[0])-1]
         noiend = np.nonzero(diffraintile[beforelast:(
             len(diffraintile)-1)] < 0)+beforelast
-        
-        #msahn For treat noiend=[]
+
+        # msahn For treat noiend=[]
         if bool(noiend.any()) is False:
             rainwidth = 0
             r2 = r1
-        else:        
+        else:
             afterlast = noiend[0][0]
             decinds = range(beforelast, afterlast+1)
             if np.all(np.diff(-diffraintile[decinds]) > 0):
@@ -220,7 +220,7 @@ def CalcRainMetrics(pdistin, bincrates):
             # Bin width - needed to normalize the rain amount distribution
             db = (bincrates[2]-bincrates[1])/bincrates[1]
             rainwidth = (r2-r1)*db+1
-            
+
         return rainpeak, rainwidth, (imax[0][0], pmax), (r1, r2, ptilerain)
     else:
         return 0, 0, (0, pmax), (0, 0, 0)
@@ -275,7 +275,7 @@ def AvgDomain(d):
 
 
 # ==================================================================================
-def AvgDomain3ClustPdfAmt(d):
+def AvgDomain3ClustPdfAmt(d, res):
     """
     Domain average with clustering grids
     Input
@@ -285,7 +285,8 @@ def AvgDomain3ClustPdfAmt(d):
     """
 
     indir = '/work/ahn6/pr/intensity_frequency_distribution/frequency_amount_peak/v20210717'
-    file = 'cluster3_pdf.amt_regrid.90x45_TRMM.nc'
+    # file = 'cluster3_pdf.amt_regrid.90x45_TRMM.nc'
+    file = 'cluster3_pdf.amt_regrid.'+res+'_IMERG_ALL.nc'
     cluster = cdms.open(os.path.join(indir, file))['cluster_nb']
 
     domains = ["HR_50S50N", "MR_50S50N", "LR_50S50N",

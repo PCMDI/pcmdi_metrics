@@ -104,10 +104,11 @@ def oneyear(thisyear, missingthresh):
                 # For the case, pfrac does not reach 1 (maybe due to regridding)
                 # prdays[ij,ik] = np.where(y >= 1)[0][0]
                 prdays[ij, ik] = np.nanargmax(y)
-                if np.diff(cum_sum[:,ij,ik])[-1] >= 1:
+                if np.diff(cum_sum[:, ij, ik])[-1] >= 1:
                     prdays_gt_1mm[ij, ik] = prdays[ij, ik]
                 else:
-                    prdays_gt_1mm[ij, ik] = np.where(np.diff(np.concatenate([z, cum_sum[:,ij,ik]])) < 1)[0][0]
+                    prdays_gt_1mm[ij, ik] = np.where(
+                        np.diff(np.concatenate([z, cum_sum[:, ij, ik]])) < 1)[0][0]
 
     ndhy[np.where(missingfrac > missingthresh)] = np.nan
     prdyfrac = prdays/nd
