@@ -7,9 +7,114 @@ import genutil
 import MV2 as MV
 import numpy as np
 import pandas as pd
+import pcmdi_metrics
+
 from regrid2 import Horizontal
 from scipy import signal
 from scipy.stats import chi2
+
+
+# ==================================================================================
+def precip_variability_across_timescale(file, syr, eyr, mip, var, fac, nperseg, noverlap):
+
+    psdmfm = {"RESULTS": {}}
+
+    if mip == "obs":
+        model = file.split("/")[-1].split(".")[2]
+        dat = model
+    else:
+        model = file.split("/")[-1].split(".")[2]
+        ens = file.split("/")[-1].split(".")[3]
+        dat = model + "." + ens
+
+    f = cdms.open(file)
+    cal = f[var].getTime().calendar
+    if "360" in cal:
+        ldy = 30
+    else:
+        ldy = 31
+    print(dat, cal)
+    print('syr, eyr:', syr, eyr)
+    for iyr in range(syr, eyr + 1):
+        print(iyr)
+        do = (
+            f(
+                var,
+                time=(
+                    str(iyr) + "-1-1 0:0:0",
+                    str(iyr) + "-12-" + str(ldy) + " 23:59:59",
+                ),
+            )
+            * float(fac)
+        )
+
+        # Regridding
+        rgtmp = Regrid2deg(do)
+        if iyr == syr:
+            drg = copy.deepcopy(rgtmp)
+        else:
+            drg = MV.concatenate((drg, rgtmp))
+        print(iyr, drg.shape)
+
+    f.close()
+
+    # Anomaly
+    if dfrq == "day":
+        ntd = 1
+    elif dfrq == "3hr":
+        ntd = 8
+    else:
+        sys.exit("ERROR: dfrq " + dfrq + " is not defined!")
+    clim, anom = ClimAnom(drg, ntd, syr, eyr)
+
+    # Power spectum of total
+    freqs, ps, rn, sig95 = Powerspectrum(drg, nperseg, noverlap)
+    # Domain & Frequency average
+    psdmfm_forced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "forced")
+    # Write data (nc file)
+    outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc"
+    with cdms.open(
+        os.path.join(outdir(output_type="diagnostic_results"), outfilename), "w"
+    ) as out:
+        out.write(freqs, id="freqs")
+        out.write(ps, id="power")
+        out.write(rn, id="rednoise")
+        out.write(sig95, id="sig95")
+
+    # Power spectum of anomaly
+    freqs, ps, rn, sig95 = Powerspectrum(anom, nperseg, noverlap)
+    # Domain & Frequency average
+    psdmfm_unforced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "unforced")
+    # Write data (nc file)
+    outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
+    with cdms.open(
+        os.path.join(outdir(output_type="diagnostic_results"), outfilename), "w"
+    ) as out:
+        out.write(freqs, id="freqs")
+        out.write(ps, id="power")
+        out.write(rn, id="rednoise")
+        out.write(sig95, id="sig95")
+
+    # Write data (json file)
+    psdmfm["RESULTS"][dat] = {}
+    psdmfm["RESULTS"][dat]["forced"] = psdmfm_forced
+    psdmfm["RESULTS"][dat]["unforced"] = psdmfm_unforced
+
+    outfilename = (
+        "PS_pr." + str(dfrq) + "_regrid.180x90_area.freq.mean_" + dat + ".json"
+    )
+    JSON = pcmdi_metrics.io.base.Base(
+        outdir(output_type="metrics_results"), outfilename
+    )
+    JSON.write(
+        psdmfm,
+        json_structure=["model+realization", "variability type", "domain", "frequency"],
+        sort_keys=True,
+        indent=4,
+        separators=(",", ": "),
+    )
+    if cmec:
+        JSON.write_cmec(indent=4, separators=(",", ": "))
 
 
 # ==================================================================================
