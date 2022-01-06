@@ -19,6 +19,8 @@ from pcmdi_metrics.precip_variability.lib import (
     Regrid2deg,
 )
 
+print('test - jwlee')
+
 # Read parameters
 P = PMPParser()
 P = AddParserArgument(P)
@@ -54,12 +56,10 @@ for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
             pass
     print(outdir(output_type=output_type))
 
-# Read data
+# Check data in advance
 file_list = sorted(glob.glob(os.path.join(modpath, "*" + mod + "*")))
-f = []
 data = []
 for ifl in range(len(file_list)):
-    f.append(cdms.open(file_list[ifl]))
     file = file_list[ifl]
     if mip == "obs":
         model = file.split("/")[-1].split(".")[2]
@@ -68,23 +68,36 @@ for ifl in range(len(file_list)):
         model = file.split("/")[-1].split(".")[2]
         ens = file.split("/")[-1].split(".")[3]
         data.append(model + "." + ens)
-print("# of data:", len(data))
+print("# of data:", len(file_list))
 print(data)
 
 # Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
 psdmfm = {"RESULTS": {}}
 syr = prd[0]
 eyr = prd[1]
-for id, dat in enumerate(data):
-    cal = f[id][var].getTime().calendar
+
+for ifl in range(len(file_list)):
+    file = file_list[ifl]   
+    if mip == "obs":
+        model = file.split("/")[-1].split(".")[2]
+        dat = model
+    else:
+        model = file.split("/")[-1].split(".")[2]
+        ens = file.split("/")[-1].split(".")[3]
+        dat = model + "." + ens
+
+    f = cdms.open(file)
+    cal = f[var].getTime().calendar
     if "360" in cal:
         ldy = 30
     else:
         ldy = 31
     print(dat, cal)
+    print('syr, eyr:', syr, eyr)
     for iyr in range(syr, eyr + 1):
+        print(iyr)
         do = (
-            f[id](
+            f(
                 var,
                 time=(
                     str(iyr) + "-1-1 0:0:0",
