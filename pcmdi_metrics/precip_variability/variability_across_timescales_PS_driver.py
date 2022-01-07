@@ -58,14 +58,14 @@ for file in file_list:
         ens = file.split("/")[-1].split(".")[3]
         data.append(model + "." + ens)
 
-print("# of data:", len(file_list))
-print(data)
+print("Number of datasets:", len(file_list))
+print("Dataset:", data)
 
 # Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
 syr = prd[0]
 eyr = prd[1]
 
-for file in file_list:
+for dat, file in zip(data, file_list):
     precip_variability_across_timescale(
-        file, syr, eyr, dfrq, mip, var, fac, nperseg, noverlap, outdir, cmec
+        file, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, outdir, cmec
     )

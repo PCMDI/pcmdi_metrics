@@ -18,7 +18,7 @@ import pcmdi_metrics
 
 # ==================================================================================
 def precip_variability_across_timescale(
-    file, syr, eyr, dfrq, mip, var, fac, nperseg, noverlap, outdir, cmec
+    file, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, outdir, cmec
 ):
     """
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
