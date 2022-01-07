@@ -26,14 +26,6 @@ def precip_variability_across_timescale(
 
     psdmfm = {"RESULTS": {}}
 
-    if mip == "obs":
-        model = file.split("/")[-1].split(".")[2]
-        dat = model
-    else:
-        model = file.split("/")[-1].split(".")[2]
-        ens = file.split("/")[-1].split(".")[3]
-        dat = model + "." + ens
-
     f = cdms.open(file)
     cal = f[var].getTime().calendar
     if "360" in cal:
