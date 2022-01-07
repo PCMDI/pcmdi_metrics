@@ -1,25 +1,25 @@
-import math
-import sys
 import copy
+import math
+import os
+import sys
 
 import cdms2 as cdms
 import cdutil
 import genutil
-import os
 import MV2 as MV
 import numpy as np
 import pandas as pd
-import pcmdi_metrics
-
 from regrid2 import Horizontal
 from scipy import signal
 from scipy.stats import chi2
 
+import pcmdi_metrics
+
 
 # ==================================================================================
 def precip_variability_across_timescale(
-    file, syr, eyr, dfrq,
-    mip, var, fac, nperseg, noverlap, outdir, cmec):
+    file, syr, eyr, dfrq, mip, var, fac, nperseg, noverlap, outdir, cmec
+):
     """
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
     """
@@ -41,7 +41,7 @@ def precip_variability_across_timescale(
     else:
         ldy = 31
     print(dat, cal)
-    print('syr, eyr:', syr, eyr)
+    print("syr, eyr:", syr, eyr)
     for iyr in range(syr, eyr + 1):
         print(iyr)
         do = (

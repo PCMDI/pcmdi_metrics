@@ -11,8 +11,6 @@ from pcmdi_metrics.precip_variability.lib import (
     precip_variability_across_timescale,
 )
 
-print('test - jwlee - 6')
-
 # Read parameters
 P = PMPParser()
 P = AddParserArgument(P)
@@ -69,7 +67,5 @@ eyr = prd[1]
 
 for file in file_list:
     precip_variability_across_timescale(
-        file, syr, eyr, dfrq,
-        mip, var, fac, nperseg, noverlap,
-        outdir, cmec
+        file, syr, eyr, dfrq, mip, var, fac, nperseg, noverlap, outdir, cmec
     )
