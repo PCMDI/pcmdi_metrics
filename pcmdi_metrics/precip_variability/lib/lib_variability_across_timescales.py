@@ -1,9 +1,11 @@
 import math
 import sys
+import copy
 
 import cdms2 as cdms
 import cdutil
 import genutil
+import os
 import MV2 as MV
 import numpy as np
 import pandas as pd
@@ -15,7 +17,12 @@ from scipy.stats import chi2
 
 
 # ==================================================================================
-def precip_variability_across_timescale(file, syr, eyr, mip, var, fac, nperseg, noverlap):
+def precip_variability_across_timescale(
+    file, syr, eyr, dfrq,
+    mip, var, fac, nperseg, noverlap, outdir, cmec):
+    """
+    Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
+    """
 
     psdmfm = {"RESULTS": {}}
 
