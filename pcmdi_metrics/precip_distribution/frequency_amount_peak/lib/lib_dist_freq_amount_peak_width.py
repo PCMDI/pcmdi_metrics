@@ -3,7 +3,10 @@ import MV2 as MV
 import cdutil
 import genutil
 import numpy as np
+import regionmask
+import xarray as xr
 from regrid2 import Horizontal
+from shapely.geometry import Polygon, MultiPolygon
 import sys
 
 
@@ -133,12 +136,20 @@ def MakeDists(pdata, binl):
         for ilat in range(nlat):
             # this is the histogram - we'll get frequency from this
             thisn, thisbin = np.histogram(pdata[:, ilat, ilon], bins)
-            n[:, ilat, ilon] = thisn
+            # n[:, ilat, ilon] = thisn
+            thmiss=0.7 # threshold for missing grid
+            if np.sum(thisn)>=nd*thmiss:
+                n[:, ilat, ilon] = thisn
+            else:
+                n[:, ilat, ilon] = np.nan
+                
             # these are the bin locations. we'll use these for the amount dist
             binno[:, ilat, ilon] = np.digitize(pdata[:, ilat, ilon], bins)
     # Calculate the number of days with non-missing data, for normalization
     ndmat = np.tile(np.expand_dims(
-        np.nansum(n, axis=0), axis=0), (len(bins)-1, 1, 1))
+       # np.nansum(n, axis=0), axis=0), (len(bins)-1, 1, 1))
+       np.sum(n, axis=0), axis=0), (len(bins)-1, 1, 1))
+        
     thisppdfmap = n/ndmat
     thisppdfmap_tn = thisppdfmap*ndmat
     # Iterate back over the bins and add up all the precip - this will be the rain amount distribution.
@@ -223,7 +234,8 @@ def CalcRainMetrics(pdistin, bincrates):
 
         return rainpeak, rainwidth, (imax[0][0], pmax), (r1, r2, ptilerain)
     else:
-        return 0, 0, (0, pmax), (0, 0, 0)
+        # return 0, 0, (0, pmax), (0, 0, 0)
+        return np.nan, np.nan, (np.nan, pmax), (np.nan, np.nan, np.nan)
 
 
 # ==================================================================================
@@ -275,17 +287,116 @@ def AvgDomain(d):
 
 
 # ==================================================================================
-def AvgDomain3ClustPdfAmt(d, res):
+def CalcMetricsDomain(pdf_tn, amt, months, bincrates):
     """
-    Domain average with clustering grids
     Input
-    - d: cdms variable
+    - pdf_tn: pdf with total number
+    - amt: amount distribution
+    - months: month list of the input data
+    - bincrates: bin centers
     Output
-    - ddom: Domain averaged data (json)
-    """
+    - metrics: metrics for each domain
+    - pdfdom: pdf for each domain
+    - amtdom: amt for each domain
+    """    
+    domains = ["Total_50S50N", "Ocean_50S50N", "Land_50S50N",
+               "Total_30N50N", "Ocean_30N50N", "Land_30N50N",
+               "Total_30S30N", "Ocean_30S30N", "Land_30S30N",
+               "Total_50S30S", "Ocean_50S30S", "Land_50S30S"]
 
+    pdf_tn_sum = cdutil.averager(pdf_tn, axis=1, weights='unweighted', action='sum')
+    pdf_tn_sum = MV.repeat(MV.reshape(pdf_tn_sum,(pdf_tn_sum.shape[0],-1,pdf_tn_sum.shape[1],pdf_tn_sum.shape[2])),repeats=pdf_tn.shape[1],axis=1)
+    pdf_tn_sum.setAxisList(pdf_tn.getAxisList())
+    
+    amt_tn = amt*pdf_tn_sum
+    amt_tn.setAxisList(pdf_tn.getAxisList())    
+    
+    domsum = []
+    for d in [pdf_tn, amt_tn, pdf_tn_sum]:
+    
+        mask = cdutil.generateLandSeaMask(d[0,0])
+        d, mask2 = genutil.grower(d, mask)
+        d_ocean = MV.masked_where(mask2 == 1.0, d)
+        d_land = MV.masked_where(mask2 == 0.0, d)
+
+        ddom = []
+        for dom in domains:
+
+            if "Ocean" in dom:
+                dmask = d_ocean
+            elif "Land" in dom:
+                dmask = d_land
+            else:
+                dmask = d
+
+            if "50S50N" in dom:
+                am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy", action='sum')
+            if "30N50N" in dom:
+                am = cdutil.averager(dmask(latitude=(30, 50)), axis="xy", action='sum')
+            if "30S30N" in dom:
+                am = cdutil.averager(dmask(latitude=(-30, 30)), axis="xy", action='sum')
+            if "50S30S" in dom:
+                am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy", action='sum')
+
+            ddom.append(am)
+
+        domsum.append(ddom)
+     
+    domsum = MV.reshape(domsum,(-1,len(domains),am.shape[0],am.shape[1]))
+    print(domsum.shape)
+    
+    pdfdom = domsum[0]/domsum[2]
+    amtdom = domsum[1]/domsum[2]
+    axdom = cdms.createAxis(range(len(domains)), id='domains')
+    pdfdom.setAxisList((axdom,am.getAxis(0),am.getAxis(1)))    
+    amtdom.setAxisList((axdom,am.getAxis(0),am.getAxis(1)))    
+    
+    metrics={}
+    metrics['pdfpeak']={}
+    metrics['pdfwidth']={}
+    metrics['amtpeak']={}
+    metrics['amtwidth']={}
+    for idm, dom in enumerate(domains):
+        metrics['pdfpeak'][dom]={'CalendarMonths':{}}
+        metrics['pdfwidth'][dom]={'CalendarMonths':{}}
+        metrics['amtpeak'][dom]={'CalendarMonths':{}}
+        metrics['amtwidth'][dom]={'CalendarMonths':{}}
+        for im, mon in enumerate(months):
+            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:            
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[idm,im,:], bincrates)
+                metrics['pdfpeak'][dom][mon] = rainpeak
+                metrics['pdfwidth'][dom][mon] = rainwidth        
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(amtdom[idm,im,:], bincrates)
+                metrics['amtpeak'][dom][mon] = rainpeak
+                metrics['amtwidth'][dom][mon] = rainwidth 
+            else:
+                calmon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+                imn=calmon.index(mon)+1
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[idm,im,:], bincrates)
+                metrics['pdfpeak'][dom]['CalendarMonths'][imn] = rainpeak
+                metrics['pdfwidth'][dom]['CalendarMonths'][imn] = rainwidth        
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(amtdom[idm,im,:], bincrates)
+                metrics['amtpeak'][dom]['CalendarMonths'][imn] = rainpeak
+                metrics['amtwidth'][dom]['CalendarMonths'][imn] = rainwidth 
+                
+    print("Complete domain metrics")
+    return metrics, pdfdom, amtdom
+
+
+# ==================================================================================
+def CalcMetricsDomain3Clust(pdf_tn, amt, months, bincrates, res):
+    """
+    Input
+    - pdf_tn: pdf with total number
+    - amt: amount distribution
+    - months: month list of the input data
+    - bincrates: bin centers
+    Output
+    - metrics: metrics for each domain
+    - pdfdom: pdf for each domain
+    - amtdom: amt for each domain
+    """ 
     indir = '/work/ahn6/pr/intensity_frequency_distribution/frequency_amount_peak/v20210717'
-    # file = 'cluster3_pdf.amt_regrid.90x45_TRMM.nc'
     file = 'cluster3_pdf.amt_regrid.'+res+'_IMERG_ALL.nc'
     cluster = cdms.open(os.path.join(indir, file))['cluster_nb']
 
@@ -294,35 +405,218 @@ def AvgDomain3ClustPdfAmt(d, res):
                "HR_30S30N", "MR_30S30N", "LR_30S30N",
                "HR_50S30S", "MR_50S30S", "LR_50S30S"]
 
-    d, mask2 = genutil.grower(d, cluster)
-    d_HR = MV.masked_where(mask2 != 0, d)
-    d_MR = MV.masked_where(mask2 != 1, d)
-    d_LR = MV.masked_where(mask2 != 2, d)
+    pdf_tn_sum = cdutil.averager(pdf_tn, axis=1, weights='unweighted', action='sum')
+    pdf_tn_sum = MV.repeat(MV.reshape(pdf_tn_sum,(pdf_tn_sum.shape[0],-1,pdf_tn_sum.shape[1],pdf_tn_sum.shape[2])),repeats=pdf_tn.shape[1],axis=1)
+    pdf_tn_sum.setAxisList(pdf_tn.getAxisList())
+    
+    amt_tn = amt*pdf_tn_sum
+    amt_tn.setAxisList(pdf_tn.getAxisList())    
+        
+    domsum = []
+    for d in [pdf_tn, amt_tn, pdf_tn_sum]:
+    
+        d, mask2 = genutil.grower(d, cluster)
+        d_HR = MV.masked_where(mask2 != 0, d)
+        d_MR = MV.masked_where(mask2 != 1, d)
+        d_LR = MV.masked_where(mask2 != 2, d)
 
-    ddom = {}
-    for dom in domains:
+        ddom = []
+        for dom in domains:
 
-        if "HR" in dom:
-            dmask = d_HR
-        elif "MR" in dom:
-            dmask = d_MR
-        elif "LR" in dom:
-            dmask = d_LR
+            if "HR" in dom:
+                dmask = d_HR
+            elif "MR" in dom:
+                dmask = d_MR
+            elif "LR" in dom:
+                dmask = d_LR
 
-        if "50S50N" in dom:
-            am = cdutil.averager(
-                dmask(latitude=(-50, 50)), axis="xy")
-        if "30N50N" in dom:
-            am = cdutil.averager(
-                dmask(latitude=(30, 50)), axis="xy")
-        if "30S30N" in dom:
-            am = cdutil.averager(
-                dmask(latitude=(-30, 30)), axis="xy")
-        if "50S30S" in dom:
-            am = cdutil.averager(
-                dmask(latitude=(-50, -30)), axis="xy")
+            if "50S50N" in dom:
+                am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy", action='sum')
+            if "30N50N" in dom:
+                am = cdutil.averager(dmask(latitude=(30, 50)), axis="xy", action='sum')
+            if "30S30N" in dom:
+                am = cdutil.averager(dmask(latitude=(-30, 30)), axis="xy", action='sum')
+            if "50S30S" in dom:
+                am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy", action='sum')
 
-        ddom[dom] = am.tolist()
+            ddom.append(am)
 
-    print("Complete domain average with clustering grids")
-    return ddom
+        domsum.append(ddom)
+        
+    domsum = MV.reshape(domsum,(-1,len(domains),am.shape[0],am.shape[1]))
+    print(domsum.shape)
+    
+    pdfdom = domsum[0]/domsum[2]
+    amtdom = domsum[1]/domsum[2]
+    axdom = cdms.createAxis(range(len(domains)), id='domains')
+    pdfdom.setAxisList((axdom,am.getAxis(0),am.getAxis(1)))    
+    amtdom.setAxisList((axdom,am.getAxis(0),am.getAxis(1)))    
+    
+    metrics={}
+    metrics['pdfpeak']={}
+    metrics['pdfwidth']={}
+    metrics['amtpeak']={}
+    metrics['amtwidth']={}
+    for idm, dom in enumerate(domains):
+        metrics['pdfpeak'][dom]={'CalendarMonths':{}}
+        metrics['pdfwidth'][dom]={'CalendarMonths':{}}
+        metrics['amtpeak'][dom]={'CalendarMonths':{}}
+        metrics['amtwidth'][dom]={'CalendarMonths':{}}
+        for im, mon in enumerate(months):
+            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:            
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[idm,im,:], bincrates)
+                metrics['pdfpeak'][dom][mon] = rainpeak
+                metrics['pdfwidth'][dom][mon] = rainwidth        
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(amtdom[idm,im,:], bincrates)
+                metrics['amtpeak'][dom][mon] = rainpeak
+                metrics['amtwidth'][dom][mon] = rainwidth 
+            else:
+                calmon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+                imn=calmon.index(mon)+1
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[idm,im,:], bincrates)
+                metrics['pdfpeak'][dom]['CalendarMonths'][imn] = rainpeak
+                metrics['pdfwidth'][dom]['CalendarMonths'][imn] = rainwidth        
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(amtdom[idm,im,:], bincrates)
+                metrics['amtpeak'][dom]['CalendarMonths'][imn] = rainpeak
+                metrics['amtwidth'][dom]['CalendarMonths'][imn] = rainwidth 
+                                     
+    print("Complete clustering domain metrics")
+    return metrics, pdfdom, amtdom            
+            
+            
+# ==================================================================================
+def CalcMetricsDomainAR6(pdf_tn, amt, months, bincrates):
+    """
+    Input
+    - pdf_tn: pdf with total number
+    - amt: amount distribution
+    - months: month list of the input data
+    - bincrates: bin centers
+    Output
+    - metrics: metrics for each domain
+    - pdfdom: pdf for each domain
+    - amtdom: amt for each domain
+    """   
+    ar6_all = regionmask.defined_regions.ar6.all
+    ar6_land = regionmask.defined_regions.ar6.land
+    ar6_ocean = regionmask.defined_regions.ar6.ocean
+
+    land_names = ar6_land.names
+    land_abbrevs = ar6_land.abbrevs
+
+    ocean_names = [ 'Arctic-Ocean', 
+                    'Arabian-Sea', 'Bay-of-Bengal', 'Equatorial-Indian-Ocean', 'S.Indian-Ocean',
+                    'N.Pacific-Ocean', 'N.W.Pacific-Ocean', 'N.E.Pacific-Ocean', 'Pacific-ITCZ',
+                    'S.W.Pacific-Ocean', 'S.E.Pacific-Ocean', 'N.Atlantic-Ocean', 'N.E.Atlantic-Ocean', 
+                    'Atlantic-ITCZ', 'S.Atlantic-Ocean', 'Southern-Ocean', 
+                  ]
+    ocean_abbrevs = [ 'ARO', 
+                      'ARS', 'BOB', 'EIO', 'SIO', 
+                      'NPO', 'NWPO', 'NEPO', 'PITCZ',
+                      'SWPO', 'SEPO', 'NAO', 'NEAO', 
+                      'AITCZ', 'SAO', 'SOO', 
+                    ]
+
+    names = land_names + ocean_names
+    abbrevs = land_abbrevs + ocean_abbrevs
+
+    regions={}
+    for reg in abbrevs:
+        if reg in land_abbrevs or reg == 'ARO' or reg == 'ARS' or reg == 'BOB' or reg == 'EIO' or reg == 'SIO':
+            vertices = ar6_all[reg].polygon
+        elif reg == 'NPO':
+            r1=[[132,20], [132,25], [157,50], [180,59.9], [180,25]]
+            r2=[[-180,25], [-180,65], [-168,65], [-168,52.5], [-143,58], [-130,50], [-125.3,40]]
+            vertices = MultiPolygon([Polygon(r1), Polygon(r2)])
+        elif reg == 'NWPO':
+            vertices = Polygon([[139.5,0], [132,5], [132,20], [180,25], [180,0]])
+        elif reg == 'NEPO':
+            vertices = Polygon([[-180,15], [-180,25], [-125.3,40], [-122.5,33.8], [-104.5,16]])
+        elif reg == 'PITCZ':
+            vertices = Polygon([[-180,0], [-180,15], [-104.5,16], [-83.4,2.2], [-83.4,0]])
+        elif reg == 'SWPO':
+            r1 = Polygon([[155,-30], [155,-10], [139.5,0], [180,0], [180,-30]])
+            r2 = Polygon([[-180,-30], [-180,0], [-135,-10], [-135,-30]])
+            vertices = MultiPolygon([Polygon(r1), Polygon(r2)])
+        elif reg == 'SEPO':
+            vertices = Polygon([[-135,-30], [-135,-10], [-180,0], [-83.4,0], [-83.4,-10], [-74.6,-20], [-78,-41]])
+        elif reg == 'NAO':
+            vertices = Polygon([[-70,25], [-77,31], [-50,50], [-50,58], [-42,58], [-38,62], [-10,62], [-10,40]])
+        elif reg == 'NEAO':
+            vertices = Polygon([[-52.5,10], [-70,25], [-10,40], [-10,30], [-20,30], [-20,10]])
+        elif reg == 'AITCZ':
+            vertices = Polygon([[-50,0], [-50,7.6], [-52.5,10], [-20,10], [-20,7.6], [8,0]])
+        elif reg == 'SAO':
+            vertices = Polygon([[-39.5,-25], [-34,-20], [-34,0], [8,0], [8,-36]])
+        elif reg == 'EIO':
+            vertices = Polygon([[139.5,0], [132,5], [132,20], [180,25], [180,0]])
+        elif reg == 'SOO':
+            vertices = Polygon([[-180,-56], [-180,-70], [-80,-70], [-65,-62], [-56,-62], [-56,-75], [-25,-75], [5,-64], [180,-64], [180,-50], [155,-50], [110,-36], [8,-36], [-39.5,-25], [-56,-40], [-56,-56], [-79,-56], [-79,-47], [-78,-41], [-135,-30], [-180,-30]])    
+        regions[reg]=vertices
+
+    rdata=[]
+    for reg in abbrevs:
+        rdata.append(regions[reg])
+    ar6_all_mod_ocn = regionmask.Regions(rdata, names=names, abbrevs=abbrevs, name="AR6 reference regions with modified ocean regions")
+
+
+    pdf_tn_sum = cdutil.averager(pdf_tn, axis=1, weights='unweighted', action='sum')
+    pdf_tn_sum = MV.repeat(MV.reshape(pdf_tn_sum,(pdf_tn_sum.shape[0],-1,pdf_tn_sum.shape[1],pdf_tn_sum.shape[2])),repeats=pdf_tn.shape[1],axis=1)
+    pdf_tn_sum.setAxisList(pdf_tn.getAxisList())
+    
+    amt_tn = amt*pdf_tn_sum
+    amt_tn.setAxisList(pdf_tn.getAxisList())    
+    
+    domsum = []
+    for d in [pdf_tn, amt_tn, pdf_tn_sum]:
+    
+        d = xr.DataArray.from_cdms2(d)
+        mask_3D = ar6_all_mod_ocn.mask_3D(d, lon_name='longitude', lat_name='latitude')
+        weights = np.cos(np.deg2rad(d.latitude))
+        ddom = d.weighted(mask_3D * weights).sum(dim=("latitude", "longitude"))
+        ddom = xr.DataArray.to_cdms2(ddom)
+        
+        domsum.append(ddom)
+        
+    domsum = MV.reshape(domsum,(-1,pdf_tn.shape[0],pdf_tn.shape[1],len(abbrevs)))
+    domsum = np.swapaxes(domsum,1,3)
+    domsum = np.swapaxes(domsum,2,3)
+    print(domsum.shape)
+    
+    pdfdom = domsum[0]/domsum[2]
+    amtdom = domsum[1]/domsum[2]
+    axdom = cdms.createAxis(range(len(abbrevs)), id='domains')
+    pdfdom.setAxisList((axdom,pdf_tn.getAxis(0),pdf_tn.getAxis(1)))    
+    amtdom.setAxisList((axdom,pdf_tn.getAxis(0),pdf_tn.getAxis(1)))    
+    
+    metrics={}
+    metrics['pdfpeak']={}
+    metrics['pdfwidth']={}
+    metrics['amtpeak']={}
+    metrics['amtwidth']={}
+    for idm, dom in enumerate(abbrevs):
+        metrics['pdfpeak'][dom]={'CalendarMonths':{}}
+        metrics['pdfwidth'][dom]={'CalendarMonths':{}}
+        metrics['amtpeak'][dom]={'CalendarMonths':{}}
+        metrics['amtwidth'][dom]={'CalendarMonths':{}}
+        for im, mon in enumerate(months):
+            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:            
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[idm,im,:], bincrates)
+                metrics['pdfpeak'][dom][mon] = rainpeak
+                metrics['pdfwidth'][dom][mon] = rainwidth        
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(amtdom[idm,im,:], bincrates)
+                metrics['amtpeak'][dom][mon] = rainpeak
+                metrics['amtwidth'][dom][mon] = rainwidth 
+            else:
+                calmon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
+                imn=calmon.index(mon)+1
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[idm,im,:], bincrates)
+                metrics['pdfpeak'][dom]['CalendarMonths'][imn] = rainpeak
+                metrics['pdfwidth'][dom]['CalendarMonths'][imn] = rainwidth        
+                rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(amtdom[idm,im,:], bincrates)
+                metrics['amtpeak'][dom]['CalendarMonths'][imn] = rainpeak
+                metrics['amtwidth'][dom]['CalendarMonths'][imn] = rainwidth                     
+                
+    print("Complete AR6 domain metrics")
+    return metrics, pdfdom, amtdom     
+

@@ -133,11 +133,9 @@ for id, dat in enumerate(data):
         print(iyr, drg.shape)
 
     # Month separation
-    # months = ['ALL', 'JAN', 'FEB', 'MAR', 'APR', 'MAY',
-    #           'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-    months = ['ALL', 'JAN', 'FEB', 'MAR', 'APR', 'MAY',
-              'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
-              'MAM', 'JJA', 'SON', 'DJF']
+    months = ['ANN', 'MAM', 'JJA', 'SON', 'DJF', 
+              'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
+              'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
 
     pdfpeakmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
     pdfwidthmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
@@ -145,7 +143,7 @@ for id, dat in enumerate(data):
     amtwidthmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
     for im, mon in enumerate(months):
 
-        if mon == 'ALL':
+        if mon == 'ANN':
             dmon = drg
         elif mon == 'MAM':
             dmon = getDailyCalendarMonth(drg, ['MAR', 'APR', 'MAY'])
@@ -167,10 +165,10 @@ for id, dat in enumerate(data):
         # Calculate bin structure
         binl, binr, bincrates = CalcBinStructure(pdata1)
 
-        # Calculate distributions
+        # Calculate distributions at each grid point
         ppdfmap, pamtmap, bins, ppdfmap_tn = MakeDists(pdata1, binl)
-
-        # Calculate the metrics for the distribution at each grid point
+        
+        # Calculate metrics from the distribution at each grid point
         for i in range(drg.shape[2]):
             for j in range(drg.shape[1]):
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(
@@ -202,8 +200,8 @@ for id, dat in enumerate(data):
     pdfmapmon.setAxisList((axmon, axbin, lat, lon))
     pdfmapmon_tn.setAxisList((axmon, axbin, lat, lon))
     amtmapmon.setAxisList((axmon, axbin, lat, lon))
-
-    # Domain average
+    
+    # Domain average of metrics
     pdfpeakmap = MV.array(pdfpeakmap)
     pdfwidthmap = MV.array(pdfwidthmap)
     amtpeakmap = MV.array(amtpeakmap)
@@ -251,3 +249,95 @@ for id, dat in enumerate(data):
                separators=(',', ': '))
     if cmec:
         JSON.write_cmec(indent=4, separators=(',', ': '))
+    
+    
+    
+    # Domain Distribution -> Metrics -> Write
+    # Calculate metrics from the distribution at each domain
+    metricsdom = {'RESULTS': {dat: {}}}
+    metricsdom3C = {'RESULTS': {dat: {}}}
+    metricsdomAR6 = {'RESULTS': {dat: {}}}
+    # for im, mon in enumerate(months):
+    #     pdf_tn = pdfmapmon_tn[im]
+    #     amt = amtmapmon[im]
+    #     metricsdom['RESULTS'][dat][mon], pdfdom, amtdom = CalcMetricsDomain(pdf_tn, amt, bincrates)
+    #     metricsdom3C['RESULTS'][dat][mon], pdfdom3C, amtdom3C = CalcMetricsDomain3Clust(pdf_tn, amt, bincrates, res)
+    #     metricsdomAR6['RESULTS'][dat][mon], pdfdomAR6, amtdomAR6 = CalcMetricsDomainAR6(pdf_tn, amt, bincrates)
+    metricsdom['RESULTS'][dat], pdfdom, amtdom = CalcMetricsDomain(pdfmapmon_tn, amtmapmon, months, bincrates)
+    metricsdom3C['RESULTS'][dat], pdfdom3C, amtdom3C = CalcMetricsDomain3Clust(pdfmapmon_tn, amtmapmon, months, bincrates, str(nx_intp)+"x"+str(ny_intp))
+    metricsdomAR6['RESULTS'][dat], pdfdomAR6, amtdomAR6 = CalcMetricsDomainAR6(pdfmapmon_tn, amtmapmon, months, bincrates)
+
+        
+    # Write data (nc file for distributions at each domain)
+    outfilename = "dist_freq.amount_domain_regrid." + \
+        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
+    with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
+        out.write(pdfdom, id="pdf")
+        out.write(amtdom, id="amt")
+        out.write(bins, id="binbounds")
+        
+    # Write data (nc file for distributions at each domain with 3 clustering regions)
+    outfilename = "dist_freq.amount_domain3C_regrid." + \
+        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
+    with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
+        out.write(pdfdom3C, id="pdf")
+        out.write(amtdom3C, id="amt")
+        out.write(bins, id="binbounds")
+    
+    # Write data (nc file for distributions at each domain with AR6 regions)
+    outfilename = "dist_freq.amount_domainAR6_regrid." + \
+        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
+    with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
+        out.write(pdfdomAR6, id="pdf")
+        out.write(amtdomAR6, id="amt")
+        out.write(bins, id="binbounds")
+    
+ 
+    # Write data (json file for domain metrics)
+    outfilename = "dist_freq.amount_peak.width_domain_regrid." + \
+        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".json"
+    JSON = pcmdi_metrics.io.base.Base(
+        outdir(output_type='metrics_results'), outfilename)
+    JSON.write(metricsdom,
+               json_structure=["model+realization",
+                               "metrics",
+                               "domain",
+                               "month"],
+               sort_keys=True,
+               indent=4,
+               separators=(',', ': '))
+    if cmec:
+        JSON.write_cmec(indent=4, separators=(',', ': '))
+
+    # Write data (json file for domain metrics with 3 clustering regions)
+    outfilename = "dist_freq.amount_peak.width_domain3C_regrid." + \
+        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".json"
+    JSON = pcmdi_metrics.io.base.Base(
+        outdir(output_type='metrics_results'), outfilename)
+    JSON.write(metricsdom3C,
+               json_structure=["model+realization",
+                               "metrics",
+                               "domain",
+                               "month"],
+               sort_keys=True,
+               indent=4,
+               separators=(',', ': '))
+    if cmec:
+        JSON.write_cmec(indent=4, separators=(',', ': '))
+        
+    # Write data (json file for domain metrics with AR6 regions)
+    outfilename = "dist_freq.amount_peak.width_domainAR6_regrid." + \
+        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".json"
+    JSON = pcmdi_metrics.io.base.Base(
+        outdir(output_type='metrics_results'), outfilename)
+    JSON.write(metricsdomAR6,
+               json_structure=["model+realization",
+                               "metrics",
+                               "domain",
+                               "month"],
+               sort_keys=True,
+               indent=4,
+               separators=(',', ': '))
+    if cmec:
+        JSON.write_cmec(indent=4, separators=(',', ': '))
+        
