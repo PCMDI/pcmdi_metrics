@@ -9,8 +9,12 @@ frq = "3hr"
 ver = "v20210123"
 modpath = os.path.join(
     "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/",
-    ver, mip, exp, 
-    "atmos", frq, var
+    ver,
+    mip,
+    exp,
+    "atmos",
+    frq,
+    var,
 )
 
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
