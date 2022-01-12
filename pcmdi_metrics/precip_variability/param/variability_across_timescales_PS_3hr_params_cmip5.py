@@ -7,18 +7,10 @@ mod = "ACCESS1-0.r1i1p1"
 var = "pr"
 frq = "3hr"
 ver = "v20210123"
-modpath = (
-    "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/"
-    + ver
-    + "/"
-    + mip
-    + "/"
-    + exp
-    + "/atmos/"
-    + frq
-    + "/"
-    + var
-    + "/"
+modpath = os.path.join(
+    "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/",
+    ver, mip, exp, 
+    "atmos", frq, var
 )
 
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
