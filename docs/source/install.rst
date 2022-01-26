@@ -30,7 +30,9 @@ Using the conda package manager, you can install the PCMDI Metrics package from 
 
 Create a new virtual environment and install PMP
   * ``conda create -n [YOUR_CONDA_ENVIRONMENT] -c conda-forge pcmdi_metrics``
+
 or
+
   * ``conda create -n [YOUR_CONDA_ENVIRONMENT]``
   * ``conda activate [YOUR_CONDA_ENVIRONMENT]``
   * ``conda install -c conda-forge pcmdi_metrics``
@@ -38,7 +40,6 @@ or
 alternatively,
 
 Install PMP in the current (or existing) virtual environment
-============================================================
   * ``conda install -c conda-forge pcmdi_metrics``
 
 
