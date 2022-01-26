@@ -15,7 +15,7 @@ PCMDI uses the PMP to produce `quick-look simulation summaries across generation
 
 The PMP expects model data to be `CF-compliant <http://cfconventions.org/>`_, otherwise, to successfully use the package may require some input data conditioning. 
 
-`A suite of demo scripts and interactive Jupyter notebooks are provided with this documentation <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/README.md>`_ 
+`A suite of demo scripts and interactive Jupyter notebooks are provided with this documentation. <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/README.md>`_ 
 
 .. toctree::
    :maxdepth: 1
