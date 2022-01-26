@@ -89,7 +89,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#all-platforms-system-requirements">All Platforms System Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#bypassing-firewalls">Bypassing firewalls</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-the-pcmdi-metrics-package-pmp">Installing the PCMDI Metrics Package (PMP)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#getting-the-latest-nightly-of-pmp-and-cdat">Getting the latest nightly of PMP and CDAT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-pmp-in-the-current-or-existing-virtual-environment">Install PMP in the current (or existing) virtual environment</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Supporting-data.html">Retrieving data for demos and use of the PMP</a></li>
@@ -193,20 +193,26 @@ Support for Windows is not available yet.</p>
 </div>
 <div class="section" id="installing-the-pcmdi-metrics-package-pmp">
 <h2>Installing the PCMDI Metrics Package (PMP)<a class="headerlink" href="#installing-the-pcmdi-metrics-package-pmp" title="Permalink to this headline">¶</a></h2>
+<p>Using the conda package manager, you can install the PCMDI Metrics package from the PCMDI conda-forge channel.</p>
 <dl class="simple">
-<dt>Using the conda package manager, you can install the PCMDI Metrics package from the PCMDI conda channel, and from an environment containing [CDAT](<a class="reference external" href="https://cdat.llnl.gov/">https://cdat.llnl.gov/</a>).</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">[YOUR_CDAT_ENABLED_CONDA_ENVIRONMENT]</span></code> (See <a class="reference external" href="https://github.com/CDAT/cdat/wiki/install">CDAT Install</a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">pcmdi_metrics</span> <span class="pre">-c</span> <span class="pre">cdat-forge</span></code></p></li>
+<dt>Create a new virtual environment and install PMP</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">[YOUR_CONDA_ENVIRONMENT]</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">pcmdi_metrics</span></code></p></li>
+</ul>
+</dd>
+<dt>or</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">[YOUR_CONDA_ENVIRONMENT]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">activate</span> <span class="pre">[YOUR_CONDA_ENVIRONMENT]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">pcmdi_metrics</span></code></p></li>
 </ul>
 </dd>
 </dl>
+<p>alternatively,</p>
 </div>
-<div class="section" id="getting-the-latest-nightly-of-pmp-and-cdat">
-<h2>Getting the latest nightly of PMP and CDAT<a class="headerlink" href="#getting-the-latest-nightly-of-pmp-and-cdat" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="install-pmp-in-the-current-or-existing-virtual-environment">
+<h2>Install PMP in the current (or existing) virtual environment<a class="headerlink" href="#install-pmp-in-the-current-or-existing-virtual-environment" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">[YOUR_ENV_NAME_HERE]</span> <span class="pre">-c</span> <span class="pre">cdat/label/nightly</span> <span class="pre">-c</span> <span class="pre">pcmdi/label/nightly</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">-c</span> <span class="pre">cdat</span> <span class="pre">pcmdi_metrics</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">activate</span> <span class="pre">[YOUR_ENV_NAME_HERE]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">pcmdi_metrics</span></code></p></li>
 </ul>
 </div></blockquote>
 <p>To learn more about conda environments see: <a class="reference external" href="http://conda.pydata.org/docs/using/envs.html">http://conda.pydata.org/docs/using/envs.html</a></p>

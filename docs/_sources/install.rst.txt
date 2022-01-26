@@ -26,14 +26,20 @@ If your institution has tight ssl certificate/security issues try:
 
 Installing the PCMDI Metrics Package (PMP)
 ==========================================
-Using the conda package manager, you can install the PCMDI Metrics package from the PCMDI conda channel, and from an environment containing [CDAT](https://cdat.llnl.gov/).
-  * ``source activate [YOUR_CDAT_ENABLED_CONDA_ENVIRONMENT]`` (See `CDAT Install <https://github.com/CDAT/cdat/wiki/install>`_)
-  * ``conda install pcmdi_metrics -c cdat-forge``
+Using the conda package manager, you can install the PCMDI Metrics package from the PCMDI conda-forge channel.
 
-Getting the latest nightly of PMP and CDAT
-==========================================
-  * ``conda create -n [YOUR_ENV_NAME_HERE] -c cdat/label/nightly -c pcmdi/label/nightly -c conda-forge -c cdat pcmdi_metrics``
-  * ``source activate [YOUR_ENV_NAME_HERE]``
+Create a new virtual environment and install PMP
+  * ``conda create -n [YOUR_CONDA_ENVIRONMENT] -c conda-forge pcmdi_metrics``
+or
+  * ``conda create -n [YOUR_CONDA_ENVIRONMENT]``
+  * ``conda activate [YOUR_CONDA_ENVIRONMENT]``
+  * ``conda install -c conda-forge pcmdi_metrics``
+
+alternatively,
+
+Install PMP in the current (or existing) virtual environment
+============================================================
+  * ``conda install -c conda-forge pcmdi_metrics``
 
 
 To learn more about conda environments see: http://conda.pydata.org/docs/using/envs.html
