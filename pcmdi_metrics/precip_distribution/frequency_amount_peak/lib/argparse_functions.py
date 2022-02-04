@@ -56,6 +56,21 @@ def AddParserArgument(P):
                    dest='ref',
                    default=None,
                    help="reference data path")
+    P.add_argument("--exp",
+                   type=str,
+                   dest='exp',
+                   default=None,
+                   help="e.g., historical or amip")
+    P.add_argument("--resn",
+                   type=str,
+                   dest='resn',
+                   default=None,
+                   help="horizontal resolution with # of nx and ny")
+    P.add_argument("--ver",
+                   type=str,
+                   dest='ver',
+                   default=None,
+                   help="version")
     P.add_argument("--cmec",
                    dest="cmec",
                    default=False,

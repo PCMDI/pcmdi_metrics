@@ -252,20 +252,14 @@ for id, dat in enumerate(data):
     
     
     
-    # Domain Distribution -> Metrics -> Write
+    # Domain averaged distribution -> Metrics -> Write
     # Calculate metrics from the distribution at each domain
     metricsdom = {'RESULTS': {dat: {}}}
     metricsdom3C = {'RESULTS': {dat: {}}}
     metricsdomAR6 = {'RESULTS': {dat: {}}}
-    # for im, mon in enumerate(months):
-    #     pdf_tn = pdfmapmon_tn[im]
-    #     amt = amtmapmon[im]
-    #     metricsdom['RESULTS'][dat][mon], pdfdom, amtdom = CalcMetricsDomain(pdf_tn, amt, bincrates)
-    #     metricsdom3C['RESULTS'][dat][mon], pdfdom3C, amtdom3C = CalcMetricsDomain3Clust(pdf_tn, amt, bincrates, res)
-    #     metricsdomAR6['RESULTS'][dat][mon], pdfdomAR6, amtdomAR6 = CalcMetricsDomainAR6(pdf_tn, amt, bincrates)
-    metricsdom['RESULTS'][dat], pdfdom, amtdom = CalcMetricsDomain(pdfmapmon_tn, amtmapmon, months, bincrates)
-    metricsdom3C['RESULTS'][dat], pdfdom3C, amtdom3C = CalcMetricsDomain3Clust(pdfmapmon_tn, amtmapmon, months, bincrates, str(nx_intp)+"x"+str(ny_intp))
-    metricsdomAR6['RESULTS'][dat], pdfdomAR6, amtdomAR6 = CalcMetricsDomainAR6(pdfmapmon_tn, amtmapmon, months, bincrates)
+    metricsdom['RESULTS'][dat], pdfdom, amtdom = CalcMetricsDomain(pdfmapmon, amtmapmon, months, bincrates)
+    metricsdom3C['RESULTS'][dat], pdfdom3C, amtdom3C = CalcMetricsDomain3Clust(pdfmapmon, amtmapmon, months, bincrates, str(nx_intp)+"x"+str(ny_intp))
+    metricsdomAR6['RESULTS'][dat], pdfdomAR6, amtdomAR6 = CalcMetricsDomainAR6(pdfmapmon, amtmapmon, months, bincrates)
 
         
     # Write data (nc file for distributions at each domain)

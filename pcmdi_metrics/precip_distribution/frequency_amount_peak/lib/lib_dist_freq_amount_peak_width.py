@@ -268,17 +268,13 @@ def AvgDomain(d):
             dmask = d
 
         if "50S50N" in dom:
-            am = cdutil.averager(
-                dmask(latitude=(-50, 50)), axis="xy")
+            am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
         if "30N50N" in dom:
-            am = cdutil.averager(
-                dmask(latitude=(30, 50)), axis="xy")
+            am = cdutil.averager(dmask(latitude=(30, 50)), axis="xy")
         if "30S30N" in dom:
-            am = cdutil.averager(
-                dmask(latitude=(-30, 30)), axis="xy")
+            am = cdutil.averager(dmask(latitude=(-30, 30)), axis="xy")
         if "50S30S" in dom:
-            am = cdutil.averager(
-                dmask(latitude=(-50, -30)), axis="xy")
+            am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy")
 
         ddom[dom] = am.tolist()
 
@@ -287,12 +283,12 @@ def AvgDomain(d):
 
 
 # ==================================================================================
-def CalcMetricsDomain(pdf_tn, amt, months, bincrates):
+def CalcMetricsDomain(pdf, amt, months, bincrates):
     """
     Input
-    - pdf_tn: pdf with total number
+    - pdf: pdf
     - amt: amount distribution
-    - months: month list of the input data
+    - months: month list of input data
     - bincrates: bin centers
     Output
     - metrics: metrics for each domain
@@ -303,23 +299,15 @@ def CalcMetricsDomain(pdf_tn, amt, months, bincrates):
                "Total_30N50N", "Ocean_30N50N", "Land_30N50N",
                "Total_30S30N", "Ocean_30S30N", "Land_30S30N",
                "Total_50S30S", "Ocean_50S30S", "Land_50S30S"]
-
-    pdf_tn_sum = cdutil.averager(pdf_tn, axis=1, weights='unweighted', action='sum')
-    pdf_tn_sum = MV.repeat(MV.reshape(pdf_tn_sum,(pdf_tn_sum.shape[0],-1,pdf_tn_sum.shape[1],pdf_tn_sum.shape[2])),repeats=pdf_tn.shape[1],axis=1)
-    pdf_tn_sum.setAxisList(pdf_tn.getAxisList())
-    
-    amt_tn = amt*pdf_tn_sum
-    amt_tn.setAxisList(pdf_tn.getAxisList())    
-    
-    domsum = []
-    for d in [pdf_tn, amt_tn, pdf_tn_sum]:
+   
+    ddom = []    
+    for d in [pdf, amt]:
     
         mask = cdutil.generateLandSeaMask(d[0,0])
         d, mask2 = genutil.grower(d, mask)
         d_ocean = MV.masked_where(mask2 == 1.0, d)
         d_land = MV.masked_where(mask2 == 0.0, d)
 
-        ddom = []
         for dom in domains:
 
             if "Ocean" in dom:
@@ -330,23 +318,21 @@ def CalcMetricsDomain(pdf_tn, amt, months, bincrates):
                 dmask = d
 
             if "50S50N" in dom:
-                am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy", action='sum')
+                am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
             if "30N50N" in dom:
-                am = cdutil.averager(dmask(latitude=(30, 50)), axis="xy", action='sum')
+                am = cdutil.averager(dmask(latitude=(30, 50)), axis="xy")
             if "30S30N" in dom:
-                am = cdutil.averager(dmask(latitude=(-30, 30)), axis="xy", action='sum')
+                am = cdutil.averager(dmask(latitude=(-30, 30)), axis="xy")
             if "50S30S" in dom:
-                am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy", action='sum')
+                am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy")
 
             ddom.append(am)
-
-        domsum.append(ddom)
-     
-    domsum = MV.reshape(domsum,(-1,len(domains),am.shape[0],am.shape[1]))
-    print(domsum.shape)
     
-    pdfdom = domsum[0]/domsum[2]
-    amtdom = domsum[1]/domsum[2]
+    ddom = MV.reshape(ddom,(-1,len(domains),am.shape[0],am.shape[1]))
+    print(ddom.shape)
+    
+    pdfdom = ddom[0]
+    amtdom = ddom[1]
     axdom = cdms.createAxis(range(len(domains)), id='domains')
     pdfdom.setAxisList((axdom,am.getAxis(0),am.getAxis(1)))    
     amtdom.setAxisList((axdom,am.getAxis(0),am.getAxis(1)))    
@@ -384,19 +370,20 @@ def CalcMetricsDomain(pdf_tn, amt, months, bincrates):
 
 
 # ==================================================================================
-def CalcMetricsDomain3Clust(pdf_tn, amt, months, bincrates, res):
+def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, res):
     """
     Input
-    - pdf_tn: pdf with total number
+    - pdf: pdf
     - amt: amount distribution
-    - months: month list of the input data
+    - months: month list of input data
     - bincrates: bin centers
+    - res: horizontal resolution of input data
     Output
     - metrics: metrics for each domain
     - pdfdom: pdf for each domain
     - amtdom: amt for each domain
-    """ 
-    indir = '/work/ahn6/pr/intensity_frequency_distribution/frequency_amount_peak/v20210717'
+    """  
+    indir = '/work/ahn6/pr/intensity_frequency_distribution/frequency_amount_peak/v20220108'
     file = 'cluster3_pdf.amt_regrid.'+res+'_IMERG_ALL.nc'
     cluster = cdms.open(os.path.join(indir, file))['cluster_nb']
 
@@ -404,23 +391,15 @@ def CalcMetricsDomain3Clust(pdf_tn, amt, months, bincrates, res):
                "HR_30N50N", "MR_30N50N", "LR_30N50N",
                "HR_30S30N", "MR_30S30N", "LR_30S30N",
                "HR_50S30S", "MR_50S30S", "LR_50S30S"]
-
-    pdf_tn_sum = cdutil.averager(pdf_tn, axis=1, weights='unweighted', action='sum')
-    pdf_tn_sum = MV.repeat(MV.reshape(pdf_tn_sum,(pdf_tn_sum.shape[0],-1,pdf_tn_sum.shape[1],pdf_tn_sum.shape[2])),repeats=pdf_tn.shape[1],axis=1)
-    pdf_tn_sum.setAxisList(pdf_tn.getAxisList())
-    
-    amt_tn = amt*pdf_tn_sum
-    amt_tn.setAxisList(pdf_tn.getAxisList())    
-        
-    domsum = []
-    for d in [pdf_tn, amt_tn, pdf_tn_sum]:
+            
+    ddom = []    
+    for d in [pdf, amt]:
     
         d, mask2 = genutil.grower(d, cluster)
         d_HR = MV.masked_where(mask2 != 0, d)
         d_MR = MV.masked_where(mask2 != 1, d)
         d_LR = MV.masked_where(mask2 != 2, d)
 
-        ddom = []
         for dom in domains:
 
             if "HR" in dom:
@@ -431,23 +410,21 @@ def CalcMetricsDomain3Clust(pdf_tn, amt, months, bincrates, res):
                 dmask = d_LR
 
             if "50S50N" in dom:
-                am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy", action='sum')
+                am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
             if "30N50N" in dom:
-                am = cdutil.averager(dmask(latitude=(30, 50)), axis="xy", action='sum')
+                am = cdutil.averager(dmask(latitude=(30, 50)), axis="xy")
             if "30S30N" in dom:
-                am = cdutil.averager(dmask(latitude=(-30, 30)), axis="xy", action='sum')
+                am = cdutil.averager(dmask(latitude=(-30, 30)), axis="xy")
             if "50S30S" in dom:
-                am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy", action='sum')
+                am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy")
 
-            ddom.append(am)
-
-        domsum.append(ddom)
+            ddom.append(am)        
         
-    domsum = MV.reshape(domsum,(-1,len(domains),am.shape[0],am.shape[1]))
-    print(domsum.shape)
+    ddom = MV.reshape(ddom,(-1,len(domains),am.shape[0],am.shape[1]))
+    print(ddom.shape)
     
-    pdfdom = domsum[0]/domsum[2]
-    amtdom = domsum[1]/domsum[2]
+    pdfdom = ddom[0]
+    amtdom = ddom[1]
     axdom = cdms.createAxis(range(len(domains)), id='domains')
     pdfdom.setAxisList((axdom,am.getAxis(0),am.getAxis(1)))    
     amtdom.setAxisList((axdom,am.getAxis(0),am.getAxis(1)))    
@@ -485,18 +462,18 @@ def CalcMetricsDomain3Clust(pdf_tn, amt, months, bincrates, res):
             
             
 # ==================================================================================
-def CalcMetricsDomainAR6(pdf_tn, amt, months, bincrates):
+def CalcMetricsDomainAR6(pdf, amt, months, bincrates):
     """
     Input
-    - pdf_tn: pdf with total number
+    - pdf: pdf
     - amt: amount distribution
-    - months: month list of the input data
+    - months: month list of input data
     - bincrates: bin centers
     Output
     - metrics: metrics for each domain
     - pdfdom: pdf for each domain
     - amtdom: amt for each domain
-    """   
+    """
     ar6_all = regionmask.defined_regions.ar6.all
     ar6_land = regionmask.defined_regions.ar6.land
     ar6_ocean = regionmask.defined_regions.ar6.ocean
@@ -559,35 +536,28 @@ def CalcMetricsDomainAR6(pdf_tn, amt, months, bincrates):
         rdata.append(regions[reg])
     ar6_all_mod_ocn = regionmask.Regions(rdata, names=names, abbrevs=abbrevs, name="AR6 reference regions with modified ocean regions")
 
-
-    pdf_tn_sum = cdutil.averager(pdf_tn, axis=1, weights='unweighted', action='sum')
-    pdf_tn_sum = MV.repeat(MV.reshape(pdf_tn_sum,(pdf_tn_sum.shape[0],-1,pdf_tn_sum.shape[1],pdf_tn_sum.shape[2])),repeats=pdf_tn.shape[1],axis=1)
-    pdf_tn_sum.setAxisList(pdf_tn.getAxisList())
     
-    amt_tn = amt*pdf_tn_sum
-    amt_tn.setAxisList(pdf_tn.getAxisList())    
-    
-    domsum = []
-    for d in [pdf_tn, amt_tn, pdf_tn_sum]:
+    ddom = []
+    for d in [pdf, amt]:
     
         d = xr.DataArray.from_cdms2(d)
         mask_3D = ar6_all_mod_ocn.mask_3D(d, lon_name='longitude', lat_name='latitude')
         weights = np.cos(np.deg2rad(d.latitude))
-        ddom = d.weighted(mask_3D * weights).sum(dim=("latitude", "longitude"))
-        ddom = xr.DataArray.to_cdms2(ddom)
+        am = d.weighted(mask_3D * weights).mean(dim=("latitude", "longitude"))
+        am = xr.DataArray.to_cdms2(am)
         
-        domsum.append(ddom)
+        ddom.append(am)
         
-    domsum = MV.reshape(domsum,(-1,pdf_tn.shape[0],pdf_tn.shape[1],len(abbrevs)))
-    domsum = np.swapaxes(domsum,1,3)
-    domsum = np.swapaxes(domsum,2,3)
-    print(domsum.shape)
+    ddom = MV.reshape(ddom,(-1,pdf.shape[0],pdf.shape[1],len(abbrevs)))
+    ddom = np.swapaxes(ddom,1,3)
+    ddom = np.swapaxes(ddom,2,3)
+    print(ddom.shape)
     
-    pdfdom = domsum[0]/domsum[2]
-    amtdom = domsum[1]/domsum[2]
+    pdfdom = ddom[0]
+    amtdom = ddom[1]
     axdom = cdms.createAxis(range(len(abbrevs)), id='domains')
-    pdfdom.setAxisList((axdom,pdf_tn.getAxis(0),pdf_tn.getAxis(1)))    
-    amtdom.setAxisList((axdom,pdf_tn.getAxis(0),pdf_tn.getAxis(1)))    
+    pdfdom.setAxisList((axdom,pdf.getAxis(0),pdf.getAxis(1)))    
+    amtdom.setAxisList((axdom,pdf.getAxis(0),pdf.getAxis(1)))    
     
     metrics={}
     metrics['pdfpeak']={}
