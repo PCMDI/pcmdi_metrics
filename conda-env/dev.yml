@@ -18,6 +18,7 @@ dependencies:
   - cdp=1.7.0
   - eofs=1.4.0
   - seaborn=0.11.1
+  - enso_metrics
   # Testing
   # ==================
   - pre_commit=2.15.0
