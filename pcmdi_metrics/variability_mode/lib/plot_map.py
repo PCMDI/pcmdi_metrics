@@ -244,4 +244,4 @@ def plot_map_cartopy(
 
     # Done, save figure
     fig.savefig(filename)
-    plt.close('all')
+    plt.close("all")
