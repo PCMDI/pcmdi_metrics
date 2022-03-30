@@ -42,16 +42,14 @@ debug = False  # False
 # -------------------------------------------------
 reference_data_name = "HadISSTv1.1"
 reference_data_path = (
-    "/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc"
+    # "/clim_obs/obs/ocn/mo/tos/UKMETOFFICE-HadISST-v1-1/130122_HadISST_sst.nc"  # original data source
+    "/p/user_pub/PCMDIobs/obs4MIPs/MOHC/HadISST-1-1/mon/ts/gn/v20210727/ts_mon_HadISST-1-1_PCMDI_gn_187001-201907.nc"  # obs4MIPs data
 )
-# reference_data_path = os.path.join(
-#    '/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/ts/HadISST-1-1/gn/v20200707',
-#    'ts_mon_HadISST-1-1_BE_gn_v20200707_187001-201907.nc')
 
-varOBS = "sst"
-# varOBS = 'ts'
-ObsUnitsAdjust = (False, 0, 0)  # degC
-# ObsUnitsAdjust = (True, 'subtract', 273.15)  # degK to degC
+# varOBS = "sst"
+# ObsUnitsAdjust = (False, 0, 0)  # degC
+varOBS = "ts"
+ModUnitsAdjust = (True, "subtract", 273.15)  # degK to degC
 
 osyear = 1900
 oeyear = 2005
