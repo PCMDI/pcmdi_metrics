@@ -1,22 +1,14 @@
 #!/usr/bin/env python
 
-import copy
 import glob
 import os
-import sys
 
-import cdms2 as cdms
-import MV2 as MV
 from genutil import StringConstructor
 
-import pcmdi_metrics
 from pcmdi_metrics.driver.pmp_parser import PMPParser
 from pcmdi_metrics.precip_variability.lib import (
     AddParserArgument,
-    Avg_PS_DomFrq,
-    ClimAnom,
-    Powerspectrum,
-    Regrid2deg,
+    precip_variability_across_timescale,
 )
 
 # Read parameters
@@ -54,13 +46,10 @@ for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
             pass
     print(outdir(output_type=output_type))
 
-# Read data
+# Check data in advance
 file_list = sorted(glob.glob(os.path.join(modpath, "*" + mod + "*")))
-f = []
 data = []
-for ifl in range(len(file_list)):
-    f.append(cdms.open(file_list[ifl]))
-    file = file_list[ifl]
+for file in file_list:
     if mip == "obs":
         model = file.split("/")[-1].split(".")[2]
         data.append(model)
@@ -68,94 +57,15 @@ for ifl in range(len(file_list)):
         model = file.split("/")[-1].split(".")[2]
         ens = file.split("/")[-1].split(".")[3]
         data.append(model + "." + ens)
-print("# of data:", len(data))
-print(data)
+
+print("Number of datasets:", len(file_list))
+print("Dataset:", data)
 
 # Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
-psdmfm = {"RESULTS": {}}
 syr = prd[0]
 eyr = prd[1]
-for id, dat in enumerate(data):
-    cal = f[id][var].getTime().calendar
-    if "360" in cal:
-        ldy = 30
-    else:
-        ldy = 31
-    print(dat, cal)
-    for iyr in range(syr, eyr + 1):
-        do = (
-            f[id](
-                var,
-                time=(
-                    str(iyr) + "-1-1 0:0:0",
-                    str(iyr) + "-12-" + str(ldy) + " 23:59:59",
-                ),
-            )
-            * float(fac)
-        )
 
-        # Regridding
-        rgtmp = Regrid2deg(do)
-        if iyr == syr:
-            drg = copy.deepcopy(rgtmp)
-        else:
-            drg = MV.concatenate((drg, rgtmp))
-        print(iyr, drg.shape)
-
-    # Anomaly
-    if dfrq == "day":
-        ntd = 1
-    elif dfrq == "3hr":
-        ntd = 8
-    else:
-        sys.exit("ERROR: dfrq " + dfrq + " is not defined!")
-    clim, anom = ClimAnom(drg, ntd, syr, eyr)
-
-    # Power spectum of total
-    freqs, ps, rn, sig95 = Powerspectrum(drg, nperseg, noverlap)
-    # Domain & Frequency average
-    psdmfm_forced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "forced")
-    # Write data (nc file)
-    outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc"
-    with cdms.open(
-        os.path.join(outdir(output_type="diagnostic_results"), outfilename), "w"
-    ) as out:
-        out.write(freqs, id="freqs")
-        out.write(ps, id="power")
-        out.write(rn, id="rednoise")
-        out.write(sig95, id="sig95")
-
-    # Power spectum of anomaly
-    freqs, ps, rn, sig95 = Powerspectrum(anom, nperseg, noverlap)
-    # Domain & Frequency average
-    psdmfm_unforced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "unforced")
-    # Write data (nc file)
-    outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
-    with cdms.open(
-        os.path.join(outdir(output_type="diagnostic_results"), outfilename), "w"
-    ) as out:
-        out.write(freqs, id="freqs")
-        out.write(ps, id="power")
-        out.write(rn, id="rednoise")
-        out.write(sig95, id="sig95")
-
-    # Write data (json file)
-    psdmfm["RESULTS"][dat] = {}
-    psdmfm["RESULTS"][dat]["forced"] = psdmfm_forced
-    psdmfm["RESULTS"][dat]["unforced"] = psdmfm_unforced
-
-    outfilename = (
-        "PS_pr." + str(dfrq) + "_regrid.180x90_area.freq.mean_" + dat + ".json"
+for dat, file in zip(data, file_list):
+    precip_variability_across_timescale(
+        file, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, outdir, cmec
     )
-    JSON = pcmdi_metrics.io.base.Base(
-        outdir(output_type="metrics_results"), outfilename
-    )
-    JSON.write(
-        psdmfm,
-        json_structure=["model+realization", "variability type", "domain", "frequency"],
-        sort_keys=True,
-        indent=4,
-        separators=(",", ": "),
-    )
-    if cmec:
-        JSON.write_cmec(indent=4, separators=(",", ": "))
