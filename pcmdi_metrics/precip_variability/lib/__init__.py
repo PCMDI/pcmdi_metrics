@@ -7,5 +7,6 @@ from .lib_variability_across_timescales import (  # noqa
     Regrid2deg,
     lag1_autocorrelation,
     prdday_to_frqidx,
+    precip_variability_across_timescale,
     rednoise,
 )
