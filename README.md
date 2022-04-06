@@ -9,7 +9,7 @@ PCMDI Metrics Package (PMP)
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
 ![License](https://anaconda.org/conda-forge/pcmdi_metrics/badges/license.svg)
 
-Conda-forge (NEW, recommended): 
+Conda-forge (NEW, recommended):
 ![install](https://anaconda.org/conda-forge/pcmdi_metrics/badges/installer/conda.svg)
 ![download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg)
 
