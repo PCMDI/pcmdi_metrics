@@ -1,8 +1,8 @@
-import urllib.request
-import requests
 import os
+import urllib.request
 
 import matplotlib.pyplot as plt
+import requests
 
 
 def add_logo(fig, ax, rect=None):
@@ -47,11 +47,11 @@ def add_logo(fig, ax, rect=None):
 
 
 def download_archived_results(path, local_dir):
-    """ Download file from url to local_dir 
-    
+    """ Download file from url to local_dir
+
     Parameters
     ----------
-    path : str 
+    path : str
         Directory path and filename in the PMP results archive in https://github.com/PCMDI/pcmdi_metrics_results_archive
     local_dir : str
         directory path in your local machine to save downloaded file
@@ -71,6 +71,6 @@ def download_archived_results(path, local_dir):
             with open(local_file, 'wb') as file:
                 file.write(r.content)
             print('Download completed:', local_file)
-    except:
+    except Exception:
         print(path, 'not exist in ', url_head_github_repo)
         pass

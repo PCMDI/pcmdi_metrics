@@ -1,8 +1,9 @@
 import copy
+import glob
+import os
+
 import numpy as np
 import pandas as pd
-import os
-import glob
 
 from pcmdi_metrics.graphics import read_mean_clim_json_files
 
