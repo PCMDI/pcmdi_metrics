@@ -12,4 +12,4 @@ from .parallel_coordinate_plot.parallel_coordinate_plot_lib import (
 from .portrait_plot.portrait_plot_lib import portrait_plot  # noqa
 from .portrait_plot.portrait_plot_lib import prepare_data  # noqa
 from .bar_chart.lib import BarChart  # noqa
-from .taylor_diagram.taylorDiagram import taylor_diagram  # noqa
+from .taylor_diagram.taylor_diagram import TaylorDiagram  # noqa
