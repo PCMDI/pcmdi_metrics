@@ -7,7 +7,7 @@ def TaylorDiagram(
     """Plot a Taylor diagram.
     This code was adpated from the ILAMB code by Nathan Collier found here:
     https://github.com/rubisco-sfa/ILAMB/blob/master/src/ILAMB/Post.py#L80,
-    which was revised by Jiwoo Lee to enable more customization.
+    which was revised by Jiwoo Lee to enable more flexible customization of the plot.
 
     The original code was written by Yannick Copin that can be found here:
     https://gist.github.com/ycopin/3342888
