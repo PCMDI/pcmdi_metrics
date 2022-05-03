@@ -1,7 +1,8 @@
+import os
 import urllib.request
-from os import path
 
 import matplotlib.pyplot as plt
+import requests
 
 
 def add_logo(fig, ax, rect=None):
@@ -21,7 +22,7 @@ def add_logo(fig, ax, rect=None):
         rect = [0.75, 0.75, 0.2, 0.2]
 
     # Download image if not exist -- later, change to use egg_path!
-    if not path.isfile("./pmp_logo.png"):
+    if not os.path.isfile("./pmp_logo.png"):
         # setting filename and image URL
         filename = "pmp_logo.png"
         image_url = "https://github.com/PCMDI/pcmdi_metrics/raw/main/share/pcmdi/PMPLogoText_1359x1146px_300dpi.png"
@@ -43,3 +44,33 @@ def add_logo(fig, ax, rect=None):
     newax.axis("off")
 
     return fig, ax
+
+
+def download_archived_results(path, local_dir):
+    """ Download file from url to local_dir
+
+    Parameters
+    ----------
+    path : str
+        Directory path and filename in the PMP results archive in https://github.com/PCMDI/pcmdi_metrics_results_archive
+    local_dir : str
+        directory path in your local machine to save downloaded file
+    """
+    os.makedirs(local_dir, exist_ok=True)
+    url_head_github_repo = "https://github.com/PCMDI/pcmdi_metrics_results_archive/tree/main/"
+    url_head = "https://raw.githubusercontent.com/PCMDI/pcmdi_metrics_results_archive/main/"
+    url = url_head + path
+    filename = url.split('/')[-1]
+    try:
+        r = requests.get(url, allow_redirects=True)
+        r.raise_for_status()
+        local_file = os.path.join(local_dir, filename)
+        if os.path.exists(local_file):
+            pass
+        else:
+            with open(local_file, 'wb') as file:
+                file.write(r.content)
+            print('Download completed:', local_file)
+    except Exception:
+        print(path, 'not exist in ', url_head_github_repo)
+        pass
