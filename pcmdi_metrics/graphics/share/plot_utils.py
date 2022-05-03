@@ -3,6 +3,8 @@ import urllib.request
 
 import matplotlib.pyplot as plt
 import requests
+from collections import defaultdict
+
 
 
 def add_logo(fig, ax, rect=None):
@@ -74,3 +76,33 @@ def download_archived_results(path, local_dir):
     except Exception:
         print(path, 'not exist in ', url_head_github_repo)
         pass
+
+
+def combine_ref_dicts(d1, d2):
+    """
+    Combine two dictionaries for reference datasets of variables, raising warning message if different reference datasets were used.
+    Below code is revised from https://stackoverflow.com/a/5946322
+    
+    Parameters
+    ----------
+    d1: dict
+    d2: dict
+    
+    Return
+    ------
+    dd: merged dict
+    """
+    # Merge dicts
+    dd = defaultdict(list)
+    for d in (d1, d2): # you can list as many input dicts as you want here
+        for key, value in d.items():
+            dd[key].append(value)
+    # Check consistency in content        
+    for key in dd:
+        if len(list(set(dd[key]))) == 1:
+            dd[key] = dd[key][0]
+        else:
+            print('Warning: differnt reference datasets detected for ' + key + ': ', dd[key])
+    # Convert outcome to normal dict and return
+    dd = dict(dd)            
+    return dd
