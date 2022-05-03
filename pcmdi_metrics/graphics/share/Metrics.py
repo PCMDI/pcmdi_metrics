@@ -54,6 +54,7 @@ class Metrics:
             self.df_dict,
             self.var_list,
             self.var_unit_list,
+            self.var_ref_dict,
             self.regions,
             self.stats,
         ) = read_mean_clim_json_files(files)
@@ -145,6 +146,7 @@ class Metrics:
 
         result.var_list = list(set(self.var_list + metrics_obj.var_list))
         result.var_unit_list = list(set(self.var_unit_list + metrics_obj.var_unit_list))
+        result.var_ref_dict = {**self.var_ref_dict, **metrics_obj.var_ref_dict}
         result.regions = list(set(self.regions + metrics_obj.regions))
         result.stats = list(set(self.stats + metrics_obj.stats))
 

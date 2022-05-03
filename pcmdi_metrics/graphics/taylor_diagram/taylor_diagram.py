@@ -1,13 +1,15 @@
 def TaylorDiagram(
         stddev, corrcoef, refstd, fig, colors,
         normalize=True,
-        labels=None, markers=None, markersizes=None, zorders=None):
+        labels=None, markers=None, markersizes=None, zorders=None,
+        ref_label=None, smax=None):
 
     """Plot a Taylor diagram.
-
-    This code was adpated and revised from the ILAMB code by Nathan Collier found here:
+    This code was adpated from the ILAMB code by Nathan Collier found here:
     https://github.com/rubisco-sfa/ILAMB/blob/master/src/ILAMB/Post.py#L80,
-    which was originally adapted from the code by Yannick Copin found here:
+    which was revised by Jiwoo Lee to enable more customization.
+
+    The original code was written by Yannick Copin that can be found here:
     https://gist.github.com/ycopin/3342888
 
     Parameters
@@ -32,6 +34,10 @@ def TaylorDiagram(
         list of integer for marker size
     zorders : list, optional
         list of integer for zorder
+    ref_label : str, optional
+        label for reference data
+    smax : int or float, optional
+        maximum of axis range for (normalized) standard deviation
 
     Return
     ------
@@ -59,7 +65,8 @@ def TaylorDiagram(
         stddev = stddev / refstd
         refstd = 1.
     smin = 0
-    smax = max(2.0, 1.1 * stddev.max())
+    if smax is None:
+        smax = max(2.0, 1.1 * stddev.max())
 
     # add the curvilinear grid
     ghelper = FA.GridHelperCurveLinear(tr,
@@ -114,7 +121,7 @@ def TaylorDiagram(
         ax.plot(np.arccos(corrcoef[i]), stddev[i], marker, color=colors[i], mew=0, ms=ms, label=label, zorder=zorder)
 
     # Add reference point and stddev contour
-    l, = ax.plot([0], refstd, 'k*', ms=12, mew=0)
+    l, = ax.plot([0], refstd, 'k*', ms=12, mew=0, label=ref_label)
     t = np.linspace(0, np.pi / 2)
     r = np.zeros_like(t) + refstd
     ax.plot(t, r, 'k--')

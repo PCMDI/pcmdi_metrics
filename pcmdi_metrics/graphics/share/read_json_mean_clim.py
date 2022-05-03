@@ -24,6 +24,7 @@ def read_mean_clim_json_files(
                  (Rows: models, Columns: variables (i.e., 2d array)
     - `var_list`: list of string, all variables from JSON files
     - `var_unit_list`: list of string, all variables and its units from JSON files
+    - `var_ref_list`: list of string, list for default reference dataset for each variable
     - `regions`: list of string, regions
     - `stats`: list of string, statistics
     """
@@ -31,14 +32,15 @@ def read_mean_clim_json_files(
     results_dict = {}  # merged dict by reading all JSON files
     var_list = []
     var_unit_list = []
+    var_ref_dict = {}
     regions_all = []
 
     for json_file in json_list:
         if debug:
             print("json_file:", json_file)
         with open(json_file) as fj:
-            dict_temp = json.load(fj)
-        var = dict_temp["Variable"]["id"]
+            dict_temp = json.load(fj)  # e.g., load contents of precipitation json file
+        var = dict_temp["Variable"]["id"]  # e.g., 'pr'
         if "level" in list(dict_temp["Variable"].keys()):
             var += "-" + str(int(dict_temp["Variable"]["level"] / 100.0))  # Pa to hPa
         results_dict[var] = dict_temp
@@ -46,11 +48,13 @@ def read_mean_clim_json_files(
         var_unit = var + " [" + unit + "]"
         var_list.append(var)
         var_unit_list.append(var_unit)
+        var_ref_dict[var] = extract_ref(var, results_dict[var])
         regions_all.extend(extract_region(var, results_dict[var]))
         if stats is None:
             stats = extract_stat(var, results_dict[var])
     if debug:
         print("var_unit_list:", var_unit_list)
+        print("var_ref_dict:", var_ref_dict)
 
     if regions is None:
         regions = list(set(regions_all))  # Remove duplicates
@@ -81,13 +85,19 @@ def read_mean_clim_json_files(
                     results_dict, var_list, region, stat, season, mip, debug
                 )
 
-    return df_dict, var_list, var_unit_list, regions, stats
+    return df_dict, var_list, var_unit_list, var_ref_dict, regions, stats
 
 
 def extract_unit(var, results_dict_var):
     model_list = sorted(list(results_dict_var["RESULTS"].keys()))
     units = results_dict_var["RESULTS"][model_list[0]]["units"]
     return units
+
+
+def extract_ref(var, results_dict_var):
+    model_list = sorted(list(results_dict_var["RESULTS"].keys()))
+    ref = results_dict_var["RESULTS"][model_list[0]]["default"]["source"]
+    return ref
 
 
 def extract_region(var, results_dict_var):
