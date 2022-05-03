@@ -1,6 +1,6 @@
 # init file
 # isort: skip_file
-from .share.plot_utils import add_logo, download_archived_results  # noqa
+from .share.plot_utils import add_logo, download_archived_results, combine_ref_dicts  # noqa
 from .share.read_json_mean_clim import (
     read_mean_clim_json_files,
     normalize_by_median,
