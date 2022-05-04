@@ -299,10 +299,8 @@ def _to_pd_dataframe(
     print('data.shape:', data.shape)
     # Pandas dataframe for seaborn plotting
     df = pd.DataFrame(data, columns=metric_names, index=model_names)
-    print('df.shape:', df.shape)
     # Stack
     df_stacked = df.stack(dropna=False).reset_index()
-    print('df_stacked.shape-1:', df_stacked.shape)
     df_stacked = df_stacked.rename(
         columns={"level_0": "Model", "level_1": "Metric", 0: "value"}
     )
@@ -312,5 +310,4 @@ def _to_pd_dataframe(
             df_stacked["group"] = np.where(
                 (df_stacked.Model == model2), group2_name, df_stacked.group
             )
-    print('df_stacked.shape-2:', df_stacked.shape)
     return df_stacked
