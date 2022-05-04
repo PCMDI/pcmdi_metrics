@@ -234,7 +234,7 @@ def _quick_qc(data, model_names, metric_names, model_names2=None):
         for model in model_names2:
             if model not in model_names:
                 sys.exit(
-                    "Error: model_names2 shoudl be a subset of model_names: "
+                    "Error: model_names2 should be a subset of model_names, but "
                     + model
                     + " is not in model_names"
                 )
@@ -296,10 +296,13 @@ def _to_pd_dataframe(
     group1_name="group1",
     group2_name="group2",
 ):
+    print('data.shape:', data.shape)
     # Pandas dataframe for seaborn plotting
     df = pd.DataFrame(data, columns=metric_names, index=model_names)
+    print('df.shape:', df.shape)
     # Stack
-    df_stacked = df.stack().reset_index()
+    df_stacked = df.stack(dropna=False).reset_index()
+    print('df_stacked.shape-1:', df_stacked.shape)
     df_stacked = df_stacked.rename(
         columns={"level_0": "Model", "level_1": "Metric", 0: "value"}
     )
@@ -309,4 +312,5 @@ def _to_pd_dataframe(
             df_stacked["group"] = np.where(
                 (df_stacked.Model == model2), group2_name, df_stacked.group
             )
+    print('df_stacked.shape-2:', df_stacked.shape)
     return df_stacked
