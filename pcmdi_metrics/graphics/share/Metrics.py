@@ -11,7 +11,7 @@ from pcmdi_metrics.graphics import combine_ref_dicts, read_mean_clim_json_files
 class Metrics:
     """Mean climate metrics object class"""
 
-    def __init__(self, files):
+    def __init__(self, files, mip=None):
         """Initialize the mean climate metrics class
 
         This method initializes the mean climate metrics object given a
@@ -57,7 +57,7 @@ class Metrics:
             self.var_ref_dict,
             self.regions,
             self.stats,
-        ) = read_mean_clim_json_files(files)
+        ) = read_mean_clim_json_files(files, mip=mip)
 
     def copy(self):
         """method to deep copy a Metrics instance"""
