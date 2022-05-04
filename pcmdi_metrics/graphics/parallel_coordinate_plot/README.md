@@ -9,4 +9,4 @@ Parallel coordinate plot using matplotlib
     
   - Mean Climate, compare CMIP5 and CMIP6: [parallel_coordinate_plot_mean_clim_multiMIPs.ipynb](./parallel_coordinate_plot_mean_clim_multiMIPs.ipynb)
   
-    ![plot](./mmean_clim_parallel_coordinate_plot_cmip56.png)
+    ![plot](./mean_clim_parallel_coordinate_plot_cmip56.png)
