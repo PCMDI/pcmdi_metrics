@@ -23,7 +23,7 @@ def TaylorDiagram(
     fig : matplotlib figure
         the matplotlib figure
     colors : array
-        an array of colors for each element of the input arrays
+        an array or list of colors for each element of the input arrays
     normalize : bool, optional
         disable to skip normalization of the standard deviation
     labels : list, optional
