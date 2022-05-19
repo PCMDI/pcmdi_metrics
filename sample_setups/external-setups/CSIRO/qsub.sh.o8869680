@@ -718,8 +718,8 @@ zg    annual mean bias is  -2.12864335119
 zg    annual mean bias is  3.82789145432
 ======================================================================================
 			Resource Usage on 2015-01-22 05:25:01.351373:
-	JobId: 8869680.r-man2  
-	Project: p66 
+	JobId: 8869680.r-man2
+	Project: p66
 	Exit Status: 0 (Linux Signal 0)
 	Service Units: 0.07
 	NCPUs Requested: 1				NCPUs Used: 1

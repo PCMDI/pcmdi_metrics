@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import sys
+
 import testsrunner
 
 
@@ -14,13 +15,16 @@ class PMPTestRunner(testsrunner.TestRunnerBase):
         return opt
 
 
-test_suite_name = 'pmp'
+test_suite_name = "pmp"
 
 workdir = os.getcwd()
-runner = PMPTestRunner(test_suite_name, options=["--update", "--traceback"],
-                       options_files=["tests/pmp_runtests.json"],
-                       get_sample_data=True,
-                       test_data_files_info="share/test_data_files.txt")
+runner = PMPTestRunner(
+    test_suite_name,
+    options=["--update", "--traceback"],
+    options_files=["tests/pmp_runtests.json"],
+    get_sample_data=True,
+    test_data_files_info="share/test_data_files.txt",
+)
 ret_code = runner.run(workdir)
 
 sys.exit(ret_code)

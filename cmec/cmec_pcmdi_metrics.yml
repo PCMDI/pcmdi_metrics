@@ -1,0 +1,5 @@
+name: _CMEC_pcmdi_metrics
+channels:
+  - conda-forge
+dependencies:
+  - pcmdi_metrics
