@@ -13,6 +13,10 @@ import MV2
 
 import pcmdi_metrics
 
+from pcmdi_metrics.variability_mode.lib import (
+    data_land_mask_out
+)
+
 
 def tree():
     return defaultdict(tree)
@@ -44,7 +48,9 @@ def get_domain_range(mode, regions_specs):
 
 
 def read_data_in(
+    dataname,
     path,
+    lf_path,
     var_in_data,
     var_to_consider,
     start_time,
@@ -92,6 +98,13 @@ def read_data_in(
             cdtime.comptime(data_eyear, 12, 31, 23, 59, 59),
         )
     )
+    
+    # landmask if required
+    if LandMask:
+        # Extract SST (land region mask out)
+        data_timeseries = data_land_mask_out(
+            dataname, data_timeseries, lf_path=lf_path
+        )
 
     f.close()
 

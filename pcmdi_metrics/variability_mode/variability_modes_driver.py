@@ -76,7 +76,6 @@ from pcmdi_metrics.variability_mode.lib import (
     gain_pseudo_pcs,
     get_domain_range,
     linear_regression_on_globe_for_teleconnection,
-    model_land_mask_out,
     plot_map,
     read_data_in,
     sort_human,
@@ -316,10 +315,14 @@ if "RESULTS" not in list(result_dict.keys()):
 # Observation
 # -------------------------------------------------
 if obs_compare:
+    
+    obs_lf_path = None
 
     # read data in
     obs_timeseries, osyear, oeyear = read_data_in(
+        obs_name,
         obs_path,
+        obs_lf_path,
         obs_var,
         var,
         start_time_obs,
@@ -550,10 +553,17 @@ for model in models:
             result_dict["RESULTS"][model][run]["defaultReference"][mode][
                 "target_model_eofs"
             ] = eofn_mod
+            
+            if LandMask:
+                model_lf_path = modpath_lf(mip=mip, exp=exp, model=model)
+            else:
+                model_lf_path = None
 
             # read data in
             model_timeseries, msyear, meyear = read_data_in(
+                model,
                 model_path,
+                model_lf_path,
                 var,
                 var,
                 start_time,
@@ -562,14 +572,6 @@ for model in models:
                 LandMask,
                 debug=debug,
             )
-
-            # landmask if required
-            if LandMask:
-                model_lf_path = modpath_lf(mip=mip, exp=exp, model=model)
-                # Extract SST (land region mask out)
-                model_timeseries = model_land_mask_out(
-                    model, model_timeseries, model_lf_path
-                )
 
             debug_print("msyear: " + str(msyear) + " meyear: " + str(meyear), debug)
 
