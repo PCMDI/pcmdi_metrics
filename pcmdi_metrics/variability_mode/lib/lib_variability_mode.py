@@ -12,10 +12,7 @@ import cdutil
 import MV2
 
 import pcmdi_metrics
-
-from pcmdi_metrics.variability_mode.lib import (
-    data_land_mask_out
-)
+from pcmdi_metrics.variability_mode.lib import data_land_mask_out
 
 
 def tree():
@@ -98,7 +95,7 @@ def read_data_in(
             cdtime.comptime(data_eyear, 12, 31, 23, 59, 59),
         )
     )
-    
+
     # landmask if required
     if LandMask:
         # Extract SST (land region mask out)

@@ -315,7 +315,7 @@ if "RESULTS" not in list(result_dict.keys()):
 # Observation
 # -------------------------------------------------
 if obs_compare:
-    
+
     obs_lf_path = None
 
     # read data in
@@ -553,7 +553,7 @@ for model in models:
             result_dict["RESULTS"][model][run]["defaultReference"][mode][
                 "target_model_eofs"
             ] = eofn_mod
-            
+
             if LandMask:
                 model_lf_path = modpath_lf(mip=mip, exp=exp, model=model)
             else:
