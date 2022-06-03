@@ -28,8 +28,8 @@ meyear = 2005
 eofn_mod = 1
 
 # OBSERVATIONS SETTINGS
-reference_data_path = '$INPUT_DIR$/obs4MIPs_PCMDI_monthly/NOAA-ESRL-PSD/20CR/mon/ts/gn/v20210727/ts_mon_20CR_PCMDI_gn_187101-201212.nc'
-reference_data_name = 'NOAA-20CR'
+reference_data_path = '$INPUT_DIR$/obs4MIPs_PCMDI_monthly/MOHC/HadISST-1-1/mon/ts/gn/v20210727/ts_mon_HadISST-1-1_PCMDI_gn_187001-201907.nc'
+reference_data_name = 'HadISST-1-1'
 varOBS = 'ts'
 ModUnitsAdjust = (True, "subtract", 273.15)  # degK to degC
 osyear = 1900
