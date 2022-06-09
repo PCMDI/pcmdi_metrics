@@ -16,7 +16,6 @@
 #
 # Modifed by Jiwoo Lee, 2020-06-26: Skip merging when dict is empty
 
-import collections
 from collections.abc import Mapping
 
 
