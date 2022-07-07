@@ -51,17 +51,17 @@ param = P.get_parameter()
 mip = param.mip
 mod = param.mod
 var = param.var
-# dfrq = param.frq
 modpath = param.modpath
+ref = param.ref
 prd = param.prd
 fac = param.fac
 res = param.res
-nx_intp = int(360/res[0])
-ny_intp = int(180/res[1])
+res_nxny=str(int(360/res[0]))+"x"+str(int(180/res[1]))
 print(modpath)
 print(mod)
 print(prd)
-print(nx_intp, 'x', ny_intp)
+print(res_nxny)
+print('Ref:', ref)
 
 # Get flag for CMEC output
 cmec = param.cmec
@@ -70,8 +70,12 @@ cmec = param.cmec
 case_id = param.case_id
 outdir_template = param.process_templated_argument("results_dir")
 outdir = StringConstructor(str(outdir_template(
-    output_type='%(output_type)',
-    mip=mip, case_id=case_id)))
+    output_type='%(output_type)', mip=mip, case_id=case_id)))
+
+refdir_template = param.process_templated_argument("ref_dir")
+refdir = StringConstructor(str(refdir_template(
+    output_type='%(output_type)', case_id=case_id)))
+refdir = refdir(output_type='diagnostic_results')
 
 for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
     if not os.path.exists(outdir(output_type=output_type)):
@@ -97,7 +101,9 @@ for ifl in range(len(file_list)):
         data.append(model)
     else:
         model = file.split("/")[-1].split(".")[2]
+        # model = file.split("/")[-1].split(".")[4]
         ens = file.split("/")[-1].split(".")[3]
+        # ens = file.split("/")[-1].split(".")[5]
         data.append(model + "." + ens)
 print("# of data:", len(data))
 print(data)
@@ -136,7 +142,7 @@ for id, dat in enumerate(data):
     months = ['ANN', 'MAM', 'JJA', 'SON', 'DJF', 
               'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
               'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-
+    
     pdfpeakmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
     pdfwidthmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
     amtpeakmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
@@ -211,14 +217,14 @@ for id, dat in enumerate(data):
     amtpeakmap.setAxisList((axmon, lat, lon))
     amtwidthmap.setAxisList((axmon, lat, lon))
     metrics['RESULTS'][dat] = {}
-    metrics['RESULTS'][dat]['pdfpeak'] = AvgDomain(pdfpeakmap)
-    metrics['RESULTS'][dat]['pdfwidth'] = AvgDomain(pdfwidthmap)
+    metrics['RESULTS'][dat]['frqpeak'] = AvgDomain(pdfpeakmap)
+    metrics['RESULTS'][dat]['frqwidth'] = AvgDomain(pdfwidthmap)
     metrics['RESULTS'][dat]['amtpeak'] = AvgDomain(amtpeakmap)
     metrics['RESULTS'][dat]['amtwidth'] = AvgDomain(amtwidthmap)
 
     # Write data (nc file for spatial pattern of distributions)
     outfilename = "dist_freq.amount_regrid." + \
-        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
+        res_nxny+"_" + dat + ".nc"
     with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
         out.write(pdfmapmon, id="pdf")
         out.write(pdfmapmon_tn, id="pdf_tn")
@@ -227,16 +233,16 @@ for id, dat in enumerate(data):
 
     # Write data (nc file for spatial pattern of metrics)
     outfilename = "dist_freq.amount_peak.width_regrid." + \
-        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
+        res_nxny+"_" + dat + ".nc"
     with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
-        out.write(pdfpeakmap, id="pdfpeak")
-        out.write(pdfwidthmap, id="pdfwidth")
+        out.write(pdfpeakmap, id="frqpeak")
+        out.write(pdfwidthmap, id="frqwidth")
         out.write(amtpeakmap, id="amtpeak")
         out.write(amtwidthmap, id="amtwidth")
 
     # Write data (json file for area averaged metrics)
     outfilename = "dist_freq.amount_peak.width_area.mean_regrid." + \
-        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".json"
+        res_nxny+"_" + dat + ".json"
     JSON = pcmdi_metrics.io.base.Base(
         outdir(output_type='metrics_results'), outfilename)
     JSON.write(metrics,
@@ -252,19 +258,18 @@ for id, dat in enumerate(data):
     
     
     
-    # Domain averaged distribution -> Metrics -> Write
-    # Calculate metrics from the distribution at each domain
+    # Domain averaged distribution -> Metrics -> Write    
+    # Calculate metrics from the distribution at each domain        
     metricsdom = {'RESULTS': {dat: {}}}
     metricsdom3C = {'RESULTS': {dat: {}}}
     metricsdomAR6 = {'RESULTS': {dat: {}}}
-    metricsdom['RESULTS'][dat], pdfdom, amtdom = CalcMetricsDomain(pdfmapmon, amtmapmon, months, bincrates)
-    metricsdom3C['RESULTS'][dat], pdfdom3C, amtdom3C = CalcMetricsDomain3Clust(pdfmapmon, amtmapmon, months, bincrates, str(nx_intp)+"x"+str(ny_intp))
-    metricsdomAR6['RESULTS'][dat], pdfdomAR6, amtdomAR6 = CalcMetricsDomainAR6(pdfmapmon, amtmapmon, months, bincrates)
+    metricsdom['RESULTS'][dat], pdfdom, amtdom = CalcMetricsDomain(pdfmapmon, amtmapmon, months, bincrates, dat, ref, refdir)
+    metricsdom3C['RESULTS'][dat], pdfdom3C, amtdom3C = CalcMetricsDomain3Clust(pdfmapmon, amtmapmon, months, bincrates, dat, ref, refdir)
+    metricsdomAR6['RESULTS'][dat], pdfdomAR6, amtdomAR6 = CalcMetricsDomainAR6(pdfmapmon, amtmapmon, months, bincrates, dat, ref, refdir)
 
-        
     # Write data (nc file for distributions at each domain)
     outfilename = "dist_freq.amount_domain_regrid." + \
-        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
+        res_nxny+"_" + dat + ".nc"
     with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
         out.write(pdfdom, id="pdf")
         out.write(amtdom, id="amt")
@@ -272,7 +277,7 @@ for id, dat in enumerate(data):
         
     # Write data (nc file for distributions at each domain with 3 clustering regions)
     outfilename = "dist_freq.amount_domain3C_regrid." + \
-        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
+        res_nxny+"_" + dat + ".nc"
     with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
         out.write(pdfdom3C, id="pdf")
         out.write(amtdom3C, id="amt")
@@ -280,7 +285,7 @@ for id, dat in enumerate(data):
     
     # Write data (nc file for distributions at each domain with AR6 regions)
     outfilename = "dist_freq.amount_domainAR6_regrid." + \
-        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
+        res_nxny+"_" + dat + ".nc"
     with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
         out.write(pdfdomAR6, id="pdf")
         out.write(amtdomAR6, id="amt")
@@ -289,7 +294,7 @@ for id, dat in enumerate(data):
  
     # Write data (json file for domain metrics)
     outfilename = "dist_freq.amount_peak.width_domain_regrid." + \
-        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".json"
+        res_nxny+"_" + dat + ".json"
     JSON = pcmdi_metrics.io.base.Base(
         outdir(output_type='metrics_results'), outfilename)
     JSON.write(metricsdom,
@@ -305,7 +310,7 @@ for id, dat in enumerate(data):
 
     # Write data (json file for domain metrics with 3 clustering regions)
     outfilename = "dist_freq.amount_peak.width_domain3C_regrid." + \
-        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".json"
+        res_nxny+"_" + dat + ".json"
     JSON = pcmdi_metrics.io.base.Base(
         outdir(output_type='metrics_results'), outfilename)
     JSON.write(metricsdom3C,
@@ -321,7 +326,7 @@ for id, dat in enumerate(data):
         
     # Write data (json file for domain metrics with AR6 regions)
     outfilename = "dist_freq.amount_peak.width_domainAR6_regrid." + \
-        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".json"
+        res_nxny+"_" + dat + ".json"
     JSON = pcmdi_metrics.io.base.Base(
         outdir(output_type='metrics_results'), outfilename)
     JSON.write(metricsdomAR6,

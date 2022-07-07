@@ -4,6 +4,11 @@ def AddParserArgument(P):
                    dest='mip',
                    default=None,
                    help="cmip5, cmip6 or other mip")
+    P.add_argument("--exp",
+                   type=str,
+                   dest='exp',
+                   default=None,
+                   help="amip, cmip or others")
     P.add_argument("--mod",
                    type=str,
                    dest='mod',
@@ -55,17 +60,17 @@ def AddParserArgument(P):
                    type=str,
                    dest='ref',
                    default=None,
-                   help="reference data path")
+                   help="reference data")
+    P.add_argument("--ref_dir",
+                   type=str,
+                   dest='ref_dir',
+                   default=None,
+                   help="reference directory path")
     P.add_argument("--exp",
                    type=str,
                    dest='exp',
                    default=None,
                    help="e.g., historical or amip")
-    P.add_argument("--resn",
-                   type=str,
-                   dest='resn',
-                   default=None,
-                   help="horizontal resolution with # of nx and ny")
     P.add_argument("--ver",
                    type=str,
                    dest='ver',
