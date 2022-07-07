@@ -41,12 +41,11 @@ modpath = param.modpath
 prd = param.prd
 fac = param.fac
 res = param.res
-nx_intp = int(360/res[0])
-ny_intp = int(180/res[1])
+res_nxny=str(int(360/res[0]))+"x"+str(int(180/res[1]))
 print(modpath)
 print(mod)
 print(prd)
-print(nx_intp, 'x', ny_intp)
+print(res_nxny)
 
 # Get flag for CMEC output
 cmec = param.cmec
@@ -82,13 +81,17 @@ for ifl in range(len(file_list)):
         data.append(model)
     else:
         model = file.split("/")[-1].split(".")[2]
+        # model = file.split("/")[-1].split(".")[4]
         ens = file.split("/")[-1].split(".")[3]
+        # ens = file.split("/")[-1].split(".")[5]
         data.append(model + "." + ens)
 print("# of data:", len(data))
 print(data)
 
-# Regridding -> Month separation -> Unevenness -> Domain average -> Write
+# Regridding -> Month separation -> Unevenness -> Domain median -> Write
 metrics = {'RESULTS': {}}
+metrics3C = {'RESULTS': {}}
+metricsAR6 = {'RESULTS': {}}
 syr = prd[0]
 eyr = prd[1]
 for id, dat in enumerate(data):
@@ -118,28 +121,28 @@ for id, dat in enumerate(data):
         print(iyr, drg.shape)
 
     # Month separation
-    # months = ['ALL', 'JAN', 'FEB', 'MAR', 'APR', 'MAY',
-    #           'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-    months = ['ALL', 'JAN', 'FEB', 'MAR', 'APR', 'MAY',
-              'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
-              'MAM', 'JJA', 'SON', 'DJF']
+    months = ['ANN', 'MAM', 'JJA', 'SON', 'DJF', 
+              'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
+              'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
 
     if "360" in cal:
-        ndymon = [360, 30, 30, 30, 30, 30, 30, 30,
-                  30, 30, 30, 30, 30, 90, 90, 90, 90]
+        ndymon = [360, 90, 90, 90, 90, 
+                  30, 30, 30, 30, 30, 30, 
+                  30, 30, 30, 30, 30, 30]
     else:
-        ndymon = [365, 31, 28, 31, 30, 31, 30, 31,
-                  31, 30, 31, 30, 31, 92, 92, 91, 90]
+        ndymon = [365, 92, 92, 91, 90, 
+                  31, 28, 31, 30, 31, 30, 
+                  31, 31, 30, 31, 30, 31]
 
     # Open nc file for writing data of spatial pattern of cumulated fractions with separated month
     outfilename = "dist_cumfrac_regrid." + \
-        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
+        res_nxny+"_" + dat + ".nc"
     outcumfrac = cdms.open(os.path.join(
         outdir(output_type='diagnostic_results'), outfilename), "w")
 
     for im, mon in enumerate(months):
 
-        if mon == 'ALL':
+        if mon == 'ANN':
             dmon = drg
         elif mon == 'MAM':
             dmon = getDailyCalendarMonth(drg, ['MAR', 'APR', 'MAY'])
@@ -179,7 +182,6 @@ for id, dat in enumerate(data):
 
             if thisyear is not None:
                 print(year, thisyear.shape)
-                thisyear = thisyear.filled(np.nan)  # np.array(thisyear)
                 pfrac, ndhy, prdyfrac, sdii = oneyear(thisyear, missingthresh)
                 cfy[iyr, :, :] = ndhy
                 prdyfracyr[iyr, :, :] = prdyfrac
@@ -215,33 +217,82 @@ for id, dat in enumerate(data):
             sdiimmon = MV.concatenate(
                 (sdiimmon, np.expand_dims(sdiim, axis=0)), axis=0)
 
-    # Domain average
-    axmon = cdms.createAxis(range(len(months)), id='month')
+    # Domain median
+    # axmon = cdms.createAxis(range(len(months)), id='month') # If id='month', genutil.statistics.median in MedDomain occurs error
+    axmon = cdms.createAxis(range(len(months)), id='time')
     ndmmon = MV.array(ndmmon)
     ndmmon.setAxisList((axmon, lat, lon))
     prdyfracmmon = MV.array(prdyfracmmon)
     prdyfracmmon.setAxisList((axmon, lat, lon))
     sdiimmon = MV.array(sdiimmon)
     sdiimmon.setAxisList((axmon, lat, lon))
+    
     metrics['RESULTS'][dat] = {}
-    metrics['RESULTS'][dat]['unevenness'] = AvgDomain(ndmmon)
-    metrics['RESULTS'][dat]['prdyfrac'] = AvgDomain(prdyfracmmon)
-    metrics['RESULTS'][dat]['sdii'] = AvgDomain(sdiimmon)
+    metrics['RESULTS'][dat]['unevenness'] = MedDomain(ndmmon, months)
+    metrics['RESULTS'][dat]['prdyfrac'] = MedDomain(prdyfracmmon, months)
+    metrics['RESULTS'][dat]['sdii'] = MedDomain(sdiimmon, months)
+    
+    metrics3C['RESULTS'][dat] = {}
+    metrics3C['RESULTS'][dat]['unevenness'] = MedDomain3Clust(ndmmon, months)
+    metrics3C['RESULTS'][dat]['prdyfrac'] = MedDomain3Clust(prdyfracmmon, months)
+    metrics3C['RESULTS'][dat]['sdii'] = MedDomain3Clust(sdiimmon, months)
+    
+    metricsAR6['RESULTS'][dat] = {}
+    metricsAR6['RESULTS'][dat]['unevenness'] = MedDomainAR6(ndmmon, months)
+    metricsAR6['RESULTS'][dat]['prdyfrac'] = MedDomainAR6(prdyfracmmon, months)
+    metricsAR6['RESULTS'][dat]['sdii'] = MedDomainAR6(sdiimmon, months)
 
+    axmon = cdms.createAxis(range(len(months)), id='month')
+    ndmmon.setAxisList((axmon, lat, lon))
+    prdyfracmmon.setAxisList((axmon, lat, lon))
+    sdiimmon.setAxisList((axmon, lat, lon))
+    
     # Write data (nc file for spatial pattern of metrics)
     outfilename = "dist_cumfrac_unevenness_regrid." + \
-        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".nc"
+        res_nxny+"_" + dat + ".nc"
     with cdms.open(os.path.join(outdir(output_type='diagnostic_results'), outfilename), "w") as out:
         out.write(ndmmon, id="unevenness")
         out.write(prdyfracmmon, id="prdyfrac")
         out.write(sdiimmon, id="sdii")
 
-    # Write data (json file for area averaged metrics)
-    outfilename = "dist_cumfrac_unevenness_area.mean_regrid." + \
-        str(nx_intp)+"x"+str(ny_intp)+"_" + dat + ".json"
+    # Write data (json file for domain median metrics)
+    outfilename = "dist_cumfrac_unevenness_domain.median_regrid." + \
+        res_nxny+"_" + dat + ".json"
     JSON = pcmdi_metrics.io.base.Base(
         outdir(output_type='metrics_results'), outfilename)
     JSON.write(metrics,
+               json_structure=["model+realization",
+                               "metrics",
+                               "domain",
+                               "month"],
+               sort_keys=True,
+               indent=4,
+               separators=(',', ': '))
+    if cmec:
+        JSON.write_cmec(indent=4, separators=(',', ': '))
+    
+    # Write data (json file for domain median metrics with 3 clustering regions)
+    outfilename = "dist_cumfrac_unevenness_domain.median.3C_regrid." + \
+        res_nxny+"_" + dat + ".json"
+    JSON = pcmdi_metrics.io.base.Base(
+        outdir(output_type='metrics_results'), outfilename)
+    JSON.write(metrics3C,
+               json_structure=["model+realization",
+                               "metrics",
+                               "domain",
+                               "month"],
+               sort_keys=True,
+               indent=4,
+               separators=(',', ': '))
+    if cmec:
+        JSON.write_cmec(indent=4, separators=(',', ': '))
+        
+    # Write data (json file for domain median metrics with AR6 regions)
+    outfilename = "dist_cumfrac_unevenness_domain.median.AR6_regrid." + \
+        res_nxny+"_" + dat + ".json"
+    JSON = pcmdi_metrics.io.base.Base(
+        outdir(output_type='metrics_results'), outfilename)
+    JSON.write(metricsAR6,
                json_structure=["model+realization",
                                "metrics",
                                "domain",

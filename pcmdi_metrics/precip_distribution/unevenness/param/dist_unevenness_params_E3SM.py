@@ -2,14 +2,12 @@ import datetime
 import os
 
 mip = "cmip6"
-# exp = "historical"
-exp = "amip"
+exp = "historical"
+dat = "E3SM-1-0"
 var = "pr"
 frq = "day"
 # ver = "v20210717"
-# ver = "v20220108"
-# ver = "v20220205"
-ver = "v20220219"
+ver = "v20220108"
 
 prd = [1985, 2004]  # analysis period
 fac = 86400  # factor to make unit of [mm/day]
@@ -18,11 +16,8 @@ fac = 86400  # factor to make unit of [mm/day]
 res = [2, 2]  # target horizontal resolution [degree] for interporation (lon, lat)
 # res = [4, 4]  # target horizontal resolution [degree] for interporation (lon, lat)
 
-modpath = (
-    "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/" +
-    ver+"/"+mip+"/"+exp+"/atmos/"+frq+"/"+var+"/"
-)
-# modpath = "/home/ahn6/xmls_rerun/"
+indir = "/home/zhang40/CMIP6/CMIP/E3SM-Project/E3SM-1-0/historical/r1i1p1f1/day/pr/gr/v20210908/"
+infile = "pr_day_E3SM-1-0_historical_r1i1p1f1_gr_*.nc"
 
 # case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 case_id = ver
@@ -32,3 +27,14 @@ case_id = ver
 pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"
 results_dir = os.path.join(
     pmpdir, '%(output_type)', 'unevenness', '%(mip)', exp, '%(case_id)')
+
+# xmldir = "./xml_obs/"
+xmldir = "./xml_e3sm/"
+if not (os.path.isdir(xmldir)):
+    os.makedirs(xmldir)
+os.system(
+    "cdscan -x " + xmldir + var + "." + frq + "." + dat + ".xml " + indir + infile
+)
+
+modpath = xmldir
+mod = var + "." + frq + "." + dat + ".xml"
