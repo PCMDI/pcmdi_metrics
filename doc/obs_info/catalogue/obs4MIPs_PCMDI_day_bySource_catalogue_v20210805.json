@@ -1,0 +1,26 @@
+{
+    "GPCP-1-3": {
+        "pr": {
+            "CMIP_CMOR_TABLE": "Aday",
+            "MD5sum": "10496775dae2b5f65fe95b064c1efd42",
+            "RefTrackingDate": "Tue Jul 27 11:33:54 2021",
+            "filename": "pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc",
+            "period": "19961002-20170101",
+            "shape": "(7397, 180, 360)",
+            "template": "NASA-JPL/GPCP-1-3/day/pr/gn/v20210727/pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc",
+            "version": "latest"
+        }
+    },
+    "PERSIANN-CDRv1r1": {
+        "pr": {
+            "CMIP_CMOR_TABLE": "Aday",
+            "MD5sum": "932785c2b908928f2c227c509ac029d1",
+            "RefTrackingDate": "Thu Jul 29 11:26:13 2021",
+            "filename": "pr_day_PERSIANN-CDRv1r1_PCMDI_gn_19830102-20190101.nc",
+            "period": "19830102-20190101",
+            "shape": "(13149, 180, 360)",
+            "template": "NOAA/PERSIANN-CDRv1r1/day/pr/gn/v20210729/pr_day_PERSIANN-CDRv1r1_PCMDI_gn_19830102-20190101.nc",
+            "version": "latest"
+        }
+    }
+}
