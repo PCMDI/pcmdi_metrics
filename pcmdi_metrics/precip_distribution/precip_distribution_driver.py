@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
-import glob
 import os
+import glob
+import copy
+import cdms2 as cdms
+import MV2 as MV
 from genutil import StringConstructor
 from pcmdi_metrics.driver.pmp_parser import PMPParser
 from pcmdi_metrics.precip_distribution.lib import (
     AddParserArgument,
+    Regrid,
     precip_distribution_frq_amt,
     precip_distribution_cum,
 )
@@ -22,11 +26,10 @@ ref = param.ref
 prd = param.prd
 fac = param.fac
 res = param.res
-res_nxny=str(int(360/res[0]))+"x"+str(int(180/res[1]))
 print(modpath)
 print(mod)
 print(prd)
-print(res_nxny)
+print(res)
 print('Ref:', ref)
 
 # Get flag for CMEC output
@@ -50,8 +53,8 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
         except FileExistsError:
             pass
     print(outdir(output_type=output_type))
-
-# Check data in advance
+    
+# Create input file list 
 file_list = sorted(glob.glob(os.path.join(modpath, "*" + mod + "*")))
 data = []
 for file in file_list:
@@ -65,14 +68,31 @@ for file in file_list:
 print("Number of datasets:", len(file_list))
 print("Dataset:", data)
 
-# It is working for daily average precipitation, in units of mm/d, with dimensions of lats, lons, and time.
-
-# Calculate metrics from precipitation frequency and amount distributions
+# Read data -> Regrid -> Calculate metrics
+# It is working for daily average precipitation, in units of mm/day, with dimensions of (time,lat,lon)
+syr = prd[0]
+eyr = prd[1]
 for dat, file in zip(data, file_list):
-    precip_distribution_frq_amt(file, dat, prd, var, fac, outdir, cmec)
+    f = cdms.open(file)
+    cal = f[var].getTime().calendar
+    if "360" in cal:
+        ldy = 30
+    else:
+        ldy = 31
+    print(dat, cal)
+    for iyr in range(syr, eyr + 1):
+        do = f(var, time=(str(iyr) + "-1-1 0:0:0", str(iyr) + "-12-" + str(ldy) + " 23:59:59"))*float(fac)
+        # Regridding
+        rgtmp = Regrid(do, res)
+        if iyr == syr:
+            drg = copy.deepcopy(rgtmp)
+        else:
+            drg = MV.concatenate((drg, rgtmp))
+        print(iyr, drg.shape)
     
-# Calculate metrics from precipitation cumulative distributions
-for dat, file in zip(data, file_list):
-    precip_distribution_cum(file, dat, prd, var, fac, outdir, cmec)
+    # Calculate metrics from precipitation frequency and amount distributions    
+    precip_distribution_frq_amt(dat, drg, syr, eyr, res, outdir, ref, refdir, cmec)
+    
+    # Calculate metrics from precipitation cumulative distributions
+    precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec)
 
-    
