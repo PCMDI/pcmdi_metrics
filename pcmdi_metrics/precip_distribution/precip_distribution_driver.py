@@ -53,8 +53,8 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
         except FileExistsError:
             pass
     print(outdir(output_type=output_type))
-    
-# Create input file list 
+
+# Create input file list
 file_list = sorted(glob.glob(os.path.join(modpath, "*" + mod + "*")))
 data = []
 for file in file_list:
@@ -89,10 +89,10 @@ for dat, file in zip(data, file_list):
         else:
             drg = MV.concatenate((drg, rgtmp))
         print(iyr, drg.shape)
-    
-    # Calculate metrics from precipitation frequency and amount distributions    
+
+    # Calculate metrics from precipitation frequency and amount distributions
     precip_distribution_frq_amt(dat, drg, syr, eyr, res, outdir, ref, refdir, cmec)
-    
+
     # Calculate metrics from precipitation cumulative distributions
     precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec)
 

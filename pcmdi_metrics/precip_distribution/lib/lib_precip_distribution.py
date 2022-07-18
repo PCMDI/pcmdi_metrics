@@ -24,8 +24,8 @@ def precip_distribution_frq_amt (dat, drg, syr, eyr, res, outdir, ref, refdir, c
     """
 
     # Month separation
-    months = ['ANN', 'MAM', 'JJA', 'SON', 'DJF', 
-              'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
+    months = ['ANN', 'MAM', 'JJA', 'SON', 'DJF',
+              'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
               'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
 
     pdfpeakmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
@@ -88,7 +88,7 @@ def precip_distribution_frq_amt (dat, drg, syr, eyr, res, outdir, ref, refdir, c
     axbin = cdms.createAxis(range(len(binl)), id='bin')
     lat = drg.getLatitude()
     lon = drg.getLongitude()
-    
+
     pdfmapmon.setAxisList((axmon, axbin, lat, lon))
     pdfmapmon_tn.setAxisList((axmon, axbin, lat, lon))
     amtmapmon.setAxisList((axmon, axbin, lat, lon))
@@ -103,7 +103,7 @@ def precip_distribution_frq_amt (dat, drg, syr, eyr, res, outdir, ref, refdir, c
     amtwidthmap.setAxisList((axmon, lat, lon))
 
     res_nxny=str(int(360/res[0]))+"x"+str(int(180/res[1]))
-    
+
     # Write data (nc file for spatial pattern of distributions)
     outfilename = "dist_frq.amt_regrid." + \
         res_nxny+"_" + dat + ".nc"
@@ -121,8 +121,8 @@ def precip_distribution_frq_amt (dat, drg, syr, eyr, res, outdir, ref, refdir, c
         out.write(pdfwidthmap, id="frqwidth")
         out.write(amtpeakmap, id="amtpeak")
         out.write(amtwidthmap, id="amtwidth")
-    
-    # Calculate metrics from the distribution at each domain        
+
+    # Calculate metrics from the distribution at each domain
     metricsdom = {'RESULTS': {dat: {}}}
     metricsdom3C = {'RESULTS': {dat: {}}}
     metricsdomAR6 = {'RESULTS': {dat: {}}}
@@ -202,7 +202,7 @@ def precip_distribution_frq_amt (dat, drg, syr, eyr, res, outdir, ref, refdir, c
                separators=(',', ': '))
     if cmec:
         JSON.write_cmec(indent=4, separators=(',', ': '))
-        
+
     print("Completed metrics from precipitation frequency and amount distributions")
 
 
@@ -210,31 +210,31 @@ def precip_distribution_frq_amt (dat, drg, syr, eyr, res, outdir, ref, refdir, c
 def precip_distribution_cum (dat, drg, cal, syr, eyr, res, outdir, cmec):
     """
     - The metric algorithm is based on Dr. Pendergrass's work (https://github.com/apendergrass/unevenprecip)
-    - Pre-processing and post-processing of data are modified for PMP as below:           
+    - Pre-processing and post-processing of data are modified for PMP as below:
       Regridding (in driver code) -> Month separation -> Year separation -> Unevenness and other metrics -> Year median -> Domain median -> Write
-    """       
+    """
 
     missingthresh = 0.3  # threshold of missing data fraction at which a year is thrown out
-    
+
     # Month separation
-    months = ['ANN', 'MAM', 'JJA', 'SON', 'DJF', 
-              'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 
+    months = ['ANN', 'MAM', 'JJA', 'SON', 'DJF',
+              'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
               'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
 
     if "360" in cal:
-        ndymon = [360, 90, 90, 90, 90, 
-                  30, 30, 30, 30, 30, 30, 
+        ndymon = [360, 90, 90, 90, 90,
+                  30, 30, 30, 30, 30, 30,
                   30, 30, 30, 30, 30, 30]
         ldy = 30
     else:
         # Only considered 365-day calendar becauase, in cumulative distribution as a function of the wettest days, the last part of the distribution is not affect to metrics.
-        ndymon = [365, 92, 92, 91, 90, 
-                  31, 28, 31, 30, 31, 30, 
+        ndymon = [365, 92, 92, 91, 90,
+                  31, 28, 31, 30, 31, 30,
                   31, 31, 30, 31, 30, 31]
-        ldy = 31        
+        ldy = 31
 
     res_nxny=str(int(360/res[0]))+"x"+str(int(180/res[1]))
-            
+
     # Open nc file for writing data of spatial pattern of cumulated fractions with separated month
     outfilename = "dist_cumfrac_regrid." + \
         res_nxny+"_" + dat + ".nc"
@@ -318,7 +318,7 @@ def precip_distribution_cum (dat, drg, cal, syr, eyr, res, outdir, cmec):
             sdiimmon = MV.concatenate(
                 (sdiimmon, np.expand_dims(sdiim, axis=0)), axis=0)
 
-    # Domain median   
+    # Domain median
     axmon = cdms.createAxis(range(len(months)), id='time')
     ndmmon = MV.array(ndmmon)
     ndmmon.setAxisList((axmon, lat, lon))
@@ -326,18 +326,18 @@ def precip_distribution_cum (dat, drg, cal, syr, eyr, res, outdir, cmec):
     prdyfracmmon.setAxisList((axmon, lat, lon))
     sdiimmon = MV.array(sdiimmon)
     sdiimmon.setAxisList((axmon, lat, lon))
-    
+
     metrics = {'RESULTS': {dat: {}}}
     metrics['RESULTS'][dat]['unevenness'] = MedDomain(ndmmon, months)
     metrics['RESULTS'][dat]['prdyfrac'] = MedDomain(prdyfracmmon, months)
     metrics['RESULTS'][dat]['sdii'] = MedDomain(sdiimmon, months)
-    
+
     metrics3C = {'RESULTS': {dat: {}}}
     metrics3C['RESULTS'][dat]['unevenness'] = MedDomain3Clust(ndmmon, months)
     metrics3C['RESULTS'][dat]['prdyfrac'] = MedDomain3Clust(prdyfracmmon, months)
     metrics3C['RESULTS'][dat]['sdii'] = MedDomain3Clust(sdiimmon, months)
-    
-    metricsAR6 = {'RESULTS': {dat: {}}}    
+
+    metricsAR6 = {'RESULTS': {dat: {}}}
     metricsAR6['RESULTS'][dat]['unevenness'] = MedDomainAR6(ndmmon, months)
     metricsAR6['RESULTS'][dat]['prdyfrac'] = MedDomainAR6(prdyfracmmon, months)
     metricsAR6['RESULTS'][dat]['sdii'] = MedDomainAR6(sdiimmon, months)
@@ -404,8 +404,8 @@ def precip_distribution_cum (dat, drg, cal, syr, eyr, res, outdir, cmec):
         JSON.write_cmec(indent=4, separators=(',', ': '))
 
     print("Completed metrics from precipitation cumulative distributions")
-    
-    
+
+
 # ==================================================================================
 def Regrid(d, resdeg):
     """
@@ -538,14 +538,14 @@ def MakeDists(pdata, binl):
                 n[:, ilat, ilon] = thisn
             else:
                 n[:, ilat, ilon] = np.nan
-                
+
             # these are the bin locations. we'll use these for the amount dist
             binno[:, ilat, ilon] = np.digitize(pdata[:, ilat, ilon], bins)
     # Calculate the number of days with non-missing data, for normalization
     ndmat = np.tile(np.expand_dims(
        # np.nansum(n, axis=0), axis=0), (len(bins)-1, 1, 1))
        np.sum(n, axis=0), axis=0), (len(bins)-1, 1, 1))
-        
+
     thisppdfmap = n/ndmat
     thisppdfmap_tn = thisppdfmap*ndmat
     # Iterate back over the bins and add up all the precip - this will be the rain amount distribution.
@@ -579,7 +579,7 @@ def CalcRainMetrics(pdistin, bincrates):
     pdist = np.copy(pdistin)
     # this is the threshold, 10% of rain amount or rain frequency
     tile = np.array(0.1)
-    
+
     # If this is frequency, get rid of the dry frequency. If it's amount, it should already be zero or close to it. (Pendergrass and Hartmann 2014)
     # pdist[0] = 0
     # msahn, Days with precip<0.1mm/day are considered dry (Pendergrass and Deser 2017)
@@ -587,7 +587,7 @@ def CalcRainMetrics(pdistin, bincrates):
     thidx=int(thidx[0][0])
     pdist[:thidx] = 0
     #-----------------------------------------------------
-    
+
     pmax = pdist.max()
     if pmax > 0:
         imax = np.nonzero(pdist == pmax)
@@ -652,20 +652,20 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
     - bincrates: bin centers
     - dat: data name
     - ref: reference data name
-    - ref_dir: reference data directory   
+    - ref_dir: reference data directory
     Output
     - metrics: metrics for each domain
     - pdfdom: pdf for each domain
     - amtdom: amt for each domain
-    """    
+    """
     domains = ["Total_50S50N", "Ocean_50S50N", "Land_50S50N",
                "Total_30N50N", "Ocean_30N50N", "Land_30N50N",
                "Total_30S30N", "Ocean_30S30N", "Land_30S30N",
                "Total_50S30S", "Ocean_50S30S", "Land_50S30S"]
-   
-    ddom = []    
+
+    ddom = []
     for d in [pdf, amt]:
-    
+
         mask = cdutil.generateLandSeaMask(d[0,0])
         d, mask2 = genutil.grower(d, mask)
         d_ocean = MV.masked_where(mask2 == 1.0, d)
@@ -690,18 +690,18 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy")
 
             ddom.append(am)
-    
+
     ddom = MV.reshape(ddom,(-1,len(domains),am.shape[0],am.shape[1]))
     ddom = np.swapaxes(ddom,1,3)
     ddom = np.swapaxes(ddom,1,2)
     print(ddom.shape)
-    
+
     pdfdom = ddom[0]
     amtdom = ddom[1]
-    axdom = cdms.createAxis(range(len(domains)), id='domains')   
+    axdom = cdms.createAxis(range(len(domains)), id='domains')
     pdfdom.setAxisList((am.getAxis(0),am.getAxis(1),axdom))
     amtdom.setAxisList((am.getAxis(0),am.getAxis(1),axdom))
-    
+
     if dat == ref:
         pdfdom_ref = pdfdom
         amtdom_ref = amtdom
@@ -739,30 +739,30 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
         metrics['amtP80'][dom]={'CalendarMonths':{}}
         metrics['amtP90'][dom]={'CalendarMonths':{}}
         for im, mon in enumerate(months):
-            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:            
+            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[im,:,idm], bincrates)
                 metrics['frqpeak'][dom][mon] = rainpeak
-                metrics['frqwidth'][dom][mon] = rainwidth        
+                metrics['frqwidth'][dom][mon] = rainwidth
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(amtdom[im,:,idm], bincrates)
                 metrics['amtpeak'][dom][mon] = rainpeak
                 metrics['amtwidth'][dom][mon] = rainwidth
                 metrics['pscore'][dom][mon] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])
-                
+
                 metrics['frqP10'][dom][mon], metrics['frqP20'][dom][mon], metrics['frqP80'][dom][mon], metrics['frqP90'][dom][mon], metrics['amtP10'][dom][mon], metrics['amtP20'][dom][mon], metrics['amtP80'][dom][mon], metrics['amtP90'][dom][mon] = CalcP10P90(pdfdom[im,:,idm], amtdom[im,:,idm], amtdom_ref[im,:,idm], bincrates)
-                
+
             else:
                 calmon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
                 imn=calmon.index(mon)+1
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[im,:,idm], bincrates)
                 metrics['frqpeak'][dom]['CalendarMonths'][imn] = rainpeak
-                metrics['frqwidth'][dom]['CalendarMonths'][imn] = rainwidth        
+                metrics['frqwidth'][dom]['CalendarMonths'][imn] = rainwidth
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(amtdom[im,:,idm], bincrates)
                 metrics['amtpeak'][dom]['CalendarMonths'][imn] = rainpeak
                 metrics['amtwidth'][dom]['CalendarMonths'][imn] = rainwidth
-                metrics['pscore'][dom]['CalendarMonths'][imn] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])                
-                
+                metrics['pscore'][dom]['CalendarMonths'][imn] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])
+
                 metrics['frqP10'][dom]['CalendarMonths'][imn], metrics['frqP20'][dom]['CalendarMonths'][imn], metrics['frqP80'][dom]['CalendarMonths'][imn], metrics['frqP90'][dom]['CalendarMonths'][imn], metrics['amtP10'][dom]['CalendarMonths'][imn], metrics['amtP20'][dom]['CalendarMonths'][imn], metrics['amtP80'][dom]['CalendarMonths'][imn], metrics['amtP90'][dom]['CalendarMonths'][imn] = CalcP10P90(pdfdom[im,:,idm], amtdom[im,:,idm], amtdom_ref[im,:,idm], bincrates)
-                
+
     print("Completed domain metrics")
     return metrics, pdfdom, amtdom
 
@@ -786,7 +786,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
     domains = ["Total_HR_50S50N", "Total_MR_50S50N", "Total_LR_50S50N",
                "Total_HR_30N50N", "Total_MR_30N50N", "Total_LR_30N50N",
                "Total_HR_30S30N", "Total_MR_30S30N", "Total_LR_30S30N",
-               "Total_HR_50S30S", "Total_MR_50S30S", "Total_LR_50S30S",               
+               "Total_HR_50S30S", "Total_MR_50S30S", "Total_LR_50S30S",
                "Ocean_HR_50S50N", "Ocean_MR_50S50N", "Ocean_LR_50S50N",
                "Ocean_HR_30N50N", "Ocean_MR_30N50N", "Ocean_LR_30N50N",
                "Ocean_HR_30S30N", "Ocean_MR_30S30N", "Ocean_LR_30S30N",
@@ -795,7 +795,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                "Land_HR_30N50N", "Land_MR_30N50N", "Land_LR_30N50N",
                "Land_HR_30S30N", "Land_MR_30S30N", "Land_LR_30S30N",
                "Land_HR_50S30S", "Land_MR_50S30S", "Land_LR_50S30S"]
-    
+
     indir = '../lib'
     file = 'cluster3_pdf.amt_regrid.360x180_IMERG_ALL.nc'
     cluster = xr.open_dataset(os.path.join(indir, file))['cluster_nb']
@@ -809,10 +809,10 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
             regs_name.append('Heavy precipitating region')
         elif reg=='MR':
             data=xr.where(cluster==1, 1, 0)
-            regs_name.append('Moderate precipitating region')        
-        elif reg=='LR':        
+            regs_name.append('Moderate precipitating region')
+        elif reg=='LR':
             data=xr.where(cluster==2, 1, 0)
-            regs_name.append('Light precipitating region')        
+            regs_name.append('Light precipitating region')
         else:
             print('ERROR: data is not defined')
             exit()
@@ -829,23 +829,23 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 shape[0]["coordinates"][0][idx]=tup
             if shape[1] == 1:
                 polygons.append(Polygon(shape[0]["coordinates"][0]))
-        
+
         mpolygons.append(MultiPolygon(polygons).simplify(3, preserve_topology=False))
 
     region = regionmask.Regions(mpolygons, names=regs_name, abbrevs=regs, name="Heavy/Moderate/Light precipitating regions")
     print(region)
-    
+
     ddom = []
     for d in [pdf, amt]:
         d_xr = xr.DataArray.from_cdms2(d[0,0])
         mask_3D = region.mask_3D(d_xr, lon_name='longitude', lat_name='latitude')
         mask_3D = xr.DataArray.to_cdms2(mask_3D)
-        
+
         mask = cdutil.generateLandSeaMask(d[0,0])
         mask_3D, mask2 = genutil.grower(mask_3D, mask)
         mask_3D_ocn = MV.where(mask2 == 0.0, mask_3D, False)
         mask_3D_lnd = MV.where(mask2 == 1.0, mask_3D, False)
-                
+
         for dom in domains:
             if "Ocean" in dom:
                 mask_3D_tmp = mask_3D_ocn
@@ -853,7 +853,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 mask_3D_tmp = mask_3D_lnd
             else:
                 mask_3D_tmp = mask_3D
-                
+
             if "HR" in dom:
                 d, mask3 = genutil.grower(d, mask_3D_tmp[0,:,:])
             elif "MR" in dom:
@@ -863,7 +863,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
             else:
                 print('ERROR: HR/MR/LR is not defined')
                 exit()
-                
+
             dmask = MV.masked_where(~mask3, d)
 
             if "50S50N" in dom:
@@ -876,18 +876,18 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy")
 
             ddom.append(am)
-        
+
     ddom = MV.reshape(ddom,(-1,len(domains),am.shape[0],am.shape[1]))
     ddom = np.swapaxes(ddom,1,3)
     ddom = np.swapaxes(ddom,1,2)
     print(ddom.shape)
-    
+
     pdfdom = ddom[0]
     amtdom = ddom[1]
-    axdom = cdms.createAxis(range(len(domains)), id='domains')   
+    axdom = cdms.createAxis(range(len(domains)), id='domains')
     pdfdom.setAxisList((am.getAxis(0),am.getAxis(1),axdom))
     amtdom.setAxisList((am.getAxis(0),am.getAxis(1),axdom))
-    
+
     if dat == ref:
         pdfdom_ref = pdfdom
         amtdom_ref = amtdom
@@ -895,7 +895,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
         file = 'dist_frq.amt_domain3C_regrid.'+str(pdf.shape[3])+"x"+str(pdf.shape[2])+'_'+ref+'.nc'
         pdfdom_ref = cdms.open(os.path.join(ref_dir, file))['pdf']
         amtdom_ref = cdms.open(os.path.join(ref_dir, file))['amt']
-    
+
     metrics={}
     metrics['frqpeak']={}
     metrics['frqwidth']={}
@@ -925,34 +925,34 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
         metrics['amtP80'][dom]={'CalendarMonths':{}}
         metrics['amtP90'][dom]={'CalendarMonths':{}}
         for im, mon in enumerate(months):
-            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:            
+            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[im,:,idm], bincrates)
                 metrics['frqpeak'][dom][mon] = rainpeak
-                metrics['frqwidth'][dom][mon] = rainwidth        
+                metrics['frqwidth'][dom][mon] = rainwidth
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(amtdom[im,:,idm], bincrates)
                 metrics['amtpeak'][dom][mon] = rainpeak
                 metrics['amtwidth'][dom][mon] = rainwidth
                 metrics['pscore'][dom][mon] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])
-                
+
                 metrics['frqP10'][dom][mon], metrics['frqP20'][dom][mon], metrics['frqP80'][dom][mon], metrics['frqP90'][dom][mon], metrics['amtP10'][dom][mon], metrics['amtP20'][dom][mon], metrics['amtP80'][dom][mon], metrics['amtP90'][dom][mon] = CalcP10P90(pdfdom[im,:,idm], amtdom[im,:,idm], amtdom_ref[im,:,idm], bincrates)
-                
+
             else:
                 calmon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
                 imn=calmon.index(mon)+1
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[im,:,idm], bincrates)
                 metrics['frqpeak'][dom]['CalendarMonths'][imn] = rainpeak
-                metrics['frqwidth'][dom]['CalendarMonths'][imn] = rainwidth        
+                metrics['frqwidth'][dom]['CalendarMonths'][imn] = rainwidth
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(amtdom[im,:,idm], bincrates)
                 metrics['amtpeak'][dom]['CalendarMonths'][imn] = rainpeak
-                metrics['amtwidth'][dom]['CalendarMonths'][imn] = rainwidth 
+                metrics['amtwidth'][dom]['CalendarMonths'][imn] = rainwidth
                 metrics['pscore'][dom]['CalendarMonths'][imn] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])
-                
+
                 metrics['frqP10'][dom]['CalendarMonths'][imn], metrics['frqP20'][dom]['CalendarMonths'][imn], metrics['frqP80'][dom]['CalendarMonths'][imn], metrics['frqP90'][dom]['CalendarMonths'][imn], metrics['amtP10'][dom]['CalendarMonths'][imn], metrics['amtP20'][dom]['CalendarMonths'][imn], metrics['amtP80'][dom]['CalendarMonths'][imn], metrics['amtP90'][dom]['CalendarMonths'][imn] = CalcP10P90(pdfdom[im,:,idm], amtdom[im,:,idm], amtdom_ref[im,:,idm], bincrates)
-                
+
     print("Completed clustering domain metrics")
-    return metrics, pdfdom, amtdom            
-            
-            
+    return metrics, pdfdom, amtdom
+
+
 # ==================================================================================
 def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
     """
@@ -976,17 +976,17 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
     land_names = ar6_land.names
     land_abbrevs = ar6_land.abbrevs
 
-    ocean_names = [ 'Arctic-Ocean', 
+    ocean_names = [ 'Arctic-Ocean',
                     'Arabian-Sea', 'Bay-of-Bengal', 'Equatorial-Indian-Ocean', 'S.Indian-Ocean',
                     'N.Pacific-Ocean', 'N.W.Pacific-Ocean', 'N.E.Pacific-Ocean', 'Pacific-ITCZ',
-                    'S.W.Pacific-Ocean', 'S.E.Pacific-Ocean', 'N.Atlantic-Ocean', 'N.E.Atlantic-Ocean', 
-                    'Atlantic-ITCZ', 'S.Atlantic-Ocean', 'Southern-Ocean', 
+                    'S.W.Pacific-Ocean', 'S.E.Pacific-Ocean', 'N.Atlantic-Ocean', 'N.E.Atlantic-Ocean',
+                    'Atlantic-ITCZ', 'S.Atlantic-Ocean', 'Southern-Ocean',
                   ]
-    ocean_abbrevs = [ 'ARO', 
-                      'ARS', 'BOB', 'EIO', 'SIO', 
+    ocean_abbrevs = [ 'ARO',
+                      'ARS', 'BOB', 'EIO', 'SIO',
                       'NPO', 'NWPO', 'NEPO', 'PITCZ',
-                      'SWPO', 'SEPO', 'NAO', 'NEAO', 
-                      'AITCZ', 'SAO', 'SOO', 
+                      'SWPO', 'SEPO', 'NAO', 'NEAO',
+                      'AITCZ', 'SAO', 'SOO',
                     ]
 
     names = land_names + ocean_names
@@ -1023,7 +1023,7 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
         elif reg == 'EIO':
             vertices = Polygon([[139.5,0], [132,5], [132,20], [180,25], [180,0]])
         elif reg == 'SOO':
-            vertices = Polygon([[-180,-56], [-180,-70], [-80,-70], [-65,-62], [-56,-62], [-56,-75], [-25,-75], [5,-64], [180,-64], [180,-50], [155,-50], [110,-36], [8,-36], [-39.5,-25], [-56,-40], [-56,-56], [-79,-56], [-79,-47], [-78,-41], [-135,-30], [-180,-30]])    
+            vertices = Polygon([[-180,-56], [-180,-70], [-80,-70], [-65,-62], [-56,-62], [-56,-75], [-25,-75], [5,-64], [180,-64], [180,-50], [155,-50], [110,-36], [8,-36], [-39.5,-25], [-56,-40], [-56,-56], [-79,-56], [-79,-47], [-78,-41], [-135,-30], [-180,-30]])
         regions[reg]=vertices
 
     rdata=[]
@@ -1031,27 +1031,27 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
         rdata.append(regions[reg])
     ar6_all_mod_ocn = regionmask.Regions(rdata, names=names, abbrevs=abbrevs, name="AR6 reference regions with modified ocean regions")
 
-    
+
     ddom = []
     for d in [pdf, amt]:
-    
+
         d = xr.DataArray.from_cdms2(d)
         mask_3D = ar6_all_mod_ocn.mask_3D(d, lon_name='longitude', lat_name='latitude')
         weights = np.cos(np.deg2rad(d.latitude))
         am = d.weighted(mask_3D * weights).mean(dim=("latitude", "longitude"))
         am = xr.DataArray.to_cdms2(am)
-        
+
         ddom.append(am)
-        
+
     ddom = MV.reshape(ddom,(-1,pdf.shape[0],pdf.shape[1],len(abbrevs)))
     print(ddom.shape)
-    
+
     pdfdom = ddom[0]
     amtdom = ddom[1]
     axdom = cdms.createAxis(range(len(abbrevs)), id='domains')
     pdfdom.setAxisList((pdf.getAxis(0),pdf.getAxis(1),axdom))
     amtdom.setAxisList((pdf.getAxis(0),pdf.getAxis(1),axdom))
-        
+
     if dat == ref:
         pdfdom_ref = pdfdom
         amtdom_ref = amtdom
@@ -1059,7 +1059,7 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
         file = 'dist_frq.amt_domainAR6_regrid.'+str(pdf.shape[3])+"x"+str(pdf.shape[2])+'_'+ref+'.nc'
         pdfdom_ref = cdms.open(os.path.join(ref_dir, file))['pdf']
         amtdom_ref = cdms.open(os.path.join(ref_dir, file))['amt']
-    
+
     metrics={}
     metrics['frqpeak']={}
     metrics['frqwidth']={}
@@ -1089,32 +1089,32 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
         metrics['amtP80'][dom]={'CalendarMonths':{}}
         metrics['amtP90'][dom]={'CalendarMonths':{}}
         for im, mon in enumerate(months):
-            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:            
+            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[im,:,idm], bincrates)
                 metrics['frqpeak'][dom][mon] = rainpeak
-                metrics['frqwidth'][dom][mon] = rainwidth        
+                metrics['frqwidth'][dom][mon] = rainwidth
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(amtdom[im,:,idm], bincrates)
                 metrics['amtpeak'][dom][mon] = rainpeak
                 metrics['amtwidth'][dom][mon] = rainwidth
                 metrics['pscore'][dom][mon] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])
-                
+
                 metrics['frqP10'][dom][mon], metrics['frqP20'][dom][mon], metrics['frqP80'][dom][mon], metrics['frqP90'][dom][mon], metrics['amtP10'][dom][mon], metrics['amtP20'][dom][mon], metrics['amtP80'][dom][mon], metrics['amtP90'][dom][mon] = CalcP10P90(pdfdom[im,:,idm], amtdom[im,:,idm], amtdom_ref[im,:,idm], bincrates)
-                
+
             else:
                 calmon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
                 imn=calmon.index(mon)+1
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[im,:,idm], bincrates)
                 metrics['frqpeak'][dom]['CalendarMonths'][imn] = rainpeak
-                metrics['frqwidth'][dom]['CalendarMonths'][imn] = rainwidth        
+                metrics['frqwidth'][dom]['CalendarMonths'][imn] = rainwidth
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(amtdom[im,:,idm], bincrates)
                 metrics['amtpeak'][dom]['CalendarMonths'][imn] = rainpeak
                 metrics['amtwidth'][dom]['CalendarMonths'][imn] = rainwidth
                 metrics['pscore'][dom]['CalendarMonths'][imn] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])
-                
+
                 metrics['frqP10'][dom]['CalendarMonths'][imn], metrics['frqP20'][dom]['CalendarMonths'][imn], metrics['frqP80'][dom]['CalendarMonths'][imn], metrics['frqP90'][dom]['CalendarMonths'][imn], metrics['amtP10'][dom]['CalendarMonths'][imn], metrics['amtP20'][dom]['CalendarMonths'][imn], metrics['amtP80'][dom]['CalendarMonths'][imn], metrics['amtP90'][dom]['CalendarMonths'][imn] = CalcP10P90(pdfdom[im,:,idm], amtdom[im,:,idm], amtdom_ref[im,:,idm], bincrates)
-                
+
     print("Completed AR6 domain metrics")
-    return metrics, pdfdom, amtdom     
+    return metrics, pdfdom, amtdom
 
 
 # ==================================================================================
@@ -1128,10 +1128,10 @@ def CalcPscore(pdf, pdf_ref):
     """
     pdf = pdf.filled(np.nan)
     pdf_ref = pdf_ref.filled(np.nan)
-    
+
     pscore = np.sum(np.minimum(pdf, pdf_ref), axis=0)
     pscore = np.array(pscore).tolist()
-    
+
     return pscore
 
 
@@ -1156,7 +1156,7 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
     pdf = pdf.filled(np.nan)
     amt = amt.filled(np.nan)
     amt_ref = amt_ref.filled(np.nan)
-    
+
     # Days with precip<0.1mm/day are considered dry (Pendergrass and Deser 2017)
     thidx=np.argwhere(bincrates>0.1)
     thidx=int(thidx[0][0])
@@ -1164,12 +1164,12 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
     amt[:thidx] = 0
     amt_ref[:thidx] = 0
     #-----------------------------------------------------
-    
+
     # Cumulative PDF
     # csum_pdf=np.cumsum(pdf, axis=0)
     pdffrac=pdf/np.sum(pdf, axis=0)
     csum_pdf=np.cumsum(pdffrac, axis=0)
-    
+
     # Cumulative amount fraction
     amtfrac=amt/np.sum(amt, axis=0)
     csum_amtfrac=np.cumsum(amtfrac, axis=0)
@@ -1177,13 +1177,13 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
     # Reference cumulative amount fraction
     amtfrac_ref=amt_ref/np.sum(amt_ref, axis=0)
     csum_amtfrac_ref=np.cumsum(amtfrac_ref, axis=0)
-    
+
     # Find 10, 20, 80, and 90 percentiles
     p10_all=np.argwhere(csum_amtfrac_ref<=0.1)
     p20_all=np.argwhere(csum_amtfrac_ref<=0.2)
     p80_all=np.argwhere(csum_amtfrac_ref>=0.8)
     p90_all=np.argwhere(csum_amtfrac_ref>=0.9)
-    
+
     if np.array(p10_all).size==0:
         f10 = np.nan
         a10 = np.nan
@@ -1191,7 +1191,7 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
         p10 = int(p10_all[-1][0])
         f10 = csum_pdf[p10]
         a10 = csum_amtfrac[p10]
-        
+
     if np.array(p20_all).size==0:
         f20 = np.nan
         a20 = np.nan
@@ -1199,7 +1199,7 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
         p20 = int(p20_all[-1][0])
         f20 = csum_pdf[p20]
         a20 = csum_amtfrac[p20]
-        
+
     if np.array(p80_all).size==0:
         f80 = np.nan
         a80 = np.nan
@@ -1207,7 +1207,7 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
         p80 = int(p80_all[0][0])
         f80 = 1-csum_pdf[p80]
         a80 = 1-csum_amtfrac[p80]
-        
+
     if np.array(p90_all).size==0:
         f90 = np.nan
         a90 = np.nan
@@ -1215,7 +1215,7 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
         p90 = int(p90_all[0][0])
         f90 = 1-csum_pdf[p90]
         a90 = 1-csum_amtfrac[p90]
-    
+
     f10 = np.array(f10).tolist()
     f20 = np.array(f20).tolist()
     f80 = np.array(f80).tolist()
@@ -1224,7 +1224,7 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
     a20 = np.array(a20).tolist()
     a80 = np.array(a80).tolist()
     a90 = np.array(a90).tolist()
-    
+
     return f10, f20, f80, f90, a10, a20, a80, a90
 
 
@@ -1233,7 +1233,7 @@ def oneyear(thisyear, missingthresh):
     # Given one year of precip data, calculate the number of days for half of precipitation
     # Ignore years with zero precip (by setting them to NaN).
     # thisyear is one year of data, (an np array) with the time variable in the leftmost dimension
-    
+
     thisyear = thisyear.filled(np.nan)  # np.array(thisyear)
     dims = thisyear.shape
     nd = dims[0]
@@ -1306,7 +1306,7 @@ def MedDomain(d, months):
             dmask = d_land
         else:
             dmask = d
-           
+
         if "50S50N" in dom:
             am = genutil.statistics.median(dmask(latitude=(-50, 50)), axis="xy")
         if "30N50N" in dom:
@@ -1316,9 +1316,9 @@ def MedDomain(d, months):
         if "50S30S" in dom:
             am = genutil.statistics.median(dmask(latitude=(-50, -30)), axis="xy")
 
-        ddom[dom] = {'CalendarMonths':{}}            
+        ddom[dom] = {'CalendarMonths':{}}
         for im, mon in enumerate(months):
-            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:                
+            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:
                 ddom[dom][mon] = am.tolist()[0][im]
             else:
                 calmon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
@@ -1342,7 +1342,7 @@ def MedDomain3Clust(d, months):
     domains = ["Total_HR_50S50N", "Total_MR_50S50N", "Total_LR_50S50N",
                "Total_HR_30N50N", "Total_MR_30N50N", "Total_LR_30N50N",
                "Total_HR_30S30N", "Total_MR_30S30N", "Total_LR_30S30N",
-               "Total_HR_50S30S", "Total_MR_50S30S", "Total_LR_50S30S",               
+               "Total_HR_50S30S", "Total_MR_50S30S", "Total_LR_50S30S",
                "Ocean_HR_50S50N", "Ocean_MR_50S50N", "Ocean_LR_50S50N",
                "Ocean_HR_30N50N", "Ocean_MR_30N50N", "Ocean_LR_30N50N",
                "Ocean_HR_30S30N", "Ocean_MR_30S30N", "Ocean_LR_30S30N",
@@ -1351,7 +1351,7 @@ def MedDomain3Clust(d, months):
                "Land_HR_30N50N", "Land_MR_30N50N", "Land_LR_30N50N",
                "Land_HR_30S30N", "Land_MR_30S30N", "Land_LR_30S30N",
                "Land_HR_50S30S", "Land_MR_50S30S", "Land_LR_50S30S"]
-    
+
     indir = '../lib'
     file = 'cluster3_pdf.amt_regrid.360x180_IMERG_ALL.nc'
     cluster = xr.open_dataset(os.path.join(indir, file))['cluster_nb']
@@ -1365,10 +1365,10 @@ def MedDomain3Clust(d, months):
             regs_name.append('Heavy precipitating region')
         elif reg=='MR':
             data=xr.where(cluster==1, 1, 0)
-            regs_name.append('Moderate precipitating region')        
-        elif reg=='LR':        
+            regs_name.append('Moderate precipitating region')
+        elif reg=='LR':
             data=xr.where(cluster==2, 1, 0)
-            regs_name.append('Light precipitating region')        
+            regs_name.append('Light precipitating region')
         else:
             print('ERROR: data is not defined')
             exit()
@@ -1385,12 +1385,12 @@ def MedDomain3Clust(d, months):
                 shape[0]["coordinates"][0][idx]=tup
             if shape[1] == 1:
                 polygons.append(Polygon(shape[0]["coordinates"][0]))
-        
+
         mpolygons.append(MultiPolygon(polygons).simplify(3, preserve_topology=False))
 
     region = regionmask.Regions(mpolygons, names=regs_name, abbrevs=regs, name="Heavy/Moderate/Light precipitating regions")
     print(region)
-        
+
     d_xr = xr.DataArray.from_cdms2(d)
     mask_3D = region.mask_3D(d_xr, lon_name='longitude', lat_name='latitude')
     mask_3D = xr.DataArray.to_cdms2(mask_3D)
@@ -1430,9 +1430,9 @@ def MedDomain3Clust(d, months):
         if "50S30S" in dom:
             am = genutil.statistics.median(dmask(latitude=(-50, -30)), axis="xy")
 
-        ddom[dom] = {'CalendarMonths':{}}            
+        ddom[dom] = {'CalendarMonths':{}}
         for im, mon in enumerate(months):
-            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:            
+            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:
                 ddom[dom][mon] = am.tolist()[0][im]
             else:
                 calmon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
@@ -1460,17 +1460,17 @@ def MedDomainAR6(d, months):
     land_names = ar6_land.names
     land_abbrevs = ar6_land.abbrevs
 
-    ocean_names = [ 'Arctic-Ocean', 
+    ocean_names = [ 'Arctic-Ocean',
                     'Arabian-Sea', 'Bay-of-Bengal', 'Equatorial-Indian-Ocean', 'S.Indian-Ocean',
                     'N.Pacific-Ocean', 'N.W.Pacific-Ocean', 'N.E.Pacific-Ocean', 'Pacific-ITCZ',
-                    'S.W.Pacific-Ocean', 'S.E.Pacific-Ocean', 'N.Atlantic-Ocean', 'N.E.Atlantic-Ocean', 
-                    'Atlantic-ITCZ', 'S.Atlantic-Ocean', 'Southern-Ocean', 
+                    'S.W.Pacific-Ocean', 'S.E.Pacific-Ocean', 'N.Atlantic-Ocean', 'N.E.Atlantic-Ocean',
+                    'Atlantic-ITCZ', 'S.Atlantic-Ocean', 'Southern-Ocean',
                   ]
-    ocean_abbrevs = [ 'ARO', 
-                      'ARS', 'BOB', 'EIO', 'SIO', 
+    ocean_abbrevs = [ 'ARO',
+                      'ARS', 'BOB', 'EIO', 'SIO',
                       'NPO', 'NWPO', 'NEPO', 'PITCZ',
-                      'SWPO', 'SEPO', 'NAO', 'NEAO', 
-                      'AITCZ', 'SAO', 'SOO', 
+                      'SWPO', 'SEPO', 'NAO', 'NEAO',
+                      'AITCZ', 'SAO', 'SOO',
                     ]
 
     names = land_names + ocean_names
@@ -1507,7 +1507,7 @@ def MedDomainAR6(d, months):
         elif reg == 'EIO':
             vertices = Polygon([[139.5,0], [132,5], [132,20], [180,25], [180,0]])
         elif reg == 'SOO':
-            vertices = Polygon([[-180,-56], [-180,-70], [-80,-70], [-65,-62], [-56,-62], [-56,-75], [-25,-75], [5,-64], [180,-64], [180,-50], [155,-50], [110,-36], [8,-36], [-39.5,-25], [-56,-40], [-56,-56], [-79,-56], [-79,-47], [-78,-41], [-135,-30], [-180,-30]])    
+            vertices = Polygon([[-180,-56], [-180,-70], [-80,-70], [-65,-62], [-56,-62], [-56,-75], [-25,-75], [5,-64], [180,-64], [180,-50], [155,-50], [110,-36], [8,-36], [-39.5,-25], [-56,-40], [-56,-56], [-79,-56], [-79,-47], [-78,-41], [-135,-30], [-180,-30]])
         regions[reg]=vertices
 
     rdata=[]
@@ -1518,18 +1518,18 @@ def MedDomainAR6(d, months):
     d = xr.DataArray.from_cdms2(d)
     mask_3D = ar6_all_mod_ocn.mask_3D(d, lon_name='longitude', lat_name='latitude')
     am = d.where(mask_3D).median(dim=("latitude", "longitude"))
-    
-    ddom = {}   
+
+    ddom = {}
     for idm, dom in enumerate(abbrevs):
-        ddom[dom] = {'CalendarMonths':{}}            
+        ddom[dom] = {'CalendarMonths':{}}
         for im, mon in enumerate(months):
-            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:            
+            if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:
                 ddom[dom][mon] = am[im,idm].values.tolist()
             else:
                 calmon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
                 imn=calmon.index(mon)+1
                 ddom[dom]['CalendarMonths'][imn] = am[im,idm].values.tolist()
-           
+
     print("Completed AR6 domain median")
     return ddom
 

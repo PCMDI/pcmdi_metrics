@@ -5,7 +5,8 @@ mip = "obs"
 dat = "IMERG"
 var = "pr"
 frq = "day"
-ver = "v20220709"
+ver = "v20220702"
+# ver = "v20220709"
 
 # prd = [2001, 2019]  # analysis period
 prd = [2001, 2020]  # analysis period
@@ -40,5 +41,5 @@ results_dir = os.path.join(
 
 
 ref = "IMERG" # For Perkins socre, P10, and P90
-ref_dir = os.path.join(   
+ref_dir = os.path.join(
     pmpdir, '%(output_type)', "obs", '%(case_id)')

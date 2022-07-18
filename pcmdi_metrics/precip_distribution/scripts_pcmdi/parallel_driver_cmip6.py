@@ -17,7 +17,7 @@ for ifl, fl in enumerate(file_list):
     log_list.append('log_'+file+'_'+str(round(360/res[0]))+'x'+str(round(180/res[1])))
     print(cmd_list[ifl])
 print('Number of data: '+str(len(cmd_list)))
-    
+
 parallel_submitter(
     cmd_list,
     log_dir='./log',
