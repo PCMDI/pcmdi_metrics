@@ -1,0 +1,33 @@
+# Conda pcmdi_metrics development environment
+name: pcmdi_metrics_dev
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # Base
+  # ==================
+  - python=3.9.7
+  - pip=21.2.4
+  - numpy=1.21.3
+  - cartopy=0.20.1
+  - matplotlib=3.4.3
+  - cdat_info=8.2.1
+  - cdms2=3.1.5
+  - genutil=8.2.1
+  - cdutil=8.2.1
+  - cdp=1.7.0
+  - eofs=1.4.0
+  - seaborn=0.11.1
+  - enso_metrics=1.1.1
+  # Testing
+  # ==================
+  - pre_commit=2.15.0
+  - pytest=6.2.5
+  - pytest-cov=3.0.0
+  # Developer Tools
+  # ==================
+  - jupyterlab=3.2.1
+  - nb_conda=2.2.1
+  - nb_conda_kernels=2.3.1
+
+prefix: /opt/miniconda3/envs/pmcdi_metrics_dev

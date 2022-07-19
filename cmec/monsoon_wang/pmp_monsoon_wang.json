@@ -22,7 +22,6 @@
         }
     },
     "default_parameters": {
-        "case_id": "monsoon_wang",
         "modnames": [
             "CanCM4"
         ],

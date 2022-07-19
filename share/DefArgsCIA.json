@@ -1,0 +1,166 @@
+{
+    "--case_id":{
+        "aliases":[
+            "--cid"
+        ],
+        "default":"None",
+        "dest":"modnames",
+        "help":"The name of the subdirectory (below results_dir where results from a paritcular code execution is stored "
+    },
+    "--diags":{
+        "aliases":[
+            "-d"
+        ],
+        "dest":"other_parameters",
+        "help":"Path to other user-defined parameter file.",
+        "nargs":"+",
+        "required":false,
+        "type":"str"
+    },
+    "--end_day":{
+        "aliases":[
+            "--ed"
+        ],
+        "default":"None",
+        "dest":"endday",
+        "help":"The end day of, for example, data to extract from a time series",
+        "type":"ast.literal_eval"
+    },
+    "--end_month":{
+        "aliases":[
+            "--em"
+        ],
+        "default":"None",
+        "dest":"endmonth",
+        "help":"The end month of, for example, data to extract from a time series",
+        "type":"ast.literal_eval"
+    },
+    "--end_year":{
+        "aliases":[
+            "--ey"
+        ],
+        "default":"None",
+        "dest":"endyear",
+        "help":"The end year of, for example, data to extract from a time series",
+        "type":"ast.literal_eval"
+    },
+    "--exp":{
+        "aliases":[
+            "--EXP"
+        ],
+        "default":"None",
+        "dest":"exp",
+        "help":"An experiment such as AMIP, historical or pi-contorl",
+        "type":"ast.literal_eval"
+    },
+    "--mip":{
+        "aliases":[
+            "--MIP"
+        ],
+        "default":"None",
+        "dest":"mip",
+        "help":"A WCRP MIP project such as CMIP3 and CMIP5",
+        "type":"ast.literal_eval"
+    },
+    "--modnames":{
+        "aliases":[
+            "--mns"
+        ],
+        "default":"None",
+        "dest":"modnames",
+        "help":"A list of names that can be used to loop through modpath",
+        "type":"ast.literal_eval"
+    },
+    "--modpath":{
+        "aliases":[
+            "--mp"
+        ],
+        "dest":"modpath",
+        "help":"Explicit path to model data",
+        "type":"str"
+    },
+    "--num_workers":{
+        "aliases":[
+            "-n"
+        ],
+        "help":"Number of workers, used when running with multiprocessing or in distributed mode.",
+        "required":false,
+        "type":"int"
+    },
+    "--parameters":{
+        "aliases":[
+            "-p"
+        ]
+    },
+    "--reference_data_path":{
+        "aliases":[
+            "--rdp"
+        ],
+        "help":"The path/filename of reference (obs) data.",
+        "type":"str"
+    },
+    "--results_dir":{
+        "aliases":[
+            "--rd"
+        ],
+        "default":"None",
+        "help":"The name of the folder where all runs will be stored.",
+        "type":"str"
+    },
+    "--scheduler_addr\"":{
+        "aliases":[
+            "--N/A"
+        ],
+        "help":"Address of scheduler in the form of IP_ADDRESS:PORT. Used when running in distributed mode.",
+        "required":false,
+        "type":"str"
+    },
+    "--seasons":{
+        "aliases":[
+            "--seas"
+        ],
+        "default":"None",
+        "dest":"sea",
+        "help":"A list of seasons, e.g., [\"DJF\",\"JJA\"]",
+        "type":"ast.literal_eval"
+    },
+    "--start_day":{
+        "aliases":[
+            "--sd"
+        ],
+        "default":"None",
+        "dest":"startday",
+        "help":"The start day of, for example, data to extract from a time series",
+        "type":"ast.literal_eval"
+    },
+    "--start_month":{
+        "aliases":[
+            "--sm"
+        ],
+        "default":"None",
+        "dest":"startmonth",
+        "help":"The start month of, for example, data to extract from a time series",
+        "type":"ast.literal_eval"
+    },
+    "--start_year":{
+        "aliases":[
+            "--sy"
+        ],
+        "default":"None",
+        "dest":"startyear",
+        "help":"The start year of, for example, data to extract from a time series",
+        "type":"ast.literal_eval"
+    },
+    "--test_data_path":{
+        "aliases":[
+            "--tp"
+        ],
+        "help":"The path/filename to model output."
+    },
+    "--variables":{
+        "aliases":[
+            "--vars"
+        ],
+        "help":"A list of variables to be processed"
+    }
+}

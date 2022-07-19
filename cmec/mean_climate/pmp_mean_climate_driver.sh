@@ -11,6 +11,9 @@ python $CMEC_CODE_DIR/../scripts/pmp_param_generator.py $CMEC_CONFIG_DIR/cmec.js
 
 if [[ $? = 0 ]]; then
     mean_climate_driver.py -p $tmp_param
+
+    # write output.json
+    python $CMEC_CODE_DIR/mean_climate_output.py
 else
     echo "Failure in PMP/mean_climate parameter file generation"
 fi

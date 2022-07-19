@@ -1,3 +1,9 @@
+import os
+
+import cdutil
+
+import pcmdi_metrics  # Or whatever your custom metrics package name is
+
 ##########################################################################
 #  OPTIONS ARE SET BY USER IN THIS FILE AS INDICATED BELOW:
 ##########################################################################
@@ -5,15 +11,17 @@
 # METRICS RUN IDENTIFICATION
 # Defines a subdirectory to output metrics results so multiple runs can be
 # compared
-case_id = 'sampletest_140910'
+case_id = "sampletest_140910"
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF
 # CLIMATOLOGY FILENAME
-test_data_set = ['GFDL-CM4', ]  # ['GFDL-ESM2G',] ; # Model identifier
+test_data_set = [
+    "GFDL-CM4",
+]  # ['GFDL-ESM2G',] ; # Model identifier
 
 # Below are the STANDARD keys that the main code will be looking for
-period = '000101-000112'  # Model climatological period (if relevant)
-realization = 'r1i1p1'  # Model run identifier (if relevant)
+period = "000101-000112"  # Model climatological period (if relevant)
+realization = "r1i1p1"  # Model run identifier (if relevant)
 
 # MODEL SPECIFIC PARAMETERS
 model_tweaks = {
@@ -43,33 +51,34 @@ model_tweaks = {
 #   vars = ['rlwcrf','rswcrf']
 # vars for processing
 vars = [
-    'pr',
-    'psl',
-    'rlut',
-    'rlutcs',
-    'rsut',
-    'rsutcs',
-    'ta_200',
-    'ta_850',
-    'tas',
-    'ua_200',
-    'ua_850',
-    'va_200',
-    'va_850',
-    'zg_500']
+    "pr",
+    "psl",
+    "rlut",
+    "rlutcs",
+    "rsut",
+    "rsutcs",
+    "ta_200",
+    "ta_850",
+    "tas",
+    "ua_200",
+    "ua_850",
+    "va_200",
+    "va_850",
+    "zg_500",
+]
 
 # Observations to use 'default', 'alternate', 'all or specific enumerated
 # climatology e.g. 'ref3'
-reference_data_set = ['default']  # ,'all','alternate','ref3'
+reference_data_set = ["default"]  # ,'all','alternate','ref3'
 # INTERPOLATION OPTIONS
-target_grid = '2.5x2.5'  # Options: '2.5x2.5' or an actual cdms2 grid object
-regrid_tool = 'regrid2'  # Options: 'regrid2','esmf'
+target_grid = "2.5x2.5"  # Options: '2.5x2.5' or an actual cdms2 grid object
+regrid_tool = "regrid2"  # Options: 'regrid2','esmf'
 # Options: 'linear','conservative', only if tool is esmf
-regrid_method = 'linear'
+regrid_method = "linear"
 # Options: 'regrid2','esmf' - Note regrid2 will fail with non lat/lon grids
-regrid_tool_ocn = 'esmf'
+regrid_tool_ocn = "esmf"
 # Options: 'linear','conservative', only if tool is esmf
-regrid_method_ocn = 'linear'
+regrid_method_ocn = "linear"
 # Options: True or False (Save interpolated model climatologies used in
 # metrics calculations)
 save_test_clims = True
@@ -77,14 +86,19 @@ save_test_clims = True
 
 # REGIONAL STUDIES
 # USER CAN CREATE CUSTOM REGIONS
-import cdutil
-regions_specs = {"Nino34":
-                 {"value": 0.,
-                  "domain": cdutil.region.domain(latitude=(-5., 5., "ccb"), longitude=(190., 240., "ccb"))},
-                 "NAM": {"value": 0.,
-                         "domain": {'latitude': (0., 45.), 'longitude': (210., 310.)},
-                         }
-                 }
+
+regions_specs = {
+    "Nino34": {
+        "value": 0.0,
+        "domain": cdutil.region.domain(
+            latitude=(-5.0, 5.0, "ccb"), longitude=(190.0, 240.0, "ccb")
+        ),
+    },
+    "NAM": {
+        "value": 0.0,
+        "domain": {"latitude": (0.0, 45.0), "longitude": (210.0, 310.0)},
+    },
+}
 # REGIONS ON WHICH WE WANT TO RUN METRICS (var specific)
 # Here we run "all" default regions (glb, NHEX, SHEX, TROP) for both
 # but also ocean and user defined Nino34 and NAME for tas (only)
@@ -99,9 +113,7 @@ regions = {"tas": [None, "ocean", "Nino34", "NAM"], "tos": None}
 # use None if you want a value to be used for every variables not
 # specifically defined
 custom_keys = {
-    "key1": {
-        None: "key1_value_for_all_vars",
-        "tas": "key1_value_for_tas"},
+    "key1": {None: "key1_value_for_all_vars", "tas": "key1_value_for_tas"},
 }
 
 # By default file names are constructed using the following keys:
@@ -128,24 +140,25 @@ sftlf_filename_template = "sftlf_%(model_version).nc"
 generate_sftlf = True
 
 # ROOT PATH FOR MODELS CLIMATOLOGIES
-test_data_path = '/export/durack1/140701_metrics/test_new'
+test_data_path = "/export/durack1/140701_metrics/test_new"
 # ROOT PATH FOR OBSERVATIONS
-reference_data_path = '/export/durack1/140701_metrics/obs'
+reference_data_path = "/export/durack1/140701_metrics/obs"
 # DIRECTORY WHERE TO PUT RESULTS - will create case_id subdirectory
-metrics_output_path = '/export/durack1/140701_metrics/test_new'
+metrics_output_path = "/export/durack1/140701_metrics/test_new"
 # DIRECTORY WHERE TO PUT INTERPOLATED MODELS' CLIMATOLOGIES - will create
 # case_id subdirectory
-test_clims_interpolated_output = '/export/durack1/140701_metrics/test_new'
+test_clims_interpolated_output = "/export/durack1/140701_metrics/test_new"
 # FILENAME FOR INTERPOLATED CLIMATOLOGIES OUTPUT
-filename_output_template = "%(variable)%(level)_%(model_version)_%(table)_historical_" +\
-    "%(realization)_%(period)_interpolated_%(regridMethod)_%(targetGridName)-clim%(ext)"
+filename_output_template = (
+    "%(variable)%(level)_%(model_version)_%(table)_historical_"
+    + "%(realization)_%(period)_interpolated_%(regridMethod)_%(targetGridName)-clim%(ext)"
+)
 
 # Observation json file can be customized and overwritten as follow:
 # Custom obs dictionary file
 custom_observations = os.path.abspath(
-    os.path.join(
-        reference_data_path,
-        "obs_info_dictionary.json"))
+    os.path.join(reference_data_path, "obs_info_dictionary.json")
+)
 
 # CUSTOM METRICS
 # The following examples allow users to plug in a set of custom metrics
@@ -154,29 +167,34 @@ custom_observations = os.path.abspath(
 # OUTPUT: dictionary
 # dict pairs are: { metrics_name:float }
 
-import pcmdi_metrics  # Or whatever your custom metrics package name is
+
 compute_custom_metrics = pcmdi_metrics.pcmdi.compute_metrics
-# or
 
 
 def mymax(slab, nm):
     if slab is None:
-        return {"custom_%s_max" % nm:
-                {"Abstract": "Computes Custom Maximum for demo purposes",
-                 "Name": "Custom Maximum",
-                 "Contact": "doutriaux1@llnl.gov"},
-                }
+        return {
+            "custom_%s_max"
+            % nm: {
+                "Abstract": "Computes Custom Maximum for demo purposes",
+                "Name": "Custom Maximum",
+                "Contact": "doutriaux1@llnl.gov",
+            },
+        }
     else:
         return {"custom_%s_max" % nm: float(slab.max())}
 
 
 def mymin(slab, nm):
     if slab is None:
-        return {"custom_%s_min" % nm:
-                {"Abstract": "Computes Custom Minimum for demo purposes",
-                 "Name": "Custom Minimum",
-                 "Contact": "doutriaux1@llnl.gov"},
-                }
+        return {
+            "custom_%s_min"
+            % nm: {
+                "Abstract": "Computes Custom Minimum for demo purposes",
+                "Name": "Custom Minimum",
+                "Contact": "doutriaux1@llnl.gov",
+            },
+        }
     else:
         return {"custom_%s_min" % nm: float(slab.min())}
 
@@ -196,4 +214,6 @@ def my_custom(var, dm, do):
     else:
         out["some_custom"] = 1.5
     return out
+
+
 compute_custom_metrics = my_custom

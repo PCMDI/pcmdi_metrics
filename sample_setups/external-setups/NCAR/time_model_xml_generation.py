@@ -1,8 +1,8 @@
 #### USED TO GENERATE XML FILES FOR NCAR CLIMATOLGIES
 
 # NCAR OUTPUT PRODUCES CLIMATOLOGIES FOR EACH CALENDAR MONTH AS SEPERATE FILES
-# XMLS PRODUCED BY THIS CODES COMBINE THESE SO THAT THE MONTHLY CLIMATOLOGICAL ANNUAL CYCLE CAN BE READ BY A SINGLE (XML) FILE  
-# THE VARIABLES "filenamea" AND "filenameb" BELOW ARE NOT LIKELY TO WORK FOR THE GENERAL CASE.  THE LOGIC TO TRAP months "01", "02"... and "10", "11" and "12" MAY NEED TO BE MODIFIED DEPENDING ON THE FILES AVAILABLE. 
+# XMLS PRODUCED BY THIS CODES COMBINE THESE SO THAT THE MONTHLY CLIMATOLOGICAL ANNUAL CYCLE CAN BE READ BY A SINGLE (XML) FILE
+# THE VARIABLES "filenamea" AND "filenameb" BELOW ARE NOT LIKELY TO WORK FOR THE GENERAL CASE.  THE LOGIC TO TRAP months "01", "02"... and "10", "11" and "12" MAY NEED TO BE MODIFIED DEPENDING ON THE FILES AVAILABLE.
 
 # LAST UPDATE 6/29/16 PJG
 
@@ -28,7 +28,7 @@ parser.add_argument("-o","--outdir",help="output directory",default=None)
 
 args =parser.parse_args(sys.argv[1:])
 
-pathin = args.basedir + '/' # Get string from first index of list - only one directory expected 
+pathin = args.basedir + '/' # Get string from first index of list - only one directory expected
 
 xmldir = args.outdir + '/'
 
@@ -38,36 +38,33 @@ except:
        pass
 
 print 'pathin is...', pathin
-print 'pathout is...', xmldir 
+print 'pathout is...', xmldir
 
-# It is assummed that each subdirectory (run) with the path xmldir includes climatological files  
+# It is assummed that each subdirectory (run) with the path xmldir includes climatological files
 runs  = os.listdir(pathin)
 
-print runs 
+print runs
 
 for run in runs:
 
-     filename = run   
+     filename = run
 
 # In this case the clim files are in the run directory
-     try:  
-      filenamea = filename + '.001_0*_climo.nc' 
+     try:
+      filenamea = filename + '.001_0*_climo.nc'
       filenameb = filename + '.001_1*_climo.nc'
-      cmd = 'cdscan -x ' + xmldir + filename + '.xml ' + pathin + filename + '/' + filenamea  + ' ' + pathin + filename + '/' + filenameb  
+      cmd = 'cdscan -x ' + xmldir + filename + '.xml ' + pathin + filename + '/' + filenamea  + ' ' + pathin + filename + '/' + filenameb
       print cmd
       os.popen(cmd).readlines()
      except:
       pass
 
 # In this case the clim files are in the run/climo directory
-     try: 
-      filenamea = filename + '_0*_climo.nc' 
+     try:
+      filenamea = filename + '_0*_climo.nc'
       filenameb = filename + '_1*_climo.nc'
 
       cmd = 'cdscan -x ' + xmldir + filename + '.xml ' + pathin + filename + '/climo/' + filenamea  + ' ' + pathin + filename + '/climo/' + filenameb
       os.popen(cmd).readlines()
      except:
       pass
-
-
-

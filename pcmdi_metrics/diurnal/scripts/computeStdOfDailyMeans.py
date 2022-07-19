@@ -12,16 +12,23 @@
 # ---> computeStdDailyMeansWrapped.py -i data -m7 --realization="r1i1p1" -t "sample_data_%(variable)_%(model).nc"
 
 from __future__ import print_function
+
+import glob
+import multiprocessing as mp
+import os
+
 import cdms2
+import cdp
 import cdtime
 import genutil
 import numpy.ma
-import os
-import glob
-import cdp
-import multiprocessing as mp
 
-from pcmdi_metrics.diurnal.common import monthname_d, P, populateStringConstructor, INPUT
+from pcmdi_metrics.diurnal.common import (
+    INPUT,
+    P,
+    monthname_d,
+    populateStringConstructor,
+)
 
 
 def main():
@@ -40,23 +47,24 @@ def main():
             # model not passed or passed as *
             reverted = template.reverse(os.path.basename(fileName))
             dataname = reverted["model"]
-        print('Data source:', dataname)
-        print('Opening %s ...' % fileName)
+        print("Data source:", dataname)
+        print("Opening %s ..." % fileName)
         if dataname not in args.skip:
             try:
-                print('Data source:', dataname)
-                print('Opening %s ...' % fileName)
+                print("Data source:", dataname)
+                print("Opening %s ..." % fileName)
                 f = cdms2.open(fileName)
                 iYear = 0
                 dmean = None
                 for year in range(startyear, finalyear + 1):
-                    print('Year %s:' % year)
+                    print("Year %s:" % year)
                     startTime = cdtime.comptime(year, month)
                     # Last possible second to get all tpoints
-                    finishtime = startTime.add(
-                        1, cdtime.Month).add(-1, cdtime.Minute)
-                    print('Reading %s from %s for time interval %s to %s ...' % (varbname, fileName, startTime,
-                                                                                 finishtime))
+                    finishtime = startTime.add(1, cdtime.Month).add(-1, cdtime.Minute)
+                    print(
+                        "Reading %s from %s for time interval %s to %s ..."
+                        % (varbname, fileName, startTime, finishtime)
+                    )
                     # Transient variable stores data for current year's month.
                     tvarb = f(varbname, time=(startTime, finishtime, "ccn"))
                     # *HARD-CODES conversion from kg/m2/sec to mm/day.
@@ -67,11 +75,8 @@ def main():
                     current = tc[0]
                     while current.month == month:
                         end = cdtime.comptime(
-                            current.year,
-                            current.month,
-                            current.day).add(
-                            1,
-                            cdtime.Day)
+                            current.year, current.month, current.day
+                        ).add(1, cdtime.Day)
                         sub = tvarb(time=(current, end, "con"))
                         # Assumes first dimension of input ("axis#0") is time
                         tmp = numpy.ma.average(sub, axis=0)
@@ -81,23 +86,29 @@ def main():
                             dmean = tmp.reshape(sh)
                         else:
                             dmean = numpy.ma.concatenate(
-                                (dmean, tmp.reshape(sh)), axis=0)
+                                (dmean, tmp.reshape(sh)), axis=0
+                            )
                         current = end
                     iYear += 1
                 f.close()
                 stdvalues = cdms2.MV2.array(genutil.statistics.std(dmean))
                 stdvalues.setAxis(0, tvarb.getLatitude())
                 stdvalues.setAxis(1, tvarb.getLongitude())
-                stdvalues.id = 'dailySD'
+                stdvalues.id = "dailySD"
                 # Standard deviation has same units as mean.
                 stdvalues.units = "mm/d"
-                stdoutfile = ('%s_%s_%s_%s-%s_std_of_dailymeans.nc') % (varbname, dataname,
-                                                                        monthname, str(startyear), str(finalyear))
+                stdoutfile = ("%s_%s_%s_%s-%s_std_of_dailymeans.nc") % (
+                    varbname,
+                    dataname,
+                    monthname,
+                    str(startyear),
+                    str(finalyear),
+                )
             except Exception as err:
                 print("Failed for model: %s with error: %s" % (dataname, err))
         if not os.path.exists(args.results_dir):
             os.makedirs(args.results_dir)
-        g = cdms2.open(os.path.join(args.results_dir, stdoutfile), 'w')
+        g = cdms2.open(os.path.join(args.results_dir, stdoutfile), "w")
         g.write(stdvalues)
         g.close()
 
@@ -105,7 +116,7 @@ def main():
     month = args.month
     startyear = args.firstyear
     finalyear = args.lastyear
-    directory = args.modpath      # Input  directory for model data
+    directory = args.modpath  # Input  directory for model data
     # These models have been processed already (or tried and found wanting,
     # e.g. problematic time coordinates):
     skipMe = args.skip
@@ -158,7 +169,7 @@ def main():
 
 
 # Good practice to place contents of script under this check
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Related to script being installed as executable
     mp.freeze_support()
 

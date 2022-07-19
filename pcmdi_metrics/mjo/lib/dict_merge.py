@@ -16,11 +16,11 @@
 #
 # Modifed by Jiwoo Lee, 2020-06-26: Skip merging when dict is empty
 
-import collections
+from collections.abc import Mapping
 
 
 def dict_merge(dct, merge_dct):
-    """ Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
+    """Recursive dict merge. Inspired by :meth:``dict.update()``, instead of
     updating only top-level keys, dict_merge recurses down into dicts nested
     to an arbitrary depth, updating keys. The ``merge_dct`` is merged into
     ``dct``.
@@ -33,8 +33,11 @@ def dict_merge(dct, merge_dct):
         if isinstance(v, dict) and len(v.keys()) == 0:
             pass
         else:
-            if ((k in dct and isinstance(dct[k], dict) and
-                    isinstance(merge_dct[k], collections.Mapping))):
+            if (
+                k in dct
+                and isinstance(dct[k], dict)
+                and isinstance(merge_dct[k], Mapping)
+            ):
                 dict_merge(dct[k], merge_dct[k])
             else:
                 dct[k] = merge_dct[k]

@@ -30,7 +30,7 @@
         }
     },
     "default_parameters": {
-        "case_id": "basicTestMOV",
+        "case_id": "mov_demo",
         "variability_mode": "NAM",
         "seasons": [
             "DJF"

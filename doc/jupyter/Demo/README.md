@@ -3,9 +3,9 @@
 These notebooks provide some basic examples for running the PMP metrics modules. They demonstrate how to use both input parameter files and the command line to generate metrics. Parameter files are generated from the \*.py.in templates by running the Demo_0_download_data.ipynb notebook.
 
 ## Environment
-PCMDI metrics package should be installed. Consult [the documentation](http://pcmdi.github.io/pcmdi_metrics/install-using-anaconda.html) for more help.
+PCMDI metrics package should be installed. Consult [the documentation](https://github.com/PCMDI/pcmdi_metrics/wiki/Install-using-conda-forge-(recommended)) for more help.
 
-To run the notebooks directly, the user should install [jupyter notebook software](https://jupyter.org/install). Additionally, the user should clone the PMP to acquire the notebooks:
+To run the notebooks directly, the user should clone the PMP to acquire the notebooks:
 `git clone https://github.com/PCMDI/pcmdi_metrics.git`
 
 ## Running the notebooks
@@ -21,11 +21,13 @@ The jupyter dashboard will be launched in your browser. From there, navigate to 
 The notebooks listed below contain command line examples that can be copied from the notebook, customized, and run in the terminal. These commands are found in cells with a *%%bash* header.
 
 ## What's in the notebooks
-[Demo 0](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_0_download_data.ipynb): Set data and output directories. Download sample data and use cdscan to create xml. Generate parameter files.  
-[Demo 1](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_1_mean_climate.ipynb): Run the Mean Climate driver and explore the many options for customization.  
-[Demo 1a](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_1a_compute_climatologies.ipynb): Learn how to create annual climatology files for running the mean climate driver with custom data.  
-[Demo 2a](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_2a_monsoon_wang.ipynb): Run the Monsoon (Wang) driver and its options.  
-[Demo 2b](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_2b_monsoon_sperber.ipynb): Run the Monsoon (Sperber) driver with options. Maps the monsoon regions and displays output graphic.  
-[Demo 3](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_3_diurnal_cycle.ipynb): Demonstrates the full workflow for running the Diurnal Cycle metrics.  
-[Demo 4](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_4_modes_of_variability.ipynb): Install scipy and eofs in the kernel environment, run the modes of variability driver with the NAM, and view an output image.  
-[Demo 5](https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_5_mjo_metrics.ipynb): Run the MJO driver with options and view an output image.  
+- [Demo 0](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_0_download_data.ipynb): Set data and output directories. Download sample data and use cdscan to create xml. Generate parameter files.
+- [Demo 1a](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_1a_compute_climatologies.ipynb): Learn how to create annual climatology files for running the mean climate driver with custom data.
+- [Demo 1b](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_1b_mean_climate.ipynb): Run the Mean Climate driver and explore the many options for customization.
+- [Demo 2a](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_2a_monsoon_wang.ipynb): Run the Monsoon (Wang) driver and its options.
+- [Demo 2b](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_2b_monsoon_sperber.ipynb): Run the Monsoon (Sperber) driver with options. Maps the monsoon regions and displays output graphic.
+- [Demo 3](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_3_diurnal_cycle.ipynb): Demonstrates the full workflow for running the Diurnal Cycle metrics.
+- [Demo 4](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_4_modes_of_variability.ipynb): Install scipy and eofs in the kernel environment, run the modes of variability driver with the NAM, and view an output image.
+- [Demo 5](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_5_mjo_metrics.ipynb): Run the MJO driver with options and view an output image.
+- [Demo 6](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_6_ENSO.ipynb): Demonstrates how to run the three metrics collections in the ENSO metrics package.
+- [Demo 7](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_7_precip_variability.ipynb): Run metric for precipitation variability across time scales.
