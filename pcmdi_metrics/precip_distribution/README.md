@@ -21,3 +21,7 @@ Reference: Ahn, M.-S., P. A. Ullrich, P. J. Gleckler, J. Lee,  A. C. Ordonez, A.
   - `run_obs.bash`
   - `run_parallel.wait.bash`
 
+## Note
+- Input data: daily averaged precipitation
+- This code should be run for a reference observation initially as some metrics (e.g., Perkins score) need a reference.
+- After completing calculation for a reference observation, this code can work for multiple datasets at once.
