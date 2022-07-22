@@ -1,5 +1,6 @@
 import glob
 
+
 def generate_parameter_files(demo_data_directory, demo_output_directory, filenames=[]):
     # This prepares the various parameter files used in the demo notebooks
     # to reflect where you downloaded the data
@@ -30,8 +31,9 @@ if __name__ == "__main__":
         demo_output_directory (str): used in generating parameter files.
             If demo_output_directory is not provided, parameter files are skipped.
     """
-    import sys
     import os
+    import sys
+
     import cdat_info
     import requests
 
@@ -47,7 +49,7 @@ if __name__ == "__main__":
 
     #  Get the list of files, with md5 sums, and write to local file.
     r = requests.get("https://pcmdiweb.llnl.gov/pss/pmpdata/pmp_tutorial_files.v20220420.txt")
-    data_files_txt = os.path.join(demo_data_directory,"data_files.txt")
+    data_files_txt = os.path.join(demo_data_directory, "data_files.txt")
     with open(data_files_txt, "wb") as f:
         f.write(r.content)
 
@@ -58,7 +60,7 @@ if __name__ == "__main__":
     except RuntimeError:
         print("Download failed")
         sys.exit(1)
-    
+
     # Only generate parameter files if demo_output_directory is provided.
     if demo_output_directory is not None:
         generate_parameter_files(demo_data_directory, demo_output_directory)
