@@ -56,7 +56,7 @@ if __name__ == "__main__":
     # Use the file list we just saved as input to cdat_info, which downloads any files
     # that are not already present in demo_data_directory.
     try:
-        cdat_info.download_sample_data_files("data_files.txt", demo_data_directory)
+        cdat_info.download_sample_data_files(data_files_txt, demo_data_directory)
     except RuntimeError:
         print("Download failed")
         sys.exit(1)
