@@ -422,7 +422,7 @@ def get_residual_timeseries(timeseries_ano, mode, region_subdomain, RmDomainMean
         # Subtract domain mean
         timeseries_residual = MV2.subtract(timeseries_ano, regional_ano_mean_timeseries)
     else:
-        if mode in ["PDO", "NPGO"]:
+        if mode in ["PDO", "NPGO", "AMO"]:
             # Get global mean
             global_ano_mean_timeseries = cdutil.averager(
                 timeseries_ano(latitude=(-60, 70)), axis="xy", weights="weighted"

@@ -29,12 +29,15 @@ def AddParserArgument(P):
         "--variability_mode",
         type=str,
         default="NAO",
-        help="Mode of variability: NAM, NAO, SAM, PNA, PDO\n"
+        help="Mode of variability: NAM, NAO, SAM, PNA, PDO, NPO, NPGO, AMO\n"
         "- NAM: Northern Annular Mode\n"
         "- NAO: Northern Atlantic Oscillation\n"
         "- SAM: Southern Annular Mode\n"
         "- PNA: Pacific North American Pattern\n"
         "- PDO: Pacific Decadal Oscillation\n"
+        "- NPO: North Pacific Oscillation\n"
+        "- NPGO: North Pacific Gyre Oscillation\n"
+        "- AMO: Atlantic Multidecadal Oscillation\n"
         "(Note: Case insensitive)",
     )
     P.add_argument(
@@ -202,7 +205,7 @@ def VariabilityModeCheck(mode, P):
     if mode is None:
         P.error("VARIABILITY_MODE is NOT defined")
     else:
-        if mode.upper() not in ["NAM", "NAO", "SAM", "PNA", "PDO", "NPO", "NPGO"]:
+        if mode.upper() not in ["NAM", "NAO", "SAM", "PNA", "PDO", "NPO", "NPGO", "AMO"]:
             P.error(
                 "".join(
                     [
