@@ -3,7 +3,7 @@
 
 PCMDI Metrics Package (PMP)
 ======
-[![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg)](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2.2)
+[![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 ![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
@@ -41,6 +41,8 @@ Some installation support for CMIP participating modeling groups is available: p
 [PMP versions](https://github.com/PCMDI/pcmdi_metrics/releases)
 ------------
 
+- [v2.3.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3.1) - Technical update
+- [v2.3](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3) - New graphics using [archived PMP results](https://github.com/PCMDI/pcmdi_metrics_results_archive)
 - [v2.2.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2.2) - Technical update
 - [v2.2.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2.1) - Minor update
 - [v2.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2) - New metric implemented: precipitation variability across time scale
