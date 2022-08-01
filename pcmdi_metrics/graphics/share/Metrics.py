@@ -5,13 +5,13 @@ import os
 import numpy as np
 import pandas as pd
 
-from pcmdi_metrics.graphics import read_mean_clim_json_files
+from pcmdi_metrics.graphics import combine_ref_dicts, read_mean_clim_json_files
 
 
 class Metrics:
     """Mean climate metrics object class"""
 
-    def __init__(self, files):
+    def __init__(self, files, mip=None):
         """Initialize the mean climate metrics class
 
         This method initializes the mean climate metrics object given a
@@ -54,9 +54,10 @@ class Metrics:
             self.df_dict,
             self.var_list,
             self.var_unit_list,
+            self.var_ref_dict,
             self.regions,
             self.stats,
-        ) = read_mean_clim_json_files(files)
+        ) = read_mean_clim_json_files(files, mip=mip)
 
     def copy(self):
         """method to deep copy a Metrics instance"""
@@ -145,6 +146,7 @@ class Metrics:
 
         result.var_list = list(set(self.var_list + metrics_obj.var_list))
         result.var_unit_list = list(set(self.var_unit_list + metrics_obj.var_unit_list))
+        result.var_ref_dict = combine_ref_dicts(self.var_ref_dict, metrics_obj.var_ref_dict)
         result.regions = list(set(self.regions + metrics_obj.regions))
         result.stats = list(set(self.stats + metrics_obj.stats))
 
