@@ -1,7 +1,12 @@
-import cal_CloudRadKernel as CRK
-import compute_ECS as CE
-import organize_jsons as OJ
-import cld_fbks_ecs_assessment_v3 as dataviz
+from pcmdi_metrics.cloud_feedback.lib import (
+    CloudRadKernel,
+    compute_ECS,
+    organize_fbk_jsons,
+    organize_err_jsons,
+    organize_ecs_jsons,
+    dataviz
+)
+
 import os
 
 """
@@ -140,17 +145,17 @@ for exp in exps:
         filenames[exp][field] = xmlname
 
 # calculate all feedback components and Klein et al (2013) error metrics:
-fbk_dict,obsc_fbk_dict,err_dict = CRK.CloudRadKernel(filenames) 
+fbk_dict,obsc_fbk_dict,err_dict = CloudRadKernel(filenames) 
 
 # add this model's results to the pre-existing json file containing other models' results: 
-updated_fbk_dict,updated_obsc_fbk_dict = OJ.organize_fbk_jsons(fbk_dict,obsc_fbk_dict,model,variant)
-updated_err_dict = OJ.organize_err_jsons(err_dict,model,variant)
+updated_fbk_dict,updated_obsc_fbk_dict = organize_fbk_jsons(fbk_dict,obsc_fbk_dict,model,variant)
+updated_err_dict = organize_err_jsons(err_dict,model,variant)
 
 ecs = None
 if get_ecs:
     # calculate ECS and add it to the pre-existing json file containing other models' results:
-    ecs = CE.compute_ECS(filenames) 
-updated_ecs_dict = OJ.organize_ecs_jsons(ecs,model,variant)
+    ecs = compute_ECS(filenames) 
+updated_ecs_dict = organize_ecs_jsons(ecs,model,variant)
 
 # plot this model alongside other models and expert assessment:
 os.makedirs(figure_path, exist_ok=True)
