@@ -8,7 +8,6 @@ from .organize_jsons import (  # noqa
     organize_ecs_jsons
 )
 
-from .cld_fbks_ecs_assessment_v3 import dataviz  # noqa
-
+import cld_fbks_ecs_assessment_v3
 import bony_analysis
 import zelinka_analysis

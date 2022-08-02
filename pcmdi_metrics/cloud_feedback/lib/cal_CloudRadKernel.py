@@ -18,7 +18,8 @@ from genutil import grower
 import pcmdi_metrics.cloud_feedback.lib.bony_analysis as BA
 import pcmdi_metrics.cloud_feedback.lib.zelinka_analysis as ZA
 
-datadir='../data/'
+#datadir='../data/'
+datadir='./data/'
 
 # Define a python dictionary containing the sections of the histogram to consider
 # These are the same as in Zelinka et al, GRL, 2016

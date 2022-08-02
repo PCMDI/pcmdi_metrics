@@ -4,8 +4,9 @@ from pcmdi_metrics.cloud_feedback.lib import (
     organize_fbk_jsons,
     organize_err_jsons,
     organize_ecs_jsons,
-    dataviz
 )
+
+import pcmdi_metrics.cloud_feedback.lib.cld_fbks_ecs_assessment_v3 as dataviz
 
 import os
 
