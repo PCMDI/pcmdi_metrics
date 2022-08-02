@@ -2,9 +2,10 @@
 # Compute NET = LW+SW feedbacks
 # Append this dictionary to the existing json containing feedbacks and error metrics
 
-import numpy as np
 import json
-from datetime import date 
+from datetime import date
+
+import numpy as np
 
 datadir = './data/'
 
@@ -21,7 +22,7 @@ def organize_fbk_jsons(new_dict,new_obsc_dict,mo,ripf):
     old_dict = json.load(f)
     f.close()
 
-    old_dict[mo]={} 
+    old_dict[mo]={}
     old_dict[mo][ripf]={}
     old_dict[mo][ripf] = new_dict
     old_dict['metadata'] = meta
@@ -32,12 +33,12 @@ def organize_fbk_jsons(new_dict,new_obsc_dict,mo,ripf):
     old_obsc_dict = json.load(f)
     f.close()
 
-    old_obsc_dict[mo]={} 
+    old_obsc_dict[mo]={}
     old_obsc_dict[mo][ripf]={}
     old_obsc_dict[mo][ripf] = new_obsc_dict
     old_obsc_dict['metadata'] = meta
-    
-    return(old_dict,old_obsc_dict) # now updated to include info from input dictionary 
+
+    return(old_dict,old_obsc_dict) # now updated to include info from input dictionary
 
 
 def organize_err_jsons(new_dict,mo,ripf):
@@ -49,7 +50,7 @@ def organize_err_jsons(new_dict,mo,ripf):
     f.close()
 
     names = ['E_TCA','E_ctpt','E_LW','E_SW','E_NET']
-    old_dict[mo]={} 
+    old_dict[mo]={}
     old_dict[mo][ripf]={}
     for region in new_dict['ALL'].keys():
         old_dict[mo][ripf][region]={}
@@ -60,16 +61,16 @@ def organize_err_jsons(new_dict,mo,ripf):
                 for name in names:
                     # place in a natural order (e.g., Tropical marine low cloud amount = region/sfc/sec/name)
                     try:
-                        old_dict[mo][ripf][region][sfc][sec][name] = new_dict[sec][region][sfc][name] 
+                        old_dict[mo][ripf][region][sfc][sec][name] = new_dict[sec][region][sfc][name]
                     except:
                         old_dict[mo][ripf][region][sfc][sec][name] = np.nan
                 # end name loop
             # end section loop:
         # end sfc type loop
-    # end region loop   
+    # end region loop
     old_dict['metadata'] = meta
 
-    return(old_dict) # now updated to include info from input dictionary 
+    return(old_dict) # now updated to include info from input dictionary
 
 
 def organize_ecs_jsons(new_ecs,mo,ripf):
@@ -84,4 +85,4 @@ def organize_ecs_jsons(new_ecs,mo,ripf):
     if new_ecs!=None:
         old_dict['CMIP6'][mo][ripf]['ECS'] = new_ecs
 
-    return(old_dict) # now updated to include info from input dictionary 
+    return(old_dict) # now updated to include info from input dictionary

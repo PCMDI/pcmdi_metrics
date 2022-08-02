@@ -3,16 +3,17 @@
 Make figures comparing GCM cloud feedback components to expert assessed values from Sherwood et al (2020)
 """
 
+import json
+import string
+from datetime import date
+
+import matplotlib as mpl
+import matplotlib.gridspec as gridspec
 #IMPORT STUFF:
 #=====================
 import matplotlib.pylab as plt
 import numpy as np
-import matplotlib.gridspec as gridspec
-import matplotlib as mpl
 from scipy import stats
-import json
-import string
-from datetime import date 
 
 HEIGHT=0.45
 figdir = './figures/'
@@ -28,15 +29,15 @@ cmaplist = [cmap(i) for i in range(cmap.N)]
 cmap = mpl.colors.LinearSegmentedColormap.from_list('Custom cmap', cmaplist, cmap.N)
 # define the bins and normalize
 bounds = np.arange(2.5,6.5,0.5)#[0,1.5,2.5,3.5,4.5,6]
-norm = mpl.colors.BoundaryNorm(bounds, cmap.N) 
+norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 
 # 5,17,83,95 percentiles of the Baseline posterior ECS from Table 10 (p. 67) of Sherwood et al (2020):
 wcrp_bounds = [2.3,2.6,3.9,4.7]
 wcrp_cmap = mpl.colors.ListedColormap(['cyan', 'white', 'orange'])
-# set over-color to last color of list 
+# set over-color to last color of list
 wcrp_cmap.set_over('red')
 wcrp_cmap.set_under('blue')
-wcrp_norm = mpl.colors.BoundaryNorm(wcrp_bounds, wcrp_cmap.N) 
+wcrp_norm = mpl.colors.BoundaryNorm(wcrp_bounds, wcrp_cmap.N)
 
 BOUNDS0 = bounds
 CMAP0 = cmap
@@ -68,13 +69,13 @@ MARK['IPSL-CM5A-LR']='D'
 MARK['IPSL-CM6A-LR']='D'
 MARK['IPSL-CM5B-LR']='d'
 MARK['GFDL-CM4']='P'
-MARK['MPI-ESM-LR']='s'    
+MARK['MPI-ESM-LR']='s'
 MARK['UKESM1-0-LL']='h'
 MARK['BCC-CSM2-MR']='H'
 MARK['CNRM-CM5']='8'
 MARK['CNRM-CM6-1']='8'
 
-#######################################################   
+#######################################################
 def get_expert_assessed_fbks():
 
     #######################################################
@@ -90,7 +91,7 @@ def get_expert_assessed_fbks():
     'Implied Unassessed Cloud Feedbacks',
     'Sum of Assessed Cloud Feedbacks',
     'Total Cloud Feedback']
-    
+
     expert_hi_alt,   err_expert_hi_alt =    0.20, 0.10
     expert_trop_lo,  err_expert_trop_lo =   0.25, 0.16
     expert_anvil,    err_expert_anvil =    -0.20, 0.20
@@ -107,18 +108,18 @@ def get_expert_assessed_fbks():
 
     return (expert_cld_fbks,err_expert_cld_fbks,fbk_names)
 
-       
-#######################################################       
+
+#######################################################
 def get_fbks(cld_fbks,obsc_cld_fbks,cld_errs,ecs_dict):
     # Load in all the json files and get assessed/unassessed feedbacks
     assessed = []
     models = []
     ripfs = []
-    ECS = []    
+    ECS = []
 
     cnt=-1
     MODELS = list(cld_fbks.keys())
-    for mo in MODELS: 
+    for mo in MODELS:
         if mo=='metadata':
             continue
         cnt+=1
@@ -135,19 +136,19 @@ def get_fbks(cld_fbks,obsc_cld_fbks,cld_errs,ecs_dict):
                 assessed = np.row_stack((assessed,afbks))
                 unassessed = np.row_stack((unassessed,ufbks))
 
-            # get the error metrics (only defined for amip versions):  
+            # get the error metrics (only defined for amip versions):
             if mo == 'HadGEM2-ES':
                 mo2 = 'HadGEM2-A'
             elif mo == 'CanESM2':
-                mo2 = 'CanAM4'            
+                mo2 = 'CanAM4'
             else:
-                mo2 = mo  
-            
+                mo2 = mo
+
             if mo2 in cld_errs.keys():
                 if ripf in cld_errs[mo2].keys():
                     ripf2 = ripf
                 else:
-                    ripf2 = list(cld_errs[mo2].keys())[0] # take the first available ripf 
+                    ripf2 = list(cld_errs[mo2].keys())[0] # take the first available ripf
                     print(mo+': Using Klein error metrics from '+ripf2+' rather than '+ripf)
                 E_TCA0 = get_gcm_cld_errs(cld_errs[mo2][ripf2],'E_TCA')
                 E_ctpt0 = get_gcm_cld_errs(cld_errs[mo2][ripf2],'E_ctpt')
@@ -172,7 +173,7 @@ def get_fbks(cld_fbks,obsc_cld_fbks,cld_errs,ecs_dict):
                 E_LW = np.row_stack((E_LW,E_LW0))
                 E_SW = np.row_stack((E_SW,E_SW0))
                 E_NET = np.row_stack((E_NET,E_NET0))
-            
+
             # Get the abrupt4xCO2 Gregory-derived ECS values
             if mo=='HadGEM2-A':
                 mo2 = 'HadGEM2-ES'
@@ -193,18 +194,18 @@ def get_fbks(cld_fbks,obsc_cld_fbks,cld_errs,ecs_dict):
                 ecs = np.nan
 
             ECS.append(ecs)
-        
-        # (un)assessed is size [models,fbk_types]
-    return (assessed,unassessed,ufbk_names,np.array(ECS),models,ripfs,E_TCA,E_ctpt,E_LW,E_SW,E_NET)    
 
-    
-#######################################################   
+        # (un)assessed is size [models,fbk_types]
+    return (assessed,unassessed,ufbk_names,np.array(ECS),models,ripfs,E_TCA,E_ctpt,E_LW,E_SW,E_NET)
+
+
+#######################################################
 def get_gcm_assessed_fbks(fbk_dict,obsc_fbk_dict):
 
     # dictionary is structured: [region][sfc][sec][name]
 
     assessed=[]
-    
+
     # 1) Global high cloud altitude
     #===========================================
     LW = fbk_dict['eq90']['all']['HI680']['LWcld_alt']
@@ -258,15 +259,15 @@ def get_gcm_assessed_fbks(fbk_dict,obsc_fbk_dict):
     true_total = LW+SW
 
     sum_assessed = np.array(assessed).sum()
-    imply_not_assessed = true_total - sum_assessed 
+    imply_not_assessed = true_total - sum_assessed
     assessed.append(imply_not_assessed)
     assessed.append(sum_assessed)
     assessed.append(true_total)
-    
-    return(np.array(assessed)) # size [fbk_types]  
+
+    return(np.array(assessed)) # size [fbk_types]
 
 
-#######################################################   
+#######################################################
 def get_gcm_cld_errs(err_dict,name):
 
     # dictionary is structured: [region][sfc][sec][name]
@@ -301,18 +302,18 @@ def get_gcm_cld_errs(err_dict,name):
     # 7) true_total -- here I will use the standard Klein et al 60-60 errors
     #===========================================
     DATA.append(err_dict['eq60']['all']['ALL'][name])
-    
+
     return(np.array(DATA)) # size [fbk_types]
-    
-    
-#######################################################   
+
+
+#######################################################
 def get_unassessed_fbks(fbk_dict,obsc_fbk_dict):
 
     # dictionary is structured: [region][sfc][sec][name]
 
     fbk_names=[]
     unassessed=[]
-        
+
     # 1) Global unobscured low altitude (Complement to global high cloud altitude)
     #===========================================
     LW = obsc_fbk_dict['eq90']['all']['LO680']['LWcld_alt']
@@ -329,7 +330,7 @@ def get_unassessed_fbks(fbk_dict,obsc_fbk_dict):
                                                         obsc_fbk_dict['eq30']['ocn_dsc']['LO680']['SWdobsc_fbk']
     unassessed.append(LW+SW)
     fbk_names.append('Tropical Marine Subsidence\nHigh-Cloud Amount + Optical Depth')
-    
+
     # 3) Complement to the Anvil
     #===========================================
     # Tropical oceanic ascent: unobscured low amt + low tau (complement to High amt + high tau + delta obscuration-induced low)
@@ -337,7 +338,7 @@ def get_unassessed_fbks(fbk_dict,obsc_fbk_dict):
     SW = obsc_fbk_dict['eq30']['ocn_asc']['LO680']['SWcld_amt'] + obsc_fbk_dict['eq30']['ocn_asc']['LO680']['SWcld_tau']
     unassessed.append(LW+SW)
     fbk_names.append('Tropical Marine Ascent\nLow-Cloud Amount + Optical Depth')
-    
+
     # 4) Tropical land high+low optical depth (Complement to Global land cloud amount)
     #===========================================
     LW = fbk_dict['eq30']['lnd']['HI680']['LWcld_tau'] + obsc_fbk_dict['eq30']['lnd']['LO680']['LWcld_tau']
@@ -364,14 +365,14 @@ def get_unassessed_fbks(fbk_dict,obsc_fbk_dict):
          obsc_fbk_dict['eq90']['all']['LO680']['SWcld_tau'] - obsc_fbk_dict['eq70']['all']['LO680']['SWcld_tau']
     unassessed.append(LW+SW)
     fbk_names.append('30-40 / 70-90 Low-Cloud Optical Depth')
-   
+
     # 7) 30-90 Ocean+Land High TAU
     #===========================================
     LW = fbk_dict['eq90']['all']['HI680']['LWcld_tau'] - fbk_dict['eq30']['all']['HI680']['LWcld_tau']
     SW = fbk_dict['eq90']['all']['HI680']['SWcld_tau'] - fbk_dict['eq30']['all']['HI680']['SWcld_tau']
     unassessed.append(LW+SW)
     fbk_names.append('30-90 High-Cloud Optical Depth')
-   
+
     # 8) 30-90 Ocean High AMT + ∆obscuration
     #===========================================
     LW = fbk_dict['eq90']['ocn']['HI680']['LWcld_amt'] - fbk_dict['eq30']['ocn']['HI680']['LWcld_amt'] + \
@@ -380,7 +381,7 @@ def get_unassessed_fbks(fbk_dict,obsc_fbk_dict):
     obsc_fbk_dict['eq90']['ocn']['LO680']['SWdobsc_fbk']  - obsc_fbk_dict['eq30']['ocn']['LO680']['SWdobsc_fbk']
     unassessed.append(LW+SW)
     fbk_names.append('30-90 Marine High-Cloud Amount')
-        
+
     # 10) Obscuration covariance term
     #===========================================
     LW = obsc_fbk_dict['eq90']['all']['LO680']['LWdobsc_cov_fbk']
@@ -394,15 +395,15 @@ def get_unassessed_fbks(fbk_dict,obsc_fbk_dict):
     SW = fbk_dict['eq90']['all']['LO680']['SWcld_err'] + fbk_dict['eq90']['all']['HI680']['SWcld_err']
     unassessed.append(LW+SW)
     fbk_names.append('Zelinka Decomposition Residual')
-    
+
     sum_unassessed = np.array(unassessed).sum()
     unassessed.append(sum_unassessed)
     fbk_names.append('Sum of Unassessed Cloud Feedbacks')
-    
+
     return(np.array(unassessed),fbk_names) # size [fbk_types]
 
 
-#######################################################  
+#######################################################
 def horiz_shade(fbk,err,xlabloc=False):
     dummyx=np.linspace(-1000,1000,100)
     ymin1 = fbk - 1.64*err
@@ -418,7 +419,7 @@ def horiz_shade(fbk,err,xlabloc=False):
         plt.text(xlabloc,ymax2,' 83%',fontsize=9,ha='center',va='center')
         plt.text(xlabloc,ymax1,' 95%',fontsize=9,ha='center',va='center')
 
-####################################################### 
+#######################################################
 def label_models(ax,models5,models6):
     ylocs = np.linspace(2,9,3+len(models5)+len(models6))[-1::-1]
     xloc=0.76
@@ -433,7 +434,7 @@ def label_models(ax,models5,models6):
         ax.plot(xloc,ylocs[cnt],ls='',marker=MARK[mod],ms=np.sqrt(70),mfc=COLOR,alpha=0.3,zorder=30)
         ax.plot(xloc,ylocs[cnt],ls='',marker=MARK[mod],ms=np.sqrt(70),mec=COLOR,mfc='None',zorder=30)
         ax.text(xloc,ylocs[cnt],'   '+letters[i]+') '+mod,ha='left',va='center',fontsize=8)
-        
+
     cnt+=1
     cnt+=1
     ax.text(0.76,ylocs[cnt],'CMIP6',ha='left',va='center',fontsize=14)
@@ -449,12 +450,12 @@ def label_models(ax,models5,models6):
     ax.set_ylim(1.5,9.5)
     ax.axis("off")
 
-#######################################################   
-def plot_expert():  
+#######################################################
+def plot_expert():
 
     (expert_cld_fbks,err_expert_cld_fbks,fbk_names) =  get_expert_assessed_fbks()
     LN = len(fbk_names)
-           
+
     yloc = np.arange(0,2*LN,2)-3*HEIGHT/2
     DATA = expert_cld_fbks[-1::-1]
     errDATA = err_expert_cld_fbks[-1::-1]
@@ -463,8 +464,8 @@ def plot_expert():
     # skip the unassessed...
     plt.errorbar(DATA[3:],yloc[3:],xerr=1.64*np.array(errDATA[3:]),fmt='kd',elinewidth=1.5,ms=8,zorder=50,label='_nolegend_')
     plt.errorbar(DATA[3:],yloc[3:],xerr=0.95*np.array(errDATA[3:]),fmt='kd',elinewidth=3,capsize=7,capthick=3,ms=8,zorder=100,label='_nolegend_')#,label='WCRP Assessment')
-    
-    
+
+
     # Stick a straw-man TIE fighter in the white space to label it
     yloc=5.5
     ERR1 = 1.64*np.array(err_expert_cld_fbks[2])
@@ -477,10 +478,10 @@ def plot_expert():
     plt.text(0.7-ERR2,yloc+0.1,'17%',ha='left',va='bottom',rotation=45)
     plt.text(0.7+ERR2,yloc+0.1,'83%',ha='left',va='bottom',rotation=45)
     plt.text(0.7,yloc-0.23,'WCRP Assessment',ha='center',va='top',fontsize=12)
-    
+
     return(fbk_names)
 
-#######################################################   
+#######################################################
 def scatter_label(x,y,models,models5,dolabel=False,dolims=False):
     m, b, r, p, std_err = stats.linregress(x.compressed(),y.compressed())
     dummyx = np.linspace(x.min(),x.max(),100)
@@ -505,15 +506,15 @@ def scatter_label(x,y,models,models5,dolabel=False,dolims=False):
             LETTER,COLOR = string.ascii_uppercase[im],'C4'
         plt.text(x[im],y[im],LETTER,ha='center',va='center',color=COLOR,fontweight='bold',fontsize=14)
         if dolabel:
-            plt.text(plt.xlim()[-1]+0.05*x.ptp(),yloc[cnt],' '+LETTER+')  '+model,ha='left',va='center',color=COLOR)            
-            #plt.text(x.max()+0.05*x.ptp(),yloc[cnt],' '+LETTER+')  '+model,ha='left',va='center',color=COLOR)            
+            plt.text(plt.xlim()[-1]+0.05*x.ptp(),yloc[cnt],' '+LETTER+')  '+model,ha='left',va='center',color=COLOR)
+            #plt.text(x.max()+0.05*x.ptp(),yloc[cnt],' '+LETTER+')  '+model,ha='left',va='center',color=COLOR)
     if dolims:
         plt.xlim(x.min()-0.05*x.ptp(),x.max()+0.05*x.ptp())
         plt.ylim(y.min()-0.05*y.ptp(),y.max()+0.05*y.ptp())
-        
+
     return(LABEL)
 
-#######################################################   
+#######################################################
 def static_plot(assessed,ecs,models,fbk_names,gen,fig,gs):
     LN = assessed.shape[1]
     if gen=='5':
@@ -525,8 +526,8 @@ def static_plot(assessed,ecs,models,fbk_names,gen,fig,gs):
         FACE = 'C4'
         EDGE = 'C4'
     avg_assessed=np.ma.average(assessed,0)
-    err_assessed=np.ma.std(assessed,0)     
-    N,T = assessed.shape #[models,fbk_types]   
+    err_assessed=np.ma.std(assessed,0)
+    N,T = assessed.shape #[models,fbk_types]
     plt.barh(yloc, avg_assessed[-1::-1], height=HEIGHT,align='center',color=FACE,alpha=0.3,zorder=10,label='CMIP'+gen+' Mean [n='+str(N)+']')
     plt.barh(yloc, avg_assessed[-1::-1], height=HEIGHT,align='center',color='None',ec=EDGE,zorder=10)#,label='CMIP'+gen+' Mean [n='+str(N)+']')
     x = assessed[:,-1::-1]
@@ -537,12 +538,12 @@ def static_plot(assessed,ecs,models,fbk_names,gen,fig,gs):
         plt.plot(x[ind],y[ind],ls='',marker=MARK[model],ms=np.sqrt(70),mec='k',mfc='None',zorder=30)#,label=model)
     if gen=='6':
         for Y in np.arange(1,2*LN+1,2):
-            plt.axhline(y=Y-HEIGHT/2,color='gray',ls='-',lw=0.5) 
+            plt.axhline(y=Y-HEIGHT/2,color='gray',ls='-',lw=0.5)
         plt.yticks(yloc,fbk_names[-1::-1],fontsize=14)
         plt.xticks(fontsize=14)
         plt.axvline(x=0.0,color='k',ls='-')
         plt.xlabel('Wm$^{-2}$K$^{-1}$',fontsize=14)
-        plt.ylim(-1.5+HEIGHT,Y-HEIGHT/2) 
+        plt.ylim(-1.5+HEIGHT,Y-HEIGHT/2)
         if assessed.max()<0.6:
             plt.xlim(-0.3,0.3)
         else:
@@ -550,18 +551,18 @@ def static_plot(assessed,ecs,models,fbk_names,gen,fig,gs):
         plt.legend(loc=1,fontsize=10,fancybox=True, framealpha=1)
 
         # create a second axes for the colorbar
-        ax2 = fig.add_axes([0.52, 0.12, 0.02, 0.30]) 
+        ax2 = fig.add_axes([0.52, 0.12, 0.02, 0.30])
         cb = mpl.colorbar.ColorbarBase(ax2, cmap=CMAP, norm=NORM, extend='both',spacing='proportional', ticks=BOUNDS, boundaries=BOUNDS,orientation='vertical')
         cb.ax.tick_params(labelsize=12)
         ax2.set_ylabel('ECS [K]', size=12)
 
 
-#######################################################   
+#######################################################
 def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
 
     # Set a unique marker for your new model
     MARK[newmod] = '<'
-    
+
     ##################################################################
     # READ IN CLOUD FEEDBACK VALUES FOR CMIP5
     ##################################################################
@@ -579,7 +580,7 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
     f = open(file,'r')
     cld_errs5 = json.load(f)
     f.close()
-    
+
     """
     ##################################################################
     # READ IN GREGORY ECS VALUES DERIVED IN ZELINKA ET AL (2020) GRL #
@@ -587,17 +588,17 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
     f = open(datadir+'cmip56_forcing_feedback_ecs.json','r')
     ecs = json.load(f)
     f.close()
-    ecs_dict5 = ecs['CMIP5']    
+    ecs_dict5 = ecs['CMIP5']
     ecs_dict6 = ecs['CMIP6']
     """
-    ecs_dict5 = ecs_dict56['CMIP5']    
+    ecs_dict5 = ecs_dict56['CMIP5']
     ecs_dict6 = ecs_dict56['CMIP6']
-    
+
     # Get the assessed and unassessed feedbacks:
     assessed5,unassessed5,ufbk_names5,ECS5,models5,ripfs5,E_TCA5,E_ctpt5,E_LW5,E_SW5,E_NET5 = get_fbks(cld_fbks5,obsc_cld_fbks5,cld_errs5,ecs_dict5)
     assessed6,unassessed6,ufbk_names6,ECS6,models6,ripfs6,E_TCA6,E_ctpt6,E_LW6,E_SW6,E_NET6 = get_fbks(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict6)
     LN = assessed6.shape[1] # number of feedback categories
-    
+
     ################################################################################################
     # BAR PLOT OF ECS ASSESSMENT CLOUD FEEDBACK COMPONENTS
     # 1) showing the 66% range (+/- 0.95sd) and 5-95% range (+/- 1.64 sd) rather than 1sd (68%) and 2 sd (2.5-97.5%) ranges
@@ -642,8 +643,8 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
     # new axis for labeling all models
     ax = plt.subplot(gs[:10, 10:12])
     label_models(ax,models5,models6)
-    plt.savefig(figdir+'WCRP_unassessed_cld_fbks_amip-p4K.pdf',bbox_inches='tight')    
-    
+    plt.savefig(figdir+'WCRP_unassessed_cld_fbks_amip-p4K.pdf',bbox_inches='tight')
+
     ################################################################################################
     # ERROR METRIC OF MODEL AGREEMENT WITH INDIVIDUAL CLOUD FEEDBACKS
     ################################################################################################
@@ -680,7 +681,7 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
     plt.plot(RMSE6,assessed6[:,-1],'o',ms=np.sqrt(275),mec='k',mfc='None',zorder=20,label='CMIP6')
     # highlight your model
     m = models6.index(newmod)
-    plt.plot(RMSE6[m],assessed6[m,-1],'o',ms=np.sqrt(325),mec='m',mew=3,mfc='None',zorder=20,label=newmod)   
+    plt.plot(RMSE6[m],assessed6[m,-1],'o',ms=np.sqrt(325),mec='m',mew=3,mfc='None',zorder=20,label=newmod)
     plt.legend(loc=8,ncol=3,handletextpad=0.4,frameon=0)
     plt.xlabel('Cloud Feedback RMSE [Wm$^{-2}$K$^{-1}$]',fontsize=14)
     plt.ylabel('Total Cloud Feedback [Wm$^{-2}$K$^{-1}$]',fontsize=14)
@@ -706,7 +707,7 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
         COLOR='k'
         if ECS56[im]<3.5 or ECS56[im]>5:
             COLOR='w'
-        ax.text(x[im],y[im],LETTER,ha='center',va='center',color=COLOR,fontsize=10,fontweight='bold',zorder=30)    
+        ax.text(x[im],y[im],LETTER,ha='center',va='center',color=COLOR,fontsize=10,fontweight='bold',zorder=30)
     # create a second axes for the colorbar
     ax2 = plt.subplot(gs[:4, 9:10])
     cb = mpl.colorbar.ColorbarBase(ax2, cmap=CMAP0, norm=NORM0,spacing='proportional', ticks=BOUNDS0, boundaries=BOUNDS0)
@@ -716,7 +717,7 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
     # Color-code by E_NET
     KEM_CMAP = plt.cm.magma_r  # define the colormap
     KEM_BOUNDS = np.arange(0.7,1.9,0.15)
-    KEM_NORM = mpl.colors.BoundaryNorm(KEM_BOUNDS, KEM_CMAP.N) 
+    KEM_NORM = mpl.colors.BoundaryNorm(KEM_BOUNDS, KEM_CMAP.N)
 
     ax = plt.subplot(gs[:4, 12:21])
     plt.scatter(RMSE5,assessed5[:,-1],s=200,c=E_NET5[:,-1],marker='D',zorder=10,cmap=KEM_CMAP, norm=KEM_NORM)
@@ -763,7 +764,7 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
 
     ######################################################
     # Plot Klein error metrics vs cloud feedback & RMSE:
-    ######################################################    
+    ######################################################
     # Plot E_NET vs total cloud feedback:
     plt.figure(figsize=(18,12))
     gs = gridspec.GridSpec(10, 24)
@@ -777,7 +778,7 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
     plt.plot(E_NET6[:,-1],assessed6[:,-1],'o',ms=np.sqrt(300),mec='C4',mfc='None',zorder=20,label='CMIP6')
     # highlight your model
     m = models6.index(newmod)
-    plt.plot(E_NET6[m,-1],assessed6[m,-1],'o',ms=np.sqrt(325),mec='m',mew=3,mfc='None',zorder=20,label=newmod)       
+    plt.plot(E_NET6[m,-1],assessed6[m,-1],'o',ms=np.sqrt(325),mec='m',mew=3,mfc='None',zorder=20,label=newmod)
     plt.legend(loc=8,ncol=3,handletextpad=0.4,frameon=0)
     LABEL=scatter_label(x,y,models56,models5,False,True)
     plt.text(0.95,0.95,LABEL,fontsize=12,color='k',ha='right',va='center',transform=ax.transAxes) # (0, 0) is lower-left and (1, 1) is upper-right
@@ -799,7 +800,7 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
     plt.plot(E_NET6[:,-1],RMSE6,'o',ms=np.sqrt(300),mec='C4',mfc='None',zorder=20,label='CMIP6')
     # highlight your model
     m = models6.index(newmod)
-    plt.plot(E_NET6[m,-1],RMSE6[m],'o',ms=np.sqrt(325),mec='m',mew=3,mfc='None',zorder=20,label=newmod)       
+    plt.plot(E_NET6[m,-1],RMSE6[m],'o',ms=np.sqrt(325),mec='m',mew=3,mfc='None',zorder=20,label=newmod)
     plt.legend(loc=8,ncol=3,handletextpad=0.4,frameon=0)
     LABEL=scatter_label(x,y,models56,models5,False,True)
     plt.text(0.95,0.95,LABEL,fontsize=12,color='k',ha='right',va='center',transform=ax.transAxes) # (0, 0) is lower-left and (1, 1) is upper-right
@@ -809,7 +810,7 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
     plt.ylim(0.04,0.15)
     plt.xlim(0.60,1.65)
     plt.savefig(figdir+'WCRP_totcldfbks2_v_E_NET_amip-p4K.pdf',bbox_inches='tight')
- 
+
 
     #######################################################
     # PRINT OUT THE TABLE OF EVERYTHING:
@@ -855,7 +856,7 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
                 ECS = ECS6
                 E_NET = E_NET6[:,-1]
             E_NET = np.ma.masked_where(np.isnan(E_NET),E_NET)
-            
+
             for ic in range(len(models)):
                 cnt+=1
                 LM = letters[cnt]+') '+models[ic]
@@ -867,7 +868,7 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
                     elif this<expert_min66[fb] or this>expert_max66[fb]:
                         data.append('%0.2f'%(this)+'*')
                     else:
-                        data.append('%0.2f'%(this))  
+                        data.append('%0.2f'%(this))
                 data.append('%0.2f'%(RMSE[ic]))
                 data.append('%0.2f'%(E_NET[ic]))
                 if ECS[ic]>4.7:
@@ -877,23 +878,23 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
                 else:
                     data.append('%0.2f'%(ECS[ic]))
                 print('{:<21s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}'.\
-                    format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13]), file=f)   
-            
+                    format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13]), file=f)
+
             # multi-model mean
             print(dash, file=f)
             data=['CMIP'+gen+' Average','','%0.2f'%(np.ma.average(assessed[:,0])),'%0.2f'%(np.ma.average(assessed[:,1])),'%0.2f'%(np.ma.average(assessed[:,2])),\
             '%0.2f'%(np.ma.average(assessed[:,3])),'%0.2f'%(np.ma.average(assessed[:,4])),'%0.2f'%(np.ma.average(assessed[:,5])),'%0.2f'%(np.ma.average(assessed[:,6])),\
             '%0.2f'%(np.ma.average(assessed[:,7])),'%0.2f'%(np.ma.average(assessed[:,8])),'%0.2f'%(np.ma.average(RMSE)),'%0.2f'%(np.ma.average(E_NET)),'%0.2f'%(np.ma.average(ECS))]
             print('{:<21s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}'.\
-                format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13]), file=f)   
+                format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13]), file=f)
             #print(dash, file=f)
             data=['CMIP'+gen+' Stdev','','%0.2f'%(np.ma.std(assessed[:,0])),'%0.2f'%(np.ma.std(assessed[:,1])),'%0.2f'%(np.ma.std(assessed[:,2])),\
             '%0.2f'%(np.ma.std(assessed[:,3])),'%0.2f'%(np.ma.std(assessed[:,4])),'%0.2f'%(np.ma.std(assessed[:,5])),'%0.2f'%(np.ma.std(assessed[:,6])),\
             '%0.2f'%(np.ma.std(assessed[:,7])),'%0.2f'%(np.ma.std(assessed[:,8])),'%0.2f'%(np.ma.std(RMSE)),'%0.2f'%(np.ma.std(E_NET)),'%0.2f'%(np.ma.std(ECS))]
             print('{:<21s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}'.\
-                format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13]), file=f)   
+                format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13]), file=f)
             print(dash, file=f)
-            
+
         # multi-model mean for combined CMIP5+6 models
         assessed = assessed56
         RMSE = RMSE56
@@ -906,28 +907,28 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
         '%0.2f'%(np.ma.average(assessed[:,3])),'%0.2f'%(np.ma.average(assessed[:,4])),'%0.2f'%(np.ma.average(assessed[:,5])),'%0.2f'%(np.ma.average(assessed[:,6])),\
         '%0.2f'%(np.ma.average(assessed[:,7])),'%0.2f'%(np.ma.average(assessed[:,8])),'%0.2f'%(np.ma.average(RMSE)),'%0.2f'%(np.ma.average(E_NET)),'%0.2f'%(np.ma.average(ECS))]
         print('{:<21s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}'.\
-            format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13]), file=f)   
+            format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13]), file=f)
         #print(dash, file=f)
         data=['CMIP5/6 Stdev','','%0.2f'%(np.ma.std(assessed[:,0])),'%0.2f'%(np.ma.std(assessed[:,1])),'%0.2f'%(np.ma.std(assessed[:,2])),\
         '%0.2f'%(np.ma.std(assessed[:,3])),'%0.2f'%(np.ma.std(assessed[:,4])),'%0.2f'%(np.ma.std(assessed[:,5])),'%0.2f'%(np.ma.std(assessed[:,6])),\
         '%0.2f'%(np.ma.std(assessed[:,7])),'%0.2f'%(np.ma.std(assessed[:,8])),'%0.2f'%(np.ma.std(RMSE)),'%0.2f'%(np.ma.std(E_NET)),'%0.2f'%(np.ma.std(ECS))]
         print('{:<21s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}'.\
-            format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13]), file=f)   
+            format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12],data[13]), file=f)
         print(dash, file=f)
         data=['WCRP Central','']
         for fb in range(len(fbk_names)):
             data.append(str(expert_cld_fbks[fb]))
         print('{:<21s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}'.\
-            format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10]), file=f)   
+            format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10]), file=f)
         #print(dash, file=f)
         data=['WCRP Stdev','']
         for fb in range(len(fbk_names)):
             data.append(str('%0.2f'%(err_expert_cld_fbks[fb])))
         print('{:<21s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}{:<11s}'.\
-            format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10]), file=f)   
+            format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10]), file=f)
         print(dash, file=f)
 
-    
+
     # UNASSESSED
     fbk_table = figdir+'CMIP56_unassessed_cld_fbks_WCRP.txt'
     dash = '-' * 170
@@ -954,15 +955,15 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
                 models = models6
                 ripfs = ripfs6
                 ufbk_names = ufbk_names6
-            
+
             for ic in range(len(models)):
                 data=[models[ic],ripfs[ic]]
                 for fb in range(len(ufbk_names)):
                     this = unassessed[ic,fb]
-                    data.append('%0.2f'%(this))  
+                    data.append('%0.2f'%(this))
                 print('{:<21s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}'.\
-                    format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12]), file=f)   
-            
+                    format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12]), file=f)
+
             # multi-model mean
             print(dash, file=f)
             data=['CMIP'+gen+' Average','','%0.2f'%(np.ma.average(unassessed[:,0])),'%0.2f'%(np.ma.average(unassessed[:,1])),'%0.2f'%(np.ma.average(unassessed[:,2])),\
@@ -970,16 +971,16 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
             '%0.2f'%(np.ma.average(unassessed[:,7])),'%0.2f'%(np.ma.average(unassessed[:,8])),'%0.2f'%(np.ma.average(unassessed[:,9])),\
             '%0.2f'%(np.ma.average(unassessed[:,10]))]
             print('{:<21s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}'.\
-                format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12]), file=f)   
+                format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12]), file=f)
             #print(dash, file=f)
             data=['CMIP'+gen+' Stdev','','%0.2f'%(np.ma.std(unassessed[:,0])),'%0.2f'%(np.ma.std(unassessed[:,1])),'%0.2f'%(np.ma.std(unassessed[:,2])),\
             '%0.2f'%(np.ma.std(unassessed[:,3])),'%0.2f'%(np.ma.std(unassessed[:,4])),'%0.2f'%(np.ma.std(unassessed[:,5])),'%0.2f'%(np.ma.std(unassessed[:,6])),\
             '%0.2f'%(np.ma.std(unassessed[:,7])),'%0.2f'%(np.ma.std(unassessed[:,8])),'%0.2f'%(np.ma.std(unassessed[:,9])),\
             '%0.2f'%(np.ma.std(unassessed[:,10]))]
             print('{:<21s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}'.\
-                format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12]), file=f)   
+                format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12]), file=f)
             print(dash, file=f)
-            
+
         # multi-model mean for combined CMIP5+6 models
         unassessed = unassessed56
         #print(dash, file=f)
@@ -988,12 +989,12 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
         '%0.2f'%(np.ma.average(unassessed[:,7])),'%0.2f'%(np.ma.average(unassessed[:,8])),'%0.2f'%(np.ma.average(unassessed[:,9])),\
         '%0.2f'%(np.ma.average(unassessed[:,10]))]
         print('{:<21s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}'.\
-            format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12]), file=f)   
+            format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12]), file=f)
         #print(dash, file=f)
         data=['CMIP5/6 Stdev','','%0.2f'%(np.ma.std(unassessed[:,0])),'%0.2f'%(np.ma.std(unassessed[:,1])),'%0.2f'%(np.ma.std(unassessed[:,2])),\
         '%0.2f'%(np.ma.std(unassessed[:,3])),'%0.2f'%(np.ma.std(unassessed[:,4])),'%0.2f'%(np.ma.std(unassessed[:,5])),'%0.2f'%(np.ma.std(unassessed[:,6])),\
         '%0.2f'%(np.ma.std(unassessed[:,7])),'%0.2f'%(np.ma.std(unassessed[:,8])),'%0.2f'%(np.ma.std(unassessed[:,9])),\
         '%0.2f'%(np.ma.std(unassessed[:,10]))]
         print('{:<21s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}'.\
-            format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12]), file=f)   
+            format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12]), file=f)
         print(dash, file=f)
