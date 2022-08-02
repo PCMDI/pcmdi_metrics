@@ -13,6 +13,6 @@ path = '/p/css03/esgf_publish/CMIP6'
 get_ecs = True
 
 # Output directory path (directory will be generated if it does not exist yet.)
-xml_path = "../xmls/"
-figure_path = "../figures/"
+xml_path = "./xmls/"
+figure_path = "./figures/"
 #================================================================================================

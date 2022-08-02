@@ -8,6 +8,6 @@ from .organize_jsons import (  # noqa
     organize_ecs_jsons
 )
 
-import cld_fbks_ecs_assessment_v3
-import bony_analysis
-import zelinka_analysis
+#from .cld_fbks_ecs_assessment_v3 import make_all_figs  # noqa
+#import bony_analysis
+#import zelinka_analysis
