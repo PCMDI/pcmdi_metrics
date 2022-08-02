@@ -6,7 +6,7 @@ import numpy as np
 import json
 from datetime import date 
 
-datadir = '../data/'
+datadir = './data/'
 
 meta = {
 "date_modified" :   str(date.today()),
