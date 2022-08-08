@@ -1,0 +1,101 @@
+{
+    "settings": {
+        "name": "enso",
+        "driver": "cmec/mean_climate/pmp_enso_driver.sh",
+        "async": null,
+        "long_name": "PMP ENSO metrics",
+        "description": "ENSO metrics for earth system models",
+        "runtime": {"PCMDI Metrics Package": "1.2", "CDAT": "8.2.1"}
+    },
+    "varlist": {
+        "pr": {
+            "long_name": "precipitation_flux",
+            "units": "kg m-2 s-2",
+            "frequency": "mon"
+        },
+        "ts": {
+            "long_name": "surface_temperature",
+            "units": "K",
+            "frequency": "mon"
+        },
+        "tauu": {
+            "long_name": "surface_downward_eastward_stress",
+            "units": "Pa",
+            "frequency": "mon"
+        },
+        "hfls": {
+            "long_name": "surface_upward_latent_heat_flux",
+            "units": "W m-2",
+            "frequency": "mon"
+        },
+        "hfss": {
+            "long_name": "surface_upward_sensible_heat_flux",
+            "units": "W m-2",
+            "frequency": "mon"
+        },
+        "rlds": {
+            "long_name": "surface_downwelling_longwave_flux_in_air",
+            "units": "W m-2",
+            "frequency": "mon"
+        },
+        "rlus": {
+            "long_name": "surface_upwelling_longwave_flux_in_air",
+            "units": "W m-2",
+            "frequency": "mon"
+        },
+        "rsds": {
+            "long_name": "surface_downwelling_shortwave_flux_in_air",
+            "units": "W m-2",
+            "frequency": "mon"
+        },
+        "rsus": {
+            "long_name": "surface_upwelling_shortwave_flux_in_air",
+            "units": "W m-2",
+            "frequency": "mon"
+        },
+        "zos": {
+            "long_name": "sea_surface_height_above_geoid",
+            "units": "m",
+            "frequency": "mon"
+        }
+    },
+    "obslist": {
+        "GPCP-2-3": {
+            "version": "2-3",
+            "long_name": "GPCP 2-3 Merged Precipitation",
+            "description": "GPCP 2.3 prepared for PMPObs (ODS-v2.1.0)"
+        },
+        "AVISO-1-0": {
+            "version": "1",
+            "long_name": "Archiving, Validation and Interpretation of Satellite Oceanographic data version 1",
+            "description": "AVISO Monthly Mean of Sea Level Anomalies referenced to the [1993, 2012] period"
+        },
+        "ERA-INT": {
+            "version": "1.0",
+            "long_name": "European ReAnalysis 1989-2010",
+            "description": "ERAINT prepared for PCMDIObs (ODS-v2.1.0)"
+        },
+        "HadISST-1-1": {
+            "version": "1.1",
+            "long_name": "HadISST 1.1 monthly average sea surface temperature",
+            "description": "Met Office Hadley Centre monthly average sea surface temperature version 1.1"
+        }
+    },
+    "default_parameters": {
+        "modnames": ["ACCESS1-0"],
+        "mip": "cmip5",
+        "exp": "historical",
+        "realization": "r1i1p1",
+        "modpath": "CMIP5_demo_data/%(variable)_Amon_%(model)_historical_%(realization)_185001-200512.nc",
+        "modpath_lf": "CMIP5_demo_data/sftlf_fx_%(model)_amip_r0i0p0.nc",
+        "obs_cmor": true,
+        "obs_cmor_path": "obs4MIPs_PCMDI_monthly",
+        "obs_catalogue": "obs4MIPs_PCMDI-CEM2021_monthly_bySource_catalogue_v20210805_demo.json",
+        "metricsCollection": "ENSO_perf",
+        "case_id": "baseicTestEnso",
+        "results_dir": "os.path.join('$OUTPUT_DIR$',case_id, metricsCollection)",
+        "json_name": "%(mip)_%(exp)_%(metricsCollection)_%(case_id)_%(model)_%(realization)",
+        "netcdf_name": "%(mip)_%(exp)_%(metricsCollection)_%(case_id)_%(model)_%(realization)",
+        "nc_out": "False"
+    }
+}
