@@ -16,7 +16,7 @@
 #
 # Modifed by Jiwoo Lee, 2020-06-26: Skip merging when dict is empty
 
-import collections
+from collections.abc import Mapping
 
 
 def dict_merge(dct, merge_dct):
@@ -36,7 +36,7 @@ def dict_merge(dct, merge_dct):
             if (
                 k in dct
                 and isinstance(dct[k], dict)
-                and isinstance(merge_dct[k], collections.Mapping)
+                and isinstance(merge_dct[k], Mapping)
             ):
                 dict_merge(dct[k], merge_dct[k])
             else:

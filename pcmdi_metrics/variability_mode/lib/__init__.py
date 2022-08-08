@@ -25,7 +25,7 @@ from .eof_analysis import (  # noqa
     linear_regression,
     linear_regression_on_globe_for_teleconnection,
 )
-from .landmask import estimate_landmask, model_land_mask_out  # noqa
+from .landmask import data_land_mask_out, estimate_landmask  # noqa
 from .lib_variability_mode import (  # noqa
     debug_print,
     get_domain_range,
