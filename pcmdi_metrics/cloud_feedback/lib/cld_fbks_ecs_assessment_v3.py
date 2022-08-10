@@ -998,3 +998,11 @@ def make_all_figs(cld_fbks6,obsc_cld_fbks6,cld_errs6,ecs_dict56,newmod):
         print('{:<21s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}{:<13s}'.\
             format(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7],data[8],data[9],data[10],data[11],data[12]), file=f)
         print(dash, file=f)
+
+
+
+    #######################################################
+    # RETURN YOURMODEL RESULTS TO DRIVER:
+    #######################################################
+    m = models6.index(newmod)
+    return RMSE6[m], ECS6[m]
