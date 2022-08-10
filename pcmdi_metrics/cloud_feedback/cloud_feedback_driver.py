@@ -7,10 +7,8 @@ from pcmdi_metrics.cloud_feedback.lib import (
 )
 
 import pcmdi_metrics.cloud_feedback.lib.cld_fbks_ecs_assessment_v3 as dataviz
-
 import json
 import os
-
 from cdp.cdp_parser import CDPParser
 import argparse 
 
@@ -97,6 +95,15 @@ P.add_argument(
          "True: compute ECS using abrupt-4xCO2 run.\n"
          "False: do not compute, instead rely on ECS value present in the json file (if it exists).", 
     required=False)
+P.add_argument(
+    '--debug',
+    type=bool,
+    dest='debug',
+    help="Flag to print interim results for debugging.\n"
+         "True: print interim results and archive some of them.\n"
+         "False: None (default).",
+    default=None,
+    required=False)
 
 param = P.get_parameter()
 
@@ -112,6 +119,7 @@ figure_path = param.figure_path
 output_path = param.output_path
 output_json_filename = param.output_json_filename
 get_ecs = param.get_ecs
+debug = param.debug
 
 print(
     "model:", model, "\n", 
@@ -125,7 +133,8 @@ print(
     "figure_path:", figure_path, "\n", 
     "output_path:", output_path, "\n", 
     "output_json_filename:", output_json_filename, "\n",
-    "get_ecs:", get_ecs
+    "get_ecs:", get_ecs, "\n",
+    "debug:", debug
 )
 
 os.makedirs(output_path, exist_ok=True)
@@ -173,25 +182,9 @@ fbk_dict, obsc_fbk_dict, err_dict = CloudRadKernel(filenames)
 
 print('calc done')
 
-"""
-with open('fbk_dict.json', 'w') as f:
-    json.dump(fbk_dict, f, sort_keys=True, indent=4)
-
-with open('err_dict.json', 'w') as f:
-    json.dump(err_dict, f, sort_keys=True, indent=4)
-"""
-
 # add this model's results to the pre-existing json file containing other models' results: 
 updated_fbk_dict, updated_obsc_fbk_dict = organize_fbk_jsons(fbk_dict, obsc_fbk_dict, model, variant)
 updated_err_dict = organize_err_jsons(err_dict, model, variant)
-
-"""
-with open('updated_err_dict.json', 'w') as f:
-    json.dump(updated_err_dict, f, sort_keys=True, indent=4)
-
-with open('updated_fbk_dict.json', 'w') as f:
-    json.dump(updated_fbk_dict, f, sort_keys=True, indent=4)
-"""
 
 ecs = None
 if get_ecs:
@@ -199,14 +192,23 @@ if get_ecs:
     ecs = compute_ECS(filenames) 
 updated_ecs_dict = organize_ecs_jsons(ecs, model, variant)
 
-with open('updated_ecs_dict.json', 'w') as f:
-    json.dump(updated_ecs_dict, f, sort_keys=True, indent=4)
+if debug:
+    with open(os.path.join(output_path, 'fbk_dict.json'), 'w') as f:
+        json.dump(fbk_dict, f, sort_keys=True, indent=4)
+    with open(os.path.join(output_path, 'err_dict.json'), 'w') as f:
+        json.dump(err_dict, f, sort_keys=True, indent=4)
+    with open(os.path.join(output_path, 'updated_err_dict.json'), 'w') as f:
+        json.dump(updated_err_dict, f, sort_keys=True, indent=4)
+    with open(os.path.join(output_path, 'updated_fbk_dict.json'), 'w') as f:
+        json.dump(updated_fbk_dict, f, sort_keys=True, indent=4)
+    with open(os.path.join(output_path, 'updated_ecs_dict.json'), 'w') as f:
+        json.dump(updated_ecs_dict, f, sort_keys=True, indent=4)
 
 # plot this model alongside other models and expert assessment:
 os.makedirs(figure_path, exist_ok=True)
 rmse, ecs = dataviz.make_all_figs(updated_fbk_dict, updated_obsc_fbk_dict, updated_err_dict, updated_ecs_dict, model)
 
-# save output
+# save final metrics and accompanying important statistics in JSON format
 print('-- Metric result --')
 print('model:', model)
 print('variant:', variant)
