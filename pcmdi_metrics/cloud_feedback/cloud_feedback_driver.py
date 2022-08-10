@@ -1,77 +1,78 @@
-from pcmdi_metrics.cloud_feedback.lib import (
-    CloudRadKernel, 
-    compute_ECS, 
-    organize_fbk_jsons, 
-    organize_err_jsons, 
-    organize_ecs_jsons, 
-)
-
-import pcmdi_metrics.cloud_feedback.lib.cld_fbks_ecs_assessment_v3 as dataviz
+import argparse
 import json
 import os
+
 from cdp.cdp_parser import CDPParser
-import argparse 
+
+import pcmdi_metrics.cloud_feedback.lib.cld_fbks_ecs_assessment_v3 as dataviz
+from pcmdi_metrics.cloud_feedback.lib import (
+    CloudRadKernel,
+    compute_ECS,
+    organize_ecs_jsons,
+    organize_err_jsons,
+    organize_fbk_jsons,
+)
 
 P = CDPParser(
-    default_args_file=[], 
-    description="Cloud feedback metrics", 
+    default_args_file=[],
+    description="Cloud feedback metrics",
     formatter_class=argparse.RawTextHelpFormatter
 )
 
 P.add_argument(
-    '--model', 
-    type=str, 
-    dest='model', 
-    help='model name (e.g., GFDL-CM4).', 
+    '--model',
+    type=str,
+    dest='model',
+    help='model name (e.g., GFDL-CM4).',
     required=False)
 P.add_argument(
-    '--institution', 
-    type=str, 
-    dest='institution', 
-    help='institution name (e.g., NOAA-GFDL).', 
+    '--institution',
+    type=str,
+    dest='institution',
+    help='institution name (e.g., NOAA-GFDL).',
     required=False)
 P.add_argument(
-    '--variant', 
-    type=str, 
-    dest='variant', 
-    help='variant name (e.g., r1i1p1f1).', 
+    '--variant',
+    type=str,
+    dest='variant',
+    help='variant name (e.g., r1i1p1f1).',
     required=False)
 P.add_argument(
-    '--grid_label', 
-    type=str, 
-    dest='grid_label', 
-    help='grid_label (e.g., gr1).', 
+    '--grid_label',
+    type=str,
+    dest='grid_label',
+    help='grid_label (e.g., gr1).',
     required=False)
 P.add_argument(
-    '--version', 
-    type=str, 
-    dest='version', 
-    help='version (e.g., v20180701).', 
+    '--version',
+    type=str,
+    dest='version',
+    help='version (e.g., v20180701).',
     required=False)
 P.add_argument(
-    '--path', 
-    type=str, 
-    dest='path', 
-    help='path (e.g., /p/css03/esgf_publish/CMIP6).', 
+    '--path',
+    type=str,
+    dest='path',
+    help='path (e.g., /p/css03/esgf_publish/CMIP6).',
     required=False)
 P.add_argument(
     '--input_files_json',
-    type=str, 
-    dest='input_files_json', 
+    type=str,
+    dest='input_files_json',
     help='json file for list of input netCDF files (e.g., ./param/input_nc_files.json).',
     default=None,
     required=False)
 P.add_argument(
-    '--xml_path', 
-    type=str, 
-    dest='xml_path', 
-    help='path (e.g., ./xmls).', 
+    '--xml_path',
+    type=str,
+    dest='xml_path',
+    help='path (e.g., ./xmls).',
     required=False)
 P.add_argument(
-    '--figure_path', 
-    type=str, 
-    dest='figure_path', 
-    help='path (e.g., ./figures/).', 
+    '--figure_path',
+    type=str,
+    dest='figure_path',
+    help='path (e.g., ./figures/).',
     required=False)
 P.add_argument(
     '--output_path',
@@ -82,18 +83,18 @@ P.add_argument(
     required=False)
 P.add_argument(
     '--output_json_filename',
-    type=str, 
-    dest='output_json_filename', 
+    type=str,
+    dest='output_json_filename',
     help='path (e.g., output.json).',
     default='output.json',
     required=False)
 P.add_argument(
-    '--get_ecs', 
-    type=bool, 
-    dest='get_ecs', 
+    '--get_ecs',
+    type=bool,
+    dest='get_ecs',
     help="Flag to compute ECS.\n"
          "True: compute ECS using abrupt-4xCO2 run.\n"
-         "False: do not compute, instead rely on ECS value present in the json file (if it exists).", 
+         "False: do not compute, instead rely on ECS value present in the json file (if it exists).",
     required=False)
 P.add_argument(
     '--debug',
@@ -122,16 +123,16 @@ get_ecs = param.get_ecs
 debug = param.debug
 
 print(
-    "model:", model, "\n", 
-    "institution:", institution, "\n", 
-    "variant:", variant, "\n", 
-    "grid_label:", grid_label, "\n", 
-    "version:", version, "\n", 
-    "path:", path, "\n", 
+    "model:", model, "\n",
+    "institution:", institution, "\n",
+    "variant:", variant, "\n",
+    "grid_label:", grid_label, "\n",
+    "version:", version, "\n",
+    "path:", path, "\n",
     "input_files_json:", input_files_json, "\n",
-    "xml_path:", xml_path, "\n", 
-    "figure_path:", figure_path, "\n", 
-    "output_path:", output_path, "\n", 
+    "xml_path:", xml_path, "\n",
+    "figure_path:", figure_path, "\n",
+    "output_path:", output_path, "\n",
     "output_json_filename:", output_json_filename, "\n",
     "get_ecs:", get_ecs, "\n",
     "debug:", debug
@@ -144,52 +145,52 @@ if get_ecs:
 else:
     exps = ['amip', 'amip-p4K']
 
-# generate xmls pointing to the cmorized netcdf files 
+# generate xmls pointing to the cmorized netcdf files
 os.makedirs(xml_path, exist_ok=True)
 
 filenames = dict()
 
-if input_files_json != None:
+if input_files_json is not None:
     with open(input_files_json) as f:
         ncfiles = json.load(f)
 
 for exp in exps:
     filenames[exp] = dict()
-    if exp=='amip-p4K':
+    if exp == 'amip-p4K':
         activity = 'CFMIP'
     else:
         activity = 'CMIP'
     if 'amip' in exp:
-        fields = ['tas', 'rsdscs', 'rsuscs', 'wap', 'clisccp'] # necessary for cloud feedback calcs
+        fields = ['tas', 'rsdscs', 'rsuscs', 'wap', 'clisccp']  # necessary for cloud feedback calcs
     else:
-        fields = ['tas', 'rlut', 'rsut', 'rsdt'] # needed for ECS calc
+        fields = ['tas', 'rlut', 'rsut', 'rsdt']  # needed for ECS calc
     for field in fields:
-        if field=='clisccp':
-            table='CFmon'
+        if field == 'clisccp':
+            table = 'CFmon'
         else:
-            table='Amon'
+            table = 'Amon'
 
-        if input_files_json == None:
+        if input_files_json is None:
             searchstring = os.path.join(path, activity, institution, model, exp, variant, table, field, grid_label, version, '*.nc')
         else:
             searchstring = " ".join(ncfiles[exp][field])
-        xmlname = os.path.join(xml_path, exp+'.'+model+'.'+variant+'.'+field+'.'+version+'.xml')
-        os.system('cdscan -x '+xmlname+' '+searchstring)
+        xmlname = os.path.join(xml_path, '.'.join([exp, model, variant, field, version, '.xml']))
+        os.system('cdscan -x ' + xmlname + ' ' + searchstring)
         filenames[exp][field] = xmlname
 
 # calculate all feedback components and Klein et al (2013) error metrics:
-fbk_dict, obsc_fbk_dict, err_dict = CloudRadKernel(filenames) 
+fbk_dict, obsc_fbk_dict, err_dict = CloudRadKernel(filenames)
 
 print('calc done')
 
-# add this model's results to the pre-existing json file containing other models' results: 
+# add this model's results to the pre-existing json file containing other models' results:
 updated_fbk_dict, updated_obsc_fbk_dict = organize_fbk_jsons(fbk_dict, obsc_fbk_dict, model, variant)
 updated_err_dict = organize_err_jsons(err_dict, model, variant)
 
 ecs = None
 if get_ecs:
     # calculate ECS and add it to the pre-existing json file containing other models' results:
-    ecs = compute_ECS(filenames) 
+    ecs = compute_ECS(filenames)
 updated_ecs_dict = organize_ecs_jsons(ecs, model, variant)
 
 if debug:
