@@ -7,8 +7,6 @@ grid_label = 'gr1'
 version = 'v20180701'
 path = '/p/css03/esgf_publish/CMIP6'
 
-input_files_json = './param/input_nc_files.json'
-
 # Flag to compute ECS
 # True: compute ECS using abrupt-4xCO2 run
 # False: do not compute, instead rely on ECS value present in the json file (if it exists)

@@ -11,25 +11,6 @@ import pcmdi_metrics.cloud_feedback.lib.cld_fbks_ecs_assessment_v3 as dataviz
 import json
 import os
 
-import glob
-
-"""
-# User Input: (collect from my_param.py)
-#================================================================================================
-model = 'GFDL-CM4'	
-institution = 'NOAA-GFDL'
-variant = 'r1i1p1f1'
-grid_label = 'gr1'
-version = 'v20180701'
-path = '/p/css03/esgf_publish/CMIP6'
-
-# Flag to compute ECS
-# True: compute ECS using abrupt-4xCO2 run
-# False: do not compute, instead rely on ECS value present in the json file (if it exists)
-get_ecs = True
-#================================================================================================
-"""
-
 from cdp.cdp_parser import CDPParser
 import argparse 
 
@@ -76,6 +57,13 @@ P.add_argument(
     help='path (e.g., /p/css03/esgf_publish/CMIP6).', 
     required=False)
 P.add_argument(
+    '--input_files_json',
+    type=str, 
+    dest='input_files_json', 
+    help='json file for list of input netCDF files (e.g., ./param/input_nc_files.json).',
+    default=None,
+    required=False)
+P.add_argument(
     '--xml_path', 
     type=str, 
     dest='xml_path', 
@@ -117,6 +105,7 @@ institution = param.institution
 variant = param.variant
 grid_label = param.grid_label
 version = param.version
+input_files_json = param.input_files_json
 path = param.path
 xml_path = param.xml_path
 figure_path = param.figure_path
@@ -131,6 +120,7 @@ print(
     "grid_label:", grid_label, "\n", 
     "version:", version, "\n", 
     "path:", path, "\n", 
+    "input_files_json:", input_files_json, "\n",
     "xml_path:", xml_path, "\n", 
     "figure_path:", figure_path, "\n", 
     "output_path:", output_path, "\n", 
@@ -147,11 +137,15 @@ else:
 
 # generate xmls pointing to the cmorized netcdf files 
 os.makedirs(xml_path, exist_ok=True)
+
 filenames = dict()
-ncfiles = dict()
+
+if input_files_json != None:
+    with open(input_files_json) as f:
+        ncfiles = json.load(f)
+
 for exp in exps:
     filenames[exp] = dict()
-    ncfiles[exp] = dict()
     if exp=='amip-p4K':
         activity = 'CFMIP'
     else:
@@ -165,17 +159,14 @@ for exp in exps:
             table='CFmon'
         else:
             table='Amon'
-        searchstring = os.path.join(path, activity, institution, model, exp, variant, table, field, grid_label, version, '*.nc')
+
+        if input_files_json == None:
+            searchstring = os.path.join(path, activity, institution, model, exp, variant, table, field, grid_label, version, '*.nc')
+        else:
+            searchstring = " ".join(ncfiles[exp][field])
         xmlname = os.path.join(xml_path, exp+'.'+model+'.'+variant+'.'+field+'.'+version+'.xml')
         os.system('cdscan -x '+xmlname+' '+searchstring)
         filenames[exp][field] = xmlname
-        ncfiles[exp][field] = glob.glob(searchstring)
-
-with open('filenames.json', 'w') as f:
-    json.dump(filenames, f, sort_keys=True, indent=4)
-
-with open('ncfiles.json', 'w') as f:
-    json.dump(ncfiles, f, sort_keys=True, indent=4)
 
 # calculate all feedback components and Klein et al (2013) error metrics:
 fbk_dict, obsc_fbk_dict, err_dict = CloudRadKernel(filenames) 
