@@ -30,6 +30,7 @@ P.add_argument(
     type=str,
     dest='institution',
     help='institution name (e.g., NOAA-GFDL).',
+    default=None,
     required=False)
 P.add_argument(
     '--variant',
@@ -42,12 +43,14 @@ P.add_argument(
     type=str,
     dest='grid_label',
     help='grid_label (e.g., gr1).',
+    default=None,
     required=False)
 P.add_argument(
     '--version',
     type=str,
     dest='version',
     help='version (e.g., v20180701).',
+    default=None,
     required=False)
 P.add_argument(
     '--path',
@@ -138,8 +141,6 @@ print(
     "debug:", debug
 )
 
-os.makedirs(output_path, exist_ok=True)
-
 if get_ecs:
     exps = ['amip', 'amip-p4K', 'piControl', 'abrupt-4xCO2']
 else:
@@ -174,7 +175,7 @@ for exp in exps:
             searchstring = os.path.join(path, activity, institution, model, exp, variant, table, field, grid_label, version, '*.nc')
         else:
             searchstring = " ".join(ncfiles[exp][field])
-        xmlname = os.path.join(xml_path, '.'.join([exp, model, variant, field, version, '.xml']))
+        xmlname = os.path.join(xml_path, '.'.join([exp, model, variant, field, '.xml']))
         os.system('cdscan -x ' + xmlname + ' ' + searchstring)
         filenames[exp][field] = xmlname
 
@@ -193,6 +194,7 @@ if get_ecs:
     ecs = compute_ECS(filenames)
 updated_ecs_dict = organize_ecs_jsons(ecs, model, variant)
 
+os.makedirs(output_path, exist_ok=True)
 if debug:
     with open(os.path.join(output_path, 'fbk_dict.json'), 'w') as f:
         json.dump(fbk_dict, f, sort_keys=True, indent=4)
@@ -223,7 +225,6 @@ output_dict['RESULTS'][model][variant] = dict()
 output_dict['RESULTS'][model][variant]['RMSE'] = rmse
 output_dict['RESULTS'][model][variant]['ECS'] = ecs
 
-os.makedirs(output_path, exist_ok=True)
 output_json = os.path.join(output_path, output_json_filename)
 with open(output_json, 'w') as f:
     json.dump(output_dict, f, sort_keys=True, indent=4)

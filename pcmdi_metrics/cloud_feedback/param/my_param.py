@@ -1,11 +1,7 @@
 # User Input:
-#================================================================================================
+# ================================================================================================
 model = 'GFDL-CM4'
-institution = 'NOAA-GFDL'
 variant = 'r1i1p1f1'
-grid_label = 'gr1'
-version = 'v20180701'
-path = '/p/css03/esgf_publish/CMIP6'
 
 input_files_json = './param/input_nc_files.json'
 
@@ -18,5 +14,5 @@ get_ecs = True
 xml_path = "./xmls/"
 figure_path = "./figures/"
 output_path = "./output"
-output_json_filename = "_".join(["cloud", model, variant])+".json"
-#================================================================================================
+output_json_filename = "_".join(["cloud_feedback", model, variant]) + ".json"
+# ================================================================================================
