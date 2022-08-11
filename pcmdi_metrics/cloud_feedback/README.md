@@ -7,25 +7,25 @@ This code performs the analysis of [Zelinka et al. (2022)](https://agupubs.onlin
 
 ## Instructions
 To use, follow these steps:
-1. Install CDAT via conda following [these instructions](https://github.com/CDAT/cdat/wiki/install#installing-latest-cdat---821)
+1. Install PMP via conda following [these instructions](http://pcmdi.github.io/pcmdi_metrics/install.html)
 
-2. Activate this environment:
+2. Activate this environment (if PMP installed env is differnt than your current one):
 ```
-conda activate cdat
+conda activate [YOUR_CONDA_ENVIRONMENT]
 ```
-3. Clone this repo:
+3. Clone PMP repo for pre-calculated data:
 ```
-git clone https://github.com/mzelinka/assessed-cloud-fbks.git
+git clone https://github.com/PCMDI/pcmdi_metrics
 ```
-4. cd to assessed-cloud-fbks/code/
+4. cd to pcmdi_metrics/pcmdi_metrics/cloud_feedback
 
-5. In main.py, update the "User Input" section so it points to your model's amip and amip-p4K files.
+5. In param/my_param.py, update the "User Input" section so it points to your model's amip and amip-p4K files.
 
 6. Run the code:
 ```
-python main.py
+python cloud_feedback_driver.py -p param/my_param.py
 ```
-7. Inspect the generated figures and tables in the /figures/ directory.
+7. Inspect the generated jsons in the ./output/ directory and figures and tables in the ./figures/ directory.
 
 
 ## References
