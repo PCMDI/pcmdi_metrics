@@ -163,12 +163,9 @@ P = pcmdi_metrics.driver.pmp_parser.PMPMetricsParser()
 
 
 P.add_argument(
-    "--vars", dest="vars", help="List of variables", nargs="+", required=False
-)
+    "--vars", dest="vars", help="List of variables", nargs="+", required=False)
 P.add_argument("--infile", dest="infile", help="Defines infile", required=False)
-P.add_argument(
-    "--outfile", dest="outfile", help="Defines output path and filename", required=False
-)
+P.add_argument( "--outfile", dest="outfile", help="Defines output path and filename", required=False)
 P.add_argument("--outpath", dest="outpath", help="Defines outpath only", required=False)
 P.add_argument(
     "--outfilename",
@@ -177,8 +174,8 @@ P.add_argument(
     required=False,
 )
 P.add_argument(
-    "--start", dest="start", help="Defines start year and month", required=False
-)
+    "--start", dest="start", help="Defines start year and month", required=False)
+
 P.add_argument("--end", dest="end", help="Defines end year and month", required=False)
 
 args = P.get_parameter()

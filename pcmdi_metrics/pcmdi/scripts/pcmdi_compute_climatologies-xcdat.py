@@ -14,6 +14,89 @@ cdms2.setNetcdfDeflateLevelFlag(0)
 
 #
 
+def clim_calc_x(var, infile, outfile, outpath, outfilename, start, end):
+    import datetime
+    import os
+    import xcdat
+    import xarray
+
+    ver = datetime.datetime.now().strftime("v%Y%m%d")
+    print('time is ', ver)
+
+    lf = infile
+    tmp = lf.split("/")
+    infilename = tmp[len(tmp) - 1]
+    print("infilename is ", infilename)
+
+    d = xcdat.open_dataset(lf, data_var=var)
+    atts = d.attrs
+    outfd = outfile
+    outdir = os.path.dirname(outfd)
+
+    print(type(d))
+    print(atts)
+    print(outfd)
+    print(outdir)
+    print('done')
+
+# CONTROL OF OUTPUT DIRECTORY AND FILE
+
+    print("outfd is ", outfd)
+#   print("outdir is ", outdir)
+
+    seperate_clims = "y"
+
+    c = d.time
+#   print(c)
+
+# DEFAULT CLIM - BASED ON ENTIRE TIME SERIES
+    if (start is None) and (end is None):
+        start_yr_str = str(int(c["time.year"][0])) 
+        start_mo_str = str(int(c["time.month"][0])) 
+        end_yr_str = str(int(c["time.year"][len(c) - 1]))
+        end_mo_str = str(int(c["time.month"][len(c) - 1]))
+        start_yr = int(start_yr_str)
+        start_mo = int(start_mo_str)
+        end_yr = int(end_yr_str)
+        end_mo = int(end_mo_str)
+        print(start_yr_str,start_mo_str,end_yr_str,end_mo_str)
+
+# USER DEFINED PERIOD
+    else:
+        start_mo = int(start.split("-")[1])
+        start_yr = int(start.split("-")[0])
+        end_mo = int(end.split("-")[1])
+        end_yr = int(end.split("-")[0])
+        start_yr_str = str(start_yr)
+        start_mo_str = str(start_mo)
+        end_yr_str = str(end_yr)
+        end_mo_str = str(end_mo)
+
+    d = d.sel(time=slice(start_yr_str + '-' + start_mo_str, end_yr_str + '-' + end_mo_str))
+#   print(d)
+
+    print("start_yr_str is ", start_yr_str)
+
+    if start_mo_str not in ["11", "12"]:
+        start_mo_str = "0" + start_mo_str
+    if end_mo_str not in ["11", "12"]:
+        end_mo_str = "0" + end_mo_str
+
+    d_djf = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},).isel(time=slice(0, 1))
+    d_mam = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},).isel(time=slice(1, 2))
+    d_jja = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},).isel(time=slice(2, 3))
+    d_son = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},).isel(time=slice(3, 4))
+#   d_ac =  d.temporal.climatology(var, freq="month", weighted=True) 
+
+
+    print(d_son)
+#   print(d_ac)
+
+
+
+
+#####
+
 
 def clim_calc(var, infile, outfile, outdir, outfilename, start, end):
     import datetime
@@ -211,4 +294,4 @@ for var in varlist:
     outpath = OutPath()
 
     # calculate climatologies for this variable
-    clim_calc(var, infile, outfile, outpath, outfilename, start, end)
+    clim_calc_x(var, infile, outfile, outpath, outfilename, start, end)
