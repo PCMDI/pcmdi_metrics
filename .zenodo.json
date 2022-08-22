@@ -2,10 +2,10 @@
     "description": "<p>Self contained packages to run PCMDI Metrics</p>",
     "access_right": "open",
     "license": "cc-by",
-    "title": "PCMDI/pcmdi_metrics: PMP Version 2.1.1",
-    "version": "v2.1.1",
+    "title": "PCMDI/pcmdi_metrics: PMP Version 2.4.0",
+    "version": "v2.4.0",
     "upload_type": "software",
-    "publication_date": "2021-11-17",
+    "publication_date": "2022-08-02",
     "creators": [
         {
             "name": "Lee, Jiwoo",
@@ -38,6 +38,30 @@
         {
             "name": "Boutte, Jason",
             "affiliation": "Lawrence Livermore National Laboratory"
+        },
+        {
+            "name": "Doutriaux, Charles",
+            "affiliation": "Lawrence Livermore National Laboratory"
+        },
+        {
+            "name": "Durack, Paul",
+            "affiliation": "Lawrence Livermore National Laboratory"
+        },
+        {
+            "name": "Shaheen, Zeshawn",
+            "affiliation": "Lawrence Livermore National Laboratory (Currently at Google LLC)"
+        },
+        {
+            "name": "Muryanto, Lina",
+            "affiliation": "Lawrence Livermore National Laboratory"
+        },
+        {
+            "name": "Painter, Jeffrey",
+            "affiliation": "Lawrence Livermore National Laboratory"
+        },
+        {
+            "name": "Krasting, John",
+            "affiliation": "NOAA Geophysical Fluid Dynamics Laboratory"
         }
     ]
 }

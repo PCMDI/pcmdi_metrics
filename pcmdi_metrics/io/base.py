@@ -4,7 +4,8 @@ import json
 import logging
 import os
 import re
-from collections import Mapping, OrderedDict
+from collections import OrderedDict
+from collections.abc import Mapping
 
 import cdat_info
 import cdms2

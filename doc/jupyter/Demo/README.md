@@ -3,9 +3,9 @@
 These notebooks provide some basic examples for running the PMP metrics modules. They demonstrate how to use both input parameter files and the command line to generate metrics. Parameter files are generated from the \*.py.in templates by running the Demo_0_download_data.ipynb notebook.
 
 ## Environment
-PCMDI metrics package should be installed. Consult [the documentation](http://pcmdi.github.io/pcmdi_metrics/install-using-anaconda.html) for more help.
+PCMDI metrics package should be installed. Consult [the documentation](https://github.com/PCMDI/pcmdi_metrics/wiki/Install-using-conda-forge-(recommended)) for more help.
 
-To run the notebooks directly, the user should install [jupyter notebook software](https://jupyter.org/install). Additionally, the user should clone the PMP to acquire the notebooks:
+To run the notebooks directly, the user should clone the PMP to acquire the notebooks:
 `git clone https://github.com/PCMDI/pcmdi_metrics.git`
 
 ## Running the notebooks
