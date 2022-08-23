@@ -25,3 +25,4 @@ Reference: Ahn, M.-S., P. A. Ullrich, P. J. Gleckler, J. Lee,  A. C. Ordonez, A.
 - Input data: daily averaged precipitation
 - This code should be run for a reference observation initially as some metrics (e.g., Perkins score) need a reference.
 - After completing calculation for a reference observation, this code can work for multiple datasets at once.
+- This benchmarking framework provides three tiers of area averaged outputs for i) large scale domain (Tropics and Extratropics with separated land and ocean) commonly used in the PMP , ii) large scale domain with clustered precipitation characteristics (Tropics and Extratropics with separated land and ocean, and separated heavy, moderate, and light precipitation regions), and iii) modified IPCC AR6 regions shown in the reference paper.
