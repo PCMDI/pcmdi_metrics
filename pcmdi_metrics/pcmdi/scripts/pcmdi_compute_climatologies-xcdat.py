@@ -72,7 +72,7 @@ def clim_calc_x(var, infile, outfile, outpath, outfilename, start, end):
         end_yr_str = str(end_yr)
         end_mo_str = str(end_mo)
 
-    d = d.sel(time=slice(start_yr_str + '-' + start_mo_str, end_yr_str + '-' + end_mo_str))
+#   d = d.sel(time=slice(start_yr_str + '-' + start_mo_str, end_yr_str + '-' + end_mo_str))
 #   print(d)
 
     print("start_yr_str is ", start_yr_str)
@@ -82,22 +82,19 @@ def clim_calc_x(var, infile, outfile, outpath, outfilename, start, end):
     if end_mo_str not in ["11", "12"]:
         end_mo_str = "0" + end_mo_str
 
-<<<<<<< HEAD
-    d_djf = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},).isel(time=slice(0, 1))
-    d_mam = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},).isel(time=slice(1, 2))
-    d_jja = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},).isel(time=slice(2, 3))
-    d_son = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},).isel(time=slice(3, 4))
-    d_ac =  d.temporal.climatology(var, freq="month", weighted=True) 
-=======
+
     d_clim = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},)
->>>>>>> 5429b4054b579b8ea942f57fd30e2ae5153bf4c6
+
+    print('above seasons')
 
     d_djf = d_clim[var][0]
     d_mam = d_clim[var][1]
     d_jja = d_clim[var][2]
     d_son = d_clim[var][3]
-    
+    print('below seasons')   
+ 
     d_ac =  d.temporal.climatology(var, freq="month", weighted=True) 
+    print('below ac')
 
     print(d_son)
     print(d_ac)
