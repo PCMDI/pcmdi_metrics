@@ -82,17 +82,25 @@ def clim_calc_x(var, infile, outfile, outpath, outfilename, start, end):
     if end_mo_str not in ["11", "12"]:
         end_mo_str = "0" + end_mo_str
 
+<<<<<<< HEAD
     d_djf = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},).isel(time=slice(0, 1))
     d_mam = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},).isel(time=slice(1, 2))
     d_jja = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},).isel(time=slice(2, 3))
     d_son = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},).isel(time=slice(3, 4))
     d_ac =  d.temporal.climatology(var, freq="month", weighted=True) 
+=======
+    d_clim = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},)
+>>>>>>> 5429b4054b579b8ea942f57fd30e2ae5153bf4c6
 
+    d_djf = d_clim[var][0]
+    d_mam = d_clim[var][1]
+    d_jja = d_clim[var][2]
+    d_son = d_clim[var][3]
+    
+    d_ac =  d.temporal.climatology(var, freq="month", weighted=True) 
 
     print(d_son)
     print(d_ac)
-
-
 
 
 #####
