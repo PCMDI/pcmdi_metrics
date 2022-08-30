@@ -3,7 +3,7 @@
 model = 'GFDL-CM4'
 variant = 'r1i1p1f1'
 
-input_files_json = './param/input_nc_files.json'
+input_files_json = './param/input_files.json'
 
 # Flag to compute ECS
 # True: compute ECS using abrupt-4xCO2 run

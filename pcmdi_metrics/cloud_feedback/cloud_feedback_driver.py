@@ -74,10 +74,10 @@ for exp in exps:
         else:
             table = 'Amon'
 
-        if input_files_json is None:
+        if input_files_json is None:  # PCMDI internal setup
             searchstring = os.path.join(path, activity, institution, model, exp, variant, table, field, grid_label, version, '*.nc')
         else:
-            searchstring = " ".join(ncfiles[exp][field])
+            searchstring = os.path.join(ncfiles[exp][field]['path'], ncfiles[exp][field]['file'])
         xmlname = os.path.join(xml_path, '.'.join([exp, model, variant, field, '.xml']))
         os.system('cdscan -x ' + xmlname + ' ' + searchstring)
         filenames[exp][field] = xmlname
