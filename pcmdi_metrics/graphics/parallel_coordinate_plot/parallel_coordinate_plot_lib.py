@@ -168,7 +168,7 @@ def parallel_coordinate_plot(
                     showextrema=False,
                 )
                 for pc in violin["bodies"]:
-                    pc.set_facecolor(violin_colors[0])
+                    pc.set_facecolor("grey")
                     pc.set_edgecolor("None")
                     pc.set_alpha(0.8)
             else:
@@ -181,10 +181,9 @@ def parallel_coordinate_plot(
                     hue="group",
                     split=True,
                     linewidth=0.1,
-                    #color=violin_colors[1],
                     scale="count",
                     scale_hue=False,
-                    palette={group1_name:violin_colors[0], group2_name:violin_colors[1]},
+                    palette={group1_name: violin_colors[0], group2_name: violin_colors[1]},
                 )
 
     # Line or marker
@@ -206,11 +205,11 @@ def parallel_coordinate_plot(
                     label=model,
                     clip_on=False,
                 )
-    
+
     # Fill between lines
     if fill_between_lines and (comparing_models is not None):
-        if (isinstance(comparing_models, tuple) 
-            or (isinstance(comparing_models, list) and len(comparing_models) == 2)):
+        if (isinstance(comparing_models, tuple)
+                or (isinstance(comparing_models, list) and len(comparing_models) == 2)):
             x = range(N)
             m1 = model_names.index(comparing_models[0])
             m2 = model_names.index(comparing_models[1])
