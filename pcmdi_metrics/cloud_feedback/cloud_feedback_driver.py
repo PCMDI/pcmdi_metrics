@@ -5,6 +5,7 @@ import pcmdi_metrics.cloud_feedback.lib.cld_fbks_ecs_assessment_v3 as dataviz
 from pcmdi_metrics.cloud_feedback.lib import (
     AddParserArgument,
     CloudRadKernel,
+    cloud_feedback_metrics_to_json,
     compute_ECS,
     organize_ecs_jsons,
     organize_err_jsons,
@@ -27,6 +28,12 @@ output_path = param.output_path
 output_json_filename = param.output_json_filename
 get_ecs = param.get_ecs
 debug = param.debug
+
+cmec = False
+if hasattr(param, "cmec"):
+    cmec = param.cmec  # Generate CMEC compliant json
+print("CMEC:" + str(cmec))
+
 
 print(
     "model:", model, "\n",
@@ -78,9 +85,13 @@ for exp in exps:
             searchstring = os.path.join(path, activity, institution, model, exp, variant, table, field, grid_label, version, '*.nc')
         else:
             searchstring = os.path.join(ncfiles[exp][field]['path'], ncfiles[exp][field]['file'])
-        xmlname = os.path.join(xml_path, '.'.join([exp, model, variant, field, '.xml']))
+        xmlname = os.path.join(xml_path, '.'.join([exp, model, variant, field, 'xml']))
         os.system('cdscan -x ' + xmlname + ' ' + searchstring)
         filenames[exp][field] = xmlname
+
+if debug:
+    with open(os.path.join(output_path, 'filenames.json'), 'w') as f:
+        json.dump(filenames, f, sort_keys=True, indent=4)
 
 # calculate all feedback components and Klein et al (2013) error metrics:
 fbk_dict, obsc_fbk_dict, err_dict = CloudRadKernel(filenames)
@@ -95,6 +106,8 @@ ecs = None
 if get_ecs:
     # calculate ECS and add it to the pre-existing json file containing other models' results:
     ecs = compute_ECS(filenames)
+    print('calc ECS done')
+    print('ecs: ', ecs)
 updated_ecs_dict = organize_ecs_jsons(ecs, model, variant)
 
 os.makedirs(output_path, exist_ok=True)
@@ -110,9 +123,10 @@ if debug:
     with open(os.path.join(output_path, 'updated_ecs_dict.json'), 'w') as f:
         json.dump(updated_ecs_dict, f, sort_keys=True, indent=4)
 
-# plot this model alongside other models and expert assessment:
+# generate plots and extract metrics from the plotting routines
 os.makedirs(figure_path, exist_ok=True)
-rmse, ecs = dataviz.make_all_figs(updated_fbk_dict, updated_obsc_fbk_dict, updated_err_dict, updated_ecs_dict, model)
+rmse, ecs = dataviz.make_all_figs(updated_fbk_dict, updated_obsc_fbk_dict, updated_err_dict, updated_ecs_dict, model, debug)
+print('get metrics done')
 
 # save final metrics and accompanying important statistics in JSON format
 print('-- Metric result --')
@@ -128,8 +142,6 @@ output_dict['RESULTS'][model][variant] = dict()
 output_dict['RESULTS'][model][variant]['RMSE'] = rmse
 output_dict['RESULTS'][model][variant]['ECS'] = ecs
 
-output_json = os.path.join(output_path, output_json_filename)
-with open(output_json, 'w') as f:
-    json.dump(output_dict, f, sort_keys=True, indent=4)
+cloud_feedback_metrics_to_json(output_path, output_json_filename, output_dict, cmec_flag=cmec)
 
 print('Done!')
