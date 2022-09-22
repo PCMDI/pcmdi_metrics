@@ -100,6 +100,20 @@ def AddParserArgument():
              "False: None (default).",
         default=None,
         required=False)
+    P.add_argument(
+        "--cmec",
+        dest="cmec",
+        action="store_true",
+        default=False,
+        help="Save metrics in CMEC format",
+    )
+    P.add_argument(
+        "--no_cmec",
+        dest="cmec",
+        action="store_false",
+        default=False,
+        help="Option to not save metrics in CMEC format",
+    )
 
     param = P.get_parameter()
 
