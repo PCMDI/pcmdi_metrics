@@ -103,19 +103,19 @@ def annual_avg(data):
     A=data.shape[0]
     anndata0=np.empty(data.shape)
     anndata0[:] = np.nan
-    cnt=-1
+    cnt = -1
     for i in np.arange(0,A,12):
         try:
             LD = len(data[i:i+12])
         except:
             continue
-        if LD==12: # only take full 12-month periods
-            cnt+=1
+        if LD == 12: # only take full 12-month periods
+            cnt += 1
             anndata0[cnt] = np.ma.average(data[i:i+12],0)
 
-    B=cnt+1
+    B = cnt + 1
     anndata = MV2.array(anndata0[:B]) # convert to a cdms2 transient variable
-    if type(anndata)!=float:
+    if type(anndata) != float:
         anndata.setAxisList(data[:B*12:12].getAxisList())
 
     return anndata
@@ -147,7 +147,7 @@ def running_mean(data,N):
 ###########################################################################
 
 def compute_ECS(filenames):
-    data={}
+    data = {}
     fields = ['tas', 'rlut', 'rsut', 'rsdt'] # needed for Gregory plots
     for var in fields:
         ab_path = filenames['abrupt-4xCO2'][var]
