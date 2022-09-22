@@ -168,7 +168,7 @@ def parallel_coordinate_plot(
                     showextrema=False,
                 )
                 for pc in violin["bodies"]:
-                    pc.set_facecolor("grey")
+                    pc.set_facecolor(violin_colors[0])
                     pc.set_edgecolor("None")
                     pc.set_alpha(0.8)
             else:
