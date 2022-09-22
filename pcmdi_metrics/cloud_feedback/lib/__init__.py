@@ -6,3 +6,4 @@ from .organize_jsons import (  # noqa
     organize_err_jsons,
     organize_fbk_jsons,
 )
+from .lib_cloud_feedback import cloud_feedback_metrics_to_json  # noqa
