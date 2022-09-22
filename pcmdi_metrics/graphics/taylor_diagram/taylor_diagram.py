@@ -1,29 +1,44 @@
 def TaylorDiagram(
-        stddev, corrcoef, refstd, fig, colors,
+        stddev, corrcoef, refstd, 
+        fig=None, 
+        ax=None,
+        colors=None,
+        cmap=None,
         normalize=True,
         labels=None, markers=None, markersizes=None, zorders=None,
-        ref_label=None, smax=None):
+        ref_label=None, smax=None,
+        compare_models=None,
+        arrowprops_dict=None,
+        annotate_text=None,
+    ):
 
-    """Plot a Taylor diagram.
-    This code was adpated from the ILAMB code by Nathan Collier found here:
-    https://github.com/rubisco-sfa/ILAMB/blob/master/src/ILAMB/Post.py#L80,
-    which was revised by Jiwoo Lee to enable more flexible customization of the plot.
+    """Plot a Taylor diagram
+    
+    This code was adpated from the ILAMB code that was written by Nathan Collier (ORNL)
+    (https://github.com/rubisco-sfa/ILAMB/blob/master/src/ILAMB/Post.py#L80)
+    and revised by Jiwoo Lee (LLNL) to implement into PMP and to enable more customizations.
 
-    The original code was written by Yannick Copin that can be found here:
+    The original code was written by Yannick Copin:
     https://gist.github.com/ycopin/3342888
 
     Parameters
     ----------
     stddev : numpy.ndarray
         an array of standard deviations
-    corrcoeff : numpy.ndarray
+    corrcoef : numpy.ndarray
         an array of correlation coefficients
     refstd : float
         the reference standard deviation
-    fig : matplotlib figure
+    fig : matplotlib figure, optional
         the matplotlib figure
-    colors : array
+    ax : matplotlib figure axis, optional
+        the matplotlib figure axis
+    cmap : string, optional
+        a name of matplotlib colormap
+        https://matplotlib.org/stable/gallery/color/colormap_reference.html
+    colors : array, optional
         an array or list of colors for each element of the input arrays
+        if colors is given, it will override cmap
     normalize : bool, optional
         disable to skip normalization of the standard deviation
     labels : list, optional
@@ -38,6 +53,13 @@ def TaylorDiagram(
         label for reference data
     smax : int or float, optional
         maximum of axis range for (normalized) standard deviation
+    compare_models : list, optional
+        two models to compare with arrow showing
+    arrowprops_dict: dict, optional
+        dict for matplotlib annotation arrowprops for compare_models arrow
+        See https://matplotlib.org/stable/tutorials/text/annotations.html for details
+    annotate_text : string, optional
+        text to place at the begining of the comparing arrow
 
     Return
     ------
@@ -48,8 +70,10 @@ def TaylorDiagram(
     """
     import mpl_toolkits.axisartist.floating_axes as FA
     import mpl_toolkits.axisartist.grid_finder as GF
+    import matplotlib.pyplot as plt
     import numpy as np
     from matplotlib.projections import PolarAxes
+
 
     # define transform
     tr = PolarAxes.PolarTransform()
@@ -73,8 +97,21 @@ def TaylorDiagram(
                                        extremes=(0, np.pi / 2, smin, smax),
                                        grid_locator1=gl1,
                                        tick_formatter1=tf1)
-    ax = FA.FloatingSubplot(fig, 111, grid_helper=ghelper)
-    fig.add_subplot(ax)
+
+    if fig is None:
+        fig = plt.figure(figsize=(8,8))
+        if ax is not None:
+            print("Figure is newly generated for given ax. To avoid this please consider provide both figure and ax.")
+    
+    if ax is None:  
+        ax = FA.FloatingSubplot(fig, 111, grid_helper=ghelper)
+        fig.add_subplot(ax)
+        
+    if colors is None:
+        if cmap is None:
+            cmap = 'viridis'
+        cm = plt.get_cmap(cmap)
+        colors = cm(np.linspace(0.1, 0.9, len(stddev)))
 
     # adjust axes
     ax.axis["top"].set_axis_direction("bottom")
@@ -94,6 +131,21 @@ def TaylorDiagram(
     ax.grid(True)
 
     ax = ax.get_aux_axes(tr)
+    
+    # Add reference point and stddev contour
+    #l, = ax.plot([0], refstd, 'k*', ms=12, mew=0, label=ref_label)
+    ax.plot([0], refstd, 'k*', ms=12, mew=0, label=ref_label)
+    t = np.linspace(0, np.pi / 2)
+    r = np.zeros_like(t) + refstd
+    ax.plot(t, r, 'k--')
+
+    # centralized rms contours
+    rs, ts = np.meshgrid(np.linspace(smin, smax),
+                         np.linspace(0, np.pi / 2))
+    rms = np.sqrt(refstd**2 + rs**2 - 2 * refstd * rs * np.cos(ts))
+    contours = ax.contour(ts, rs, rms, 5, colors='k', alpha=0.4)
+    ax.clabel(contours, fmt='%1.1f')
+    
     # Plot data
     corrcoef = corrcoef.clip(-1, 1)
     for i in range(len(corrcoef)):
@@ -119,18 +171,27 @@ def TaylorDiagram(
             zorder = None
         # customize end
         ax.plot(np.arccos(corrcoef[i]), stddev[i], marker, color=colors[i], mew=0, ms=ms, label=label, zorder=zorder)
-
-    # Add reference point and stddev contour
-    l, = ax.plot([0], refstd, 'k*', ms=12, mew=0, label=ref_label)
-    t = np.linspace(0, np.pi / 2)
-    r = np.zeros_like(t) + refstd
-    ax.plot(t, r, 'k--')
-
-    # centralized rms contours
-    rs, ts = np.meshgrid(np.linspace(smin, smax),
-                         np.linspace(0, np.pi / 2))
-    rms = np.sqrt(refstd**2 + rs**2 - 2 * refstd * rs * np.cos(ts))
-    contours = ax.contour(ts, rs, rms, 5, colors='k', alpha=0.4)
-    ax.clabel(contours, fmt='%1.1f')
+    
+    # Add arrow
+    if arrowprops_dict is None:
+        arrowprops_dict = dict(facecolor='black', 
+                               lw=0.5,
+                               width=0.5,
+                               shrink=0.05)  # shrink arrow length little bit to make it look good...
+    if compare_models is not None:        
+        index_model1 = labels.index(compare_models[0])
+        index_model2 = labels.index(compare_models[1])
+        theta1 = np.arccos(corrcoef[index_model1])
+        theta2 = np.arccos(corrcoef[index_model2])
+        r1 = stddev[index_model1]
+        r2 = stddev[index_model2]
+        
+        ax.annotate(annotate_text,
+            xy=(theta2, r2),  # theta, radius of arrival
+            xytext=(theta1, r1),  # theta, radius of departure
+            xycoords='data', textcoords='data',
+            arrowprops=arrowprops_dict,
+            horizontalalignment='center',
+            verticalalignment='center') 
 
     return fig, ax
