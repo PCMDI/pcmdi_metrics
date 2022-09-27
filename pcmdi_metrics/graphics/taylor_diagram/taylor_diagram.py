@@ -1,11 +1,17 @@
 def TaylorDiagram(
         stddev, corrcoef, refstd,
         fig=None,
+        rect=111,
+        title=None,
         colors=None,
         cmap=None,
         normalize=False,
-        labels=None, markers=None, markersizes=None, zorders=None,
-        ref_label=None, smax=None,
+        labels=None,
+        markers=None,
+        markersizes=None,
+        zorders=None,
+        ref_label=None,
+        smax=None,
         compare_models=None,
         arrowprops_dict=None,
         annotate_text=None,
@@ -13,13 +19,19 @@ def TaylorDiagram(
         angular_axis_title=None):
 
     """Plot a Taylor diagram
+    
+    Jiwoo Lee (PCMDI LLNL) - last update: September 2022
 
     This code was adpated from the ILAMB code that was written by Nathan Collier (ORNL)
     (https://github.com/rubisco-sfa/ILAMB/blob/master/src/ILAMB/Post.py#L80)
-    and revised by Jiwoo Lee (LLNL) to implement into PMP and to enable more customizations.
+    and revised by Jiwoo Lee (LLNL) to add capabilities and enable more customizations 
+    for implementation into PCMDI Metrics Package (PMP).
+    The original code was written by Yannick Copin (https://gist.github.com/ycopin/3342888)
+    
+    Reference for Taylor Diagram:
+    Taylor, K. E. (2001), Summarizing multiple aspects of model performance in a single diagram, 
+    J. Geophys. Res., 106(D7), 7183–7192, http://dx.doi.org/10.1029/2000JD900719
 
-    The original code was written by Yannick Copin:
-    https://gist.github.com/ycopin/3342888
 
     Parameters
     ----------
@@ -31,6 +43,12 @@ def TaylorDiagram(
         the reference standard deviation
     fig : matplotlib figure, optional
         the matplotlib figure
+    rect : a 3-digit integer, optional
+        ax subplot rect, , default is 111, which indicate the figure has 1 row, 1 column, and this plot is the first plot. 
+        https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplot.html
+        https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.add_subplot
+    title : string, optional
+        title for the plot
     cmap : string, optional
         a name of matplotlib colormap
         https://matplotlib.org/stable/gallery/color/colormap_reference.html
@@ -92,6 +110,8 @@ def TaylorDiagram(
     if normalize:
         stddev = stddev / refstd
         refstd = 1.
+        
+    # Radial axis range
     smin = 0
     if smax is None:
         smax = max(2.0, 1.1 * stddev.max())
@@ -104,9 +124,9 @@ def TaylorDiagram(
 
     if fig is None:
         fig = plt.figure(figsize=(8, 8))
-
-    ax = FA.FloatingSubplot(fig, 111, grid_helper=ghelper)
-    fig.add_subplot(ax)
+   
+    ax = fig.add_subplot(
+        rect, axes_class=FA.FloatingAxes, grid_helper=ghelper, title=title)
 
     if colors is None:
         if cmap is None:
