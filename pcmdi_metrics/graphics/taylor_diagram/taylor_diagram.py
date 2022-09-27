@@ -1,19 +1,19 @@
 def TaylorDiagram(
-        stddev, corrcoef, refstd, 
-        fig=None, 
-        ax=None,
+        stddev, corrcoef, refstd,
+        fig=None,
         colors=None,
         cmap=None,
-        normalize=True,
+        normalize=False,
         labels=None, markers=None, markersizes=None, zorders=None,
         ref_label=None, smax=None,
         compare_models=None,
         arrowprops_dict=None,
         annotate_text=None,
-    ):
+        radial_axis_title=None,
+        angular_axis_title=None):
 
     """Plot a Taylor diagram
-    
+
     This code was adpated from the ILAMB code that was written by Nathan Collier (ORNL)
     (https://github.com/rubisco-sfa/ILAMB/blob/master/src/ILAMB/Post.py#L80)
     and revised by Jiwoo Lee (LLNL) to implement into PMP and to enable more customizations.
@@ -31,8 +31,6 @@ def TaylorDiagram(
         the reference standard deviation
     fig : matplotlib figure, optional
         the matplotlib figure
-    ax : matplotlib figure axis, optional
-        the matplotlib figure axis
     cmap : string, optional
         a name of matplotlib colormap
         https://matplotlib.org/stable/gallery/color/colormap_reference.html
@@ -41,6 +39,7 @@ def TaylorDiagram(
         if colors is given, it will override cmap
     normalize : bool, optional
         disable to skip normalization of the standard deviation
+        default is False
     labels : list, optional
         list of text for labels
     markers : list, optional
@@ -53,13 +52,19 @@ def TaylorDiagram(
         label for reference data
     smax : int or float, optional
         maximum of axis range for (normalized) standard deviation
-    compare_models : list, optional
-        two models to compare with arrow showing
+    compare_models : list of tuples, optional
+        list of pair of two models to compare by showing arrows
     arrowprops_dict: dict, optional
         dict for matplotlib annotation arrowprops for compare_models arrow
         See https://matplotlib.org/stable/tutorials/text/annotations.html for details
     annotate_text : string, optional
         text to place at the begining of the comparing arrow
+    radial_axis_title : string, optional
+        axis title for radial axis
+        default - Standard deviation (when normalize=False) or Normalized standard deviation (when normalize=True)
+    angular_axis_title : string, optional
+        axis title for angular axis
+        default - Correlation
 
     Return
     ------
@@ -68,12 +73,11 @@ def TaylorDiagram(
     ax : matplotlib axis
         the matplotlib axis
     """
+    import matplotlib.pyplot as plt
     import mpl_toolkits.axisartist.floating_axes as FA
     import mpl_toolkits.axisartist.grid_finder as GF
-    import matplotlib.pyplot as plt
     import numpy as np
     from matplotlib.projections import PolarAxes
-
 
     # define transform
     tr = PolarAxes.PolarTransform()
@@ -99,14 +103,11 @@ def TaylorDiagram(
                                        tick_formatter1=tf1)
 
     if fig is None:
-        fig = plt.figure(figsize=(8,8))
-        if ax is not None:
-            print("Figure is newly generated for given ax. To avoid this please consider provide both figure and ax.")
-    
-    if ax is None:  
-        ax = FA.FloatingSubplot(fig, 111, grid_helper=ghelper)
-        fig.add_subplot(ax)
-        
+        fig = plt.figure(figsize=(8, 8))
+
+    ax = FA.FloatingSubplot(fig, 111, grid_helper=ghelper)
+    fig.add_subplot(ax)
+
     if colors is None:
         if cmap is None:
             cmap = 'viridis'
@@ -118,22 +119,30 @@ def TaylorDiagram(
     ax.axis["top"].toggle(ticklabels=True, label=True)
     ax.axis["top"].major_ticklabels.set_axis_direction("top")
     ax.axis["top"].label.set_axis_direction("top")
-    ax.axis["top"].label.set_text("Correlation")
-    ax.axis["left"].set_axis_direction("bottom")
-    if normalize:
-        ax.axis["left"].label.set_text("Normalized standard deviation")
+    if angular_axis_title is None:
+        ax.axis["top"].label.set_text("Correlation")
     else:
-        ax.axis["left"].label.set_text("Standard deviation")
+        ax.axis["top"].label.set_text(angular_axis_title)
+
+    ax.axis["left"].set_axis_direction("bottom")
+    if radial_axis_title is None:
+        if normalize:
+            ax.axis["left"].label.set_text("Normalized standard deviation")
+        else:
+            ax.axis["left"].label.set_text("Standard deviation")
+    else:
+        ax.axis["left"].label.set_text(radial_axis_title)
+
     ax.axis["right"].set_axis_direction("top")
     ax.axis["right"].toggle(ticklabels=True)
     ax.axis["right"].major_ticklabels.set_axis_direction("left")
+
     ax.axis["bottom"].set_visible(False)
     ax.grid(True)
 
     ax = ax.get_aux_axes(tr)
-    
+
     # Add reference point and stddev contour
-    #l, = ax.plot([0], refstd, 'k*', ms=12, mew=0, label=ref_label)
     ax.plot([0], refstd, 'k*', ms=12, mew=0, label=ref_label)
     t = np.linspace(0, np.pi / 2)
     r = np.zeros_like(t) + refstd
@@ -145,7 +154,7 @@ def TaylorDiagram(
     rms = np.sqrt(refstd**2 + rs**2 - 2 * refstd * rs * np.cos(ts))
     contours = ax.contour(ts, rs, rms, 5, colors='k', alpha=0.4)
     ax.clabel(contours, fmt='%1.1f')
-    
+
     # Plot data
     corrcoef = corrcoef.clip(-1, 1)
     for i in range(len(corrcoef)):
@@ -171,27 +180,30 @@ def TaylorDiagram(
             zorder = None
         # customize end
         ax.plot(np.arccos(corrcoef[i]), stddev[i], marker, color=colors[i], mew=0, ms=ms, label=label, zorder=zorder)
-    
+
     # Add arrow
     if arrowprops_dict is None:
-        arrowprops_dict = dict(facecolor='black', 
+        arrowprops_dict = dict(facecolor='black',
                                lw=0.5,
                                width=0.5,
                                shrink=0.05)  # shrink arrow length little bit to make it look good...
-    if compare_models is not None:        
-        index_model1 = labels.index(compare_models[0])
-        index_model2 = labels.index(compare_models[1])
-        theta1 = np.arccos(corrcoef[index_model1])
-        theta2 = np.arccos(corrcoef[index_model2])
-        r1 = stddev[index_model1]
-        r2 = stddev[index_model2]
-        
-        ax.annotate(annotate_text,
-            xy=(theta2, r2),  # theta, radius of arrival
-            xytext=(theta1, r1),  # theta, radius of departure
-            xycoords='data', textcoords='data',
-            arrowprops=arrowprops_dict,
-            horizontalalignment='center',
-            verticalalignment='center') 
+    if compare_models is not None:
+        for compare_models_pair in compare_models:
+            index_model1 = labels.index(compare_models_pair[0])
+            index_model2 = labels.index(compare_models_pair[1])
+            theta1 = np.arccos(corrcoef[index_model1])
+            theta2 = np.arccos(corrcoef[index_model2])
+            r1 = stddev[index_model1]
+            r2 = stddev[index_model2]
+
+            ax.annotate(
+                annotate_text,
+                xy=(theta2, r2),  # theta, radius of arrival
+                xytext=(theta1, r1),  # theta, radius of departure
+                xycoords='data',
+                textcoords='data',
+                arrowprops=arrowprops_dict,
+                horizontalalignment='center',
+                verticalalignment='center')
 
     return fig, ax
