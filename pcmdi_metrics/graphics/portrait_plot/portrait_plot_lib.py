@@ -22,6 +22,8 @@ def portrait_plot(
     vrange=None,
     xaxis_fontsize=15,
     yaxis_fontsize=15,
+    inner_line_color="k",
+    inner_line_width=0.5,
     cmap="RdBu_r",
     cmap_bounds=None,
     cbar_label=None,
@@ -63,6 +65,8 @@ def portrait_plot(
     - `vrange`: tuple of two numbers, range of value for colorbar.  Optional.
     - `xaxis_fontsize`: number, default=15, font size for xaxis tick labels
     - `yaxis_fontsize`: number, default=15, font size for yaxis tick labels
+    - `inner_line_color`: string, default="k" (black), color for inner lines (triangle edge lines)
+    - `inner_line_width`: float, default=0.5, line width for inner lines (triangle edge lines)
     - `cmap`: string, default="RdBu_r", name of matplotlib colormap
     - `cmap_bounds`: list of numbers.  If given, discrete colors are applied.  Optional.
     - `cbar_label`: string, default=None, label for colorbar
@@ -116,8 +120,10 @@ def portrait_plot(
     # ----------------
     # Ready to plot!!
     # ----------------
-    if fig is None and ax is None:
-        fig, ax = plt.subplots(figsize=figsize)
+    if fig is None:
+        fig = plt.figure(figsize=figsize)
+    if ax is None:
+        ax = fig.add_subplot(111)
 
     ax.set_facecolor(missing_color)
 
@@ -133,7 +139,11 @@ def portrait_plot(
         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
     else:
         cmap = plt.get_cmap(cmap)
-        norm = matplotlib.colors.BoundaryNorm(cmap_bounds, cmap.N, **cbar_kw)
+        if 'extend' in list(cbar_kw.keys()):
+            extend = cbar_kw['extend']
+        else:
+            extend = 'neither'
+        norm = matplotlib.colors.BoundaryNorm(cmap_bounds, cmap.N, extend=extend)
 
     # [1] Heatmap-style portrait plot (no triangles)
     if num_divide == 1:
@@ -178,6 +188,8 @@ def portrait_plot(
             cmap=cmap,
             invert_yaxis=invert_yaxis,
             norm=norm,
+            inner_line_color=inner_line_color,
+            inner_line_width=inner_line_width,
         )
 
     # [4] Four triangle portrait plot
@@ -196,8 +208,8 @@ def portrait_plot(
             tripcolorkw={
                 "cmap": cmap,
                 "norm": norm,
-                "edgecolors": "k",
-                "linewidth": 0.5,
+                "edgecolors": inner_line_color,
+                "linewidth": inner_line_width,
             },
             xaxis_labels=xaxis_labels,
             yaxis_labels=yaxis_labels,
@@ -443,6 +455,8 @@ def triamatrix_wrap_up(
     vmax=3,
     norm=None,
     invert_yaxis=True,
+    inner_line_color="k",
+    inner_line_width=0.5
 ):
 
     # Colorbar range
@@ -450,8 +464,8 @@ def triamatrix_wrap_up(
         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
 
     # Triangles
-    im = triamatrix(upper, ax, rot=270, cmap=cmap, norm=norm, edgecolors="k", lw=0.5)
-    im = triamatrix(lower, ax, rot=90, cmap=cmap, norm=norm, edgecolors="k", lw=0.5)
+    im = triamatrix(upper, ax, rot=270, cmap=cmap, norm=norm, edgecolors=inner_line_color, lw=inner_line_width)
+    im = triamatrix(lower, ax, rot=90, cmap=cmap, norm=norm, edgecolors=inner_line_color, lw=inner_line_width)
     ax.set_xlim(-0.5, upper.shape[1] - 0.5)
     ax.set_ylim(-0.5, upper.shape[0] - 0.5)
 
