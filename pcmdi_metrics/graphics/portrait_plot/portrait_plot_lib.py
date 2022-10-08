@@ -257,14 +257,47 @@ def portrait_plot(
     if not colorbar_off:
         # Create colorbar
         cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
+        #cbar = fig.colorbar(im, ax=ax.ravel().tolist(), **cbar_kw)
+        #cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+        #cbar = fig.colorbar(im, cax=cbar_ax, **cbar_kw)
 
         # Label for colorbar
         if cbar_label is not None:
-            cbar.ax.set_ylabel(
-                cbar_label, rotation=-90, va="bottom", fontsize=cbar_label_fontsize
-            )
+            if "orientation" in list(cbar_kw.keys()):
+                if cbar_kw["orientation"] == "horizontal":
+                    rotation = 0
+                    ha="center"
+                    va="top"
+                    cbar.ax.set_xlabel(
+                        cbar_label, 
+                        rotation=rotation, 
+                        ha=ha,
+                        va=va,
+                        fontsize=cbar_label_fontsize
+                    )
+                else:
+                    rotation = -90
+                    ha="center"
+                    va="bottom"
+                    cbar.ax.set_ylabel(
+                        cbar_label, 
+                        rotation=rotation, 
+                        ha=ha,
+                        va=va,
+                        fontsize=cbar_label_fontsize
+                    )
+            else:
+                rotation = -90
+                ha="center"
+                va="bottom"
+                cbar.ax.set_ylabel(
+                    cbar_label, 
+                    rotation=rotation, 
+                    ha=ha,
+                    va=va,
+                    fontsize=cbar_label_fontsize
+                )
             cbar.ax.tick_params(labelsize=cbar_tick_fontsize)
-
         return fig, ax, cbar
     else:
         return fig, ax
