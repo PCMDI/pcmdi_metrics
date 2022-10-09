@@ -63,31 +63,31 @@ def portrait_plot(
     - `annotate_format`: format for annotate value, default="{x:.2f}"
     - `figsize`: tuple of two numbers (width, height), default=(12, 10), figure size in inches
     - `vrange`: tuple of two numbers, range of value for colorbar.  Optional.
-    - `xaxis_fontsize`: number, default=15, font size for xaxis tick labels
-    - `yaxis_fontsize`: number, default=15, font size for yaxis tick labels
-    - `inner_line_color`: string, default="k" (black), color for inner lines (triangle edge lines)
-    - `inner_line_width`: float, default=0.5, line width for inner lines (triangle edge lines)
-    - `cmap`: string, default="RdBu_r", name of matplotlib colormap
+    - `xaxis_fontsize`: number, default=15, font size for xaxis tick labels.  Optional.
+    - `yaxis_fontsize`: number, default=15, font size for yaxis tick labels.  Optional.
+    - `inner_line_color`: string, default="k" (black), color for inner lines (triangle edge lines).  Optional.
+    - `inner_line_width`: float, default=0.5, line width for inner lines (triangle edge lines).  Optional.
+    - `cmap`: string, default="RdBu_r", name of matplotlib colormap.  Optional.
     - `cmap_bounds`: list of numbers.  If given, discrete colors are applied.  Optional.
-    - `cbar_label`: string, default=None, label for colorbar
-    - `cbar_label_fontsize`: number, default=15, font size for colorbar labels
-    - `cbar_tick_fontsize`: number, default=12, font size for colorbar tick labels
+    - `cbar_label`: string, default=None, label for colorbar.  Optional.
+    - `cbar_label_fontsize`: number, default=15, font size for colorbar labels.  Optional.
+    - `cbar_tick_fontsize`: number, default=12, font size for colorbar tick labels.  Optional.
     - `cbar_kw`: A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
     - `colorbar_off`: Trun off colorbar if True.  Optional.
-    - `missing_color`: color, default="grey", `matplotlib.axes.Axes.set_facecolor` parameter
-    - `invert_yaxis`: bool, default=True, place y=0 at top on the plot
-    - `box_as_square`: bool, default=False, make each box as square
-    - `legend_on`: bool, default=False, show legend (only for 2 or 4 triangles portrait plot)
-    - `legend_labels`: list of strings, legend labels for triangls
-    - `legend_box_xy`: tuple of numbers, position of legend box's upper-left corner
-                       (lower-left if `invert_yaxis=False`), in `axes` coordinate
-    - `legend_box_size`: number, size of legend box
-    - `legend_lw`: number, line width of legend, default=1
-    - `legend_fontsize`: number, font size for legend, default=14
-    - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the the PMP logo.
+    - `missing_color`: color, default="grey", `matplotlib.axes.Axes.set_facecolor` parameter.  Optional.
+    - `invert_yaxis`: bool, default=True, place y=0 at top on the plot.  Optional.
+    - `box_as_square`: bool, default=False, make each box as square.  Optional.
+    - `legend_on`: bool, default=False, show legend (only for 2 or 4 triangles portrait plot).  Optional.
+    - `legend_labels`: list of strings, legend labels for triangls.  Optional.
+    - `legend_box_xy`: tuple of numbers, position of legend box's upper-left corner.  Optional.
+                       (lower-left if `invert_yaxis=False`), in `axes` coordinate.  Optional.
+    - `legend_box_size`: number, size of legend box.  Optional.
+    - `legend_lw`: number, line width of legend, default=1.  Optional.
+    - `legend_fontsize`: number, font size for legend, default=14.  Optional.
+    - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the the PMP logo.  Optional.
                    All quantities are in fractions of figure width and height.  Optional
-    - `logo_off`: bool, default=False, turn off PMP logo
-    - `debug`: bool, default=False, if true print more message when running that help debugging
+    - `logo_off`: bool, default=False, turn off PMP logo.  Optional.
+    - `debug`: bool, default=False, if true print more message when running that help debugging.  Optional.
 
     Return
     ------
