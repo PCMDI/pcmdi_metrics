@@ -22,6 +22,8 @@ def portrait_plot(
     vrange=None,
     xaxis_fontsize=15,
     yaxis_fontsize=15,
+    xaxis_tick_labels_top_and_bottom=False,
+    xticklabel_rotation=45,
     inner_line_color="k",
     inner_line_width=0.5,
     cmap="RdBu_r",
@@ -65,6 +67,8 @@ def portrait_plot(
     - `vrange`: tuple of two numbers, range of value for colorbar.  Optional.
     - `xaxis_fontsize`: number, default=15, font size for xaxis tick labels.  Optional.
     - `yaxis_fontsize`: number, default=15, font size for yaxis tick labels.  Optional.
+    - `xaxis_tick_labels_top_and_bottom`: bool, default=False, if true duplicate xaxis tick label to the other side.  Optional.
+    - `xticklabel_rotation`: int or float, default=45, degree of angle to rotate x-axis tick label.  Optional
     - `inner_line_color`: string, default="k" (black), color for inner lines (triangle edge lines).  Optional.
     - `inner_line_width`: float, default=0.5, line width for inner lines (triangle edge lines).  Optional.
     - `cmap`: string, default="RdBu_r", name of matplotlib colormap.  Optional.
@@ -96,6 +100,7 @@ def portrait_plot(
     - `cbar`: matplotlib component for colorbar (not returned if colorbar_off=True)
 
     Author: Jiwoo Lee @ LLNL (2021. 7)
+    Last update: 2022. 10
     """
 
     # ----------------
@@ -216,9 +221,15 @@ def portrait_plot(
             invert_yaxis=invert_yaxis,
         )
 
-    # Let the horizontal axes labeling appear on top.
-    ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
+    # X-axis tick labels
+    if xaxis_tick_labels_top_and_bottom:
+        # additional x-axis tick labels
+        ax.tick_params(axis="x", bottom=True, top=True, labelbottom=True, labeltop=True)
+    else:
+        # Let the horizontal axes labeling appear on top.
+        ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
 
+    """
     # Rotate the tick labels and set their alignment.
     plt.setp(
         ax.get_xticklabels(),
@@ -227,6 +238,17 @@ def portrait_plot(
         ha="right",
         rotation_mode="anchor",
     )
+    """
+    # Rotate and align top ticklabels
+    plt.setp(
+        [tick.label2 for tick in ax.xaxis.get_major_ticks()], rotation=xticklabel_rotation,
+         ha="left", va="center", rotation_mode="anchor", fontsize=xaxis_fontsize)
+
+    if xaxis_tick_labels_top_and_bottom:
+        # Rotate and align bottom ticklabels
+        plt.setp(
+            [tick.label1 for tick in ax.xaxis.get_major_ticks()], rotation=xticklabel_rotation,
+            ha="right", va="center", rotation_mode="anchor", fontsize=xaxis_fontsize)
 
     # Set font size for yaxis tick labels
     plt.setp(ax.get_yticklabels(), fontsize=yaxis_fontsize)
