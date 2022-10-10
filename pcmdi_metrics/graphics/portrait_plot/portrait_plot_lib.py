@@ -242,7 +242,7 @@ def portrait_plot(
     # Rotate and align top ticklabels
     plt.setp(
         [tick.label2 for tick in ax.xaxis.get_major_ticks()], rotation=xticklabel_rotation,
-         ha="left", va="center", rotation_mode="anchor", fontsize=xaxis_fontsize)
+        ha="left", va="center", rotation_mode="anchor", fontsize=xaxis_fontsize)
 
     if xaxis_tick_labels_top_and_bottom:
         # Rotate and align bottom ticklabels
