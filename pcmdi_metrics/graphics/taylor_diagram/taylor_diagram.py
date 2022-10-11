@@ -1,3 +1,5 @@
+import math
+
 def TaylorDiagram(
         stddev, corrcoef, refstd,
         fig=None,
@@ -16,7 +18,10 @@ def TaylorDiagram(
         arrowprops_dict=None,
         annotate_text=None,
         radial_axis_title=None,
-        angular_axis_title=None):
+        angular_axis_title=None,
+        closed_marker=True,
+        markercloses=None,
+        debug=False):
 
     """Plot a Taylor diagram
     
@@ -83,6 +88,14 @@ def TaylorDiagram(
     angular_axis_title : string, optional
         axis title for angular axis
         default - Correlation
+    closed_marker : bool, optional
+        closed marker or opened marker
+        default - True
+    markercloses : list of bool,  optional
+        default - None
+    debug : bool, optional
+        default - False
+        if true print some interim results for debugging purpose
 
     Return
     ------
@@ -198,8 +211,41 @@ def TaylorDiagram(
             zorder = zorders[i]
         else:
             zorder = None
+        # customize marker closed/opened
+        if closed_marker:
+            markerclose = True
+        else:
+            if markercloses is not None:
+                markerclose = markercloses[i]
+            else:
+                markerclose = False
+
+        if markerclose:
+            marker_dict = dict(
+                color=colors[i],
+                mew=0
+            )
+        else:
+            marker_dict = dict(
+                mec=colors[i], 
+                mfc='none', 
+                mew=1,
+            )
+
+        # place marker on the graph
+        ax.plot(
+            np.arccos(corrcoef[i]), 
+            stddev[i], 
+            marker, 
+            ms=ms, 
+            label=label, 
+            zorder=zorder,
+            **marker_dict)
+
         # customize end
-        ax.plot(np.arccos(corrcoef[i]), stddev[i], marker, color=colors[i], mew=0, ms=ms, label=label, zorder=zorder)
+        if debug:
+            crmsd = math.sqrt(stddev[i]**2 + refstd**2 - 2 * stddev[i] * refstd * corrcoef[i])  # centered rms difference
+            print('i, label, corrcoef[i], np.arccos(corrcoef[i]), stddev[i], crmsd:', i, label, corrcoef[i], np.arccos(corrcoef[i]), stddev[i], crmsd)
 
     # Add arrow
     if arrowprops_dict is None:
