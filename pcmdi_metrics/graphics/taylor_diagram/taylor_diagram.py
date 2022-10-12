@@ -171,7 +171,7 @@ def TaylorDiagram(
     ax.axis["top"].major_ticklabels.set_axis_direction("top")
     ax.axis["top"].label.set_axis_direction("top")
     ax.axis["top"].label.set_text(angular_axis_title)
-    ax.axis["left"].set_axis_direction("bottom")  
+    ax.axis["left"].set_axis_direction("bottom")
     ax.axis["left"].label.set_text(radial_axis_title)
     ax.axis["right"].set_axis_direction("top")
     ax.axis["right"].toggle(ticklabels=True)
@@ -263,7 +263,7 @@ def TaylorDiagram(
         if debug:
             crmsd = math.sqrt(stddev[i]**2 + refstd**2 - 2 * stddev[i] * refstd * corrcoef[i])  # centered rms difference
             print(
-                'i, label, corrcoef[i], np.arccos(corrcoef[i]), stddev[i], crmsd:', 
+                'i, label, corrcoef[i], np.arccos(corrcoef[i]), stddev[i], crmsd:',
                 i, label, corrcoef[i], np.arccos(corrcoef[i]), stddev[i], crmsd)
 
     # Add arrow(s)
