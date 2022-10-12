@@ -6,12 +6,15 @@ def TaylorDiagram(
         fig=None,
         rect=111,
         title=None,
+        titleprops_dict=dict(),
         colors=None,
         cmap=None,
         normalize=False,
         labels=None,
         markers=None,
         markersizes=None,
+        closed_marker=True,
+        markercloses=None,
         zorders=None,
         ref_label=None,
         smax=None,
@@ -19,9 +22,8 @@ def TaylorDiagram(
         arrowprops_dict=None,
         annotate_text=None,
         radial_axis_title=None,
-        angular_axis_title=None,
-        closed_marker=True,
-        markercloses=None,
+        angular_axis_title="Correlation",
+        grid=True,
         debug=False):
 
     """Plot a Taylor diagram
@@ -55,6 +57,8 @@ def TaylorDiagram(
         https://matplotlib.org/stable/api/figure_api.html#matplotlib.figure.Figure.add_subplot
     title : string, optional
         title for the plot
+    titleprops_dict : dict, optional
+        title property dict (e.g., fontsize)
     cmap : string, optional
         a name of matplotlib colormap
         https://matplotlib.org/stable/gallery/color/colormap_reference.html
@@ -70,6 +74,12 @@ def TaylorDiagram(
         list of marker type
     markersizes : list, optional
         list of integer for marker size
+    closed_marker : bool, optional
+        closed marker or opened marker
+        default - True
+    markercloses : list of bool,  optional
+        When closed_marker is False but you still want to have a few closed markers among opened markers, provide list of True (close) or False (open)
+        default - None
     zorders : list, optional
         list of integer for zorder
     ref_label : str, optional
@@ -89,12 +99,9 @@ def TaylorDiagram(
     angular_axis_title : string, optional
         axis title for angular axis
         default - Correlation
-    closed_marker : bool, optional
-        closed marker or opened marker
+    grid : bool, optional
+        grid line in plot
         default - True
-    markercloses : list of bool,  optional
-        if closed_marker is False but you want to have selected closed markers, provide list of True (close) or False (open)
-        default - None
     debug : bool, optional
         default - False
         if true print some interim results for debugging purpose
@@ -141,7 +148,10 @@ def TaylorDiagram(
         fig = plt.figure(figsize=(8, 8))
 
     ax = fig.add_subplot(
-        rect, axes_class=FA.FloatingAxes, grid_helper=ghelper, title=title)
+        rect, axes_class=FA.FloatingAxes, grid_helper=ghelper)
+
+    if title is not None:
+        ax.set_title(title, **titleprops_dict)
 
     if colors is None:
         if cmap is None:
@@ -149,31 +159,25 @@ def TaylorDiagram(
         cm = plt.get_cmap(cmap)
         colors = cm(np.linspace(0.1, 0.9, len(stddev)))
 
+    if radial_axis_title is None:
+        if normalize:
+            ax.axis["left"].label.set_text("Normalized standard deviation")
+        else:
+            radial_axis_title = "Standard deviation"
+
     # adjust axes
     ax.axis["top"].set_axis_direction("bottom")
     ax.axis["top"].toggle(ticklabels=True, label=True)
     ax.axis["top"].major_ticklabels.set_axis_direction("top")
     ax.axis["top"].label.set_axis_direction("top")
-    if angular_axis_title is None:
-        ax.axis["top"].label.set_text("Correlation")
-    else:
-        ax.axis["top"].label.set_text(angular_axis_title)
-
-    ax.axis["left"].set_axis_direction("bottom")
-    if radial_axis_title is None:
-        if normalize:
-            ax.axis["left"].label.set_text("Normalized standard deviation")
-        else:
-            ax.axis["left"].label.set_text("Standard deviation")
-    else:
-        ax.axis["left"].label.set_text(radial_axis_title)
-
+    ax.axis["top"].label.set_text(angular_axis_title)
+    ax.axis["left"].set_axis_direction("bottom")  
+    ax.axis["left"].label.set_text(radial_axis_title)
     ax.axis["right"].set_axis_direction("top")
     ax.axis["right"].toggle(ticklabels=True)
     ax.axis["right"].major_ticklabels.set_axis_direction("left")
-
     ax.axis["bottom"].set_visible(False)
-    ax.grid(True)
+    ax.grid(grid)
 
     ax = ax.get_aux_axes(tr)
 
@@ -193,34 +197,35 @@ def TaylorDiagram(
     # Plot data
     corrcoef = corrcoef.clip(-1, 1)
     for i in range(len(corrcoef)):
+        # --- customize start ---
         # customize label
-        if labels is not None:
-            label = labels[i]
-        else:
+        if labels is None:
             label = None
+        else:
+            label = labels[i]
         # customize marker
-        if markers is not None:
-            marker = markers[i]
-        else:
+        if markers is None:
             marker = 'o'
+        else:
+            marker = markers[i]
         # customize marker size
-        if markersizes is not None:
-            ms = markersizes[i]
-        else:
+        if markersizes is None:
             ms = 8
-        # customize marker order
-        if zorders is not None:
-            zorder = zorders[i]
         else:
+            ms = markersizes[i]
+        # customize marker order
+        if zorders is None:
             zorder = None
+        else:
+            zorder = zorders[i]
         # customize marker closed/opened
         if closed_marker:
             markerclose = True
         else:
-            if markercloses is not None:
-                markerclose = markercloses[i]
-            else:
+            if markercloses is None:
                 markerclose = False
+            else:
+                markerclose = markercloses[i]
 
         if markerclose:
             if closed_marker:
@@ -240,7 +245,7 @@ def TaylorDiagram(
                 mfc='none',
                 mew=1,
             )
-        # customize end
+        # --- customize end ---
 
         # -------------------------
         # place marker on the graph
@@ -257,9 +262,11 @@ def TaylorDiagram(
         # debugging
         if debug:
             crmsd = math.sqrt(stddev[i]**2 + refstd**2 - 2 * stddev[i] * refstd * corrcoef[i])  # centered rms difference
-            print('i, label, corrcoef[i], np.arccos(corrcoef[i]), stddev[i], crmsd:', i, label, corrcoef[i], np.arccos(corrcoef[i]), stddev[i], crmsd)
+            print(
+                'i, label, corrcoef[i], np.arccos(corrcoef[i]), stddev[i], crmsd:', 
+                i, label, corrcoef[i], np.arccos(corrcoef[i]), stddev[i], crmsd)
 
-    # Add arrow
+    # Add arrow(s)
     if arrowprops_dict is None:
         arrowprops_dict = dict(facecolor='black',
                                lw=0.5,
