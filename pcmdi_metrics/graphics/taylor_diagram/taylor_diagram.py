@@ -161,7 +161,7 @@ def TaylorDiagram(
 
     if radial_axis_title is None:
         if normalize:
-            ax.axis["left"].label.set_text("Normalized standard deviation")
+            radial_axis_title = "Normalized standard deviation"
         else:
             radial_axis_title = "Standard deviation"
 
