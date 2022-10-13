@@ -48,7 +48,7 @@ def add_logo(fig, ax, rect=None):
 
 
 def download_archived_results(path, local_dir):
-    """ Download file from url to local_dir
+    """Download file from url to local_dir
 
     Parameters
     ----------
@@ -58,10 +58,14 @@ def download_archived_results(path, local_dir):
         directory path in your local machine to save downloaded file
     """
     os.makedirs(local_dir, exist_ok=True)
-    url_head_github_repo = "https://github.com/PCMDI/pcmdi_metrics_results_archive/tree/main/"
-    url_head = "https://raw.githubusercontent.com/PCMDI/pcmdi_metrics_results_archive/main/"
+    url_head_github_repo = (
+        "https://github.com/PCMDI/pcmdi_metrics_results_archive/tree/main/"
+    )
+    url_head = (
+        "https://raw.githubusercontent.com/PCMDI/pcmdi_metrics_results_archive/main/"
+    )
     url = url_head + path
-    filename = url.split('/')[-1]
+    filename = url.split("/")[-1]
     try:
         r = requests.get(url, allow_redirects=True)
         r.raise_for_status()
@@ -69,11 +73,11 @@ def download_archived_results(path, local_dir):
         if os.path.exists(local_file):
             pass
         else:
-            with open(local_file, 'wb') as file:
+            with open(local_file, "wb") as file:
                 file.write(r.content)
-            print('Download completed:', local_file)
+            print("Download completed:", local_file)
     except Exception:
-        print(path, 'not exist in ', url_head_github_repo)
+        print(path, "not exist in ", url_head_github_repo)
         pass
 
 
@@ -101,7 +105,10 @@ def combine_ref_dicts(d1, d2):
         if len(list(set(dd[key]))) == 1:
             dd[key] = dd[key][0]
         else:
-            print('Warning: differnt reference datasets detected for ' + key + ': ', dd[key])
+            print(
+                "Warning: differnt reference datasets detected for " + key + ": ",
+                dd[key],
+            )
     # Convert outcome to normal dict and return
     dd = dict(dd)
     return dd

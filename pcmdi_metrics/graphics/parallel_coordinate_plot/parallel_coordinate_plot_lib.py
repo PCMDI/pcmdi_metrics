@@ -36,7 +36,7 @@ def parallel_coordinate_plot(
     group2_name="group2",
     comparing_models=None,
     fill_between_lines=False,
-    fill_between_lines_colors=("green", "red")
+    fill_between_lines_colors=("green", "red"),
 ):
     """
     Parameters
@@ -183,7 +183,10 @@ def parallel_coordinate_plot(
                     linewidth=0.1,
                     scale="count",
                     scale_hue=False,
-                    palette={group1_name: violin_colors[0], group2_name: violin_colors[1]},
+                    palette={
+                        group1_name: violin_colors[0],
+                        group2_name: violin_colors[1],
+                    },
                 )
 
     # Line or marker
@@ -208,15 +211,30 @@ def parallel_coordinate_plot(
 
     # Fill between lines
     if fill_between_lines and (comparing_models is not None):
-        if (isinstance(comparing_models, tuple)
-                or (isinstance(comparing_models, list) and len(comparing_models) == 2)):
+        if isinstance(comparing_models, tuple) or (
+            isinstance(comparing_models, list) and len(comparing_models) == 2
+        ):
             x = range(N)
             m1 = model_names.index(comparing_models[0])
             m2 = model_names.index(comparing_models[1])
             y1 = zs[m1, :]
             y2 = zs[m2, :]
-            ax.fill_between(x, y1, y2, where=y2 >= y1, facecolor=fill_between_lines_colors[0], interpolate=True)
-            ax.fill_between(x, y1, y2, where=y2 <= y1, facecolor=fill_between_lines_colors[1], interpolate=True)
+            ax.fill_between(
+                x,
+                y1,
+                y2,
+                where=y2 >= y1,
+                facecolor=fill_between_lines_colors[0],
+                interpolate=True,
+            )
+            ax.fill_between(
+                x,
+                y1,
+                y2,
+                where=y2 <= y1,
+                facecolor=fill_between_lines_colors[1],
+                interpolate=True,
+            )
 
     ax.set_xlim(-0.5, N - 0.5)
     ax.set_xticks(range(N))
@@ -317,7 +335,7 @@ def _to_pd_dataframe(
     group1_name="group1",
     group2_name="group2",
 ):
-    print('data.shape:', data.shape)
+    print("data.shape:", data.shape)
     # Pandas dataframe for seaborn plotting
     df = pd.DataFrame(data, columns=metric_names, index=model_names)
     # Stack
