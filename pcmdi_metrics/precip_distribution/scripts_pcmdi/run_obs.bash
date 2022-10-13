@@ -9,4 +9,3 @@ mkdir ./log
 nohup python -u ../precip_distribution_driver.py -p ../param/precip_distribution_params_IMERG.py  > ./log/log_IMERG_$res &
 # nohup python -u ../precip_distribution_driver.py -p ../param/precip_distribution_params_PERSIANN.py  > ./log/log_PERSIANN_$res &
 # nohup python -u ../precip_distribution_driver.py -p ../param/precip_distribution_params_TRMM.py  > ./log/log_TRMM_$res &
-
