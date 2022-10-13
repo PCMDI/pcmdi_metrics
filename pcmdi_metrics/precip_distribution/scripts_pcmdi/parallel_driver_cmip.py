@@ -14,8 +14,12 @@ param = P.get_parameter()
 mip = param.mip
 modpath = param.modpath
 res = param.res
+mod = param.mod
+if mod is None:
+    mod = "*"
 
-file_list = sorted(glob.glob(os.path.join(modpath, "*")))
+file_list = sorted(glob.glob(os.path.join(modpath, "*" + mod + "*")))
+
 cmd_list = []
 log_list = []
 for ifl, fl in enumerate(file_list):
