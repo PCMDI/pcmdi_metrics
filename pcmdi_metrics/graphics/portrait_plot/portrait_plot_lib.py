@@ -144,10 +144,10 @@ def portrait_plot(
         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
     else:
         cmap = plt.get_cmap(cmap)
-        if 'extend' in list(cbar_kw.keys()):
-            extend = cbar_kw['extend']
+        if "extend" in list(cbar_kw.keys()):
+            extend = cbar_kw["extend"]
         else:
-            extend = 'neither'
+            extend = "neither"
         norm = matplotlib.colors.BoundaryNorm(cmap_bounds, cmap.N, extend=extend)
 
     # [1] Heatmap-style portrait plot (no triangles)
@@ -241,14 +241,24 @@ def portrait_plot(
     """
     # Rotate and align top ticklabels
     plt.setp(
-        [tick.label2 for tick in ax.xaxis.get_major_ticks()], rotation=xticklabel_rotation,
-        ha="left", va="center", rotation_mode="anchor", fontsize=xaxis_fontsize)
+        [tick.label2 for tick in ax.xaxis.get_major_ticks()],
+        rotation=xticklabel_rotation,
+        ha="left",
+        va="center",
+        rotation_mode="anchor",
+        fontsize=xaxis_fontsize,
+    )
 
     if xaxis_tick_labels_top_and_bottom:
         # Rotate and align bottom ticklabels
         plt.setp(
-            [tick.label1 for tick in ax.xaxis.get_major_ticks()], rotation=xticklabel_rotation,
-            ha="right", va="center", rotation_mode="anchor", fontsize=xaxis_fontsize)
+            [tick.label1 for tick in ax.xaxis.get_major_ticks()],
+            rotation=xticklabel_rotation,
+            ha="right",
+            va="center",
+            rotation_mode="anchor",
+            fontsize=xaxis_fontsize,
+        )
 
     # Set font size for yaxis tick labels
     plt.setp(ax.get_yticklabels(), fontsize=yaxis_fontsize)
@@ -292,7 +302,7 @@ def portrait_plot(
                         rotation=rotation,
                         ha=ha,
                         va=va,
-                        fontsize=cbar_label_fontsize
+                        fontsize=cbar_label_fontsize,
                     )
                 else:
                     rotation = -90
@@ -303,7 +313,7 @@ def portrait_plot(
                         rotation=rotation,
                         ha=ha,
                         va=va,
-                        fontsize=cbar_label_fontsize
+                        fontsize=cbar_label_fontsize,
                     )
             else:
                 rotation = -90
@@ -314,7 +324,7 @@ def portrait_plot(
                     rotation=rotation,
                     ha=ha,
                     va=va,
-                    fontsize=cbar_label_fontsize
+                    fontsize=cbar_label_fontsize,
                 )
             cbar.ax.tick_params(labelsize=cbar_tick_fontsize)
         return fig, ax, cbar
@@ -508,7 +518,7 @@ def triamatrix_wrap_up(
     norm=None,
     invert_yaxis=True,
     inner_line_color="k",
-    inner_line_width=0.5
+    inner_line_width=0.5,
 ):
 
     # Colorbar range
@@ -516,8 +526,24 @@ def triamatrix_wrap_up(
         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
 
     # Triangles
-    im = triamatrix(upper, ax, rot=270, cmap=cmap, norm=norm, edgecolors=inner_line_color, lw=inner_line_width)
-    im = triamatrix(lower, ax, rot=90, cmap=cmap, norm=norm, edgecolors=inner_line_color, lw=inner_line_width)
+    im = triamatrix(
+        upper,
+        ax,
+        rot=270,
+        cmap=cmap,
+        norm=norm,
+        edgecolors=inner_line_color,
+        lw=inner_line_width,
+    )
+    im = triamatrix(
+        lower,
+        ax,
+        rot=90,
+        cmap=cmap,
+        norm=norm,
+        edgecolors=inner_line_color,
+        lw=inner_line_width,
+    )
     ax.set_xlim(-0.5, upper.shape[1] - 0.5)
     ax.set_ylim(-0.5, upper.shape[0] - 0.5)
 
