@@ -2,29 +2,32 @@ import math
 
 
 def TaylorDiagram(
-        stddev, corrcoef, refstd,
-        fig=None,
-        rect=111,
-        title=None,
-        titleprops_dict=dict(),
-        colors=None,
-        cmap=None,
-        normalize=False,
-        labels=None,
-        markers=None,
-        markersizes=None,
-        closed_marker=True,
-        markercloses=None,
-        zorders=None,
-        ref_label=None,
-        smax=None,
-        compare_models=None,
-        arrowprops_dict=None,
-        annotate_text=None,
-        radial_axis_title=None,
-        angular_axis_title="Correlation",
-        grid=True,
-        debug=False):
+    stddev,
+    corrcoef,
+    refstd,
+    fig=None,
+    rect=111,
+    title=None,
+    titleprops_dict=dict(),
+    colors=None,
+    cmap=None,
+    normalize=False,
+    labels=None,
+    markers=None,
+    markersizes=None,
+    closed_marker=True,
+    markercloses=None,
+    zorders=None,
+    ref_label=None,
+    smax=None,
+    compare_models=None,
+    arrowprops_dict=None,
+    annotate_text=None,
+    radial_axis_title=None,
+    angular_axis_title="Correlation",
+    grid=True,
+    debug=False,
+):
 
     """Plot a Taylor diagram
 
@@ -123,7 +126,7 @@ def TaylorDiagram(
     tr = PolarAxes.PolarTransform()
 
     # correlation labels
-    rlocs = np.concatenate((np.arange(10) / 10., [0.95, 0.99]))
+    rlocs = np.concatenate((np.arange(10) / 10.0, [0.95, 0.99]))
     tlocs = np.arccos(rlocs)
     gl1 = GF.FixedLocator(tlocs)
     tf1 = GF.DictFormatter(dict(zip(tlocs, map(str, rlocs))))
@@ -131,7 +134,7 @@ def TaylorDiagram(
     # standard deviation axis extent
     if normalize:
         stddev = stddev / refstd
-        refstd = 1.
+        refstd = 1.0
 
     # Radial axis range
     smin = 0
@@ -139,23 +142,21 @@ def TaylorDiagram(
         smax = max(2.0, 1.1 * stddev.max())
 
     # add the curvilinear grid
-    ghelper = FA.GridHelperCurveLinear(tr,
-                                       extremes=(0, np.pi / 2, smin, smax),
-                                       grid_locator1=gl1,
-                                       tick_formatter1=tf1)
+    ghelper = FA.GridHelperCurveLinear(
+        tr, extremes=(0, np.pi / 2, smin, smax), grid_locator1=gl1, tick_formatter1=tf1
+    )
 
     if fig is None:
         fig = plt.figure(figsize=(8, 8))
 
-    ax = fig.add_subplot(
-        rect, axes_class=FA.FloatingAxes, grid_helper=ghelper)
+    ax = fig.add_subplot(rect, axes_class=FA.FloatingAxes, grid_helper=ghelper)
 
     if title is not None:
         ax.set_title(title, **titleprops_dict)
 
     if colors is None:
         if cmap is None:
-            cmap = 'viridis'
+            cmap = "viridis"
         cm = plt.get_cmap(cmap)
         colors = cm(np.linspace(0.1, 0.9, len(stddev)))
 
@@ -182,17 +183,16 @@ def TaylorDiagram(
     ax = ax.get_aux_axes(tr)
 
     # Add reference point and stddev contour
-    ax.plot([0], refstd, 'k*', ms=12, mew=0, label=ref_label)
+    ax.plot([0], refstd, "k*", ms=12, mew=0, label=ref_label)
     t = np.linspace(0, np.pi / 2)
     r = np.zeros_like(t) + refstd
-    ax.plot(t, r, 'k--')
+    ax.plot(t, r, "k--")
 
     # centralized rms contours
-    rs, ts = np.meshgrid(np.linspace(smin, smax),
-                         np.linspace(0, np.pi / 2))
+    rs, ts = np.meshgrid(np.linspace(smin, smax), np.linspace(0, np.pi / 2))
     rms = np.sqrt(refstd**2 + rs**2 - 2 * refstd * rs * np.cos(ts))
-    contours = ax.contour(ts, rs, rms, 5, colors='k', alpha=0.4)
-    ax.clabel(contours, fmt='%1.1f')
+    contours = ax.contour(ts, rs, rms, 5, colors="k", alpha=0.4)
+    ax.clabel(contours, fmt="%1.1f")
 
     # Plot data
     corrcoef = corrcoef.clip(-1, 1)
@@ -205,7 +205,7 @@ def TaylorDiagram(
             label = labels[i]
         # customize marker
         if markers is None:
-            marker = 'o'
+            marker = "o"
         else:
             marker = markers[i]
         # customize marker size
@@ -234,15 +234,11 @@ def TaylorDiagram(
                     mew=0,
                 )
             else:
-                marker_dict = dict(
-                    mfc=colors[i],
-                    mec='k',
-                    mew=1
-                )
+                marker_dict = dict(mfc=colors[i], mec="k", mew=1)
         else:
             marker_dict = dict(
                 mec=colors[i],
-                mfc='none',
+                mfc="none",
                 mew=1,
             )
         # --- customize end ---
@@ -257,21 +253,29 @@ def TaylorDiagram(
             ms=ms,
             label=label,
             zorder=zorder,
-            **marker_dict)
+            **marker_dict,
+        )
 
         # debugging
         if debug:
-            crmsd = math.sqrt(stddev[i]**2 + refstd**2 - 2 * stddev[i] * refstd * corrcoef[i])  # centered rms difference
+            crmsd = math.sqrt(
+                stddev[i] ** 2 + refstd**2 - 2 * stddev[i] * refstd * corrcoef[i]
+            )  # centered rms difference
             print(
-                'i, label, corrcoef[i], np.arccos(corrcoef[i]), stddev[i], crmsd:',
-                i, label, corrcoef[i], np.arccos(corrcoef[i]), stddev[i], crmsd)
+                "i, label, corrcoef[i], np.arccos(corrcoef[i]), stddev[i], crmsd:",
+                i,
+                label,
+                corrcoef[i],
+                np.arccos(corrcoef[i]),
+                stddev[i],
+                crmsd,
+            )
 
     # Add arrow(s)
     if arrowprops_dict is None:
-        arrowprops_dict = dict(facecolor='black',
-                               lw=0.5,
-                               width=0.5,
-                               shrink=0.05)  # shrink arrow length little bit to make it look good...
+        arrowprops_dict = dict(
+            facecolor="black", lw=0.5, width=0.5, shrink=0.05
+        )  # shrink arrow length little bit to make it look good...
     if compare_models is not None:
         for compare_models_pair in compare_models:
             index_model1 = labels.index(compare_models_pair[0])
@@ -285,10 +289,11 @@ def TaylorDiagram(
                 annotate_text,
                 xy=(theta2, r2),  # theta, radius of arrival
                 xytext=(theta1, r1),  # theta, radius of departure
-                xycoords='data',
-                textcoords='data',
+                xycoords="data",
+                textcoords="data",
                 arrowprops=arrowprops_dict,
-                horizontalalignment='center',
-                verticalalignment='center')
+                horizontalalignment="center",
+                verticalalignment="center",
+            )
 
     return fig, ax

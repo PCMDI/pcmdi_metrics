@@ -23,7 +23,7 @@
     X = numpy.fft.ifft(x)
     a = X.real
     b = X.imag
-    S = numpy.sqrt(a ** 2 + b ** 2)
+    S = numpy.sqrt(a**2 + b**2)
     c = S[:, 0]
     # time of maximum for nth component (n=0 => diurnal, n=1 => semi...)
     tmax = numpy.zeros((nGridPoints, 3))
@@ -76,7 +76,7 @@ def fastAllGridFT(x, t):
     print("Converting from complex-valued FFT to real-valued amplitude and phase ...")
     a = X.real
     b = X.imag
-    S = numpy.sqrt(a ** 2 + b ** 2)
+    S = numpy.sqrt(a**2 + b**2)
     c = S[0]  # Zeroth harmonic = mean-value "constant term" in Fourier series.
     for n in range(3):
         # Adding first + last terms, second + second-to-last, ...
