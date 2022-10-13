@@ -48,7 +48,9 @@ if __name__ == "__main__":
         os.mkdir(demo_data_directory)
 
     #  Get the list of files, with md5 sums, and write to local file.
-    r = requests.get("https://pcmdiweb.llnl.gov/pss/pmpdata/pmp_tutorial_files.v20220420.txt")
+    r = requests.get(
+        "https://pcmdiweb.llnl.gov/pss/pmpdata/pmp_tutorial_files.v20220420.txt"
+    )
     data_files_txt = os.path.join(demo_data_directory, "data_files.txt")
     with open(data_files_txt, "wb") as f:
         f.write(r.content)
