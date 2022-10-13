@@ -1,8 +1,9 @@
 import glob
 import os
 
-from pcmdi_metrics.misc.scripts import parallel_submitter
 from pcmdi_metrics.driver.pmp_parser import PMPParser
+from pcmdi_metrics.misc.scripts import parallel_submitter
+from pcmdi_metrics.precip_distribution.lib import AddParserArgument
 
 num_cpus = 20
 
@@ -12,6 +13,7 @@ P = AddParserArgument(P)
 param = P.get_parameter()
 mip = param.mip
 modpath = param.modpath
+res = param.res
 
 file_list = sorted(glob.glob(os.path.join(modpath, "*")))
 cmd_list = []

@@ -1,5 +1,7 @@
 # Usage
 
+Adjust `ncpu` in `parallel_driver_cmip.py`
+
 ## CMIP5
 python -u parallel_driver_cmip.py  -p ../param/precip_distribution_params_cmip5.py > ./log/log_parallel.wait_cmip5 &
 
