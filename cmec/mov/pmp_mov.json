@@ -47,7 +47,7 @@
         "meyear": 2005,
         "eofn_mod": 1,
         "reference_data_name": "NOAA-20CR",
-        "reference_data_path": "PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707/psl_mon_20CR_BE_gn_v20200707_187101-201212.nc",
+        "reference_data_path": "obs4MIPs_PCMDI_monthly/NOAA-ESRL-PSD/20CR/mon/psl/gn/v20210727/psl_mon_20CR_PCMDI_gn_187101-201212.nc",
         "varOBS": "psl",
         "ObsUnitsAdjust": "(True, 'divide', 100.0)",
         "osyear": 1900,

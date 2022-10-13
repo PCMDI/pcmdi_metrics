@@ -2,10 +2,10 @@
     "description": "<p>Self contained packages to run PCMDI Metrics</p>",
     "access_right": "open",
     "license": "cc-by",
-    "title": "PCMDI/pcmdi_metrics: PMP Version 2.3.1",
-    "version": "v2.3.1",
+    "title": "PCMDI/pcmdi_metrics: PMP Version 2.4.0",
+    "version": "v2.4.0",
     "upload_type": "software",
-    "publication_date": "2022-06-10",
+    "publication_date": "2022-08-02",
     "creators": [
         {
             "name": "Lee, Jiwoo",

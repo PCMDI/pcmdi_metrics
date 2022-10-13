@@ -1,4 +1,3 @@
-import datetime
 import os
 
 mip = "obs"
@@ -35,10 +34,8 @@ mod = var + "." + frq + "." + dat + ".xml"
 # case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 case_id = ver
 pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"
-results_dir = os.path.join(
-    pmpdir, '%(output_type)', '%(mip)', '%(case_id)')
+results_dir = os.path.join(pmpdir, "%(output_type)", "%(mip)", "%(case_id)")
 
 
-ref = "IMERG" # For Perkins socre, P10, and P90
-ref_dir = os.path.join(
-    pmpdir, '%(output_type)', "obs", '%(case_id)')
+ref = "IMERG"  # For Perkins socre, P10, and P90
+ref_dir = os.path.join(pmpdir, "%(output_type)", "obs", "%(case_id)")

@@ -14,12 +14,13 @@ def parallel_coordinate_plot(
     data,
     metric_names,
     model_names,
-    model_highlights=list(),
+    models_to_highlight=list(),
     fig=None,
     ax=None,
     figsize=(15, 5),
-    show_boxplot=True,
-    show_violin=True,
+    show_boxplot=False,
+    show_violin=False,
+    violin_colors=("lightgrey", "pink"),
     title=None,
     identify_all_models=True,
     xtick_labels=None,
@@ -33,6 +34,9 @@ def parallel_coordinate_plot(
     model_names2=None,
     group1_name="group1",
     group2_name="group2",
+    comparing_models=None,
+    fill_between_lines=False,
+    fill_between_lines_colors=("green", "red")
 ):
     """
     Parameters
@@ -40,14 +44,15 @@ def parallel_coordinate_plot(
     - `data`: 2-d numpy array for metrics
     - `metric_names`: list, names of metrics for individual vertical axes (axis=1)
     - `model_names`: list, name of models for markers/lines (axis=0)
-    - `model_highlights`: list, default=None, List of models to highlight as lines
+    - `models_to_highlight`: list, default=None, List of models to highlight as lines
     - `fig`: `matplotlib.figure` instance to which the parallel coordinate plot is plotted.
              If not provided, use current axes or create a new one.  Optional.
     - `ax`: `matplotlib.axes.Axes` instance to which the parallel coordinate plot is plotted.
             If not provided, use current axes or create a new one.  Optional.
     - `figsize`: tuple (two numbers), default=(15,5), image size
-    - `show_boxplot`: bool, default=True, show box and wiskers plot
-    - `show_violin`: bool, default=True, show violin plot
+    - `show_boxplot`: bool, default=False, show box and wiskers plot
+    - `show_violin`: bool, default=False, show violin plot
+    - `violin_colors`: tuple or list containing two strings for colors of violin. Default=("lightgrey", "pink")
     - `title`: string, default=None, plot title
     - `identify_all_models`: bool, default=True. Show and identify all models using markers
     - `xtick_labelsize`: number, fontsize for x-axis tick labels (optional)
@@ -61,6 +66,9 @@ def parallel_coordinate_plot(
     - `model_names2`: list of string, should be a subset of `model_names`.  If given, violin plot will be split into 2 groups. Optional.
     - `group1_name`: string, needed for violin plot legend if splited to two groups, for the 1st group. Default is 'group1'.
     - `group2_name`: string, needed for violin plot legend if splited to two groups, for the 2nd group. Default is 'group2'.
+    - `comparing_models`: tuple or list containing two strings for models to compare with colors filled between the two lines.
+    - `fill_between_lines`: bool, default=False, fill color between lines for models in comparing_models
+    - `fill_between_lines_colors`: tuple or list containing two strings for colors filled between the two lines. Default=('green', 'red')
 
     Return
     ------
@@ -68,6 +76,7 @@ def parallel_coordinate_plot(
     - `ax`: matplotlib component for axis
 
     Author: Jiwoo Lee @ LLNL (2021. 7)
+    Last update: 2022. 9
     Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
     """
     params = {
@@ -159,7 +168,7 @@ def parallel_coordinate_plot(
                     showextrema=False,
                 )
                 for pc in violin["bodies"]:
-                    pc.set_facecolor("lightgrey")
+                    pc.set_facecolor(violin_colors[0])
                     pc.set_edgecolor("None")
                     pc.set_alpha(0.8)
             else:
@@ -172,9 +181,9 @@ def parallel_coordinate_plot(
                     hue="group",
                     split=True,
                     linewidth=0.1,
-                    color="pink",
                     scale="count",
                     scale_hue=False,
+                    palette={group1_name: violin_colors[0], group2_name: violin_colors[1]},
                 )
 
     # Line or marker
@@ -184,7 +193,7 @@ def parallel_coordinate_plot(
     colors *= len(marker_types)
     for j, model in enumerate(model_names):
         # to just draw straight lines between the axes:
-        if model in model_highlights:
+        if model in models_to_highlight:
             ax.plot(range(N), zs[j, :], "-", c=colors[j], label=model, lw=3)
         else:
             if identify_all_models:
@@ -196,6 +205,18 @@ def parallel_coordinate_plot(
                     label=model,
                     clip_on=False,
                 )
+
+    # Fill between lines
+    if fill_between_lines and (comparing_models is not None):
+        if (isinstance(comparing_models, tuple)
+                or (isinstance(comparing_models, list) and len(comparing_models) == 2)):
+            x = range(N)
+            m1 = model_names.index(comparing_models[0])
+            m2 = model_names.index(comparing_models[1])
+            y1 = zs[m1, :]
+            y2 = zs[m2, :]
+            ax.fill_between(x, y1, y2, where=y2 >= y1, facecolor=fill_between_lines_colors[0], interpolate=True)
+            ax.fill_between(x, y1, y2, where=y2 <= y1, facecolor=fill_between_lines_colors[1], interpolate=True)
 
     ax.set_xlim(-0.5, N - 0.5)
     ax.set_xticks(range(N))
