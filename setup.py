@@ -74,7 +74,6 @@ scripts = [
     "pcmdi_metrics/variability_mode/variability_modes_driver.py",
     "pcmdi_metrics/enso/enso_driver.py",
     "pcmdi_metrics/precip_variability/variability_across_timescales_PS_driver.py",
-    "pcmdi_metrics/cloud_feedback/cloud_feedback_driver.py",
 ]
 # scripts += glob.glob("pcmdi_metrics/diurnal/scripts/*.py")
 
