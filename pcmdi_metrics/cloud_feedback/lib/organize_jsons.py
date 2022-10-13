@@ -88,7 +88,7 @@ def organize_ecs_jsons(new_ecs, mo, ripf):
     old_dict = json.load(f)
     f.close()
 
-    if new_ecs != None:
+    if new_ecs is not None:
         old_dict["CMIP6"][mo][ripf]["ECS"] = new_ecs
 
     return old_dict  # now updated to include info from input dictionary

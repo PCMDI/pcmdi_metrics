@@ -9,8 +9,6 @@ from datetime import date
 
 import matplotlib as mpl
 import matplotlib.gridspec as gridspec
-# IMPORT STUFF:
-# =====================
 import matplotlib.pylab as plt
 import numpy as np
 from scipy import stats
@@ -74,6 +72,7 @@ MARK["UKESM1-0-LL"] = "h"
 MARK["BCC-CSM2-MR"] = "H"
 MARK["CNRM-CM5"] = "8"
 MARK["CNRM-CM6-1"] = "8"
+
 
 #######################################################
 def get_expert_assessed_fbks():
@@ -804,7 +803,7 @@ def static_plot(assessed, ecs, models, fbk_names, gen, fig, gs):
         FACE = "C4"
         EDGE = "C4"
     avg_assessed = np.ma.average(assessed, 0)
-    err_assessed = np.ma.std(assessed, 0)
+    # err_assessed = np.ma.std(assessed, 0)
     N, T = assessed.shape  # [models, fbk_types]
     plt.barh(
         yloc,
@@ -1043,15 +1042,15 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
 
     assessed56 = np.append(assessed5, assessed6, axis=0)
     unassessed56 = np.append(unassessed5, unassessed6, axis=0)
-    E_TCA56 = np.append(E_TCA5, E_TCA6, axis=0)
-    E_ctpt56 = np.append(E_ctpt5, E_ctpt6, axis=0)
-    E_LW56 = np.append(E_LW5, E_LW6, axis=0)
-    E_SW56 = np.append(E_SW5, E_SW6, axis=0)
+    # E_TCA56 = np.append(E_TCA5, E_TCA6, axis=0)
+    # E_ctpt56 = np.append(E_ctpt5, E_ctpt6, axis=0)
+    # E_LW56 = np.append(E_LW5, E_LW6, axis=0)
+    # E_SW56 = np.append(E_SW5, E_SW6, axis=0)
     E_NET56 = np.append(E_NET5, E_NET6, axis=0)
     RMSE56 = np.append(RMSE5, RMSE6)
     ECS56 = np.append(ECS5, ECS6)
     models56 = np.append(models5, models6)
-    inds = np.argsort(RMSE56)
+    # inds = np.argsort(RMSE56)
 
     ######################################################
     # Plot RMSE vs total cloud feedback:

@@ -7,8 +7,6 @@ import cdms2
 import cdtime
 import cdutil
 import MV2
-# IMPORT STUFF:
-# =====================
 import numpy as np
 from scipy import stats
 
@@ -31,7 +29,7 @@ def get_anom_abrupt(ab_path, pi_path, var):
         branch_time_in_parent = 91250  # https://errata.es-doc.org/static/view.html?uid=2f6b5963-f87e-b2df-a5b0-2f12b6b68d32
     else:
         branch_time_in_parent = np.float(f.branch_time_in_parent)
-    branch_time_in_child = f.branch_time_in_child
+    # branch_time_in_child = f.branch_time_in_child
     parent_time_units = f.parent_time_units
     child_time_units = f[var].getTime().units
     ab_st = f.branch_time_in_child

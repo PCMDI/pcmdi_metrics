@@ -82,6 +82,7 @@ obs_clisccp_AC_wap = f("AC_clisccp_wap")
 obs_N_AC_wap = f("AC_N_wap")
 f.close()
 
+
 ###########################################################################
 def apply_land_mask_v2(data):
     """
@@ -300,8 +301,8 @@ def get_CRK_data(filenames):
 
     print("    amip-p4K")
     fut_tas = get_amip_data(filenames["amip-p4K"], "tas")
-    fut_rsdscs = get_amip_data(filenames["amip-p4K"], "rsdscs")
-    fut_rsuscs = get_amip_data(filenames["amip-p4K"], "rsuscs")
+    # fut_rsdscs = get_amip_data(filenames["amip-p4K"], "rsdscs")
+    # fut_rsuscs = get_amip_data(filenames["amip-p4K"], "rsuscs")
     fut_wap = get_amip_data(filenames["amip-p4K"], "wap", 50000)
     fut_clisccp = get_amip_data(filenames["amip-p4K"], "clisccp")
 
@@ -683,7 +684,7 @@ def obscuration_terms3(c1, c2):
     # c is [mo,tau,ctp,lat,lon]
     # c is in percent
 
-    AX = c2.getAxisList()
+    # AX = c2.getAxisList()
 
     c1 = MV.masked_where(c2.mask, c1)
     c2 = MV.masked_where(c1.mask, c2)
@@ -724,7 +725,7 @@ def obscuration_terms3(c1, c2):
     L_R_bar[L_R_bar < 0] = 0
     F_bar[F_bar < 0] = 0
 
-    rep_L_bar = tile_uneven(L_bar, L12)
+    # rep_L_bar = tile_uneven(L_bar, L12)
     rep_L_R_bar = tile_uneven(L_R_bar, L_R12)
     rep_F_bar = tile_uneven(F_bar, F12b)
 

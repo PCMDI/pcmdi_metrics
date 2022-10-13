@@ -85,9 +85,7 @@ def KT_decomposition_general(c1, c2, Klw, Ksw):
         Klw_t_prime * np.ma.sum(dc_star, 1), 0
     )  # LW optical depth component
     dRlw_resid = np.ma.sum(np.ma.sum(Klw_resid_prime * dc_star, 1), 0)  # LW residual
-    dRlw_sum = (
-        dRlw_prop + dRlw_dctp + dRlw_dtau + dRlw_resid
-    )  # sum of LW components -- should equal LW total
+    # dRlw_sum = dRlw_prop + dRlw_dctp + dRlw_dtau + dRlw_resid  # sum of LW components -- should equal LW total
 
     # SW components
     Ksw0 = np.ma.sum(np.ma.sum(Ksw * c1 / sum_c, 0), 0)  # Eq. B4
@@ -107,9 +105,7 @@ def KT_decomposition_general(c1, c2, Klw, Ksw):
         Ksw_t_prime * np.ma.sum(dc_star, 1), 0
     )  # SW optical depth component
     dRsw_resid = np.ma.sum(np.ma.sum(Ksw_resid_prime * dc_star, 1), 0)  # SW residual
-    dRsw_sum = (
-        dRsw_prop + dRsw_dctp + dRsw_dtau + dRsw_resid
-    )  # sum of SW components -- should equal SW total
+    # dRsw_sum = dRsw_prop + dRsw_dctp + dRsw_dtau + dRsw_resid  # sum of SW components -- should equal SW total
 
     # Set SW fields to zero where the sun is down
     RR = Ksw0.mask
