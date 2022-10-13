@@ -34,47 +34,19 @@ if hasattr(param, "cmec"):
     cmec = param.cmec  # Generate CMEC compliant json
 print("CMEC:" + str(cmec))
 
-
-print(
-    "model:",
-    model,
-    "\n",
-    "institution:",
-    institution,
-    "\n",
-    "variant:",
-    variant,
-    "\n",
-    "grid_label:",
-    grid_label,
-    "\n",
-    "version:",
-    version,
-    "\n",
-    "path:",
-    path,
-    "\n",
-    "input_files_json:",
-    input_files_json,
-    "\n",
-    "xml_path:",
-    xml_path,
-    "\n",
-    "figure_path:",
-    figure_path,
-    "\n",
-    "output_path:",
-    output_path,
-    "\n",
-    "output_json_filename:",
-    output_json_filename,
-    "\n",
-    "get_ecs:",
-    get_ecs,
-    "\n",
-    "debug:",
-    debug,
-)
+print("model:", model)
+print("institution:", institution)
+print("variant:", variant)
+print("grid_label:", grid_label)
+print("version:", version)
+print("path:", path)
+print("input_files_json:", input_files_json)
+print("xml_path:", xml_path)
+print("figure_path:", figure_path)
+print("output_path:", output_path)
+print("output_json_filename:", output_json_filename)
+print("get_ecs:", get_ecs)
+print("debug:", debug)
 
 if get_ecs:
     exps = ["amip", "amip-p4K", "piControl", "abrupt-4xCO2"]
