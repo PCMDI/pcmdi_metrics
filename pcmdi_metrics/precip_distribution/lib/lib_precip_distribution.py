@@ -1,7 +1,4 @@
-import copy
-import glob
 import os
-import sys
 
 import cdms2 as cdms
 import cdutil
