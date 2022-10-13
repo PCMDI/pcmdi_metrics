@@ -567,8 +567,8 @@ def CalcBinStructure(pdata1):
     # % extend the bins until the maximum precip anywhere in the dataset falls
     # % within the bins
     # switch maxp to pmax if you want it to depend on your data
-    while maxp > binr[len(binr)-1]:
-        binrlogex = np.append(binrlogex, binrlogex[len(binrlogex)-1]+dbin)
+    while maxp > binr[len(binr) - 1]:
+        binrlogex = np.append(binrlogex, binrlogex[len(binrlogex) - 1] + dbin)
         # binrend = np.exp(binrlogex[len(binrlogex)-1])
         binrlog = binrlogex
         binllog = binrlog - dbinlog[0]
