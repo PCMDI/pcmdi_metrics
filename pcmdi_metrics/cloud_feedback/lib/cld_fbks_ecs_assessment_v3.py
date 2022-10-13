@@ -249,7 +249,7 @@ def get_fbks(cld_fbks, obsc_cld_fbks, cld_errs, ecs_dict):
                     print(mo + ": Using ECS from " + ripf2 + " rather than " + ripf)
             try:
                 ecs = ecs_dict[mo2][ripf2]["ECS"]
-            except:
+            except Exception:
                 print("No ECS for " + mo2 + "." + ripf2)
                 ecs = np.nan
 
@@ -1269,7 +1269,7 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
         boundaries=KEM_BOUNDS,
     )
     cb.ax.tick_params(labelsize=14)
-    ax2.set_ylabel("$\mathrm{E_{NET}}$", size=14)
+    ax2.set_ylabel(r"$\mathrm{E_{NET}}$", size=14)
     plt.savefig(
         figdir + "WCRP_assessed_RMSE_v_cldfbk2_amip-p4K.png", bbox_inches="tight"
     )
@@ -1332,7 +1332,7 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
         transform=ax.transAxes,
     )  # (0, 0) is lower-left and (1, 1) is upper-right
     plt.ylabel(fbk_names[-1] + " [Wm$^{-2}$K$^{-1}$]", fontsize=14)
-    plt.xlabel("$\mathrm{E_{NET}}$", fontsize=14)
+    plt.xlabel(r"$\mathrm{E_{NET}}$", fontsize=14)
     plt.title("a", fontsize=16, loc="left")
     # put horizontal shading for assessed total cloud feedback
     horiz_shade(expert_cld_fbks[-1], err_expert_cld_fbks[-1], 0.65)
@@ -1391,7 +1391,7 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
         transform=ax.transAxes,
     )  # (0, 0) is lower-left and (1, 1) is upper-right
     plt.ylabel("Cloud Feedback RMSE [Wm$^{-2}$K$^{-1}$]", fontsize=14)
-    plt.xlabel("$\mathrm{E_{NET}}$", fontsize=14)
+    plt.xlabel(r"$\mathrm{E_{NET}}$", fontsize=14)
     plt.title("b", fontsize=16, loc="left")
     plt.ylim(0.04, 0.15)
     plt.xlim(0.60, 1.65)

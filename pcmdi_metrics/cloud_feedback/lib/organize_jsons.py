@@ -68,7 +68,7 @@ def organize_err_jsons(new_dict, mo, ripf):
                         old_dict[mo][ripf][region][sfc][sec][name] = new_dict[sec][
                             region
                         ][sfc][name]
-                    except:
+                    except Exception:
                         old_dict[mo][ripf][region][sfc][sec][name] = np.nan
                 # end name loop
             # end section loop:

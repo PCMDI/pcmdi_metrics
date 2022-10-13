@@ -116,7 +116,7 @@ def annual_avg(data):
     for i in np.arange(0, A, 12):
         try:
             LD = len(data[i : i + 12])
-        except:
+        except Exception:
             continue
         if LD == 12:  # only take full 12-month periods
             cnt += 1

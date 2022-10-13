@@ -32,7 +32,7 @@ def map_SWkern_to_lon(Ksw, albcsmap):
             # interp1d can't handle mask but it can deal with NaN (?)
             try:
                 alon2 = MV.where(alon.mask, np.nan, alon)
-            except:
+            except Exception:
                 alon2 = alon
             if np.ma.count(alon2) > 1:  # at least 1 unmasked value
                 if len(np.where(Ksw[MM, :, :, LA, :] > 0)) == 0:

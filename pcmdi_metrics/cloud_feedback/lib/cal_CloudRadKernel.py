@@ -593,7 +593,7 @@ def monthly_anomalies(data):
     try:
         avgdata.setAxisList(data[:12].getAxisList())
         anomdata.setAxisList(data.getAxisList())
-    except:
+    except Exception:
         pass
 
     return (anomdata, avgdata)
