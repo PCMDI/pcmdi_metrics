@@ -51,7 +51,14 @@ def plot_map(mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_n
     else:
         gridline = True
 
-    if mode in ["PDO", "NPGO", "AMO", "PDO_teleconnection", "NPGO_teleconnection", "AMO_teleconnection"]:
+    if mode in [
+        "PDO",
+        "NPGO",
+        "AMO",
+        "PDO_teleconnection",
+        "NPGO_teleconnection",
+        "AMO_teleconnection",
+    ]:
         levels = [r / 10 for r in list(range(-5, 6, 1))]
         maskout = "land"
     else:

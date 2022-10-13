@@ -36,16 +36,13 @@ def precip_variability_across_timescale(
     print("syr, eyr:", syr, eyr)
     for iyr in range(syr, eyr + 1):
         print(iyr)
-        do = (
-            f(
-                var,
-                time=(
-                    str(iyr) + "-1-1 0:0:0",
-                    str(iyr) + "-12-" + str(ldy) + " 23:59:59",
-                ),
-            )
-            * float(fac)
-        )
+        do = f(
+            var,
+            time=(
+                str(iyr) + "-1-1 0:0:0",
+                str(iyr) + "-12-" + str(ldy) + " 23:59:59",
+            ),
+        ) * float(fac)
 
         # Regridding
         rgtmp = Regrid2deg(do)

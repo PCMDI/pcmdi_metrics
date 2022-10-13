@@ -173,11 +173,11 @@ def main():
             sin_avg_ocn /= 1 - glolf
             # Amplitude and phase:
             # * 86400 Convert kg/m2/s -> mm/d?
-            amp_avg_glo = MV2.sqrt(sin_avg_glo ** 2 + cos_avg_glo ** 2)
+            amp_avg_glo = MV2.sqrt(sin_avg_glo**2 + cos_avg_glo**2)
             # * 86400 Convert kg/m2/s -> mm/d?
-            amp_avg_lnd = MV2.sqrt(sin_avg_lnd ** 2 + cos_avg_lnd ** 2)
+            amp_avg_lnd = MV2.sqrt(sin_avg_lnd**2 + cos_avg_lnd**2)
             # * 86400 Convert kg/m2/s -> mm/d?
-            amp_avg_ocn = MV2.sqrt(sin_avg_ocn ** 2 + cos_avg_ocn ** 2)
+            amp_avg_ocn = MV2.sqrt(sin_avg_ocn**2 + cos_avg_ocn**2)
             pha_avg_glo = MV2.remainder(
                 rad_to_hrs(MV2.arctan2(sin_avg_glo, cos_avg_glo), clocktype), clocktype
             )
