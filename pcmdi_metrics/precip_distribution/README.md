@@ -1,6 +1,6 @@
 # Precip distribution metrics
 
-Reference: Ahn, M.-S., P. A. Ullrich, P. J. Gleckler, J. Lee,  A. C. Ordonez, A. G. Pendergrass, and C. Jakob, 2022: Framework for Benchmarking Simulated Precipitation Distributions at Regional Scales. Geoscientific Model Development (in prep)
+Reference: Ahn, M.-S., P. A. Ullrich, P. J. Gleckler, J. Lee,  A. C. Ordonez, and A. G. Pendergrass, 2022: Evaluating Precipitation Distributions at Regional Scales: A Benchmarking Framework and Application to CMIP5 and CMIP6. Geoscientific Model Development (Submitted)
 
 ## Driver code:
 - `precip_distribution_driver.py`
