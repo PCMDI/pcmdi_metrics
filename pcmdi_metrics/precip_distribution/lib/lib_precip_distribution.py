@@ -1,18 +1,20 @@
+import copy
+import glob
+import os
+import sys
+
 import cdms2 as cdms
-import MV2 as MV
 import cdutil
 import genutil
+import MV2 as MV
 import numpy as np
-import glob
-import copy
-import pcmdi_metrics
-import regionmask
 import rasterio.features
+import regionmask
 import xarray as xr
 from regrid2 import Horizontal
-from shapely.geometry import Polygon, MultiPolygon
-import sys
-import os
+from shapely.geometry import MultiPolygon, Polygon
+
+import pcmdi_metrics
 
 
 # ==================================================================================
@@ -1532,4 +1534,3 @@ def MedDomainAR6(d, months):
 
     print("Completed AR6 domain median")
     return ddom
-

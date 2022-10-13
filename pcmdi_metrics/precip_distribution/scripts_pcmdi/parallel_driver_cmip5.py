@@ -1,5 +1,6 @@
-import os
 import glob
+import os
+
 from pcmdi_metrics.misc.scripts import parallel_submitter
 
 mip='cmip5'
@@ -24,4 +25,3 @@ parallel_submitter(
     logfilename_list=log_list,
     num_workers=num_cpus,
 )
-
