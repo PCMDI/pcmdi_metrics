@@ -2,12 +2,16 @@ import glob
 import os
 
 from pcmdi_metrics.misc.scripts import parallel_submitter
+from pcmdi_metrics.driver.pmp_parser import PMPParser
 
-mip = "cmip5"
 num_cpus = 20
 
-with open("../param/precip_distribution_params_" + mip + ".py") as source_file:
-    exec(source_file.read())
+# Read parameters
+P = PMPParser()
+P = AddParserArgument(P)
+param = P.get_parameter()
+mip = param.mip
+modpath = param.modpath
 
 file_list = sorted(glob.glob(os.path.join(modpath, "*")))
 cmd_list = []
