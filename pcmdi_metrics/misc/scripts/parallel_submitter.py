@@ -95,7 +95,7 @@ def parallel_submitter(
                     time.sleep(2)  # set this so the CPU does not go crazy
 
     # DONE
-    print("Parallel process completed: %s" % time.ctime())
+    print("Parallel process submission for all tasks are completed: %s" % time.ctime())
 
 
 def check_for_done(processes):
