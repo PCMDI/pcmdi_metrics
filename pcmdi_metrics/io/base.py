@@ -158,7 +158,16 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
     def read(self):
         pass
 
-    def write(self, data, type="json", mode="w", include_YAML=False, include_script=False, *args, **kwargs):
+    def write(
+        self,
+        data,
+        type="json",
+        mode="w",
+        include_YAML=False,
+        include_script=False,
+        *args,
+        **kwargs,
+    ):
         self.type = type.lower()
         file_name = self()
         dir_path = os.path.split(file_name)[0]
@@ -202,7 +211,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                 del out_dict["provenance"]["conda"]["yaml"]
 
             if not include_script:
-                if "script" in out_dict["provenance"].keys(): 
+                if "script" in out_dict["provenance"].keys():
                     del out_dict["provenance"]["script"]
 
             json.dump(out_dict, f, cls=CDMSDomainsEncoder, *args, **kwargs)

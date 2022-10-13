@@ -1,11 +1,11 @@
 # User Input:
 # ================================================================================================
-model = 'GFDL-CM4'
-institution = 'NOAA-GFDL'
-variant = 'r1i1p1f1'
-grid_label = 'gr1'
-version = 'v20180701'
-path = '/p/css03/esgf_publish/CMIP6'
+model = "GFDL-CM4"
+institution = "NOAA-GFDL"
+variant = "r1i1p1f1"
+grid_label = "gr1"
+version = "v20180701"
+path = "/p/css03/esgf_publish/CMIP6"
 
 # Flag to compute ECS
 # True: compute ECS using abrupt-4xCO2 run
