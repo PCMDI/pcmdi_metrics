@@ -12,6 +12,7 @@ from regrid2 import Horizontal
 from shapely.geometry import MultiPolygon, Polygon
 
 import pcmdi_metrics
+from pcmdi_metrics import resources
 
 
 # ==================================================================================
@@ -1796,9 +1797,9 @@ def MedDomain3Clust(d, months):
         "Land_LR_50S30S",
     ]
 
-    indir = "../lib"
+    egg_pth = resources.resource_path()
     file = "cluster3_pdf.amt_regrid.360x180_IMERG_ALL.nc"
-    cluster = xr.open_dataset(os.path.join(indir, file))["cluster_nb"]
+    cluster = xr.open_dataset(os.path.join(egg_pth, file))["cluster_nb"]
 
     regs = ["HR", "MR", "LR"]
     mpolygons = []
