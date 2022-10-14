@@ -1,3 +1,4 @@
+import datetime
 import os
 
 mip = "obs"
@@ -32,8 +33,7 @@ modpath = xmldir
 mod = var + "." + frq + "." + dat + ".xml"
 
 
-# case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-case_id = ver
+case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"
 results_dir = os.path.join(pmpdir, "%(output_type)", "%(mip)", "%(case_id)")
 
