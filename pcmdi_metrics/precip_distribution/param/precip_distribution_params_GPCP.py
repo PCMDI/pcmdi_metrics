@@ -1,3 +1,4 @@
+import datetime
 import os
 
 mip = "obs"
@@ -31,11 +32,14 @@ modpath = xmldir
 mod = var + "." + frq + "." + dat + ".xml"
 
 
-# case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-case_id = ver
-pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"
-results_dir = os.path.join(pmpdir, "%(output_type)", "%(mip)", "%(case_id)")
+case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+pmpdir = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2"
+results_dir = os.path.join(
+    pmpdir, "%(output_type)", "precip_distribution", "obs", "%(case_id)"
+)
 
 
 ref = "IMERG"  # For Perkins socre, P10, and P90
-ref_dir = os.path.join(pmpdir, "%(output_type)", "obs", "%(case_id)")
+ref_dir = os.path.join(
+    pmpdir, "%(output_type)", "precip_distribution", "obs", "%(case_id)"
+)

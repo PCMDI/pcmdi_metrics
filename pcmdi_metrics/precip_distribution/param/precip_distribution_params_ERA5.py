@@ -1,3 +1,4 @@
+import datetime
 import os
 
 mip = "obs"
@@ -17,7 +18,7 @@ res = [2, 2]  # target horizontal resolution [degree] for interporation (lon, la
 # res = [4, 4]  # target horizontal resolution [degree] for interporation (lon, lat)
 
 
-indir = "/p/user_pub/PCMDIobs/obs4MIPs/ECMWF/ERA-5/day/pr/1x1/latest/"
+indir = "/p/eser_pub/PCMDIobs/obs4MIPs/ECMWF/ERA-5/day/pr/1x1/latest/"
 infile = "pr_day_ERA-5_PCMDIFROGS_1x1_19790101-20181231.nc"
 
 xmldir = "./xml_obs/"
@@ -31,11 +32,13 @@ modpath = xmldir
 mod = var + "." + frq + "." + dat + ".xml"
 
 
-# case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-case_id = ver
-pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"
-results_dir = os.path.join(pmpdir, "%(output_type)", "%(mip)", "%(case_id)")
-
+case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+pmpdir = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2"
+results_dir = os.path.join(
+    pmpdir, "%(output_type)", "precip_distribution", "obs", "%(case_id)"
+)
 
 ref = "IMERG"  # For Perkins socre, P10, and P90
-ref_dir = os.path.join(pmpdir, "%(output_type)", "obs", "%(case_id)")
+ref_dir = os.path.join(
+    pmpdir, "%(output_type)", "precip_distribution", "obs", "%(case_id)"
+)
