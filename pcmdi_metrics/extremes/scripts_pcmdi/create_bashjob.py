@@ -1,6 +1,5 @@
-import os
-import glob
 import datetime
+import glob
 
 ver = datetime.datetime.now().strftime("v%Y%m%d")
 
@@ -18,14 +17,7 @@ pin = (
     + "/atmos/day/pr/*r1i1p1f1*.xml"
 )
 
-lst = glob.glob(pin)
-
-cmd = (
-    "nohup computeStdOfDailyMeans.py -p inparam_CMIP_computeStdOfDailyMeans.py --model "
-)
-
-## TEST ON SMALL DOMAIN DATA
-cmd = "nohup python driver_extrema_longrun_pentad.py -p daily_extremes_input_params.py --modpath /export/gleckler1/processing/metrics_package/my_test/mfw_extremes/cmip6.historical.GFDL-CM4.r1i1p1f1.mon.pr_smalldomain.nc --mod_name "
+file_list = glob.glob(pin)
 
 cmd = (
     "nohup python driver_extrema_longrun_pentad.py -p daily_extremes_input_params.py --modpath /p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/"
@@ -40,8 +32,8 @@ cmd = (
 
 f = open(mip + "_" + exp + "_MFW_jobs_" + ver + ".bash", "w+")
 
-for l in lst:
-    mod = l.split(".")[4] + "." + l.split(".")[5]
+for file_path_name in file_list:
+    mod = file_path_name.split(".")[4] + "." + file_path_name.split(".")[5]
 
     cmd1 = cmd.replace("MODEL", mod)
     cmd2 = cmd1 + " " + mod + " " + " > " + mod + "." + mip + "." + exp + ".log &"

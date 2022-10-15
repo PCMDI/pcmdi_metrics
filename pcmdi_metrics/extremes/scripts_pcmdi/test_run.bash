@@ -18,4 +18,3 @@ nohup python  driver_extrema_longrun_pentad.py -p daily_extremes_input_params.py
 nohup python  driver_extrema_longrun_pentad.py -p daily_extremes_input_params.py --modpath /export/gleckler1/processing/metrics_package/my_test/mfw_extremes/cmip6.historical.GFDL-CM4.r1i1p1f1.mon.pr_smalldomain.nc --mod_name  CESM2-WACCM.r1i1p1f1  > CESM2-WACCM.r1i1p1f1.cmip6.historical.log &
 nohup python  driver_extrema_longrun_pentad.py -p daily_extremes_input_params.py --modpath /export/gleckler1/processing/metrics_package/my_test/mfw_extremes/cmip6.historical.GFDL-CM4.r1i1p1f1.mon.pr_smalldomain.nc --mod_name  CESM2.r1i1p1f1  > CESM2.r1i1p1f1.cmip6.historical.log &
 nohup python  driver_extrema_longrun_pentad.py -p daily_extremes_input_params.py --modpath /export/gleckler1/processing/metrics_package/my_test/mfw_extremes/cmip6.historical.GFDL-CM4.r1i1p1f1.mon.pr_smalldomain.nc --mod_name  INM-CM5-0.r1i1p1f1  > INM-CM5-0.r1i1p1f1.cmip6.historical.log &
-
