@@ -13,18 +13,12 @@
 # However, the prefix of the name of the output variable is unchanged from the input variable name.
 # The suffix of the name of the output variable reflects the season.
 
-import collections
-import glob
-import os
-import string
-import sys
 import time as atime
 
 import cdms2 as cdms
 import cdtime
 import MV2 as MV
 
-import pcmdi_metrics
 from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
 
 # from pcmdi_metrics.driver.pmp_parser.PMPParser import PMPParser
@@ -95,17 +89,17 @@ mip = "cmip6"
 
 lat = "latitude"
 
-##pathout = '/export/gleckler1/processing/metrics_package/my_test/mfw_extremes/'
-##pathout = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/daily_extremes/' + mip + '/' + exp
+# pathout = '/export/gleckler1/processing/metrics_package/my_test/mfw_extremes/'
+# pathout = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/daily_extremes/' + mip + '/' + exp
 pathout = args.results_dir
 
 # pathout = args.results_dir
-# modpaths = args.modpaths
+modpaths = args.modpaths
 # outpathdata = args.results_dir
 
 pcmdi_operations = False  # True
 
-if pcmdi_operations == True:
+if pcmdi_operations:
     mod_rip = {}
     gmods = []
     for m in modpaths:
@@ -381,9 +375,8 @@ for mod in [mod_name]:
 
     print("DONE WITH MAM")
 
-    #   output.close()
+    # output.close()
 
-    #'''
     # Calculate SON extrema
     print("starting SON")
     y1 = y0
@@ -474,8 +467,8 @@ for mod in [mod_name]:
                 + s1[ii - 4, :, :]
             )
             ii = ii + 1
-        #  mask_s=s.mask
-        #  MV.putmask(s,mask_s,0)
+        # mask_s=s.mask
+        # MV.putmask(s,mask_s,0)
         sorted = MV.sort(s, 0)
         daily_max[y, :, :] = sorted[e - b, :, :]
         y = y + 1
@@ -495,5 +488,3 @@ for mod in [mod_name]:
     print("DONE WITH JJA")
 
     output.close()
-
-#'''
