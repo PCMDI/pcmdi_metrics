@@ -74,6 +74,7 @@ scripts = [
     "pcmdi_metrics/variability_mode/variability_modes_driver.py",
     "pcmdi_metrics/enso/enso_driver.py",
     "pcmdi_metrics/precip_variability/variability_across_timescales_PS_driver.py",
+    "pcmdi_metrics/precip_distribution/precip_distribution_driver.py",
 ]
 # scripts += glob.glob("pcmdi_metrics/diurnal/scripts/*.py")
 
@@ -127,6 +128,7 @@ data_files = (
             "share/cmip_model_list.json",
             "share/default_regions.py",
             "share/DefArgsCIA.json",
+            "pcmdi_metrics/precip_distribution/lib/cluster3_pdf.amt_regrid.360x180_IMERG_ALL.nc",
         ),
     ),
     ("share/pmp/demo", demo_files),
