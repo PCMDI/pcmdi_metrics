@@ -2,22 +2,29 @@ import datetime
 import os
 import string
 
-ver = datetime.datetime.now().strftime('v%Y%m%d')
+ver = datetime.datetime.now().strftime("v%Y%m%d")
 
-exp = 'historical'
+exp = "historical"
 
-mod_name = 'GFDL-CM4.r1i1p1f1' 
+mod_name = "GFDL-CM4.r1i1p1f1"
 
-realization = 'shit'
+realization = "shit"
 
-modpath = '/export/gleckler1/processing/metrics_package/my_test/mfw_extremes/cmip6.historical.GFDL-CM4.r1i1p1f1.mon.pr_smalldomain.nc'
+modpath = "/export/gleckler1/processing/metrics_package/my_test/mfw_extremes/cmip6.historical.GFDL-CM4.r1i1p1f1.mon.pr_smalldomain.nc"
 
-results_dir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/daily_extremes/cmip6/' + exp
+results_dir = (
+    "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/daily_extremes/cmip6/"
+    + exp
+)
 
 try:
- os.mkdir(results_dir + '/' + ver) 
+    os.mkdir(results_dir + "/" + ver)
 except:
- pass
+    pass
 
-results_dir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/daily_extremes/cmip6/' + exp + '/' + ver 
-
+results_dir = (
+    "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/daily_extremes/cmip6/"
+    + exp
+    + "/"
+    + ver
+)

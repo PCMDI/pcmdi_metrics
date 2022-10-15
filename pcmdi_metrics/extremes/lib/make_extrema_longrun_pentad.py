@@ -292,7 +292,7 @@ while y1<y2+1:
 #  mask_s=s.mask
 #  MV.putmask(s,mask_s,0)
   sorted=MV.sort(s,0)
-  daily_max[y,:,:]=sorted[e-b,:,:]  
+  daily_max[y,:,:]=sorted[e-b,:,:]
   y=y+1
   y1=y1+1
 
