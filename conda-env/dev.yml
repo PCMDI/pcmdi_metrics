@@ -19,6 +19,10 @@ dependencies:
   - eofs=1.4.0
   - seaborn=0.11.1
   - enso_metrics=1.1.1
+  - netcdf4=1.6.0
+  - regionmask=0.9.0
+  - rasterio=1.2.10
+  - shapely=1.8.0
   # Testing
   # ==================
   - pre_commit=2.20.0
