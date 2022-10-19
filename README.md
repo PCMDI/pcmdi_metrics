@@ -10,12 +10,11 @@ PCMDI Metrics Package (PMP)
 ![License](https://anaconda.org/conda-forge/pcmdi_metrics/badges/license.svg)
 
 Conda-forge (NEW, recommended):
-![install](https://anaconda.org/conda-forge/pcmdi_metrics/badges/installer/conda.svg)
-![download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg)
+![Install](https://anaconda.org/conda-forge/pcmdi_metrics/)
+[![Download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 
 PCMDI Conda Channel (halted):
-[![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/installer/conda.svg)](https://conda.anaconda.org/pcmdi)
-[![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
+[![Download](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
 
 
 The PCMDI Metrics Package (PMP) is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons emphasize metrics of large- to global-scale annual cycle, tropical and extra-tropical modes of variability, ENSO, MJO, regional monsoons, and high frequency characteristics of simulated precipitation.
