@@ -17,7 +17,9 @@
             "period": "200301-201812",
             "shape": "(12, 60, 350)",
             "template": "hfls/TropFlux-1-0/v20210804/hfls_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
-        }
+        },
+        "default": "TropFlux-1-0",
+        "alternate1": "ERA-INT"
     },
     "hfns": {
         "TropFlux-1-0": {
@@ -28,7 +30,8 @@
             "period": "200301-201812",
             "shape": "(12, 60, 350)",
             "template": "hfns/TropFlux-1-0/v20210804/hfns_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
-        }
+        },
+        "default": "TropFlux-1-0"
     },
     "hfss": {
         "ERA-INT": {
@@ -48,7 +51,9 @@
             "period": "200301-201812",
             "shape": "(12, 60, 350)",
             "template": "hfss/TropFlux-1-0/v20210804/hfss_mon_TropFlux-1-0_PCMDI_gn.200301-201812.AC.v20210804.nc"
-        }
+        },
+        "default": "TropFlux-1-0",
+        "alternate1": "ERA-INT"
     },
     "hur": {
         "ERA-INT": {
@@ -59,7 +64,8 @@
             "period": "200301-201812",
             "shape": "(12, 19, 121, 240)",
             "template": "hur/ERA-INT/v20210804/hur_mon_ERA-INT_PCMDI_gn.200301-201812.AC.v20210804.nc"
-        }
+        },
+        "default": "ERA-INT"
     },
     "hus": {
         "ERA-INT": {
@@ -496,7 +502,9 @@
             "period": "200301-201812",
             "shape": "(12, 180, 360)",
             "template": "rt/CERES-EBAF-4-1/v20210804/rt_mon_CERES-EBAF-4-1_PCMDI_gn.200301-201812.AC.v20210804.nc"
-        }
+        },
+        "default": "CERES-EBAF-4-1",
+        "alternate1": "CERES-EBAF-4-0"
     },
     "sfcWind": {
         "ERA-INT": {
