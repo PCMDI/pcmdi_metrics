@@ -48,7 +48,7 @@ f.close()
 p = subprocess.Popen(["python", "setup_default_args.py"], cwd="share")
 p.communicate()
 
-packages = find_packages(exclude=['cmec', 'tests'])
+packages = find_packages(exclude=["cmec", "tests"])
 
 scripts = [
     "pcmdi_metrics/pcmdi/scripts/mean_climate_driver.py",
