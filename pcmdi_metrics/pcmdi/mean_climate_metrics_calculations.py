@@ -50,7 +50,7 @@ def compute_metrics(Var, dm, do):
 
     # CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD
     rms_xyt = pcmdi_metrics.pcmdi.rms_xyt.compute(dm, do)
-    #   cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm, do)
+    # cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm, do)
     stdObs_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(do)
     std_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(dm)
 
