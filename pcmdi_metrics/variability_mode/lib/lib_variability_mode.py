@@ -99,9 +99,7 @@ def read_data_in(
     # landmask if required
     if LandMask:
         # Extract SST (land region mask out)
-        data_timeseries = data_land_mask_out(
-            dataname, data_timeseries, lf_path=lf_path
-        )
+        data_timeseries = data_land_mask_out(dataname, data_timeseries, lf_path=lf_path)
 
     f.close()
 

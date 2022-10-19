@@ -180,18 +180,20 @@ def extract_data(results_dict, var_list, region, stat, season, mip, debug=False)
     return df
 
 
-def normalize_by_median(data, axis=0):
+def normalize_by_median(data, data_median=None, axis=0):
     """
     Parameters
     ----------
     - `data`: 2d numpy array
+    - `data_median`: 2d numpy array, optional, data for median calculation if different to `data`
     - `axis`: 0 (normalize each column) or 1 (normalize each row), default=0
-
     Return
     ------
     - `data_nor`: 2d numpy array
     """
-    median = np.nanmedian(data, axis=axis)
+    if data_median is None:
+        data_median = data
+    median = np.nanmedian(data_median, axis=axis)
     if axis == 0:
         data_nor = (data - median) / median
     elif axis == 1:

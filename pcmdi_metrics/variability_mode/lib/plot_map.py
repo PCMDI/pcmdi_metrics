@@ -15,7 +15,7 @@ def plot_map(mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_n
     if "teleconnection" in mode:
         # projection = "PlateCarree"
         projection = "Robinson"
-    elif mode in ["NAO", "PNA", "NPO", "PDO", "NPGO"]:
+    elif mode in ["NAO", "PNA", "NPO", "PDO", "NPGO", "AMO"]:
         projection = "Lambert"
     elif mode in ["NAM"]:
         projection = "Stereo_north"
@@ -46,17 +46,29 @@ def plot_map(mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_n
         + percentage
     )
 
-    if mode in ["PNA", "PDO", "NPGO"] and projection == "Lambert":
+    if mode in ["PNA", "PDO", "NPGO", "AMO"] and projection == "Lambert":
         gridline = False
     else:
         gridline = True
 
-    if "PDO" in mode or "NPGO" in mode:
+    if mode in [
+        "PDO",
+        "NPGO",
+        "AMO",
+        "PDO_teleconnection",
+        "NPGO_teleconnection",
+        "AMO_teleconnection",
+    ]:
         levels = [r / 10 for r in list(range(-5, 6, 1))]
         maskout = "land"
     else:
         levels = list(range(-5, 6, 1))
         maskout = None
+
+    if mode in ["AMO_teleconnection"]:
+        center_lon_global = 0
+    else:
+        center_lon_global = 180
 
     plot_map_cartopy(
         eof_Nth,
@@ -66,6 +78,7 @@ def plot_map(mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_n
         gridline=gridline,
         levels=levels,
         maskout=maskout,
+        center_lon_global=center_lon_global,
     )
 
 
@@ -78,6 +91,7 @@ def plot_map_cartopy(
     proj="PlateCarree",
     data_area="global",
     cmap="RdBu_r",
+    center_lon_global=180,
     maskout=None,
     debug=False,
 ):
@@ -120,9 +134,9 @@ def plot_map_cartopy(
     https://github.com/SciTools/cartopy-tutorial/blob/master/tutorial/projections_crs_and_terms.ipynb
     """
     if proj == "PlateCarree":
-        projection = ccrs.PlateCarree(central_longitude=180)
+        projection = ccrs.PlateCarree(central_longitude=center_lon_global)
     elif proj == "Robinson":
-        projection = ccrs.Robinson(central_longitude=180)
+        projection = ccrs.Robinson(central_longitude=center_lon_global)
     elif proj == "Stereo_north":
         projection = ccrs.NorthPolarStereo()
     elif proj == "Stereo_south":
