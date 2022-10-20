@@ -61,6 +61,7 @@ Distributed under the BSD 3-Clause License. See [`LICENSE`](https://github.com/P
 
 [Released versions](https://github.com/PCMDI/pcmdi_metrics/releases)
 
+- [v2.5.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.5.1) - Technical update
 - [v2.5.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.5.0) - New metric added: Precipitation Benchmarking -- distribution. Graphics updated
 - [v2.4.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.4.0) - New metric added: AMO in variability modes
 - [v2.3.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3.2) - CMEC interface updates
