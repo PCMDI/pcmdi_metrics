@@ -18,9 +18,6 @@ def compute_metrics(Var, dm, do):
         metrics_defs["rmsc_xy"] = pcmdi_metrics.pcmdi.rmsc_xy.compute(None, None)
         metrics_defs["bias_xy"] = pcmdi_metrics.pcmdi.bias_xy.compute(None, None)
         metrics_defs["mae_xy"] = pcmdi_metrics.pcmdi.meanabs_xy.compute(None, None)
-        # metrics_defs["cor_xyt"] = pcmdi_metrics.pcmdi.cor_xyt.compute(
-        #     None,
-        #     None)
         metrics_defs["cor_xy"] = pcmdi_metrics.pcmdi.cor_xy.compute(None, None)
         metrics_defs["mean_xy"] = pcmdi_metrics.pcmdi.mean_xy.compute(None)
         metrics_defs["std_xy"] = pcmdi_metrics.pcmdi.std_xy.compute(None)
@@ -50,7 +47,6 @@ def compute_metrics(Var, dm, do):
 
     # CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD
     rms_xyt = pcmdi_metrics.pcmdi.rms_xyt.compute(dm, do)
-    #   cor_xyt = pcmdi_metrics.pcmdi.cor_xyt.compute(dm, do)
     stdObs_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(do)
     std_xyt = pcmdi_metrics.pcmdi.std_xyt.compute(dm)
 
