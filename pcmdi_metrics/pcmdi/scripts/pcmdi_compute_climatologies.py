@@ -99,7 +99,7 @@ def clim_calc(var, infile, outfile=None, outpath=None, outfilename=None, start=N
         out_season = out.replace(".nc", addf)
 
         print("output file is", out_season)
-        d_clim_dict[s].to_netcdf(out_season)
+        d_clim_dict[s].to_netcdf(out_season)  # global attributes are automatically saved as well
 
 
 if __name__ == "__main__":
