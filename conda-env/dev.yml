@@ -19,6 +19,8 @@ dependencies:
   - eofs=1.4.0
   - seaborn=0.11.1
   - enso_metrics=1.1.1
+  - xcdat=0.3.3
+  - xmltodict=0.13.0
   # Testing
   # ==================
   - pre_commit=2.15.0

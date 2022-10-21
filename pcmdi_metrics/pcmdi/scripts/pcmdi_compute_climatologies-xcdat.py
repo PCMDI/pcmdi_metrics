@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 import datetime
-from genutil import StringConstructor
 import os
+
 import xcdat
+from genutil import StringConstructor
+
 import pcmdi_metrics
 
 
@@ -17,11 +19,12 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
 
     d = xcdat.open_dataset(infile, data_var=var)
     atts = d.attrs
-    
+
     print(type(d))
     print(atts)
 
-    # CONTROL OF OUTPUT DIRECTORY AND FILE        
+    # CONTROL OF OUTPUT DIRECTORY AND FILE
+    out = outfile
     if outpath is None:
         outdir = os.path.dirname(outfile)
     else:
@@ -30,16 +33,14 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
 
     print("outdir is ", outdir)
 
-    seperate_clims = "y"
-
     c = d.time
     # print(c)
 
     # CLIM PERIOD
     if (start is None) and (end is None):
         # DEFAULT CLIM - BASED ON ENTIRE TIME SERIES
-        start_yr_str = str(int(c["time.year"][0])) 
-        start_mo_str = str(int(c["time.month"][0])) 
+        start_yr_str = str(int(c["time.year"][0]))
+        start_mo_str = str(int(c["time.month"][0]))
         end_yr_str = str(int(c["time.year"][len(c) - 1]))
         end_mo_str = str(int(c["time.month"][len(c) - 1]))
         start_yr = int(start_yr_str)
@@ -58,7 +59,7 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
         end_yr_str = str(end_yr)
         end_mo_str = str(end_mo)
 
-    d = d.sel(time=slice(start_yr_str + '-' + start_mo_str + '-01', 
+    d = d.sel(time=slice(start_yr_str + '-' + start_mo_str + '-01',
                          end_yr_str + '-' + end_mo_str + '-31'))
     # print(d)
 
@@ -66,24 +67,24 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
     print("start_mo_str is ", start_mo_str)
     print("end_yr_str is ", end_yr_str)
     print("end_mo_str is ", end_mo_str)
-    
+
     start_mo_str = start_mo_str.zfill(2)
     end_mo_str = end_mo_str.zfill(2)
 
     d_clim = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},)
-    
+
     d_clim_dict = dict()
-    
+
     d_clim_dict['DJF'] = d_clim.isel(time=0)
     d_clim_dict['MAM'] = d_clim.isel(time=1)
     d_clim_dict['JJA'] = d_clim.isel(time=2)
     d_clim_dict['SON'] = d_clim.isel(time=3)
- 
-    d_ac =  d.temporal.climatology(var, freq="month", weighted=True) 
+
+    d_ac = d.temporal.climatology(var, freq="month", weighted=True)
     print('below ac')
-    
+
     d_clim_dict['AC'] = d_ac
-    
+
     for s in ["AC", "DJF", "MAM", "JJA", "SON"]:
         addf = (
             "."
@@ -98,18 +99,16 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
             + ver
             + ".nc"
         )
-        print("outfd is ", outfd)
-        out = out.replace(".nc", addf)
-        
         if outfilename is not None:
             out = os.path.join(outdir, outfilename)
-        
+        out = out.replace(".nc", addf)
+
         print("out is ", out)
-        d_clim_dict[s].to_netcdf(out))
+        d_clim_dict[s].to_netcdf(out)
 
 
 if __name__ == "__main__":
-    
+
     ver = datetime.datetime.now().strftime("v%Y%m%d")
 
     P = pcmdi_metrics.driver.pmp_parser.PMPMetricsParser()
@@ -161,6 +160,12 @@ if __name__ == "__main__":
         outfile = OutFile()
         outfilename = OutFileName()
         outpath = OutPath()
+
+        print('var:', var)
+        print('infile:', infile)
+        print('outfile:', outfile)
+        print('outfilename:', outfilename)
+        print('outpath:', outpath)
 
         # calculate climatologies for this variable
         clim_calc_x(var, infile, outfile, outpath, outfilename, start, end)
