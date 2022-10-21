@@ -14,12 +14,11 @@ def clim_calc(var, infile, outfile=None, outpath=None, outfilename=None, start=N
     ver = datetime.datetime.now().strftime("v%Y%m%d")
     print('time is ', ver)
 
-    tmp = infile.split("/")
-    infilename = tmp[len(tmp) - 1]
+    infilename = infile.split("/")[-1]
     print("infilename is ", infilename)
 
-    # d = xcdat.open_dataset(infile, data_var=var)
-    d = xcdat_open(infile, data_var=var)
+    # d = xcdat.open_dataset(infile, data_var=var)  # use xcdat function directly
+    d = xcdat_open(infile, data_var=var)   # wrapper of xcdat open functions to enable using xml
     atts = d.attrs
 
     print('type(d):', type(d))
