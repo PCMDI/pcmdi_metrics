@@ -1,39 +1,46 @@
-import xmltodict
 import glob
 import os
 import sys
-import xcdat as xc
+
+import xcdat
+import xmltodict
 
 
-def xcdat_open(infile):
+def xcdat_open(infile, data_var=None):
     """
     Parameter
     ---------
-    infile: 
+    infile:
         list of string, or string
         File(s) to open using xcdat
+    data_var:
+        (Optional[str], optional) – The key of the non-bounds data variable to keep in the Dataset, alongside any existing bounds data variables, by default None.
+
     Output
     ------
     ds:
         xcdat dataset
-    """     
+    """
     if isinstance(infile, list):
-        ds = xcdat.open_mfdataset(infile)
+        ds = xcdat.open_mfdataset(infile, data_var=data_var)
     else:
         if infile.split('.')[-1].lower() == 'xml':
-            ds = xcdat_openxml(infile)
+            ds = xcdat_openxml(infile, data_var=data_var)
         else:
-            ds = xcdat.open_dataset(infile)
+            ds = xcdat.open_dataset(infile, data_var=data_var)
 
     return ds
 
 
-def xcdat_openxml(xmlfile):
+def xcdat_openxml(xmlfile, data_var=None):
     """
     Parameter
     ---------
-    infile: 
+    infile:
         xml file to open using xcdat
+    data_var:
+        (Optional[str], optional) – The key of the non-bounds data variable to keep in the Dataset, alongside any existing bounds data variables, by default None.
+
     Output
     ------
     ds:
@@ -46,10 +53,10 @@ def xcdat_openxml(xmlfile):
         doc = xmltodict.parse(fd.read())
 
     ncfile_list = glob.glob(os.path.join(doc['dataset']['@directory'], '*.nc'))
-    
+
     if len(ncfile_list) > 1:
-        ds = xc.open_mfdataset(ncfile_list)
+        ds = xcdat.open_mfdataset(ncfile_list, data_var=data_var)
     else:
-        ds = xc.open_dataset(ncfile_list[0])
-    
+        ds = xcdat.open_dataset(ncfile_list[0], data_var=data_var)
+
     return ds

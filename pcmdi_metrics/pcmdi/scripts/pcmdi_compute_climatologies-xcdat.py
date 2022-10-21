@@ -2,10 +2,10 @@
 import datetime
 import os
 
-import xcdat
 from genutil import StringConstructor
 
 import pcmdi_metrics
+from pcmdi_metrics.io import xcdat_open
 
 
 def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start=None, end=None):
@@ -17,11 +17,12 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
     infilename = tmp[len(tmp) - 1]
     print("infilename is ", infilename)
 
-    d = xcdat.open_dataset(infile, data_var=var)
+    # d = xcdat.open_dataset(infile, data_var=var)
+    d = xcdat_open(infile, data_var=var)
     atts = d.attrs
 
-    print(type(d))
-    print(atts)
+    print('type(d):', type(d))
+    print('atts:', atts)
 
     # CONTROL OF OUTPUT DIRECTORY AND FILE
     out = outfile
@@ -40,9 +41,9 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
     if (start is None) and (end is None):
         # DEFAULT CLIM - BASED ON ENTIRE TIME SERIES
         start_yr_str = str(int(c["time.year"][0]))
-        start_mo_str = str(int(c["time.month"][0]))
+        start_mo_str = str(int(c["time.month"][0]).zfill(2))
         end_yr_str = str(int(c["time.year"][len(c) - 1]))
-        end_mo_str = str(int(c["time.month"][len(c) - 1]))
+        end_mo_str = str(int(c["time.month"][len(c) - 1]).zfill(2))
         start_yr = int(start_yr_str)
         start_mo = int(start_mo_str)
         end_yr = int(end_yr_str)
@@ -50,14 +51,14 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
         print(start_yr_str, start_mo_str, end_yr_str, end_mo_str)
     else:
         # USER DEFINED PERIOD
-        start_mo = int(start.split("-")[1])
         start_yr = int(start.split("-")[0])
-        end_mo = int(end.split("-")[1])
+        start_mo = int(start.split("-")[1])
         end_yr = int(end.split("-")[0])
+        end_mo = int(end.split("-")[1])
         start_yr_str = str(start_yr)
-        start_mo_str = str(start_mo)
+        start_mo_str = str(start_mo).zfill(2)
         end_yr_str = str(end_yr)
-        end_mo_str = str(end_mo)
+        end_mo_str = str(end_mo).zfill(2)
 
     d = d.sel(time=slice(start_yr_str + '-' + start_mo_str + '-01',
                          end_yr_str + '-' + end_mo_str + '-31'))
@@ -101,10 +102,10 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
         )
         if outfilename is not None:
             out = os.path.join(outdir, outfilename)
-        out = out.replace(".nc", addf)
+        out_season = out.replace(".nc", addf)
 
-        print("out is ", out)
-        d_clim_dict[s].to_netcdf(out)
+        print("out_season is ", out_season)
+        d_clim_dict[s].to_netcdf(out_season)
 
 
 if __name__ == "__main__":
