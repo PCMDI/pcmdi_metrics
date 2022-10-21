@@ -39,26 +39,23 @@ def clim_calc(var, infile, outfile=None, outpath=None, outfilename=None, start=N
     # CLIM PERIOD
     if (start is None) and (end is None):
         # DEFAULT CLIM - BASED ON ENTIRE TIME SERIES
-        start_yr_str = str(int(c["time.year"][0]))
-        start_mo_str = str(int(c["time.month"][0]).zfill(2))
-        end_yr_str = str(int(c["time.year"][len(c) - 1]))
-        end_mo_str = str(int(c["time.month"][len(c) - 1]).zfill(2))
-        start_yr = int(start_yr_str)
-        start_mo = int(start_mo_str)
-        end_yr = int(end_yr_str)
-        end_mo = int(end_mo_str)
-        print(start_yr_str, start_mo_str, end_yr_str, end_mo_str)
+        start_yr = int(d.time["time.year"][0])
+        start_mo = int(d.time["time.month"][0])
+        end_yr = int(d.time["time.year"][-1])
+        end_mo = int(d.time["time.month"][-1])
     else:
         # USER DEFINED PERIOD
         start_yr = int(start.split("-")[0])
         start_mo = int(start.split("-")[1])
         end_yr = int(end.split("-")[0])
         end_mo = int(end.split("-")[1])
-        start_yr_str = str(start_yr)
-        start_mo_str = str(start_mo).zfill(2)
-        end_yr_str = str(end_yr)
-        end_mo_str = str(end_mo).zfill(2)
 
+    start_yr_str = str(start_yr)
+    start_mo_str = str(start_mo).zfill(2)
+    end_yr_str = str(end_yr)
+    end_mo_str = str(end_mo).zfill(2)
+
+    # Subset given time period
     d = d.sel(time=slice(start_yr_str + '-' + start_mo_str + '-01',
                          end_yr_str + '-' + end_mo_str + '-31'))
 
