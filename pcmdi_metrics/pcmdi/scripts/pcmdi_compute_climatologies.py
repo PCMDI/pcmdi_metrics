@@ -1,105 +1,87 @@
 #!/usr/bin/env python
 import datetime
+import os
+import dask
 
-import cdms2
 from genutil import StringConstructor
 
 import pcmdi_metrics
-
-ver = datetime.datetime.now().strftime("v%Y%m%d")
-
-cdms2.setNetcdfShuffleFlag(0)
-cdms2.setNetcdfDeflateFlag(0)
-cdms2.setNetcdfDeflateLevelFlag(0)
-
-#
+from pcmdi_metrics.io import xcdat_open
 
 
-def clim_calc(var, infile, outfile, outdir, outfilename, start, end):
-    import datetime
-    import os
-
-    import cdms2
-    import cdtime
-    import cdutil
+def clim_calc(var, infile, outfile=None, outpath=None, outfilename=None, start=None, end=None):
 
     ver = datetime.datetime.now().strftime("v%Y%m%d")
+    print('time is ', ver)
 
-    lf = infile
-    tmp = lf.split("/")
+    tmp = infile.split("/")
     infilename = tmp[len(tmp) - 1]
     print("infilename is ", infilename)
 
-    f = cdms2.open(lf)
-    atts = f.listglobal()
-    outfd = outfile
+    # d = xcdat.open_dataset(infile, data_var=var)
+    d = xcdat_open(infile, data_var=var)
+    atts = d.attrs
+
+    print('type(d):', type(d))
+    print('atts:', atts)
 
     # CONTROL OF OUTPUT DIRECTORY AND FILE
+    out = outfile
+    if outpath is None:
+        outdir = os.path.dirname(outfile)
+    else:
+        outdir = outpath
+    os.makedirs(outdir, exist_ok=True)
 
-    # outdir AND outfilename PROVIDED BY USER
-    if outdir is not None and outfilename is not None:
-        outfd = outdir + outfilename
-
-    # outdir PROVIDED BY USER, BUT filename IS TAKEN FROM infilename WITH CLIM MODIFICATIONS SUFFIX ADDED BELOW
-    if outdir is not None and outfilename is None:
-        outfd = outdir + "/" + infilename
-
-    if outdir is None and outfilename is None:
-        outfd = outfile
-
-    print("outfd is ", outfd)
     print("outdir is ", outdir)
 
-    seperate_clims = "y"
+    c = d.time  # coordinate for time
 
-    # DEFAULT CLIM - BASED ON ENTIRE TIME SERIES
+    # CLIM PERIOD
     if (start is None) and (end is None):
-        d = f(var)
-        t = d.getTime()
-        c = t.asComponentTime()
-        start_yr_str = str(c[0].year)
-        start_mo_str = str(c[0].month)
-        end_yr_str = str(c[len(c) - 1].year)
-        end_mo_str = str(c[len(c) - 1].month)
+        # DEFAULT CLIM - BASED ON ENTIRE TIME SERIES
+        start_yr_str = str(int(c["time.year"][0]))
+        start_mo_str = str(int(c["time.month"][0]).zfill(2))
+        end_yr_str = str(int(c["time.year"][len(c) - 1]))
+        end_mo_str = str(int(c["time.month"][len(c) - 1]).zfill(2))
         start_yr = int(start_yr_str)
         start_mo = int(start_mo_str)
         end_yr = int(end_yr_str)
         end_mo = int(end_mo_str)
-
-    # USER DEFINED PERIOD
+        print(start_yr_str, start_mo_str, end_yr_str, end_mo_str)
     else:
-        start_mo = int(start.split("-")[1])
+        # USER DEFINED PERIOD
         start_yr = int(start.split("-")[0])
-        end_mo = int(end.split("-")[1])
+        start_mo = int(start.split("-")[1])
         end_yr = int(end.split("-")[0])
+        end_mo = int(end.split("-")[1])
         start_yr_str = str(start_yr)
-        start_mo_str = str(start_mo)
+        start_mo_str = str(start_mo).zfill(2)
         end_yr_str = str(end_yr)
-        end_mo_str = str(end_mo)
+        end_mo_str = str(end_mo).zfill(2)
 
-    d = f(
-        var, time=(cdtime.comptime(start_yr, start_mo), cdtime.comptime(end_yr, end_mo))
-    )
+    d = d.sel(time=slice(start_yr_str + '-' + start_mo_str + '-01',
+                         end_yr_str + '-' + end_mo_str + '-31'))
 
     print("start_yr_str is ", start_yr_str)
+    print("start_mo_str is ", start_mo_str)
+    print("end_yr_str is ", end_yr_str)
+    print("end_mo_str is ", end_mo_str)
 
-    if start_mo_str not in ["11", "12"]:
-        start_mo_str = "0" + start_mo_str
-    if end_mo_str not in ["11", "12"]:
-        end_mo_str = "0" + end_mo_str
+    # Calculate climatology
+    dask.config.set(**{'array.slicing.split_large_chunks': True})
+    d_clim = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},)
+    d_ac = d.temporal.climatology(var, freq="month", weighted=True)
 
-    d_ac = cdutil.ANNUALCYCLE.climatology(d).astype("float32")
-    d_djf = cdutil.DJF.climatology(d)(squeeze=1).astype("float32")
-    d_jja = cdutil.JJA.climatology(d)(squeeze=1).astype("float32")
-    d_son = cdutil.SON.climatology(d)(squeeze=1).astype("float32")
-    d_mam = cdutil.MAM.climatology(d)(squeeze=1).astype("float32")
+    d_clim_dict = dict()
 
-    for v in [d_ac, d_djf, d_jja, d_son, d_mam]:
-
-        v.id = var
+    d_clim_dict['DJF'] = d_clim.isel(time=0)
+    d_clim_dict['MAM'] = d_clim.isel(time=1)
+    d_clim_dict['JJA'] = d_clim.isel(time=2)
+    d_clim_dict['SON'] = d_clim.isel(time=3)
+    d_clim_dict['AC'] = d_ac
 
     for s in ["AC", "DJF", "MAM", "JJA", "SON"]:
-
         addf = (
             "."
             + start_yr_str
@@ -113,99 +95,73 @@ def clim_calc(var, infile, outfile, outdir, outfilename, start, end):
             + ver
             + ".nc"
         )
+        if outfilename is not None:
+            out = os.path.join(outdir, outfilename)
+        out_season = out.replace(".nc", addf)
 
-        if seperate_clims == "y":
-            print("outfd is ", outfd)
-            out = outfd
-            out = out.replace(".nc", addf)
-            out = out.replace(".xml", addf)
-            print("out is ", out)
-
-        if seperate_clims == "n":
-            out = outfd.replace("climo.nc", s + ".nc")
-        if s == "AC":
-            do = d_ac
-        if s == "DJF":
-            do = d_djf
-        if s == "MAM":
-            do = d_mam
-        if s == "JJA":
-            do = d_jja
-        if s == "SON":
-            do = d_son
-        do.id = var
-
-        #  MKDIRS AS NEEDED
-        lst = outfd.split("/")
-        s = "/"
-        for ll in range(len(lst)):
-            d = s.join(lst[0 : ll + 1])
-            try:
-                os.mkdir(d)
-            except OSError:
-                pass
-
-        g = cdms2.open(out, "w+")
-        g.write(do)
-
-        for att in atts:
-            setattr(g, att, f.getglobal(att))
-        g.close()
-        print(do.shape, " ", d_ac.shape, " ", out)
-        f.close()
-    return
+        print("output file is", out_season)
+        d_clim_dict[s].to_netcdf(out_season)
 
 
-#######################################################################
+if __name__ == "__main__":
 
+    ver = datetime.datetime.now().strftime("v%Y%m%d")
 
-P = pcmdi_metrics.driver.pmp_parser.PMPMetricsParser()
+    P = pcmdi_metrics.driver.pmp_parser.PMPMetricsParser()
 
+    P.add_argument(
+        "--vars", dest="vars", help="List of variables", nargs="+", required=False
+    )
+    P.add_argument("--infile", dest="infile", help="Defines infile", required=False)
+    P.add_argument(
+        "--outfile", dest="outfile", help="Defines output path and filename", required=False
+    )
+    P.add_argument("--outpath", dest="outpath", help="Defines outpath only", required=False)
+    P.add_argument(
+        "--outfilename",
+        dest="outfilename",
+        help="Defines out filename only",
+        required=False,
+    )
+    P.add_argument(
+        "--start", dest="start", help="Defines start year and month", required=False
+    )
+    P.add_argument("--end", dest="end", help="Defines end year and month", required=False)
 
-P.add_argument(
-    "--vars", dest="vars", help="List of variables", nargs="+", required=False)
-P.add_argument("--infile", dest="infile", help="Defines infile", required=False)
-P.add_argument( "--outfile", dest="outfile", help="Defines output path and filename", required=False)
-P.add_argument("--outpath", dest="outpath", help="Defines outpath only", required=False)
-P.add_argument(
-    "--outfilename",
-    dest="outfilename",
-    help="Defines out filename only",
-    required=False,
-)
-P.add_argument(
-    "--start", dest="start", help="Defines start year and month", required=False)
+    args = P.get_parameter()
 
-P.add_argument("--end", dest="end", help="Defines end year and month", required=False)
+    infile_template = args.infile
+    outfile_template = args.outfile
+    outpath_template = args.outpath
+    outfilename_template = args.outfilename
+    varlist = args.vars
+    start = args.start
+    end = args.end
 
-args = P.get_parameter()
+    print("start and end are ", start, " ", end)
+    print("variable list: ", varlist)
 
-infile_template = args.infile
-outfile_template = args.outfile
-outpath_template = args.outpath
-outfilename_template = args.outfilename
-varlist = args.vars
-start = args.start
-end = args.end
+    InFile = StringConstructor(infile_template)
+    OutFile = StringConstructor(outfile_template)
+    OutFileName = StringConstructor(outfilename_template)
+    OutPath = StringConstructor(outpath_template)
 
-print("start and end are ", start, " ", end)
-print("variable list: ", varlist)
+    for var in varlist:
+        # Build filenames
+        InFile.variable = var
+        OutFile.variable = var
+        OutFileName.variable = var
+        OutPath.variable = var
+        infile = InFile()
+        outfile = OutFile()
+        outfilename = OutFileName()
+        outpath = OutPath()
 
-InFile = StringConstructor(infile_template)
-OutFile = StringConstructor(outfile_template)
-OutFileName = StringConstructor(outfilename_template)
-OutPath = StringConstructor(outpath_template)
+        print('var:', var)
+        print('infile:', infile)
+        print('outfile:', outfile)
+        print('outfilename:', outfilename)
+        print('outpath:', outpath)
 
-for var in varlist:
-    # Build filenames
-    InFile.variable = var
-    OutFile.variable = var
-    OutFileName.variable = var
-    OutPath.variable = var
-    infile = InFile()
-    outfile = OutFile()
-    outfilename = OutFileName()
-    outpath = OutPath()
-
-    # calculate climatologies for this variable
-    clim_calc(var, infile, outfile, outpath, outfilename, start, end)
+        # calculate climatologies for this variable
+        clim_calc(var, infile, outfile, outpath, outfilename, start, end)

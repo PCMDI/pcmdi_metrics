@@ -66,7 +66,6 @@ packages = find_packages()
 scripts = [
     "pcmdi_metrics/pcmdi/scripts/mean_climate_driver.py",
     "pcmdi_metrics/pcmdi/scripts/pcmdi_compute_climatologies.py",
-    "pcmdi_metrics/pcmdi/scripts/pcmdi_compute_climatologies-xcdat.py",
     "pcmdi_metrics/misc/scripts/parallelize_driver.py",
     "pcmdi_metrics/misc/scripts/get_pmp_data.py",
     "pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py",
