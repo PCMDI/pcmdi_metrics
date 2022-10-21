@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import datetime
 import os
+import dask
 
 from genutil import StringConstructor
 
@@ -34,8 +35,7 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
 
     print("outdir is ", outdir)
 
-    c = d.time
-    # print(c)
+    c = d.time  # coordinate for time
 
     # CLIM PERIOD
     if (start is None) and (end is None):
@@ -62,17 +62,16 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
 
     d = d.sel(time=slice(start_yr_str + '-' + start_mo_str + '-01',
                          end_yr_str + '-' + end_mo_str + '-31'))
-    # print(d)
 
     print("start_yr_str is ", start_yr_str)
     print("start_mo_str is ", start_mo_str)
     print("end_yr_str is ", end_yr_str)
     print("end_mo_str is ", end_mo_str)
 
-    start_mo_str = start_mo_str.zfill(2)
-    end_mo_str = end_mo_str.zfill(2)
-
+    # Calculate climatology
+    dask.config.set(**{'array.slicing.split_large_chunks': True})
     d_clim = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},)
+    d_ac = d.temporal.climatology(var, freq="month", weighted=True)
 
     d_clim_dict = dict()
 
@@ -80,10 +79,6 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
     d_clim_dict['MAM'] = d_clim.isel(time=1)
     d_clim_dict['JJA'] = d_clim.isel(time=2)
     d_clim_dict['SON'] = d_clim.isel(time=3)
-
-    d_ac = d.temporal.climatology(var, freq="month", weighted=True)
-    print('below ac')
-
     d_clim_dict['AC'] = d_ac
 
     for s in ["AC", "DJF", "MAM", "JJA", "SON"]:
@@ -104,7 +99,7 @@ def clim_calc_x(var, infile, outfile=None, outpath=None, outfilename=None, start
             out = os.path.join(outdir, outfilename)
         out_season = out.replace(".nc", addf)
 
-        print("out_season is ", out_season)
+        print("output file is", out_season)
         d_clim_dict[s].to_netcdf(out_season)
 
 
