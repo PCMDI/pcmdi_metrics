@@ -158,7 +158,16 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
     def read(self):
         pass
 
-    def write(self, data, type="json", mode="w", *args, **kwargs):
+    def write(
+        self,
+        data,
+        type="json",
+        mode="w",
+        include_YAML=False,
+        include_script=False,
+        *args,
+        **kwargs,
+    ):
         self.type = type.lower()
         file_name = self()
         dir_path = os.path.split(file_name)[0]
@@ -197,9 +206,13 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             f = open(file_name, "w")
             update_dict(out_dict, data)
             if "yaml" in out_dict["provenance"]["conda"]:
-                out_dict["YAML"] = out_dict["provenance"]["conda"]["yaml"]
+                if include_YAML:
+                    out_dict["YAML"] = out_dict["provenance"]["conda"]["yaml"]
                 del out_dict["provenance"]["conda"]["yaml"]
-            #               out_dict = OrderedDict({"provenance": generateProvenance()})
+
+            if not include_script:
+                if "script" in out_dict["provenance"].keys():
+                    del out_dict["provenance"]["script"]
 
             json.dump(out_dict, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
