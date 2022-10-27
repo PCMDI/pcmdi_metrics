@@ -3,14 +3,12 @@ import ast
 import json
 import logging
 
-#import pcmdi_metrics.mean_climate.lib.dataset
-from pcmdi_metrics.mean_climate.lib import DataSet
-#import pcmdi_metrics.mean_climate.lib.pmp_parser
+from pcmdi_metrics.mean_climate.lib.dataset import DataSet
 from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics import LOG_LEVEL
-from pcmdi_metrics.mean_climate.lib import Model
-from pcmdi_metrics.mean_climate.lib import Observation
-from pcmdi_metrics.mean_climate.lib import OutputMetrics
+from pcmdi_metrics.mean_climate.lib.model import Model
+from pcmdi_metrics.mean_climate.lib.observation import Observation
+from pcmdi_metrics.mean_climate.lib.outputmetrics import OutputMetrics
 
 
 class PMPDriver(object):

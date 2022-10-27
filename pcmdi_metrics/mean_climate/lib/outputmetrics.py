@@ -6,8 +6,8 @@ import cdms2
 
 import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
-from pcmdi_metrics.mean_climate.lib import DataSet
-from pcmdi_metrics.mean_climate.lib import Observation
+from pcmdi_metrics.mean_climate.lib.dataset import DataSet
+from pcmdi_metrics.mean_climate.lib.observation import Observation
 from pcmdi_metrics.io.base import Base
 
 try:

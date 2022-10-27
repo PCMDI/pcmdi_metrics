@@ -14,13 +14,16 @@ from .compute_statistics import (  # noqa
     std_xyt, 
     zonal_mean
 )
+
+from . import (  # noqa
+    io,
+    pmp_parser,  # PMPParser, PMPMetricsParser
+    pmp_parameter,  # PMPParameter, PMPMetricsParameter
+    outputmetrics,  # OutputMetrics
+    observation,  # OBS, Observation
+    model,  # Model
+    dataset  # DataSet
+)
+
 from .mean_climate_metrics_calculations import compute_metrics  # noqa
 from .mean_climate_metrics_driver import PMPDriver, create_mean_climate_parser  # noqa
-
-from .io import OBS, JSONs  # noqa
-from .pmp_parser import PMPParser, PMPMetricsParser  # noqa
-from .pmp_parameter import PMPParameter, PMPMetricsParameter  # noqa
-from .outputmetrics import OutputMetrics  # noqa
-from .observation import OBS, Observation  # noqa
-from .model import Model  # noqa
-from .dataset import DataSet  # noqa
