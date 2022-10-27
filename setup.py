@@ -40,7 +40,7 @@ f.close()
 p = subprocess.Popen(["python", "setup_default_args.py"], cwd="share")
 p.communicate()
 
-packages = find_packages(exclude=["cmec", "tests"])
+packages = find_packages(exclude=["cmec", "tests"], include=["pcmdi_metrics*"])
 
 scripts = [
     "pcmdi_metrics/mean_climate/pcmdi_compute_climatologies.py",

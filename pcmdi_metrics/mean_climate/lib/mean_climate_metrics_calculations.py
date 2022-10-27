@@ -1,4 +1,3 @@
-import collections
 
 import cdms2 as cdms
 import MV2
@@ -224,16 +223,6 @@ def compute_metrics(Var, dm, do):
         std_xy_mo_l.append(format(std_xy_mo * conv, sig_digits))
         meanObs_xy_mo_l.append(format(meanObs_xy_mo * conv, sig_digits))
         mean_xy_mo_l.append(format(mean_xy_mo * conv, sig_digits))
-
-    #       metrics_dictionary['bias_xy'][mo] = format( bias_mo * conv, sig_digits)
-    #       metrics_dictionary['rms_xy'][mo] = format( rms_mo * conv, sig_digits)
-    #       metrics_dictionary['rmsc_xy'][mo] = format( rmsc_mo * conv, sig_digits)
-    #       metrics_dictionary['cor_xy'][mo] = format( cor_mo, '.2f')
-    #       metrics_dictionary['mae_xy'][mo] = format( mae_mo * conv, sig_digits)
-    #       metrics_dictionary['std-obs_xy'][mo] = format( stdObs_xy_mo * conv, sig_digits)
-    #       metrics_dictionary['std_xy'][mo] = format( std_xy_mo * conv, sig_digits)
-    #       metrics_dictionary['mean-obs_xy'][mo] = format( meanObs_xy_mo * conv, sig_digits)
-    #       metrics_dictionary['mean_xy'][mo] = format( mean_xy_mo * conv, sig_digits)
 
     metrics_dictionary["bias_xy"]["CalendarMonths"] = bias_mo_l
     metrics_dictionary["rms_xy"]["CalendarMonths"] = rms_mo_l
