@@ -7,13 +7,7 @@ import sys
 
 from setuptools import find_packages, setup
 
-if "--enable-devel" in sys.argv:
-    install_dev = True
-    sys.argv.remove("--enable-devel")
-else:
-    install_dev = False
-
-Version = "2.0"
+Version = "2.5"
 p = subprocess.Popen(
     ("git", "describe", "--tags"),
     stdin=subprocess.PIPE,
@@ -48,32 +42,18 @@ f.close()
 p = subprocess.Popen(["python", "setup_default_args.py"], cwd="share")
 p.communicate()
 
-portrait_files = [
-    "pcmdi_metrics/graphics/share/portraits.scr",
-]
-
-packages = {
-    "pcmdi_metrics": "src/python",
-    "pcmdi_metrics.io": "src/python/io",
-    "pcmdi_metrics.pcmdi": "src/python/pcmdi",
-    "pcmdi_metrics.diurnal": "src/python/diurnal",
-    "pcmdi_metrics.graphics": "src/python/graphics",
-    "pcmdi_metrics.driver": "src/python/pcmdi/scripts/driver",
-    "pcmdi_metrics.monsoon_wang": "src/python/monsoon_wang/lib",
-    "pcmdi_metrics.monsoon_sperber": "src/python/monsoon_sperber/lib",
-}
 packages = find_packages()
 scripts = [
-    "pcmdi_metrics/pcmdi/scripts/mean_climate_driver.py",
-    "pcmdi_metrics/pcmdi/scripts/pcmdi_compute_climatologies.py",
-    "pcmdi_metrics/misc/scripts/parallelize_driver.py",
-    "pcmdi_metrics/misc/scripts/get_pmp_data.py",
+    "pcmdi_metrics/pcmdi_mean_climate/pcmdi_compute_climatologies.py",
+    "pcmdi_metrics/pcmdi_mean_climate/mean_climate_driver.py",
     "pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py",
     "pcmdi_metrics/monsoon_sperber/scripts/driver_monsoon_sperber.py",
-    "pcmdi_metrics/mjo/scripts/mjo_metrics_driver.py",
+    "pcmdi_metrics/mjo/mjo_metrics_driver.py",
     "pcmdi_metrics/variability_mode/variability_modes_driver.py",
     "pcmdi_metrics/enso/enso_driver.py",
     "pcmdi_metrics/precip_variability/variability_across_timescales_PS_driver.py",
+    "pcmdi_metrics/misc/scripts/parallelize_driver.py",
+    "pcmdi_metrics/misc/scripts/get_pmp_data.py",
 ]
 # scripts += glob.glob("pcmdi_metrics/diurnal/scripts/*.py")
 
@@ -94,7 +74,6 @@ demo_files = glob.glob("demo/*/*")
 print("demo files")
 
 data_files = (
-    ("share/pmp/graphics/vcs", portrait_files),
     (
         "share/pmp/graphics/png",
         [
@@ -132,35 +111,6 @@ data_files = (
     ("share/pmp/demo", demo_files),
 )
 
-if install_dev:
-    print("Adding experimental packages")
-    dev_packages = glob.glob("src/python/devel/*")
-    dev_packages.remove("src/python/devel/example_dev")
-    for p in dev_packages:
-        if not os.path.isdir(p):
-            dev_packages.pop(p)
-    dev_scripts = []
-    for p in dev_packages:
-        scripts = glob.glob(os.path.join(p, "scripts", "*"))
-        dev_scripts += scripts
-    dev_pkg = {}
-    dev_data = []
-    for p in dev_packages:
-        nm = p.replace("/", ".")
-        nm = nm.replace("src.python.devel", "pcmdi_metrics")
-        pnm = nm.split(".")[-1]
-        pkg_dir = os.path.join(p, "lib")
-        dev_pkg[nm] = pkg_dir
-        data = glob.glob(os.path.join(p, "data", "*"))
-        for d in data:
-            dir_nm = os.path.split(d)[-1]
-            dev_data.append(
-                [os.path.join(dir_nm, pnm), glob.glob(os.path.join(d, "*"))]
-            )
-    packages.update(dev_pkg)
-    data_files += dev_data
-    scripts += dev_scripts
-
 setup(
     name="pcmdi_metrics",
     version=descr,
@@ -171,14 +121,4 @@ setup(
     scripts=scripts,
     data_files=data_files,
     entry_points=entry_points,
-    # include_dirs = [numpy.lib.utils.get_include()],
-    #  ext_modules = [
-    #               Extension('pcmdi_metrics.exts',
-    #               ['src/C/add.c',],
-    #               library_dirs = [],
-    #               libraries = [],
-    #               define_macros = [],
-    #               extra_compile_args = [],
-    #               extra_link_args = [],
-    #               ]
 )
