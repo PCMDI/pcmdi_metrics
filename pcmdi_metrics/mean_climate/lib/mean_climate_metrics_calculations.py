@@ -4,6 +4,7 @@ import MV2
 from genutil import grower
 
 import pcmdi_metrics
+import collections
 
 
 def compute_metrics(Var, dm, do):
