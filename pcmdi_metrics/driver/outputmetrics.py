@@ -139,7 +139,10 @@ class OutputMetrics(object):
             raise RuntimeError("Need to skip model: %s" % test.obs_or_model)
 
         # Todo: Make this a fcn
+        print('jwlee-test-2-1, test().shape:', test().shape)
+        print('jwlee-test-2-2, test_data.shape:', test_data.shape)
         self.set_grid_in_metrics_dictionary(test_data)
+        print('jwlee-test-2-3, test_data.shape:', test_data.shape)
 
         if ref_data.shape != test_data.shape:
             raise RuntimeError(

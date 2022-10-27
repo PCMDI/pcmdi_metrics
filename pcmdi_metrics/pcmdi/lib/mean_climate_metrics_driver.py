@@ -155,6 +155,8 @@ class PMPDriver(object):
         reference_data_set = self.parameter.reference_data_set
         test_data_set = self.parameter.test_data_set
 
+        print('jwlee-test-0, test_data_set:', test_data_set)
+
         reference_data_set_is_obs = self.is_data_set_obs(reference_data_set)
         test_data_set_is_obs = self.is_data_set_obs(test_data_set)
 
@@ -168,6 +170,9 @@ class PMPDriver(object):
             test_data_set = Observation.setup_obs_list_from_parameter(
                 test_data_set, self.obs_dict, self.var
             )
+
+        print('jwlee-test-1, test_data_set:', test_data_set)
+        print('jwlee-test-1, test_data_set_is_obs:', test_data_set_is_obs)
 
         if len(reference_data_set) == 0:  # We did not find any ref!!!
             raise RuntimeError("No reference dataset found!")
@@ -192,6 +197,7 @@ class PMPDriver(object):
                 )
                 self.output_metric.add_region(self.region)
                 try:
+                    print('jwlee-test-1.5, test_data_set_is_obs, test, self.parameter.test_data_path:', test_data_set_is_obs, test, self.parameter.test_data_path)
                     tst = self.determine_obs_or_model(
                         test_data_set_is_obs, test, self.parameter.test_data_path
                     )
@@ -207,6 +213,8 @@ class PMPDriver(object):
                     break
 
                 try:
+                    print('jwlee-test-2: type(self), ref, tst:', type(self), ref, tst)
+                    print('jwlee-test-2: tst().shape:', tst().shape)
                     self.output_metric.calculate_and_output_metrics(ref, tst)
                 except RuntimeError:
                     continue
@@ -233,6 +241,7 @@ class PMPDriver(object):
         return data_set_is_obs
 
     def determine_obs_or_model(self, is_obs, ref_or_test, data_path):
+        print('jwlee-test-1.5-1: is_obs, ref_or_test, data_path:', is_obs, ref_or_test, data_path)
         """Actually create Observation or Module object
         based on if ref_or_test is an obs or model."""
         if is_obs:
