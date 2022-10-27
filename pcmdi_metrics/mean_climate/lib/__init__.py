@@ -1,10 +1,3 @@
-from . import dataset  # DataSet  # noqa
-from . import io  # noqa
-from . import model  # Model  # noqa
-from . import observation  # OBS, Observation  # noqa
-from . import outputmetrics  # OutputMetrics  # noqa
-from . import pmp_parameter  # PMPParameter, PMPMetricsParameter  # noqa
-from . import pmp_parser  # PMPParser, PMPMetricsParser  # noqa
 from .compute_statistics import (  # noqa
     annual_mean,
     bias_xy,
