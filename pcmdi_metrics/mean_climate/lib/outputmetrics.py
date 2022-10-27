@@ -4,11 +4,11 @@ import os
 
 import cdms2
 
-import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.mean_climate.lib.dataset import DataSet
 from pcmdi_metrics.mean_climate.lib.observation import Observation
+from pcmdi_metrics.mean_climate.lib import compute_metrics
 
 try:
     basestring  # noqa
@@ -165,14 +165,14 @@ class OutputMetrics(object):
         ].get(self.parameter.realization, {})
 
         if not self.parameter.dry_run:
-            pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(
+            pr_rgn = compute_metrics(
                 self.var_name_long, test_data, ref_data
             )
 
             # Calling compute_metrics with None for the model and obs returns
             # the definitions.
             self.metrics_def_dictionary.update(
-                pcmdi_metrics.pcmdi.compute_metrics(self.var_name_long, None, None)
+                compute_metrics(self.var_name_long, None, None)
             )
             if hasattr(self.parameter, "compute_custom_metrics"):
                 pr_rgn.update(
