@@ -7,7 +7,7 @@ import sys
 
 from setuptools import find_packages, setup
 
-Version = "2.5"
+Version = "2.5.0"
 p = subprocess.Popen(
     ("git", "describe", "--tags"),
     stdin=subprocess.PIPE,
