@@ -12,7 +12,7 @@ import cdutil
 import genutil
 import numpy
 
-from pcmdi_metrics.driver.pmp_parser import PMPParser
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 
 try:
     import cmor
