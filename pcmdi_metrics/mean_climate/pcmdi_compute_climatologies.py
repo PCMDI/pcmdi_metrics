@@ -104,7 +104,7 @@ if __name__ == "__main__":
 
     ver = datetime.datetime.now().strftime("v%Y%m%d")
 
-    P = pcmdi_metrics.mean_climate.lib.pmp_parser.PMPMetricsParser()
+    P = pcmdi_metrics.mean_climate.pmp_parser.PMPMetricsParser()
 
     P.add_argument(
         "--vars", dest="vars", help="List of variables", nargs="+", required=False
