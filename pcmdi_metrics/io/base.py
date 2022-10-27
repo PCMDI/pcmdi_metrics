@@ -389,6 +389,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
     def set_target_grid_and_mask_in_var(self, var):
         if self.target_grid is not None:
+            print('jwlee-test-regrid, var.shape:', var.shape)
             var = var.regrid(
                 self.target_grid,
                 regridTool=self.regrid_tool,
