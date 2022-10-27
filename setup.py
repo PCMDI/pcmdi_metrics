@@ -1,9 +1,7 @@
 from __future__ import print_function
 
 import glob
-import os
 import subprocess
-import sys
 
 from setuptools import find_packages, setup
 
