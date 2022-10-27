@@ -44,8 +44,8 @@ p.communicate()
 
 packages = find_packages()
 scripts = [
-    "pcmdi_metrics/pcmdi_mean_climate/pcmdi_compute_climatologies.py",
-    "pcmdi_metrics/pcmdi_mean_climate/mean_climate_driver.py",
+    "pcmdi_metrics/mean_climate/pcmdi_compute_climatologies.py",
+    "pcmdi_metrics/mean_climate/mean_climate_driver.py",
     "pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py",
     "pcmdi_metrics/monsoon_sperber/scripts/driver_monsoon_sperber.py",
     "pcmdi_metrics/mjo/mjo_metrics_driver.py",
