@@ -5,12 +5,11 @@ import cdms2
 import cdutil
 import MV2
 
-from pcmdi_metrics.mean_climate.lib.dataset import DataSet
 from pcmdi_metrics import LOG_LEVEL
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.mean_climate.lib.dataset import DataSet
 
 
-#class Model(pcmdi_metrics.mean_climate.lib.dataset.DataSet):
 class Model(DataSet):
     """Handles all the computation (setting masking, target grid, etc)
     and some file I/O related to models."""

@@ -2,9 +2,11 @@ import os
 
 import cdp.cdp_parser
 
-#import pcmdi_metrics.mean_climate.lib.pmp_parameter
-from pcmdi_metrics.mean_climate.lib.pmp_parameter import PMPParameter, PMPMetricsParameter
 from pcmdi_metrics import resources
+from pcmdi_metrics.mean_climate.lib.pmp_parameter import (
+    PMPMetricsParameter,
+    PMPParameter,
+)
 
 try:
     basestring  # noqa
@@ -22,7 +24,6 @@ def path_to_default_args():
 class PMPParser(cdp.cdp_parser.CDPParser):
     def __init__(self, *args, **kwargs):
         super(PMPParser, self).__init__(
-            #pcmdi_metrics.mean_climate.lib.pmp_parameter.PMPParameter,
             PMPParameter,
             path_to_default_args(),
             *args,
@@ -35,7 +36,6 @@ class PMPParser(cdp.cdp_parser.CDPParser):
 class PMPMetricsParser(cdp.cdp_parser.CDPParser):
     def __init__(self, *args, **kwargs):
         super(PMPMetricsParser, self).__init__(
-            #pcmdi_metrics.mean_climate.lib.pmp_parameter.PMPMetricsParameter,
             PMPMetricsParameter,
             path_to_default_args(),
             *args,

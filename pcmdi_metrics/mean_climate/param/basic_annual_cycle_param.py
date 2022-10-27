@@ -1,11 +1,11 @@
 # VARIABLES TO USE
 vars = ['pr']
-#vars = ['ua', 'ta']
+# vars = ['ua', 'ta']
 vars = ['pr', 'ua', 'ta']
 
 # START AND END DATES FOR CLIMATOLOGY
 start = '1981-01'
-#end = '1983-12'
+# end = '1983-12'
 end = '2005-12'
 
 # INPUT DATASET - CAN BE MODEL OR OBSERVATIONS

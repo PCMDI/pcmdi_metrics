@@ -2,12 +2,12 @@
 
 import datetime
 import os
-import dask
 
+import dask
 from genutil import StringConstructor
 
-import pcmdi_metrics
 from pcmdi_metrics.io import xcdat_open
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPMetricsParser
 
 
 def clim_calc(var, infile, outfile=None, outpath=None, outfilename=None, start=None, end=None):
@@ -34,8 +34,6 @@ def clim_calc(var, infile, outfile=None, outpath=None, outfilename=None, start=N
     os.makedirs(outdir, exist_ok=True)
 
     print("outdir is ", outdir)
-
-    c = d.time  # coordinate for time
 
     # CLIM PERIOD
     if (start is None) and (end is None):
@@ -104,7 +102,7 @@ if __name__ == "__main__":
 
     ver = datetime.datetime.now().strftime("v%Y%m%d")
 
-    P = pcmdi_metrics.mean_climate.pmp_parser.PMPMetricsParser()
+    P = PMPMetricsParser()
 
     P.add_argument(
         "--vars", dest="vars", help="List of variables", nargs="+", required=False
