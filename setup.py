@@ -55,7 +55,6 @@ scripts = [
     "pcmdi_metrics/misc/scripts/parallelize_driver.py",
     "pcmdi_metrics/misc/scripts/get_pmp_data.py",
 ]
-# scripts += glob.glob("pcmdi_metrics/diurnal/scripts/*.py")
 
 entry_points = {
     "console_scripts": [
