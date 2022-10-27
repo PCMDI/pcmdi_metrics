@@ -2,7 +2,8 @@ import os
 
 import cdp.cdp_parser
 
-import pcmdi_metrics.mean_climate.lib.pmp_parameter
+#import pcmdi_metrics.mean_climate.lib.pmp_parameter
+from pcmdi_metrics.mean_climate.lib import pmp_parameter
 from pcmdi_metrics import resources
 
 try:
@@ -21,7 +22,8 @@ def path_to_default_args():
 class PMPParser(cdp.cdp_parser.CDPParser):
     def __init__(self, *args, **kwargs):
         super(PMPParser, self).__init__(
-            pcmdi_metrics.mean_climate.lib.pmp_parameter.PMPParameter,
+            #pcmdi_metrics.mean_climate.lib.pmp_parameter.PMPParameter,
+            pmp_parameter.PMPParameter,
             path_to_default_args(),
             *args,
             **kwargs,
@@ -33,7 +35,8 @@ class PMPParser(cdp.cdp_parser.CDPParser):
 class PMPMetricsParser(cdp.cdp_parser.CDPParser):
     def __init__(self, *args, **kwargs):
         super(PMPMetricsParser, self).__init__(
-            pcmdi_metrics.mean_climate.lib.pmp_parameter.PMPMetricsParameter,
+            #pcmdi_metrics.mean_climate.lib.pmp_parameter.PMPMetricsParameter,
+            pmp_parameter.PMPMetricsParameter,
             path_to_default_args(),
             *args,
             **kwargs,

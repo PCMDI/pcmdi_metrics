@@ -3,12 +3,14 @@ import ast
 import json
 import logging
 
-import pcmdi_metrics.mean_climate.lib.dataset
-import pcmdi_metrics.mean_climate.lib.pmp_parser
+#import pcmdi_metrics.mean_climate.lib.dataset
+from pcmdi_metrics.mean_climate.lib import DataSet
+#import pcmdi_metrics.mean_climate.lib.pmp_parser
+from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics import LOG_LEVEL
-from pcmdi_metrics.mean_climate.lib.model import Model
-from pcmdi_metrics.mean_climate.lib.observation import Observation
-from pcmdi_metrics.mean_climate.lib.outputmetrics import OutputMetrics
+from pcmdi_metrics.mean_climate.lib import Model
+from pcmdi_metrics.mean_climate.lib import Observation
+from pcmdi_metrics.mean_climate.lib import OutputMetrics
 
 
 class PMPDriver(object):
@@ -37,7 +39,7 @@ class PMPDriver(object):
         self.var = ""
         self.output_metric = None
         self.region = ""
-        self.sftlf = pcmdi_metrics.mean_climate.lib.dataset.DataSet.create_sftlf(self.parameter)
+        self.sftlf = DataSet.create_sftlf(self.parameter)
         self.default_regions = []
         self.regions_specs = {}
 
@@ -67,7 +69,7 @@ class PMPDriver(object):
         """Loads obs_info_dictionary.json and appends
         custom_observations from the parameter file if needed."""
         obs_file_name = "obs_info_dictionary.json"
-        obs_json_file = pcmdi_metrics.mean_climate.lib.dataset.DataSet.load_path_as_file_obj(
+        obs_json_file = DataSet.load_path_as_file_obj(
             obs_file_name
         )
         obs_dict = json.loads(obs_json_file.read())
@@ -103,7 +105,7 @@ class PMPDriver(object):
         """Gets the default_regions dict and regions_specs dict
         from default_regions.py and stores them as attributes."""
         default_regions_file = (
-            pcmdi_metrics.mean_climate.lib.dataset.DataSet.load_path_as_file_obj(
+            DataSet.load_path_as_file_obj(
                 "default_regions.py"
             )
         )
@@ -269,7 +271,7 @@ class PMPDriver(object):
 
 
 def create_mean_climate_parser():
-    parser = pcmdi_metrics.mean_climate.lib.pmp_parser.PMPMetricsParser()
+    parser = pmp_parser.PMPMetricsParser()
     parser.add_argument(
         "--case_id",
         dest="case_id",
