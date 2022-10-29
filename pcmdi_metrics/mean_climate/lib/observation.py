@@ -131,7 +131,9 @@ class Observation(DataSet):
     def get(self):
         """Gets the variable based on the region and level (if given) for
         the file from data_path, which is defined in the initializer."""
-        try:
+        #try:
+        if 1:
+            print('jwlee-test-observation-get, self.level:', self.level)
             if self.level is not None:
                 data_obs = self._obs_file.get(
                     self.var, level=self.level, region=self.region
@@ -139,6 +141,7 @@ class Observation(DataSet):
             else:
                 data_obs = self._obs_file.get(self.var, region=self.region)
             return data_obs
+        """
         except Exception as e:
             if self.level is not None:
                 logging.getLogger("pcmdi_metrics").error(
@@ -152,7 +155,7 @@ class Observation(DataSet):
                         "Failed opening 3D OBS", self.var, self.obs_or_model, e
                     )
                 )
-
+        """
     def hash(self):
         """Return a hash of the file."""
         return self._obs_file.hash()

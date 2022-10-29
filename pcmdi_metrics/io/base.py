@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import re
+import sys
 from collections import OrderedDict
 from collections.abc import Mapping
 
@@ -14,9 +15,11 @@ import cdutil
 import genutil
 import MV2
 import numpy
+import xcdat
 
 import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
+from pcmdi_metrics.io import xcdat_open
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
@@ -339,6 +342,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         )
 
     def get(self, var, var_in_file=None, region={}, *args, **kwargs):
+        print('jwlee-test-get, var, var_in_file:', var, var_in_file)
         self.variable = var
         self.var_from_file = self.extract_var_from_file(
             var, var_in_file, *args, **kwargs
@@ -352,7 +356,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         if self.is_masking():
             self.var_from_file = self.mask_var(self.var_from_file)
 
-        self.var_from_file = self.set_target_grid_and_mask_in_var(self.var_from_file)
+        self.var_from_file = self.set_target_grid_and_mask_in_var(self.var_from_file, var)
 
         self.var_from_file = self.set_domain_in_var(self.var_from_file, self.region)
 
@@ -362,12 +366,17 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         if var_in_file is None:
             var_in_file = var
         # self.extension = 'nc'
+        """
         var_file = cdms2.open(self(), "r")
         for att in ["var_in_file,", "varInFile"]:
             if att in kwargs:
                 del kwargs[att]
         extracted_var = var_file(var_in_file, *args, **kwargs)
         var_file.close()
+        """
+        ds = xcdat_open(self(), data_var=var_in_file, decode_times=False)
+        extracted_var = ds
+        
         return extracted_var
 
     def is_masking(self):
@@ -387,8 +396,17 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         mask = MV2.not_equal(mask, self.value)
         return MV2.masked_where(mask, var)
 
-    def set_target_grid_and_mask_in_var(self, var):
+    def set_target_grid_and_mask_in_var(self, var, var_in_file):
+        """
+        self: <class 'pcmdi_metrics.io.base.Base'> object
+        dir(self): ['__abstractmethods__', '__call__', '__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_abc_impl', 'case_id', 'construct', 'ext', 'extract_var_from_file', 'file_mask_template', 'get', 'get_mask_from_var', 'hash', 'is_masking', 'keys', 'mask', 'mask_var', 'model_version', 'period', 'read', 'realization', 'realm', 'region', 'regrid_method', 'regrid_tool', 'reverse', 'root', 'set_domain_in_var', 'set_file_mask_template', 'set_target_grid', 'set_target_grid_and_mask_in_var', 'setup_cdms2', 'table', 'target_grid', 'target_grid_name', 'target_mask', 'template', 'type', 'value', 'var_from_file', 'variable', 'write', 'write_cmec']
+        self(): string, path to input file
+        """
+        print('jwlee-test-regrid, set_target_grid_and_mask_in_var start')
+        #print('jwlee-test-regrid, self.target_grid:', self.target_grid)
         if self.target_grid is not None:
+            #print('jwlee-test-regrid, var[var_in_file].shape:', var[var_in_file].shape)
+            """
             print('jwlee-test-regrid, var.shape:', var.shape)
             var = var.regrid(
                 self.target_grid,
@@ -398,13 +416,30 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                 diag={},
                 periodicity=1,
             )
+            """
+            #print('jwlee-test-regrid, dir(self):', dir(self))
+            print('jwlee-test-regrid, type(self):', type(self))
+            print('jwlee-test-regrid, type(self()):', type(self()))
+            print('jwlee-test-regrid, self():', self())
+            print('jwlee-test-regrid, regridder start, var_in_file:', var_in_file)
+            var.to_netcdf(self().split('/')[-1].split('.nc')[0] + '_test1-org.nc')
+            var = var.regridder.horizontal(var_in_file, self.target_grid, tool=self.regrid_tool)
+            print('jwlee-test-regrid, regridder done')
+            var.to_netcdf(self().split('/')[-1].split('.nc')[0]+'_test2-regridded.nc')
+
+            print('jwlee-test-regrid-2, var[var_in_file].shape:', var[var_in_file].shape)
+
+            print('jwlee-test-regrid-3, self.target_mask:', self.target_mask)
 
             if self.target_mask is not None:
-                if self.target_mask.shape != var.shape:
+                #if self.target_mask.shape != var.shape:
+                if self.target_mask.shape != var[var_in_file].shape:
                     dummy, mask = genutil.grower(var, self.target_mask)
                 else:
                     mask = self.target_mask
                 var = MV2.masked_where(mask, var)
+
+            print('jwlee-test-regrid-4, set_target_grid_and_mask_in_var done')
 
         return var
 
@@ -445,7 +480,9 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         self.regrid_tool = regrid_tool
         self.regrid_method = regrid_method
         if target == "2.5x2.5":
-            self.target_grid = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
+            print('jwlee-test, set_target_grid, start')
+            #self.target_grid = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
+            self.target_grid = xcdat.create_uniform_grid(-88.875, 88.625, 2.5, 0, 357.5, 2.5)
             self.target_grid_name = target
         elif cdms2.isGrid(target):
             self.target_grid = target

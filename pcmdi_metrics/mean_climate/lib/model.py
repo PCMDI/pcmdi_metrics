@@ -58,7 +58,9 @@ class Model(DataSet):
     def get(self):
         """Gets the variable based on the region and level (if given) for
         the file from data_path, which is defined in the initalizer."""
-        try:
+        print('jwlee-test-get: self.var_in_file, self.region:', self.var_in_file, self.region)
+        #try:
+        if 1:
             if self.level is None:
                 data_model = self._model_file.get(
                     self.var, var_in_file=self.var_in_file, region=self.region
@@ -73,12 +75,14 @@ class Model(DataSet):
 
             return data_model
 
+        """
         except Exception as e:
             msg = "Failed to get variables %s for versions: %s, error: %s"
             logging.getLogger("pcmdi_metrics").error(
                 msg % (self.var, self.obs_or_model, e)
             )
             raise RuntimeError("Need to skip model: %s" % self.obs_or_model)
+        """
 
     def get_var_in_file(self):
         """Based off the model_tweaks parameter, get the variable mapping."""
