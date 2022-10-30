@@ -1,10 +1,11 @@
-import cdms2
+#import cdms2
 import cdutil
 import genutil
 import MV2
+import xcdat
 
 
-def annual_mean(dm, do):
+def annual_mean(dm, do, var=None):
     """Computes ANNUAL MEAN"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -15,12 +16,27 @@ def annual_mean(dm, do):
             "Contact": "pcmdi-metrics@llnl.gov",
             "Comments": "Assumes input are 12 months climatology",
         }
-    # Do we really want this? Wouldn't it better to let it fails
-    cdms2.setAutoBounds("on")
-    return cdutil.averager(dm, axis="t"), cdutil.averager(do, axis="t")
+    #cdms2.setAutoBounds("on")
+    #return cdutil.averager(dm, axis="t"), cdutil.averager(do, axis="t")
+    dm_am = dm.temporal.average(var)
+    do_am = do.temporal.average(var)
+    
 
 
-def bias_xy(dm, do):
+def bias_xy(dm, do, var=None):
+    """Computes bias"""
+    if dm is None and do is None:  # just want the doc
+        return {
+            "Name": "Bias",
+            "Abstract": "Compute Full Average of Model - Observation",
+            "Contact": "pcmdi-metrics@llnl.gov",
+        }
+    dm['dif'] = dm[var] - do[var]
+    stat = dm.spatial.average('dif', axis=['X', 'Y'])['dif'].values
+    return float(stat)
+
+
+def bias_xyt(dm, do, var=None):
     """Computes bias"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -29,22 +45,12 @@ def bias_xy(dm, do):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     dif = MV2.subtract(dm, do)
-    return MV2.float(cdutil.averager(dif, axis="xy", weights="weighted"))
+    dm['dif'] = dm[var] - do[var]
+    stat = dm.spatial.average('dif', axis=['X', 'Y']).temporal.average('absdif')['absdif'].values
+    return float(stat)
 
 
-def bias_xyt(dm, do):
-    """Computes bias"""
-    if dm is None and do is None:  # just want the doc
-        return {
-            "Name": "Bias",
-            "Abstract": "Compute Full Average of Model - Observation",
-            "Contact": "pcmdi-metrics@llnl.gov",
-        }
-    dif = MV2.subtract(dm, do)
-    return MV2.float(cdutil.averager(dif, axis="xyt", weights="weighted"))
-
-
-def cor_xy(dm, do):
+def cor_xy(dm, do, var=None):
     """Computes correlation"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -57,20 +63,7 @@ def cor_xy(dm, do):
     return float(genutil.statistics.correlation(dm, do, axis="xy", weights="weighted"))
 
 
-def cor_xyt(dm, do):
-    """Computes correlation"""
-    if dm is None and do is None:  # just want the doc
-        return {
-            "Name": "Spatial and Temporal Correlation",
-            "Abstract": "Compute Spatio-Temporal Correlation",
-            "URI": "http://uvcdat.llnl.gov/documentation/utilities/"
-            + "utilities-2.html",
-            "Contact": "pcmdi-metrics@llnl.gov",
-        }
-    return float(genutil.statistics.correlation(dm, do, axis="xyt", weights="weighted"))
-
-
-def mean_xy(d):
+def mean_xy(d, var=None):
     """Computes bias"""
     if d is None:  # just want the doc
         return {
@@ -78,10 +71,11 @@ def mean_xy(d):
             "Abstract": "Area Mean (area weighted)",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    return MV2.float(cdutil.averager(d, axis="xy", weights="weighted"))
+    mean_xy = d.spatial.average(var, axis=['X', 'Y']).values
+    return float(mean_xy)
 
 
-def meanabs_xy(dm, do):
+def meanabs_xy(dm, do, var=None):
     """Computes Mean Absolute Error"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -90,12 +84,12 @@ def meanabs_xy(dm, do):
             + "Absolute Difference Between Model And Observation",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    absdif = MV2.absolute(MV2.subtract(dm, do))
-    mae = cdutil.averager(absdif, axis="xy", weights="weighted")
-    return float(mae)
+    dm['absdif'] = abs(dm[var] - do[var])
+    stat = dm.spatial.average('absdif', axis=['X', 'Y'])['absdif'].values
+    return float(stat)
 
 
-def meanabs_xyt(dm, do):
+def meanabs_xyt(dm, do, var=None):
     """Computes Mean Absolute Error"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -104,12 +98,12 @@ def meanabs_xyt(dm, do):
             + "Absolute Difference Between Model And Observation",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    absdif = MV2.absolute(MV2.subtract(dm, do))
-    mae = cdutil.averager(absdif, axis="xyt", weights="weighted")
-    return float(mae)
+    dm['absdif'] = abs(dm[var] - do[var])
+    stat = dm.spatial.average('absdif', axis=['X', 'Y']).temporal.average('absdif')['absdif'].values
+    return float(stat)
 
 
-def rms_0(dm, do):
+def rms_0(dm, do, var=None):
     """Computes rms over first axis"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -125,7 +119,7 @@ def rms_0(dm, do):
     return float(genutil.statistics.rms(dm, do))
 
 
-def rms_xy(dm, do):
+def rms_xy(dm, do, var=None):
     """Computes rms"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -138,7 +132,7 @@ def rms_xy(dm, do):
     return float(genutil.statistics.rms(dm, do, axis="xy", weights="weighted"))
 
 
-def rms_xyt(dm, do):
+def rms_xyt(dm, do, var=None):
     """Computes rms"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -151,7 +145,7 @@ def rms_xyt(dm, do):
     return float(genutil.statistics.rms(dm, do, axis="xyt", weights="weighted"))
 
 
-def rmsc_xy(dm, do):
+def rmsc_xy(dm, do, var=None):
     """Computes centered rms"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -166,7 +160,7 @@ def rmsc_xy(dm, do):
     )
 
 
-def seasonal_mean(d, sea):
+def seasonal_mean(d, sea, var=None):
     """Computes SEASONAL MEAN"""
     if d is None and sea is None:  # just want the doc
         return {
@@ -198,7 +192,7 @@ def seasonal_mean(d, sea):
     return d_sea
 
 
-def std_xy(d):
+def std_xy(d, var=None):
     """Computes std"""
     if d is None:  # just want the doc
         return {
@@ -211,7 +205,7 @@ def std_xy(d):
     return float(genutil.statistics.std(d, axis="xy", weights="weighted"))
 
 
-def std_xyt(d):
+def std_xyt(d, var=None):
     """Computes std"""
     if d is None:  # just want the doc
         return {
@@ -224,7 +218,7 @@ def std_xyt(d):
     return float(genutil.statistics.std(d, axis="xyt", weights="weighted"))
 
 
-def zonal_mean(dm, do):
+def zonal_mean(dm, do, var=None):
     """Computes ZONAL MEAN assumes rectilinear/regular grid"""
     if dm is None and do is None:  # just want the doc
         return {

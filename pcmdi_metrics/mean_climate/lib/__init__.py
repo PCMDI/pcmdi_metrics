@@ -2,7 +2,6 @@ from .compute_statistics import (  # noqa
     annual_mean,
     bias_xy,
     cor_xy,
-    cor_xyt,
     mean_xy,
     meanabs_xy,
     rms_0,
