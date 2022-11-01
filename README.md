@@ -22,11 +22,11 @@ The PCMDI Metrics Package (PMP) is used to provide "quick-look" objective compar
 
 **PCMDI uses the PMP to produce [quick-look simulation summaries across generations of CMIP](https://pcmdi.llnl.gov/research/metrics/).**
 
-The metrics package consists of four parts: 
-1) Analysis software
-2) Observation-based reference database of global (or near global, land or ocean) [time series and climatologies](https://github.com/PCMDI/PCMDIobs-cmor-tables/tree/master/catalogue)
-3) [Database](https://github.com/PCMDI/pcmdi_metrics_results_archive) of performance metrics computed for CMIP models
-4) [Package documentation](http://pcmdi.github.io/pcmdi_metrics/) and [interactive jupyter notebook demos](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md).
+The metrics package consists of the following parts: 
+* Analysis software
+* Observation-based reference database of global (or near global, land or ocean) [time series and climatologies](https://github.com/PCMDI/PCMDIobs-cmor-tables/tree/master/catalogue)
+* [Package documentation](http://pcmdi.github.io/pcmdi_metrics/) and [interactive jupyter notebook demos](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
+* [Database](https://github.com/PCMDI/pcmdi_metrics_results_archive) of performance metrics computed for CMIP models
 
 The package expects model data to be [CF-compliant](http://cfconventions.org/). To successfully use the package some input data "conditioning" may be required. We provide several demo scripts within the package.
 
