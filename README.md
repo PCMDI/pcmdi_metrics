@@ -1,7 +1,8 @@
 <img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" width="15%" height="15%" align="right" />
 <h5 align="right"></h5>
 
-# PCMDI Metrics Package (PMP)
+PCMDI Metrics Package (PMP)
+---------------------------
 
 [![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 ![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg)
@@ -27,7 +28,8 @@ The package expects model data to be [CF-compliant](http://cfconventions.org/). 
 Users will need to contact the PMP developers (pcmdi-metrics@llnl.gov) to obtain supporting datasets and get started using the package.
 
 
-## Documentation
+Documentation
+-------------
 
 Getting Started: Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
 
@@ -36,7 +38,8 @@ An overview for using the package and template scripts are detailed on the [Usin
 [View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
 
 
-## Contact
+Contact
+-------
 
 [Report Bug](https://github.com/PCMDI/pcmdi_metrics/issues)
 
@@ -45,19 +48,35 @@ An overview for using the package and template scripts are detailed on the [Usin
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
 
 
-## Contributors
+Contributors
+------------
 
 Thanks to our contributors!
 
 [![Contributors](https://contrib.rocks/image?repo=PCMDI/pcmdi_metrics)](https://github.com/PCMDI/pcmdi_metrics/graphs/contributors)
 
+Acknowledgement
+---------------
 
-## License
+This software is  developed by scientists and developers from the Program for Climate Model Diagnosis and Intercomparison (`PCMDI`_) at Lawrence Livermore National Laboratory (`LLNL`_). The work is performed for the E3SM project, which is sponsored by the Regional and Global Model Analysis (`RGMA`_) program. The RGMA is a program for the Earth and Environmental Systems Sciences Division (`EESSD`_) in the Office of Biological and Environmental Research (`BER`_) within the `Department of Energy`_'s `Office of Science`_.
+
+.. _PCMDI: https://pcmdi.llnl.gov/
+.. _LLNL: https://www.llnl.gov/
+.. _RGMA: https://climatemodeling.science.energy.gov/program/regional-global-model-analysis
+.. _EESSD: https://science.osti.gov/ber/Research/eessd
+.. _BER: https://science.osti.gov/ber
+.. _Department of Energy: https://www.energy.gov/
+.. _Office of Science: https://science.osti.gov/
+
+
+License
+-------
 
 Distributed under the BSD 3-Clause License. See [`LICENSE`](https://github.com/PCMDI/pcmdi_metrics/blob/main/LICENSE) for more information.
 
 
-## Version Release Log
+Version Release Log
+-------------------
 
 [Released versions](https://github.com/PCMDI/pcmdi_metrics/releases)
 
