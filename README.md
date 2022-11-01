@@ -1,6 +1,7 @@
 <img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" width="15%" height="15%" align="right" />
 <h5 align="right"></h5>
 
+
 PCMDI Metrics Package (PMP)
 ---------------------------
 
@@ -21,21 +22,27 @@ The PCMDI Metrics Package (PMP) is used to provide "quick-look" objective compar
 
 **PCMDI uses the PMP to produce [quick-look simulation summaries across generations of CMIP](https://pcmdi.llnl.gov/research/metrics/).**
 
-The metrics package consists of four parts: 1) Analysis software, 2) an observationally-based database of global (or near global, land or ocean) [time series and climatologies](https://github.com/PCMDI/PCMDIobs-cmor-tables/tree/master/catalogue), 3) a database of performance metrics computed for CMIP models and 4) [package documentation and interactive demos](http://pcmdi.github.io/pcmdi_metrics/).
+The metrics package consists of four parts: 
+1) Analysis software
+2) Observation-based reference database of global (or near global, land or ocean) [time series and climatologies](https://github.com/PCMDI/PCMDIobs-cmor-tables/tree/master/catalogue)
+3) [Database](https://github.com/PCMDI/pcmdi_metrics_results_archive) of performance metrics computed for CMIP models
+4) [Package documentation](http://pcmdi.github.io/pcmdi_metrics/) and [interactive jupyter notebook demos](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md).
 
 The package expects model data to be [CF-compliant](http://cfconventions.org/). To successfully use the package some input data "conditioning" may be required. We provide several demo scripts within the package.
-
-Users will need to contact the PMP developers (pcmdi-metrics@llnl.gov) to obtain supporting datasets and get started using the package.
 
 
 Documentation
 -------------
 
-Getting Started: Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
+**Getting Started**
 
-An overview for using the package and template scripts are detailed on the [Using-the-package](http://pcmdi.github.io/pcmdi_metrics) page
+* Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
 
-[View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
+* Users will need to contact the PMP developers (pcmdi-metrics@llnl.gov) to obtain supporting datasets and get started using the package.
+
+* An overview for using the package and template scripts are detailed on the [Using-the-package](http://pcmdi.github.io/pcmdi_metrics) page
+
+* [View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
 
 
 Contact
@@ -54,6 +61,7 @@ Contributors
 Thanks to our contributors!
 
 [![Contributors](https://contrib.rocks/image?repo=PCMDI/pcmdi_metrics)](https://github.com/PCMDI/pcmdi_metrics/graphs/contributors)
+
 
 Acknowledgement
 ---------------
