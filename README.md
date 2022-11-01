@@ -83,8 +83,8 @@ License
 Distributed under the BSD 3-Clause License. See [`LICENSE`](https://github.com/PCMDI/pcmdi_metrics/blob/main/LICENSE) for more information.
 
 
-Version Release Log
--------------------
+Release Notes and History
+-------------------------
 
 [Released versions](https://github.com/PCMDI/pcmdi_metrics/releases)
 
