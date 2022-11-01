@@ -1,8 +1,10 @@
-#import cdms2
 import cdutil
 import genutil
 import MV2
 import xcdat
+import xskillscore as xs
+import math
+import numpy as np
 
 
 def annual_mean(dm, do, var=None):
@@ -11,16 +13,12 @@ def annual_mean(dm, do, var=None):
         return {
             "Name": "Annual Mean",
             "Abstract": "Compute Annual Mean",
-            "URI": "http://uvcdat.llnl.gov/documentation/"
-            + "utilities/utilities-2.html",
             "Contact": "pcmdi-metrics@llnl.gov",
             "Comments": "Assumes input are 12 months climatology",
         }
-    #cdms2.setAutoBounds("on")
-    #return cdutil.averager(dm, axis="t"), cdutil.averager(do, axis="t")
     dm_am = dm.temporal.average(var)
     do_am = do.temporal.average(var)
-    
+    return dm_am, do_am    
 
 
 def bias_xy(dm, do, var=None):
@@ -44,9 +42,8 @@ def bias_xyt(dm, do, var=None):
             "Abstract": "Compute Full Average of Model - Observation",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    dif = MV2.subtract(dm, do)
     dm['dif'] = dm[var] - do[var]
-    stat = dm.spatial.average('dif', axis=['X', 'Y']).temporal.average('absdif')['absdif'].values
+    stat = dm.spatial.average('dif', axis=['X', 'Y']).temporal.average('dif')['dif'].values
     return float(stat)
 
 
@@ -56,11 +53,11 @@ def cor_xy(dm, do, var=None):
         return {
             "Name": "Spatial Correlation",
             "Abstract": "Compute Spatial Correlation",
-            "URI": "http://uvcdat.llnl.gov/documentation/utilities/"
-            + "utilities-2.html",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    return float(genutil.statistics.correlation(dm, do, axis="xy", weights="weighted"))
+    spatial_weights = dm.spatial.get_weights(axis=['X', 'Y'])
+    stat = xs.pearson_r(dm[var], do[var], weights=spatial_weights).values
+    return float(stat)
 
 
 def mean_xy(d, var=None):
@@ -71,8 +68,8 @@ def mean_xy(d, var=None):
             "Abstract": "Area Mean (area weighted)",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    mean_xy = d.spatial.average(var, axis=['X', 'Y']).values
-    return float(mean_xy)
+    stat = d.spatial.average(var, axis=['X', 'Y'])[var].values
+    return float(stat)
 
 
 def meanabs_xy(dm, do, var=None):
@@ -109,14 +106,11 @@ def rms_0(dm, do, var=None):
         return {
             "Name": "Root Mean Square over First Axis",
             "Abstract": "Compute Root Mean Square over the first axis",
-            "URI": "http://uvcdat.llnl.gov/documentation/"
-            + "utilities/utilities-2.html",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    if 1 in [x.isLevel() for x in dm.getAxisList()]:
-        dm = dm(squeeze=1)
-        do = do(squeeze=1)
-    return float(genutil.statistics.rms(dm, do))
+    dm['diff_square'] = (dm[var] - do[var])**2
+    stat = math.sqrt(dm.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'].values)
+    return float(stat)
 
 
 def rms_xy(dm, do, var=None):
@@ -125,11 +119,11 @@ def rms_xy(dm, do, var=None):
         return {
             "Name": "Spatial Root Mean Square",
             "Abstract": "Compute Spatial Root Mean Square",
-            "URI": "http://uvcdat.llnl.gov/documentation/"
-            + "utilities/utilities-2.html",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    return float(genutil.statistics.rms(dm, do, axis="xy", weights="weighted"))
+    dm['diff_square'] = (dm[var] - do[var])**2
+    stat = math.sqrt(dm.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'].values)
+    return float(stat)
 
 
 def rms_xyt(dm, do, var=None):
@@ -138,11 +132,12 @@ def rms_xyt(dm, do, var=None):
         return {
             "Name": "Spatio-Temporal Root Mean Square",
             "Abstract": "Compute Spatial and Temporal Root Mean Square",
-            "URI": "http://uvcdat.llnl.gov/documentation/"
-            + "utilities/utilities-2.html",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    return float(genutil.statistics.rms(dm, do, axis="xyt", weights="weighted"))
+    dm['diff_square'] = (dm[var] - do[var])**2
+    dm['diff_square_sqrt'] = np.sqrt(dm.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'])
+    stat = dm.temporal.average('diff_square_sqrt')['diff_square_sqrt'].values   
+    return float(stat)
 
 
 def rmsc_xy(dm, do, var=None):
@@ -151,18 +146,18 @@ def rmsc_xy(dm, do, var=None):
         return {
             "Name": "Spatial Root Mean Square",
             "Abstract": "Compute Centered Spatial Root Mean Square",
-            "URI": "http://uvcdat.llnl.gov/documentation/"
-            + "utilities/utilities-2.html",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    return float(
-        genutil.statistics.rms(dm, do, axis="xy", centered=1, weights="weighted")
-    )
+    dm['anomaly'] = dm[var] - dm.spatial.average(var, axis=['X', 'Y'])[var]
+    do['anomaly'] = do[var] - do.spatial.average(var, axis=['X', 'Y'])[var]
+    dm['diff_square'] = (dm['anomaly'] - do['anomaly'])**2
+    stat = math.sqrt(dm.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'].values)
+    return float(stat)
 
 
 def seasonal_mean(d, sea, var=None):
     """Computes SEASONAL MEAN"""
-    if d is None and sea is None:  # just want the doc
+    if d is None and season is None:  # just want the doc
         return {
             "Name": "Seasonal Mean",
             "Abstract": "Compute Seasonal Mean",
@@ -172,24 +167,24 @@ def seasonal_mean(d, sea, var=None):
 
     mo_wts = [31, 31, 28.25, 31, 30, 31, 30, 31, 31, 30, 31, 30]
 
-    if sea == "djf":
+    if season == "djf":
         indx = [11, 0, 1]
-    if sea == "mam":
+    if season == "mam":
         indx = [2, 3, 4]
-    if sea == "jja":
+    if season == "jja":
         indx = [5, 6, 7]
-    if sea == "son":
+    if season == "son":
         indx = [8, 9, 10]
 
-    sea_no_days = mo_wts[indx[0]] + mo_wts[indx[1]] + mo_wts[indx[2]]
+    season_num_days = mo_wts[indx[0]] + mo_wts[indx[1]] + mo_wts[indx[2]]
+    
+    d_season = (
+        d.isel(time=indx[0])[var] * mo_wts[indx[0]]
+        + d.isel(time=indx[1])[var] * mo_wts[indx[1]]
+        + d.isel(time=indx[2])[var] * mo_wts[indx[2]]
+    ) / season_num_days
 
-    d_sea = (
-        d[indx[0]] * mo_wts[indx[0]]
-        + d[indx[1]] * mo_wts[indx[1]]
-        + d[indx[2]] * mo_wts[indx[2]]
-    ) / sea_no_days
-
-    return d_sea
+    return d_season
 
 
 def std_xy(d, var=None):
@@ -198,11 +193,13 @@ def std_xy(d, var=None):
         return {
             "Name": "Spatial Standard Deviation",
             "Abstract": "Compute Spatial Standard Deviation",
-            "URI": "http://uvcdat.llnl.gov/documentation/"
-            + "utilities/utilities-2.html",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    return float(genutil.statistics.std(d, axis="xy", weights="weighted"))
+    average = float(d.spatial.average(var, axis=['X', 'Y'])[var].values)
+    d['anomaly'] = (d[var] - average)**2
+    variance = float(d.spatial.average('anomaly')['anomaly'].values)
+    std = math.sqrt(variance)
+    return(std)
 
 
 def std_xyt(d, var=None):
@@ -211,11 +208,13 @@ def std_xyt(d, var=None):
         return {
             "Name": "Spatial-temporal Standard Deviation",
             "Abstract": "Compute Space-Time Standard Deviation",
-            "URI": "http://uvcdat.llnl.gov/documentation/"
-            + "utilities/utilities-2.html",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    return float(genutil.statistics.std(d, axis="xyt", weights="weighted"))
+    average = float(d.spatial.average(var, axis=['X', 'Y']).temporal.average(var)[var].values)
+    d['anomaly'] = (d[var] - average)**2
+    variance = float(d.spatial.average('anomaly').temporal.average('anomaly')['anomaly'].values)
+    std = math.sqrt(variance)
+    return(std)
 
 
 def zonal_mean(dm, do, var=None):
@@ -224,8 +223,6 @@ def zonal_mean(dm, do, var=None):
         return {
             "Name": "Zonal Mean",
             "Abstract": "Compute Zonal Mean",
-            "URI": "http://uvcdat.llnl.gov/documentation/"
-            + "utilities/utilities-2.html",
             "Contact": "pcmdi-metrics@llnl.gov",
             "Comments": "",
         }
