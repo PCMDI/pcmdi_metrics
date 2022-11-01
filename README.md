@@ -58,15 +58,15 @@ Thanks to our contributors!
 Acknowledgement
 ---------------
 
-This software is  developed by scientists and developers from the Program for Climate Model Diagnosis and Intercomparison (`PCMDI`_) at Lawrence Livermore National Laboratory (`LLNL`_). The work is performed for the E3SM project, which is sponsored by the Regional and Global Model Analysis (`RGMA`_) program. The RGMA is a program for the Earth and Environmental Systems Sciences Division (`EESSD`_) in the Office of Biological and Environmental Research (`BER`_) within the `Department of Energy`_'s `Office of Science`_.
+This software is  developed by scientists and developers from the Program for Climate Model Diagnosis and Intercomparison ([PCMDI][PCMDI]) at Lawrence Livermore National Laboratory ([LLNL][LLNL]). The work is performed for the E3SM project, which is sponsored by the Regional and Global Model Analysis ([RGMA][RGMA]) program. The RGMA is a program for the Earth and Environmental Systems Sciences Division ([EESSD][EESSD]) in the Office of Biological and Environmental Research ([BER][BER]) within the [Department of Energy][DOE]'s [Office of Science][OS].
 
-.. _PCMDI: https://pcmdi.llnl.gov/
-.. _LLNL: https://www.llnl.gov/
-.. _RGMA: https://climatemodeling.science.energy.gov/program/regional-global-model-analysis
-.. _EESSD: https://science.osti.gov/ber/Research/eessd
-.. _BER: https://science.osti.gov/ber
-.. _Department of Energy: https://www.energy.gov/
-.. _Office of Science: https://science.osti.gov/
+[PCMDI]: https://pcmdi.llnl.gov/
+[LLNL]: https://www.llnl.gov/
+[RGMA]: https://climatemodeling.science.energy.gov/program/regional-global-model-analysis
+[EESSD]: https://science.osti.gov/ber/Research/eessd
+[BER]: https://science.osti.gov/ber
+[DOE]: https://www.energy.gov/
+[OS]: https://science.osti.gov/
 
 
 License
