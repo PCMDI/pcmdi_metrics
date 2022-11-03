@@ -1,8 +1,4 @@
-import cdutil
-import genutil
-import MV2
 import xcdat
-import xskillscore as xs
 import math
 import numpy as np
 
@@ -56,7 +52,13 @@ def cor_xy(dm, do, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     spatial_weights = dm.spatial.get_weights(axis=['X', 'Y'])
-    stat = xs.pearson_r(dm[var], do[var], weights=spatial_weights).values
+    dm_avg = float(dm.spatial.average(var, axis=['X', 'Y'])[var].values)
+    do_avg = float(do.spatial.average(var, axis=['X', 'Y'])[var].values)
+    
+    covariance = float(((dm[var] - dm_avg) * (do[var] - do_avg)).cf.weighted(spatial_weights).mean(dim=['lon', 'lat']).values)
+    std_dm = std_xy(dm, var)
+    std_do = std_xy(do, var)
+    stat = covariance / (std_dm * std_do)
     return float(stat)
 
 
