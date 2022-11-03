@@ -18,7 +18,7 @@ def annual_mean(dm, do, var=None):
         }
     dm_am = dm.temporal.average(var)
     do_am = do.temporal.average(var)
-    return dm_am, do_am    
+    return dm_am, do_am  # DataSets
 
 
 def bias_xy(dm, do, var=None):
@@ -226,4 +226,6 @@ def zonal_mean(dm, do, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
             "Comments": "",
         }
-    return cdutil.averager(dm, axis="x"), cdutil.averager(do, axis="x")
+    dm_zm = dm.spatial.average(var, axis=['X'])
+    do_zm = do.spatial.average(var, axis=['X'])
+    return dm_zm, do_zm  # DataSets
