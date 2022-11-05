@@ -17,146 +17,6 @@ def annual_mean(dm, do, var=None):
     return dm_am, do_am  # DataSets
 
 
-def bias_xy(dm, do, var=None):
-    """Computes bias"""
-    if dm is None and do is None:  # just want the doc
-        return {
-            "Name": "Bias",
-            "Abstract": "Compute Full Average of Model - Observation",
-            "Contact": "pcmdi-metrics@llnl.gov",
-        }
-    dm['dif'] = dm[var] - do[var]
-    stat = dm.spatial.average('dif', axis=['X', 'Y'])['dif'].values
-    return float(stat)
-
-
-def bias_xyt(dm, do, var=None):
-    """Computes bias"""
-    if dm is None and do is None:  # just want the doc
-        return {
-            "Name": "Bias",
-            "Abstract": "Compute Full Average of Model - Observation",
-            "Contact": "pcmdi-metrics@llnl.gov",
-        }
-    dm['dif'] = dm[var] - do[var]
-    stat = dm.spatial.average('dif', axis=['X', 'Y']).temporal.average('dif')['dif'].values
-    return float(stat)
-
-
-def cor_xy(dm, do, var=None):
-    """Computes correlation"""
-    if dm is None and do is None:  # just want the doc
-        return {
-            "Name": "Spatial Correlation",
-            "Abstract": "Compute Spatial Correlation",
-            "Contact": "pcmdi-metrics@llnl.gov",
-        }
-    spatial_weights = dm.spatial.get_weights(axis=['X', 'Y'])
-    dm_avg = float(dm.spatial.average(var, axis=['X', 'Y'])[var].values)
-    do_avg = float(do.spatial.average(var, axis=['X', 'Y'])[var].values)
-    
-    covariance = float(((dm[var] - dm_avg) * (do[var] - do_avg)).cf.weighted(spatial_weights).mean(dim=['lon', 'lat']).values)
-    std_dm = std_xy(dm, var)
-    std_do = std_xy(do, var)
-    stat = covariance / (std_dm * std_do)
-    return float(stat)
-
-
-def mean_xy(d, var=None):
-    """Computes bias"""
-    if d is None:  # just want the doc
-        return {
-            "Name": "Mean",
-            "Abstract": "Area Mean (area weighted)",
-            "Contact": "pcmdi-metrics@llnl.gov",
-        }
-    stat = d.spatial.average(var, axis=['X', 'Y'])[var].values
-    return float(stat)
-
-
-def meanabs_xy(dm, do, var=None):
-    """Computes Mean Absolute Error"""
-    if dm is None and do is None:  # just want the doc
-        return {
-            "Name": "Mean Absolute Error",
-            "Abstract": "Compute Full Average of "
-            + "Absolute Difference Between Model And Observation",
-            "Contact": "pcmdi-metrics@llnl.gov",
-        }
-    dm['absdif'] = abs(dm[var] - do[var])
-    stat = dm.spatial.average('absdif', axis=['X', 'Y'])['absdif'].values
-    return float(stat)
-
-
-def meanabs_xyt(dm, do, var=None):
-    """Computes Mean Absolute Error"""
-    if dm is None and do is None:  # just want the doc
-        return {
-            "Name": "Mean Absolute Error",
-            "Abstract": "Compute Full Average of "
-            + "Absolute Difference Between Model And Observation",
-            "Contact": "pcmdi-metrics@llnl.gov",
-        }
-    dm['absdif'] = abs(dm[var] - do[var])
-    stat = dm.spatial.average('absdif', axis=['X', 'Y']).temporal.average('absdif')['absdif'].values
-    return float(stat)
-
-
-def rms_0(dm, do, var=None):
-    """Computes rms over first axis"""
-    if dm is None and do is None:  # just want the doc
-        return {
-            "Name": "Root Mean Square over First Axis",
-            "Abstract": "Compute Root Mean Square over the first axis",
-            "Contact": "pcmdi-metrics@llnl.gov",
-        }
-    dm['diff_square'] = (dm[var] - do[var])**2
-    stat = math.sqrt(dm.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'].values)
-    return float(stat)
-
-
-def rms_xy(dm, do, var=None):
-    """Computes rms"""
-    if dm is None and do is None:  # just want the doc
-        return {
-            "Name": "Spatial Root Mean Square",
-            "Abstract": "Compute Spatial Root Mean Square",
-            "Contact": "pcmdi-metrics@llnl.gov",
-        }
-    dm['diff_square'] = (dm[var] - do[var])**2
-    stat = math.sqrt(dm.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'].values)
-    return float(stat)
-
-
-def rms_xyt(dm, do, var=None):
-    """Computes rms"""
-    if dm is None and do is None:  # just want the doc
-        return {
-            "Name": "Spatio-Temporal Root Mean Square",
-            "Abstract": "Compute Spatial and Temporal Root Mean Square",
-            "Contact": "pcmdi-metrics@llnl.gov",
-        }
-    dm['diff_square'] = (dm[var] - do[var])**2
-    dm['diff_square_sqrt'] = np.sqrt(dm.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'])
-    stat = dm.temporal.average('diff_square_sqrt')['diff_square_sqrt'].values   
-    return float(stat)
-
-
-def rmsc_xy(dm, do, var=None):
-    """Computes centered rms"""
-    if dm is None and do is None:  # just want the doc
-        return {
-            "Name": "Spatial Root Mean Square",
-            "Abstract": "Compute Centered Spatial Root Mean Square",
-            "Contact": "pcmdi-metrics@llnl.gov",
-        }
-    dm['anomaly'] = dm[var] - dm.spatial.average(var, axis=['X', 'Y'])[var]
-    do['anomaly'] = do[var] - do.spatial.average(var, axis=['X', 'Y'])[var]
-    dm['diff_square'] = (dm['anomaly'] - do['anomaly'])**2
-    stat = math.sqrt(dm.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'].values)
-    return float(stat)
-
-
 def seasonal_mean(d, sea, var=None):
     """Computes SEASONAL MEAN"""
     if d is None and season is None:  # just want the doc
@@ -189,19 +49,183 @@ def seasonal_mean(d, sea, var=None):
     return d_season
 
 
-def std_xy(d, var=None):
+# Metrics calculations
+
+
+def bias_xy(dm, do, var=None, weights=None):
+    """Computes bias"""
+    if dm is None and do is None:  # just want the doc
+        return {
+            "Name": "Bias",
+            "Abstract": "Compute Full Average of Model - Observation",
+            "Contact": "pcmdi-metrics@llnl.gov",
+        }
+    dif = dm[var] - do[var]
+    if weights is None:
+        weights = dm.spatial.get_weights(axis=['X', 'Y'])
+    stat = float(dif.weighted(weights).mean(("lon", "lat")))
+    return float(stat)
+
+
+def bias_xyt(dm, do, var=None):
+    """Computes bias"""
+    if dm is None and do is None:  # just want the doc
+        return {
+            "Name": "Bias",
+            "Abstract": "Compute Full Average of Model - Observation",
+            "Contact": "pcmdi-metrics@llnl.gov",
+        }
+    ds = dm.copy(deep=True)
+    ds['dif'] = dm[var] - do[var]
+    stat = ds.spatial.average('dif', axis=['X', 'Y']).temporal.average('dif')['dif'].values
+    return float(stat)
+
+
+def cor_xy(dm, do, var=None, weights=None):
+    """Computes correlation"""
+    if dm is None and do is None:  # just want the doc
+        return {
+            "Name": "Spatial Correlation",
+            "Abstract": "Compute Spatial Correlation",
+            "Contact": "pcmdi-metrics@llnl.gov",
+        }
+    if weights is None:
+        weights = dm.spatial.get_weights(axis=['X', 'Y'])
+    
+    dm_avg = dm.spatial.average(var, axis=['X', 'Y'], weights=weights)[var].values
+    do_avg = do.spatial.average(var, axis=['X', 'Y'], weights=weights)[var].values
+    
+    covariance = ((dm[var] - dm_avg) * (do[var] - do_avg)).weighted(weights).mean(dim=['lon', 'lat']).values
+    std_dm = std_xy(dm, var)
+    std_do = std_xy(do, var)
+    stat = covariance / (std_dm * std_do)
+    
+    return float(stat)
+
+
+def mean_xy(d, var=None, weights=None):
+    """Computes bias"""
+    if d is None:  # just want the doc
+        return {
+            "Name": "Mean",
+            "Abstract": "Area Mean (area weighted)",
+            "Contact": "pcmdi-metrics@llnl.gov",
+        }
+    
+    if weights is None:
+        weights = d.spatial.get_weights(axis=['X', 'Y'])
+    stat = float(d[var].weighted(weights).mean(("lon", "lat")))
+    return float(stat)
+
+
+def meanabs_xy(dm, do, var=None, weights=None):
+    """Computes Mean Absolute Error"""
+    if dm is None and do is None:  # just want the doc
+        return {
+            "Name": "Mean Absolute Error",
+            "Abstract": "Compute Full Average of "
+            + "Absolute Difference Between Model And Observation",
+            "Contact": "pcmdi-metrics@llnl.gov",
+        }
+    if weights is None:
+        weights = dm.spatial.get_weights(axis=['X', 'Y'])
+    dif = abs(dm[var] - do[var])
+    stat = dif.weighted(weights).mean(("lon", "lat"))
+    return float(stat)
+
+
+def meanabs_xyt(dm, do, var=None):
+    """Computes Mean Absolute Error"""
+    if dm is None and do is None:  # just want the doc
+        return {
+            "Name": "Mean Absolute Error",
+            "Abstract": "Compute Full Average of "
+            + "Absolute Difference Between Model And Observation",
+            "Contact": "pcmdi-metrics@llnl.gov",
+        }
+    ds = dm.copy(deep=True)
+    ds['absdif'] = abs(dm[var] - do[var])
+    stat = ds.spatial.average('absdif', axis=['X', 'Y']).temporal.average('absdif')['absdif'].values
+    return float(stat)
+
+
+def rms_0(dm, do, var=None):
+    """Computes rms over first axis"""
+    if dm is None and do is None:  # just want the doc
+        return {
+            "Name": "Root Mean Square over First Axis",
+            "Abstract": "Compute Root Mean Square over the first axis",
+            "Contact": "pcmdi-metrics@llnl.gov",
+        }
+    dm['diff_square'] = (dm[var] - do[var])**2
+    stat = math.sqrt(dm.spatial.average('diff_square', axis=['Y'])['diff_square'].values)
+    return float(stat)
+
+
+def rms_xy(dm, do, var=None):
+    """Computes rms"""
+    if dm is None and do is None:  # just want the doc
+        return {
+            "Name": "Spatial Root Mean Square",
+            "Abstract": "Compute Spatial Root Mean Square",
+            "Contact": "pcmdi-metrics@llnl.gov",
+        }
+    dif_square = (dm[var] - do[var])**2
+    weights = dm.spatial.get_weights(axis=['X', 'Y'])
+    stat = math.sqrt(dif_square.weighted(weights).mean(("lon", "lat")))
+    return float(stat)
+
+
+def rms_xyt(dm, do, var=None):
+    """Computes rms"""
+    if dm is None and do is None:  # just want the doc
+        return {
+            "Name": "Spatio-Temporal Root Mean Square",
+            "Abstract": "Compute Spatial and Temporal Root Mean Square",
+            "Contact": "pcmdi-metrics@llnl.gov",
+        }
+    ds = dm.copy(deep=True)
+    ds['diff_square'] = (dm[var] - do[var])**2
+    ds['diff_square_sqrt'] = np.sqrt(ds.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'])
+    stat = ds.temporal.average('diff_square_sqrt')['diff_square_sqrt'].values   
+    return float(stat)
+
+
+def rmsc_xy(dm, do, var=None, weights=None):
+    """Computes centered rms"""
+    if dm is None and do is None:  # just want the doc
+        return {
+            "Name": "Spatial Root Mean Square",
+            "Abstract": "Compute Centered Spatial Root Mean Square",
+            "Contact": "pcmdi-metrics@llnl.gov",
+        }
+    if weights is None:
+        weights = dm.spatial.get_weights(axis=['X', 'Y'])
+        
+    dm_anomaly = dm[var] - dm[var].weighted(weights).mean(("lon", "lat"))
+    do_anomaly = do[var] - do[var].weighted(weights).mean(("lon", "lat"))
+    diff_square = (dm_anomaly - do_anomaly)**2
+
+    stat = math.sqrt(diff_square.weighted(weights).mean(("lon", "lat")))
+    return float(stat)
+
+
+def std_xy(d, var=None, weights=None):
     """Computes std"""
     if d is None:  # just want the doc
         return {
             "Name": "Spatial Standard Deviation",
             "Abstract": "Compute Spatial Standard Deviation",
             "Contact": "pcmdi-metrics@llnl.gov",
-        }
+        }    
+    
     average = float(d.spatial.average(var, axis=['X', 'Y'])[var].values)
-    d['anomaly'] = (d[var] - average)**2
-    variance = float(d.spatial.average('anomaly')['anomaly'].values)
+    anomaly = (d[var] - average)**2
+    if weights is None:
+        weights = d.spatial.get_weights(axis=['X', 'Y'])
+    variance = float(anomaly.weighted(weights).mean(("lon", "lat")))
     std = math.sqrt(variance)
-    return(std)
+    return float(std)
 
 
 def std_xyt(d, var=None):
@@ -212,9 +236,10 @@ def std_xyt(d, var=None):
             "Abstract": "Compute Space-Time Standard Deviation",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    average = float(d.spatial.average(var, axis=['X', 'Y']).temporal.average(var)[var].values)
-    d['anomaly'] = (d[var] - average)**2
-    variance = float(d.spatial.average('anomaly').temporal.average('anomaly')['anomaly'].values)
+    ds = d.copy(deep=True)
+    average = d.spatial.average(var, axis=['X', 'Y']).temporal.average(var)[var]
+    ds['anomaly'] = (d[var] - average)**2
+    variance = ds.spatial.average('anomaly').temporal.average('anomaly')['anomaly'].values
     std = math.sqrt(variance)
     return(std)
 
