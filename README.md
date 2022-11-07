@@ -1,9 +1,12 @@
-<img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" width="15%" height="15%" align="right" />
-<h5 align="right"></h5>
+<div>
+<img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" height="90" align="right" />
+<img src="share/pcmdi/PCMDILogo_400x131px_72dpi.png" height="60" align="right" />
+</div>
 
+<br><br><br><br>
 
-PCMDI Metrics Package (PMP)
----------------------------
+# PCMDI Metrics Package (PMP)
+
 
 [![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 ![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg)
