@@ -149,16 +149,20 @@ def meanabs_xyt(dm, do, var=None):
     return float(stat)
 
 
-def rms_0(dm, do, var=None):
-    """Computes rms over first axis"""
+def rms_0(dm, do, var=None, weighted=True):
+    """Computes rms over first axis -- compare two zonal mean fields"""
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Root Mean Square over First Axis",
             "Abstract": "Compute Root Mean Square over the first axis",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    dm['diff_square'] = (dm[var] - do[var])**2
-    stat = math.sqrt(dm.spatial.average('diff_square', axis=['Y'])['diff_square'].values)
+    dif_square = (dm[var] - do[var])**2
+    if weighted:
+        weights = dm.spatial.get_weights(axis=['Y'])
+        stat = math.sqrt(dif_square.weighted(weights).mean(("lat")))
+    else:
+        stat = math.sqrt(dif_square.mean(("lat")))
     return float(stat)
 
 
