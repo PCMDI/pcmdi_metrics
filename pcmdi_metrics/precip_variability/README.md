@@ -16,5 +16,4 @@ Reference: Ahn, M.-S., P. J. Gleckler, J. Lee, A. G. Pendergrass, and C. Jakob, 
 ## Run scripts:
 - `scripts_pcmdi/`
   - `run_obs.bash`
-  - `run_cmip5.bash`
-  - `run_cmip6.bash`
+  - `run_parallel.wait.bash`
