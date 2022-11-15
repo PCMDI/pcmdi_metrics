@@ -48,7 +48,7 @@ jobs:
     defaults:
       run:
         shell: bash -l {0}
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
 
