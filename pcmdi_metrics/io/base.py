@@ -386,6 +386,12 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             ds = xcdat_open(self(), data_var=var_in_file, decode_times=True)
         except:
             ds = xcdat_open(self(), data_var=var_in_file, decode_times=False)  # Temporary part to read in cdms written obs4MIP AC files
+
+        if 'level' in list(kwargs.keys()):
+            print("jwlee-test extract_var_from_file kwargs['level']:", kwargs['level'])
+            level = kwargs['level']
+            ds = ds.sel(plev=level)
+
         extracted_var = ds
         
         return extracted_var
