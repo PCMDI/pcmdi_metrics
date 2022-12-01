@@ -17,7 +17,7 @@ def annual_mean(dm, do, var=None):
     return dm_am, do_am  # DataSets
 
 
-def seasonal_mean(d, sea, var=None):
+def seasonal_mean(d, season, var=None):
     """Computes SEASONAL MEAN"""
     if d is None and season is None:  # just want the doc
         return {
@@ -45,8 +45,11 @@ def seasonal_mean(d, sea, var=None):
         + d.isel(time=indx[1])[var] * mo_wts[indx[1]]
         + d.isel(time=indx[2])[var] * mo_wts[indx[2]]
     ) / season_num_days
+    
+    ds_new = d.isel(time=0).copy(deep=True)
+    ds_new[var] = d_season
 
-    return d_season
+    return ds_new
 
 
 # Metrics calculations
@@ -189,9 +192,12 @@ def rms_xyt(dm, do, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     ds = dm.copy(deep=True)
+    print('jwlee-test-rms_xyt-1')
     ds['diff_square'] = (dm[var] - do[var])**2
     ds['diff_square_sqrt'] = np.sqrt(ds.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'])
+    print('jwlee-test-rms_xyt-2')
     stat = ds.temporal.average('diff_square_sqrt')['diff_square_sqrt'].values   
+    print('jwlee-test-rms_xyt-3')
     return float(stat)
 
 

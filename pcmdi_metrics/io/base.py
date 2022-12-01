@@ -167,6 +167,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         type="json",
         mode="w",
         include_YAML=False,
+        include_history=False,
         include_script=False,
         *args,
         **kwargs,
@@ -217,6 +218,10 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                 if "script" in out_dict["provenance"].keys():
                     del out_dict["provenance"]["script"]
 
+            if not include_history:
+                if "history" in out_dict["provenance"].keys():
+                    del out_dict["provenance"]["history"]
+
             json.dump(out_dict, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 
@@ -227,11 +232,14 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             f.close()
 
         elif self.type == "nc":
+            """
             f = cdms2.open(file_name, "w")
             f.write(data, *args, **kwargs)
             f.metrics_git_sha1 = pcmdi_metrics.__git_sha1__
             f.uvcdat_version = cdat_info.get_version()
             f.close()
+            """
+            data.to_netcdf(file_name)
 
         else:
             logging.getLogger("pcmdi_metrics").error("Unknown type: %s" % type)
@@ -374,7 +382,10 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         extracted_var = var_file(var_in_file, *args, **kwargs)
         var_file.close()
         """
-        ds = xcdat_open(self(), data_var=var_in_file, decode_times=False)
+        try:
+            ds = xcdat_open(self(), data_var=var_in_file, decode_times=True)
+        except:
+            ds = xcdat_open(self(), data_var=var_in_file, decode_times=False)  # Temporary part to read in cdms written obs4MIP AC files
         extracted_var = ds
         
         return extracted_var

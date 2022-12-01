@@ -344,6 +344,8 @@ class OutputMetrics(object):
         clim_file.region = region_name
         clim_file.realization = self.parameter.realization
         DataSet.apply_custom_keys(clim_file, self.parameter.custom_keys, self.var)
+        print('jwlee-test outputmetrics clim_file.write')
+        print('type(test_data):', type(test_data))
         clim_file.write(test_data, type="nc", id=self.var)
 
     def get_region_name_from_region(self, region):
