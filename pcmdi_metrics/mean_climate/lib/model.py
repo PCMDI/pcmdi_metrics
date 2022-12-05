@@ -5,12 +5,12 @@ import cdms2
 import cdutil
 import MV2
 
-import pcmdi_metrics.driver.dataset
 from pcmdi_metrics import LOG_LEVEL
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.mean_climate.lib.dataset import DataSet
 
 
-class Model(pcmdi_metrics.driver.dataset.DataSet):
+class Model(DataSet):
     """Handles all the computation (setting masking, target grid, etc)
     and some file I/O related to models."""
 
@@ -58,6 +58,7 @@ class Model(pcmdi_metrics.driver.dataset.DataSet):
     def get(self):
         """Gets the variable based on the region and level (if given) for
         the file from data_path, which is defined in the initalizer."""
+        print('jwlee-test-get: self.var_in_file, self.region:', self.var_in_file, self.region)
         try:
             if self.level is None:
                 data_model = self._model_file.get(

@@ -15,5 +15,6 @@ ch.setFormatter(formatter)
 plog.addHandler(ch)
 plog.setLevel(LOG_LEVEL)
 from . import io  # noqa
-from . import pcmdi  # noqa
+#from . import pcmdi  # noqa
+#from . import mean_climate  # noqa
 from .version import __git_sha1__, __git_tag_describe__, __version__  # noqa

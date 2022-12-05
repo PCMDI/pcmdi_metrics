@@ -4,11 +4,11 @@ import os
 
 import cdms2
 
-import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
-from pcmdi_metrics.driver.dataset import DataSet
-from pcmdi_metrics.driver.observation import Observation
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.mean_climate.lib import compute_metrics
+from pcmdi_metrics.mean_climate.lib.dataset import DataSet
+from pcmdi_metrics.mean_climate.lib.observation import Observation
 
 try:
     basestring  # noqa
@@ -120,6 +120,10 @@ class OutputMetrics(object):
 
         self.metrics_dictionary["References"][ref.obs_or_model] = self.obs_var_ref
 
+        print('jwlee-test-calculate_and_output_metrics, self.obs_var_ref:', self.obs_var_ref)
+
+        ref_data = None
+
         try:
             ref_data = ref()
         except Exception as e:
@@ -139,15 +143,29 @@ class OutputMetrics(object):
             raise RuntimeError("Need to skip model: %s" % test.obs_or_model)
 
         # Todo: Make this a fcn
-        self.set_grid_in_metrics_dictionary(test_data)
+        print('jwlee-test-calculate_and_output_metrics, grid_in_metrics_dict start')
+        self.set_grid_in_metrics_dictionary(test_data, self.var)
+        print('jwlee-test-calculate_and_output_metrics, grid_in_metrics_dict done')
+        print('jwlee-test type(ref_data), type(test_data):', type(ref_data), type(test_data))
+        print('jwlee-test ref_data:', ref_data)
+        print('jwlee-test test_data:', test_data)
+        print('jwlee-test ref_data[self.var]:', ref_data[self.var])
+        print('jwlee-test test_data[self.var]:', test_data[self.var])
+        print('jwlee-test ref_data[self.var].shape:', ref_data[self.var].shape)
+        print('jwlee-test test_data[self.var].shape:', test_data[self.var].shape)
 
-        if ref_data.shape != test_data.shape:
+        # if ref_data.shape != test_data.shape:
+        if ref_data[self.var].shape != test_data[self.var].shape:
+            print('jwlee-test raise runtime error')
             raise RuntimeError(
-                "Two data sets have different shapes. %s vs %s"
-                % (ref_data.shape, test_data.shape)
+                "Two data sets have different shapes. {} vs {}".format(
+                    str(ref_data[self.var].shape), str(test_data[self.var].shape))
+                # % (ref_data.shape, test_data.shape)
             )
 
+        print('jwlee-test-calculate_and_output_metrics, set_simulation_desc start')
         self.set_simulation_desc(test, test_data)
+        print('jwlee-test-calculate_and_output_metrics, set_simulation_desc done')
 
         if (
             ref.obs_or_model
@@ -162,14 +180,18 @@ class OutputMetrics(object):
         ].get(self.parameter.realization, {})
 
         if not self.parameter.dry_run:
-            pr_rgn = pcmdi_metrics.pcmdi.compute_metrics(
+            print('jwlee-test-calculate_and_output_metrics, compute_metrics start')
+            print('jwlee-test-calculate_and_output_metrics, self.var_name_long:', self.var_name_long)
+
+            pr_rgn = compute_metrics(
                 self.var_name_long, test_data, ref_data
             )
+            print('jwlee-test-calculate_and_output_metrics, compute_metrics done')
 
             # Calling compute_metrics with None for the model and obs returns
             # the definitions.
             self.metrics_def_dictionary.update(
-                pcmdi_metrics.pcmdi.compute_metrics(self.var_name_long, None, None)
+                compute_metrics(self.var_name_long, None, None)
             )
             if hasattr(self.parameter, "compute_custom_metrics"):
                 pr_rgn.update(
@@ -204,14 +226,20 @@ class OutputMetrics(object):
         else:
             self.write_on_exit(False)
 
-    def set_grid_in_metrics_dictionary(self, test_data):
+    def set_grid_in_metrics_dictionary(self, test_data, var):
         """Set the grid in metrics_dictionary."""
+        print('jwlee-test set_grid_in_metrics_dictionary start')
         grid = {}
         grid["RegridMethod"] = self.regrid_method
         grid["RegridTool"] = self.regrid_tool
         grid["GridName"] = self.parameter.target_grid
-        grid["GridResolution"] = test_data.shape[1:]
+        print('jwlee-test set_grid_in_metrics_dictionary middle')
+        print('jwlee-test var:', var)
+        # print('jwlee-test dir(test_data):', dir(test_data))
+        # grid["GridResolution"] = test_data.shape[1:]
+        grid["GridResolution"] = test_data[var].shape[1:]
         self.metrics_dictionary["GridInfo"] = grid
+        print('jwlee-test set_grid_in_metrics_dictionary done')
 
     def set_simulation_desc(self, test, test_data):
         """Fillout information for the output .json and .txt files."""
@@ -308,6 +336,8 @@ class OutputMetrics(object):
         clim_file.region = region_name
         clim_file.realization = self.parameter.realization
         DataSet.apply_custom_keys(clim_file, self.parameter.custom_keys, self.var)
+        print('jwlee-test outputmetrics clim_file.write')
+        print('type(test_data):', type(test_data))
         clim_file.write(test_data, type="nc", id=self.var)
 
     def get_region_name_from_region(self, region):

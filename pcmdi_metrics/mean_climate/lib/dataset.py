@@ -5,6 +5,7 @@ import sys
 
 import cdms2
 import cdutil
+import xcdat
 from six import with_metaclass
 
 from pcmdi_metrics import resources
@@ -94,14 +95,20 @@ class DataSet(with_metaclass(abc.ABCMeta, object)):
                 sftlf[test] = {"raw": None}
                 sftlf[test]["filename"] = None
                 sftlf[test]["md5"] = None
+        print('jwlee-test-target_grid-create')
         if parameter.target_grid == "2.5x2.5":
-            t_grid = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
+            t_grid_cdms2 = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
+            t_grid = xcdat.create_uniform_grid(-88.875, 88.625, 2.5, 0, 357.5, 2.5)
         else:
             t_grid = parameter.target_grid
+        print('jwlee-test-target_grid-create done')
+        print('jwlee-test-target_grid-create t_grid:', t_grid)
 
-        sft = cdutil.generateLandSeaMask(t_grid)
+        # sft = cdutil.generateLandSeaMask(t_grid)
+        sft = cdutil.generateLandSeaMask(t_grid_cdms2)
         sft[:] = sft.filled(1.0) * 100.0
         sftlf["target_grid"] = sft
+        print('jwlee-test-target_grid, type(sft), sft.shape:', type(sft), sft.shape)
 
         return sftlf
 

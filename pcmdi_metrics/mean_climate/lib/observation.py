@@ -3,8 +3,8 @@ import logging
 import MV2
 
 from pcmdi_metrics import LOG_LEVEL
-from pcmdi_metrics.driver.dataset import DataSet
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.mean_climate.lib.dataset import DataSet
 
 try:
     basestring  # noqa
@@ -132,6 +132,7 @@ class Observation(DataSet):
         """Gets the variable based on the region and level (if given) for
         the file from data_path, which is defined in the initializer."""
         try:
+            print('jwlee-test-observation-get, self.level:', self.level)
             if self.level is not None:
                 data_obs = self._obs_file.get(
                     self.var, level=self.level, region=self.region
