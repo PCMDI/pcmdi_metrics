@@ -1,10 +1,6 @@
-
-#import cdms2 as cdms
-#import MV2
-#from genutil import grower
+import collections
 
 import pcmdi_metrics
-import collections
 
 
 def compute_metrics(Var, dm, do):
@@ -32,7 +28,7 @@ def compute_metrics(Var, dm, do):
         metrics_defs["zonal_mean"] = pcmdi_metrics.mean_climate.lib.zonal_mean(None, None)
         return metrics_defs
 
-    #cdms.setAutoBounds("on")
+    # cdms.setAutoBounds("on")
     print('var: ', var)
 
     # Below is temporary...
@@ -50,7 +46,6 @@ def compute_metrics(Var, dm, do):
     print("do.time.encoding['calendar']: ", do.time.encoding['calendar'])
     """
     metrics_dictionary = {}
-
 
     # SET CONDITIONAL ON INPUT VARIABLE
     if var == "pr":

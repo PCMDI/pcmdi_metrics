@@ -102,8 +102,9 @@ class DataSet(with_metaclass(abc.ABCMeta, object)):
         else:
             t_grid = parameter.target_grid
         print('jwlee-test-target_grid-create done')
+        print('jwlee-test-target_grid-create t_grid:', t_grid)
 
-        #sft = cdutil.generateLandSeaMask(t_grid)
+        # sft = cdutil.generateLandSeaMask(t_grid)
         sft = cdutil.generateLandSeaMask(t_grid_cdms2)
         sft[:] = sft.filled(1.0) * 100.0
         sftlf["target_grid"] = sft

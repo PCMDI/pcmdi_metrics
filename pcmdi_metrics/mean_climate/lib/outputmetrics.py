@@ -6,9 +6,9 @@ import cdms2
 
 from pcmdi_metrics import LOG_LEVEL
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.mean_climate.lib import compute_metrics
 from pcmdi_metrics.mean_climate.lib.dataset import DataSet
 from pcmdi_metrics.mean_climate.lib.observation import Observation
-from pcmdi_metrics.mean_climate.lib import compute_metrics
 
 try:
     basestring  # noqa
@@ -124,16 +124,13 @@ class OutputMetrics(object):
 
         ref_data = None
 
-        #try:
-        if 1:
+        try:
             ref_data = ref()
-        """
         except Exception as e:
             msg = "Error while processing observation %s for variables %s:\n\t%s"
             logging.getLogger("pcmdi_metrics").error(
                 msg % (ref.obs_or_model, self.var, str(e))
             )
-        """
 
         if ref_data is None:  # Something went bad!
             raise RuntimeError("Could not load reference {}".format(ref.obs_or_model))
@@ -146,14 +143,9 @@ class OutputMetrics(object):
             raise RuntimeError("Need to skip model: %s" % test.obs_or_model)
 
         # Todo: Make this a fcn
-        #print('jwlee-test-calculate_and_output_metrics, type(test):', type(test))
-        #print('jwlee-test-2-1, test().shape:', test().shape)
-        #print('jwlee-test-2-2, test_data.shape:', test_data.shape)
         print('jwlee-test-calculate_and_output_metrics, grid_in_metrics_dict start')
         self.set_grid_in_metrics_dictionary(test_data, self.var)
         print('jwlee-test-calculate_and_output_metrics, grid_in_metrics_dict done')
-        #print('jwlee-test-2-3, test_data.shape:', test_data.shape)
-
         print('jwlee-test type(ref_data), type(test_data):', type(ref_data), type(test_data))
         print('jwlee-test ref_data:', ref_data)
         print('jwlee-test test_data:', test_data)
@@ -162,13 +154,13 @@ class OutputMetrics(object):
         print('jwlee-test ref_data[self.var].shape:', ref_data[self.var].shape)
         print('jwlee-test test_data[self.var].shape:', test_data[self.var].shape)
 
-        #if ref_data.shape != test_data.shape:
+        # if ref_data.shape != test_data.shape:
         if ref_data[self.var].shape != test_data[self.var].shape:
             print('jwlee-test raise runtime error')
             raise RuntimeError(
                 "Two data sets have different shapes. {} vs {}".format(
-                str(ref_data[self.var].shape), str(test_data[self.var].shape))
-                #% (ref_data.shape, test_data.shape)
+                    str(ref_data[self.var].shape), str(test_data[self.var].shape))
+                # % (ref_data.shape, test_data.shape)
             )
 
         print('jwlee-test-calculate_and_output_metrics, set_simulation_desc start')
@@ -190,7 +182,7 @@ class OutputMetrics(object):
         if not self.parameter.dry_run:
             print('jwlee-test-calculate_and_output_metrics, compute_metrics start')
             print('jwlee-test-calculate_and_output_metrics, self.var_name_long:', self.var_name_long)
-         
+
             pr_rgn = compute_metrics(
                 self.var_name_long, test_data, ref_data
             )
@@ -243,8 +235,8 @@ class OutputMetrics(object):
         grid["GridName"] = self.parameter.target_grid
         print('jwlee-test set_grid_in_metrics_dictionary middle')
         print('jwlee-test var:', var)
-        #print('jwlee-test dir(test_data):', dir(test_data))
-        #grid["GridResolution"] = test_data.shape[1:]
+        # print('jwlee-test dir(test_data):', dir(test_data))
+        # grid["GridResolution"] = test_data.shape[1:]
         grid["GridResolution"] = test_data[var].shape[1:]
         self.metrics_dictionary["GridInfo"] = grid
         print('jwlee-test set_grid_in_metrics_dictionary done')

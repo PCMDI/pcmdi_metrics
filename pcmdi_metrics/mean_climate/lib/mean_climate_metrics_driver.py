@@ -104,7 +104,8 @@ class PMPDriver(object):
         from default_regions.py and stores them as attributes."""
         default_regions_file = (
             DataSet.load_path_as_file_obj(
-                "default_regions.py"
+                # "default_regions.py"
+                "default_regions_xcdat.py"
             )
         )
         exec(
@@ -212,13 +213,11 @@ class PMPDriver(object):
                     )
                     break
 
-                #try:
-                if 1:
+                try:
                     print('jwlee-test-2: type(self), ref, tst:', type(self), ref, tst)
                     print('jwlee-test-2: self.var, self.var_name_long:', self.var, self.var_name_long)
                     print('jwlee-test-2: tst()[self.var].shape:', tst()[self.var].shape)
                     self.output_metric.calculate_and_output_metrics(ref, tst)
-                """
                 except RuntimeError:
                     continue
                 except Exception as err:
@@ -229,7 +228,6 @@ class PMPDriver(object):
                     )
                     logging.getLogger("pcmdi_metrics").info(err_msg)
                     break
-                """
 
     def is_data_set_obs(self, data_set):
         """Is data_set (which is either a test or reference) an obs?"""

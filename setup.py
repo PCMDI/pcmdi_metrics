@@ -103,6 +103,7 @@ data_files = (
             "share/test_data_files.txt",
             "share/cmip_model_list.json",
             "share/default_regions.py",
+            #"share/default_regions_xcdat.py",
             "share/DefArgsCIA.json",
         ),
     ),

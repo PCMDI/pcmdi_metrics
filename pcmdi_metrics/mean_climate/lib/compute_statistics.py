@@ -1,5 +1,5 @@
-import xcdat
 import math
+
 import numpy as np
 
 
@@ -39,13 +39,13 @@ def seasonal_mean(d, season, var=None):
         indx = [8, 9, 10]
 
     season_num_days = mo_wts[indx[0]] + mo_wts[indx[1]] + mo_wts[indx[2]]
-    
+
     d_season = (
         d.isel(time=indx[0])[var] * mo_wts[indx[0]]
         + d.isel(time=indx[1])[var] * mo_wts[indx[1]]
         + d.isel(time=indx[2])[var] * mo_wts[indx[2]]
     ) / season_num_days
-    
+
     ds_new = d.isel(time=0).copy(deep=True)
     ds_new[var] = d_season
 
@@ -94,15 +94,15 @@ def cor_xy(dm, do, var=None, weights=None):
         }
     if weights is None:
         weights = dm.spatial.get_weights(axis=['X', 'Y'])
-    
+
     dm_avg = dm.spatial.average(var, axis=['X', 'Y'], weights=weights)[var].values
     do_avg = do.spatial.average(var, axis=['X', 'Y'], weights=weights)[var].values
-    
+
     covariance = ((dm[var] - dm_avg) * (do[var] - do_avg)).weighted(weights).mean(dim=['lon', 'lat']).values
     std_dm = std_xy(dm, var)
     std_do = std_xy(do, var)
     stat = covariance / (std_dm * std_do)
-    
+
     return float(stat)
 
 
@@ -114,7 +114,7 @@ def mean_xy(d, var=None, weights=None):
             "Abstract": "Area Mean (area weighted)",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    
+
     if weights is None:
         weights = d.spatial.get_weights(axis=['X', 'Y'])
     stat = float(d[var].weighted(weights).mean(("lon", "lat")))
@@ -196,7 +196,7 @@ def rms_xyt(dm, do, var=None):
     ds['diff_square'] = (dm[var] - do[var])**2
     ds['diff_square_sqrt'] = np.sqrt(ds.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'])
     print('jwlee-test-rms_xyt-2')
-    stat = ds.temporal.average('diff_square_sqrt')['diff_square_sqrt'].values   
+    stat = ds.temporal.average('diff_square_sqrt')['diff_square_sqrt'].values
     print('jwlee-test-rms_xyt-3')
     return float(stat)
 
@@ -211,7 +211,7 @@ def rmsc_xy(dm, do, var=None, weights=None):
         }
     if weights is None:
         weights = dm.spatial.get_weights(axis=['X', 'Y'])
-        
+
     dm_anomaly = dm[var] - dm[var].weighted(weights).mean(("lon", "lat"))
     do_anomaly = do[var] - do[var].weighted(weights).mean(("lon", "lat"))
     diff_square = (dm_anomaly - do_anomaly)**2
@@ -227,8 +227,8 @@ def std_xy(d, var=None, weights=None):
             "Name": "Spatial Standard Deviation",
             "Abstract": "Compute Spatial Standard Deviation",
             "Contact": "pcmdi-metrics@llnl.gov",
-        }    
-    
+        }
+
     average = float(d.spatial.average(var, axis=['X', 'Y'])[var].values)
     anomaly = (d[var] - average)**2
     if weights is None:
