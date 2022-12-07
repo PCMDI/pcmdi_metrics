@@ -141,7 +141,7 @@ def load_and_regrid(data_path, var, t_grid):
     Args:
         data_path (str): full data path for nc or xml file
         var (str): variable name
-        t_grid (_type_): _description_
+        t_grid (xarray.core.dataset.Dataset): target grid to regrid
     """
     print('123')
 
