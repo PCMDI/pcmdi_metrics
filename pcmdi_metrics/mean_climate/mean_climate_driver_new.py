@@ -103,12 +103,8 @@ def main():
                 reference_data_path,
                 obs_dict[varname][ref_dataset_name]["template"])
             print('ref_data_full_path:', ref_data_full_path)
-            # load data
-            ds_ref = xcdat_open(ref_data_full_path, data_var=var, decode_times=False)  # NOTE: decode_times=False will be removed once obs4MIP written using xcdat
-            print('ds_ref:', ds_ref)
-            # regrid
-            ds_ref_regridded = ds_ref.regridder.horizontal(var, t_grid, tool=regrid_tool)
-            print('ds_ref_regridded:', ds_ref_regridded)
+            # load data and regrid
+            ds_ref = load_and_regrid(ref_data_full_path, var, t_grid, decode_times=False, regrid_tool=regrid_tool, debug=True)
 
             # ----------
             # model loop
@@ -135,17 +131,26 @@ def main():
         # write JSON for all models / all obs / single variable
 
 
-def load_and_regrid(data_path, var, t_grid):
-    """_summary_
+def load_and_regrid(data_path, var, t_grid, decode_times=True, regrid_tool='regrid2', debug=False):
+    """Load data and regrid to target grid
 
     Args:
         data_path (str): full data path for nc or xml file
         var (str): variable name
         t_grid (xarray.core.dataset.Dataset): target grid to regrid
+        decode_times (bool): Default is True. decode_times=False will be removed once obs4MIP written using xcdat
+        regrid_tool (str): Name of the regridding tool. See https://xcdat.readthedocs.io/en/stable/generated/xarray.Dataset.regridder.horizontal.html for more info
+        debug (bool): Default is False. If True, print more info to help debugging process
     """
-    print('123')
-
-
+    # load data
+    ds = xcdat_open(data_path, data_var=var, decode_times=decode_times)  # NOTE: decode_times=False will be removed once obs4MIP written using xcdat
+    if debug:
+        print('ds_ref:', ds)
+    # regrid
+    ds_regridded = ds.regridder.horizontal(var, t_grid, tool=regrid_tool)
+    if debug:
+        print('ds_regridded:', ds_regridded)
+    return ds_regridded
 
 
 if __name__ == "__main__":
