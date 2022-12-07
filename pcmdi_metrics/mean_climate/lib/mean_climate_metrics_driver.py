@@ -104,8 +104,8 @@ class PMPDriver(object):
         from default_regions.py and stores them as attributes."""
         default_regions_file = (
             DataSet.load_path_as_file_obj(
-                # "default_regions.py"
-                "default_regions_xcdat.py"
+                "default_regions.py"
+                # "default_regions_xcdat.py"
             )
         )
         exec(

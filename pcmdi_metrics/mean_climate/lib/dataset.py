@@ -73,10 +73,12 @@ class DataSet(with_metaclass(abc.ABCMeta, object)):
         """Create the sftlf file from the parameter."""
         sftlf = {}
 
+        print('jwlee-test_create_sftlf, parameter.test_data_set:', parameter.test_data_set)
         for test in parameter.test_data_set:
             tmp_name = getattr(parameter, "sftlf_filename_template")
             if tmp_name is None:  # Not defined from commandline or param file
                 tmp_name = parameter.filename_template
+            print('jwlee-test_create_sftlf, tmp_name:', tmp_name)
             sft = Base(parameter.test_data_path, tmp_name)
             sft.model_version = test
             sft.table = "fx"
@@ -87,14 +89,22 @@ class DataSet(with_metaclass(abc.ABCMeta, object)):
             sft.target_grid = None
             sft.realization = "r0i0p0"
             DataSet.apply_custom_keys(sft, parameter.custom_keys, "sftlf")
-            try:
+            if 1:
+            #try:
+                print('jwlee-test_create_sftlf, chk1')
                 sftlf[test] = {"raw": sft.get("sftlf")}
+                print('jwlee-test_create_sftlf, chk1-2')
                 sftlf[test]["filename"] = os.path.basename(sft())
+                print('jwlee-test_create_sftlf, chk1-3')
                 sftlf[test]["md5"] = sft.hash()
+                print('jwlee-test_create_sftlf, chk1-4')
+            """
             except Exception:
+                print('jwlee-test_create_sftlf, chk2')
                 sftlf[test] = {"raw": None}
                 sftlf[test]["filename"] = None
                 sftlf[test]["md5"] = None
+            """
         print('jwlee-test-target_grid-create')
         if parameter.target_grid == "2.5x2.5":
             t_grid_cdms2 = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
@@ -109,6 +119,8 @@ class DataSet(with_metaclass(abc.ABCMeta, object)):
         sft[:] = sft.filled(1.0) * 100.0
         sftlf["target_grid"] = sft
         print('jwlee-test-target_grid, type(sft), sft.shape:', type(sft), sft.shape)
+
+        print("jwlee-test_create_sftlf, sftlf[test]['raw']:", sftlf[test]['raw'])
 
         return sftlf
 

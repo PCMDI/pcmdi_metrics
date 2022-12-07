@@ -394,10 +394,24 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             return False
 
     def mask_var(self, var):
+        """
+        self: <pcmdi_metrics.io.base.Base object at 0x7f24a0768a60>
+        var: <xarray.Dataset>
+        """
+        print('jwlee-test-mask_var, self, var:', self, var)
+        print('jwlee-test-mask_var, type(self)', type(self))
+        print('jwlee-test-mask_var, type(var)', type(var))
+        print('jwlee-test-mask_var, self.mask', self.mask)
+        print('jwlee-test-mask_var, type(self.mask)', type(self.mask))  # cdms2.tvariable.TransientVariable
+        print('jwlee-test-mask_var, self.mask.shape', self.mask.shape)
+        print("jwlee-test-mask_var, tuple(var.dims[d] for d in ['lat', 'lon']):", tuple(var.dims[d] for d in ['lat', 'lon']))
+        var_shape = tuple(var.dims[d] for d in ['lat', 'lon'])
+
         if self.mask is None:
             self.set_file_mask_template()
             self.mask = self.get_mask_from_var(var)
-        if self.mask.shape != var.shape:
+        #if self.mask.shape != var.shape:
+        if self.mask.shape != var_shape:
             dummy, mask = genutil.grower(var, self.mask)
         else:
             mask = self.target_mask
@@ -458,7 +472,12 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
     def get_mask_from_var(self, var):
         try:
-            o_mask = self.file_mask_template.get("sftlf")
+            print('jwlee-test-get_mask_from_var start')
+            #o_mask = self.file_mask_template.get("sftlf")
+            o_mask = self.file_mask_template.get("sftlf", var_in_file="sftlf")
+            print('jwlee-test-get_mask_from_var, self.file_mask_template:', self.file_mask_template)
+            print('jwlee-test-get_mask_from_var, type(o_mask):', type(o_mask))
+            print('jwlee-test-get_mask_from_var, o_mask.shape:', o_mask.shape)
         except Exception:
             o_mask = (
                 cdutil.generateLandSeaMask(var, regridTool=self.regrid_tool).filled(1.0)
