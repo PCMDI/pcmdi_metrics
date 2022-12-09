@@ -401,7 +401,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         if self.mask is None:
             self.set_file_mask_template()
             self.mask = self.get_mask_from_var(var)
-        #if self.mask.shape != var.shape:
+        # if self.mask.shape != var.shape:
         if self.mask.shape != var_shape:
             dummy, mask = genutil.grower(var, self.mask)
         else:
