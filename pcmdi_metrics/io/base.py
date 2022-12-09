@@ -349,7 +349,6 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         )
 
     def get(self, var, var_in_file=None, region={}, *args, **kwargs):
-        print('jwlee-test-get, var, var_in_file:', var, var_in_file)
         self.variable = var
         self.var_from_file = self.extract_var_from_file(
             var, var_in_file, *args, **kwargs
@@ -379,7 +378,6 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             ds = xcdat_open(self(), data_var=var_in_file, decode_times=False)  # Temporary part to read in cdms written obs4MIP AC files
 
         if 'level' in list(kwargs.keys()):
-            print("jwlee-test extract_var_from_file kwargs['level']:", kwargs['level'])
             level = kwargs['level']
             ds = ds.sel(plev=level)
 
@@ -398,13 +396,6 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         self: <pcmdi_metrics.io.base.Base object at 0x7f24a0768a60>
         var: <xarray.Dataset>
         """
-        print('jwlee-test-mask_var, self, var:', self, var)
-        print('jwlee-test-mask_var, type(self)', type(self))
-        print('jwlee-test-mask_var, type(var)', type(var))
-        print('jwlee-test-mask_var, self.mask', self.mask)
-        print('jwlee-test-mask_var, type(self.mask)', type(self.mask))  # cdms2.tvariable.TransientVariable
-        print('jwlee-test-mask_var, self.mask.shape', self.mask.shape)
-        print("jwlee-test-mask_var, tuple(var.dims[d] for d in ['lat', 'lon']):", tuple(var.dims[d] for d in ['lat', 'lon']))
         var_shape = tuple(var.dims[d] for d in ['lat', 'lon'])
 
         if self.mask is None:
@@ -423,19 +414,8 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         self: <class 'pcmdi_metrics.io.base.Base'> object
         self(): string, path to input file
         """
-        print('jwlee-test-regrid, set_target_grid_and_mask_in_var start')
         if self.target_grid is not None:
-            print('jwlee-test-regrid, type(self):', type(self))
-            print('jwlee-test-regrid, type(self()):', type(self()))
-            print('jwlee-test-regrid, self():', self())
-            print('jwlee-test-regrid, regridder start, var_in_file:', var_in_file)
-            var.to_netcdf(self().split('/')[-1].split('.nc')[0] + '_test1-org.nc')
             var = var.regridder.horizontal(var_in_file, self.target_grid, tool=self.regrid_tool)
-            print('jwlee-test-regrid, regridder done')
-            var.to_netcdf(self().split('/')[-1].split('.nc')[0] + '_test2-regridded.nc')
-            print('jwlee-test-regrid-2, var[var_in_file].shape:', var[var_in_file].shape)
-            print('jwlee-test-regrid-3, self.target_mask:', self.target_mask)
-
             if self.target_mask is not None:
                 # if self.target_mask.shape != var.shape:
                 if self.target_mask.shape != var[var_in_file].shape:
@@ -443,9 +423,6 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
                 else:
                     mask = self.target_mask
                 var = MV2.masked_where(mask, var)
-
-            print('jwlee-test-regrid-4, set_target_grid_and_mask_in_var done')
-
         return var
 
     def set_domain_in_var(self, var, region):
@@ -472,12 +449,8 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
     def get_mask_from_var(self, var):
         try:
-            print('jwlee-test-get_mask_from_var start')
-            #o_mask = self.file_mask_template.get("sftlf")
+            # o_mask = self.file_mask_template.get("sftlf")
             o_mask = self.file_mask_template.get("sftlf", var_in_file="sftlf")
-            print('jwlee-test-get_mask_from_var, self.file_mask_template:', self.file_mask_template)
-            print('jwlee-test-get_mask_from_var, type(o_mask):', type(o_mask))
-            print('jwlee-test-get_mask_from_var, o_mask.shape:', o_mask.shape)
         except Exception:
             o_mask = (
                 cdutil.generateLandSeaMask(var, regridTool=self.regrid_tool).filled(1.0)
@@ -492,7 +465,6 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         self.regrid_tool = regrid_tool
         self.regrid_method = regrid_method
         if target == "2.5x2.5":
-            print('jwlee-test, set_target_grid, start')
             # self.target_grid = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
             self.target_grid = xcdat.create_uniform_grid(-88.875, 88.625, 2.5, 0, 357.5, 2.5)
             self.target_grid_name = target
