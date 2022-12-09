@@ -192,12 +192,9 @@ def rms_xyt(dm, do, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     ds = dm.copy(deep=True)
-    print('jwlee-test-rms_xyt-1')
     ds['diff_square'] = (dm[var] - do[var])**2
     ds['diff_square_sqrt'] = np.sqrt(ds.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'])
-    print('jwlee-test-rms_xyt-2')
     stat = ds.temporal.average('diff_square_sqrt')['diff_square_sqrt'].values
-    print('jwlee-test-rms_xyt-3')
     return float(stat)
 
 

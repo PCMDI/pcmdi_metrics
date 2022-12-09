@@ -1,3 +1,4 @@
+from .compute_metrics import compute_metrics  # noqa
 from .compute_statistics import (  # noqa
     annual_mean,
     bias_xy,
@@ -13,13 +14,6 @@ from .compute_statistics import (  # noqa
     std_xyt,
     zonal_mean,
 )
-from .mean_climate_metrics_calculations import compute_metrics  # noqa
-from .mean_climate_metrics_driver import PMPDriver, create_mean_climate_parser  # noqa
-
-from . import dataset  # DataSet  # noqa  # isort:skip
-from . import io  # noqa  # isort:skip
-from . import model  # Model  # noqa  # isort:skip
-from . import observation  # OBS, Observation  # noqa  # isort:skip
-from . import outputmetrics  # OutputMetrics  # noqa  # isort:skip
-from . import pmp_parameter  # PMPParameter, PMPMetricsParameter  # noqa  # isort:skip
-from . import pmp_parser  # PMPParser, PMPMetricsParser  # noqa  # isort:skip
+from .create_mean_climate_parser import create_mean_climate_parser  # noqa
+from .load_and_regrid import load_and_regrid  # noqa
+from .mean_climate_metrics_to_json import mean_climate_metrics_to_json  # noqa

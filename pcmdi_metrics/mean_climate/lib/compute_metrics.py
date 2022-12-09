@@ -39,12 +39,6 @@ def compute_metrics(Var, dm, do):
     dm.to_netcdf('dm.nc')
     do.to_netcdf('do.nc')
 
-    """
-    print('jwlee-test-check-calendar')
-    print("dm.time.encoding['calendar']: ", dm.time.encoding['calendar'])
-    do.time.encoding['calendar'] = dm.time.encoding['calendar']
-    print("do.time.encoding['calendar']: ", do.time.encoding['calendar'])
-    """
     metrics_dictionary = {}
 
     # SET CONDITIONAL ON INPUT VARIABLE
@@ -59,63 +53,56 @@ def compute_metrics(Var, dm, do):
         sig_digits = ".3f"
 
     # CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD
-    print('jwlee-test-compute_metrics-CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD')
-    print('jwlee-test-compute_metrics, rms_xyt')
+    print('compute_metrics-CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD')
+    print('compute_metrics, rms_xyt')
     rms_xyt = pcmdi_metrics.mean_climate.lib.rms_xyt(dm, do, var)
-    print('jwlee-test-compute_metrics, stdObs_xyt')
+    print('compute_metrics, stdObs_xyt')
     stdObs_xyt = pcmdi_metrics.mean_climate.lib.std_xyt(do, var)
-    print('jwlee-test-compute_metrics, std_xyt')
+    print('compute_metrics, std_xyt')
     std_xyt = pcmdi_metrics.mean_climate.lib.std_xyt(dm, var)
 
     # CALCULATE ANNUAL MEANS
-    print('jwlee-test-compute_metrics-CALCULATE ANNUAL MEANS')
+    print('compute_metrics-CALCULATE ANNUAL MEANS')
     dm_am, do_am = pcmdi_metrics.mean_climate.lib.annual_mean(dm, do, var)
 
     # CALCULATE ANNUAL MEAN BIAS
-    print('jwlee-test-compute_metrics-CALCULATE ANNUAL MEAN BIAS')
+    print('compute_metrics-CALCULATE ANNUAL MEAN BIAS')
     bias_xy = pcmdi_metrics.mean_climate.lib.bias_xy(dm_am, do_am, var)
 
     # CALCULATE MEAN ABSOLUTE ERROR
-    print('jwlee-test-compute_metrics-CALCULATE MSE')
+    print('compute_metrics-CALCULATE MSE')
     mae_xy = pcmdi_metrics.mean_climate.lib.meanabs_xy(dm_am, do_am, var)
 
     # CALCULATE ANNUAL MEAN RMS (centered and uncentered)
-    print('jwlee-test-compute_metrics-CALCULATE MEAN RMS')
+    print('compute_metrics-CALCULATE MEAN RMS')
     rms_xy = pcmdi_metrics.mean_climate.lib.rms_xy(dm_am, do_am, var)
     rmsc_xy = pcmdi_metrics.mean_climate.lib.rmsc_xy(dm_am, do_am, var)
 
     # CALCULATE ANNUAL MEAN CORRELATION
-    print('jwlee-test-compute_metrics-CALCULATE MEAN CORR')
+    print('compute_metrics-CALCULATE MEAN CORR')
     cor_xy = pcmdi_metrics.mean_climate.lib.cor_xy(dm_am, do_am, var)
 
     # CALCULATE ANNUAL OBS and MOD STD
-    print('jwlee-test-compute_metrics-CALCULATE ANNUAL OBS AND MOD STD')
+    print('compute_metrics-CALCULATE ANNUAL OBS AND MOD STD')
     stdObs_xy = pcmdi_metrics.mean_climate.lib.std_xy(do_am, var)
     std_xy = pcmdi_metrics.mean_climate.lib.std_xy(dm_am, var)
 
     # CALCULATE ANNUAL OBS and MOD MEAN
-    print('jwlee-test-compute_metrics-CALCULATE ANNUAL OBS AND MOD MEAN')
+    print('compute_metrics-CALCULATE ANNUAL OBS AND MOD MEAN')
     meanObs_xy = pcmdi_metrics.mean_climate.lib.mean_xy(do_am, var)
     mean_xy = pcmdi_metrics.mean_climate.lib.mean_xy(dm_am, var)
 
     # ZONAL MEANS ######
     # CALCULATE ANNUAL MEANS
-    print('jwlee-test-compute_metrics-CALCULATE ANNUAL MEANS')
+    print('compute_metrics-CALCULATE ANNUAL MEANS')
     dm_amzm, do_amzm = pcmdi_metrics.mean_climate.lib.zonal_mean(dm_am, do_am, var)
 
     # CALCULATE ANNUAL AND ZONAL MEAN RMS
-    print('jwlee-test-compute_metrics-CALCULATE ANNUAL AND ZONAL MEAN RMS')
+    print('compute_metrics-CALCULATE ANNUAL AND ZONAL MEAN RMS')
     rms_y = pcmdi_metrics.mean_climate.lib.rms_0(dm_amzm, do_amzm, var)
 
     # CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN RMS
-    print('jwlee-test-compute_metrics-CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN RMS')
-    """
-    dm_amzm_grown, dummy = grower(dm_amzm, dm_am, var)
-    dm_am_devzm = MV2.subtract(dm_am, dm_amzm_grown, var)
-    do_amzm_grown, dummy = grower(do_amzm, do_am, var)
-    do_am_devzm = MV2.subtract(do_am, do_amzm_grown, var)
-    rms_xy_devzm = pcmdi_metrics.mean_climate.lib.rms_xy(dm_am_devzm, do_am_devzm, var)
-    """
+    print('compute_metrics-CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN RMS')
     dm_am_devzm = dm_am - dm_amzm
     do_am_devzm = do_am - do_amzm
     rms_xy_devzm = pcmdi_metrics.mean_climate.lib.rms_xy(dm_am_devzm, do_am_devzm, var)
@@ -123,7 +110,7 @@ def compute_metrics(Var, dm, do):
     # CALCULATE ANNUAL AND ZONAL MEAN STD
 
     # CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN STD
-    print('jwlee-test-compute_metrics-CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN STD')
+    print('compute_metrics-CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN STD')
     stdObs_xy_devzm = pcmdi_metrics.mean_climate.lib.std_xy(do_am_devzm, var)
     std_xy_devzm = pcmdi_metrics.mean_climate.lib.std_xy(dm_am_devzm, var)
 

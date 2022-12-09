@@ -45,7 +45,6 @@ packages = find_packages(exclude=["cmec", "tests"], include=["pcmdi_metrics*"])
 scripts = [
     "pcmdi_metrics/mean_climate/pcmdi_compute_climatologies.py",
     "pcmdi_metrics/mean_climate/mean_climate_driver.py",
-    "pcmdi_metrics/mean_climate/mean_climate_driver_new.py",
     "pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py",
     "pcmdi_metrics/monsoon_sperber/scripts/driver_monsoon_sperber.py",
     "pcmdi_metrics/mjo/mjo_metrics_driver.py",
