@@ -169,7 +169,7 @@ def rms_0(dm, do, var=None, weighted=True):
     return float(stat)
 
 
-def rms_xy(dm, do, var=None):
+def rms_xy(dm, do, var=None, weights=None):
     """Computes rms"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -178,7 +178,8 @@ def rms_xy(dm, do, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     dif_square = (dm[var] - do[var])**2
-    weights = dm.spatial.get_weights(axis=['X', 'Y'])
+    if weights is None:
+        weights = dm.spatial.get_weights(axis=['X', 'Y'])
     stat = math.sqrt(dif_square.weighted(weights).mean(("lon", "lat")))
     return float(stat)
 
@@ -225,11 +226,10 @@ def std_xy(d, var=None, weights=None):
             "Abstract": "Compute Spatial Standard Deviation",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-
-    average = float(d.spatial.average(var, axis=['X', 'Y'])[var].values)
-    anomaly = (d[var] - average)**2
     if weights is None:
         weights = d.spatial.get_weights(axis=['X', 'Y'])
+    average = float(d[var].weighted(weights).mean(("lon", "lat")))
+    anomaly = (d[var] - average)**2
     variance = float(anomaly.weighted(weights).mean(("lon", "lat")))
     std = math.sqrt(variance)
     return float(std)

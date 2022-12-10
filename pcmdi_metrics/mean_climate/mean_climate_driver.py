@@ -201,7 +201,8 @@ def main():
                         print('compute metrics start')
                         result_dict["RESULTS"][model][ref][run][region] = compute_metrics(varname, ds_test_dict[region], ds_ref_dict[region])
 
-                # write individual JSON for single model (multi realizations if exist) / single obs (need to accumulate later) / single variable
+                # write individual JSON
+                # --- single model (multi realizations if exist) / single obs (need to accumulate later) / single variable
                 json_filename_tmp = "_".join([model, var, target_grid, regrid_tool, regrid_method, "metrics"])
                 mean_climate_metrics_to_json(
                     os.path.join(metrics_output_path, var),
@@ -212,7 +213,7 @@ def main():
                     cmec_flag=cmec,
                 )
 
-        # write collective JSON for all models / all obs / single variable
+        # write collective JSON --- all models / all obs / single variable
         json_filename = "_".join([var, target_grid, regrid_tool, regrid_method, "metrics"])
         mean_climate_metrics_to_json(
             metrics_output_path,

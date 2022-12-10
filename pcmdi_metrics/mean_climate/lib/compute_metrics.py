@@ -105,14 +105,14 @@ def compute_metrics(Var, dm, do):
     print('compute_metrics-CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN RMS')
     dm_am_devzm = dm_am - dm_amzm
     do_am_devzm = do_am - do_amzm
-    rms_xy_devzm = pcmdi_metrics.mean_climate.lib.rms_xy(dm_am_devzm, do_am_devzm, var)
+    rms_xy_devzm = pcmdi_metrics.mean_climate.lib.rms_xy(dm_am_devzm, do_am_devzm, var, weights=dm.spatial.get_weights(axis=['X', 'Y']))
 
     # CALCULATE ANNUAL AND ZONAL MEAN STD
 
     # CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN STD
     print('compute_metrics-CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN STD')
-    stdObs_xy_devzm = pcmdi_metrics.mean_climate.lib.std_xy(do_am_devzm, var)
-    std_xy_devzm = pcmdi_metrics.mean_climate.lib.std_xy(dm_am_devzm, var)
+    stdObs_xy_devzm = pcmdi_metrics.mean_climate.lib.std_xy(do_am_devzm, var, weights=do.spatial.get_weights(axis=['X', 'Y']))
+    std_xy_devzm = pcmdi_metrics.mean_climate.lib.std_xy(dm_am_devzm, var, weights=dm.spatial.get_weights(axis=['X', 'Y']))
 
     for stat in [
         "std-obs_xy",
@@ -182,9 +182,7 @@ def compute_metrics(Var, dm, do):
         metrics_dictionary["mae_xy"][sea] = format(mae_sea * conv, sig_digits)
         metrics_dictionary["std-obs_xy"][sea] = format(stdObs_xy_sea * conv, sig_digits)
         metrics_dictionary["std_xy"][sea] = format(std_xy_sea * conv, sig_digits)
-        metrics_dictionary["mean-obs_xy"][sea] = format(
-            meanObs_xy_sea * conv, sig_digits
-        )
+        metrics_dictionary["mean-obs_xy"][sea] = format(meanObs_xy_sea * conv, sig_digits)
         metrics_dictionary["mean_xy"][sea] = format(mean_xy_sea * conv, sig_digits)
 
     rms_mo_l = []
