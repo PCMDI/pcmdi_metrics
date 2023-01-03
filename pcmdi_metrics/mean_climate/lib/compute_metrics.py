@@ -253,13 +253,9 @@ def compute_metrics(Var, dm, do):
 
 
 # ZONAL AND SEASONAL MEAN CONTRIBUTIONS
-#           metrics_dictionary[ 'rms_y'][ sea] = format(
-#              rms_y *
-#              conv,
-#              sig_digits)
-#           metrics_dictionary[ 'rms_devzm'][ sea] = format(
-#              rms_xy_devzm *
-#              conv,
-#              sig_digits)
-
-#   return metrics_dictionary
+#           metrics_dictionary['rms_y'][sea] = format(
+#               rms_y * conv,
+#               sig_digits)
+#           metrics_dictionary['rms_devzm'][sea] = format(
+#               rms_xy_devzm * conv,
+#               sig_digits)
