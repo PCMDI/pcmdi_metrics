@@ -19,6 +19,8 @@ def load_regions_specs():
         "ocean_SHEX": {"value": 0, "domain": {"latitude": (-90.0, -30)}},
         "ocean_TROPICS": {"value": 0, "domain": {"latitude": (30.0, 30)}},
         "ocean": {"value": 0},
+        "CONUS": {"domain": {"latitude": (24.7, 49.4), "longitude": (-124.78, -66.92)}},
+        "land_CONUS": {"value": 100, "domain": {"latitude": (24.7, 49.4), "longitude": (-124.78, -66.92)}},
         # Modes of variability
         "NAM": {"domain": {"latitude": (20.0, 90), "longitude": (-180, 180)}},
         "NAO": {"domain": {"latitude": (20.0, 80), "longitude": (-90, 40)}},
