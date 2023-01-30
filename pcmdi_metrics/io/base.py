@@ -177,7 +177,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
         if not os.path.exists(dir_path):
             try:
-                os.makedirs(dir_path)
+                os.makedirs(dir_path, exist_ok=True)
             except Exception:
                 logging.getLogger("pcmdi_metrics").error(
                     "Could not create output directory: %s" % dir_path
