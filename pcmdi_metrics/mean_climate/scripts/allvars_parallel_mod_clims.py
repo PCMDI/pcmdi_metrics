@@ -30,7 +30,7 @@ for var in vars:
     pathout_base = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/' + mip + '/' + exp + '/'
     pathoutdir = os.path.join(pathout_base, verout, var)
 
-    os.makedir(pathoutdir, exist_ok=True)
+    os.makedirs(pathoutdir, exist_ok=True)
 
     for li in lst:
 
