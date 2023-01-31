@@ -82,7 +82,7 @@ if regional == 'n':
 # vars = [['ts', ], ['psl', ]]
 
 # ###################
-# vars = ['ts']
+vars = ['ts']
 
 # MODEL SPECIFIC PARAMETERS
 model_tweaks = {
