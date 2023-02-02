@@ -3,8 +3,6 @@ import json
 import os
 import sys
 
-import cdutil
-
 ver = datetime.datetime.now().strftime('v%Y%m%d')
 
 # ###############################################################################
@@ -52,7 +50,7 @@ simulation_description_mapping = {"creation_date": "creation_date", "tracking_id
 realm = 'Amon'
 # realm = 'Omon'
 
-vars = ['ts']
+vars = ['ts', 'pr']
 
 # MODEL SPECIFIC PARAMETERS
 model_tweaks = {

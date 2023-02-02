@@ -1,11 +1,11 @@
+import json
 from copy import deepcopy
 
 from pcmdi_metrics.io.base import Base
-import json
 
 
 def mean_climate_metrics_to_json(
-    outdir, json_filename, result_dict, 
+    outdir, json_filename, result_dict,
     model=None, run=None,
     cmec_flag=False, debug=False
 ):

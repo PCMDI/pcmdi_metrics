@@ -89,8 +89,7 @@ class DataSet(with_metaclass(abc.ABCMeta, object)):
             sft.target_grid = None
             sft.realization = "r0i0p0"
             DataSet.apply_custom_keys(sft, parameter.custom_keys, "sftlf")
-            if 1:
-            #try:
+            try:
                 print('jwlee-test_create_sftlf, chk1')
                 sftlf[test] = {"raw": sft.get("sftlf")}
                 print('jwlee-test_create_sftlf, chk1-2')
@@ -98,13 +97,11 @@ class DataSet(with_metaclass(abc.ABCMeta, object)):
                 print('jwlee-test_create_sftlf, chk1-3')
                 sftlf[test]["md5"] = sft.hash()
                 print('jwlee-test_create_sftlf, chk1-4')
-            """
             except Exception:
                 print('jwlee-test_create_sftlf, chk2')
                 sftlf[test] = {"raw": None}
                 sftlf[test]["filename"] = None
                 sftlf[test]["md5"] = None
-            """
         print('jwlee-test-target_grid-create')
         if parameter.target_grid == "2.5x2.5":
             t_grid_cdms2 = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)

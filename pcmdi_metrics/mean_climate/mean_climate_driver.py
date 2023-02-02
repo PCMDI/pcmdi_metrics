@@ -56,7 +56,7 @@ def main():
 
     if not bool(regions_specs):
         regions_specs = load_regions_specs()
-    
+
     default_regions = ['global', 'NHEX', 'SHEX', 'TROPICS']
     print(
         'case_id: ', case_id, '\n',
@@ -194,7 +194,7 @@ def main():
                             ds_test_dict[region] = ds_test_tmp
                             if region not in list(ds_ref_dict.keys()):
                                 ds_ref_dict[region] = region_subset(ds_ref_tmp, regions_specs, region=region)
-                            
+
                             print('spatial subset done')
 
                         if debug:

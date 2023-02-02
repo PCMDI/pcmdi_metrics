@@ -5,7 +5,6 @@ import os
 
 import dask
 from genutil import StringConstructor
-import xcdat as xc
 
 from pcmdi_metrics.io import xcdat_open
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPMetricsParser

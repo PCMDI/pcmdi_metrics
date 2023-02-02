@@ -87,7 +87,7 @@ def region_subset(ds, regions_specs, region=None):
             if 'longitude' in list(regions_specs[region]['domain'].keys()):
                 lon0 = regions_specs[region]['domain']['longitude'][0]
                 lon1 = regions_specs[region]['domain']['longitude'][1]
-                
+
                 # check original dataset longitude range
                 if 'longitude' in (ds.coords.dims):
                     lon_min = ds.longitude.min()
@@ -101,7 +101,7 @@ def region_subset(ds, regions_specs, region=None):
                     if min(lon_min, lon_max) < 0:  # if original data lon range is (-180, 180) no treatment needed
                         pass
                     else:  # if original data lon range is (0, 360), convert swap lon
-                        ds = xc.swap_lon_axis(ds, to=(-180, 180)) 
+                        ds = xc.swap_lon_axis(ds, to=(-180, 180))
 
                 # proceed subset
                 if 'longitude' in (ds.coords.dims):
