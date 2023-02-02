@@ -21,6 +21,7 @@ dependencies:
   - enso_metrics=1.1.1
   - xcdat=0.4.0
   - xmltodict=0.13.0
+  - setuptools=65.5.0
   # Testing
   # ==================
   - pre_commit=2.15.0
