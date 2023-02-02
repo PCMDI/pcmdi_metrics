@@ -82,7 +82,7 @@ def update_dict(d, u):
 
 
 def generateProvenance():
-    extra_pairs = {"matplotlib": "matplotlib ", "scipy": "scipy"}
+    extra_pairs = {"matplotlib": "matplotlib ", "scipy": "scipy", "xcdat": "xcdat", "xarray", "xarray"}
     prov = cdat_info.generateProvenance(extra_pairs=extra_pairs)
     prov["packages"]["PMP"] = pcmdi_metrics.version.__git_tag_describe__
     prov["packages"][
