@@ -212,6 +212,14 @@ def create_mean_climate_parser():
     )
 
     parser.add_argument(
+        "--debug",
+        dest="debug",
+        help="Turn on debugging mode by printing more information to track progress",
+        default=False,
+        required=False,
+    )
+
+    parser.add_argument(
         "--cmec",
         dest="cmec",
         action="store_true",

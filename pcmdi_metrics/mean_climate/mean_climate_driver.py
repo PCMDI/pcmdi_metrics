@@ -45,14 +45,13 @@ def main():
     reference_data_path = parameter.reference_data_path
     metrics_output_path = parameter.metrics_output_path.replace('%(case_id)', case_id)
 
+    debug = parameter.debug
     cmec = False  # temporary
 
     if realization is None:
         realization = ""
     elif isinstance(realization, str):
         realization = [realization]
-
-    debug = True
 
     if not bool(regions_specs):
         regions_specs = load_regions_specs()
