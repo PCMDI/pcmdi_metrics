@@ -5,6 +5,7 @@ import os
 
 import dask
 from genutil import StringConstructor
+import xcdat as xc
 
 from pcmdi_metrics.io import xcdat_open
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPMetricsParser
@@ -13,17 +14,17 @@ from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPMetricsParser
 def clim_calc(var, infile, outfile=None, outpath=None, outfilename=None, start=None, end=None):
 
     ver = datetime.datetime.now().strftime("v%Y%m%d")
-    print('time is ', ver)
+    print("ver:", ver)
 
     infilename = infile.split("/")[-1]
-    print("infilename is ", infilename)
+    print("infilename:", infilename)
 
-    # d = xcdat.open_dataset(infile, data_var=var)  # use xcdat function directly
+    # open file
     d = xcdat_open(infile, data_var=var)   # wrapper of xcdat open functions to enable using xml
     atts = d.attrs
 
-    print('type(d):', type(d))
-    print('atts:', atts)
+    print("type(d):", type(d))
+    print("atts:", atts)
 
     # CONTROL OF OUTPUT DIRECTORY AND FILE
     out = outfile
@@ -33,7 +34,7 @@ def clim_calc(var, infile, outfile=None, outpath=None, outfilename=None, start=N
         outdir = outpath
     os.makedirs(outdir, exist_ok=True)
 
-    print("outdir is ", outdir)
+    print("outdir:", outdir)
 
     # CLIM PERIOD
     if (start is None) and (end is None):

@@ -39,6 +39,7 @@ def main():
     filename_template = parameter.filename_template
     sftlf_filename_template = parameter.sftlf_filename_template
     generate_sftlf = parameter.generate_sftlf
+    regions_specs = parameter.regions_specs
     regions = parameter.regions
     test_data_path = parameter.test_data_path
     reference_data_path = parameter.reference_data_path
@@ -53,6 +54,10 @@ def main():
 
     debug = True
 
+    if not bool(regions_specs):
+        regions_specs = load_regions_specs()
+    
+    default_regions = ['global', 'NHEX', 'SHEX', 'TROPICS']
     print(
         'case_id: ', case_id, '\n',
         'test_data_set:', test_data_set, '\n',
@@ -68,15 +73,13 @@ def main():
         'filename_template:', filename_template, '\n',
         'sftlf_filename_template:', sftlf_filename_template, '\n',
         'generate_sftlf:', generate_sftlf, '\n',
+        'regions_specs:', regions_specs, '\n',
         'regions:', regions, '\n',
         'test_data_path:', test_data_path, '\n',
         'reference_data_path:', reference_data_path, '\n',
         'metrics_output_path:', metrics_output_path, '\n')
 
     print('--- prepare mean climate metrics calculation ---')
-
-    regions_specs = load_regions_specs()
-    default_regions = ['global', 'NHEX', 'SHEX', 'TROPICS']
 
     # generate target grid
     if target_grid == "2.5x2.5":
@@ -107,9 +110,6 @@ def main():
     # if debug:
         # print('obs_dict:', json.dumps(obs_dict, indent=4, sort_keys=True))
 
-    # set dictionary for .json record
-    result_dict = tree()
-
     print('--- start mean climate metrics calculation ---')
 
     # -------------
@@ -130,6 +130,9 @@ def main():
         print('varname:', varname)
         print('level:', level)
 
+        # set dictionary for .json record
+        result_dict = tree()
+
         # ----------------
         # observation loop
         # ----------------
@@ -149,15 +152,16 @@ def main():
             # model loop
             # ----------
             for model in test_data_set:
-                print('model:', model)
                 for run in realization:
+                    print('model, run:', model, run)
                     ds_test_dict = dict()
                     # identify data to load (annual cycle (AC) data is loading in)
                     test_data_full_path = os.path.join(
                         test_data_path,
-                        filename_template.replace('%(variable)', varname).replace('%(model)', model).replace('%(realization)', run))
+                        filename_template).replace('%(variable)', varname).replace('%(model)', model).replace('%(realization)', run)
                     # load data and regrid
                     ds_test = load_and_regrid(test_data_full_path, varname, level, t_grid, regrid_tool=regrid_tool, debug=debug)
+                    print('load and regrid done')
 
                     # -----------
                     # region loop
@@ -166,20 +170,19 @@ def main():
                         print('region:', region)
 
                         # land/sea mask -- conduct masking only for variable data array, not entire data
-                        if region.split('_')[0] in ['land', 'ocean']:
-                            surface_type = region.split('_')[0]
+                        if ('land' in region.split('_')) or ('ocean' in region.split('_')):
                             ds_test_tmp = ds_test.copy(deep=True)
                             ds_ref_tmp = ds_ref.copy(deep=True)
-                            if surface_type == 'land':
+                            if 'land' in region.split('_'):
                                 ds_test_tmp[varname] = ds_test[varname].where(t_grid['sftlf'] != 0.)
                                 ds_ref_tmp[varname] = ds_ref[varname].where(t_grid['sftlf'] != 0.)
-                            elif surface_type == 'ocean':
+                            elif 'ocean' in region.split('_'):
                                 ds_test_tmp[varname] = ds_test[varname].where(t_grid['sftlf'] == 0.)
                                 ds_ref_tmp[varname] = ds_ref[varname].where(t_grid['sftlf'] == 0.)
+                                print('mask done')
                         else:
                             ds_test_tmp = ds_test
                             ds_ref_tmp = ds_ref
-                        print('mask done')
 
                         # spatial subset
                         if region.lower() in ['global', 'land', 'ocean']:
@@ -191,11 +194,13 @@ def main():
                             ds_test_dict[region] = ds_test_tmp
                             if region not in list(ds_ref_dict.keys()):
                                 ds_ref_dict[region] = region_subset(ds_ref_tmp, regions_specs, region=region)
-                        print('spatial subset done')
+                            
+                            print('spatial subset done')
 
                         if debug:
                             print('ds_test_tmp:', ds_test_tmp)
-                            ds_test_tmp.to_netcdf('_'.join([var, 'model', region + '.nc']))
+                            ds_test_dict[region].to_netcdf('_'.join([var, 'model', region + '.nc']))
+                            ds_ref_dict[region].to_netcdf('_'.join([var, 'ref', region + '.nc']))
 
                         # compute metrics
                         print('compute metrics start')
@@ -211,6 +216,7 @@ def main():
                     model=model,
                     run=run,
                     cmec_flag=cmec,
+                    debug=debug
                 )
 
         # write collective JSON --- all models / all obs / single variable
