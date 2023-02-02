@@ -38,7 +38,7 @@ all_mods_dic = json.load(open('all_mip_mods-v20230201.json'))  #all_mip_mods-v20
 # test_data_set = all_mods_dic
 test_data_set = all_mods_dic[MIP][exp]
 test_data_set.sort()
-#test_data_set = ['ACCESS-CM2']
+# test_data_set = ['ACCESS-CM2']
 
 print(len(test_data_set), ' ', test_data_set)
 print('----------------------------------------------------------------')
