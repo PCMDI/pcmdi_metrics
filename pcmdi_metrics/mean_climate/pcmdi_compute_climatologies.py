@@ -40,23 +40,29 @@ def clim_calc(var, infile, outfile=None, outpath=None, outfilename=None, start=N
         # DEFAULT CLIM - BASED ON ENTIRE TIME SERIES
         start_yr = int(d.time["time.year"][0])
         start_mo = int(d.time["time.month"][0])
+        start_da = int(d.time["time.day"][0])
         end_yr = int(d.time["time.year"][-1])
         end_mo = int(d.time["time.month"][-1])
+        end_da = int(d.time["time.day"][-1])
     else:
         # USER DEFINED PERIOD
         start_yr = int(start.split("-")[0])
         start_mo = int(start.split("-")[1])
+        start_da = 1
         end_yr = int(end.split("-")[0])
         end_mo = int(end.split("-")[1])
+        end_da = int(d.time.dt.days_in_month.sel(time=(d.time.dt.year==end_yr))[end_mo-1])
 
-    start_yr_str = str(start_yr)
+    start_yr_str = str(start_yr).zfill(4)
     start_mo_str = str(start_mo).zfill(2)
-    end_yr_str = str(end_yr)
+    start_da_str = str(start_da).zfill(2)
+    end_yr_str = str(end_yr).zfill(4)
     end_mo_str = str(end_mo).zfill(2)
+    end_da_str = str(end_da).zfill(2)
 
     # Subset given time period
-    d = d.sel(time=slice(start_yr_str + '-' + start_mo_str + '-01',
-                         end_yr_str + '-' + end_mo_str + '-31'))
+    d = d.sel(time=slice(start_yr_str + '-' + start_mo_str + '-' + start_da_str,
+                         end_yr_str + '-' + end_mo_str + '-' + end_da_str))
 
     print("start_yr_str is ", start_yr_str)
     print("start_mo_str is ", start_mo_str)
