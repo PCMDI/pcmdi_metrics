@@ -1,10 +1,13 @@
 from copy import deepcopy
 
 from pcmdi_metrics.io.base import Base
+import json
 
 
 def mean_climate_metrics_to_json(
-    outdir, json_filename, result_dict, model=None, run=None, cmec_flag=False
+    outdir, json_filename, result_dict, 
+    model=None, run=None,
+    cmec_flag=False, debug=False
 ):
     # Open JSON
     JSON = Base(
@@ -17,10 +20,11 @@ def mean_climate_metrics_to_json(
         models_in_dict = list(json_dict["RESULTS"].keys())
         for m in models_in_dict:
             if m == model:
-                runs_in_model_dict = list(json_dict["RESULTS"][m].keys())
-                for r in runs_in_model_dict:
-                    if r != run and run is not None:
-                        del json_dict["RESULTS"][m][r]
+                for ref in list(json_dict["RESULTS"][m].keys()):
+                    runs_in_model_dict = list(json_dict["RESULTS"][m][ref].keys())
+                    for r in runs_in_model_dict:
+                        if (r != run) and (run is not None):
+                            del json_dict["RESULTS"][m][ref][r]
             else:
                 del json_dict["RESULTS"][m]
     # Write selected dict to JSON
@@ -39,6 +43,11 @@ def mean_climate_metrics_to_json(
         mode="r+",
         sort_keys=True,
     )
+
+    if debug:
+        print('in mean_climate_metrics_to_json, model, run:', model, run)
+        print('json_dict:', json.dumps(json_dict, sort_keys=True, indent=4))
+
     if cmec_flag:
         print("Writing cmec file")
         JSON.write_cmec(indent=4, separators=(",", ": "))
