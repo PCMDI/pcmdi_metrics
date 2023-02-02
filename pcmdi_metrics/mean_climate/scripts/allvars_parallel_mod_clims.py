@@ -7,7 +7,7 @@ from pcmdi_metrics.misc.scripts import parallel_submitter
 exp = 'historical'
 # exp = 'amip'
 mip = 'cmip6'
-verin = 'v20220924'  #'v20210731'  #'v20201226'
+verin = 'v20230201'  #'v20210731'  #'v20201226'
 start = '1981-01'
 end = '2005-12'
 numw = 35  # None   #35
@@ -17,7 +17,7 @@ verout = datetime.datetime.now().strftime('v%Y%m%d')
 # vars = ['ts', 'tas', 'uas', 'vas', 'huss', 'hurs', 'psl', 'prw', 'sfcWind', 'tauu', 'tauv', 'pr', 'rlut', 'rsut', 'rlutcs', 'rsutcs', 'rsdt', 'rsus', 'rsds', 'rlds', 'rlus', 'rldscs', 'rsdscs']
 # vars = ['ta', 'ua', 'va', 'zg', 'hur', 'hus']
 # vars = ['ts', 'tas', 'uas', 'vas', 'huss', 'hurs', 'psl', 'prw', 'sfcWind', 'tauu', 'tauv', 'pr', 'rlut', 'rsut', 'rlutcs', 'rsutcs', 'rsdt', 'rsus', 'rsds', 'rlds', 'rlus', 'rldscs', 'rsdscs', 'ta', 'ua', 'va', 'zg', 'hur', 'hus']
-vars = ['ts']
+vars = ['ts', 'pr']
 
 lst1 = []
 listlog = []
