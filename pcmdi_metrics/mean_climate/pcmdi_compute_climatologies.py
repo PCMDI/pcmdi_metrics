@@ -51,7 +51,7 @@ def clim_calc(var, infile, outfile=None, outpath=None, outfilename=None, start=N
         start_da = 1
         end_yr = int(end.split("-")[0])
         end_mo = int(end.split("-")[1])
-        end_da = int(d.time.dt.days_in_month.sel(time=(d.time.dt.year==end_yr))[end_mo-1])
+        end_da = int(d.time.dt.days_in_month.sel(time=(d.time.dt.year == end_yr))[end_mo - 1])
 
     start_yr_str = str(start_yr).zfill(4)
     start_mo_str = str(start_mo).zfill(2)

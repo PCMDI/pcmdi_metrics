@@ -32,7 +32,7 @@ if MIP == 'cmip5':
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
 
-all_mods_dic = json.load(open('all_mip_mods-' + modver +'.json'))
+all_mods_dic = json.load(open('all_mip_mods-' + modver + '.json'))
 # all_mods_dic = ['E3SM-1-0', 'ACCESS-CM2']
 
 # test_data_set = all_mods_dic

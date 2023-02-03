@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import glob
 import json
 import os
 from re import split
@@ -8,7 +9,6 @@ import cdms2
 import cdutil
 import numpy as np
 import xcdat
-import glob
 
 from pcmdi_metrics import resources
 from pcmdi_metrics.io import load_regions_specs, region_subset
