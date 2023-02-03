@@ -28,6 +28,7 @@ try:
         Version = descr
 except Exception:
     descr = release_version
+    Version = release_version
 
 p = subprocess.Popen(
     ("git", "log", "-n1", "--pretty=short"),
