@@ -1,4 +1,5 @@
 [tool.black]
+[tool.poetry.dev-dependencies]
 line-length = 88
 target-version = ['py36']
 include = '\.pyi?$'
