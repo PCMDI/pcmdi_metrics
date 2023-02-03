@@ -29,10 +29,13 @@ jobs:
     steps:
       - name: Checkout Code Repository
         uses: actions/checkout@v2
+        with:
+          node-version: '16'
 
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
+          node-version: '16'
           python-version: 3.9
 
       # Run all pre-commit hooks on all the files.
@@ -40,6 +43,8 @@ jobs:
       # since the action is run on a branch in detached head state
       - name: Install and Run Pre-commit
         uses: pre-commit/action@v2.0.3
+        with:
+          node-version: '16'
 
   build:
     needs: check-jobs-to-skip
@@ -51,6 +56,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2
+        with:
+          node-version: '16'
 
       - name: Cache Conda
         uses: actions/cache@v2
@@ -58,6 +65,7 @@ jobs:
           # Increase this value to reset cache if conda/dev.yml has not changed in the workflow
           CACHE_NUMBER: 0
         with:
+          node-version: '16'
           path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-publish
 
