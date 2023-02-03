@@ -59,7 +59,9 @@ class PMPDriver(object):
                 continue
 
             for region in self.regions_dict[self.var]:
-                logging.getLogger("pcmdi_metrics").info("REGION: {}".format(region))
+                logging.getLogger("pcmdi_metrics").info(
+                    "VAR: {}, REGION: {}".format(self.var, region)
+                )
                 self.region = self.create_region(region)
                 self.run_reference_and_test_comparison()
 
@@ -160,6 +162,12 @@ class PMPDriver(object):
 
         reference_data_set_is_obs = self.is_data_set_obs(reference_data_set)
         test_data_set_is_obs = self.is_data_set_obs(test_data_set)
+
+        logging.getLogger("pcmdi_metrics").info(
+            "reference_data_set (given): {}, reference_data_set_is_obs: {}, test_data_set_is_obs: {}".format(
+                reference_data_set, reference_data_set_is_obs, test_data_set_is_obs
+            )
+        )
 
         # If either the reference or test are obs, the data sets
         # themselves need to be modified.

@@ -3,24 +3,14 @@ import os
 
 mip = "cmip6"
 exp = "historical"
-mod = "ACCESS-CM2.r1i1p1f1"
 var = "pr"
 frq = "3hr"
-ver = "v20210123"
-modpath = os.path.join(
-    "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/",
-    ver,
-    mip,
-    exp,
-    "atmos",
-    frq,
-    var,
-)
+ver = "v20221111"
 
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 pmpdir = "/work/ahn6/pr/variability_across_timescales/power_spectrum/" + ver + "_test/"
 results_dir = os.path.join(
-    pmpdir, "%(output_type)", "precip_variability", "%(mip)", exp, "%(case_id)"
+    pmpdir, "%(output_type)", "%(mip)", exp, "%(case_id)"
 )
 
 prd = [1985, 2004]  # analysis period

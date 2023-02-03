@@ -53,6 +53,7 @@ scripts = [
     "pcmdi_metrics/precip_variability/variability_across_timescales_PS_driver.py",
     "pcmdi_metrics/misc/scripts/parallelize_driver.py",
     "pcmdi_metrics/misc/scripts/get_pmp_data.py",
+    "pcmdi_metrics/precip_distribution/precip_distribution_driver.py",
 ]
 
 entry_points = {
@@ -68,14 +69,10 @@ entry_points = {
     ],
 }
 
-demo_files = glob.glob("demo/*/*")
-print("demo files")
-
 data_files = (
     (
         "share/pmp/graphics/png",
         [
-            "share/pcmdi/171101_doutriaux1_UVCDATLogo_446x119px_72dpi.png",
             "share/pcmdi/CDATLogo_140x49px_72dpi.png",
             "share/pcmdi/CDATLogo_1866x651px_300dpi.png",
             "share/pcmdi/CDATLogo_200x70px_72dpi.png",
@@ -87,8 +84,6 @@ data_files = (
             "share/pcmdi/PCMDILogo_400x131px_72dpi.png",
             "share/pcmdi/PCMDILogo_500x164px_72dpi.png",
             "share/pcmdi/PCMDILogoText_1365x520px_300dpi.png",
-            "share/pcmdi/PCMDILogo-old-oblong_377x300px_72dpi.png",
-            "share/pcmdi/PCMDILogo-old_348x300px_72dpi.png",
             "share/pcmdi/PMPLogoText_1359x1146px_300dpi.png",
             "share/pcmdi/PMPLogo_1359x1146px_300dpi.png",
             "share/pcmdi/PMPLogo_500x421px_72dpi.png",
@@ -104,9 +99,9 @@ data_files = (
             "share/cmip_model_list.json",
             "share/default_regions.py",
             "share/DefArgsCIA.json",
+            "pcmdi_metrics/precip_distribution/lib/cluster3_pdf.amt_regrid.360x180_IMERG_ALL.nc",
         ),
     ),
-    ("share/pmp/demo", demo_files),
 )
 
 setup(

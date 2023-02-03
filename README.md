@@ -1,46 +1,100 @@
-<img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" width="15%" height="15%" align="right" />
-<h5 align="right"></h5>
+<div>
+<img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" height="90" align="right" />
+<img src="share/pcmdi/PCMDILogo_400x131px_72dpi.png" height="60" align="right" />
+</div>
 
-PCMDI Metrics Package (PMP)
-======
+<br><br><br><br>
+
+# PCMDI Metrics Package (PMP)
+
+
 [![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 ![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
-![License](https://anaconda.org/conda-forge/pcmdi_metrics/badges/license.svg)
+[![License](https://anaconda.org/conda-forge/pcmdi_metrics/badges/license.svg)](https://github.com/PCMDI/pcmdi_metrics/blob/main/LICENSE)
+[![Formatted with black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
 Conda-forge (NEW, recommended):
-![install](https://anaconda.org/conda-forge/pcmdi_metrics/badges/installer/conda.svg)
-![download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg)
+[![Download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 
 PCMDI Conda Channel (halted):
-[![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/installer/conda.svg)](https://conda.anaconda.org/pcmdi)
-[![Anaconda-Server Badge](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
+[![Download](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
 
+The PCMDI Metrics Package (PMP) is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons emphasize metrics of large- to global-scale annual cycle, tropical and extra-tropical modes of variability, ENSO, MJO, regional monsoons, and high frequency characteristics of simulated precipitation.
 
-The PCMDI Metrics Package (PMP) is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons emphasize metrics of large- to global-scale annual cycle and both tropcial and extra-tropical modes of variability. Ongoing work in v1.x development branches include established statistics for ENSO, MJO, regional monsoons, and high frequency characteristics of simulated precipitation.
+**PCMDI uses the PMP to produce [quick-look simulation summaries across generations of CMIP](https://pcmdi.llnl.gov/research/metrics/).**
 
-**PCMDI uses the PMP to produce [quick-look simulation summaries across generations of CMIP](https://cmec.llnl.gov/results/physical.html)**
-
-The metrics package consists of four parts: 1) Analysis software, 2) an observationally-based database of global (or near global, land or ocean) [time series and climatologies](https://github.com/PCMDI/PCMDIobs-cmor-tables/tree/master/catalogue), 3) a database of performance metrics computed for CMIP models and 4) [package documentation and interactive demos](http://pcmdi.github.io/pcmdi_metrics/).
+The metrics package consists of the following parts: 
+* Analysis software
+* Observation-based reference database of global (or near global, land or ocean) [time series and climatologies](https://github.com/PCMDI/PCMDIobs-cmor-tables/tree/master/catalogue)
+* [Package documentation](http://pcmdi.github.io/pcmdi_metrics/) and [interactive jupyter notebook demos](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
+* [Database](https://github.com/PCMDI/pcmdi_metrics_results_archive) of performance metrics computed for CMIP models
 
 The package expects model data to be [CF-compliant](http://cfconventions.org/). To successfully use the package some input data "conditioning" may be required. We provide several demo scripts within the package.
 
-Users of the current release (v1.2) will need to contact the PMP developers (pcmdi-metrics@llnl.gov) to obtain supporting datasets and get started using the package.
+
+Documentation
+-------------
+
+**Getting Started**
+
+* Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
+
+* Users will need to contact the PMP developers (pcmdi-metrics@llnl.gov) to obtain supporting datasets and get started using the package.
+
+* An overview for using the package and template scripts are detailed on the [Using-the-package](http://pcmdi.github.io/pcmdi_metrics) page
+
+* [View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
 
 
-GETTING STARTED
-----------------
+Contact
+-------
 
-Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
+[Report Bug](https://github.com/PCMDI/pcmdi_metrics/issues)
 
-An overview for using the package and template scripts are detailed on the [Using-the-package](http://pcmdi.github.io/pcmdi_metrics) page
+[Request Feature](https://github.com/PCMDI/pcmdi_metrics/issues)
 
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
 
-[PMP versions](https://github.com/PCMDI/pcmdi_metrics/releases)
+
+Contributors
 ------------
 
+Thanks to our contributors!
+
+[![Contributors](https://contrib.rocks/image?repo=PCMDI/pcmdi_metrics)](https://github.com/PCMDI/pcmdi_metrics/graphs/contributors)
+
+
+Acknowledgement
+---------------
+
+This software is  developed by scientists and developers from the Program for Climate Model Diagnosis and Intercomparison ([PCMDI][PCMDI]) at Lawrence Livermore National Laboratory ([LLNL][LLNL]). The work is performed for the E3SM project, which is sponsored by the Regional and Global Model Analysis ([RGMA][RGMA]) program. The RGMA is a program for the Earth and Environmental Systems Sciences Division ([EESSD][EESSD]) in the Office of Biological and Environmental Research ([BER][BER]) within the [Department of Energy][DOE]'s [Office of Science][OS].
+
+[PCMDI]: https://pcmdi.llnl.gov/
+[LLNL]: https://www.llnl.gov/
+[RGMA]: https://climatemodeling.science.energy.gov/program/regional-global-model-analysis
+[EESSD]: https://science.osti.gov/ber/Research/eessd
+[BER]: https://science.osti.gov/ber
+[DOE]: https://www.energy.gov/
+[OS]: https://science.osti.gov/
+
+
+License
+-------
+
+Distributed under the BSD 3-Clause License. See [`LICENSE`](https://github.com/PCMDI/pcmdi_metrics/blob/main/LICENSE) for more information.
+
+
+Release Notes and History
+-------------------------
+
+[Released versions](https://github.com/PCMDI/pcmdi_metrics/releases)
+
+- [v2.5.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.5.1) - Technical update
+- [v2.5.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.5.0) - New metric added: Precipitation Benchmarking -- distribution. Graphics updated
+- [v2.4.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.4.0) - New metric added: AMO in variability modes
+- [v2.3.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3.2) - CMEC interface updates
 - [v2.3.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3.1) - Technical update
 - [v2.3](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3) - New graphics using [archived PMP results](https://github.com/PCMDI/pcmdi_metrics_results_archive)
 - [v2.2.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2.2) - Technical update
