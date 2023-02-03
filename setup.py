@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-import glob
 import subprocess
 
 from setuptools import find_packages, setup
