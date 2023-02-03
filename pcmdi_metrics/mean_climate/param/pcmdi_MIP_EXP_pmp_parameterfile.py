@@ -24,7 +24,7 @@ cmec = False  # True
 # ################################################################
 
 if MIP == 'cmip6':
-    modver = 'v20230201'
+    modver = 'v20230202'
 if MIP == 'cmip5':
     modver = 'v20220928'
     if exp == 'historical':
@@ -32,7 +32,7 @@ if MIP == 'cmip5':
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
 
-all_mods_dic = json.load(open('all_mip_mods-v20230201.json'))  #all_mip_mods-v20200528.json'))
+all_mods_dic = json.load(open('all_mip_mods-' + modver +'.json'))
 # all_mods_dic = ['E3SM-1-0', 'ACCESS-CM2']
 
 # test_data_set = all_mods_dic
@@ -99,9 +99,9 @@ regrid_method_ocn = 'conservative'  # OPTIONS: 'linear', 'conservative', only if
 
 # SIMULATION PARAMETERg
 period = '1981-2005'
-# period = '1979-1989'
 
-realization = 'r1i1p1f1'
+# realization = 'r1i1p1f1'
+realization = 'all'
 
 # SAVE INTERPOLATED MODEL CLIMATOLOGIES ?
 save_test_clims = True  # True or False
@@ -159,3 +159,5 @@ test_clims_interpolated_output = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnos
 
 # FILENAME FOR INTERPOLATED CLIMATOLGIES OUTPUT
 filename_output_template = MIP + ".%(model)." + exp + "." + realization + ".mo.%(variable)%(level).%(period).interpolated.%(regrid_method).%(region).AC." + case_id + "%(ext)"
+
+debug = False

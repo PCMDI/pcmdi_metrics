@@ -8,6 +8,7 @@ import cdms2
 import cdutil
 import numpy as np
 import xcdat
+import glob
 
 from pcmdi_metrics import resources
 from pcmdi_metrics.io import load_regions_specs, region_subset
@@ -32,7 +33,6 @@ def main():
     reference_data_set = parameter.reference_data_set
     target_grid = parameter.target_grid
     regrid_tool = parameter.regrid_tool
-    regrid_method = parameter.regrid_method
     regrid_tool_ocn = parameter.regrid_tool_ocn
     save_test_clims = parameter.save_test_clims
     test_clims_interpolated_output = parameter.test_clims_interpolated_output
@@ -49,9 +49,12 @@ def main():
     cmec = False  # temporary
 
     if realization is None:
-        realization = ""
+        realizations = [""]
     elif isinstance(realization, str):
-        realization = [realization]
+        if realization.lower() in ["all", "*"]:
+            find_all_realizations = True
+        else:
+            realizations = [realization]
 
     if not bool(regions_specs):
         regions_specs = load_regions_specs()
@@ -65,7 +68,6 @@ def main():
         'reference_data_set:', reference_data_set, '\n',
         'target_grid:', target_grid, '\n',
         'regrid_tool:', regrid_tool, '\n',
-        'regrid_method:', regrid_method, '\n',
         'regrid_tool_ocn:', regrid_tool_ocn, '\n',
         'save_test_clims:', save_test_clims, '\n',
         'test_clims_interpolated_output:', test_clims_interpolated_output, '\n',
@@ -76,7 +78,8 @@ def main():
         'regions:', regions, '\n',
         'test_data_path:', test_data_path, '\n',
         'reference_data_path:', reference_data_path, '\n',
-        'metrics_output_path:', metrics_output_path, '\n')
+        'metrics_output_path:', metrics_output_path, '\n',
+        'debug:', debug, '\n')
 
     print('--- prepare mean climate metrics calculation ---')
 
@@ -151,81 +154,103 @@ def main():
             # model loop
             # ----------
             for model in test_data_set:
-                for run in realization:
-                    print('model, run:', model, run)
-                    ds_test_dict = dict()
+
+                if find_all_realizations:
+                    test_data_full_path = os.path.join(
+                        test_data_path,
+                        filename_template).replace('%(variable)', varname).replace('%(model)', model).replace('%(realization)', '*')
+                    ncfiles = glob.glob(test_data_full_path)
+                    realizations = []
+                    for ncfile in ncfiles:
+                        realizations.append(ncfile.split('/')[-1].split('.')[3])
+                    print('=================================')
+                    print('model, runs:', model, realizations)
+
+                for run in realizations:
                     # identify data to load (annual cycle (AC) data is loading in)
                     test_data_full_path = os.path.join(
                         test_data_path,
                         filename_template).replace('%(variable)', varname).replace('%(model)', model).replace('%(realization)', run)
-                    # load data and regrid
-                    ds_test = load_and_regrid(test_data_full_path, varname, level, t_grid, regrid_tool=regrid_tool, debug=debug)
-                    print('load and regrid done')
+                    if os.path.exists(test_data_full_path):
+                        print('-----------------------')
+                        print('model, run:', model, run)
+                        try:
+                            ds_test_dict = dict()
 
-                    # -----------
-                    # region loop
-                    # -----------
-                    for region in regions[varname]:
-                        print('region:', region)
+                            # load data and regrid
+                            ds_test = load_and_regrid(test_data_full_path, varname, level, t_grid, regrid_tool=regrid_tool, debug=debug)
+                            print('load and regrid done')
 
-                        # land/sea mask -- conduct masking only for variable data array, not entire data
-                        if ('land' in region.split('_')) or ('ocean' in region.split('_')):
-                            ds_test_tmp = ds_test.copy(deep=True)
-                            ds_ref_tmp = ds_ref.copy(deep=True)
-                            if 'land' in region.split('_'):
-                                ds_test_tmp[varname] = ds_test[varname].where(t_grid['sftlf'] != 0.)
-                                ds_ref_tmp[varname] = ds_ref[varname].where(t_grid['sftlf'] != 0.)
-                            elif 'ocean' in region.split('_'):
-                                ds_test_tmp[varname] = ds_test[varname].where(t_grid['sftlf'] == 0.)
-                                ds_ref_tmp[varname] = ds_ref[varname].where(t_grid['sftlf'] == 0.)
-                                print('mask done')
-                        else:
-                            ds_test_tmp = ds_test
-                            ds_ref_tmp = ds_ref
+                            # -----------
+                            # region loop
+                            # -----------
+                            for region in regions[varname]:
+                                print('region:', region)
 
-                        # spatial subset
-                        if region.lower() in ['global', 'land', 'ocean']:
-                            ds_test_dict[region] = ds_test_tmp
-                            if region not in list(ds_ref_dict.keys()):
-                                ds_ref_dict[region] = ds_ref_tmp
-                        else:
-                            ds_test_tmp = region_subset(ds_test_tmp, regions_specs, region=region)
-                            ds_test_dict[region] = ds_test_tmp
-                            if region not in list(ds_ref_dict.keys()):
-                                ds_ref_dict[region] = region_subset(ds_ref_tmp, regions_specs, region=region)
+                                # land/sea mask -- conduct masking only for variable data array, not entire data
+                                if ('land' in region.split('_')) or ('ocean' in region.split('_')):
+                                    ds_test_tmp = ds_test.copy(deep=True)
+                                    ds_ref_tmp = ds_ref.copy(deep=True)
+                                    if 'land' in region.split('_'):
+                                        ds_test_tmp[varname] = ds_test[varname].where(t_grid['sftlf'] != 0.)
+                                        ds_ref_tmp[varname] = ds_ref[varname].where(t_grid['sftlf'] != 0.)
+                                    elif 'ocean' in region.split('_'):
+                                        ds_test_tmp[varname] = ds_test[varname].where(t_grid['sftlf'] == 0.)
+                                        ds_ref_tmp[varname] = ds_ref[varname].where(t_grid['sftlf'] == 0.)
+                                        print('mask done')
+                                else:
+                                    ds_test_tmp = ds_test
+                                    ds_ref_tmp = ds_ref
 
-                            print('spatial subset done')
+                                # spatial subset
+                                if region.lower() in ['global', 'land', 'ocean']:
+                                    ds_test_dict[region] = ds_test_tmp
+                                    if region not in list(ds_ref_dict.keys()):
+                                        ds_ref_dict[region] = ds_ref_tmp
+                                else:
+                                    ds_test_tmp = region_subset(ds_test_tmp, regions_specs, region=region)
+                                    ds_test_dict[region] = ds_test_tmp
+                                    if region not in list(ds_ref_dict.keys()):
+                                        ds_ref_dict[region] = region_subset(ds_ref_tmp, regions_specs, region=region)
 
-                        if debug:
-                            print('ds_test_tmp:', ds_test_tmp)
-                            ds_test_dict[region].to_netcdf('_'.join([var, 'model', region + '.nc']))
-                            ds_ref_dict[region].to_netcdf('_'.join([var, 'ref', region + '.nc']))
+                                    print('spatial subset done')
 
-                        # compute metrics
-                        print('compute metrics start')
-                        result_dict["RESULTS"][model][ref][run][region] = compute_metrics(varname, ds_test_dict[region], ds_ref_dict[region])
+                                if debug:
+                                    print('ds_test_tmp:', ds_test_tmp)
+                                    ds_test_dict[region].to_netcdf('_'.join([var, 'model', region + '.nc']))
+                                    ds_ref_dict[region].to_netcdf('_'.join([var, 'ref', region + '.nc']))
 
-                # write individual JSON
-                # --- single model (multi realizations if exist) / single obs (need to accumulate later) / single variable
-                json_filename_tmp = "_".join([model, var, target_grid, regrid_tool, regrid_method, "metrics"])
-                mean_climate_metrics_to_json(
-                    os.path.join(metrics_output_path, var),
-                    json_filename_tmp,
-                    result_dict,
-                    model=model,
-                    run=run,
-                    cmec_flag=cmec,
-                    debug=debug
-                )
+                                # compute metrics
+                                print('compute metrics start')
+                                result_dict["RESULTS"][model][ref][run][region] = compute_metrics(varname, ds_test_dict[region], ds_ref_dict[region])
 
+                            # write individual JSON
+                            # --- single simulation, obs (need to accumulate later) / single variable
+                            json_filename_tmp = "_".join([model, var, target_grid, regrid_tool, "metrics", ref])
+                            mean_climate_metrics_to_json(
+                                os.path.join(metrics_output_path, var),
+                                json_filename_tmp,
+                                result_dict,
+                                model=model,
+                                run=run,
+                                cmec_flag=cmec,
+                                debug=debug
+                            )
+
+                        except Exception as e:
+                            print('error occured for ', model, run)
+                            print(e)
+
+        """
         # write collective JSON --- all models / all obs / single variable
-        json_filename = "_".join([var, target_grid, regrid_tool, regrid_method, "metrics"])
+        json_filename = "_".join([var, target_grid, regrid_tool, "metrics"])
         mean_climate_metrics_to_json(
             metrics_output_path,
             json_filename,
             result_dict,
             cmec_flag=cmec,
         )
+        """
 
 
 if __name__ == "__main__":
