@@ -27,17 +27,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
       - name: Checkout Code Repository
         uses: actions/checkout@v2
         with:
           node-version: '16'
-
       - name: Set up Python 3.9
         uses: actions/setup-python@v2
         with:
           node-version: '16'
           python-version: 3.9
-
       # Run all pre-commit hooks on all the files.
       # Getting only staged files can be tricky in case a new PR is opened
       # since the action is run on a branch in detached head state
@@ -53,12 +54,12 @@ jobs:
     defaults:
       run:
         shell: bash -l {0}
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: '16'
-
+      - uses: actions/checkout@v2
       - name: Cache Conda
         uses: actions/cache@v2
         env:
