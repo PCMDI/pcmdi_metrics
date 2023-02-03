@@ -41,7 +41,7 @@ except Exception:
     commit = ""
 
 f = open("pcmdi_metrics/version.py", "w")
-print("__version__ = '%s'" % release_version, file=f)
+print("__version__ = '%s'" % Version, file=f)
 print("__git_tag_describe__ = '%s'" % descr, file=f)
 print("__git_sha1__ = '%s'" % commit, file=f)
 f.close()
