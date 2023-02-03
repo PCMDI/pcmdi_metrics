@@ -13,7 +13,7 @@ if "--enable-devel" in sys.argv:
 else:
     install_dev = False
 
-Version = "2.0"
+release_version = '2.5.1'
 p = subprocess.Popen(
     ("git", "describe", "--tags"),
     stdin=subprocess.PIPE,
@@ -26,7 +26,7 @@ try:
     if Version == "":
         Version = descr
 except Exception:
-    descr = Version
+    descr = release_version
 
 p = subprocess.Popen(
     ("git", "log", "-n1", "--pretty=short"),
@@ -143,7 +143,7 @@ if install_dev:
 
 setup(
     name="pcmdi_metrics",
-    version=descr,
+    version=release_version,
     author="PCMDI",
     description="model metrics tools",
     url="http://github.com/PCMDI/pcmdi_metrics",
