@@ -16,6 +16,20 @@ else:
 release_version = "2.5.1"
 
 p = subprocess.Popen(
+    ("git", "describe", "--tags"),
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+)
+try:
+    descr = p.stdout.readlines()[0].strip().decode("utf-8")
+    Version = "-".join(descr.split("-")[:-2])
+    if Version == "":
+        Version = descr
+except Exception:
+    descr = release_version
+
+p = subprocess.Popen(
     ("git", "log", "-n1", "--pretty=short"),
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
@@ -28,7 +42,7 @@ except Exception:
 
 f = open("pcmdi_metrics/version.py", "w")
 print("__version__ = '%s'" % release_version, file=f)
-print("__git_tag_describe__ = '%s'" % release_version, file=f)
+print("__git_tag_describe__ = '%s'" % descr, file=f)
 print("__git_sha1__ = '%s'" % commit, file=f)
 f.close()
 
