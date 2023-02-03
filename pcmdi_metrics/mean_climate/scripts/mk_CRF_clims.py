@@ -19,9 +19,9 @@ MIP = 'cmip6'   # 'CMIP6'
 # MIP = 'cmip5'   # 'CMIP5'
 
 if MIP == 'cmip6':
-    ver = 'v20220927'  # v20210812'  #'v20210806'  #'v20200526'
+    ver = 'v20230202'
 if MIP == 'cmip5':
-    ver = 'v20200426'  #'v20191016'  #'v20190820'   #'v20190307'
+    ver = 'v20200426'
 
 # NEED TO RUN SEPERATELY FOR LW AND SW (i.e., rsut and rlut)
 radvar = 'rsut'
@@ -34,9 +34,9 @@ lst = glob.glob(pi + '*' + radvar + 'cs' '*.nc')
 
 for lc in lst:
     try:
-        l = lc.replace(radvar + 'cs', radvar)
+        li = lc.replace(radvar + 'cs', radvar)
 
-        if os.path.isfile(l):
+        if os.path.isfile(li):
 
             if radvar == 'rsut':
                 fixname = 'rstcre'
@@ -45,7 +45,7 @@ for lc in lst:
 
             os.makedirs(pi.replace(radvar + 'cs', fixname), exist_ok=True)
 
-            f = cdms.open(l)
+            f = cdms.open(li)
             d = f(radvar)
             fc = cdms.open(lc)
             att_keys = fc.attributes.keys()
@@ -62,7 +62,7 @@ for lc in lst:
 
             cre.units = "W m-2"
 
-            lo = l.replace(radvar, fixname)
+            lo = li.replace(radvar, fixname)
 
             g = cdms.open(lo, 'w+')
             for att in f.attributes.keys():
@@ -73,7 +73,7 @@ for lc in lst:
             print('done with ', lo)
 
             if radvar == 'rsut':
-                l1 = lc.replace('rsutcs', 'rsdt')   # [:-1]
+                l1 = lc.replace('rsutcs', 'rsdt')
 
             try:
                 f1 = cdms.open(l1)
