@@ -4,7 +4,15 @@ import subprocess
 
 from setuptools import find_packages, setup
 
-Version = "2.5.0"
+
+if "--enable-devel" in sys.argv:
+    install_dev = True
+    sys.argv.remove("--enable-devel")
+else:
+    install_dev = False
+
+release_version = "2.5.1"
+
 p = subprocess.Popen(
     ("git", "describe", "--tags"),
     stdin=subprocess.PIPE,
@@ -17,7 +25,8 @@ try:
     if Version == "":
         Version = descr
 except Exception:
-    descr = Version
+    descr = release_version
+    Version = release_version
 
 p = subprocess.Popen(
     ("git", "log", "-n1", "--pretty=short"),
@@ -29,6 +38,7 @@ try:
     commit = p.stdout.readlines()[0].split()[1].decode("utf-8")
 except Exception:
     commit = ""
+
 f = open("pcmdi_metrics/version.py", "w")
 print("__version__ = '%s'" % Version, file=f)
 print("__git_tag_describe__ = '%s'" % descr, file=f)
@@ -105,7 +115,7 @@ data_files = (
 
 setup(
     name="pcmdi_metrics",
-    version=descr,
+    version=release_version,
     author="PCMDI",
     description="model metrics tools",
     url="http://github.com/PCMDI/pcmdi_metrics",
