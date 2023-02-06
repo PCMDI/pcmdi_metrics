@@ -1,168 +1,71 @@
 #!/usr/bin/env python
 
 import datetime
-import os
 
-import dask
 from genutil import StringConstructor
 
-from pcmdi_metrics.io import xcdat_open
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPMetricsParser
+from pcmdi_metrics.mean_climate.lib import calculate_climatology
 
 
-def clim_calc(var, infile, outfile=None, outpath=None, outfilename=None, start=None, end=None):
+ver = datetime.datetime.now().strftime("v%Y%m%d")
 
-    ver = datetime.datetime.now().strftime("v%Y%m%d")
-    print("ver:", ver)
+P = PMPMetricsParser()
 
-    infilename = infile.split("/")[-1]
-    print("infilename:", infilename)
+P.add_argument(
+    "--vars", dest="vars", help="List of variables", nargs="+", required=False
+)
+P.add_argument("--infile", dest="infile", help="Defines infile", required=False)
+P.add_argument(
+    "--outfile", dest="outfile", help="Defines output path and filename", required=False
+)
+P.add_argument("--outpath", dest="outpath", help="Defines outpath only", required=False)
+P.add_argument(
+    "--outfilename",
+    dest="outfilename",
+    help="Defines out filename only",
+    required=False,
+)
+P.add_argument(
+    "--start", dest="start", help="Defines start year and month", required=False
+)
+P.add_argument("--end", dest="end", help="Defines end year and month", required=False)
 
-    # open file
-    d = xcdat_open(infile, data_var=var)   # wrapper of xcdat open functions to enable using xml
-    atts = d.attrs
+args = P.get_parameter()
 
-    print("type(d):", type(d))
-    print("atts:", atts)
+infile_template = args.infile
+outfile_template = args.outfile
+outpath_template = args.outpath
+outfilename_template = args.outfilename
+varlist = args.vars
+start = args.start
+end = args.end
 
-    # CONTROL OF OUTPUT DIRECTORY AND FILE
-    out = outfile
-    if outpath is None:
-        outdir = os.path.dirname(outfile)
-    else:
-        outdir = outpath
-    os.makedirs(outdir, exist_ok=True)
+print("start and end are ", start, " ", end)
+print("variable list: ", varlist)
+print("ver:", ver)
 
-    print("outdir:", outdir)
+InFile = StringConstructor(infile_template)
+OutFile = StringConstructor(outfile_template)
+OutFileName = StringConstructor(outfilename_template)
+OutPath = StringConstructor(outpath_template)
 
-    # CLIM PERIOD
-    if (start is None) and (end is None):
-        # DEFAULT CLIM - BASED ON ENTIRE TIME SERIES
-        start_yr = int(d.time["time.year"][0])
-        start_mo = int(d.time["time.month"][0])
-        start_da = int(d.time["time.day"][0])
-        end_yr = int(d.time["time.year"][-1])
-        end_mo = int(d.time["time.month"][-1])
-        end_da = int(d.time["time.day"][-1])
-    else:
-        # USER DEFINED PERIOD
-        start_yr = int(start.split("-")[0])
-        start_mo = int(start.split("-")[1])
-        start_da = 1
-        end_yr = int(end.split("-")[0])
-        end_mo = int(end.split("-")[1])
-        end_da = int(d.time.dt.days_in_month.sel(time=(d.time.dt.year == end_yr))[end_mo - 1])
+for var in varlist:
+    # Build filenames
+    InFile.variable = var
+    OutFile.variable = var
+    OutFileName.variable = var
+    OutPath.variable = var
+    infile = InFile()
+    outfile = OutFile()
+    outfilename = OutFileName()
+    outpath = OutPath()
 
-    start_yr_str = str(start_yr).zfill(4)
-    start_mo_str = str(start_mo).zfill(2)
-    start_da_str = str(start_da).zfill(2)
-    end_yr_str = str(end_yr).zfill(4)
-    end_mo_str = str(end_mo).zfill(2)
-    end_da_str = str(end_da).zfill(2)
+    print('var:', var)
+    print('infile:', infile)
+    print('outfile:', outfile)
+    print('outfilename:', outfilename)
+    print('outpath:', outpath)
 
-    # Subset given time period
-    d = d.sel(time=slice(start_yr_str + '-' + start_mo_str + '-' + start_da_str,
-                         end_yr_str + '-' + end_mo_str + '-' + end_da_str))
-
-    print("start_yr_str is ", start_yr_str)
-    print("start_mo_str is ", start_mo_str)
-    print("end_yr_str is ", end_yr_str)
-    print("end_mo_str is ", end_mo_str)
-
-    # Calculate climatology
-    dask.config.set(**{'array.slicing.split_large_chunks': True})
-    d_clim = d.temporal.climatology(var, freq="season", weighted=True, season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},)
-    d_ac = d.temporal.climatology(var, freq="month", weighted=True)
-
-    d_clim_dict = dict()
-
-    d_clim_dict['DJF'] = d_clim.isel(time=0)
-    d_clim_dict['MAM'] = d_clim.isel(time=1)
-    d_clim_dict['JJA'] = d_clim.isel(time=2)
-    d_clim_dict['SON'] = d_clim.isel(time=3)
-    d_clim_dict['AC'] = d_ac
-
-    for s in ["AC", "DJF", "MAM", "JJA", "SON"]:
-        addf = (
-            "."
-            + start_yr_str
-            + start_mo_str
-            + "-"
-            + end_yr_str
-            + end_mo_str
-            + "."
-            + s
-            + "."
-            + ver
-            + ".nc"
-        )
-        if outfilename is not None:
-            out = os.path.join(outdir, outfilename)
-        out_season = out.replace(".nc", addf)
-
-        print("output file is", out_season)
-        d_clim_dict[s].to_netcdf(out_season)  # global attributes are automatically saved as well
-
-
-if __name__ == "__main__":
-
-    ver = datetime.datetime.now().strftime("v%Y%m%d")
-
-    P = PMPMetricsParser()
-
-    P.add_argument(
-        "--vars", dest="vars", help="List of variables", nargs="+", required=False
-    )
-    P.add_argument("--infile", dest="infile", help="Defines infile", required=False)
-    P.add_argument(
-        "--outfile", dest="outfile", help="Defines output path and filename", required=False
-    )
-    P.add_argument("--outpath", dest="outpath", help="Defines outpath only", required=False)
-    P.add_argument(
-        "--outfilename",
-        dest="outfilename",
-        help="Defines out filename only",
-        required=False,
-    )
-    P.add_argument(
-        "--start", dest="start", help="Defines start year and month", required=False
-    )
-    P.add_argument("--end", dest="end", help="Defines end year and month", required=False)
-
-    args = P.get_parameter()
-
-    infile_template = args.infile
-    outfile_template = args.outfile
-    outpath_template = args.outpath
-    outfilename_template = args.outfilename
-    varlist = args.vars
-    start = args.start
-    end = args.end
-
-    print("start and end are ", start, " ", end)
-    print("variable list: ", varlist)
-
-    InFile = StringConstructor(infile_template)
-    OutFile = StringConstructor(outfile_template)
-    OutFileName = StringConstructor(outfilename_template)
-    OutPath = StringConstructor(outpath_template)
-
-    for var in varlist:
-        # Build filenames
-        InFile.variable = var
-        OutFile.variable = var
-        OutFileName.variable = var
-        OutPath.variable = var
-        infile = InFile()
-        outfile = OutFile()
-        outfilename = OutFileName()
-        outpath = OutPath()
-
-        print('var:', var)
-        print('infile:', infile)
-        print('outfile:', outfile)
-        print('outfilename:', outfilename)
-        print('outpath:', outpath)
-
-        # calculate climatologies for this variable
-        clim_calc(var, infile, outfile, outpath, outfilename, start, end)
+    # calculate climatologies for this variable
+    calculate_climatology(var, infile, outfile, outpath, outfilename, start, end, ver)
