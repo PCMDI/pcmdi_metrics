@@ -1274,9 +1274,9 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
         figdir + "WCRP_assessed_RMSE_v_cldfbk2_amip-p4K.png", bbox_inches="tight"
     )
 
-    ######################################################
+    # #####################################################
     # Plot Klein error metrics vs cloud feedback & RMSE:
-    ######################################################
+    # #####################################################
     # Plot E_NET vs total cloud feedback:
     plt.figure(figsize=(18, 12))
     gs = gridspec.GridSpec(10, 24)
@@ -1934,8 +1934,8 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
         )
         print(dash, file=f)
 
-    #######################################################
+    # ######################################################
     # RETURN YOURMODEL RESULTS TO DRIVER:
-    #######################################################
+    # ######################################################
     m = models6.index(newmod)
-    return RMSE6[m], ECS6[m]
+    return E_NET6[m], RMSE6[m], assessed6[m,-1], ECS6[m]

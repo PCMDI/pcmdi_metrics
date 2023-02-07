@@ -146,7 +146,7 @@ if debug:
 
 # generate plots and extract metrics from the plotting routines
 os.makedirs(figure_path, exist_ok=True)
-rmse, ecs = dataviz.make_all_figs(
+climo_cld_rmse, cld_fbk_rmse, tot_cld_fbk, ecs = dataviz.make_all_figs(
     updated_fbk_dict,
     updated_obsc_fbk_dict,
     updated_err_dict,
@@ -160,15 +160,20 @@ print("get metrics done")
 print("-- Metric result --")
 print("model:", model)
 print("variant:", variant)
-print("rmse:", rmse)
+print("clim_cloud_rmse:", climo_cld_rmse)
+print("cloud_feedback_rmse:", cld_fbk_rmse)
+print("total_cloud_feedback:", tot_cld_fbk)
 print("ecs:", ecs)
 
 output_dict = dict()
 output_dict["RESULTS"] = dict()
 output_dict["RESULTS"][model] = dict()
 output_dict["RESULTS"][model][variant] = dict()
-output_dict["RESULTS"][model][variant]["RMSE"] = rmse
+output_dict["RESULTS"][model][variant]["clim_cloud_rmse"] = climo_cld_rmse
+output_dict["RESULTS"][model][variant]["cloud_feedback_rmse"] = cld_fbk_rmse
+output_dict["RESULTS"][model][variant]["total_cloud_feedback"] = tot_cld_fbk
 output_dict["RESULTS"][model][variant]["ECS"] = ecs
+
 
 cloud_feedback_metrics_to_json(
     output_path, output_json_filename, output_dict, cmec_flag=cmec
