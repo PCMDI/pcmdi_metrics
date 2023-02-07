@@ -7,4 +7,9 @@
 ## Prepare run metrics calculations
 * `get_all_MIP_mods_from_CLIMS.py`: Generate a json file that includes list of models, e.g., `all_mip_mods-v20230130.json`
 
-mean_climate_driver.py -p ../param/pcmdi_MIP_EXP_pmp_parameterfile.py
+## Calculate metrics
+* Serial mode
+  * mean_climate_driver.py -p ../param/pcmdi_MIP_EXP_pmp_parameterfile.py
+
+## Merge individual JSON files
+* post_process_merge_jsons.py

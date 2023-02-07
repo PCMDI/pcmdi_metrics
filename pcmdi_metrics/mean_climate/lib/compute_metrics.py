@@ -36,8 +36,8 @@ def compute_metrics(Var, dm, do):
     do['time_bnds'] = dm['time_bnds']
     print('do.time: ', do['time'])
 
-    dm.to_netcdf('dm.nc')
-    do.to_netcdf('do.nc')
+    # dm.to_netcdf('dm.nc')
+    # do.to_netcdf('do.nc')
 
     metrics_dictionary = {}
 
