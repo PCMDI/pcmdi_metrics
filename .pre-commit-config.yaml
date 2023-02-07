@@ -1,4 +1,4 @@
-exclude: "docs|node_modules|migrations|.git|.tox|sample_setups/(external-setups|jsons)|tests/deprecated"
+exclude: "docs|node_modules|migrations|.git|.tox|.md|sample_setups/(external-setups|jsons)|tests/deprecated"
 default_stages: [commit]
 fail_fast: true
 
@@ -12,19 +12,19 @@ repos:
           - id: check-yaml
 
     - repo: https://github.com/psf/black
-      rev: 22.6.0
+      rev: 22.10.0
       hooks:
           - id: black
 
-    - repo: https://github.com/timothycrosley/isort
-      rev: 5.10.1
+    - repo: https://github.com/PyCQA/isort
+      rev: 5.12.0
       hooks:
           - id: isort
 
     # Need to use flake8 GitHub mirror due to CentOS git issue with GitLab
     # https://github.com/pre-commit/pre-commit/issues/1206
     - repo: https://github.com/pycqa/flake8
-      rev: 4.0.1
+      rev: 5.0.4
       hooks:
           - id: flake8
             args: ["--config=setup.cfg"]

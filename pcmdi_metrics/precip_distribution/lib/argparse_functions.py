@@ -2,11 +2,9 @@ def AddParserArgument(P):
     P.add_argument(
         "--mip", type=str, dest="mip", default=None, help="cmip5, cmip6 or other mip"
     )
-    P.add_argument("--exp",
-               type=str,
-               dest='exp',
-               default=None,
-               help="amip, cmip or others")
+    P.add_argument(
+        "--exp", type=str, dest="exp", default=None, help="amip, cmip or others"
+    )
     P.add_argument("--mod", type=str, dest="mod", default=None, help="model")
     P.add_argument(
         "--var", type=str, dest="var", default=None, help="pr or other variable"
@@ -43,22 +41,25 @@ def AddParserArgument(P):
         help="factor to make unit of [mm/day]",
     )
     P.add_argument(
-        "--nperseg",
+        "--res",
         type=int,
-        dest="nperseg",
+        dest="res",
+        nargs="+",
         default=None,
-        help="length of segment in power spectra",
+        help="list of target horizontal resolution [degree] for interporation (lon, lat)",
+    )
+    P.add_argument("--ref", type=str, dest="ref", default=None, help="reference data")
+    P.add_argument(
+        "--ref_dir",
+        type=str,
+        dest="ref_dir",
+        default=None,
+        help="reference directory path",
     )
     P.add_argument(
-        "--noverlap",
-        type=int,
-        dest="noverlap",
-        default=None,
-        help="length of overlap between segments in power spectra",
+        "--exp", type=str, dest="exp", default=None, help="e.g., historical or amip"
     )
-    P.add_argument(
-        "--ref", type=str, dest="ref", default=None, help="reference data path"
-    )
+    P.add_argument("--ver", type=str, dest="ver", default=None, help="version")
     P.add_argument(
         "--cmec",
         dest="cmec",
