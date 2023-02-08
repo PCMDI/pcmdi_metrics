@@ -59,7 +59,9 @@ class PMPDriver(object):
                 continue
 
             for region in self.regions_dict[self.var]:
-                logging.getLogger("pcmdi_metrics").info("REGION: {}".format(region))
+                logging.getLogger("pcmdi_metrics").info(
+                    "VAR: {}, REGION: {}".format(self.var, region)
+                )
                 self.region = self.create_region(region)
                 self.run_reference_and_test_comparison()
 
@@ -158,6 +160,12 @@ class PMPDriver(object):
         reference_data_set_is_obs = self.is_data_set_obs(reference_data_set)
         test_data_set_is_obs = self.is_data_set_obs(test_data_set)
 
+        logging.getLogger("pcmdi_metrics").info(
+            "reference_data_set (given): {}, reference_data_set_is_obs: {}, test_data_set_is_obs: {}".format(
+                reference_data_set, reference_data_set_is_obs, test_data_set_is_obs
+            )
+        )
+
         # If either the reference or test are obs, the data sets
         # themselves need to be modified.
         if reference_data_set_is_obs:
@@ -168,6 +176,12 @@ class PMPDriver(object):
             test_data_set = Observation.setup_obs_list_from_parameter(
                 test_data_set, self.obs_dict, self.var
             )
+
+        logging.getLogger("pcmdi_metrics").info(
+            "reference_data_set (adjusted): {}, test_data_set: {}".format(
+                reference_data_set, test_data_set
+            )
+        )
 
         if len(reference_data_set) == 0:  # We did not find any ref!!!
             raise RuntimeError("No reference dataset found!")
