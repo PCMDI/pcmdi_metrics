@@ -135,7 +135,10 @@ def create_mean_climate_parser():
     )
 
     parser.add_argument(
-        "--ext", dest="ext", help="Extension for the output files?", required=False
+        "--ext", 
+        dest="ext", 
+        help="Extension for the output files?", 
+        required=False
     )
 
     parser.add_argument(
@@ -188,6 +191,7 @@ def create_mean_climate_parser():
         type=lambda x: x.lower() == "true",
         dest="save_test_clims",
         help="True if to save interpolated test climatologies," + " otherwise False",
+        default=False,
         required=False,
     )
 
@@ -214,8 +218,8 @@ def create_mean_climate_parser():
     parser.add_argument(
         "--debug",
         dest="debug",
+        action="store_true",
         help="Turn on debugging mode by printing more information to track progress",
-        default=False,
         required=False,
     )
 
@@ -224,7 +228,6 @@ def create_mean_climate_parser():
         dest="cmec",
         action="store_true",
         help="Save metrics in CMEC format",
-        default=False,
         required=False,
     )
 
@@ -233,7 +236,6 @@ def create_mean_climate_parser():
         dest="cmec",
         action="store_false",
         help="Option to not save metrics in CMEC format",
-        default=False,
         required=False,
     )
 

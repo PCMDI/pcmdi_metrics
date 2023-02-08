@@ -4,9 +4,9 @@ import os
 
 from pcmdi_metrics.misc.scripts import parallel_submitter
 
+mip = 'cmip5'
 exp = 'historical'
 # exp = 'amip'
-mip = 'cmip6'
 verin = 'v20230201'
 start = '1981-01'
 end = '2005-12'
@@ -18,8 +18,7 @@ verout = datetime.datetime.now().strftime('v%Y%m%d')
 # vars = ['ta', 'ua', 'va', 'zg', 'hur', 'hus']
 # vars = ['ts', 'tas', 'uas', 'vas', 'huss', 'hurs', 'psl', 'prw', 'sfcWind', 'tauu', 'tauv', 'pr', 'rlut', 'rsut', 'rlutcs', 'rsutcs', 'rsdt', 'rsus', 'rsds', 'rlds', 'rlus', 'rldscs', 'rsdscs', 'ta', 'ua', 'va', 'zg', 'hur', 'hus']
 # vars = ['ts', 'pr']
-# vars = ['tas', 'uas', 'vas', 'huss', 'hurs', 'psl', 'prw', 'sfcWind', 'tauu', 'tauv', 'rlut', 'rsut', 'rlutcs', 'rsutcs', 'rsdt', 'rsus', 'rsds', 'rlds', 'rlus', 'rldscs', 'rsdscs']
-vars = ['ta', 'ua', 'va', 'zg', 'hur']
+vars = ['tas', 'uas', 'vas', 'huss', 'hurs', 'psl', 'prw', 'sfcWind', 'tauu', 'tauv', 'rlut', 'rsut', 'rlutcs', 'rsutcs', 'rsdt', 'rsus', 'rsds', 'rlds', 'rlus', 'rldscs', 'rsdscs', 'ta', 'ua', 'va', 'zg', 'hur']
 
 lst1 = []
 listlog = []

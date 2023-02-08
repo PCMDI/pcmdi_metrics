@@ -8,7 +8,7 @@ from re import split
 import cdms2
 import cdutil
 import numpy as np
-import xcdat
+import xcdat as xc
 
 from pcmdi_metrics import resources
 from pcmdi_metrics.io import load_regions_specs, region_subset
@@ -22,7 +22,13 @@ from pcmdi_metrics.variability_mode.lib import tree
 
 
 parser = create_mean_climate_parser()
-parameter = parser.get_parameter(cmd_default_vars=False, argparse_vals_only=False)
+#parameter = parser.get_parameter(cmd_default_vars=False, argparse_vals_only=False)
+#parameter = parser.get_parameter(cmd_default_vars=True, argparse_vals_only=False)
+parameter = parser.get_parameter(argparse_vals_only=False)
+#parameter = parser.get_parameter()
+#print(parameter)
+#import sys
+#sys.exit('test')
 
 # parameters
 case_id = parameter.case_id
@@ -45,10 +51,12 @@ reference_data_path = parameter.reference_data_path
 metrics_output_path = parameter.metrics_output_path.replace('%(case_id)', case_id)
 
 debug = parameter.debug
-cmec = False  # temporary
+cmec = parameter.cmec
 
+find_all_realizations = False
 if realization is None:
-    realizations = [""]
+    realization = ""
+    realizations = [realization]
 elif isinstance(realization, str):
     if realization.lower() in ["all", "*"]:
         find_all_realizations = True
@@ -85,7 +93,7 @@ print('--- prepare mean climate metrics calculation ---')
 # generate target grid
 if target_grid == "2.5x2.5":
     # target grid for regridding
-    t_grid = xcdat.create_uniform_grid(-88.875, 88.625, 2.5, 0, 357.5, 2.5)
+    t_grid = xc.create_uniform_grid(-88.875, 88.625, 2.5, 0, 357.5, 2.5)
     if debug:
         print('type(t_grid):', type(t_grid))  # Expected type is 'xarray.core.dataset.Dataset'
         print('t_grid:', t_grid)
@@ -137,6 +145,10 @@ for var in vars:
     # ----------------
     # observation loop
     # ----------------
+    if "all" in reference_data_set:
+        reference_data_set = [x for x in list(obs_dict[varname].keys()) if (x == "default" or "alternate" in x)]
+        print("reference_data_set (all): ", reference_data_set)
+
     for ref in reference_data_set:
         print('ref:', ref)
         # identify data to load (annual cycle (AC) data is loading in)
@@ -157,7 +169,7 @@ for var in vars:
             if find_all_realizations:
                 test_data_full_path = os.path.join(
                     test_data_path,
-                    filename_template).replace('%(variable)', varname).replace('%(model)', model).replace('%(realization)', '*')
+                    filename_template).replace('%(variable)', varname).replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', '*')
                 ncfiles = glob.glob(test_data_full_path)
                 realizations = []
                 for ncfile in ncfiles:
@@ -169,15 +181,17 @@ for var in vars:
                 # identify data to load (annual cycle (AC) data is loading in)
                 test_data_full_path = os.path.join(
                     test_data_path,
-                    filename_template).replace('%(variable)', varname).replace('%(model)', model).replace('%(realization)', run)
+                    filename_template).replace('%(variable)', varname).replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', run)
                 if os.path.exists(test_data_full_path):
                     print('-----------------------')
                     print('model, run:', model, run)
-                    try:
+                    print('test_data (model in this case) full_path:', test_data_full_path)
+                    #try:
+                    if 1:
                         ds_test_dict = dict()
 
                         # load data and regrid
-                        ds_test = load_and_regrid(test_data_full_path, varname, level, t_grid, regrid_tool=regrid_tool, debug=debug)
+                        ds_test = load_and_regrid(test_data_full_path, varname, level, t_grid, decode_times=True, regrid_tool=regrid_tool, debug=debug)
                         print('load and regrid done')
 
                         # -----------
@@ -235,11 +249,11 @@ for var in vars:
                             cmec_flag=cmec,
                             debug=debug
                         )
-
+                    """
                     except Exception as e:
                         print('error occured for ', model, run)
                         print(e)
-
+                    """
     """
     # write collective JSON --- all models / all obs / single variable
     json_filename = "_".join([var, target_grid, regrid_tool, "metrics"])
