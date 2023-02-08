@@ -69,7 +69,14 @@ Thanks to our contributors!
 Acknowledgement
 ---------------
 
-This software is  developed by scientists and developers from the Program for Climate Model Diagnosis and Intercomparison ([PCMDI][PCMDI]) at Lawrence Livermore National Laboratory ([LLNL][LLNL]). The work is performed for the E3SM project, which is sponsored by the Regional and Global Model Analysis ([RGMA][RGMA]) program. The RGMA is a program for the Earth and Environmental Systems Sciences Division ([EESSD][EESSD]) in the Office of Biological and Environmental Research ([BER][BER]) within the [Department of Energy][DOE]'s [Office of Science][OS].
+Software contained in this repository is developed by climate and computer scientists from the Program
+for Climate Model Diagnosis and Intercomparison ([PCMDI][PCMDI]) at Lawrence Livermore National
+Laboratory ([LLNL][LLNL]). This work is sponsored by the Regional and Global Model Analysis
+([RGMA][RGMA]) program, of the Earth and Environmental Systems Sciences Division ([EESSD][EESSD])
+in the Office of Biological and Environmental Research ([BER][BER]) within the
+[Department of Energy][DOE]'s [Office of Science][OS]. The work is performed under the auspices of
+the U.S. Department of Energy by Lawrence Livermore National Laboratory under Contract
+DE-AC52-07NA27344.
 
 [PCMDI]: https://pcmdi.llnl.gov/
 [LLNL]: https://www.llnl.gov/
@@ -78,6 +85,7 @@ This software is  developed by scientists and developers from the Program for Cl
 [BER]: https://science.osti.gov/ber
 [DOE]: https://www.energy.gov/
 [OS]: https://science.osti.gov/
+
 
 
 License
