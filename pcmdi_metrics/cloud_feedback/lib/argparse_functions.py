@@ -72,10 +72,19 @@ def AddParserArgument():
         required=False,
     )
     P.add_argument(
+        "--data_path",
+        type=str,
+        dest="data_path",
+        help="path (e.g., ./data/).",
+        default=None,
+        required=False,
+    )
+    P.add_argument(
         "--figure_path",
         type=str,
         dest="figure_path",
         help="path (e.g., ./figures/).",
+        default=None,
         required=False,
     )
     P.add_argument(

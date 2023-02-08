@@ -25,6 +25,7 @@ version = param.version
 input_files_json = param.input_files_json
 path = param.path
 xml_path = param.xml_path
+data_path = param.data_path
 figure_path = param.figure_path
 output_path = param.output_path
 output_json_filename = param.output_json_filename
@@ -63,6 +64,8 @@ filenames = dict()
 if input_files_json is not None:
     with open(input_files_json) as f:
         ncfiles = json.load(f)
+else:
+    print('Warning: input files were not explicitly given. They will be searched from ', path)
 
 for exp in exps:
     filenames[exp] = dict()
@@ -119,9 +122,9 @@ print("calc done")
 
 # add this model's results to the pre-existing json file containing other models' results:
 updated_fbk_dict, updated_obsc_fbk_dict = organize_fbk_jsons(
-    fbk_dict, obsc_fbk_dict, model, variant
+    fbk_dict, obsc_fbk_dict, model, variant, datadir=data_path
 )
-updated_err_dict = organize_err_jsons(err_dict, model, variant)
+updated_err_dict = organize_err_jsons(err_dict, model, variant, datadir=data_path)
 
 ecs = None
 if get_ecs:
@@ -129,7 +132,7 @@ if get_ecs:
     ecs = compute_ECS(filenames)
     print("calc ECS done")
     print("ecs: ", ecs)
-updated_ecs_dict = organize_ecs_jsons(ecs, model, variant)
+updated_ecs_dict = organize_ecs_jsons(ecs, model, variant, datadir=data_path)
 
 os.makedirs(output_path, exist_ok=True)
 if debug:
@@ -152,7 +155,9 @@ climo_cld_rmse, cld_fbk_rmse, tot_cld_fbk, ecs = dataviz.make_all_figs(
     updated_err_dict,
     updated_ecs_dict,
     model,
-    debug,
+    figdir=figure_path,
+    datadir=data_path,
+    debug=debug,
 )
 print("get metrics done")
 

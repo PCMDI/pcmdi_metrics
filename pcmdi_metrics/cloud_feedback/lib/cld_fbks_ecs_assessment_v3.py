@@ -5,6 +5,7 @@ Make figures comparing GCM cloud feedback components to expert assessed values f
 
 import json
 import string
+import os
 from datetime import date
 
 import matplotlib as mpl
@@ -14,12 +15,10 @@ import numpy as np
 from scipy import stats
 
 HEIGHT = 0.45
-figdir = "./figures/"
-datadir = "./data/"
 
-#######################################################
-########### DEFINE COLORS FOR ECS COLORBAR ############
-#######################################################
+# ######################################################
+# DEFINE COLORS FOR ECS COLORBAR 
+# ######################################################
 cmap = plt.cm.RdBu_r  # define the colormap
 # extract all colors from the .jet map
 cmaplist = [cmap(i) for i in range(cmap.N)]
@@ -74,12 +73,12 @@ MARK["CNRM-CM5"] = "8"
 MARK["CNRM-CM6-1"] = "8"
 
 
-#######################################################
+# ######################################################
 def get_expert_assessed_fbks():
 
-    #######################################################
-    ############## WCRP ASSESSMENT VALUES #################
-    #######################################################
+    # ######################################################
+    # ############# WCRP ASSESSMENT VALUES #################
+    # ######################################################
     fbk_names = [
         "High-Cloud Altitude",
         "Tropical Marine Low-Cloud",
@@ -147,7 +146,7 @@ def get_expert_assessed_fbks():
     return (expert_cld_fbks, err_expert_cld_fbks, fbk_names)
 
 
-#######################################################
+# ######################################################
 def get_fbks(cld_fbks, obsc_cld_fbks, cld_errs, ecs_dict):
     # Load in all the json files and get assessed/unassessed feedbacks
     assessed = []
@@ -271,7 +270,7 @@ def get_fbks(cld_fbks, obsc_cld_fbks, cld_errs, ecs_dict):
     )
 
 
-#######################################################
+# ######################################################
 def get_gcm_assessed_fbks(fbk_dict, obsc_fbk_dict):
 
     # dictionary is structured: [region][sfc][sec][name]
@@ -363,7 +362,7 @@ def get_gcm_assessed_fbks(fbk_dict, obsc_fbk_dict):
     return np.array(assessed)  # size [fbk_types]
 
 
-#######################################################
+# ######################################################
 def get_gcm_cld_errs(err_dict, name):
 
     # dictionary is structured: [region][sfc][sec][name]
@@ -402,7 +401,7 @@ def get_gcm_cld_errs(err_dict, name):
     return np.array(DATA)  # size [fbk_types]
 
 
-#######################################################
+# ######################################################
 def get_unassessed_fbks(fbk_dict, obsc_fbk_dict):
 
     # dictionary is structured: [region][sfc][sec][name]
@@ -551,7 +550,7 @@ def get_unassessed_fbks(fbk_dict, obsc_fbk_dict):
     return (np.array(unassessed), fbk_names)  # size [fbk_types]
 
 
-#######################################################
+# ######################################################
 def horiz_shade(fbk, err, xlabloc=False):
     dummyx = np.linspace(-1000, 1000, 100)
     ymin1 = fbk - 1.64 * err
@@ -568,7 +567,7 @@ def horiz_shade(fbk, err, xlabloc=False):
         plt.text(xlabloc, ymax1, " 95%", fontsize=9, ha="center", va="center")
 
 
-#######################################################
+# ######################################################
 def label_models(ax, models5, models6):
     ylocs = np.linspace(2, 9, 3 + len(models5) + len(models6))[-1::-1]
     xloc = 0.76
@@ -650,7 +649,7 @@ def label_models(ax, models5, models6):
     ax.axis("off")
 
 
-#######################################################
+# ######################################################
 def plot_expert():
 
     (expert_cld_fbks, err_expert_cld_fbks, fbk_names) = get_expert_assessed_fbks()
@@ -741,7 +740,7 @@ def plot_expert():
     return fbk_names
 
 
-#######################################################
+# ######################################################
 def scatter_label(x, y, models, models5, dolabel=False, dolims=False):
     m, b, r, p, std_err = stats.linregress(x.compressed(), y.compressed())
     dummyx = np.linspace(x.min(), x.max(), 100)
@@ -791,7 +790,7 @@ def scatter_label(x, y, models, models5, dolabel=False, dolims=False):
     return LABEL
 
 
-#######################################################
+# ######################################################
 def static_plot(assessed, ecs, models, fbk_names, gen, fig, gs):
     LN = assessed.shape[1]
     if gen == "5":
@@ -879,26 +878,34 @@ def static_plot(assessed, ecs, models, fbk_names, gen, fig, gs):
         ax2.set_ylabel("ECS [K]", size=12)
 
 
-#######################################################
-def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debug):
+# ######################################################
+def make_all_figs(
+    cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, 
+    figdir=None, datadir=None,
+    debug=False):
 
     # Set a unique marker for your new model
     MARK[newmod] = "<"
 
-    ##################################################################
+    # #################################################################
     # READ IN CLOUD FEEDBACK VALUES FOR CMIP5
-    ##################################################################
-    file = datadir + "cmip5_amip4K_cld_fbks.json"
+    # #################################################################
+    if figdir is None:
+        figdir = "./figures/"
+    if datadir is None:
+        datadir = "./data/"
+
+    file = os.path.join(datadir, "cmip5_amip4K_cld_fbks.json")
     f = open(file, "r")
     cld_fbks5 = json.load(f)
     f.close()
 
-    file = datadir + "cmip5_amip4K_cld_obsc_fbks.json"
+    file = os.path.join(datadir, "cmip5_amip4K_cld_obsc_fbks.json")
     f = open(file, "r")
     obsc_cld_fbks5 = json.load(f)
     f.close()
 
-    file = datadir + "cmip5_amip_cld_errs.json"
+    file = os.path.join(datadir, "cmip5_amip_cld_errs.json")
     f = open(file, "r")
     cld_errs5 = json.load(f)
     f.close()
@@ -948,12 +955,12 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
     if debug:
         print("make_all_figs: get_fbks done")
 
-    ################################################################################################
+    # ###############################################################################################
     # BAR PLOT OF ECS ASSESSMENT CLOUD FEEDBACK COMPONENTS
     # 1) showing the 66% range (+/- 0.95sd) and 5-95% range (+/- 1.64 sd) rather than 1sd (68%) and 2 sd (2.5-97.5%) ranges
     # 2) putting the assessment values beneath rather than within the CFMIP bars
     # 3) add something to the legend that makes it clear what the range bars are (1 sd / 2sd or 66% / 5-95%)
-    ################################################################################################
+    # ###############################################################################################
 
     if debug:
         print("make_all_figs: fig start")
@@ -991,13 +998,13 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
     # new axis for labeling all models
     ax = plt.subplot(gs[:10, 10:12])
     label_models(ax, models5, models6)
-    plt.savefig(figdir + "WCRP_assessed_cld_fbks_amip-p4K.png", bbox_inches="tight")
+    plt.savefig(os.path.join(figdir, "WCRP_assessed_cld_fbks_amip-p4K.png"), bbox_inches="tight")
     if debug:
         print("make_all_figs: WCRP_assessed_cld_fbks_amip-p4K.png done")
 
-    ################################################################################################
+    # ###############################################################################################
     # BAR PLOT OF UNASSESSED CLOUD FEEDBACK COMPONENTS
-    ################################################################################################
+    # ###############################################################################################
     fig = plt.figure(figsize=(18, 12))
     gs = gridspec.GridSpec(20, 20)
     ax = plt.subplot(gs[:, :10])
@@ -1023,13 +1030,13 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
     # new axis for labeling all models
     ax = plt.subplot(gs[:10, 10:12])
     label_models(ax, models5, models6)
-    plt.savefig(figdir + "WCRP_unassessed_cld_fbks_amip-p4K.png", bbox_inches="tight")
+    plt.savefig(os.path.join(figdir, "WCRP_unassessed_cld_fbks_amip-p4K.png"), bbox_inches="tight")
     if debug:
         print("make_all_figs: WCRP_unassessed_cld_fbks_amip-p4K.png done")
 
-    ################################################################################################
+    # ###############################################################################################
     # ERROR METRIC OF MODEL AGREEMENT WITH INDIVIDUAL CLOUD FEEDBACKS
-    ################################################################################################
+    # ###############################################################################################
     expert_cld_fbks, err_expert_cld_fbks, fbk_names = get_expert_assessed_fbks()
     serr = (assessed5 - expert_cld_fbks) ** 2
     RMSE5 = np.sqrt(
@@ -1052,9 +1059,9 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
     models56 = np.append(models5, models6)
     # inds = np.argsort(RMSE56)
 
-    ######################################################
+    # #####################################################
     # Plot RMSE vs total cloud feedback:
-    ######################################################
+    # #####################################################
     plt.figure(figsize=(18, 12))
     gs = gridspec.GridSpec(10, 24)
 
@@ -1270,8 +1277,8 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
     )
     cb.ax.tick_params(labelsize=14)
     ax2.set_ylabel(r"$\mathrm{E_{NET}}$", size=14)
-    plt.savefig(
-        figdir + "WCRP_assessed_RMSE_v_cldfbk2_amip-p4K.png", bbox_inches="tight"
+    plt.savefig(os.path.join(
+        figdir, "WCRP_assessed_RMSE_v_cldfbk2_amip-p4K.png"), bbox_inches="tight"
     )
 
     # #####################################################
@@ -1395,11 +1402,11 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
     plt.title("b", fontsize=16, loc="left")
     plt.ylim(0.04, 0.15)
     plt.xlim(0.60, 1.65)
-    plt.savefig(figdir + "WCRP_totcldfbks2_v_E_NET_amip-p4K.png", bbox_inches="tight")
+    plt.savefig(os.path.join(figdir, "WCRP_totcldfbks2_v_E_NET_amip-p4K.png"), bbox_inches="tight")
 
-    #######################################################
+    # ######################################################
     # PRINT OUT THE TABLE OF EVERYTHING:
-    #######################################################
+    # ######################################################
 
     # Determine min and max of the likely (66%) and very likely (90%) range of expert judgement
     expert_min66 = expert_cld_fbks - 0.95 * err_expert_cld_fbks
@@ -1408,7 +1415,7 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
     expert_max90 = expert_cld_fbks + 1.64 * err_expert_cld_fbks
 
     # ASSESSED
-    fbk_table = figdir + "CMIP56_assessed_cld_fbks_WCRP.txt"
+    fbk_table = os.path.join(figdir, "CMIP56_assessed_cld_fbks_WCRP.txt")
     dash = "-" * 170
     with open(fbk_table, "w") as f:
         print(dash, file=f)
@@ -1711,7 +1718,7 @@ def make_all_figs(cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, debu
         print(dash, file=f)
 
     # UNASSESSED
-    fbk_table = figdir + "CMIP56_unassessed_cld_fbks_WCRP.txt"
+    fbk_table = os.path.join(figdir, "CMIP56_unassessed_cld_fbks_WCRP.txt")
     dash = "-" * 170
     with open(fbk_table, "w") as f:
         print(dash, file=f)

@@ -4,10 +4,9 @@
 
 import json
 from datetime import date
+import os
 
 import numpy as np
-
-datadir = "./data/"
 
 meta = {
     "date_modified": str(date.today()),
@@ -15,10 +14,13 @@ meta = {
 }
 
 
-def organize_fbk_jsons(new_dict, new_obsc_dict, mo, ripf):
+def organize_fbk_jsons(new_dict, new_obsc_dict, mo, ripf, datadir=None):
+
+    if datadir is None:
+        datadir = "./data/"
 
     # Load in the existing file containing pre-computed CMIP6 feedbacks
-    file = datadir + "cmip6_amip-p4K_cld_fbks.json"
+    file = os.path.join(datadir, "cmip6_amip-p4K_cld_fbks.json")
     f = open(file, "r")
     old_dict = json.load(f)
     f.close()
@@ -29,7 +31,7 @@ def organize_fbk_jsons(new_dict, new_obsc_dict, mo, ripf):
     old_dict["metadata"] = meta
 
     # Load in the existing file containing pre-computed CMIP6 obscuration-related feedbacks
-    file = datadir + "cmip6_amip-p4K_cld_obsc_fbks.json"
+    file = os.path.join(datadir, "cmip6_amip-p4K_cld_obsc_fbks.json")
     f = open(file, "r")
     old_obsc_dict = json.load(f)
     f.close()
@@ -45,10 +47,13 @@ def organize_fbk_jsons(new_dict, new_obsc_dict, mo, ripf):
     )  # now updated to include info from input dictionary
 
 
-def organize_err_jsons(new_dict, mo, ripf):
+def organize_err_jsons(new_dict, mo, ripf, datadir=None):
+
+    if datadir is None:
+        datadir = "./data/"    
 
     # Load in the existing file containing pre-computed CMIP6 error metrics
-    file = datadir + "cmip6_amip_cld_errs.json"
+    file = os.path.join(datadir, "cmip6_amip_cld_errs.json")
     f = open(file, "r")
     old_dict = json.load(f)
     f.close()
@@ -79,12 +84,15 @@ def organize_err_jsons(new_dict, mo, ripf):
     return old_dict  # now updated to include info from input dictionary
 
 
-def organize_ecs_jsons(new_ecs, mo, ripf):
+def organize_ecs_jsons(new_ecs, mo, ripf, datadir=None):
+
+    if datadir is None:
+        datadir = "./data/"
 
     ##################################################################
     # READ IN GREGORY ECS VALUES DERIVED IN ZELINKA ET AL (2020) GRL #
     ##################################################################
-    f = open(datadir + "cmip56_forcing_feedback_ecs.json", "r")
+    f = open(os.path.join(datadir, "cmip56_forcing_feedback_ecs.json"), "r")
     old_dict = json.load(f)
     f.close()
 

@@ -11,10 +11,11 @@ path = "/p/css03/esgf_publish/CMIP6"
 # True: compute ECS using abrupt-4xCO2 run
 # False: do not compute, instead rely on ECS value present in the json file (if it exists)
 get_ecs = True
+data_pathh = "/home/lee1043/git/pcmdi_metrics_20221013/pcmdi_metrics/pcmdi_metrics/cloud_feedback/data"
 
 # Output directory path (directory will be generated if it does not exist yet.)
-xml_path = "./xmls/"
-figure_path = "./figures/"
-output_path = "./output"
+xml_path = "/work/lee1043/cdat/pmp/cloud_feedback/xmls/"
+figure_path = "/work/lee1043/cdat/pmp/cloud_feedback/figures/"
+output_path = "/work/lee1043/cdat/pmp/cloud_feedback/output"
 output_json_filename = "_".join(["cloud_feedback", model, variant]) + ".json"
 # ================================================================================================
