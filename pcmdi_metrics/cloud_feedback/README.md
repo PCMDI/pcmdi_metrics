@@ -23,12 +23,13 @@ Clone PMP repo to your local for pre-calculated data:
 git clone https://github.com/PCMDI/pcmdi_metrics
 ```
 
-#### 4. Go to `pcmdi_metrics/pcmdi_metrics/cloud_feedback` directory
+Once completed, go to `pcmdi_metrics/pcmdi_metrics/cloud_feedback` directory
 ```
-cd [YOUR LOCALLY CLONED PMP REPOSITORY]/pcmdi_metrics/pcmdi_metrics/cloud_feedback
+cd [YOUR LOCAL CLONED PMP REPOSITORY]
+cd pcmdi_metrics/pcmdi_metrics/cloud_feedback
 ```
 
-#### 5. Edit parameter files
+#### 4. Edit parameter files
 In [`param/my_param.py`](param/my_param.py), update the "User Input" section so it points to your model's amip and amip-p4K files.
 ```python
 
@@ -55,14 +56,13 @@ output_json_filename = "_".join(["cloud_feedback", model, variant]) + ".json"
 
 You will need to update [`param/input_files.json`](param/input_files.json) file as well to provide data path for your input files. 
 
-#### 6. Run the code
+#### 5. Run the code and inspect the generated output files 
+Run calculation:
 ```
 python cloud_feedback_driver.py -p param/my_param.py
 ```
 
-
-#### 7. Inspect the generated output files 
-Check `output` directory (`output_path` from the above parameter file) for JSON and `figures` directory (`figure_path` from the above parameter file) for figures and text tables
+Once code is completed, check `output` directory (`output_path` from the above parameter file) for JSON and `figures` directory (`figure_path` from the above parameter file) for figures and text tables.
 
 
 ## References
