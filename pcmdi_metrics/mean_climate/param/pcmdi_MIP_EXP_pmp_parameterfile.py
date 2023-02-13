@@ -10,8 +10,8 @@ ver = datetime.datetime.now().strftime('v%Y%m%d')
 # ###############################################################################
 case_id = ver
 
-MIP = 'cmip6'  # 'CMIP6'
-# MIP = 'cmip5'  # 'CMIP6'
+# MIP = 'cmip6'  # 'CMIP6'
+MIP = 'cmip5'  # 'CMIP6'
 exp = 'historical'
 # exp = 'amip'
 # exp = 'picontrol'
@@ -26,9 +26,7 @@ cmec = False  # True
 if MIP == 'cmip6':
     modver = 'v20230202'
 if MIP == 'cmip5':
-    modver = 'v20220928'
-    if exp == 'historical':
-        modver = 'v20220928'
+    modver = 'v20230208'
 
 # LIST OF MODEL VERSIONS TO BE TESTED - WHICH ARE EXPECTED TO BE PART OF CLIMATOLOGY FILENAME
 
