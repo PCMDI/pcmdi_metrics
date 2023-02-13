@@ -17,8 +17,8 @@ verout = datetime.datetime.now().strftime('v%Y%m%d')
 # vars = ['ts', 'tas', 'uas', 'vas', 'huss', 'hurs', 'psl', 'prw', 'sfcWind', 'tauu', 'tauv', 'pr', 'rlut', 'rsut', 'rlutcs', 'rsutcs', 'rsdt', 'rsus', 'rsds', 'rlds', 'rlus', 'rldscs', 'rsdscs']
 # vars = ['ta', 'ua', 'va', 'zg', 'hur', 'hus']
 # vars = ['ts', 'tas', 'uas', 'vas', 'huss', 'hurs', 'psl', 'prw', 'sfcWind', 'tauu', 'tauv', 'pr', 'rlut', 'rsut', 'rlutcs', 'rsutcs', 'rsdt', 'rsus', 'rsds', 'rlds', 'rlus', 'rldscs', 'rsdscs', 'ta', 'ua', 'va', 'zg', 'hur', 'hus']
-# vars = ['ts', 'pr']
-vars = ['tas', 'uas', 'vas', 'huss', 'hurs', 'psl', 'prw', 'sfcWind', 'tauu', 'tauv', 'rlut', 'rsut', 'rlutcs', 'rsutcs', 'rsdt', 'rsus', 'rsds', 'rlds', 'rlus', 'rldscs', 'rsdscs', 'ta', 'ua', 'va', 'zg', 'hur']
+vars = ['ts', 'pr']
+#vars = ['tas', 'uas', 'vas', 'huss', 'hurs', 'psl', 'prw', 'sfcWind', 'tauu', 'tauv', 'rlut', 'rsut', 'rlutcs', 'rsutcs', 'rsdt', 'rsus', 'rsds', 'rlds', 'rlus', 'rldscs', 'rsdscs', 'ta', 'ua', 'va', 'zg', 'hur']
 
 lst1 = []
 listlog = []
@@ -38,16 +38,15 @@ for var in vars:
         print(li.split('.'))
         mod = li.split('.')[4]  # model
         rn = li.split('.')[5]  # realization
-        vv = li.split('.')[7]  # variable
 
-        outfilename = mip + '.' + exp + '.' + mod + '.r1i1p1f1.mon.' + var + '.nc'
+        outfilename = mip + '.' + exp + '.' + mod + '.' + rn + '.mon.' + var + '.nc'
         cmd0 = "pcmdi_compute_climatologies.py --start " + start + " --end " + end + " --infile "
 
         pathout = pathoutdir + '/' + outfilename
         cmd = cmd0 + li + ' --outfile ' + pathout + ' --var ' + var
 
         lst1.append(cmd)
-        logf = mod + '.' + rn + '.' + vv
+        logf = mod + '.' + rn + '.' + var
         listlog.append(logf)
         print(logf)
 
