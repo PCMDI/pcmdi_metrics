@@ -1,12 +1,9 @@
-# assessed-cloud-fbks
+# Cloud Feedback Metrics 
 
-[![DOI](https://zenodo.org/badge/353136800.svg)](https://zenodo.org/badge/latestdoi/353136800)
-
-## Description
-This code performs the analysis of [Zelinka et al. (2022)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2021JD035198). It computes GCM cloud feedback components and compares them to the expert-assessed values from [Sherwood et al. (2020)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2019RG000678).
+The clould feedback metrics implemented to PMP is originally from [`assessed-cloud-fbks`](https://github.com/mzelinka/assessed-cloud-fbks)[![DOI](https://zenodo.org/badge/353136800.svg)](https://zenodo.org/badge/latestdoi/353136800), developed by [@mzelinka](https://mzelinka.github.io/) at LLNL. This code performs the analysis of [Zelinka et al. (2022)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2021JD035198). It computes GCM cloud feedback components and compares them to the expert-assessed values from [Sherwood et al. (2020)](https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2019RG000678).
 
 ## Instructions
-To use, follow these steps:
+To use, please consider follow these steps:
 
 #### 1. Install PMP
 Install PMP via conda following [these instructions](http://pcmdi.github.io/pcmdi_metrics/install.html). For example:
