@@ -149,7 +149,7 @@ if debug:
 
 # generate plots and extract metrics from the plotting routines
 os.makedirs(figure_path, exist_ok=True)
-climo_cld_rmse, cld_fbk_rmse, tot_cld_fbk, ecs = dataviz.make_all_figs(
+climo_cld_rmse, cld_fbk_rmse, assessed_cld_fbk, ecs = dataviz.make_all_figs(
     updated_fbk_dict,
     updated_obsc_fbk_dict,
     updated_err_dict,
@@ -167,17 +167,24 @@ print("model:", model)
 print("variant:", variant)
 print("clim_cloud_rmse:", climo_cld_rmse)
 print("cloud_feedback_rmse:", cld_fbk_rmse)
-print("total_cloud_feedback:", tot_cld_fbk)
+print("assessed_cloud_feedback:", assessed_cld_fbk)
 print("ecs:", ecs)
 
 output_dict = dict()
 output_dict["RESULTS"] = dict()
 output_dict["RESULTS"][model] = dict()
 output_dict["RESULTS"][model][variant] = dict()
-# output_dict["RESULTS"][model][variant]["clim_cloud_rmse"] = climo_cld_rmse  # list
+output_dict["RESULTS"][model][variant]["clim_cloud_rmse"] = climo_cld_rmse
 output_dict["RESULTS"][model][variant]["cloud_feedback_rmse"] = cld_fbk_rmse
-output_dict["RESULTS"][model][variant]["total_cloud_feedback"] = tot_cld_fbk
-output_dict["RESULTS"][model][variant]["ECS"] = ecs
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"] = dict()
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["high_cloud_altitude"] = assessed_cld_fbk[0]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["tropical_marine_low_cloud"] = assessed_cld_fbk[1]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["tropical_anvil_cloud_area"] = assessed_cld_fbk[2]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["land_cloud_amount"] = assessed_cld_fbk[3]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["middle_latitude_marine_low_cloud_amount"] = assessed_cld_fbk[4]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["high_latitude_low_cloud_optical_depth"] = assessed_cld_fbk[5]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["total_cloud_feedback"] = assessed_cld_fbk[6]
+output_dict["RESULTS"][model][variant]["equilibrium_climate_sensitivity"] = ecs
 
 
 cloud_feedback_metrics_to_json(

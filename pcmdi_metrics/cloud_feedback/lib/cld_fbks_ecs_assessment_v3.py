@@ -1945,4 +1945,4 @@ def make_all_figs(
     # RETURN YOURMODEL RESULTS TO DRIVER:
     # ######################################################
     m = models6.index(newmod)
-    return E_NET6[m], RMSE6[m], assessed6[m,-1], ECS6[m]
+    return E_NET6[m, -1], RMSE6[m], assessed6[m], ECS6[m]
