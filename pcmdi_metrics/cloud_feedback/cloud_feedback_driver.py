@@ -175,8 +175,6 @@ output_dict = OrderedDict()
 output_dict["RESULTS"] = OrderedDict()
 output_dict["RESULTS"][model] = OrderedDict()
 output_dict["RESULTS"][model][variant] = OrderedDict()
-output_dict["RESULTS"][model][variant]["clim_cloud_rmse"] = climo_cld_rmse
-output_dict["RESULTS"][model][variant]["cloud_feedback_rmse"] = cld_fbk_rmse
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"] = OrderedDict()
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["high_cloud_altitude"] = assessed_cld_fbk[0]
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["tropical_marine_low_cloud"] = assessed_cld_fbk[1]
@@ -187,6 +185,8 @@ output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["high_latitude
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["implied_unassessed"] = assessed_cld_fbk[6]
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["sum_of_assessed"] = assessed_cld_fbk[7]
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["total_cloud_feedback"] = assessed_cld_fbk[8]
+output_dict["RESULTS"][model][variant]["clim_cloud_rmse"] = climo_cld_rmse
+output_dict["RESULTS"][model][variant]["cloud_feedback_rmse"] = cld_fbk_rmse
 output_dict["RESULTS"][model][variant]["equilibrium_climate_sensitivity"] = ecs
 
 
