@@ -16,6 +16,6 @@ data_pathh = "/home/lee1043/git/pcmdi_metrics_20221013/pcmdi_metrics/pcmdi_metri
 # Output directory path (directory will be generated if it does not exist yet.)
 xml_path = "/work/lee1043/cdat/pmp/cloud_feedback/xmls/"
 figure_path = "/work/lee1043/cdat/pmp/cloud_feedback/figures/"
-output_path = "/work/lee1043/cdat/pmp/cloud_feedback/output"
+output_path = "/work/lee1043/cdat/pmp/cloud_feedback/output/"
 output_json_filename = "_".join(["cloud_feedback", model, variant]) + ".json"
 # ================================================================================================
