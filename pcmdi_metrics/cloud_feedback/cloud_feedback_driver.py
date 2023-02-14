@@ -2,6 +2,7 @@
 
 import json
 import os
+from collections import OrderedDict
 
 import pcmdi_metrics.cloud_feedback.lib.cld_fbks_ecs_assessment_v3 as dataviz
 from pcmdi_metrics.cloud_feedback.lib import (
@@ -176,14 +177,16 @@ output_dict["RESULTS"][model] = dict()
 output_dict["RESULTS"][model][variant] = dict()
 output_dict["RESULTS"][model][variant]["clim_cloud_rmse"] = climo_cld_rmse
 output_dict["RESULTS"][model][variant]["cloud_feedback_rmse"] = cld_fbk_rmse
-output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"] = dict()
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"] = OrderedDict()
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["high_cloud_altitude"] = assessed_cld_fbk[0]
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["tropical_marine_low_cloud"] = assessed_cld_fbk[1]
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["tropical_anvil_cloud_area"] = assessed_cld_fbk[2]
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["land_cloud_amount"] = assessed_cld_fbk[3]
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["middle_latitude_marine_low_cloud_amount"] = assessed_cld_fbk[4]
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["high_latitude_low_cloud_optical_depth"] = assessed_cld_fbk[5]
-output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["total_cloud_feedback"] = assessed_cld_fbk[6]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["implied_unassessed"] = assessed_cld_fbk[6]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["sum_of_assessed"] = assessed_cld_fbk[7]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["total_cloud_feedback"] = assessed_cld_fbk[8]
 output_dict["RESULTS"][model][variant]["equilibrium_climate_sensitivity"] = ecs
 
 
