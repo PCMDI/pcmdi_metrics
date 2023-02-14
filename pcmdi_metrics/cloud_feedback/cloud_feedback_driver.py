@@ -171,10 +171,10 @@ print("cloud_feedback_rmse:", cld_fbk_rmse)
 print("assessed_cloud_feedback:", assessed_cld_fbk)
 print("ecs:", ecs)
 
-output_dict = dict()
-output_dict["RESULTS"] = dict()
-output_dict["RESULTS"][model] = dict()
-output_dict["RESULTS"][model][variant] = dict()
+output_dict = OrderedDict()
+output_dict["RESULTS"] = OrderedDict()
+output_dict["RESULTS"][model] = OrderedDict()
+output_dict["RESULTS"][model][variant] = OrderedDict()
 output_dict["RESULTS"][model][variant]["clim_cloud_rmse"] = climo_cld_rmse
 output_dict["RESULTS"][model][variant]["cloud_feedback_rmse"] = cld_fbk_rmse
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"] = OrderedDict()
