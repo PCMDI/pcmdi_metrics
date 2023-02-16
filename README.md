@@ -1,7 +1,12 @@
-<img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" width="15%" height="15%" align="right" />
-<h5 align="right"></h5>
+<div>
+<img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" height="90" align="right" />
+<img src="share/pcmdi/PCMDILogo_400x131px_72dpi.png" height="60" align="right" />
+</div>
+
+<br><br><br><br>
 
 # PCMDI Metrics Package (PMP)
+
 
 [![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 ![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg)
@@ -20,23 +25,31 @@ The PCMDI Metrics Package (PMP) is used to provide "quick-look" objective compar
 
 **PCMDI uses the PMP to produce [quick-look simulation summaries across generations of CMIP](https://pcmdi.llnl.gov/research/metrics/).**
 
-The metrics package consists of four parts: 1) Analysis software, 2) an observationally-based database of global (or near global, land or ocean) [time series and climatologies](https://github.com/PCMDI/PCMDIobs-cmor-tables/tree/master/catalogue), 3) a database of performance metrics computed for CMIP models and 4) [package documentation and interactive demos](http://pcmdi.github.io/pcmdi_metrics/).
+The metrics package consists of the following parts: 
+* Analysis software
+* Observation-based reference database of global (or near global, land or ocean) [time series and climatologies](https://github.com/PCMDI/PCMDIobs-cmor-tables/tree/master/catalogue)
+* [Package documentation](http://pcmdi.github.io/pcmdi_metrics/) and [interactive jupyter notebook demos](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
+* [Database](https://github.com/PCMDI/pcmdi_metrics_results_archive) of performance metrics computed for CMIP models
 
 The package expects model data to be [CF-compliant](http://cfconventions.org/). To successfully use the package some input data "conditioning" may be required. We provide several demo scripts within the package.
 
-Users will need to contact the PMP developers (pcmdi-metrics@llnl.gov) to obtain supporting datasets and get started using the package.
+
+Documentation
+-------------
+
+**Getting Started**
+
+* Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
+
+* Users will need to contact the PMP developers (pcmdi-metrics@llnl.gov) to obtain supporting datasets and get started using the package.
+
+* An overview for using the package and template scripts are detailed on the [Using-the-package](http://pcmdi.github.io/pcmdi_metrics) page
+
+* [View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
 
 
-## Documentation
-
-Getting Started: Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
-
-An overview for using the package and template scripts are detailed on the [Using-the-package](http://pcmdi.github.io/pcmdi_metrics) page
-
-[View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
-
-
-## Contact
+Contact
+-------
 
 [Report Bug](https://github.com/PCMDI/pcmdi_metrics/issues)
 
@@ -45,19 +58,52 @@ An overview for using the package and template scripts are detailed on the [Usin
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
 
 
-## Contributors
+Contributors
+------------
 
 Thanks to our contributors!
 
 [![Contributors](https://contrib.rocks/image?repo=PCMDI/pcmdi_metrics)](https://github.com/PCMDI/pcmdi_metrics/graphs/contributors)
 
 
-## License
+
+Acknowledgement
+---------------
+Content in this repository is developed by climate and computer scientists from the Program for Climate Model Diagnosis and Intercomparison ([PCMDI][PCMDI]) at Lawrence Livermore National Laboratory ([LLNL][LLNL]). This work is sponsored by the Regional and Global Model Analysis ([RGMA][RGMA]) program, of the Earth and Environmental Systems Sciences Division ([EESSD][EESSD]) in the Office of Biological and Environmental Research ([BER][BER]) within the [Department of Energy][DOE]'s [Office of Science][OS]. The work is performed under the auspices of the U.S. Department of Energy by Lawrence Livermore National Laboratory under Contract DE-AC52-07NA27344.
+
+<p>
+    <img src="https://github.com/PCMDI/assets/blob/main/DOE/480px-DOE_Seal_Color.png?raw=true"
+         width="65"
+         style="margin-right: 30px"
+         title="United States Department of Energy"
+         alt="United States Department of Energy"
+    >&nbsp;
+    <img src="https://github.com/PCMDI/assets/blob/main/LLNL/212px-LLNLiconPMS286-WHITEBACKGROUND.png?raw=true"
+         width="65"
+         title="Lawrence Livermore National Laboratory"
+         alt="Lawrence Livermore National Laboratory"
+    >
+</p>
+
+
+[PCMDI]: https://pcmdi.llnl.gov/
+[LLNL]: https://www.llnl.gov/
+[RGMA]: https://climatemodeling.science.energy.gov/program/regional-global-model-analysis
+[EESSD]: https://science.osti.gov/ber/Research/eessd
+[BER]: https://science.osti.gov/ber
+[DOE]: https://www.energy.gov/
+[OS]: https://science.osti.gov/
+
+
+
+License
+-------
 
 Distributed under the BSD 3-Clause License. See [`LICENSE`](https://github.com/PCMDI/pcmdi_metrics/blob/main/LICENSE) for more information.
 
 
-## Version Release Log
+Release Notes and History
+-------------------------
 
 [Released versions](https://github.com/PCMDI/pcmdi_metrics/releases)
 
