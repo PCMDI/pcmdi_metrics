@@ -65,6 +65,7 @@ scripts = [
     "pcmdi_metrics/enso/enso_driver.py",
     "pcmdi_metrics/precip_variability/variability_across_timescales_PS_driver.py",
     "pcmdi_metrics/precip_distribution/precip_distribution_driver.py",
+    "pcmdi_metrics/cloud_feedback/cloud_feedback_driver.py",
 ]
 
 entry_points = {
