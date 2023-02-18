@@ -1,0 +1,82 @@
+{
+    "abrupt-4xCO2": {
+        "rlut": {
+            "path": "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/abrupt-4xCO2/r1i1p1f1/Amon/rlut/gr1/v20180701/",
+            "file": "rlut_Amon_GFDL-CM4_abrupt-4xCO2_r1i1p1f1_gr1_*.nc"
+        },
+        "rsdt": {
+            "path": "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/abrupt-4xCO2/r1i1p1f1/Amon/rsdt/gr1/v20180701/",
+            "file": "rsdt_Amon_GFDL-CM4_abrupt-4xCO2_r1i1p1f1_gr1_*.nc"
+        },
+        "rsut": {
+            "path": "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/abrupt-4xCO2/r1i1p1f1/Amon/rsut/gr1/v20180701/",
+            "file": "rsut_Amon_GFDL-CM4_abrupt-4xCO2_r1i1p1f1_gr1_*.nc"
+        },
+        "tas": {
+            "path": "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/abrupt-4xCO2/r1i1p1f1/Amon/tas/gr1/v20180701/",
+            "file": "tas_Amon_GFDL-CM4_abrupt-4xCO2_r1i1p1f1_gr1_*.nc"
+        }
+    },
+    "amip": {
+        "clisccp": {
+            "path": "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/amip/r1i1p1f1/CFmon/clisccp/gr1/v20180701/",
+            "file": "clisccp_CFmon_GFDL-CM4_amip_r1i1p1f1_gr1_*.nc"
+        },
+        "rsdscs": {
+            "path": "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/amip/r1i1p1f1/Amon/rsdscs/gr1/v20180701/",
+            "file": "rsdscs_Amon_GFDL-CM4_amip_r1i1p1f1_gr1_*.nc"
+        },
+        "rsuscs": {
+            "path": "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/amip/r1i1p1f1/Amon/rsuscs/gr1/v20180701/",
+            "file": "rsuscs_Amon_GFDL-CM4_amip_r1i1p1f1_gr1_*.nc"
+        },
+        "tas": {
+            "path": "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/amip/r1i1p1f1/Amon/tas/gr1/v20180701/",
+            "file": "tas_Amon_GFDL-CM4_amip_r1i1p1f1_gr1_*.nc"
+        },
+        "wap": {
+           "path":  "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/amip/r1i1p1f1/Amon/wap/gr1/v20180701/",
+           "file": "wap_Amon_GFDL-CM4_amip_r1i1p1f1_gr1_*.nc"
+        }
+    },
+    "amip-p4K": {
+        "clisccp": {
+            "path": "/p/css03/esgf_publish/CMIP6/CFMIP/NOAA-GFDL/GFDL-CM4/amip-p4K/r1i1p1f1/CFmon/clisccp/gr1/v20180701/",
+            "file": "clisccp_CFmon_GFDL-CM4_amip-p4K_r1i1p1f1_gr1_197901-201412.nc"
+        },
+        "rsdscs": {
+            "path": "/p/css03/esgf_publish/CMIP6/CFMIP/NOAA-GFDL/GFDL-CM4/amip-p4K/r1i1p1f1/Amon/rsdscs/gr1/v20180701/",
+            "file": "rsdscs_Amon_GFDL-CM4_amip-p4K_r1i1p1f1_gr1_197901-201412.nc"
+        },
+        "rsuscs": {
+            "path": "/p/css03/esgf_publish/CMIP6/CFMIP/NOAA-GFDL/GFDL-CM4/amip-p4K/r1i1p1f1/Amon/rsuscs/gr1/v20180701/",
+            "file": "rsuscs_Amon_GFDL-CM4_amip-p4K_r1i1p1f1_gr1_197901-201412.nc"
+        },
+        "tas": {
+            "path": "/p/css03/esgf_publish/CMIP6/CFMIP/NOAA-GFDL/GFDL-CM4/amip-p4K/r1i1p1f1/Amon/tas/gr1/v20180701/",
+            "file": "tas_Amon_GFDL-CM4_amip-p4K_r1i1p1f1_gr1_197901-201412.nc"
+        },
+        "wap": {
+            "path": "/p/css03/esgf_publish/CMIP6/CFMIP/NOAA-GFDL/GFDL-CM4/amip-p4K/r1i1p1f1/Amon/wap/gr1/v20180701/",
+            "file": "wap_Amon_GFDL-CM4_amip-p4K_r1i1p1f1_gr1_197901-201412.nc"
+        }
+    },
+    "piControl": {
+        "rlut": {
+            "path": "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/piControl/r1i1p1f1/Amon/rlut/gr1/v20180701/",
+            "file": "rlut_Amon_GFDL-CM4_piControl_r1i1p1f1_gr1_*.nc"
+        },
+        "rsdt": {
+            "path": "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/piControl/r1i1p1f1/Amon/rsdt/gr1/v20180701/",
+            "file": "rsdt_Amon_GFDL-CM4_piControl_r1i1p1f1_gr1_*.nc"
+        },
+        "rsut": {
+            "path": "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/piControl/r1i1p1f1/Amon/rsut/gr1/v20180701/",
+            "file": "rsut_Amon_GFDL-CM4_piControl_r1i1p1f1_gr1_*.nc"
+        },
+        "tas": {
+            "path": "/p/css03/esgf_publish/CMIP6/CMIP/NOAA-GFDL/GFDL-CM4/piControl/r1i1p1f1/Amon/tas/gr1/v20180701/",
+            "file": "tas_Amon_GFDL-CM4_piControl_r1i1p1f1_gr1_*.nc"
+        }
+    }
+}

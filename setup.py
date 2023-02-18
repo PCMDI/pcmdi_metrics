@@ -63,6 +63,7 @@ scripts = [
     "pcmdi_metrics/misc/scripts/parallelize_driver.py",
     "pcmdi_metrics/misc/scripts/get_pmp_data.py",
     "pcmdi_metrics/precip_distribution/precip_distribution_driver.py",
+    "pcmdi_metrics/cloud_feedback/cloud_feedback_driver.py",
 ]
 
 entry_points = {
