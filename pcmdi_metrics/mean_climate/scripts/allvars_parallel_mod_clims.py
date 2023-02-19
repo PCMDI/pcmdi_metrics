@@ -10,15 +10,15 @@ def find_latest(path):
     return sorted(dir_list)[-1]
 
 
-# mip = 'cmip5'
-mip = 'cmip6'
+mip = 'cmip5'
+# mip = 'cmip6'
 exp = 'historical'
 # exp = 'amip'
 # verin = 'v20230201'
 data_path = find_latest("/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest")
 start = '1981-01'
 end = '2005-12'
-numw = 35  # number of workers in parallel processing
+numw = 20  # number of workers in parallel processing
 verout = datetime.datetime.now().strftime('v%Y%m%d')
 
 # vars = ['rlut', 'tas', 'pr']
@@ -27,6 +27,7 @@ verout = datetime.datetime.now().strftime('v%Y%m%d')
 # vars = ['ts', 'tas', 'uas', 'vas', 'huss', 'hurs', 'psl', 'prw', 'sfcWind', 'tauu', 'tauv', 'pr', 'rlut', 'rsut', 'rlutcs', 'rsutcs', 'rsdt', 'rsus', 'rsds', 'rlds', 'rlus', 'rldscs', 'rsdscs', 'ta', 'ua', 'va', 'zg', 'hur', 'hus']
 # vars = ['ts', 'pr', 'tas', 'uas', 'vas', 'huss', 'hurs', 'psl', 'prw', 'sfcWind', 'tauu', 'tauv', 'rlut', 'rsut', 'rlutcs', 'rsutcs', 'rsdt', 'rsus', 'rsds', 'rlds', 'rlus', 'rldscs', 'rsdscs', 'ta', 'ua', 'va', 'zg', 'hur']
 vars = ['hur', 'hurs', 'huss', 'pr', 'prw', 'psl', 'rlds', 'rldscs', 'rlus', 'rlut', 'rlutcs', 'rsds', 'rsdscs', 'rsdt', 'rsus', 'rsut', 'rsutcs', 'sfcWind', 'ta', 'tas', 'tauu', 'tauv', 'ts', 'ua', 'uas', 'va', 'vas', 'zg']
+# vars = ['ts', 'pr']
 
 lst1 = []
 listlog = []
