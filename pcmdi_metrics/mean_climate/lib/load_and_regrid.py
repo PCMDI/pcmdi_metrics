@@ -1,4 +1,5 @@
 from pcmdi_metrics.io import xcdat_open
+import cftime
 
 
 def load_and_regrid(data_path, varname, level=None, t_grid=None, decode_times=True, regrid_tool='regrid2', debug=False):
@@ -15,6 +16,11 @@ def load_and_regrid(data_path, varname, level=None, t_grid=None, decode_times=Tr
     """
     # load data
     ds = xcdat_open(data_path, data_var=varname, decode_times=decode_times)  # NOTE: decode_times=False will be removed once obs4MIP written using xcdat
+    # time bound check -- add proper time bound info if cdms-generated annual cycle is loaded
+    if not isinstance(ds.time.values[0], cftime._cftime.DatetimeProlepticGregorian) and "units" not in list(ds.time.attrs.keys()):
+        ds.time.attrs['units'] = "days since 0001-01-01"
+        ds = xc.decode_time(ds)
+    # level
     if level is not None:
         level = level * 100  # hPa to Pa
         ds = ds.sel(plev=level)
