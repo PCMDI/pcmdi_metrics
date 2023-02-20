@@ -1,6 +1,6 @@
 from pcmdi_metrics.io import xcdat_open
 import cftime
-
+import xcdat as xc
 
 def load_and_regrid(data_path, varname, level=None, t_grid=None, decode_times=True, regrid_tool='regrid2', debug=False):
     """Load data and regrid to target grid
