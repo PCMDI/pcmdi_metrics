@@ -89,7 +89,7 @@ def mjo_metric_ewr_calculation(
     # Store each year's segment in a dictionary: segment[year]
     segment = {}
     segment_ano = {}
-    daSeaCyc = MV2.zeros((NT, d.shape[1], d.shape[2]), MV2.float)
+    daSeaCyc = MV2.zeros((NT, d.shape[1], d.shape[2]))
     for year in range(startYear, endYear):
         print(year)
         segment[year] = subSliceSegment(d, year, mon, day, NT)
