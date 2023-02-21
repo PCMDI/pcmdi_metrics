@@ -184,8 +184,7 @@ for var in vars:
                     print('-----------------------')
                     print('model, run:', model, run)
                     print('test_data (model in this case) full_path:', test_data_full_path)
-                    #try:
-                    if 1:
+                    try:
                         ds_test_dict = OrderedDict()
 
                         # load data and regrid
@@ -246,11 +245,11 @@ for var in vars:
                             cmec_flag=cmec,
                             debug=debug
                         )
-                    """
+ 
                     except Exception as e:
                         print('error occured for ', model, run)
                         print(e)
-                    """
+
     # write collective JSON --- all models / all obs / single variable
     json_filename = "_".join([var, target_grid, regrid_tool, "metrics"])
     mean_climate_metrics_to_json(
