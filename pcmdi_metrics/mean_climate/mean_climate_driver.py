@@ -4,6 +4,7 @@ import glob
 import json
 import os
 from re import split
+from collections import OrderedDict
 
 import cdms2
 import cdutil
@@ -22,13 +23,7 @@ from pcmdi_metrics.variability_mode.lib import tree
 
 
 parser = create_mean_climate_parser()
-#parameter = parser.get_parameter(cmd_default_vars=False, argparse_vals_only=False)
-#parameter = parser.get_parameter(cmd_default_vars=True, argparse_vals_only=False)
 parameter = parser.get_parameter(argparse_vals_only=False)
-#parameter = parser.get_parameter()
-#print(parameter)
-#import sys
-#sys.exit('test')
 
 # parameters
 case_id = parameter.case_id
@@ -63,7 +58,10 @@ elif isinstance(realization, str):
     else:
         realizations = [realization]
 
-if not bool(regions_specs):
+if debug:
+    print('regions_specs (before loading internally defined):', regions_specs)
+
+if regions_specs is None or not bool(regions_specs):
     regions_specs = load_regions_specs()
 
 default_regions = ['global', 'NHEX', 'SHEX', 'TROPICS']
@@ -159,7 +157,7 @@ for var in vars:
         print('ref_data_full_path:', ref_data_full_path)
         # load data and regrid
         ds_ref = load_and_regrid(ref_data_full_path, varname, level, t_grid, decode_times=False, regrid_tool=regrid_tool, debug=debug)
-        ds_ref_dict = dict()
+        ds_ref_dict = OrderedDict()
 
         # ----------
         # model loop
@@ -188,7 +186,7 @@ for var in vars:
                     print('test_data (model in this case) full_path:', test_data_full_path)
                     #try:
                     if 1:
-                        ds_test_dict = dict()
+                        ds_test_dict = OrderedDict()
 
                         # load data and regrid
                         ds_test = load_and_regrid(test_data_full_path, varname, level, t_grid, decode_times=True, regrid_tool=regrid_tool, debug=debug)
@@ -225,7 +223,6 @@ for var in vars:
                                 ds_test_dict[region] = ds_test_tmp
                                 if region not in list(ds_ref_dict.keys()):
                                     ds_ref_dict[region] = region_subset(ds_ref_tmp, regions_specs, region=region)
-
                                 print('spatial subset done')
 
                             if debug:
@@ -235,7 +232,7 @@ for var in vars:
 
                             # compute metrics
                             print('compute metrics start')
-                            result_dict["RESULTS"][model][ref][run][region] = compute_metrics(varname, ds_test_dict[region], ds_ref_dict[region])
+                            result_dict["RESULTS"][model][ref][run][region] = compute_metrics(varname, ds_test_dict[region], ds_ref_dict[region], debug=debug)
 
                         # write individual JSON
                         # --- single simulation, obs (need to accumulate later) / single variable
@@ -254,7 +251,6 @@ for var in vars:
                         print('error occured for ', model, run)
                         print(e)
                     """
-    """
     # write collective JSON --- all models / all obs / single variable
     json_filename = "_".join([var, target_grid, regrid_tool, "metrics"])
     mean_climate_metrics_to_json(
@@ -263,4 +259,4 @@ for var in vars:
         result_dict,
         cmec_flag=cmec,
     )
-    """
+    print('pmp mean clim driver completed')

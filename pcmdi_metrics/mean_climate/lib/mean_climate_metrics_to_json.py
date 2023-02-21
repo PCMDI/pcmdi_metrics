@@ -41,7 +41,7 @@ def mean_climate_metrics_to_json(
         indent=4,
         separators=(",", ": "),
         mode="r+",
-        sort_keys=True,
+        sort_keys=False,
     )
 
     if debug:
