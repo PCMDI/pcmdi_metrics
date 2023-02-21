@@ -26,6 +26,7 @@ dependencies:
   - regionmask=0.9.0
   - rasterio=1.2.10
   - shapely=1.8.0
+  - xesmf=0.7.0
   # Testing
   # ==================
   - pre_commit=2.20.0
