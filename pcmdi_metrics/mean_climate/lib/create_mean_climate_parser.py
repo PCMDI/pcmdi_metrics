@@ -186,6 +186,14 @@ def create_mean_climate_parser():
         help="Directory of where to put the results",
         required=False,
     )
+    
+    parser.add_argument(
+        "--diagnostics_output_path",
+        dest="diagnostics_output_path",
+        help="Directory of where to put the results",
+        default=None,
+        required=False,
+    )
 
     parser.add_argument(
         "--filename_output_template",

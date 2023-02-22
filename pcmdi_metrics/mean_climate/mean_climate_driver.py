@@ -43,10 +43,18 @@ regions_specs = parameter.regions_specs
 regions = parameter.regions
 test_data_path = parameter.test_data_path
 reference_data_path = parameter.reference_data_path
-metrics_output_path = parameter.metrics_output_path.replace('%(case_id)', case_id)
-
+metrics_output_path = parameter.metrics_output_path
+diagnostics_output_path = parameter.diagnostics_output_path
 debug = parameter.debug
 cmec = parameter.cmec
+
+if metrics_output_path is not None:
+    metrics_output_path = parameter.metrics_output_path.replace('%(case_id)', case_id)
+
+if diagnostics_output_path is None:
+    diagnostics_output_path = metrics_output_path.replace('metrics_results', 'diagnostic_results')    
+    
+diagnostics_output_path = diagnostics_output_path.replace('%(case_id)', case_id)
 
 find_all_realizations = False
 if realization is None:
@@ -84,6 +92,7 @@ print(
     'test_data_path:', test_data_path, '\n',
     'reference_data_path:', reference_data_path, '\n',
     'metrics_output_path:', metrics_output_path, '\n',
+    'diagnostics_output_path:', diagnostics_output_path, '\n',
     'debug:', debug, '\n')
 
 print('--- prepare mean climate metrics calculation ---')
@@ -223,11 +232,21 @@ for var in vars:
                                 if region not in list(ds_ref_dict.keys()):
                                     ds_ref_dict[region] = region_subset(ds_ref_tmp, regions_specs, region=region)
                                 print('spatial subset done')
+                                
+                            if save_test_clims and ref == reference_data_set[0]:
+                                test_clims_dir = os.path.join(
+                                    diagnostics_output_path, var, 'interpolated_model_clims')
+                                os.makedirs(test_clims_dir, exist_ok=True)
+                                test_clims_file = os.path.join(
+                                    test_clims_dir,
+                                    '_'.join([var, model, run, 'interpolated', regrid_tool, region, 'AC', case_id + '.nc']))
+                                ds_test_dict[region].to_netcdf(test_clims_file)
 
                             if debug:
                                 print('ds_test_tmp:', ds_test_tmp)
-                                ds_test_dict[region].to_netcdf('_'.join([var, 'model', region + '.nc']))
-                                ds_ref_dict[region].to_netcdf('_'.join([var, 'ref', region + '.nc']))
+                                ds_test_dict[region].to_netcdf('_'.join([var, 'model', model, run, region + '.nc']))
+                                if model == test_data_set[0] and run == realizations[0]:
+                                    ds_ref_dict[region].to_netcdf('_'.join([var, 'ref', region + '.nc']))
 
                             # compute metrics
                             print('compute metrics start')
