@@ -1,6 +1,6 @@
 mip = "cmip5"
 exp = "historical"
-mod = "pr.day.GISS-E2-H.historical.r6i1p1.20000101-20051231.xml"
+mod = "pr_day_GISS-E2-H_historical_r6i1p1_*.nc"
 var = "pr"
 frq = "day"
 modpath = '$INPUT_DIR$/CMIP5_demo_timeseries/historical/atmos/day/pr/'
