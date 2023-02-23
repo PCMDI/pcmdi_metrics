@@ -1,7 +1,5 @@
 from __future__ import print_function
 
-import glob
-import os
 import subprocess
 import sys
 
@@ -51,19 +49,19 @@ f.close()
 p = subprocess.Popen(["python", "setup_default_args.py"], cwd="share")
 p.communicate()
 
-packages = find_packages(exclude=["cmec", "tests"])
+packages = find_packages(exclude=["cmec", "tests"], include=["pcmdi_metrics*"])
 
 scripts = [
-    "pcmdi_metrics/pcmdi/scripts/mean_climate_driver.py",
-    "pcmdi_metrics/pcmdi/scripts/pcmdi_compute_climatologies.py",
-    "pcmdi_metrics/misc/scripts/parallelize_driver.py",
-    "pcmdi_metrics/misc/scripts/get_pmp_data.py",
+    "pcmdi_metrics/mean_climate/pcmdi_compute_climatologies.py",
+    "pcmdi_metrics/mean_climate/mean_climate_driver.py",
     "pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py",
     "pcmdi_metrics/monsoon_sperber/scripts/driver_monsoon_sperber.py",
-    "pcmdi_metrics/mjo/scripts/mjo_metrics_driver.py",
+    "pcmdi_metrics/mjo/mjo_metrics_driver.py",
     "pcmdi_metrics/variability_mode/variability_modes_driver.py",
     "pcmdi_metrics/enso/enso_driver.py",
     "pcmdi_metrics/precip_variability/variability_across_timescales_PS_driver.py",
+    "pcmdi_metrics/misc/scripts/parallelize_driver.py",
+    "pcmdi_metrics/misc/scripts/get_pmp_data.py",
     "pcmdi_metrics/precip_distribution/precip_distribution_driver.py",
     "pcmdi_metrics/cloud_feedback/cloud_feedback_driver.py",
 ]
@@ -116,35 +114,6 @@ data_files = (
     ),
 )
 
-if install_dev:
-    print("Adding experimental packages")
-    dev_packages = glob.glob("src/python/devel/*")
-    dev_packages.remove("src/python/devel/example_dev")
-    for p in dev_packages:
-        if not os.path.isdir(p):
-            dev_packages.pop(p)
-    dev_scripts = []
-    for p in dev_packages:
-        scripts = glob.glob(os.path.join(p, "scripts", "*"))
-        dev_scripts += scripts
-    dev_pkg = {}
-    dev_data = []
-    for p in dev_packages:
-        nm = p.replace("/", ".")
-        nm = nm.replace("src.python.devel", "pcmdi_metrics")
-        pnm = nm.split(".")[-1]
-        pkg_dir = os.path.join(p, "lib")
-        dev_pkg[nm] = pkg_dir
-        data = glob.glob(os.path.join(p, "data", "*"))
-        for d in data:
-            dir_nm = os.path.split(d)[-1]
-            dev_data.append(
-                [os.path.join(dir_nm, pnm), glob.glob(os.path.join(d, "*"))]
-            )
-    packages.update(dev_pkg)
-    data_files += dev_data
-    scripts += dev_scripts
-
 setup(
     name="pcmdi_metrics",
     version=release_version,
@@ -155,14 +124,4 @@ setup(
     scripts=scripts,
     data_files=data_files,
     entry_points=entry_points,
-    # include_dirs = [numpy.lib.utils.get_include()],
-    #  ext_modules = [
-    #               Extension('pcmdi_metrics.exts',
-    #               ['src/C/add.c',],
-    #               library_dirs = [],
-    #               libraries = [],
-    #               define_macros = [],
-    #               extra_compile_args = [],
-    #               extra_link_args = [],
-    #               ]
 )

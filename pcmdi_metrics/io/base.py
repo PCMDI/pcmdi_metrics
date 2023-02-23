@@ -14,9 +14,11 @@ import cdutil
 import genutil
 import MV2
 import numpy
+import xcdat
 
 import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
+from pcmdi_metrics.io import xcdat_open
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
@@ -80,7 +82,7 @@ def update_dict(d, u):
 
 
 def generateProvenance():
-    extra_pairs = {"matplotlib": "matplotlib ", "scipy": "scipy"}
+    extra_pairs = {"matplotlib": "matplotlib ", "scipy": "scipy", "xcdat": "xcdat", "xarray": "xarray"}
     prov = cdat_info.generateProvenance(extra_pairs=extra_pairs)
     prov["packages"]["PMP"] = pcmdi_metrics.version.__git_tag_describe__
     prov["packages"][
@@ -164,6 +166,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         type="json",
         mode="w",
         include_YAML=False,
+        include_history=False,
         include_script=False,
         *args,
         **kwargs,
@@ -174,7 +177,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
         if not os.path.exists(dir_path):
             try:
-                os.makedirs(dir_path)
+                os.makedirs(dir_path, exist_ok=True)
             except Exception:
                 logging.getLogger("pcmdi_metrics").error(
                     "Could not create output directory: %s" % dir_path
@@ -213,7 +216,9 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             if not include_script:
                 if "script" in out_dict["provenance"].keys():
                     del out_dict["provenance"]["script"]
-
+            if not include_history:
+                if "history" in out_dict["provenance"].keys():
+                    del out_dict["provenance"]["history"]
             json.dump(out_dict, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 
@@ -224,11 +229,14 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             f.close()
 
         elif self.type == "nc":
+            """
             f = cdms2.open(file_name, "w")
             f.write(data, *args, **kwargs)
             f.metrics_git_sha1 = pcmdi_metrics.__git_sha1__
             f.uvcdat_version = cdat_info.get_version()
             f.close()
+            """
+            data.to_netcdf(file_name)
 
         else:
             logging.getLogger("pcmdi_metrics").error("Unknown type: %s" % type)
@@ -352,7 +360,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         if self.is_masking():
             self.var_from_file = self.mask_var(self.var_from_file)
 
-        self.var_from_file = self.set_target_grid_and_mask_in_var(self.var_from_file)
+        self.var_from_file = self.set_target_grid_and_mask_in_var(self.var_from_file, var)
 
         self.var_from_file = self.set_domain_in_var(self.var_from_file, self.region)
 
@@ -361,13 +369,18 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
     def extract_var_from_file(self, var, var_in_file, *args, **kwargs):
         if var_in_file is None:
             var_in_file = var
-        # self.extension = 'nc'
-        var_file = cdms2.open(self(), "r")
-        for att in ["var_in_file,", "varInFile"]:
-            if att in kwargs:
-                del kwargs[att]
-        extracted_var = var_file(var_in_file, *args, **kwargs)
-        var_file.close()
+
+        try:
+            ds = xcdat_open(self(), data_var=var_in_file, decode_times=True)
+        except Exception:
+            ds = xcdat_open(self(), data_var=var_in_file, decode_times=False)  # Temporary part to read in cdms written obs4MIP AC files
+
+        if 'level' in list(kwargs.keys()):
+            level = kwargs['level']
+            ds = ds.sel(plev=level)
+
+        extracted_var = ds
+
         return extracted_var
 
     def is_masking(self):
@@ -377,46 +390,51 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             return False
 
     def mask_var(self, var):
+        """
+        self: <pcmdi_metrics.io.base.Base object at 0x7f24a0768a60>
+        var: <xarray.Dataset>
+        """
+        var_shape = tuple(var.dims[d] for d in ['lat', 'lon'])
+
         if self.mask is None:
             self.set_file_mask_template()
             self.mask = self.get_mask_from_var(var)
-        if self.mask.shape != var.shape:
+        # if self.mask.shape != var.shape:
+        if self.mask.shape != var_shape:
             dummy, mask = genutil.grower(var, self.mask)
         else:
             mask = self.target_mask
         mask = MV2.not_equal(mask, self.value)
         return MV2.masked_where(mask, var)
 
-    def set_target_grid_and_mask_in_var(self, var):
+    def set_target_grid_and_mask_in_var(self, var, var_in_file):
+        """
+        self: <class 'pcmdi_metrics.io.base.Base'> object
+        self(): string, path to input file
+        """
         if self.target_grid is not None:
-            var = var.regrid(
-                self.target_grid,
-                regridTool=self.regrid_tool,
-                regridMethod=self.regrid_method,
-                coordSys="deg",
-                diag={},
-                periodicity=1,
-            )
-
+            var = var.regridder.horizontal(var_in_file, self.target_grid, tool=self.regrid_tool)
             if self.target_mask is not None:
-                if self.target_mask.shape != var.shape:
+                # if self.target_mask.shape != var.shape:
+                if self.target_mask.shape != var[var_in_file].shape:
                     dummy, mask = genutil.grower(var, self.target_mask)
                 else:
                     mask = self.target_mask
                 var = MV2.masked_where(mask, var)
-
         return var
 
     def set_domain_in_var(self, var, region):
-        domain = region.get("domain", None)
-        if domain is not None:
-            if isinstance(domain, dict):
-                var = var(**domain)
-            elif isinstance(domain, (list, tuple)):
-                var = var(*domain)
-            elif isinstance(domain, cdms2.selectors.Selector):
-                domain.id = region.get("id", "region")
-                var = var(*[domain])
+        """
+        self: <class 'pcmdi_metrics.io.base.Base'>
+        var: <xarray.Dataset>
+        region: <class 'dict'>, e.g., {'domain': Selector(<cdutil.region.DomainComponent object at 0x7fdbe2b70760>), 'id': 'NHEX'}
+        """
+        region_id = region['id']
+        from pcmdi_metrics.io import load_regions_specs, region_subset
+        regions_specs = load_regions_specs()
+        if region_id not in ['global', 'land', 'ocean']:
+            var = region_subset(var, regions_specs, region=region_id)
+
         return var
 
     def set_file_mask_template(self):
@@ -429,7 +447,8 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
 
     def get_mask_from_var(self, var):
         try:
-            o_mask = self.file_mask_template.get("sftlf")
+            # o_mask = self.file_mask_template.get("sftlf")
+            o_mask = self.file_mask_template.get("sftlf", var_in_file="sftlf")
         except Exception:
             o_mask = (
                 cdutil.generateLandSeaMask(var, regridTool=self.regrid_tool).filled(1.0)
@@ -444,7 +463,8 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         self.regrid_tool = regrid_tool
         self.regrid_method = regrid_method
         if target == "2.5x2.5":
-            self.target_grid = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
+            # self.target_grid = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
+            self.target_grid = xcdat.create_uniform_grid(-88.875, 88.625, 2.5, 0, 357.5, 2.5)
             self.target_grid_name = target
         elif cdms2.isGrid(target):
             self.target_grid = target
