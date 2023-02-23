@@ -5,7 +5,7 @@ import os
 
 from genutil import StringConstructor
 
-from pcmdi_metrics.driver.pmp_parser import PMPParser
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.precip_variability.lib import (
     AddParserArgument,
     precip_variability_across_timescale,
@@ -49,7 +49,7 @@ for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
 # Check data in advance
 file_list = sorted(glob.glob(os.path.join(modpath, mod)))
 if mip == "obs":
-    dat = file_list[0].split("/")[-1].split("_")[2].split("-")[0]
+    dat = file_list[0].split("/")[-1].split("_")[2]
 else:
     model = file_list[0].split("/")[-1].split("_")[2]
     ens = file_list[0].split("/")[-1].split("_")[4]

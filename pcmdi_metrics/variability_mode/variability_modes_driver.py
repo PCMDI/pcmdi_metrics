@@ -83,6 +83,8 @@ from pcmdi_metrics.variability_mode.lib import (
     variability_metrics_to_json,
     write_nc_output,
 )
+from pcmdi_metrics.mean_climate.lib import pmp_parser
+
 
 # To avoid below error
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
@@ -106,7 +108,7 @@ exec(
 # =================================================
 # Collect user defined options
 # -------------------------------------------------
-P = pcmdi_metrics.driver.pmp_parser.PMPParser(
+P = pmp_parser.PMPParser(
     description="Runs PCMDI Modes of Variability Computations",
     formatter_class=RawTextHelpFormatter,
 )
