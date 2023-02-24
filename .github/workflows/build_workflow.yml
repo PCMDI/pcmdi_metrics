@@ -83,3 +83,11 @@ jobs:
       - name: Run Tests
         run: |
           pytest
+          mean_climate_driver.py --help
+          mpindex_compute.py --help
+          driver_monsoon_sperber.py --help
+          std_of_dailymeans.py --help
+          variability_modes_driver.py --help
+          mjo_metrics_driver.py --help
+          enso_driver.py --help
+          precip_distribution_driver.py --help
