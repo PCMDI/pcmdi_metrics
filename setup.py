@@ -55,7 +55,7 @@ scripts = [
     "pcmdi_metrics/mean_climate/pcmdi_compute_climatologies.py",
     "pcmdi_metrics/mean_climate/mean_climate_driver.py",
     "pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py",
-    "pcmdi_metrics/monsoon_sperber/scripts/driver_monsoon_sperber.py",
+    "pcmdi_metrics/monsoon_sperber/driver_monsoon_sperber.py",
     "pcmdi_metrics/mjo/mjo_metrics_driver.py",
     "pcmdi_metrics/variability_mode/variability_modes_driver.py",
     "pcmdi_metrics/enso/enso_driver.py",
