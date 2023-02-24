@@ -7,7 +7,7 @@ import MV2
 from SeabarChart_mpl import BarChart
 
 from pcmdi_metrics.mean_climate.lib import pmp_parser
-from pcmdi_metrics.pcmdi.io import JSONs
+from pcmdi_metrics.io.base import JSONs
 
 test = False
 # test = True
