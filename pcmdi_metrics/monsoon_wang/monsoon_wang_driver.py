@@ -11,7 +11,7 @@ from genutil import statistics
 import pcmdi_metrics
 from pcmdi_metrics import resources
 from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
-from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 
 
 def create_monsoon_wang_parser():

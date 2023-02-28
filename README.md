@@ -21,7 +21,7 @@ Conda-forge (NEW, recommended):
 PCMDI Conda Channel (halted):
 [![Download](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
 
-The PCMDI Metrics Package (PMP) is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons emphasize metrics of large- to global-scale annual cycle, tropical and extra-tropical modes of variability, ENSO, MJO, regional monsoons, and high frequency characteristics of simulated precipitation.
+The PCMDI Metrics Package (PMP) is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons emphasize metrics of large- to global-scale annual cycle, tropical and extra-tropical modes of variability, ENSO, MJO, regional monsoons, high frequency characteristics of simulated precipitation, and cloud feedback.
 
 **PCMDI uses the PMP to produce [quick-look simulation summaries across generations of CMIP](https://pcmdi.llnl.gov/research/metrics/).**
 
@@ -107,20 +107,22 @@ Release Notes and History
 
 [Released versions](https://github.com/PCMDI/pcmdi_metrics/releases)
 
+- [v3.0.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.0.1) - Minor technical patch
+- [v3.0.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.0.0) - New metric added: **Cloud feedback metric** by @mzelinka. [**xCDAT**](https://xcdat.readthedocs.io/en/latest/) implemented for mean climate metrics
 - [v2.5.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.5.1) - Technical update
-- [v2.5.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.5.0) - New metric added: Precipitation Benchmarking -- distribution. Graphics updated
-- [v2.4.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.4.0) - New metric added: AMO in variability modes
+- [v2.5.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.5.0) - New metric added: **Precipitation Benchmarking -- distribution**. Graphics updated
+- [v2.4.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.4.0) - New metric added: **AMO** in variability modes
 - [v2.3.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3.2) - CMEC interface updates
 - [v2.3.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3.1) - Technical update
 - [v2.3](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3) - New graphics using [archived PMP results](https://github.com/PCMDI/pcmdi_metrics_results_archive)
 - [v2.2.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2.2) - Technical update
 - [v2.2.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2.1) - Minor update
-- [v2.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2) - New metric implemented: precipitation variability across time scale
+- [v2.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2) - New metric implemented: **precipitation variability across time scale**
 - [v2.1.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.2) - Minor update
 - [v2.1.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.1) - Simplified dependent libraries and CI process
-- [v2.1.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.0) - CMEC driver interfaced added.
-- [v2.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.0) - New capabilities: ENSO metrics, demos, and documentations.
+- [v2.1.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.0) - [**CMEC**](https://cmec.llnl.gov/) driver interfaced added.
+- [v2.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.0) - New capabilities: **ENSO** metrics, demos, and documentations.
 - [v1.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.2) - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal cycle and intermittency of precipitation, sample monsoon metrics.
 - [v1.1.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1.2) - Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added.   Extensive provenance information incorporated into json files.
-- [v1.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1) - First public release, emphasizing climatological statistics, with development branches for ENSO and regional monsoon precipitation indices.
+- [v1.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1) - First public release, emphasizing **climatological statistics**, with development branches for ENSO and regional monsoon precipitation indices.
 - [v1.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0) - Prototype version of the PMP.
