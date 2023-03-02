@@ -1,4 +1,7 @@
 <div>
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 <img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" height="90" align="right" />
 <img src="share/pcmdi/PCMDILogo_400x131px_72dpi.png" height="60" align="right" />
 </div>
@@ -132,3 +135,25 @@ Release Notes and History
 - [v1.1.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1.2) - Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added.   Extensive provenance information incorporated into json files.
 - [v1.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1) - First public release, emphasizing **climatological statistics**, with development branches for ENSO and regional monsoon precipitation indices.
 - [v1.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0) - Prototype version of the PMP.
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://sites.google.com/view/jiwoolee"><img src="https://avatars.githubusercontent.com/u/17091564?v=4?s=100" width="100px;" alt="Jiwoo Lee"/><br /><sub><b>Jiwoo Lee</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=lee1043" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
