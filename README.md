@@ -61,12 +61,8 @@ Contact
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
 
 
-<<<<<<< HEAD
-## Contributors
-=======
 Contributors
 ------------
->>>>>>> 84855903 (add more contributors)
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
