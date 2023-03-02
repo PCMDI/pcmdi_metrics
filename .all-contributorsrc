@@ -183,6 +183,14 @@
         "code",
         "research"
       ]
+    },
+    {
+      "name": "Daehyun Kim",
+      "profile": "https://sites.google.com/uw.edu/kimresearchgroup",
+      "contributions": [
+        "code",
+        "research"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -8,7 +8,7 @@
 # PCMDI Metrics Package (PMP)
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-17-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-18-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Conda-forge (NEW, recommended):
@@ -86,6 +86,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://www.gfdl.noaa.gov/john-krasting-homepage"><img src="https://avatars.githubusercontent.com/u/6594675?v=4?s=100" width="100px;" alt="John Krasting"/><br /><sub><b>John Krasting</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=jkrasting" title="Code">💻</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=jkrasting" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://www.cgd.ucar.edu/staff/apgrass/"><img src="https://avatars.githubusercontent.com/u/16008440?v=4?s=100" width="100px;" alt="Angeline G Pendergrass"/><br /><sub><b>Angeline G Pendergrass</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=apendergrass" title="Code">💻</a> <a href="#research-apendergrass" title="Research">🔬</a> <a href="#ideas-apendergrass" title="Ideas, Planning, & Feedback">🤔</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mfwehner"><img src="https://avatars.githubusercontent.com/u/10789148?v=4?s=100" width="100px;" alt="mfwehner"/><br /><sub><b>mfwehner</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=mfwehner" title="Code">💻</a> <a href="#research-mfwehner" title="Research">🔬</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://sites.google.com/uw.edu/kimresearchgroup"><img src="?s=100" width="100px;" alt="Daehyun Kim"/><br /><sub><b>Daehyun Kim</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=" title="Code">💻</a> <a href="#research" title="Research">🔬</a></td>
     </tr>
   </tbody>
 </table>
