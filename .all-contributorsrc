@@ -22,7 +22,7 @@
     },
     {
       "login": "gleckler1",
-      "name": "gleckler1",
+      "name": "Peter Gleckler",
       "avatar_url": "https://avatars.githubusercontent.com/u/4553389?v=4",
       "profile": "https://github.com/gleckler1",
       "contributions": [
@@ -85,6 +85,16 @@
       "profile": "https://mzelinka.github.io/",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "paullric",
+      "name": "Paul Ullrich",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5330916?v=4",
+      "profile": "http://climate.ucdavis.edu/",
+      "contributions": [
+        "ideas",
+        "research"
       ]
     },
     {
