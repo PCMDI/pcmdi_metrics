@@ -61,18 +61,27 @@ Contact
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
 
 
-## Contributors
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://sites.google.com/view/jiwoolee"><img src="https://avatars.githubusercontent.com/u/17091564?v=4?s=100" width="100px;" alt="Jiwoo Lee"/><br /><sub><b>Jiwoo Lee</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=lee1043" title="Code">💻</a></td>
+    </tr>
+  </tbody>
+</table>
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
-[![All Contributors](https://img.shields.io/github/all-contributors/PCMDI/pcmdi_metrics?color=ee8449&style=flat-square)](#contributors)
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
 
 
 
@@ -136,24 +145,3 @@ Release Notes and History
 - [v1.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1) - First public release, emphasizing **climatological statistics**, with development branches for ENSO and regional monsoon precipitation indices.
 - [v1.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0) - Prototype version of the PMP.
 
-## Contributors ✨
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://sites.google.com/view/jiwoolee"><img src="https://avatars.githubusercontent.com/u/17091564?v=4?s=100" width="100px;" alt="Jiwoo Lee"/><br /><sub><b>Jiwoo Lee</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=lee1043" title="Code">💻</a></td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
