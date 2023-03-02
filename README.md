@@ -14,7 +14,9 @@
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
 [![License](https://anaconda.org/conda-forge/pcmdi_metrics/badges/license.svg)](https://github.com/PCMDI/pcmdi_metrics/blob/main/LICENSE)
 [![Formatted with black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Conda-forge (NEW, recommended):
 [![Download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
@@ -59,7 +61,7 @@ Contact
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
 
 
-## Contributors ✨
+## Contributors
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
@@ -142,4 +144,3 @@ Release Notes and History
 - [v1.1.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1.2) - Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added.   Extensive provenance information incorporated into json files.
 - [v1.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1) - First public release, emphasizing **climatological statistics**, with development branches for ENSO and regional monsoon precipitation indices.
 - [v1.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0) - Prototype version of the PMP.
-
