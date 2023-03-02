@@ -1,7 +1,4 @@
 <div>
-<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
-<!-- ALL-CONTRIBUTORS-BADGE:END -->
 <img src="share/pcmdi/PMPLogo_1359x1146px_300dpi.png" height="90" align="right" />
 <img src="share/pcmdi/PCMDILogo_400x131px_72dpi.png" height="60" align="right" />
 </div>
@@ -17,6 +14,7 @@
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
 [![License](https://anaconda.org/conda-forge/pcmdi_metrics/badges/license.svg)](https://github.com/PCMDI/pcmdi_metrics/blob/main/LICENSE)
 [![Formatted with black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 
 Conda-forge (NEW, recommended):
 [![Download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
