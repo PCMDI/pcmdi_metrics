@@ -173,6 +173,16 @@
         "research",
         "ideas"
       ]
+    },
+    {
+      "login": "michaelw",
+      "name": "Michael Weber",
+      "avatar_url": "https://avatars.githubusercontent.com/u/346824?v=4",
+      "profile": "https://mw.magneticflux.net/",
+      "contributions": [
+        "code",
+        "research"
+      ]
     }
   ],
   "contributorsPerLine": 7,
