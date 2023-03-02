@@ -17,7 +17,8 @@
         "review",
         "test",
         "tutorial",
-        "research"
+        "research",
+        "ideas"
       ]
     },
     {
@@ -31,7 +32,8 @@
         "research",
         "review",
         "test",
-        "data"
+        "data",
+        "ideas"
       ]
     },
     {
@@ -159,6 +161,17 @@
       "contributions": [
         "code",
         "test"
+      ]
+    },
+    {
+      "login": "apendergrass",
+      "name": "Angeline G Pendergrass",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16008440?v=4",
+      "profile": "http://www.cgd.ucar.edu/staff/apgrass/",
+      "contributions": [
+        "code",
+        "research",
+        "ideas"
       ]
     }
   ],
