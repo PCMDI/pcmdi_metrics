@@ -72,6 +72,16 @@
       ]
     },
     {
+      "login": "taylor13",
+      "name": "Karl Taylor",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4993439?v=4",
+      "profile": "https://github.com/taylor13",
+      "contributions": [
+        "research",
+        "ideas"
+      ]
+    },
+    {
       "login": "durack1",
       "name": "Paul J. Durack",
       "avatar_url": "https://avatars.githubusercontent.com/u/3229632?v=4",
@@ -96,6 +106,15 @@
       "profile": "http://climate.ucdavis.edu/",
       "contributions": [
         "ideas",
+        "research"
+      ]
+    },
+    {
+      "login": "bonfils2",
+      "name": "Celine Bonfils",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3536584?v=4",
+      "profile": "https://github.com/bonfils2",
+      "contributions": [
         "research"
       ]
     },
@@ -141,7 +160,18 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/2799665?v=4",
       "profile": "https://github.com/painter1",
       "contributions": [
-        "code"
+        "code",
+        "data"
+      ]
+    },
+    {
+      "login": "pochedls",
+      "name": "Stephen Po-Chedley",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3698109?v=4",
+      "profile": "https://github.com/pochedls",
+      "contributions": [
+        "data",
+        "infra"
       ]
     },
     {

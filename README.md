@@ -7,8 +7,14 @@
 
 # PCMDI Metrics Package (PMP)
 
+[![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
+![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg)
+![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
+[![License](https://anaconda.org/conda-forge/pcmdi_metrics/badges/license.svg)](https://github.com/PCMDI/pcmdi_metrics/blob/main/LICENSE)
+[![Formatted with black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-18-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-21-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Conda-forge (NEW, recommended):
@@ -52,52 +58,6 @@ Contact
 [Request Feature](https://github.com/PCMDI/pcmdi_metrics/issues)
 
 Some installation support for CMIP participating modeling groups is available: pcmdi-metrics@llnl.gov
-
-
-Contributors
-------------
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
-<table>
-  <tbody>
-    <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://sites.google.com/view/jiwoolee"><img src="https://avatars.githubusercontent.com/u/17091564?v=4?s=100" width="100px;" alt="Jiwoo Lee"/><br /><sub><b>Jiwoo Lee</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=lee1043" title="Code">💻</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=lee1043" title="Documentation">📖</a> <a href="https://github.com/PCMDI/pcmdi_metrics/pulls?q=is%3Apr+reviewed-by%3Alee1043" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=lee1043" title="Tests">⚠️</a> <a href="#tutorial-lee1043" title="Tutorials">✅</a> <a href="#research-lee1043" title="Research">🔬</a> <a href="#ideas-lee1043" title="Ideas, Planning, & Feedback">🤔</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/gleckler1"><img src="https://avatars.githubusercontent.com/u/4553389?v=4?s=100" width="100px;" alt="Peter Gleckler"/><br /><sub><b>Peter Gleckler</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=gleckler1" title="Code">💻</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=gleckler1" title="Documentation">📖</a> <a href="#research-gleckler1" title="Research">🔬</a> <a href="https://github.com/PCMDI/pcmdi_metrics/pulls?q=is%3Apr+reviewed-by%3Agleckler1" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=gleckler1" title="Tests">⚠️</a> <a href="#data-gleckler1" title="Data">🔣</a> <a href="#ideas-gleckler1" title="Ideas, Planning, & Feedback">🤔</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/doutriaux1"><img src="https://avatars.githubusercontent.com/u/2781425?v=4?s=100" width="100px;" alt="Charles Doutriaux"/><br /><sub><b>Charles Doutriaux</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=doutriaux1" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/acordonez"><img src="https://avatars.githubusercontent.com/u/18147700?v=4?s=100" width="100px;" alt="Ana Ordonez"/><br /><sub><b>Ana Ordonez</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=acordonez" title="Code">💻</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=acordonez" title="Documentation">📖</a> <a href="https://github.com/PCMDI/pcmdi_metrics/pulls?q=is%3Apr+reviewed-by%3Aacordonez" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=acordonez" title="Tests">⚠️</a> <a href="#tutorial-acordonez" title="Tutorials">✅</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/msahn"><img src="https://avatars.githubusercontent.com/u/46369397?v=4?s=100" width="100px;" alt="Min-Seop Ahn"/><br /><sub><b>Min-Seop Ahn</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=msahn" title="Code">💻</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=msahn" title="Documentation">📖</a> <a href="https://github.com/PCMDI/pcmdi_metrics/pulls?q=is%3Apr+reviewed-by%3Amsahn" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=msahn" title="Tests">⚠️</a> <a href="#tutorial-msahn" title="Tutorials">✅</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/durack1"><img src="https://avatars.githubusercontent.com/u/3229632?v=4?s=100" width="100px;" alt="Paul J. Durack"/><br /><sub><b>Paul J. Durack</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=durack1" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://mzelinka.github.io/"><img src="https://avatars.githubusercontent.com/u/11380489?v=4?s=100" width="100px;" alt="Mark Zelinka"/><br /><sub><b>Mark Zelinka</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=mzelinka" title="Code">💻</a></td>
-    </tr>
-    <tr>
-      <td align="center" valign="top" width="14.28%"><a href="http://climate.ucdavis.edu/"><img src="https://avatars.githubusercontent.com/u/5330916?v=4?s=100" width="100px;" alt="Paul Ullrich"/><br /><sub><b>Paul Ullrich</b></sub></a><br /><a href="#ideas-paullric" title="Ideas, Planning, & Feedback">🤔</a> <a href="#research-paullric" title="Research">🔬</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/zshaheen"><img src="https://avatars.githubusercontent.com/u/4239938?v=4?s=100" width="100px;" alt="Zeshawn Shaheen"/><br /><sub><b>Zeshawn Shaheen</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=zshaheen" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/muryanto1"><img src="https://avatars.githubusercontent.com/u/35277663?v=4?s=100" width="100px;" alt="Lina Muryanto"/><br /><sub><b>Lina Muryanto</b></sub></a><br /><a href="#infra-muryanto1" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tomvothecoder"><img src="https://avatars.githubusercontent.com/u/25624127?v=4?s=100" width="100px;" alt="Tom Vo"/><br /><sub><b>Tom Vo</b></sub></a><br /><a href="#infra-tomvothecoder" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jasonb5"><img src="https://avatars.githubusercontent.com/u/2191036?v=4?s=100" width="100px;" alt="Jason Boutte"/><br /><sub><b>Jason Boutte</b></sub></a><br /><a href="#infra-jasonb5" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/painter1"><img src="https://avatars.githubusercontent.com/u/2799665?v=4?s=100" width="100px;" alt="Jeffrey Painter"/><br /><sub><b>Jeffrey Painter</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=painter1" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://xylar.github.io/"><img src="https://avatars.githubusercontent.com/u/4179064?v=4?s=100" width="100px;" alt="Xylar Asay-Davis"/><br /><sub><b>Xylar Asay-Davis</b></sub></a><br /><a href="#infra-xylar" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
-    </tr>
-    <tr>
-      <td align="center" valign="top" width="14.28%"><a href="http://www.gfdl.noaa.gov/john-krasting-homepage"><img src="https://avatars.githubusercontent.com/u/6594675?v=4?s=100" width="100px;" alt="John Krasting"/><br /><sub><b>John Krasting</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=jkrasting" title="Code">💻</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=jkrasting" title="Tests">⚠️</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="http://www.cgd.ucar.edu/staff/apgrass/"><img src="https://avatars.githubusercontent.com/u/16008440?v=4?s=100" width="100px;" alt="Angeline G Pendergrass"/><br /><sub><b>Angeline G Pendergrass</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=apendergrass" title="Code">💻</a> <a href="#research-apendergrass" title="Research">🔬</a> <a href="#ideas-apendergrass" title="Ideas, Planning, & Feedback">🤔</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/mfwehner"><img src="https://avatars.githubusercontent.com/u/10789148?v=4?s=100" width="100px;" alt="mfwehner"/><br /><sub><b>mfwehner</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=mfwehner" title="Code">💻</a> <a href="#research-mfwehner" title="Research">🔬</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://sites.google.com/uw.edu/kimresearchgroup"><img src="?s=100" width="100px;" alt="Daehyun Kim"/><br /><sub><b>Daehyun Kim</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=" title="Code">💻</a> <a href="#research" title="Research">🔬</a></td>
-    </tr>
-  </tbody>
-</table>
-
-<!-- markdownlint-restore -->
-<!-- prettier-ignore-end -->
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
-
 
 
 Acknowledgement
@@ -159,3 +119,55 @@ Release Notes and History
 - [v1.1.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1.2) - Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added.   Extensive provenance information incorporated into json files.
 - [v1.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1) - First public release, emphasizing **climatological statistics**, with development branches for ENSO and regional monsoon precipitation indices.
 - [v1.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0) - Prototype version of the PMP.
+
+
+Contributors
+------------
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://sites.google.com/view/jiwoolee"><img src="https://avatars.githubusercontent.com/u/17091564?v=4?s=100" width="100px;" alt="Jiwoo Lee"/><br /><sub><b>Jiwoo Lee</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=lee1043" title="Code">💻</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=lee1043" title="Documentation">📖</a> <a href="https://github.com/PCMDI/pcmdi_metrics/pulls?q=is%3Apr+reviewed-by%3Alee1043" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=lee1043" title="Tests">⚠️</a> <a href="#tutorial-lee1043" title="Tutorials">✅</a> <a href="#research-lee1043" title="Research">🔬</a> <a href="#ideas-lee1043" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/gleckler1"><img src="https://avatars.githubusercontent.com/u/4553389?v=4?s=100" width="100px;" alt="Peter Gleckler"/><br /><sub><b>Peter Gleckler</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=gleckler1" title="Code">💻</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=gleckler1" title="Documentation">📖</a> <a href="#research-gleckler1" title="Research">🔬</a> <a href="https://github.com/PCMDI/pcmdi_metrics/pulls?q=is%3Apr+reviewed-by%3Agleckler1" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=gleckler1" title="Tests">⚠️</a> <a href="#data-gleckler1" title="Data">🔣</a> <a href="#ideas-gleckler1" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/doutriaux1"><img src="https://avatars.githubusercontent.com/u/2781425?v=4?s=100" width="100px;" alt="Charles Doutriaux"/><br /><sub><b>Charles Doutriaux</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=doutriaux1" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/acordonez"><img src="https://avatars.githubusercontent.com/u/18147700?v=4?s=100" width="100px;" alt="Ana Ordonez"/><br /><sub><b>Ana Ordonez</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=acordonez" title="Code">💻</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=acordonez" title="Documentation">📖</a> <a href="https://github.com/PCMDI/pcmdi_metrics/pulls?q=is%3Apr+reviewed-by%3Aacordonez" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=acordonez" title="Tests">⚠️</a> <a href="#tutorial-acordonez" title="Tutorials">✅</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/msahn"><img src="https://avatars.githubusercontent.com/u/46369397?v=4?s=100" width="100px;" alt="Min-Seop Ahn"/><br /><sub><b>Min-Seop Ahn</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=msahn" title="Code">💻</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=msahn" title="Documentation">📖</a> <a href="https://github.com/PCMDI/pcmdi_metrics/pulls?q=is%3Apr+reviewed-by%3Amsahn" title="Reviewed Pull Requests">👀</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=msahn" title="Tests">⚠️</a> <a href="#tutorial-msahn" title="Tutorials">✅</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/taylor13"><img src="https://avatars.githubusercontent.com/u/4993439?v=4?s=100" width="100px;" alt="Karl Taylor"/><br /><sub><b>Karl Taylor</b></sub></a><br /><a href="#research-taylor13" title="Research">🔬</a> <a href="#ideas-taylor13" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/durack1"><img src="https://avatars.githubusercontent.com/u/3229632?v=4?s=100" width="100px;" alt="Paul J. Durack"/><br /><sub><b>Paul J. Durack</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=durack1" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://mzelinka.github.io/"><img src="https://avatars.githubusercontent.com/u/11380489?v=4?s=100" width="100px;" alt="Mark Zelinka"/><br /><sub><b>Mark Zelinka</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=mzelinka" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://climate.ucdavis.edu/"><img src="https://avatars.githubusercontent.com/u/5330916?v=4?s=100" width="100px;" alt="Paul Ullrich"/><br /><sub><b>Paul Ullrich</b></sub></a><br /><a href="#ideas-paullric" title="Ideas, Planning, & Feedback">🤔</a> <a href="#research-paullric" title="Research">🔬</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/bonfils2"><img src="https://avatars.githubusercontent.com/u/3536584?v=4?s=100" width="100px;" alt="Celine Bonfils"/><br /><sub><b>Celine Bonfils</b></sub></a><br /><a href="#research-bonfils2" title="Research">🔬</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/zshaheen"><img src="https://avatars.githubusercontent.com/u/4239938?v=4?s=100" width="100px;" alt="Zeshawn Shaheen"/><br /><sub><b>Zeshawn Shaheen</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=zshaheen" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/muryanto1"><img src="https://avatars.githubusercontent.com/u/35277663?v=4?s=100" width="100px;" alt="Lina Muryanto"/><br /><sub><b>Lina Muryanto</b></sub></a><br /><a href="#infra-muryanto1" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tomvothecoder"><img src="https://avatars.githubusercontent.com/u/25624127?v=4?s=100" width="100px;" alt="Tom Vo"/><br /><sub><b>Tom Vo</b></sub></a><br /><a href="#infra-tomvothecoder" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jasonb5"><img src="https://avatars.githubusercontent.com/u/2191036?v=4?s=100" width="100px;" alt="Jason Boutte"/><br /><sub><b>Jason Boutte</b></sub></a><br /><a href="#infra-jasonb5" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/painter1"><img src="https://avatars.githubusercontent.com/u/2799665?v=4?s=100" width="100px;" alt="Jeffrey Painter"/><br /><sub><b>Jeffrey Painter</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=painter1" title="Code">💻</a> <a href="#data-painter1" title="Data">🔣</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/pochedls"><img src="https://avatars.githubusercontent.com/u/3698109?v=4?s=100" width="100px;" alt="Stephen Po-Chedley"/><br /><sub><b>Stephen Po-Chedley</b></sub></a><br /><a href="#data-pochedls" title="Data">🔣</a> <a href="#infra-pochedls" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://xylar.github.io/"><img src="https://avatars.githubusercontent.com/u/4179064?v=4?s=100" width="100px;" alt="Xylar Asay-Davis"/><br /><sub><b>Xylar Asay-Davis</b></sub></a><br /><a href="#infra-xylar" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.gfdl.noaa.gov/john-krasting-homepage"><img src="https://avatars.githubusercontent.com/u/6594675?v=4?s=100" width="100px;" alt="John Krasting"/><br /><sub><b>John Krasting</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=jkrasting" title="Code">💻</a> <a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=jkrasting" title="Tests">⚠️</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.cgd.ucar.edu/staff/apgrass/"><img src="https://avatars.githubusercontent.com/u/16008440?v=4?s=100" width="100px;" alt="Angeline G Pendergrass"/><br /><sub><b>Angeline G Pendergrass</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=apendergrass" title="Code">💻</a> <a href="#research-apendergrass" title="Research">🔬</a> <a href="#ideas-apendergrass" title="Ideas, Planning, & Feedback">🤔</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/mfwehner"><img src="https://avatars.githubusercontent.com/u/10789148?v=4?s=100" width="100px;" alt="mfwehner"/><br /><sub><b>mfwehner</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=mfwehner" title="Code">💻</a> <a href="#research-mfwehner" title="Research">🔬</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://sites.google.com/uw.edu/kimresearchgroup"><img src="?s=100" width="100px;" alt="Daehyun Kim"/><br /><sub><b>Daehyun Kim</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=" title="Code">💻</a> <a href="#research" title="Research">🔬</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
+
+
+
+
