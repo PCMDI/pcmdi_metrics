@@ -31,6 +31,9 @@ P.add_argument(
 )
 P.add_argument("--end", dest="end", help="Defines end year and month", required=False)
 
+P.add_argument("--periodinname", dest="periodinname", help="Include clim period in name (default yes) or not", required=False)
+
+
 args = P.get_parameter()
 
 infile_template = args.infile
@@ -40,6 +43,7 @@ outfilename_template = args.outfilename
 varlist = args.vars
 start = args.start
 end = args.end
+periodinname = args.periodinname
 
 print("start and end are ", start, " ", end)
 print("variable list: ", varlist)
@@ -68,4 +72,4 @@ for var in varlist:
     print('outpath:', outpath)
 
     # calculate climatologies for this variable
-    calculate_climatology(var, infile, outfile, outpath, outfilename, start, end, ver)
+    calculate_climatology(var, infile, outfile, outpath, outfilename, start, end, ver,periodinname)
