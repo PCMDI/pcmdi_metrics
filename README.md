@@ -96,27 +96,49 @@ Distributed under the BSD 3-Clause License. See [`LICENSE`](https://github.com/P
 Release Notes and History
 -------------------------
 
-[Released versions](https://github.com/PCMDI/pcmdi_metrics/releases)
+| <div style="width:300%">[Versions]</div> | Update summary   |
+| ------------- | ------------------------------------- |
+| [v3.0.1]      | Minor technical patch                 
+| [v3.0.0]      | New metric added: **Cloud feedback metric** by @mzelinka. [**xCDAT**](https://xcdat.readthedocs.io/en/latest/) implemented for mean climate metrics
+| [v2.5.1]      | Technical update
+| [v2.5.0]      | New metric added: **Precipitation Benchmarking -- distribution**. Graphics updated
+| [v2.4.0]      | New metric added: **AMO** in variability modes
+| [v2.3.2]      | CMEC interface updates
+| [v2.3.1]      | Technical update
+| [v2.3]        | New graphics using [archived PMP results](https://github.com/PCMDI/pcmdi_metrics_results_archive)
+| [v2.2.2]      | Technical update
+| [v2.2.1]      | Minor update
+| [v2.2]        | New metric implemented: **precipitation variability across time scale**
+| [v2.1.2]      | Minor update
+| [v2.1.1]      | Simplified dependent libraries and CI process
+| [v2.1.0]      | [**CMEC**](https://cmec.llnl.gov/) driver interfaced added.
+| [v2.0]        | New capabilities: **ENSO** metrics, demos, and documentations.
+| [v1.2]        | Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal cycle and intermittency of precipitation, sample monsoon metrics.
+| [v1.1.2]      | Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added.   Extensive provenance information incorporated into json files.
+| [v1.1]        | First public release, emphasizing **climatological statistics**, with development branches for ENSO and regional monsoon precipitation indices.
+| [v1.0]        | Prototype version of the PMP.
 
-- [v3.0.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.0.1) - Minor technical patch
-- [v3.0.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.0.0) - New metric added: **Cloud feedback metric** by @mzelinka. [**xCDAT**](https://xcdat.readthedocs.io/en/latest/) implemented for mean climate metrics
-- [v2.5.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.5.1) - Technical update
-- [v2.5.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.5.0) - New metric added: **Precipitation Benchmarking -- distribution**. Graphics updated
-- [v2.4.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.4.0) - New metric added: **AMO** in variability modes
-- [v2.3.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3.2) - CMEC interface updates
-- [v2.3.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3.1) - Technical update
-- [v2.3](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3) - New graphics using [archived PMP results](https://github.com/PCMDI/pcmdi_metrics_results_archive)
-- [v2.2.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2.2) - Technical update
-- [v2.2.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2.1) - Minor update
-- [v2.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2) - New metric implemented: **precipitation variability across time scale**
-- [v2.1.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.2) - Minor update
-- [v2.1.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.1) - Simplified dependent libraries and CI process
-- [v2.1.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.0) - [**CMEC**](https://cmec.llnl.gov/) driver interfaced added.
-- [v2.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.0) - New capabilities: **ENSO** metrics, demos, and documentations.
-- [v1.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.2) - Tied to CDAT 8.0.  Now includes extensive regression testing.  New metrics: Diurnal cycle and intermittency of precipitation, sample monsoon metrics.
-- [v1.1.2](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1.2) - Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added.   Extensive provenance information incorporated into json files.
-- [v1.1](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1) - First public release, emphasizing **climatological statistics**, with development branches for ENSO and regional monsoon precipitation indices.
-- [v1.0](https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0) - Prototype version of the PMP.
+
+[Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.0.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.0.1
+[v3.0.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.0.0
+[v2.5.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.5.1
+[v2.5.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.5.0
+[v2.4.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.4.0
+[v2.3.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3.2
+[v2.3.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3.1
+[v2.3]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.3
+[v2.2.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2.2
+[v2.2.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2.1
+[v2.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.2
+[v2.1.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.2
+[v2.1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.1
+[v2.1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.0
+[v2.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.0
+[v1.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.2
+[v1.1.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1.2
+[v1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1
+[v1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0
 
 
 Contributors
@@ -165,6 +187,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
+
+
 
 
 
