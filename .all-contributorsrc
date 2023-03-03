@@ -122,6 +122,15 @@
       ]
     },
     {
+      "name": "Curtis C. Covey",
+      "avatar_url": "https://pcmdi.llnl.gov/staff/covey/curt.jpg",
+      "profile": "https://pcmdi.llnl.gov/staff/covey/",
+      "contributions": [
+        "code",
+        "research"
+      ]
+    },
+    {
       "login": "zshaheen",
       "name": "Zeshawn Shaheen",
       "avatar_url": "https://avatars.githubusercontent.com/u/4239938?v=4",
@@ -220,6 +229,7 @@
     },
     {
       "name": "Daehyun Kim",
+      "avatar_url": "https://scholar.googleusercontent.com/citations?view_op=view_photo&user=3xLjsIsAAAAJ&citpid=3",
       "profile": "https://sites.google.com/uw.edu/kimresearchgroup",
       "contributions": [
         "code",
