@@ -37,15 +37,6 @@
       ]
     },
     {
-      "login": "doutriaux1",
-      "name": "Charles Doutriaux",
-      "avatar_url": "https://avatars.githubusercontent.com/u/2781425?v=4",
-      "profile": "https://github.com/doutriaux1",
-      "contributions": [
-        "code"
-      ]
-    },
-    {
       "login": "acordonez",
       "name": "Ana Ordonez",
       "avatar_url": "https://avatars.githubusercontent.com/u/18147700?v=4",
@@ -69,6 +60,25 @@
         "review",
         "test",
         "tutorial"
+      ]
+    },
+    {
+      "login": "paullric",
+      "name": "Paul Ullrich",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5330916?v=4",
+      "profile": "http://climate.ucdavis.edu/",
+      "contributions": [
+        "ideas",
+        "research"
+      ]
+    },
+    {
+      "login": "doutriaux1",
+      "name": "Charles Doutriaux",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2781425?v=4",
+      "profile": "https://github.com/doutriaux1",
+      "contributions": [
+        "code"
       ]
     },
     {
@@ -97,16 +107,6 @@
       "profile": "https://mzelinka.github.io/",
       "contributions": [
         "code"
-      ]
-    },
-    {
-      "login": "paullric",
-      "name": "Paul Ullrich",
-      "avatar_url": "https://avatars.githubusercontent.com/u/5330916?v=4",
-      "profile": "http://climate.ucdavis.edu/",
-      "contributions": [
-        "ideas",
-        "research"
       ]
     },
     {
