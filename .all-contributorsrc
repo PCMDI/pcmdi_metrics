@@ -18,7 +18,8 @@
         "test",
         "tutorial",
         "research",
-        "ideas"
+        "ideas",
+        "infra"
       ]
     },
     {
@@ -46,7 +47,8 @@
         "doc",
         "review",
         "test",
-        "tutorial"
+        "tutorial",
+        "infra"
       ]
     },
     {
@@ -59,7 +61,8 @@
         "doc",
         "review",
         "test",
-        "tutorial"
+        "tutorial",
+        "research"
       ]
     },
     {
@@ -160,8 +163,9 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/2799665?v=4",
       "profile": "https://github.com/painter1",
       "contributions": [
-        "code",
-        "data"
+        "data",
+        "infra",
+        "code"
       ]
     },
     {
