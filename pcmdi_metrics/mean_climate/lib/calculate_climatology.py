@@ -10,7 +10,7 @@ from pcmdi_metrics.io import xcdat_open
 def calculate_climatology(
     var, infile,
     outfile=None, outpath=None, outfilename=None,
-    start=None, end=None, ver=None,periodinname=None,climlist=None):
+    start=None, end=None, ver=None, periodinname=None, climlist=None):
 
     if ver is None:
         ver=datetime.datetime.now().strftime("v%Y%m%d")
