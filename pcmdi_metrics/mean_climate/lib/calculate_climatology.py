@@ -84,8 +84,10 @@ def calculate_climatology(
     d_clim_dict['SON'] = d_clim.isel(time=3)
     d_clim_dict['AC'] = d_ac
 
-    if climlist is None: clims = ["AC", "DJF", "MAM", "JJA", "SON"]
-    if climlist is not None: clims = climlist 
+    if climlist is None: 
+        clims = ["AC", "DJF", "MAM", "JJA", "SON"]
+    else:
+        clims = climlist 
 
     for s in clims:
         if periodinname is None: 
