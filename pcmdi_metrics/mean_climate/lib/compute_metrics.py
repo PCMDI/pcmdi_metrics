@@ -1,14 +1,14 @@
-import collections
+from collections import OrderedDict
 
 import pcmdi_metrics
 
 
-def compute_metrics(Var, dm, do):
+def compute_metrics(Var, dm, do, debug=False):
     # Var is sometimes sent with level associated
     var = Var.split("_")[0]
     # Did we send data? Or do we just want the info?
     if dm is None and do is None:
-        metrics_defs = collections.OrderedDict()
+        metrics_defs = OrderedDict()
         metrics_defs["rms_xyt"] = pcmdi_metrics.mean_climate.lib.rms_xyt(None, None)
         metrics_defs["rms_xy"] = pcmdi_metrics.mean_climate.lib.rms_xy(None, None)
         metrics_defs["rmsc_xy"] = pcmdi_metrics.mean_climate.lib.rmsc_xy(None, None)
@@ -31,15 +31,26 @@ def compute_metrics(Var, dm, do):
     # cdms.setAutoBounds("on")
     print('var: ', var)
 
+    # unify time and time bounds between observation and model
+    if debug:
+        print('before time and time bounds unifying')
+        print('dm.time: ', dm['time'])
+        print('do.time: ', do['time'])
+        
     # Below is temporary...
-    do['time'] = dm['time']
-    do['time_bnds'] = dm['time_bnds']
-    print('do.time: ', do['time'])
+    dm['time'] = do['time']
+    dm[dm.time.attrs['bounds']] = do[do.time.attrs['bounds']]
+    
+    if debug:
+        print('after time and time bounds unifying')
+        print('dm.time: ', dm['time'])
+        print('do.time: ', do['time'])
 
-    # dm.to_netcdf('dm.nc')
-    # do.to_netcdf('do.nc')
+    #if debug:
+    #    dm.to_netcdf('dm.nc')
+    #    do.to_netcdf('do.nc')
 
-    metrics_dictionary = {}
+    metrics_dictionary = OrderedDict()
 
     # SET CONDITIONAL ON INPUT VARIABLE
     if var == "pr":
@@ -114,7 +125,7 @@ def compute_metrics(Var, dm, do):
     stdObs_xy_devzm = pcmdi_metrics.mean_climate.lib.std_xy(do_am_devzm, var, weights=do.spatial.get_weights(axis=['X', 'Y']))
     std_xy_devzm = pcmdi_metrics.mean_climate.lib.std_xy(dm_am_devzm, var, weights=dm.spatial.get_weights(axis=['X', 'Y']))
 
-    for stat in [
+    for stat in sorted([
         "std-obs_xy",
         "std_xy",
         "std-obs_xyt",
@@ -131,8 +142,8 @@ def compute_metrics(Var, dm, do):
         "mae_xy",
         "rms_y",
         "rms_devzm",
-    ]:
-        metrics_dictionary[stat] = {}
+    ]):
+        metrics_dictionary[stat] = OrderedDict()
 
     metrics_dictionary["mean-obs_xy"]["ann"] = format(meanObs_xy * conv, sig_digits)
     metrics_dictionary["mean_xy"]["ann"] = format(mean_xy * conv, sig_digits)

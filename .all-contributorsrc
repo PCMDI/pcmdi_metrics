@@ -1,0 +1,246 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "lee1043",
+      "name": "Jiwoo Lee",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17091564?v=4",
+      "profile": "https://sites.google.com/view/jiwoolee",
+      "contributions": [
+        "code",
+        "doc",
+        "review",
+        "test",
+        "tutorial",
+        "research",
+        "ideas",
+        "infra"
+      ]
+    },
+    {
+      "login": "gleckler1",
+      "name": "Peter Gleckler",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4553389?v=4",
+      "profile": "https://github.com/gleckler1",
+      "contributions": [
+        "code",
+        "doc",
+        "research",
+        "review",
+        "test",
+        "data",
+        "ideas"
+      ]
+    },
+    {
+      "login": "acordonez",
+      "name": "Ana Ordonez",
+      "avatar_url": "https://avatars.githubusercontent.com/u/18147700?v=4",
+      "profile": "https://github.com/acordonez",
+      "contributions": [
+        "code",
+        "doc",
+        "review",
+        "test",
+        "tutorial",
+        "infra"
+      ]
+    },
+    {
+      "login": "msahn",
+      "name": "Min-Seop Ahn",
+      "avatar_url": "https://avatars.githubusercontent.com/u/46369397?v=4",
+      "profile": "https://github.com/msahn",
+      "contributions": [
+        "code",
+        "doc",
+        "review",
+        "test",
+        "tutorial",
+        "research"
+      ]
+    },
+    {
+      "login": "paullric",
+      "name": "Paul Ullrich",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5330916?v=4",
+      "profile": "http://climate.ucdavis.edu/",
+      "contributions": [
+        "ideas",
+        "research"
+      ]
+    },
+    {
+      "login": "doutriaux1",
+      "name": "Charles Doutriaux",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2781425?v=4",
+      "profile": "https://github.com/doutriaux1",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "taylor13",
+      "name": "Karl Taylor",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4993439?v=4",
+      "profile": "https://github.com/taylor13",
+      "contributions": [
+        "research",
+        "ideas"
+      ]
+    },
+    {
+      "login": "durack1",
+      "name": "Paul J. Durack",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3229632?v=4",
+      "profile": "https://github.com/durack1",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mzelinka",
+      "name": "Mark Zelinka",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11380489?v=4",
+      "profile": "https://mzelinka.github.io/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "bonfils2",
+      "name": "Celine Bonfils",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3536584?v=4",
+      "profile": "https://github.com/bonfils2",
+      "contributions": [
+        "research"
+      ]
+    },
+    {
+      "name": "Curtis C. Covey",
+      "avatar_url": "https://pcmdi.llnl.gov/staff/covey/curt.jpg",
+      "profile": "https://pcmdi.llnl.gov/staff/covey/",
+      "contributions": [
+        "code",
+        "research"
+      ]
+    },
+    {
+      "login": "zshaheen",
+      "name": "Zeshawn Shaheen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4239938?v=4",
+      "profile": "https://github.com/zshaheen",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "muryanto1",
+      "name": "Lina Muryanto",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35277663?v=4",
+      "profile": "https://github.com/muryanto1",
+      "contributions": [
+        "infra"
+      ]
+    },
+    {
+      "login": "tomvothecoder",
+      "name": "Tom Vo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/25624127?v=4",
+      "profile": "https://github.com/tomvothecoder",
+      "contributions": [
+        "infra"
+      ]
+    },
+    {
+      "login": "jasonb5",
+      "name": "Jason Boutte",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2191036?v=4",
+      "profile": "https://github.com/jasonb5",
+      "contributions": [
+        "infra"
+      ]
+    },
+    {
+      "login": "painter1",
+      "name": "Jeffrey Painter",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2799665?v=4",
+      "profile": "https://github.com/painter1",
+      "contributions": [
+        "data",
+        "infra",
+        "code"
+      ]
+    },
+    {
+      "login": "pochedls",
+      "name": "Stephen Po-Chedley",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3698109?v=4",
+      "profile": "https://github.com/pochedls",
+      "contributions": [
+        "data",
+        "infra"
+      ]
+    },
+    {
+      "login": "xylar",
+      "name": "Xylar Asay-Davis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4179064?v=4",
+      "profile": "https://xylar.github.io/",
+      "contributions": [
+        "infra"
+      ]
+    },
+    {
+      "login": "jkrasting",
+      "name": "John Krasting",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6594675?v=4",
+      "profile": "http://www.gfdl.noaa.gov/john-krasting-homepage",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "apendergrass",
+      "name": "Angeline G Pendergrass",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16008440?v=4",
+      "profile": "http://www.cgd.ucar.edu/staff/apgrass/",
+      "contributions": [
+        "code",
+        "research",
+        "ideas"
+      ]
+    },
+    {
+      "login": "mfwehner",
+      "name": "Michael Wehner",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10789148?v=4",
+      "profile": "https://github.com/mfwehner",
+      "contributions": [
+        "code",
+        "research"
+      ]
+    },
+    {
+      "name": "Daehyun Kim",
+      "avatar_url": "https://scholar.googleusercontent.com/citations?view_op=view_photo&user=3xLjsIsAAAAJ&citpid=3",
+      "profile": "https://sites.google.com/uw.edu/kimresearchgroup",
+      "contributions": [
+        "code",
+        "research"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "pcmdi_metrics",
+  "projectOwner": "PCMDI"
+}

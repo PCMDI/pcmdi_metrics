@@ -39,6 +39,15 @@ def create_mean_climate_parser():
         help="Users can customize regions values names",
         required=False,
     )
+    
+    parser.add_argument(
+        "--regions_specs",
+        type=ast.literal_eval,
+        dest="regions_specs",
+        help="Users can customize regions",
+        default=None,
+        required=False,
+    )
 
     parser.add_argument(
         "-r",
@@ -175,6 +184,14 @@ def create_mean_climate_parser():
         "--metrics_output_path",
         dest="metrics_output_path",
         help="Directory of where to put the results",
+        required=False,
+    )
+    
+    parser.add_argument(
+        "--diagnostics_output_path",
+        dest="diagnostics_output_path",
+        help="Directory of where to put the results",
+        default=None,
         required=False,
     )
 

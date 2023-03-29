@@ -51,6 +51,9 @@ from pcmdi_metrics.mjo.lib import (
     mjo_metrics_to_json,
 )
 
+from pcmdi_metrics.mean_climate.lib import pmp_parser
+
+
 # To avoid below error
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
 # os.environ['OPENBLAS_NUM_THREADS'] = '1'
@@ -71,7 +74,7 @@ degX = 2.5  # grid distance for common grid (in degree)
 # =================================================
 # Collect user defined options
 # -------------------------------------------------
-P = pcmdi_metrics.driver.pmp_parser.PMPParser(
+P = pmp_parser.PMPParser(
     description="Runs PCMDI MJO Computations", formatter_class=RawTextHelpFormatter
 )
 P = AddParserArgument(P)

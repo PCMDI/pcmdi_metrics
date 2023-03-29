@@ -216,11 +216,9 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             if not include_script:
                 if "script" in out_dict["provenance"].keys():
                     del out_dict["provenance"]["script"]
-
             if not include_history:
                 if "history" in out_dict["provenance"].keys():
                     del out_dict["provenance"]["history"]
-
             json.dump(out_dict, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 
