@@ -98,7 +98,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
-| [v3.0.2]      | Minor patch and add more documentation
+| [v3.0.2]      | Minor patch and more documentation added
 | [v3.0.1]      | Minor technical patch                 
 | [v3.0.0]      | New metric added: **Cloud feedback metric** by @mzelinka. [**xCDAT**](https://xcdat.readthedocs.io/en/latest/) implemented for mean climate metrics
 | [v2.5.1]      | Technical update
