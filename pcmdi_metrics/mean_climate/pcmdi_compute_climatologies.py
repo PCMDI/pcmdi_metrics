@@ -74,4 +74,4 @@ for var in varlist:
     print('outpath:', outpath)
 
     # calculate climatologies for this variable
-    calculate_climatology(var, infile, outfile, outpath, outfilename, start, end, ver,periodinname,climlist)
+    calculate_climatology(var, infile, outfile, outpath, outfilename, start, end, ver, periodinname, climlist)
