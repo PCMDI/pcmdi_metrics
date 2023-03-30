@@ -125,8 +125,6 @@ def parallel_coordinate_plot(
 
     if fig is None and ax is None:
         fig, ax = plt.subplots(figsize=figsize)
-    else:
-        ax = ax
 
     axes = [ax] + [ax.twinx() for i in range(N - 1)]
 
