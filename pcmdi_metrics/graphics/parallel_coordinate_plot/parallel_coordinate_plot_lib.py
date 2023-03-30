@@ -37,6 +37,7 @@ def parallel_coordinate_plot(
     comparing_models=None,
     fill_between_lines=False,
     fill_between_lines_colors=("green", "red"),
+    median_centered=False,
 ):
     """
     Parameters
@@ -99,6 +100,7 @@ def parallel_coordinate_plot(
         model_names2=model_names2,
         group1_name=group1_name,
         group2_name=group2_name,
+        median_centered=median_centered,
     )
 
     # Prepare plot
@@ -287,12 +289,19 @@ def _data_transform(
     model_names2=None,
     group1_name="group1",
     group2_name="group2",
+    median_centered=False,
 ):
     # Data to plot
     ys = data  # stacked y-axis values
     N = ys.shape[1]  # number of vertical axis (i.e., =len(metric_names))
     ymins = np.nanmin(ys, axis=0)  # minimum (ignore nan value)
     ymaxs = np.nanmax(ys, axis=0)  # maximum (ignore nan value)
+    if median_centered:
+        ymeds = np.nanmedian(ys, axis=0)
+        for i in range(0, N):
+            max_distance_from_median = max(abs(ymaxs[i] - ymeds[i]), abs(ymeds[i] - ymins[i]))
+            ymaxs[i] = ymeds[i] + max_distance_from_median
+            ymins[i] = ymeds[i] - max_distance_from_median
     dys = ymaxs - ymins
     ymins -= dys * 0.05  # add 5% padding below and above
     ymaxs += dys * 0.05
