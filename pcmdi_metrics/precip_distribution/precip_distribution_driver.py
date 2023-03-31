@@ -9,10 +9,15 @@ from genutil import StringConstructor
 from pcmdi_metrics.driver.pmp_parser import PMPParser
 from pcmdi_metrics.precip_distribution.lib import (
     AddParserArgument,
-    Regrid,
-    precip_distribution_frq_amt,
-    precip_distribution_cum,
+    # Regrid,
+    # precip_distribution_frq_amt,
+    # precip_distribution_cum,
 )
+with open('../lib/lib_precip_distribution.py') as source_file:
+    exec(source_file.read())
+
+import xcdat
+import xarray as xr
 
 # Read parameters
 P = PMPParser()
@@ -21,6 +26,7 @@ param = P.get_parameter()
 mip = param.mip
 mod = param.mod
 var = param.var
+frq = param.frq
 modpath = param.modpath
 ref = param.ref
 prd = param.prd
@@ -54,45 +60,51 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
             pass
     print(outdir(output_type=output_type))
 
-# Create input file list
-file_list = sorted(glob.glob(os.path.join(modpath, "*" + mod + "*")))
-data = []
-for file in file_list:
-    if mip == "obs":
-        model = file.split("/")[-1].split(".")[2]
-        data.append(model)
-    else:
-        model = file.split("/")[-1].split(".")[2]
-        ens = file.split("/")[-1].split(".")[3]
-        data.append(model + "." + ens)
-print("Number of datasets:", len(file_list))
-print("Dataset:", data)
-
 # Read data -> Regrid -> Calculate metrics
 # It is working for daily average precipitation, in units of mm/day, with dimensions of (time,lat,lon)
+file_list = sorted(glob.glob(os.path.join(modpath, mod)))
+print(file_list)   
+f = xcdat.open_mfdataset(file_list)
+# f = xr.open_mfdataset(file_list)
+
+if mip == "obs":
+    if file_list[0].split("/")[-1].split("_")[2] == 'reanalysis':
+        dat = file_list[0].split("/")[-1].split("_")[3]
+    else:
+        dat = file_list[0].split("/")[-1].split("_")[2].split("-")[0]
+        if dat == 'ERA': dat = 'ERA5'
+else:
+    model = file_list[0].split("/")[-1].split("_")[2]
+    ens = file_list[0].split("/")[-1].split("_")[4]
+    dat = model + "." + ens
+
+cal = f.time.encoding["calendar"] 
+print(dat, cal)
+    
+if "360" in cal:
+    ldy = 30
+else:
+    ldy = 31
+    
 syr = prd[0]
 eyr = prd[1]
-for dat, file in zip(data, file_list):
-    f = cdms.open(file)
-    cal = f[var].getTime().calendar
-    if "360" in cal:
-        ldy = 30
+for iyr in range(syr, eyr + 1):
+    do = f.sel(time=slice(str(iyr) + "-01-01 00:00:00", str(iyr) + "-12-" + str(ldy) + " 23:59:59"))[var]
+    # Correct negative precip to 0 (ERA-interim from CREATE-IP and ERA-5 from obs4MIP have negative precip values between -1 and 0)
+    do = xr.where((do < 0) & (do > -1), 0, do)
+    do = xr.DataArray.to_cdms2(do)*float(fac)
+    
+    # Regridding
+    rgtmp = Regrid(do, res)
+    if iyr == syr:
+        drg = copy.deepcopy(rgtmp)
     else:
-        ldy = 31
-    print(dat, cal)
-    for iyr in range(syr, eyr + 1):
-        do = f(var, time=(str(iyr) + "-1-1 0:0:0", str(iyr) + "-12-" + str(ldy) + " 23:59:59"))*float(fac)
-        # Regridding
-        rgtmp = Regrid(do, res)
-        if iyr == syr:
-            drg = copy.deepcopy(rgtmp)
-        else:
-            drg = MV.concatenate((drg, rgtmp))
-        print(iyr, drg.shape)
+        drg = MV.concatenate((drg, rgtmp))
+    print(iyr, drg.shape)
 
-    # Calculate metrics from precipitation frequency and amount distributions
-    precip_distribution_frq_amt(dat, drg, syr, eyr, res, outdir, ref, refdir, cmec)
+# Calculate metrics from precipitation frequency and amount distributions
+precip_distribution_frq_amt(dat, drg, syr, eyr, res, outdir, ref, refdir, cmec)
 
-    # Calculate metrics from precipitation cumulative distributions
-    precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec)
+# Calculate metrics from precipitation cumulative distributions
+precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec)
 

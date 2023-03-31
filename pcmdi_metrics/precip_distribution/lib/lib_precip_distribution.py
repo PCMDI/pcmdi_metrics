@@ -3,6 +3,7 @@ import MV2 as MV
 import cdutil
 import genutil
 import numpy as np
+import numpy.ma as ma
 import glob
 import copy
 import pcmdi_metrics
@@ -11,6 +12,7 @@ import rasterio.features
 import xarray as xr
 from regrid2 import Horizontal
 from shapely.geometry import Polygon, MultiPolygon
+from scipy.signal import savgol_filter
 import sys
 import os
 
@@ -52,7 +54,7 @@ def precip_distribution_frq_amt (dat, drg, syr, eyr, res, outdir, ref, refdir, c
         print(dat, mon, dmon.shape)
 
         pdata1 = dmon
-
+        
         # Calculate bin structure
         binl, binr, bincrates = CalcBinStructure(pdata1)
 
@@ -290,15 +292,22 @@ def precip_distribution_cum (dat, drg, cal, syr, eyr, res, outdir, cmec):
                 pfracyr[iyr, :, :, :] = pfrac[:ndymon[im], :, :]
                 print(year, 'pfrac.shape is ', pfrac.shape, ', but',
                       pfrac[:ndymon[im], :, :].shape, ' is used')
-
+            
         ndm = np.nanmedian(cfy, axis=0)  # ignore years with zero precip
-        missingfrac = (np.sum(np.isnan(cfy), axis=0)/nyr)
-        ndm[np.where(missingfrac > missingthresh)] = np.nan
         prdyfracm = np.nanmedian(prdyfracyr, axis=0)
         sdiim = np.nanmedian(sdiiyr, axis=0)
 
+        missingfrac = (np.sum(np.isnan(cfy), axis=0)/nyr)
+        ndm[np.where(missingfrac > missingthresh)] = np.nan
+        missingfrac = (np.sum(np.isnan(prdyfracyr), axis=0)/nyr)
+        prdyfracm[np.where(missingfrac > missingthresh)] = np.nan
+        missingfrac = (np.sum(np.isnan(sdiiyr), axis=0)/nyr)
+        sdiim[np.where(missingfrac > missingthresh)] = np.nan
+        
         pfracm = np.nanmedian(pfracyr, axis=0)
-        axbin = cdms.createAxis(range(1, ndymon[im]+1), id='cumday')
+        missingfrac = (np.sum(np.isnan(pfracyr), axis=0)/nyr)
+        pfracm[np.where(missingfrac > missingthresh)] = np.nan
+        axbin = cdms.createAxis(range(1, ndymon[im]+1), id='time')
         lat = dmon.getLatitude()
         lon = dmon.getLongitude()
         pfracm = MV.array(pfracm)
@@ -543,11 +552,11 @@ def MakeDists(pdata, binl):
             binno[:, ilat, ilon] = np.digitize(pdata[:, ilat, ilon], bins)
     # Calculate the number of days with non-missing data, for normalization
     ndmat = np.tile(np.expand_dims(
-       # np.nansum(n, axis=0), axis=0), (len(bins)-1, 1, 1))
-       np.sum(n, axis=0), axis=0), (len(bins)-1, 1, 1))
+       np.nansum(n, axis=0), axis=0), (len(bins)-1, 1, 1))
 
     thisppdfmap = n/ndmat
     thisppdfmap_tn = thisppdfmap*ndmat
+    
     # Iterate back over the bins and add up all the precip - this will be the rain amount distribution.
     # This step is probably the limiting factor and might be able to be made more efficient - I had a clever trick in matlab, but it doesn't work in python
     testpamtmap = np.empty(thisppdfmap.shape)
@@ -555,6 +564,11 @@ def MakeDists(pdata, binl):
         testpamtmap[ibin, :, :] = (pdata*(ibin == binno)).sum(axis=0)
     thispamtmap = testpamtmap/ndmat
 
+    # Change Inf to Nan
+    thisppdfmap[np.isinf(thisppdfmap)] = np.nan
+    thisppdfmap_tn[np.isinf(thisppdfmap_tn)] = np.nan
+    thispamtmap[np.isinf(thispamtmap)] = np.nan
+    
     axbin = cdms.createAxis(range(len(binl)), id='bin')
     lat = pdata.getLatitude()
     lon = pdata.getLongitude()
@@ -680,6 +694,8 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
             else:
                 dmask = d
 
+            dmask = MV.masked_where(~np.isfinite(dmask), dmask)
+                
             if "50S50N" in dom:
                 am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
             if "30N50N" in dom:
@@ -724,6 +740,7 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
     metrics['amtP20']={}
     metrics['amtP80']={}
     metrics['amtP90']={}
+    metrics['bimod']={}
     for idm, dom in enumerate(domains):
         metrics['frqpeak'][dom]={'CalendarMonths':{}}
         metrics['frqwidth'][dom]={'CalendarMonths':{}}
@@ -738,6 +755,7 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
         metrics['amtP20'][dom]={'CalendarMonths':{}}
         metrics['amtP80'][dom]={'CalendarMonths':{}}
         metrics['amtP90'][dom]={'CalendarMonths':{}}
+        metrics['bimod'][dom]={'CalendarMonths':{}}
         for im, mon in enumerate(months):
             if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[im,:,idm], bincrates)
@@ -747,8 +765,8 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 metrics['amtpeak'][dom][mon] = rainpeak
                 metrics['amtwidth'][dom][mon] = rainwidth
                 metrics['pscore'][dom][mon] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])
-
                 metrics['frqP10'][dom][mon], metrics['frqP20'][dom][mon], metrics['frqP80'][dom][mon], metrics['frqP90'][dom][mon], metrics['amtP10'][dom][mon], metrics['amtP20'][dom][mon], metrics['amtP80'][dom][mon], metrics['amtP90'][dom][mon] = CalcP10P90(pdfdom[im,:,idm], amtdom[im,:,idm], amtdom_ref[im,:,idm], bincrates)
+                metrics['bimod'][dom][mon] = CalcBimodality(pdfdom[im,:,idm], bincrates)
 
             else:
                 calmon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
@@ -760,8 +778,8 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 metrics['amtpeak'][dom]['CalendarMonths'][imn] = rainpeak
                 metrics['amtwidth'][dom]['CalendarMonths'][imn] = rainwidth
                 metrics['pscore'][dom]['CalendarMonths'][imn] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])
-
                 metrics['frqP10'][dom]['CalendarMonths'][imn], metrics['frqP20'][dom]['CalendarMonths'][imn], metrics['frqP80'][dom]['CalendarMonths'][imn], metrics['frqP90'][dom]['CalendarMonths'][imn], metrics['amtP10'][dom]['CalendarMonths'][imn], metrics['amtP20'][dom]['CalendarMonths'][imn], metrics['amtP80'][dom]['CalendarMonths'][imn], metrics['amtP90'][dom]['CalendarMonths'][imn] = CalcP10P90(pdfdom[im,:,idm], amtdom[im,:,idm], amtdom_ref[im,:,idm], bincrates)
+                metrics['bimod'][dom]['CalendarMonths'][imn] = CalcBimodality(pdfdom[im,:,idm], bincrates)
 
     print("Completed domain metrics")
     return metrics, pdfdom, amtdom
@@ -797,7 +815,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                "Land_HR_50S30S", "Land_MR_50S30S", "Land_LR_50S30S"]
 
     indir = '../lib'
-    file = 'cluster3_pdf.amt_regrid.360x180_IMERG_ALL.nc'
+    file = 'cluster3_pdf.amt_regrid.360x180_IMERG_ALL_90S90N.nc'
     cluster = xr.open_dataset(os.path.join(indir, file))['cluster_nb']
 
     regs=['HR', 'MR', 'LR']
@@ -865,7 +883,9 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 exit()
 
             dmask = MV.masked_where(~mask3, d)
-
+            
+            dmask = MV.masked_where(~np.isfinite(dmask), dmask)
+                
             if "50S50N" in dom:
                 am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
             if "30N50N" in dom:
@@ -910,6 +930,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
     metrics['amtP20']={}
     metrics['amtP80']={}
     metrics['amtP90']={}
+    metrics['bimod']={}
     for idm, dom in enumerate(domains):
         metrics['frqpeak'][dom]={'CalendarMonths':{}}
         metrics['frqwidth'][dom]={'CalendarMonths':{}}
@@ -924,6 +945,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
         metrics['amtP20'][dom]={'CalendarMonths':{}}
         metrics['amtP80'][dom]={'CalendarMonths':{}}
         metrics['amtP90'][dom]={'CalendarMonths':{}}
+        metrics['bimod'][dom]={'CalendarMonths':{}}
         for im, mon in enumerate(months):
             if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[im,:,idm], bincrates)
@@ -933,8 +955,8 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 metrics['amtpeak'][dom][mon] = rainpeak
                 metrics['amtwidth'][dom][mon] = rainwidth
                 metrics['pscore'][dom][mon] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])
-
                 metrics['frqP10'][dom][mon], metrics['frqP20'][dom][mon], metrics['frqP80'][dom][mon], metrics['frqP90'][dom][mon], metrics['amtP10'][dom][mon], metrics['amtP20'][dom][mon], metrics['amtP80'][dom][mon], metrics['amtP90'][dom][mon] = CalcP10P90(pdfdom[im,:,idm], amtdom[im,:,idm], amtdom_ref[im,:,idm], bincrates)
+                metrics['bimod'][dom][mon] = CalcBimodality(pdfdom[im,:,idm], bincrates)
 
             else:
                 calmon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
@@ -946,8 +968,8 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 metrics['amtpeak'][dom]['CalendarMonths'][imn] = rainpeak
                 metrics['amtwidth'][dom]['CalendarMonths'][imn] = rainwidth
                 metrics['pscore'][dom]['CalendarMonths'][imn] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])
-
                 metrics['frqP10'][dom]['CalendarMonths'][imn], metrics['frqP20'][dom]['CalendarMonths'][imn], metrics['frqP80'][dom]['CalendarMonths'][imn], metrics['frqP90'][dom]['CalendarMonths'][imn], metrics['amtP10'][dom]['CalendarMonths'][imn], metrics['amtP20'][dom]['CalendarMonths'][imn], metrics['amtP80'][dom]['CalendarMonths'][imn], metrics['amtP90'][dom]['CalendarMonths'][imn] = CalcP10P90(pdfdom[im,:,idm], amtdom[im,:,idm], amtdom_ref[im,:,idm], bincrates)
+                metrics['bimod'][dom]['CalendarMonths'][imn] = CalcBimodality(pdfdom[im,:,idm], bincrates)
 
     print("Completed clustering domain metrics")
     return metrics, pdfdom, amtdom
@@ -1074,6 +1096,7 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
     metrics['amtP20']={}
     metrics['amtP80']={}
     metrics['amtP90']={}
+    metrics['bimod']={}
     for idm, dom in enumerate(abbrevs):
         metrics['frqpeak'][dom]={'CalendarMonths':{}}
         metrics['frqwidth'][dom]={'CalendarMonths':{}}
@@ -1088,6 +1111,7 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
         metrics['amtP20'][dom]={'CalendarMonths':{}}
         metrics['amtP80'][dom]={'CalendarMonths':{}}
         metrics['amtP90'][dom]={'CalendarMonths':{}}
+        metrics['bimod'][dom]={'CalendarMonths':{}}
         for im, mon in enumerate(months):
             if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(pdfdom[im,:,idm], bincrates)
@@ -1097,8 +1121,8 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 metrics['amtpeak'][dom][mon] = rainpeak
                 metrics['amtwidth'][dom][mon] = rainwidth
                 metrics['pscore'][dom][mon] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])
-
                 metrics['frqP10'][dom][mon], metrics['frqP20'][dom][mon], metrics['frqP80'][dom][mon], metrics['frqP90'][dom][mon], metrics['amtP10'][dom][mon], metrics['amtP20'][dom][mon], metrics['amtP80'][dom][mon], metrics['amtP90'][dom][mon] = CalcP10P90(pdfdom[im,:,idm], amtdom[im,:,idm], amtdom_ref[im,:,idm], bincrates)
+                metrics['bimod'][dom][mon] = CalcBimodality(pdfdom[im,:,idm], bincrates)
 
             else:
                 calmon=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
@@ -1110,8 +1134,8 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 metrics['amtpeak'][dom]['CalendarMonths'][imn] = rainpeak
                 metrics['amtwidth'][dom]['CalendarMonths'][imn] = rainwidth
                 metrics['pscore'][dom]['CalendarMonths'][imn] = CalcPscore(pdfdom[im,:,idm], pdfdom_ref[im,:,idm])
-
                 metrics['frqP10'][dom]['CalendarMonths'][imn], metrics['frqP20'][dom]['CalendarMonths'][imn], metrics['frqP80'][dom]['CalendarMonths'][imn], metrics['frqP90'][dom]['CalendarMonths'][imn], metrics['amtP10'][dom]['CalendarMonths'][imn], metrics['amtP20'][dom]['CalendarMonths'][imn], metrics['amtP80'][dom]['CalendarMonths'][imn], metrics['amtP90'][dom]['CalendarMonths'][imn] = CalcP10P90(pdfdom[im,:,idm], amtdom[im,:,idm], amtdom_ref[im,:,idm], bincrates)
+                metrics['bimod'][dom]['CalendarMonths'][imn] = CalcBimodality(pdfdom[im,:,idm], bincrates)
 
     print("Completed AR6 domain metrics")
     return metrics, pdfdom, amtdom
@@ -1227,6 +1251,80 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
 
     return f10, f20, f80, f90, a10, a20, a80, a90
 
+# ==================================================================================
+def CalcBimodality (pdf, distbin):
+    """
+    Input
+    - pdf: pdf
+    - distbin: bin centers
+    Output
+    - bimod: Bimodality
+    """
+    pdf = pdf.filled(np.nan)
+    
+    binrange=[0.1, 50] #precipitation bin range for gradient calculation
+    cofsmooth=[51,10] #window size and polynomial order for smoothing
+
+    ## 1stBin=2ndBin before smoothing
+    tmp = copy.deepcopy(pdf)
+    tmp[0] = tmp[1]
+    distsmt = savgol_filter(tmp, cofsmooth[0], cofsmooth[1])
+    
+    ## Bins lower than 10th percentile are excluded in searching peaks
+    ascend = np.sort(distsmt)
+    cumfrac = np.nancumsum(ascend)/np.nansum(ascend)
+    ithres = np.argwhere(cumfrac>=0.1)
+    if np.array(ithres).size == 0:
+        distsmt = distsmt
+    else:
+        distsmt=np.where(distsmt>=ascend[ithres[0][0]],distsmt,0)
+    
+    ## Gradient
+    distsmtgrad = np.gradient(distsmt)
+    
+    ## Calculate bimodality
+    inds = []
+    for i, grad in enumerate(distsmtgrad):
+        if distbin[i] > binrange[0] and distbin[i] < binrange[1]:
+            if grad >= 0 and distsmtgrad[i+1] < 0:
+                inds.append(i)
+    inds=np.array(inds)
+    
+    if len(inds) <= 1:
+        bimod = 0
+    else:                        
+        inds_op = []
+        for i, grad in enumerate(distsmtgrad):
+            if i > inds[0] and i < inds[-1]:
+                if grad <= 0 and distsmtgrad[i+1] > 0:
+                    inds_op.append(i)
+                    
+        if np.array(inds_op).size == 0:
+            bimod = 0
+        else:
+            peaks_op=[]
+            for ind in inds_op:
+                peaks_op.append(distsmt[ind])
+
+            indcenter=inds_op[np.argsort(peaks_op)[0]]
+            indsleft=inds[inds<indcenter]
+            indsright=inds[inds>indcenter]
+
+            peaksleft=[]
+            for ind in indsleft:
+                peaksleft.append(distsmt[ind])
+            maxleft=np.nanmax(peaksleft)
+            peaksright=[]
+            for ind in indsright:
+                peaksright.append(distsmt[ind])
+            maxright=np.nanmax(peaksright)
+
+            bimod = (min(maxleft,maxright)-distsmt[indcenter])/max(maxleft,maxright)
+            if maxleft > maxright:
+                bimod = -bimod
+    
+    return bimod
+
 
 # ==================================================================================
 def oneyear(thisyear, missingthresh):
@@ -1237,10 +1335,13 @@ def oneyear(thisyear, missingthresh):
     thisyear = thisyear.filled(np.nan)  # np.array(thisyear)
     dims = thisyear.shape
     nd = dims[0]
+    ndwonan = np.sum(~np.isnan(thisyear), axis=0)
     missingfrac = (np.sum(np.isnan(thisyear), axis=0)/nd)
-    ptot = np.sum(thisyear, axis=0)
+    # ptot = np.sum(thisyear, axis=0)
+    ptot = np.nansum(thisyear, axis=0)
     sortandflip = -np.sort(-thisyear, axis=0)
-    cum_sum = np.cumsum(sortandflip, axis=0)
+    # cum_sum = np.cumsum(sortandflip, axis=0)
+    cum_sum = np.nancumsum(sortandflip, axis=0)
     ptotnp = np.array(ptot)
     ptotnp[np.where(ptotnp == 0)] = np.nan
     pfrac = cum_sum / np.tile(ptotnp[np.newaxis, :, :], [nd, 1, 1])
@@ -1268,12 +1369,18 @@ def oneyear(thisyear, missingthresh):
                     prdays_gt_1mm[ij, ik] = np.where(
                         np.diff(np.concatenate([z, cum_sum[:, ij, ik]])) < 1)[0][0]
 
-    ndhy[np.where(missingfrac > missingthresh)] = np.nan
-    # prdyfrac = prdays/nd
-    prdyfrac = prdays_gt_1mm/nd
+    # prdyfrac = prdays/ndwonan
+    prdyfrac = prdays_gt_1mm/ndwonan
     # sdii = ptot/prdays
     sdii = ptot/prdays_gt_1mm # Zhang et al. (2011)
 
+    ndhy[np.where(missingfrac > missingthresh)] = np.nan
+    prdyfrac[np.where(missingfrac > missingthresh)] = np.nan
+    sdii[np.where(missingfrac > missingthresh)] = np.nan
+    
+    missingfrac2 = np.tile(missingfrac[np.newaxis, :, :], [nd, 1, 1])
+    pfrac[np.where(missingfrac2 > missingthresh)] = np.nan
+    
     return pfrac, ndhy, prdyfrac, sdii
 
 
@@ -1306,7 +1413,9 @@ def MedDomain(d, months):
             dmask = d_land
         else:
             dmask = d
-
+       
+        dmask = MV.masked_where(~np.isfinite(dmask), dmask)
+            
         if "50S50N" in dom:
             am = genutil.statistics.median(dmask(latitude=(-50, 50)), axis="xy")
         if "30N50N" in dom:
@@ -1315,7 +1424,7 @@ def MedDomain(d, months):
             am = genutil.statistics.median(dmask(latitude=(-30, 30)), axis="xy")
         if "50S30S" in dom:
             am = genutil.statistics.median(dmask(latitude=(-50, -30)), axis="xy")
-
+            
         ddom[dom] = {'CalendarMonths':{}}
         for im, mon in enumerate(months):
             if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:
@@ -1353,7 +1462,7 @@ def MedDomain3Clust(d, months):
                "Land_HR_50S30S", "Land_MR_50S30S", "Land_LR_50S30S"]
 
     indir = '../lib'
-    file = 'cluster3_pdf.amt_regrid.360x180_IMERG_ALL.nc'
+    file = 'cluster3_pdf.amt_regrid.360x180_IMERG_ALL_90S90N.nc'
     cluster = xr.open_dataset(os.path.join(indir, file))['cluster_nb']
 
     regs=['HR', 'MR', 'LR']
@@ -1420,6 +1529,8 @@ def MedDomain3Clust(d, months):
             exit()
 
         dmask = MV.masked_where(~mask3, d)
+               
+        dmask = MV.masked_where(~np.isfinite(dmask), dmask)
 
         if "50S50N" in dom:
             am = genutil.statistics.median(dmask(latitude=(-50, 50)), axis="xy")

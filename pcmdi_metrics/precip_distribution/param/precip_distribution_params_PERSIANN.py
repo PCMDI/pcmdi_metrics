@@ -5,7 +5,7 @@ mip = "obs"
 dat = "PERSIANN"
 var = "pr"
 frq = "day"
-ver = "v20220709"
+ver = "v20220827"
 
 # prd = [2001, 2019]  # analysis period
 prd = [1984, 2018]  # analysis period
@@ -17,24 +17,13 @@ fac = 86400  # factor to make unit of [mm/day]
 res = [2, 2]  # target horizontal resolution [degree] for interporation (lon, lat)
 # res = [4, 4]  # target horizontal resolution [degree] for interporation (lon, lat)
 
-
-indir = "/p/user_pub/PCMDIobs/obs4MIPs/NOAA/PERSIANN-CDRv1r1/day/pr/1x1/latest/"
-infile = "pr_day_PERSIANN-CDRv1r1_PCMDIFROGS_1x1_19830102-20190101.nc"
-
-xmldir = "./xml_obs/"
-if not (os.path.isdir(xmldir)):
-    os.makedirs(xmldir)
-os.system(
-    "cdscan -x " + xmldir + var + "." + frq + "." + dat + ".xml " + indir + infile
-)
-
-modpath = xmldir
-mod = var + "." + frq + "." + dat + ".xml"
-
+modpath = "/p/user_pub/PCMDIobs/obs4MIPs/NOAA/PERSIANN-CDRv1r1/day/pr/1x1/latest/"
+mod = "pr_day_PERSIANN-CDRv1r1_PCMDIFROGS_1x1_19830102-20190101.nc"
 
 # case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 case_id = ver
-pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"
+# pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"
+pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"+var+"/"
 results_dir = os.path.join(
     pmpdir, '%(output_type)', '%(mip)', '%(case_id)')
 
