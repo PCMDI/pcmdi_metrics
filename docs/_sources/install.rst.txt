@@ -4,14 +4,17 @@
 Install using Anaconda
 **********************
 
-We offer an installation for anaconda users under linux-64 or osx-64.
+We offer an installation for `Anaconda`_ users under linux-64 or osx-64. 
 Support for Windows is not available yet.
 
-https://anaconda.org/PCMDI/pcmdi_metrics/files
+https://anaconda.org/conda-forge/pcmdi_metrics
 
 All Platforms System Requirements
 =================================
-  * Install the `Anaconda for Python 3.7 <https://www.anaconda.com/products/individual#Downloads>`_ package (we recommend installing this for each user)
+  * Install the `Anaconda`_ package (we recommend installing this for each user)
+  * Alternatives include `Miniconda`_ or `Miniforge/Mambaforge`_
+  * If using Anaconda or Miniconda, we recommend also installing `mamba`_ for better performance
+
   * Make sure anaconda is in your PATH (assuming anaconda is installed in ${HOME}/anaconda
       * ``export PATH=${HOME}/anaconda/bin:${PATH}`` # for [ba]sh
       * ``setenv PATH ${HOME}/anaconda/bin:${PATH}`` # for [t]csh
@@ -26,21 +29,31 @@ If your institution has tight ssl certificate/security issues try:
 
 Installing the PCMDI Metrics Package (PMP)
 ==========================================
-Using the conda package manager, you can install the PCMDI Metrics package from the PCMDI conda-forge channel.
+You can install the PCMDI Metrics package from the PCMDI conda-forge channel. 
+For the best performance, use `mamba`_. 
+For faster installation without mamba, specify versions of python and pcmdi_metrics.
 
 Create a new virtual environment and install PMP
-  * ``conda create -n [YOUR_CONDA_ENVIRONMENT] -c conda-forge pcmdi_metrics``
+  * Using `mamba`_   
+      * ``mamba create -n [YOUR_CONDA_ENVIRONMENT] -c conda-forge pcmdi_metrics`` 
+  
+  * Using `conda`_
+      * ``conda create -n [YOUR_CONDA_ENVIRONMENT] -c conda-forge python=[VERSION] pcmdi_metrics=[VERSION]``  
+      * e.g. ``conda create -n pcmdi_metrics -c conda-forge python=3.10 pcmdi_metrics=3.0.1`` 
+  
+  * Using `conda`_ (alternative)
+      * ``conda create -n [YOUR_CONDA_ENVIRONMENT]``
+      * ``conda activate [YOUR_CONDA_ENVIRONMENT]``
+      * ``conda install -c conda-forge python=[VERSION] pcmdi_metrics=[VERSION]``
 
-or
-
-  * ``conda create -n [YOUR_CONDA_ENVIRONMENT]``
-  * ``conda activate [YOUR_CONDA_ENVIRONMENT]``
-  * ``conda install -c conda-forge pcmdi_metrics``
-
-alternatively,
-
-Install PMP in the current (or existing) virtual environment
-  * ``conda install -c conda-forge pcmdi_metrics``
-
+  * (Another alternative) Install PMP in the current (or existing) virtual environment
+      * Using `mamba`_: ``mamba install -c conda-forge pcmdi_metrics``
+      * or using `conda`_: ``conda install -c conda-forge pcmdi_metrics``
 
 To learn more about conda environments see: http://conda.pydata.org/docs/using/envs.html
+
+.. _mamba: https://mamba.readthedocs.io/en/latest/installation.html
+.. _Miniforge/Mambaforge: https://github.com/conda-forge/miniforge
+.. _Miniconda: https://conda.io/miniconda.html
+.. _Anaconda: https://www.anaconda.com/products/individual#Downloads
+.. _conda: https://docs.conda.io/en/latest/
