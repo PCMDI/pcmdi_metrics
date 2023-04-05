@@ -149,6 +149,11 @@ for var in vars:
     # set dictionary for .json record
     result_dict = tree()
 
+    result_dict["Variable"] = dict()
+    result_dict["Variable"]["id"] = varname
+    if level is not None:
+        result_dict["Variable"]["level"] = level*100  # hPa to Pa
+
     # ----------------
     # observation loop
     # ----------------
