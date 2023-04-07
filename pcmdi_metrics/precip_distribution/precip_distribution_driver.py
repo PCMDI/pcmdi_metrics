@@ -7,12 +7,12 @@ import os
 import MV2 as MV
 from genutil import StringConstructor
 
-from pcmdi_metrics.driver.pmp_parser import PMPParser
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.precip_distribution.lib import ( 
     AddParserArgument,
     Regrid,
-    precip_distribution_frq_amt,
     precip_distribution_cum,
+    precip_distribution_frq_amt,
 )
 
 import xarray as xr

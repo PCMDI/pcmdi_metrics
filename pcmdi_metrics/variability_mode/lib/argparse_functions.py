@@ -205,7 +205,16 @@ def VariabilityModeCheck(mode, P):
     if mode is None:
         P.error("VARIABILITY_MODE is NOT defined")
     else:
-        if mode.upper() not in ["NAM", "NAO", "SAM", "PNA", "PDO", "NPO", "NPGO", "AMO"]:
+        if mode.upper() not in [
+            "NAM",
+            "NAO",
+            "SAM",
+            "PNA",
+            "PDO",
+            "NPO",
+            "NPGO",
+            "AMO",
+        ]:
             P.error(
                 "".join(
                     [

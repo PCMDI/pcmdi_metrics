@@ -3,18 +3,17 @@ import math
 import os
 import sys
 
-import cdms2 as cdms
 import cdutil
-import genutil
-import MV2 as MV
 import numpy as np
 import pandas as pd
-from regrid2 import Horizontal
 from scipy import signal
 from scipy.stats import chi2
 
 import pcmdi_metrics
 
+import xarray as xr
+import xcdat
+from xcdat.regridder import grid
 
 # ==================================================================================
 def precip_variability_across_timescale(
@@ -26,8 +25,8 @@ def precip_variability_across_timescale(
 
     psdmfm = {"RESULTS": {}}
 
-    f = cdms.open(file)
-    cal = f[var].getTime().calendar
+    f = xcdat.open_mfdataset(file)
+    cal = f.time.encoding["calendar"]   
     if "360" in cal:
         ldy = 30
     else:
@@ -36,25 +35,16 @@ def precip_variability_across_timescale(
     print("syr, eyr:", syr, eyr)
     for iyr in range(syr, eyr + 1):
         print(iyr)
-        do = (
-            f(
-                var,
-                time=(
-                    str(iyr) + "-1-1 0:0:0",
-                    str(iyr) + "-12-" + str(ldy) + " 23:59:59",
-                ),
-            )
-            * float(fac)
-        )
-
+        do = f.sel(time=slice(str(iyr) + "-01-01 00:00:00",str(iyr) + "-12-" + str(ldy) + " 23:59:59"))
+        
         # Regridding
-        rgtmp = Regrid2deg(do)
+        rgtmp = Regrid2deg(do, var)*float(fac)
         if iyr == syr:
             drg = copy.deepcopy(rgtmp)
         else:
-            drg = MV.concatenate((drg, rgtmp))
-        print(iyr, drg.shape)
-
+            drg = xr.concat([drg, rgtmp], dim='time')
+        print(iyr, drg.shape)      
+        
     f.close()
 
     # Anomaly
@@ -64,7 +54,7 @@ def precip_variability_across_timescale(
         ntd = 8
     else:
         sys.exit("ERROR: dfrq " + dfrq + " is not defined!")
-    clim, anom = ClimAnom(drg, ntd, syr, eyr)
+    clim, anom = ClimAnom(drg, ntd, syr, eyr, cal)
 
     # Power spectum of total
     freqs, ps, rn, sig95 = Powerspectrum(drg, nperseg, noverlap)
@@ -72,28 +62,18 @@ def precip_variability_across_timescale(
     psdmfm_forced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "forced")
     # Write data (nc file)
     outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc"
-    with cdms.open(
-        os.path.join(outdir(output_type="diagnostic_results"), outfilename), "w"
-    ) as out:
-        out.write(freqs, id="freqs")
-        out.write(ps, id="power")
-        out.write(rn, id="rednoise")
-        out.write(sig95, id="sig95")
-
+    custom_dataset = xr.merge([freqs, ps, rn, sig95])
+    custom_dataset.to_netcdf(path=os.path.join(outdir(output_type="diagnostic_results"), outfilename))
+        
     # Power spectum of anomaly
     freqs, ps, rn, sig95 = Powerspectrum(anom, nperseg, noverlap)
     # Domain & Frequency average
     psdmfm_unforced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "unforced")
     # Write data (nc file)
     outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
-    with cdms.open(
-        os.path.join(outdir(output_type="diagnostic_results"), outfilename), "w"
-    ) as out:
-        out.write(freqs, id="freqs")
-        out.write(ps, id="power")
-        out.write(rn, id="rednoise")
-        out.write(sig95, id="sig95")
-
+    custom_dataset = xr.merge([freqs, ps, rn, sig95])
+    custom_dataset.to_netcdf(path=os.path.join(outdir(output_type="diagnostic_results"), outfilename))
+        
     # Write data (json file)
     psdmfm["RESULTS"][dat] = {}
     psdmfm["RESULTS"][dat]["forced"] = psdmfm_forced
@@ -117,74 +97,55 @@ def precip_variability_across_timescale(
 
 
 # ==================================================================================
-def Regrid2deg(d):
+def Regrid2deg(d, var):
     """
     Regrid to 2deg (180lon*90lat) horizontal resolution
     Input
-    - d: cdms variable
+    - d: xCDAT variable
+    - var: variable name
     Output
-    - drg: cdms variable with 2deg horizontal resolution
+    - drg: xCDAT variable with 2deg horizontal resolution
     """
-    # Regridding
-    tgrid = cdms.createUniformGrid(-89, 90, 2.0, 0, 180, 2.0, order="yx")
-    orig_grid = d.getGrid()
-    regridFunc = Horizontal(orig_grid, tgrid)
-    drg = MV.zeros((d.shape[0], tgrid.shape[0], tgrid.shape[1]), MV.float)
-    for it in range(d.shape[0]):
-        drg[it] = regridFunc(d[it])
-
-    # Dimension information
-    time = d.getTime()
-    lat = tgrid.getLatitude()
-    lon = tgrid.getLongitude()
-    drg.setAxisList((time, lat, lon))
-
-    # Missing value (In case, missing value is changed after regridding)
-    if d.missing_value > 0:
-        drg[drg >= d.missing_value] = d.missing_value
-    else:
-        drg[drg <= d.missing_value] = d.missing_value
-    mask = np.array(drg == d.missing_value)
-    drg.mask = mask
-
-    print("Complete regridding from", d.shape, "to", drg.shape)
+    tgrid = grid.create_uniform_grid(-89, 89, 2.0, 0.0, 358., 2.0)
+    drg = d.regridder.horizontal(var, tgrid, tool="xesmf", method="conservative_normed",periodic=True)[var]
+    
+    print("Complete regridding from", d[var].shape, "to", drg.shape)
     return drg
 
 
 # ==================================================================================
-def ClimAnom(d, ntd, syr, eyr):
+def ClimAnom(d, ntd, syr, eyr, cal):
     """
     Calculate climatoloty and anomaly with data higher frequency than daily
     Input
-    - d: cdms variabl
+    - d: xCDAT variable
     - ntd: number of time steps per day (daily: 1, 3-hourly: 8)
     - syr: analysis start year
     - eyr: analysis end year
+    - cal: calendar
     Output
     - clim: climatology (climatological diurnal and annual cycles)
     - anom: anomaly departure from the climatological diurnal and annual cycles
     """
+        
     # Year segment
-    cal = d.getTime().calendar
     nyr = eyr - syr + 1
     if "gregorian" in cal:
         ndy = 366
         ldy = 31
-        dseg = MV.zeros((nyr, ndy, ntd, d.shape[1], d.shape[2]), MV.float)
+        dseg = np.zeros((nyr, ndy, ntd, d.shape[1], d.shape[2]), dtype=float)
         for iyr, year in enumerate(range(syr, eyr + 1)):
-            yrtmp = d(
-                time=(
-                    str(year) + "-1-1 0:0:0",
-                    str(year) + "-12-" + str(ldy) + " 23:59:59",
-                )
-            )
-            yrtmpseg = MV.reshape(
-                yrtmp, (int(yrtmp.shape[0] / ntd), ntd, yrtmp.shape[1], yrtmp.shape[2])
-            )
+            yrtmp = d.sel(time=slice(str(year) + "-01-01 00:00:00",str(year) + "-12-" + str(ldy) + " 23:59:59"))
+                        
+            expanded = yrtmp.expand_dims("ndy")          
+            yrtmpseg = np.reshape(
+                expanded, (int(yrtmp.shape[0] / ntd), ntd, yrtmp.shape[1], yrtmp.shape[2])
+            )            
+            
             if yrtmpseg.shape[0] == 365:
                 dseg[iyr, 0:59] = yrtmpseg[0:59]
                 dseg[iyr, 60:366] = yrtmpseg[59:365]
-                dseg[iyr, 59] = d.missing_value
+                dseg[iyr, 59] = np.nan
             else:
                 dseg[iyr] = yrtmpseg
     else:
@@ -194,40 +155,26 @@ def ClimAnom(d, ntd, syr, eyr):
         else:  # 365-canlendar
             ndy = 365
             ldy = 31
-        dseg = MV.zeros((nyr, ndy, ntd, d.shape[1], d.shape[2]), MV.float)
+        dseg = np.zeros((nyr, ndy, ntd, d.shape[1], d.shape[2]), dtype=float)        
         for iyr, year in enumerate(range(syr, eyr + 1)):
-            yrtmp = d(
-                time=(
-                    str(year) + "-1-1 0:0:0",
-                    str(year) + "-12-" + str(ldy) + " 23:59:59",
-                )
-            )
-            yrtmpseg = MV.reshape(
-                yrtmp, (int(yrtmp.shape[0] / ntd), ntd, yrtmp.shape[1], yrtmp.shape[2])
-            )
+            yrtmp = d.sel(time=slice(str(year) + "-01-01 00:00:00",str(year) + "-12-" + str(ldy) + " 23:59:59"))            
+            
+            expanded = yrtmp.expand_dims("ndy")          
+            yrtmpseg = np.reshape(
+                expanded, (int(yrtmp.shape[0] / ntd), ntd, yrtmp.shape[1], yrtmp.shape[2])
+            )            
             dseg[iyr] = yrtmpseg
 
-    # Missing value (In case, missing value is changed)
-    if d.missing_value > 0:
-        dseg[dseg >= d.missing_value] = d.missing_value
-    else:
-        dseg[dseg <= d.missing_value] = d.missing_value
-    mask = np.array(dseg == d.missing_value)
-    dseg.mask = mask
 
     # Climatology
-    clim = cdutil.averager(dseg, axis=0, weights="unweighted")
+    clim = np.nanmean(dseg, axis=0)
 
     # Anomaly
-    anom = MV.array([])
+    anom = np.array([])
     if "gregorian" in cal:
         for iyr, year in enumerate(range(syr, eyr + 1)):
-            yrtmp = d(
-                time=(
-                    str(year) + "-1-1 0:0:0",
-                    str(year) + "-12-" + str(ldy) + " 23:59:59",
-                )
-            )
+            yrtmp = d.sel(time=slice(str(year) + "-01-01 00:00:00",str(year) + "-12-" + str(ldy) + " 23:59:59"))            
+                        
             if yrtmp.shape[0] == 365 * ntd:
                 anom = np.append(
                     anom,
@@ -239,24 +186,14 @@ def ClimAnom(d, ntd, syr, eyr):
         for iyr, year in enumerate(range(syr, eyr + 1)):
             anom = np.append(anom, (dseg[iyr] - clim))
 
-    # Missing value (In case, missing value is changed after np.append)
-    if d.missing_value > 0:
-        anom[anom >= d.missing_value] = d.missing_value
-    else:
-        anom[anom <= d.missing_value] = d.missing_value
-    mask = np.array(anom == d.missing_value)
-    anom.mask = mask
-
     # Reahape and Dimension information
-    clim = MV.reshape(clim, (ndy * ntd, d.shape[1], d.shape[2]))
-    anom = MV.reshape(anom, (d.shape[0], d.shape[1], d.shape[2]))
-    time = d.getTime()
-    lat = d.getLatitude()
-    lon = d.getLongitude()
-    clim.setAxis(1, lat)
-    clim.setAxis(2, lon)
-    anom.setAxisList((time, lat, lon))
-
+    clim = np.reshape(clim, (ndy * ntd, d.shape[1], d.shape[2]))
+    anom = np.reshape(anom, (d.shape[0], d.shape[1], d.shape[2]))
+    
+    climtime = pd.period_range(start="0001-01-01", periods=clim.shape[0], freq=str(24/ntd)+"H")
+    clim = xr.DataArray(clim, coords=[climtime, d.coords[d.dims[1]], d.coords[d.dims[2]]], dims=d.dims)
+    anom = xr.DataArray(anom, coords=d.coords, dims=d.dims)
+    
     print("Complete calculating climatology and anomaly for calendar of", cal)
     return clim, anom
 
@@ -266,7 +203,7 @@ def Powerspectrum(d, nperseg, noverlap):
     """
     Power spectrum (scipy.signal.welch)
     Input
-    - d: cdms variable
+    - d: xCDAT variable
     - nperseg: Length of each segment
     - noverlap: Length of overlap between segments
     Output
@@ -277,14 +214,7 @@ def Powerspectrum(d, nperseg, noverlap):
     """
     # Fill missing date using interpolation
     dnp = np.array(d)
-
-    # Missing value (In case, missing value is changed after np.array)
-    if d.missing_value > 0:
-        dnp[dnp >= d.missing_value] = d.missing_value
-    else:
-        dnp[dnp <= d.missing_value] = d.missing_value
-    dnp[dnp == d.missing_value] = np.nan
-    dfm = np.zeros((d.shape[0], d.shape[1], d.shape[2]), np.float64)
+    dfm = np.zeros((d.shape[0], d.shape[1], d.shape[2]), dtype=float)
     for iy in range(d.shape[1]):
         for ix in range(d.shape[2]):
             yp = pd.Series(dnp[:, iy, ix])
@@ -310,25 +240,23 @@ def Powerspectrum(d, nperseg, noverlap):
             sig95[:, iy, ix] = RedNoiseSignificanceLevel(nu, rn[:, iy, ix])
 
     # Decorate arrays with dimensions
-    freqs = MV.array(freqs)
-    psd = MV.array(psd)
-    rn = MV.array(rn)
-    sig95 = MV.array(sig95)
-    frq = cdms.createAxis(range(len(freqs)), id="frequency")
-    lat = d.getLatitude()
-    lon = d.getLongitude()
-    freqs.setAxis(0, frq)
-    psd.setAxisList((frq, lat, lon))
-    rn.setAxisList((frq, lat, lon))
-    sig95.setAxisList((frq, lat, lon))
-
+    # axisfrq = np.arange(len(freqs))
+    axisfrq = range(len(freqs))
+    coords=[axisfrq, d.coords[d.dims[1]], d.coords[d.dims[2]]]
+    dims=["frequency", d.dims[1], d.dims[2]]   
+    freqs = xr.DataArray(freqs, coords=[axisfrq], dims=["frequency"], name="freqs")
+    psd = xr.DataArray(psd, coords=coords, dims=dims, name="power")
+    rn = xr.DataArray(rn, coords=coords, dims=dims, name="rednoise")
+    sig95 = xr.DataArray(sig95, coords=coords, dims=dims, name="sig95")
+    
     print("Complete power spectra (segment: ", nperseg, " nps:", nps, ")")
     return freqs, psd, rn, sig95
 
 
 # ==================================================================================
 def lag1_autocorrelation(x):
-    result = float(genutil.statistics.autocorrelation(x, lag=1)[-1])
+    lag = 1
+    result = float(np.corrcoef(x[:-lag], x[lag:])[0,1])
     return result
 
 
@@ -372,7 +300,7 @@ def RedNoiseSignificanceLevel(nu, rn, p=0.050):
     95% Confidence CHI-SQUARED FOR NU DEGREES OF FREEDOM
     """
     factor = chi2.isf(p, nu) / nu
-    siglevel = MV.multiply(rn, factor)
+    siglevel = np.multiply(rn, factor)
     return siglevel
 
 
@@ -381,7 +309,7 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
     """
     Domain and Frequency average of spectral power
     Input
-    - d: spectral power with lon, lat, and frequency dimensions (cdms)
+    - d: spectral power with lon, lat, and frequency dimensions (xCDAT)
     - ntd: number of time steps per day (daily: 1, 3-hourly: 8)
     - frequency: frequency
     - dat: model name
@@ -427,30 +355,33 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
     else:
         sys.exit("ERROR: frc " + frc + " is not defined!")
 
-    mask = cdutil.generateLandSeaMask(d[0])
-    d, mask2 = genutil.grower(d, mask)
-    d_ocean = MV.masked_where(mask2 == 1.0, d)
-    d_land = MV.masked_where(mask2 == 0.0, d)
-
+    d_cdms = xr.DataArray.to_cdms2(d[0])
+    mask = cdutil.generateLandSeaMask(d_cdms)
+    mask = xr.DataArray.from_cdms2(mask)
+    
     psdmfm = {}
     for dom in domains:
         psdmfm[dom] = {}
 
         if "Ocean" in dom:
-            dmask = d_ocean
+            dmask = d.where(mask==0)
         elif "Land" in dom:
-            dmask = d_land
+            dmask = d.where(mask==1)
         else:
             dmask = d
 
+        dmask = dmask.to_dataset(name="ps")
+        dmask = dmask.bounds.add_bounds(axis="X", width=0.5)
+        dmask = dmask.bounds.add_bounds(axis="Y", width=0.5)
+            
         if "50S50N" in dom:
-            am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
+            am = dmask.sel(lat=slice(-50, 50)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
         if "30N50N" in dom:
-            am = cdutil.averager(dmask(latitude=(30, 50)), axis="xy")
+            am = dmask.sel(lat=slice(30, 50)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
         if "30S30N" in dom:
-            am = cdutil.averager(dmask(latitude=(-30, 30)), axis="xy")
+            am = dmask.sel(lat=slice(-30, 30)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
         if "50S30S" in dom:
-            am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy")
+            am = dmask.sel(lat=slice(-50, -30)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
         am = np.array(am)
 
         for frq in frqs:
@@ -470,22 +401,22 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
                 amfm = np.amax(am[idx1 : idx2 + 1])
             elif frq == "sub-daily":  # pr<1day
                 idx1 = prdday_to_frqidx(1, frequency, ntd)
-                amfm = cdutil.averager(am[idx1 + 1 :], weights="unweighted")
+                amfm = np.nanmean(am[idx1 + 1 :])
             elif frq == "synoptic":  # 1day=<pr<20day
                 idx2 = prdday_to_frqidx(1, frequency, ntd)
                 idx1 = prdday_to_frqidx(20, frequency, ntd)
-                amfm = cdutil.averager(am[idx1 + 1 : idx2 + 1], weights="unweighted")
+                amfm = np.nanmean(am[idx1 + 1 : idx2 + 1])
             elif frq == "sub-seasonal":  # 20day=<pr<90day
                 idx2 = prdday_to_frqidx(20, frequency, ntd)
                 idx1 = prdday_to_frqidx(90, frequency, ntd)
-                amfm = cdutil.averager(am[idx1 + 1 : idx2 + 1], weights="unweighted")
+                amfm = np.nanmean(am[idx1 + 1 : idx2 + 1])
             elif frq == "seasonal-annual":  # 90day=<pr<365day
                 idx2 = prdday_to_frqidx(90, frequency, ntd)
                 idx1 = prdday_to_frqidx(365, frequency, ntd)
-                amfm = cdutil.averager(am[idx1 + 1 : idx2 + 1], weights="unweighted")
+                amfm = np.nanmean(am[idx1 + 1 : idx2 + 1])
             elif frq == "interannual":  # 365day=<pr
                 idx2 = prdday_to_frqidx(365, frequency, ntd)
-                amfm = cdutil.averager(am[: idx2 + 1], weights="unweighted")
+                amfm = np.nanmean(am[: idx2 + 1])
             psdmfm[dom][frq] = amfm.tolist()
 
     print("Complete domain and frequency average of spectral power")

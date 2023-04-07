@@ -14,6 +14,7 @@ from scipy.signal import savgol_filter
 from shapely.geometry import MultiPolygon, Polygon
 
 import pcmdi_metrics
+from pcmdi_metrics import resources
 
 
 # ==================================================================================
@@ -549,7 +550,7 @@ def getDailyCalendarMonth(d, mon):
 # ==================================================================================
 def CalcBinStructure(pdata1):
     L = 2.5e6  # % w/m2. latent heat of vaporization of water
-    wm2tommd = 1.0 / L * 3600 * 24  # % conversion from w/m2 to mm/d
+    # wm2tommd = 1.0 / L * 3600 * 24  # % conversion from w/m2 to mm/d
     # pmax = pdata1.max() / wm2tommd
     maxp = 1500  # % choose an arbitrary upper bound for initial distribution, in w/m2
     # % arbitrary lower bound, in w/m2. Make sure to set this low enough that you catch most of the rain.
@@ -980,9 +981,9 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
         "Land_LR_50S30S",
     ]
 
-    indir = "../lib"
+    egg_pth = resources.resource_path()
     file = "cluster3_pdf.amt_regrid.360x180_IMERG_ALL_90S90N.nc"
-    cluster = xr.open_dataset(os.path.join(indir, file))["cluster_nb"]
+    cluster = xr.open_dataset(os.path.join(egg_pth, file))["cluster_nb"]
 
     regs = ["HR", "MR", "LR"]
     mpolygons = []
@@ -1909,9 +1910,9 @@ def MedDomain3Clust(d, months):
         "Land_LR_50S30S",
     ]
 
-    indir = "../lib"
+    egg_pth = resources.resource_path()
     file = "cluster3_pdf.amt_regrid.360x180_IMERG_ALL_90S90N.nc"
-    cluster = xr.open_dataset(os.path.join(indir, file))["cluster_nb"]
+    cluster = xr.open_dataset(os.path.join(egg_pth, file))["cluster_nb"]
 
     regs = ["HR", "MR", "LR"]
     mpolygons = []

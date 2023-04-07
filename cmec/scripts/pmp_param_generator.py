@@ -24,7 +24,6 @@ def check_for_opt(key, settings):
 
 
 if __name__ == "__main__":
-
     config_json = sys.argv[1]
     out_file_name = sys.argv[2]
     pmp_config = sys.argv[3]
