@@ -12,7 +12,7 @@ from pcmdi_metrics.precip_distribution.lib import (  # Regrid,; precip_distribut
     AddParserArgument,
 )
 
-with open('../lib/lib_precip_distribution.py') as source_file:
+with open("../lib/lib_precip_distribution.py") as source_file:
     exec(source_file.read())
 
 import xarray as xr
@@ -35,7 +35,7 @@ print(modpath)
 print(mod)
 print(prd)
 print(res)
-print('Ref:', ref)
+print("Ref:", ref)
 
 # Get flag for CMEC output
 cmec = param.cmec
@@ -43,15 +43,17 @@ cmec = param.cmec
 # Create output directory
 case_id = param.case_id
 outdir_template = param.process_templated_argument("results_dir")
-outdir = StringConstructor(str(outdir_template(
-    output_type='%(output_type)', mip=mip, case_id=case_id)))
+outdir = StringConstructor(
+    str(outdir_template(output_type="%(output_type)", mip=mip, case_id=case_id))
+)
 
 refdir_template = param.process_templated_argument("ref_dir")
-refdir = StringConstructor(str(refdir_template(
-    output_type='%(output_type)', case_id=case_id)))
-refdir = refdir(output_type='diagnostic_results')
+refdir = StringConstructor(
+    str(refdir_template(output_type="%(output_type)", case_id=case_id))
+)
+refdir = refdir(output_type="diagnostic_results")
 
-for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
+for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
     if not os.path.exists(outdir(output_type=output_type)):
         try:
             os.makedirs(outdir(output_type=output_type))
@@ -67,12 +69,12 @@ f = xcdat.open_mfdataset(file_list)
 # f = xr.open_mfdataset(file_list)
 
 if mip == "obs":
-    if file_list[0].split("/")[-1].split("_")[2] == 'reanalysis':
+    if file_list[0].split("/")[-1].split("_")[2] == "reanalysis":
         dat = file_list[0].split("/")[-1].split("_")[3]
     else:
         dat = file_list[0].split("/")[-1].split("_")[2].split("-")[0]
-        if dat == 'ERA':
-            dat = 'ERA5'
+        if dat == "ERA":
+            dat = "ERA5"
 else:
     model = file_list[0].split("/")[-1].split("_")[2]
     ens = file_list[0].split("/")[-1].split("_")[4]
@@ -89,7 +91,11 @@ else:
 syr = prd[0]
 eyr = prd[1]
 for iyr in range(syr, eyr + 1):
-    do = f.sel(time=slice(str(iyr) + "-01-01 00:00:00", str(iyr) + "-12-" + str(ldy) + " 23:59:59"))[var]
+    do = f.sel(
+        time=slice(
+            str(iyr) + "-01-01 00:00:00", str(iyr) + "-12-" + str(ldy) + " 23:59:59"
+        )
+    )[var]
     # Correct negative precip to 0 (ERA-interim from CREATE-IP and ERA-5 from obs4MIP have negative precip values between -1 and 0)
     do = xr.where((do < 0) & (do > -1), 0, do)
     do = xr.DataArray.to_cdms2(do) * float(fac)

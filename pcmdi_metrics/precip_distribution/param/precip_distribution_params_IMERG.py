@@ -23,11 +23,9 @@ mod = "pr_day_IMERG-V06-FU_PCMDIFROGS_1x1_20010101-20201231.nc"
 # case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 case_id = ver
 # pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"
-pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"+var+"/"
-results_dir = os.path.join(
-    pmpdir, '%(output_type)', '%(mip)', '%(case_id)')
+pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/" + var + "/"
+results_dir = os.path.join(pmpdir, "%(output_type)", "%(mip)", "%(case_id)")
 
 
-ref = "IMERG" # For Perkins socre, P10, and P90
-ref_dir = os.path.join(
-    pmpdir, '%(output_type)', "obs", '%(case_id)')
+ref = "IMERG"  # For Perkins socre, P10, and P90
+ref_dir = os.path.join(pmpdir, "%(output_type)", "obs", "%(case_id)")

@@ -18,11 +18,9 @@ res = [2, 2]  # target horizontal resolution [degree] for interporation (lon, la
 # case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 case_id = ver
 # pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"
-pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"+var+"/"
-results_dir = os.path.join(
-    pmpdir, '%(output_type)', '%(mip)', exp, '%(case_id)')
+pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/" + var + "/"
+results_dir = os.path.join(pmpdir, "%(output_type)", "%(mip)", exp, "%(case_id)")
 
 
-ref = "IMERG" # For Perkins socre, P10, and P90
-ref_dir = os.path.join(
-    pmpdir, '%(output_type)', "obs", '%(case_id)')
+ref = "IMERG"  # For Perkins socre, P10, and P90
+ref_dir = os.path.join(pmpdir, "%(output_type)", "obs", "%(case_id)")
