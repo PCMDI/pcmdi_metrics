@@ -4,7 +4,6 @@ import copy
 import glob
 import os
 
-import cdms2 as cdms
 import MV2 as MV
 from genutil import StringConstructor
 
@@ -72,7 +71,8 @@ if mip == "obs":
         dat = file_list[0].split("/")[-1].split("_")[3]
     else:
         dat = file_list[0].split("/")[-1].split("_")[2].split("-")[0]
-        if dat == 'ERA': dat = 'ERA5'
+        if dat == 'ERA':
+            dat = 'ERA5'
 else:
     model = file_list[0].split("/")[-1].split("_")[2]
     ens = file_list[0].split("/")[-1].split("_")[4]
@@ -92,7 +92,7 @@ for iyr in range(syr, eyr + 1):
     do = f.sel(time=slice(str(iyr) + "-01-01 00:00:00", str(iyr) + "-12-" + str(ldy) + " 23:59:59"))[var]
     # Correct negative precip to 0 (ERA-interim from CREATE-IP and ERA-5 from obs4MIP have negative precip values between -1 and 0)
     do = xr.where((do < 0) & (do > -1), 0, do)
-    do = xr.DataArray.to_cdms2(do)*float(fac)
+    do = xr.DataArray.to_cdms2(do) * float(fac)
 
     # Regridding
     rgtmp = Regrid(do, res)
