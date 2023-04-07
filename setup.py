@@ -112,7 +112,7 @@ data_files = (
             "share/cmip_model_list.json",
             "share/default_regions.py",
             "share/DefArgsCIA.json",
-            "pcmdi_metrics/precip_distribution/lib/cluster3_pdf.amt_regrid.360x180_IMERG_ALL.nc",
+            "pcmdi_metrics/precip_distribution/lib/cluster3_pdf.amt_regrid.360x180_IMERG_ALL_90S90N.nc",
         ),
     ),
 )
