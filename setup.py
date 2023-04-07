@@ -11,7 +11,7 @@ if "--enable-devel" in sys.argv:
 else:
     install_dev = False
 
-release_version = "3.0.2"
+release_version = "3.0.3"
 
 p = subprocess.Popen(
     ("git", "describe", "--tags"),
