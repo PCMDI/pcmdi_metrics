@@ -1,20 +1,22 @@
+import copy
+import glob
+import os
+import sys
+
 import cdms2 as cdms
-import MV2 as MV
 import cdutil
 import genutil
+import MV2 as MV
 import numpy as np
 import numpy.ma as ma
-import glob
-import copy
-import pcmdi_metrics
-import regionmask
 import rasterio.features
+import regionmask
 import xarray as xr
 from regrid2 import Horizontal
-from shapely.geometry import Polygon, MultiPolygon
 from scipy.signal import savgol_filter
-import sys
-import os
+from shapely.geometry import MultiPolygon, Polygon
+
+import pcmdi_metrics
 
 
 # ==================================================================================
@@ -54,7 +56,7 @@ def precip_distribution_frq_amt (dat, drg, syr, eyr, res, outdir, ref, refdir, c
         print(dat, mon, dmon.shape)
 
         pdata1 = dmon
-        
+
         # Calculate bin structure
         binl, binr, bincrates = CalcBinStructure(pdata1)
 
@@ -292,7 +294,7 @@ def precip_distribution_cum (dat, drg, cal, syr, eyr, res, outdir, cmec):
                 pfracyr[iyr, :, :, :] = pfrac[:ndymon[im], :, :]
                 print(year, 'pfrac.shape is ', pfrac.shape, ', but',
                       pfrac[:ndymon[im], :, :].shape, ' is used')
-            
+
         ndm = np.nanmedian(cfy, axis=0)  # ignore years with zero precip
         prdyfracm = np.nanmedian(prdyfracyr, axis=0)
         sdiim = np.nanmedian(sdiiyr, axis=0)
@@ -303,7 +305,7 @@ def precip_distribution_cum (dat, drg, cal, syr, eyr, res, outdir, cmec):
         prdyfracm[np.where(missingfrac > missingthresh)] = np.nan
         missingfrac = (np.sum(np.isnan(sdiiyr), axis=0)/nyr)
         sdiim[np.where(missingfrac > missingthresh)] = np.nan
-        
+
         pfracm = np.nanmedian(pfracyr, axis=0)
         missingfrac = (np.sum(np.isnan(pfracyr), axis=0)/nyr)
         pfracm[np.where(missingfrac > missingthresh)] = np.nan
@@ -556,7 +558,7 @@ def MakeDists(pdata, binl):
 
     thisppdfmap = n/ndmat
     thisppdfmap_tn = thisppdfmap*ndmat
-    
+
     # Iterate back over the bins and add up all the precip - this will be the rain amount distribution.
     # This step is probably the limiting factor and might be able to be made more efficient - I had a clever trick in matlab, but it doesn't work in python
     testpamtmap = np.empty(thisppdfmap.shape)
@@ -568,7 +570,7 @@ def MakeDists(pdata, binl):
     thisppdfmap[np.isinf(thisppdfmap)] = np.nan
     thisppdfmap_tn[np.isinf(thisppdfmap_tn)] = np.nan
     thispamtmap[np.isinf(thispamtmap)] = np.nan
-    
+
     axbin = cdms.createAxis(range(len(binl)), id='bin')
     lat = pdata.getLatitude()
     lon = pdata.getLongitude()
@@ -695,7 +697,7 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 dmask = d
 
             dmask = MV.masked_where(~np.isfinite(dmask), dmask)
-                
+
             if "50S50N" in dom:
                 am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
             if "30N50N" in dom:
@@ -883,9 +885,9 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 exit()
 
             dmask = MV.masked_where(~mask3, d)
-            
+
             dmask = MV.masked_where(~np.isfinite(dmask), dmask)
-                
+
             if "50S50N" in dom:
                 am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
             if "30N50N" in dom:
@@ -1261,7 +1263,7 @@ def CalcBimodality (pdf, distbin):
     - bimod: Bimodality
     """
     pdf = pdf.filled(np.nan)
-    
+
     binrange=[0.1, 50] #precipitation bin range for gradient calculation
     cofsmooth=[51,10] #window size and polynomial order for smoothing
 
@@ -1269,7 +1271,7 @@ def CalcBimodality (pdf, distbin):
     tmp = copy.deepcopy(pdf)
     tmp[0] = tmp[1]
     distsmt = savgol_filter(tmp, cofsmooth[0], cofsmooth[1])
-    
+
     ## Bins lower than 10th percentile are excluded in searching peaks
     ascend = np.sort(distsmt)
     cumfrac = np.nancumsum(ascend)/np.nansum(ascend)
@@ -1278,10 +1280,10 @@ def CalcBimodality (pdf, distbin):
         distsmt = distsmt
     else:
         distsmt=np.where(distsmt>=ascend[ithres[0][0]],distsmt,0)
-    
+
     ## Gradient
     distsmtgrad = np.gradient(distsmt)
-    
+
     ## Calculate bimodality
     inds = []
     for i, grad in enumerate(distsmtgrad):
@@ -1289,16 +1291,16 @@ def CalcBimodality (pdf, distbin):
             if grad >= 0 and distsmtgrad[i+1] < 0:
                 inds.append(i)
     inds=np.array(inds)
-    
+
     if len(inds) <= 1:
         bimod = 0
-    else:                        
+    else:
         inds_op = []
         for i, grad in enumerate(distsmtgrad):
             if i > inds[0] and i < inds[-1]:
                 if grad <= 0 and distsmtgrad[i+1] > 0:
                     inds_op.append(i)
-                    
+
         if np.array(inds_op).size == 0:
             bimod = 0
         else:
@@ -1322,7 +1324,7 @@ def CalcBimodality (pdf, distbin):
             bimod = (min(maxleft,maxright)-distsmt[indcenter])/max(maxleft,maxright)
             if maxleft > maxright:
                 bimod = -bimod
-    
+
     return bimod
 
 
@@ -1377,10 +1379,10 @@ def oneyear(thisyear, missingthresh):
     ndhy[np.where(missingfrac > missingthresh)] = np.nan
     prdyfrac[np.where(missingfrac > missingthresh)] = np.nan
     sdii[np.where(missingfrac > missingthresh)] = np.nan
-    
+
     missingfrac2 = np.tile(missingfrac[np.newaxis, :, :], [nd, 1, 1])
     pfrac[np.where(missingfrac2 > missingthresh)] = np.nan
-    
+
     return pfrac, ndhy, prdyfrac, sdii
 
 
@@ -1413,9 +1415,9 @@ def MedDomain(d, months):
             dmask = d_land
         else:
             dmask = d
-       
+
         dmask = MV.masked_where(~np.isfinite(dmask), dmask)
-            
+
         if "50S50N" in dom:
             am = genutil.statistics.median(dmask(latitude=(-50, 50)), axis="xy")
         if "30N50N" in dom:
@@ -1424,7 +1426,7 @@ def MedDomain(d, months):
             am = genutil.statistics.median(dmask(latitude=(-30, 30)), axis="xy")
         if "50S30S" in dom:
             am = genutil.statistics.median(dmask(latitude=(-50, -30)), axis="xy")
-            
+
         ddom[dom] = {'CalendarMonths':{}}
         for im, mon in enumerate(months):
             if mon in ['ANN', 'MAM', 'JJA', 'SON', 'DJF']:
@@ -1529,7 +1531,7 @@ def MedDomain3Clust(d, months):
             exit()
 
         dmask = MV.masked_where(~mask3, d)
-               
+
         dmask = MV.masked_where(~np.isfinite(dmask), dmask)
 
         if "50S50N" in dom:
@@ -1643,4 +1645,3 @@ def MedDomainAR6(d, months):
 
     print("Completed AR6 domain median")
     return ddom
-

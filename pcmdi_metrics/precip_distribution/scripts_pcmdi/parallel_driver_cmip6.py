@@ -1,7 +1,9 @@
-import os
 import glob
-from pcmdi_metrics.misc.scripts import parallel_submitter
+import os
+
 import xsearch as xs
+
+from pcmdi_metrics.misc.scripts import parallel_submitter
 
 mip='cmip6'
 num_cpus = 20
@@ -30,4 +32,3 @@ parallel_submitter(
     logfilename_list=log_list,
     num_workers=num_cpus,
 )
-

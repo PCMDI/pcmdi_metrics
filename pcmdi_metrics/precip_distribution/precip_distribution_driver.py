@@ -1,23 +1,23 @@
 #!/usr/bin/env python
 
-import os
-import glob
 import copy
+import glob
+import os
+
 import cdms2 as cdms
 import MV2 as MV
 from genutil import StringConstructor
+
 from pcmdi_metrics.driver.pmp_parser import PMPParser
-from pcmdi_metrics.precip_distribution.lib import (
+from pcmdi_metrics.precip_distribution.lib import (  # Regrid,; precip_distribution_frq_amt,; precip_distribution_cum,
     AddParserArgument,
-    # Regrid,
-    # precip_distribution_frq_amt,
-    # precip_distribution_cum,
 )
+
 with open('../lib/lib_precip_distribution.py') as source_file:
     exec(source_file.read())
 
-import xcdat
 import xarray as xr
+import xcdat
 
 # Read parameters
 P = PMPParser()
@@ -63,7 +63,7 @@ for output_type in ['graphics', 'diagnostic_results', 'metrics_results']:
 # Read data -> Regrid -> Calculate metrics
 # It is working for daily average precipitation, in units of mm/day, with dimensions of (time,lat,lon)
 file_list = sorted(glob.glob(os.path.join(modpath, mod)))
-print(file_list)   
+print(file_list)
 f = xcdat.open_mfdataset(file_list)
 # f = xr.open_mfdataset(file_list)
 
@@ -78,14 +78,14 @@ else:
     ens = file_list[0].split("/")[-1].split("_")[4]
     dat = model + "." + ens
 
-cal = f.time.encoding["calendar"] 
+cal = f.time.encoding["calendar"]
 print(dat, cal)
-    
+
 if "360" in cal:
     ldy = 30
 else:
     ldy = 31
-    
+
 syr = prd[0]
 eyr = prd[1]
 for iyr in range(syr, eyr + 1):
@@ -93,7 +93,7 @@ for iyr in range(syr, eyr + 1):
     # Correct negative precip to 0 (ERA-interim from CREATE-IP and ERA-5 from obs4MIP have negative precip values between -1 and 0)
     do = xr.where((do < 0) & (do > -1), 0, do)
     do = xr.DataArray.to_cdms2(do)*float(fac)
-    
+
     # Regridding
     rgtmp = Regrid(do, res)
     if iyr == syr:
@@ -107,4 +107,3 @@ precip_distribution_frq_amt(dat, drg, syr, eyr, res, outdir, ref, refdir, cmec)
 
 # Calculate metrics from precipitation cumulative distributions
 precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec)
-
