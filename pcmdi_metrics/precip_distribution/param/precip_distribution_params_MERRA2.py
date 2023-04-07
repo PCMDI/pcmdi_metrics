@@ -26,4 +26,4 @@ pmpdir = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2"
 results_dir = os.path.join(pmpdir, "%(output_type)", "precip", "intensity.frequency_distribution", "%(mip)", "%(case_id)")
 
 ref = "IMERG"  # For Perkins socre, P10, and P90
-ref_dir = os.path.join(pmpdir, "%(output_type)", "obs", "%(case_id)")
+ref_dir = os.path.join(pmpdir, "%(output_type)", "precip", "intensity.frequency_distribution", "obs", "%(case_id)")
