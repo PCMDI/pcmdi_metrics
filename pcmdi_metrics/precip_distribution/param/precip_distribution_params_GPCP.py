@@ -20,12 +20,9 @@ res = [2, 2]  # target horizontal resolution [degree] for interporation (lon, la
 modpath = "/p/user_pub/PCMDIobs/obs4MIPs/NASA-GSFC/GPCP-1DD-CDR-v1-3/day/pr/1x1/latest/"
 mod = "pr_day_GPCP-1DD-CDR-v1-3_PCMDIFROGS_1x1_19961001-20201231.nc"
 
-# case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-case_id = ver
-# pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/"
-pmpdir = "/work/ahn6/pr/intensity_frequency_distribution/" + var + "/"
-results_dir = os.path.join(pmpdir, "%(output_type)", "%(mip)", "%(case_id)")
-
+case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+pmpdir = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2"
+results_dir = os.path.join(pmpdir, "%(output_type)", "precip", "intensity.frequency_distribution", "%(mip)", "%(case_id)")
 
 ref = "IMERG"  # For Perkins socre, P10, and P90
 ref_dir = os.path.join(pmpdir, "%(output_type)", "obs", "%(case_id)")

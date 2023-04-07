@@ -550,7 +550,7 @@ def getDailyCalendarMonth(d, mon):
 def CalcBinStructure(pdata1):
     L = 2.5e6  # % w/m2. latent heat of vaporization of water
     wm2tommd = 1.0 / L * 3600 * 24  # % conversion from w/m2 to mm/d
-    pmax = pdata1.max() / wm2tommd
+    # pmax = pdata1.max() / wm2tommd
     maxp = 1500  # % choose an arbitrary upper bound for initial distribution, in w/m2
     # % arbitrary lower bound, in w/m2. Make sure to set this low enough that you catch most of the rain.
     minp = 1
@@ -570,13 +570,13 @@ def CalcBinStructure(pdata1):
     binl = np.exp(binllog) / L * 3600 * 24
     dbin = dbinlog[0]
     binrlogex = binrlog
-    binrend = np.exp(binrlogex[len(binrlogex) - 1])
+    # binrend = np.exp(binrlogex[len(binrlogex) - 1])
     # % extend the bins until the maximum precip anywhere in the dataset falls
     # % within the bins
     # switch maxp to pmax if you want it to depend on your data
     while maxp > binr[len(binr) - 1]:
         binrlogex = np.append(binrlogex, binrlogex[len(binrlogex) - 1] + dbin)
-        binrend = np.exp(binrlogex[len(binrlogex) - 1])
+        # binrend = np.exp(binrlogex[len(binrlogex) - 1])
         binrlog = binrlogex
         binllog = binrlog - dbinlog[0]
         # %% this is what we'll use to make distributions
@@ -1229,7 +1229,7 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
     """
     ar6_all = regionmask.defined_regions.ar6.all
     ar6_land = regionmask.defined_regions.ar6.land
-    ar6_ocean = regionmask.defined_regions.ar6.ocean
+    # ar6_ocean = regionmask.defined_regions.ar6.ocean
 
     land_names = ar6_land.names
     land_abbrevs = ar6_land.abbrevs
@@ -2032,7 +2032,7 @@ def MedDomainAR6(d, months):
     """
     ar6_all = regionmask.defined_regions.ar6.all
     ar6_land = regionmask.defined_regions.ar6.land
-    ar6_ocean = regionmask.defined_regions.ar6.ocean
+    # ar6_ocean = regionmask.defined_regions.ar6.ocean
 
     land_names = ar6_land.names
     land_abbrevs = ar6_land.abbrevs

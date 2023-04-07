@@ -8,12 +8,12 @@ import MV2 as MV
 from genutil import StringConstructor
 
 from pcmdi_metrics.driver.pmp_parser import PMPParser
-from pcmdi_metrics.precip_distribution.lib import (  # Regrid,; precip_distribution_frq_amt,; precip_distribution_cum,
+from pcmdi_metrics.precip_distribution.lib import ( 
     AddParserArgument,
+    Regrid,
+    precip_distribution_frq_amt,
+    precip_distribution_cum,
 )
-
-with open("../lib/lib_precip_distribution.py") as source_file:
-    exec(source_file.read())
 
 import xarray as xr
 import xcdat
