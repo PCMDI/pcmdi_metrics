@@ -72,9 +72,7 @@ if mip == "obs":
     if file_list[0].split("/")[-1].split("_")[2] == "reanalysis":
         dat = file_list[0].split("/")[-1].split("_")[3]
     else:
-        dat = file_list[0].split("/")[-1].split("_")[2].split("-")[0]
-        if dat == "ERA":
-            dat = "ERA5"
+        dat = file_list[0].split("/")[-1].split("_")[2]
 else:
     model = file_list[0].split("/")[-1].split("_")[2]
     ens = file_list[0].split("/")[-1].split("_")[4]
