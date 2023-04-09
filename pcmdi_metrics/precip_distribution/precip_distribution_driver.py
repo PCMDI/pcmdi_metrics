@@ -65,8 +65,8 @@ for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
 # It is working for daily average precipitation, in units of mm/day, with dimensions of (time,lat,lon)
 file_list = sorted(glob.glob(os.path.join(modpath, mod)))
 print(file_list)
-f = xcdat.open_mfdataset(file_list)
-# f = xr.open_mfdataset(file_list)
+# f = xcdat.open_mfdataset(file_list)
+f = xr.open_mfdataset(file_list)
 
 if mip == "obs":
     if file_list[0].split("/")[-1].split("_")[2] == "reanalysis":
