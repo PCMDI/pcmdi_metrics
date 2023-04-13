@@ -39,6 +39,7 @@ def parallel_coordinate_plot(
     fill_between_lines_colors=("green", "red"),
     vertical_center=None,
     vertical_center_line=False,
+    vertical_center_line_label=None,
 ):
     """
     Parameters
@@ -74,6 +75,7 @@ def parallel_coordinate_plot(
     - `fill_between_lines_colors`: tuple or list containing two strings for colors filled between the two lines. Default=('green', 'red')
     - `vertical_center`: string ("median", "mean")/float/integer, default=None, adjust range of vertical axis to set center of vertical axis as median, mean, or given number
     - `vertical_center_line`: bool, default=False, show median as line
+    - `vertical_center_line_label`: str, default=None, label in legend for the horizontal vertical center line. If not given, it will be automatically assigned. It can be turned off by "off"
 
     Return
     ------
@@ -227,8 +229,12 @@ def parallel_coordinate_plot(
                     clip_on=False,
                 )
     
-    if vertical_center_line:            
-        ax.plot(range(N), zs_middle, "-", c="k", label="median", lw=1)
+    if vertical_center_line:
+        if vertical_center_line_label is None:
+            vertical_center_line_label = str(vertical_center)
+        elif vertical_center_line_label == "off":
+             vertical_center_line_label = None     
+        ax.plot(range(N), zs_middle, "-", c="k", label=vertical_center_line_label, lw=1)
 
     # Fill between lines
     if fill_between_lines and (comparing_models is not None):
@@ -340,7 +346,10 @@ def _data_transform(
     zs[:, 0] = ys[:, 0]
     zs[:, 1:] = (ys[:, 1:] - ymins[1:]) / dys[1:] * dys[0] + ymins[0]
     
-    zs_middle = (ymids[:] - ymins[:]) / dys[:] * dys[0] + ymins[0]
+    if vertical_center is not None:
+        zs_middle = (ymids[:] - ymins[:]) / dys[:] * dys[0] + ymins[0]
+    else:
+        zs_middle = (ymaxs[:] - ymins[:]) / 2 / dys[:] * dys[0] + ymins[0]
 
     if model_names2 is not None:
         print("Models in the second group:", model_names2)
