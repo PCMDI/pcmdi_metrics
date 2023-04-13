@@ -40,6 +40,8 @@ def parallel_coordinate_plot(
     vertical_center=None,
     vertical_center_line=False,
     vertical_center_line_label=None,
+    ymax=None,
+    ymin=None,
 ):
     """
     Parameters
@@ -76,6 +78,8 @@ def parallel_coordinate_plot(
     - `vertical_center`: string ("median", "mean")/float/integer, default=None, adjust range of vertical axis to set center of vertical axis as median, mean, or given number
     - `vertical_center_line`: bool, default=False, show median as line
     - `vertical_center_line_label`: str, default=None, label in legend for the horizontal vertical center line. If not given, it will be automatically assigned. It can be turned off by "off"
+    - `ymax`: int or float, default=None, specify value of vertical axis top
+    - `ymin`: int or float, default=None, specify value of vertical axis bottom
 
     Return
     ------
@@ -110,6 +114,8 @@ def parallel_coordinate_plot(
         group1_name=group1_name,
         group2_name=group2_name,
         vertical_center=vertical_center,
+        ymax=ymax,
+        ymin=ymin,
     )
 
     # Prepare plot
@@ -317,14 +323,25 @@ def _data_transform(
     group1_name="group1",
     group2_name="group2",
     vertical_center=None,
+    ymax=None,
+    ymin=None,
 ):
     # Data to plot
     ys = data  # stacked y-axis values
     N = ys.shape[1]  # number of vertical axis (i.e., =len(metric_names))
-    ymins = np.nanmin(ys, axis=0)  # minimum (ignore nan value)
-    ymaxs = np.nanmax(ys, axis=0)  # maximum (ignore nan value)
+    if ymax is None:
+        ymaxs = np.nanmax(ys, axis=0)  # maximum (ignore nan value)
+    else:
+        ymaxs = np.repeat(ymax, N)
+        
+    if ymin is None:
+        ymins = np.nanmin(ys, axis=0)  # minimum (ignore nan value)
+    else:
+        ymins = np.repeat(ymin, N)
+    
     ymeds = np.nanmedian(ys, axis=0)  # median
     ymean = np.nanmean(ys, axis=0)  # mean
+    
     if vertical_center is not None:
         if vertical_center == "median":
             ymids = ymeds
@@ -336,9 +353,12 @@ def _data_transform(
             max_distance_from_middle = max(abs(ymaxs[i] - ymids[i]), abs(ymids[i] - ymins[i]))
             ymaxs[i] = ymids[i] + max_distance_from_middle
             ymins[i] = ymids[i] - max_distance_from_middle
+
     dys = ymaxs - ymins
-    ymins -= dys * 0.05  # add 5% padding below and above
-    ymaxs += dys * 0.05
+    if ymin is None:
+        ymins -= dys * 0.05  # add 5% padding below and above
+    if ymax is None:
+        ymaxs += dys * 0.05
     dys = ymaxs - ymins
 
     # Transform all data to be compatible with the main axis
