@@ -37,8 +37,11 @@ def parallel_coordinate_plot(
     comparing_models=None,
     fill_between_lines=False,
     fill_between_lines_colors=("green", "red"),
-    median_centered=False,
-    median_line=False,
+    vertical_center=None,
+    vertical_center_line=False,
+    vertical_center_line_label=None,
+    ymax=None,
+    ymin=None,
 ):
     """
     Parameters
@@ -72,8 +75,11 @@ def parallel_coordinate_plot(
     - `comparing_models`: tuple or list containing two strings for models to compare with colors filled between the two lines.
     - `fill_between_lines`: bool, default=False, fill color between lines for models in comparing_models
     - `fill_between_lines_colors`: tuple or list containing two strings for colors filled between the two lines. Default=('green', 'red')
-    - `median_centered`: bool, default=False, adjust range of vertical axis to set center of vertical axis as median
-    - `median_line`: bool, default=False, show median as line
+    - `vertical_center`: string ("median", "mean")/float/integer, default=None, adjust range of vertical axis to set center of vertical axis as median, mean, or given number
+    - `vertical_center_line`: bool, default=False, show median as line
+    - `vertical_center_line_label`: str, default=None, label in legend for the horizontal vertical center line. If not given, it will be automatically assigned. It can be turned off by "off"
+    - `ymax`: int or float, default=None, specify value of vertical axis top
+    - `ymin`: int or float, default=None, specify value of vertical axis bottom
 
     Return
     ------
@@ -82,9 +88,10 @@ def parallel_coordinate_plot(
 
     Author: Jiwoo Lee @ LLNL (2021. 7)
     Update history: 
+    2021-07 Plotting code created. Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
     2022-09 violin plots added
     2023-03 median centered option added
-    Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
+    2023-04 vertical center option diversified (median, mean, or given number)
     """
     params = {
         "legend.fontsize": "large",
@@ -99,14 +106,16 @@ def parallel_coordinate_plot(
     _quick_qc(data, model_names, metric_names, model_names2=model_names2)
 
     # Transform data for plotting
-    zs, zs_meds, N, ymins, ymaxs, df_stacked, df2_stacked = _data_transform(
+    zs, zs_middle, N, ymins, ymaxs, df_stacked, df2_stacked = _data_transform(
         data,
         metric_names,
         model_names,
         model_names2=model_names2,
         group1_name=group1_name,
         group2_name=group2_name,
-        median_centered=median_centered,
+        vertical_center=vertical_center,
+        ymax=ymax,
+        ymin=ymin,
     )
 
     # Prepare plot
@@ -226,8 +235,12 @@ def parallel_coordinate_plot(
                     clip_on=False,
                 )
     
-    if median_line:            
-        ax.plot(range(N), zs_meds, "-", c="k", label="median", lw=1)
+    if vertical_center_line:
+        if vertical_center_line_label is None:
+            vertical_center_line_label = str(vertical_center)
+        elif vertical_center_line_label == "off":
+             vertical_center_line_label = None     
+        ax.plot(range(N), zs_middle, "-", c="k", label=vertical_center_line_label, lw=1)
 
     # Fill between lines
     if fill_between_lines and (comparing_models is not None):
@@ -309,22 +322,43 @@ def _data_transform(
     model_names2=None,
     group1_name="group1",
     group2_name="group2",
-    median_centered=False,
+    vertical_center=None,
+    ymax=None,
+    ymin=None,
 ):
     # Data to plot
     ys = data  # stacked y-axis values
     N = ys.shape[1]  # number of vertical axis (i.e., =len(metric_names))
-    ymins = np.nanmin(ys, axis=0)  # minimum (ignore nan value)
-    ymaxs = np.nanmax(ys, axis=0)  # maximum (ignore nan value)
+    if ymax is None:
+        ymaxs = np.nanmax(ys, axis=0)  # maximum (ignore nan value)
+    else:
+        ymaxs = np.repeat(ymax, N)
+        
+    if ymin is None:
+        ymins = np.nanmin(ys, axis=0)  # minimum (ignore nan value)
+    else:
+        ymins = np.repeat(ymin, N)
+    
     ymeds = np.nanmedian(ys, axis=0)  # median
-    if median_centered:
+    ymean = np.nanmean(ys, axis=0)  # mean
+    
+    if vertical_center is not None:
+        if vertical_center == "median":
+            ymids = ymeds
+        elif vertical_center == "mean":
+            ymids = ymean
+        else:
+            ymids = np.repeat(vertical_center, N)
         for i in range(0, N):
-            max_distance_from_median = max(abs(ymaxs[i] - ymeds[i]), abs(ymeds[i] - ymins[i]))
-            ymaxs[i] = ymeds[i] + max_distance_from_median
-            ymins[i] = ymeds[i] - max_distance_from_median
+            max_distance_from_middle = max(abs(ymaxs[i] - ymids[i]), abs(ymids[i] - ymins[i]))
+            ymaxs[i] = ymids[i] + max_distance_from_middle
+            ymins[i] = ymids[i] - max_distance_from_middle
+
     dys = ymaxs - ymins
-    ymins -= dys * 0.05  # add 5% padding below and above
-    ymaxs += dys * 0.05
+    if ymin is None:
+        ymins -= dys * 0.05  # add 5% padding below and above
+    if ymax is None:
+        ymaxs += dys * 0.05
     dys = ymaxs - ymins
 
     # Transform all data to be compatible with the main axis
@@ -332,7 +366,10 @@ def _data_transform(
     zs[:, 0] = ys[:, 0]
     zs[:, 1:] = (ys[:, 1:] - ymins[1:]) / dys[1:] * dys[0] + ymins[0]
     
-    zs_meds = (ymeds[:] - ymins[:]) / dys[:] * dys[0] + ymins[0]
+    if vertical_center is not None:
+        zs_middle = (ymids[:] - ymins[:]) / dys[:] * dys[0] + ymins[0]
+    else:
+        zs_middle = (ymaxs[:] - ymins[:]) / 2 / dys[:] * dys[0] + ymins[0]
 
     if model_names2 is not None:
         print("Models in the second group:", model_names2)
@@ -355,7 +392,7 @@ def _data_transform(
         group2_name=group2_name,
     )
 
-    return zs, zs_meds, N, ymins, ymaxs, df_stacked, df2_stacked
+    return zs, zs_middle, N, ymins, ymaxs, df_stacked, df2_stacked
 
 
 def _to_pd_dataframe(

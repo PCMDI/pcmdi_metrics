@@ -12,20 +12,20 @@ cdms.setNetcdfShuffleFlag(0)
 cdms.setNetcdfDeflateFlag(0)
 cdms.setNetcdfDeflateLevelFlag(0)
 
-exp = 'historical'
-# exp = 'amip'
+#exp = 'historical'
+exp = 'amip'
 
-# MIP = 'cmip6'   # 'CMIP6'
-MIP = 'cmip5'   # 'CMIP5'
+MIP = 'cmip6'   # 'CMIP6'
+# MIP = 'cmip5'   # 'CMIP5'
 
 if MIP == 'cmip6':
-    ver = 'v20230202'
+    ver = 'v20230324'
 if MIP == 'cmip5':
-    ver = 'v20230208'
+    ver = 'v20230324'
 
 # NEED TO RUN SEPERATELY FOR LW AND SW (i.e., rsut and rlut)
-radvar = 'rsut'
-# radvar = 'rlut'
+# radvar = 'rsut'
+radvar = 'rlut'
 
 pit = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/' + MIP + '/' + exp + '/' + ver + '/'
 pi = pit + radvar + 'cs/'

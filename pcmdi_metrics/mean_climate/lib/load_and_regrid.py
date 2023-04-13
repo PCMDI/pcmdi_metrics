@@ -64,6 +64,16 @@ def load_and_regrid(data_path, varname, varname_in_file=None, level=None, t_grid
     if varname != varname_in_file:
         ds_regridded[varname] = ds_regridded[varname_in_file]
 
+    # preserve units
+    try:
+        units = ds[varname].units
+    except Exception as e:
+        print(e)
+        units = "" 
+    print('units:', units)
+
+    ds_regridded[varname] = ds_regridded[varname].assign_attrs({'units': units})
+        
     if debug:
         print('ds_regridded:', ds_regridded)
     return ds_regridded
