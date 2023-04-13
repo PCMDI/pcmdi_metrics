@@ -154,6 +154,8 @@ for var in vars:
     if level is not None:
         result_dict["Variable"]["level"] = level*100  # hPa to Pa
 
+    result_dict['References'] = dict()
+
     # ----------------
     # observation loop
     # ----------------
@@ -172,11 +174,15 @@ for var in vars:
         # load data and regrid
         ds_ref = load_and_regrid(ref_data_full_path, varname, level, t_grid, decode_times=False, regrid_tool=regrid_tool, debug=debug)
         ds_ref_dict = OrderedDict()
+        # for record in output json
+        result_dict['References'][ref] = obs_dict[varname][ref_dataset_name]
 
         # ----------
         # model loop
         # ----------
         for model in test_data_set:
+
+            result_dict["RESULTS"][model][ref]["source"] = ref_dataset_name 
 
             if find_all_realizations:
                 test_data_full_path = os.path.join(
@@ -204,6 +210,8 @@ for var in vars:
                         # load data and regrid
                         ds_test = load_and_regrid(test_data_full_path, varname, level, t_grid, decode_times=True, regrid_tool=regrid_tool, debug=debug)
                         print('load and regrid done')
+                        result_dict["RESULTS"][model]["units"] = ds_test[varname].units
+                        result_dict["RESULTS"][model][ref][run]["InputClimatologyFileName"] = test_data_full_path.split('/')[-1] 
 
                         # -----------
                         # region loop
@@ -256,7 +264,6 @@ for var in vars:
                             # compute metrics
                             print('compute metrics start')
                             result_dict["RESULTS"][model][ref][run][region] = compute_metrics(varname, ds_test_dict[region], ds_ref_dict[region], debug=debug)
-                            result_dict["RESULTS"][model][ref]["source"] = ref_dataset_name 
 
                         # write individual JSON
                         # --- single simulation, obs (need to accumulate later) / single variable

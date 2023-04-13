@@ -56,6 +56,16 @@ def load_and_regrid(data_path, varname, level=None, t_grid=None, decode_times=Tr
         regrid_tool = 'xesmf'
         regrid_method = 'bilinear'
         ds_regridded = ds.regridder.horizontal(varname, t_grid, tool=regrid_tool, method=regrid_method)
+
+    # preserve units
+    try:
+        units = ds[varname].units
+    except Exception as e:
+        print(e)
+        units = "" 
+    print('units:', units)
+
+    ds_regridded[varname] = ds_regridded[varname].assign_attrs({'units': units})
         
     if debug:
         print('ds_regridded:', ds_regridded)
