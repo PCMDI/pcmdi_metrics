@@ -3,12 +3,13 @@ import cftime
 import xcdat as xc
 import numpy as np
 
-def load_and_regrid(data_path, varname, level=None, t_grid=None, decode_times=True, regrid_tool='regrid2', debug=False):
+def load_and_regrid(data_path, varname, varname_in_file=None, level=None, t_grid=None, decode_times=True, regrid_tool='regrid2', debug=False):
     """Load data and regrid to target grid
 
     Args:
         data_path (str): full data path for nc or xml file
         varname (str): variable name
+        varname_in_file (str): variable name if data array named differently 
         level (float): level to extract (unit in hPa)
         t_grid (xarray.core.dataset.Dataset): target grid to regrid
         decode_times (bool): Default is True. decode_times=False will be removed once obs4MIP written using xcdat
@@ -17,9 +18,12 @@ def load_and_regrid(data_path, varname, level=None, t_grid=None, decode_times=Tr
     """
     if debug:
         print('load_and_regrid start')
-    
+
+    if varname_in_file is None:
+        varname_in_file = varname
+
     # load data
-    ds = xcdat_open(data_path, data_var=varname, decode_times=decode_times)  # NOTE: decode_times=False will be removed once obs4MIP written using xcdat
+    ds = xcdat_open(data_path, data_var=varname_in_file, decode_times=decode_times)  # NOTE: decode_times=False will be removed once obs4MIP written using xcdat
 
     # calendar quality check
     if "calendar" in list(ds.time.attrs.keys()):
@@ -51,12 +55,15 @@ def load_and_regrid(data_path, varname, level=None, t_grid=None, decode_times=Tr
     
     # regrid
     if regrid_tool == 'regrid2':
-        ds_regridded = ds.regridder.horizontal(varname, t_grid, tool=regrid_tool)
+        ds_regridded = ds.regridder.horizontal(varname_in_file, t_grid, tool=regrid_tool)
     elif regrid_tool in ['esmf', 'xesmf']:
         regrid_tool = 'xesmf'
         regrid_method = 'bilinear'
-        ds_regridded = ds.regridder.horizontal(varname, t_grid, tool=regrid_tool, method=regrid_method)
-        
+        ds_regridded = ds.regridder.horizontal(varname_in_file, t_grid, tool=regrid_tool, method=regrid_method)
+
+    if varname != varname_in_file:
+        ds_regridded[varname] = ds_regridded[varname_in_file]
+
     if debug:
         print('ds_regridded:', ds_regridded)
     return ds_regridded
