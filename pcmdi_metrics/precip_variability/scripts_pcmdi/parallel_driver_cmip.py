@@ -2,7 +2,7 @@ import os
 import glob
 import xsearch as xs
 
-from pcmdi_metrics.driver.pmp_parser import PMPParser
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.misc.scripts import parallel_submitter
 from pcmdi_metrics.precip_variability.lib import AddParserArgument
 
