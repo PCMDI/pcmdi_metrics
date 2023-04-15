@@ -10,7 +10,7 @@ from pcmdi_metrics.io import xcdat_open
 def calculate_climatology(
     var, infile,
     outfile=None, outpath=None, outfilename=None,
-    start=None, end=None, ver=None):
+    start=None, end=None, ver=None, periodinname=None, climlist=None):
 
     if ver is None:
         ver=datetime.datetime.now().strftime("v%Y%m%d")
@@ -84,8 +84,14 @@ def calculate_climatology(
     d_clim_dict['SON'] = d_clim.isel(time=3)
     d_clim_dict['AC'] = d_ac
 
-    for s in ["AC", "DJF", "MAM", "JJA", "SON"]:
-        addf = (
+    if climlist is None: 
+        clims = ["AC", "DJF", "MAM", "JJA", "SON"]
+    else:
+        clims = climlist 
+
+    for s in clims:
+        if periodinname is None: 
+         addf = (
             "."
             + start_yr_str
             + start_mo_str
@@ -96,8 +102,15 @@ def calculate_climatology(
             + s
             + "."
             + ver
-            + ".nc"
-        )
+            + ".nc")
+        if periodinname is not None:
+         addf = (
+            "."
+            + s
+            + "."
+            + ver
+            + ".nc")
+
         if outfilename is not None:
             out = os.path.join(outdir, outfilename)
         out_season = out.replace(".nc", addf)

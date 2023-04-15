@@ -1,6 +1,6 @@
 import genutil
 
-from pcmdi_metrics.driver.pmp_parser import PMPParser
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 
 monthname_d = {
     1: "Jan",

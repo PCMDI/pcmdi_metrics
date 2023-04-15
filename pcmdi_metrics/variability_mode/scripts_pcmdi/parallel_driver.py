@@ -9,6 +9,7 @@ from argparse import RawTextHelpFormatter
 from genutil import StringConstructor
 
 import pcmdi_metrics
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.misc.scripts import parallel_submitter
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
@@ -19,7 +20,7 @@ from pcmdi_metrics.variability_mode.lib import (
 # =================================================
 # Collect user defined options
 # -------------------------------------------------
-P = pcmdi_metrics.driver.pmp_parser.PMPParser(
+P = PMPParser(
     description="Runs PCMDI Modes of Variability Computations",
     formatter_class=RawTextHelpFormatter,
 )
