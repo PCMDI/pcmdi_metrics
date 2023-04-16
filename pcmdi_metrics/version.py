@@ -1,3 +1,3 @@
 __version__ = 'v3.0.2'
-__git_tag_describe__ = 'v3.0.2-4-g110dcf50'
-__git_sha1__ = '110dcf50d933e099ee063c8b0a64644635d0af12'
+__git_tag_describe__ = 'v3.0.2-11-g06b151f'
+__git_sha1__ = '06b151f46b182259277ddc6b9e25ea9ff08b1f50'
