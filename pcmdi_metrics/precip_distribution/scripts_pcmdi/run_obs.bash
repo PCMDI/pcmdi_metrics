@@ -7,7 +7,7 @@ data='IMERG'
 # data='CMORPH ERA5 GPCP PERSIANN TRMM CFSR ERA-Interim JRA-55 MERRA MERRA2'
 
 
-mkdir ./log
+mkdir -p ./log
 for idat in $data
 do
   echo $idat
