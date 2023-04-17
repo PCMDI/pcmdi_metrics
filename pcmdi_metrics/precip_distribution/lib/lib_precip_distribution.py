@@ -500,7 +500,7 @@ def Regrid(d, resdeg):
     tgrid = cdms.createUniformGrid(sy, ny, resdeg[1], 0, nx, resdeg[0], order="yx")
     orig_grid = d.getGrid()
     regridFunc = Horizontal(orig_grid, tgrid)
-    drg = MV.zeros((d.shape[0], tgrid.shape[0], tgrid.shape[1]), MV.float)
+    drg = MV.zeros((d.shape[0], tgrid.shape[0], tgrid.shape[1]))
     for it in range(d.shape[0]):
         drg[it] = regridFunc(d[it])
 
