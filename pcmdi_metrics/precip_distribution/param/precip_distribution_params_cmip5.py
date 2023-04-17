@@ -6,7 +6,7 @@ mip = "cmip5"
 exp = "amip"
 var = "pr"
 frq = "day"
-ver = "v20230407"
+ver = "v20230415"
 
 prd = [1985, 2004]  # analysis period
 fac = 86400  # factor to make unit of [mm/day]
