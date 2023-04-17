@@ -11,5 +11,5 @@ mkdir -p ./log
 for idat in $data
 do
   echo $idat
-  nohup python -u ../precip_distribution_driver.py -p ../param/precip_distribution_params_$idat.py  > ./log/log_${idat}_$res &
+  nohup python -u ../precip_distribution_driver.py -p ../param/precip_distribution_params_$idat.py  &> ./log/log_${idat}_$res & disown
 done
