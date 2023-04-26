@@ -1,4 +1,3 @@
-from pcmdi_metrics.io import xcdat_open
 import cftime
 import xcdat as xc
 import numpy as np
@@ -23,7 +22,7 @@ def load_and_regrid(data_path, varname, varname_in_file=None, level=None, t_grid
         varname_in_file = varname
 
     # load data
-    ds = xcdat_open(data_path, data_var=varname_in_file, decode_times=decode_times)  # NOTE: decode_times=False will be removed once obs4MIP written using xcdat
+    ds = xc.open_mfdataset(data_path, data_var=varname_in_file, decode_times=decode_times)  # NOTE: decode_times=False will be removed once obs4MIP written using xcdat
 
     # calendar quality check
     if "calendar" in list(ds.time.attrs.keys()):

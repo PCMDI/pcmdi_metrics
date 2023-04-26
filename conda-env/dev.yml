@@ -19,7 +19,7 @@ dependencies:
   - eofs=1.4.0
   - seaborn=0.11.1
   - enso_metrics=1.1.1
-  - xcdat=0.4.0
+  - xcdat=0.5.0
   - xmltodict=0.13.0
   - setuptools=65.5.0
   - netcdf4=1.6.0

@@ -18,7 +18,8 @@ import xcdat
 
 import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
-from pcmdi_metrics.io import xcdat_open
+
+import xcdat as xc
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
@@ -371,9 +372,9 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
             var_in_file = var
 
         try:
-            ds = xcdat_open(self(), data_var=var_in_file, decode_times=True)
+            ds = xc.open_mfdataset(self(), data_var=var_in_file, decode_times=True)
         except Exception:
-            ds = xcdat_open(self(), data_var=var_in_file, decode_times=False)  # Temporary part to read in cdms written obs4MIP AC files
+            ds = xc.open_mfdataset(self(), data_var=var_in_file, decode_times=False)  # Temporary part to read in cdms written obs4MIP AC files
 
         if 'level' in list(kwargs.keys()):
             level = kwargs['level']
