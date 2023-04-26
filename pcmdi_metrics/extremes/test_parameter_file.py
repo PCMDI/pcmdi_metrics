@@ -1,0 +1,14 @@
+case_id = "test_case_1"
+test_data_set = ["MRI-ESM2-0","MIROC6"]
+realization = "r1i1p1f1"
+#vars = ["pr"]
+vars=["tasmax","tasmin"]
+#reference_data_set = parameter.reference_data_set
+filename_template = "%(model)/historical/%(realization)/day/%(variable)/gn/*/%(variable)_day_%(model)_historical_%(realization)_gn_2000????-????????.nc"
+sftlf_filename_template = "/p/css03/esgf_publish/CMIP6/CMIP/*/%(model)/historical/%(realization)/fx/sftlf/gn/*/sftlf_fx_%(model)_historical_%(realization)_gn.nc"
+generate_sftlf = False
+test_data_path = "/p/user_pub/cmip/CMIP6/CMIP/*/"
+#reference_data_path = parameter.reference_data_path
+metrics_output_path = "./test/"
+debug = False
+cmec = True
