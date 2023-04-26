@@ -31,19 +31,19 @@ jobs:
         with:
           node-version: '16'
       - name: Checkout Code Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           node-version: '16'
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           node-version: '16'
-          python-version: 3.9
+          python-version: '3.10'
       # Run all pre-commit hooks on all the files.
       # Getting only staged files can be tricky in case a new PR is opened
       # since the action is run on a branch in detached head state
       - name: Install and Run Pre-commit
-        uses: pre-commit/action@v2.0.3
+        uses: pre-commit/action@v3.0.0
         with:
           node-version: '16'
 
@@ -59,30 +59,43 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+
+      # Used for refreshing the cache every 24 hours to avoid inconsistencies of package
+      # versions between the CI pipeline and local installations.
+      - name: Get Date
+        id: get-date
+        run: echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
+        shell: bash
+
       - name: Cache Conda
-        uses: actions/cache@v2
-        env:
-          # Increase this value to reset cache if conda/dev.yml has not changed in the workflow
-          CACHE_NUMBER: 0
+        uses: actions/cache@v3
         with:
           node-version: '16'
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-publish
+          path: ${{ env.CONDA }}/envs
+          key:
+            conda-${{ runner.os }}--${{ runner.arch }}--${{
+            steps.get-date.outputs.today }}-${{
+            hashFiles('conda-env/ci.yml') }}-${{ env.CACHE_NUMBER}}
+        env:
+          # Increase this value to reset cache if conda/ci.yml has not changed in the workflow
+          CACHE_NUMBER: 0
 
       - name: Set up Conda Environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-environment: "pcmdi_metrics_dev"
+          activate-environment: "pcmdi_metrics_ci"
           miniforge-variant: Mambaforge
           miniforge-version: latest
           use-mamba: true
           mamba-version: "*"
-          environment-file: conda-env/dev.yml
           channel-priority: strict
           auto-update-conda: true
-          # IMPORTANT: This needs to be set for caching to work properly!
-          use-only-tar-bz2: true
+
+      - name: Update environment
+        run:
+          mamba env update -n pcmdi_metrics_ci -f conda-env/ci.yml
+        if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Install pcmdi_metrics
         # Source: https://github.com/conda/conda-build/issues/4251#issuecomment-1053460542
