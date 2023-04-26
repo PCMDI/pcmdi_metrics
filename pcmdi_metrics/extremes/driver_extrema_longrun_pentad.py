@@ -73,11 +73,6 @@ print("PRINT P.view_args() = ", P.view_args())
 
 var = "pr"
 
-"""
-var_file = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20200822/cmip6/historical/atmos/day/pr/cmip6.historical.GFDL-ESM4.r1i1p1f1.day.pr.xml'
-var_file = '/export/gleckler1/processing/metrics_package/my_test/mfw_extremes/cmip6.historical.GFDL-CM4.r1i1p1f1.mon.pr_smalldomain.nc'
-"""
-
 var_file = modpath
 
 
@@ -94,7 +89,7 @@ lat = "latitude"
 pathout = args.results_dir
 
 # pathout = args.results_dir
-modpaths = args.modpaths
+#modpaths = args.modpaths
 # outpathdata = args.results_dir
 
 pcmdi_operations = False  # True
@@ -162,8 +157,8 @@ for mod in [mod_name]:
     latitude = dtmp.getLatitude()[:]
     longitude = dtmp.getLongitude()[:]
 
-    latitude = latitude.astype(MV.float64)
-    longitude = longitude.astype(MV.float64)
+    #latitude = latitude.astype(MV)
+    #longitude = longitude.astype(MV)
     nlat = latitude.shape[0]
     nlon = longitude.shape[0]
 
@@ -180,20 +175,20 @@ for mod in [mod_name]:
     y2 = int(time2.torel("years since 1800").value) + 1800
     y0 = y1
 
-    daily_max = MV.zeros((y2 - y1 + 1, nlat, nlon), MV.float)
+    daily_max = MV.zeros((y2 - y1 + 1, nlat, nlon))
 
-    time = MV.zeros((y2 - y0 + 1), MV.float)
+    time = MV.zeros((y2 - y0 + 1))
 
     # Calculate annual extrema
     print("starting annual y1 y2 and time.shape ", y1, " ", y2, " ", time.shape)
     y1 = y0
-    m1 = 1  # January
-    d1 = 1
+    m1 = 12  # January
+    d1 = 28 # I changed these dates from 1/1 to 12/28 AO 
     m2 = 12  # december
     d2 = 31
     y = 0
     while y1 < y2 + 1:
-        beg = cdtime.comptime(y1, m1, d1).torel(u).value
+        beg = cdtime.comptime(y1-1, m1, d1).torel(u).value # AO changed this
         end = cdtime.comptime(y1, m2, d2).torel(u).value
         if hasattr(tt, "calendar"):
             if tt.calendar == "360_day":
@@ -214,7 +209,7 @@ for mod in [mod_name]:
         # print "b e tim[b] and tim[e] ", b," ",e," ", tim[b]," ", tim[e]
         s1 = f.getslab(var, tim[b], tim[e])
         bb = atime.time()
-        print("time to read year and slab shape ", int(y1), bb - aa, " ", s1.shape)
+        #print("time to read year and slab shape ", int(y1), bb - aa, " ", s1.shape)
 
         # w =sys.stdin.readline()
 
@@ -282,11 +277,13 @@ for mod in [mod_name]:
             if t1 <= beg and t2 > beg:
                 b = i
             if t1 < end and t2 >= end:
-                e = i + 1
+                e = i # I removed the + 1 as a test here AO
+        #print(cdtime.reltime(tim[b+1], u).value,cdtime.reltime(tim[e+1], u).value)
         s1 = f.getslab(var, tim[b + 1], tim[e + 1])
         if var == "pr" or var == "precip" or var == "PRECT":
             s1.missing_value = 0.0
         ndays = s1.shape[0]
+        #print(ndays)
         s = 0.0 * s1
         ii = 4
         while ii < ndays:
@@ -339,7 +336,7 @@ for mod in [mod_name]:
             if t1 <= beg and t2 > beg:
                 b = i
             if t1 < end and t2 >= end:
-                e = i + 1
+                e = i # Remove +1 as a test AO
         # Compute the extrema of the daily average values for year=Y
         s1 = f.getslab(var, tim[b + 1], tim[e + 1])
         ndays = s1.shape[0]
@@ -397,9 +394,9 @@ for mod in [mod_name]:
             if t1 <= beg and t2 > beg:
                 b = i
             if t1 < end and t2 >= end:
-                e = i + 1
+                e = i # Remove +1 as a test AO
         # Compute the extrema of the daily average values for year=Y
-        s1 = f.getslab(var, tim[b + 1], tim[e + 1])
+        s1 = f.getslab(var, tim[b+1], tim[e + 1])
         ndays = s1.shape[0]
         s = 0.0 * s1
         ii = 4
@@ -431,7 +428,7 @@ for mod in [mod_name]:
     daily_max.id = var + "_SON_daily_max"
     output.write(daily_max)
     print("done with SON")
-
+    
     # Calculate JJA extrema
     print("starting JJA")
     y1 = y0
@@ -452,7 +449,7 @@ for mod in [mod_name]:
             if t1 <= beg and t2 > beg:
                 b = i
             if t1 < end and t2 >= end:
-                e = i + 1
+                e = i # Remove +1 as a test AO
         # Compute the extrema of the daily average values for year=Y
         s1 = f.getslab(var, tim[b + 1], tim[e + 1])
         ndays = s1.shape[0]
