@@ -64,7 +64,7 @@ jobs:
       - name: Set up Conda Environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-environment: "pcmdi_metrics_ci"
+          activate-environment: "pcmdi_metrics_dev"
           miniforge-variant: Mambaforge
           miniforge-version: latest
           use-mamba: true
@@ -87,14 +87,14 @@ jobs:
           key:
             conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
-            hashFiles('conda-env/ci.yml') }}-${{ env.CACHE_NUMBER}}
+            hashFiles('conda-env/dev.yml') }}-${{ env.CACHE_NUMBER}}
         env:
-          # Increase this value to reset cache if conda/ci.yml has not changed in the workflow
+          # Increase this value to reset cache if conda/dev.yml has not changed in the workflow
           CACHE_NUMBER: 0
 
       - name: Update environment
         run:
-          mamba env update -n pcmdi_metrics_ci -f conda-env/ci.yml
+          mamba env update -n pcmdi_metrics_dev -f conda-env/dev.yml
         if: steps.cache.outputs.cache-hit != 'true'
 
       - name: Install pcmdi_metrics
