@@ -61,6 +61,17 @@ jobs:
           node-version: '16'
       - uses: actions/checkout@v3
 
+      - name: Set up Conda Environment
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: "pcmdi_metrics_ci"
+          miniforge-variant: Mambaforge
+          miniforge-version: latest
+          use-mamba: true
+          mamba-version: "*"
+          channel-priority: strict
+          auto-update-conda: true
+
       # Used for refreshing the cache every 24 hours to avoid inconsistencies of package
       # versions between the CI pipeline and local installations.
       - name: Get Date
@@ -80,17 +91,6 @@ jobs:
         env:
           # Increase this value to reset cache if conda/ci.yml has not changed in the workflow
           CACHE_NUMBER: 0
-
-      - name: Set up Conda Environment
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          activate-environment: "pcmdi_metrics_ci"
-          miniforge-variant: Mambaforge
-          miniforge-version: latest
-          use-mamba: true
-          mamba-version: "*"
-          channel-priority: strict
-          auto-update-conda: true
 
       - name: Update environment
         run:
