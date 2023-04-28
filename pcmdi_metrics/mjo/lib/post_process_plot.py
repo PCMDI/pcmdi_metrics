@@ -22,8 +22,7 @@ def main():
     imgdir = "/work/lee1043/imsi/result_test/mjo_metrics/plot_test"
     # imgdir = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/graphics/mjo/'+mip+'/historical/'+version
 
-    if not os.path.exists(imgdir):
-        os.makedirs(imgdir)
+    os.makedirs(imgdir, exist_ok=True)
 
     ncfile_list = glob.glob(os.path.join(datadir, "*.nc"))
 
