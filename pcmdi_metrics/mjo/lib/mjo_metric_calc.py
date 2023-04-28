@@ -159,15 +159,13 @@ def mjo_metric_ewr_calculation(
 
     # NetCDF output
     if nc_out:
-        if not os.path.exists(outdir(output_type="diagnostic_results")):
-            os.makedirs(outdir(output_type="diagnostic_results"))
+        os.makedirs(outdir(output_type="diagnostic_results"), exist_ok=True)
         fout = os.path.join(outdir(output_type="diagnostic_results"), output_filename)
         write_netcdf_output(OEE, fout)
 
     # Plot
     if plot:
-        if not os.path.exists(outdir(output_type="graphics")):
-            os.makedirs(outdir(output_type="graphics"))
+        os.makedirs(outdir(output_type="graphics"), exist_ok=True)
         fout = os.path.join(outdir(output_type="graphics"), output_filename)
         title = (
             mip.upper()
