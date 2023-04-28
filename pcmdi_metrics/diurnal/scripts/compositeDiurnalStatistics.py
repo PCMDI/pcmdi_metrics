@@ -173,8 +173,7 @@ def main():
                     str(args.lastyear),
                 )
                 LSToutfile = "%s_%s_LocalSolarTimes.nc" % (varbname, dataname)
-                if not os.path.exists(args.results_dir):
-                    os.makedirs(args.results_dir)
+                os.makedirs(args.results_dir, exist_ok=True)
                 f = cdms2.open(os.path.join(args.results_dir, avgoutfile), "w")
                 g = cdms2.open(os.path.join(args.results_dir, stdoutfile), "w")
                 h = cdms2.open(os.path.join(args.results_dir, LSToutfile), "w")
