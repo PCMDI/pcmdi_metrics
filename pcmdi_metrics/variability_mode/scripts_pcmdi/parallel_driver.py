@@ -99,8 +99,7 @@ print("debug:", debug)
 # Create output directories
 # -------------------------------------------------
 for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
-    if not os.path.exists(outdir(output_type=output_type)):
-        os.makedirs(outdir(output_type=output_type))
+    os.makedirs(outdir(output_type=output_type), exist_ok=True)
     print(outdir(output_type=output_type))
 
 # =================================================

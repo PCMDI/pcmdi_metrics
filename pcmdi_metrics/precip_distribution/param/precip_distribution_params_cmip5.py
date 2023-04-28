@@ -6,8 +6,7 @@ mip = "cmip5"
 exp = "amip"
 var = "pr"
 frq = "day"
-ver = "v20220702"
-# ver = "v20220709"
+ver = "v20230415"
 
 prd = [1985, 2004]  # analysis period
 fac = 86400  # factor to make unit of [mm/day]
@@ -16,23 +15,10 @@ fac = 86400  # factor to make unit of [mm/day]
 res = [2, 2]  # target horizontal resolution [degree] for interporation (lon, lat)
 # res = [4, 4]  # target horizontal resolution [degree] for interporation (lon, lat)
 
-modpath = os.path.join(
-    "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/",
-    ver,
-    mip,
-    exp,
-    "atmos",
-    frq,
-    var,
-)
-
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
+# case_id = ver
 pmpdir = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2"
-results_dir = os.path.join(
-    pmpdir, "%(output_type)", "precip_distribution", "%(mip)", exp, "%(case_id)"
-)
+results_dir = os.path.join(pmpdir, "%(output_type)", "precip", "%(mip)", exp, "%(case_id)", "intensity.frequency_distribution")
 
-ref = "IMERG"  # For Perkins socre, P10, and P90
-ref_dir = os.path.join(
-    pmpdir, "%(output_type)", "precip_distribution", "obs", "%(case_id)"
-)
+ref = "IMERG-V06-FU"  # For Perkins socre, P10, and P90
+ref_dir = os.path.join(pmpdir, "%(output_type)", "precip", "obs", "%(case_id)", "intensity.frequency_distribution")

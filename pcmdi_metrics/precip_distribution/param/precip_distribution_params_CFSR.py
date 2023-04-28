@@ -2,13 +2,13 @@ import datetime
 import os
 
 mip = "obs"
-dat = "CMORPH"
+dat = "CFSR"
 var = "pr"
 frq = "day"
 ver = "v20230407"
 
 # prd = [2001, 2019]  # analysis period
-prd = [1998, 2012]  # analysis period
+prd = [1979, 2018]  # analysis period
 fac = 86400  # factor to make unit of [mm/day]
 # res = [0.25, 0.25]  # target horizontal resolution [degree] for interporation (lon, lat)
 # res = [0.5, 0.5]  # target horizontal resolution [degree] for interporation (lon, lat)
@@ -16,8 +16,8 @@ fac = 86400  # factor to make unit of [mm/day]
 res = [2, 2]  # target horizontal resolution [degree] for interporation (lon, lat)
 # res = [4, 4]  # target horizontal resolution [degree] for interporation (lon, lat)
 
-modpath = "/p/user_pub/PCMDIobs/obs4MIPs/NOAA/CMORPH-1-0-CRT/day/pr/1x1/latest/"
-mod = "pr_day_CMORPH-1-0-CRT_PCMDIFROGS_1x1_19980101-20121231.nc"
+modpath = "/work/ahn6/obs/CFSR/pr/"
+mod = "*.nc"
 
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 # case_id = ver

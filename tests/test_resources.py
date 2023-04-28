@@ -9,7 +9,7 @@ def test_conda_env(tmpdir):
 
     pmp_share_path = os.path.join(conda_prefix, "share", "pmp")
 
-    os.makedirs(pmp_share_path)
+    os.makedirs(pmp_share_path, exist_ok=True)
 
     with mock.patch.dict(os.environ, {"CONDA_PREFIX": conda_prefix}):
         path = resources.resource_path()
@@ -27,7 +27,7 @@ def test_conda_env_no_exist(resource_filename, getcwd, tmpdir):
 
     getcwd_path = os.path.join(tmpdir, "share", "pmp")
 
-    os.makedirs(getcwd_path)
+    os.makedirs(getcwd_path, exist_ok=True)
 
     getcwd.return_value = tmpdir
 
