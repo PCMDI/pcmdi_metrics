@@ -4,7 +4,7 @@ import os
 import dask
 from genutil import StringConstructor
 
-from pcmdi_metrics.io import xcdat_open
+import xcdat as xc
 
 
 def calculate_climatology(
@@ -21,7 +21,7 @@ def calculate_climatology(
     print("infilename:", infilename)
 
     # open file
-    d = xcdat_open(infile, data_var=var)   # wrapper of xcdat open functions to enable using xml
+    d = xc.open_mfdataset(infile, data_var=var)
     atts = d.attrs
 
     print("type(d):", type(d))

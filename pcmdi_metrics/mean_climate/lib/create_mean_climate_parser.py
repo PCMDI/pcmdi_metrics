@@ -25,6 +25,14 @@ def create_mean_climate_parser():
     )
 
     parser.add_argument(
+        "--varname_in_test_data",
+        type=ast.literal_eval,
+        dest="varname_in_test_data",
+        help="Variable name in input model file",
+        required=False,
+    )
+
+    parser.add_argument(
         "--regions",
         type=ast.literal_eval,
         dest="regions",

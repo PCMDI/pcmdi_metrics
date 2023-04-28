@@ -40,8 +40,7 @@ class TestGraphics(unittest.TestCase):
         #    self.x.open()
         self.orig_cwd = os.getcwd()
         self.pngsdir = "tests_png"
-        if not os.path.exists(self.pngsdir):
-            os.makedirs(self.pngsdir)
+        os.makedirs(self.pngsdir, exist_ok=True)
         self.basedir = os.path.join(os.path.dirname(__file__), "graphics")
 
 
