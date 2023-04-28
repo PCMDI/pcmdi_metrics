@@ -1,15 +1,13 @@
 import glob
 import json
 
-ver = 'v20230208'
+ver = 'v20230324'
 
 pin = '/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/%(MIP)/%(EXP)/' + ver + '/ts/'
 
-# MIPS = ['cmip6', 'cmip5']
+MIPS = ['cmip6', 'cmip5']
 # exps = ['historical', 'amip']
-
-MIPS = ['cmip5']
-exps = ['historical']
+exps = ['amip']
 
 mod_dic = {}
 
