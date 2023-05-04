@@ -61,7 +61,7 @@ elif isinstance(realization, str):
 elif isinstance(realization,list):
     realizations = realization
 
-metrics_dict = compute_metrics.init_metrics_dict()
+metrics_dict = compute_metrics.init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict)
 definitions = {
         "Rx5day": "Maximum consecutive 5-day precipitation",
         "Rx1day": "Maximum daily precipitation",
@@ -90,6 +90,8 @@ for model in model_list:
         print('=================================')
         print('model, runs:', model, realizations)
     
+    metrics_dict["RESULTS"][model] = {}
+
     for run in realizations:
         sftlf_filename_list = sftlf_filename_template.replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', run)
         try:
@@ -97,8 +99,10 @@ for model in model_list:
         except IndexError:
             print("No sftlf file found:",sftlf_filename_list)
         sftlf = xr.open_dataset(sftlf_filename) # xcdat giving error with no time bounds...but no time dimensions
+        
+        metrics_dict["RESULTS"][model][run] = {}
+        
         for varname in variable_list:
-            print(test_data_path,filename_template)
             test_data_full_path = os.path.join(
                 test_data_path,
                 filename_template
@@ -106,10 +110,12 @@ for model in model_list:
             try:
                 test_data_full_path = glob.glob(test_data_full_path)[0]
             except:
+                print("")
                 print("-----------------------")
                 print("Not found: model, run, variable:", model, run, varname)
                 continue
             if os.path.exists(test_data_full_path):
+                print("")
                 print('-----------------------')
                 print('model, run, variable:', model, run, varname)
                 print('test_data (model in this case) full_path:', test_data_full_path)
@@ -124,24 +130,12 @@ for model in model_list:
 
             stats_dict = {}
 
-            # TODO convert 3 hourly to daily option
             if varname == "tasmax":
                 TXx,TXn = compute_metrics.temperature_metrics(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
-                #tmp_dict = {"TXx": TXx, "TXn": TXn}
-                #result_dict = compute_metrics.temperature_metrics_json(tmp_dict,sftlf)
-                #metrics_dict["RESULTS"][model] = {
-                #    realization: result_dict
-                #}
                 stats_dict["TXx"] = TXx
                 stats_dict["TXn"] = TXn
-                #stats_dict["TXx"] = {}
-                #stats_dict["TXn"] = {}
-                #for season in ["ANN","DJF","MAM","JJA","SON"]:
-                #    stats_dict["TX0x"]["mean_xy"] = {}
-                #    stats_dict["TXn"]["mean_xy"] = {}
-                #    stats_dict["TXx"]["mean_xy"][season] = compute_statistics.mean_xy(TXx, var=season)
-                #    stats_dict["TXn"]["mean_xy"][season] = compute_statistics.mean_xy(TXn, var=season)
 
+                print("Writing results to netCDF.")
                 filepath = os.path.join(metrics_output_path,"TXx_{0}.nc".format("_".join([model,run])))
                 TXx.to_netcdf(filepath)
                 filepath = os.path.join(metrics_output_path,"TXn_{0}.nc".format("_".join([model,run])))
@@ -151,19 +145,8 @@ for model in model_list:
                 TNx,TNn = compute_metrics.temperature_metrics(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
                 stats_dict["TNx"] = TNx
                 stats_dict["TNn"] = TNn
-                #tmp_dict = {"TNx": TNx, "TNn": TNn}
-                #result_dict = compute_metrics.temperature_metrics_json(tmp_dict,sftlf)
-                #metrics_dict["RESULTS"][model] = {
-                #    realization: result_dict
-                #}
-                #stats_dict["TNx"] = {}
-                #stats_dict["TNn"] = {}
-                #for season in ["ANN","DJF","MAM","JJA","SON"]:
-                #    stats_dict["TNx"]["mean_xy"] = {}
-                #    stats_dict["TNn"]["mean_xy"] = {}
-                #    stats_dict["TNx"]["mean_xy"][season] = compute_statistics.mean_xy(TNx, var=season)
-                #    stats_dict["TNn"]["mean_xy"][season] = compute_statistics.mean_xy(TNn, var=season)
 
+                print("Writing results to netCDF.")
                 filepath = os.path.join(metrics_output_path,"TNx_{0}.nc".format("_".join([model,run])))
                 TNx.to_netcdf(filepath)
                 filepath = os.path.join(metrics_output_path,"TNn_{0}.nc".format("_".join([model,run])))
@@ -177,28 +160,15 @@ for model in model_list:
                 stats_dict["Rx1day"] = Rx1day
                 stats_dict["Rx5day"] = Rx5day
 
-                #stats_dict["Rx1day"] = {}
-                #stats_dict["Rx5day"] = {}
-                #for season in ["ANN","DJF","MAM","JJA","SON"]:
-                #    stats_dict["Rx1day"]["mean_xy"] = {}
-                #    stats_dict["Rx5day"]["mean_xy"] = {}
-                #    stats_dict["Rx1day"]["mean_xy"][season] = compute_metrics.mean_xy(Rx1day,varname=season)
-                #    stats_dict["Rx5day"]["mean_xy"][season] = compute_metrics.mean_xy(Rx5day,varname=season)
-
-
-                #tmp_dict = {"Rx1day": Rx1day, "Rx5day": Rx5day}
-                # Update metrics
-                #result_dict = compute_metrics.precipitation_metrics_json(tmp_dict,sftlf)
-                #metrics_dict["RESULTS"][model] = {
-                #    realization: result_dict
-                #}
-                Rx1day.to_netcdf(os.path.join(metrics_output_path,"Rx1day_{0}.nc".format("_".join([model,run]))))
-                Rx5day.to_netcdf(os.path.join(metrics_output_path,"Rx5day_{0}.nc".format("_".join([model,run]))))
+                print("Writing results to netCDF.")
+                filepath = os.path.join(metrics_output_path,"Rx1day_{0}.nc".format("_".join([model,run])))
+                Rx1day.to_netcdf(filepath)
+                filepath = os.path.join(metrics_output_path,"Rx5day_{0}.nc".format("_".join([model,run])))
+                Rx5day.to_netcdf(filepath)
             
+            # Get stats and update metrics dictionary
             result_dict = compute_metrics.metrics_json(stats_dict,sftlf)
-            metrics_dict["RESULTS"][model] = {
-                run: result_dict
-            }
+            metrics_dict["RESULTS"][model][run].update(result_dict)
             if run not in metrics_dict["DIMENSIONS"]["realization"]:
                 metrics_dict["DIMENSIONS"]["realization"].append(run)
 
@@ -223,4 +193,7 @@ for model in model_list:
 for m in stats_dict:
     metrics_dict["DIMENSIONS"]["metric"][m] = definitions[m]
 
-print(json.dumps(metrics_dict, indent=2))
+print("Writing metrics JSON.")
+metrics_path = os.path.join(metrics_output_path,"extremes_metrics.json")
+with open(metrics_path,"w") as mp:
+    json.dump(metrics_dict, mp, indent=2)
