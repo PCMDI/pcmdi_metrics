@@ -202,10 +202,10 @@ def init_metrics_dict():
     return metrics
 
 
-def temperature_metrics(ds,varname):
+def temperature_metrics(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
     TS = TimeSeriesData(ds,varname)
 
-    S = SeasonalAverager(TS,dec_mode="DJF", drop_incomplete_djf=True, annual_strict=False)
+    S = SeasonalAverager(TS,dec_mode=dec_mode,drop_incomplete_djf=drop_incomplete_djf,annual_strict=annual_strict)
 
     Tmax = xr.Dataset()
     Tmin = xr.Dataset()
@@ -221,11 +221,11 @@ def temperature_metrics(ds,varname):
 
     return Tmax, Tmin
 
-def precipitation_metrics(ds):
+def precipitation_metrics(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
 
     PR = TimeSeriesData(ds,"pr")
 
-    S = SeasonalAverager(PR,dec_mode="DJF",drop_incomplete_djf=True,annual_strict=True)
+    S = SeasonalAverager(PR,dec_mode=dec_mode,drop_incomplete_djf=drop_incomplete_djf,annual_strict=annual_strict)
 
     # Rx1day
     P1day = xr.Dataset()
@@ -263,6 +263,7 @@ def metrics_json(data_dict,sftlf):
             }
         }
         ds_m = data_dict[m]
+        print(ds_m)
         for season in ["ANN","DJF","MAM","JJA","SON"]:
             tmp = ds_m.where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100).spatial.average(season)[season]
             tmp_list = [{int(yr.data): float("% .2f" %tmp.sel({"time":yr}).data)} for yr in tmp.time]
@@ -295,3 +296,10 @@ def precipitation_metrics_json(data_dict,sftlf):
             met_dict["land"][season] = tmp_dict
     return met_dict
 """
+
+def mean_xy(d,varname):
+    # Return the area weighted mean as a year: value dictionary
+    weights = d.spatial.get_weights(axis=["X","Y"],data_var=varname)
+    stat = d[varname].weighted(weights).mean(("lon","lat"))
+    res = (dict(zip(d.time.data, stat.data)))
+    return res

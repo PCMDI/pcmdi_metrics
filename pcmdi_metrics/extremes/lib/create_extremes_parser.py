@@ -141,7 +141,7 @@ def create_extremes_parser():
 
     parser.add_argument(
         "--chunk_size",
-        dest=chunk_size,
+        dest="chunk_size",
         default=None,
         help="Chunk size for latitude/longitude",
         required=False
@@ -149,23 +149,30 @@ def create_extremes_parser():
 
     parser.add_argument(
         "--annual_strict",
-        dest=strict_annual,
+        dest="annual_strict",
         action="store_true",
         help="Flag to only include current year in rolling data calculations"
     )
 
     parser.add_argument(
         "--exclude_leap_day",
-        dest=exclude_leap,
+        dest="exclude_leap",
         action="store_true",
         help="Flag to exclude leap days"
     )
 
     parser.add_argument(
         "--keep_incomplete_djf",
-        dest=drop_incomplete_djf,
-        action="store_true",
+        dest="drop_incomplete_djf",
+        action="store_false",
         help="Flag to include data from incomplete DJF seasons"
+    )
+
+    parser.add_argument(
+        "--dec_mode",
+        dest="dec_mode",
+        default="DJF",
+        help="'DJF' or 'JFD' format for December/January/February season"
     )
 
     return parser
