@@ -185,7 +185,7 @@ class SeasonalAverager():
             
         return ds_stat
 
-def init_metrics_dict():
+def init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict):
     # TODO: Runtime settings like Dec mode should be recorded
     metrics = {
         "DIMENSIONS": {
@@ -197,12 +197,22 @@ def init_metrics_dict():
             "model": [],
             "realization": []
         },
-        "RESULTS": {}
+        "RESULTS": {},
+        "PROVENANCE": {
+            "Settings": {
+                "december_mode": str(dec_mode),
+                "drop_incomplete_djf": str(drop_incomplete_djf),
+                "annual_strict": str(annual_strict)
+            }
+        }
     }
     return metrics
 
 
 def temperature_metrics(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
+
+    print("Generating temperature block extrema.")
+
     TS = TimeSeriesData(ds,varname)
 
     S = SeasonalAverager(TS,dec_mode=dec_mode,drop_incomplete_djf=drop_incomplete_djf,annual_strict=annual_strict)
@@ -218,10 +228,18 @@ def temperature_metrics(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_str
     
     Tmax = Tmax.bounds.add_missing_bounds()
     Tmin = Tmin.bounds.add_missing_bounds()
+    Tmax.attrs["december_mode"] = str(dec_mode)
+    Tmax.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
+    Tmax.attrs["annual_strict"] = str(annual_strict)
+    Tmin.attrs["december_mode"] = str(dec_mode)
+    Tmin.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
+    Tmin.attrs["annual_strict"] = str(annual_strict)
 
     return Tmax, Tmin
 
 def precipitation_metrics(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
+
+    print("Generating precipitation block extrema.")
 
     PR = TimeSeriesData(ds,"pr")
 
@@ -230,26 +248,43 @@ def precipitation_metrics(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
     # Rx1day
     P1day = xr.Dataset()
     P1day["ANN"] = S.annual_stats("max",pentad=False)
+    P1day["ANN"] = P1day["ANN"] * 86400
+    P1day["ANN"].attrs["units"] = "mm day-1"
 
     for season in ["DJF","MAM","JJA","SON"]:
         P1day[season] = S.seasonal_stats(season,"max",pentad=False)
+        P1day[season] = P1day[season] * 86400
+        P1day[season].attrs["units"] = "mm day-1"
 
-    P1day = P1day.bounds.add_missing_bounds()    
+    P1day = P1day.bounds.add_missing_bounds() 
+    P1day.attrs["december_mode"] = str(dec_mode)
+    P1day.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
+    P1day.attrs["annual_strict"] = str(annual_strict)
 
     # Rx5day
     P5day = xr.Dataset()
     P5day["ANN"] = S.annual_stats("max",pentad=True)
+    P5day["ANN"] = P5day["ANN"] * 86400
+    P5day["ANN"].attrs["units"] = "mm day-1"
 
     for season in ["DJF","MAM","JJA","SON"]:
         P5day[season] = S.seasonal_stats(season,"max",pentad=True)
+        P5day[season] = P5day[season] * 86400
+        P5day[season].attrs["units"] = "mm day-1"
 
     P5day = P5day.bounds.add_missing_bounds()
+    P5day.attrs["december_mode"] = str(dec_mode)
+    P5day.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
+    P5day.attrs["annual_strict"] = str(annual_strict)
 
     return P1day,P5day
 
 def metrics_json(data_dict,sftlf):
-    # Previously temperature metrics json, but it looks like I'm doing the
-    # same thing for temperature and precip now.
+    # Format, calculate, and return the global mean value over land
+    # for all datasets in the input dictionary
+    # Arguments:
+    #   data_dict: Dictionary containing block extrema datasets
+    #   sftlf: Land sea mask
     met_dict = {}
 
     for m in data_dict:
@@ -263,7 +298,6 @@ def metrics_json(data_dict,sftlf):
             }
         }
         ds_m = data_dict[m]
-        print(ds_m)
         for season in ["ANN","DJF","MAM","JJA","SON"]:
             tmp = ds_m.where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100).spatial.average(season)[season]
             tmp_list = [{int(yr.data): float("% .2f" %tmp.sel({"time":yr}).data)} for yr in tmp.time]
@@ -273,33 +307,3 @@ def metrics_json(data_dict,sftlf):
             met_dict[m]["land"][season] = tmp_dict
     return met_dict
 
-"""
-def precipitation_metrics_json(data_dict,sftlf):
-    met_dict = {}
-
-    for m in data_dict:
-    met_dict[m] = {"land": {
-                        "ANN": [],
-                        "DJF": [],
-                        "MAM": [],
-                        "JJA": [],
-                        "SON": []
-                    }
-                }
-        ds_m = data_dict[m]
-        for season in ["ANN","DJF","MAM","JJA","SON"]:
-            tmp = ds_m.where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100).spatial.average(season)[season] * 86400 # convert to mm
-            tmp_list = [{int(yr.data): float("% .2f" %tmp.sel({"time":yr}).data)} for yr in tmp.time]
-            tmp_dict ={}
-            for d in tmp_list:
-                tmp_dict.update(d)
-            met_dict["land"][season] = tmp_dict
-    return met_dict
-"""
-
-def mean_xy(d,varname):
-    # Return the area weighted mean as a year: value dictionary
-    weights = d.spatial.get_weights(axis=["X","Y"],data_var=varname)
-    stat = d[varname].weighted(weights).mean(("lon","lat"))
-    res = (dict(zip(d.time.data, stat.data)))
-    return res
