@@ -38,20 +38,6 @@ class TimeSeriesData():
         # Use on daily data
         return self.ds[self.ds_var].rolling(time=5).mean()
 
-    def daily_total(self):
-        # Use on sub-daily data
-        return  self.ds[self.ds_var].resample(time='1D').sum(dim="time")
-    
-    def daily_min(self):
-        # Use on sub-daily data
-        return  self.ds[self.ds_var].resample(time='1D').min(dim="time")
-        #return self.ds[self.ds_var].min(dim="time")
-        
-    def daily_max(self):
-        # Use on sub-daily data
-        return self.ds[self.ds_var].resample(time='1D').max(dim="time")
-        #return self.ds[self.ds_var].min(dim="time")
-
 class SeasonalAverager():
     # Make seasonal averages of data in TimeSeriesData class
 
@@ -65,9 +51,16 @@ class SeasonalAverager():
         self.pentad = None
         
     def calc_5day_mean(self):
+        # Get the 5-day mean dataset
         self.pentad = self.ds.rolling_5day()
         
     def annual_stats(self,stat,pentad=False):
+        # Acquire annual statistics
+        # Arguments:
+        #     stat: Can be "max", "min"
+        #     pentad: True to run on 5-day mean
+        # Returns:
+        #     ds_ann: Dataset containing annual max or min grid
 
         if pentad == True:
             if self.pentad is None:
@@ -104,8 +97,13 @@ class SeasonalAverager():
         return ds_ann
 
     def seasonal_stats(self,season,stat,pentad=False):
-        # Seasons can be "DJF","MAM","JJA","SON"
-        # Stat can be "max", "min"
+        # Acquire statistics for a given season
+        # Arguments:
+        #     season: Can be "DJF","MAM","JJA","SON"
+        #     stat: Can be "max", "min"
+        #     pentad: True to run on 5-day mean
+        # Returns:
+        #     ds_stat: Dataset containing seasonal max or min grid
 
         year_range = self.ds.year_range
 
@@ -186,7 +184,7 @@ class SeasonalAverager():
         return ds_stat
 
 def init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict):
-    # TODO: Runtime settings like Dec mode should be recorded
+    # Return initial version of the metrics dictionary
     metrics = {
         "DIMENSIONS": {
             "json_structure": ["model","realization","metric","region","season","year"],
@@ -241,6 +239,9 @@ def precipitation_metrics(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
 
     print("Generating precipitation block extrema.")
 
+    ds["pr"] = ds["pr"] * 86400
+    ds["pr"].attrs["units"] = "mm day-1"
+
     PR = TimeSeriesData(ds,"pr")
 
     S = SeasonalAverager(PR,dec_mode=dec_mode,drop_incomplete_djf=drop_incomplete_djf,annual_strict=annual_strict)
@@ -248,13 +249,9 @@ def precipitation_metrics(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
     # Rx1day
     P1day = xr.Dataset()
     P1day["ANN"] = S.annual_stats("max",pentad=False)
-    P1day["ANN"] = P1day["ANN"] * 86400
-    P1day["ANN"].attrs["units"] = "mm day-1"
 
     for season in ["DJF","MAM","JJA","SON"]:
         P1day[season] = S.seasonal_stats(season,"max",pentad=False)
-        P1day[season] = P1day[season] * 86400
-        P1day[season].attrs["units"] = "mm day-1"
 
     P1day = P1day.bounds.add_missing_bounds() 
     P1day.attrs["december_mode"] = str(dec_mode)
@@ -264,13 +261,9 @@ def precipitation_metrics(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
     # Rx5day
     P5day = xr.Dataset()
     P5day["ANN"] = S.annual_stats("max",pentad=True)
-    P5day["ANN"] = P5day["ANN"] * 86400
-    P5day["ANN"].attrs["units"] = "mm day-1"
 
     for season in ["DJF","MAM","JJA","SON"]:
         P5day[season] = S.seasonal_stats(season,"max",pentad=True)
-        P5day[season] = P5day[season] * 86400
-        P5day[season].attrs["units"] = "mm day-1"
 
     P5day = P5day.bounds.add_missing_bounds()
     P5day.attrs["december_mode"] = str(dec_mode)
@@ -279,12 +272,14 @@ def precipitation_metrics(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
 
     return P1day,P5day
 
-def metrics_json(data_dict,sftlf):
+def metrics_json(data_dict,sftlf,obs_dict={}):
     # Format, calculate, and return the global mean value over land
     # for all datasets in the input dictionary
     # Arguments:
     #   data_dict: Dictionary containing block extrema datasets
     #   sftlf: Land sea mask
+    # Returns:
+    #   met_dict: A dictionary containing metrics
     met_dict = {}
 
     for m in data_dict:
@@ -299,11 +294,30 @@ def metrics_json(data_dict,sftlf):
         }
         ds_m = data_dict[m]
         for season in ["ANN","DJF","MAM","JJA","SON"]:
+            met_dict[m]["land"][season] = {}
+
+            # Global mean over land
             tmp = ds_m.where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100).spatial.average(season)[season]
-            tmp_list = [{int(yr.data): float("% .2f" %tmp.sel({"time":yr}).data)} for yr in tmp.time]
+            tmp_list = [
+                {
+                    int(yr.data): None
+                } if np.isnan(tmp.sel({"time":yr}).data) else
+                {
+                    int(yr.data): float("% .2f" %tmp.sel({"time":yr}).data)
+                    } for yr in tmp.time
+                ]
             tmp_dict ={}
             for d in tmp_list:
                 tmp_dict.update(d)
-            met_dict[m]["land"][season] = tmp_dict
+            met_dict[m]["land"][season]["mean"] = tmp_dict
+
+            # TODO: RMSE Error between reference and model
+            # DO for each time step or just overall average?
+            """dif_square = (dm[var] - do[var])**2
+            if weights is None:
+                weights = dm.spatial.get_weights(axis=['X', 'Y'])
+            stat = math.sqrt(dif_square.weighted(weights).mean(("lon", "lat")))
+            return float(stat)"""
+
     return met_dict
 

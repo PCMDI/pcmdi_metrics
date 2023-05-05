@@ -175,4 +175,11 @@ def create_extremes_parser():
         help="'DJF' or 'JFD' format for December/January/February season"
     )
 
+    parser.add_argument(
+        "--nc_out",
+        type=bool,
+        default=True,
+        help="Option for generate netCDF file output: True (default) / False",
+    )
+
     return parser
