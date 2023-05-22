@@ -1,0 +1,70 @@
+{
+    "pr": {
+        "CMORPH-1-0-CRT": {
+            "MD5sum": "438c5bead4b114b3a1c99f0ffdfea11e",
+            "period": "199801-201212",
+            "shape": "(5479, 180, 360)",
+            "template": "/obs4MIPs/NOAA/CMORPH-1-0-CRT/day/pr/1x1/v20210824/pr_day_CMORPH-1-0-CRT_PCMDIFROGS_1x1_19980101-20121231.nc"
+        },
+        "ERA-5": {
+            "MD5sum": "cd0fe94bd1b09a26cefd1cecc8e9c482",
+            "period": "197901-201812",
+            "shape": "(14610, 180, 360)",
+            "template": "/obs4MIPs/ECMWF/ERA-5/day/pr/1x1/v20210824/pr_day_ERA-5_PCMDIFROGS_1x1_19790101-20181231.nc"
+        },
+        "GPCP-1-3": {
+            "MD5sum": "10496775dae2b5f65fe95b064c1efd42",
+            "period": "199610-201701",
+            "shape": "(7397, 180, 360)",
+            "template": "/obs4MIPs/NASA-JPL/GPCP-1-3/day/pr/gn/v20210727/pr_day_GPCP-1-3_PCMDI_gn_19961002-20170101.nc"
+        },
+        "GPCP-1DD-CDR-v1-3": {
+            "MD5sum": "97ac05457ef9abd45f41ffa406024401",
+            "period": "199610-202012",
+            "shape": "(8858, 180, 360)",
+            "template": "/obs4MIPs/NASA-GSFC/GPCP-1DD-CDR-v1-3/day/pr/1x1/v20210826/pr_day_GPCP-1DD-CDR-v1-3_PCMDIFROGS_1x1_19961001-20201231.nc"
+        },
+        "IMERG-V06-EU": {
+            "MD5sum": "ef182110063857a33a8820b42eccf252",
+            "period": "200101-201812",
+            "shape": "(6574, 180, 360)",
+            "template": "/obs4MIPs/NASA-GSFC/IMERG-V06-EU/day/pr/1x1/v20220201/pr_day_IMERG-V06-EU_PCMDIFROGS_1x1_20010101-20181231.nc"
+        },
+        "IMERG-V06-FC": {
+            "MD5sum": "40a29053a6e9a89b8fa42ec2a7198a68",
+            "period": "200101-202012",
+            "shape": "(7305, 180, 360)",
+            "template": "/obs4MIPs/NASA-GSFC/IMERG-V06-FC/day/pr/1x1/v20210826/pr_day_IMERG-V06-FC_PCMDIFROGS_1x1_20010101-20201231.nc"
+        },
+        "IMERG-V06-FU": {
+            "MD5sum": "13b096e94babac0c7af3402e18364ce0",
+            "period": "200101-202012",
+            "shape": "(7305, 180, 360)",
+            "template": "/obs4MIPs/NASA-GSFC/IMERG-V06-FU/day/pr/1x1/v20210826/pr_day_IMERG-V06-FU_PCMDIFROGS_1x1_20010101-20201231.nc"
+        },
+        "IMERG-V06-LU": {
+            "MD5sum": "039040e74f9d46a9daef80c824870a1c",
+            "period": "200101-202012",
+            "shape": "(7305, 180, 360)",
+            "template": "/obs4MIPs/NASA-GSFC/IMERG-V06-LU/day/pr/1x1/v20210826/pr_day_IMERG-V06-LU_PCMDIFROGS_1x1_20010101-20201231.nc"
+        },
+        "MSWEP-V280-Past": {
+            "MD5sum": "N/A",
+            "period": "197901-202012",
+            "shape": "(15339, 1800, 3600)",
+            "template": "/obs4MIPs/GloH2O/MSWEP-V280-Past/day/pr/10km/v20230328/pr_day_MSWEP-V280-Past_PCMDI_10km_*.nc"
+        },
+        "PERSIANN-CDRv1r1": {
+            "MD5sum": "0afe9d51145db4db0d60ad94455fa91f",
+            "period": "198301-201901",
+            "shape": "(13149, 180, 360)",
+            "template": "/obs4MIPs/NOAA/PERSIANN-CDRv1r1/day/pr/1x1/v20210826/pr_day_PERSIANN-CDRv1r1_PCMDIFROGS_1x1_19830102-20190101.nc"
+        },
+        "TRMM-3B42v-7": {
+            "MD5sum": "d43e23bd191d348d0ce9c8ec551470ad",
+            "period": "199801-201912",
+            "shape": "(8034, 180, 360)",
+            "template": "/obs4MIPs/NASA-GSFC/TRMM-3B42v-7/day/pr/1x1/v20210824/pr_day_TRMM-3B42v-7_PCMDIFROGS_1x1_19980101-20191230.nc"
+        }
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "pr": {
+        "CMORPH-1-0": {
+            "MD5sum": "N/A",
+            "period": "200101-201912",
+            "shape": "(55512, 90, 180)",
+            "template": "/obs4MIPs/NOAA/CMORPH-1-0/3hr/pr/2x2/v20210812/pr_3hr_CMORPH-1-0_PCMDI_2x2_*.nc"
+        },
+        "IMERG-v06B-Final": {
+            "MD5sum": "N/A",
+            "period": "200101-201912",
+            "shape": "(55512, 90, 180)",
+            "template": "/obs4MIPs/NASA-GSFC/IMERG-v06B-Final/3hr/pr/2x2/v20210812/pr_3hr_IMERG-v06B-Final_PCMDI_2x2_*.nc"
+        },
+        "TRMM-3B43v-7": {
+            "MD5sum": "N/A",
+            "period": "199801-201912",
+            "shape": "(64280, 90, 180)",
+            "template": "/obs4MIPs/NASA-GSFC/TRMM-3B43v-7/3hr/pr/2x2/v20210812/pr_3hr_TRMM-3B43v-7_PCMDI_2x2_*.nc"
+        },
+        "alternate1": "TRMM-3B43v-7"
+    }
+}

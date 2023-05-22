@@ -1,0 +1,627 @@
+{
+    "hfls": {
+        "ERA-INT": {
+            "MD5sum": "1ae4587143f05ee81432b3d9960aab63",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/hfls/gn/v20210727/hfls_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "TropFlux-1-0": {
+            "MD5sum": "2f05191d6727068e1500d8d4ed90098a",
+            "period": "197901-201707",
+            "shape": "(463, 60, 350)",
+            "template": "/obs4MIPs/ESSO/TropFlux-1-0/mon/hfls/gn/v20210727/hfls_mon_TropFlux-1-0_PCMDI_gn_197901-201707.nc"
+        }
+    },
+    "hfns": {
+        "TropFlux-1-0": {
+            "MD5sum": "7a9019e51a41d9e4ab1fcfb072d8ca8d",
+            "period": "197901-201707",
+            "shape": "(463, 60, 350)",
+            "template": "/obs4MIPs/ESSO/TropFlux-1-0/mon/hfns/gn/v20210727/hfns_mon_TropFlux-1-0_PCMDI_gn_197901-201707.nc"
+        }
+    },
+    "hfss": {
+        "ERA-INT": {
+            "MD5sum": "261f02b8cbce18486548882a11f9aa34",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/hfss/gn/v20210727/hfss_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "TropFlux-1-0": {
+            "MD5sum": "1da9d8fe862c61bc49c36c18b6527213",
+            "period": "197901-201707",
+            "shape": "(463, 60, 350)",
+            "template": "/obs4MIPs/ESSO/TropFlux-1-0/mon/hfss/gn/v20210727/hfss_mon_TropFlux-1-0_PCMDI_gn_197901-201707.nc"
+        }
+    },
+    "hur": {
+        "ERA-40": {
+            "MD5sum": "071568e2d25b0e95e2040071f7182560",
+            "period": "195709-200208",
+            "shape": "(540, 19, 73, 144)",
+            "template": "/obs4MIPs/ECMWF/ERA-40/mon/hur/gn/v20210727/hur_mon_ERA-40_PCMDI_gn_195709-200208.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "15e3daee720e632c3fdf9f5f6c905a77",
+            "period": "198901-201001",
+            "shape": "(253, 19, 121, 240)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/hur/gn/v20220201/hur_mon_ERA-INT_PCMDI_gn_198901-201001.nc"
+        }
+    },
+    "hus": {
+        "ERA-40": {
+            "MD5sum": "fe81dd5e1408ebe5d8bc582fd416039b",
+            "period": "195709-200208",
+            "shape": "(540, 19, 73, 144)",
+            "template": "/obs4MIPs/ECMWF/ERA-40/mon/hus/gn/v20210727/hus_mon_ERA-40_PCMDI_gn_195709-200208.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "2e3fd2cd7162c901b6a7eb57c9dcd208",
+            "period": "198901-201001",
+            "shape": "(253, 19, 121, 240)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/hus/gn/v20220201/hus_mon_ERA-INT_PCMDI_gn_198901-201001.nc"
+        },
+        "alternate1": "ERA-40",
+        "default": "ERA-INT"
+    },
+    "pr": {
+        "CMAP-V1902": {
+            "MD5sum": "55278127c3d083511ba7a46be3257011",
+            "period": "197901-201901",
+            "shape": "(481, 72, 144)",
+            "template": "/obs4MIPs/NOAA-ESRL-PSD/CMAP-V1902/mon/pr/gn/v20230110/pr_mon_CMAP-V1902_PCMDI_gn_197901-201901.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "92e48c992cde6850d41c52e1778057c2",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/pr/gn/v20210727/pr_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "GPCP-2-3": {
+            "MD5sum": "0877f014868b83547448f96c3e7c83e9",
+            "period": "197901-201907",
+            "shape": "(487, 72, 144)",
+            "template": "/obs4MIPs/NOAA-NCEI/GPCP-2-3/mon/pr/gn/v20210727/pr_mon_GPCP-2-3_PCMDI_gn_197901-201907.nc"
+        },
+        "MSWEP-V280-Past": {
+            "MD5sum": "N/A",
+            "period": "197902-202011",
+            "shape": "(502, 1800, 3600)",
+            "template": "/obs4MIPs/GloH2O/MSWEP-V280-Past/mon/pr/10km/v20230329/pr_mon_MSWEP-V280-Past_PCMDI_10km_*.nc"
+        },
+        "TRMM-3B43v-7": {
+            "MD5sum": "b80c9989d358656c781be5ea5a44c64c",
+            "period": "199801-201712",
+            "shape": "(240, 400, 1440)",
+            "template": "/obs4MIPs/NASA-GSFC/TRMM-3B43v-7/mon/pr/gn/v20210727/pr_mon_TRMM-3B43v-7_PCMDI_gn_199801-201712.nc"
+        },
+        "alternate1": "TRMM-3B43v-7",
+        "alternate2": "CMAP-V1902",
+        "default": "GPCP-2-3"
+    },
+    "prw": {
+        "REMSS-PRW-v07r01": {
+            "MD5sum": "67e4ddabf6a1e887449eeb7fb1e6355e",
+            "period": "198801-201812",
+            "shape": "(372, 180, 360)",
+            "template": "/obs4MIPs/RSS/REMSS-PRW-v07r01/mon/prw/gn/v20220201/prw_mon_REMSS-PRW-v07r01_PCMDI_gn_198801-201812.nc"
+        },
+        "default": "REMSS-PRW-v07r01"
+    },
+    "psl": {
+        "20CR": {
+            "MD5sum": "df32aefb724f2f864f2cf891ffa1c0ce",
+            "period": "187101-201212",
+            "shape": "(1704, 91, 180)",
+            "template": "/obs4MIPs/NOAA-ESRL-PSD/20CR/mon/psl/gn/v20230110/psl_mon_20CR_PCMDI_gn_187101-201212.nc"
+        },
+        "ERA-20C": {
+            "MD5sum": "38ffb0059f262551efd9351f4797207a",
+            "period": "190001-201012",
+            "shape": "(1332, 181, 360)",
+            "template": "/obs4MIPs/ECMWF/ERA-20C/mon/psl/gn/v20220721/psl_mon_ERA-20C_PCMDI_gn_190001-201012.nc"
+        },
+        "ERA-40": {
+            "MD5sum": "1743faab81429bd4d146e8863615d510",
+            "period": "195709-200208",
+            "shape": "(540, 73, 144)",
+            "template": "/obs4MIPs/ECMWF/ERA-40/mon/psl/gn/v20210727/psl_mon_ERA-40_PCMDI_gn_195709-200208.nc"
+        },
+        "ERA-5": {
+            "MD5sum": "f1dd446bea836944ec03aab8f3233d23",
+            "period": "197901-201912",
+            "shape": "(492, 721, 1440)",
+            "template": "/obs4MIPs/ECMWF/ERA-5/mon/psl/gn/v20220201/psl_mon_ERA-5_PCMDI_gn_197901-201912.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "7409d0caa4a675436e28085bed12d0c9",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/psl/gn/v20210727/psl_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "alternate1": "ERA-INT",
+        "alternate2": "ERA-40",
+        "default": "ERA-5"
+    },
+    "rlds": {
+        "CERES-EBAF-4-1": {
+            "MD5sum": "fa148244cad04d4805f1693e2fcace23",
+            "period": "200003-201905",
+            "shape": "(231, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rlds/gn/v20230109/rlds_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201905.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "dfba31b6b8e6a4924b7b6cfba648715f",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/rlds/gn/v20210727/rlds_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "default": "CERES-EBAF-4-1"
+    },
+    "rldscs": {
+        "CERES-EBAF-4-1": {
+            "MD5sum": "8f2f3cc7edae13aed959e2cb2b30c124",
+            "period": "200003-201905",
+            "shape": "(231, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rldscs/gn/v20230109/rldscs_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201905.nc"
+        },
+        "default": "CERES-EBAF-4-1"
+    },
+    "rltcre": {
+        "CERES-EBAF-4-0": {
+            "MD5sum": "07d4fe27c0930d33adda6f7be0f38389",
+            "period": "200003-201810",
+            "shape": "(224, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-0/mon/rltcre/gn/v20230109/rltcre_mon_CERES-EBAF-4-0_PCMDI_gn_200003-201810.nc"
+        },
+        "CERES-EBAF-4-1": {
+            "MD5sum": "c0c102c1c04af159bd498a3fb1231ca9",
+            "period": "200003-201905",
+            "shape": "(231, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rltcre/gn/v20230109/rltcre_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201905.nc"
+        },
+        "alternate1": "CERES-EBAF-4-0",
+        "default": "CERES-EBAF-4-1"
+    },
+    "rlus": {
+        "CERES-EBAF-4-0": {
+            "MD5sum": "8ce633376d3b4a4365819f2bdce98410",
+            "period": "200003-201803",
+            "shape": "(217, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-0/mon/rlus/gn/v20230109/rlus_mon_CERES-EBAF-4-0_PCMDI_gn_200003-201803.nc"
+        },
+        "CERES-EBAF-4-1": {
+            "MD5sum": "c990a2a0f21ca3e6a6f96105f85bf30a",
+            "period": "200003-201905",
+            "shape": "(231, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rlus/gn/v20230109/rlus_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201905.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "94acf2c3bd5f39301148f610722b4590",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/rlus/gn/v20210727/rlus_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "alternate1": "CERES-EBAF-4-0",
+        "default": "CERES-EBAF-4-1"
+    },
+    "rlut": {
+        "CERES-EBAF-4-0": {
+            "MD5sum": "5ff1c339a5937af47a35441b0da1524c",
+            "period": "200003-201810",
+            "shape": "(224, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-0/mon/rlut/gn/v20230109/rlut_mon_CERES-EBAF-4-0_PCMDI_gn_200003-201810.nc"
+        },
+        "CERES-EBAF-4-1": {
+            "MD5sum": "2f9b2456abf901687e0b4a4bd475d3e6",
+            "period": "200003-201906",
+            "shape": "(232, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rlut/gn/v20230109/rlut_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201906.nc"
+        },
+        "alternate1": "CERES-EBAF-4-0",
+        "default": "CERES-EBAF-4-1"
+    },
+    "rlutcs": {
+        "CERES-EBAF-4-0": {
+            "MD5sum": "2dc64fbe347cfb0d266c73fc533c030a",
+            "period": "200003-201810",
+            "shape": "(224, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-0/mon/rlutcs/gn/v20230109/rlutcs_mon_CERES-EBAF-4-0_PCMDI_gn_200003-201810.nc"
+        },
+        "CERES-EBAF-4-1": {
+            "MD5sum": "79aa8c7679d1d215bf9d579a74dfcbbf",
+            "period": "200003-201906",
+            "shape": "(232, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rlutcs/gn/v20230109/rlutcs_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201906.nc"
+        },
+        "alternate1": "CERES-EBAF-4-0",
+        "default": "CERES-EBAF-4-1"
+    },
+    "rsds": {
+        "CERES-EBAF-4-0": {
+            "MD5sum": "04f1308d5d76f0876a46956cf1b3ef99",
+            "period": "200003-201803",
+            "shape": "(217, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-0/mon/rsds/gn/v20230109/rsds_mon_CERES-EBAF-4-0_PCMDI_gn_200003-201803.nc"
+        },
+        "CERES-EBAF-4-1": {
+            "MD5sum": "d3777070d924847b2f631ce63ff41f9b",
+            "period": "200003-201905",
+            "shape": "(231, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rsds/gn/v20230109/rsds_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201905.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "0a56d7cd3fdf112a37c48433b8cd1e29",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/rsds/gn/v20210727/rsds_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "alternate1": "CERES-EBAF-4-0",
+        "default": "CERES-EBAF-4-1"
+    },
+    "rsdscs": {
+        "CERES-EBAF-4-0": {
+            "MD5sum": "ba07672cb8a3938b59e0dd1772ee52e5",
+            "period": "200003-201803",
+            "shape": "(217, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-0/mon/rsdscs/gn/v20230109/rsdscs_mon_CERES-EBAF-4-0_PCMDI_gn_200003-201803.nc"
+        },
+        "CERES-EBAF-4-1": {
+            "MD5sum": "8be059ebe7ac858b2e07b725161b70bd",
+            "period": "200003-201905",
+            "shape": "(231, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rsdscs/gn/v20230109/rsdscs_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201905.nc"
+        },
+        "alternate1": "CERES-EBAF-4-0",
+        "default": "CERES-EBAF-4-1"
+    },
+    "rsdt": {
+        "CERES-EBAF-4-1": {
+            "MD5sum": "db5987d918af4529c35dd0a7e5aa1ae4",
+            "period": "200003-201906",
+            "shape": "(232, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rsdt/gn/v20230109/rsdt_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201906.nc"
+        },
+        "default": "CERES-EBAF-4-1"
+    },
+    "rstcre": {
+        "CERES-EBAF-4-0": {
+            "MD5sum": "c7356738afcf1ce201e7462e8a48d95f",
+            "period": "200003-201810",
+            "shape": "(224, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-0/mon/rstcre/gn/v20230109/rstcre_mon_CERES-EBAF-4-0_PCMDI_gn_200003-201810.nc"
+        },
+        "CERES-EBAF-4-1": {
+            "MD5sum": "aa67e9aa6bd5c965ab30a6e1dc1b5260",
+            "period": "200003-201905",
+            "shape": "(231, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rstcre/gn/v20230109/rstcre_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201905.nc"
+        },
+        "alternate1": "CERES-EBAF-4-0",
+        "default": "CERES-EBAF-4-1"
+    },
+    "rsus": {
+        "CERES-EBAF-4-0": {
+            "MD5sum": "911ae2dd87edde201da0cd056c6faae9",
+            "period": "200003-201803",
+            "shape": "(217, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-0/mon/rsus/gn/v20230109/rsus_mon_CERES-EBAF-4-0_PCMDI_gn_200003-201803.nc"
+        },
+        "CERES-EBAF-4-1": {
+            "MD5sum": "63a64c3c5b9cd0ed8d9e5e608a69f951",
+            "period": "200003-201905",
+            "shape": "(231, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rsus/gn/v20230109/rsus_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201905.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "ec8f6e9cb64d81a7c0b70fbd7692e133",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/rsus/gn/v20210727/rsus_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "alternate1": "CERES-EBAF-4-0",
+        "default": "CERES-EBAF-4-1"
+    },
+    "rsuscs": {
+        "CERES-EBAF-4-0": {
+            "MD5sum": "bba4459ccc9df684559c93749c199272",
+            "period": "200003-201803",
+            "shape": "(217, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-0/mon/rsuscs/gn/v20230109/rsuscs_mon_CERES-EBAF-4-0_PCMDI_gn_200003-201803.nc"
+        },
+        "CERES-EBAF-4-1": {
+            "MD5sum": "239b73eb8975bdb8f7119734b551e5ae",
+            "period": "200003-201905",
+            "shape": "(231, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rsuscs/gn/v20230109/rsuscs_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201905.nc"
+        }
+    },
+    "rsut": {
+        "CERES-EBAF-4-0": {
+            "MD5sum": "2eaecec18d9758397f130bc20a77dcf7",
+            "period": "200003-201810",
+            "shape": "(224, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-0/mon/rsut/gn/v20230109/rsut_mon_CERES-EBAF-4-0_PCMDI_gn_200003-201810.nc"
+        },
+        "CERES-EBAF-4-1": {
+            "MD5sum": "f73c963e7b415e706340b496bac58aa6",
+            "period": "200003-201906",
+            "shape": "(232, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rsut/gn/v20230109/rsut_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201906.nc"
+        },
+        "alternate1": "CERES-EBAF-4-0",
+        "default": "CERES-EBAF-4-1"
+    },
+    "rsutcs": {
+        "CERES-EBAF-4-0": {
+            "MD5sum": "ffadcbcf978be0be1da158112f5c3920",
+            "period": "200003-201810",
+            "shape": "(224, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-0/mon/rsutcs/gn/v20230109/rsutcs_mon_CERES-EBAF-4-0_PCMDI_gn_200003-201810.nc"
+        },
+        "CERES-EBAF-4-1": {
+            "MD5sum": "1d4485905b0cc740dd854be38296d0ed",
+            "period": "200003-201906",
+            "shape": "(232, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rsutcs/gn/v20230109/rsutcs_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201906.nc"
+        },
+        "alternate1": "CERES-EBAF-4-0",
+        "default": "CERES-EBAF-4-1"
+    },
+    "rt": {
+        "CERES-EBAF-4-0": {
+            "MD5sum": "9e0233334411cb47452c6f6b275d7954",
+            "period": "200003-201810",
+            "shape": "(224, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-0/mon/rt/gn/v20230109/rt_mon_CERES-EBAF-4-0_PCMDI_gn_200003-201810.nc"
+        },
+        "CERES-EBAF-4-1": {
+            "MD5sum": "27fdfe06d99713caf700b7fb79389e96",
+            "period": "200003-201906",
+            "shape": "(232, 180, 360)",
+            "template": "/obs4MIPs/NASA-LaRC/CERES-EBAF-4-1/mon/rt/gn/v20230109/rt_mon_CERES-EBAF-4-1_PCMDI_gn_200003-201906.nc"
+        }
+    },
+    "sfcWind": {
+        "ERA-INT": {
+            "MD5sum": "8a54a0edef0b9c22ea0b1dd8d5f2dd57",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/sfcWind/gn/v20210727/sfcWind_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "REMSS-PRW-v07r01": {
+            "MD5sum": "fa907bc890bf554ec95d1a65e9e6cdd0",
+            "period": "198801-201812",
+            "shape": "(372, 180, 360)",
+            "template": "/obs4MIPs/RSS/REMSS-PRW-v07r01/mon/sfcWind/gn/v20220510/sfcWind_mon_REMSS-PRW-v07r01_PCMDI_gn_198801-201812.nc"
+        },
+        "alternate1": "ERA-INT",
+        "default": "REMSS-PRW-v07r01"
+    },
+    "ta": {
+        "ERA-40": {
+            "MD5sum": "ca364648035e4f6fc4bd5ddf62b70e21",
+            "period": "195709-200208",
+            "shape": "(540, 19, 73, 144)",
+            "template": "/obs4MIPs/ECMWF/ERA-40/mon/ta/gn/v20210727/ta_mon_ERA-40_PCMDI_gn_195709-200208.nc"
+        },
+        "ERA-5": {
+            "MD5sum": "N/A",
+            "period": "197901-201812",
+            "shape": "(480, 37, 721, 1440)",
+            "template": "/obs4MIPs/ECMWF/ERA-5/mon/ta/gn/v20210729/ta_mon_ERA-5_PCMDI_gn_*.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "418676047f6514f6aa40f951421e81a6",
+            "period": "198901-201001",
+            "shape": "(253, 19, 121, 240)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/ta/gn/v20220201/ta_mon_ERA-INT_PCMDI_gn_198901-201001.nc"
+        },
+        "alternate1": "ERA-40",
+        "alternate2": "ERA-INT",
+        "default": "ERA-5"
+    },
+    "tas": {
+        "ERA-40": {
+            "MD5sum": "8330431f6d7cdf5708070c3829bddbf3",
+            "period": "195709-200208",
+            "shape": "(540, 73, 144)",
+            "template": "/obs4MIPs/ECMWF/ERA-40/mon/tas/gn/v20210727/tas_mon_ERA-40_PCMDI_gn_195709-200208.nc"
+        },
+        "ERA-5": {
+            "MD5sum": "c3645cf4da79945dba13c89a9c8f5855",
+            "period": "197901-201912",
+            "shape": "(492, 721, 1440)",
+            "template": "/obs4MIPs/ECMWF/ERA-5/mon/tas/gn/v20220201/tas_mon_ERA-5_PCMDI_gn_197901-201912.nc"
+        },
+        "TropFlux-1-0": {
+            "MD5sum": "a6057931b5f6bc000a44514a1a8c891f",
+            "period": "197901-201707",
+            "shape": "(463, 60, 350)",
+            "template": "/obs4MIPs/ESSO/TropFlux-1-0/mon/tas/gn/v20210727/tas_mon_TropFlux-1-0_PCMDI_gn_197901-201707.nc"
+        },
+        "alternate2": "ERA-40",
+        "default": "ERA-5"
+    },
+    "tauu": {
+        "ERA-INT": {
+            "MD5sum": "af86da822ebd76ed3ee0a7e5d5a9912f",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/tauu/gn/v20210727/tauu_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "TropFlux-1-0": {
+            "MD5sum": "7c73a3deed3403fa9d21caef3a4d988d",
+            "period": "197901-201707",
+            "shape": "(463, 60, 350)",
+            "template": "/obs4MIPs/ESSO/TropFlux-1-0/mon/tauu/gn/v20210727/tauu_mon_TropFlux-1-0_PCMDI_gn_197901-201707.nc"
+        },
+        "default": "ERA-INT"
+    },
+    "tauv": {
+        "ERA-INT": {
+            "MD5sum": "87757bbcaff35aef1d685649563ba0a7",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/tauv/gn/v20210727/tauv_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "TropFlux-1-0": {
+            "MD5sum": "8abc7a724a7a297826e2f783a4ea14f9",
+            "period": "197901-201707",
+            "shape": "(463, 60, 350)",
+            "template": "/obs4MIPs/ESSO/TropFlux-1-0/mon/tauv/gn/v20210727/tauv_mon_TropFlux-1-0_PCMDI_gn_197901-201707.nc"
+        },
+        "default": "ERA-INT"
+    },
+    "ts": {
+        "20CR": {
+            "MD5sum": "22bef43e3065a922edf90975f99ff1cf",
+            "period": "187101-201212",
+            "shape": "(1704, 94, 192)",
+            "template": "/obs4MIPs/NOAA-ESRL-PSD/20CR/mon/ts/gn/v20230110/ts_mon_20CR_PCMDI_gn_187101-201212.nc"
+        },
+        "ERA-20C": {
+            "MD5sum": "c1be17d58be109f5576216929f26f58b",
+            "period": "190001-201012",
+            "shape": "(1332, 181, 360)",
+            "template": "/obs4MIPs/ECMWF/ERA-20C/mon/ts/gn/v20220721/ts_mon_ERA-20C_PCMDI_gn_190001-201012.nc"
+        },
+        "ERA-5": {
+            "MD5sum": "2c9f71f7a445277195138ff8d0f7017a",
+            "period": "197901-201912",
+            "shape": "(492, 721, 1440)",
+            "template": "/obs4MIPs/ECMWF/ERA-5/mon/ts/gn/v20220721/ts_mon_ERA-5_PCMDI_gn_197901-201912.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "f6a6f2bd8710df95c06dcb910501a771",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/ts/gn/v20210727/ts_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "HadISST-1-1": {
+            "MD5sum": "b0da7bebe32cd9ee3221ccec24e280d8",
+            "period": "187001-201907",
+            "shape": "(1795, 180, 360)",
+            "template": "/obs4MIPs/MOHC/HadISST-1-1/mon/ts/gn/v20230109/ts_mon_HadISST-1-1_PCMDI_gn_187001-201907.nc"
+        },
+        "TropFlux-1-0": {
+            "MD5sum": "8697d3d7862f6e3b72bb5a161aa75ee8",
+            "period": "197901-201707",
+            "shape": "(463, 60, 350)",
+            "template": "/obs4MIPs/ESSO/TropFlux-1-0/mon/ts/gn/v20210727/ts_mon_TropFlux-1-0_PCMDI_gn_197901-201707.nc"
+        },
+        "alternate1": "HadISST-1-1",
+        "default": "ERA-5"
+    },
+    "ua": {
+        "ERA-40": {
+            "MD5sum": "f3c26a3f370d4b07c45715637bb62131",
+            "period": "195709-200208",
+            "shape": "(540, 19, 73, 144)",
+            "template": "/obs4MIPs/ECMWF/ERA-40/mon/ua/gn/v20210727/ua_mon_ERA-40_PCMDI_gn_195709-200208.nc"
+        },
+        "ERA-5": {
+            "MD5sum": "N/A",
+            "period": "197901-201812",
+            "shape": "(480, 37, 721, 1440)",
+            "template": "/obs4MIPs/ECMWF/ERA-5/mon/ua/gn/v20210728/ua_mon_ERA-5_PCMDI_gn_*.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "3dbdac8cbff3b5e97422a8a29f84ff83",
+            "period": "198901-201001",
+            "shape": "(253, 19, 121, 240)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/ua/gn/v20220201/ua_mon_ERA-INT_PCMDI_gn_198901-201001.nc"
+        },
+        "alternate1": "ERA-INT",
+        "alternate2": "ERA-40",
+        "default": "ERA-5"
+    },
+    "uas": {
+        "ERA-40": {
+            "MD5sum": "75cfafe3edbed57d19144682e6f36ad9",
+            "period": "195709-200208",
+            "shape": "(540, 73, 144)",
+            "template": "/obs4MIPs/ECMWF/ERA-40/mon/uas/gn/v20210727/uas_mon_ERA-40_PCMDI_gn_195709-200208.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "2b3144fc737c5e3d2aa930c53751ff2b",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/uas/gn/v20210727/uas_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "alternate1": "ERA-INT",
+        "alternate2": "ERA-40"
+    },
+    "va": {
+        "ERA-40": {
+            "MD5sum": "556138d2f156b9acf5728d1b6f5ce6f7",
+            "period": "195709-200208",
+            "shape": "(540, 19, 73, 144)",
+            "template": "/obs4MIPs/ECMWF/ERA-40/mon/va/gn/v20210727/va_mon_ERA-40_PCMDI_gn_195709-200208.nc"
+        },
+        "ERA-5": {
+            "MD5sum": "N/A",
+            "period": "197901-201812",
+            "shape": "(480, 37, 721, 1440)",
+            "template": "/obs4MIPs/ECMWF/ERA-5/mon/va/gn/v20210728/va_mon_ERA-5_PCMDI_gn_*.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "03db31208eb0014a7f951142c2a73f6e",
+            "period": "198901-201001",
+            "shape": "(253, 19, 121, 240)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/va/gn/v20220201/va_mon_ERA-INT_PCMDI_gn_198901-201001.nc"
+        },
+        "alternate1": "ERA-INT",
+        "alternate2": "ERA-40",
+        "default": "ERA-5"
+    },
+    "vas": {
+        "ERA-40": {
+            "MD5sum": "2ba90ab1c1a7d554a0b7ff30224e5c48",
+            "period": "195709-200208",
+            "shape": "(540, 73, 144)",
+            "template": "/obs4MIPs/ECMWF/ERA-40/mon/vas/gn/v20210727/vas_mon_ERA-40_PCMDI_gn_195709-200208.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "ac19b48b897cfe839585df4ff0fc4a7b",
+            "period": "197901-201903",
+            "shape": "(483, 241, 480)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/vas/gn/v20210727/vas_mon_ERA-INT_PCMDI_gn_197901-201903.nc"
+        },
+        "alternate1": "ERA-40",
+        "alternate2": "ERA-INT"
+    },
+    "zg": {
+        "ERA-40": {
+            "MD5sum": "a739f2e6a61e28e5033559e7d3ff5e3a",
+            "period": "195709-200208",
+            "shape": "(540, 19, 73, 144)",
+            "template": "/obs4MIPs/ECMWF/ERA-40/mon/zg/gn/v20210727/zg_mon_ERA-40_PCMDI_gn_195709-200208.nc"
+        },
+        "ERA-5": {
+            "MD5sum": "N/A",
+            "period": "197901-201812",
+            "shape": "(480, 37, 721, 1440)",
+            "template": "/obs4MIPs/ECMWF/ERA-5/mon/zg/gn/v20210729/zg_mon_ERA-5_PCMDI_gn_*.nc"
+        },
+        "ERA-INT": {
+            "MD5sum": "0c99b65883c04e9b7124d1dfd005389b",
+            "period": "198901-201001",
+            "shape": "(253, 19, 121, 240)",
+            "template": "/obs4MIPs/ECMWF/ERA-INT/mon/zg/gn/v20220201/zg_mon_ERA-INT_PCMDI_gn_198901-201001.nc"
+        },
+        "alternate1": "ERA-INT",
+        "alternate2": "ERA-40",
+        "default": "ERA-5"
+    },
+    "zos": {
+        "AVISO-1-0": {
+            "MD5sum": "91252303cb65548fee5ff42dd3024825",
+            "period": "199301-201912",
+            "shape": "(324, 720, 1440)",
+            "template": "/obs4MIPs/CNES/AVISO-1-0/mon/zos/gn/v20210727/zos_mon_AVISO-1-0_PCMDI_gn_199301-201912.nc"
+        },
+        "default": "AVISO-1-0"
+    }
+}
