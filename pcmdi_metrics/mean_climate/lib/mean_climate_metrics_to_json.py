@@ -20,7 +20,14 @@ def mean_climate_metrics_to_json(
         models_in_dict = list(json_dict["RESULTS"].keys())
         for m in models_in_dict:
             if m == model:
-                for ref in list(json_dict["RESULTS"][m].keys()):
+                ref_list = list(json_dict["RESULTS"][m].keys())
+                if debug:
+                    print('debug:: mean_climate_metrics_to_json:: m, ref_list: ', m, ref_list)
+                if 'units' in ref_list:
+                    ref_list.remove('units')
+                for ref in ref_list:
+                    if debug:
+                        print('debug:: mean_climate_metrics_to_json:: m, ref, json_dict["RESULTS"][m][ref]: ', m, ref, json_dict["RESULTS"][m][ref])
                     runs_in_model_dict = list(json_dict["RESULTS"][m][ref].keys())
                     for r in runs_in_model_dict:
                         if (r != run) and (run is not None):

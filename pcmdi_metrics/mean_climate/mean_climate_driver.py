@@ -278,6 +278,8 @@ for var in vars:
 
                         # write individual JSON
                         # --- single simulation, obs (need to accumulate later) / single variable
+                        if debug:
+                            print('write individual JSON start: model, run:', model, run)
                         json_filename_tmp = "_".join([model, var, target_grid, regrid_tool, "metrics", ref])
                         mean_climate_metrics_to_json(
                             os.path.join(metrics_output_path, var),
@@ -296,11 +298,14 @@ for var in vars:
                         print(e)
 
     # write collective JSON --- all models / all obs / single variable
+    if debug:
+        print('write collective JSON start')
     json_filename = "_".join([var, target_grid, regrid_tool, "metrics"])
     mean_climate_metrics_to_json(
         metrics_output_path,
         json_filename,
         result_dict,
         cmec_flag=cmec,
+        debug=debug
     )
     print('pmp mean clim driver completed')
