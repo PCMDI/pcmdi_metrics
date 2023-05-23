@@ -54,9 +54,10 @@ def compute_metrics(Var, dm, do, debug=False):
 
     # SET CONDITIONAL ON INPUT VARIABLE
     if var == "pr":
-        conv = 86400.0
-    else:
-        conv = 1.0
+        if do[var].units == "kg m-2 s-1":
+            do[var] = do[var] * 86400
+        if dm[var].units == "kg m-2 s-1":
+            dm[var] = dm[var] * 86400
 
     if var in ["hus"]:
         sig_digits = ".5f"
@@ -145,25 +146,25 @@ def compute_metrics(Var, dm, do, debug=False):
     ]):
         metrics_dictionary[stat] = OrderedDict()
 
-    metrics_dictionary["mean-obs_xy"]["ann"] = format(meanObs_xy * conv, sig_digits)
-    metrics_dictionary["mean_xy"]["ann"] = format(mean_xy * conv, sig_digits)
-    metrics_dictionary["std-obs_xy"]["ann"] = format(stdObs_xy * conv, sig_digits)
-    metrics_dictionary["std_xy"]["ann"] = format(std_xy * conv, sig_digits)
-    metrics_dictionary["std-obs_xyt"]["ann"] = format(stdObs_xyt * conv, sig_digits)
-    metrics_dictionary["std_xyt"]["ann"] = format(std_xyt * conv, sig_digits)
+    metrics_dictionary["mean-obs_xy"]["ann"] = format(meanObs_xy, sig_digits)
+    metrics_dictionary["mean_xy"]["ann"] = format(mean_xy, sig_digits)
+    metrics_dictionary["std-obs_xy"]["ann"] = format(stdObs_xy, sig_digits)
+    metrics_dictionary["std_xy"]["ann"] = format(std_xy, sig_digits)
+    metrics_dictionary["std-obs_xyt"]["ann"] = format(stdObs_xyt, sig_digits)
+    metrics_dictionary["std_xyt"]["ann"] = format(std_xyt, sig_digits)
     metrics_dictionary["std-obs_xy_devzm"]["ann"] = format(
-        stdObs_xy_devzm * conv, sig_digits
+        stdObs_xy_devzm, sig_digits
     )
-    metrics_dictionary["std_xy_devzm"]["ann"] = format(std_xy_devzm * conv, sig_digits)
-    metrics_dictionary["rms_xyt"]["ann"] = format(rms_xyt * conv, sig_digits)
-    metrics_dictionary["rms_xy"]["ann"] = format(rms_xy * conv, sig_digits)
-    metrics_dictionary["rmsc_xy"]["ann"] = format(rmsc_xy * conv, sig_digits)
+    metrics_dictionary["std_xy_devzm"]["ann"] = format(std_xy_devzm, sig_digits)
+    metrics_dictionary["rms_xyt"]["ann"] = format(rms_xyt, sig_digits)
+    metrics_dictionary["rms_xy"]["ann"] = format(rms_xy, sig_digits)
+    metrics_dictionary["rmsc_xy"]["ann"] = format(rmsc_xy, sig_digits)
     metrics_dictionary["cor_xy"]["ann"] = format(cor_xy, sig_digits)
-    metrics_dictionary["bias_xy"]["ann"] = format(bias_xy * conv, sig_digits)
-    metrics_dictionary["mae_xy"]["ann"] = format(mae_xy * conv, sig_digits)
+    metrics_dictionary["bias_xy"]["ann"] = format(bias_xy, sig_digits)
+    metrics_dictionary["mae_xy"]["ann"] = format(mae_xy, sig_digits)
     # ZONAL MEAN CONTRIBUTIONS
-    metrics_dictionary["rms_y"]["ann"] = format(rms_y * conv, sig_digits)
-    metrics_dictionary["rms_devzm"]["ann"] = format(rms_xy_devzm * conv, sig_digits)
+    metrics_dictionary["rms_y"]["ann"] = format(rms_y, sig_digits)
+    metrics_dictionary["rms_devzm"]["ann"] = format(rms_xy_devzm, sig_digits)
 
     # CALCULATE SEASONAL MEANS
     for sea in ["djf", "mam", "jja", "son"]:
@@ -186,15 +187,15 @@ def compute_metrics(Var, dm, do, debug=False):
         meanObs_xy_sea = pcmdi_metrics.mean_climate.lib.mean_xy(do_sea, var)
         mean_xy_sea = pcmdi_metrics.mean_climate.lib.mean_xy(dm_sea, var)
 
-        metrics_dictionary["bias_xy"][sea] = format(bias_sea * conv, sig_digits)
-        metrics_dictionary["rms_xy"][sea] = format(rms_sea * conv, sig_digits)
-        metrics_dictionary["rmsc_xy"][sea] = format(rmsc_sea * conv, sig_digits)
+        metrics_dictionary["bias_xy"][sea] = format(bias_sea, sig_digits)
+        metrics_dictionary["rms_xy"][sea] = format(rms_sea, sig_digits)
+        metrics_dictionary["rmsc_xy"][sea] = format(rmsc_sea, sig_digits)
         metrics_dictionary["cor_xy"][sea] = format(cor_sea, ".2f")
-        metrics_dictionary["mae_xy"][sea] = format(mae_sea * conv, sig_digits)
-        metrics_dictionary["std-obs_xy"][sea] = format(stdObs_xy_sea * conv, sig_digits)
-        metrics_dictionary["std_xy"][sea] = format(std_xy_sea * conv, sig_digits)
-        metrics_dictionary["mean-obs_xy"][sea] = format(meanObs_xy_sea * conv, sig_digits)
-        metrics_dictionary["mean_xy"][sea] = format(mean_xy_sea * conv, sig_digits)
+        metrics_dictionary["mae_xy"][sea] = format(mae_sea, sig_digits)
+        metrics_dictionary["std-obs_xy"][sea] = format(stdObs_xy_sea, sig_digits)
+        metrics_dictionary["std_xy"][sea] = format(std_xy_sea, sig_digits)
+        metrics_dictionary["mean-obs_xy"][sea] = format(meanObs_xy_sea, sig_digits)
+        metrics_dictionary["mean_xy"][sea] = format(mean_xy_sea, sig_digits)
 
     rms_mo_l = []
     rmsc_mo_l = []
@@ -240,15 +241,15 @@ def compute_metrics(Var, dm, do, debug=False):
         meanObs_xy_mo = pcmdi_metrics.mean_climate.lib.mean_xy(do_mo, var)
         mean_xy_mo = pcmdi_metrics.mean_climate.lib.mean_xy(dm_mo, var)
 
-        rms_mo_l.append(format(rms_mo * conv, sig_digits))
-        rmsc_mo_l.append(format(rmsc_mo * conv, sig_digits))
+        rms_mo_l.append(format(rms_mo, sig_digits))
+        rmsc_mo_l.append(format(rmsc_mo, sig_digits))
         cor_mo_l.append(format(cor_mo, ".2f"))
-        mae_mo_l.append(format(mae_mo * conv, sig_digits))
-        bias_mo_l.append(format(bias_mo * conv, sig_digits))
-        stdObs_xy_mo_l.append(format(stdObs_xy_mo * conv, sig_digits))
-        std_xy_mo_l.append(format(std_xy_mo * conv, sig_digits))
-        meanObs_xy_mo_l.append(format(meanObs_xy_mo * conv, sig_digits))
-        mean_xy_mo_l.append(format(mean_xy_mo * conv, sig_digits))
+        mae_mo_l.append(format(mae_mo, sig_digits))
+        bias_mo_l.append(format(bias_mo, sig_digits))
+        stdObs_xy_mo_l.append(format(stdObs_xy_mo, sig_digits))
+        std_xy_mo_l.append(format(std_xy_mo, sig_digits))
+        meanObs_xy_mo_l.append(format(meanObs_xy_mo, sig_digits))
+        mean_xy_mo_l.append(format(mean_xy_mo, sig_digits))
 
     metrics_dictionary["bias_xy"]["CalendarMonths"] = bias_mo_l
     metrics_dictionary["rms_xy"]["CalendarMonths"] = rms_mo_l
@@ -265,8 +266,8 @@ def compute_metrics(Var, dm, do, debug=False):
 
 # ZONAL AND SEASONAL MEAN CONTRIBUTIONS
 #           metrics_dictionary['rms_y'][sea] = format(
-#               rms_y * conv,
+#               rms_y,
 #               sig_digits)
 #           metrics_dictionary['rms_devzm'][sea] = format(
-#               rms_xy_devzm * conv,
+#               rms_xy_devzm,
 #               sig_digits)

@@ -62,6 +62,7 @@ def load_and_regrid(data_path, varname, varname_in_file=None, level=None, t_grid
 
     if varname != varname_in_file:
         ds_regridded[varname] = ds_regridded[varname_in_file]
+        ds_regridded = ds_regridded.drop_vars([varname_in_file])
 
     # preserve units
     try:
