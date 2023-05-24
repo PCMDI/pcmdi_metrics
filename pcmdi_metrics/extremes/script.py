@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import xarray as xr
 import xcdat
 import pandas as pd
@@ -8,12 +9,28 @@ import sys
 import os
 import glob
 import json
+import datetime
 
 from lib import (
     compute_metrics,
     create_extremes_parser
 )
 
+def write_to_nc(filepath,ds):
+    try:
+        ds.to_netcdf(filepath,mode="w")
+    except PermissionError as e:
+        if os.path.exists(filepath):
+            print("  Permission error. Removing existing file",filepath)
+            os.remove(filepath)
+            print("  Writing new netcdf file",filepath)
+            ds.to_netcdf(filepath,mode="w")
+        else:
+            print("  Permission error. Could not write netcdf file",filepath)
+            print("  ",e)
+    except Error as e:
+        print("  Error: Could not write netcdf file",filepath)
+        print("  ",e)
 
 ##########
 # Set up
@@ -22,7 +39,7 @@ from lib import (
 parser = create_extremes_parser.create_extremes_parser()
 parameter = parser.get_parameter(argparse_vals_only=False)
 
-# parameters
+# Parameters
 case_id = parameter.case_id
 model_list = parameter.test_data_set
 realization = parameter.realization
@@ -32,22 +49,39 @@ sftlf_filename_template = parameter.sftlf_filename_template
 test_data_path = parameter.test_data_path
 reference_data_path = parameter.reference_data_path
 reference_data_set = parameter.reference_data_set
-reference_sftlf_template = parameter.reference_sftlf_template # TODO what is this parameter
+reference_sftlf_template = parameter.reference_sftlf_template
 metrics_output_path = parameter.metrics_output_path
 nc_out = parameter.nc_out
 debug = parameter.debug
 cmec = parameter.cmec
+# Block extrema related settings
 annual_strict = parameter.annual_strict
 exclude_leap = parameter.exclude_leap
 dec_mode = parameter.dec_mode
 drop_incomplete_djf = parameter.drop_incomplete_djf
+start_year = parameter.year_range[0]
+end_year = parameter.year_range[1]
 
-
-if metrics_output_path is not None:
+# Verifying output directory
+if metrics_output_path is None:
+    metrics_output_path = datetime.datetime.now().strftime("v%Y%m%d")
+if case_id is not None:
     metrics_output_path = parameter.metrics_output_path.replace('%(case_id)', case_id)
+if not os.path.exists(metrics_output_path):
+    print("\nMetrics output path not found.")
+    print("Creating metrics output directory",metrics_output_path)
+    try:
+        os.makedirs(metrics_output_path)
+    except Error as e:
+        print("\nError: Could not create metrics output path",metrics_output_path)
+        print(e)
+        print("Exiting.")
+        sys.exit()
 
 obs = {}
+# TODO: Obs will likely need to be converted to model grid
 
+# Setting up model realization list
 find_all_realizations = False
 if realization is None:
     realization = ""
@@ -60,10 +94,11 @@ elif isinstance(realization, str):
 elif isinstance(realization,list):
     realizations = realization
 
+# Initialize output JSON structures
 metrics_dict = compute_metrics.init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict)
 # If any new extrema are added to the analysis,
 # a definition needs to be provided here.
-metrics_dict["DIMENSIONS"]["metric"] = {
+metrics_dict["DIMENSIONS"]["index"] = {
         "Rx5day": "Maximum consecutive 5-day precipitation",
         "Rx1day": "Maximum daily precipitation",
         "TXx": "Maximum value of daily maximum temperature",
@@ -72,19 +107,21 @@ metrics_dict["DIMENSIONS"]["metric"] = {
         "TNn": "Minimum value of daily minimum temperature",
     }
 
+# Only include reference data in loop if it exists
+if reference_data_path is not None:
+    model_loop_list = ["Reference"]+model_list
+else:
+    model_loop_list = model_list
 
 ##########
 # Run Analysis
 ##########
 
 # Loop over models
-for model in ["Reference"]+model_list:
+for model in model_loop_list:
 
     if model=="Reference":
-        if reference_data_set is not None:
-            list_of_runs = [reference_data_set] #TODO: realizations set in multiple places
-        else:
-            list_of_runs = []
+        list_of_runs = [str(reference_data_set)] #TODO: realizations set in multiple places
     elif find_all_realizations:
         test_data_full_path = os.path.join(
             test_data_path,
@@ -147,6 +184,11 @@ for model in ["Reference"]+model_list:
             else:
                 ds = xcdat.open_dataset(test_data_full_path[0])
 
+            if start_year is not None and end_year is not None:
+                start_time = cftime.datetime(start_year,1,1) - datetime.timedelta(days=0)
+                end_time = cftime.datetime(end_year+1,1,1) - datetime.timedelta(days=1)
+                ds = ds.sel(time=slice(start_time,end_time))
+
             if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
                 ds = self.ds.convert_calendar('noleap')
 
@@ -165,9 +207,9 @@ for model in ["Reference"]+model_list:
                 if nc_out:
                     print("Writing results to netCDF.")
                     filepath = os.path.join(metrics_output_path,"TXx_{0}.nc".format("_".join([model,run])))
-                    TXx.to_netcdf(filepath)
+                    write_to_nc(filepath,TXx)
                     filepath = os.path.join(metrics_output_path,"TXn_{0}.nc".format("_".join([model,run])))
-                    TXn.to_netcdf(filepath)   
+                    write_to_nc(filepath,TXn)
    
             if varname == "tasmin":
                 TNx,TNn = compute_metrics.temperature_metrics(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
@@ -181,9 +223,9 @@ for model in ["Reference"]+model_list:
                 if nc_out:
                     print("Writing results to netCDF.")
                     filepath = os.path.join(metrics_output_path,"TNx_{0}.nc".format("_".join([model,run])))
-                    TNx.to_netcdf(filepath)
+                    write_to_nc(filepath,TNx)
                     filepath = os.path.join(metrics_output_path,"TNn_{0}.nc".format("_".join([model,run])))
-                    TNn.to_netcdf(filepath)   
+                    write_to_nc(filepath,TNx)
 
             if varname in ["pr","PRECT","precip"]:
                 # Rename possible precipitation variable names for consistency
@@ -200,31 +242,32 @@ for model in ["Reference"]+model_list:
                 if nc_out:
                     print("Writing results to netCDF.")
                     filepath = os.path.join(metrics_output_path,"Rx1day_{0}.nc".format("_".join([model,run])))
-                    Rx1day.to_netcdf(filepath)
+                    write_to_nc(filepath,Rx1day)
                     filepath = os.path.join(metrics_output_path,"Rx5day_{0}.nc".format("_".join([model,run])))
-                    Rx5day.to_netcdf(filepath)
+                    write_to_nc(filepath,Rx5day)
             
             # Get stats and update metrics dictionary
+            print("Generating metrics")
             result_dict = compute_metrics.metrics_json(stats_dict,sftlf,obs_dict=obs)
             metrics_dict["RESULTS"][model][run].update(result_dict)
             if run not in metrics_dict["DIMENSIONS"]["realization"]:
                 metrics_dict["DIMENSIONS"]["realization"].append(run)
-
+    
     # Update metrics definitions
     metrics_dict["DIMENSIONS"]["model"] = model_list
 
-    #JSON = pcmdi_metrics.io.base.Base(
-    #    outdir(output_type="metrics_results"), json_filename
-    #)
-    #JSON.write(met_dict,
-    #json_structure = ["model","realization","metric","region","season","year"],
-    #sort_keys = True,
-    #indent = 4,
-    #separators=(",", ": "))
+    # Pull out metrics for just this model
+    # and write to JSON
+    metrics_tmp = metrics_dict.copy()
+    metrics_tmp["DIMENSIONS"]["model"] = model
+    metrics_tmp["DIMENSIONS"]["realization"] = list_of_runs
+    metrics_tmp["RESULTS"] = {model: metrics_dict["RESULTS"][model]}
+    metrics_path = os.path.join(metrics_output_path,"{0}_extremes_metrics.json".format(model))
+    print("  Writing metrics JSON",metrics_path)
+    with open(metrics_path,"w") as mp:
+        json.dump(metrics_dict, mp, indent=2)
 
-    #if cmec_flag:
-    #    JSON.write_cmec(indent=4, separators=(",", ": "))
-
+# TODO: PMP metrics JSON formatting and CMEC JSON
 
 print("Writing metrics JSON.")
 metrics_path = os.path.join(metrics_output_path,"extremes_metrics.json")
