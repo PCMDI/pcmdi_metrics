@@ -25,6 +25,7 @@ def create_extremes_parser():
     parser.add_argument(
         "-r",
         "--reference_data_set",
+        default = None,
         type=str,
         nargs="+",
         dest="reference_data_set",
@@ -35,8 +36,16 @@ def create_extremes_parser():
 
     parser.add_argument(
         "--reference_data_path",
+        default = None,
         dest="reference_data_path",
         help="Path for the reference climitologies",
+        required=False,
+    )
+    parser.add_argument(
+        "--reference_sftlf_template",
+        default = None,
+        dest="reference_sftlf_template",
+        help="Path for the reference sftlf file",
         required=False,
     )
 
@@ -91,6 +100,7 @@ def create_extremes_parser():
     parser.add_argument(
         "--metrics_output_path",
         dest="metrics_output_path",
+        default=None,
         help="Directory of where to put the results",
         required=False,
     )
@@ -182,4 +192,22 @@ def create_extremes_parser():
         help="Option for generate netCDF file output: True (default) / False",
     )
 
+    parser.add_argument(
+        "--year_range",
+        type=list,
+        default=[None, None],
+        help="List containing the start and end year"
+    ),
+    parser.add_argument(
+        "--covariate_path",
+        type=str,
+        default=None,
+        help="Covariate file path"
+    )
+    parser.add_argument(
+        "--covariate",
+        type=str,
+        default="CO2mass",
+        help="Covariate variable name"
+    )
     return parser
