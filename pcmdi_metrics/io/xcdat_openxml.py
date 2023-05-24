@@ -27,7 +27,7 @@ def xcdat_open(infile, data_var=None, decode_times=True):
         if infile.split('.')[-1].lower() == 'xml':
             ds = xcdat_openxml(infile, data_var=data_var, decode_times=decode_times)
         else:
-            ds = xcdat.open_dataset(infile, data_var=data_var, decode_times=decode_times)
+            ds = xcdat.open_mfdataset(infile, data_var=data_var, decode_times=decode_times)
 
     return ds
 
