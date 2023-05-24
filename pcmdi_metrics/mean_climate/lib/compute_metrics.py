@@ -54,10 +54,13 @@ def compute_metrics(Var, dm, do, debug=False):
 
     # SET CONDITIONAL ON INPUT VARIABLE
     if var == "pr":
-        if do[var].units == "kg m-2 s-1":
-            do[var] = do[var] * 86400
+        print('Adjust units for pr')
+        #if do[var].units == "kg m-2 s-1":
+        do[var] = do[var] * 86400
+        print('REF DATA pr units adjusted to [mm d-1] from [kg m-2 s-1] by 86400 multiplied')
         if dm[var].units == "kg m-2 s-1":
             dm[var] = dm[var] * 86400
+            print('TEST DATA pr units adjusted to [mm d-1] from [kg m-2 s-1] by 86400 multiplied')
 
     if var in ["hus"]:
         sig_digits = ".5f"

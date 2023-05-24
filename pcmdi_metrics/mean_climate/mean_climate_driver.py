@@ -211,10 +211,11 @@ for var in vars:
                 test_data_full_path = os.path.join(
                     test_data_path,
                     filename_template).replace('%(variable)', varname).replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', run)
+                print('test_data (model in this case) full_path:', test_data_full_path)
                 if os.path.exists(test_data_full_path):
                     print('-----------------------')
                     print('model, run:', model, run)
-                    print('test_data (model in this case) full_path:', test_data_full_path)
+                    # print('test_data (model in this case) full_path:', test_data_full_path)
                     try:
                         ds_test_dict = OrderedDict()
 
