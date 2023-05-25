@@ -210,4 +210,36 @@ def create_extremes_parser():
         default="CO2mass",
         help="Covariate variable name"
     )
+
+    parser.add_argument(
+        "--shp_path",
+        type=str,
+        default=None,
+        help="Region shapefile path. Must also provide --column and --region_name. Only one of --shp_path, --coords can be used.",
+        required=False
+    )
+
+    parser.add_argument(
+        "--column",
+        type=str,
+        default=None,
+        help="Name of region attribute column in shapefile",
+        required=False
+    )
+    parser.add_argument(
+        "--region_name",
+        type=str,
+        default=None,
+        help="Name of region. If from shapefile, value must be found under attribute given by --column",
+        required=False
+    )
+
+    parser.add_argument(
+        "--coords",
+        type=list,
+        default=None,
+        help="List of coordinates for region bounds. Must be provided in consecutive order around shape perimeter. Only one of --shp_path, --coords can be used.",
+        required=False
+    )
+
     return parser
