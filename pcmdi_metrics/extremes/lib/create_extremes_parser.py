@@ -242,4 +242,12 @@ def create_extremes_parser():
         required=False
     )
 
+    parser.add_argument(
+        "--generate_sftlf",
+        type=bool,
+        default=False,
+        help="Flag to generate land sea mask if not found.",
+        required=False
+    )
+
     return parser
