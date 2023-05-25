@@ -230,8 +230,11 @@ def init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict,region_name):
 
     return metrics
 
+def mask_with_sftlf(da,sftlf):
+    da = da.where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100)
+    return da
 
-def temperature_metrics(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
+def temperature_indices(ds,varname,dec_mode,drop_incomplete_djf,annual_strict):
     # Returns annual max and min of provided temperature dataset
     # Temperature input can be "tasmax" or "tasmin".
 
@@ -251,17 +254,18 @@ def temperature_metrics(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_str
         Tmin[season] = S.seasonal_stats(season,"min")
     
     Tmax = Tmax.bounds.add_missing_bounds()
-    Tmin = Tmin.bounds.add_missing_bounds()
     Tmax.attrs["december_mode"] = str(dec_mode)
     Tmax.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
     Tmax.attrs["annual_strict"] = str(annual_strict)
+
+    Tmin = Tmin.bounds.add_missing_bounds()
     Tmin.attrs["december_mode"] = str(dec_mode)
     Tmin.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
     Tmin.attrs["annual_strict"] = str(annual_strict)
 
     return Tmax, Tmin
 
-def precipitation_metrics(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
+def precipitation_indices(ds,dec_mode,drop_incomplete_djf,annual_strict):
     # Returns annual Rx1day and Rx5day of provided precipitation dataset.
     # Precipitation variable must be called "pr".
 
@@ -286,6 +290,8 @@ def precipitation_metrics(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
     P1day.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
     P1day.attrs["annual_strict"] = str(annual_strict)
 
+    P1day = mask_with_sftlf(P1day,sftlf)
+
     # Rx5day
     P5day = xr.Dataset()
     P5day["ANN"] = S.annual_stats("max",pentad=True)
@@ -297,6 +303,8 @@ def precipitation_metrics(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
     P5day.attrs["december_mode"] = str(dec_mode)
     P5day.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
     P5day.attrs["annual_strict"] = str(annual_strict)
+
+    P5day = mask_with_sftlf(P5day,sftlf)
 
     return P1day,P5day
 
@@ -338,13 +346,13 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land"):
         for season in ["ANN","DJF","MAM","JJA","SON"]:
 
             # Global mean over land
-            seas_mean = ds_m.where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100).spatial.average(season)[season].mean()
+            seas_mean = ds_m.where(sftlf>=50).where(sftlf<=100).spatial.average(season)[season].mean()
             met_dict[m][region]["mean"][season] = float(seas_mean)
 
             if len(obs_dict) > 0:
                 # RMSE Error between reference and model
-                a = ds_m.temporal.average(season)[season].where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100)
-                b = obs_dict[m].temporal.average(season)[season].where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100)
+                a = ds_m.where(sftlf>=50).where(sftlf<=100).temporal.average(season)[season]
+                b = obs_dict[m].where(sftlf>=50).where(sftlf<=100).temporal.average(season)[season]
                 dif_square = (a - b) ** 2
                 weights = ds_m.spatial.get_weights(axis=['X', 'Y'])
                 stat = math.sqrt(dif_square.weighted(weights).mean(("lon", "lat")))

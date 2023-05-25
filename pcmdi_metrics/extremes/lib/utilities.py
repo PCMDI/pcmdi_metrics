@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import cftime
 import cdms2
+import cdutil
 import datetime
 import glob
 import json
@@ -25,7 +26,7 @@ def write_to_nc(filepath,ds):
         else:
             print("  Permission error. Could not write netcdf file",filepath)
             print("  ",e)
-    except Error as e:
+    except Exception as e:
         print("  Error: Could not write netcdf file",filepath)
         print("  ",e)
 
@@ -76,3 +77,33 @@ def set_up_realizations(realization):
         realizations = realization
     
     return find_all_realizations,realizations
+
+def generate_land_sea_mask(data,debug=False):
+    # generate sftlf if not provided.
+    latArray = data["lat"]
+    lat = cdms2.createAxis(latArray, id="latitude")
+    lat.designateLatitude()
+    lat.units = "degrees_north"
+
+    lonArray = data["lon"]
+    lon = cdms2.createAxis(lonArray, id="longitude")
+    lon.designateLongitude()
+    lon.units = "degrees_east"
+
+    t_grid_cdms2 = cdms2.grid.TransientRectGrid(lat, lon, 'yx', 'uniform')
+    sft = cdutil.generateLandSeaMask(t_grid_cdms2)
+
+    if debug:
+        print('sft:', sft)
+        print('sft.getAxisList():', sft.getAxisList())
+
+    # add sft to target grid dataset
+    t_grid = xr.DataArray(np.array(sft), 
+        coords={'lat': latArray,'lon': lonArray}, 
+        dims=["lat", "lon"]).to_dataset(name="sftlf")
+    t_grid = t_grid * 100
+    if debug:
+        print('t_grid (after sftlf added):', t_grid)
+        t_grid.to_netcdf('target_grid.nc')
+    
+    return t_grid

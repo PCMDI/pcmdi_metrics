@@ -46,6 +46,7 @@ debug = parameter.debug
 cmec = parameter.cmec
 start_year = parameter.year_range[0]
 end_year = parameter.year_range[1]
+generate_sftlf = parameter.generate_sftlf
 # Block extrema related settings
 annual_strict = parameter.annual_strict
 exclude_leap = parameter.exclude_leap
@@ -108,23 +109,37 @@ for model in model_loop_list:
     for run in list_of_runs:
 
         # SFTLF
+        sftlf_exists = True
         if run == reference_data_set:
-            sftlf = xcdat.open_dataset(reference_sftlf_template,decode_times=False)
+            if os.path.exists(reference_sftlf_template):
+                sftlf_filename = reference_sftlf_template
+            else:
+                print("No reference sftlf file template provided.")
+                if not generate_sftlf:
+                    print("Skipping reference data")
+                else:
+                    # Set flag to generate sftlf after loading data
+                    sftlf_exists = False
         else:
-            sftlf_filename_list = sftlf_filename_template.replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', run)
             try:
+                sftlf_filename_list = sftlf_filename_template.replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', run)
                 sftlf_filename = glob.glob(sftlf_filename_list)[0]
-            except IndexError:
-                print("No sftlf file found:",sftlf_filename_list)
-                print("Skipping realization",run)
-                continue
+            except (AttributeError, IndexError):
+                print("No sftlf file found for",model,run)
+                if not generate_sftlf:
+                    print("Skipping realization",run)
+                    continue
+                else:
+                    # Set flag to generate sftlf after loading data
+                    sftlf_exists = False
+        if sftlf_exists:
             sftlf = xcdat.open_dataset(sftlf_filename,decode_times=False)
-        # Stats calculation is expecting sfltf scaled from 0-100
-        if sftlf["sftlf"].max() <= 20:
-            sftlf["sftlf"] = sftlf["sftlf"] * 100.
-        if use_region_mask:
-            print("\nCreating sftlf region mask.")
-            sftlf = region_utilities.mask_region(sftlf,region_name,coords=coords,shp_path=shp_path,column=col)
+            # Stats calculation is expecting sfltf scaled from 0-100
+            if sftlf["sftlf"].max() <= 20:
+                sftlf["sftlf"] = sftlf["sftlf"] * 100.
+            if use_region_mask:
+                print("\nCreating sftlf region mask.")
+                sftlf = region_utilities.mask_region(sftlf,region_name,coords=coords,shp_path=shp_path,column=col)
         
         metrics_dict["RESULTS"][model][run] = {}
         
@@ -156,6 +171,13 @@ for model in model_loop_list:
             else:
                 ds = xcdat.open_dataset(test_data_full_path[0])
 
+            if not sftlf_exists and generate_sftlf:
+                print("Generating land sea mask.")
+                sftlf = utilities.generate_land_sea_mask(ds,debug=debug)
+                if use_region_mask:
+                    print("\nCreating sftlf region mask.")
+                    sftlf = region_utilities.mask_region(sftlf,region_name,coords=coords,shp_path=shp_path,column=col)
+
             if use_region_mask:
                 print("Creating dataset mask.")
                 ds = region_utilities.mask_region(ds,region_name,coords=coords,shp_path=shp_path,column=col)
@@ -172,7 +194,7 @@ for model in model_loop_list:
             stats_dict = {}
 
             if varname == "tasmax":
-                TXx,TXn = compute_metrics.temperature_metrics(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
+                TXx,TXn = compute_metrics.temperature_indices(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
                 stats_dict["TXx"] = TXx
                 stats_dict["TXn"] = TXn
 
@@ -188,7 +210,7 @@ for model in model_loop_list:
                     utilities.write_to_nc(filepath,TXn)
    
             if varname == "tasmin":
-                TNx,TNn = compute_metrics.temperature_metrics(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
+                TNx,TNn = compute_metrics.temperature_indices(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
                 stats_dict["TNx"] = TNx
                 stats_dict["TNn"] = TNn
 
@@ -207,7 +229,7 @@ for model in model_loop_list:
                 # Rename possible precipitation variable names for consistency
                 if varname in ["precip","PRECT"]:
                     ds = ds.rename({variable: "pr"})
-                Rx1day,Rx5day = compute_metrics.precipitation_metrics(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
+                Rx1day,Rx5day = compute_metrics.precipitation_indices(ds,dec_mode,drop_incomplete_djf,annual_strict)
                 stats_dict["Rx1day"] = Rx1day
                 stats_dict["Rx5day"] = Rx5day
 
