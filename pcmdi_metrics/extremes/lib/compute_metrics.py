@@ -221,12 +221,10 @@ def init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict):
             "realization": []
         },
         "RESULTS": {},
-        "PROVENANCE": {
-            "Settings": {
-                "december_mode": str(dec_mode),
-                "drop_incomplete_djf": str(drop_incomplete_djf),
-                "annual_strict": str(annual_strict)
-            }
+        "RUNTIME_CALENDAR_SETTINGS": {
+            "december_mode": str(dec_mode),
+            "drop_incomplete_djf": str(drop_incomplete_djf),
+            "annual_strict": str(annual_strict)
         }
     }
 
@@ -312,6 +310,7 @@ def metrics_json(data_dict,sftlf,obs_dict={}):
     #   met_dict: A dictionary containing metrics
     met_dict = {}
 
+    # Looping over each type of extrema in data_dict
     for m in data_dict:
         met_dict[m] = {
             "land": {
@@ -325,7 +324,7 @@ def metrics_json(data_dict,sftlf,obs_dict={}):
             }
         }
 
-    # If obs available, add metrics comparing with obs
+        # If obs available, add metrics comparing with obs
         if len(obs_dict) > 0:
             met_dict[m]["land"]["rmse_error"] = {
                 "ANN": "",
@@ -344,22 +343,12 @@ def metrics_json(data_dict,sftlf,obs_dict={}):
 
             if len(obs_dict) > 0:
                 # RMSE Error between reference and model
-                #dif_square = (
-                #            ds_m.where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100).temporal.average(season)[season] - 
-                #            obs_dict[m].where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100).temporal.average(season)[season]) ** 2
-                #weights = ds_m.spatial.get_weights(axis=['X', 'Y'])
-                #stat = float(math.sqrt(dif_square.weighted(weights).mean(("lon", "lat"))))
-                #met_dict[m]["land"]["rmse_error"][season] = stat
                 a = ds_m.temporal.average(season)[season].where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100)
                 b = obs_dict[m].temporal.average(season)[season].where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100)
                 dif_square = (a - b) ** 2
-                #print(a.shape,b.shape)
-                #print(dif_square)
                 weights = ds_m.spatial.get_weights(axis=['X', 'Y'])
                 stat = math.sqrt(dif_square.weighted(weights).mean(("lon", "lat")))
                 met_dict[m]["land"]["rmse_error"][season] = stat
-                #print(stat)
-                #print(a.shape,b.shape)
 
     return met_dict
 
