@@ -203,12 +203,12 @@ class SeasonalAverager():
             
         return ds_stat
 
-def init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict):
+def init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict,region_name):
     # Return initial version of the metrics dictionary
     metrics = {
         "DIMENSIONS": {
             "json_structure": ["model","realization","region","metric","season"],
-            "region": {"land": "Areas where 50<=sftlf<=100"},
+            "region": {region_name: "Areas where 50<=sftlf<=100"},
             "season": ["ANN","DJF","MAM","JJA","SON"],
             "index": {        
                 "Rx5day": "Maximum consecutive 5-day mean precipitation",
@@ -300,7 +300,7 @@ def precipitation_metrics(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
 
     return P1day,P5day
 
-def metrics_json(data_dict,sftlf,obs_dict={}):
+def metrics_json(data_dict,sftlf,obs_dict={},region="land"):
     # Format, calculate, and return the global mean value over land
     # for all datasets in the input dictionary
     # Arguments:
@@ -313,7 +313,7 @@ def metrics_json(data_dict,sftlf,obs_dict={}):
     # Looping over each type of extrema in data_dict
     for m in data_dict:
         met_dict[m] = {
-            "land": {
+            region: {
                 "mean":{
                     "ANN": "",
                     "DJF": "",
@@ -326,7 +326,7 @@ def metrics_json(data_dict,sftlf,obs_dict={}):
 
         # If obs available, add metrics comparing with obs
         if len(obs_dict) > 0:
-            met_dict[m]["land"]["rmse_error"] = {
+            met_dict[m][region]["rmse_error"] = {
                 "ANN": "",
                 "DJF": "",
                 "MAM": "",
@@ -339,7 +339,7 @@ def metrics_json(data_dict,sftlf,obs_dict={}):
 
             # Global mean over land
             seas_mean = ds_m.where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100).spatial.average(season)[season].mean()
-            met_dict[m]["land"]["mean"][season] = float(seas_mean)
+            met_dict[m][region]["mean"][season] = float(seas_mean)
 
             if len(obs_dict) > 0:
                 # RMSE Error between reference and model
@@ -348,7 +348,7 @@ def metrics_json(data_dict,sftlf,obs_dict={}):
                 dif_square = (a - b) ** 2
                 weights = ds_m.spatial.get_weights(axis=['X', 'Y'])
                 stat = math.sqrt(dif_square.weighted(weights).mean(("lon", "lat")))
-                met_dict[m]["land"]["rmse_error"][season] = stat
+                met_dict[m][region]["rmse_error"][season] = stat
 
     return met_dict
 
