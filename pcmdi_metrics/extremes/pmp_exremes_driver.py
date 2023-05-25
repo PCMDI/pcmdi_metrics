@@ -10,11 +10,52 @@ import os
 import glob
 import json
 import datetime
+import regionmask
+import geopandas as gpd
 
 from lib import (
     compute_metrics,
     create_extremes_parser
 )
+from pcmdi_metrics.io.base import Base
+
+def mask_region(data,name,coords=None,shp_path=None,column=None):
+   
+    lon = data["lon"]
+    lat = data["lat"]
+
+    # Option 1: Region is defined by coord pairs
+    if coords is not None:
+        print("Masking region",coords)
+        regions = regionmask.Regions([coords])
+        mask = regions.mask(lon, lat)
+
+    # Option 2: region is defined by shapefile
+    elif shp_path is not None:
+        print("Loading region from file",shp_path)
+        regions_file = gpd.read_file(shp_path)
+        if column is not None:
+            regions = regionmask.from_geopandas(regions_file,names=column)
+        else:
+            print("Column name not provided.")
+            regions = regionmask.from_geopandas(regions_file)
+        mask = regions.mask(lon, lat)
+
+    else:
+        print("Region coordinates or shapefile must be provided.")
+        print("Defaulting to global analysis.")
+        return
+
+    try:
+        masked_data = data.where(mask == name)
+    except Error as e:
+        print("Error: Masking failed. Defaulting to global analysis.")
+        print(e)
+        return
+
+    return  masked_data
+    
+
 
 def write_to_nc(filepath,ds):
     try:
@@ -32,6 +73,22 @@ def write_to_nc(filepath,ds):
         print("  Error: Could not write netcdf file",filepath)
         print("  ",e)
 
+def write_to_json(outdir,json_filename,json_dict):
+    # Open JSON
+    JSON = Base(
+        outdir, json_filename
+    )
+    json_structure = json_dict["DIMENSIONS"]["json_structure"]
+
+    JSON.write(
+        json_dict,
+        json_structure=json_structure,
+        sort_keys=True,
+        indent=4,
+        separators=(",", ": "),
+    )
+    return
+
 ##########
 # Set up
 ##########
@@ -40,6 +97,7 @@ parser = create_extremes_parser.create_extremes_parser()
 parameter = parser.get_parameter(argparse_vals_only=False)
 
 # Parameters
+# I/O settings
 case_id = parameter.case_id
 model_list = parameter.test_data_set
 realization = parameter.realization
@@ -54,13 +112,13 @@ metrics_output_path = parameter.metrics_output_path
 nc_out = parameter.nc_out
 debug = parameter.debug
 cmec = parameter.cmec
+start_year = parameter.year_range[0]
+end_year = parameter.year_range[1]
 # Block extrema related settings
 annual_strict = parameter.annual_strict
 exclude_leap = parameter.exclude_leap
 dec_mode = parameter.dec_mode
 drop_incomplete_djf = parameter.drop_incomplete_djf
-start_year = parameter.year_range[0]
-end_year = parameter.year_range[1]
 
 # Verifying output directory
 if metrics_output_path is None:
@@ -95,17 +153,10 @@ elif isinstance(realization,list):
     realizations = realization
 
 # Initialize output JSON structures
+# FYI: if new metrics are added to this analysis, 
+# the index object in the compute_metrics.init_metrics_dict
+# code must be updated manually.
 metrics_dict = compute_metrics.init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict)
-# If any new extrema are added to the analysis,
-# a definition needs to be provided here.
-metrics_dict["DIMENSIONS"]["index"] = {
-        "Rx5day": "Maximum consecutive 5-day precipitation",
-        "Rx1day": "Maximum daily precipitation",
-        "TXx": "Maximum value of daily maximum temperature",
-        "TXn": "Minimum value of daily maximum temperature",
-        "TNx": "Maximum value of daily minimum temperature",
-        "TNn": "Minimum value of daily minimum temperature",
-    }
 
 # Only include reference data in loop if it exists
 if reference_data_path is not None:
@@ -149,9 +200,11 @@ for model in model_loop_list:
                 sftlf_filename = glob.glob(sftlf_filename_list)[0]
             except IndexError:
                 print("No sftlf file found:",sftlf_filename_list)
+                print("Skipping realization",run)
+                continue
             sftlf = xcdat.open_dataset(sftlf_filename,decode_times=False)
         # Stats calculation is expecting sfltf scaled from 0-100
-        if sftlf["sftlf"].max() <= 10:
+        if sftlf["sftlf"].max() <= 20:
             sftlf["sftlf"] = sftlf["sftlf"] * 100.
         
         metrics_dict["RESULTS"][model][run] = {}
@@ -192,7 +245,7 @@ for model in model_loop_list:
             if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
                 ds = self.ds.convert_calendar('noleap')
 
-            # This is going to hold results for just this run
+            # This dict is going to hold results for just this run
             stats_dict = {}
 
             if varname == "tasmax":
@@ -262,14 +315,8 @@ for model in model_loop_list:
     metrics_tmp["DIMENSIONS"]["model"] = model
     metrics_tmp["DIMENSIONS"]["realization"] = list_of_runs
     metrics_tmp["RESULTS"] = {model: metrics_dict["RESULTS"][model]}
-    metrics_path = os.path.join(metrics_output_path,"{0}_extremes_metrics.json".format(model))
-    print("  Writing metrics JSON",metrics_path)
-    with open(metrics_path,"w") as mp:
-        json.dump(metrics_dict, mp, indent=2)
+    metrics_path = "{0}_extremes_metrics.json".format(model)
+    write_to_json(metrics_output_path,metrics_path,metrics_tmp)
 
-# TODO: PMP metrics JSON formatting and CMEC JSON
-
-print("Writing metrics JSON.")
-metrics_path = os.path.join(metrics_output_path,"extremes_metrics.json")
-with open(metrics_path,"w") as mp:
-    json.dump(metrics_dict, mp, indent=2)
+# Output single file with all models
+write_to_json(metrics_output_path,"extremes_metrics.json",metrics_dict)
