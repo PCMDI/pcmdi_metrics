@@ -41,18 +41,33 @@ class TimeSeriesData():
 class SeasonalAverager():
     # Make seasonal averages of data in TimeSeriesData class
 
-    def __init__(self, ds, dec_mode="DJF", drop_incomplete_djf=True, annual_strict=True):
-        self.ds = ds
+    def __init__(self, TS, sftlf, dec_mode="DJF", drop_incomplete_djf=True, annual_strict=True):
+        self.TS = TS
         self.dec_mode = dec_mode
         self.drop_incomplete_djf = drop_incomplete_djf
         self.annual_strict = annual_strict
         self.del1d = datetime.timedelta(days=1)
         self.del0d = datetime.timedelta(days=0)
         self.pentad = None
+        self.sftlf = sftlf["sftlf"]
+
+    def masked_ds(self,ds):
+        # Mask land where 50<=sftlf<=100
+        return ds.where(self.sftlf>=50).where(self.sftlf<=100)
         
     def calc_5day_mean(self):
         # Get the 5-day mean dataset
-        self.pentad = self.ds.rolling_5day()
+        self.pentad = self.TS.rolling_5day()
+
+    def fix_time_coord(self,ds,cal):
+        ds = ds.rename({"year": "time"})
+        y_to_cft = [cftime.datetime(y,1,1,calendar=cal) for y in ds.time]
+        ds["time"] = y_to_cft
+        ds.time.attrs["axis"] = "T"
+        ds['time'].encoding['calendar'] = cal
+        ds['time'].attrs['standard_name'] = 'time'
+        ds.time.encoding['units'] = "days since 0000-01-01"
+        return ds
         
     def annual_stats(self,stat,pentad=False):
         # Acquire annual statistics
@@ -67,13 +82,13 @@ class SeasonalAverager():
                 self.calc_5day_mean()
             ds = self.pentad
         else:
-            ds = self.ds.return_data_array()
-        cal = self.ds.calendar
+            ds = self.TS.return_data_array()
+        cal = self.TS.calendar
 
         if self.annual_strict:
             # This setting is for means using 5 day rolling average values, where
             # we do not want to include any data from the prior year
-            year_range = self.ds.year_range
+            year_range = self.TS.year_range
 
             # Only use data from that year - start on Jan 5 avg
             date_range = [xr.cftime_range(
@@ -96,14 +111,8 @@ class SeasonalAverager():
         
         # Need to fix time axis if groupby operation happened
         if "year" in ds_ann.coords:
-            ds_ann = ds_ann.rename({"year": "time"})
-            y_to_cft = [cftime.datetime(y,1,1,calendar=cal) for y in ds_ann.time]
-            ds_ann["time"] = y_to_cft
-            ds_ann.time.attrs["axis"] = "T"
-            ds_ann['time'].encoding['calendar'] = cal
-            ds_ann['time'].attrs['standard_name'] = 'time'
-            ds_ann.time.encoding['units'] = "days since 0000-01-01"
-        return ds_ann
+            ds_ann = self.fix_time_coord(ds_ann,cal)
+        return self.masked_ds(ds_ann)
 
     def seasonal_stats(self,season,stat,pentad=False):
         # Acquire statistics for a given season
@@ -114,15 +123,15 @@ class SeasonalAverager():
         # Returns:
         #     ds_stat: Dataset containing seasonal max or min grid
 
-        year_range = self.ds.year_range
+        year_range = self.TS.year_range
 
         if pentad == True:
             if self.pentad is None:
                 self.calc_5day_mean()
             ds = self.pentad
         else:
-            ds = self.ds.return_data_array()
-        cal = self.ds.calendar
+            ds = self.TS.return_data_array()
+        cal = self.TS.calendar
 
         if season == "DJF" and self.dec_mode =="DJF":
             # Resample DJF to count prior DJF in current year
@@ -176,7 +185,7 @@ class SeasonalAverager():
             mo_en = dates[season][1][0]
             day_en = dates[season][1][1]
             
-            cal = self.ds.calendar
+            cal = self.TS.calendar
 
             date_range = [xr.cftime_range(
                             start=cftime.datetime(year,mo_st,day_st,calendar=cal)-self.del0d,
@@ -192,16 +201,8 @@ class SeasonalAverager():
 
         # Need to fix time axis if groupby operation happened
         if "year" in ds_stat.coords:
-            ds_stat = ds_stat.rename({"year": "time"})
-            
-            y_to_cft = [cftime.datetime(y,1,1,calendar=cal) for y in ds_stat.time]
-            ds_stat["time"] = y_to_cft
-            ds_stat.time.attrs["axis"] = "T"
-            ds_stat['time'].encoding['calendar'] = cal
-            ds_stat['time'].attrs['standard_name'] = 'time'
-            ds_stat.time.encoding['units'] = "days since 0000-01-01"
-            
-        return ds_stat
+            ds_stat = self.fix_time_coord(ds_stat,cal)
+        return self.masked_ds(ds_stat)
 
 def init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict,region_name):
     # Return initial version of the metrics dictionary
@@ -211,8 +212,8 @@ def init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict,region_name):
             "region": {region_name: "Areas where 50<=sftlf<=100"},
             "season": ["ANN","DJF","MAM","JJA","SON"],
             "index": {        
-                "Rx5day": "Maximum consecutive 5-day mean precipitation",
-                "Rx1day": "Maximum daily precipitation",
+                "Rx5day": "Maximum consecutive 5-day mean precipitation, mm/day",
+                "Rx1day": "Maximum daily precipitation, mm/day",
                 "TXx": "Maximum value of daily maximum temperature",
                 "TXn": "Minimum value of daily maximum temperature",
                 "TNx": "Maximum value of daily minimum temperature",
@@ -230,19 +231,23 @@ def init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict,region_name):
 
     return metrics
 
-def mask_with_sftlf(da,sftlf):
-    da = da.where(sftlf.sftlf >= 50).where(sftlf.sftlf <= 100)
-    return da
+def update_nc_attrs(ds,dec_mode,drop_incomplete_djf,annual_strict):
+    # Add bounds and record user settings in attributes
+    # Use this function for any general dataset updates.
+    ds = ds.bounds.add_missing_bounds() 
+    ds.attrs["december_mode"] = str(dec_mode)
+    ds.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
+    ds.attrs["annual_strict"] = str(annual_strict)
+    return ds
 
-def temperature_indices(ds,varname,dec_mode,drop_incomplete_djf,annual_strict):
+def temperature_indices(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
     # Returns annual max and min of provided temperature dataset
     # Temperature input can be "tasmax" or "tasmin".
 
     print("Generating temperature block extrema.")
 
     TS = TimeSeriesData(ds,varname)
-
-    S = SeasonalAverager(TS,dec_mode=dec_mode,drop_incomplete_djf=drop_incomplete_djf,annual_strict=annual_strict)
+    S = SeasonalAverager(TS,sftlf,dec_mode=dec_mode,drop_incomplete_djf=drop_incomplete_djf,annual_strict=annual_strict)
 
     Tmax = xr.Dataset()
     Tmin = xr.Dataset()
@@ -253,21 +258,15 @@ def temperature_indices(ds,varname,dec_mode,drop_incomplete_djf,annual_strict):
         Tmax[season] = S.seasonal_stats(season,"max")
         Tmin[season] = S.seasonal_stats(season,"min")
     
-    Tmax = Tmax.bounds.add_missing_bounds()
-    Tmax.attrs["december_mode"] = str(dec_mode)
-    Tmax.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
-    Tmax.attrs["annual_strict"] = str(annual_strict)
-
-    Tmin = Tmin.bounds.add_missing_bounds()
-    Tmin.attrs["december_mode"] = str(dec_mode)
-    Tmin.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
-    Tmin.attrs["annual_strict"] = str(annual_strict)
+    Tmax = update_nc_attrs(Tmax,dec_mode,drop_incomplete_djf,annual_strict)
+    Tmin = update_nc_attrs(Tmin,dec_mode,drop_incomplete_djf,annual_strict)
 
     return Tmax, Tmin
 
-def precipitation_indices(ds,dec_mode,drop_incomplete_djf,annual_strict):
+def precipitation_indices(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
     # Returns annual Rx1day and Rx5day of provided precipitation dataset.
     # Precipitation variable must be called "pr".
+    # Input data expected to have units of kg/m2/s
 
     print("Generating precipitation block extrema.")
 
@@ -275,36 +274,21 @@ def precipitation_indices(ds,dec_mode,drop_incomplete_djf,annual_strict):
     ds["pr"].attrs["units"] = "mm day-1"
 
     PR = TimeSeriesData(ds,"pr")
-
-    S = SeasonalAverager(PR,dec_mode=dec_mode,drop_incomplete_djf=drop_incomplete_djf,annual_strict=annual_strict)
+    S = SeasonalAverager(PR,sftlf,dec_mode=dec_mode,drop_incomplete_djf=drop_incomplete_djf,annual_strict=annual_strict)
 
     # Rx1day
     P1day = xr.Dataset()
     P1day["ANN"] = S.annual_stats("max",pentad=False)
-
     for season in ["DJF","MAM","JJA","SON"]:
         P1day[season] = S.seasonal_stats(season,"max",pentad=False)
-
-    P1day = P1day.bounds.add_missing_bounds() 
-    P1day.attrs["december_mode"] = str(dec_mode)
-    P1day.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
-    P1day.attrs["annual_strict"] = str(annual_strict)
-
-    P1day = mask_with_sftlf(P1day,sftlf)
+    P1day = update_nc_attrs(P1day,dec_mode,drop_incomplete_djf,annual_strict)
 
     # Rx5day
     P5day = xr.Dataset()
     P5day["ANN"] = S.annual_stats("max",pentad=True)
-
     for season in ["DJF","MAM","JJA","SON"]:
         P5day[season] = S.seasonal_stats(season,"max",pentad=True)
-
-    P5day = P5day.bounds.add_missing_bounds()
-    P5day.attrs["december_mode"] = str(dec_mode)
-    P5day.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
-    P5day.attrs["annual_strict"] = str(annual_strict)
-
-    P5day = mask_with_sftlf(P5day,sftlf)
+    P5day = update_nc_attrs(P5day,dec_mode,drop_incomplete_djf,annual_strict)
 
     return P1day,P5day
 
@@ -316,8 +300,8 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land"):
     #   sftlf: Land sea mask
     # Returns:
     #   met_dict: A dictionary containing metrics
-    met_dict = {}
 
+    met_dict = {}
     # Looping over each type of extrema in data_dict
     for m in data_dict:
         met_dict[m] = {
@@ -331,32 +315,29 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land"):
                 }
             }
         }
-
         # If obs available, add metrics comparing with obs
         if len(obs_dict) > 0:
-            met_dict[m][region]["rmse_error"] = {
+            met_dict[m][region]["rms"] = {
                 "ANN": "",
                 "DJF": "",
                 "MAM": "",
                 "JJA": "",
                 "SON": ""
             }
-
         ds_m = data_dict[m]
         for season in ["ANN","DJF","MAM","JJA","SON"]:
-
             # Global mean over land
-            seas_mean = ds_m.where(sftlf>=50).where(sftlf<=100).spatial.average(season)[season].mean()
+            seas_mean = ds_m.spatial.average(season)[season].mean()
             met_dict[m][region]["mean"][season] = float(seas_mean)
 
             if len(obs_dict) > 0:
                 # RMSE Error between reference and model
-                a = ds_m.where(sftlf>=50).where(sftlf<=100).temporal.average(season)[season]
-                b = obs_dict[m].where(sftlf>=50).where(sftlf<=100).temporal.average(season)[season]
+                a = ds_m.temporal.average(season)[season]
+                b = obs_dict[m].temporal.average(season)[season]
                 dif_square = (a - b) ** 2
                 weights = ds_m.spatial.get_weights(axis=['X', 'Y'])
                 stat = math.sqrt(dif_square.weighted(weights).mean(("lon", "lat")))
-                met_dict[m][region]["rmse_error"][season] = stat
+                met_dict[m][region]["rms"][season] = stat
 
     return met_dict
 

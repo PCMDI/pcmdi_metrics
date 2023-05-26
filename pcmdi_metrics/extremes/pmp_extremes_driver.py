@@ -67,7 +67,6 @@ metrics_output_path = utilities.verify_output_path(metrics_output_path,case_id)
 obs = {}
 # TODO: Obs will likely need to be converted to model grid
 
-
 # Setting up model realization list
 find_all_realizations,realizations = utilities.set_up_realizations(realization)
 
@@ -210,7 +209,7 @@ for model in model_loop_list:
                     utilities.write_to_nc(filepath,TXn)
    
             if varname == "tasmin":
-                TNx,TNn = compute_metrics.temperature_indices(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
+                TNx,TNn = compute_metrics.temperature_indices(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
                 stats_dict["TNx"] = TNx
                 stats_dict["TNn"] = TNn
 
@@ -229,7 +228,7 @@ for model in model_loop_list:
                 # Rename possible precipitation variable names for consistency
                 if varname in ["precip","PRECT"]:
                     ds = ds.rename({variable: "pr"})
-                Rx1day,Rx5day = compute_metrics.precipitation_indices(ds,dec_mode,drop_incomplete_djf,annual_strict)
+                Rx1day,Rx5day = compute_metrics.precipitation_indices(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
                 stats_dict["Rx1day"] = Rx1day
                 stats_dict["Rx5day"] = Rx5day
 
@@ -240,7 +239,7 @@ for model in model_loop_list:
                 if nc_out:
                     print("Writing results to netCDF.")
                     filepath = os.path.join(metrics_output_path,"Rx1day_{0}.nc".format("_".join([model,run,region_name])))
-                    utilities._to_nc(filepath,Rx1day)
+                    utilities.write_to_nc(filepath,Rx1day)
                     filepath = os.path.join(metrics_output_path,"Rx5day_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,Rx5day)
             
