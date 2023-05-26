@@ -48,9 +48,9 @@ You can either use a region from a shapefile or provide coordinate pairs that de
 
 | Parameter   | Definition |
 --------------|-------------
-| dec_mode | (str) Toggle how season containing December, January, and February is defined. "DJF" or "JFD".  |
-| annual_strict | (bool) This only matters for Rx5day. If True, only use data from within a given year in the 5-day means (record beings on Jan 5). If False, the rolling mean will include the last 4 days of the prior year. |
-| drop_incomplete_djf | Don't include data from the first JF and last D in the analysis. |
+| dec_mode | (str) Toggle how season containing December, January, and February is defined. "DJF" or "JFD". Default "DJF". |
+| annual_strict | (bool) This only matters for Rx5day. If True, only use data from within a given year in the 5-day means. If False, the rolling mean will include the last 4 days of the prior year. Default False. |
+| drop_incomplete_djf | (bool) Don't include data from the first January/February and last December in the analysis. Default False. |
 
 ## Other parameters
 | Parameter   | Definition |
