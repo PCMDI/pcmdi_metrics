@@ -1,8 +1,13 @@
-notes:
+PMP Extremes Metrics
+
+How to run driver:
+python pmp_extremes_driver.py -p parameter_file --other_params
+
+This script will produce metrics JSONs and netcdf files (optional) containing block max/min values for temperature and/or precipitation. 
 
 Temperature: metrics in same units as input data. Must have variable "tasmax" or "tasmin"
 
-Precipitation: inputs expected to be kg/m2/s. Converts to mm/day. Variable name pr,PRECT, or precip
+Precipitation: inputs expected to be kg/m2/s. Converts to mm/day. Variable name must be pr,PRECT, or precip
 
 It is not required to provide a reference dataset
 
