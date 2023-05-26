@@ -85,7 +85,7 @@ class SeasonalAverager():
             ds = self.TS.return_data_array()
         cal = self.TS.calendar
 
-        if self.annual_strict:
+        if self.annual_strict and pentad:
             # This setting is for means using 5 day rolling average values, where
             # we do not want to include any data from the prior year
             year_range = self.TS.year_range
@@ -204,7 +204,7 @@ class SeasonalAverager():
             ds_stat = self.fix_time_coord(ds_stat,cal)
         return self.masked_ds(ds_stat)
 
-def init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict,region_name):
+def init_metrics_dict(model_list,dec_mode,drop_incomplete_djf,annual_strict,region_name):
     # Return initial version of the metrics dictionary
     metrics = {
         "DIMENSIONS": {
@@ -218,7 +218,7 @@ def init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict,region_name):
                 "TXn": "Minimum value of daily maximum temperature",
                 "TNx": "Maximum value of daily minimum temperature",
                 "TNn": "Minimum value of daily minimum temperature",},
-            "model": [],
+            "model": model_list,
             "realization": []
         },
         "RESULTS": {},
