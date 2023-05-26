@@ -30,6 +30,7 @@ case_id = parameter.case_id
 test_data_set = parameter.test_data_set
 realization = parameter.realization
 vars = parameter.vars
+varname_in_test_data = parameter.varname_in_test_data
 reference_data_set = parameter.reference_data_set
 target_grid = parameter.target_grid
 regrid_tool = parameter.regrid_tool
@@ -63,6 +64,7 @@ if realization is None:
 elif isinstance(realization, str):
     if realization.lower() in ["all", "*"]:
         find_all_realizations = True
+        realizations = "Search for all realizations!!"
     else:
         realizations = [realization]
 
@@ -78,6 +80,7 @@ print(
     'test_data_set:', test_data_set, '\n',
     'realization:', realization, '\n',
     'vars:', vars, '\n',
+    'varname_in_test_data:', varname_in_test_data, '\n',
     'reference_data_set:', reference_data_set, '\n',
     'target_grid:', target_grid, '\n',
     'regrid_tool:', regrid_tool, '\n',
@@ -146,8 +149,20 @@ for var in vars:
     print('varname:', varname)
     print('level:', level)
 
+    if varname_in_test_data is not None:
+        varname_testdata = varname_in_test_data[varname]
+    else:
+        varname_testdata = varname
+
     # set dictionary for .json record
     result_dict = tree()
+
+    result_dict["Variable"] = dict()
+    result_dict["Variable"]["id"] = varname
+    if level is not None:
+        result_dict["Variable"]["level"] = level*100  # hPa to Pa
+
+    result_dict['References'] = dict()
 
     # ----------------
     # observation loop
@@ -165,24 +180,31 @@ for var in vars:
             obs_dict[varname][ref_dataset_name]["template"])
         print('ref_data_full_path:', ref_data_full_path)
         # load data and regrid
-        ds_ref = load_and_regrid(ref_data_full_path, varname, level, t_grid, decode_times=False, regrid_tool=regrid_tool, debug=debug)
+        ds_ref = load_and_regrid(data_path=ref_data_full_path, varname=varname, level=level, t_grid=t_grid, decode_times=False, regrid_tool=regrid_tool, debug=debug)
         ds_ref_dict = OrderedDict()
+        # for record in output json
+        result_dict['References'][ref] = obs_dict[varname][ref_dataset_name]
 
         # ----------
         # model loop
         # ----------
         for model in test_data_set:
 
+            print('=================================')
+            print('model, runs, find_all_realizations:', model, realizations, find_all_realizations)
+
+            result_dict["RESULTS"][model][ref]["source"] = ref_dataset_name 
+
             if find_all_realizations:
                 test_data_full_path = os.path.join(
                     test_data_path,
                     filename_template).replace('%(variable)', varname).replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', '*')
-                ncfiles = glob.glob(test_data_full_path)
+                print('test_data_full_path: ', test_data_full_path)
+                ncfiles = sorted(glob.glob(test_data_full_path))
                 realizations = []
                 for ncfile in ncfiles:
                     realizations.append(ncfile.split('/')[-1].split('.')[3])
-                print('=================================')
-                print('model, runs:', model, realizations)
+                print('realizations (after search): ', realizations)
 
             for run in realizations:
                 # identify data to load (annual cycle (AC) data is loading in)
@@ -197,8 +219,10 @@ for var in vars:
                         ds_test_dict = OrderedDict()
 
                         # load data and regrid
-                        ds_test = load_and_regrid(test_data_full_path, varname, level, t_grid, decode_times=True, regrid_tool=regrid_tool, debug=debug)
+                        ds_test = load_and_regrid(data_path=test_data_full_path, varname=varname, varname_in_file=varname_testdata, level=level, t_grid=t_grid, decode_times=True, regrid_tool=regrid_tool, debug=debug)
                         print('load and regrid done')
+                        result_dict["RESULTS"][model]["units"] = ds_test[varname].units
+                        result_dict["RESULTS"][model][ref][run]["InputClimatologyFileName"] = test_data_full_path.split('/')[-1] 
 
                         # -----------
                         # region loop
@@ -266,6 +290,8 @@ for var in vars:
                         )
  
                     except Exception as e:
+                        if debug:
+                            raise
                         print('error occured for ', model, run)
                         print(e)
 

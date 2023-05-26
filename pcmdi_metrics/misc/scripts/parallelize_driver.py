@@ -14,7 +14,7 @@ import tempfile
 
 import cdp
 
-from pcmdi_metrics.driver.pmp_parser import PMPParser
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 
 parser = PMPParser(description="Parallelize a driver over some arguments")
 parser.add_argument("--driver", help="driver to prallelize")

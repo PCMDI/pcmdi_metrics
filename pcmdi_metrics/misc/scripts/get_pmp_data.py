@@ -7,7 +7,7 @@ import tempfile
 import cdat_info
 import requests
 
-from pcmdi_metrics.driver.pmp_parser import PMPParser
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 
 
 def download_file(download_url_root, name, local_filename):

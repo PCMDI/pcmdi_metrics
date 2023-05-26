@@ -3,7 +3,7 @@ import glob
 import json
 import os
 
-from pcmdi_metrics.driver.pmp_parser import PMPParser
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.precip_variability.lib import AddParserArgument
 
 # Read parameters
@@ -39,8 +39,7 @@ for model in file_list:
                     / psdmfm_ref["RESULTS"][dat_ref][frc][dom][frq]
                 )
 
-    if not (os.path.isdir(outdir)):
-        os.makedirs(outdir)
+    os.makedirs(outdir, exist_ok=True)
     outfile = open(os.path.join(outdir, model.split("/")[-1]), "w")
     json.dump(psdmfm, outfile, sort_keys=True, indent=4, separators=(",", ": "))
     outfile.close()

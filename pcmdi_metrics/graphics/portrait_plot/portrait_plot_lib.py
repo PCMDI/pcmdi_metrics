@@ -106,7 +106,7 @@ def portrait_plot(
     # ----------------
     # Prepare plotting
     # ----------------
-    data, num_divide = prepare_data(data, xaxis_labels, yaxis_labels, debug)
+    data, num_divide = prepare_data(data, xaxis_labels, yaxis_labels, debug=debug)
 
     if num_divide not in [1, 2, 4]:
         sys.exit("Error: Number of (stacked) array is not 1, 2, or 4.")
@@ -117,7 +117,7 @@ def portrait_plot(
             num_divide_annotate = num_divide
         else:
             annotate_data, num_divide_annotate = prepare_data(
-                annotate_data, xaxis_labels, yaxis_labels, debug
+                annotate_data, xaxis_labels, yaxis_labels, debug=debug
             )
             if num_divide_annotate != num_divide:
                 sys.exit("Error: annotate_data does not have same size as data")
@@ -154,8 +154,8 @@ def portrait_plot(
     if num_divide == 1:
         ax, im = heatmap(
             data,
-            yaxis_labels,
             xaxis_labels,
+            yaxis_labels,
             ax=ax,
             invert_yaxis=invert_yaxis,
             cmap=cmap,
@@ -335,7 +335,7 @@ def portrait_plot(
 # ======================================================================
 # Prepare data
 # ----------------------------------------------------------------------
-def prepare_data(data, xaxis_labels, yaxis_labels, debug):
+def prepare_data(data, xaxis_labels, yaxis_labels, debug=False):
     # In case data was given as list of arrays, convert it to numpy (stacked) array
     if type(data) == list:
         if debug:
@@ -362,7 +362,7 @@ def prepare_data(data, xaxis_labels, yaxis_labels, debug):
         sys.exit("Error: Number of elements in yaxis_label mismatchs to the data")
 
     if type(data) == np.ndarray:
-        data = np.squeeze(data)
+        # data = np.squeeze(data)
         if len(data.shape) == 2:
             num_divide = 1
         elif len(data.shape) == 3:
@@ -386,7 +386,7 @@ def prepare_data(data, xaxis_labels, yaxis_labels, debug):
 # Portrait plot 1: heatmap-style (no triangle)
 # (Inspired from: https://matplotlib.org/devdocs/gallery/images_contours_and_fields/image_annotated_heatmap.html)
 # ----------------------------------------------------------------------
-def heatmap(data, row_labels, col_labels, ax=None, invert_yaxis=False, **kwargs):
+def heatmap(data, xaxis_labels, yaxis_labels, ax=None, invert_yaxis=False, **kwargs):
     """
     Create a heatmap from a numpy array and two lists of labels.
 
@@ -394,9 +394,9 @@ def heatmap(data, row_labels, col_labels, ax=None, invert_yaxis=False, **kwargs)
     ----------
     data
         A 2D numpy array of shape (M, N).
-    row_labels
+    yaxis_labels
         A list or array of length M with the labels for the rows.
-    col_labels
+    xaxis_labels
         A list or array of length N with the labels for the columns.
     ax
         A `matplotlib.axes.Axes` instance to which the heatmap is plotted.  If
@@ -419,8 +419,8 @@ def heatmap(data, row_labels, col_labels, ax=None, invert_yaxis=False, **kwargs)
     # Show all ticks and label them with the respective list entries.
     ax.set_xticks(np.arange(data.shape[1]) + 0.5, minor=False)
     ax.set_yticks(np.arange(data.shape[0]) + 0.5, minor=False)
-    ax.set_xticklabels(col_labels)
-    ax.set_yticklabels(row_labels)
+    ax.set_xticklabels(xaxis_labels)
+    ax.set_yticklabels(yaxis_labels)
     ax.tick_params(which="minor", bottom=False, left=False)
 
     return ax, im

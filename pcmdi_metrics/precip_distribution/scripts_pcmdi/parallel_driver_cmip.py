@@ -1,7 +1,9 @@
 import glob
 import os
 
-from pcmdi_metrics.driver.pmp_parser import PMPParser
+import xsearch as xs
+
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.misc.scripts import parallel_submitter
 from pcmdi_metrics.precip_distribution.lib import AddParserArgument
 
@@ -12,29 +14,46 @@ P = PMPParser()
 P = AddParserArgument(P)
 param = P.get_parameter()
 mip = param.mip
-modpath = param.modpath
+exp = param.exp
+var = param.var
+frq = param.frq
 res = param.res
 mod = param.mod
-if mod is None:
-    mod = "*"
 
-file_list = sorted(glob.glob(os.path.join(modpath, "*" + mod + "*")))
+if mod is None:
+    pathDict = xs.findPaths(exp, var, frq, cmipTable=frq, mip_era=mip.upper())
+else:
+    pathDict = xs.findPaths(exp, var, frq, cmipTable=frq, mip_era=mip.upper(), model=mod)
+path_list = sorted(list(pathDict.keys()))
+print("Number of datasets:", len(path_list))
+print(path_list)
 
 cmd_list = []
 log_list = []
-for ifl, fl in enumerate(file_list):
-    file = fl.split("/")[-1]
+for path in path_list:
+    fl = sorted(glob.glob(os.path.join(path, "*")))
+    model = fl[0].split("/")[-1].split("_")[2]
+    ens = fl[0].split("/")[-1].split("_")[4]
+    dat = model + "." + ens
     cmd_list.append(
         "python -u ../precip_distribution_driver.py -p ../param/precip_distribution_params_"
         + mip
-        + ".py --mod "
-        + file
+        + ".py --modpath "
+        + path
+        + " --mod *"
     )
     log_list.append(
-        "log_" + file + "_" + str(round(360 / res[0])) + "x" + str(round(180 / res[1]))
+        "log_"
+        + mip
+        + "_"
+        + var
+        + "_"
+        + dat
+        + "_"
+        + str(round(360 / res[0]))
+        + "x"
+        + str(round(180 / res[1]))
     )
-    print(cmd_list[ifl])
-print("Number of data: " + str(len(cmd_list)))
 
 parallel_submitter(
     cmd_list,

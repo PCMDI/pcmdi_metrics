@@ -4,6 +4,8 @@ import sys
 import numpy as np
 import pandas as pd
 
+from pcmdi_metrics.variability_mode.lib import sort_human
+
 
 def read_mean_clim_json_files(
     json_list, regions=None, stats=None, mip=None, debug=False
@@ -45,7 +47,10 @@ def read_mean_clim_json_files(
             var += "-" + str(int(dict_temp["Variable"]["level"] / 100.0))  # Pa to hPa
         results_dict[var] = dict_temp
         unit = extract_unit(var, results_dict[var])
-        var_unit = var + " [" + unit + "]"
+        if unit is not None:
+            var_unit = var + " [" + unit + "]"
+        else:
+            var_unit = var
         var_list.append(var)
         var_unit_list.append(var_unit)
         var_ref_dict[var] = extract_ref(var, results_dict[var])
@@ -90,13 +95,19 @@ def read_mean_clim_json_files(
 
 def extract_unit(var, results_dict_var):
     model_list = sorted(list(results_dict_var["RESULTS"].keys()))
-    units = results_dict_var["RESULTS"][model_list[0]]["units"]
+    try:
+        units = results_dict_var["RESULTS"][model_list[0]]["units"]
+    except Exception as e:
+        units = None
     return units
 
 
 def extract_ref(var, results_dict_var):
     model_list = sorted(list(results_dict_var["RESULTS"].keys()))
-    ref = results_dict_var["RESULTS"][model_list[0]]["default"]["source"]
+    try:
+        ref = results_dict_var["RESULTS"][model_list[0]]["default"]["source"]
+    except Exception as e:
+        ref = None
     return ref
 
 
@@ -112,7 +123,7 @@ def extract_stat(var, results_dict_var):
 
 def extract_region_stat(var, results_dict_var):
     model_list = sorted(list(results_dict_var["RESULTS"].keys()))
-    run_list = sorted(
+    run_list = sort_human(
         list(results_dict_var["RESULTS"][model_list[0]]["default"].keys())
     )
     if "source" in run_list:
@@ -135,24 +146,28 @@ def extract_data(results_dict, var_list, region, stat, season, mip, debug=False)
     Return a pandas dataframe for metric numbers at given region/stat/season.
     Rows: models, Columns: variables (i.e., 2d array)
     """
-    if "rlut" in list(results_dict["rlut"]["RESULTS"].keys()):
-        model_list = sorted(list(results_dict["rlut"]["RESULTS"].keys()))
+    if "rlut" in list(results_dict.keys()):
+        if "rlut" in list(results_dict["rlut"]["RESULTS"].keys()):
+            model_list = sorted(list(results_dict["rlut"]["RESULTS"].keys()))
     else:
         model_list = sorted(list(results_dict[var_list[0]]["RESULTS"].keys()))
 
     data_list = []
     for model in model_list:
-        if "rlut" in list(results_dict["rlut"]["RESULTS"].keys()):
-            run_list = list(results_dict["rlut"]["RESULTS"][model]["default"].keys())
+        if "rlut" in list(results_dict.keys()):
+            if "rlut" in list(results_dict["rlut"]["RESULTS"].keys()):
+                run_list = sort_human(list(results_dict["rlut"]["RESULTS"][model]["default"].keys()))
         else:
-            run_list = list(
-                results_dict[var_list[0]]["RESULTS"][model]["default"].keys()
+            run_list = sort_human(list(
+                results_dict[var_list[0]]["RESULTS"][model]["default"].keys())
             )
 
         if debug:
             print("model, run_list:", model, run_list)
 
-        run_list.remove("source")
+        if "source" in run_list:
+            run_list.remove("source")
+
         for run in run_list:
             tmp_list = []
             for var in var_list:

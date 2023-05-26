@@ -56,6 +56,7 @@ import numpy as np
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
+from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.monsoon_sperber.lib import (
     AddParserArgument,
     YearCheck,
@@ -82,7 +83,7 @@ n = 5  # pentad
 # =================================================
 # Collect user defined options
 # -------------------------------------------------
-P = pcmdi_metrics.driver.pmp_parser.PMPParser(
+P = pmp_parser.PMPParser(
     description="Runs PCMDI Monsoon Sperber Computations",
     formatter_class=RawTextHelpFormatter,
 )
@@ -138,8 +139,7 @@ outdir = param.process_templated_argument("results_dir")
 
 # Create output directory
 for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
-    if not os.path.exists(outdir(output_type=output_type)):
-        os.makedirs(outdir(output_type=output_type))
+    os.makedirs(outdir(output_type=output_type), exist_ok=True)
     print(outdir(output_type=output_type))
 
 # Debug

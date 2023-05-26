@@ -1,3 +1,4 @@
+import copy
 import os
 
 import cdms2 as cdms
@@ -9,6 +10,7 @@ import rasterio.features
 import regionmask
 import xarray as xr
 from regrid2 import Horizontal
+from scipy.signal import savgol_filter
 from shapely.geometry import MultiPolygon, Polygon
 
 import pcmdi_metrics
@@ -49,7 +51,6 @@ def precip_distribution_frq_amt(dat, drg, syr, eyr, res, outdir, ref, refdir, cm
     amtpeakmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
     amtwidthmap = np.empty((len(months), drg.shape[1], drg.shape[2]))
     for im, mon in enumerate(months):
-
         if mon == "ANN":
             dmon = drg
         elif mon == "MAM":
@@ -59,7 +60,7 @@ def precip_distribution_frq_amt(dat, drg, syr, eyr, res, outdir, ref, refdir, cm
         elif mon == "SON":
             dmon = getDailyCalendarMonth(drg, ["SEP", "OCT", "NOV"])
         elif mon == "DJF":
-            # dmon = getDailyCalendarMonth(drg, ['DEC','JAN','FEB'])
+            # dmon = getDailyCalendarMonth(drg, ['DEC', 'JAN', 'FEB'])
             dmon = getDailyCalendarMonth(
                 drg(time=(str(syr) + "-3-1 0:0:0", str(eyr) + "-11-30 23:59:59")),
                 ["DEC", "JAN", "FEB"],
@@ -195,13 +196,13 @@ def precip_distribution_frq_amt(dat, drg, syr, eyr, res, outdir, ref, refdir, cm
     )
     JSON.write(
         metricsdom,
-        json_structure=["model+realization", "metrics", "domain", "month"],
+        json_structure=["model + realization", "metrics", "domain", "month"],
         sort_keys=True,
         indent=4,
-        separators=(",", ": "),
+        separators=(", ", ": "),
     )
     if cmec:
-        JSON.write_cmec(indent=4, separators=(",", ": "))
+        JSON.write_cmec(indent=4, separators=(", ", ": "))
 
     # Write data (json file for domain metrics with 3 clustering regions)
     outfilename = (
@@ -212,13 +213,13 @@ def precip_distribution_frq_amt(dat, drg, syr, eyr, res, outdir, ref, refdir, cm
     )
     JSON.write(
         metricsdom3C,
-        json_structure=["model+realization", "metrics", "domain", "month"],
+        json_structure=["model + realization", "metrics", "domain", "month"],
         sort_keys=True,
         indent=4,
-        separators=(",", ": "),
+        separators=(", ", ": "),
     )
     if cmec:
-        JSON.write_cmec(indent=4, separators=(",", ": "))
+        JSON.write_cmec(indent=4, separators=(", ", ": "))
 
     # Write data (json file for domain metrics with AR6 regions)
     outfilename = (
@@ -229,13 +230,13 @@ def precip_distribution_frq_amt(dat, drg, syr, eyr, res, outdir, ref, refdir, cm
     )
     JSON.write(
         metricsdomAR6,
-        json_structure=["model+realization", "metrics", "domain", "month"],
+        json_structure=["model + realization", "metrics", "domain", "month"],
         sort_keys=True,
         indent=4,
-        separators=(",", ": "),
+        separators=(", ", ": "),
     )
     if cmec:
-        JSON.write_cmec(indent=4, separators=(",", ": "))
+        JSON.write_cmec(indent=4, separators=(", ", ": "))
 
     print("Completed metrics from precipitation frequency and amount distributions")
 
@@ -290,7 +291,6 @@ def precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec):
     )
 
     for im, mon in enumerate(months):
-
         if mon == "ANN":
             dmon = drg
         elif mon == "MAM":
@@ -300,7 +300,7 @@ def precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec):
         elif mon == "SON":
             dmon = getDailyCalendarMonth(drg, ["SEP", "OCT", "NOV"])
         elif mon == "DJF":
-            # dmon = getDailyCalendarMonth(drg, ['DEC','JAN','FEB'])
+            # dmon = getDailyCalendarMonth(drg, ['DEC', 'JAN', 'FEB'])
             dmon = getDailyCalendarMonth(
                 drg(time=(str(syr) + "-3-1 0:0:0", str(eyr) + "-11-30 23:59:59")),
                 ["DEC", "JAN", "FEB"],
@@ -355,13 +355,20 @@ def precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec):
                 )
 
         ndm = np.nanmedian(cfy, axis=0)  # ignore years with zero precip
-        missingfrac = np.sum(np.isnan(cfy), axis=0) / nyr
-        ndm[np.where(missingfrac > missingthresh)] = np.nan
         prdyfracm = np.nanmedian(prdyfracyr, axis=0)
         sdiim = np.nanmedian(sdiiyr, axis=0)
 
+        missingfrac = np.sum(np.isnan(cfy), axis=0) / nyr
+        ndm[np.where(missingfrac > missingthresh)] = np.nan
+        missingfrac = np.sum(np.isnan(prdyfracyr), axis=0) / nyr
+        prdyfracm[np.where(missingfrac > missingthresh)] = np.nan
+        missingfrac = np.sum(np.isnan(sdiiyr), axis=0) / nyr
+        sdiim[np.where(missingfrac > missingthresh)] = np.nan
+
         pfracm = np.nanmedian(pfracyr, axis=0)
-        axbin = cdms.createAxis(range(1, ndymon[im] + 1), id="cumday")
+        missingfrac = np.sum(np.isnan(pfracyr), axis=0) / nyr
+        pfracm[np.where(missingfrac > missingthresh)] = np.nan
+        axbin = cdms.createAxis(range(1, ndymon[im] + 1), id="time")
         lat = dmon.getLatitude()
         lon = dmon.getLongitude()
         pfracm = MV.array(pfracm)
@@ -427,13 +434,13 @@ def precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec):
     )
     JSON.write(
         metrics,
-        json_structure=["model+realization", "metrics", "domain", "month"],
+        json_structure=["model + realization", "metrics", "domain", "month"],
         sort_keys=True,
         indent=4,
-        separators=(",", ": "),
+        separators=(", ", ": "),
     )
     if cmec:
-        JSON.write_cmec(indent=4, separators=(",", ": "))
+        JSON.write_cmec(indent=4, separators=(", ", ": "))
 
     # Write data (json file for domain median metrics with 3 clustering regions)
     outfilename = (
@@ -444,13 +451,13 @@ def precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec):
     )
     JSON.write(
         metrics3C,
-        json_structure=["model+realization", "metrics", "domain", "month"],
+        json_structure=["model + realization", "metrics", "domain", "month"],
         sort_keys=True,
         indent=4,
-        separators=(",", ": "),
+        separators=(", ", ": "),
     )
     if cmec:
-        JSON.write_cmec(indent=4, separators=(",", ": "))
+        JSON.write_cmec(indent=4, separators=(", ", ": "))
 
     # Write data (json file for domain median metrics with AR6 regions)
     outfilename = (
@@ -465,13 +472,13 @@ def precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec):
     )
     JSON.write(
         metricsAR6,
-        json_structure=["model+realization", "metrics", "domain", "month"],
+        json_structure=["model + realization", "metrics", "domain", "month"],
         sort_keys=True,
         indent=4,
-        separators=(",", ": "),
+        separators=(", ", ": "),
     )
     if cmec:
-        JSON.write_cmec(indent=4, separators=(",", ": "))
+        JSON.write_cmec(indent=4, separators=(", ", ": "))
 
     print("Completed metrics from precipitation cumulative distributions")
 
@@ -493,7 +500,7 @@ def Regrid(d, resdeg):
     tgrid = cdms.createUniformGrid(sy, ny, resdeg[1], 0, nx, resdeg[0], order="yx")
     orig_grid = d.getGrid()
     regridFunc = Horizontal(orig_grid, tgrid)
-    drg = MV.zeros((d.shape[0], tgrid.shape[0], tgrid.shape[1]), MV.float)
+    drg = MV.zeros((d.shape[0], tgrid.shape[0], tgrid.shape[1]))
     for it in range(d.shape[0]):
         drg[it] = regridFunc(d[it])
 
@@ -521,7 +528,7 @@ def getDailyCalendarMonth(d, mon):
     Month separation from daily data
     Input
     - d: cdms variable
-    - mon: list of months (e.g., ['JAN'], ['FEB'], ['MAR','APR','MAY'], ...)
+    - mon: list of months (e.g., ['JAN'], ['FEB'], ['MAR', 'APR', 'MAY'], ...)
     Output
     - calmo: cdms variable concatenated for specific month
     """
@@ -543,8 +550,8 @@ def getDailyCalendarMonth(d, mon):
 # ==================================================================================
 def CalcBinStructure(pdata1):
     L = 2.5e6  # % w/m2. latent heat of vaporization of water
-    # wm2tommd = 1./L*3600*24  # % conversion from w/m2 to mm/d
-    # pmax = pdata1.max()/wm2tommd
+    # wm2tommd = 1.0 / L * 3600 * 24  # % conversion from w/m2 to mm/d
+    # pmax = pdata1.max() / wm2tommd
     maxp = 1500  # % choose an arbitrary upper bound for initial distribution, in w/m2
     # % arbitrary lower bound, in w/m2. Make sure to set this low enough that you catch most of the rain.
     minp = 1
@@ -564,13 +571,13 @@ def CalcBinStructure(pdata1):
     binl = np.exp(binllog) / L * 3600 * 24
     dbin = dbinlog[0]
     binrlogex = binrlog
-    # binrend = np.exp(binrlogex[len(binrlogex)-1])
+    # binrend = np.exp(binrlogex[len(binrlogex) - 1])
     # % extend the bins until the maximum precip anywhere in the dataset falls
     # % within the bins
     # switch maxp to pmax if you want it to depend on your data
     while maxp > binr[len(binr) - 1]:
         binrlogex = np.append(binrlogex, binrlogex[len(binrlogex) - 1] + dbin)
-        # binrend = np.exp(binrlogex[len(binrlogex)-1])
+        # binrend = np.exp(binrlogex[len(binrlogex) - 1])
         binrlog = binrlogex
         binllog = binrlog - dbinlog[0]
         # %% this is what we'll use to make distributions
@@ -611,23 +618,22 @@ def MakeDists(pdata, binl):
             # these are the bin locations. we'll use these for the amount dist
             binno[:, ilat, ilon] = np.digitize(pdata[:, ilat, ilon], bins)
     # Calculate the number of days with non-missing data, for normalization
-    ndmat = np.tile(
-        np.expand_dims(
-            # np.nansum(n, axis=0), axis=0), (len(bins)-1, 1, 1))
-            np.sum(n, axis=0),
-            axis=0,
-        ),
-        (len(bins) - 1, 1, 1),
-    )
+    ndmat = np.tile(np.expand_dims(np.nansum(n, axis=0), axis=0), (len(bins) - 1, 1, 1))
 
     thisppdfmap = n / ndmat
     thisppdfmap_tn = thisppdfmap * ndmat
+
     # Iterate back over the bins and add up all the precip - this will be the rain amount distribution.
     # This step is probably the limiting factor and might be able to be made more efficient - I had a clever trick in matlab, but it doesn't work in python
     testpamtmap = np.empty(thisppdfmap.shape)
     for ibin in range(len(bins) - 1):
         testpamtmap[ibin, :, :] = (pdata * (ibin == binno)).sum(axis=0)
     thispamtmap = testpamtmap / ndmat
+
+    # Change Inf to Nan
+    thisppdfmap[np.isinf(thisppdfmap)] = np.nan
+    thisppdfmap_tn[np.isinf(thisppdfmap_tn)] = np.nan
+    thispamtmap[np.isinf(thispamtmap)] = np.nan
 
     axbin = cdms.createAxis(range(len(binl)), id="bin")
     lat = pdata.getLatitude()
@@ -751,20 +757,20 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
     ddom = []
     for d in [pdf, amt]:
-
         mask = cdutil.generateLandSeaMask(d[0, 0])
         d, mask2 = genutil.grower(d, mask)
         d_ocean = MV.masked_where(mask2 == 1.0, d)
         d_land = MV.masked_where(mask2 == 0.0, d)
 
         for dom in domains:
-
             if "Ocean" in dom:
                 dmask = d_ocean
             elif "Land" in dom:
                 dmask = d_land
             else:
                 dmask = d
+
+            dmask = MV.masked_where(~np.isfinite(dmask), dmask)
 
             if "50S50N" in dom:
                 am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
@@ -818,6 +824,7 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
     metrics["amtP20"] = {}
     metrics["amtP80"] = {}
     metrics["amtP90"] = {}
+    metrics["bimod"] = {}
     for idm, dom in enumerate(domains):
         metrics["frqpeak"][dom] = {"CalendarMonths": {}}
         metrics["frqwidth"][dom] = {"CalendarMonths": {}}
@@ -832,6 +839,7 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
         metrics["amtP20"][dom] = {"CalendarMonths": {}}
         metrics["amtP80"][dom] = {"CalendarMonths": {}}
         metrics["amtP90"][dom] = {"CalendarMonths": {}}
+        metrics["bimod"][dom] = {"CalendarMonths": {}}
         for im, mon in enumerate(months):
             if mon in ["ANN", "MAM", "JJA", "SON", "DJF"]:
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(
@@ -847,7 +855,6 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 metrics["pscore"][dom][mon] = CalcPscore(
                     pdfdom[im, :, idm], pdfdom_ref[im, :, idm]
                 )
-
                 (
                     metrics["frqP10"][dom][mon],
                     metrics["frqP20"][dom][mon],
@@ -862,6 +869,9 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
                     amtdom[im, :, idm],
                     amtdom_ref[im, :, idm],
                     bincrates,
+                )
+                metrics["bimod"][dom][mon] = CalcBimodality(
+                    pdfdom[im, :, idm], bincrates
                 )
 
             else:
@@ -893,7 +903,6 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 metrics["pscore"][dom]["CalendarMonths"][imn] = CalcPscore(
                     pdfdom[im, :, idm], pdfdom_ref[im, :, idm]
                 )
-
                 (
                     metrics["frqP10"][dom]["CalendarMonths"][imn],
                     metrics["frqP20"][dom]["CalendarMonths"][imn],
@@ -908,6 +917,9 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
                     amtdom[im, :, idm],
                     amtdom_ref[im, :, idm],
                     bincrates,
+                )
+                metrics["bimod"][dom]["CalendarMonths"][imn] = CalcBimodality(
+                    pdfdom[im, :, idm], bincrates
                 )
 
     print("Completed domain metrics")
@@ -970,7 +982,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
     ]
 
     egg_pth = resources.resource_path()
-    file = "cluster3_pdf.amt_regrid.360x180_IMERG_ALL.nc"
+    file = "cluster3_pdf.amt_regrid.360x180_IMERG_ALL_90S90N.nc"
     cluster = xr.open_dataset(os.path.join(egg_pth, file))["cluster_nb"]
 
     regs = ["HR", "MR", "LR"]
@@ -1044,6 +1056,8 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
             dmask = MV.masked_where(~mask3, d)
 
+            dmask = MV.masked_where(~np.isfinite(dmask), dmask)
+
             if "50S50N" in dom:
                 am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
             if "30N50N" in dom:
@@ -1096,6 +1110,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
     metrics["amtP20"] = {}
     metrics["amtP80"] = {}
     metrics["amtP90"] = {}
+    metrics["bimod"] = {}
     for idm, dom in enumerate(domains):
         metrics["frqpeak"][dom] = {"CalendarMonths": {}}
         metrics["frqwidth"][dom] = {"CalendarMonths": {}}
@@ -1110,6 +1125,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
         metrics["amtP20"][dom] = {"CalendarMonths": {}}
         metrics["amtP80"][dom] = {"CalendarMonths": {}}
         metrics["amtP90"][dom] = {"CalendarMonths": {}}
+        metrics["bimod"][dom] = {"CalendarMonths": {}}
         for im, mon in enumerate(months):
             if mon in ["ANN", "MAM", "JJA", "SON", "DJF"]:
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(
@@ -1125,7 +1141,6 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 metrics["pscore"][dom][mon] = CalcPscore(
                     pdfdom[im, :, idm], pdfdom_ref[im, :, idm]
                 )
-
                 (
                     metrics["frqP10"][dom][mon],
                     metrics["frqP20"][dom][mon],
@@ -1140,6 +1155,9 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                     amtdom[im, :, idm],
                     amtdom_ref[im, :, idm],
                     bincrates,
+                )
+                metrics["bimod"][dom][mon] = CalcBimodality(
+                    pdfdom[im, :, idm], bincrates
                 )
 
             else:
@@ -1171,7 +1189,6 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 metrics["pscore"][dom]["CalendarMonths"][imn] = CalcPscore(
                     pdfdom[im, :, idm], pdfdom_ref[im, :, idm]
                 )
-
                 (
                     metrics["frqP10"][dom]["CalendarMonths"][imn],
                     metrics["frqP20"][dom]["CalendarMonths"][imn],
@@ -1186,6 +1203,9 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                     amtdom[im, :, idm],
                     amtdom_ref[im, :, idm],
                     bincrates,
+                )
+                metrics["bimod"][dom]["CalendarMonths"][imn] = CalcBimodality(
+                    pdfdom[im, :, idm], bincrates
                 )
 
     print("Completed clustering domain metrics")
@@ -1210,6 +1230,7 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
     """
     ar6_all = regionmask.defined_regions.ar6.all
     ar6_land = regionmask.defined_regions.ar6.land
+    # ar6_ocean = regionmask.defined_regions.ar6.ocean
 
     land_names = ar6_land.names
     land_abbrevs = ar6_land.abbrevs
@@ -1368,7 +1389,6 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
     ddom = []
     for d in [pdf, amt]:
-
         d = xr.DataArray.from_cdms2(d)
         mask_3D = ar6_all_mod_ocn.mask_3D(d, lon_name="longitude", lat_name="latitude")
         weights = np.cos(np.deg2rad(d.latitude))
@@ -1416,6 +1436,7 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
     metrics["amtP20"] = {}
     metrics["amtP80"] = {}
     metrics["amtP90"] = {}
+    metrics["bimod"] = {}
     for idm, dom in enumerate(abbrevs):
         metrics["frqpeak"][dom] = {"CalendarMonths": {}}
         metrics["frqwidth"][dom] = {"CalendarMonths": {}}
@@ -1430,6 +1451,7 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
         metrics["amtP20"][dom] = {"CalendarMonths": {}}
         metrics["amtP80"][dom] = {"CalendarMonths": {}}
         metrics["amtP90"][dom] = {"CalendarMonths": {}}
+        metrics["bimod"][dom] = {"CalendarMonths": {}}
         for im, mon in enumerate(months):
             if mon in ["ANN", "MAM", "JJA", "SON", "DJF"]:
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(
@@ -1445,7 +1467,6 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 metrics["pscore"][dom][mon] = CalcPscore(
                     pdfdom[im, :, idm], pdfdom_ref[im, :, idm]
                 )
-
                 (
                     metrics["frqP10"][dom][mon],
                     metrics["frqP20"][dom][mon],
@@ -1460,6 +1481,9 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
                     amtdom[im, :, idm],
                     amtdom_ref[im, :, idm],
                     bincrates,
+                )
+                metrics["bimod"][dom][mon] = CalcBimodality(
+                    pdfdom[im, :, idm], bincrates
                 )
 
             else:
@@ -1491,7 +1515,6 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 metrics["pscore"][dom]["CalendarMonths"][imn] = CalcPscore(
                     pdfdom[im, :, idm], pdfdom_ref[im, :, idm]
                 )
-
                 (
                     metrics["frqP10"][dom]["CalendarMonths"][imn],
                     metrics["frqP20"][dom]["CalendarMonths"][imn],
@@ -1506,6 +1529,9 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
                     amtdom[im, :, idm],
                     amtdom_ref[im, :, idm],
                     bincrates,
+                )
+                metrics["bimod"][dom]["CalendarMonths"][imn] = CalcBimodality(
+                    pdfdom[im, :, idm], bincrates
                 )
 
     print("Completed AR6 domain metrics")
@@ -1561,7 +1587,7 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
     # -----------------------------------------------------
 
     # Cumulative PDF
-    # csum_pdf=np.cumsum(pdf, axis=0)
+    # csum_pdf = np.cumsum(pdf, axis=0)
     pdffrac = pdf / np.sum(pdf, axis=0)
     csum_pdf = np.cumsum(pdffrac, axis=0)
 
@@ -1624,6 +1650,83 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
 
 
 # ==================================================================================
+def CalcBimodality(pdf, distbin):
+    """
+    Input
+    - pdf: pdf
+    - distbin: bin centers
+    Output
+    - bimod: Bimodality
+    """
+    pdf = pdf.filled(np.nan)
+
+    binrange = [0.1, 50]  # precipitation bin range for gradient calculation
+    cofsmooth = [51, 10]  # window size and polynomial order for smoothing
+
+    ## 1stBin=2ndBin before smoothing
+    tmp = copy.deepcopy(pdf)
+    tmp[0] = tmp[1]
+    distsmt = savgol_filter(tmp, cofsmooth[0], cofsmooth[1])
+
+    ## Bins lower than 10th percentile are excluded in searching peaks
+    ascend = np.sort(distsmt)
+    cumfrac = np.nancumsum(ascend) / np.nansum(ascend)
+    ithres = np.argwhere(cumfrac >= 0.1)
+    if np.array(ithres).size == 0:
+        distsmt = distsmt
+    else:
+        distsmt = np.where(distsmt >= ascend[ithres[0][0]], distsmt, 0)
+
+    ## Gradient
+    distsmtgrad = np.gradient(distsmt)
+
+    ## Calculate bimodality
+    inds = []
+    for i, grad in enumerate(distsmtgrad):
+        if distbin[i] > binrange[0] and distbin[i] < binrange[1]:
+            if grad >= 0 and distsmtgrad[i + 1] < 0:
+                inds.append(i)
+    inds = np.array(inds)
+
+    if len(inds) <= 1:
+        bimod = 0
+    else:
+        inds_op = []
+        for i, grad in enumerate(distsmtgrad):
+            if i > inds[0] and i < inds[-1]:
+                if grad <= 0 and distsmtgrad[i + 1] > 0:
+                    inds_op.append(i)
+
+        if np.array(inds_op).size == 0:
+            bimod = 0
+        else:
+            peaks_op = []
+            for ind in inds_op:
+                peaks_op.append(distsmt[ind])
+
+            indcenter = inds_op[np.argsort(peaks_op)[0]]
+            indsleft = inds[inds < indcenter]
+            indsright = inds[inds > indcenter]
+
+            peaksleft = []
+            for ind in indsleft:
+                peaksleft.append(distsmt[ind])
+            maxleft = np.nanmax(peaksleft)
+            peaksright = []
+            for ind in indsright:
+                peaksright.append(distsmt[ind])
+            maxright = np.nanmax(peaksright)
+
+            bimod = (min(maxleft, maxright) - distsmt[indcenter]) / max(
+                maxleft, maxright
+            )
+            if maxleft > maxright:
+                bimod = -bimod
+
+    return bimod
+
+
+# ==================================================================================
 def oneyear(thisyear, missingthresh):
     # Given one year of precip data, calculate the number of days for half of precipitation
     # Ignore years with zero precip (by setting them to NaN).
@@ -1632,10 +1735,13 @@ def oneyear(thisyear, missingthresh):
     thisyear = thisyear.filled(np.nan)  # np.array(thisyear)
     dims = thisyear.shape
     nd = dims[0]
+    ndwonan = np.sum(~np.isnan(thisyear), axis=0)
     missingfrac = np.sum(np.isnan(thisyear), axis=0) / nd
-    ptot = np.sum(thisyear, axis=0)
+    # ptot = np.sum(thisyear, axis=0)
+    ptot = np.nansum(thisyear, axis=0)
     sortandflip = -np.sort(-thisyear, axis=0)
-    cum_sum = np.cumsum(sortandflip, axis=0)
+    # cum_sum = np.cumsum(sortandflip, axis=0)
+    cum_sum = np.nancumsum(sortandflip, axis=0)
     ptotnp = np.array(ptot)
     ptotnp[np.where(ptotnp == 0)] = np.nan
     pfrac = cum_sum / np.tile(ptotnp[np.newaxis, :, :], [nd, 1, 1])
@@ -1655,7 +1761,7 @@ def oneyear(thisyear, missingthresh):
                 prdays_gt_1mm[ij, ik] = np.nan
             else:
                 # For the case, pfrac does not reach 1 (maybe due to regridding)
-                # prdays[ij,ik] = np.where(y >= 1)[0][0]
+                # prdays[ij, ik] = np.where(y >= 1)[0][0]
                 prdays[ij, ik] = np.nanargmax(y)
                 if np.diff(cum_sum[:, ij, ik])[-1] >= 1:
                     prdays_gt_1mm[ij, ik] = prdays[ij, ik]
@@ -1664,11 +1770,17 @@ def oneyear(thisyear, missingthresh):
                         np.diff(np.concatenate([z, cum_sum[:, ij, ik]])) < 1
                     )[0][0]
 
-    ndhy[np.where(missingfrac > missingthresh)] = np.nan
-    # prdyfrac = prdays/nd
-    prdyfrac = prdays_gt_1mm / nd
+    # prdyfrac = prdays/ndwonan
+    prdyfrac = prdays_gt_1mm / ndwonan
     # sdii = ptot/prdays
     sdii = ptot / prdays_gt_1mm  # Zhang et al. (2011)
+
+    ndhy[np.where(missingfrac > missingthresh)] = np.nan
+    prdyfrac[np.where(missingfrac > missingthresh)] = np.nan
+    sdii[np.where(missingfrac > missingthresh)] = np.nan
+
+    missingfrac2 = np.tile(missingfrac[np.newaxis, :, :], [nd, 1, 1])
+    pfrac[np.where(missingfrac2 > missingthresh)] = np.nan
 
     return pfrac, ndhy, prdyfrac, sdii
 
@@ -1705,13 +1817,14 @@ def MedDomain(d, months):
 
     ddom = {}
     for dom in domains:
-
         if "Ocean" in dom:
             dmask = d_ocean
         elif "Land" in dom:
             dmask = d_land
         else:
             dmask = d
+
+        dmask = MV.masked_where(~np.isfinite(dmask), dmask)
 
         if "50S50N" in dom:
             am = genutil.statistics.median(dmask(latitude=(-50, 50)), axis="xy")
@@ -1798,7 +1911,7 @@ def MedDomain3Clust(d, months):
     ]
 
     egg_pth = resources.resource_path()
-    file = "cluster3_pdf.amt_regrid.360x180_IMERG_ALL.nc"
+    file = "cluster3_pdf.amt_regrid.360x180_IMERG_ALL_90S90N.nc"
     cluster = xr.open_dataset(os.path.join(egg_pth, file))["cluster_nb"]
 
     regs = ["HR", "MR", "LR"]
@@ -1871,6 +1984,8 @@ def MedDomain3Clust(d, months):
 
         dmask = MV.masked_where(~mask3, d)
 
+        dmask = MV.masked_where(~np.isfinite(dmask), dmask)
+
         if "50S50N" in dom:
             am = genutil.statistics.median(dmask(latitude=(-50, 50)), axis="xy")
         if "30N50N" in dom:
@@ -1918,6 +2033,7 @@ def MedDomainAR6(d, months):
     """
     ar6_all = regionmask.defined_regions.ar6.all
     ar6_land = regionmask.defined_regions.ar6.land
+    # ar6_ocean = regionmask.defined_regions.ar6.ocean
 
     land_names = ar6_land.names
     land_abbrevs = ar6_land.abbrevs

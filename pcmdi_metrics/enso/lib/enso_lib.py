@@ -9,7 +9,7 @@ import re
 from collections import defaultdict
 
 import pcmdi_metrics
-from pcmdi_metrics.driver.pmp_parser import PMPParser
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 
 
 def AddParserArgument():
