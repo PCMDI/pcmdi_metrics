@@ -54,7 +54,7 @@ dec_mode = parameter.dec_mode
 drop_incomplete_djf = parameter.drop_incomplete_djf
 # Region masking
 shp_path = parameter.shp_path
-col = parameter.column
+col = parameter.attribute
 region_name = parameter.region_name
 coords = parameter.coords
 
@@ -70,15 +70,15 @@ obs = {}
 # Setting up model realization list
 find_all_realizations,realizations = utilities.set_up_realizations(realization)
 
-# Initialize output JSON structures
-# FYI: if the analysis output JSON is changed, remember to update this function!
-metrics_dict = compute_metrics.init_metrics_dict(dec_mode,drop_incomplete_djf,annual_strict,region_name)
-
 # Only include reference data in loop if it exists
 if reference_data_path is not None:
     model_loop_list = ["Reference"]+model_list
 else:
     model_loop_list = model_list
+
+# Initialize output JSON structures
+# FYI: if the analysis output JSON is changed, remember to update this function!
+metrics_dict = compute_metrics.init_metrics_dict(model_loop_list,dec_mode,drop_incomplete_djf,annual_strict,region_name)
 
 ##############
 # Run Analysis
@@ -105,6 +105,7 @@ for model in model_loop_list:
     
     metrics_dict["RESULTS"][model] = {}
 
+    # Loop over realizations
     for run in list_of_runs:
 
         # SFTLF
@@ -142,6 +143,7 @@ for model in model_loop_list:
         
         metrics_dict["RESULTS"][model][run] = {}
         
+        # Loop over variables - tasmax, tasmin, or pr
         for varname in variable_list:
             # Find model data, determine number of files, check if they exist
             if run==reference_data_set:
@@ -192,6 +194,7 @@ for model in model_loop_list:
             # This dict is going to hold results for just this run
             stats_dict = {}
 
+            # Here's where the extremes calculations are happening
             if varname == "tasmax":
                 TXx,TXn = compute_metrics.temperature_indices(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
                 stats_dict["TXx"] = TXx
@@ -249,9 +252,6 @@ for model in model_loop_list:
             metrics_dict["RESULTS"][model][run].update(result_dict)
             if run not in metrics_dict["DIMENSIONS"]["realization"]:
                 metrics_dict["DIMENSIONS"]["realization"].append(run)
-    
-    # Update metrics definitions
-    metrics_dict["DIMENSIONS"]["model"] = model_list
 
     # Pull out metrics for just this model
     # and write to JSON

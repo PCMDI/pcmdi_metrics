@@ -220,7 +220,7 @@ def create_extremes_parser():
     )
 
     parser.add_argument(
-        "--column",
+        "--attribute",
         type=str,
         default=None,
         help="Name of region attribute column in shapefile",
