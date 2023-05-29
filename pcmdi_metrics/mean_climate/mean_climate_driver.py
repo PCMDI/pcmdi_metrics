@@ -168,20 +168,33 @@ for var in vars:
     # observation loop
     # ----------------
     if "all" in reference_data_set:
-        reference_data_set = [x for x in list(obs_dict[varname].keys()) if (x == "default" or "alternate" in x)]
+        reference_data_set = [
+            x for x in list(obs_dict[varname].keys()) if (x == "default" or "alternate" in x)]
         print("reference_data_set (all): ", reference_data_set)
 
     for ref in reference_data_set:
         print('ref:', ref)
+        
         # identify data to load (annual cycle (AC) data is loading in)
         ref_dataset_name = obs_dict[varname][ref]
         ref_data_full_path = os.path.join(
             reference_data_path,
             obs_dict[varname][ref_dataset_name]["template"])
         print('ref_data_full_path:', ref_data_full_path)
+        
         # load data and regrid
-        ds_ref = load_and_regrid(data_path=ref_data_full_path, varname=varname, level=level, t_grid=t_grid, decode_times=False, regrid_tool=regrid_tool, debug=debug)
+        ds_ref = load_and_regrid(
+            data_path=ref_data_full_path, 
+            varname=varname, 
+            level=level, 
+            t_grid=t_grid, 
+            # decode_times=False, 
+            decode_times=True, 
+            regrid_tool=regrid_tool, 
+            debug=debug)
+        
         ds_ref_dict = OrderedDict()
+        
         # for record in output json
         result_dict['References'][ref] = obs_dict[varname][ref_dataset_name]
 
