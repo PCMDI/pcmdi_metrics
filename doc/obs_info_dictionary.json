@@ -105,7 +105,7 @@
             "filename": "pr_monC_GPCP-2-3_PCMDI_gn_197901-201907.AC.v20230516.nc",
             "period": "200301-201812",
             "shape": "(12, 72, 144)",
-            "template": "NOAA-NCEI/GPCP-2-3/monC/pr/gn/v20230516/pr_monC_GPCP-2-3_PCMDI_gn_197901-201907.AC.v20230516.nc"           
+            "template": "NOAA-NCEI/GPCP-2-3/monC/pr/gn/v20230516/pr_monC_GPCP-2-3_PCMDI_gn_197901-201907.AC.v20230516.nc"
         },
         "TRMM-3B43v-7": {
             "CMIP_CMOR_TABLE": "Amon",
