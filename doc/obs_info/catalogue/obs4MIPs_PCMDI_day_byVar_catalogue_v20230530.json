@@ -60,11 +60,59 @@
             "shape": "(13149, 180, 360)",
             "template": "/obs4MIPs/NOAA/PERSIANN-CDRv1r1/day/pr/1x1/v20210826/pr_day_PERSIANN-CDRv1r1_PCMDIFROGS_1x1_19830102-20190101.nc"
         },
+        "PRISM-M3": {
+            "MD5sum": "N/A",
+            "period": "198101-202209",
+            "shape": "(15248, 621, 1405)",
+            "template": "/obs4MIPs/OSU/PRISM-M3/day/pr/gn/v20230526/pr_day_PRISM-M3_PCMDI_gn_*.nc"
+        },
         "TRMM-3B42v-7": {
             "MD5sum": "d43e23bd191d348d0ce9c8ec551470ad",
             "period": "199801-201912",
             "shape": "(8034, 180, 360)",
             "template": "/obs4MIPs/NASA-GSFC/TRMM-3B42v-7/day/pr/1x1/v20210824/pr_day_TRMM-3B42v-7_PCMDIFROGS_1x1_19980101-20191230.nc"
+        },
+        "livneh-1-0": {
+            "MD5sum": "N/A",
+            "period": "191501-201112",
+            "shape": "(35429, 444, 922)",
+            "template": "/obs4MIPs/NOAA-ESRL-PSD/livneh-1-0/day/pr/gn/v20230526/pr_day_livneh-1-0_PCMDI_gn_*.nc"
+        }
+    },
+    "tas": {
+        "PRISM-M3": {
+            "MD5sum": "N/A",
+            "period": "198101-202209",
+            "shape": "(15248, 621, 1405)",
+            "template": "/obs4MIPs/OSU/PRISM-M3/day/tas/gn/v20230526/tas_day_PRISM-M3_PCMDI_gn_*.nc"
+        }
+    },
+    "tasmax": {
+        "PRISM-M3": {
+            "MD5sum": "N/A",
+            "period": "198101-202209",
+            "shape": "(15248, 621, 1405)",
+            "template": "/obs4MIPs/OSU/PRISM-M3/day/tasmax/gn/v20230526/tasmax_day_PRISM-M3_PCMDI_gn_*.nc"
+        },
+        "livneh-1-0": {
+            "MD5sum": "N/A",
+            "period": "191501-201812",
+            "shape": "(37986, 444, 922)",
+            "template": "/obs4MIPs/NOAA-ESRL-PSD/livneh-1-0/day/tasmax/gn/v20230526/tasmax_day_livneh-1-0_PCMDI_gn_*.nc"
+        }
+    },
+    "tasmin": {
+        "PRISM-M3": {
+            "MD5sum": "N/A",
+            "period": "198101-202209",
+            "shape": "(15248, 621, 1405)",
+            "template": "/obs4MIPs/OSU/PRISM-M3/day/tasmin/gn/v20230526/tasmin_day_PRISM-M3_PCMDI_gn_*.nc"
+        },
+        "livneh-1-0": {
+            "MD5sum": "N/A",
+            "period": "191501-201812",
+            "shape": "(37986, 444, 922)",
+            "template": "/obs4MIPs/NOAA-ESRL-PSD/livneh-1-0/day/tasmin/gn/v20230526/tasmin_day_livneh-1-0_PCMDI_gn_*.nc"
         }
     }
 }
