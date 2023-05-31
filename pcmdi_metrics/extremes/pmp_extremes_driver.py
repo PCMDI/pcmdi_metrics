@@ -58,6 +58,8 @@ col = parameter.attribute
 region_name = parameter.region_name
 coords = parameter.coords
 
+# TODO: logging
+
 # Check the region masking parameters, if provided
 use_region_mask,region_name,coords = region_utilities.check_region_params(shp_path,coords,region_name,col,"land")
 
