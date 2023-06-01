@@ -4,6 +4,8 @@ import sys
 import numpy as np
 import pandas as pd
 
+from pcmdi_metrics.variability_mode.lib import sort_human
+
 
 def read_mean_clim_json_files(
     json_list, regions=None, stats=None, mip=None, debug=False
@@ -121,7 +123,7 @@ def extract_stat(var, results_dict_var):
 
 def extract_region_stat(var, results_dict_var):
     model_list = sorted(list(results_dict_var["RESULTS"].keys()))
-    run_list = sorted(
+    run_list = sort_human(
         list(results_dict_var["RESULTS"][model_list[0]]["default"].keys())
     )
     if "source" in run_list:
@@ -144,18 +146,20 @@ def extract_data(results_dict, var_list, region, stat, season, mip, debug=False)
     Return a pandas dataframe for metric numbers at given region/stat/season.
     Rows: models, Columns: variables (i.e., 2d array)
     """
-    if "rlut" in list(results_dict["rlut"]["RESULTS"].keys()):
-        model_list = sorted(list(results_dict["rlut"]["RESULTS"].keys()))
+    if "rlut" in list(results_dict.keys()):
+        if "rlut" in list(results_dict["rlut"]["RESULTS"].keys()):
+            model_list = sorted(list(results_dict["rlut"]["RESULTS"].keys()))
     else:
         model_list = sorted(list(results_dict[var_list[0]]["RESULTS"].keys()))
 
     data_list = []
     for model in model_list:
-        if "rlut" in list(results_dict["rlut"]["RESULTS"].keys()):
-            run_list = list(results_dict["rlut"]["RESULTS"][model]["default"].keys())
+        if "rlut" in list(results_dict.keys()):
+            if "rlut" in list(results_dict["rlut"]["RESULTS"].keys()):
+                run_list = sort_human(list(results_dict["rlut"]["RESULTS"][model]["default"].keys()))
         else:
-            run_list = list(
-                results_dict[var_list[0]]["RESULTS"][model]["default"].keys()
+            run_list = sort_human(list(
+                results_dict[var_list[0]]["RESULTS"][model]["default"].keys())
             )
 
         if debug:
