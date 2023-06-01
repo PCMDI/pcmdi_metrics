@@ -4,10 +4,10 @@ import os
 
 
 class MetadataFile():
-    def __init__(metrics_output_path):
+    def __init__(self,metrics_output_path):
         self.outfile = os.path.join(metrics_output_path,"output.json")
         self.json = {
-            "index": None},
+            "index": None,
             "provenance": {
                 "environment": "",
                 "modeldata": "",
@@ -50,7 +50,7 @@ class MetadataFile():
         self.json["provenance"].update({kw:data})
         return
 
-    def write(self)
+    def write(self):
         with open(self.outfile,"w") as f:
-            f.dump(self.json, indent=4)
+            json.dump(self.json, f, indent=4)
 

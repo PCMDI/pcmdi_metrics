@@ -17,7 +17,8 @@ from lib import (
     compute_metrics,
     create_extremes_parser,
     utilities,
-    region_utilities
+    region_utilities,
+    metadata
 )
 
 
@@ -66,6 +67,9 @@ use_region_mask,region_name,coords = region_utilities.check_region_params(shp_pa
 
 # Verifying output directory
 metrics_output_path = utilities.verify_output_path(metrics_output_path,case_id)
+
+# Initialize output.json file
+meta = metadata.MetadataFile(metrics_output_path)
 
 # Setting up model realization list
 find_all_realizations,realizations = utilities.set_up_realizations(realization)
@@ -211,8 +215,12 @@ for model in model_loop_list:
                     print("Writing results to netCDF.")
                     filepath = os.path.join(metrics_output_path,"TXx_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,TXx)
+                    meta.update_data("TXx",filepath,"TXx","Seasonal maximum of maximum temperature.")
+
                     filepath = os.path.join(metrics_output_path,"TXn_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,TXn)
+                    meta.update_data("TXn",filepath,"TXn","Seasonal minimum of maximum temperature.")
+
    
             if varname == "tasmin":
                 TNx,TNn = compute_metrics.temperature_indices(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
@@ -227,8 +235,11 @@ for model in model_loop_list:
                     print("Writing results to netCDF.")
                     filepath = os.path.join(metrics_output_path,"TNx_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,TNx)
+                    meta.update_data("TNx",filepath,"TNx","Seasonal maximum of minimum temperature.")
+
                     filepath = os.path.join(metrics_output_path,"TNn_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,TNx)
+                    meta.update_data("TNn",filepath,"TNn","Seasonal minimum of minimum temperature.")
 
             if varname in ["pr","PRECT","precip"]:
                 # Rename possible precipitation variable names for consistency
@@ -246,8 +257,12 @@ for model in model_loop_list:
                     print("Writing results to netCDF.")
                     filepath = os.path.join(metrics_output_path,"Rx1day_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,Rx1day)
+                    meta.update_data("Rx1day",filepath,"Rx1day","Seasonal maximum value of daily precipitation")
+
                     filepath = os.path.join(metrics_output_path,"Rx5day_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,Rx5day)
+                    meta.update_data("Rx5day",filepath,"Rx5day","Seasonal maximum value of 5-day mean precipitation")
+
             
             # Get stats and update metrics dictionary
             print("Generating metrics.")
@@ -265,6 +280,31 @@ for model in model_loop_list:
     metrics_path = "{0}_extremes_metrics.json".format(model)
     utilities.write_to_json(metrics_output_path,metrics_path,metrics_tmp)
 
+    meta.update_metrics(
+        model,
+        os.path.join(metrics_output_path,metrics_path),
+        model+" results",
+        "Seasonal metrics for block extrema for single dataset")
+
 # Output single file with all models
 metrics_dict["DIMENSIONS"]["model"] = model_loop_list
 utilities.write_to_json(metrics_output_path,"extremes_metrics.json",metrics_dict)
+fname=os.path.join(metrics_output_path,"extremes_metrics.json")
+meta.update_metrics(
+    "ALL",
+    fname,
+    "All results",
+    "Seasonal metrics for block extrema for all datasets")
+
+# Update and write metadata file
+try:
+        with open(fname,"r") as f:
+            tmp = json.load(f)
+        meta.update_provenance("environment",tmp["provenance"])
+except:
+    pass
+
+meta.update_provenance("modeldata", os.path.join(test_data_path,filename_template))
+meta.update_provenance("obsdata", os.path.join(reference_data_path,reference_data_set))
+
+meta.write()
