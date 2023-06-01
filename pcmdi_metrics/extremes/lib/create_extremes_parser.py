@@ -250,4 +250,13 @@ def create_extremes_parser():
         required=False
     )
 
+    parser.add_argument(
+        "--regrid",
+        type=bool,
+        default=True,
+        help="Set to False if model and reference data all use same grid.",
+        required=False
+    )
+
+
     return parser
