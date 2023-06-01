@@ -273,7 +273,7 @@ def init_metrics_dict(model_list,dec_mode,drop_incomplete_djf,annual_strict,regi
     # Return initial version of the metrics dictionary
     metrics = {
         "DIMENSIONS": {
-            "json_structure": ["model","realization","region","index","season","statistic"],
+            "json_structure": ["model","realization","index","region","statistic","season"],
             "region": {region_name: "Areas where 50<=sftlf<=100"},
             "season": ["ANN","DJF","MAM","JJA","SON"],
             "index": {        
@@ -342,7 +342,7 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land",regrid=True):
         # If new statistics are added, be sure to update
         # "statistic" entry in init_metrics_dict()
         if len(obs_dict) > 0:
-            for k in ["difference","percent_difference","bias_xy","cor_xy","mae_xy","rms_xy","rmsc_xy"]:
+            for k in ["pct_dif","bias_xy","cor_xy","mae_xy","rms_xy","rmsc_xy"]:
                 met_dict[m][region][k] = seasons_dict.copy()
 
         ds_m = data_dict[m]
