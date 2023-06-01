@@ -27,7 +27,7 @@ def xcdat_open(infile, data_var=None, decode_times=True):
         if infile.split('.')[-1].lower() == 'xml':
             ds = xcdat_openxml(infile, data_var=data_var, decode_times=decode_times)
         else:
-            ds = xcdat.open_dataset(infile, data_var=data_var, decode_times=decode_times)
+            ds = xcdat.open_mfdataset(infile, data_var=data_var, decode_times=decode_times)
 
     return ds
 
@@ -53,10 +53,6 @@ def xcdat_openxml(xmlfile, data_var=None, decode_times=True):
         doc = xmltodict.parse(fd.read())
 
     ncfile_list = glob.glob(os.path.join(doc['dataset']['@directory'], '*.nc'))
-
-    if len(ncfile_list) > 1:
-        ds = xcdat.open_mfdataset(ncfile_list, data_var=data_var, decode_times=decode_times)
-    else:
-        ds = xcdat.open_dataset(ncfile_list[0], data_var=data_var, decode_times=decode_times)
+    ds = xcdat.open_mfdataset(ncfile_list, data_var=data_var, decode_times=decode_times)
 
     return ds
