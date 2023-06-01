@@ -9,6 +9,8 @@ import sys
 import os
 import math
 
+from pcmdi_metrics.mean_climate.lib import compute_statistics
+
 class TimeSeriesData():
     # Track years and calendar for time series grids
     # Store methods to act on time series grids
@@ -298,46 +300,60 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land"):
     # Arguments:
     #   data_dict: Dictionary containing block extrema datasets
     #   sftlf: Land sea mask
+    #   obs_dict: Dictionary containing block extrema for 
+    #             reference dataset
+    #   region: Name of region.
     # Returns:
     #   met_dict: A dictionary containing metrics
 
     met_dict = {}
-    # Looping over each type of extrema in data_dict
-    for m in data_dict:
-        met_dict[m] = {
-            region: {
-                "mean":{
-                    "ANN": "",
-                    "DJF": "",
-                    "MAM": "",
-                    "JJA": "",
-                    "SON": ""
-                }
-            }
-        }
-        # If obs available, add metrics comparing with obs
-        if len(obs_dict) > 0:
-            met_dict[m][region]["rms"] = {
+    seasons_dict = {
                 "ANN": "",
                 "DJF": "",
                 "MAM": "",
                 "JJA": "",
                 "SON": ""
             }
+    # Looping over each type of extrema in data_dict
+    for m in data_dict:
+        met_dict[m] = {
+            region: {
+                "mean": seasons_dict.copy(),
+                "std_xy": seasons_dict.copy()
+            }
+        }
+        # If obs available, add metrics comparing with obs
+        if len(obs_dict) > 0:
+            for k in ["bias_xy","cor_xy","mae_xy","rms_xy","rmsc_xy"]:
+                met_dict[m][region][k] = seasons_dict.copy()
+
+
         ds_m = data_dict[m]
         for season in ["ANN","DJF","MAM","JJA","SON"]:
             # Global mean over land
             seas_mean = ds_m.spatial.average(season)[season].mean()
             met_dict[m][region]["mean"][season] = float(seas_mean)
+            a = ds_m.temporal.average(season)
+            std_xy = compute_statistics.std_xy(a, season)
+            met_dict[m][region]["std_xy"][season] = std_xy
 
             if len(obs_dict) > 0:
-                # RMSE Error between reference and model
-                a = ds_m.temporal.average(season)[season]
-                b = obs_dict[m].temporal.average(season)[season]
-                dif_square = (a - b) ** 2
-                weights = ds_m.spatial.get_weights(axis=['X', 'Y'])
-                stat = math.sqrt(dif_square.weighted(weights).mean(("lon", "lat")))
-                met_dict[m][region]["rms"][season] = stat
+                # Regrid obs to model grid
+                obs_regridded = obs_dict[m].regridder.horizontal(season, ds_m, tool='regrid2')
+
+                # Get xy stats for temporal average
+                a = ds_m.temporal.average(season)
+                b = obs_regridded.temporal.average(season)
+                rms_xy = compute_statistics.rms_xy(a, b, var=season)
+                meanabs_xy = compute_statistics.meanabs_xy(a, b, var=season)
+                bias_xy = compute_statistics.bias_xy(a, b, var=season)
+                cor_xy = compute_statistics.cor_xy(a, b, var=season)
+                rmsc_xy = compute_statistics.rmsc_xy(a, b, var=season)
+                met_dict[m][region]["rms_xy"][season] = rms_xy
+                met_dict[m][region]["mae_xy"][season] = meanabs_xy
+                met_dict[m][region]["bias_xy"][season] = bias_xy
+                met_dict[m][region]["cor_xy"][season] = cor_xy
+                met_dict[m][region]["rmsc_xy"][season] = rmsc_xy
 
     return met_dict
 

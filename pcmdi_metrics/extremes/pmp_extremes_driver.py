@@ -252,8 +252,8 @@ for model in model_loop_list:
             print("Generating metrics.")
             result_dict = compute_metrics.metrics_json(stats_dict,sftlf,obs_dict=obs,region=region_name)
             metrics_dict["RESULTS"][model][run].update(result_dict)
-            if run not in metrics_dict["DIMENSIONS"]["realization"]:
-                metrics_dict["DIMENSIONS"]["realization"].append(run)
+            #if run not in metrics_dict["DIMENSIONS"]["realization"]:
+            #    metrics_dict["DIMENSIONS"]["realization"].append(run)
 
     # Pull out metrics for just this model
     # and write to JSON
@@ -265,4 +265,6 @@ for model in model_loop_list:
     utilities.write_to_json(metrics_output_path,metrics_path,metrics_tmp)
 
 # Output single file with all models
+metrics_dict["DIMENSIONS"]["model"] = model_loop_list
+metrics_dict["DIMENSIONS"]["realization"] = list_of_runs
 utilities.write_to_json(metrics_output_path,"extremes_metrics.json",metrics_dict)
