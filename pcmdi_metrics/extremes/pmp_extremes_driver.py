@@ -47,6 +47,7 @@ cmec = parameter.cmec
 start_year = parameter.year_range[0]
 end_year = parameter.year_range[1]
 generate_sftlf = parameter.generate_sftlf
+regrid = parameter.regrid
 # Block extrema related settings
 annual_strict = parameter.annual_strict
 exclude_leap = parameter.exclude_leap
@@ -66,9 +67,6 @@ use_region_mask,region_name,coords = region_utilities.check_region_params(shp_pa
 # Verifying output directory
 metrics_output_path = utilities.verify_output_path(metrics_output_path,case_id)
 
-obs = {}
-# TODO: Obs will likely need to be converted to model grid
-
 # Setting up model realization list
 find_all_realizations,realizations = utilities.set_up_realizations(realization)
 
@@ -81,6 +79,8 @@ else:
 # Initialize output JSON structures
 # FYI: if the analysis output JSON is changed, remember to update this function!
 metrics_dict = compute_metrics.init_metrics_dict(model_loop_list,dec_mode,drop_incomplete_djf,annual_strict,region_name)
+
+obs = {}
 
 ##############
 # Run Analysis
@@ -169,6 +169,7 @@ for model in model_loop_list:
                 for t in test_data_full_path:
                     print("  ",t)
 
+            # Load and prep data
             if len(test_data_full_path) > 1 or test_data_full_path[0].endswith(".xml"):
                 ds = xcdat.open_mfdataset(test_data_full_path)
             else:
@@ -250,10 +251,10 @@ for model in model_loop_list:
             
             # Get stats and update metrics dictionary
             print("Generating metrics.")
-            result_dict = compute_metrics.metrics_json(stats_dict,sftlf,obs_dict=obs,region=region_name)
+            result_dict = compute_metrics.metrics_json(stats_dict,sftlf,obs_dict=obs,region=region_name,regrid=regrid)
             metrics_dict["RESULTS"][model][run].update(result_dict)
-            #if run not in metrics_dict["DIMENSIONS"]["realization"]:
-            #    metrics_dict["DIMENSIONS"]["realization"].append(run)
+            if run not in metrics_dict["DIMENSIONS"]["realization"]:
+                metrics_dict["DIMENSIONS"]["realization"].append(run)
 
     # Pull out metrics for just this model
     # and write to JSON
@@ -266,5 +267,4 @@ for model in model_loop_list:
 
 # Output single file with all models
 metrics_dict["DIMENSIONS"]["model"] = model_loop_list
-metrics_dict["DIMENSIONS"]["realization"] = list_of_runs
 utilities.write_to_json(metrics_output_path,"extremes_metrics.json",metrics_dict)
