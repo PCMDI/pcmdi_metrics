@@ -14,7 +14,7 @@ It is not required to provide a reference dataset
 
 The default JSON output is designed to be cmec compliant - do not need to use CMEC flag.
 
-If land/sea masks are not provided, there is an option to generate them on the fly using cdutil.
+If land sea masks are scaled from 0-1, they will be rescaled to 0-100 on-the-fly. If land/sea masks are not provided, there is an option to generate them on-the-fly using cdutil.
 
 ## Run
 python pmp_extremes_driver.py -p parameter_file --other_params
@@ -70,6 +70,7 @@ You can either use a region from a shapefile or provide coordinate pairs that de
 | nc_out | (bool) True to save yearly block extrema as netcdf files. | 
 | debug | (bool) True to use debug mode. | 
 | year_range |  (list) A list containing the start year and end year. | 
+| regrid | (bool) Set to False to skip regridding if all datasets are on the same grid. Default True. |
 
-
+## References
 
