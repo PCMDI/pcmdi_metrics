@@ -91,16 +91,16 @@ class SeasonalAverager():
             # This setting is for means using 5 day rolling average values, where
             # we do not want to include any data from the prior year
             year_range = self.TS.year_range
+            hr = int(ds.time[0].dt.hour) # help with selecting nearest time
 
             # Only use data from that year - start on Jan 5 avg
             date_range = [xr.cftime_range(
-                            start=cftime.datetime(year,1,5,calendar=cal)-self.del0d,
-                            end = cftime.datetime(year+1,1,1,calendar=cal)-self.del1d,
+                            start=cftime.datetime(year,1,5,hour=hr,calendar=cal)-self.del0d,
+                            end = cftime.datetime(year+1,1,1,hour=hr,calendar=cal)-self.del1d,
                             freq='D',
                             calendar=cal) for year in year_range]
             date_range = [item for sublist in date_range for item in sublist]
             if stat=="max":
-                # TODO: Is nearest best method to get data in this day?
                 ds_ann = ds.sel(time=date_range,method="nearest").groupby("time.year").max(dim="time")
             elif stat=="min":
                 ds_ann = ds.sel(time=date_range,method="nearest").groupby("time.year").min(dim="time")
@@ -135,6 +135,8 @@ class SeasonalAverager():
             ds = self.TS.return_data_array()
         cal = self.TS.calendar
 
+        hr = int(ds.time[0].dt.hour) # help with selecting nearest time
+
         if season == "DJF" and self.dec_mode =="DJF":
             # Resample DJF to count prior DJF in current year
             if stat == "max":
@@ -157,14 +159,14 @@ class SeasonalAverager():
 
             # Make date lists that capture JF and D in all years, then merge and sort
             date_range_1 = [xr.cftime_range(
-                                start=cftime.datetime(year,1,1,calendar=cal)-self.del0d,
-                                end=cftime.datetime(year,3,1,calendar=cal)-self.del1d,
+                                start=cftime.datetime(year,1,1,hour=hr,calendar=cal)-self.del0d,
+                                end=cftime.datetime(year,3,1,hour=hr,calendar=cal)-self.del1d,
                                 freq='D',
                                 calendar=cal) for year in year_range]
             date_range_1 = [item for sublist in date_range_1 for item in sublist]
             date_range_2 = [xr.cftime_range(
-                                start=cftime.datetime(year,12,1,calendar=cal)-self.del0d,
-                                end=cftime.datetime(year+1,1,1,calendar=cal)-self.del1d,
+                                start=cftime.datetime(year,12,1,hour=hr,calendar=cal)-self.del0d,
+                                end=cftime.datetime(year+1,1,1,hour=hr,calendar=cal)-self.del1d,
                                 freq='D',
                                 calendar=cal) for year in year_range]
             date_range_2 = [item for sublist in date_range_2 for item in sublist]
@@ -190,8 +192,8 @@ class SeasonalAverager():
             cal = self.TS.calendar
 
             date_range = [xr.cftime_range(
-                            start=cftime.datetime(year,mo_st,day_st,calendar=cal)-self.del0d,
-                            end=cftime.datetime(year,mo_en,day_en,calendar=cal)-self.del1d,
+                            start=cftime.datetime(year,mo_st,day_st,hour=hr,calendar=cal)-self.del0d,
+                            end=cftime.datetime(year,mo_en,day_en,hour=hr,calendar=cal)-self.del1d,
                             freq='D',
                             calendar=cal) for year in year_range]
             date_range = [item for sublist in date_range for item in sublist]
@@ -205,33 +207,6 @@ class SeasonalAverager():
         if "year" in ds_stat.coords:
             ds_stat = self.fix_time_coord(ds_stat,cal)
         return self.masked_ds(ds_stat)
-
-def init_metrics_dict(model_list,dec_mode,drop_incomplete_djf,annual_strict,region_name):
-    # Return initial version of the metrics dictionary
-    metrics = {
-        "DIMENSIONS": {
-            "json_structure": ["model","realization","region","metric","season"],
-            "region": {region_name: "Areas where 50<=sftlf<=100"},
-            "season": ["ANN","DJF","MAM","JJA","SON"],
-            "index": {        
-                "Rx5day": "Maximum consecutive 5-day mean precipitation, mm/day",
-                "Rx1day": "Maximum daily precipitation, mm/day",
-                "TXx": "Maximum value of daily maximum temperature",
-                "TXn": "Minimum value of daily maximum temperature",
-                "TNx": "Maximum value of daily minimum temperature",
-                "TNn": "Minimum value of daily minimum temperature",},
-            "model": model_list,
-            "realization": []
-        },
-        "RESULTS": {},
-        "RUNTIME_CALENDAR_SETTINGS": {
-            "december_mode": str(dec_mode),
-            "drop_incomplete_djf": str(drop_incomplete_djf),
-            "annual_strict": str(annual_strict)
-        }
-    }
-
-    return metrics
 
 def update_nc_attrs(ds,dec_mode,drop_incomplete_djf,annual_strict):
     # Add bounds and record user settings in attributes
@@ -294,7 +269,47 @@ def precipitation_indices(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
 
     return P1day,P5day
 
-def metrics_json(data_dict,sftlf,obs_dict={},region="land"):
+def init_metrics_dict(model_list,dec_mode,drop_incomplete_djf,annual_strict,region_name):
+    # Return initial version of the metrics dictionary
+    metrics = {
+        "DIMENSIONS": {
+            "json_structure": ["model","realization","region","index","season","statistic"],
+            "region": {region_name: "Areas where 50<=sftlf<=100"},
+            "season": ["ANN","DJF","MAM","JJA","SON"],
+            "index": {        
+                "Rx5day": "Maximum consecutive 5-day mean precipitation, mm/day",
+                "Rx1day": "Maximum daily precipitation, mm/day",
+                "TXx": "Maximum value of daily maximum temperature",
+                "TXn": "Minimum value of daily maximum temperature",
+                "TNx": "Maximum value of daily minimum temperature",
+                "TNn": "Minimum value of daily minimum temperature",},
+            "statistic": {
+                "mean": compute_statistics.mean_xy(None),
+                "std_xy": compute_statistics.std_xy(None,None),
+                "bias_xy": compute_statistics.bias_xy(None,None),
+                "cor_xy": compute_statistics.cor_xy(None,None),
+                "mae_xy": compute_statistics.meanabs_xy(None,None),
+                "rms_xy": compute_statistics.rms_xy(None,None),
+                "rmsc_xy": compute_statistics.rmsc_xy(None,None),
+                "pct_dif": {
+                    "Abstract": "Bias xy as a percentage of the Observed mean.",
+                    "Contact": "pcmdi-metrics@llnl.gov",
+                    "Name": "Spatial Difference Percentage"}
+                },
+            "model": model_list,
+            "realization": []
+        },
+        "RESULTS": {},
+        "RUNTIME_CALENDAR_SETTINGS": {
+            "december_mode": str(dec_mode),
+            "drop_incomplete_djf": str(drop_incomplete_djf),
+            "annual_strict": str(annual_strict)
+        }
+    }
+
+    return metrics
+
+def metrics_json(data_dict,sftlf,obs_dict={},region="land",regrid=True):
     # Format, calculate, and return the global mean value over land
     # for all datasets in the input dictionary
     # Arguments:
@@ -314,6 +329,7 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land"):
                 "JJA": "",
                 "SON": ""
             }
+
     # Looping over each type of extrema in data_dict
     for m in data_dict:
         met_dict[m] = {
@@ -323,10 +339,11 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land"):
             }
         }
         # If obs available, add metrics comparing with obs
+        # If new statistics are added, be sure to update
+        # "statistic" entry in init_metrics_dict()
         if len(obs_dict) > 0:
-            for k in ["bias_xy","cor_xy","mae_xy","rms_xy","rmsc_xy"]:
+            for k in ["difference","percent_difference","bias_xy","cor_xy","mae_xy","rms_xy","rmsc_xy"]:
                 met_dict[m][region][k] = seasons_dict.copy()
-
 
         ds_m = data_dict[m]
         for season in ["ANN","DJF","MAM","JJA","SON"]:
@@ -337,18 +354,30 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land"):
             std_xy = compute_statistics.std_xy(a, season)
             met_dict[m][region]["std_xy"][season] = std_xy
 
-            if len(obs_dict) > 0:
+            if len(obs_dict) > 0 and not obs_dict[m].equals(ds_m):
                 # Regrid obs to model grid
-                obs_regridded = obs_dict[m].regridder.horizontal(season, ds_m, tool='regrid2')
+                if regrid:
+                    obs_m = obs_dict[m].regridder.horizontal(season, ds_m, tool='regrid2')
+                else:
+                    obs_m = obs_dict[m]
+                    shp1 = (len(ds_m[season].lat),len(ds_m[season].lon))
+                    shp2 = (len(obs_m[season].lat),len(obs_m[season].lon))
+                    assert shp1 == shp2, "Model and Reference data dimensions 'lat' and 'lon' must match."
+                    
 
                 # Get xy stats for temporal average
                 a = ds_m.temporal.average(season)
-                b = obs_regridded.temporal.average(season)
-                rms_xy = compute_statistics.rms_xy(a, b, var=season)
-                meanabs_xy = compute_statistics.meanabs_xy(a, b, var=season)
-                bias_xy = compute_statistics.bias_xy(a, b, var=season)
-                cor_xy = compute_statistics.cor_xy(a, b, var=season)
-                rmsc_xy = compute_statistics.rmsc_xy(a, b, var=season)
+                b = obs_m.temporal.average(season)
+                weights = ds_m.spatial.get_weights(axis=['X', 'Y'])
+                #dif = float((a - b).spatial.average(season, axis=['X', 'Y'],weights=weights)[season])
+                rms_xy = compute_statistics.rms_xy(a, b, var=season, weights=weights)
+                meanabs_xy = compute_statistics.meanabs_xy(a, b, var=season, weights=weights)
+                bias_xy = compute_statistics.bias_xy(a, b, var=season, weights=weights)
+                cor_xy = compute_statistics.cor_xy(a, b, var=season, weights=weights)
+                rmsc_xy = compute_statistics.rmsc_xy(a, b, var=season, weights=weights)
+                percent_difference=float(100.*bias_xy/b.spatial.average(season,axis=['X','Y'],weights=weights)[season])
+
+                met_dict[m][region]["pct_dif"][season] = percent_difference
                 met_dict[m][region]["rms_xy"][season] = rms_xy
                 met_dict[m][region]["mae_xy"][season] = meanabs_xy
                 met_dict[m][region]["bias_xy"][season] = bias_xy
