@@ -68,9 +68,11 @@ You can either use a region from a shapefile or provide coordinate pairs that de
 | reference_sftlf_template | (str) The full path of the reference data set land/sea mask. | 
 | metrics_output_path  | (str) The directory to write output files to. | 
 | nc_out | (bool) True to save yearly block extrema as netcdf files. | 
+| plots | (bool) True to save world map figures of mean metrics. |
 | debug | (bool) True to use debug mode. | 
 | year_range |  (list) A list containing the start year and end year. | 
 | regrid | (bool) Set to False to skip regridding if all datasets are on the same grid. Default True. |
+
 
 ## References
 
