@@ -47,6 +47,7 @@ def plot_map_cartopy(
     center_lon_global=180,
     maskout=None,
     debug=False,):
+    # Taken from similar function in variability_mode.lib.plot_map
 
     lons = data.lon
     lats = data.lat
