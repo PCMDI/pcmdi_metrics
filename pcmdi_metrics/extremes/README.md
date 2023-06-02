@@ -24,6 +24,11 @@ This script will produce metrics JSONs and netcdf files (optional) containing bl
 
 Data is masked to be over land only (50<=sftlf<=100)
 
+Metrics:
+Metrics are produced to describe the time mean extrema values, along with spatial statistics comparing the mean model field to mean observed field.  
+Model only: "mean", "std_xy"  
+If reference dataset is available: "mean", "std_xy","std-obs_xy","pct_dif","bias_xy","cor_xy","mae_xy","rms_xy","rmsc_xy"  
+
 ## Regional Analysis
 
 You can either use a region from a shapefile or provide coordinate pairs that define the region. Consult the parameters section for more information.
