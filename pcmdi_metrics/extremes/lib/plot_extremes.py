@@ -1,5 +1,7 @@
 #!/usr/bin/env python
+import json
 import math
+import numpy as np
 import os
 import sys
 
@@ -12,7 +14,25 @@ import numpy as np
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
-def plot_extremes(data,metric,model,run,metrics_output_path):
+import matplotlib.pyplot as plt
+from pcmdi_metrics.graphics import TaylorDiagram
+
+def make_maps(data,model,run,region_name,index,yrs,plot_dir,desc,meta):
+    # Consolidating some plotting code here to streamline main function
+    output_template = os.path.join(plot_dir,"_".join([model,run,region_name,index,"season"]))
+    plot_extremes(data,index,model,run,yrs,output_template)
+    meta.update_plots(index,output_template+".png",index,desc)
+    return meta
+
+def plot_extremes(data,metric,model,run,yrs,output_template):
+
+    if yrs == [None, None]:
+        start_year = int(data.time[0].dt.year)
+        end_year = int(data.time[-1].dt.year)
+    else:
+        start_year = yrs[0]
+        end_year = yrs[1]
+    yrs_str = "({0}-{1})".format(start_year,end_year)
 
     if metric in ["TXx","TXn","TNx","TNn"]:
         colors="YlOrRd"
@@ -21,9 +41,8 @@ def plot_extremes(data,metric,model,run,metrics_output_path):
 
     for season in ["ANN","DJF","MAM","JJA","SON"]:
         ds = data[season].mean("time")
-        outfile = os.path.join(metrics_output_path,"_".join([model,run,metric,season]))
-        print(outfile)
-        title = " ".join([model,run,season,"mean",metric])
+        outfile = output_template.replace("season",season)
+        title = " ".join([model,run,season,"mean",metric,yrs_str])
         min_lev = math.floor(ds.min()/10) * 10
         max_lev = math.floor(ds.max()/10) * 10
         levels = np.arange(min_lev,max_lev+10,10)
@@ -33,7 +52,8 @@ def plot_extremes(data,metric,model,run,metrics_output_path):
             title=title,
             proj="Robinson",
             cmap=colors,
-            levels=levels)                  
+            levels=levels)
+    return               
 
 def plot_map_cartopy(    
     data,
@@ -115,3 +135,64 @@ def plot_map_cartopy(
     # Done, save figure
     fig.savefig(filename)
     plt.close("all")
+
+    return
+
+def taylor_diag(fname,outfile_template):
+
+    with open(fname,"r") as metrics_file:
+        metrics = json.load(metrics_file)
+
+    models = metrics["DIMENSIONS"]["model"]
+    realizations = metrics["DIMENSIONS"]["realization"]
+    region = metrics["DIMENSIONS"]["region"]
+    indices = metrics["DIMENSIONS"]["index"]
+    
+    # For legend
+    models_label = models.copy()
+    models_label.remove("Reference")
+    
+    nc = 1
+    fsize = (8,5)
+    if len(models_label) > 10:
+        nc = 2
+        fsize = (12,5)
+
+    for s  in ["ANN","DJF","MAM","SON","JJA"]:
+        for r in realizations:
+            # Possible for a realization to be not found for every model
+            if r not in idx not in metrics["RESULTS"][models[1]]:
+                continue
+            for rg in region:
+                for idx in indices:
+                    if idx not in metrics["RESULTS"][models[1]][r][rg]:
+                        continue
+                    
+                    stat_dict = {}
+                    for stat in ["std_xy","std-obs_xy","cor_xy"]:
+                        tmp = []
+                        for m in models:
+                            if m == "Reference":
+                                continue
+                            else:
+                                tmp.append(metrics["RESULTS"][m][r][idx][rg][stat][s])
+                        stat_dict[stat] = np.array(tmp)
+                    
+                    stddev = stat_dict["std_xy"]
+                    corrcoeff = stat_dict["cor_xy"]
+                    refstd = stat_dict["std-obs_xy"]
+
+                    plottitle=" ".join([r,s,idx,rg])
+                    outfile = outfile_template.replace("realization",r).replace("region",rg).replace("index",idx).replace("season",s)
+
+                    fig = plt.figure(figsize=fsize)
+                    fig, ax = TaylorDiagram(stddev, corrcoeff, refstd, 
+                            fig=fig, 
+                            labels=models_label, 
+                            ref_label='Reference'
+                        )
+
+                    ax.legend(bbox_to_anchor=(1.05, 0), loc='lower left', ncol=nc)
+                    fig.suptitle(plottitle, fontsize=20)
+                    plt.savefig(outfile)
+    return

@@ -269,20 +269,14 @@ def precipitation_indices(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
 
     return P1day,P5day
 
-def init_metrics_dict(model_list,dec_mode,drop_incomplete_djf,annual_strict,region_name):
+def init_metrics_dict(model_list,var_list,dec_mode,drop_incomplete_djf,annual_strict,region_name):
     # Return initial version of the metrics dictionary
     metrics = {
         "DIMENSIONS": {
             "json_structure": ["model","realization","index","region","statistic","season"],
             "region": {region_name: "Areas where 50<=sftlf<=100"},
             "season": ["ANN","DJF","MAM","JJA","SON"],
-            "index": {        
-                "Rx5day": "Maximum consecutive 5-day mean precipitation, mm/day",
-                "Rx1day": "Maximum daily precipitation, mm/day",
-                "TXx": "Maximum value of daily maximum temperature",
-                "TXn": "Minimum value of daily maximum temperature",
-                "TNx": "Maximum value of daily minimum temperature",
-                "TNn": "Minimum value of daily minimum temperature",},
+            "index": {},
             "statistic": {
                 "mean": compute_statistics.mean_xy(None),
                 "std_xy": compute_statistics.std_xy(None,None),
@@ -291,6 +285,7 @@ def init_metrics_dict(model_list,dec_mode,drop_incomplete_djf,annual_strict,regi
                 "mae_xy": compute_statistics.meanabs_xy(None,None),
                 "rms_xy": compute_statistics.rms_xy(None,None),
                 "rmsc_xy": compute_statistics.rmsc_xy(None,None),
+                "std-obs_xy": compute_statistics.std_xy(None,None),
                 "pct_dif": {
                     "Abstract": "Bias xy as a percentage of the Observed mean.",
                     "Contact": "pcmdi-metrics@llnl.gov",
@@ -306,6 +301,18 @@ def init_metrics_dict(model_list,dec_mode,drop_incomplete_djf,annual_strict,regi
             "annual_strict": str(annual_strict)
         }
     }
+
+    # Only include the definitions for the indices in this particular analysis.
+    for v in var_list:
+        if v == "tasmax":
+            metrics["DIMENSIONS"]["index"].update({"TXx": "Maximum value of daily maximum temperature"})
+            metrics["DIMENSIONS"]["index"].update({"TXn": "Minimum value of daily maximum temperature"})
+        if v == "tasmin":
+            metrics["DIMENSIONS"]["index"].update({"TNx": "Maximum value of daily minimum temperature"})
+            metrics["DIMENSIONS"]["index"].update({"TNn": "Minimum value of daily minimum temperature"})
+        if v in ["pr","PRECT","precip"]:
+            metrics["DIMENSIONS"]["index"].update({"Rx5day": "Maximum consecutive 5-day mean precipitation, mm/day"})
+            metrics["DIMENSIONS"]["index"].update({"Rx1day": "Maximum daily precipitation, mm/day"})
 
     return metrics
 
@@ -342,7 +349,7 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land",regrid=True):
         # If new statistics are added, be sure to update
         # "statistic" entry in init_metrics_dict()
         if len(obs_dict) > 0:
-            for k in ["pct_dif","bias_xy","cor_xy","mae_xy","rms_xy","rmsc_xy"]:
+            for k in ["std-obs_xy","pct_dif","bias_xy","cor_xy","mae_xy","rms_xy","rmsc_xy"]:
                 met_dict[m][region][k] = seasons_dict.copy()
 
         ds_m = data_dict[m]
@@ -374,6 +381,7 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land",regrid=True):
                 bias_xy = compute_statistics.bias_xy(a, b, var=season, weights=weights)
                 cor_xy = compute_statistics.cor_xy(a, b, var=season, weights=weights)
                 rmsc_xy = compute_statistics.rmsc_xy(a, b, var=season, weights=weights)
+                std_obs_xy = compute_statistics.std_xy(b, season)
                 percent_difference=float(100.*bias_xy/b.spatial.average(season,axis=['X','Y'],weights=weights)[season])
 
                 met_dict[m][region]["pct_dif"][season] = percent_difference
@@ -382,6 +390,7 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land",regrid=True):
                 met_dict[m][region]["bias_xy"][season] = bias_xy
                 met_dict[m][region]["cor_xy"][season] = cor_xy
                 met_dict[m][region]["rmsc_xy"][season] = rmsc_xy
+                met_dict[m][region]["std-obs_xy"][season] = std_obs_xy
 
     return met_dict
 

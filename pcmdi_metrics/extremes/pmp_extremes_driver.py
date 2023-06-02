@@ -62,10 +62,13 @@ col = parameter.attribute
 region_name = parameter.region_name
 coords = parameter.coords
 
-# TODO: logging
-
 # Check the region masking parameters, if provided
-use_region_mask,region_name,coords = region_utilities.check_region_params(shp_path,coords,region_name,col,"land")
+use_region_mask,region_name,coords = region_utilities.check_region_params(
+    shp_path,
+    coords,
+    region_name,
+    col,
+    "land")
 
 # Verifying output directory
 metrics_output_path = utilities.verify_output_path(metrics_output_path,case_id)
@@ -73,12 +76,16 @@ metrics_output_path = utilities.verify_output_path(metrics_output_path,case_id)
 # Initialize output.json file
 meta = metadata.MetadataFile(metrics_output_path)
 
+# Initialize other directories
 if nc_out:
-    nc_dir = os.path.join(metrics_output_path,"data")
+    nc_dir = os.path.join(metrics_output_path,"netcdf")
     os.makedirs(nc_dir,exist_ok=True)
 if plots:
-    plot_dir = os.path.join(metrics_output_path,"plots")
-    os.makedirs(plot_dir,exist_ok=True)
+    plot_dir_maps = os.path.join(metrics_output_path,"plots","maps")
+    os.makedirs(plot_dir_maps,exist_ok=True)
+    if reference_data_path is not None:
+        plot_dir_taylor = os.path.join(metrics_output_path,"plots","taylor")
+        os.makedirs(plot_dir_taylor,exist_ok=True)
 
 # Setting up model realization list
 find_all_realizations,realizations = utilities.set_up_realizations(realization)
@@ -91,7 +98,13 @@ else:
 
 # Initialize output JSON structures
 # FYI: if the analysis output JSON is changed, remember to update this function!
-metrics_dict = compute_metrics.init_metrics_dict(model_loop_list,dec_mode,drop_incomplete_djf,annual_strict,region_name)
+metrics_dict = compute_metrics.init_metrics_dict(
+    model_loop_list,
+    variable_list,
+    dec_mode,
+    drop_incomplete_djf,
+    annual_strict,
+    region_name)
 
 obs = {}
 
@@ -105,9 +118,9 @@ for model in model_loop_list:
     if model=="Reference":
         list_of_runs = [str(reference_data_set)] #TODO: realizations set in multiple places
     elif find_all_realizations:
-        test_data_full_path = os.path.join(
-            test_data_path,
-            filename_template).replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', '*')
+        tags = {'%(model)': model, '%(model_version)': model, '%(realization)': "*"}
+        test_data_full_path = os.path.join(test_data_path,filename_template)
+        test_data_full_path = utilities.replace_multi(test_data_full_path,tags)
         ncfiles = glob.glob(test_data_full_path)
         realizations = []
         for ncfile in ncfiles:
@@ -137,7 +150,8 @@ for model in model_loop_list:
                     sftlf_exists = False
         else:
             try:
-                sftlf_filename_list = sftlf_filename_template.replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', run)
+                tags = {'%(model)': model, '%(model_version)': model, '%(realization)': run}
+                sftlf_filename_list = utilities.replace_multi(sftlf_filename_template,tags)
                 sftlf_filename = glob.glob(sftlf_filename_list)[0]
             except (AttributeError, IndexError):
                 print("No sftlf file found for",model,run)
@@ -154,7 +168,12 @@ for model in model_loop_list:
                 sftlf["sftlf"] = sftlf["sftlf"] * 100.
             if use_region_mask:
                 print("\nCreating sftlf region mask.")
-                sftlf = region_utilities.mask_region(sftlf,region_name,coords=coords,shp_path=shp_path,column=col)
+                sftlf = region_utilities.mask_region(
+                    sftlf,
+                    region_name,
+                    coords=coords,
+                    shp_path=shp_path,
+                    column=col)
         
         metrics_dict["RESULTS"][model][run] = {}
         
@@ -164,10 +183,9 @@ for model in model_loop_list:
             if run==reference_data_set:
                 test_data_full_path = reference_data_path
             else:
-                test_data_full_path = os.path.join(
-                    test_data_path,
-                    filename_template
-                    ).replace('%(variable)', varname).replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', run)
+                tags = {'%(variable)': varname, '%(model)': model, '%(model_version)': model,'%(realization)': run}
+                test_data_full_path = os.path.join(test_data_path,filename_template)
+                test_data_full_path = utilities.replace_multi(test_data_full_path,tags)
             test_data_full_path = glob.glob(test_data_full_path)
             if len(test_data_full_path) == 0:
                 print("")
@@ -193,11 +211,21 @@ for model in model_loop_list:
                 sftlf = utilities.generate_land_sea_mask(ds,debug=debug)
                 if use_region_mask:
                     print("\nCreating sftlf region mask.")
-                    sftlf = region_utilities.mask_region(sftlf,region_name,coords=coords,shp_path=shp_path,column=col)
+                    sftlf = region_utilities.mask_region(
+                        sftlf,
+                        region_name,
+                        coords=coords,
+                        shp_path=shp_path,
+                        column=col)
 
             if use_region_mask:
                 print("Creating dataset mask.")
-                ds = region_utilities.mask_region(ds,region_name,coords=coords,shp_path=shp_path,column=col)
+                ds = region_utilities.mask_region(
+                    ds,
+                    region_name,
+                    coords=coords,
+                    shp_path=shp_path,
+                    column=col)
 
             if start_year is not None and end_year is not None:
                 start_time = cftime.datetime(start_year,1,1) - datetime.timedelta(days=0)
@@ -212,7 +240,13 @@ for model in model_loop_list:
 
             # Here's where the extremes calculations are happening
             if varname == "tasmax":
-                TXx,TXn = compute_metrics.temperature_indices(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
+                TXx,TXn = compute_metrics.temperature_indices(
+                    ds,
+                    varname,
+                    sftlf,
+                    dec_mode,
+                    drop_incomplete_djf,
+                    annual_strict)
                 stats_dict["TXx"] = TXx
                 stats_dict["TXn"] = TXn
 
@@ -222,30 +256,27 @@ for model in model_loop_list:
 
                 if nc_out:
                     print("Writing results to netCDF.")
-                    filepath = os.path.join(
-                        nc_dir,
-                        "TXx_{0}.nc".format("_".join([model,run,region_name])))
-                    utilities.write_to_nc(filepath,TXx)
-                    meta.update_data("TXx",filepath,"TXx","Seasonal maximum of maximum temperature.")
-
-                    filepath = os.path.join(
-                        nc_dir,
-                        "TXn_{0}.nc".format("_".join([model,run,region_name])))
-                    utilities.write_to_nc(filepath,TXn)
-                    meta.update_data("TXn",filepath,"TXn","Seasonal minimum of maximum temperature.")
+                    desc = "Seasonal maximum of maximum temperature."
+                    meta = utilities.write_to_nc(TXx,model,run,region_name,"TXx",nc_dir,desc,meta)
+                    desc = "Seasonal minimum of maximum temperature."
+                    meta = utilities.write_to_nc(TXn,model,run,region_name,"TXn",nc_dir,desc,meta)
 
                 if plots:
-                    print("Creating figures")
-                    # TODO: pull out figure path
-                    # TODO: Add year range
-                    plot_extremes.plot_extremes(TXx,"TXx",model,run,plot_dir)
-                    plot_extremes.plot_extremes(TXn,"TXn",model,run,plot_dir)
-                    meta.update_plots("TXx","","TXx","Seasonal maximum of maximum temperature.")
-                    meta.update_plots("TXn","","TXn","Seasonal minimum of maximum temperature.")
+                    print("Creating maps")
+                    yrs = [start_year, end_year]
+                    desc = "Seasonal maximum of maximum temperature."
+                    meta = plot_extremes.make_maps(TXx,model,run,region_name,"TXx",yrs,plot_dir_maps,desc,meta)
+                    desc = "Seasonal minimum of maximum temperature."
+                    meta = plot_extremes.make_maps(TXn,model,run,region_name,"TXn",yrs,plot_dir_maps,desc,meta)
 
-   
             if varname == "tasmin":
-                TNx,TNn = compute_metrics.temperature_indices(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
+                TNx,TNn = compute_metrics.temperature_indices(
+                    ds,
+                    varname,
+                    sftlf,
+                    dec_mode,
+                    drop_incomplete_djf,
+                    annual_strict)
                 stats_dict["TNx"] = TNx
                 stats_dict["TNn"] = TNn
 
@@ -255,30 +286,29 @@ for model in model_loop_list:
 
                 if nc_out:
                     print("Writing results to netCDF.")
-                    filepath = os.path.join(
-                        nc_dir,
-                        "TNx_{0}.nc".format("_".join([model,run,region_name])))
-                    utilities.write_to_nc(filepath,TNx)
-                    meta.update_data("TNx",filepath,"TNx","Seasonal maximum of minimum temperature.")
-
-                    filepath = os.path.join(
-                        nc_dir,
-                        "TNn_{0}.nc".format("_".join([model,run,region_name])))
-                    utilities.write_to_nc(filepath,TNx)
-                    meta.update_data("TNn",filepath,"TNn","Seasonal minimum of minimum temperature.")
+                    desc = "Seasonal maximum of minimum temperature."
+                    meta = utilities.write_to_nc(TNx,model,run,region_name,"TNx",nc_dir,desc,meta)
+                    desc = "Seasonal minimum of minimum temperature."
+                    meta = utilities.write_to_nc(TNn,model,run,region_name,"TNn",nc_dir,desc,meta)
 
                 if plots:
-                    print("Creating figures")
-                    plot_extremes.plot_extremes(TNx,"TNx",model,run,plot_dir)
-                    plot_extremes.plot_extremes(TNn,"TNn",model,run,plot_dir)
-                    meta.update_plots("TNx","","TNx","Seasonal maximum of minimum temperature.")
-                    meta.update_plots("TNn","","TNx","Seasonal minimum of minimum temperature.")
+                    print("Creating maps")
+                    yrs = [start_year, end_year]
+                    desc = "Seasonal maximum of minimum temperature."
+                    meta = plot_extremes.make_maps(TNx,model,run,region_name,"TNx",yrs,plot_dir_maps,desc,meta)
+                    desc = "Seasonal minimum of minimum temperature."
+                    meta = plot_extremes.make_maps(TNn,model,run,region_name,"TNn",yrs,plot_dir_maps,desc,meta)
 
             if varname in ["pr","PRECT","precip"]:
                 # Rename possible precipitation variable names for consistency
                 if varname in ["precip","PRECT"]:
                     ds = ds.rename({variable: "pr"})
-                Rx1day,Rx5day = compute_metrics.precipitation_indices(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict)
+                Rx1day,Rx5day = compute_metrics.precipitation_indices(
+                    ds,
+                    sftlf,
+                    dec_mode,
+                    drop_incomplete_djf,
+                    annual_strict)
                 stats_dict["Rx1day"] = Rx1day
                 stats_dict["Rx5day"] = Rx5day
 
@@ -288,29 +318,27 @@ for model in model_loop_list:
 
                 if nc_out:
                     print("Writing results to netCDF.")
-                    filepath = os.path.join(
-                        nc_dir,
-                        "Rx1day_{0}.nc".format("_".join([model,run,region_name])))
-                    utilities.write_to_nc(filepath,Rx1day)
-                    meta.update_data("Rx1day",filepath,"Rx1day","Seasonal maximum value of daily precipitation")
-
-                    filepath = os.path.join(
-                        nc_dir,
-                        "Rx5day_{0}.nc".format("_".join([model,run,region_name])))
-                    utilities.write_to_nc(filepath,Rx5day)
-                    meta.update_data("Rx5day",filepath,"Rx5day","Seasonal maximum value of 5-day mean precipitation")
+                    desc = "Seasonal maximum value of daily precipitation."
+                    meta = utilities.write_to_nc(Rx1day,model,run,region_name,"Rx1day",nc_dir,desc,meta)
+                    desc = "Seasonal maximum value of 5-day mean precipitation."
+                    meta = utilities.write_to_nc(Rx5day,model,run,region_name,"Rx5day",nc_dir,desc,meta)
 
                 if plots:
-                    print("Creating figures")
-                    plot_extremes.plot_extremes(Rx1day,"Rx1day",model,run,plot_dir)
-                    plot_extremes.plot_extremes(Rx5day,"Rx5day",model,run,plot_dir)
-                    meta.update_plots("Rx5day","","Rx5day","Seasonal maximum value of 5-day mean precipitation")
-                    meta.update_plots("Rx1day","","Rx1day","Seasonal maximum value of daily precipitation")
-
+                    print("Creating maps")
+                    yrs = [start_year, end_year]
+                    desc = "Seasonal maximum value of 5-day mean precipitation."
+                    meta = plot_extremes.make_maps(Rx5day,model,run,region_name,"Rx5day",yrs,plot_dir_maps,desc,meta)
+                    desc = "Seasonal maximum value of daily precipitation."
+                    meta = plot_extremes.make_maps(Rx1day,model,run,region_name,"Rx1day",yrs,plot_dir_maps,desc,meta)
             
             # Get stats and update metrics dictionary
             print("Generating metrics.")
-            result_dict = compute_metrics.metrics_json(stats_dict,sftlf,obs_dict=obs,region=region_name,regrid=regrid)
+            result_dict = compute_metrics.metrics_json(
+                stats_dict,
+                sftlf,
+                obs_dict=obs,
+                region=region_name,
+                regrid=regrid)
             metrics_dict["RESULTS"][model][run].update(result_dict)
             if run not in metrics_dict["DIMENSIONS"]["realization"]:
                 metrics_dict["DIMENSIONS"]["realization"].append(run)
@@ -340,15 +368,29 @@ meta.update_metrics(
     "All results",
     "Seasonal metrics for block extrema for all datasets")
 
+# Taylor Diagram
+if plots and (reference_data_path is not None):
+    print("Making Taylor Diagrams")
+    outfile_template = os.path.join(
+        plot_dir_taylor,
+        "_".join(["taylor","realization","region","index","season"]))
+    plot_extremes.taylor_diag(fname,outfile_template)
+    meta.update_plots(
+        "Taylor_Diagrams",
+        outfile_template,
+        "Taylor Diagrams",
+        "Taylor Diagrams for block extrema results.")
+
 # Update and write metadata file
 try:
-        with open(fname,"r") as f:
-            tmp = json.load(f)
-        meta.update_provenance("environment",tmp["provenance"])
+    with open(fname,"r") as f:
+        tmp = json.load(f)
+    meta.update_provenance("environment",tmp["provenance"])
 except:
-    pass
+    # Skip provenance if there's an issue
+    print("Error: Could not get provenance from extremes json for output.json.")
 
-meta.update_provenance("modeldata", os.path.join(test_data_path,filename_template))
+meta.update_provenance("modeldata", test_data_path)
 if reference_data_path is not None:
-    meta.update_provenance("obsdata", os.path.join(reference_data_path,reference_data_set))
+    meta.update_provenance("obsdata", reference_data_path)
 meta.write()

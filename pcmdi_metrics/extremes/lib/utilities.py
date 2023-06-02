@@ -13,8 +13,21 @@ import xcdat
 
 from pcmdi_metrics.io.base import Base
 
+def replace_multi(string,rdict):
+    # Replace multiple keyworks in a string template
+    # based on key-value pairs in 'rdict'.
+    for k in rdict.keys():
+        string = string.replace(k,rdict[k])
+    return string
 
-def write_to_nc(filepath,ds):
+def write_to_nc(data,model,run,region_name,index,ncdir,desc,meta):
+    # Consolidating some netcdf writing code here to streamline main function
+    filepath = os.path.join(ncdir,"_".join([model,run,region_name,index])+".nc")
+    write_netcdf_file(filepath,data)
+    meta.update_data(index,filepath+".png",index,desc)
+    return meta
+
+def write_netcdf_file(filepath,ds):
     try:
         ds.to_netcdf(filepath,mode="w")
     except PermissionError as e:
