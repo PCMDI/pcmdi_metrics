@@ -369,7 +369,6 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land",regrid=True):
                 a = ds_m.temporal.average(season)
                 b = obs_m.temporal.average(season)
                 weights = ds_m.spatial.get_weights(axis=['X', 'Y'])
-                #dif = float((a - b).spatial.average(season, axis=['X', 'Y'],weights=weights)[season])
                 rms_xy = compute_statistics.rms_xy(a, b, var=season, weights=weights)
                 meanabs_xy = compute_statistics.meanabs_xy(a, b, var=season, weights=weights)
                 bias_xy = compute_statistics.bias_xy(a, b, var=season, weights=weights)
