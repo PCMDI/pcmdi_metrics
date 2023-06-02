@@ -18,7 +18,8 @@ from lib import (
     create_extremes_parser,
     utilities,
     region_utilities,
-    metadata
+    metadata,
+    plot_extremes
 )
 
 
@@ -43,6 +44,7 @@ reference_data_set = parameter.reference_data_set
 reference_sftlf_template = parameter.reference_sftlf_template
 metrics_output_path = parameter.metrics_output_path
 nc_out = parameter.nc_out
+plots = parameter.plots
 debug = parameter.debug
 cmec = parameter.cmec
 start_year = parameter.year_range[0]
@@ -70,6 +72,13 @@ metrics_output_path = utilities.verify_output_path(metrics_output_path,case_id)
 
 # Initialize output.json file
 meta = metadata.MetadataFile(metrics_output_path)
+
+if nc_out:
+    nc_dir = os.path.join(metrics_output_path,"data")
+    os.makedirs(nc_dir,exist_ok=True)
+if plots:
+    plot_dir = os.path.join(metrics_output_path,"plots")
+    os.makedirs(plot_dir,exist_ok=True)
 
 # Setting up model realization list
 find_all_realizations,realizations = utilities.set_up_realizations(realization)
@@ -213,13 +222,26 @@ for model in model_loop_list:
 
                 if nc_out:
                     print("Writing results to netCDF.")
-                    filepath = os.path.join(metrics_output_path,"TXx_{0}.nc".format("_".join([model,run,region_name])))
+                    filepath = os.path.join(
+                        nc_dir,
+                        "TXx_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,TXx)
                     meta.update_data("TXx",filepath,"TXx","Seasonal maximum of maximum temperature.")
 
-                    filepath = os.path.join(metrics_output_path,"TXn_{0}.nc".format("_".join([model,run,region_name])))
+                    filepath = os.path.join(
+                        nc_dir,
+                        "TXn_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,TXn)
                     meta.update_data("TXn",filepath,"TXn","Seasonal minimum of maximum temperature.")
+
+                if plots:
+                    print("Creating figures")
+                    # TODO: pull out figure path
+                    # TODO: Add year range
+                    plot_extremes.plot_extremes(TXx,"TXx",model,run,plot_dir)
+                    plot_extremes.plot_extremes(TXn,"TXn",model,run,plot_dir)
+                    meta.update_plots("TXx","","TXx","Seasonal maximum of maximum temperature.")
+                    meta.update_plots("TXn","","TXn","Seasonal minimum of maximum temperature.")
 
    
             if varname == "tasmin":
@@ -233,13 +255,24 @@ for model in model_loop_list:
 
                 if nc_out:
                     print("Writing results to netCDF.")
-                    filepath = os.path.join(metrics_output_path,"TNx_{0}.nc".format("_".join([model,run,region_name])))
+                    filepath = os.path.join(
+                        nc_dir,
+                        "TNx_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,TNx)
                     meta.update_data("TNx",filepath,"TNx","Seasonal maximum of minimum temperature.")
 
-                    filepath = os.path.join(metrics_output_path,"TNn_{0}.nc".format("_".join([model,run,region_name])))
+                    filepath = os.path.join(
+                        nc_dir,
+                        "TNn_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,TNx)
                     meta.update_data("TNn",filepath,"TNn","Seasonal minimum of minimum temperature.")
+
+                if plots:
+                    print("Creating figures")
+                    plot_extremes.plot_extremes(TNx,"TNx",model,run,plot_dir)
+                    plot_extremes.plot_extremes(TNn,"TNn",model,run,plot_dir)
+                    meta.update_plots("TNx","","TNx","Seasonal maximum of minimum temperature.")
+                    meta.update_plots("TNn","","TNx","Seasonal minimum of minimum temperature.")
 
             if varname in ["pr","PRECT","precip"]:
                 # Rename possible precipitation variable names for consistency
@@ -255,13 +288,24 @@ for model in model_loop_list:
 
                 if nc_out:
                     print("Writing results to netCDF.")
-                    filepath = os.path.join(metrics_output_path,"Rx1day_{0}.nc".format("_".join([model,run,region_name])))
+                    filepath = os.path.join(
+                        nc_dir,
+                        "Rx1day_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,Rx1day)
                     meta.update_data("Rx1day",filepath,"Rx1day","Seasonal maximum value of daily precipitation")
 
-                    filepath = os.path.join(metrics_output_path,"Rx5day_{0}.nc".format("_".join([model,run,region_name])))
+                    filepath = os.path.join(
+                        nc_dir,
+                        "Rx5day_{0}.nc".format("_".join([model,run,region_name])))
                     utilities.write_to_nc(filepath,Rx5day)
                     meta.update_data("Rx5day",filepath,"Rx5day","Seasonal maximum value of 5-day mean precipitation")
+
+                if plots:
+                    print("Creating figures")
+                    plot_extremes.plot_extremes(Rx1day,"Rx1day",model,run,plot_dir)
+                    plot_extremes.plot_extremes(Rx5day,"Rx5day",model,run,plot_dir)
+                    meta.update_plots("Rx5day","","Rx5day","Seasonal maximum value of 5-day mean precipitation")
+                    meta.update_plots("Rx1day","","Rx1day","Seasonal maximum value of daily precipitation")
 
             
             # Get stats and update metrics dictionary
@@ -291,7 +335,7 @@ metrics_dict["DIMENSIONS"]["model"] = model_loop_list
 utilities.write_to_json(metrics_output_path,"extremes_metrics.json",metrics_dict)
 fname=os.path.join(metrics_output_path,"extremes_metrics.json")
 meta.update_metrics(
-    "ALL",
+    "All",
     fname,
     "All results",
     "Seasonal metrics for block extrema for all datasets")
@@ -305,6 +349,6 @@ except:
     pass
 
 meta.update_provenance("modeldata", os.path.join(test_data_path,filename_template))
-meta.update_provenance("obsdata", os.path.join(reference_data_path,reference_data_set))
-
+if reference_data_path is not None:
+    meta.update_provenance("obsdata", os.path.join(reference_data_path,reference_data_set))
 meta.write()
