@@ -258,5 +258,12 @@ def create_extremes_parser():
         required=False
     )
 
+    parser.add_argument(
+        "--plots",
+        type=bool,
+        default=False,
+        help="Set to True to generate figures.",
+        required=False
+    )
 
     return parser
