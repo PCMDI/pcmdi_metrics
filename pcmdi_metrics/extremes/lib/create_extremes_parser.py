@@ -265,5 +265,17 @@ def create_extremes_parser():
         help="Set to True to generate figures.",
         required=False
     )
+    parser.add_argument(
+        "--osyear", dest="osyear", type=int, help="Start year for reference data set"
+    )
+    parser.add_argument(
+        "--msyear", dest="msyear", type=int, help="Start year for model data set"
+    )
+    parser.add_argument(
+        "--oeyear", dest="oeyear", type=int, help="End year for reference data set"
+    )
+    parser.add_argument(
+        "--meyear", dest="meyear", type=int, help="End year for model data set"
+    )
 
     return parser

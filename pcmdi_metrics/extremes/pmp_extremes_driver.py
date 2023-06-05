@@ -47,8 +47,10 @@ nc_out = parameter.nc_out
 plots = parameter.plots
 debug = parameter.debug
 cmec = parameter.cmec
-start_year = parameter.year_range[0]
-end_year = parameter.year_range[1]
+msyear = parameter.msyear
+meyear = parameter.meyear
+osyear = parameter.osyear
+oeyear = parameter.oeyear
 generate_sftlf = parameter.generate_sftlf
 regrid = parameter.regrid
 # Block extrema related settings
@@ -227,10 +229,13 @@ for model in model_loop_list:
                     shp_path=shp_path,
                     column=col)
 
-            if start_year is not None and end_year is not None:
-                start_time = cftime.datetime(start_year,1,1) - datetime.timedelta(days=0)
-                end_time = cftime.datetime(end_year+1,1,1) - datetime.timedelta(days=1)
-                ds = ds.sel(time=slice(start_time,end_time))
+            # Get time slice if year parameters exist
+            if run == reference_data_set:
+                if osyear is not None and oeyear is not None:
+                    ds = utilities.slice_ds(ds,osyear,oeyear)
+            else:
+                if msyear is not None and meyear is not None:
+                    ds = utilities.slice_ds(ds,msyear,meyear)
 
             if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
                 ds = self.ds.convert_calendar('noleap')
