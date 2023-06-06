@@ -161,12 +161,12 @@ def taylor_diag(fname,outfile_template):
     for s  in ["ANN","DJF","MAM","SON","JJA"]:
         for r in realizations:
             # Possible for a realization to be not found for every model
-            if r not in idx not in metrics["RESULTS"][models[1]]:
+            if r not in metrics["RESULTS"][models[1]]:
                 continue
-            for rg in region:
-                for idx in indices:
-                    if idx not in metrics["RESULTS"][models[1]][r][rg]:
-                        continue
+            for idx in indices:
+                if idx not in metrics["RESULTS"][models[1]][r]:
+                    continue
+                for rg in region:
                     
                     stat_dict = {}
                     for stat in ["std_xy","std-obs_xy","cor_xy"]:
