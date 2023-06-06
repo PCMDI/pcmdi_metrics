@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import xarray as xr
-import xcdat
+import xcdat as xc
 import pandas as pd
 import numpy as np
 import cftime
@@ -19,7 +19,8 @@ class TimeSeriesData():
         self.ds_var = ds_var
         self.freq = xr.infer_freq(ds.time)
         self._set_years()
-        self._set_calendar()
+        self.calendar = ds.time.encoding["calendar"]
+        self.time_units = ds.time.encoding["units"]
     
     def _set_years(self):
         self.year_beg = self.ds.isel({"time": 0}).time.dt.year.item()
@@ -29,9 +30,6 @@ class TimeSeriesData():
             raise Exception("Error: Final year must be greater than beginning year.")
 
         self.year_range = np.arange(self.year_beg,self.year_end+1,1)
-        
-    def _set_calendar(self):
-        self.calendar = self.ds.time.encoding["calendar"]
 
     def return_data_array(self):
         return self.ds[self.ds_var]
@@ -61,14 +59,15 @@ class SeasonalAverager():
         # Get the 5-day mean dataset
         self.pentad = self.TS.rolling_5day()
 
-    def fix_time_coord(self,ds,cal):
+    def fix_time_coord(self,ds):
+        cal = self.TS.calendar
         ds = ds.rename({"year": "time"})
         y_to_cft = [cftime.datetime(y,1,1,calendar=cal) for y in ds.time]
         ds["time"] = y_to_cft
         ds.time.attrs["axis"] = "T"
         ds['time'].encoding['calendar'] = cal
         ds['time'].attrs['standard_name'] = 'time'
-        ds.time.encoding['units'] = "days since 0000-01-01"
+        ds.time.encoding['units'] = self.TS.time_units
         return ds
         
     def annual_stats(self,stat,pentad=False):
@@ -91,7 +90,7 @@ class SeasonalAverager():
             # This setting is for means using 5 day rolling average values, where
             # we do not want to include any data from the prior year
             year_range = self.TS.year_range
-            hr = int(ds.time[0].dt.hour) # help with selecting nearest time
+            hr = int(ds.time[0].dt.hour) # get hour to help with selecting nearest time
 
             # Only use data from that year - start on Jan 5 avg
             date_range = [xr.cftime_range(
@@ -113,7 +112,7 @@ class SeasonalAverager():
         
         # Need to fix time axis if groupby operation happened
         if "year" in ds_ann.coords:
-            ds_ann = self.fix_time_coord(ds_ann,cal)
+            ds_ann = self.fix_time_coord(ds_ann)
         return self.masked_ds(ds_ann)
 
     def seasonal_stats(self,season,stat,pentad=False):
@@ -205,7 +204,7 @@ class SeasonalAverager():
 
         # Need to fix time axis if groupby operation happened
         if "year" in ds_stat.coords:
-            ds_stat = self.fix_time_coord(ds_stat,cal)
+            ds_stat = self.fix_time_coord(ds_stat)
         return self.masked_ds(ds_stat)
 
 def update_nc_attrs(ds,dec_mode,drop_incomplete_djf,annual_strict):
@@ -364,7 +363,8 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land",regrid=True):
             if len(obs_dict) > 0 and not obs_dict[m].equals(ds_m):
                 # Regrid obs to model grid
                 if regrid:
-                    obs_m = obs_dict[m].regridder.horizontal(season, ds_m, tool='regrid2')
+                    target = xc.create_grid(ds_m.lat, ds_m.lon)
+                    obs_m = obs_dict[m].regridder.horizontal(season, target, tool='regrid2')
                 else:
                     obs_m = obs_dict[m]
                     shp1 = (len(ds_m[season].lat),len(ds_m[season].lon))

@@ -277,5 +277,23 @@ def create_extremes_parser():
     parser.add_argument(
         "--meyear", dest="meyear", type=int, help="End year for model data set"
     )
+    parser.add_argument(
+        "--ObsUnitsAdjust",
+        type=tuple,
+        default=(False, 0, 0),
+        help="For unit adjust for OBS dataset. For example:\n"
+        "- (True, 'divide', 100.0)  # Pa to hPa\n"
+        "- (True, 'subtract', 273.15)  # degK to degC\n"
+        "- (False, 0, 0) # No adjustment (default)",
+    )
+    parser.add_argument(
+        "--ModUnitsAdjust",
+        type=tuple,
+        default=(False, 0, 0),
+        help="For unit adjust for model dataset. For example:\n"
+        "- (True, 'divide', 100.0)  # Pa to hPa\n"
+        "- (True, 'subtract', 273.15)  # degK to degC\n"
+        "- (False, 0, 0) # No adjustment (default)",
+    )
 
     return parser

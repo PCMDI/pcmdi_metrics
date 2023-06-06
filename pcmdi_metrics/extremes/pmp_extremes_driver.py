@@ -22,6 +22,8 @@ from lib import (
     plot_extremes
 )
 
+from pcmdi_metrics.io import xcdat_openxml
+
 
 ##########
 # Set up
@@ -181,13 +183,18 @@ for model in model_loop_list:
         
         # Loop over variables - tasmax, tasmin, or pr
         for varname in variable_list:
+
             # Find model data, determine number of files, check if they exist
             if run==reference_data_set:
                 test_data_full_path = reference_data_path
+                start_year = osyear
+                end_year = oeyear
             else:
                 tags = {'%(variable)': varname, '%(model)': model, '%(model_version)': model,'%(realization)': run}
                 test_data_full_path = os.path.join(test_data_path,filename_template)
                 test_data_full_path = utilities.replace_multi(test_data_full_path,tags)
+                start_year = msyear
+                end_year = meyear
             test_data_full_path = glob.glob(test_data_full_path)
             if len(test_data_full_path) == 0:
                 print("")
@@ -203,10 +210,13 @@ for model in model_loop_list:
                     print("  ",t)
 
             # Load and prep data
-            if len(test_data_full_path) > 1 or test_data_full_path[0].endswith(".xml"):
-                ds = xcdat.open_mfdataset(test_data_full_path)
+            if len(test_data_full_path) > 1:
+                ds = xcdat.open_mfdataset(test_data_full_path,chunks=None)
             else:
-                ds = xcdat.open_dataset(test_data_full_path[0])
+                if test_data_full_path[0].endswith(".xml"):
+                    ds = xcdat_openxml.xcdat_openxml(test_data_full_path[0])
+                else:
+                    ds = xcdat.open_dataset(test_data_full_path[0])
 
             if not sftlf_exists and generate_sftlf:
                 print("Generating land sea mask.")
@@ -230,12 +240,10 @@ for model in model_loop_list:
                     column=col)
 
             # Get time slice if year parameters exist
-            if run == reference_data_set:
-                if osyear is not None and oeyear is not None:
-                    ds = utilities.slice_ds(ds,osyear,oeyear)
-            else:
-                if msyear is not None and meyear is not None:
-                    ds = utilities.slice_ds(ds,msyear,meyear)
+            if start_year is not None and end_year is not None:
+                start_time = cftime.datetime(start_year,1,1) - datetime.timedelta(days=0)
+                end_time = cftime.datetime(end_year+1,1,1) - datetime.timedelta(days=1)
+                ds = ds.sel(time=slice(start_time,end_time))
 
             if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
                 ds = self.ds.convert_calendar('noleap')

@@ -13,6 +13,7 @@ import xcdat
 
 from pcmdi_metrics.io.base import Base
 
+
 def replace_multi(string,rdict):
     # Replace multiple keyworks in a string template
     # based on key-value pairs in 'rdict'.
