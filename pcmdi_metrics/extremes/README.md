@@ -4,23 +4,23 @@ This documentation is a work in progress, and may change at any time.
 
 ## Inputs
 
+This package expects input files to be cf-compliant. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr".
+
 Temperature: metrics in same units as input data. Must have variable "tasmax" or "tasmin"
 
 Precipitation: inputs expected to be kg/m2/s. Converts to mm/day. Variable name must be pr,PRECT, or precip
 
-The input data must use coordinates "lat" and "lon".
-
-It is not required to provide a reference dataset
-
-The default JSON output is designed to be cmec compliant - do not need to use CMEC flag.
+A reference (observation) input is not required, but it is necessary to create Taylor Diagrams.
 
 If land sea masks are scaled from 0-1, they will be rescaled to 0-100 on-the-fly. If land/sea masks are not provided, there is an option to generate them on-the-fly using cdutil.
 
 ## Run
-python pmp_extremes_driver.py -p parameter_file --other_params
+
+To run the extremes metrics, use the following command in a PMP environment:
+```python pmp_extremes_driver.py -p parameter_file --other_params```
 
 ## Outputs
-This script will produce metrics JSONs and netcdf files (optional) containing block max/min values for temperature and/or precipitation. 
+This script will produce metrics JSONs, netcdf files (optional) and figures (optional) containing block max/min values for temperature and/or precipitation. 
 
 Data is masked to be over land only (50<=sftlf<=100)
 
@@ -75,7 +75,10 @@ You can either use a region from a shapefile or provide coordinate pairs that de
 | nc_out | (bool) True to save yearly block extrema as netcdf files. | 
 | plots | (bool) True to save world map figures of mean metrics. |
 | debug | (bool) True to use debug mode. | 
-| year_range |  (list) A list containing the start year and end year. | 
+| msyear | (int) Start year for model data set. |
+| meyear | (int) End year for model data set. |
+| osyear | (int) Start year for reference data set. |
+| oeyear | (int) End year for model data set. |
 | regrid | (bool) Set to False to skip regridding if all datasets are on the same grid. Default True. |
 
 
