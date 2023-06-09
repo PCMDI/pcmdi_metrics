@@ -21,9 +21,10 @@ def replace_multi(string,rdict):
         string = string.replace(k,rdict[k])
     return string
 
-def write_to_nc(data,model,run,region_name,index,ncdir,desc,meta):
+def write_to_nc(data,model,run,region_name,index,years,ncdir,desc,meta):
     # Consolidating some netcdf writing code here to streamline main function
-    filepath = os.path.join(ncdir,"_".join([model,run,region_name,index])+".nc")
+    yrs = "-".join(years)
+    filepath = os.path.join(ncdir,"_".join([model,run,region_name,index,yrs])+".nc")
     write_netcdf_file(filepath,data)
     meta.update_data(index,filepath+".png",index,desc)
     return meta

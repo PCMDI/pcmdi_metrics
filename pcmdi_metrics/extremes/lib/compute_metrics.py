@@ -268,6 +268,17 @@ def precipitation_indices(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
 
     return P1day,P5day
 
+# A couple of statistics that aren't being loaded from mean_climate
+def mean_xy(data,varname):
+    # Spatial mean of single dataset
+    mean_xy = data.spatial.average(varname)[varname].mean()
+    return float(mean_xy)
+
+def percent_difference(ref,bias_xy,varname,weights):
+    # bias as percentage of reference dataset "ref"
+    pct_dif=float(100.*bias_xy/ref.spatial.average(varname,axis=['X','Y'],weights=weights)[varname])
+    return float(pct_dif)
+
 def init_metrics_dict(model_list,var_list,dec_mode,drop_incomplete_djf,annual_strict,region_name):
     # Return initial version of the metrics dictionary
     metrics = {
@@ -354,8 +365,7 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land",regrid=True):
         ds_m = data_dict[m]
         for season in ["ANN","DJF","MAM","JJA","SON"]:
             # Global mean over land
-            seas_mean = ds_m.spatial.average(season)[season].mean()
-            met_dict[m][region]["mean"][season] = float(seas_mean)
+            met_dict[m][region]["mean"][season] = mean_xy(ds_m,season)
             a = ds_m.temporal.average(season)
             std_xy = compute_statistics.std_xy(a, season)
             met_dict[m][region]["std_xy"][season] = std_xy
@@ -382,7 +392,7 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land",regrid=True):
                 cor_xy = compute_statistics.cor_xy(a, b, var=season, weights=weights)
                 rmsc_xy = compute_statistics.rmsc_xy(a, b, var=season, weights=weights)
                 std_obs_xy = compute_statistics.std_xy(b, season)
-                percent_difference=float(100.*bias_xy/b.spatial.average(season,axis=['X','Y'],weights=weights)[season])
+                pct_dif = percent_difference(b,bias_xy,season,weights)
 
                 met_dict[m][region]["pct_dif"][season] = percent_difference
                 met_dict[m][region]["rms_xy"][season] = rms_xy

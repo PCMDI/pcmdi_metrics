@@ -195,7 +195,8 @@ for model in model_loop_list:
                 test_data_full_path = utilities.replace_multi(test_data_full_path,tags)
                 start_year = msyear
                 end_year = meyear
-            test_data_full_path = glob.glob(test_data_full_path)
+            yrs = [start_year, end_year] # for output file names
+            test_data_full_path = sort(glob.glob(test_data_full_path))
             if len(test_data_full_path) == 0:
                 print("")
                 print("-----------------------")
@@ -210,13 +211,12 @@ for model in model_loop_list:
                     print("  ",t)
 
             # Load and prep data
-            if len(test_data_full_path) > 1:
+            if test_data_full_path[-1].endswith(".xml"):
+                # Final item of sorted list would have most recent version date
+                ds = xcdat_openxml.xcdat_openxml(test_data_full_path[-1])
+            elif len(test_data_full_path) > 1:
                 ds = xcdat.open_mfdataset(test_data_full_path,chunks=None)
-            else:
-                if test_data_full_path[0].endswith(".xml"):
-                    ds = xcdat_openxml.xcdat_openxml(test_data_full_path[0])
-                else:
-                    ds = xcdat.open_dataset(test_data_full_path[0])
+            else: ds = xcdat.open_dataset(test_data_full_path[0])
 
             if not sftlf_exists and generate_sftlf:
                 print("Generating land sea mask.")
@@ -229,6 +229,9 @@ for model in model_loop_list:
                         coords=coords,
                         shp_path=shp_path,
                         column=col)
+            
+            # Mask out Antarctica
+            sftlf["sftlf"] = sftlf["sftlf"].where(sftlf.lat>-60)
 
             if use_region_mask:
                 print("Creating dataset mask.")
@@ -241,8 +244,9 @@ for model in model_loop_list:
 
             # Get time slice if year parameters exist
             if start_year is not None and end_year is not None:
-                start_time = cftime.datetime(start_year,1,1) - datetime.timedelta(days=0)
-                end_time = cftime.datetime(end_year+1,1,1) - datetime.timedelta(days=1)
+                cal = ds.time.encoding["calendar"]
+                start_time = cftime.datetime(start_year,1,1,calendar=cal) - datetime.timedelta(days=0)
+                end_time = cftime.datetime(end_year+1,1,1,calendar=cal) - datetime.timedelta(days=1)
                 ds = ds.sel(time=slice(start_time,end_time))
 
             if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
@@ -270,9 +274,9 @@ for model in model_loop_list:
                 if nc_out:
                     print("Writing results to netCDF.")
                     desc = "Seasonal maximum of maximum temperature."
-                    meta = utilities.write_to_nc(TXx,model,run,region_name,"TXx",nc_dir,desc,meta)
+                    meta = utilities.write_to_nc(TXx,model,run,region_name,"TXx",yrs,nc_dir,desc,meta)
                     desc = "Seasonal minimum of maximum temperature."
-                    meta = utilities.write_to_nc(TXn,model,run,region_name,"TXn",nc_dir,desc,meta)
+                    meta = utilities.write_to_nc(TXn,model,run,region_name,"TXn",yrs,nc_dir,desc,meta)
 
                 if plots:
                     print("Creating maps")
@@ -300,9 +304,9 @@ for model in model_loop_list:
                 if nc_out:
                     print("Writing results to netCDF.")
                     desc = "Seasonal maximum of minimum temperature."
-                    meta = utilities.write_to_nc(TNx,model,run,region_name,"TNx",nc_dir,desc,meta)
+                    meta = utilities.write_to_nc(TNx,model,run,region_name,"TNx",yrs,nc_dir,desc,meta)
                     desc = "Seasonal minimum of minimum temperature."
-                    meta = utilities.write_to_nc(TNn,model,run,region_name,"TNn",nc_dir,desc,meta)
+                    meta = utilities.write_to_nc(TNn,model,run,region_name,"TNn",yrs,nc_dir,desc,meta)
 
                 if plots:
                     print("Creating maps")
@@ -332,9 +336,9 @@ for model in model_loop_list:
                 if nc_out:
                     print("Writing results to netCDF.")
                     desc = "Seasonal maximum value of daily precipitation."
-                    meta = utilities.write_to_nc(Rx1day,model,run,region_name,"Rx1day",nc_dir,desc,meta)
+                    meta = utilities.write_to_nc(Rx1day,model,run,region_name,"Rx1day",yrs,nc_dir,desc,meta)
                     desc = "Seasonal maximum value of 5-day mean precipitation."
-                    meta = utilities.write_to_nc(Rx5day,model,run,region_name,"Rx5day",nc_dir,desc,meta)
+                    meta = utilities.write_to_nc(Rx5day,model,run,region_name,"Rx5day",yrs,nc_dir,desc,meta)
 
                 if plots:
                     print("Creating maps")
@@ -384,9 +388,10 @@ meta.update_metrics(
 # Taylor Diagram
 if plots and (reference_data_path is not None):
     print("Making Taylor Diagrams")
+    years = "-".join(yrs)
     outfile_template = os.path.join(
         plot_dir_taylor,
-        "_".join(["taylor","realization","region","index","season"]))
+        "_".join(["taylor","realization","region","index","season",years]))
     plot_extremes.taylor_diag(fname,outfile_template)
     meta.update_plots(
         "Taylor_Diagrams",
