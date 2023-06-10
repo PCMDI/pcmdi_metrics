@@ -41,8 +41,8 @@ class TimeSeriesData():
 class SeasonalAverager():
     # Make seasonal averages of data in TimeSeriesData class
 
-    def __init__(self, TS, sftlf, dec_mode="DJF", drop_incomplete_djf=True, annual_strict=True):
-        self.TS = TS
+    def __init__(self, TSD, sftlf, dec_mode="DJF", drop_incomplete_djf=True, annual_strict=True):
+        self.TSD = TSD
         self.dec_mode = dec_mode
         self.drop_incomplete_djf = drop_incomplete_djf
         self.annual_strict = annual_strict
@@ -57,17 +57,17 @@ class SeasonalAverager():
         
     def calc_5day_mean(self):
         # Get the 5-day mean dataset
-        self.pentad = self.TS.rolling_5day()
+        self.pentad = self.TSD.rolling_5day()
 
     def fix_time_coord(self,ds):
-        cal = self.TS.calendar
+        cal = self.TSD.calendar
         ds = ds.rename({"year": "time"})
         y_to_cft = [cftime.datetime(y,1,1,calendar=cal) for y in ds.time]
         ds["time"] = y_to_cft
         ds.time.attrs["axis"] = "T"
         ds['time'].encoding['calendar'] = cal
         ds['time'].attrs['standard_name'] = 'time'
-        ds.time.encoding['units'] = self.TS.time_units
+        ds.time.encoding['units'] = self.TSD.time_units
         return ds
         
     def annual_stats(self,stat,pentad=False):
@@ -83,13 +83,13 @@ class SeasonalAverager():
                 self.calc_5day_mean()
             ds = self.pentad
         else:
-            ds = self.TS.return_data_array()
-        cal = self.TS.calendar
+            ds = self.TSD.return_data_array()
+        cal = self.TSD.calendar
 
         if self.annual_strict and pentad:
             # This setting is for means using 5 day rolling average values, where
             # we do not want to include any data from the prior year
-            year_range = self.TS.year_range
+            year_range = self.TSD.year_range
             hr = int(ds.time[0].dt.hour) # get hour to help with selecting nearest time
 
             # Only use data from that year - start on Jan 5 avg
@@ -124,15 +124,15 @@ class SeasonalAverager():
         # Returns:
         #     ds_stat: Dataset containing seasonal max or min grid
 
-        year_range = self.TS.year_range
+        year_range = self.TSD.year_range
 
         if pentad == True:
             if self.pentad is None:
                 self.calc_5day_mean()
             ds = self.pentad
         else:
-            ds = self.TS.return_data_array()
-        cal = self.TS.calendar
+            ds = self.TSD.return_data_array()
+        cal = self.TSD.calendar
 
         hr = int(ds.time[0].dt.hour) # help with selecting nearest time
 
@@ -188,7 +188,7 @@ class SeasonalAverager():
             mo_en = dates[season][1][0]
             day_en = dates[season][1][1]
             
-            cal = self.TS.calendar
+            cal = self.TSD.calendar
 
             date_range = [xr.cftime_range(
                             start=cftime.datetime(year,mo_st,day_st,hour=hr,calendar=cal)-self.del0d,

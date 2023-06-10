@@ -195,8 +195,9 @@ for model in model_loop_list:
                 test_data_full_path = utilities.replace_multi(test_data_full_path,tags)
                 start_year = msyear
                 end_year = meyear
-            yrs = [start_year, end_year] # for output file names
-            test_data_full_path = sort(glob.glob(test_data_full_path))
+            yrs = [str(start_year), str(end_year)] # for output file names
+            test_data_full_path = glob.glob(test_data_full_path)
+            test_data_full_path.sort()
             if len(test_data_full_path) == 0:
                 print("")
                 print("-----------------------")

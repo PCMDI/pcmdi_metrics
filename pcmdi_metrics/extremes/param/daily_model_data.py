@@ -28,8 +28,8 @@ annual_strict = False
 nc_out=True
 regrid=True
 plots=False
-msyear = 2000
-meyear = 2050
+msyear = 1960
+meyear = 2010
 generate_sftlf = True
 
 #year_range = [1900,1930]
