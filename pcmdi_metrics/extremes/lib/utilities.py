@@ -12,7 +12,26 @@ import xarray as xr
 import xcdat
 
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.io import xcdat_openxml
 
+def load_dataset(filepath):
+    # Load an xarray dataset from the given filepath.
+    # If list of netcdf files, opens mfdataset.
+    # If list of xmls, open last file in list.
+    if filepath[-1].endswith(".xml"):
+        # Final item of sorted list would have most recent version date
+        ds = xcdat_openxml.xcdat_openxml(filepath[-1])
+    elif len(filepath) > 1:
+        ds = xcdat.open_mfdataset(filepath,chunks=None)
+    else: ds = xcdat.open_dataset(filepath[0])
+    return ds
+
+def slice_dataset(ds,start_year,end_year):
+    cal = ds.time.encoding["calendar"]
+    start_time = cftime.datetime(start_year,1,1,calendar=cal) - datetime.timedelta(days=0)
+    end_time = cftime.datetime(end_year+1,1,1,calendar=cal) - datetime.timedelta(days=1)
+    ds = ds.sel(time=slice(start_time,end_time))
+    return ds
 
 def replace_multi(string,rdict):
     # Replace multiple keyworks in a string template

@@ -212,12 +212,7 @@ for model in model_loop_list:
                     print("  ",t)
 
             # Load and prep data
-            if test_data_full_path[-1].endswith(".xml"):
-                # Final item of sorted list would have most recent version date
-                ds = xcdat_openxml.xcdat_openxml(test_data_full_path[-1])
-            elif len(test_data_full_path) > 1:
-                ds = xcdat.open_mfdataset(test_data_full_path,chunks=None)
-            else: ds = xcdat.open_dataset(test_data_full_path[0])
+            ds = utilities.load_dataset(test_data_full_path)
 
             if not sftlf_exists and generate_sftlf:
                 print("Generating land sea mask.")
@@ -245,10 +240,7 @@ for model in model_loop_list:
 
             # Get time slice if year parameters exist
             if start_year is not None and end_year is not None:
-                cal = ds.time.encoding["calendar"]
-                start_time = cftime.datetime(start_year,1,1,calendar=cal) - datetime.timedelta(days=0)
-                end_time = cftime.datetime(end_year+1,1,1,calendar=cal) - datetime.timedelta(days=1)
-                ds = ds.sel(time=slice(start_time,end_time))
+                ds = utilities.slice_dataset(ds,start_year,end_year)
 
             if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
                 ds = self.ds.convert_calendar('noleap')

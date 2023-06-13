@@ -147,17 +147,24 @@ class SeasonalAverager():
             
             if self.drop_incomplete_djf:
                 ds_stat = ds_stat.sel(time=slice(str(year_range[0]),str(year_range[-1]-1)))
-                #ds_stat["time"] = np.arange(year_range[0]+1,year_range[-1]+1)
                 ds_stat["time"] = [cftime.datetime(y,1,1,calendar=cal) for y in np.arange(year_range[0]+1,year_range[-1]+1)]
             else:
+                # Deal with inconsistencies between QS-DEC calendar and block exremes calendar
                 ds_stat = ds_stat.sel(time=slice(str(year_range[0]-1),str(year_range[-1])))
-                #ds_stat["time"] = np.arange(year_range[0],year_range[-1]+2)
                 ds_stat["time"] = [cftime.datetime(y,1,1,calendar=cal) for y in np.arange(year_range[0],year_range[-1]+2)]
     
         elif season == "DJF" and self.dec_mode == "JFD":
 
             # Make date lists that capture JF and D in all years, then merge and sort
-            date_range_1 = [xr.cftime_range(
+            if self.annual_strict and pentad:
+                # Only use data from that year - start on Jan 5 avg
+                date_range_1 = [xr.cftime_range(
+                                start=cftime.datetime(year,1,5,hour=hr,calendar=cal)-self.del0d,
+                                end = cftime.datetime(year,3,1,hour=hr,calendar=cal)-self.del1d,
+                                freq='D',
+                                calendar=cal) for year in year_range]
+            else:
+                date_range_1 = [xr.cftime_range(
                                 start=cftime.datetime(year,1,1,hour=hr,calendar=cal)-self.del0d,
                                 end=cftime.datetime(year,3,1,hour=hr,calendar=cal)-self.del1d,
                                 freq='D',
@@ -255,15 +262,25 @@ def precipitation_indices(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
     # Rx1day
     P1day = xr.Dataset()
     P1day["ANN"] = S.annual_stats("max",pentad=False)
+    # Can end up with very small negative values that should be 0
+    # Possibly related to this issue? https://github.com/pydata/bottleneck/issues/332
+    # (from https://github.com/pydata/xarray/issues/3855)
+    P1day["ANN"] = P1day["ANN"].where(P1day["ANN"]>0,0).where(~np.isnan(P1day["ANN"]),np.nan)
     for season in ["DJF","MAM","JJA","SON"]:
         P1day[season] = S.seasonal_stats(season,"max",pentad=False)
+        P1day[season] = P1day[season].where(P1day[season]>0,0).where(~np.isnan(P1day[season]),np.nan)
     P1day = update_nc_attrs(P1day,dec_mode,drop_incomplete_djf,annual_strict)
 
     # Rx5day
     P5day = xr.Dataset()
     P5day["ANN"] = S.annual_stats("max",pentad=True)
+    P5day["ANN"] = P5day["ANN"].where(P5day["ANN"]>0,0).where(~np.isnan(P5day["ANN"]),np.nan)
     for season in ["DJF","MAM","JJA","SON"]:
+        if season=="DJF":
+            tmp=S.seasonal_stats(season,"max",pentad=True)
+            print(tmp.time)
         P5day[season] = S.seasonal_stats(season,"max",pentad=True)
+        P5day[season] = P5day[season].where(P5day[season]>0,0).where(~np.isnan(P5day[season]),np.nan)
     P5day = update_nc_attrs(P5day,dec_mode,drop_incomplete_djf,annual_strict)
 
     return P1day,P5day
