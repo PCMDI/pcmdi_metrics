@@ -9,13 +9,18 @@ PCMDI Metrics Package (PMP)
 
 *The content of this site is currently being expanded to include examples for all of the PMP summary statistic functionality*
 
-The PMP is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  Currently, the comparisons emphasize metrics of large- to global-scale annual cycle and both tropcial and extra-tropical modes of variability. Ongoing work in v1.x development branches include established statistics for ENSO, MJO, regional monsoons, and high frequency characteristics of simulated precipitation. 
+The PMP is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  
+Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  
+Currently, the comparisons emphasize metrics of large- to global-scale annual cycle and both tropcial 
+and extra-tropical modes of variability. 
+Recent release (v3) include established statistics for mean climate, ENSO, MJO, extratropical modes of variability, 
+regional monsoons, and high frequency characteristics of simulated precipitation as a part of U.S. DOE's Benchmarking of simulated precipitation. 
 
-PCMDI uses the PMP to produce `quick-look simulation summaries across generations of CMIP <https://cmec.llnl.gov/results/physical.html>`_
+PCMDI uses the PMP to produce `quick-look simulation summaries across generations of CMIP <https://pcmdi.llnl.gov/metrics>`_.
 
 The PMP expects model data to be `CF-compliant <http://cfconventions.org/>`_, otherwise, to successfully use the package may require some input data conditioning. 
 
-`A suite of demo scripts and interactive Jupyter notebooks are provided with this documentation. <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/README.md>`_ 
+A suite of demo scripts and interactive Jupyter notebooks are provided with `this documentation <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/README.md>`_. 
 
 .. toctree::
    :maxdepth: 1

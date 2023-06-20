@@ -45,8 +45,8 @@
 <li class="toctree-l1"><a class="reference internal" href="Technical-overview.html">Usage Overview</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Install using Anaconda</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#all-platforms-system-requirements">All Platforms System Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#bypassing-firewalls">Bypassing firewalls</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-the-pcmdi-metrics-package-pmp">Installing the PCMDI Metrics Package (PMP)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bypassing-firewalls">Bypassing firewalls</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="Supporting-data.html">Retrieving data for demos and use of the PMP</a></li>
@@ -102,16 +102,6 @@ Support for Windows is not available yet.</p>
 </div></blockquote>
 <p>Make sure you have no environment variables set from an old UV-CDAT installation in your PATH/PYTHONPATH,LD_LIBRARY_PATH etc</p>
 </section>
-<section id="bypassing-firewalls">
-<h2>Bypassing firewalls<a class="headerlink" href="#bypassing-firewalls" title="Permalink to this heading">¶</a></h2>
-<dl class="simple">
-<dt>If your institution has tight ssl certificate/security issues try:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">config</span> <span class="pre">--set</span> <span class="pre">ssl_verify</span> <span class="pre">False</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">binstar</span> <span class="pre">config</span> <span class="pre">--set</span> <span class="pre">ssl_verify</span> <span class="pre">False</span></code></p></li>
-</ul>
-</dd>
-</dl>
-</section>
 <section id="installing-the-pcmdi-metrics-package-pmp">
 <h2>Installing the PCMDI Metrics Package (PMP)<a class="headerlink" href="#installing-the-pcmdi-metrics-package-pmp" title="Permalink to this heading">¶</a></h2>
 <p>You can install the PCMDI Metrics package from the PCMDI conda-forge channel.
@@ -155,6 +145,16 @@ For faster installation without mamba, specify versions of python and pcmdi_metr
 </dd>
 </dl>
 <p>To learn more about conda environments see: <a class="reference external" href="http://conda.pydata.org/docs/using/envs.html">http://conda.pydata.org/docs/using/envs.html</a></p>
+</section>
+<section id="bypassing-firewalls">
+<h2>Bypassing firewalls<a class="headerlink" href="#bypassing-firewalls" title="Permalink to this heading">¶</a></h2>
+<dl class="simple">
+<dt>If your institution has tight ssl certificate/security issues try before installing PMP:</dt><dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">config</span> <span class="pre">--set</span> <span class="pre">ssl_verify</span> <span class="pre">False</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">binstar</span> <span class="pre">config</span> <span class="pre">--set</span> <span class="pre">ssl_verify</span> <span class="pre">False</span></code></p></li>
+</ul>
+</dd>
+</dl>
 </section>
 </section>
 

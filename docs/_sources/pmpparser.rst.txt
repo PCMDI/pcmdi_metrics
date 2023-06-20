@@ -2,22 +2,9 @@
 Miscellaneous 
 *********
 
-Installing PMPParser
-####################
-**Via Anaconda: get the nightly from or after October 18, 2016** 
-
-::
-
-   conda install pcmdi_metrics=2016.10.18 -c pcmdi/label/nightly -c uvcdat
-
-**Manually: clone the repo and just run:**
-
-::
-
-   python setup.py install
-
-Information 
+PMPParser
 ############
+
 PMPParser is basically a wrapper around ArgumentParser. It has the ability for users to use the default arguments which are listed below or define their own, which can overwrite the default arguments if needed. PMPParser also supports reading in a parameter file from the command line and then allowing for the user to modify select parameter values as needed.
 
 Default Arguments

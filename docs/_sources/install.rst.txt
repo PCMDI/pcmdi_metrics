@@ -21,11 +21,6 @@ All Platforms System Requirements
 
 Make sure you have no environment variables set from an old UV-CDAT installation in your PATH/PYTHONPATH,LD_LIBRARY_PATH etc
 
-Bypassing firewalls
-===================
-If your institution has tight ssl certificate/security issues try:
-  * ``conda config --set ssl_verify False``
-  * ``binstar config --set ssl_verify False``
 
 Installing the PCMDI Metrics Package (PMP)
 ==========================================
@@ -57,3 +52,10 @@ To learn more about conda environments see: http://conda.pydata.org/docs/using/e
 .. _Miniconda: https://conda.io/miniconda.html
 .. _Anaconda: https://www.anaconda.com/products/individual#Downloads
 .. _conda: https://docs.conda.io/en/latest/
+
+
+Bypassing firewalls
+===================
+If your institution has tight ssl certificate/security issues try before installing PMP:
+  * ``conda config --set ssl_verify False``
+  * ``binstar config --set ssl_verify False``

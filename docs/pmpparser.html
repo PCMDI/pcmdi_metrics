@@ -46,8 +46,7 @@
 <li class="toctree-l1"><a class="reference internal" href="Supporting-data.html">Retrieving data for demos and use of the PMP</a></li>
 <li class="toctree-l1"><a class="reference internal" href="metrics-overview.html">Documentation and Demos</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Miscellaneous</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installing-pmpparser">Installing PMPParser</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#information">Information</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pmpparser">PMPParser</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#default-arguments">Default Arguments</a></li>
 </ul>
 </li>
@@ -90,19 +89,8 @@
              
   <section id="miscellaneous">
 <h1>Miscellaneous<a class="headerlink" href="#miscellaneous" title="Permalink to this heading">¶</a></h1>
-<section id="installing-pmpparser">
-<h2>Installing PMPParser<a class="headerlink" href="#installing-pmpparser" title="Permalink to this heading">¶</a></h2>
-<p><strong>Via Anaconda: get the nightly from or after October 18, 2016</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="n">pcmdi_metrics</span><span class="o">=</span><span class="mf">2016.10.18</span> <span class="o">-</span><span class="n">c</span> <span class="n">pcmdi</span><span class="o">/</span><span class="n">label</span><span class="o">/</span><span class="n">nightly</span> <span class="o">-</span><span class="n">c</span> <span class="n">uvcdat</span>
-</pre></div>
-</div>
-<p><strong>Manually: clone the repo and just run:</strong></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="n">install</span>
-</pre></div>
-</div>
-</section>
-<section id="information">
-<h2>Information<a class="headerlink" href="#information" title="Permalink to this heading">¶</a></h2>
+<section id="pmpparser">
+<h2>PMPParser<a class="headerlink" href="#pmpparser" title="Permalink to this heading">¶</a></h2>
 <p>PMPParser is basically a wrapper around ArgumentParser. It has the ability for users to use the default arguments which are listed below or define their own, which can overwrite the default arguments if needed. PMPParser also supports reading in a parameter file from the command line and then allowing for the user to modify select parameter values as needed.</p>
 <section id="default-arguments">
 <h3>Default Arguments<a class="headerlink" href="#default-arguments" title="Permalink to this heading">¶</a></h3>

@@ -17,7 +17,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="CLIVAR 2020 ENSO Metrics" href="clivar-enso-metrics.html" />
+    <link rel="next" title="CLIVAR ENSO Metrics" href="clivar-enso-metrics.html" />
     <link rel="prev" title="Sub-daily precipitation" href="subdaily-precipitation.html" /> 
 </head>
 
@@ -51,9 +51,12 @@
 <li class="toctree-l3"><a class="reference internal" href="subdaily-precipitation.html">Sub-daily precipitation</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Extra-tropical modes of variability</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#overview">Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#demo">Demo</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#resources">Resources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="clivar-enso-metrics.html">CLIVAR 2020 ENSO Metrics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="clivar-enso-metrics.html">CLIVAR ENSO Metrics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mjo.html">MJO baseline metrics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="monsoon.html">Monsoon examples</a></li>
 </ul>
@@ -92,7 +95,39 @@
 <span id="using-the-package"></span><h1>Extra-tropical modes of variability<a class="headerlink" href="#extra-tropical-modes-of-variability" title="Permalink to this heading">¶</a></h1>
 <section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
-<p>Coming soon …</p>
+<p>PMP calculates skill metrics for extra-tropical modes of variability (EMoV), including
+the Northern Annular Model (NAM), the North Atlantic Oscillation (NAO),
+the Southern Annular Mode (SAM), the Pacific North American pattern (PNA),
+the North Pacific Oscillation (NPO), the Pacific Decadal Oscillation (PDO),
+and the North Pacific Gyre Oscillation (NPGO).</p>
+<p>For NAM, NAO, SAM, PNA, and NPO the results are based on sea-level pressure,
+while the results for PDO and NPGO are based on sea surface temperature.
+Our approach distinguishes itself from other studies that analyze modes of variability
+in that we use the Common Basis Function approach (CBF), in which model anomalies
+are projected onto the observed modes of variability, together with
+the traditional EOF approach.</p>
+<p>Using the Historical simulations, the skill of the spatial patterns is given by
+the Root-Mean-Squared-Error (RMSE), and the Amplitude gives the standard deviation
+of the Principal Component time series.</p>
+</section>
+<section id="demo">
+<h2>Demo<a class="headerlink" href="#demo" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_4_modes_of_variability.ipynb">PMP demo Jupyter notebook</a></p></li>
+</ul>
+</section>
+<section id="resources">
+<h2>Resources<a class="headerlink" href="#resources" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/variability_modes/">PMP-calculated EMoV Metrics</a></p></li>
+</ul>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019: Quantifying the Agreement Between Observed and Simulated Extratropical Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089, <a class="reference external" href="https://doi.org/10.1007/s00382-018-4355-4">https://doi.org/10.1007/s00382-018-4355-4</a></p></li>
+<li><p>Lee, J., K. Sperber, P. Gleckler, K. Taylor, and C. Bonfils, 2021: Benchmarking performance changes in the simulation of extratropical modes of variability across CMIP generations. Journal of Climate, 34, 6945–6969, <a class="reference external" href="https://doi.org/10.1175/JCLI-D-20-0832.1">https://doi.org/10.1175/JCLI-D-20-0832.1</a></p></li>
+</ul>
 </section>
 </section>
 
@@ -101,7 +136,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="subdaily-precipitation.html" class="btn btn-neutral float-left" title="Sub-daily precipitation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="clivar-enso-metrics.html" class="btn btn-neutral float-right" title="CLIVAR 2020 ENSO Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="clivar-enso-metrics.html" class="btn btn-neutral float-right" title="CLIVAR ENSO Metrics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
