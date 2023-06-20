@@ -1,7 +1,7 @@
 .. _using-the-package:
 
 *****************
-CLIVAR ENSO Metrics
+ENSO Metrics
 *****************
 
 Overview
