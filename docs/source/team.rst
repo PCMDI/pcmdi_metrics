@@ -1,6 +1,9 @@
-*****************
-PMP Team
-*****************
+.. _team:
+
+
+****
+Team
+****
 
 Core developers
 ===============
@@ -11,3 +14,5 @@ Core developers
 * Bo Dong (LLNL)
 * Peter Gleckler (LLNL)
 * Min-Seop Ahn (NASA)
+
+pcmdi-metrics@llnl.gov

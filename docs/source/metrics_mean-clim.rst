@@ -1,5 +1,3 @@
-.. _using-the-package:
-
 *****************
 Mean Climate
 *****************

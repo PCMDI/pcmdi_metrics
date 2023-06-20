@@ -1,7 +1,7 @@
 .. _Monsoon-example:
 
 *****************
-Monsoon examples
+Monsoon
 *****************
 
 Overview

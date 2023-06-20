@@ -1,8 +1,8 @@
-Usage Overview
-***********
+.. _overview:
 
-Summary
-=======
+***********
+Overview
+***********
 
 The PMP provides a diverse suite of analysis utilities each of which produce summary statistics that gauge the consistency between climate model simulations and available observations.  
 The primary application of the PMP is to evaluate simulations from the `Coupled Model Intercomparison Project (CMIP) <https://www.wcrp-climate.org/wgcm-cmip>`_.  

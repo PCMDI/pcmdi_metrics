@@ -1,8 +1,6 @@
-.. _using-the-package:
-
-*****************
+***********************************
 Extra-tropical modes of variability
-*****************
+***********************************
 
 Overview
 ========
@@ -28,10 +26,10 @@ Demo
 ====
 * `PMP demo Jupyter notebook`_
 
-Resources
-=========
-* `PMP-calculated EMoV Metrics`_
-
+Results
+=======
+* `Interactive graphics for PMP-calculated MoV Metrics`_
+* `Description for the results`_
 
 References
 ==========
@@ -40,4 +38,5 @@ References
 
 
 .. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_4_modes_of_variability.ipynb
-.. _PMP-calculated EMoV Metrics: https://pcmdi.llnl.gov/research/metrics/variability_modes/
+.. _Interactive graphics for PMP-calculated MoV Metrics: https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/variability_modes/portrait_plot/pmp_mov_page_viewer.html
+.. _Description for the results: https://pcmdi.llnl.gov/research/metrics/variability_modes/

@@ -22,7 +22,7 @@ copyright = '2023 PCMDI'
 author = 'PCMDI'
 
 # The full version, including alpha/beta/rc tags
-release = '1.2.1'
+# release = '1.2.1'
 
 
 # -- General configuration ---------------------------------------------------

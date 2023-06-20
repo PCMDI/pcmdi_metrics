@@ -1,9 +1,6 @@
 *********
-Miscellaneous 
+PMPParser 
 *********
-
-PMPParser
-############
 
 PMPParser is basically a wrapper around ArgumentParser. It has the ability for users to use the default arguments which are listed below or define their own, which can overwrite the default arguments if needed. PMPParser also supports reading in a parameter file from the command line and then allowing for the user to modify select parameter values as needed.
 
@@ -44,7 +41,7 @@ compute_custom_metrics 			--compute_custom_metrics
 ==============================  =====================================
 
 Examples
-########
+^^^^^^^^
 
 How to use PMPParser in your driver
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -90,8 +87,9 @@ Reading in a dictionary from the command line
 results in ``parameter.regions`` being ``{'tos': [None], 'tas': [None, 'terre', 'ocean']}``
 
 
-More Parser Info
-============
+
+More PMPParser Info
+^^^^^^^^^^^^^^^^^^^
 
 This guide is intended to bring developers (and maybe users) up to speed with the changes done when refactoring pmp to use cdp. If you don't know what cdp is, look `here <https://github.com/UV-CDAT/CDP>`_.
 
@@ -123,6 +121,7 @@ Though not a requirement of cdp, the driver is now programmed in an object-orien
 * **RunDiags**: The actual work for ``PMPDriver.run_diags()`` is done by this class. **This is where the main functionality is**. This loops through all of the ``vars``, ``regions``, ``reference_data_set`` and ``test_data_set`` in that order. This also determines if the comparison is obs vs obs, obs vs model, or model vs model.
 
 * **OutputMetrics** When ``RunDiags`` gets the data from ``Model`` or ``Observation`` (via ``DataSet.get()``), these get sent to ``OutputMetrics`` which creates the ``metrics_dictionary``, computes the metrics needed, and outputs the results. Also has an ``out_file`` and ``clim_file``, which were respectively ``OUT`` and ``CLIM`` previously.
+
 
 
 
