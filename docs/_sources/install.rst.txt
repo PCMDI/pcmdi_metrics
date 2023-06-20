@@ -1,7 +1,7 @@
 .. _install:
 
 **********************
-Install using Anaconda
+Installation
 **********************
 
 We offer an installation for `Anaconda`_ users under linux-64 or osx-64. 
@@ -22,7 +22,7 @@ All Platforms System Requirements
 Make sure you have no environment variables set from an old UV-CDAT installation in your PATH/PYTHONPATH,LD_LIBRARY_PATH etc
 
 
-Installing the PCMDI Metrics Package (PMP)
+Install PMP using conda/mamba
 ==========================================
 You can install the PCMDI Metrics package from the PCMDI conda-forge channel. 
 For the best performance, use `mamba`_. 
@@ -54,8 +54,8 @@ To learn more about conda environments see: http://conda.pydata.org/docs/using/e
 .. _conda: https://docs.conda.io/en/latest/
 
 
-Bypassing firewalls
-===================
+Bypassing firewalls (optional)
+==============================
 If your institution has tight ssl certificate/security issues try before installing PMP:
   * ``conda config --set ssl_verify False``
   * ``binstar config --set ssl_verify False``
