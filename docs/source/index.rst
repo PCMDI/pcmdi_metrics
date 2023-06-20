@@ -31,6 +31,7 @@ A suite of demo scripts and interactive Jupyter notebooks are provided with `thi
    Supporting-data
    metrics-overview
    pmpparser
+   team
 
 
 GETTING STARTED

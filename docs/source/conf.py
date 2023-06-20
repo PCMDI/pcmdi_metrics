@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'PCMDI Metrics'
-copyright = '2020 PCMDI'
+copyright = '2023 PCMDI'
 author = 'PCMDI'
 
 # The full version, including alpha/beta/rc tags
