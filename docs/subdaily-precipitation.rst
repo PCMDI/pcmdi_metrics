@@ -1,8 +1,8 @@
 .. _subdaily-precipitation:
 
-*****************
+***********************
 Sub-daily precipitation
-*****************
+***********************
 
 Overview
 ========
