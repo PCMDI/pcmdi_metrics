@@ -1,6 +1,6 @@
 readthedocs
 -----------
-This branch hosts the online documentation for the PCMDI Metrics packages. Provided here are instructions for updating the documentation.
+This directory hosts the online documentation for the PCMDI Metrics packages (https://pcmdi-metrics.readthedocs.io). Provided here are instructions for updating the documentation.
 
 Checking out and making changes to the docs branch:
 ---------------------------------------------------
@@ -52,4 +52,8 @@ Checkout and push your changes:
 git checkout <branch with changes>
 git push <remote name> <branch with changes>
 ```
-Then go to your forked repo on github.com and create a Pull Request to the `main` branch. Once merged, readthedocs webhook will automatically generate the web pages.
+Then go to your forked repo on github.com and create a Pull Request to the `main` branch. 
+
+Build webpages:
+---------------
+Once merged, go to readthedocs (https://readthedocs.org/projects/pcmdi-metrics/) to build web pages.
