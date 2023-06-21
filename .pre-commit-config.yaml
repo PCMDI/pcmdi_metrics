@@ -1,8 +1,13 @@
+# Configuration file for `pre-commit` tool.
+# Source: https://pre-commit.com/#pre-commit-configyaml---top-level
 exclude: "docs|node_modules|migrations|.git|.tox|.md|sample_setups/(external-setups|jsons)|tests/deprecated"
 default_stages: [commit]
 fail_fast: true
 
 repos:
+    # =======================
+    # General file formatters
+    # =======================
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: v4.4.0
       hooks:
@@ -11,6 +16,9 @@ repos:
           - id: end-of-file-fixer
           - id: check-yaml
 
+    # =======================
+    # Python code formatters
+    # =======================
     - repo: https://github.com/psf/black
       rev: 23.1.0
       hooks:
@@ -21,8 +29,10 @@ repos:
       hooks:
           - id: isort
 
-    # Need to use flake8 GitHub mirror due to CentOS git issue with GitLab
-    # https://github.com/pre-commit/pre-commit/issues/1206
+
+    # =======================
+    # Python linting
+    # =======================
     - repo: https://github.com/pycqa/flake8
       rev: 6.0.0
       hooks:

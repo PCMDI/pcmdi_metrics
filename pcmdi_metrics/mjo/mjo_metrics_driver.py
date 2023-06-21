@@ -35,6 +35,7 @@ for advertising or product endorsement purposes.
 import glob
 import json
 import os
+import re
 import sys
 import time
 from argparse import RawTextHelpFormatter
@@ -108,9 +109,9 @@ models = param.modnames
 
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
-    model_index_path = param.modpath.split("/")[-1].split(".").index("%(model)")
+    model_index_path = re.split('. |_', param.modpath.split("/")[-1]).index("%(model)")
     models = [
-        p.split("/")[-1].split(".")[model_index_path]
+        re.split('. |_', p.split("/")[-1])[model_index_path]
         for p in glob.glob(
             modpath(mip=mip, exp=exp, model="*", realization="*", variable=varModel)
         )
@@ -263,8 +264,8 @@ for model in models:
                     run = reference_data_name
                 else:
                     if realization in ["all", "All", "ALL", "*"]:
-                        run_index = modpath.split(".").index("%(realization)")
-                        run = model_path.split("/")[-1].split(".")[run_index]
+                        run_index = re.split('. |_', param.modpath.split("/")[-1]).index("%(realization)")
+                        run = re.split('. |_', model_path.split("/")[-1])[run_index]
                     else:
                         run = realization
                     # dict
