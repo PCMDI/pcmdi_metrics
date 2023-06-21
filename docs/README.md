@@ -5,7 +5,13 @@ This branch hosts the online documentation for the PCMDI Metrics packages. Provi
 Checking out and making changes to the docs branch:
 ---------------------------------------------------
 
-You must be in a conda environment with "sphinx" and "sphinx_rtd_theme" installed
+You must be in a conda environment with "sphinx", "sphinx_rtd_theme", and other sphinx-related libraries listed in `conda-env/readthedocs.yml` installed. Otherwise, create your env following below
+```
+cd pcmdi_metrics
+conda env create -n <new environment name> -f conda-env/readthedocs.yml
+conda activate <new environment name>
+```
+Once your environment is ready
 ```
 git pull origin main (optional, grab latest updates)
 git checkout -b <new branch name>
