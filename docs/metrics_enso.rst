@@ -33,7 +33,7 @@ Additional Resources
 * `CLIVAR ENSO Metrics GitHub repository`_
 
 .. _International CLIVAR Pacific Panel: https://www.clivar.org/clivar-panels/pacific
-.. _CLIVAR ENSO Metrics GitHub repository: https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/enso_metric/enso_metrics_interactive_portrait_plots_v20210723.html
-.. _Description for the results: https://github.com/CLIVAR-PRP/ENSO_metrics
-.. _Interactive graphics for PMP-calculated ENSO Metrics: https://pcmdi.llnl.gov/metrics/enso/
+.. _CLIVAR ENSO Metrics GitHub repository: https://github.com/CLIVAR-PRP/ENSO_metrics 
+.. _Description for the results: https://pcmdi.llnl.gov/metrics/enso/
+.. _Interactive graphics for PMP-calculated ENSO Metrics: https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/enso_metric/enso_metrics_interactive_portrait_plots_v20210723.html
 .. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_6_ENSO.ipynb
