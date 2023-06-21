@@ -1,5 +1,5 @@
-gh-pages
---------
+readthedocs
+-----------
 This branch hosts the online documentation for the PCMDI Metrics packages. Provided here are instructions for updating the documentation.
 
 Checking out and making changes to the docs branch:
