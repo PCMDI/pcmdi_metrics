@@ -38,7 +38,7 @@ dependencies:
     # ==================
     - jupyterlab=3.6.3
     - nb_conda=2.2.1
-    - nb_conda_kernels=2.3.1  
+    - nb_conda_kernels=2.3.1
     # ==================
     # Documentation
     # ==================
