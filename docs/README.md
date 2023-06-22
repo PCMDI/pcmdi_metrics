@@ -1,6 +1,6 @@
 Update Documentation website
 ----------------------------
-This directory hosts the online documentation for the PCMDI Metrics packages. There are two options available, one via Github Pages (http://pcmdi.github.io/pcmdi_metrics/) and another via ReadtheDocs (https://pcmdi-metrics.readthedocs.io). Provided here are instructions for updating the documentation.
+This directory hosts the online documentation for the PCMDI Metrics packages. There are two options available, one via Github Pages (http://pcmdi.github.io/pcmdi_metrics/) and another via ReadtheDocs (https://pcmdi-metrics.readthedocs.io). Provided here are instructions for updating the documentation for either or both options.
 
 Checking out and making changes
 -------------------------------
