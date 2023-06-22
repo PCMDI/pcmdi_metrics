@@ -2,8 +2,8 @@ readthedocs
 -----------
 This directory hosts the online documentation for the PCMDI Metrics packages (https://pcmdi-metrics.readthedocs.io). Provided here are instructions for updating the documentation.
 
-Checking out and making changes to the docs branch:
----------------------------------------------------
+Checking out and making changes
+-------------------------------
 
 You must be in a conda environment with "sphinx", "sphinx_rtd_theme", and other sphinx-related libraries listed in `conda-env/readthedocs.yml` installed. Otherwise, create your env following below
 ```
@@ -56,4 +56,4 @@ Then go to your forked repo on github.com and create a Pull Request to the `main
 
 Build webpages:
 ---------------
-Once merged, go to readthedocs (https://readthedocs.org/projects/pcmdi-metrics/) to build web pages.
+Once merged to the `main` branch, Github Action will automatically build and deploy web pages.
