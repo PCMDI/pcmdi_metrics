@@ -14,7 +14,7 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-import sphinx_autosummary_accessors
+#import sphinx_autosummary_accessors
 
 # -- Project information -----------------------------------------------------
 
