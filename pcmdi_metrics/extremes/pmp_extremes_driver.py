@@ -19,7 +19,8 @@ from lib import (
     utilities,
     region_utilities,
     metadata,
-    plot_extremes
+    plot_extremes,
+    return_value
 )
 
 from pcmdi_metrics.io import xcdat_openxml
@@ -76,6 +77,10 @@ use_region_mask,region_name,coords = region_utilities.check_region_params(
 
 # Verifying output directory
 metrics_output_path = utilities.verify_output_path(metrics_output_path,case_id)
+
+# Verify years
+ok_mod = utilities.verify_years(msyear,meyear,msg="Error: Model msyear and meyear must both be set or both be None (unset).")
+ok_obs = utilities.verify_years(osyear,oeyear,msg="Error: Obs osyear and oeyear must both be set or both be None (unset).")
 
 # Initialize output.json file
 meta = metadata.MetadataFile(metrics_output_path)
@@ -239,8 +244,11 @@ for model in model_loop_list:
                     column=col)
 
             # Get time slice if year parameters exist
-            if start_year is not None and end_year is not None:
+            if start_year is not None:
                 ds = utilities.slice_dataset(ds,start_year,end_year)
+            else:
+                # Get labels for start/end years from dataset
+                yrs = [str(int(ds.time.dt.year[0])), str(int(ds.time.dt.year[-1]))]
 
             if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
                 ds = self.ds.convert_calendar('noleap')
@@ -335,12 +343,11 @@ for model in model_loop_list:
 
                 if plots:
                     print("Creating maps")
-                    yrs = [start_year, end_year]
                     desc = "Seasonal maximum value of 5-day mean precipitation."
                     meta = plot_extremes.make_maps(Rx5day,model,run,region_name,"Rx5day",yrs,plot_dir_maps,desc,meta)
                     desc = "Seasonal maximum value of daily precipitation."
                     meta = plot_extremes.make_maps(Rx1day,model,run,region_name,"Rx1day",yrs,plot_dir_maps,desc,meta)
-            
+
             # Get stats and update metrics dictionary
             print("Generating metrics.")
             result_dict = compute_metrics.metrics_json(
@@ -405,3 +412,5 @@ meta.update_provenance("modeldata", test_data_path)
 if reference_data_path is not None:
     meta.update_provenance("obsdata", reference_data_path)
 meta.write()
+
+#return_value.wrap_rv(nc_dir,"co2_annual_1950-2000.nc")

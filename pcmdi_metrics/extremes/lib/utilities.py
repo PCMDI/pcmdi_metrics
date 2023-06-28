@@ -80,6 +80,15 @@ def write_to_json(outdir,json_filename,json_dict):
     )
     return
 
+def verify_years(start_year,end_year,msg="Error: Invalid start or end year"):
+    if start_year is None and end_year is None:
+        return
+    elif start_year is None or end_year is None:
+        # If only one of the two is set, exit.
+        print(msg)
+        print("Exiting")
+        sys.exit()
+
 def verify_output_path(metrics_output_path,case_id):
     if metrics_output_path is None:
         metrics_output_path = datetime.datetime.now().strftime("v%Y%m%d")

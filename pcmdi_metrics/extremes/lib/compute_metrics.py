@@ -144,12 +144,12 @@ class SeasonalAverager():
                 ds_stat = ds.resample(time='QS-DEC').min(dim="time")
 
             ds_stat = ds_stat.isel(time=ds_stat.time.dt.month.isin([12]))
-            
+
+            # Deal with inconsistencies between QS-DEC calendar and block exremes calendar
             if self.drop_incomplete_djf:
                 ds_stat = ds_stat.sel(time=slice(str(year_range[0]),str(year_range[-1]-1)))
                 ds_stat["time"] = [cftime.datetime(y,1,1,calendar=cal) for y in np.arange(year_range[0]+1,year_range[-1]+1)]
             else:
-                # Deal with inconsistencies between QS-DEC calendar and block exremes calendar
                 ds_stat = ds_stat.sel(time=slice(str(year_range[0]-1),str(year_range[-1])))
                 ds_stat["time"] = [cftime.datetime(y,1,1,calendar=cal) for y in np.arange(year_range[0],year_range[-1]+2)]
     
