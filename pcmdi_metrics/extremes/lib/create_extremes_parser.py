@@ -296,4 +296,11 @@ def create_extremes_parser():
         "- (False, 0, 0) # No adjustment (default)",
     )
 
+    parser.add_argument(
+        "--return_period",
+        type=int,
+        default=20,
+        help="Return period, in years, for obtaining return values.",
+    )
+
     return parser

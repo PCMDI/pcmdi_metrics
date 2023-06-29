@@ -56,6 +56,9 @@ osyear = parameter.osyear
 oeyear = parameter.oeyear
 generate_sftlf = parameter.generate_sftlf
 regrid = parameter.regrid
+cov_file = parameter.covariate_path
+cov_name = parameter.covariate
+return_period = parameter.return_period
 # Block extrema related settings
 annual_strict = parameter.annual_strict
 exclude_leap = parameter.exclude_leap
@@ -413,4 +416,4 @@ if reference_data_path is not None:
     meta.update_provenance("obsdata", reference_data_path)
 meta.write()
 
-#return_value.wrap_rv(nc_dir,"co2_annual_1950-2000.nc")
+return_value.compute_rv_from_file(nc_dir,cov_file,cov_name,return_period)

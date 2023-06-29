@@ -11,19 +11,21 @@ import sys
 
 from lib import utilities
 
-def compute_rv_from_file(ncdir,cov_filepath="co2_annual_1950-2000.nc"):
-    # Go through all files and get rv
-    # Write rv and se to netcdf
+def compute_rv_from_file(ncdir,cov_filepath,cov_name,return_period):
+    # Go through all files and get return value and standard error by file.
+    # Write results to netcdf file.
     for ncfile in glob.glob(ncdir+"/*"):
         print(ncfile)
         ds = xc.open_dataset(ncfile)
-        rv,se = get_dataset_rv(ds,cov_filepath,[1950,1999],"mole_fraction_of_carbon_dioxide_in_air")
+        rv,se = get_dataset_rv(ds,cov_filepath,cov_name,return_period)
         if rv is None:
-            continue
+            print("Error in calculating return value for",ncfile)
+            sys.exit()
         fname = os.path.basename(ncfile).replace(".nc","")
         utilities.write_netcdf_file(ncdir+"/"+fname+"_return_value.nc",rv)
         utilities.write_netcdf_file(ncdir+"/"+fname+"_standard_error.nc",se)
 
+"""
 def compute_rv_for_model(filelist,return_period=20,cov_filepath="co2_annual_1950-2000.nc",cov_varname="mole_fraction_of_carbon_dioxide_in_air"):
     # Similar to compute_rv_from_file, but to work on multiple realizations
     # from the same model
@@ -105,9 +107,9 @@ def compute_rv_for_model(filelist,return_period=20,cov_filepath="co2_annual_1950
     utilities.write_netcdf_file(fname,standard_error)
 
     return return_value,standard_error
+"""
 
-
-def get_dataset_rv(ds,cov_filepath,years,cov_varname,return_period=20):
+def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20):
     dec_mode = str(ds.attrs["december_mode"])
     drop_incomplete_djf = bool(ds.attrs["drop_incomplete_djf"])
 
@@ -131,7 +133,8 @@ def get_dataset_rv(ds,cov_filepath,years,cov_varname,return_period=20):
     rep_ind = np.ones((time))
 
     return_value = xr.zeros_like(ds)
-    standard_error = xr.zeros_like(ds)
+    return_value.drop(labels=["lon_bnds","lat_bnds","time_bnds"])
+    standard_error = return_value.copy()
 
     for season in ["ANN","DJF","MAM","JJA","SON"]:
         print("\n-----",season,"-----\n")
@@ -149,24 +152,31 @@ def get_dataset_rv(ds,cov_filepath,years,cov_varname,return_period=20):
         data = np.reshape(data,(time,dim2))
         rv_array = np.ones(np.shape(data)) * np.nan
         se_array = rv_array.copy()
+        success = np.zeros((dim2))
 
         # Turn nans to zeros
         data = np.nan_to_num(data)
 
-        # TODO: depending on dec mode, slice off certain years from dec case
         for j in range(0,dim2):
             b=data[i1:,j]
             if np.sum(b) == 0:
                 continue
-            return_value,std_err = calc_rv(data[i1:,j].squeeze(),cov_ds[i1:],return_period,1)
-            if return_value is not None:
-                rv_array[i1:,j] = return_value*scale_factor
-                se_array[i1:,j] = std_err*scale_factor
+            rv_tmp,se_tmp = calc_rv(data[i1:,j].squeeze(),cov_ds[i1:],return_period,1)
+            if rv_tmp is not None:
+                rv_array[i1:,j] = rv_tmp*scale_factor
+                se_array[i1:,j] = se_tmp*scale_factor
+                success[j] = 1
 
         rv_array = np.reshape(rv_array,(time,lat,lon))
         se_array = np.reshape(se_array,(time,lat,lon))
-        return_value[season] = (("time", "lat", "lon"),rv_array)
+        success = np.reshape(success,(lat,lon))
+        return_value[season] = (("time","lat","lon"),rv_array)
+        return_value[season+"_success"] = (("lat","lon"),success)
         standard_error[season] = (("time","lat","lon"),se_array)
+        standard_error[season+"_success"] = (("lat","lon"),success)
+
+    return_value = return_value.bounds.add_missing_bounds() 
+    standard_error = standard_error.bounds.add_missing_bounds()
 
     return return_value,standard_error
 

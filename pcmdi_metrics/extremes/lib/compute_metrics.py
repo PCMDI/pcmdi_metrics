@@ -67,7 +67,7 @@ class SeasonalAverager():
         ds.time.attrs["axis"] = "T"
         ds['time'].encoding['calendar'] = cal
         ds['time'].attrs['standard_name'] = 'time'
-        ds.time.encoding['units'] = self.TSD.time_units
+        #ds.time.encoding['units'] = self.TSD.time_units
         return ds
         
     def annual_stats(self,stat,pentad=False):
@@ -217,7 +217,9 @@ class SeasonalAverager():
 def update_nc_attrs(ds,dec_mode,drop_incomplete_djf,annual_strict):
     # Add bounds and record user settings in attributes
     # Use this function for any general dataset updates.
-    ds = ds.bounds.add_missing_bounds() 
+    ds.lat.attrs['standard_name'] = 'Y'
+    ds.lon.attrs['standard_name'] = 'X'
+    ds = ds.bounds.add_missing_bounds()
     ds.attrs["december_mode"] = str(dec_mode)
     ds.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
     ds.attrs["annual_strict"] = str(annual_strict)
@@ -278,7 +280,6 @@ def precipitation_indices(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
     for season in ["DJF","MAM","JJA","SON"]:
         if season=="DJF":
             tmp=S.seasonal_stats(season,"max",pentad=True)
-            print(tmp.time)
         P5day[season] = S.seasonal_stats(season,"max",pentad=True)
         P5day[season] = P5day[season].where(P5day[season]>0,0).where(~np.isnan(P5day[season]),np.nan)
     P5day = update_nc_attrs(P5day,dec_mode,drop_incomplete_djf,annual_strict)
