@@ -1,5 +1,4 @@
-# Conda pcmdi_metrics development environment
-name: pcmdi_metrics_dev
+name: pcmdi_metrics_rtd
 channels:
     - conda-forge
     - defaults
@@ -50,5 +49,5 @@ dependencies:
     - nbsphinx=0.9.1
     - pandoc=3.1.1
     - ipython=8.11.0 # Required for nbsphinx syntax highlighting
-
-prefix: /opt/miniconda3/envs/pmcdi_metrics_dev
+    
+prefix: /opt/miniconda3/envs/pcmdi_metrics_rtd
