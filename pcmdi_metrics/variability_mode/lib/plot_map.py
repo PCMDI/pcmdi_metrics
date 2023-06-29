@@ -47,7 +47,8 @@ def plot_map(mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_n
     )
 
     if mode in ["PNA", "PDO", "NPGO", "AMO"] and projection == "Lambert":
-        gridline = False
+        # gridline = False
+        gridline = True
     else:
         gridline = True
 
@@ -130,9 +131,9 @@ def plot_map_cartopy(
     if debug:
         print(min_lon, max_lon, min_lat, max_lat)
 
-    """ map types:
-    https://github.com/SciTools/cartopy-tutorial/blob/master/tutorial/projections_crs_and_terms.ipynb
-    """
+    # map types example:
+    # https://github.com/SciTools/cartopy-tutorial/blob/master/tutorial/projections_crs_and_terms.ipynb
+    
     if proj == "PlateCarree":
         projection = ccrs.PlateCarree(central_longitude=center_lon_global)
     elif proj == "Robinson":
@@ -217,20 +218,32 @@ def plot_map_cartopy(
         circle = mpath.Path(verts * radius + center)
         ax.set_boundary(circle, transform=ax.transAxes)
     elif proj == "Lambert":
-        if gridline:
-            gl = ax.gridlines(draw_labels=True, alpha=0.5, linestyle="--")
-            gl.top_labels = False  # suppress top labels
-            gl.right_labels = False  # suppress top labels
         # Make a boundary path in PlateCarree projection, I choose to start in
         # the bottom left and go round anticlockwise, creating a boundary point
         # every 1 degree so that the result is smooth:
         # https://stackoverflow.com/questions/43463643/cartopy-albersequalarea-limit-region-using-lon-and-lat
         vertices = [
-            (lon, min_lat) for lon in range(int(min_lon), int(max_lon + 1), 1)
-        ] + [(lon, max_lat) for lon in range(int(max_lon), int(min_lon - 1), -1)]
+            (lon - 180, min_lat) for lon in range(int(min_lon), int(max_lon + 1), 1)
+        ] + [(lon - 180, max_lat) for lon in range(int(max_lon), int(min_lon - 1), -1)]
         boundary = mpath.Path(vertices)
+        ax.set_boundary(boundary, transform=ccrs.PlateCarree(central_longitude=180))
         ax.set_extent([min_lon, max_lon, min_lat, max_lat], crs=ccrs.PlateCarree())
-        ax.set_boundary(boundary, transform=ccrs.PlateCarree())
+        if gridline:
+            
+            gl = ax.gridlines(draw_labels=True, alpha=0.8, linestyle="--", crs=cartopy.crs.PlateCarree())
+            gl.xformatter = LONGITUDE_FORMATTER 
+            gl.yformatter = LATITUDE_FORMATTER
+            gl.ylocator = mticker.FixedLocator([30, 60])
+            gl.xlocator = mticker.FixedLocator([120, 160, 200-360, 240-360])
+
+            gl.top_labels = False  # suppress top labels
+            
+            # suppress right labels
+            # gl.right_labels = False  
+            for ea in gl.ylabel_artists:
+                right_label = ea.get_position()[0] > 0
+                if right_label:
+                    ea.set_visible(False)
 
     # Add title
     plt.title(title, pad=15, fontsize=15)
