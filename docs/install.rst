@@ -53,6 +53,17 @@ To learn more about conda environments see: http://conda.pydata.org/docs/using/e
 .. _Anaconda: https://www.anaconda.com/products/individual#Downloads
 .. _conda: https://docs.conda.io/en/latest/
 
+Note for Apple Silicon M1 or M2:
+
+The CDAT dependency is not available for this architecture, so you will need to create an environment using x86 builds. This article from Towards Data Science has more information about managing Conda environments on Apple Silicon chips.
+
+.. code-block:: python
+
+  CONDA_SUBDIR=osx-64 conda create -n [YOUR_CONDA_ENVIRONMENT] -c conda-forge python=[VERSION]
+  conda activate [YOUR_CONDA_ENVIRONMENT]
+  conda config --env --set subdir osx-64
+  mamba install -c conda-forge pcmdi_metrics or conda install -c conda-forge pcmdi_metrics=[VERSION]
+
 
 Bypassing firewalls (optional)
 ==============================
