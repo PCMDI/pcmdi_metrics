@@ -11,6 +11,27 @@ from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
 
 def plot_map(mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_name):
+    """Plot dive down map and save
+
+    Parameters
+    ----------
+    mode : str
+        Mode to plot (e.g., "NAO" or "NAO_teleconnection")
+    model : str
+        Name of model or reference dataset that will be shown in figure title
+    syear : int
+        Start year from analysis
+    eyear : int
+        End year from analysis
+    season : str
+        season ("DJF", "MAM", "JJA", "SON", "monthly", or "yearly") that was used for analysis and will be shown in figure title
+    eof_Nth : cdms2.TransientVariable
+        EOF pattern to plot, 2D cdms2 TransientVariable with lat/lon coordinates attached
+    frac_Nth : float
+        Fraction of explained variability (0 to 1), which will be shown in the figure as percentage after multiplying 100
+    output_file_name : str
+        Name of output image file (e.g., "output_file.png")
+    """
     # Map Projection
     if "teleconnection" in mode:
         # projection = "PlateCarree"
@@ -46,10 +67,7 @@ def plot_map(mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_n
         + percentage
     )
 
-    if mode in ["PNA", "PDO", "NPGO", "AMO"] and projection == "Lambert":
-        gridline = False
-    else:
-        gridline = True
+    gridline = True
 
     if mode in [
         "PDO",
@@ -65,7 +83,7 @@ def plot_map(mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_n
         levels = list(range(-5, 6, 1))
         maskout = None
 
-    if mode in ["AMO_teleconnection"]:
+    if mode in ["AMO", "AMO_teleconnection"]:
         center_lon_global = 0
     else:
         center_lon_global = 180
@@ -130,9 +148,9 @@ def plot_map_cartopy(
     if debug:
         print(min_lon, max_lon, min_lat, max_lat)
 
-    """ map types:
-    https://github.com/SciTools/cartopy-tutorial/blob/master/tutorial/projections_crs_and_terms.ipynb
-    """
+    # map types example:
+    # https://github.com/SciTools/cartopy-tutorial/blob/master/tutorial/projections_crs_and_terms.ipynb
+    
     if proj == "PlateCarree":
         projection = ccrs.PlateCarree(central_longitude=center_lon_global)
     elif proj == "Robinson":
@@ -147,14 +165,6 @@ def plot_map_cartopy(
             print("revised maxlat:", max_lat)
         central_longitude = (min_lon + max_lon) / 2.0
         central_latitude = (min_lat + max_lat) / 2.0
-        """
-        projection = ccrs.LambertConformal(
-            central_longitude=central_longitude,
-            cutoff=min_lat)
-        projection = ccrs.LambertAzimuthalEqualArea(
-            central_longitude=central_longitude,
-            central_latitude=central_latitude)
-        """
         projection = ccrs.AlbersEqualArea(
             central_longitude=central_longitude,
             central_latitude=central_latitude,
@@ -217,20 +227,29 @@ def plot_map_cartopy(
         circle = mpath.Path(verts * radius + center)
         ax.set_boundary(circle, transform=ax.transAxes)
     elif proj == "Lambert":
-        if gridline:
-            gl = ax.gridlines(draw_labels=True, alpha=0.5, linestyle="--")
-            gl.top_labels = False  # suppress top labels
-            gl.right_labels = False  # suppress top labels
         # Make a boundary path in PlateCarree projection, I choose to start in
         # the bottom left and go round anticlockwise, creating a boundary point
         # every 1 degree so that the result is smooth:
         # https://stackoverflow.com/questions/43463643/cartopy-albersequalarea-limit-region-using-lon-and-lat
         vertices = [
-            (lon, min_lat) for lon in range(int(min_lon), int(max_lon + 1), 1)
-        ] + [(lon, max_lat) for lon in range(int(max_lon), int(min_lon - 1), -1)]
+            (lon - 180, min_lat) for lon in range(int(min_lon), int(max_lon + 1), 1)
+        ] + [(lon - 180, max_lat) for lon in range(int(max_lon), int(min_lon - 1), -1)]
         boundary = mpath.Path(vertices)
+        ax.set_boundary(boundary, transform=ccrs.PlateCarree(central_longitude=180))
         ax.set_extent([min_lon, max_lon, min_lat, max_lat], crs=ccrs.PlateCarree())
-        ax.set_boundary(boundary, transform=ccrs.PlateCarree())
+        if gridline:     
+            gl = ax.gridlines(draw_labels=True, alpha=0.8, linestyle="--", crs=cartopy.crs.PlateCarree())
+            gl.xformatter = LONGITUDE_FORMATTER 
+            gl.yformatter = LATITUDE_FORMATTER
+            gl.ylocator = mticker.FixedLocator([30, 60])
+            gl.xlocator = mticker.FixedLocator([120, 160, 200-360, 240-360])
+            gl.top_labels = False  # suppress top labels
+            # suppress right labels
+            # gl.right_labels = False  
+            for ea in gl.ylabel_artists:
+                right_label = ea.get_position()[0] > 0
+                if right_label:
+                    ea.set_visible(False)
 
     # Add title
     plt.title(title, pad=15, fontsize=15)
