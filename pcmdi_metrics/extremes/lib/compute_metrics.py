@@ -67,7 +67,7 @@ class SeasonalAverager():
         ds.time.attrs["axis"] = "T"
         ds['time'].encoding['calendar'] = cal
         ds['time'].attrs['standard_name'] = 'time'
-        #ds.time.encoding['units'] = self.TSD.time_units
+        ds.time.encoding['units'] = self.TSD.time_units
         return ds
         
     def annual_stats(self,stat,pentad=False):

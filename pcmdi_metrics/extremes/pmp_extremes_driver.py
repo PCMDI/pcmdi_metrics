@@ -13,7 +13,7 @@ import datetime
 import regionmask
 import geopandas as gpd
 
-from lib import (
+from pcmdi_metrics.extremes.lib import (
     compute_metrics,
     create_extremes_parser,
     utilities,
@@ -416,4 +416,17 @@ if reference_data_path is not None:
     meta.update_provenance("obsdata", reference_data_path)
 meta.write()
 
-return_value.compute_rv_from_file(nc_dir,cov_file,cov_name,return_period)
+#filelist = glob.glob(nc_dir+"/*")
+#max_list = [item for item in filelist if any([x in item for x in ["TXx","TNx","Rx5day","Rx1day"]])]
+#return_value.compute_rv_from_file(max_list,cov_file,cov_name,nc_dir,return_period,maxes=True)
+#min_list = [item for item in filelist if any([x in item for x in ["TXn","TNn"]])]
+#return_value.compute_rv_from_file(min_list,cov_file,cov_name,nc_dir,return_period,maxes=False)
+
+if "Reference" in model_loop_list:
+    model_loop_list = model_loop_list.remove("Reference")
+
+for model in model_loop_list:
+    for stat in ["TXx","TNx","Rx5day","Rx1day"]:
+        filelist = glob.glob(nc_dir+"/*{0}*{1}*".format(model,stat))
+        if len(filelist) > 0:
+            return_value.compute_rv_for_model(filelist,cov_file,cov_name,return_period,maxes=True)
