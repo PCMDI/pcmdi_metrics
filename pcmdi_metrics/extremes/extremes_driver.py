@@ -46,7 +46,8 @@ reference_data_path = parameter.reference_data_path
 reference_data_set = parameter.reference_data_set
 reference_sftlf_template = parameter.reference_sftlf_template
 metrics_output_path = parameter.metrics_output_path
-nc_out = parameter.nc_out
+#nc_out = parameter.nc_out
+nc_out = True
 plots = parameter.plots
 debug = parameter.debug
 cmec = parameter.cmec
@@ -81,6 +82,10 @@ use_region_mask,region_name,coords = region_utilities.check_region_params(
 # Verifying output directory
 metrics_output_path = utilities.verify_output_path(metrics_output_path,case_id)
 
+if isinstance(reference_data_set,list):
+    # Fix a command line issue
+    reference_data_set = reference_data_set[0]
+
 # Verify years
 ok_mod = utilities.verify_years(msyear,meyear,msg="Error: Model msyear and meyear must both be set or both be None (unset).")
 ok_obs = utilities.verify_years(osyear,oeyear,msg="Error: Obs osyear and oeyear must both be set or both be None (unset).")
@@ -89,9 +94,8 @@ ok_obs = utilities.verify_years(osyear,oeyear,msg="Error: Obs osyear and oeyear 
 meta = metadata.MetadataFile(metrics_output_path)
 
 # Initialize other directories
-if nc_out:
-    nc_dir = os.path.join(metrics_output_path,"netcdf")
-    os.makedirs(nc_dir,exist_ok=True)
+nc_dir = os.path.join(metrics_output_path,"netcdf")
+os.makedirs(nc_dir,exist_ok=True)
 if plots:
     plot_dir_maps = os.path.join(metrics_output_path,"plots","maps")
     os.makedirs(plot_dir_maps,exist_ok=True)
@@ -128,7 +132,7 @@ obs = {}
 for model in model_loop_list:
 
     if model=="Reference":
-        list_of_runs = [str(reference_data_set)] #TODO: realizations set in multiple places
+        list_of_runs = [str(reference_data_set)]
     elif find_all_realizations:
         tags = {'%(model)': model, '%(model_version)': model, '%(realization)': "*"}
         test_data_full_path = os.path.join(test_data_path,filename_template)
@@ -151,7 +155,8 @@ for model in model_loop_list:
         # SFTLF
         sftlf_exists = True
         if run == reference_data_set:
-            if os.path.exists(reference_sftlf_template):
+            if reference_sftlf_template is not None and \
+            os.path.exists(reference_sftlf_template):
                 sftlf_filename = reference_sftlf_template
             else:
                 print("No reference sftlf file template provided.")
@@ -422,11 +427,19 @@ meta.write()
 #min_list = [item for item in filelist if any([x in item for x in ["TXn","TNn"]])]
 #return_value.compute_rv_from_file(min_list,cov_file,cov_name,nc_dir,return_period,maxes=False)
 
+
+print("Generating return values.")
 if "Reference" in model_loop_list:
-    model_loop_list = model_loop_list.remove("Reference")
+    model_loop_list.remove("Reference")
 
 for model in model_loop_list:
     for stat in ["TXx","TNx","Rx5day","Rx1day"]:
+        if stat in ["TXx","TNx","Rx5day","Rx1day"]:
+            maxes = True
+        else: # TXn and TNn
+            maxes = False
         filelist = glob.glob(nc_dir+"/*{0}*{1}*".format(model,stat))
-        if len(filelist) > 0:
-            return_value.compute_rv_for_model(filelist,cov_file,cov_name,return_period,maxes=True)
+        if len(filelist) > 1:
+            return_value.compute_rv_for_model(filelist,cov_file,cov_name,nc_dir,return_period,maxes=maxes)
+        elif len(filelist) == 1:
+            return_value.compute_rv_from_file(filelist,cov_file,cov_name,nc_dir,return_period,maxes=maxes)
