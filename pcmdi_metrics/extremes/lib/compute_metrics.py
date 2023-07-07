@@ -295,7 +295,7 @@ def mean_xy(data,varname):
 def percent_difference(ref,bias_xy,varname,weights):
     # bias as percentage of reference dataset "ref"
     pct_dif=float(100.*bias_xy/ref.spatial.average(varname,axis=['X','Y'],weights=weights)[varname])
-    return float(pct_dif)
+    return pct_dif
 
 def init_metrics_dict(model_list,var_list,dec_mode,drop_incomplete_djf,annual_strict,region_name):
     # Return initial version of the metrics dictionary
@@ -412,7 +412,7 @@ def metrics_json(data_dict,sftlf,obs_dict={},region="land",regrid=True):
                 std_obs_xy = compute_statistics.std_xy(b, season)
                 pct_dif = percent_difference(b,bias_xy,season,weights)
 
-                met_dict[m][region]["pct_dif"][season] = percent_difference
+                met_dict[m][region]["pct_dif"][season] = pct_dif
                 met_dict[m][region]["rms_xy"][season] = rms_xy
                 met_dict[m][region]["mae_xy"][season] = meanabs_xy
                 met_dict[m][region]["bias_xy"][season] = bias_xy

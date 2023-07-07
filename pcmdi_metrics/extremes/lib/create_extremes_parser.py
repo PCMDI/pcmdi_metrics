@@ -187,8 +187,7 @@ def create_extremes_parser():
 
     parser.add_argument(
         "--nc_out",
-        type=bool,
-        default=True,
+        action="store_true",
         help="Option for generate netCDF file output: True (default) / False",
     )
 
@@ -244,8 +243,7 @@ def create_extremes_parser():
 
     parser.add_argument(
         "--generate_sftlf",
-        type=bool,
-        default=False,
+        action="store_true",
         help="Flag to generate land sea mask if not found.",
         required=False
     )
@@ -260,8 +258,7 @@ def create_extremes_parser():
 
     parser.add_argument(
         "--plots",
-        type=bool,
-        default=False,
+        action="store_true",
         help="Set to True to generate figures.",
         required=False
     )
