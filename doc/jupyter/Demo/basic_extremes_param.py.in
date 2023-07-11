@@ -1,4 +1,4 @@
-case_id = "extremes_ex1"
+# Settings for extremes driver
 
 # These settings are required
 vars = ['pr'] # Choices are 'pr','tasmax', 'tasmin'
@@ -8,9 +8,16 @@ test_data_path = '$INPUT_DIR$/CMIP5_demo_timeseries/historical/atmos/day/pr/'
 filename_template = '%(variable)_day_%(model)_historical_%(realization)_20000101-20051231.nc'
 metrics_output_path = $OUTPUT_DIR$
 
-# Additional options
+# Note: You can use the following placeholders in file templates:
+# %(variable) to substitute variable name from "vars" (except in sftlf filenames)
+# %(model) to substitute model name from "test_data_set"
+# %(realization) to substitute realization from "realization"
+
+# Optional settings
+case_id = "extremes_ex1"
 sftlf_filename_template = 'demo_data/CMIP5_demo_data/cmip5.historical.%(model).sftlf.nc'
 
+ModUnitsAdjust = (True,"multiply",86400.) # Convert units from kg/m2/s to mm/day
 dec_mode="JFD"
 annual_strict = True
 drop_incomplete_djf = True
