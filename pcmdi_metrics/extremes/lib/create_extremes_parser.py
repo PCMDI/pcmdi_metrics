@@ -186,12 +186,6 @@ def create_extremes_parser():
     )
 
     parser.add_argument(
-        "--nc_out",
-        action="store_true",
-        help="Option for generate netCDF file output: True (default) / False",
-    )
-
-    parser.add_argument(
         "--year_range",
         type=list,
         default=[None, None],
@@ -277,20 +271,20 @@ def create_extremes_parser():
     parser.add_argument(
         "--ObsUnitsAdjust",
         type=tuple,
-        default=(False, 0, 0),
+        default=(False, 0, 0, None),
         help="For unit adjust for OBS dataset. For example:\n"
-        "- (True, 'divide', 100.0)  # Pa to hPa\n"
-        "- (True, 'subtract', 273.15)  # degK to degC\n"
-        "- (False, 0, 0) # No adjustment (default)",
+        "- (True, 'divide', 100.0, 'hPa')  # Pa to hPa\n"
+        "- (True, 'subtract', 273.15, 'C')  # degK to degC\n"
+        "- (False, 0, 0, None) # No adjustment (default)",
     )
     parser.add_argument(
         "--ModUnitsAdjust",
         type=tuple,
-        default=(False, 0, 0),
+        default=(False, 0, 0, None),
         help="For unit adjust for model dataset. For example:\n"
-        "- (True, 'divide', 100.0)  # Pa to hPa\n"
-        "- (True, 'subtract', 273.15)  # degK to degC\n"
-        "- (False, 0, 0) # No adjustment (default)",
+        "- (True, 'divide', 100.0, 'hPa')  # Pa to hPa\n"
+        "- (True, 'subtract', 273.15, 'C')  # degK to degC\n"
+        "- (False, 0, 0, None) # No adjustment (default)",
     )
 
     parser.add_argument(

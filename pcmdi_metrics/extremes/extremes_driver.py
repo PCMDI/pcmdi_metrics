@@ -46,6 +46,8 @@ reference_data_path = parameter.reference_data_path
 reference_data_set = parameter.reference_data_set
 reference_sftlf_template = parameter.reference_sftlf_template
 metrics_output_path = parameter.metrics_output_path
+ModUnitsAdjust = parameter.ModUnitsAdjust
+ObsUnitsAdjust = parameter.ObsUnitsAdjust
 #nc_out = parameter.nc_out
 nc_out = True
 plots = parameter.plots
@@ -191,6 +193,11 @@ for model in model_loop_list:
                     coords=coords,
                     shp_path=shp_path,
                     column=col)
+
+        if run == reference_data_set:
+            units_adjust = ObsUnitsAdjust
+        else:
+            units_adjust = ModUnitsAdjust
         
         metrics_dict["RESULTS"][model][run] = {}
         
@@ -270,6 +277,7 @@ for model in model_loop_list:
                     ds,
                     varname,
                     sftlf,
+                    units_adjust,
                     dec_mode,
                     drop_incomplete_djf,
                     annual_strict)
@@ -300,6 +308,7 @@ for model in model_loop_list:
                     ds,
                     varname,
                     sftlf,
+                    units_adjust,
                     dec_mode,
                     drop_incomplete_djf,
                     annual_strict)
@@ -332,6 +341,7 @@ for model in model_loop_list:
                 Rx1day,Rx5day = compute_metrics.precipitation_indices(
                     ds,
                     sftlf,
+                    units_adjust,
                     dec_mode,
                     drop_incomplete_djf,
                     annual_strict)
@@ -420,12 +430,6 @@ meta.update_provenance("modeldata", test_data_path)
 if reference_data_path is not None:
     meta.update_provenance("obsdata", reference_data_path)
 meta.write()
-
-#filelist = glob.glob(nc_dir+"/*")
-#max_list = [item for item in filelist if any([x in item for x in ["TXx","TNx","Rx5day","Rx1day"]])]
-#return_value.compute_rv_from_file(max_list,cov_file,cov_name,nc_dir,return_period,maxes=True)
-#min_list = [item for item in filelist if any([x in item for x in ["TXn","TNn"]])]
-#return_value.compute_rv_from_file(min_list,cov_file,cov_name,nc_dir,return_period,maxes=False)
 
 
 print("Generating return values.")
