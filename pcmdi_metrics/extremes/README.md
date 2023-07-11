@@ -1,10 +1,10 @@
 # PMP Extremes Metrics
 
-This documentation is a work in progress, and may change at any time.
+This documentation is a work in progress.
 
 ## Inputs
 
-This package expects input files to be cf-compliant. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr".
+This package expects input files to be cf-compliant. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
 
 Temperature: metrics in same units as input data. Must have variable "tasmax" or "tasmin"
 
@@ -16,11 +16,11 @@ If land sea masks are scaled from 0-1, they will be rescaled to 0-100 on-the-fly
 
 ## Run
 
-To run the extremes metrics, use the following command in a PMP environment:
-```python pmp_extremes_driver.py -p parameter_file --other_params```
+To run the extremes metrics, use the following command format in a PMP environment:
+```extremes_driver.py -p parameter_file --other_params```
 
 ## Outputs
-This script will produce metrics JSONs, netcdf files (optional) and figures (optional) containing block max/min values for temperature and/or precipitation. 
+This script will produce metrics JSONs, netcdf files, and figures (optional) containing block max/min values for temperature and/or precipitation. 
 
 Data is masked to be over land only (50<=sftlf<=100)
 
@@ -72,14 +72,15 @@ You can either use a region from a shapefile or provide coordinate pairs that de
 | reference_data_set  | (str) The short name of the reference datas set for labeling output files. | 
 | reference_sftlf_template | (str) The full path of the reference data set land/sea mask. | 
 | metrics_output_path  | (str) The directory to write output files to. | 
-| nc_out | (bool) True to save yearly block extrema as netcdf files. | 
 | plots | (bool) True to save world map figures of mean metrics. |
 | debug | (bool) True to use debug mode. | 
 | msyear | (int) Start year for model data set. |
 | meyear | (int) End year for model data set. |
 | osyear | (int) Start year for reference data set. |
 | oeyear | (int) End year for model data set. |
-| regrid | (bool) Set to False to skip regridding if all datasets are on the same grid. Default True. |
+| regrid | (bool) Set to False to skip regridding if all datasets are on the same grid. Default True. |  
+| ModUnitsAdjust | (tuple) Provide information for units conversion. Uses format (flag (bool), operation (str), value (float), new units (str)). Operation can be "add", "subtract", "multiply", or "divide". For example, use (True, 'multiply', 86400, 'mm/day') to convert kg/m2/s to mm/day.|
+| ObsUnitsAdjust | (tuple) Similar to ModUnitsAdjust, but for reference dataset. |  
 
 
 ## References
