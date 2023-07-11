@@ -223,13 +223,49 @@ def update_nc_attrs(ds,dec_mode,drop_incomplete_djf,annual_strict):
     ds.attrs["december_mode"] = str(dec_mode)
     ds.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
     ds.attrs["annual_strict"] = str(annual_strict)
+
+    # Update fill value encoding
+    ds.lat.encoding["_FillValue"] = None
+    ds.lon.encoding["_FillValue"] = None
+    ds.time.encoding["_FillValue"] = None
+    ds.lat_bnds.encoding["_FillValue"] = None
+    ds.lon_bnds.encoding["_FillValue"] = None
+    ds.time_bnds.encoding["_FillValue"] = None
+    for season in ["ANN","DJF","MAM","JJA","SON"]:
+        ds[season].encoding["_FillValue"] = float(1e20)
     return ds
 
-def temperature_indices(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
+def convert_units(data,units_adjust):
+    # Convert the units of the input data
+    # units_adjust is a tuple of form 
+    # (flag (bool), operation (str), value (float), units (str)).
+    # For example, (True, "multiply", 86400., "mm/day")
+    # If flag is False, data is returned unaltered.
+    if bool(units_adjust[0]):
+        op_dict = {
+            "add": "+",
+            "subtract": "-",
+            "multiply": "*",
+            "divide": "/"
+        }
+        if str(units_adjust[1]) not in op_dict:
+            print("Error in units conversion. Operation must be add, subtract, multiply, or divide.")
+            print("Skipping units conversion.")
+            return data
+        op = op_dict[str(units_adjust[1])]
+        val = float(units_adjust[2])
+        operation = "data {0} {1}".format(op,val)
+        data = eval(operation)
+        data.attrs["units"] = str(units_adjust[3])
+    return data
+
+def temperature_indices(ds,varname,sftlf,units_adjust,dec_mode,drop_incomplete_djf,annual_strict):
     # Returns annual max and min of provided temperature dataset
     # Temperature input can be "tasmax" or "tasmin".
 
     print("Generating temperature block extrema.")
+
+    ds[varname] = convert_units(ds[varname],units_adjust)
 
     TS = TimeSeriesData(ds,varname)
     S = SeasonalAverager(TS,sftlf,dec_mode=dec_mode,drop_incomplete_djf=drop_incomplete_djf,annual_strict=annual_strict)
@@ -248,15 +284,14 @@ def temperature_indices(ds,varname,sftlf,dec_mode,drop_incomplete_djf,annual_str
 
     return Tmax, Tmin
 
-def precipitation_indices(ds,sftlf,dec_mode,drop_incomplete_djf,annual_strict):
+def precipitation_indices(ds,sftlf,units_adjust,dec_mode,drop_incomplete_djf,annual_strict):
     # Returns annual Rx1day and Rx5day of provided precipitation dataset.
     # Precipitation variable must be called "pr".
     # Input data expected to have units of kg/m2/s
 
     print("Generating precipitation block extrema.")
 
-    ds["pr"] = ds["pr"] * 86400
-    ds["pr"].attrs["units"] = "mm day-1"
+    ds["pr"] = convert_units(ds["pr"],units_adjust)
 
     PR = TimeSeriesData(ds,"pr")
     S = SeasonalAverager(PR,sftlf,dec_mode=dec_mode,drop_incomplete_djf=drop_incomplete_djf,annual_strict=annual_strict)
