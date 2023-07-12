@@ -14,6 +14,8 @@ import xcdat
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.io import xcdat_openxml
 
+from  pcmdi_utils import land_sea_mask
+
 def load_dataset(filepath):
     # Load an xarray dataset from the given filepath.
     # If list of netcdf files, opens mfdataset.
@@ -123,6 +125,7 @@ def set_up_realizations(realization):
 
 def generate_land_sea_mask(data,debug=False):
     # generate sftlf if not provided.
+    """Commenting out the cdutil version
     latArray = data["lat"]
     lat = cdms2.createAxis(latArray, id="latitude")
     lat.designateLatitude()
@@ -148,5 +151,9 @@ def generate_land_sea_mask(data,debug=False):
     if debug:
         print('t_grid (after sftlf added):', t_grid)
         t_grid.to_netcdf('target_grid.nc')
+    """
+    mask = land_sea_mask.generate_land_sea_mask(data, tool="pcmdi", maskname="sftlf")
+    mask = mask * 100.
+    mask = mask.to_dataset()
     
-    return t_grid
+    return mask
