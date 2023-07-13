@@ -366,34 +366,38 @@ for model in model_loop_list:
                     desc = "Seasonal maximum value of daily precipitation."
                     meta = plot_extremes.make_maps(Rx1day,model,run,region_name,"Rx1day",yrs,plot_dir_maps,desc,meta)
 
-            # Get stats and update metrics dictionary
-            print("Generating metrics.")
-            result_dict = compute_metrics.metrics_json(
-                stats_dict,
-                sftlf,
-                obs_dict=obs,
-                region=region_name,
-                regrid=regrid)
-            metrics_dict["RESULTS"][model][run].update(result_dict)
-            if run not in metrics_dict["DIMENSIONS"]["realization"]:
-                metrics_dict["DIMENSIONS"]["realization"].append(run)
+            if model != "Reference":
+                # Get stats and update metrics dictionary
+                print("Generating metrics.")
+                result_dict = compute_metrics.metrics_json(
+                    stats_dict,
+                    sftlf,
+                    obs_dict=obs,
+                    region=region_name,
+                    regrid=regrid)
+                metrics_dict["RESULTS"][model][run].update(result_dict)
+                if run not in metrics_dict["DIMENSIONS"]["realization"]:
+                    metrics_dict["DIMENSIONS"]["realization"].append(run)
 
-    # Pull out metrics for just this model
-    # and write to JSON
-    metrics_tmp = metrics_dict.copy()
-    metrics_tmp["DIMENSIONS"]["model"] = model
-    metrics_tmp["DIMENSIONS"]["realization"] = list_of_runs
-    metrics_tmp["RESULTS"] = {model: metrics_dict["RESULTS"][model]}
-    metrics_path = "{0}_extremes_metrics.json".format(model)
-    utilities.write_to_json(metrics_output_path,metrics_path,metrics_tmp)
+    if model != "Reference":
+        # Pull out metrics for just this model
+        # and write to JSON
+        metrics_tmp = metrics_dict.copy()
+        metrics_tmp["DIMENSIONS"]["model"] = model
+        metrics_tmp["DIMENSIONS"]["realization"] = list_of_runs
+        metrics_tmp["RESULTS"] = {model: metrics_dict["RESULTS"][model]}
+        metrics_path = "{0}_extremes_metrics.json".format(model)
+        utilities.write_to_json(metrics_output_path,metrics_path,metrics_tmp)
 
-    meta.update_metrics(
-        model,
-        os.path.join(metrics_output_path,metrics_path),
-        model+" results",
-        "Seasonal metrics for block extrema for single dataset")
+        meta.update_metrics(
+            model,
+            os.path.join(metrics_output_path,metrics_path),
+            model+" results",
+            "Seasonal metrics for block extrema for single dataset")
 
 # Output single file with all models
+if "Reference" in model_loop_list:
+    model_loop_list.remove("Reference")
 metrics_dict["DIMENSIONS"]["model"] = model_loop_list
 utilities.write_to_json(metrics_output_path,"extremes_metrics.json",metrics_dict)
 fname=os.path.join(metrics_output_path,"extremes_metrics.json")
@@ -410,12 +414,38 @@ if plots and (reference_data_path is not None):
     outfile_template = os.path.join(
         plot_dir_taylor,
         "_".join(["taylor","realization","region","index","season",years]))
-    plot_extremes.taylor_diag(fname,outfile_template)
-    meta.update_plots(
-        "Taylor_Diagrams",
-        outfile_template,
-        "Taylor Diagrams",
-        "Taylor Diagrams for block extrema results.")
+    try:
+        plot_extremes.taylor_diag(fname,outfile_template)
+        meta.update_plots(
+            "Taylor_Diagrams",
+            outfile_template,
+            "Taylor Diagrams",
+            "Taylor Diagrams for block extrema results.")
+    except Exception as e:
+        print("Error. Could not create Taylor Diagram for ",outfile_template,":")
+        print(e)
+
+# Calculate Return Values
+# If more metrics are added to this analysis,
+# Update the stat list in the inner loop and in the 
+# max/min check.
+print("Generating return values.")
+
+for model in model_loop_list:
+    for stat in ["TXx","TNx","Rx5day","Rx1day"]:
+        if stat in ["TXx","TNx","Rx5day","Rx1day"]:
+            maxes = True
+        else: 
+            # TXn and TNn
+            maxes = False
+        filelist = glob.glob(nc_dir+"/*{0}*{1}*".format(model,stat))
+        if len(filelist) > 1:
+            # Use all realizations
+            meta = return_value.compute_rv_for_model(filelist,cov_file,cov_name,nc_dir,return_period,meta,maxes=maxes)
+        elif len(filelist) == 1:
+            # Return value from single realization
+            meta = return_value.compute_rv_from_file(filelist,cov_file,cov_name,nc_dir,return_period,meta,maxes=maxes)
+
 
 # Update and write metadata file
 try:
@@ -430,20 +460,3 @@ meta.update_provenance("modeldata", test_data_path)
 if reference_data_path is not None:
     meta.update_provenance("obsdata", reference_data_path)
 meta.write()
-
-
-print("Generating return values.")
-if "Reference" in model_loop_list:
-    model_loop_list.remove("Reference")
-
-for model in model_loop_list:
-    for stat in ["TXx","TNx","Rx5day","Rx1day"]:
-        if stat in ["TXx","TNx","Rx5day","Rx1day"]:
-            maxes = True
-        else: # TXn and TNn
-            maxes = False
-        filelist = glob.glob(nc_dir+"/*{0}*{1}*".format(model,stat))
-        if len(filelist) > 1:
-            return_value.compute_rv_for_model(filelist,cov_file,cov_name,nc_dir,return_period,maxes=maxes)
-        elif len(filelist) == 1:
-            return_value.compute_rv_from_file(filelist,cov_file,cov_name,nc_dir,return_period,maxes=maxes)

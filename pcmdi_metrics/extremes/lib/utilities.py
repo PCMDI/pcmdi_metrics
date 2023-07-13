@@ -47,7 +47,7 @@ def write_to_nc(data,model,run,region_name,index,years,ncdir,desc,meta):
     yrs = "-".join(years)
     filepath = os.path.join(ncdir,"_".join([model,run,region_name,index,yrs])+".nc")
     write_netcdf_file(filepath,data)
-    meta.update_data(index,filepath+".png",index,desc)
+    meta.update_data(os.path.basename(filepath),filepath,index,desc)
     return meta
 
 def write_netcdf_file(filepath,ds):

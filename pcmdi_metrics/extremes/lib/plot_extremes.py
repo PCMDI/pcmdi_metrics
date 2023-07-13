@@ -20,8 +20,12 @@ from pcmdi_metrics.graphics import TaylorDiagram
 def make_maps(data,model,run,region_name,index,yrs,plot_dir,desc,meta):
     # Consolidating some plotting code here to streamline main function
     output_template = os.path.join(plot_dir,"_".join([model,run,region_name,index,"season"]))
-    plot_extremes(data,index,model,run,yrs,output_template)
-    meta.update_plots(index,output_template+".png",index,desc)
+    try:
+        plot_extremes(data,index,model,run,yrs,output_template)
+        meta.update_plots(os.path.basename(output_template),output_template+".png",index,desc)
+    except Exception as e:
+        print("Error. Could not create figure",output_template,":")
+        print("    ",e)
     return meta
 
 def plot_extremes(data,metric,model,run,yrs,output_template):

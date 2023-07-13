@@ -9,9 +9,16 @@ import climextremes
 import glob
 from pcmdi_metrics.extremes.lib import utilities
 
-def compute_rv_from_file(filelist,cov_filepath,cov_name,outdir,return_period,maxes=True):
+def compute_rv_from_file(filelist,cov_filepath,cov_name,outdir,return_period,meta,maxes=True):
     # Go through all files and get return value and standard error by file.
     # Write results to netcdf file.
+    if cov_filepath is None:
+        desc1 = "Return value from stationary GEV fit for single realization"
+        desc2 = "Standard error for return value from stationary fit for single realization"
+    else:
+        desc = "Return value from nonstationary GEV fit for single realization"
+        desc2 = "Standard error for return value from nonstationary fit for single realization"
+
     for ncfile in filelist:
         ds = xc.open_dataset(ncfile)
         rv,se = get_dataset_rv(ds,cov_filepath,cov_name,return_period,maxes)
@@ -19,12 +26,19 @@ def compute_rv_from_file(filelist,cov_filepath,cov_name,outdir,return_period,max
             print("Error in calculating return value for",ncfile)
             print("Skipping file.")
             continue
+
         fname = os.path.basename(ncfile).replace(".nc","")
-        utilities.write_netcdf_file(outdir+"/"+fname+"_return_value.nc",rv)
-        utilities.write_netcdf_file(outdir+"/"+fname+"_standard_error.nc",se)
+        rv_file = outdir+"/"+fname+"_return_value.nc"
+        utilities.write_netcdf_file(rv_file,rv)
+        meta.update_data(os.path.basename(rv_file),rv_file,"return_value",desc1)
 
+        se_file = outdir+"/"+fname+"_standard_error.nc"
+        utilities.write_netcdf_file(se_file,se)
+        meta.update_data(os.path.basename(se_file),se_file,"standard_error",desc2)
 
-def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,maxes=True):
+    return meta
+
+def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,meta,maxes=True):
     # Similar to compute_rv_from_file, but to work on multiple realizations
     # from the same model
     # Nonstationary GEV requiring covariate
@@ -50,7 +64,7 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
             print("Covariate timeseries must have same number of years as block extremes dataset.")
             print("Skipping return value calculation for files:")
             print(filelist)
-            return None,None
+            return meta
 
         # To numpy array
         cov_np = cov_ds[cov_varname].data.squeeze()
@@ -134,15 +148,26 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
     return_value = return_value.bounds.add_missing_bounds() 
     standard_error = standard_error.bounds.add_missing_bounds()
 
+    # Set descriptions for metadata
+    if nonstationary:
+        desc1 = "Return value from stationary GEV fit for multiple realizations"
+        desc2 = "Standard error for return value from stationary fit for multiple realizations"
+    else:
+        desc1= "Return value from nonstationary GEV fit for multiple realizations"
+        desc2 = "Standard error for return value from nonstationary fit for multiple realizations"
+
     fname = os.path.basename(filelist[0])
     real = fname.split("_")[1]
     fname = fname.replace(real+"_","").replace(".nc","")
     outfile = os.path.join(ncdir,fname+"_return_value.nc")
     utilities.write_netcdf_file(outfile,return_value)
+    meta.update_data(os.path.basename(outfile),outfile,"return_value",desc1)
+
     outfile = os.path.join(ncdir,fname+"_standard_error.nc")
     utilities.write_netcdf_file(outfile,standard_error)
+    meta.update_data(os.path.basename(outfile),outfile,"standard_error",desc2)
 
-    return return_value,standard_error
+    return meta
 
 def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
     # Get the return value for a single model & realization
