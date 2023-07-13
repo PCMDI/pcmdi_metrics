@@ -48,7 +48,7 @@ You can either use a region from a shapefile or provide coordinate pairs that de
 ### Coordinates 
 | Parameter   | Definition |
 --------------|-------------
-| coords      | (list) Coordinate pair lists. The coordinate must be listed in consecutive order, as they would occur when walking the perimeter of the bounding shape. Does not need to be a box, but cannot have holes. Follows the pattern [[x1,y1],[x1,y2],[x2,y2],[x2,y1]].  |
+| coords      | (list) Coordinate lat/lon pair lists. The coordinate must be listed in consecutive order, as they would occur when walking the perimeter of the bounding shape. Does not need to be a box, but cannot have holes. For example [[lat1,lon1],[lat1,lon2],[lat2,lon2],[lat2,lon1]].  |
 | region_name | (str) Name of region. Default is "custom". |
 
 ## Time series settings
@@ -87,4 +87,4 @@ You can either use a region from a shapefile or provide coordinate pairs that de
 
 ## References
 
-Michael Wehner, Peter Gleckler, Jiwoo Lee, 2020: Characterization of long period return values of extreme daily temperature and precipitation in the CMIP6 models: Part 1, model evaluation, Weather and Climate Extremes,30,100283,https://doi.org/10.1016/j.wace.2020.100283.
+Michael Wehner, Peter Gleckler, Jiwoo Lee, 2020: Characterization of long period return values of extreme daily temperature and precipitation in the CMIP6 models: Part 1, model evaluation, Weather and Climate Extremes, 30, 100283, https://doi.org/10.1016/j.wace.2020.100283.
