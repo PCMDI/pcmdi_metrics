@@ -1,10 +1,8 @@
 # PMP Extremes Metrics
 
-This documentation is a work in progress.
-
 ## Inputs
 
-This package expects input netcdf files to be cf-compliant and on regular latitude/longitude grids. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
+The Extremes Driver works on daily gridded climate data. This package expects input netcdf files to be cf-compliant and on regular latitude/longitude grids. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
 
 A reference (observation) input is not required, but it is necessary to create Taylor Diagrams. Reference data sets must follow the above rules for variable names and bounds.
 
@@ -16,7 +14,7 @@ See the "Other Parameters" table for options to select a year range, convert uni
 
 ## Run
 
-To run the extremes metrics, use the following command format in a PMP environment:
+To run the extremes metrics, use the following command format in a PMP environment:  
 ```extremes_driver.py -p parameter_file --other_params```
 
 ## Outputs
