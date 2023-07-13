@@ -4,15 +4,15 @@ This documentation is a work in progress.
 
 ## Inputs
 
-This package expects input files to be cf-compliant. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
+This package expects input netcdf files to be cf-compliant and on regular latitude/longitude grids. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
 
-Temperature: metrics in same units as input data. Must have variable "tasmax" or "tasmin"
+A reference (observation) input is not required, but it is necessary to create Taylor Diagrams. Reference data sets must follow the above rules for variable names and bounds.
 
-Precipitation: inputs expected to be kg/m2/s. Converts to mm/day. Variable name must be pr,PRECT, or precip
+If land sea masks are scaled from 0-1, they will be rescaled to 0-100 on-the-fly. The mask variable in the file must be called "sftlf". If land/sea masks are not provided, there is an option to generate them on-the-fly using pcmdi_utils. 
 
-A reference (observation) input is not required, but it is necessary to create Taylor Diagrams.
+A yearly covariate time series can be provided to calculate the return value for non-stationary data. The covariate time dimension must either 1) be exactly the same length in years as the input data, or 2) overlap in years with the input data time dimension. It is recommended that a log transformation be applied to nonlinear covariates such as recent carbon dioxide values. Covariate data must be provided as a netcdf file with time bounds.
 
-If land sea masks are scaled from 0-1, they will be rescaled to 0-100 on-the-fly. If land/sea masks are not provided, there is an option to generate them on-the-fly using cdutil.
+See the "Other Parameters" table for options to select a year range, convert units, and control regridding.
 
 ## Run
 
@@ -20,11 +20,13 @@ To run the extremes metrics, use the following command format in a PMP environme
 ```extremes_driver.py -p parameter_file --other_params```
 
 ## Outputs
-This script will produce metrics JSONs, netcdf files, and figures (optional) containing block max/min values for temperature and/or precipitation. 
+The outputs will be written to a single directory. This directory will be created by the driver if it does not already exist. Otherwise, the output directory should be empty before the driver starts. The name of the output directory is controlled by the `metrics_output_path` and `case_id` parameters. 
 
-Data is masked to be over land only (50<=sftlf<=100)
+This script will produce metrics JSONs, netcdf files, and figures (optional) containing block max/min values for temperature and/or precipitation. A metadata file called "output.json" will be generated with more detailed information about the files in the output bundle.
 
-Metrics:
+Data is masked to be over land only (50<=sftlf<=100). Antarctica is excluded.
+
+### Metrics
 Metrics are produced to describe the time mean extrema values, along with spatial statistics comparing the mean model field to mean observed field.  
 Model only: "mean", "std_xy"  
 If reference dataset is available: "mean", "std_xy","std-obs_xy","pct_dif","bias_xy","cor_xy","mae_xy","rms_xy","rmsc_xy"  
@@ -55,7 +57,7 @@ You can either use a region from a shapefile or provide coordinate pairs that de
 --------------|-------------
 | dec_mode | (str) Toggle how season containing December, January, and February is defined. "DJF" or "JFD". Default "DJF". |
 | annual_strict | (bool) This only matters for Rx5day. If True, only use data from within a given year in the 5-day means. If False, the rolling mean will include the last 4 days of the prior year. Default False. |
-| drop_incomplete_djf | (bool) Don't include data from the first January/February and last December in the analysis. Default False. |
+| drop_incomplete_djf | (bool) If True, don't include data from the first January/February and last December in the analysis. Default False. |
 
 ## Other parameters
 | Parameter   | Definition |
@@ -85,3 +87,4 @@ You can either use a region from a shapefile or provide coordinate pairs that de
 
 ## References
 
+Michael Wehner, Peter Gleckler, Jiwoo Lee, 2020: Characterization of long period return values of extreme daily temperature and precipitation in the CMIP6 models: Part 1, model evaluation, Weather and Climate Extremes,30,100283,https://doi.org/10.1016/j.wace.2020.100283.
