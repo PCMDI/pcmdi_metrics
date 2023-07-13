@@ -55,7 +55,6 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
         # To numpy array
         cov_np = cov_ds[cov_varname].data.squeeze()
         cov_ds.close()
-        cov_np = np.log(cov_np) # TODO - log should probably be optional
 
     dec_mode = str(ds.attrs["december_mode"])
     drop_incomplete_djf = bool(ds.attrs["drop_incomplete_djf"])
@@ -171,7 +170,6 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
 
         # To numpy array
         cov_ds = cov_ds[cov_varname].data.squeeze()
-        cov_ds = np.log(cov_ds) # TODO - log should probably be optional
 
     lat = len(ds["lat"])
     lon = len(ds["lon"])
