@@ -1,5 +1,7 @@
 # PMP Extremes Metrics
 
+TODO: THere is a bug in the return value calculation (lib/return_value.py) that is causing DJF to be all nans.
+
 ## Inputs
 
 The Extremes Driver works on daily gridded climate data. This package expects input netcdf files to be cf-compliant and on regular latitude/longitude grids. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
