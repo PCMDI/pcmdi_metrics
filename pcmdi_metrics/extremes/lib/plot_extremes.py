@@ -20,12 +20,8 @@ from pcmdi_metrics.graphics import TaylorDiagram
 def make_maps(data,model,run,region_name,index,yrs,plot_dir,desc,meta):
     # Consolidating some plotting code here to streamline main function
     output_template = os.path.join(plot_dir,"_".join([model,run,region_name,index,"season"]))
-    try:
-        plot_extremes(data,index,model,run,yrs,output_template)
-        meta.update_plots(os.path.basename(output_template),output_template+".png",index,desc)
-    except Exception as e:
-        print("Error. Could not create figure",output_template,":")
-        print("    ",e)
+    plot_extremes(data,index,model,run,yrs,output_template)
+    meta.update_plots(os.path.basename(output_template),output_template+".png",index,desc)
     return meta
 
 def plot_extremes(data,metric,model,run,yrs,output_template):
@@ -50,13 +46,17 @@ def plot_extremes(data,metric,model,run,yrs,output_template):
         min_lev = math.floor(ds.min()/10) * 10
         max_lev = math.floor(ds.max()/10) * 10
         levels = np.arange(min_lev,max_lev+10,10)
-        plot_map_cartopy(
-            ds,
-            outfile,
-            title=title,
-            proj="Robinson",
-            cmap=colors,
-            levels=levels)
+        try:
+            plot_map_cartopy(
+                ds,
+                outfile,
+                title=title,
+                proj="Robinson",
+                cmap=colors,
+                levels=levels)
+        except Exception as e:
+            print("Error. Could not create figure",outfile,":")
+            print("    ",e)
     return               
 
 def plot_map_cartopy(    
