@@ -98,6 +98,8 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.1.1]      | Technical and documentation update
+| [v3.1]        | New metric added: **Precipitation Benchmarking -- distribution bimodality**
 | [v3.0.2]      | Minor patch and more documentation added
 | [v3.0.1]      | Minor technical patch                 
 | [v3.0.0]      | New metric added: **Cloud feedback metric** by @mzelinka. [**xCDAT**](https://xcdat.readthedocs.io/en/latest/) implemented for mean climate metrics
@@ -121,6 +123,8 @@ Release Notes and History
 
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.1.1
+[v3.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.1
 [v3.0.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.0.2
 [v3.0.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.0.1
 [v3.0.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.0.0

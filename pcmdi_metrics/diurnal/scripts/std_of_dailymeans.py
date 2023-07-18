@@ -131,8 +131,7 @@ def main():
     print("TEMPLATE NAME:", template())
 
     print("Preparing to write output to JSON file ...")
-    if not os.path.exists(args.results_dir):
-        os.makedirs(args.results_dir)
+    os.makedirs(args.results_dir, exist_ok=True)
     jsonFile = populateStringConstructor(args.outnamejson, args)
     jsonFile.month = monthname
 

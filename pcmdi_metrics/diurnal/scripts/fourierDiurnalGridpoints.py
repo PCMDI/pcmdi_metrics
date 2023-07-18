@@ -83,8 +83,7 @@ def main():
     ascFile.month = monthname
     ascname = os.path.join(os.path.abspath(args.results_dir), ascFile())
 
-    if not os.path.exists(os.path.dirname(ascname)):
-        os.makedirs(os.path.dirname(ascname))
+    os.makedirs(os.path.dirname(ascname), exist_ok=True)
     fasc = open(ascname, "w")
 
     gridptlats = [float(x) for x in args.lats]

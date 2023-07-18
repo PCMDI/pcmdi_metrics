@@ -106,8 +106,7 @@ def main():
                 )
             except Exception as err:
                 print("Failed for model: %s with error: %s" % (dataname, err))
-        if not os.path.exists(args.results_dir):
-            os.makedirs(args.results_dir)
+        os.makedirs(args.results_dir, exist_ok=True)
         g = cdms2.open(os.path.join(args.results_dir, stdoutfile), "w")
         g.write(stdvalues)
         g.close()
