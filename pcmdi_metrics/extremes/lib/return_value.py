@@ -1,12 +1,16 @@
 #!/usr/bin/env python
-import cftime
 import datetime
-import numpy as np
+import glob
 import os
+
+import cftime
+import climextremes
+import numpy as np
+from scipy.stats import genextreme
+from scipy.optimize import minimize
 import xarray as xr
 import xcdat as xc
-import climextremes
-import glob
+
 from pcmdi_metrics.extremes.lib import utilities
 
 def compute_rv_from_file(filelist,cov_filepath,cov_name,outdir,return_period,meta,maxes=True):
@@ -120,10 +124,14 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
         se_array = rv_array.copy()
         # Here's where we're doing the return value calculation
         for j in range(0,lat*lon):
-            rv,se = calc_rv(arr[:,j].squeeze(),cov_tile,return_period,nreplicates=nreal,maxes=maxes)
+            if np.sum(arr[:,j]) == 0:
+                continue
+            elif np.isnan(np.sum(arr[:,j])):
+                continue
+            rv,se = calc_rv_py(arr[:,j].squeeze(),cov_tile,return_period,nreplicates=nreal,maxes=maxes)
             if rv is not None:
-                rv_array[:,j] = rv*scale_factor
-                se_array[:,j] = se*scale_factor
+                rv_array[:,j] = np.squeeze(rv*scale_factor)
+                se_array[:,j] = np.squeeze(se*scale_factor)
 
         # reshape array to match desired dimensions and add to Dataset
         if nonstationary:
@@ -297,3 +305,71 @@ def calc_rv(data,covariate,return_period,nreplicates=1,maxes=True):
         return_value = tmp['returnValue']
         standard_error = tmp['se_returnValue']
     return return_value,standard_error
+
+def logliklihood(params,x,covariate,nreplicates):
+    # Negative Log liklihood function to minimize for GEV
+    beta1 = params[0]
+    beta2 = params[1]
+    scale = params[2]
+    shape = params[3]
+
+    n = len(x)
+    location = beta1 + beta2 * covariate
+    
+    if scale <= 0:
+        return 1e10
+
+    # TODO: How close to zero for using Gumbel?
+    if shape == 0: # or np.isclose(shape,0):
+        shape=0
+        y = (x - location) / scale
+        result = np.sum(n*np.log(scale) + y + np.exp(-y))
+    else:
+        # This value must be > 0, Coles 2001
+        y = 1 + shape * (x - location) / scale
+        check = [True for item in y if item <= 0]
+        if len(check) > 0:
+            return 1e10
+
+        result = np.sum(np.log(scale) + y**(-1 / shape) + np.log(y)*(1/shape + 1))
+
+    return result
+
+def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
+    # This function would be swapped with calc_rv() defined above,
+    # to use the pure Python GEV calculation for return value.
+    if maxes:
+        mins=False
+    else:
+        mins=True
+
+    if mins:
+        x = -1*x
+
+    #ncov=len(covariate)
+    #covariate = np.tile(np.squeeze(covariate),nreplicates)
+    #covariate = np.reshape(covariate,(ncov*nreplicates,1))
+
+    # Use the stationary gev to make initial parameter guess
+    fit = genextreme.fit(x)
+    shape, loc, scale = fit
+
+    # Get GEV parameters
+    ll_min = minimize(logliklihood,(loc,0,scale,shape),args=(x,covariate,nreplicates),tol=1e-7,method="nelder-mead")
+
+    params = ll_min["x"]
+    success = ll_min["success"]
+
+    # Calculate return value
+    return_value = np.ones((len(x),1))*np.nan
+    for time in range(0,len(x)):
+        location = params[0] + params[1] * covariate[time]
+        scale = params[2]
+        shape = params[3]
+        rv = genextreme.isf(1/return_period, shape, location, scale)
+        return_value[time] = np.squeeze(np.where(success==1,rv,np.nan))
+    if mins:
+        return_value = -1 * return_value
+
+    # TODO: standard error, returning NaN placeholder now
+    return return_value,np.ones(np.shape(return_value))*np.nan
