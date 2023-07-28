@@ -12,8 +12,11 @@ Demo
 ====
 * `PMP demo Jupyter notebook`_
 
+Exampe parameter files
+======================
+A set of example parameter files for models and observations can be viewed at `this link`_.
 
-Required Data sets 
+Required data sets 
 ==================
 
 Input files must use the following name convention: ::
@@ -64,3 +67,4 @@ Ahn, M.-S., P. J. Gleckler, J. Lee, A. G. Pendergrass, and C. Jakob, 2022: Bench
 
 
 .. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_7_precip_variability.ipynb
+.. _this link: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/precip_variability/param
