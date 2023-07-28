@@ -1,8 +1,8 @@
 .. _metrics_precip-variability:
 
-*****************
-Precip-variability
-*****************
+*******************************************
+Precipitation Variability Across Timescales
+*******************************************
 
 Overview
 ========
