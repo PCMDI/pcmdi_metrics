@@ -16,13 +16,14 @@ Demo
 Required Data sets 
 ==================
 
-Input files must use the following name convention:  
+Input files must use the following name convention: ::
 variable_frequency_model_experiment_ensemble_startdate-enddate.nc  
 
 Because underscores are used to separate these elements, they may not be used anywhere else in the file name.
+
 Start and end dates must use the YYYYMMDD or YYYYMMDDHHHH format.  
 
-For example, these are valid input file names:  
+For example, these are valid input file names: ::
 pr_day_bcc-csm1-1_historical_r1i1p1_19800101-19841231.nc  
 pr_3hr_IMERG-v06B-Final_PCMDI_2x2_201004010000-201004302100.nc  
 If the time series for a single data set is spread across multiple files, those files must be located in a single directory.
@@ -33,23 +34,23 @@ Users will set up a parameter file and run the precipitation variability driver 
 To run the driver, use:
 `variability_across_timescales_PS_driver.py -p parameter_file`  
 
-Results are reported on a 2x2 degree latitude/longitude grid.
+Results are reported on a 2x2 degree latitude/longitude world grid.
 
-Options available to set in the parameter file include:
-* **mip**: Name of MIP
-* **exp**: Name of experiment
-* **var**: Name of data set variable, e.g. "pr"
-* **frq**: Frequency of data set, either "day" or "3hr"
-* **modpath**: Path to directory containing input data files
-* **mod**: Name of model file or wildcard "*" to use all files in directory. Symlinks may be used.
-* **results_dir**: Results directory path
-* **case_id**: Case id
-* **prd**: Start and end years for analysis as list, e.g. [start_year, end_year]
+Options available to set in the parameter file include:  ::
+* **mip**: Name of MIP.
+* **exp**: Name of experiment. 
+* **var**: Name of data set variable, e.g. "pr". 
+* **frq**: Frequency of data set, either "day" or "3hr". 
+* **modpath**: Path to directory containing input data files. 
+* **mod**: Name of model file or wildcard "*" to use all files in directory. Symlinks may be used. 
+* **results_dir**: Results directory path.
+* **case_id**: Case id.
+* **prd**: Start and end years for analysis as list, e.g. [start_year, end_year].
 * **fac**: Factor to convert from data set units to mm/day. Set to 1 for no conversion.
-* **nperseg**: Length of segment in power spectra
-* **noverlap**: Length of overlap between segments in power spectra
-* **ref**: Reference data path
-* **cmec**: Set to True to output CMEC formatted JSON
+* **nperseg**: Length of segment in power spectra.
+* **noverlap**: Length of overlap between segments in power spectra.
+* **ref**: Reference data path.
+* **cmec**: Set to True to output CMEC formatted JSON.
 
 
 Reference
