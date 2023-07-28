@@ -128,7 +128,7 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
                 continue
             elif np.isnan(np.sum(arr[:,j])):
                 continue
-            rv,se = calc_rv_py(arr[:,j].squeeze(),cov_tile,return_period,nreplicates=nreal,maxes=maxes)
+            rv,se = calc_rv(arr[:,j].squeeze(),cov_tile,return_period,nreplicates=nreal,maxes=maxes)
             if rv is not None:
                 rv_array[:,j] = np.squeeze(rv*scale_factor)
                 se_array[:,j] = np.squeeze(se*scale_factor)
@@ -308,6 +308,8 @@ def calc_rv(data,covariate,return_period,nreplicates=1,maxes=True):
 
 def logliklihood(params,x,covariate,nreplicates):
     # Negative Log liklihood function to minimize for GEV
+    # This code has been copied from a testing Jupyter notebook
+    # and may not be properly implemented yet.
     beta1 = params[0]
     beta2 = params[1]
     scale = params[2]
@@ -338,6 +340,8 @@ def logliklihood(params,x,covariate,nreplicates):
 def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
     # This function would be swapped with calc_rv() defined above,
     # to use the pure Python GEV calculation for return value.
+    # This code has been copied from a testing Jupyter notebook
+    # and may not be properly implemented yet.
     if maxes:
         mins=False
     else:
@@ -345,10 +349,6 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
 
     if mins:
         x = -1*x
-
-    #ncov=len(covariate)
-    #covariate = np.tile(np.squeeze(covariate),nreplicates)
-    #covariate = np.reshape(covariate,(ncov*nreplicates,1))
 
     # Use the stationary gev to make initial parameter guess
     fit = genextreme.fit(x)
