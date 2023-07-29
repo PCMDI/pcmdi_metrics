@@ -18,5 +18,6 @@ A suite of demo scripts and interactive Jupyter notebooks are provided with `thi
    metrics_mjo
    metrics_monsoon
    metrics_precip-variability
+   metrics_precip-distribution
 
 
