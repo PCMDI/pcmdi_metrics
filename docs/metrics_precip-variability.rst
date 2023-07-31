@@ -36,6 +36,10 @@ If the time series for a single data set is spread across multiple files, those 
 
 Usage
 =====
+
+Spectral averages
+*****************
+
 Users will set up a parameter file and run the precipitation variability driver on the command line.
 To run the driver, use: ::
 
@@ -60,6 +64,23 @@ Options available to set in the parameter file include:
 * **ref**: Reference data path.
 * **cmec**: Set to True to output CMEC formatted JSON.
 
+Metric 
+******
+
+The precipitation variability metric can be generated after model and observational spectral averages are made.
+
+A script called `calc_ratio.py`_ is provided in the precip_variability codebase. This script can be called with three arguments to generate the ratio.
+
+* **ref**: path to obs results JSON
+* **modpath**: directory containing model results JSONS (not CMEC formatted JSONs)
+* **results_dir**: directory for calc_ratio.py results
+
+The calc_ratio.py script must be called with python directly. For example, to run this script using files from a directory called "results": ::
+
+   python pcmdi_metrics/pcmdi_metrics/precip_variability/scripts_pcmdi/calc_ratio.py \
+   --ref results/precip_variability/GPCP-1-3/PS_pr.day_regrid.180x90_area.freq.mean_GPCP-1-3.json \
+   --modpath results/precip_variability/GISS-E2-H/ \
+   --results_dir results/precip_variability/ratio/
 
 Reference
 ==========
@@ -68,3 +89,4 @@ Ahn, M.-S., P. J. Gleckler, J. Lee, A. G. Pendergrass, and C. Jakob, 2022: Bench
 
 .. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_7_precip_variability.ipynb
 .. _this link: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/precip_variability/param
+.. _calc_ratio.py: https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/precip_variability/scripts_pcmdi/calc_ratio.py
