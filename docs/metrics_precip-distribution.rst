@@ -15,18 +15,20 @@ A set of example parameter files for models and observations can be viewed at `t
 Required data sets 
 ==================
 
+This driver expects daily averaged precipitation.
+
 Input files must use the following name convention: ::
 
    variable_frequency_model_experiment_ensemble_startdate-enddate.nc  
 
 Because underscores are used to separate these elements, they may not be used anywhere else in the file name.
 
-Start and end dates must use the YYYYMMDD or YYYYMMDDHHHH format.  
+Start and end dates must use the YYYYMMDD format.  
 
 For example, these are valid input file names: ::
 
    pr_day_bcc-csm1-1_historical_r1i1p1_19800101-19841231.nc  
-   pr_3hr_IMERG-v06B-Final_PCMDI_2x2_201004010000-201004302100.nc  
+   pr_3hr_IMERG-v06B-Final_PCMDI_2x2_20100401-20100430.nc  
 
 If the time series for a single data set is spread across multiple files, those files must be located in a single directory.
 
@@ -36,6 +38,12 @@ Users will set up a parameter file and run the precipitation variability driver 
 To run the driver, use: ::
 
    precip_distribution_driver.py -p parameter_file  
+
+This code should be run for a reference observation initially as some metrics (e.g., Perkins score) need a reference.
+
+After completing calculation for a reference observation, this code can work for multiple datasets at once.
+
+This benchmarking framework provides three tiers of area averaged outputs for i) large scale domain (Tropics and Extratropics with separated land and ocean) commonly used in the PMP , ii) large scale domain with clustered precipitation characteristics (Tropics and Extratropics with separated land and ocean, and separated heavy, moderate, and light precipitation regions), and iii) modified IPCC AR6 regions shown in the reference paper.
 
 Options available to set in the parameter file include:
 
