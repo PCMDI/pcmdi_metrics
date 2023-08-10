@@ -146,12 +146,11 @@ def extract_data(results_dict, var_list, region, stat, season, mip, debug=False)
     Return a pandas dataframe for metric numbers at given region/stat/season.
     Rows: models, Columns: variables (i.e., 2d array)
     """
+    model_list = sorted(list(results_dict[var_list[0]]["RESULTS"].keys()))
     if "rlut" in list(results_dict.keys()):
         if "rlut" in list(results_dict["rlut"]["RESULTS"].keys()):
             model_list = sorted(list(results_dict["rlut"]["RESULTS"].keys()))
-    else:
-        model_list = sorted(list(results_dict[var_list[0]]["RESULTS"].keys()))
-
+    
     data_list = []
     for model in model_list:
         if "rlut" in list(results_dict.keys()):
