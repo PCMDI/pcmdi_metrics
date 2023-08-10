@@ -147,9 +147,12 @@ def extract_data(results_dict, var_list, region, stat, season, mip, debug=False)
     Rows: models, Columns: variables (i.e., 2d array)
     """
     model_list = sorted(list(results_dict[var_list[0]]["RESULTS"].keys()))
+    # update model_list
     if "rlut" in list(results_dict.keys()):
         if "rlut" in list(results_dict["rlut"]["RESULTS"].keys()):
             model_list = sorted(list(results_dict["rlut"]["RESULTS"].keys()))
+            
+    print('extract_data:: model_list: ', model_list)
     
     data_list = []
     for model in model_list:
