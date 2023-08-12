@@ -98,11 +98,14 @@ def combine_ref_dicts(d1, d2):
     # Merge dicts
     dd = defaultdict(list)
     for d in (d1, d2):  # you can list as many input dicts as you want here
+        print('d:', d)
         for key, value in d.items():
+            print('key, value:', key, value)
             dd[key].append(value)
     # Check consistency in content
+    print('dd:', dd)
     for key in dd:
-        if len(list(set(dd[key]))) == 1:
+        if len(list(set(flatten(dd[key])))) == 1:
             dd[key] = dd[key][0]
         else:
             print(
@@ -112,3 +115,13 @@ def combine_ref_dicts(d1, d2):
     # Convert outcome to normal dict and return
     dd = dict(dd)
     return dd
+
+
+def flatten(list_):
+    list_final = list()
+    for item in list_:
+        if isinstance(item, list):
+            list_final.extend(item)
+        else:
+            list_final.append(item)
+    return list_final
