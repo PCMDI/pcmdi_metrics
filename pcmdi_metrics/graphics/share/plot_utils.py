@@ -98,9 +98,7 @@ def combine_ref_dicts(d1, d2):
     # Merge dicts
     dd = defaultdict(list)
     for d in (d1, d2):  # you can list as many input dicts as you want here
-        print('d:', d)
         for key, value in d.items():
-            print('key, value:', key, value)
             dd[key].append(value)
     # Check consistency in content
     print('dd:', dd)
