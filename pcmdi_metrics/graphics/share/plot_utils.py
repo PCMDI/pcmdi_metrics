@@ -101,7 +101,6 @@ def combine_ref_dicts(d1, d2):
         for key, value in d.items():
             dd[key].append(value)
     # Check consistency in content
-    print('dd:', dd)
     for key in dd:
         if len(list(set(flatten(dd[key])))) == 1:
             dd[key] = dd[key][0]
