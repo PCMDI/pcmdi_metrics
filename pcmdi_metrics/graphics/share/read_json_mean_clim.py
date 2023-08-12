@@ -131,6 +131,8 @@ def extract_region_stat(var, results_dict_var):
     region_list = sorted(
         list(results_dict_var["RESULTS"][model_list[0]]["default"][run_list[0]].keys())
     )
+    if "InputClimatologyFileName" in region_list:
+        region_list.remove("InputClimatologyFileName")
     stat_list = sorted(
         list(
             results_dict_var["RESULTS"][model_list[0]]["default"][run_list[0]][
