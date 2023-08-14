@@ -50,6 +50,7 @@ for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
 
 # Check data in advance
 file_list = sorted(glob.glob(os.path.join(modpath, mod)))
+print(file_list)
 if mip == "obs":
     dat = file_list[0].split("/")[-1].split("_")[2]
 else:
