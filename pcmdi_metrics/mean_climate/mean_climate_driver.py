@@ -101,24 +101,31 @@ print(
 print('--- prepare mean climate metrics calculation ---')
 
 # generate target grid
-if target_grid == "2.5x2.5":
-    # target grid for regridding
-    t_grid = xc.create_uniform_grid(-88.875, 88.625, 2.5, 0, 357.5, 2.5)
-    if debug:
-        print('type(t_grid):', type(t_grid))  # Expected type is 'xarray.core.dataset.Dataset'
-        print('t_grid:', t_grid)
-    # identical target grid in cdms2 to use generateLandSeaMask function that is yet to exist in xcdat
-    t_grid_cdms2 = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
-    # generate land sea mask for the target grid
-    sft = cdutil.generateLandSeaMask(t_grid_cdms2)
-    if debug:
-        print('sft:', sft)
-        print('sft.getAxisList():', sft.getAxisList())
-    # add sft to target grid dataset
-    t_grid['sftlf'] = (['lat', 'lon'], np.array(sft))
-    if debug:
-        print('t_grid (after sftlf added):', t_grid)
-        t_grid.to_netcdf('target_grid.nc')
+res=target_grid.split("x")
+lat_res=float(res[0])
+lon_res=float(res[1])
+start_lat=-90+lat_res/2
+start_lon=0
+end_lat = 90-lat_res/2
+end_lon = 360-lon_res
+nlat = ((end_lat - start_lat) * 1/lat_res) + 1
+nlon = ((end_lon - start_lon) * 1/lon_res) + 1
+t_grid=xc.create_uniform_grid(start_lat,end_lat,lat_res,start_lon,end_lon,lon_res)
+if debug:
+    print('type(t_grid):', type(t_grid))  # Expected type is 'xarray.core.dataset.Dataset'
+    print('t_grid:', t_grid)
+# identical target grid in cdms2 to use generateLandSeaMask function that is yet to exist in xcdat
+t_grid_cdms2 = cdms2.createUniformGrid(start_lat,nlat,lat_res,start_lon,nlon,lon_res)
+# generate land sea mask for the target grid
+sft = cdutil.generateLandSeaMask(t_grid_cdms2)
+if debug:
+    print('sft:', sft)
+    print('sft.getAxisList():', sft.getAxisList())
+# add sft to target grid dataset
+t_grid['sftlf'] = (['lat', 'lon'], np.array(sft))
+if debug:
+    print('t_grid (after sftlf added):', t_grid)
+    t_grid.to_netcdf('target_grid.nc')
 
 # load obs catalogue json
 egg_pth = resources.resource_path()
