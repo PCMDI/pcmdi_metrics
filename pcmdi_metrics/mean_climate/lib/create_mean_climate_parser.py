@@ -186,6 +186,7 @@ def create_mean_climate_parser():
         dest="custom_observations",
         help="Path to an alternative, custom observation file",
         required=False,
+        default=""
     )
 
     parser.add_argument(

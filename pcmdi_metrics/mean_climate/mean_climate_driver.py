@@ -46,6 +46,7 @@ test_data_path = parameter.test_data_path
 reference_data_path = parameter.reference_data_path
 metrics_output_path = parameter.metrics_output_path
 diagnostics_output_path = parameter.diagnostics_output_path
+custom_obs = parameter.custom_observations
 debug = parameter.debug
 cmec = parameter.cmec
 
@@ -122,8 +123,11 @@ if target_grid == "2.5x2.5":
 
 # load obs catalogue json
 egg_pth = resources.resource_path()
-obs_file_name = "obs_info_dictionary.json"
-obs_file_path = os.path.join(egg_pth, obs_file_name)
+if len(custom_obs) > 0:
+    obs_file_path = custom_obs
+else:
+    obs_file_name = "obs_info_dictionary.json"
+    obs_file_path = os.path.join(egg_pth, obs_file_name)
 with open(obs_file_path) as fo:
     obs_dict = json.loads(fo.read())
 # if debug:
