@@ -34,11 +34,11 @@ def compute_rv_from_file(filelist,cov_filepath,cov_name,outdir,return_period,met
         fname = os.path.basename(ncfile).replace(".nc","")
         rv_file = outdir+"/"+fname+"_return_value.nc"
         utilities.write_netcdf_file(rv_file,rv)
-        meta.update_data(os.path.basename(rv_file),rv_file,"return_value",desc1)
+        meta.update_data(os.path.basename(rv_file),rv_file,"return_value","return value for single realization")
 
         se_file = outdir+"/"+fname+"_standard_error.nc"
         utilities.write_netcdf_file(se_file,se)
-        meta.update_data(os.path.basename(se_file),se_file,"standard_error",desc2)
+        meta.update_data(os.path.basename(se_file),se_file,"standard_error","standard error for return value")
 
     return meta
 
@@ -49,9 +49,11 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
     nreal = len(filelist)
 
     ds = xc.open_dataset(filelist[0])
+    real_list = [os.path.basename(f).split("_")[1] for f in filelist]
+    units = ds.ANN.attrs["units"]
 
     if cov_filepath is not None:
-        nonstationary  = True
+        nonstationary = True
     else:
         nonstationary = False
     
@@ -82,15 +84,21 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
     lon = len(ds.lon)
     # Add and order additional dimension for realization
     if nonstationary:
-        return_value = xr.zeros_like(ds).expand_dims(dim={"real": nreal}).assign_coords({"real": range(0,nreal)})
-        return_value = return_value[["real","time", "lat", "lon"]]
+        return_value = xr.zeros_like(ds).expand_dims(dim={"real": nreal}).assign_coords({"real": real_list})
+        return_value = return_value[["time", "real", "lat", "lon"]]
+        for season in ["ANN","DJF","MAM","SON","JJA"]:
+            return_value[season]=(("time","real","lat","lon"),np.ones((time,nreal,lat,lon))*np.nan)
     else:
-        return_value = xr.zeros_like(ds.isel({"time":0})).expand_dims(dim={"real": nreal}).assign_coords({"real": range(0,nreal)})
+        return_value = xr.zeros_like(ds.isel({"time":0})).expand_dims(dim={"real": nreal}).assign_coords({"real": real_list})
         return_value = return_value.drop(labels=["time"])
         return_value = return_value[["real","lat", "lon"]]
+        for season in ["ANN","DJF","MAM","SON","JJA"]:
+            return_value[season]=(("real","lat","lon"),np.ones((nreal,lat,lon))*np.nan)
     standard_error = xr.zeros_like(return_value)
+    ds.close()
 
     for season in ["ANN","DJF","MAM","JJA","SON"]:
+        print("*****\n",season,"\n*****")
         if season == "DJF" and dec_mode == "DJF" and drop_incomplete_djf:
             # Step first time index to skip all-nan block
             i1 = 1
@@ -134,25 +142,53 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
                 se_array[:,j] = np.squeeze(se*scale_factor)
 
         # reshape array to match desired dimensions and add to Dataset
+        # Also reorder dimensions for nonstationary case
         if nonstationary:
             rv_array = np.reshape(rv_array,(nreal,t,lat,lon))
             se_array = np.reshape(se_array,(nreal,t,lat,lon))
+            
             if season == "DJF" and dec_mode == "DJF" and drop_incomplete_djf:
                 nans = np.ones((nreal,1,lat,lon))*np.nan
                 rv_array = np.concatenate((nans,rv_array),axis=1)
                 se_array = np.concatenate((nans,se_array),axis=1)
-            return_value[season] = (("real","time", "lat", "lon"),rv_array)
-            standard_error[season] = (("real","time","lat","lon"),se_array)
+                
+            rv_da = xr.DataArray(
+                data=rv_array,
+                dims=["real","time","lat","lon"],
+                coords=dict(
+                    real=(["real"], return_value["real"].data),
+                    lon=(["lon"], return_value["lon"].data),
+                    lat=(["lat"], return_value["lat"].data),
+                    time=(["time"],return_value["time"].data),
+                ),
+                attrs={},
+            )
+            se_da = xr.DataArray(
+                data=se_array,
+                dims=["real","time","lat","lon"],
+                coords=dict(
+                    real=(["real"], return_value["real"].data),
+                    lon=(["lon"], return_value["lon"].data),
+                    lat=(["lat"], return_value["lat"].data),
+                    time=(["time"],return_value["time"].data),
+                ),
+                attrs={},
+            )
+            return_value[season] = rv_da.transpose("time","real","lat","lon")
+            standard_error[season] = se_da.transpose("time","real","lat","lon")
         else:
             rv_array = np.reshape(rv_array,(nreal,lat,lon))
             se_array = np.reshape(se_array,(nreal,lat,lon))
             return_value[season] = (("real","lat", "lon"),rv_array)
             standard_error[season] = (("real","lat","lon"),se_array)
     
-    if nonstationary:
-        # reorder dimensions
-        return_value = return_value[["time", "real", "lat", "lon"]]
-        standard_error = standard_error[["time", "real", "lat", "lon"]]
+    # Update attributes
+    return_value.attrs["description"] = "{0}-year return value".format(return_period)
+    standard_error.attrs["description"] = "standard error"
+    for season in ["ANN","DJF","MAM","JJA","SON"]:
+        return_value[season].attrs["units"] = units
+        standard_error[season].attrs["units"] = units
+
     return_value = return_value.bounds.add_missing_bounds() 
     standard_error = standard_error.bounds.add_missing_bounds()
 
@@ -182,6 +218,7 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
     # Set cov_filepath and cov_varname to None for stationary GEV.
     dec_mode = str(ds.attrs["december_mode"])
     drop_incomplete_djf = bool(ds.attrs["drop_incomplete_djf"])
+    units = ds.ANN.attrs["units"]
 
     if cov_filepath is not None:
         nonstationary = True
@@ -251,6 +288,8 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
             b=data[i1:,j]
             if np.sum(b) == 0:
                 continue
+            elif np.isnan(np.sum(b)):
+                continue
             rv_tmp,se_tmp = calc_rv(data[i1:,j].squeeze(),cov_slice,return_period,1,maxes)
             if rv_tmp is not None:
                 rv_array[i1:,j] = rv_tmp*scale_factor
@@ -258,8 +297,8 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
                 success[j] = 1
 
         if nonstationary:
-            rv_array = np.reshape(rv_array,(t,lat,lon))
-            se_array = np.reshape(se_array,(t,lat,lon))
+            rv_array = np.reshape(rv_array,(time,lat,lon))
+            se_array = np.reshape(se_array,(time,lat,lon))
             success = np.reshape(success,(lat,lon))
             return_value[season] = (("time","lat","lon"),rv_array)
             return_value[season+"_success"] = (("lat","lon"),success)
@@ -272,7 +311,13 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
             return_value[season] = (("lat","lon"),rv_array)
             return_value[season+"_success"] = (("lat","lon"),success)
             standard_error[season] = (("lat","lon"),se_array)
-            standard_error[season+"_success"] = (("lat","lon"),success)            
+            standard_error[season+"_success"] = (("lat","lon"),success)
+ 
+    return_value.attrs["description"] = "{0}-year return value".format(return_period)
+    standard_error.attrs["description"] = "standard error"
+    for season in ["ANN","DJF","MAM","JJA","SON"]:
+        return_value[season].attrs["units"] = units
+        standard_error[season].attrs["units"] = units
 
     return_value = return_value.bounds.add_missing_bounds() 
     standard_error = standard_error.bounds.add_missing_bounds()
