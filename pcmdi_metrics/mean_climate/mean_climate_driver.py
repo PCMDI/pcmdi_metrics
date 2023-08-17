@@ -105,12 +105,12 @@ print('--- prepare mean climate metrics calculation ---')
 res=target_grid.split("x")
 lat_res=float(res[0])
 lon_res=float(res[1])
-start_lat=-90+lat_res/2
-start_lon=0
-end_lat = 90-lat_res/2
-end_lon = 360-lon_res
-nlat = ((end_lat - start_lat) * 1/lat_res) + 1
-nlon = ((end_lon - start_lon) * 1/lon_res) + 1
+start_lat=-90.+lat_res/2
+start_lon=0.
+end_lat = 90.-lat_res/2
+end_lon = 360.-lon_res
+nlat = ((end_lat - start_lat) * 1./lat_res) + 1
+nlon = ((end_lon - start_lon) * 1./lon_res) + 1
 t_grid=xc.create_uniform_grid(start_lat,end_lat,lat_res,start_lon,end_lon,lon_res)
 if debug:
     print('type(t_grid):', type(t_grid))  # Expected type is 'xarray.core.dataset.Dataset'
