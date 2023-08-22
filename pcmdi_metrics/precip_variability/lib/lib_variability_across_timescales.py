@@ -17,7 +17,7 @@ from xcdat.regridder import grid
 
 # ==================================================================================
 def precip_variability_across_timescale(
-    file, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, res, lat_range, lon_range, outdir, cmec
+    file, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, res, regions_specs, outdir, cmec
 ):
     """
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
@@ -39,8 +39,8 @@ def precip_variability_across_timescale(
         
         # Regridding
         rgtmp = RegridHoriz(do, var, res)*float(fac)
-        if len(lat_range) > 0 and len(lon_range) > 0:
-            rgtmp = CropLatLon(rgtmp, lat_range, lon_range)
+        if regions_specs is not None or bool(regions_specs):
+            rgtmp = CropLatLon(rgtmp, regions_specs)
         if iyr == syr:
             drg = copy.deepcopy(rgtmp)
         else:
@@ -124,28 +124,18 @@ def RegridHoriz(d, var, res):
     return drg
 
 # ==================================================================================
-def CropLatLon(d,lat_range,lon_range):
+def CropLatLon(d, regions_specs):
     """
-    Select a subgrid of the dataset defined by lat1, lat2, lon1, and lon2.
+    Select a subgrid of the dataset defined by the regions_specs dictionary.
     Input
     - d: xCDAT variable
-    - lat_range: list of floats
-    - lon_range: list of floats
+    - regions_specs: a dictionary
     Output
     - dnew: xCDAT variable selected over region of interest
     """
-    lat1 = lat_range[0]
-    lat2 = lat_range[1]
-    lon1 = lon_range[0]
-    lon2 = lon_range[1]
+    region_name = list(regions_specs.keys())[0]
 
-    try:
-        dnew = d.sel(lat=slice(lat1,lat2), lon=slice(lon1,lon2))
-    
-    except Exception as e:
-        print("Error:",e)
-        print("Could not select lat/lon box",lat1,lat2,lon1,lon2)
-        dnew = d
+    dnew = region_subset(d, regions_specs, region=region_name)
 
     return dnew
 
