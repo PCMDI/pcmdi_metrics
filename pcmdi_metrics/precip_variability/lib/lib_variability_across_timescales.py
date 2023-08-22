@@ -10,6 +10,7 @@ from scipy import signal
 from scipy.stats import chi2
 
 import pcmdi_metrics
+from pcmdi_metrics.io import region_subset
 
 import xarray as xr
 import xcdat
