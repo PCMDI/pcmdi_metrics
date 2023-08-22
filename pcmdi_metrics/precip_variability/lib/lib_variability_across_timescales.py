@@ -17,7 +17,7 @@ from xcdat.regridder import grid
 
 # ==================================================================================
 def precip_variability_across_timescale(
-    file, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, res, outdir, cmec
+    file, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, res, lat_range, lon_range, outdir, cmec
 ):
     """
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
@@ -39,6 +39,8 @@ def precip_variability_across_timescale(
         
         # Regridding
         rgtmp = RegridHoriz(do, var, res)*float(fac)
+        if len(lat_range) > 0 and len(lon_range) > 0:
+            rgtmp = CropLatLon(rgtmp, lat_range, lon_range)
         if iyr == syr:
             drg = copy.deepcopy(rgtmp)
         else:
@@ -121,6 +123,31 @@ def RegridHoriz(d, var, res):
     print("Complete regridding from", d[var].shape, "to", drg.shape)
     return drg
 
+# ==================================================================================
+def CropLatLon(d,lat_range,lon_range):
+    """
+    Select a subgrid of the dataset defined by lat1, lat2, lon1, and lon2.
+    Input
+    - d: xCDAT variable
+    - lat_range: list of floats
+    - lon_range: list of floats
+    Output
+    - dnew: xCDAT variable selected over region of interest
+    """
+    lat1 = lat_range[0]
+    lat2 = lat_range[1]
+    lon1 = lon_range[0]
+    lon2 = lon_range[1]
+
+    try:
+        dnew = d.sel(lat=slice(lat1,lat2), lon=slice(lon1,lon2))
+    
+    except Exception as e:
+        print("Error:",e)
+        print("Could not select lat/lon box",lat1,lat2,lon1,lon2)
+        dnew = d
+
+    return dnew
 
 # ==================================================================================
 def ClimAnom(d, ntd, syr, eyr, cal):
