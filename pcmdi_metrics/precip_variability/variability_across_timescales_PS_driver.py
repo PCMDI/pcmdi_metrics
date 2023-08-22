@@ -24,10 +24,12 @@ prd = param.prd
 fac = param.fac
 nperseg = param.nperseg
 noverlap = param.noverlap
+res = param.res
 print(modpath)
 print(mod)
 print(prd)
 print(nperseg, noverlap)
+print(res)
 
 # Get flag for CMEC output
 cmec = param.cmec
@@ -57,5 +59,5 @@ print(file_list)
 syr = prd[0]
 eyr = prd[1]
 precip_variability_across_timescale(
-        file_list, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, outdir, cmec
+        file_list, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, res, outdir, cmec
     )
