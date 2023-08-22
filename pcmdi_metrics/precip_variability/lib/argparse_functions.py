@@ -60,6 +60,13 @@ def AddParserArgument(P):
         "--ref", type=str, dest="ref", default=None, help="reference data path"
     )
     P.add_argument(
+        "--res",
+        type=int,
+        dest="res",
+        default=2,
+        help="Horizontal resolution [degree] for interpolation (lon, lat)",
+    )
+    P.add_argument(
         "--cmec",
         dest="cmec",
         default=False,
