@@ -67,6 +67,14 @@ def AddParserArgument(P):
         help="Horizontal resolution [degree] for interpolation (lon, lat)",
     )
     P.add_argument(
+        "--regions_specs",
+        type=ast.literal_eval,
+        dest="regions_specs",
+        help="Provide a single custom region",
+        default=None,
+        required=False,
+    )
+    P.add_argument(
         "--cmec",
         dest="cmec",
         default=False,
