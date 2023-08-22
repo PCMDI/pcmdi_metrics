@@ -17,7 +17,7 @@ from xcdat.regridder import grid
 
 # ==================================================================================
 def precip_variability_across_timescale(
-    file, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, outdir, cmec
+    file, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, res, outdir, cmec
 ):
     """
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
@@ -38,7 +38,7 @@ def precip_variability_across_timescale(
         do = f.sel(time=slice(str(iyr) + "-01-01 00:00:00",str(iyr) + "-12-" + str(ldy) + " 23:59:59"))
         
         # Regridding
-        rgtmp = Regrid2deg(do, var)*float(fac)
+        rgtmp = RegridHoriz(do, var, res)*float(fac)
         if iyr == syr:
             drg = copy.deepcopy(rgtmp)
         else:
@@ -97,7 +97,7 @@ def precip_variability_across_timescale(
 
 
 # ==================================================================================
-def Regrid2deg(d, var):
+def RegridHoriz(d, var, res):
     """
     Regrid to 2deg (180lon*90lat) horizontal resolution
     Input
@@ -106,7 +106,14 @@ def Regrid2deg(d, var):
     Output
     - drg: xCDAT variable with 2deg horizontal resolution
     """
-    tgrid = grid.create_uniform_grid(-89, 89, 2.0, 0.0, 358., 2.0)
+    start_lat=-90.+res/2.
+    start_lon=0.
+    end_lat = 90.-res/2.
+    end_lon = 360.-res
+    nlat = ((end_lat - start_lat) * 1./res) + 1
+    nlon = ((end_lon - start_lon) * 1./res) + 1
+
+    tgrid = grid.create_uniform_grid(start_lat,end_lat,res,start_lon,end_lon,res)
     drg = d.regridder.horizontal(var, tgrid, tool="xesmf", method="conservative_normed",periodic=True)[var]
     
     print("Complete regridding from", d[var].shape, "to", drg.shape)
