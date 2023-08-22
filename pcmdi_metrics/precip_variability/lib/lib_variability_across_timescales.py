@@ -44,7 +44,9 @@ def precip_variability_across_timescale(
         else:
             drg = xr.concat([drg, rgtmp], dim='time')
         print(iyr, drg.shape)      
-        
+    nlon = str(len(drg.lon))
+    nlat = str(len(drg.lat))
+
     f.close()
 
     # Anomaly
@@ -61,7 +63,7 @@ def precip_variability_across_timescale(
     # Domain & Frequency average
     psdmfm_forced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "forced")
     # Write data (nc file)
-    outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc"
+    outfilename = "PS_pr." + str(dfrq) + "_regrid." + nlon + "x" + nlat + "_" + dat + ".nc"
     custom_dataset = xr.merge([freqs, ps, rn, sig95])
     custom_dataset.to_netcdf(path=os.path.join(outdir(output_type="diagnostic_results"), outfilename))
         
@@ -70,7 +72,7 @@ def precip_variability_across_timescale(
     # Domain & Frequency average
     psdmfm_unforced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "unforced")
     # Write data (nc file)
-    outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
+    outfilename = "PS_pr." + str(dfrq) + "_regrid." + nlon + "x" + nlat + "_" + dat + "_unforced.nc"
     custom_dataset = xr.merge([freqs, ps, rn, sig95])
     custom_dataset.to_netcdf(path=os.path.join(outdir(output_type="diagnostic_results"), outfilename))
         
@@ -80,7 +82,7 @@ def precip_variability_across_timescale(
     psdmfm["RESULTS"][dat]["unforced"] = psdmfm_unforced
 
     outfilename = (
-        "PS_pr." + str(dfrq) + "_regrid.180x90_area.freq.mean_" + dat + ".json"
+        "PS_pr." + str(dfrq) + "_regrid." + nlon + "x" + nlat + "_area.freq.mean_" + dat + ".json"
     )
     JSON = pcmdi_metrics.io.base.Base(
         outdir(output_type="metrics_results"), outfilename
