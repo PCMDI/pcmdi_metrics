@@ -120,6 +120,15 @@ def RegridHoriz(d, var, res):
 
     tgrid = grid.create_uniform_grid(start_lat,end_lat,res,start_lon,end_lon,res)
     drg = d.regridder.horizontal(var, tgrid, tool="xesmf", method="conservative_normed",periodic=True)[var]
+
+    # Workaround for regional grid cases where areas outside
+    # original grid might be populated with 0's due to xesmf.
+    drg = drg.where(
+        (drg.lat >= d.lat.min()) &
+        (drg.lat <= d.lat.max()) &
+        (drg.lon >= d.lon.min()) &
+        (drg.lon <= d.lon.max())
+    )
     
     print("Complete regridding from", d[var].shape, "to", drg.shape)
     return drg
