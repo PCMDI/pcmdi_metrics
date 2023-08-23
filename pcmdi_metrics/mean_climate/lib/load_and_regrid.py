@@ -49,10 +49,22 @@ def load_and_regrid(data_path, varname, varname_in_file=None, level=None, t_grid
     
     # level - extract a specific level if needed
     if level is not None:
-        level = level * 100  # hPa to Pa
-        ds = ds.sel(plev=level)
-    if debug:
-        print('ds:', ds)
+        if isinstance(level, int) or isinstance(level, float):
+            pass
+        else:
+            level = float(level)
+
+        # check vertical coordinate first
+        if 'plev' in list(ds.coords.keys()):
+            if ds.plev.units == 'Pa':
+                level = level * 100  # hPa to Pa
+            ds = ds.sel(plev=level)
+            if debug:
+                print('ds:', ds)
+        else:
+            print('ERROR: plev is not in the nc file. Check vertical coordinate.')
+            print('Coordinates keys in the nc file:', list(ds.coords.keys()))
+            return
     
     # regrid
     if regrid_tool == 'regrid2':
