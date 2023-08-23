@@ -123,6 +123,8 @@ def RegridHoriz(d, var, res):
 
     # Workaround for regional grid cases where areas outside
     # original grid might be populated with 0's due to xesmf.
+    if d.lon.min() < 0:
+        d = xc.swap_lon_axis(d, to=(0, 360))
     drg = drg.where(
         (drg.lat >= d.lat.min()) &
         (drg.lat <= d.lat.max()) &
