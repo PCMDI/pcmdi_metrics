@@ -63,15 +63,12 @@ find_all_realizations = False
 first_realization_only = False
 if realization is None:
     realization = ""
-    realizations = [realization]
 elif isinstance(realization, str):
     if realization.lower() in ["all", "*"]:
         find_all_realizations = True
-        realizations = "Search for all realizations!!"
     elif realization.lower() in ["first", "first_only"]:
         first_realization_only = True
-    else:
-        realizations = [realization]
+realizations = [realization]
 
 if debug:
     print('regions_specs (before loading internally defined):', regions_specs)
