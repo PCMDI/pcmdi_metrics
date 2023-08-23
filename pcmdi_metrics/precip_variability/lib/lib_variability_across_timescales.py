@@ -166,7 +166,7 @@ def ClimAnom(d, ntd, syr, eyr, cal):
         
     # Year segment
     nyr = eyr - syr + 1
-    if "gregorian" in cal:
+    if "gregorian" in cal or "standard" in cal:
         ndy = 366
         ldy = 31
         dseg = np.zeros((nyr, ndy, ntd, d.shape[1], d.shape[2]), dtype=float)
@@ -207,7 +207,7 @@ def ClimAnom(d, ntd, syr, eyr, cal):
 
     # Anomaly
     anom = np.array([])
-    if "gregorian" in cal:
+    if "gregorian" in cal or "standard" in cal:
         for iyr, year in enumerate(range(syr, eyr + 1)):
             yrtmp = d.sel(time=slice(str(year) + "-01-01 00:00:00",str(year) + "-12-" + str(ldy) + " 23:59:59"))            
                         
