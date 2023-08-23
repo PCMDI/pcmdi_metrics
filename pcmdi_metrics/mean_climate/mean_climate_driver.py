@@ -60,7 +60,7 @@ if diagnostics_output_path is None:
 diagnostics_output_path = diagnostics_output_path.replace('%(case_id)', case_id)
 
 find_all_realizations = False
-first_realization_only = False   
+first_realization_only = False
 if realization is None:
     realization = ""
     realizations = [realization]
