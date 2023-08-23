@@ -20,6 +20,7 @@ from pcmdi_metrics.mean_climate.lib import (
     mean_climate_metrics_to_json,
 )
 from pcmdi_metrics.variability_mode.lib import tree
+from pcmdi_metrics.variability_mode.lib import sort_human
 
 
 parser = create_mean_climate_parser()
@@ -59,6 +60,7 @@ if diagnostics_output_path is None:
 diagnostics_output_path = diagnostics_output_path.replace('%(case_id)', case_id)
 
 find_all_realizations = False
+first_realization_only = False
 if realization is None:
     realization = ""
     realizations = [realization]
@@ -66,6 +68,8 @@ elif isinstance(realization, str):
     if realization.lower() in ["all", "*"]:
         find_all_realizations = True
         realizations = "Search for all realizations!!"
+    elif realization.lower() in ["first", "first_only"]:
+        first_realization_only = True
     else:
         realizations = [realization]
 
@@ -206,7 +210,7 @@ for var in vars:
 
             result_dict["RESULTS"][model][ref]["source"] = ref_dataset_name 
 
-            if find_all_realizations:
+            if find_all_realizations or first_realization_only:
                 test_data_full_path = os.path.join(
                     test_data_path,
                     filename_template).replace('%(variable)', varname).replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', '*')
@@ -215,6 +219,9 @@ for var in vars:
                 realizations = []
                 for ncfile in ncfiles:
                     realizations.append(ncfile.split('/')[-1].split('.')[3])
+                realizations = sort_human(realizations)
+                if first_realization_only:
+                    realizations == realizations[0:1]
                 print('realizations (after search): ', realizations)
 
             for run in realizations:
