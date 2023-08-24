@@ -58,9 +58,27 @@ def load_and_regrid(data_path, varname, varname_in_file=None, level=None, t_grid
         if 'plev' in list(ds.coords.keys()):
             if ds.plev.units == 'Pa':
                 level = level * 100  # hPa to Pa
-            ds = ds.sel(plev=level)
+            try:
+                ds = ds.sel(plev=level)
+            except Exception as ex:
+                print('WARNING: ', ex)
+
+                nearest_level = find_nearest(ds.plev.values, level)
+
+                print('  Given level', level)
+                print('  Selected nearest level from dataset:', nearest_level)
+
+                diff_percentage = abs(nearest_level - level) / level * 100
+                if diff_percentage < 0.1:  # acceptable if differance is less than 0.1%
+                    ds = ds.sel(plev=level, method='nearest')
+                    print('  Difference is in acceptable range.')
+                    pass
+                else:
+                    print('ERROR: Difference between two levels are too big!')
+                    return
             if debug:
                 print('ds:', ds)
+                print('ds.plev.units:', ds.plev.units)
         else:
             print('ERROR: plev is not in the nc file. Check vertical coordinate.')
             print('Coordinates keys in the nc file:', list(ds.coords.keys()))
@@ -90,3 +108,10 @@ def load_and_regrid(data_path, varname, varname_in_file=None, level=None, t_grid
     if debug:
         print('ds_regridded:', ds_regridded)
     return ds_regridded
+
+
+def find_nearest(array, value):
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return array[idx]
+
