@@ -218,7 +218,7 @@ for var in vars:
                     realizations.append(ncfile.split('/')[-1].split('.')[3])
                 realizations = sort_human(realizations)
                 if first_realization_only:
-                    realizations == realizations[0:1]
+                    realizations = realizations[0:1]
                 print('realizations (after search): ', realizations)
 
             for run in realizations:
