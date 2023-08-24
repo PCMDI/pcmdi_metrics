@@ -49,7 +49,7 @@ Results are reported on a 2x2 degree latitude/longitude world grid.
 
 Options available to set in the parameter file include:
 
-* **mip**: Name of MIP.
+* **mip**: Name of MIP. Use "obs" for reference datasets.
 * **exp**: Name of experiment. 
 * **var**: Name of data set variable, e.g. "pr". 
 * **frq**: Frequency of data set, either "day" or "3hr". 
