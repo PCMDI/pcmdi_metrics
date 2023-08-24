@@ -81,7 +81,8 @@ def load_and_regrid(data_path, varname, varname_in_file=None, level=None, t_grid
                 print('ds.plev.units:', ds.plev.units)
         else:
             print('ERROR: plev is not in the nc file. Check vertical coordinate.')
-            print('Coordinates keys in the nc file:', list(ds.coords.keys()))
+            print('  Coordinates keys in the nc file:', list(ds.coords.keys()))
+            print('ERROR: load and regrid can not complete')
             return
     
     # regrid
