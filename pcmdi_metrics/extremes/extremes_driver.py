@@ -432,7 +432,7 @@ if plots and (reference_data_path is not None):
 print("Generating return values.")
 
 for model in model_loop_list:
-    for stat in ["TXx","TNx","Rx5day","Rx1day"]:
+    for stat in ["TXx","TXn","TNx","TNn","Rx5day","Rx1day"]:
         if stat in ["TXx","TNx","Rx5day","Rx1day"]:
             maxes = True
         else: 

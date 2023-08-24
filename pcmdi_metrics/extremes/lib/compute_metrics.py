@@ -147,11 +147,11 @@ class SeasonalAverager():
 
             # Deal with inconsistencies between QS-DEC calendar and block exremes calendar
             if self.drop_incomplete_djf:
-                ds_stat = ds_stat.sel(time=slice(str(year_range[0]),str(year_range[-1]-1)))
+                ds_stat = ds_stat.sel({"time":slice(str(year_range[0]),str(year_range[-1]-1))})
                 ds_stat["time"] = [cftime.datetime(y,1,1,calendar=cal) for y in np.arange(year_range[0]+1,year_range[-1]+1)]
             else:
-                ds_stat = ds_stat.sel(time=slice(str(year_range[0]-1),str(year_range[-1])))
-                ds_stat["time"] = [cftime.datetime(y,1,1,calendar=cal) for y in np.arange(year_range[0],year_range[-1]+2)]
+                ds_stat = ds_stat.sel({"time":slice(str(year_range[0]-1),str(year_range[-1]-1))})
+                ds_stat["time"] = [cftime.datetime(y,1,1,calendar=cal) for y in np.arange(year_range[0],year_range[-1]+1)]
     
         elif season == "DJF" and self.dec_mode == "JFD":
 
@@ -257,6 +257,10 @@ def convert_units(data,units_adjust):
         operation = "data {0} {1}".format(op,val)
         data = eval(operation)
         data.attrs["units"] = str(units_adjust[3])
+    else:
+        # No adjustment, but check that units attr is populated
+        if "units" not in data.attrs:
+            data.attrs["units"] = ""
     return data
 
 def temperature_indices(ds,varname,sftlf,units_adjust,dec_mode,drop_incomplete_djf,annual_strict):
