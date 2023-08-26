@@ -16,6 +16,7 @@ def parallel_coordinate_plot(
     model_names,
     models_to_highlight=list(),
     models_to_highlight_colors=None,
+    models_to_highlight_labels=None,
     fig=None,
     ax=None,
     figsize=(15, 5),
@@ -51,6 +52,7 @@ def parallel_coordinate_plot(
     - `model_names`: list, name of models for markers/lines (axis=0)
     - `models_to_highlight`: list, default=None, List of models to highlight as lines
     - `models_to_highlight_colors`: list, default=None, List of colors for models to highlight as lines
+    - `models_to_highlight_labels`: list, default=None, List of string labels for models to highlight as lines
     - `fig`: `matplotlib.figure` instance to which the parallel coordinate plot is plotted.
              If not provided, use current axes or create a new one.  Optional.
     - `ax`: `matplotlib.axes.Axes` instance to which the parallel coordinate plot is plotted.
@@ -222,7 +224,13 @@ def parallel_coordinate_plot(
                 color = models_to_highlight_colors[mh_index]
             else:
                 color = colors[j]
-            ax.plot(range(N), zs[j, :], "-", c=color, label=model, lw=3)
+                
+            if models_to_highlight_labels is not None:
+                label = models_to_highlight_labels[mh_index]
+            else:
+                label = model
+                
+            ax.plot(range(N), zs[j, :], "-", c=color, label=label, lw=3)
             mh_index += 1
         else:
             if identify_all_models:
