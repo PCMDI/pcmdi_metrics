@@ -7,7 +7,7 @@ Sub-daily precipitation
 Overview
 ========
 
-The PMP can be used to compare observed and simulated sub-daily precipition, including forced (the diurnal and semi-diurnal cycle) and unforced variability (often referred to as "intermittency").  Well established Fourier analysis (e.g., Dai, 2006) with well-established large scale objective performance metrics (Covey et al., 2016) to estimate the phase and amplitude of the diurnal and semi-diurnal cycle of precipitation.  The unforced sub-daily variability stems from methods developed by Trenberth et al. (2017) and Covey et al. (2017).  Both analysis require data at a 3hr time resolution.   
+The PMP can be used to compare observed and simulated sub-daily precipitation, including forced (the diurnal and semi-diurnal cycle) and unforced variability (often referred to as "intermittency").  Well established Fourier analysis (e.g., Dai, 2006) with well-established large scale objective performance metrics (Covey et al., 2016) to estimate the phase and amplitude of the diurnal and semi-diurnal cycle of precipitation.  The unforced sub-daily variability stems from methods developed by Trenberth et al. (2017) and Covey et al. (2017).  Both analysis require data at a 3hr time resolution.   
 
 Analysis of higher frequency data often includes multiple stages of processing.  `The flow diagram of the PMP's sub-daily precipitation <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/Diurnal%20Cycle%20Diagram.pdf>`_ shows that is the case here.  Each of the steps highlighted in the flow diagram are included in `the diurnal cycle and intermittency Jupyter notebook demo <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_3_diurnal_cycle.ipynb>`_. 
 
