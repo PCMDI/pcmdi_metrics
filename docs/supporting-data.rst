@@ -17,7 +17,7 @@ A location where you want to store the demo data locally can be set: ::
     demo_data_directory = 'MyDemoPath' 
 
 
-After you have set the location for the demo_output you can downloaded it by entering the following: ::
+After you have set the location for the demo_output you can download it by entering the following: ::
 
     import cdat_info
     cdat_info.download_sample_data_files("data_files.txt", demo_data_directory)

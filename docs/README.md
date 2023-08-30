@@ -58,9 +58,9 @@ Then go to your forked repo on github.com and create a Pull Request to the `main
 
 Build webpages
 --------------
-Once the changes are merged to the `main` branch of pcmdi_metrics, Github Action will automatically build and deploy web pages using Github Pages. This process will follow what is defined in `.github/workflows/documentation.yaml`. The page will be accssible at http://pcmdi.github.io/pcmdi_metrics/.
+Once the changes are merged to the `main` branch of pcmdi_metrics, Github Action will automatically build and deploy web pages using Github Pages. This process will follow what is defined in `.github/workflows/documentation.yaml`. The page will be accessible at http://pcmdi.github.io/pcmdi_metrics/.
 
-To deploy the web pages via readthedocs, you will need to go to readthedocs project page (https://readthedocs.org/projects/pcmdi-metrics/), go to "Builds" menu, and click "Build Version" button. The page will be accessbile at https://pcmdi-metrics.readthedocs.io/en/latest/.
+To deploy the web pages via readthedocs, you will need to go to readthedocs project page (https://readthedocs.org/projects/pcmdi-metrics/), go to "Builds" menu, and click "Build Version" button. The page will be accessible at https://pcmdi-metrics.readthedocs.io/en/latest/.
 
 Resources
 ---------
