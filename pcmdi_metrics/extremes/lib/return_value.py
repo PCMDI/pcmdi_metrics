@@ -11,6 +11,8 @@ from scipy.optimize import minimize
 import xarray as xr
 import xcdat as xc
 
+from numdifftools.core import Hessian
+
 from pcmdi_metrics.extremes.lib import utilities
 
 def compute_rv_from_file(filelist,cov_filepath,cov_name,outdir,return_period,meta,maxes=True):
@@ -43,19 +45,28 @@ def compute_rv_from_file(filelist,cov_filepath,cov_name,outdir,return_period,met
     return meta
 
 def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,meta,maxes=True):
-    # Similar to compute_rv_from_file, but to work on multiple realizations
+    # Similar to compute_rv_from_dataset, but to work on multiple realizations
     # from the same model
-    # Nonstationary GEV requiring covariate
+    # Arguments:
+    #   ds: xarray dataset
+    #   cov_filepath: string
+    #   cov_varname: string
+    #   return_period: int
+    #   maxes: bool
+
     nreal = len(filelist)
 
     ds = xc.open_dataset(filelist[0])
     real_list = [os.path.basename(f).split("_")[1] for f in filelist]
     units = ds.ANN.attrs["units"]
 
+    print("Return value for multiple realizations") 
     if cov_filepath is not None:
         nonstationary = True
+        print("Nonstationary case")
     else:
         nonstationary = False
+        print("Stationary case")
     
     if nonstationary:
         cov_ds = utilities.load_dataset([cov_filepath])
@@ -216,14 +227,24 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
 def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
     # Get the return value for a single model & realization
     # Set cov_filepath and cov_varname to None for stationary GEV.
+    # Arguments:
+    #   ds: xarray dataset
+    #   cov_filepath: string
+    #   cov_varname: string
+    #   return_period: int
+    #   maxes: bool
+
     dec_mode = str(ds.attrs["december_mode"])
     drop_incomplete_djf = bool(ds.attrs["drop_incomplete_djf"])
     units = ds.ANN.attrs["units"]
 
+    print("Return value for single realization")
     if cov_filepath is not None:
         nonstationary = True
+        print("Nonstationary case")
     else:
         nonstationary = False
+        print("Stationary case")
     
     if nonstationary:
         cov_ds = utilities.load_dataset([cov_filepath])
@@ -328,6 +349,12 @@ def calc_rv(data,covariate,return_period,nreplicates=1,maxes=True):
     # This function contains the code that does the actual return value calculation.
     # Changes to the return value algorithm can be made here.
     # Returns the return value and standard error.
+    # Arguments:
+    #   ds: xarray dataset
+    #   cov_filepath: string
+    #   cov_varname: string
+    #   return_period: int
+    #   maxes: bool
     return_value = None
     standard_error = None
     if covariate is None: # Stationary
@@ -351,42 +378,10 @@ def calc_rv(data,covariate,return_period,nreplicates=1,maxes=True):
         standard_error = tmp['se_returnValue']
     return return_value,standard_error
 
-def logliklihood(params,x,covariate,nreplicates):
-    # Negative Log liklihood function to minimize for GEV
-    # This code has been copied from a testing Jupyter notebook
-    # and may not be properly implemented yet.
-    beta1 = params[0]
-    beta2 = params[1]
-    scale = params[2]
-    shape = params[3]
-
-    n = len(x)
-    location = beta1 + beta2 * covariate
-    
-    if scale <= 0:
-        return 1e10
-
-    # TODO: How close to zero for using Gumbel?
-    if shape == 0: # or np.isclose(shape,0):
-        shape=0
-        y = (x - location) / scale
-        result = np.sum(n*np.log(scale) + y + np.exp(-y))
-    else:
-        # This value must be > 0, Coles 2001
-        y = 1 + shape * (x - location) / scale
-        check = [True for item in y if item <= 0]
-        if len(check) > 0:
-            return 1e10
-
-        result = np.sum(np.log(scale) + y**(-1 / shape) + np.log(y)*(1/shape + 1))
-
-    return result
-
 def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
     # This function would be swapped with calc_rv() defined above,
     # to use the pure Python GEV calculation for return value.
-    # This code has been copied from a testing Jupyter notebook
-    # and may not be properly implemented yet.
+
     if maxes:
         mins=False
     else:
@@ -398,13 +393,45 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
     # Use the stationary gev to make initial parameter guess
     fit = genextreme.fit(x)
     shape, loc, scale = fit
+    
+    # Defining the logliklihood in scope to access x/covariate/nreplicates
+    def ll(params):
+        # Negative Log liklihood function to minimize for GEV
+        # This code has been copied from a testing Jupyter notebook
+        # and may not be properly implemented yet.
+        beta1 = params[0]
+        beta2 = params[1]
+        scale = params[2]
+        shape = params[3]
+
+        n = len(x)
+        location = beta1 + beta2 * covariate
+    
+        if scale <= 0:
+            return 1e10
+
+        # TODO: How close to zero for using Gumbel?
+        if shape == 0: # or np.isclose(shape,0):
+            shape=0
+            y = (x - location) / scale
+            result = np.sum(n*np.log(scale) + y + np.exp(-y))
+        else:
+            # This value must be > 0, Coles 2001
+            y = 1 + shape * (x - location) / scale
+            check = [True for item in y if item <= 0]
+            if len(check) > 0:
+                return 1e10
+
+            result = np.sum(np.log(scale) + y**(-1 / shape) + np.log(y)*(1/shape + 1))
+
+        return result
 
     # Get GEV parameters
-    ll_min = minimize(logliklihood,(loc,0,scale,shape),args=(x,covariate,nreplicates),tol=1e-7,method="nelder-mead")
+    ll_min = minimize(ll,(loc,0,scale,shape),tol=1e-7,method="nelder-mead")
 
     params = ll_min["x"]
     success = ll_min["success"]
-
+    
     # Calculate return value
     return_value = np.ones((len(x),1))*np.nan
     for time in range(0,len(x)):
@@ -414,7 +441,38 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
         rv = genextreme.isf(1/return_period, shape, location, scale)
         return_value[time] = np.squeeze(np.where(success==1,rv,np.nan))
     if mins:
-        return_value = -1 * return_value
+        return_value = -1 * return_value    
+    
+    try:
+        #autograd
+        #hs=hessian(ll)
+        #https://numdifftools.readthedocs.io/en/latest/reference/generated/numdifftools.core.Hessian.html
+        hs=Hessian(ll, step=None, method='central', order=None)
+        vcov = np.linalg.inv(hs(ll_min.x))
+        cov = covariate
+        var_theta = np.expand_dims(np.diagonal(vcov),axis=1)
+        chck = [True for item in var_theta[0,:] if item < 0]
+        if len(chck) > 0:
+            raise RuntimeError
+        scale = params[2]
+        shape = params[3]
 
-    # TODO: standard error, returning NaN placeholder now
-    return return_value,np.ones(np.shape(return_value))*np.nan
+        y = -np.log(1-1/return_period)
+
+        if shape == 0:
+            grad = [1,-np.log(y)]
+        else:
+            # TODO: check covariate term
+            db1 = np.ones(len(cov))
+            db2 = cov
+            dsh = np.ones(len(cov)) * (-1/shape)*(1-y**(-shape))
+            dsc = np.ones(len(cov)) * scale*(shape**-2)*(1-y**-shape)-(scale/shape*(y**-shape)*np.log(y))
+            grad = np.array([db1,db2,dsh,dsc])
+
+        A = np.matmul(np.transpose(grad),vcov)
+        B = np.matmul(A,grad)
+        se = np.sqrt(np.diagonal(B))
+    except:
+        se = np.ones(np.shape(return_value))*np.nan
+
+    return return_value.squeeze(), se.squeeze()
