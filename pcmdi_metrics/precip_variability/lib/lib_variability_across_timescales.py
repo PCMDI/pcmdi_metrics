@@ -41,7 +41,7 @@ def precip_variability_across_timescale(
         # Regridding
         rgtmp_ds = RegridHoriz(do, var, res)
         if regions_specs is not None or bool(regions_specs):
-            rgtmp = CropLatLon(rgtmp, regions_specs)
+            rgtmp_ds = CropLatLon(rgtmp_ds, regions_specs)
         rgtmp = rgtmp_ds[var]*float(fac)
         if iyr == syr:
             drg = copy.deepcopy(rgtmp)
