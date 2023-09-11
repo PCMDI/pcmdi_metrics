@@ -39,7 +39,7 @@ def precip_variability_across_timescale(
         do = f.sel(time=slice(str(iyr) + "-01-01 00:00:00",str(iyr) + "-12-" + str(ldy) + " 23:59:59"))
         
         # Regridding
-        rgtmp_ds = RegridHoriz(do, res)
+        rgtmp_ds = RegridHoriz(do, var, res)
         if regions_specs is not None or bool(regions_specs):
             rgtmp = CropLatLon(rgtmp, regions_specs)
         rgtmp = rgtmp_ds[var]*float(fac)
@@ -103,7 +103,7 @@ def precip_variability_across_timescale(
 
 
 # ==================================================================================
-def RegridHoriz(d, res):
+def RegridHoriz(d, var, res):
     """
     Regrid to 2deg (180lon*90lat) horizontal resolution
     Input
