@@ -331,7 +331,7 @@ def RedNoiseSignificanceLevel(nu, rn, p=0.050):
 
 
 # ==================================================================================
-def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
+def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc, regions_specs):
     """
     Domain and Frequency average of spectral power
     Input
@@ -341,6 +341,7 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
     - dat: model name
     - mip: mip name
     - frc: forced or unforced
+    - regions_specs: dictionary defining custom region
     Output
     - psdmfm: Domain and Frequency averaged of spectral power (json)
     """
@@ -358,6 +359,8 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
         "Ocean_50S30S",
         "Land_50S30S",
     ]
+    if regions_specs:
+        domains = list(regions_specs.keys())
 
     if ntd == 8:  # 3-hourly data
         frqs_forced = ["semi-diurnal", "diurnal", "semi-annual", "annual"]
@@ -389,9 +392,9 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
     for dom in domains:
         psdmfm[dom] = {}
 
-        if "Ocean" in dom:
+        if "Ocean" in dom or regions_specs[dom].get("value",-1)==0:
             dmask = d.where(mask==0)
-        elif "Land" in dom:
+        elif "Land" in dom or regions_specs[dom].get("value",-1)==1:
             dmask = d.where(mask==1)
         else:
             dmask = d
@@ -402,12 +405,17 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
             
         if "50S50N" in dom:
             am = dmask.sel(lat=slice(-50, 50)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
-        if "30N50N" in dom:
+        elif "30N50N" in dom:
             am = dmask.sel(lat=slice(30, 50)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
-        if "30S30N" in dom:
+        elif "30S30N" in dom:
             am = dmask.sel(lat=slice(-30, 30)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
-        if "50S30S" in dom:
+        elif "50S30S" in dom:
             am = dmask.sel(lat=slice(-50, -30)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
+        else:
+            # Custom region
+            lats=[regions_specs[dom]["domain"]["latitude"]]
+            lons=[regions_specs[dom]["domain"]["longitude"]]
+            am = dmask.sel(lat=slice(lats[0],lats[1]),lon=slice(lons[0],lons[1])).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
         am = np.array(am)
 
         for frq in frqs:
