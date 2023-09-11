@@ -39,9 +39,10 @@ def precip_variability_across_timescale(
         do = f.sel(time=slice(str(iyr) + "-01-01 00:00:00",str(iyr) + "-12-" + str(ldy) + " 23:59:59"))
         
         # Regridding
-        rgtmp = RegridHoriz(do, var, res)*float(fac)
+        rgtmp_ds = RegridHoriz(do, res)
         if regions_specs is not None or bool(regions_specs):
             rgtmp = CropLatLon(rgtmp, regions_specs)
+        rgtmp = rgtmp_ds[var]*float(fac)
         if iyr == syr:
             drg = copy.deepcopy(rgtmp)
         else:
@@ -102,7 +103,7 @@ def precip_variability_across_timescale(
 
 
 # ==================================================================================
-def RegridHoriz(d, var, res):
+def RegridHoriz(d, res):
     """
     Regrid to 2deg (180lon*90lat) horizontal resolution
     Input
@@ -117,7 +118,7 @@ def RegridHoriz(d, var, res):
     end_lon = 360.-res
 
     tgrid = grid.create_uniform_grid(start_lat,end_lat,res,start_lon,end_lon,res)
-    drg = d.regridder.horizontal(var, tgrid, tool="xesmf", method="conservative_normed",periodic=True,unmapped_to_nan=True)[var]
+    drg = d.regridder.horizontal(var, tgrid, tool="xesmf", method="conservative_normed",periodic=True,unmapped_to_nan=True)
     
     print("Complete regridding from", d[var].shape, "to", drg.shape)
     return drg
