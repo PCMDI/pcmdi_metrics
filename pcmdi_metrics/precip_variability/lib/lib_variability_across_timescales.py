@@ -120,7 +120,7 @@ def RegridHoriz(d, var, res):
     tgrid = grid.create_uniform_grid(start_lat,end_lat,res,start_lon,end_lon,res)
     drg = d.regridder.horizontal(var, tgrid, tool="xesmf", method="conservative_normed",periodic=True,unmapped_to_nan=True)
     
-    print("Complete regridding from", d[var].shape, "to", drg.shape)
+    print("Complete regridding from", d[var].shape, "to", drg[var].shape)
     return drg
 
 # ==================================================================================
