@@ -65,7 +65,7 @@ def precip_variability_across_timescale(
     # Power spectum of total
     freqs, ps, rn, sig95 = Powerspectrum(drg, nperseg, noverlap)
     # Domain & Frequency average
-    psdmfm_forced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "forced")
+    psdmfm_forced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "forced", regions_specs)
     # Write data (nc file)
     outfilename = "PS_pr." + str(dfrq) + "_regrid." + nlon + "x" + nlat + "_" + dat + ".nc"
     custom_dataset = xr.merge([freqs, ps, rn, sig95])
@@ -74,7 +74,7 @@ def precip_variability_across_timescale(
     # Power spectum of anomaly
     freqs, ps, rn, sig95 = Powerspectrum(anom, nperseg, noverlap)
     # Domain & Frequency average
-    psdmfm_unforced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "unforced")
+    psdmfm_unforced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "unforced", regions_specs)
     # Write data (nc file)
     outfilename = "PS_pr." + str(dfrq) + "_regrid." + nlon + "x" + nlat + "_" + dat + "_unforced.nc"
     custom_dataset = xr.merge([freqs, ps, rn, sig95])
