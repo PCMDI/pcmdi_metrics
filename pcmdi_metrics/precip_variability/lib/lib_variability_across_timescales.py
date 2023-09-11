@@ -412,10 +412,9 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc, regions_specs):
         elif "50S30S" in dom:
             am = dmask.sel(lat=slice(-50, -30)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
         else:
-            # Custom region
-            lats=regions_specs[dom]["domain"]["latitude"]
-            lons=regions_specs[dom]["domain"]["longitude"]
-            am = dmask.sel(lat=slice(lats[0],lats[1]),lon=slice(lons[0],lons[1])).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
+            # Custom region. Don't need to slice again because d only covered this region
+            am = dmask.spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
+
         am = np.array(am)
 
         for frq in frqs:
