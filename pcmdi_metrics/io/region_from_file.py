@@ -7,7 +7,7 @@ import sys
 import xarray as xr
 import xcdat
 
-def extract_by_shp(data,feature,coords=None,rgn_path=None,attr=None):
+def region_from_file(data,feature,coords=None,rgn_path=None,attr=None):
     # Return data masked from coordinate list or shapefile.
     # Masks a single region
     # Arguments:
