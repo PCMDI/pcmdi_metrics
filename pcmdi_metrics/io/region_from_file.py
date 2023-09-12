@@ -3,7 +3,7 @@ import regionmask
 import xarray as xr
 import xcdat
 
-def region_from_file(data,rgn_path,attr,feature):
+def region_from_file(data,rgn_path,feature,attr=None):
     # Return data masked from a feature in input file.
     # Arguments:
     #    data: xcdat dataset
@@ -24,7 +24,7 @@ def region_from_file(data,rgn_path,attr,feature):
             regions = regionmask.from_geopandas(regions_df)
         mask = regions.mask(lon, lat)
         # Can't match mask by name, rather index of name
-        val = list(regions_file[attr]).index(feature)
+        val = list(regions_df[attr]).index(feature)
     except Exception as e:
         print("Error in creating region subset from file:")
         raise e
