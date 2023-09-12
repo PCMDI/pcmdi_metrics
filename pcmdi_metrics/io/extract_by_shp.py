@@ -7,47 +7,55 @@ import sys
 import xarray as xr
 import xcdat
 
-def extract_by_shp(data,name,coords=None,shp_path=None,column=None):
+def extract_by_shp(data,feature,coords=None,rgn_path=None,attr=None):
     # Return data masked from coordinate list or shapefile.
     # Masks a single region
+    # Arguments:
+    #    data: xcdat dataset
+    #    feature: str, name of region
+    #    coords: list, coordinates
+    #    rgn_path: str, path to file
+    #    attr: str, attribute name
 
     lon = data["lon"].data
     lat = data["lat"].data
 
     # Option 1: Region is defined by coord pairs
     if coords is not None:
+        print("Using coordinates to select region.")
         try:
-            names=[name]
+            names=[feature]
             regions = regionmask.Regions([np.array(coords)],names=names)
             mask = regions.mask(lon, lat)
             val=0
         except Exception as e:
-            print("Error in creating mask from provided coordinates:")
+            print("Error in extracting region by provided coordinates:")
             raise e
 
     # Option 2: region is defined by shapefile
-    elif shp_path is not None:
+    elif rgn_path is not None:
+        print("Reading region from file.")
         try:
-            regions_file = gpd.read_file(shp_path)
-            if column is not None:
-                regions = regionmask.from_geopandas(regions_file,names=column)
+            regions_df = gpd.read_file(rgn_path)
+            if attr is not None:
+                regions = regionmask.from_geopandas(regions_df,names=attr)
             else:
-                print("Column name not provided.")
-                regions = regionmask.from_geopandas(regions_file)
+                print("Attribute name not provided.")
+                regions = regionmask.from_geopandas(regions_df)
             mask = regions.mask(lon, lat)
             # Can't match mask by name, rather index of name
-            val = list(regions_file[column]).index(name)
+            val = list(regions_file[attr]).index(feature)
         except Exception as e:
-            print("Error in creating mask from shapefile:")
+            print("Error in creating region subset from file:")
             raise e
 
     else:
-        raise RuntimeError("Error in masking: Region coordinates or shapefile must be provided.")
+        raise RuntimeError("Error in region selection: Region coordinates or region file must be provided.")
     
     try:
         masked_data = data.where(mask == val)
     except Exception as e:
-        print("Error: Masking failed.")
+        print("Error: Region selection failed.")
         raise e
 
     return  masked_data
