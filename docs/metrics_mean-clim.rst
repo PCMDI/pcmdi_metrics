@@ -7,8 +7,8 @@ Overview
 
 The mean climate summary statistics are the most routine analysis available from the PMP.
 Because they are quasi-operationally applied to large numbers of simulations and under 
-different conditions, the current mode of opertation is fairly general.  
-Before it can be applied some prepration is needed including:    
+different conditions, the current mode of operation is fairly general.  
+Before it can be applied some preparation is needed including:    
 
 * Setting-up observational climatologies
 
@@ -17,7 +17,7 @@ Before it can be applied some prepration is needed including:
 * Construction of an input parameter file to run the desired operations  
 
 
-Each of these steps are included in the 
+Each of these steps is included in the 
 `mean climate notebook <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_1_mean_climate.ipynb>`_ 
 along with a series of examples that demonstrate the options. 
 These steps are also summarized below.
@@ -36,17 +36,17 @@ and you will be promptly provided with the database.
 
 The PMP's mean climate summary statistics can be applied to many fields and 
 in most cases there is more than one reference data set available.  
-To accomodate this, the observational climatologies used by the PMP a
-re managed via `a simple catalogue in the form of a JSON file <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/pcmdiobs2_clims_byVar_catalogue_v20201210.json>`_.  
+To accommodate this, the observational climatologies used by the PMP are 
+managed via `a simple catalogue in the form of a JSON file <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/pcmdiobs2_clims_byVar_catalogue_v20201210.json>`_.  
 For many of the variables there are 'default' and 'alternate1' 
 datasets and for some there is also an 'alternate2'.  
 To simplify the use of the different options in the mean climate, 
 the mean_climate_driver.py (see below) expects to be pointed to observational catalogue.  
 Currently, if a user wants to add additional observational data this can be done by 
-including it in the JSON cataloge. However, this most be done carefully to ensure 
+including it in the JSON catalogue. However, this must be done carefully to ensure 
 the file retains JSON compliant structure.       
 
-A recent observational climatology catalogue is included as part of the PMP as a default, so it does not need to be explicitly idenified when using the mean_climate_driver.py (unless the catalogue has been modified to include new observations). However, as described below, the user must provide the base path to the observational database. As indicated in the catalogue, the actual database does incorporate futher directory structure and defined filenames which should not be modified.  If changes are made to the catalogue, this can be done with input parameter settings (below) using the "custom_observations" option.     
+A recent observational climatology catalogue is included as part of the PMP as a default, so it does not need to be explicitly identified when using the mean_climate_driver.py (unless the catalogue has been modified to include new observations). However, as described below, the user must provide the base path to the observational database. As indicated in the catalogue, the actual database does incorporate further directory structure and defined filenames which should not be modified.  If changes are made to the catalogue, this can be done with input parameter settings (below) using the "custom_observations" option.     
 
  
 Preparation of model climatologies
@@ -60,7 +60,7 @@ via the `mean climate metrics notebook <https://github.com/PCMDI/pcmdi_metrics/b
 or the `PMP github repository <https://github.com/PCMDI/pcmdi_metrics/tree/master/sample_setups/pcmdi_parameter_files/mean_climate/make_clims>`_.   
 
 
-Construction of an input paramater file
+Construction of an input parameter file
 #######################################
 
 The PMP mean climate metrics can be controlled via an input parameter file, the command line, or both.  With the command line only it is executed via: ::
@@ -84,12 +84,12 @@ where the list of variables (vars) to run the analysis on includes 'rlut' (outgo
 * **regrid_tool**: options include 'esmf' and 'regrid2'  
 * **metric_output_path**: the full path to the metrics output in JSON files, e.g., '~/demo_data/PMP_metrics/' 
 
-In addition to the above required input parameters, if the default cataolgue of observational climatologies is not being used its replacement needs to be specified, e.g.: ::
+In addition to the above required input parameters, if the default catalogue of observational climatologies is not being used its replacement needs to be specified, e.g.: ::
 
     custom_observations = './pcmdiobs2_clims_byVar_catalogue_v20200615.json'
 
 
-The output of the mean climate summary statistics are saved in a JSON file.  `An example result <https://github.com/PCMDI/pcmdi_metrics/blob/master/sample_setups/jsons/mean_climate/CMIP5/historical/v20190724/tas/ACCESS1-0.tas.CMIP5.historical.regrid2.2p5x2p5.v20190724.json>`_ demonstrates that multiple statistics are computed for different conditions including regions and seasons. The resulting JSON files include the data, software and hardware information on how the summary statistics.  
+The output of the mean climate summary statistics are saved in a JSON file.  `An example result <https://github.com/PCMDI/pcmdi_metrics/blob/master/sample_setups/jsons/mean_climate/CMIP5/historical/v20190724/tas/ACCESS1-0.tas.CMIP5.historical.regrid2.2p5x2p5.v20190724.json>`_ demonstrates that multiple statistics are computed for different conditions including regions and seasons. The resulting JSON files include the data, software and hardware information on the summary statistics.  
 
 
 In addition to the minimum set of parameters noted above, the following **additional options can be controlled** for the mean climate:
