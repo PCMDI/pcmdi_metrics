@@ -18,7 +18,8 @@ from xcdat.regridder import grid
 
 # ==================================================================================
 def precip_variability_across_timescale(
-    file, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, res, regions_specs, outdir, cmec
+    file, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, res, regions_specs, \
+    outdir, cmec, fshp, feature, attr
 ):
     """
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
@@ -40,6 +41,8 @@ def precip_variability_across_timescale(
         
         # Regridding
         rgtmp_ds = RegridHoriz(do, var, res)
+        if fshp is not None:
+            rgtmp_ds = region_from_file(rgtmp_ds,fshp,feature,attr)
         if regions_specs is not None or bool(regions_specs):
             rgtmp_ds = CropLatLon(rgtmp_ds, regions_specs)
         rgtmp = rgtmp_ds[var]*float(fac)
