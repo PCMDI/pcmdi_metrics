@@ -11,6 +11,7 @@ from scipy.stats import chi2
 
 import pcmdi_metrics
 from pcmdi_metrics.io import region_subset
+from pcmdi_metrics.io.region_from_file import region_from_file
 
 import xarray as xr
 import xcdat
