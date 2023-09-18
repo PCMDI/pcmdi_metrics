@@ -90,6 +90,24 @@ def AddParserArgument(P):
         action="store_false",
         help="Do not save CMEC format metrics JSON",
     )
+    P.add_argument(
+        "--region_file",
+        dest="region_file",
+        help="File containing vector region of interest."
+        default=None
+    )
+    P.add_argument(
+        "--feature",
+        dest="feature",
+        help="Feature in vectorized region."
+        default=None
+    )
+    P.add_argument(
+        "--attr",
+        dest="attr",
+        help="Attribute containing feature in vectorized region."
+        default=None
+    )
     P.set_defaults(cmec=False)
 
     return P
