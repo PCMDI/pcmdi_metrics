@@ -98,6 +98,7 @@ def create_mean_climate_parser():
         dest="target_grid",
         help='Options are "2.5x2.5" or an actual cdms2 grid object',
         required=False,
+        default="2.5x2.5"
     )
 
     parser.add_argument(
@@ -186,6 +187,7 @@ def create_mean_climate_parser():
         dest="custom_observations",
         help="Path to an alternative, custom observation file",
         required=False,
+        default=""
     )
 
     parser.add_argument(
