@@ -26,6 +26,9 @@ nperseg = param.nperseg
 noverlap = param.noverlap
 res = param.res
 regions_specs = param.regions_specs
+fshp = param.region_file
+feature = param.feature
+attr = param.attr
 print(modpath)
 print(mod)
 print(prd)
@@ -60,5 +63,6 @@ print(file_list)
 syr = prd[0]
 eyr = prd[1]
 precip_variability_across_timescale(
-        file_list, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, res, regions_specs, outdir, cmec
+        file_list, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, res, regions_specs, \
+        outdir, cmec, fshp, feature, attr
     )
