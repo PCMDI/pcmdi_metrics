@@ -50,6 +50,7 @@ diagnostics_output_path = parameter.diagnostics_output_path
 custom_obs = parameter.custom_observations
 debug = parameter.debug
 cmec = parameter.cmec
+parallel = parameter.parallel
 
 if metrics_output_path is not None:
     metrics_output_path = parameter.metrics_output_path.replace('%(case_id)', case_id)
@@ -146,6 +147,9 @@ print('--- start mean climate metrics calculation ---')
 # -------------
 # variable loop
 # -------------
+if isinstance(vars, str):
+    vars = [vars]
+
 for var in vars:
 
     if '_' in var or '-' in var:
@@ -310,12 +314,17 @@ for var in vars:
                         print('error occured for ', model, run)
                         print(e)
 
-    # write collective JSON --- all models / all obs / single variable
-    json_filename = "_".join([var, target_grid, regrid_tool, "metrics"])
-    mean_climate_metrics_to_json(
-        metrics_output_path,
-        json_filename,
-        result_dict,
-        cmec_flag=cmec,
-    )
-    print('pmp mean clim driver completed')
+    # ========================================================================
+    # Dictionary to JSON: collective JSON at the end of model_realization loop
+    # ------------------------------------------------------------------------
+    if not parallel:
+        # write collective JSON --- all models / all obs / single variable
+        json_filename = "_".join([var, target_grid, regrid_tool, "metrics"])
+        mean_climate_metrics_to_json(
+            metrics_output_path,
+            json_filename,
+            result_dict,
+            cmec_flag=cmec,
+        )
+
+print('pmp mean clim driver completed')
