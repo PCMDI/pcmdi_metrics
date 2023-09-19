@@ -147,7 +147,8 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
                 continue
             elif np.isnan(np.sum(arr[:,j])):
                 continue
-            rv,se = calc_rv(arr[:,j].squeeze(),cov_tile,return_period,nreplicates=nreal,maxes=maxes)
+            rv,se = calc_rv_py(arr[:,j].squeeze(),cov_tile,return_period,nreplicates=nreal,maxes=maxes)
+            #rv,se = calc_rv_interpolated(arr[:,j],return_period)
             if rv is not None:
                 rv_array[:,j] = np.squeeze(rv*scale_factor)
                 se_array[:,j] = np.squeeze(se*scale_factor)
@@ -311,7 +312,8 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
                 continue
             elif np.isnan(np.sum(b)):
                 continue
-            rv_tmp,se_tmp = calc_rv(data[i1:,j].squeeze(),cov_slice,return_period,1,maxes)
+            rv_tmp,se_tmp = calc_rv_py(data[i1:,j].squeeze(),cov_slice,return_period,1,maxes)
+            #rv_tmp,se_tmp = calc_rv_interpolated(data[i1:,j],return_period)
             if rv_tmp is not None:
                 rv_array[i1:,j] = rv_tmp*scale_factor
                 se_array[i1:,j] = se_tmp*scale_factor
@@ -409,6 +411,8 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
     
         if scale <= 0:
             return 1e10
+        if shape <= 0:
+            return 1e10
 
         # TODO: How close to zero for using Gumbel?
         if shape == 0: # or np.isclose(shape,0):
@@ -444,35 +448,59 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
         return_value = -1 * return_value    
     
     try:
-        #autograd
-        #hs=hessian(ll)
-        #https://numdifftools.readthedocs.io/en/latest/reference/generated/numdifftools.core.Hessian.html
-        hs=Hessian(ll, step=None, method='central', order=None)
-        vcov = np.linalg.inv(hs(ll_min.x))
         cov = covariate
-        var_theta = np.expand_dims(np.diagonal(vcov),axis=1)
-        chck = [True for item in var_theta[0,:] if item < 0]
-        if len(chck) > 0:
+        var_theta = np.diag(np.diag(vcov))
+        if (var_theta < 0).any(): 
             raise RuntimeError
         scale = params[2]
         shape = params[3]
 
         y = -np.log(1-1/return_period)
 
-        if shape == 0:
+        if shape == 0: 
             grad = [1,-np.log(y)]
         else:
-            # TODO: check covariate term
             db1 = np.ones(len(cov))
             db2 = cov
             dsh = np.ones(len(cov)) * (-1/shape)*(1-y**(-shape))
             dsc = np.ones(len(cov)) * scale*(shape**-2)*(1-y**-shape)-(scale/shape*(y**-shape)*np.log(y))
             grad = np.array([db1,db2,dsh,dsc])
 
-        A = np.matmul(np.transpose(grad),vcov)
+        A = np.matmul(np.transpose(grad),var_theta)
         B = np.matmul(A,grad)
-        se = np.sqrt(np.diagonal(B))
+        se = np.sqrt(np.diag(B))
     except:
         se = np.ones(np.shape(return_value))*np.nan
 
     return return_value.squeeze(), se.squeeze()
+
+
+def calc_rv_interpolated(tseries,return_period):
+    if return_period < 1:
+        return None
+    nyrs = len(tseries)
+    tsorted = np.sort(tseries)[::-1]
+    if return_period > nyrs:
+        return None
+    rplist = [nyrs/n for n in range(1,nyrs+1)]
+    count = 0
+    for item in rplist:
+        if item > return_period:
+            continue
+        if item < return_period:
+            rp_upper=rplist[count-1]
+            rp_lower=rplist[count]
+            def f(x):
+                m = (tsorted[count-1] - tsorted[count])/(rp_upper-rp_lower)
+                b = tsorted[count] - (m * rp_lower)
+                return m * x + b
+            rv = f(return_period)
+            break
+        elif item == return_period:
+            try:
+                rv = (tsorted[count]+tsorted[count+1])/2
+            except:
+                rv = tsorted[count]
+            break
+        count+=1
+    return rv,np.nan

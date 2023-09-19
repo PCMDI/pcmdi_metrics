@@ -2,18 +2,18 @@
 
 
 #====tasmax====
-vars = ["tasmax"]
-ModUnitsAdjust=(True,"subtract",273,"C")
+#vars = ["tasmax"]
+#ModUnitsAdjust=(True,"subtract",273,"C")
 
-#metrics_output_path = "test_py_ns_100_tasmax_MRI_2"
+#metrics_output_path = "test_py_ns_100_tasmax_MRI_int2"
 #metrics_output_path = "test_ce_st_100_tasmax_MRI"
-metrics_output_path = "test_ce_ns_100_tasmax_MRI_2"
+#metrics_output_path = "test_ce_ns_100_tasmax_MRI_2"
 
 
 #===pr====
-#vars = ["pr"]
-#ModUnitsAdjust=(True,"multiply",86400,"mm/day")
-#metrics_output_path = "test_py_ns_100_pr_MRI"
+vars = ["pr"]
+ModUnitsAdjust=(True,"multiply",86400,"mm/day")
+metrics_output_path = "test_py_ns_100_pr_MRI_shp"
 #metrics_output_path = "test_ce_st_100_pr_MRI"
 #metrics_output_path = "test_ce_ns_100_pr_MRI"
 
