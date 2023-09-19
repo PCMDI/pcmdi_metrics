@@ -291,18 +291,18 @@ for var in vars:
                             print('compute metrics start')
                             result_dict["RESULTS"][model][ref][run][region] = compute_metrics(varname, ds_test_dict[region], ds_ref_dict[region], debug=debug)
 
-                        # write individual JSON
-                        # --- single simulation, obs (need to accumulate later) / single variable
-                        json_filename_tmp = "_".join([model, var, target_grid, regrid_tool, "metrics", ref])
-                        mean_climate_metrics_to_json(
-                            os.path.join(metrics_output_path, var),
-                            json_filename_tmp,
-                            result_dict,
-                            model=model,
-                            run=run,
-                            cmec_flag=cmec,
-                            debug=debug
-                        )
+                            # write individual JSON
+                            # --- single simulation, obs (need to accumulate later) / single variable
+                            json_filename_tmp = "_".join([var, model, run, target_grid, regrid_tool, "metrics", ref])
+                            mean_climate_metrics_to_json(
+                                os.path.join(metrics_output_path, var),
+                                json_filename_tmp,
+                                result_dict,
+                                model=model,
+                                run=run,
+                                cmec_flag=cmec,
+                                debug=debug
+                            )
  
                     except Exception as e:
                         if debug:
