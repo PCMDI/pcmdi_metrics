@@ -287,7 +287,7 @@ for var in vars:
 
                             if debug:
                                 print('ds_test_tmp:', ds_test_tmp)
-                                ds_test_dict[region].to_netcdf('_'.join([var, 'model', model, run, region + '.nc']))
+                                ds_test_dict[region].to_netcdf('_'.join([var, 'model', model, run, region, case_id + '.nc']))
                                 if model == test_data_set[0] and run == realizations[0]:
                                     ds_ref_dict[region].to_netcdf('_'.join([var, 'ref', region + '.nc']))
 
@@ -297,7 +297,7 @@ for var in vars:
 
                             # write individual JSON
                             # --- single simulation, obs (need to accumulate later) / single variable
-                            json_filename_tmp = "_".join([var, model, run, target_grid, regrid_tool, "metrics", ref])
+                            json_filename_tmp = "_".join([var, model, run, target_grid, regrid_tool, "metrics", ref, case_id])
                             mean_climate_metrics_to_json(
                                 os.path.join(metrics_output_path, var),
                                 json_filename_tmp,
@@ -319,7 +319,7 @@ for var in vars:
     # ------------------------------------------------------------------------
     if not parallel:
         # write collective JSON --- all models / all obs / single variable
-        json_filename = "_".join([var, target_grid, regrid_tool, "metrics"])
+        json_filename = "_".join([var, target_grid, regrid_tool, "metrics", case_id])
         mean_climate_metrics_to_json(
             metrics_output_path,
             json_filename,

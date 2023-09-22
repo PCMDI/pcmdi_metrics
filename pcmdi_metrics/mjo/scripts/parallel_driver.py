@@ -97,10 +97,10 @@ for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
 # =================================================
 # Generates list of command
 # -------------------------------------------------
-param_file = "../doc/myParam_mjo.py"
+param_file = "../param/myParam_mjo.py"
 
 if debug:
-    param_file = "../doc/myParam_test.py"
+    param_file = "../param/myParam_test.py"
     print("number of models (debug mode):", len(models))
 
 cmds_list = list()
