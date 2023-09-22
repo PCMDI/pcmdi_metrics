@@ -148,7 +148,6 @@ for m, model in enumerate(models):
     for r, run in enumerate(runs_list):
         # command line for queue
         cmd = [
-            "python",
             "mjo_metrics_driver.py",
             "-p",
             param_file,
