@@ -42,10 +42,12 @@ def precip_variability_across_timescale(
         
         # Regridding
         rgtmp_ds = RegridHoriz(do, var, res)
-        if fshp is not None:
-            rgtmp_ds = region_from_file(rgtmp_ds,fshp,feature,attr)
         if regions_specs is not None or bool(regions_specs):
+            print("Cropping region from bounds")
             rgtmp_ds = CropLatLon(rgtmp_ds, regions_specs)
+        if fshp is not None:
+            print("Cropping from shapefile")
+            rgtmp_ds = region_from_file(rgtmp_ds,fshp,attr,feature)
         rgtmp = rgtmp_ds[var]*float(fac)
         if iyr == syr:
             drg = copy.deepcopy(rgtmp)

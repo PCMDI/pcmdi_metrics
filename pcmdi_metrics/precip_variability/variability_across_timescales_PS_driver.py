@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-
+#import faulthandler; faulthandler.enable()
+import geopandas
+from pcmdi_metrics.io.region_from_file import region_from_file
 import glob
 import os
 
