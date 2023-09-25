@@ -3,8 +3,6 @@
 import glob
 import os
 
-from genutil import StringConstructor
-
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.precip_variability.lib import (
     AddParserArgument,
@@ -38,9 +36,11 @@ outdir_template = param.process_templated_argument("results_dir")
 outdir = StringConstructor(
     str(outdir_template(output_type="%(output_type)", mip=mip, case_id=case_id))
 )
+outdir_template = outdir_template.replace("%(mip)",mip).replace("%(case_id)",case_id)
 for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
-    os.makedirs(outdir(output_type=output_type), exist_ok=True)
-    print(outdir(output_type=output_type))
+    outdir = outdir_template.replace("%(output_type)",output_type)
+    os.makedirs(outdir, exist_ok=True)
+    print(outdir)
 
 # Check data in advance
 file_list = sorted(glob.glob(os.path.join(modpath, mod)))
@@ -57,5 +57,5 @@ print(file_list)
 syr = prd[0]
 eyr = prd[1]
 precip_variability_across_timescale(
-        file_list, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, outdir, cmec
+        file_list, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, outdir_template, cmec
     )
