@@ -33,7 +33,7 @@ cmec = param.cmec
 # Create output directory
 case_id = param.case_id
 outdir_template = param.results_dir
-outdir_template = outdir_template.replace("%(mip)",mip).replace("%(case_id)",case_id)
+outdir_template = outdir_template.replace("%(mip)",str(mip)).replace("%(case_id)",str(case_id))
 for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
     outdir = outdir_template.replace("%(output_type)",output_type)
     os.makedirs(outdir, exist_ok=True)
