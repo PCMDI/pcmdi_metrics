@@ -33,9 +33,6 @@ cmec = param.cmec
 # Create output directory
 case_id = param.case_id
 outdir_template = param.process_templated_argument("results_dir")
-outdir = StringConstructor(
-    str(outdir_template(output_type="%(output_type)", mip=mip, case_id=case_id))
-)
 outdir_template = outdir_template.replace("%(mip)",mip).replace("%(case_id)",case_id)
 for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
     outdir = outdir_template.replace("%(output_type)",output_type)
