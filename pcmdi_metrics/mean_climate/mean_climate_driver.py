@@ -50,6 +50,7 @@ diagnostics_output_path = parameter.diagnostics_output_path
 custom_obs = parameter.custom_observations
 debug = parameter.debug
 cmec = parameter.cmec
+parallel = parameter.parallel
 
 if metrics_output_path is not None:
     metrics_output_path = parameter.metrics_output_path.replace('%(case_id)', case_id)
@@ -146,6 +147,9 @@ print('--- start mean climate metrics calculation ---')
 # -------------
 # variable loop
 # -------------
+if isinstance(vars, str):
+    vars = [vars]
+
 for var in vars:
 
     if '_' in var or '-' in var:
@@ -283,7 +287,7 @@ for var in vars:
 
                             if debug:
                                 print('ds_test_tmp:', ds_test_tmp)
-                                ds_test_dict[region].to_netcdf('_'.join([var, 'model', model, run, region + '.nc']))
+                                ds_test_dict[region].to_netcdf('_'.join([var, 'model', model, run, region, case_id + '.nc']))
                                 if model == test_data_set[0] and run == realizations[0]:
                                     ds_ref_dict[region].to_netcdf('_'.join([var, 'ref', region + '.nc']))
 
@@ -291,18 +295,18 @@ for var in vars:
                             print('compute metrics start')
                             result_dict["RESULTS"][model][ref][run][region] = compute_metrics(varname, ds_test_dict[region], ds_ref_dict[region], debug=debug)
 
-                        # write individual JSON
-                        # --- single simulation, obs (need to accumulate later) / single variable
-                        json_filename_tmp = "_".join([model, var, target_grid, regrid_tool, "metrics", ref])
-                        mean_climate_metrics_to_json(
-                            os.path.join(metrics_output_path, var),
-                            json_filename_tmp,
-                            result_dict,
-                            model=model,
-                            run=run,
-                            cmec_flag=cmec,
-                            debug=debug
-                        )
+                            # write individual JSON
+                            # --- single simulation, obs (need to accumulate later) / single variable
+                            json_filename_tmp = "_".join([var, model, run, target_grid, regrid_tool, "metrics", ref, case_id])
+                            mean_climate_metrics_to_json(
+                                os.path.join(metrics_output_path, var),
+                                json_filename_tmp,
+                                result_dict,
+                                model=model,
+                                run=run,
+                                cmec_flag=cmec,
+                                debug=debug
+                            )
  
                     except Exception as e:
                         if debug:
@@ -310,12 +314,17 @@ for var in vars:
                         print('error occured for ', model, run)
                         print(e)
 
-    # write collective JSON --- all models / all obs / single variable
-    json_filename = "_".join([var, target_grid, regrid_tool, "metrics"])
-    mean_climate_metrics_to_json(
-        metrics_output_path,
-        json_filename,
-        result_dict,
-        cmec_flag=cmec,
-    )
-    print('pmp mean clim driver completed')
+    # ========================================================================
+    # Dictionary to JSON: collective JSON at the end of model_realization loop
+    # ------------------------------------------------------------------------
+    if not parallel:
+        # write collective JSON --- all models / all obs / single variable
+        json_filename = "_".join([var, target_grid, regrid_tool, "metrics", case_id])
+        mean_climate_metrics_to_json(
+            metrics_output_path,
+            json_filename,
+            result_dict,
+            cmec_flag=cmec,
+        )
+
+print('pmp mean clim driver completed')
