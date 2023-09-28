@@ -57,7 +57,7 @@ del E, W
 ###########################################################################
 def get_amip_data(filename, var, lev=None):
     # load in cmip data using the appropriate function for the experiment/mip
-    print('  '+var)#, end=",")
+    print("  " + var)  # , end=",")
 
     tslice = slice(
         "1983-01-01", "2008-12-31"
@@ -191,7 +191,6 @@ def get_CRK_data(filepath):
 def get_kernel_regrid(ctl):
     # Read in data and map kernels to lat/lon
 
-    
     f = xc.open_mfdataset(datadir + "cloud_kernels2.nc", decode_times=False)
     f = f.rename({"mo": "time", "tau_midpt": "tau", "p_midpt": "plev"})
     f["time"] = ctl["time"].copy()
