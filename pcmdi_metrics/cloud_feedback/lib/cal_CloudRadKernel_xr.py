@@ -19,7 +19,7 @@ from datetime import date
 # define necessary information
 # =============================================
 
-datadir = "../data/"
+datadir = "./data/"
 
 # Define a python dictionary containing the sections of the histogram to consider
 # These are the same as in Zelinka et al, GRL, 2016
@@ -190,7 +190,7 @@ def get_CRK_data(filepath):
 ###########################################################################
 def get_kernel_regrid(ctl):
     # Read in data and map kernels to lat/lon
-
+    
     f = xc.open_mfdataset(datadir + "cloud_kernels2.nc", decode_times=False)
     f = f.rename({"mo": "time", "tau_midpt": "tau", "p_midpt": "plev"})
     f["time"] = ctl["time"].copy()
