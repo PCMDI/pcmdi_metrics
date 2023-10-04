@@ -1,9 +1,6 @@
 #!/usr/bin/env python
-import datetime
-import glob
 import os
 
-import cftime
 import numpy as np
 from scipy.stats import genextreme
 from scipy.optimize import minimize
