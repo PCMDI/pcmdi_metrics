@@ -28,17 +28,6 @@ If you are proposing a feature:
 * Keep the scope as narrow as possible, to make it easier to implement.
 * Remember that this is a open-source project, and that contributions are welcome :)
 
-Features must meet the following criteria before they are considered for implementation:
-
-1. Feature is not implemented by ``xarray``
-2. Feature is not implemented in another actively developed xarray-based package
-
-   * For example,  `cf_xarray`_ already handles interpretation of `CF convention`_ attributes on xarray objects
-
-3. Feature is not limited to specific use cases (e.g., data quality issues)
-4. Feature is generally reusable
-5. Feature is relatively simple and lightweight to implement and use
-
 Documentation Update
 ~~~~~~~~~~~~~~~~~~~~
 
