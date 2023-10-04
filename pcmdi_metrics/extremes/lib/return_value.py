@@ -313,7 +313,6 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
             elif np.isnan(np.sum(b)):
                 continue
             rv_tmp,se_tmp = calc_rv_py(data[i1:,j].squeeze(),cov_slice,return_period,1,maxes)
-            #rv_tmp,se_tmp = calc_rv_interpolated(data[i1:,j],return_period)
             if rv_tmp is not None:
                 rv_array[i1:,j] = rv_tmp*scale_factor
                 se_array[i1:,j] = se_tmp*scale_factor
@@ -347,14 +346,16 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
 
     return return_value,standard_error
 
-def calc_rv(data,covariate,return_period,nreplicates=1,maxes=True):
-    # This function contains the code that does the actual return value calculation.
-    # Changes to the return value algorithm can be made here.
+def calc_rv_climex(data,covariate,return_period,nreplicates=1,maxes=True):
+    # Use climextRemes to get the return value and standard error
+    # This function exists for easy comparison with the pure Python
+    # implementation in calc_rv_py. However, generating the return
+    # value this way is not supported as part of the PMP.
     # Returns the return value and standard error.
     # Arguments:
-    #   ds: xarray dataset
-    #   cov_filepath: string
-    #   cov_varname: string
+    #   ds: numpy array
+    #   covariate: numpy array
+    #   nreplicates: int
     #   return_period: int
     #   maxes: bool
     return_value = None
@@ -380,9 +381,14 @@ def calc_rv(data,covariate,return_period,nreplicates=1,maxes=True):
         standard_error = tmp['se_returnValue']
     return return_value,standard_error
 
-def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
-    # This function would be swapped with calc_rv() defined above,
-    # to use the pure Python GEV calculation for return value.
+def calc_rv_py(x,covariate,return_period,maxes=True):
+    # An implementation of the return value and standard error
+    # that does not use climextRemes.
+    # Arguments:
+    #   ds: numpy array
+    #   covariate: numpy array
+    #   return_period: int
+    #   maxes: bool
 
     if maxes:
         mins=False
@@ -395,12 +401,9 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
     # Use the stationary gev to make initial parameter guess
     fit = genextreme.fit(x)
     shape, loc, scale = fit
-    
-    # Defining the logliklihood in scope to access x/covariate/nreplicates
+
     def ll(params):
         # Negative Log liklihood function to minimize for GEV
-        # This code has been copied from a testing Jupyter notebook
-        # and may not be properly implemented yet.
         beta1 = params[0]
         beta2 = params[1]
         scale = params[2]
@@ -408,24 +411,17 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
 
         n = len(x)
         location = beta1 + beta2 * covariate
-    
-        if scale <= 0:
-            return 1e10
-        if shape <= 0:
-            return 1e10
 
-        # TODO: How close to zero for using Gumbel?
-        if shape == 0: # or np.isclose(shape,0):
-            shape=0
+        if np.allclose(np.array(shape),np.array(0)):
+            shape = 0
             y = (x - location) / scale
-            result = np.sum(n*np.log(scale) + y + np.exp(-y))
+            result = np.sum(n * np.log(scale) + y + np.exp(-y))
         else:
             # This value must be > 0, Coles 2001
             y = 1 + shape * (x - location) / scale
             check = [True for item in y if item <= 0]
             if len(check) > 0:
                 return 1e10
-
             result = np.sum(np.log(scale) + y**(-1 / shape) + np.log(y)*(1/shape + 1))
 
         return result
@@ -447,26 +443,35 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
     if mins:
         return_value = -1 * return_value    
     
+    # Calculate standard error
     try:
-        cov = covariate
-        var_theta = np.diag(np.diag(vcov))
+        hs=Hessian(ll, step=None, method='central', order=None)
+        vcov = np.linalg.inv(hs(ll_min.x))
+        var_theta = np.diag(vcov)
         if (var_theta < 0).any(): 
-            raise RuntimeError
+            # Try again with a different method
+            hs=Hessian(ll, step=None, method='complex', order=None)
+            vcov = np.linalg.inv(hs(ll_min.x))
+            var_theta = np.diag(vcov)
+            if (var_theta < 0).any():
+                # Negative values on diagonal not good
+                raise RuntimeError("Negative value in diagonal of Hessian.")
+        cov = covariate
         scale = params[2]
         shape = params[3]
 
         y = -np.log(1-1/return_period)
 
         if shape == 0: 
-            grad = [1,-np.log(y)]
+            grad = np.array([1,-np.log(y)])
         else:
             db1 = np.ones(len(cov))
             db2 = cov
-            dsh = np.ones(len(cov)) * (-1/shape)*(1-y**(-shape))
-            dsc = np.ones(len(cov)) * scale*(shape**-2)*(1-y**-shape)-(scale/shape*(y**-shape)*np.log(y))
+            dsh = np.ones(len(cov))*(-1/shape)*(1-y**(-shape))
+            dsc = np.ones(len(cov))*scale*(shape**-2)*(1-y**-shape) - (scale/shape*(y**-shape)*np.log(y))
             grad = np.array([db1,db2,dsh,dsc])
 
-        A = np.matmul(np.transpose(grad),var_theta)
+        A = np.matmul(np.transpose(grad),vcov)
         B = np.matmul(A,grad)
         se = np.sqrt(np.diag(B))
     except:
@@ -476,11 +481,14 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
 
 
 def calc_rv_interpolated(tseries,return_period):
+    # A function to get a stationary return period
+    # interpolated from the block maximum data
     if return_period < 1:
         return None
     nyrs = len(tseries)
     tsorted = np.sort(tseries)[::-1]
     if return_period > nyrs:
+        print("Return period cannot be greater than length of timeseries.")
         return None
     rplist = [nyrs/n for n in range(1,nyrs+1)]
     count = 0
@@ -488,6 +496,8 @@ def calc_rv_interpolated(tseries,return_period):
         if item > return_period:
             continue
         if item < return_period:
+            # linearly interpolate between measurements
+            # to estimate return value
             rp_upper=rplist[count-1]
             rp_lower=rplist[count]
             def f(x):
