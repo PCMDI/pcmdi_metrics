@@ -177,9 +177,8 @@ Local Development
     black....................................................................Passed
     isort....................................................................Passed
     flake8...................................................................Passed
-    mypy.....................................................................Passed
 
-11. Commit your changes::
+10. Commit your changes::
 
      $ git add .
      $ git commit -m <Your detailed description of your changes>
@@ -191,16 +190,16 @@ Local Development
      isort....................................................................Passed
      flake8...................................................................Passed
 
-12. Make sure pre-commit QA checks pass. Otherwise, fix any caught issues.
+11. Make sure pre-commit QA checks pass. Otherwise, fix any caught issues.
 
     - Most of the tools fix issues automatically so you just need to re-stage the files.
     - flake8 and mypy issues must be fixed automatically.
 
-13. Push changes::
+12. Push changes::
 
     $ git push origin <BRANCH-NAME>
 
-14. Submit a pull request through the GitHub website.
+13. Submit a pull request through the GitHub website.
 
 
 Pull Request Guidelines
