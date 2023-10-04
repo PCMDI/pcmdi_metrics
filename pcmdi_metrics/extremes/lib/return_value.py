@@ -4,7 +4,6 @@ import glob
 import os
 
 import cftime
-import climextremes
 import numpy as np
 from scipy.stats import genextreme
 from scipy.optimize import minimize
