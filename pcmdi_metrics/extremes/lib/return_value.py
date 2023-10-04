@@ -112,10 +112,9 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
         else:
             i1 = 0
         if nonstationary:
-            cov = cov_np[i1:]
-            cov_tile = np.tile(cov,nreal).squeeze()
+            cov = cov_np[i1:].squeeze()
         else:
-            cov_tile = None
+            cov = None
         # Flatten input data and create output arrays
         t = time-i1
         arr = np.ones((t*nreal,lat*lon))
@@ -143,8 +142,7 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
                 continue
             elif np.isnan(np.sum(arr[:,j])):
                 continue
-            rv,se = calc_rv_py(arr[:,j].squeeze(),cov_tile,return_period,nreplicates=nreal,maxes=maxes)
-            #rv,se = calc_rv_interpolated(arr[:,j],return_period)
+            rv,se = calc_rv_py(arr[:,j].squeeze(),cov,return_period,nreplicates=nreal,maxes=maxes)
             if rv is not None:
                 rv_array[:,j] = np.squeeze(rv*scale_factor)
                 se_array[:,j] = np.squeeze(se*scale_factor)
@@ -363,26 +361,34 @@ def calc_rv_climex(data,covariate,return_period,nreplicates=1,maxes=True):
             nReplicates=nreplicates,
             maxes=maxes)
     else: # Nonstationary
+        if len(covariate)<len(data):
+            covariate_tiled = np.tile(covariate,nreplicates)
+            xnew=covariate
+        else:
+            covariate_tiled=covariate
+            xlen=len(covariate)/nreplicates
+            xnew=covariate[0:xlen]
         tmp = climextremes.fit_gev(
             data.squeeze(),
-            covariate,
+            covariate_tiled,
             returnPeriod=return_period,
             nReplicates=nreplicates,
             locationFun = 1,
             maxes=maxes,
-            xNew=covariate)
+            xNew=xnew)
     success = tmp['info']['failure'][0]
     if success == 0:
         return_value = tmp['returnValue']
         standard_error = tmp['se_returnValue']
     return return_value,standard_error
 
-def calc_rv_py(x,covariate,return_period,maxes=True):
+def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
     # An implementation of the return value and standard error
     # that does not use climextRemes.
     # Arguments:
     #   ds: numpy array
     #   covariate: numpy array
+    #   nreplicates: int
     #   return_period: int
     #   maxes: bool
 
@@ -393,6 +399,11 @@ def calc_rv_py(x,covariate,return_period,maxes=True):
 
     if mins:
         x = -1*x
+
+    if nreplicates>1:
+        covariate_tiled = np.tile(covariate,nreplicates)
+    else:
+        covariate_tiled = covariate
 
     # Use the stationary gev to make initial parameter guess
     fit = genextreme.fit(x)
@@ -406,7 +417,7 @@ def calc_rv_py(x,covariate,return_period,maxes=True):
         shape = params[3]
 
         n = len(x)
-        location = beta1 + beta2 * covariate
+        location = beta1 + beta2 * covariate_tiled
 
         if np.allclose(np.array(shape),np.array(0)):
             shape = 0
@@ -429,8 +440,8 @@ def calc_rv_py(x,covariate,return_period,maxes=True):
     success = ll_min["success"]
     
     # Calculate return value
-    return_value = np.ones((len(x),1))*np.nan
-    for time in range(0,len(x)):
+    return_value = np.ones((len(covariate),1))*np.nan
+    for time in range(0,len(covariate)):
         location = params[0] + params[1] * covariate[time]
         scale = params[2]
         shape = params[3]
