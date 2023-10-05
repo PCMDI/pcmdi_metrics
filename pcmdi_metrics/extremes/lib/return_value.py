@@ -84,7 +84,11 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
         cov_ds.close()
 
     dec_mode = str(ds.attrs["december_mode"])
-    drop_incomplete_djf = bool(ds.attrs["drop_incomplete_djf"])
+    drop_incomplete_djf = ds.attrs["drop_incomplete_djf"]
+    if drop_incomplete_djf=="False":
+        drop_incomplete_djf = False
+    else:
+        drop_incomplete_djf = True
 
     time = len(ds.time) # This will change for DJF cases
     lat = len(ds.lat)
@@ -203,7 +207,11 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
     #   maxes: bool
 
     dec_mode = str(ds.attrs["december_mode"])
-    drop_incomplete_djf = bool(ds.attrs["drop_incomplete_djf"])
+    drop_incomplete_djf = ds.attrs["drop_incomplete_djf"]
+    if drop_incomplete_djf=="False":
+        drop_incomplete_djf = False
+    else:
+        drop_incomplete_djf = True
     units = ds.ANN.attrs["units"]
 
     print("Return value for single realization")
