@@ -89,18 +89,13 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
     time = len(ds.time) # This will change for DJF cases
     lat = len(ds.lat)
     lon = len(ds.lon)
-    # Add and order additional dimension for realization
+
     if nonstationary:
-        return_value = xr.zeros_like(ds).expand_dims(dim={"real": nreal}).assign_coords({"real": real_list})
-        return_value = return_value[["time", "real", "lat", "lon"]]
-        for season in ["ANN","DJF","MAM","SON","JJA"]:
-            return_value[season]=(("time","real","lat","lon"),np.ones((time,nreal,lat,lon))*np.nan)
+        return_value = xr.zeros_like(ds)
     else:
-        return_value = xr.zeros_like(ds.isel({"time":0})).expand_dims(dim={"real": nreal}).assign_coords({"real": real_list})
+        return_value = xr.zeros_like(ds.isel({"time":0}))
         return_value = return_value.drop(labels=["time"])
-        return_value = return_value[["real","lat", "lon"]]
-        for season in ["ANN","DJF","MAM","SON","JJA"]:
-            return_value[season]=(("real","lat","lon"),np.ones((nreal,lat,lon))*np.nan)
+    return_value.drop(labels=["lon_bnds","lat_bnds","time_bnds"])
     standard_error = xr.zeros_like(return_value)
     ds.close()
 
@@ -132,9 +127,9 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
         scale_factor = np.abs(np.nanmean(arr))
         arr = arr / scale_factor
         if nonstationary:
-            rv_array = np.ones((t*nreal,lat*lon)) * np.nan
+            rv_array = np.ones((t,lat*lon)) * np.nan
         else:
-            rv_array = np.ones((nreal,lat*lon)) * np.nan
+            rv_array = np.ones((lat*lon)) * np.nan
         se_array = rv_array.copy()
         # Here's where we're doing the return value calculation
         for j in range(0,lat*lon):
@@ -144,49 +139,27 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
                 continue
             rv,se = calc_rv_py(arr[:,j].squeeze(),cov,return_period,nreplicates=nreal,maxes=maxes)
             if rv is not None:
-                rv_array[:,j] = np.squeeze(rv*scale_factor)
-                se_array[:,j] = np.squeeze(se*scale_factor)
+                rv_array[i1:,j] = np.squeeze(rv*scale_factor)
+                se_array[i1:,j] = np.squeeze(se*scale_factor)
 
         # reshape array to match desired dimensions and add to Dataset
         # Also reorder dimensions for nonstationary case
         if nonstationary:
-            rv_array = np.reshape(rv_array,(nreal,t,lat,lon))
-            se_array = np.reshape(se_array,(nreal,t,lat,lon))
-            
-            if season == "DJF" and dec_mode == "DJF" and drop_incomplete_djf:
-                nans = np.ones((nreal,1,lat,lon))*np.nan
-                rv_array = np.concatenate((nans,rv_array),axis=1)
-                se_array = np.concatenate((nans,se_array),axis=1)
-                
-            rv_da = xr.DataArray(
-                data=rv_array,
-                dims=["real","time","lat","lon"],
-                coords=dict(
-                    real=(["real"], return_value["real"].data),
-                    lon=(["lon"], return_value["lon"].data),
-                    lat=(["lat"], return_value["lat"].data),
-                    time=(["time"],return_value["time"].data),
-                ),
-                attrs={},
-            )
-            se_da = xr.DataArray(
-                data=se_array,
-                dims=["real","time","lat","lon"],
-                coords=dict(
-                    real=(["real"], return_value["real"].data),
-                    lon=(["lon"], return_value["lon"].data),
-                    lat=(["lat"], return_value["lat"].data),
-                    time=(["time"],return_value["time"].data),
-                ),
-                attrs={},
-            )
-            return_value[season] = rv_da.transpose("time","real","lat","lon")
-            standard_error[season] = se_da.transpose("time","real","lat","lon")
+            rv_array = np.reshape(rv_array,(time,lat,lon))
+            se_array = np.reshape(se_array,(time,lat,lon))
+            return_value[season] = (("time","lat","lon"),rv_array)
+            standard_error[season] = (("time","lat","lon"),se_array)
         else:
-            rv_array = np.reshape(rv_array,(nreal,lat,lon))
-            se_array = np.reshape(se_array,(nreal,lat,lon))
-            return_value[season] = (("real","lat", "lon"),rv_array)
-            standard_error[season] = (("real","lat","lon"),se_array)
+            rv_array = np.reshape(rv_array,(lat,lon))
+            se_array = np.reshape(se_array,(lat,lon))
+            return_value[season] = (("lat","lon"),rv_array)
+            standard_error[season] = (("lat","lon"),se_array)
+ 
+    return_value.attrs["description"] = "{0}-year return value".format(return_period)
+    standard_error.attrs["description"] = "standard error"
+    for season in ["ANN","DJF","MAM","JJA","SON"]:
+        return_value[season].attrs["units"] = units
+        standard_error[season].attrs["units"] = units
     
     # Update attributes
     return_value.attrs["description"] = "{0}-year return value".format(return_period)
@@ -310,24 +283,21 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
             if rv_tmp is not None:
                 rv_array[i1:,j] = rv_tmp*scale_factor
                 se_array[i1:,j] = se_tmp*scale_factor
-                success[j] = 1
 
         if nonstationary:
             rv_array = np.reshape(rv_array,(time,lat,lon))
             se_array = np.reshape(se_array,(time,lat,lon))
             success = np.reshape(success,(lat,lon))
             return_value[season] = (("time","lat","lon"),rv_array)
-            return_value[season+"_success"] = (("lat","lon"),success)
             standard_error[season] = (("time","lat","lon"),se_array)
-            standard_error[season+"_success"] = (("lat","lon"),success)
+
         else:
             rv_array = np.reshape(rv_array,(lat,lon))
             se_array = np.reshape(se_array,(lat,lon))
             success = np.reshape(success,(lat,lon))
             return_value[season] = (("lat","lon"),rv_array)
-            return_value[season+"_success"] = (("lat","lon"),success)
             standard_error[season] = (("lat","lon"),se_array)
-            standard_error[season+"_success"] = (("lat","lon"),success)
+
  
     return_value.attrs["description"] = "{0}-year return value".format(return_period)
     standard_error.attrs["description"] = "standard error"
@@ -396,13 +366,16 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
         mins=False
     else:
         mins=True
-
-    if mins:
         x = -1*x
 
-    if nreplicates>1:
+    nonstationary = True
+    if covariate is None:
+        nonstationary = False
+
+    # Need to tile covariate if multiple replicates
+    if nonstationary and nreplicates>1:
         covariate_tiled = np.tile(covariate,nreplicates)
-    else:
+    elif nonstationary:
         covariate_tiled = covariate
 
     # Use the stationary gev to make initial parameter guess
@@ -411,13 +384,18 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
 
     def ll(params):
         # Negative Log liklihood function to minimize for GEV
-        beta1 = params[0]
-        beta2 = params[1]
-        scale = params[2]
-        shape = params[3]
 
         n = len(x)
-        location = beta1 + beta2 * covariate_tiled
+        if nonstationary:
+            beta1 = params[0]
+            beta2 = params[1]
+            scale = params[2]
+            shape = params[3]
+            location = beta1 + beta2 * covariate_tiled
+        else:
+            location = params[0]
+            scale = params[1]
+            shape = params[2]
 
         if np.allclose(np.array(shape),np.array(0)):
             shape = 0
@@ -434,17 +412,28 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
         return result
 
     # Get GEV parameters
-    ll_min = minimize(ll,(loc,0,scale,shape),tol=1e-7,method="nelder-mead")
+    if nonstationary:
+        ll_min = minimize(ll,(loc,0,scale,shape),tol=1e-7,method="nelder-mead")
+    else:
+        ll_min = minimize(ll,(loc,scale,shape),tol=1e-7,method="nelder-mead")
 
     params = ll_min["x"]
     success = ll_min["success"]
+
+    if nonstationary:
+        scale = params[2]
+        shape = params[3]
+    else:
+        location = params[0]
+        scale = params[1]
+        shape = params[2]
+        covariate = [1] # set cov size to 1
     
     # Calculate return value
     return_value = np.ones((len(covariate),1))*np.nan
     for time in range(0,len(covariate)):
-        location = params[0] + params[1] * covariate[time]
-        scale = params[2]
-        shape = params[3]
+        if nonstationary:
+            location = params[0] + params[1] * covariate[time]
         rv = genextreme.isf(1/return_period, shape, location, scale)
         return_value[time] = np.squeeze(np.where(success==1,rv,np.nan))
     if mins:
@@ -463,25 +452,35 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
             if (var_theta < 0).any():
                 # Negative values on diagonal not good
                 raise RuntimeError("Negative value in diagonal of Hessian.")
-        cov = covariate
-        scale = params[2]
-        shape = params[3]
 
-        y = -np.log(1-1/return_period)
-
-        if shape == 0: 
-            grad = np.array([1,-np.log(y)])
+        if nonstationary:
+            cov = covariate
+            y = -np.log(1-1/return_period)
+            if shape == 0: 
+                grad = np.array([1,-np.log(y)])
+            else:
+                db1 = np.ones(len(cov))
+                db2 = cov
+                dsh = np.ones(len(cov))*(-1/shape)*(1-y**(-shape))
+                dsc = np.ones(len(cov))*scale*(shape**-2)*(1-y**-shape) - (scale/shape*(y**-shape)*np.log(y))
+                grad = np.array([db1,db2,dsh,dsc])
         else:
-            db1 = np.ones(len(cov))
-            db2 = cov
-            dsh = np.ones(len(cov))*(-1/shape)*(1-y**(-shape))
-            dsc = np.ones(len(cov))*scale*(shape**-2)*(1-y**-shape) - (scale/shape*(y**-shape)*np.log(y))
-            grad = np.array([db1,db2,dsh,dsc])
+            y = -np.log(1-1/return_period)
+            if shape == 0: 
+                grad = np.array([1,-np.log(y)])
+            else:
+                db1 = 1
+                dsh = (-1/shape)*(1-y**(-shape))
+                dsc = scale*(shape**-2)*(1-y**-shape) - (scale/shape*(y**-shape)*np.log(y))
+                grad = np.array([db1,dsh,dsc])
+                grad = np.expand_dims(grad,axis=1)
 
         A = np.matmul(np.transpose(grad),vcov)
         B = np.matmul(A,grad)
         se = np.sqrt(np.diag(B))
-    except:
+    except Exception as e:
+        print(e)
+        print("Setting SE to np.nan")
         se = np.ones(np.shape(return_value))*np.nan
 
     return return_value.squeeze(), se.squeeze()
