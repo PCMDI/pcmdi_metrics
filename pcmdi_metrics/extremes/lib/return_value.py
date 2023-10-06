@@ -143,8 +143,12 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
                 continue
             rv,se = calc_rv_py(arr[:,j].squeeze(),cov,return_period,nreplicates=nreal,maxes=maxes)
             if rv is not None:
-                rv_array[i1:,j] = np.squeeze(rv*scale_factor)
-                se_array[i1:,j] = np.squeeze(se*scale_factor)
+                if nonstationary:
+                    rv_array[i1:,j] = np.squeeze(rv*scale_factor)
+                    se_array[i1:,j] = np.squeeze(se*scale_factor)
+                else:
+                    rv_array[j] = rv*scale_factor
+                    se_array[j] = se*scale_factor
 
         # reshape array to match desired dimensions and add to Dataset
         # Also reorder dimensions for nonstationary case
@@ -266,10 +270,10 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
             i1 = 0
 
         data = np.reshape(data,(time,dim2))
-        if cov_filepath is not None:
+        if nonstationary:
             rv_array = np.ones(np.shape(data)) * np.nan
         else:
-            rv_array = np.ones((1,dim2)) * np.nan
+            rv_array = np.ones((dim2)) * np.nan
         se_array = rv_array.copy()
         success = np.zeros((dim2))
 
@@ -289,24 +293,25 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
                 continue
             rv_tmp,se_tmp = calc_rv_py(data[i1:,j].squeeze(),cov_slice,return_period,1,maxes)
             if rv_tmp is not None:
-                rv_array[i1:,j] = rv_tmp*scale_factor
-                se_array[i1:,j] = se_tmp*scale_factor
+                if nonstationary:
+                    rv_array[i1:,j] = rv_tmp*scale_factor
+                    se_array[i1:,j] = se_tmp*scale_factor
+                else:
+                    rv_array[j] = rv_tmp*scale_factor
+                    se_array[j] = se_tmp*scale_factor
 
         if nonstationary:
             rv_array = np.reshape(rv_array,(time,lat,lon))
             se_array = np.reshape(se_array,(time,lat,lon))
-            success = np.reshape(success,(lat,lon))
             return_value[season] = (("time","lat","lon"),rv_array)
             standard_error[season] = (("time","lat","lon"),se_array)
 
         else:
             rv_array = np.reshape(rv_array,(lat,lon))
             se_array = np.reshape(se_array,(lat,lon))
-            success = np.reshape(success,(lat,lon))
             return_value[season] = (("lat","lon"),rv_array)
             standard_error[season] = (("lat","lon"),se_array)
 
- 
     return_value.attrs["description"] = "{0}-year return value".format(return_period)
     standard_error.attrs["description"] = "standard error"
     for season in ["ANN","DJF","MAM","JJA","SON"]:
