@@ -1,17 +1,11 @@
 #!/usr/bin/env python
-import xarray as xr
-import xcdat
-import pandas as pd
-import numpy as np
-import cftime
-import datetime
-import sys
-import os
 import glob
 import json
-import datetime
-import regionmask
-import geopandas as gpd
+import sys
+import os
+
+import xarray as xr
+import xcdat
 
 from pcmdi_metrics.extremes.lib import (
     compute_metrics,
@@ -22,7 +16,6 @@ from pcmdi_metrics.extremes.lib import (
     plot_extremes,
     return_value
 )
-
 from pcmdi_metrics.io import xcdat_openxml
 
 
@@ -371,7 +364,6 @@ for model in model_loop_list:
                 print("Generating metrics.")
                 result_dict = compute_metrics.metrics_json(
                     stats_dict,
-                    sftlf,
                     obs_dict=obs,
                     region=region_name,
                     regrid=regrid)
@@ -386,7 +378,7 @@ for model in model_loop_list:
         metrics_tmp["DIMENSIONS"]["model"] = model
         metrics_tmp["DIMENSIONS"]["realization"] = list_of_runs
         metrics_tmp["RESULTS"] = {model: metrics_dict["RESULTS"][model]}
-        metrics_path = "{0}_extremes_metrics.json".format(model)
+        metrics_path = "{0}_block_extremes_metrics.json".format(model)
         utilities.write_to_json(metrics_output_path,metrics_path,metrics_tmp)
 
         meta.update_metrics(
@@ -399,8 +391,8 @@ for model in model_loop_list:
 if "Reference" in model_loop_list:
     model_loop_list.remove("Reference")
 metrics_dict["DIMENSIONS"]["model"] = model_loop_list
-utilities.write_to_json(metrics_output_path,"extremes_metrics.json",metrics_dict)
-fname=os.path.join(metrics_output_path,"extremes_metrics.json")
+utilities.write_to_json(metrics_output_path,"block_extremes_metrics.json",metrics_dict)
+fname=os.path.join(metrics_output_path,"block_extremes_metrics.json")
 meta.update_metrics(
     "All",
     fname,
@@ -445,7 +437,6 @@ for model in model_loop_list:
         elif len(filelist) == 1:
             # Return value from single realization
             meta = return_value.compute_rv_from_file(filelist,cov_file,cov_name,nc_dir,return_period,meta,maxes=maxes)
-
 
 # Update and write metadata file
 try:
