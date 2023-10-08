@@ -29,8 +29,10 @@ debug = True  # False
 # -------------------------------------------------
 reference_data_name = "NOAA-CIRES_20CR"
 reference_data_path = os.path.join(
-    "/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707",
-    "psl_mon_20CR_BE_gn_v20200707_187101-201212.nc",
+    "/p/user_pub/PCMDIobs/obs4MIPs/NOAA-ESRL-PSD/20CR/mon/psl/gn/latest",
+    "psl_mon_20CR_PCMDI_gn_187101-201212.nc"
+    #"/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707",
+    #"psl_mon_20CR_BE_gn_v20200707_187101-201212.nc",
 )
 
 varOBS = "psl"

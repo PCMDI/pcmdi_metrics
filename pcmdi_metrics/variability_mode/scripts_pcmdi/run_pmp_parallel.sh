@@ -9,7 +9,6 @@ export OMP_NUM_THREADS=1
 
 ver=`date +"%Y%m%d-%H%M"`
 case_id="v"`date +"%Y%m%d"`
-case_id="v20210119"
 
 #mips='cmip3 cmip5 cmip6'
 #mips='cmip5 cmip6'
@@ -24,8 +23,6 @@ exps='historical'
 #exps='amip'
 
 #modes='all'
-#modes='SAM'
-#modes='SAM NAM'
 modes='NAO NPO PNA'
 
 modnames='all'
@@ -37,15 +34,6 @@ param_dir='../../../sample_setups/pcmdi_parameter_files/variability_modes'
 
 for mip in $mips; do
     echo $mip
-    #if [ $mip == 'cmip5' ]; then
-    #    realization='r1i1p1'
-    #    #modnames="BNU-ESM CESM1-FASTCHEM CMCC-CM FGOALS-g2 HadCM3 HadGEM2-CC IPSL-CM5A-LR IPSL-CM5A-MR MIROC4h MIROC5 MPI-ESM-LR MPI-ESM-MR"
-    #    #modnames="HadGEM2-CC HadGEM2-ES INMCM4 IPSL-CM5A-LR IPSL-CM5A-MR IPSL-CM5B-LR MIROC-ESM MIROC-ESM-CHEM MIROC4h MIROC5 MPI-ESM-LR MPI-ESM-MR MPI-ESM-P MRI-CGCM3 MRI-ESM1 NorESM1-M NorESM1-ME"
-    #fi
-    if [ $mip == 'cmip6' ]; then
-    #    realization='r1i1p1f1'
-        modnames="CNRM-CM6-1-HR EC-Earth3 EC-Earth3-AerChem EC-Earth3-Veg HadGEM3-GC31-MM"
-    fi
     for exp in $exps; do
         if [ $modes == 'all' ]; then
             if [ $exp == 'historical' ] || [ $exp == '20c3m' ]; then
