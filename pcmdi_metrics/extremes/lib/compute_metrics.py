@@ -233,6 +233,10 @@ def update_nc_attrs(ds,dec_mode,drop_incomplete_djf,annual_strict):
     ds.time_bnds.encoding["_FillValue"] = None
     for season in ["ANN","DJF","MAM","JJA","SON"]:
         ds[season].encoding["_FillValue"] = float(1e20)
+
+    # Drop type attribute that comes from land mask
+    if "type" in ds:
+        ds = ds.drop("type")
     return ds
 
 def convert_units(data,units_adjust):
@@ -459,56 +463,76 @@ def metrics_json(data_dict,obs_dict={},region="land",regrid=True):
 
     return met_dict
 
-def metrics_json_return_value(rv,blockex,obs,region="land",regrid=True):
-    # Format, calculate, and return the global mean value over land
-    # for all datasets in the input dictionary
+def metrics_json_return_value(rv,blockex,obs,stat,region="land",regrid=True):
+    # Generate metrics for stationary return value comparing model and obs
     # Arguments:
-    #   data_dict: Dictionary containing block extrema datasets
-    #   obs_dict: Dictionary containing block extrema for 
-    #             reference dataset
-    #   region: Name of region.
+    #   rv: dataset
+    #   blockex: dataset
+    #   obs: dataset
+    #   stat: string
+    #   region: string
+    #   regrid: bool
     # Returns:
-    #   met_dict: A dictionary containing metrics
+    #    met_dict: dictionary
+    met_dict = {stat: {}}
+    seasons_dict = {
+                "ANN": "",
+                "DJF": "",
+                "MAM": "",
+                "JJA": "",
+                "SON": ""
+            }
 
-    rv_new = rv.copy(deep=True)
+    # Looping over each type of extrema in data_dict
+    met_dict[stat] = {
+        region: {
+            "mean": seasons_dict.copy(),
+            "std_xy": seasons_dict.copy()
+        }
+    }
+    # If obs available, add metrics comparing with obs
+    # If new statistics are added, be sure to update
+    # "statistic" entry in init_metrics_dict()
+    if obs is not None:
+        for k in ["std-obs_xy","pct_dif","bias_xy","cor_xy","mae_xy","rms_xy","rmsc_xy"]:
+            met_dict[stat][region][k] = seasons_dict.copy()
+
+    rv_tmp = rv.copy(deep=True)
     for season in ["ANN","DJF","MAM","JJA","SON"]:
         # Global mean over land
-        rv_new[season] = remove_outliers(rv[season],block[season])
-        met_dict[m][region]["mean"][season] = mean_xy(rv_new,season)
-        a = rv_new.temporal.average(season)
-        std_xy = compute_statistics.std_xy(a, season)
-        met_dict[m][region]["std_xy"][season] = std_xy
+        rv_tmp[season] = remove_outliers(rv[season],blockex[season])
+        met_dict[stat][region]["mean"][season] = mean_xy(rv_tmp,season)
+        std_xy = compute_statistics.std_xy(rv_tmp, season)
+        met_dict[stat][region]["std_xy"][season] = std_xy
 
-        if len(obs_dict) > 0 and not obs[season].equals(rv_new):
+        if obs is not None and not obs[season].equals(rv_tmp):
             # Regrid obs to model grid
             if regrid:
-                target = xc.create_grid(rv_new.lat, rv_new.lon)
-                obs_m = obs[season].regridder.horizontal(season, target, tool='regrid2')
+                target = xc.create_grid(rv_tmp.lat, rv_tmp.lon)
+                obs_m = obs.regridder.horizontal(season, target, tool='regrid2')
             else:
-                obs_m = obs[season]
-                shp1 = (len(rv_new[season].lat),len(rv_new[season].lon))
-                shp2 = (len(obs_m[season].lat),len(obs_m[season].lon))
+                obs_m = obs
+                shp1 = (len(rv_tmp.lat),len(rv_tmp.lon))
+                shp2 = (len(obs.lat),len(obs.lon))
                 assert shp1 == shp2, "Model and Reference data dimensions 'lat' and 'lon' must match."
 
             # Get xy stats for temporal average
-            a = rv_new.temporal.average(season)
-            b = obs_m.temporal.average(season)
-            weights = rv_new.spatial.get_weights(axis=['X', 'Y'])
-            rms_xy = compute_statistics.rms_xy(a, b, var=season, weights=weights)
-            meanabs_xy = compute_statistics.meanabs_xy(a, b, var=season, weights=weights)
-            bias_xy = compute_statistics.bias_xy(a, b, var=season, weights=weights)
-            cor_xy = compute_statistics.cor_xy(a, b, var=season, weights=weights)
-            rmsc_xy = compute_statistics.rmsc_xy(a, b, var=season, weights=weights)
-            std_obs_xy = compute_statistics.std_xy(b, season)
-            pct_dif = percent_difference(b,bias_xy,season,weights)
+            weights = rv_tmp.spatial.get_weights(axis=['X', 'Y'])
+            rms_xy = compute_statistics.rms_xy(rv_tmp, obs_m, var=season, weights=weights)
+            meanabs_xy = compute_statistics.meanabs_xy(rv_tmp, obs_m, var=season, weights=weights)
+            bias_xy = compute_statistics.bias_xy(rv_tmp, obs_m, var=season, weights=weights)
+            cor_xy = compute_statistics.cor_xy(rv_tmp, obs_m, var=season, weights=weights)
+            rmsc_xy = compute_statistics.rmsc_xy(rv_tmp, obs_m, var=season, weights=weights)
+            std_obs_xy = compute_statistics.std_xy(rv_tmp, season)
+            pct_dif = percent_difference(obs_m,bias_xy,season,weights)
 
-            met_dict[m][region]["pct_dif"][season] = pct_dif
-            met_dict[m][region]["rms_xy"][season] = rms_xy
-            met_dict[m][region]["mae_xy"][season] = meanabs_xy
-            met_dict[m][region]["bias_xy"][season] = bias_xy
-            met_dict[m][region]["cor_xy"][season] = cor_xy
-            met_dict[m][region]["rmsc_xy"][season] = rmsc_xy
-            met_dict[m][region]["std-obs_xy"][season] = std_obs_xy
+            met_dict[stat][region]["pct_dif"][season] = pct_dif
+            met_dict[stat][region]["rms_xy"][season] = rms_xy
+            met_dict[stat][region]["mae_xy"][season] = meanabs_xy
+            met_dict[stat][region]["bias_xy"][season] = bias_xy
+            met_dict[stat][region]["cor_xy"][season] = cor_xy
+            met_dict[stat][region]["rmsc_xy"][season] = rmsc_xy
+            met_dict[stat][region]["std-obs_xy"][season] = std_obs_xy
 
     return met_dict
 
@@ -517,15 +541,15 @@ def remove_outliers(rv,blockex):
     # filtering by comparing to the block extreme values
     # rv: data array
     # blckex: data array
-    block_max=blockex.max("time").data
-    block_min=blockex.min("time").data
-    block_std=blockex.std("time").data
+    block_max=blockex.max("time",skipna=True).data
+    block_min=blockex.min("time",skipna=True).data
+    block_std=blockex.std("time",skipna=True).data
     
     # Remove values that are either:
     # 8 standard deviations above the max value in block extema
     # 8 standard deviations below the min value in block extrema
-    plussig=block_max+8*block_std
-    minsig=block_min-8*block_std
-    rv_new = rv.where((val<plussig) & (val>minsig))
-
-    return rv_new
+    tol = 8 * block_std
+    plussig=block_max + tol
+    minsig=block_min - tol
+    rv_remove_outliers = rv.where((rv<plussig) & (rv>minsig))
+    return rv_remove_outliers

@@ -388,9 +388,10 @@ for model in model_loop_list:
             "Seasonal metrics for block extrema for single dataset")
 
 # Output single file with all models
-if "Reference" in model_loop_list:
-    model_loop_list.remove("Reference")
-metrics_dict["DIMENSIONS"]["model"] = model_loop_list
+model_write_list = model_loop_list.copy()
+if "Reference" in model_write_list:
+    model_write_list.remove("Reference")
+metrics_dict["DIMENSIONS"]["model"] = model_write_list
 utilities.write_to_json(metrics_output_path,"block_extremes_metrics.json",metrics_dict)
 fname=os.path.join(metrics_output_path,"block_extremes_metrics.json")
 meta.update_metrics(
@@ -422,8 +423,10 @@ if plots and (reference_data_path is not None):
 # Update the stat list in the inner loop and in the 
 # max/min check.
 print("Generating return values.")
-
 for model in model_loop_list:
+    # Skip obs if nonstationary
+    if model=="Reference" and cov_file is not None:
+        continue
     for stat in ["TXx","TXn","TNx","TNn","Rx5day","Rx1day"]:
         if stat in ["TXx","TNx","Rx5day","Rx1day"]:
             maxes = True
@@ -437,6 +440,69 @@ for model in model_loop_list:
         elif len(filelist) == 1:
             # Return value from single realization
             meta = return_value.compute_rv_from_file(filelist,cov_file,cov_name,nc_dir,return_period,meta,maxes=maxes)
+
+rv_metrics_dict = compute_metrics.init_metrics_dict(
+    model_loop_list,
+    variable_list,
+    dec_mode,
+    drop_incomplete_djf,
+    annual_strict,
+    region_name)
+
+# Write metrics file for return values
+# Can only do this for stationary case
+if cov_file is None:
+    filelist = glob.glob(nc_dir+"/*return_value.nc")
+    for file in filelist:
+        # Use the file name to get variables
+        if len(os.path.basename(file).split("_")) > 6:
+            rz = os.path.basename(file).split("_")[1]
+        else:
+            rz = "all"
+        model = os.path.basename(file).split("_")[0]
+        stat = os.path.basename(file).split("_")[-4]
+        region = os.path.basename(file).split("_")[-5]
+
+        if rz == "all":
+            # Use the realization file name that comes first, sorted
+            bmfilelist = glob.glob(nc_dir+"/{0}_*_{1}_{2}_*.nc".format(model,region,stat))
+            bmfilelist.sort()
+            bm = xcdat.open_dataset(bmfilelist[0])
+        else:
+            block_file = file.replace("_return_value","")
+            bm = xcdat.open_dataset(block_file)
+
+        # Get reference data if present
+        refds = None
+        if "Reference" in model_loop_list:
+            ref_file = nc_dir+"/Reference_{0}_{1}_{2}_*_return_value.nc".format(reference_data_set,region,stat)
+            ref_file=glob.glob(ref_file)[0]
+            refds = xcdat.open_dataset(ref_file)
+            refds=refds.drop_vars("lat_bnds")
+            refds=refds.drop_vars("lon_bnds")
+            refds.lat["bounds"]=""
+            refds.lon["bounds"]=""
+            refds=refds.bounds.add_missing_bounds()
+
+        rv = xcdat.open_dataset(file)
+        rv=rv.drop_vars("lat_bnds")
+        rv=rv.drop_vars("lon_bnds")
+        rv.lat["bounds"]=""
+        rv.lon["bounds"]=""
+        rv=rv.bounds.add_missing_bounds()
+        tmp = metrics_json_return_value2(rv,bm,refds,stat,region=region,regrid=regrid)
+        rv_metrics_dict[model].update({rz: tmp})
+        
+    if "Reference" in model_loop_list:
+        model_write_list.remove("Reference")
+    rv_metrics_dict["DIMENSIONS"]["model"] = model_loop_list
+    utilities.write_to_json(metrics_output_path,"return_value_metrics.json",rv_metrics_dict)
+    fname=os.path.join(metrics_output_path,"return_value_metrics.json")
+    meta.update_metrics(
+        "All",
+        fname,
+        "All results",
+        "Seasonal metrics for return value for all datasets")
 
 # Update and write metadata file
 try:
