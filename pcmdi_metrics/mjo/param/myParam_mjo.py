@@ -30,7 +30,7 @@ update_json = False
 # Observation
 # -------------------------------------------------
 reference_data_name = "GPCP-1-3"
-reference_data_path = "/p/user_pub/PCMDIobs/PCMDIobs2/atmos/day/pr/GPCP-1-3/gn/v20200707/pr_day_GPCP-1-3_BE_gn_v20200707_19961002-20170101.nc"  # noqa
+reference_data_path = "/p/user_pub/PCMDIobs/obs4MIPs_legacy/PCMDIobs2/atmos/day/pr/GPCP-1-3/gn/v20200924/pr_day_GPCP-1-3_BE_gn_v20200924_19961002-20170101.nc"  # noqa
 
 varOBS = "pr"
 ObsUnitsAdjust = (True, "multiply", 86400.0, "mm d-1")  # kg m-2 s-1 to mm day-1

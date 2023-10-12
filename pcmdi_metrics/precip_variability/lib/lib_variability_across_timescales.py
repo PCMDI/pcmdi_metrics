@@ -63,7 +63,7 @@ def precip_variability_across_timescale(
     # Write data (nc file)
     outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc"
     custom_dataset = xr.merge([freqs, ps, rn, sig95])
-    custom_dataset.to_netcdf(path=os.path.join(outdir(output_type="diagnostic_results"), outfilename))
+    custom_dataset.to_netcdf(path=os.path.join(outdir.replace("%(output_type)","diagnostic_results"), outfilename))
         
     # Power spectum of anomaly
     freqs, ps, rn, sig95 = Powerspectrum(anom, nperseg, noverlap)
@@ -72,7 +72,7 @@ def precip_variability_across_timescale(
     # Write data (nc file)
     outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
     custom_dataset = xr.merge([freqs, ps, rn, sig95])
-    custom_dataset.to_netcdf(path=os.path.join(outdir(output_type="diagnostic_results"), outfilename))
+    custom_dataset.to_netcdf(path=os.path.join(outdir.replace("%(output_type)","diagnostic_results"), outfilename))
         
     # Write data (json file)
     psdmfm["RESULTS"][dat] = {}
@@ -83,7 +83,7 @@ def precip_variability_across_timescale(
         "PS_pr." + str(dfrq) + "_regrid.180x90_area.freq.mean_" + dat + ".json"
     )
     JSON = pcmdi_metrics.io.base.Base(
-        outdir(output_type="metrics_results"), outfilename
+        outdir.replace("%(output_type)","metrics_results"), outfilename
     )
     JSON.write(
         psdmfm,

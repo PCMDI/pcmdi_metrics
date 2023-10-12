@@ -20,6 +20,7 @@ from pcmdi_metrics.mean_climate.lib import (
     mean_climate_metrics_to_json,
 )
 from pcmdi_metrics.variability_mode.lib import tree
+from pcmdi_metrics.variability_mode.lib import sort_human
 
 
 parser = create_mean_climate_parser()
@@ -46,8 +47,10 @@ test_data_path = parameter.test_data_path
 reference_data_path = parameter.reference_data_path
 metrics_output_path = parameter.metrics_output_path
 diagnostics_output_path = parameter.diagnostics_output_path
+custom_obs = parameter.custom_observations
 debug = parameter.debug
 cmec = parameter.cmec
+parallel = parameter.parallel
 
 if metrics_output_path is not None:
     metrics_output_path = parameter.metrics_output_path.replace('%(case_id)', case_id)
@@ -58,15 +61,15 @@ if diagnostics_output_path is None:
 diagnostics_output_path = diagnostics_output_path.replace('%(case_id)', case_id)
 
 find_all_realizations = False
+first_realization_only = False
 if realization is None:
     realization = ""
-    realizations = [realization]
 elif isinstance(realization, str):
     if realization.lower() in ["all", "*"]:
         find_all_realizations = True
-        realizations = "Search for all realizations!!"
-    else:
-        realizations = [realization]
+    elif realization.lower() in ["first", "first_only"]:
+        first_realization_only = True
+realizations = [realization]
 
 if debug:
     print('regions_specs (before loading internally defined):', regions_specs)
@@ -101,29 +104,39 @@ print(
 print('--- prepare mean climate metrics calculation ---')
 
 # generate target grid
-if target_grid == "2.5x2.5":
-    # target grid for regridding
-    t_grid = xc.create_uniform_grid(-88.875, 88.625, 2.5, 0, 357.5, 2.5)
-    if debug:
-        print('type(t_grid):', type(t_grid))  # Expected type is 'xarray.core.dataset.Dataset'
-        print('t_grid:', t_grid)
-    # identical target grid in cdms2 to use generateLandSeaMask function that is yet to exist in xcdat
-    t_grid_cdms2 = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
-    # generate land sea mask for the target grid
-    sft = cdutil.generateLandSeaMask(t_grid_cdms2)
-    if debug:
-        print('sft:', sft)
-        print('sft.getAxisList():', sft.getAxisList())
-    # add sft to target grid dataset
-    t_grid['sftlf'] = (['lat', 'lon'], np.array(sft))
-    if debug:
-        print('t_grid (after sftlf added):', t_grid)
-        t_grid.to_netcdf('target_grid.nc')
+res=target_grid.split("x")
+lat_res=float(res[0])
+lon_res=float(res[1])
+start_lat=-90.+lat_res/2
+start_lon=0.
+end_lat = 90.-lat_res/2
+end_lon = 360.-lon_res
+nlat = ((end_lat - start_lat) * 1./lat_res) + 1
+nlon = ((end_lon - start_lon) * 1./lon_res) + 1
+t_grid=xc.create_uniform_grid(start_lat,end_lat,lat_res,start_lon,end_lon,lon_res)
+if debug:
+    print('type(t_grid):', type(t_grid))  # Expected type is 'xarray.core.dataset.Dataset'
+    print('t_grid:', t_grid)
+# identical target grid in cdms2 to use generateLandSeaMask function that is yet to exist in xcdat
+t_grid_cdms2 = cdms2.createUniformGrid(start_lat,nlat,lat_res,start_lon,nlon,lon_res)
+# generate land sea mask for the target grid
+sft = cdutil.generateLandSeaMask(t_grid_cdms2)
+if debug:
+    print('sft:', sft)
+    print('sft.getAxisList():', sft.getAxisList())
+# add sft to target grid dataset
+t_grid['sftlf'] = (['lat', 'lon'], np.array(sft))
+if debug:
+    print('t_grid (after sftlf added):', t_grid)
+    t_grid.to_netcdf('target_grid.nc')
 
 # load obs catalogue json
 egg_pth = resources.resource_path()
-obs_file_name = "obs_info_dictionary.json"
-obs_file_path = os.path.join(egg_pth, obs_file_name)
+if len(custom_obs) > 0:
+    obs_file_path = custom_obs
+else:
+    obs_file_name = "obs_info_dictionary.json"
+    obs_file_path = os.path.join(egg_pth, obs_file_name)
 with open(obs_file_path) as fo:
     obs_dict = json.loads(fo.read())
 # if debug:
@@ -134,6 +147,9 @@ print('--- start mean climate metrics calculation ---')
 # -------------
 # variable loop
 # -------------
+if isinstance(vars, str):
+    vars = [vars]
+
 for var in vars:
 
     if '_' in var or '-' in var:
@@ -195,7 +211,7 @@ for var in vars:
 
             result_dict["RESULTS"][model][ref]["source"] = ref_dataset_name 
 
-            if find_all_realizations:
+            if find_all_realizations or first_realization_only:
                 test_data_full_path = os.path.join(
                     test_data_path,
                     filename_template).replace('%(variable)', varname).replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', '*')
@@ -204,6 +220,9 @@ for var in vars:
                 realizations = []
                 for ncfile in ncfiles:
                     realizations.append(ncfile.split('/')[-1].split('.')[3])
+                realizations = sort_human(realizations)
+                if first_realization_only:
+                    realizations = realizations[0:1]
                 print('realizations (after search): ', realizations)
 
             for run in realizations:
@@ -268,7 +287,7 @@ for var in vars:
 
                             if debug:
                                 print('ds_test_tmp:', ds_test_tmp)
-                                ds_test_dict[region].to_netcdf('_'.join([var, 'model', model, run, region + '.nc']))
+                                ds_test_dict[region].to_netcdf('_'.join([var, 'model', model, run, region, case_id + '.nc']))
                                 if model == test_data_set[0] and run == realizations[0]:
                                     ds_ref_dict[region].to_netcdf('_'.join([var, 'ref', region + '.nc']))
 
@@ -276,18 +295,18 @@ for var in vars:
                             print('compute metrics start')
                             result_dict["RESULTS"][model][ref][run][region] = compute_metrics(varname, ds_test_dict[region], ds_ref_dict[region], debug=debug)
 
-                        # write individual JSON
-                        # --- single simulation, obs (need to accumulate later) / single variable
-                        json_filename_tmp = "_".join([model, var, target_grid, regrid_tool, "metrics", ref])
-                        mean_climate_metrics_to_json(
-                            os.path.join(metrics_output_path, var),
-                            json_filename_tmp,
-                            result_dict,
-                            model=model,
-                            run=run,
-                            cmec_flag=cmec,
-                            debug=debug
-                        )
+                            # write individual JSON
+                            # --- single simulation, obs (need to accumulate later) / single variable
+                            json_filename_tmp = "_".join([var, model, run, target_grid, regrid_tool, "metrics", ref, case_id])
+                            mean_climate_metrics_to_json(
+                                os.path.join(metrics_output_path, var),
+                                json_filename_tmp,
+                                result_dict,
+                                model=model,
+                                run=run,
+                                cmec_flag=cmec,
+                                debug=debug
+                            )
  
                     except Exception as e:
                         if debug:
@@ -295,12 +314,17 @@ for var in vars:
                         print('error occured for ', model, run)
                         print(e)
 
-    # write collective JSON --- all models / all obs / single variable
-    json_filename = "_".join([var, target_grid, regrid_tool, "metrics"])
-    mean_climate_metrics_to_json(
-        metrics_output_path,
-        json_filename,
-        result_dict,
-        cmec_flag=cmec,
-    )
-    print('pmp mean clim driver completed')
+    # ========================================================================
+    # Dictionary to JSON: collective JSON at the end of model_realization loop
+    # ------------------------------------------------------------------------
+    if not parallel:
+        # write collective JSON --- all models / all obs / single variable
+        json_filename = "_".join([var, target_grid, regrid_tool, "metrics", case_id])
+        mean_climate_metrics_to_json(
+            metrics_output_path,
+            json_filename,
+            result_dict,
+            cmec_flag=cmec,
+        )
+
+print('pmp mean clim driver completed')
