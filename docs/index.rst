@@ -9,7 +9,7 @@ PCMDI Metrics Package (PMP)
 
 The Program for Climate Model Diagnosis & Intercomparison (`PCMDI`_) Metrics Package (PMP) is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  
 Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  
-Currently, the comparisons emphasize metrics of large- to global-scale annual cycle and both tropcial 
+Currently, the comparisons emphasize metrics of large- to global-scale annual cycle and both tropical 
 and extra-tropical modes of variability. 
 Recent release (v3) include established statistics for mean climate, ENSO, MJO, extratropical modes of variability, 
 regional monsoons, and high frequency characteristics of simulated precipitation as a part of U.S. DOE's Benchmarking of simulated precipitation. 
@@ -78,6 +78,7 @@ BSD 3-Clause License. See `LICENSE <https://github.com/PCMDI/pcmdi_metrics/blob/
    :hidden:
    :caption: For developers/contributors:
 
+   contributing
    resources
    team
    GitHub repository <https://github.com/PCMDI/pcmdi_metrics>
