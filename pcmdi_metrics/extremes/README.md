@@ -28,12 +28,14 @@ To run the extremes metrics, use the following command format in a PMP environme
 ## Outputs
 The outputs will be written to a single directory. This directory will be created by the driver if it does not already exist. Otherwise, the output directory should be empty before the driver starts. The name of the output directory is controlled by the `metrics_output_path` and `case_id` parameters. 
 
-This script will produce metrics JSONs, netcdf files, and figures (optional) containing block max/min values for temperature and/or precipitation. A metadata file called "output.json" will be generated with more detailed information about the files in the output bundle.
+This script will produce metrics JSONs, netcdf files, and figures (optional). There will be netcdf files containing block max/min values for temperature and/or precipitation, along with return value and standard error files. A metadata file called "output.json" will be generated with more detailed information about the files in the output bundle. Return value statistics will be provided for stationary return values only.
 
-Data is masked to be over land only (50<=sftlf<=100). Antarctica is excluded.
+All netcdf files will contain data for 5 time periods: Annual ("ANN"), DJF, MAM, JJA, and SON. Data is masked to be over land only (50<=sftlf<=100). Antarctica is excluded.
+
+If multiple realizations are provided for a single model, a single return value file will be produced for that model which makes use of all provided realizations in the return value computation.
 
 ### Metrics
-Metrics are produced to describe the time mean extrema values, along with spatial statistics comparing the mean model field to mean observed field.  
+Metrics are produced to describe the time mean extrema values, along with spatial statistics comparing the mean model field to mean observed field. Metrics are output for Annual, DJF, MAM, JJA, and SON seasons.
 Model only: "mean", "std_xy"  
 If reference dataset is available: "mean", "std_xy", "std-obs_xy", "pct_dif", "bias_xy", "cor_xy", "mae_xy", "rms_xy", "rmsc_xy"  
 
@@ -90,6 +92,9 @@ You can either use a region from a shapefile or provide coordinate pairs that de
 | ModUnitsAdjust | (tuple) Provide information for units conversion. Uses format (flag (bool), operation (str), value (float), new units (str)). Operation can be "add", "subtract", "multiply", or "divide". For example, use (True, 'multiply', 86400, 'mm/day') to convert kg/m2/s to mm/day.|
 | ObsUnitsAdjust | (tuple) Similar to ModUnitsAdjust, but for reference dataset. |  
 
+## Extreme value analysis details
+
+For this driver, we have implemented the Generalized Extreme Value analysis in pure Python. The return value results may vary from those obtained with the R climextRemes package, which was used to conduct the return value analysis in Wehner, Gleckler, and Lee (2000). In the nonstationary case, the GEV location parameter is linearly dependent on the covariate. 
 
 ## References
 
