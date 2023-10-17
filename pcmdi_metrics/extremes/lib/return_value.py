@@ -493,8 +493,6 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
         B = np.matmul(A,grad)
         se = np.sqrt(np.diag(B))
     except Exception as e:
-        print(e)
-        print("Setting SE to np.nan")
         se = np.ones(np.shape(return_value))*np.nan
 
     return return_value.squeeze(), se.squeeze()
