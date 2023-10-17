@@ -121,6 +121,7 @@ def compute_rv_for_model(filelist,cov_filepath,cov_varname,ncdir,return_period,m
         count=0
         for ncfile in filelist:
             ds = xc.open_dataset(ncfile)
+            print(ncfile)
             data = np.reshape(ds[season].data,(time,lat*lon))
             ind1 = count*t
             ind2 = ind1+t
