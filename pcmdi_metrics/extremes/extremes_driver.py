@@ -18,7 +18,6 @@ from pcmdi_metrics.extremes.lib import (
 )
 from pcmdi_metrics.io import xcdat_openxml
 
-
 ##########
 # Set up
 ##########
@@ -490,7 +489,7 @@ if cov_file is None:
         rv.lat["bounds"]=""
         rv.lon["bounds"]=""
         rv=rv.bounds.add_missing_bounds()
-        tmp = metrics_json_return_value2(rv,bm,refds,stat,region=region,regrid=regrid)
+        tmp = compute_metrics.metrics_json_return_value(rv,bm,refds,stat,region=region,regrid=regrid)
         rv_metrics_dict[model].update({rz: tmp})
         
     if "Reference" in model_loop_list:
