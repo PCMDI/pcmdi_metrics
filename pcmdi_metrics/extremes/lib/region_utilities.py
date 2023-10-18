@@ -10,7 +10,12 @@ import xcdat
 
 def check_region_params(shp_path,coords,region_name,col,default):
     use_region_mask = False
-    
+
+    # Underscore will mess with file name slicing in extremes driver    
+    if region_name is not None and "_" in region_name:
+        print("Error: Underscore character not permitted in region_name.")
+        sys.exit()
+
     if shp_path is not None:
         use_region_mask = True
         if not os.path.exists(shp_path):
