@@ -22,6 +22,7 @@ def compute_rv_from_file(filelist,cov_filepath,cov_name,outdir,return_period,met
 
     for ncfile in filelist:
         ds = xc.open_dataset(ncfile)
+        print(ncfile)
         rv,se = get_dataset_rv(ds,cov_filepath,cov_name,return_period,maxes)
         if rv is None:
             print("Error in calculating return value for",ncfile)
@@ -218,7 +219,7 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
         drop_incomplete_djf = True
     units = ds.ANN.attrs["units"]
 
-    print("Return value for single realization")
+    print("Return value for single realization",)
     if cov_filepath is not None:
         nonstationary = True
         print("Nonstationary case")
@@ -257,7 +258,6 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
     standard_error = return_value.copy()
 
     for season in ["ANN","DJF","MAM","JJA","SON"]:
-        print("\n-----",season,"-----\n")
         data = ds[season].data
         # Scale x to be around magnitude 1
         scale_factor = np.abs(np.nanmean(data))
