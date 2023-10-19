@@ -18,6 +18,7 @@ from pcmdi_metrics.extremes.lib import (
 )
 from pcmdi_metrics.io import xcdat_openxml
 
+
 ##########
 # Set up
 ##########
@@ -433,8 +434,12 @@ for model in model_loop_list:
             # TXn and TNn
             maxes = False
         filelist = glob.glob(nc_dir+"/*{0}*{1}*".format(model,stat))
+        # Skip over results that might be left from old run
+        filelist = [f for f in filelist if ("return_value" not in f) and \
+                    ("standard_error" not in f)]
         if len(filelist) > 1:
             # Use all realizations
+            print(model)
             meta = return_value.compute_rv_for_model(filelist,cov_file,cov_name,nc_dir,return_period,meta,maxes=maxes)
         elif len(filelist) == 1:
             # Return value from single realization
@@ -490,10 +495,18 @@ if cov_file is None:
         rv.lon["bounds"]=""
         rv=rv.bounds.add_missing_bounds()
         tmp = compute_metrics.metrics_json_return_value(rv,bm,refds,stat,region=region,regrid=regrid)
-        rv_metrics_dict[model].update({rz: tmp})
+        # store the stats correctly in the metrics dictionary
+        if model != "Reference":
+            if model in rv_metrics_dict["RESULTS"]:
+                if rz in rv_metrics_dict["RESULTS"][model]:
+                    rv_metrics_dict["RESULTS"][model][rz].update(tmp)
+                else:
+                    rv_metrics_dict["RESULTS"][model].update({rz:tmp})
+            else:
+                rv_metrics_dict["RESULTS"][model] = {rz:tmp}
         
     if "Reference" in model_loop_list:
-        model_write_list.remove("Reference")
+        model_loop_list.remove("Reference")
     rv_metrics_dict["DIMENSIONS"]["model"] = model_loop_list
     utilities.write_to_json(metrics_output_path,"return_value_metrics.json",rv_metrics_dict)
     fname=os.path.join(metrics_output_path,"return_value_metrics.json")
