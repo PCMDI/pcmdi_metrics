@@ -75,7 +75,7 @@ The following parameters are **required to be set by the user** either in a para
 * **realization**: List of realizations.
 * **test_data_path**: File path to directory containing model/test data.
 * **filename_template**: File name template for test data, e.g., "CMIP5.historical.%(model_version).r1i1p1.day.%(variable).19810101-200512.AC.v2019022512.nc" where "model_version" and "variable" will be analyzed for each of the entries in test_data_set and vars.
-* **metric_output_path**: the full path to the metrics output in JSON files, e.g., '~/demo_data/PMP_metrics/'. The %(case_id) variable can be used here.
+* **metric_output_path**: Directory path for metrics output in JSON files, e.g., '~/demo_data/PMP_metrics/'. The %(case_id) variable can be used here. If exists, should be empty before run. 
 
 Reference data is optional, but the following parameters must be set when it is used:
 
