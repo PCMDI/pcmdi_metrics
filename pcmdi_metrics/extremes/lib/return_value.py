@@ -323,48 +323,6 @@ def get_dataset_rv(ds,cov_filepath,cov_varname,return_period=20,maxes=True):
 
     return return_value,standard_error
 
-def calc_rv_climex(data,covariate,return_period,nreplicates=1,maxes=True):
-    # Use climextRemes to get the return value and standard error
-    # This function exists for easy comparison with the pure Python
-    # implementation in calc_rv_py. However, generating the return
-    # value this way is not supported as part of the PMP.
-    # Returns the return value and standard error.
-    # Arguments:
-    #   ds: numpy array
-    #   covariate: numpy array
-    #   nreplicates: int
-    #   return_period: int
-    #   maxes: bool
-    return_value = None
-    standard_error = None
-    if covariate is None: # Stationary
-        tmp = climextremes.fit_gev(
-            data.squeeze(),
-            returnPeriod=return_period,
-            nReplicates=nreplicates,
-            maxes=maxes)
-    else: # Nonstationary
-        if len(covariate)<len(data):
-            covariate_tiled = np.tile(covariate,nreplicates)
-            xnew=covariate
-        else:
-            covariate_tiled=covariate
-            xlen=len(covariate)/nreplicates
-            xnew=covariate[0:xlen]
-        tmp = climextremes.fit_gev(
-            data.squeeze(),
-            covariate_tiled,
-            returnPeriod=return_period,
-            nReplicates=nreplicates,
-            locationFun = 1,
-            maxes=maxes,
-            xNew=xnew)
-    success = tmp['info']['failure'][0]
-    if success == 0:
-        return_value = tmp['returnValue']
-        standard_error = tmp['se_returnValue']
-    return return_value,standard_error
-
 def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
     # An implementation of the return value and standard error
     # that does not use climextRemes.
@@ -496,10 +454,11 @@ def calc_rv_py(x,covariate,return_period,nreplicates=1,maxes=True):
 
     return return_value.squeeze(), se.squeeze()
 
-
-def calc_rv_interpolated(tseries,return_period):
+def calc_rv_interpolated(tseries,return_period,average=False):
     # A function to get a stationary return period
     # interpolated from the block maximum data
+    # The "average" parameter works best for the 100
+    # year timeseries.
     if return_period < 1:
         return None
     nyrs = len(tseries)
@@ -510,24 +469,70 @@ def calc_rv_interpolated(tseries,return_period):
     rplist = [nyrs/n for n in range(1,nyrs+1)]
     count = 0
     for item in rplist:
-        if item > return_period:
-            continue
-        if item < return_period:
-            # linearly interpolate between measurements
-            # to estimate return value
-            rp_upper=rplist[count-1]
-            rp_lower=rplist[count]
-            def f(x):
-                m = (tsorted[count-1] - tsorted[count])/(rp_upper-rp_lower)
-                b = tsorted[count] - (m * rp_lower)
-                return m * x + b
-            rv = f(return_period)
-            break
-        elif item == return_period:
-            try:
-                rv = (tsorted[count]+tsorted[count+1])/2
-            except:
-                rv = tsorted[count]
+        try:
+            if item > return_period:
+                continue
+            if item < return_period:
+                # linearly interpolate between measurements
+                # to estimate return value
+                rp_upper=rplist[count-1]
+                rp_lower=rplist[count]
+                def f(x):
+                    m = (tsorted[count-1] - tsorted[count])/(rp_upper-rp_lower)
+                    b = tsorted[count] - (m * rp_lower)
+                    return m * x + b
+                rv = f(return_period)
+                break
+            elif item == return_period:
+                if average:
+                    rv = (tsorted[count]+tsorted[count-1])/2.
+                else:
+                    rv = tsorted[count]
+                break
+        except: # any issues, set to NaN
+            rv = np.nan
             break
         count+=1
     return rv,np.nan
+
+def calc_rv_climex(data,covariate,return_period,nreplicates=1,maxes=True):
+    # Use climextRemes to get the return value and standard error
+    # This function exists for easy comparison with the pure Python
+    # implementation in calc_rv_py. However, generating the return
+    # value this way is not supported as part of the PMP.
+    # Returns the return value and standard error.
+    # Arguments:
+    #   ds: numpy array
+    #   covariate: numpy array
+    #   nreplicates: int
+    #   return_period: int
+    #   maxes: bool
+    return_value = None
+    standard_error = None
+    if covariate is None: # Stationary
+        tmp = climextremes.fit_gev(
+            data.squeeze(),
+            returnPeriod=return_period,
+            nReplicates=nreplicates,
+            maxes=maxes)
+    else: # Nonstationary
+        if len(covariate)<len(data):
+            covariate_tiled = np.tile(covariate,nreplicates)
+            xnew=covariate
+        else:
+            covariate_tiled=covariate
+            xlen=len(covariate)/nreplicates
+            xnew=covariate[0:xlen]
+        tmp = climextremes.fit_gev(
+            data.squeeze(),
+            covariate_tiled,
+            returnPeriod=return_period,
+            nReplicates=nreplicates,
+            locationFun = 1,
+            maxes=maxes,
+            xNew=xnew)
+    success = tmp['info']['failure'][0]
+    if success == 0:
+        return_value = tmp['returnValue']
+        standard_error = tmp['se_returnValue']
+    return return_value,standard_error
