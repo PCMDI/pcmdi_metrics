@@ -5,10 +5,13 @@ Extremes
 Summary
 ========
 
+The PMP Extremes driver produces annual block extrema and return values for daily temperature and precipitation data. The annual block extrema results include the `ETCCDI indices <http://etccdi.pacificclimate.org/list_27_indices.shtml>`_ Rx1day and Rx5day for precipitation and TX :sub:`x` , TX :sub:`n` , TN :sub:`x` , and TN :sub:`n`  for temperature.
+
+
 Inputs
 ========
 
-The Extremes Driver works on daily gridded climate data. This package expects input netcdf files to be cf-compliant and on regular latitude/longitude grids. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
+The Extremes Driver works on daily gridded climate data. This package expects input NetCDF files to be cf-compliant and on regular latitude/longitude grids. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
 
 Reference data
 ####################
@@ -24,7 +27,7 @@ Covariate data and stationarity
 ################################
 The extremes driver can produce nonstationary return values for model-only runs. To generate nonstationary return values, users must provide a covariate file path and name (see the parameters section for these settings). If no covariate file is provided, the Extremes Driver will generate stationary return values.
 
-The covariate file must contain an annual time series of the covariate variable. Covariate data must be provided in a netcdf file with time bounds included. The covariate time dimension must either 1) be exactly the same length in years as the input data, or 2) overlap in years with the input data time dimension. It is recommended that a log transformation be applied to nonlinear time series such as recent carbon dioxide values.
+The covariate file must contain an annual time series of the covariate variable. Covariate data must be provided in a NetCDF file with time bounds included. The covariate time dimension must either 1) be exactly the same length in years as the input data, or 2) overlap in years with the input data time dimension. It is recommended that a log transformation be applied to nonlinear time series such as recent carbon dioxide values.
 
 Regional Analysis
 #####################
@@ -41,9 +44,9 @@ Outputs
 ========
 The outputs will be written to a single directory. This directory will be created by the driver if it does not already exist. Otherwise, the output directory should be empty before the driver starts. The name of the output directory is controlled by the `metrics_output_path` and `case_id` parameters. 
 
-This script will produce metrics JSONs, netcdf files, and figures (optional). There will be netcdf files containing block max/min values for temperature and/or precipitation, along with return value and standard error files. A metadata file called "output.json" will be generated with more detailed information about the files in the output bundle. Return value statistics will be provided for stationary return values only.
+This script will produce metrics JSONs, NetCDF files, and figures (optional). There will be NetCDF files containing block max/min values for temperature and/or precipitation, along with return value and standard error files. A metadata file called "output.json" will be generated with more detailed information about the files in the output bundle. Return value statistics will be provided for stationary return values only.
 
-All netcdf files will contain data for 5 time periods: Annual ("ANN"), DJF, MAM, JJA, and SON. Data is masked to be over land only (50<=sftlf<=100). Antarctica is excluded.
+All NetCDF files will contain data for 5 time periods: Annual ("ANN"), DJF, MAM, JJA, and SON. Data is masked to be over land only (50<=sftlf<=100). Antarctica is excluded.
 
 If multiple realizations are provided for a single model, a single return value file will be produced for that model which makes use of all provided realizations in the return value computation.
 
@@ -81,7 +84,7 @@ Reference data is optional, but the following parameters must be set when it is 
 
 To generate nonstationary return values (test data set only), use the following parameters:
 
-* **covariate_path**: File path of covariate timeseries netcdf. Must contain time bounds.
+* **covariate_path**: File path of covariate timeseries NetCDF. Must contain time bounds.
 * **covariate**: Name of covariate variable in file given by --covariate_path.
 
 The output of the extremes summary statistics are saved in a JSON file. 
@@ -118,8 +121,6 @@ These parameters are used for regional analysis using a coordinate list:
 
 Extreme value analysis details
 ==============================
-
-Extreme value analysis details
 
 For this driver, we have implemented the Generalized Extreme Value analysis in pure Python. The return value results may vary from those obtained with the R climextRemes package, which was used to conduct the return value analysis in Wehner, Gleckler, and Lee (2000). In the nonstationary case, the GEV location parameter is linearly dependent on the covariate.
 
