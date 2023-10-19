@@ -81,7 +81,9 @@ You can either use a region from a shapefile or provide coordinate pairs that de
 | reference_data_path | (str) The full path of the reference data file. | 
 | reference_data_set  | (str) The short name of the reference datas set for labeling output files. | 
 | reference_sftlf_template | (str) The full path of the reference data set land/sea mask. | 
-| metrics_output_path  | (str) The directory to write output files to. | 
+| metrics_output_path  | (str) The directory to write output files to. |  
+| covariate_path | (str) File path of covariate timeseries netcdf. |
+| covariate | (str) Name of covariate variable in file given by --covariate_path. |
 | plots | (bool) True to save world map figures of mean metrics. |
 | debug | (bool) True to use debug mode. | 
 | msyear | (int) Start year for model data set. |
