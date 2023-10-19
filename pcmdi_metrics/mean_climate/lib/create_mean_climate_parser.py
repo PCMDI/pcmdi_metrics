@@ -266,4 +266,13 @@ def create_mean_climate_parser():
         required=False,
     )
 
+    parser.add_argument(
+        "--parallel",
+        type=bool,
+        dest="parallel",
+        default=False,
+        help="Option for running code in parallel mode: True / False (default)",
+        required=False,
+    )
+
     return parser
