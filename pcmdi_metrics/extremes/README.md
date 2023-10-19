@@ -5,7 +5,7 @@
 The Extremes Driver works on daily gridded climate data. This package expects input netcdf files to be cf-compliant and on regular latitude/longitude grids. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
 
 ### Reference data
-A reference (observation) input is not required, but it is necessary to create Taylor Diagrams. Reference data sets must follow the above rules for variable names and bounds.
+A reference (observation) input is not required, but it is necessary to create (optional) Taylor Diagrams. Reference data sets must follow the above rules for variable names and bounds.
 
 ### Land/sea mask
 Block extrema and return values will only be generated over land areas, so a land/sea mask is required for all datasets. Land is defined as grid cells where the land area percentage is between 50 and 100. Areas south of 50S will be masked out.
