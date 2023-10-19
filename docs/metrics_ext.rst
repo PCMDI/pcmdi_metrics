@@ -106,11 +106,13 @@ In addition to the minimum set of parameters noted above, the following **additi
 * **ObsUnitsAdjust**: Similar to ModUnitsAdjust, but for reference dataset.
 
 The following parameters are used for regional analysis using a shapefile:
+
 * **shp_path**: Path to shapefile.
 * **attribute**: Attribute used to identify region (eg, column of attribute table). For example, "COUNTRY" in a shapefile of countries.
 * **region_name**: Unique feature value of the region that occurs in the attribute given by "--attribute". Must match only one geometry in the shapefile. An example is "NORTH_AMERICA" under the attribute "CONTINENTS".
 
 These parameters are used for regional analysis using a coordinate list:
+
 * **coords**: Coordinate lat/lon pair lists. The coordinate must be listed in consecutive order, as they would occur when walking the perimeter of the bounding shape. Does not need to be a box, but cannot have holes. For example [[lat1,lon1],[lat1,lon2],[lat2,lon2],[lat2,lon1]].
 * **region_name**: Name of region. Default is "custom".
 
