@@ -154,7 +154,8 @@ def taylor_diag(fname,outfile_template):
     
     # For legend
     models_label = models.copy()
-    models_label.remove("Reference")
+    if "Reference" in models_label:
+        models_label.remove("Reference")
     
     nc = 1
     fsize = (8,5)
