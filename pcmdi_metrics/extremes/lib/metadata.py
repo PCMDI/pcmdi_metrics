@@ -11,7 +11,6 @@ class MetadataFile():
     def __init__(self,metrics_output_path):
         self.outfile = os.path.join(metrics_output_path,"output.json")
         self.json = {
-            "index": None,
             "provenance": {
                 "environment": "",
                 "modeldata": "",
