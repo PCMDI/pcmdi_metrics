@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+import os
+import sys
+
 import geopandas as gpd
 import numpy as np
-import os
 import regionmask
-import sys
 import xarray as xr
 import xcdat
 

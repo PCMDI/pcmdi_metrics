@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 import glob
 import json
-import sys
 import os
+import sys
 
 import xarray as xr
 import xcdat
@@ -10,14 +10,13 @@ import xcdat
 from pcmdi_metrics.extremes.lib import (
     compute_metrics,
     create_extremes_parser,
-    utilities,
-    region_utilities,
     metadata,
     plot_extremes,
+    region_utilities,
     return_value,
+    utilities,
 )
 from pcmdi_metrics.io import xcdat_openxml
-
 
 ##########
 # Set up

@@ -1,20 +1,20 @@
 #!/usr/bin/env python
-import cftime
-import cdms2
-import cdutil
 import datetime
 import glob
 import json
-import numpy as np
 import os
 import sys
+
+import cdms2
+import cdutil
+import cftime
+import numpy as np
 import xarray as xr
 import xcdat
-
-from pcmdi_metrics.io.base import Base
-from pcmdi_metrics.io import xcdat_openxml
-
 from pcmdi_utils import land_sea_mask
+
+from pcmdi_metrics.io import xcdat_openxml
+from pcmdi_metrics.io.base import Base
 
 
 def load_dataset(filepath):

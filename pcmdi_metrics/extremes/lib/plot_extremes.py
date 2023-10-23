@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import json
 import math
-import numpy as np
 import os
 import sys
 
@@ -14,7 +13,6 @@ import numpy as np
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
-import matplotlib.pyplot as plt
 from pcmdi_metrics.graphics import TaylorDiagram
 
 

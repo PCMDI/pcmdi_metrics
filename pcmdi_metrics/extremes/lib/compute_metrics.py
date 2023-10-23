@@ -1,13 +1,14 @@
 #!/usr/bin/env python
+import datetime
+import math
+import os
+import sys
+
+import cftime
+import numpy as np
+import pandas as pd
 import xarray as xr
 import xcdat as xc
-import pandas as pd
-import numpy as np
-import cftime
-import datetime
-import sys
-import os
-import math
 
 from pcmdi_metrics.mean_climate.lib import compute_statistics
 

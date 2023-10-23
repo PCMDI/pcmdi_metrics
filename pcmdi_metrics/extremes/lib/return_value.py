@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 import os
 
-from numdifftools.core import Hessian
 import numpy as np
-from scipy.stats import genextreme
-from scipy.optimize import minimize
 import xarray as xr
 import xcdat as xc
+from numdifftools.core import Hessian
+from scipy.optimize import minimize
+from scipy.stats import genextreme
 
 from pcmdi_metrics.extremes.lib import utilities
 
