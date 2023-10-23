@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from pcmdi_metrics.mean_climate.lib import pmp_parser
 
-def create_extremes_parser():
 
+def create_extremes_parser():
     parser = pmp_parser.PMPMetricsParser()
     parser.add_argument(
         "--case_id",
@@ -21,11 +21,11 @@ def create_extremes_parser():
         help="Variables to use",
         required=False,
     )
-    
+
     parser.add_argument(
         "-r",
         "--reference_data_set",
-        default = None,
+        default=None,
         type=str,
         nargs="+",
         dest="reference_data_set",
@@ -36,14 +36,14 @@ def create_extremes_parser():
 
     parser.add_argument(
         "--reference_data_path",
-        default = None,
+        default=None,
         dest="reference_data_path",
         help="Path for the reference climitologies",
         required=False,
     )
     parser.add_argument(
         "--reference_sftlf_template",
-        default = None,
+        default=None,
         dest="reference_sftlf_template",
         help="Path for the reference sftlf file",
         required=False,
@@ -147,61 +147,55 @@ def create_extremes_parser():
         action="store_false",
         help="Option to not save metrics in CMEC format",
         required=False,
-    )    
+    )
 
     parser.add_argument(
         "--chunk_size",
         dest="chunk_size",
         default=None,
         help="Chunk size for latitude/longitude",
-        required=False
+        required=False,
     )
 
     parser.add_argument(
         "--annual_strict",
         dest="annual_strict",
         action="store_true",
-        help="Flag to only include current year in rolling data calculations"
+        help="Flag to only include current year in rolling data calculations",
     )
 
     parser.add_argument(
         "--exclude_leap_day",
         dest="exclude_leap",
         action="store_true",
-        help="Flag to exclude leap days"
+        help="Flag to exclude leap days",
     )
 
     parser.add_argument(
         "--keep_incomplete_djf",
         dest="drop_incomplete_djf",
         action="store_false",
-        help="Flag to include data from incomplete DJF seasons"
+        help="Flag to include data from incomplete DJF seasons",
     )
 
     parser.add_argument(
         "--dec_mode",
         dest="dec_mode",
         default="DJF",
-        help="'DJF' or 'JFD' format for December/January/February season"
+        help="'DJF' or 'JFD' format for December/January/February season",
     )
 
     parser.add_argument(
         "--year_range",
         type=list,
         default=[None, None],
-        help="List containing the start and end year"
+        help="List containing the start and end year",
     ),
     parser.add_argument(
-        "--covariate_path",
-        type=str,
-        default=None,
-        help="Covariate file path"
+        "--covariate_path", type=str, default=None, help="Covariate file path"
     )
     parser.add_argument(
-        "--covariate",
-        type=str,
-        default="CO2mass",
-        help="Covariate variable name"
+        "--covariate", type=str, default="CO2mass", help="Covariate variable name"
     )
 
     parser.add_argument(
@@ -209,7 +203,7 @@ def create_extremes_parser():
         type=str,
         default=None,
         help="Region shapefile path. Must also provide --column and --region_name. Only one of --shp_path, --coords can be used.",
-        required=False
+        required=False,
     )
 
     parser.add_argument(
@@ -217,14 +211,14 @@ def create_extremes_parser():
         type=str,
         default=None,
         help="Name of region attribute column in shapefile",
-        required=False
+        required=False,
     )
     parser.add_argument(
         "--region_name",
         type=str,
         default=None,
         help="Name of region. If from shapefile, value must be found under attribute given by --column",
-        required=False
+        required=False,
     )
 
     parser.add_argument(
@@ -232,14 +226,14 @@ def create_extremes_parser():
         type=list,
         default=None,
         help="List of coordinates for region bounds. Must be provided in consecutive order around shape perimeter. Only one of --shp_path, --coords can be used.",
-        required=False
+        required=False,
     )
 
     parser.add_argument(
         "--generate_sftlf",
         action="store_true",
         help="Flag to generate land sea mask if not found.",
-        required=False
+        required=False,
     )
 
     parser.add_argument(
@@ -247,14 +241,14 @@ def create_extremes_parser():
         type=bool,
         default=True,
         help="Set to False if model and reference data all use same grid.",
-        required=False
+        required=False,
     )
 
     parser.add_argument(
         "--plots",
         action="store_true",
         help="Set to True to generate figures.",
-        required=False
+        required=False,
     )
     parser.add_argument(
         "--osyear", dest="osyear", type=int, help="Start year for reference data set"
