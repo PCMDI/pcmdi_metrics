@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 import datetime
-import glob
-import json
 import os
 import sys
 
@@ -9,8 +7,8 @@ import cdms2
 import cdutil
 import cftime
 import numpy as np
-import xarray as xr
 import xcdat
+import xarray as xr
 from pcmdi_utils import land_sea_mask
 
 from pcmdi_metrics.io import xcdat_openxml
@@ -114,7 +112,7 @@ def verify_output_path(metrics_output_path, case_id):
         print("Creating metrics output directory", metrics_output_path)
         try:
             os.makedirs(metrics_output_path)
-        except Error as e:
+        except Exception as e:
             print("\nError: Could not create metrics output path", metrics_output_path)
             print(e)
             print("Exiting.")
@@ -140,7 +138,14 @@ def set_up_realizations(realization):
 
 def generate_land_sea_mask(data, debug=False):
     # generate sftlf if not provided.
-    """Commenting out the cdutil version
+    mask = land_sea_mask.generate_land_sea_mask(data, tool="pcmdi", maskname="sftlf")
+    mask = mask * 100.0
+    mask = mask.to_dataset()
+
+    return mask
+
+
+def generate_land_sea_mask_cdutil(data, debug=False):
     latArray = data["lat"]
     lat = cdms2.createAxis(latArray, id="latitude")
     lat.designateLatitude()
@@ -151,24 +156,19 @@ def generate_land_sea_mask(data, debug=False):
     lon.designateLongitude()
     lon.units = "degrees_east"
 
-    t_grid_cdms2 = cdms2.grid.TransientRectGrid(lat, lon, 'yx', 'uniform')
+    t_grid_cdms2 = cdms2.grid.TransientRectGrid(lat, lon, "yx", "uniform")
     sft = cdutil.generateLandSeaMask(t_grid_cdms2)
 
     if debug:
-        print('sft:', sft)
-        print('sft.getAxisList():', sft.getAxisList())
+        print("sft:", sft)
+        print("sft.getAxisList():", sft.getAxisList())
 
     # add sft to target grid dataset
-    t_grid = xr.DataArray(np.array(sft),
-        coords={'lat': latArray,'lon': lonArray},
-        dims=["lat", "lon"]).to_dataset(name="sftlf")
+    t_grid = xr.DataArray(
+        np.array(sft), coords={"lat": latArray, "lon": lonArray}, dims=["lat", "lon"]
+    ).to_dataset(name="sftlf")
     t_grid = t_grid * 100
     if debug:
-        print('t_grid (after sftlf added):', t_grid)
-        t_grid.to_netcdf('target_grid.nc')
-    """
-    mask = land_sea_mask.generate_land_sea_mask(data, tool="pcmdi", maskname="sftlf")
-    mask = mask * 100.0
-    mask = mask.to_dataset()
-
-    return mask
+        print("t_grid (after sftlf added):", t_grid)
+        t_grid.to_netcdf("target_grid.nc")
+    return t_grid

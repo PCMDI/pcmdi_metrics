@@ -22,7 +22,7 @@ def compute_rv_from_file(
             "Standard error for return value from stationary fit for single realization"
         )
     else:
-        desc = "Return value from nonstationary GEV fit for single realization"
+        desc1 = "Return value from nonstationary GEV fit for single realization"
         desc2 = "Standard error for return value from nonstationary fit for single realization"
 
     for ncfile in filelist:
@@ -41,7 +41,7 @@ def compute_rv_from_file(
             os.path.basename(rv_file),
             rv_file,
             "return_value",
-            "return value for single realization",
+            desc1,
         )
 
         se_file = outdir + "/" + fname + "_standard_error.nc"
@@ -50,7 +50,7 @@ def compute_rv_from_file(
             os.path.basename(se_file),
             se_file,
             "standard_error",
-            "standard error for return value",
+            desc2,
         )
 
     return meta
@@ -71,7 +71,6 @@ def compute_rv_for_model(
     nreal = len(filelist)
 
     ds = xc.open_dataset(filelist[0])
-    real_list = [os.path.basename(f).split("_")[1] for f in filelist]
     units = ds.ANN.attrs["units"]
 
     print("Return value for multiple realizations")
@@ -274,7 +273,6 @@ def get_dataset_rv(ds, cov_filepath, cov_varname, return_period=20, maxes=True):
     lon = len(ds["lon"])
     time = len(ds["time"])
     dim2 = lat * lon
-    rep_ind = np.ones((time))
 
     if nonstationary:
         return_value = xr.zeros_like(ds)
@@ -302,7 +300,6 @@ def get_dataset_rv(ds, cov_filepath, cov_varname, return_period=20, maxes=True):
         else:
             rv_array = np.ones((dim2)) * np.nan
         se_array = rv_array.copy()
-        success = np.zeros((dim2))
 
         # Turn nans to zeros
         data = np.nan_to_num(data)
@@ -485,7 +482,7 @@ def calc_rv_py(x, covariate, return_period, nreplicates=1, maxes=True):
         A = np.matmul(np.transpose(grad), vcov)
         B = np.matmul(A, grad)
         se = np.sqrt(np.diag(B))
-    except Exception as e:
+    except Exception:
         se = np.ones(np.shape(return_value)) * np.nan
 
     return return_value.squeeze(), se.squeeze()
@@ -528,13 +525,14 @@ def calc_rv_interpolated(tseries, return_period, average=False):
                 else:
                     rv = tsorted[count]
                 break
-        except:  # any issues, set to NaN
+        except Exception:  # any issues, set to NaN
             rv = np.nan
             break
         count += 1
     return rv, np.nan
 
 
+"""
 def calc_rv_climex(data, covariate, return_period, nreplicates=1, maxes=True):
     # Use climextRemes to get the return value and standard error
     # This function exists for easy comparison with the pure Python
@@ -578,3 +576,4 @@ def calc_rv_climex(data, covariate, return_period, nreplicates=1, maxes=True):
         return_value = tmp["returnValue"]
         standard_error = tmp["se_returnValue"]
     return return_value, standard_error
+"""

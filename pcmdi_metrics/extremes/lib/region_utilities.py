@@ -5,8 +5,6 @@ import sys
 import geopandas as gpd
 import numpy as np
 import regionmask
-import xarray as xr
-import xcdat
 
 
 def check_region_params(shp_path, coords, region_name, col, default):

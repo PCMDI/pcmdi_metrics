@@ -2,15 +2,10 @@
 import json
 import math
 import os
-import sys
 
-import cartopy
 import cartopy.crs as ccrs
-import matplotlib.path as mpath
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 import numpy as np
-from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
 from pcmdi_metrics.graphics import TaylorDiagram
@@ -110,7 +105,7 @@ def plot_map_cartopy(
     if proj == "PlateCarree":
         if data_area == "global":
             if gridline:
-                gl = ax.gridlines(alpha=0.5, linestyle="--")
+                ax.gridlines(alpha=0.5, linestyle="--")
             ax.set_xticks([0, 60, 120, 180, 240, 300, 360], crs=ccrs.PlateCarree())
             ax.set_yticks([-90, -60, -30, 0, 30, 60, 90], crs=ccrs.PlateCarree())
             lon_formatter = LongitudeFormatter(zero_direction_label=True)
@@ -119,10 +114,10 @@ def plot_map_cartopy(
             ax.yaxis.set_major_formatter(lat_formatter)
         else:
             if gridline:
-                gl = ax.gridlines(draw_labels=True, alpha=0.5, linestyle="--")
+                ax.gridlines(draw_labels=True, alpha=0.5, linestyle="--")
     elif proj == "Robinson":
         if gridline:
-            gl = ax.gridlines(alpha=0.5, linestyle="--")
+            ax.gridlines(alpha=0.5, linestyle="--")
 
     # Add title
     plt.title(title, pad=15, fontsize=15)
