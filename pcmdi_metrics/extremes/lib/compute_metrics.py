@@ -1,12 +1,8 @@
 #!/usr/bin/env python
 import datetime
-import math
-import os
-import sys
 
 import cftime
 import numpy as np
-import pandas as pd
 import xarray as xr
 import xcdat as xc
 
@@ -83,7 +79,7 @@ class SeasonalAverager:
         # Returns:
         #     ds_ann: Dataset containing annual max or min grid
 
-        if pentad == True:
+        if pentad:
             if self.pentad is None:
                 self.calc_5day_mean()
             ds = self.pentad
@@ -145,7 +141,7 @@ class SeasonalAverager:
 
         year_range = self.TSD.year_range
 
-        if pentad == True:
+        if pentad:
             if self.pentad is None:
                 self.calc_5day_mean()
             ds = self.pentad
@@ -414,8 +410,6 @@ def precipitation_indices(
         P5day["ANN"].where(P5day["ANN"] > 0, 0).where(~np.isnan(P5day["ANN"]), np.nan)
     )
     for season in ["DJF", "MAM", "JJA", "SON"]:
-        if season == "DJF":
-            tmp = S.seasonal_stats(season, "max", pentad=True)
         P5day[season] = S.seasonal_stats(season, "max", pentad=True)
         P5day[season] = (
             P5day[season]
