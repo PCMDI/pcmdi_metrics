@@ -2,9 +2,7 @@
 import glob
 import json
 import os
-import sys
 
-import xarray as xr
 import xcdat
 
 from pcmdi_metrics.extremes.lib import (
@@ -16,7 +14,6 @@ from pcmdi_metrics.extremes.lib import (
     return_value,
     utilities,
 )
-from pcmdi_metrics.io import xcdat_openxml
 
 ##########
 # Set up
@@ -264,7 +261,7 @@ for model in model_loop_list:
                 yrs = [str(int(ds.time.dt.year[0])), str(int(ds.time.dt.year[-1]))]
 
             if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
-                ds = self.ds.convert_calendar("noleap")
+                ds = ds.convert_calendar("noleap")
 
             # This dict is going to hold results for just this run
             stats_dict = {}
@@ -385,7 +382,7 @@ for model in model_loop_list:
             if varname in ["pr", "PRECT", "precip"]:
                 # Rename possible precipitation variable names for consistency
                 if varname in ["precip", "PRECT"]:
-                    ds = ds.rename({variable: "pr"})
+                    ds = ds.rename({varname: "pr"})
                 Rx1day, Rx5day = compute_metrics.precipitation_indices(
                     ds,
                     sftlf,
@@ -635,7 +632,7 @@ try:
     with open(fname, "r") as f:
         tmp = json.load(f)
     meta.update_provenance("environment", tmp["provenance"])
-except:
+except Exception:
     # Skip provenance if there's an issue
     print("Error: Could not get provenance from extremes json for output.json.")
 
