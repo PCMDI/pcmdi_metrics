@@ -16,7 +16,7 @@ regional monsoons, and high frequency characteristics of simulated precipitation
 
 `PCMDI`_ uses the PMP to produce `quick-look simulation summaries across generations of CMIP <https://pcmdi.llnl.gov/metrics>`_.
 
-[![PMP_Intro_Video](./_static/PMP_intro_video.png)](https://youtu.be/STfCq5Biqf0?feature=shared "PMP Introduction")
+[![PMP_Intro_Video](_static/PMP_intro_video.png)](https://youtu.be/STfCq5Biqf0?feature=shared "PMP Introduction")
 
 The PMP expects model data to be `CF-compliant <http://cfconventions.org/>`_, otherwise, 
 to successfully use the package may require some input data conditioning. 
