@@ -15,4 +15,4 @@ Core developers
 * Peter Gleckler (LLNL)
 * Min-Seop Ahn (NASA)
 
-pcmdi-metrics@llnl.gov
+Contact: pcmdi-metrics@llnl.gov
