@@ -27,25 +27,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
       - name: Checkout Code Repository
         uses: actions/checkout@v3
-        with:
-          node-version: '16'
+        
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          node-version: '16'
           python-version: '3.10'
-      # Run all pre-commit hooks on all the files.
-      # Getting only staged files can be tricky in case a new PR is opened
-      # since the action is run on a branch in detached head state
+
       - name: Install and Run Pre-commit
         uses: pre-commit/action@v3.0.0
-        with:
-          node-version: '16'
 
   build:
     needs: check-jobs-to-skip
@@ -56,9 +47,6 @@ jobs:
         shell: bash -l {0}
     timeout-minutes: 10
     steps:
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
       - uses: actions/checkout@v3
 
       - name: Set up Conda Environment
@@ -82,7 +70,6 @@ jobs:
       - name: Cache Conda
         uses: actions/cache@v3
         with:
-          node-version: '16'
           path: ${{ env.CONDA }}/envs
           key:
             conda-${{ runner.os }}--${{ runner.arch }}--${{
