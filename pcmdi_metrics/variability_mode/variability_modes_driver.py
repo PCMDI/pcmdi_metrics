@@ -60,7 +60,6 @@ import cdutil
 import MV2
 from genutil import StringConstructor
 
-import pcmdi_metrics
 from pcmdi_metrics import resources
 from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.variability_mode.lib import (

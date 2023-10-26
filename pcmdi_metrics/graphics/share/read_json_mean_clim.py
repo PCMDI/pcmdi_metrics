@@ -97,7 +97,7 @@ def extract_unit(var, results_dict_var):
     model_list = sorted(list(results_dict_var["RESULTS"].keys()))
     try:
         units = results_dict_var["RESULTS"][model_list[0]]["units"]
-    except Exception as e:
+    except Exception:
         units = None
     return units
 
@@ -106,7 +106,7 @@ def extract_ref(var, results_dict_var):
     model_list = sorted(list(results_dict_var["RESULTS"].keys()))
     try:
         ref = results_dict_var["RESULTS"][model_list[0]]["default"]["source"]
-    except Exception as e:
+    except Exception:
         ref = None
     return ref
 

@@ -10,7 +10,6 @@
 from datetime import date
 
 # IMPORT STUFF:
-import cftime
 import numpy as np
 import xarray as xr
 import xcdat as xc
@@ -371,7 +370,7 @@ def bony_sorting_part2(OKwaps, data, OKland, WTS, binedges):
     # Ensure that the area matrix has zeros rather than masked points
     CNTS = CNTS.where(~np.isnan(CNTS), 0.0)
 
-    if np.allclose(0.5, np.sum(CNTS.values, 1)) == False:
+    if np.allclose(0.5, np.sum(CNTS.values, 1)) is False:
         print(
             "sum of fractional counts over all wapbins does not equal 0.5 (tropical fraction)"
         )
@@ -386,7 +385,7 @@ def bony_sorting_part2(OKwaps, data, OKland, WTS, binedges):
     v2b = (data * WTS).sum(dim=["lat", "lon"]).transpose("time", "tau", "plev")
 
     # if np.allclose(v1.values,v2a.values)==False or np.allclose(v1.values,v2b.values)==False:
-    if np.allclose(v1.values, v2b.values) == False:
+    if np.allclose(v1.values, v2b.values) is False:
         print("Cannot reconstruct tropical average via summing regimes")
 
     return DATA, CNTS  # [time,wapbin]
@@ -603,7 +602,7 @@ def obscuration_terms3(c1, c2):
     L_R_bar = L_R_bar.where(L_R_bar >= 0, 0.0)
     F_bar = F_bar.where(F_bar >= 0, 0.0)
 
-    rep_L_bar = tile_uneven(L_bar, L12)
+    # rep_L_bar = tile_uneven(L_bar, L12)
     rep_L_R_bar = tile_uneven(L_R_bar, L_R12)
     rep_F_bar = tile_uneven(F_bar, F12b)
 
@@ -874,7 +873,7 @@ def klein_metrics(obs_clisccp, gcm_clisccp, LWkern, SWkern, WTS):
     # take only clouds with tau>3.6
     clisccp_bias_CPM = clisccp_bias[:, 2:, :]  # 4 tau bins
     obs_clisccp_CPM = obs_clisccp[:, 2:, :]  # 4 tau bins
-    gcm_clisccp_CPM = gcm_clisccp[:, 2:, :]  # 4 tau bins
+    # gcm_clisccp_CPM = gcm_clisccp[:, 2:, :]  # 4 tau bins
     LWkernel_CPM = LWkern[:, 2:, :]  # 4 tau bins
     SWkernel_CPM = SWkern[:, 2:, :]  # 4 tau bins
     NETkernel_CPM = SWkernel_CPM + LWkernel_CPM

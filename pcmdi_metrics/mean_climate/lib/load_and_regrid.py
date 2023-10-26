@@ -1,4 +1,3 @@
-import cftime
 import numpy as np
 import xcdat as xc
 

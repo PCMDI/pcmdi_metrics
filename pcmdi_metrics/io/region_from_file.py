@@ -1,7 +1,5 @@
 import geopandas as gpd
 import regionmask
-import xarray as xr
-import xcdat
 
 
 def region_from_file(data, rgn_path, attr, feature):

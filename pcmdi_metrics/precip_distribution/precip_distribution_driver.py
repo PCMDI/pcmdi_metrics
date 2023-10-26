@@ -6,7 +6,6 @@ import os
 
 import MV2 as MV
 import xarray as xr
-import xcdat
 from genutil import StringConstructor
 
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser

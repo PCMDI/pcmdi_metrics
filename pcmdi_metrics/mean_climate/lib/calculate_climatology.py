@@ -3,7 +3,6 @@ import os
 
 import dask
 import xcdat as xc
-from genutil import StringConstructor
 
 
 def calculate_climatology(

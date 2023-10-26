@@ -94,7 +94,7 @@ def get_data(pi, ab):
         print("len(time)<1200...skipping")
         return None
 
-    bdate = pisub.time.dt.year.values
+    # bdate = pisub.time.dt.year.values
     # compute global means:
     GLcntl = pisub.spatial.average(var)
     GLpert = absub.spatial.average(var)
