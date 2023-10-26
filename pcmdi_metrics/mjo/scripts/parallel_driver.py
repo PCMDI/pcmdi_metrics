@@ -8,7 +8,6 @@ from argparse import RawTextHelpFormatter
 
 from genutil import StringConstructor
 
-import pcmdi_metrics
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.misc.scripts import parallel_submitter
 from pcmdi_metrics.mjo.lib import AddParserArgument

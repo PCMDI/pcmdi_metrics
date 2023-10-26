@@ -10,8 +10,8 @@ from genutil import statistics
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
-from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
+from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
 
 
 def create_monsoon_wang_parser():
@@ -198,7 +198,6 @@ def monsoon_wang_runner(args):
         )
 
         for dom in doms:
-
             mpi_stats_dic[mod][dom] = {}
 
             reg_sel = regions_specs[dom]["domain"]

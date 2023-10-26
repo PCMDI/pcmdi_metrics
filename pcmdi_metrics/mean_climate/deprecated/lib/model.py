@@ -44,17 +44,23 @@ class Model(DataSet):
         """Sets the mask and target_mask attribute of self._model_file"""
         self.var_in_file = self.get_var_in_file()
 
-        print('jwlee-test-setup_target_mask, self.var_in_file:', self.var_in_file)
-        print('jwlee-test-setup_target_mask, self.region:', self.region)
-        print('jwlee-test-setup_target_mask, self.obs_or_model:', self.obs_or_model)
+        print("jwlee-test-setup_target_mask, self.var_in_file:", self.var_in_file)
+        print("jwlee-test-setup_target_mask, self.region:", self.region)
+        print("jwlee-test-setup_target_mask, self.obs_or_model:", self.obs_or_model)
 
         if self.region is not None:
             region_value = self.region.get("value", None)
-            print('jwlee-test-setup_target_mask, region_value:', region_value)
+            print("jwlee-test-setup_target_mask, region_value:", region_value)
             if region_value is not None:
-                print('jwlee-test-setup_target_mask, self.sftlf:', self.sftlf)
-                print('jwlee-test-setup_target_mask, self.sftlf[self.obs_or_model]:', self.sftlf[self.obs_or_model])
-                print('jwlee-test-setup_target_mask, self.sftlf[self.obs_or_model]["raw"]:', self.sftlf[self.obs_or_model]["raw"])
+                print("jwlee-test-setup_target_mask, self.sftlf:", self.sftlf)
+                print(
+                    "jwlee-test-setup_target_mask, self.sftlf[self.obs_or_model]:",
+                    self.sftlf[self.obs_or_model],
+                )
+                print(
+                    'jwlee-test-setup_target_mask, self.sftlf[self.obs_or_model]["raw"]:',
+                    self.sftlf[self.obs_or_model]["raw"],
+                )
                 if self.sftlf[self.obs_or_model]["raw"] is None:
                     self.create_sftlf_model_raw(self.var_in_file)
 
@@ -66,7 +72,11 @@ class Model(DataSet):
     def get(self):
         """Gets the variable based on the region and level (if given) for
         the file from data_path, which is defined in the initalizer."""
-        print('jwlee-test-get: self.var_in_file, self.region:', self.var_in_file, self.region)
+        print(
+            "jwlee-test-get: self.var_in_file, self.region:",
+            self.var_in_file,
+            self.region,
+        )
         try:
             if self.level is None:
                 data_model = self._model_file.get(
