@@ -89,7 +89,7 @@ def parallel_coordinate_plot(
     - `ax`: matplotlib component for axis
 
     Author: Jiwoo Lee @ LLNL (2021. 7)
-    Update history: 
+    Update history:
     2021-07 Plotting code created. Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
     2022-09 violin plots added
     2023-03 median centered option added
@@ -185,7 +185,9 @@ def parallel_coordinate_plot(
                     showextrema=False,
                 )
                 for pc in violin["bodies"]:
-                    if isinstance(violin_colors, tuple) or isinstance(violin_colors, list):
+                    if isinstance(violin_colors, tuple) or isinstance(
+                        violin_colors, list
+                    ):
                         violin_color = violin_colors[0]
                     else:
                         violin_color = violin_colors
@@ -219,17 +221,16 @@ def parallel_coordinate_plot(
     for j, model in enumerate(model_names):
         # to just draw straight lines between the axes:
         if model in models_to_highlight:
-            
             if models_to_highlight_colors is not None:
                 color = models_to_highlight_colors[mh_index]
             else:
                 color = colors[j]
-                
+
             if models_to_highlight_labels is not None:
                 label = models_to_highlight_labels[mh_index]
             else:
                 label = model
-                
+
             ax.plot(range(N), zs[j, :], "-", c=color, label=label, lw=3)
             mh_index += 1
         else:
@@ -242,12 +243,12 @@ def parallel_coordinate_plot(
                     label=model,
                     clip_on=False,
                 )
-    
+
     if vertical_center_line:
         if vertical_center_line_label is None:
             vertical_center_line_label = str(vertical_center)
         elif vertical_center_line_label == "off":
-             vertical_center_line_label = None     
+            vertical_center_line_label = None
         ax.plot(range(N), zs_middle, "-", c="k", label=vertical_center_line_label, lw=1)
 
     # Fill between lines
@@ -341,15 +342,15 @@ def _data_transform(
         ymaxs = np.nanmax(ys, axis=0)  # maximum (ignore nan value)
     else:
         ymaxs = np.repeat(ymax, N)
-        
+
     if ymin is None:
         ymins = np.nanmin(ys, axis=0)  # minimum (ignore nan value)
     else:
         ymins = np.repeat(ymin, N)
-    
+
     ymeds = np.nanmedian(ys, axis=0)  # median
     ymean = np.nanmean(ys, axis=0)  # mean
-    
+
     if vertical_center is not None:
         if vertical_center == "median":
             ymids = ymeds
@@ -358,7 +359,9 @@ def _data_transform(
         else:
             ymids = np.repeat(vertical_center, N)
         for i in range(0, N):
-            max_distance_from_middle = max(abs(ymaxs[i] - ymids[i]), abs(ymids[i] - ymins[i]))
+            max_distance_from_middle = max(
+                abs(ymaxs[i] - ymids[i]), abs(ymids[i] - ymins[i])
+            )
             ymaxs[i] = ymids[i] + max_distance_from_middle
             ymins[i] = ymids[i] - max_distance_from_middle
 
@@ -373,7 +376,7 @@ def _data_transform(
     zs = np.zeros_like(ys)
     zs[:, 0] = ys[:, 0]
     zs[:, 1:] = (ys[:, 1:] - ymins[1:]) / dys[1:] * dys[0] + ymins[0]
-    
+
     if vertical_center is not None:
         zs_middle = (ymids[:] - ymins[:]) / dys[:] * dys[0] + ymins[0]
     else:

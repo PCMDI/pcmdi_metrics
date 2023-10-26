@@ -36,7 +36,6 @@ def main():
 
     for mip in mips:
         for exp in exps:
-
             if exp == "amip":
                 modes = ["NAM", "NAO", "PNA", "SAM", "NPO"]
                 # modes = ['SAM']

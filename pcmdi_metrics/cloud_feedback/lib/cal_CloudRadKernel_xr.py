@@ -7,13 +7,14 @@
 # to expert-assessed values from Sherwood et al (2020)
 # =============================================
 
+from datetime import date
+
 # IMPORT STUFF:
 import cftime
+import numpy as np
 import xarray as xr
 import xcdat as xc
-import numpy as np
 from global_land_mask import globe
-from datetime import date
 
 # =============================================
 # define necessary information
@@ -190,7 +191,7 @@ def get_CRK_data(filepath):
 ###########################################################################
 def get_kernel_regrid(ctl):
     # Read in data and map kernels to lat/lon
-    
+
     f = xc.open_mfdataset(datadir + "cloud_kernels2.nc", decode_times=False)
     f = f.rename({"mo": "time", "tau_midpt": "tau", "p_midpt": "plev"})
     f["time"] = ctl["time"].copy()

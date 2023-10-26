@@ -23,7 +23,9 @@ mod = param.mod
 if mod is None:
     pathDict = xs.findPaths(exp, var, frq, cmipTable=frq, mip_era=mip.upper())
 else:
-    pathDict = xs.findPaths(exp, var, frq, cmipTable=frq, mip_era=mip.upper(), model=mod)
+    pathDict = xs.findPaths(
+        exp, var, frq, cmipTable=frq, mip_era=mip.upper(), model=mod
+    )
 path_list = sorted(list(pathDict.keys()))
 print("Number of datasets:", len(path_list))
 print(path_list)

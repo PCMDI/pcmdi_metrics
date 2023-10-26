@@ -62,6 +62,7 @@ from genutil import StringConstructor
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
+from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
     VariabilityModeCheck,
@@ -83,8 +84,6 @@ from pcmdi_metrics.variability_mode.lib import (
     variability_metrics_to_json,
     write_nc_output,
 )
-from pcmdi_metrics.mean_climate.lib import pmp_parser
-
 
 # To avoid below error
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
@@ -316,7 +315,6 @@ if "RESULTS" not in list(result_dict.keys()):
 # Observation
 # -------------------------------------------------
 if obs_compare:
-
     obs_lf_path = None
 
     # read data in
@@ -533,7 +531,6 @@ for model in models:
     # Run
     # -------------------------------------------------
     for model_path in model_path_list:
-
         try:
             if realization == "*":
                 run = (model_path.split("/")[-1]).split(".")[run_in_modpath]
@@ -609,7 +606,6 @@ for model in models:
                 # Common Basis Function Approach
                 # - - - - - - - - - - - - - - - - - - - - - - - - -
                 if CBF and obs_compare:
-
                     if "cbf" not in list(
                         result_dict["RESULTS"][model][run]["defaultReference"][mode][
                             season
@@ -779,7 +775,6 @@ for model in models:
                 # Conventional EOF approach as supplementary
                 # - - - - - - - - - - - - - - - - - - - - - - - - -
                 if ConvEOF:
-
                     eofn_mod_max = 3
 
                     # EOF analysis

@@ -2,10 +2,11 @@
 # Compute NET = LW+SW feedbacks
 # Append this dictionary to the existing json containing feedbacks and error metrics
 
-from datetime import date
-import urllib.request
-import numpy as np
 import json
+import urllib.request
+from datetime import date
+
+import numpy as np
 
 meta = {
     "date_modified": str(date.today()),

@@ -25,28 +25,30 @@ def compute_metrics(Var, dm, do, debug=False):
         metrics_defs["annual_mean"] = pcmdi_metrics.mean_climate.lib.annual_mean(
             None, None
         )
-        metrics_defs["zonal_mean"] = pcmdi_metrics.mean_climate.lib.zonal_mean(None, None)
+        metrics_defs["zonal_mean"] = pcmdi_metrics.mean_climate.lib.zonal_mean(
+            None, None
+        )
         return metrics_defs
 
     # cdms.setAutoBounds("on")
-    print('var: ', var)
+    print("var: ", var)
 
     # unify time and time bounds between observation and model
     if debug:
-        print('before time and time bounds unifying')
-        print('dm.time: ', dm['time'])
-        print('do.time: ', do['time'])
-        
-    # Below is temporary...
-    dm['time'] = do['time']
-    dm[dm.time.attrs['bounds']] = do[do.time.attrs['bounds']]
-    
-    if debug:
-        print('after time and time bounds unifying')
-        print('dm.time: ', dm['time'])
-        print('do.time: ', do['time'])
+        print("before time and time bounds unifying")
+        print("dm.time: ", dm["time"])
+        print("do.time: ", do["time"])
 
-    #if debug:
+    # Below is temporary...
+    dm["time"] = do["time"]
+    dm[dm.time.attrs["bounds"]] = do[do.time.attrs["bounds"]]
+
+    if debug:
+        print("after time and time bounds unifying")
+        print("dm.time: ", dm["time"])
+        print("do.time: ", do["time"])
+
+    # if debug:
     #    dm.to_netcdf('dm.nc')
     #    do.to_netcdf('do.nc')
 
@@ -64,85 +66,93 @@ def compute_metrics(Var, dm, do, debug=False):
         sig_digits = ".3f"
 
     # CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD
-    print('compute_metrics-CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD')
-    print('compute_metrics, rms_xyt')
+    print("compute_metrics-CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD")
+    print("compute_metrics, rms_xyt")
     rms_xyt = pcmdi_metrics.mean_climate.lib.rms_xyt(dm, do, var)
-    print('compute_metrics, stdObs_xyt')
+    print("compute_metrics, stdObs_xyt")
     stdObs_xyt = pcmdi_metrics.mean_climate.lib.std_xyt(do, var)
-    print('compute_metrics, std_xyt')
+    print("compute_metrics, std_xyt")
     std_xyt = pcmdi_metrics.mean_climate.lib.std_xyt(dm, var)
 
     # CALCULATE ANNUAL MEANS
-    print('compute_metrics-CALCULATE ANNUAL MEANS')
+    print("compute_metrics-CALCULATE ANNUAL MEANS")
     dm_am, do_am = pcmdi_metrics.mean_climate.lib.annual_mean(dm, do, var)
 
     # CALCULATE ANNUAL MEAN BIAS
-    print('compute_metrics-CALCULATE ANNUAL MEAN BIAS')
+    print("compute_metrics-CALCULATE ANNUAL MEAN BIAS")
     bias_xy = pcmdi_metrics.mean_climate.lib.bias_xy(dm_am, do_am, var)
 
     # CALCULATE MEAN ABSOLUTE ERROR
-    print('compute_metrics-CALCULATE MSE')
+    print("compute_metrics-CALCULATE MSE")
     mae_xy = pcmdi_metrics.mean_climate.lib.meanabs_xy(dm_am, do_am, var)
 
     # CALCULATE ANNUAL MEAN RMS (centered and uncentered)
-    print('compute_metrics-CALCULATE MEAN RMS')
+    print("compute_metrics-CALCULATE MEAN RMS")
     rms_xy = pcmdi_metrics.mean_climate.lib.rms_xy(dm_am, do_am, var)
     rmsc_xy = pcmdi_metrics.mean_climate.lib.rmsc_xy(dm_am, do_am, var)
 
     # CALCULATE ANNUAL MEAN CORRELATION
-    print('compute_metrics-CALCULATE MEAN CORR')
+    print("compute_metrics-CALCULATE MEAN CORR")
     cor_xy = pcmdi_metrics.mean_climate.lib.cor_xy(dm_am, do_am, var)
 
     # CALCULATE ANNUAL OBS and MOD STD
-    print('compute_metrics-CALCULATE ANNUAL OBS AND MOD STD')
+    print("compute_metrics-CALCULATE ANNUAL OBS AND MOD STD")
     stdObs_xy = pcmdi_metrics.mean_climate.lib.std_xy(do_am, var)
     std_xy = pcmdi_metrics.mean_climate.lib.std_xy(dm_am, var)
 
     # CALCULATE ANNUAL OBS and MOD MEAN
-    print('compute_metrics-CALCULATE ANNUAL OBS AND MOD MEAN')
+    print("compute_metrics-CALCULATE ANNUAL OBS AND MOD MEAN")
     meanObs_xy = pcmdi_metrics.mean_climate.lib.mean_xy(do_am, var)
     mean_xy = pcmdi_metrics.mean_climate.lib.mean_xy(dm_am, var)
 
     # ZONAL MEANS ######
     # CALCULATE ANNUAL MEANS
-    print('compute_metrics-CALCULATE ANNUAL MEANS')
+    print("compute_metrics-CALCULATE ANNUAL MEANS")
     dm_amzm, do_amzm = pcmdi_metrics.mean_climate.lib.zonal_mean(dm_am, do_am, var)
 
     # CALCULATE ANNUAL AND ZONAL MEAN RMS
-    print('compute_metrics-CALCULATE ANNUAL AND ZONAL MEAN RMS')
+    print("compute_metrics-CALCULATE ANNUAL AND ZONAL MEAN RMS")
     rms_y = pcmdi_metrics.mean_climate.lib.rms_0(dm_amzm, do_amzm, var)
 
     # CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN RMS
-    print('compute_metrics-CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN RMS')
+    print("compute_metrics-CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN RMS")
     dm_am_devzm = dm_am - dm_amzm
     do_am_devzm = do_am - do_amzm
-    rms_xy_devzm = pcmdi_metrics.mean_climate.lib.rms_xy(dm_am_devzm, do_am_devzm, var, weights=dm.spatial.get_weights(axis=['X', 'Y']))
+    rms_xy_devzm = pcmdi_metrics.mean_climate.lib.rms_xy(
+        dm_am_devzm, do_am_devzm, var, weights=dm.spatial.get_weights(axis=["X", "Y"])
+    )
 
     # CALCULATE ANNUAL AND ZONAL MEAN STD
 
     # CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN STD
-    print('compute_metrics-CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN STD')
-    stdObs_xy_devzm = pcmdi_metrics.mean_climate.lib.std_xy(do_am_devzm, var, weights=do.spatial.get_weights(axis=['X', 'Y']))
-    std_xy_devzm = pcmdi_metrics.mean_climate.lib.std_xy(dm_am_devzm, var, weights=dm.spatial.get_weights(axis=['X', 'Y']))
+    print("compute_metrics-CALCULATE ANNUAL MEAN DEVIATION FROM ZONAL MEAN STD")
+    stdObs_xy_devzm = pcmdi_metrics.mean_climate.lib.std_xy(
+        do_am_devzm, var, weights=do.spatial.get_weights(axis=["X", "Y"])
+    )
+    std_xy_devzm = pcmdi_metrics.mean_climate.lib.std_xy(
+        dm_am_devzm, var, weights=dm.spatial.get_weights(axis=["X", "Y"])
+    )
 
-    for stat in sorted([
-        "std-obs_xy",
-        "std_xy",
-        "std-obs_xyt",
-        "std_xyt",
-        "std-obs_xy_devzm",
-        "mean_xy",
-        "mean-obs_xy",
-        "std_xy_devzm",
-        "rms_xyt",
-        "rms_xy",
-        "rmsc_xy",
-        "cor_xy",
-        "bias_xy",
-        "mae_xy",
-        "rms_y",
-        "rms_devzm",
-    ]):
+    for stat in sorted(
+        [
+            "std-obs_xy",
+            "std_xy",
+            "std-obs_xyt",
+            "std_xyt",
+            "std-obs_xy_devzm",
+            "mean_xy",
+            "mean-obs_xy",
+            "std_xy_devzm",
+            "rms_xyt",
+            "rms_xy",
+            "rmsc_xy",
+            "cor_xy",
+            "bias_xy",
+            "mae_xy",
+            "rms_y",
+            "rms_devzm",
+        ]
+    ):
         metrics_dictionary[stat] = OrderedDict()
 
     metrics_dictionary["mean-obs_xy"]["ann"] = format(meanObs_xy * conv, sig_digits)
@@ -167,7 +177,6 @@ def compute_metrics(Var, dm, do, debug=False):
 
     # CALCULATE SEASONAL MEANS
     for sea in ["djf", "mam", "jja", "son"]:
-
         dm_sea = pcmdi_metrics.mean_climate.lib.seasonal_mean(dm, sea, var)
         do_sea = pcmdi_metrics.mean_climate.lib.seasonal_mean(do, sea, var)
 
@@ -193,7 +202,9 @@ def compute_metrics(Var, dm, do, debug=False):
         metrics_dictionary["mae_xy"][sea] = format(mae_sea * conv, sig_digits)
         metrics_dictionary["std-obs_xy"][sea] = format(stdObs_xy_sea * conv, sig_digits)
         metrics_dictionary["std_xy"][sea] = format(std_xy_sea * conv, sig_digits)
-        metrics_dictionary["mean-obs_xy"][sea] = format(meanObs_xy_sea * conv, sig_digits)
+        metrics_dictionary["mean-obs_xy"][sea] = format(
+            meanObs_xy_sea * conv, sig_digits
+        )
         metrics_dictionary["mean_xy"][sea] = format(mean_xy_sea * conv, sig_digits)
 
     rms_mo_l = []

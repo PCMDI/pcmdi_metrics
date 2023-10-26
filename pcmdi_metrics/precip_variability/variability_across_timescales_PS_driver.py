@@ -33,9 +33,11 @@ cmec = param.cmec
 # Create output directory
 case_id = param.case_id
 outdir_template = param.results_dir
-outdir_template = outdir_template.replace("%(mip)",str(mip)).replace("%(case_id)",str(case_id))
+outdir_template = outdir_template.replace("%(mip)", str(mip)).replace(
+    "%(case_id)", str(case_id)
+)
 for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
-    outdir = outdir_template.replace("%(output_type)",output_type)
+    outdir = outdir_template.replace("%(output_type)", output_type)
     os.makedirs(outdir, exist_ok=True)
     print(outdir)
 
@@ -48,11 +50,22 @@ else:
     ens = file_list[0].split("/")[-1].split("_")[4]
     dat = model + "." + ens
 print(dat)
-print(file_list)   
+print(file_list)
 
 # Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
 syr = prd[0]
 eyr = prd[1]
 precip_variability_across_timescale(
-        file_list, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, outdir_template, cmec
-    )
+    file_list,
+    syr,
+    eyr,
+    dfrq,
+    mip,
+    dat,
+    var,
+    fac,
+    nperseg,
+    noverlap,
+    outdir_template,
+    cmec,
+)

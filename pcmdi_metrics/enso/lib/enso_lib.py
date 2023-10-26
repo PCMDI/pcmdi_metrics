@@ -13,7 +13,6 @@ from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 
 
 def AddParserArgument():
-
     P = PMPParser()  # Includes all default options
 
     P.add_argument(
