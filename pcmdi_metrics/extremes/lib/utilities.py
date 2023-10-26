@@ -7,8 +7,8 @@ import cdms2
 import cdutil
 import cftime
 import numpy as np
-import xcdat
 import xarray as xr
+import xcdat
 from pcmdi_utils import land_sea_mask
 
 from pcmdi_metrics.io import xcdat_openxml
