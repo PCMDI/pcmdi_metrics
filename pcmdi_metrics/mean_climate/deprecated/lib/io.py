@@ -8,7 +8,6 @@ class OBS(pcmdi_metrics.io.base.Base):
     def __init__(
         self, root, var, obs_dic, reference="default", file_mask_template=None
     ):
-
         template = (
             "%(realm)/%(frequency)/%(variable)/" + "%(reference)/%(ac)/%(filename)"
         )

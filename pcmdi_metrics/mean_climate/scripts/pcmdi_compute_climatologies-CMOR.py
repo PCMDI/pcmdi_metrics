@@ -448,7 +448,6 @@ def store_attributes(var):
 
 
 def runClim(A):
-
     print("OK SO START IS:", A.start)
     # season dictionary
     season_function = {

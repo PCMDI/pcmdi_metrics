@@ -28,7 +28,6 @@ def TaylorDiagram(
     grid=True,
     debug=False,
 ):
-
     """Plot a Taylor diagram
 
     Jiwoo Lee (PCMDI LLNL) - last update: 2022. 10
