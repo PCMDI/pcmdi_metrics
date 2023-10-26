@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 88
-target-version = ['py36']
+target-version = ['py39']
 include = '\.pyi?$'
 exclude = '''
 (
@@ -21,3 +21,18 @@ exclude = '''
   )/
 )
 '''
+
+[tool.isort]
+# Docs: https://pycqa.github.io/isort/docs/configuration/options.html#example-pyprojecttoml_4
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+line_length = 88
+
+[tool.pytest.ini_options]
+# Docs: https://docs.pytest.org/en/7.2.x/reference/customize.html#configuration
+junit_family = "xunit2"
+addopts = "--cov=pcmdi_metrics --cov-report term --cov-report html:tests_coverage_reports/htmlcov --cov-report xml:tests_coverage_reports/coverage.xml -s --ignore tests/deprecated"
+python_files = ["tests.py", "test_*.py"]
+
