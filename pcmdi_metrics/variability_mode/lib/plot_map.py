@@ -150,7 +150,7 @@ def plot_map_cartopy(
 
     # map types example:
     # https://github.com/SciTools/cartopy-tutorial/blob/master/tutorial/projections_crs_and_terms.ipynb
-    
+
     if proj == "PlateCarree":
         projection = ccrs.PlateCarree(central_longitude=center_lon_global)
     elif proj == "Robinson":
@@ -237,15 +237,20 @@ def plot_map_cartopy(
         boundary = mpath.Path(vertices)
         ax.set_boundary(boundary, transform=ccrs.PlateCarree(central_longitude=180))
         ax.set_extent([min_lon, max_lon, min_lat, max_lat], crs=ccrs.PlateCarree())
-        if gridline:     
-            gl = ax.gridlines(draw_labels=True, alpha=0.8, linestyle="--", crs=cartopy.crs.PlateCarree())
-            gl.xformatter = LONGITUDE_FORMATTER 
+        if gridline:
+            gl = ax.gridlines(
+                draw_labels=True,
+                alpha=0.8,
+                linestyle="--",
+                crs=cartopy.crs.PlateCarree(),
+            )
+            gl.xformatter = LONGITUDE_FORMATTER
             gl.yformatter = LATITUDE_FORMATTER
             gl.ylocator = mticker.FixedLocator([30, 60])
-            gl.xlocator = mticker.FixedLocator([120, 160, 200-360, 240-360])
+            gl.xlocator = mticker.FixedLocator([120, 160, 200 - 360, 240 - 360])
             gl.top_labels = False  # suppress top labels
             # suppress right labels
-            # gl.right_labels = False  
+            # gl.right_labels = False
             for ea in gl.ylabel_artists:
                 right_label = ea.get_position()[0] > 0
                 if right_label:

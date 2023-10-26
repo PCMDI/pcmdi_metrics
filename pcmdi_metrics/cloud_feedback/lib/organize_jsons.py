@@ -2,10 +2,11 @@
 # Compute NET = LW+SW feedbacks
 # Append this dictionary to the existing json containing feedbacks and error metrics
 
-from datetime import date
-import urllib.request
-import numpy as np
 import json
+import urllib.request
+from datetime import date
+
+import numpy as np
 
 meta = {
     "date_modified": str(date.today()),
@@ -64,7 +65,7 @@ def organize_err_jsons(new_dict, mo, ripf):
                         old_dict[mo][ripf][region][sfc][sec][name] = new_dict[sec][
                             region
                         ][sfc][name]
-                    except:
+                    except Exception:
                         old_dict[mo][ripf][region][sfc][sec][name] = np.nan
                 # end name loop
             # end section loop:
@@ -84,7 +85,7 @@ def organize_ecs_jsons(new_ecs, mo, ripf):
     ) as url:
         old_dict = json.load(url)
 
-    if new_ecs != None:
+    if new_ecs is not None:
         old_dict["CMIP6"][mo][ripf]["ECS"] = new_ecs
 
     return old_dict  # now updated to include info from input dictionary

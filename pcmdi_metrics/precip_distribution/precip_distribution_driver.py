@@ -5,18 +5,16 @@ import glob
 import os
 
 import MV2 as MV
+import xarray as xr
 from genutil import StringConstructor
 
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
-from pcmdi_metrics.precip_distribution.lib import ( 
+from pcmdi_metrics.precip_distribution.lib import (
     AddParserArgument,
     Regrid,
     precip_distribution_cum,
     precip_distribution_frq_amt,
 )
-
-import xarray as xr
-import xcdat
 
 # Read parameters
 P = PMPParser()

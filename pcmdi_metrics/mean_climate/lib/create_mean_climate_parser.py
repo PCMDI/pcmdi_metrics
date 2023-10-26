@@ -47,7 +47,7 @@ def create_mean_climate_parser():
         help="Users can customize regions values names",
         required=False,
     )
-    
+
     parser.add_argument(
         "--regions_specs",
         type=ast.literal_eval,
@@ -98,7 +98,7 @@ def create_mean_climate_parser():
         dest="target_grid",
         help='Set to "LATxLON" resolution in degrees. Default is "2.5x2.5"',
         required=False,
-        default="2.5x2.5"
+        default="2.5x2.5",
     )
 
     parser.add_argument(
@@ -153,10 +153,7 @@ def create_mean_climate_parser():
     )
 
     parser.add_argument(
-        "--ext", 
-        dest="ext", 
-        help="Extension for the output files?", 
-        required=False
+        "--ext", dest="ext", help="Extension for the output files?", required=False
     )
 
     parser.add_argument(
@@ -187,7 +184,7 @@ def create_mean_climate_parser():
         dest="custom_observations",
         help="Path to an alternative, custom observation file",
         required=False,
-        default=""
+        default="",
     )
 
     parser.add_argument(
@@ -196,7 +193,7 @@ def create_mean_climate_parser():
         help="Directory of where to put the results",
         required=False,
     )
-    
+
     parser.add_argument(
         "--diagnostics_output_path",
         dest="diagnostics_output_path",

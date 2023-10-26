@@ -108,7 +108,7 @@ def check_for_done(processes):
 def main():
     cmd_list = ["expr 1 + " + str(r) for r in range(1, 10)]
     logfilename_list = ["log_" + str(r) for r in range(1, 10)]
-    for (process, log_file) in zip(cmd_list, logfilename_list):
+    for process, log_file in zip(cmd_list, logfilename_list):
         print(process, "\t", log_file)
     num_workers = 2
     parallel_submitter(

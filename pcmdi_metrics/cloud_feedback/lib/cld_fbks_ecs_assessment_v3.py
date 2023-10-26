@@ -4,8 +4,8 @@ Make figures comparing GCM cloud feedback components to expert assessed values f
 """
 
 import json
-import string
 import os
+import string
 from datetime import date
 
 import matplotlib as mpl
@@ -17,7 +17,7 @@ from scipy import stats
 HEIGHT = 0.45
 
 # ######################################################
-# DEFINE COLORS FOR ECS COLORBAR 
+# DEFINE COLORS FOR ECS COLORBAR
 # ######################################################
 cmap = plt.cm.RdBu_r  # define the colormap
 # extract all colors from the .jet map
@@ -75,7 +75,6 @@ MARK["CNRM-CM6-1"] = "8"
 
 # ######################################################
 def get_expert_assessed_fbks():
-
     # ######################################################
     # ############# WCRP ASSESSMENT VALUES #################
     # ######################################################
@@ -272,7 +271,6 @@ def get_fbks(cld_fbks, obsc_cld_fbks, cld_errs, ecs_dict):
 
 # ######################################################
 def get_gcm_assessed_fbks(fbk_dict, obsc_fbk_dict):
-
     # dictionary is structured: [region][sfc][sec][name]
 
     assessed = []
@@ -364,7 +362,6 @@ def get_gcm_assessed_fbks(fbk_dict, obsc_fbk_dict):
 
 # ######################################################
 def get_gcm_cld_errs(err_dict, name):
-
     # dictionary is structured: [region][sfc][sec][name]
 
     DATA = []
@@ -403,7 +400,6 @@ def get_gcm_cld_errs(err_dict, name):
 
 # ######################################################
 def get_unassessed_fbks(fbk_dict, obsc_fbk_dict):
-
     # dictionary is structured: [region][sfc][sec][name]
 
     fbk_names = []
@@ -651,7 +647,6 @@ def label_models(ax, models5, models6):
 
 # ######################################################
 def plot_expert():
-
     (expert_cld_fbks, err_expert_cld_fbks, fbk_names) = get_expert_assessed_fbks()
     LN = len(fbk_names)
 
@@ -880,10 +875,15 @@ def static_plot(assessed, ecs, models, fbk_names, gen, fig, gs):
 
 # ######################################################
 def make_all_figs(
-    cld_fbks6, obsc_cld_fbks6, cld_errs6, ecs_dict56, newmod, 
-    figdir=None, datadir=None,
-    debug=False):
-
+    cld_fbks6,
+    obsc_cld_fbks6,
+    cld_errs6,
+    ecs_dict56,
+    newmod,
+    figdir=None,
+    datadir=None,
+    debug=False,
+):
     # Set a unique marker for your new model
     MARK[newmod] = "<"
 
@@ -998,7 +998,9 @@ def make_all_figs(
     # new axis for labeling all models
     ax = plt.subplot(gs[:10, 10:12])
     label_models(ax, models5, models6)
-    plt.savefig(os.path.join(figdir, "WCRP_assessed_cld_fbks_amip-p4K.png"), bbox_inches="tight")
+    plt.savefig(
+        os.path.join(figdir, "WCRP_assessed_cld_fbks_amip-p4K.png"), bbox_inches="tight"
+    )
     if debug:
         print("make_all_figs: WCRP_assessed_cld_fbks_amip-p4K.png done")
 
@@ -1030,7 +1032,10 @@ def make_all_figs(
     # new axis for labeling all models
     ax = plt.subplot(gs[:10, 10:12])
     label_models(ax, models5, models6)
-    plt.savefig(os.path.join(figdir, "WCRP_unassessed_cld_fbks_amip-p4K.png"), bbox_inches="tight")
+    plt.savefig(
+        os.path.join(figdir, "WCRP_unassessed_cld_fbks_amip-p4K.png"),
+        bbox_inches="tight",
+    )
     if debug:
         print("make_all_figs: WCRP_unassessed_cld_fbks_amip-p4K.png done")
 
@@ -1277,8 +1282,9 @@ def make_all_figs(
     )
     cb.ax.tick_params(labelsize=14)
     ax2.set_ylabel(r"$\mathrm{E_{NET}}$", size=14)
-    plt.savefig(os.path.join(
-        figdir, "WCRP_assessed_RMSE_v_cldfbk2_amip-p4K.png"), bbox_inches="tight"
+    plt.savefig(
+        os.path.join(figdir, "WCRP_assessed_RMSE_v_cldfbk2_amip-p4K.png"),
+        bbox_inches="tight",
     )
 
     # #####################################################
@@ -1402,7 +1408,10 @@ def make_all_figs(
     plt.title("b", fontsize=16, loc="left")
     plt.ylim(0.04, 0.15)
     plt.xlim(0.60, 1.65)
-    plt.savefig(os.path.join(figdir, "WCRP_totcldfbks2_v_E_NET_amip-p4K.png"), bbox_inches="tight")
+    plt.savefig(
+        os.path.join(figdir, "WCRP_totcldfbks2_v_E_NET_amip-p4K.png"),
+        bbox_inches="tight",
+    )
 
     # ######################################################
     # PRINT OUT THE TABLE OF EVERYTHING:
