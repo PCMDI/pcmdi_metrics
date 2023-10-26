@@ -2,28 +2,25 @@
 # Compute NET = LW+SW feedbacks
 # Append this dictionary to the existing json containing feedbacks and error metrics
 
-import json
 from datetime import date
-import os
-
+import urllib.request
 import numpy as np
+import json
 
 meta = {
     "date_modified": str(date.today()),
     "author": "Mark D. Zelinka <zelinka1@llnl.gov>",
 }
 
+# Location of the cloud feedback and error metric jsons:
+urlpath = "https://raw.githubusercontent.com/mzelinka/assessed-cloud-fbks/main/data/"
 
-def organize_fbk_jsons(new_dict, new_obsc_dict, mo, ripf, datadir=None):
 
-    if datadir is None:
-        datadir = "./data/"
-
+def organize_fbk_jsons(new_dict, new_obsc_dict, mo, ripf):
     # Load in the existing file containing pre-computed CMIP6 feedbacks
-    file = os.path.join(datadir, "cmip6_amip-p4K_cld_fbks.json")
-    f = open(file, "r")
-    old_dict = json.load(f)
-    f.close()
+    fname = "cmip6_amip-p4K_cld_fbks.json"
+    with urllib.request.urlopen(urlpath + fname) as url:
+        old_dict = json.load(url)
 
     old_dict[mo] = {}
     old_dict[mo][ripf] = {}
@@ -31,10 +28,9 @@ def organize_fbk_jsons(new_dict, new_obsc_dict, mo, ripf, datadir=None):
     old_dict["metadata"] = meta
 
     # Load in the existing file containing pre-computed CMIP6 obscuration-related feedbacks
-    file = os.path.join(datadir, "cmip6_amip-p4K_cld_obsc_fbks.json")
-    f = open(file, "r")
-    old_obsc_dict = json.load(f)
-    f.close()
+    fname = "cmip6_amip-p4K_cld_obsc_fbks.json"
+    with urllib.request.urlopen(urlpath + fname) as url:
+        old_obsc_dict = json.load(url)
 
     old_obsc_dict[mo] = {}
     old_obsc_dict[mo][ripf] = {}
@@ -47,16 +43,11 @@ def organize_fbk_jsons(new_dict, new_obsc_dict, mo, ripf, datadir=None):
     )  # now updated to include info from input dictionary
 
 
-def organize_err_jsons(new_dict, mo, ripf, datadir=None):
-
-    if datadir is None:
-        datadir = "./data/"    
-
+def organize_err_jsons(new_dict, mo, ripf):
     # Load in the existing file containing pre-computed CMIP6 error metrics
-    file = os.path.join(datadir, "cmip6_amip_cld_errs.json")
-    f = open(file, "r")
-    old_dict = json.load(f)
-    f.close()
+    fname = "cmip6_amip_cld_errs.json"
+    with urllib.request.urlopen(urlpath + fname) as url:
+        old_dict = json.load(url)
 
     names = ["E_TCA", "E_ctpt", "E_LW", "E_SW", "E_NET"]
     old_dict[mo] = {}
@@ -73,7 +64,7 @@ def organize_err_jsons(new_dict, mo, ripf, datadir=None):
                         old_dict[mo][ripf][region][sfc][sec][name] = new_dict[sec][
                             region
                         ][sfc][name]
-                    except Exception:
+                    except:
                         old_dict[mo][ripf][region][sfc][sec][name] = np.nan
                 # end name loop
             # end section loop:
@@ -84,19 +75,16 @@ def organize_err_jsons(new_dict, mo, ripf, datadir=None):
     return old_dict  # now updated to include info from input dictionary
 
 
-def organize_ecs_jsons(new_ecs, mo, ripf, datadir=None):
-
-    if datadir is None:
-        datadir = "./data/"
-
+def organize_ecs_jsons(new_ecs, mo, ripf):
     ##################################################################
     # READ IN GREGORY ECS VALUES DERIVED IN ZELINKA ET AL (2020) GRL #
     ##################################################################
-    f = open(os.path.join(datadir, "cmip56_forcing_feedback_ecs.json"), "r")
-    old_dict = json.load(f)
-    f.close()
+    with urllib.request.urlopen(
+        "https://raw.githubusercontent.com/mzelinka/cmip56_forcing_feedback_ecs/master/cmip56_forcing_feedback_ecs.json"
+    ) as url:
+        old_dict = json.load(url)
 
-    if new_ecs is not None:
+    if new_ecs != None:
         old_dict["CMIP6"][mo][ripf]["ECS"] = new_ecs
 
     return old_dict  # now updated to include info from input dictionary
