@@ -36,12 +36,3 @@ junit_family = "xunit2"
 addopts = "--cov=pcmdi_metrics --cov-report term --cov-report html:tests_coverage_reports/htmlcov --cov-report xml:tests_coverage_reports/coverage.xml -s --ignore tests/deprecated"
 python_files = ["tests.py", "test_*.py"]
 
-
-[tool.mypy]
-# Docs: https://mypy.readthedocs.io/en/stable/config_file.html
-python_version = 3.10
-check_untyped_defs = true
-ignore_missing_imports = true
-warn_unused_ignores = true
-warn_redundant_casts = true
-warn_unused_configs = true
