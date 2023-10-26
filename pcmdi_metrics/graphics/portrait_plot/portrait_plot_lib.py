@@ -520,7 +520,6 @@ def triamatrix_wrap_up(
     inner_line_color="k",
     inner_line_width=0.5,
 ):
-
     # Colorbar range
     if norm is None:
         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
