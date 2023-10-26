@@ -12,7 +12,6 @@ input_files_json = "./param/input_files.json"
 get_ecs = False
 
 # Output directory path (directory will be generated if it does not exist yet.)
-xml_path = "./xmls/"
 figure_path = "./figures/"
 output_path = "./output"
 output_json_filename = "_".join(["cloud_feedback", model, variant]) + ".json"
