@@ -1,5 +1,5 @@
 #  put here the import calls to expose whatever we want to the user
-import logging
+import logging  # noqa
 
 LOG_LEVEL = logging.DEBUG
 plog = logging.getLogger("pcmdi_metrics")
@@ -15,6 +15,4 @@ ch.setFormatter(formatter)
 plog.addHandler(ch)
 plog.setLevel(LOG_LEVEL)
 from . import io  # noqa
-#from . import pcmdi  # noqa
-#from . import mean_climate  # noqa
 from .version import __git_sha1__, __git_tag_describe__, __version__  # noqa
