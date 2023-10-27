@@ -6,14 +6,14 @@ import sys
 import cdutil
 import numpy as np
 import pandas as pd
+import xarray as xr
+import xcdat
 from scipy import signal
 from scipy.stats import chi2
+from xcdat.regridder import grid
 
 import pcmdi_metrics
 
-import xarray as xr
-import xcdat
-from xcdat.regridder import grid
 
 # ==================================================================================
 def precip_variability_across_timescale(
@@ -26,7 +26,7 @@ def precip_variability_across_timescale(
     psdmfm = {"RESULTS": {}}
 
     f = xcdat.open_mfdataset(file)
-    cal = f.time.encoding["calendar"]   
+    cal = f.time.encoding["calendar"]
     if "360" in cal:
         ldy = 30
     else:
@@ -35,16 +35,20 @@ def precip_variability_across_timescale(
     print("syr, eyr:", syr, eyr)
     for iyr in range(syr, eyr + 1):
         print(iyr)
-        do = f.sel(time=slice(str(iyr) + "-01-01 00:00:00",str(iyr) + "-12-" + str(ldy) + " 23:59:59"))
-        
+        do = f.sel(
+            time=slice(
+                str(iyr) + "-01-01 00:00:00", str(iyr) + "-12-" + str(ldy) + " 23:59:59"
+            )
+        )
+
         # Regridding
-        rgtmp = Regrid2deg(do, var)*float(fac)
+        rgtmp = Regrid2deg(do, var) * float(fac)
         if iyr == syr:
             drg = copy.deepcopy(rgtmp)
         else:
-            drg = xr.concat([drg, rgtmp], dim='time')
-        print(iyr, drg.shape)      
-        
+            drg = xr.concat([drg, rgtmp], dim="time")
+        print(iyr, drg.shape)
+
     f.close()
 
     # Anomaly
@@ -63,8 +67,12 @@ def precip_variability_across_timescale(
     # Write data (nc file)
     outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc"
     custom_dataset = xr.merge([freqs, ps, rn, sig95])
-    custom_dataset.to_netcdf(path=os.path.join(outdir(output_type="diagnostic_results"), outfilename))
-        
+    custom_dataset.to_netcdf(
+        path=os.path.join(
+            outdir.replace("%(output_type)", "diagnostic_results"), outfilename
+        )
+    )
+
     # Power spectum of anomaly
     freqs, ps, rn, sig95 = Powerspectrum(anom, nperseg, noverlap)
     # Domain & Frequency average
@@ -72,8 +80,12 @@ def precip_variability_across_timescale(
     # Write data (nc file)
     outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
     custom_dataset = xr.merge([freqs, ps, rn, sig95])
-    custom_dataset.to_netcdf(path=os.path.join(outdir(output_type="diagnostic_results"), outfilename))
-        
+    custom_dataset.to_netcdf(
+        path=os.path.join(
+            outdir.replace("%(output_type)", "diagnostic_results"), outfilename
+        )
+    )
+
     # Write data (json file)
     psdmfm["RESULTS"][dat] = {}
     psdmfm["RESULTS"][dat]["forced"] = psdmfm_forced
@@ -83,7 +95,7 @@ def precip_variability_across_timescale(
         "PS_pr." + str(dfrq) + "_regrid.180x90_area.freq.mean_" + dat + ".json"
     )
     JSON = pcmdi_metrics.io.base.Base(
-        outdir(output_type="metrics_results"), outfilename
+        outdir.replace("%(output_type)", "metrics_results"), outfilename
     )
     JSON.write(
         psdmfm,
@@ -106,9 +118,11 @@ def Regrid2deg(d, var):
     Output
     - drg: xCDAT variable with 2deg horizontal resolution
     """
-    tgrid = grid.create_uniform_grid(-89, 89, 2.0, 0.0, 358., 2.0)
-    drg = d.regridder.horizontal(var, tgrid, tool="xesmf", method="conservative_normed",periodic=True)[var]
-    
+    tgrid = grid.create_uniform_grid(-89, 89, 2.0, 0.0, 358.0, 2.0)
+    drg = d.regridder.horizontal(
+        var, tgrid, tool="xesmf", method="conservative_normed", periodic=True
+    )[var]
+
     print("Complete regridding from", d[var].shape, "to", drg.shape)
     return drg
 
@@ -127,7 +141,7 @@ def ClimAnom(d, ntd, syr, eyr, cal):
     - clim: climatology (climatological diurnal and annual cycles)
     - anom: anomaly departure from the climatological diurnal and annual cycles
     """
-        
+
     # Year segment
     nyr = eyr - syr + 1
     if "gregorian" in cal:
@@ -135,13 +149,19 @@ def ClimAnom(d, ntd, syr, eyr, cal):
         ldy = 31
         dseg = np.zeros((nyr, ndy, ntd, d.shape[1], d.shape[2]), dtype=float)
         for iyr, year in enumerate(range(syr, eyr + 1)):
-            yrtmp = d.sel(time=slice(str(year) + "-01-01 00:00:00",str(year) + "-12-" + str(ldy) + " 23:59:59"))
-                        
-            expanded = yrtmp.expand_dims("ndy")          
+            yrtmp = d.sel(
+                time=slice(
+                    str(year) + "-01-01 00:00:00",
+                    str(year) + "-12-" + str(ldy) + " 23:59:59",
+                )
+            )
+
+            expanded = yrtmp.expand_dims("ndy")
             yrtmpseg = np.reshape(
-                expanded, (int(yrtmp.shape[0] / ntd), ntd, yrtmp.shape[1], yrtmp.shape[2])
-            )            
-            
+                expanded,
+                (int(yrtmp.shape[0] / ntd), ntd, yrtmp.shape[1], yrtmp.shape[2]),
+            )
+
             if yrtmpseg.shape[0] == 365:
                 dseg[iyr, 0:59] = yrtmpseg[0:59]
                 dseg[iyr, 60:366] = yrtmpseg[59:365]
@@ -155,16 +175,21 @@ def ClimAnom(d, ntd, syr, eyr, cal):
         else:  # 365-canlendar
             ndy = 365
             ldy = 31
-        dseg = np.zeros((nyr, ndy, ntd, d.shape[1], d.shape[2]), dtype=float)        
+        dseg = np.zeros((nyr, ndy, ntd, d.shape[1], d.shape[2]), dtype=float)
         for iyr, year in enumerate(range(syr, eyr + 1)):
-            yrtmp = d.sel(time=slice(str(year) + "-01-01 00:00:00",str(year) + "-12-" + str(ldy) + " 23:59:59"))            
-            
-            expanded = yrtmp.expand_dims("ndy")          
-            yrtmpseg = np.reshape(
-                expanded, (int(yrtmp.shape[0] / ntd), ntd, yrtmp.shape[1], yrtmp.shape[2])
-            )            
-            dseg[iyr] = yrtmpseg
+            yrtmp = d.sel(
+                time=slice(
+                    str(year) + "-01-01 00:00:00",
+                    str(year) + "-12-" + str(ldy) + " 23:59:59",
+                )
+            )
 
+            expanded = yrtmp.expand_dims("ndy")
+            yrtmpseg = np.reshape(
+                expanded,
+                (int(yrtmp.shape[0] / ntd), ntd, yrtmp.shape[1], yrtmp.shape[2]),
+            )
+            dseg[iyr] = yrtmpseg
 
     # Climatology
     clim = np.nanmean(dseg, axis=0)
@@ -173,8 +198,13 @@ def ClimAnom(d, ntd, syr, eyr, cal):
     anom = np.array([])
     if "gregorian" in cal:
         for iyr, year in enumerate(range(syr, eyr + 1)):
-            yrtmp = d.sel(time=slice(str(year) + "-01-01 00:00:00",str(year) + "-12-" + str(ldy) + " 23:59:59"))            
-                        
+            yrtmp = d.sel(
+                time=slice(
+                    str(year) + "-01-01 00:00:00",
+                    str(year) + "-12-" + str(ldy) + " 23:59:59",
+                )
+            )
+
             if yrtmp.shape[0] == 365 * ntd:
                 anom = np.append(
                     anom,
@@ -189,11 +219,15 @@ def ClimAnom(d, ntd, syr, eyr, cal):
     # Reahape and Dimension information
     clim = np.reshape(clim, (ndy * ntd, d.shape[1], d.shape[2]))
     anom = np.reshape(anom, (d.shape[0], d.shape[1], d.shape[2]))
-    
-    climtime = pd.period_range(start="0001-01-01", periods=clim.shape[0], freq=str(24/ntd)+"H")
-    clim = xr.DataArray(clim, coords=[climtime, d.coords[d.dims[1]], d.coords[d.dims[2]]], dims=d.dims)
+
+    climtime = pd.period_range(
+        start="0001-01-01", periods=clim.shape[0], freq=str(24 / ntd) + "H"
+    )
+    clim = xr.DataArray(
+        clim, coords=[climtime, d.coords[d.dims[1]], d.coords[d.dims[2]]], dims=d.dims
+    )
     anom = xr.DataArray(anom, coords=d.coords, dims=d.dims)
-    
+
     print("Complete calculating climatology and anomaly for calendar of", cal)
     return clim, anom
 
@@ -242,13 +276,13 @@ def Powerspectrum(d, nperseg, noverlap):
     # Decorate arrays with dimensions
     # axisfrq = np.arange(len(freqs))
     axisfrq = range(len(freqs))
-    coords=[axisfrq, d.coords[d.dims[1]], d.coords[d.dims[2]]]
-    dims=["frequency", d.dims[1], d.dims[2]]   
+    coords = [axisfrq, d.coords[d.dims[1]], d.coords[d.dims[2]]]
+    dims = ["frequency", d.dims[1], d.dims[2]]
     freqs = xr.DataArray(freqs, coords=[axisfrq], dims=["frequency"], name="freqs")
     psd = xr.DataArray(psd, coords=coords, dims=dims, name="power")
     rn = xr.DataArray(rn, coords=coords, dims=dims, name="rednoise")
     sig95 = xr.DataArray(sig95, coords=coords, dims=dims, name="sig95")
-    
+
     print("Complete power spectra (segment: ", nperseg, " nps:", nps, ")")
     return freqs, psd, rn, sig95
 
@@ -256,7 +290,7 @@ def Powerspectrum(d, nperseg, noverlap):
 # ==================================================================================
 def lag1_autocorrelation(x):
     lag = 1
-    result = float(np.corrcoef(x[:-lag], x[lag:])[0,1])
+    result = float(np.corrcoef(x[:-lag], x[lag:])[0, 1])
     return result
 
 
@@ -358,30 +392,38 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
     d_cdms = xr.DataArray.to_cdms2(d[0])
     mask = cdutil.generateLandSeaMask(d_cdms)
     mask = xr.DataArray.from_cdms2(mask)
-    
+
     psdmfm = {}
     for dom in domains:
         psdmfm[dom] = {}
 
         if "Ocean" in dom:
-            dmask = d.where(mask==0)
+            dmask = d.where(mask == 0)
         elif "Land" in dom:
-            dmask = d.where(mask==1)
+            dmask = d.where(mask == 1)
         else:
             dmask = d
 
         dmask = dmask.to_dataset(name="ps")
         dmask = dmask.bounds.add_bounds(axis="X", width=0.5)
         dmask = dmask.bounds.add_bounds(axis="Y", width=0.5)
-            
+
         if "50S50N" in dom:
-            am = dmask.sel(lat=slice(-50, 50)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
+            am = dmask.sel(lat=slice(-50, 50)).spatial.average(
+                "ps", axis=["X", "Y"], weights="generate"
+            )["ps"]
         if "30N50N" in dom:
-            am = dmask.sel(lat=slice(30, 50)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
+            am = dmask.sel(lat=slice(30, 50)).spatial.average(
+                "ps", axis=["X", "Y"], weights="generate"
+            )["ps"]
         if "30S30N" in dom:
-            am = dmask.sel(lat=slice(-30, 30)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
+            am = dmask.sel(lat=slice(-30, 30)).spatial.average(
+                "ps", axis=["X", "Y"], weights="generate"
+            )["ps"]
         if "50S30S" in dom:
-            am = dmask.sel(lat=slice(-50, -30)).spatial.average("ps", axis=["X", "Y"], weights='generate')["ps"]
+            am = dmask.sel(lat=slice(-50, -30)).spatial.average(
+                "ps", axis=["X", "Y"], weights="generate"
+            )["ps"]
         am = np.array(am)
 
         for frq in frqs:

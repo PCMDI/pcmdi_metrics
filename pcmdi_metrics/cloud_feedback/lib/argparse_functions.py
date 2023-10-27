@@ -4,7 +4,6 @@ from cdp.cdp_parser import CDPParser
 
 
 def AddParserArgument():
-
     P = CDPParser(
         default_args_file=[],
         description="Cloud feedback metrics",

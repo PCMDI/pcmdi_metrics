@@ -8,7 +8,6 @@ from argparse import RawTextHelpFormatter
 
 from genutil import StringConstructor
 
-import pcmdi_metrics
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.misc.scripts import parallel_submitter
 from pcmdi_metrics.mjo.lib import AddParserArgument
@@ -97,10 +96,10 @@ for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
 # =================================================
 # Generates list of command
 # -------------------------------------------------
-param_file = "../doc/myParam_mjo.py"
+param_file = "../param/myParam_mjo.py"
 
 if debug:
-    param_file = "../doc/myParam_test.py"
+    param_file = "../param/myParam_test.py"
     print("number of models (debug mode):", len(models))
 
 cmds_list = list()
@@ -148,7 +147,6 @@ for m, model in enumerate(models):
     for r, run in enumerate(runs_list):
         # command line for queue
         cmd = [
-            "python",
             "mjo_metrics_driver.py",
             "-p",
             param_file,

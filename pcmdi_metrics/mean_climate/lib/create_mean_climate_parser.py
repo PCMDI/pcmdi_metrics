@@ -47,7 +47,7 @@ def create_mean_climate_parser():
         help="Users can customize regions values names",
         required=False,
     )
-    
+
     parser.add_argument(
         "--regions_specs",
         type=ast.literal_eval,
@@ -98,6 +98,7 @@ def create_mean_climate_parser():
         dest="target_grid",
         help='Options are "2.5x2.5" or an actual cdms2 grid object',
         required=False,
+        default="2.5x2.5",
     )
 
     parser.add_argument(
@@ -152,10 +153,7 @@ def create_mean_climate_parser():
     )
 
     parser.add_argument(
-        "--ext", 
-        dest="ext", 
-        help="Extension for the output files?", 
-        required=False
+        "--ext", dest="ext", help="Extension for the output files?", required=False
     )
 
     parser.add_argument(
@@ -186,6 +184,7 @@ def create_mean_climate_parser():
         dest="custom_observations",
         help="Path to an alternative, custom observation file",
         required=False,
+        default="",
     )
 
     parser.add_argument(
@@ -194,7 +193,7 @@ def create_mean_climate_parser():
         help="Directory of where to put the results",
         required=False,
     )
-    
+
     parser.add_argument(
         "--diagnostics_output_path",
         dest="diagnostics_output_path",
@@ -261,6 +260,15 @@ def create_mean_climate_parser():
         dest="cmec",
         action="store_false",
         help="Option to not save metrics in CMEC format",
+        required=False,
+    )
+
+    parser.add_argument(
+        "--parallel",
+        type=bool,
+        dest="parallel",
+        default=False,
+        help="Option for running code in parallel mode: True / False (default)",
         required=False,
     )
 

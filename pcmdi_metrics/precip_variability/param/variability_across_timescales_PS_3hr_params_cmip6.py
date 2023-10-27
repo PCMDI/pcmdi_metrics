@@ -5,12 +5,19 @@ mip = "cmip6"
 exp = "historical"
 var = "pr"
 frq = "3hr"
-ver = "v20221111"
+ver = "v20230407"
 
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
-pmpdir = "/work/ahn6/pr/variability_across_timescales/power_spectrum/" + ver + "_test/"
+# case_id = ver
+pmpdir = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2"
 results_dir = os.path.join(
-    pmpdir, "%(output_type)", "%(mip)", exp, "%(case_id)"
+    pmpdir,
+    "%(output_type)",
+    "precip",
+    "%(mip)",
+    exp,
+    "%(case_id)",
+    "variability_across_timescales",
 )
 
 prd = [1985, 2004]  # analysis period
