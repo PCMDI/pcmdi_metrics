@@ -590,7 +590,9 @@ def metrics_json(data_dict, obs_dict={}, region="land", regrid=True):
     return met_dict
 
 
-def metrics_json_return_value(rv, blockex, obs, stat, region="land", regrid=True):
+def metrics_json_return_value(
+    rv, blockex, obs, blockex_obs, stat, region="land", regrid=True
+):
     # Generate metrics for stationary return value comparing model and obs
     # Arguments:
     #   rv: dataset
@@ -632,6 +634,7 @@ def metrics_json_return_value(rv, blockex, obs, stat, region="land", regrid=True
         met_dict[stat][region]["std_xy"][season] = std_xy
 
         if obs is not None and not obs[season].equals(rv_tmp):
+            obs[season] = remove_outliers(obs[season], blockex_obs[season])
             # Regrid obs to model grid
             if regrid:
                 target = xc.create_grid(rv_tmp.lat, rv_tmp.lon)

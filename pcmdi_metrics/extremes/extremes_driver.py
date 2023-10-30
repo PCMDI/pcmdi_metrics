@@ -582,6 +582,7 @@ if cov_file is None:
 
         # Get reference data if present
         refds = None
+        bm_ref = None
         if "Reference" in model_loop_list:
             ref_file = nc_dir + "/Reference_{0}_{1}_{2}_*_return_value.nc".format(
                 reference_data_set, region, stat
@@ -594,6 +595,9 @@ if cov_file is None:
             refds.lon["bounds"] = ""
             refds = refds.bounds.add_missing_bounds()
 
+            bm_ref_file = ref_file.replace("_return_value", "")
+            bm_ref = xcdat.open_dataset(bm_ref_file)
+
         rv = xcdat.open_dataset(file)
         rv = rv.drop_vars("lat_bnds")
         rv = rv.drop_vars("lon_bnds")
@@ -601,7 +605,7 @@ if cov_file is None:
         rv.lon["bounds"] = ""
         rv = rv.bounds.add_missing_bounds()
         tmp = compute_metrics.metrics_json_return_value(
-            rv, bm, refds, stat, region=region, regrid=regrid
+            rv, bm, refds, bm_ref, stat, region=region, regrid=regrid
         )
         # store the stats correctly in the metrics dictionary
         if model != "Reference":
