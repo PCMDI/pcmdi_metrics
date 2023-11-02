@@ -13,7 +13,12 @@ realm = "atm"
 # Analysis Options
 # -------------------------------------------------
 variability_mode = "NAM"  # Available domains: NAM, NAO, SAM, PNA, PDO
-seasons = ["DJF", "MAM", "JJA", "SON"]  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
+seasons = [
+    "DJF",
+    "MAM",
+    "JJA",
+    "SON",
+]  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 ConvEOF = True  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
@@ -31,8 +36,8 @@ reference_data_name = "NOAA-CIRES_20CR"
 reference_data_path = os.path.join(
     "/p/user_pub/PCMDIobs/obs4MIPs/NOAA-ESRL-PSD/20CR/mon/psl/gn/latest",
     "psl_mon_20CR_PCMDI_gn_187101-201212.nc"
-    #"/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707",
-    #"psl_mon_20CR_BE_gn_v20200707_187101-201212.nc",
+    # "/p/user_pub/PCMDIobs/PCMDIobs2/atmos/mon/psl/20CR/gn/v20200707",
+    # "psl_mon_20CR_BE_gn_v20200707_187101-201212.nc",
 )
 
 varOBS = "psl"
@@ -88,4 +93,3 @@ nc_out_obs = True  # Write output in NetCDF
 # Output for models
 nc_out = True
 plot = True
-

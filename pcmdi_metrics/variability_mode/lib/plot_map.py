@@ -1,23 +1,25 @@
+import faulthandler
 import sys
 
-#import cartopy
+# import cartopy
 import cartopy.crs as ccrs
 import matplotlib.path as mpath
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
-from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
-from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
-from pcmdi_metrics.variability_mode.lib import debug_print
 from cartopy.feature import LAND as cartopy_land
 from cartopy.feature import OCEAN as cartopy_ocean
+from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
+from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
-import faulthandler
+from pcmdi_metrics.variability_mode.lib import debug_print
 
 faulthandler.enable()
 
 
-def plot_map(mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_name, debug=False):
+def plot_map(
+    mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_name, debug=False
+):
     """Plot dive down map and save
 
     Parameters
@@ -74,7 +76,9 @@ def plot_map(mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_n
         + percentage
     )
 
-    debug_print('plot_map: projection, plot_title:' + projection +', '+ plot_title, debug)
+    debug_print(
+        "plot_map: projection, plot_title:" + projection + ", " + plot_title, debug
+    )
 
     gridline = True
 
@@ -148,7 +152,7 @@ def plot_map_cartopy(
         Switch for debugging print statements (default is False)
     """
 
-    debug_print('plot_map_cartopy starts', debug)
+    debug_print("plot_map_cartopy starts", debug)
 
     lons = data.getLongitude()
     lats = data.getLatitude()
@@ -160,8 +164,8 @@ def plot_map_cartopy(
     if debug:
         print(min_lon, max_lon, min_lat, max_lat)
 
-    debug_print('Central longitude setup starts', debug)
-    debug_print('proj: '+proj, debug)
+    debug_print("Central longitude setup starts", debug)
+    debug_print("proj: " + proj, debug)
     # map types example:
     # https://github.com/SciTools/cartopy-tutorial/blob/master/tutorial/projections_crs_and_terms.ipynb
 
@@ -185,19 +189,19 @@ def plot_map_cartopy(
             standard_parallels=(20, max_lat),
         )
     else:
-        print('Error: projection not defined!')
+        print("Error: projection not defined!")
 
     if debug:
-        debug_print('Central longitude setup completes', debug)
-        print('projection:', projection)
+        debug_print("Central longitude setup completes", debug)
+        print("projection:", projection)
 
     # Generate plot
-    debug_print('Generate plot starts', debug)
-    #fig = plt.figure(figsize=(8, 6))
-    debug_print('fig done', debug)
-    #ax = plt.axes(projection=projection)
+    debug_print("Generate plot starts", debug)
+    fig = plt.figure(figsize=(8, 6))
+    debug_print("fig done", debug)
+    # ax = plt.axes(projection=projection)
     ax = plt.axes(projection=ccrs.NorthPolarStereo())
-    debug_print('ax done', debug)
+    debug_print("ax done", debug)
     im = ax.contourf(
         lons,
         lats,
@@ -207,12 +211,12 @@ def plot_map_cartopy(
         levels=levels,
         extend="both",
     )
-    debug_print('contourf done', debug)
+    debug_print("contourf done", debug)
     ax.coastlines()
-    debug_print('Generate plot completed', debug)
+    debug_print("Generate plot completed", debug)
 
     # Grid Lines and tick labels
-    debug_print('projection starts', debug)
+    debug_print("projection starts", debug)
     if proj == "PlateCarree":
         if data_area == "global":
             if gridline:
@@ -230,7 +234,7 @@ def plot_map_cartopy(
         if gridline:
             gl = ax.gridlines(alpha=0.5, linestyle="--")
     elif "Stereo" in proj:
-        debug_print(proj + ' start', debug)
+        debug_print(proj + " start", debug)
         if gridline:
             gl = ax.gridlines(draw_labels=True, alpha=0.5, linestyle="--")
             gl.xlocator = mticker.FixedLocator(
@@ -254,7 +258,7 @@ def plot_map_cartopy(
         verts = np.vstack([np.sin(theta), np.cos(theta)]).T
         circle = mpath.Path(verts * radius + center)
         ax.set_boundary(circle, transform=ax.transAxes)
-        debug_print(proj + ' plotted', debug)
+        debug_print(proj + " plotted", debug)
     elif proj == "Lambert":
         # Make a boundary path in PlateCarree projection, I choose to start in
         # the bottom left and go round anticlockwise, creating a boundary point
@@ -271,7 +275,7 @@ def plot_map_cartopy(
                 draw_labels=True,
                 alpha=0.8,
                 linestyle="--",
-                crs=cartopy.crs.PlateCarree(),
+                crs=ccrs.PlateCarree(),
             )
             gl.xformatter = LONGITUDE_FORMATTER
             gl.yformatter = LATITUDE_FORMATTER
@@ -284,7 +288,7 @@ def plot_map_cartopy(
                 right_label = ea.get_position()[0] > 0
                 if right_label:
                     ea.set_visible(False)
-    debug_print('projection completed', debug)
+    debug_print("projection completed", debug)
 
     # Add title
     plt.title(title, pad=15, fontsize=15)
@@ -311,6 +315,6 @@ def plot_map_cartopy(
             )
 
     # Done, save figure
-    debug_print('plot done, save figure as ' + filename, debug)
+    debug_print("plot done, save figure as " + filename, debug)
     fig.savefig(filename)
     plt.close("all")

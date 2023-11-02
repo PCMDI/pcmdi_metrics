@@ -451,7 +451,7 @@ if obs_compare:
                 eof_lr_obs[season](region_subdomain),
                 frac_obs[season],
                 output_img_file_obs,
-                debug=debug
+                debug=debug,
             )
             plot_map(
                 mode + "_teleconnection",
@@ -462,7 +462,7 @@ if obs_compare:
                 eof_lr_obs[season](longitude=(lon1g, lon2g)),
                 frac_obs[season],
                 output_img_file_obs + "_teleconnection",
-                debug=debug
+                debug=debug,
             )
             debug_print("obs plotting end", debug)
 
@@ -757,7 +757,7 @@ for model in models:
                             eof_lr_cbf(region_subdomain),
                             frac_cbf,
                             output_img_file + "_cbf",
-                            debug=debug
+                            debug=debug,
                         )
                         plot_map(
                             mode + "_teleconnection",
@@ -768,7 +768,7 @@ for model in models:
                             eof_lr_cbf(longitude=(lon1g, lon2g)),
                             frac_cbf,
                             output_img_file + "_cbf_teleconnection",
-                            debug=debug
+                            debug=debug,
                         )
 
                     debug_print("cbf pcs end", debug)

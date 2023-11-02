@@ -94,4 +94,4 @@ nc_out_obs = True  # Write output in NetCDF
 
 # Output for models
 nc_out = True
-plot = True  
+plot = True
