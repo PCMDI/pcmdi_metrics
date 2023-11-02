@@ -13,7 +13,7 @@ realm = "atm"
 # Analysis Options
 # -------------------------------------------------
 variability_mode = "NAM"  # Available domains: NAM, NAO, SAM, PNA, PDO
-seasons = ["DJF"]  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
+seasons = ["DJF", "MAM", "JJA", "SON"]  # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
 
 ConvEOF = True  # Calculate conventioanl EOF for model
 CBF = True  # Calculate Common Basis Function (CBF) for model
@@ -21,8 +21,8 @@ CBF = True  # Calculate Common Basis Function (CBF) for model
 # =================================================
 # Miscellaneous
 # -------------------------------------------------
-update_json = True  # False
-debug = True  # False
+update_json = False
+debug = False
 
 # =================================================
 # Observation
@@ -81,5 +81,11 @@ results_dir = os.path.join(
     "%(reference_data_name)",
 )
 
-nc_out = True  # Write output in NetCDF
-plot = True  # Create map graphics
+# Output for obs
+plot_obs = True  # Create map graphics
+nc_out_obs = True  # Write output in NetCDF
+
+# Output for models
+nc_out = True
+plot = True
+
