@@ -439,8 +439,39 @@ if obs_compare:
         if EofScaling:
             output_filename_obs += "_EOFscaled"
 
-        # Save global map, pc timeseries, and fraction in NetCDF output
+        # Plot
+        if plot_obs:
+            debug_print("plot obs", debug)
+            output_img_file_obs = os.path.join(
+                outdir(output_type="graphics"), output_filename_obs
+            )
+            plot_map(
+                mode,
+                "[REF] " + obs_name,
+                osyear,
+                oeyear,
+                season,
+                eof_lr_obs[season](region_subdomain),
+                frac_obs[season],
+                output_img_file_obs,
+                debug=debug
+            )
+            plot_map(
+                mode + "_teleconnection",
+                "[REF] " + obs_name,
+                osyear,
+                oeyear,
+                season,
+                eof_lr_obs[season](longitude=(lon1g, lon2g)),
+                frac_obs[season],
+                output_img_file_obs + "_teleconnection",
+                debug=debug
+            )
+            debug_print("obs plotting end", debug)
+
+        # NetCDF: Save global map, pc timeseries, and fraction in NetCDF output
         if nc_out_obs:
+            debug_print("write obs nc", debug)
             output_nc_file_obs = os.path.join(
                 outdir(output_type="diagnostic_results"), output_filename_obs
             )
@@ -452,36 +483,6 @@ if obs_compare:
                 slope_obs,
                 intercept_obs,
             )
-
-        # Plotting
-        if plot_obs:
-            output_img_file_obs = os.path.join(
-                outdir(output_type="graphics"), output_filename_obs
-            )
-            # plot_map(mode, '[REF] '+obs_name, osyear, oeyear, season,
-            #          eof_obs[season], frac_obs[season],
-            #          output_img_file_obs+'_org_eof')
-            plot_map(
-                mode,
-                "[REF] " + obs_name,
-                osyear,
-                oeyear,
-                season,
-                eof_lr_obs[season](region_subdomain),
-                frac_obs[season],
-                output_img_file_obs,
-            )
-            plot_map(
-                mode + "_teleconnection",
-                "[REF] " + obs_name,
-                osyear,
-                oeyear,
-                season,
-                eof_lr_obs[season](longitude=(lon1g, lon2g)),
-                frac_obs[season],
-                output_img_file_obs + "_teleconnection",
-            )
-            debug_print("obs plotting end", debug)
 
         # Save stdv of PC time series in dictionary
         dict_head_obs["stdv_pc"] = stdv_pc_obs[season]
@@ -761,6 +762,7 @@ for model in models:
                             eof_lr_cbf(region_subdomain),
                             frac_cbf,
                             output_img_file + "_cbf",
+                            debug=debug
                         )
                         plot_map(
                             mode + "_teleconnection",
@@ -771,6 +773,7 @@ for model in models:
                             eof_lr_cbf(longitude=(lon1g, lon2g)),
                             frac_cbf,
                             output_img_file + "_cbf_teleconnection",
+                            debug=debug
                         )
 
                     debug_print("cbf pcs end", debug)
@@ -920,11 +923,6 @@ for model in models:
                             outdir(output_type="graphics"), output_filename
                         )
                         if plot_model:
-                            # plot_map(mode,
-                            #          mip.upper()+' '+model+' ('+run+')',
-                            #          msyear, meyear, season,
-                            #          eof, frac,
-                            #          output_img_file+'_org_eof')
                             plot_map(
                                 mode,
                                 mip.upper()
@@ -940,6 +938,7 @@ for model in models:
                                 eof_lr(region_subdomain),
                                 frac,
                                 output_img_file,
+                                debug=debug,
                             )
                             plot_map(
                                 mode + "_teleconnection",
@@ -956,6 +955,7 @@ for model in models:
                                 eof_lr(longitude=(lon1g, lon2g)),
                                 frac,
                                 output_img_file + "_teleconnection",
+                                debug=debug,
                             )
 
                         # - - - - - - - - - - - - - - - - - - - - - - - - -
