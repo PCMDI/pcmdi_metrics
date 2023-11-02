@@ -45,15 +45,13 @@ from shutil import copyfile
 from genutil import StringConstructor
 
 import pcmdi_metrics
+from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.mjo.lib import (
     AddParserArgument,
     YearCheck,
     mjo_metric_ewr_calculation,
     mjo_metrics_to_json,
 )
-
-from pcmdi_metrics.mean_climate.lib import pmp_parser
-
 
 # To avoid below error
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
@@ -109,9 +107,9 @@ models = param.modnames
 
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
-    model_index_path = re.split('. |_', param.modpath.split("/")[-1]).index("%(model)")
+    model_index_path = re.split(". |_", param.modpath.split("/")[-1]).index("%(model)")
     models = [
-        re.split('. |_', p.split("/")[-1])[model_index_path]
+        re.split(". |_", p.split("/")[-1])[model_index_path]
         for p in glob.glob(
             modpath(mip=mip, exp=exp, model="*", realization="*", variable=varModel)
         )
@@ -264,8 +262,10 @@ for model in models:
                     run = reference_data_name
                 else:
                     if realization in ["all", "All", "ALL", "*"]:
-                        run_index = re.split('. |_', param.modpath.split("/")[-1]).index("%(realization)")
-                        run = re.split('. |_', model_path.split("/")[-1])[run_index]
+                        run_index = re.split(
+                            ". |_", param.modpath.split("/")[-1]
+                        ).index("%(realization)")
+                        run = re.split(". |_", model_path.split("/")[-1])[run_index]
                     else:
                         run = realization
                     # dict
