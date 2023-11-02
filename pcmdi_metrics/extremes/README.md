@@ -34,6 +34,8 @@ All netcdf files will contain data for 5 time periods: Annual ("ANN"), DJF, MAM,
 
 If multiple realizations are provided for a single model, a single return value file will be produced for that model which makes use of all provided realizations in the return value computation.
 
+A demo is provided to show  users how to generate a portrait plot of the bias in return values in ../graphics/portrait_plot/return_value_portrait_plot_demo.ipynb.  
+
 ### Metrics
 Metrics are produced to describe the time mean extrema values, along with spatial statistics comparing the mean model field to mean observed field. Metrics are output for Annual, DJF, MAM, JJA, and SON seasons.
 Model only: "mean", "std_xy"  
