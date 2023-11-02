@@ -1,9 +1,8 @@
 import geopandas as gpd
 import regionmask
-import xarray as xr
-import xcdat
 
-def region_from_file(data,rgn_path,attr,feature):
+
+def region_from_file(data, rgn_path, attr, feature):
     # Return data masked from a feature in input file.
     # Arguments:
     #    data: xcdat dataset
@@ -17,18 +16,18 @@ def region_from_file(data,rgn_path,attr,feature):
     print("Reading region from file.")
     try:
         regions_df = gpd.read_file(rgn_path)
-        regions = regionmask.from_geopandas(regions_df,names=attr)
+        regions = regionmask.from_geopandas(regions_df, names=attr)
         mask = regions.mask(lon, lat)
         # Can't match mask by name, rather index of name
         val = list(regions_df[attr]).index(feature)
     except Exception as e:
         print("Error in creating region subset from file:")
         raise e
-    
+
     try:
         masked_data = data.where(mask == val)
     except Exception as e:
         print("Error: Region selection failed.")
         raise e
 
-    return  masked_data
+    return masked_data

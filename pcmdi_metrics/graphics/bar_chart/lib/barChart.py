@@ -4,7 +4,6 @@ import numpy as np
 
 class BarChart(object):
     def __init__(self, mods, data, stat, unit=None, unit_adjust=1, fig=None, rect=111):
-
         # Canvas setup
         if fig is None:
             fig = plt.figure
