@@ -9,7 +9,10 @@ The PMP Extremes driver produces annual block extrema and return values for dail
 
 Demo
 =====
-Coming soon
+* `PMP demo Jupyter notebook`_
+
+.. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_8_extremes.ipynb
+
 
 
 Inputs
