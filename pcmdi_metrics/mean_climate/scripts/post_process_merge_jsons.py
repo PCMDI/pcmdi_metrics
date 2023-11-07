@@ -4,7 +4,6 @@ import copy
 import glob
 import json
 import os
-import sys
 
 from genutil import StringConstructor
 
@@ -17,7 +16,7 @@ def main():
     # mips = ['cmip3']
 
     # exps = ['historical', 'amip']
-    exps = ['historical']
+    exps = ["historical"]
     # exps = ["amip"]
     # exps = ['20c3m', 'amip']
     # exps = ['20c3m']
@@ -35,18 +34,35 @@ def main():
 
     for mip in mips:
         for exp in exps:
-            variables = [s.split('/')[-1] for s in glob.glob(os.path.join(pmprdir, "metrics_results", "mean_climate", mip, exp, case_id, "*")) if os.path.isdir(s)]
+            variables = [
+                s.split("/")[-1]
+                for s in glob.glob(
+                    os.path.join(
+                        pmprdir,
+                        "metrics_results",
+                        "mean_climate",
+                        mip,
+                        exp,
+                        case_id,
+                        "*",
+                    )
+                )
+                if os.path.isdir(s)
+            ]
             print("variables:", variables)
             for var in variables:
                 # json merge
-                #try:
+                # try:
                 if 1:
-                    merge_json(mip, exp, case_id, var, obs_selection, syear, eyear, pmprdir)
+                    merge_json(
+                        mip, exp, case_id, var, obs_selection, syear, eyear, pmprdir
+                    )
                 """
                 except Exception as err:
                     print("ERROR: ", mip, exp, var, err)
                     pass
                 """
+
 
 def merge_json(mip, exp, case_id, var, obs, syear, eyear, pmprdir):
     json_file_dir_template = (
@@ -58,7 +74,7 @@ def merge_json(mip, exp, case_id, var, obs, syear, eyear, pmprdir):
         json_file_dir_template(mip=mip, exp=exp, case_id=case_id, var=var),
     )
 
-    print('json_file_dir:', json_file_dir)
+    print("json_file_dir:", json_file_dir)
 
     json_file_template = "%(model)_%(var)_*_%(obs).json"
     json_file_template = StringConstructor(json_file_template)
@@ -80,7 +96,7 @@ def merge_json(mip, exp, case_id, var, obs, syear, eyear, pmprdir):
         )
     )
 
-    print('json_files:', json_files)
+    print("json_files:", json_files)
 
     # Remove diveDown JSONs and previously generated merged JSONs if included
     json_files_revised = copy.copy(json_files)
@@ -103,7 +119,9 @@ def merge_json(mip, exp, case_id, var, obs, syear, eyear, pmprdir):
         f.close()
 
     # Dump final dictionary to JSON
-    final_json_filename = StringConstructor("%(var)_%(mip)_%(exp)_%(case_id).json")(var=var, mip=mip, exp=exp, case_id=case_id)
+    final_json_filename = StringConstructor("%(var)_%(mip)_%(exp)_%(case_id).json")(
+        var=var, mip=mip, exp=exp, case_id=case_id
+    )
     final_json_file = os.path.join(json_file_dir, "..", final_json_filename)
 
     with open(final_json_file, "w") as fp:

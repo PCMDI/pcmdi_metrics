@@ -56,7 +56,6 @@ def read_data_in(
     LandMask,
     debug=False,
 ):
-
     f = cdms2.open(path)
     data_timeseries = f(var_in_data, time=(start_time, end_time), latitude=(-90, 90))
     cdutil.setTimeBoundsMonthly(data_timeseries)

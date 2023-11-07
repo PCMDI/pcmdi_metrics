@@ -41,7 +41,6 @@ def mjo_metric_ewr_calculation(
     outdir,
     season="NDJFMA",
 ):
-
     # Open file to read daily dataset
     if debug:
         print("debug: open file")
@@ -167,21 +166,35 @@ def mjo_metric_ewr_calculation(
     if plot:
         os.makedirs(outdir(output_type="graphics"), exist_ok=True)
         fout = os.path.join(outdir(output_type="graphics"), output_filename)
-        title = (
-            mip.upper()
-            + ": "
-            + model
-            + " ("
-            + run
-            + ") \n"
-            + var.capitalize()
-            + ", "
-            + season
-            + " "
-            + str(startYear)
-            + "-"
-            + str(endYear)
-        )
+        if model == "obs":
+            title = (
+                " OBS ("
+                + run
+                + ") \n"
+                + var.capitalize()
+                + ", "
+                + season
+                + " "
+                + str(startYear)
+                + "-"
+                + str(endYear)
+            )
+        else:
+            title = (
+                mip.upper()
+                + ": "
+                + model
+                + " ("
+                + run
+                + ") \n"
+                + var.capitalize()
+                + ", "
+                + season
+                + " "
+                + str(startYear)
+                + "-"
+                + str(endYear)
+            )
         if cmmGrid:
             title += ", common grid (2.5x2.5deg)"
         plot_power(OEE, title, fout, ewr)
