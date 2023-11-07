@@ -111,10 +111,12 @@ for mod in mods:
 
         try:
             area = g("areacello")
-        except:
+        except Exception:
             area = g("areacella")
         area = MV.multiply(area, factor1)
-        area = MV.multiply(area, factor1)
+        area = MV.multiply(
+            area, factor1
+        )  # Question from Jiwoo (2023-11-7): Why this line repeats two times?
 
         g.close()
 
@@ -142,7 +144,7 @@ for mod in mods:
                 print(mod, MV.max(frac))
             area = MV.multiply(area, frac)
             land_mask = MV.multiply(1, (1 - frac))
-        except:
+        except Exception:
             frac = s("sftlf")
         if (
             mod != "MIROC5"
@@ -209,7 +211,7 @@ for mod in mods:
             MV.greater_equal(lats, -90.0), MV.less(lats, -55.0)
         )
 
-    except:
+    except Exception:
         "Failed for ", mod
         mods_failed.append(mod)
 

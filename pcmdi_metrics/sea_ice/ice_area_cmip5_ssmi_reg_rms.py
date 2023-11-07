@@ -408,7 +408,7 @@ for dl in range(0, len(dlist_n)):
             data_np.append(val4 + val5)
             data_na.append(val6 + val7 + val8 + val9 + val11 + val12)
             data_ca.append(val10)
-        except:
+        except Exception:
             pass
     obs1_n[:, dl] = MV.array(data_n[0:324], id="sic")
     obs1_ca[:, dl] = MV.array(data_ca[0:324], id="sic")
@@ -428,7 +428,7 @@ for dl in range(0, len(dlist_n)):
             data_sa.append(val4)
             data_io.append(val5)
             data_sp.append(val6 + val7 + val8)
-        except:
+        except Exception:
             pass
 
     obs1_s[:, dl] = MV.array(data_s[0:324], id="sic")
@@ -675,7 +675,7 @@ for mod in mods:
     g = cdms.open(gfile)
     try:
         area = g("areacello")
-    except:
+    except Exception:
         area = g("areacella")
     area = MV.multiply(area, factor1)
     area = MV.multiply(area, factor1)
