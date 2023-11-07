@@ -5,7 +5,7 @@ import cdutil, genutil
 import cdtime, datetime
 import gc
 
-import numpy as np 
+import numpy as np
 import pylab
 import matplotlib.pyplot as plt
 

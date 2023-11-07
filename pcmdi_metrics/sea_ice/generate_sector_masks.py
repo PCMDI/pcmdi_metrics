@@ -24,7 +24,7 @@ P.add_argument("-o", "--obspath",
                       default = '',
                       help = "Explicit path to obs monthly PR climatology")
 P.add_argument("--outpd", "--outpathdata",
-                      type = str, 
+                      type = str,
                       dest = 'outpathdata',
                       default = '/export/gleckler1/processing/metrics_package/my_test/sea_ice/git_data/',
                       help = "Output path for sector scale masks")
@@ -95,8 +95,8 @@ for mod in mods:
    alist = os.listdir(area_dir) # LIST OF ALL AREACELLO FILES
 
    for a in alist:
-     if string.find(a,mod) != -1: 
-      areaf = a 
+     if string.find(a,mod) != -1:
+      areaf = a
       print mod,' ', a
 #  w = sys.stdin.readline()
 
@@ -161,9 +161,9 @@ for mod in mods:
 
 ###############################################################
 
-   sectors = ['ca','na','np','sp','sa','io'] 
+   sectors = ['ca','na','np','sp','sa','io']
 
-   for sector in sectors: 
+   for sector in sectors:
      mask = getmask(sector,lats,lons,lons_a,lons_p,land_mask)
 
      g = cdms2.open(sec_mask_dir + 'mask_' + mod + '_' + sector + '.nc','w+')
@@ -193,5 +193,3 @@ for mod in mods:
 print 'failed for ', mods_failed
 
 # Calculate the Sea Ice Covered Area
-
-
