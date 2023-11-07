@@ -233,32 +233,36 @@ for var in vars:
     # ----------------
     if "all" in reference_data_set:
         reference_data_set = [
-            x for x in list(obs_dict[varname].keys()) if (x == "default" or "alternate" in x)]
+            x
+            for x in list(obs_dict[varname].keys())
+            if (x == "default" or "alternate" in x)
+        ]
         print("reference_data_set (all): ", reference_data_set)
 
     for ref in reference_data_set:
-        print('ref:', ref)
-        
+        print("ref:", ref)
+
         # identify data to load (annual cycle (AC) data is loading in)
         ref_dataset_name = obs_dict[varname][ref]
         ref_data_full_path = os.path.join(
-            reference_data_path,
-            obs_dict[varname][ref_dataset_name]["template"])
-        print('ref_data_full_path:', ref_data_full_path)
-        
+            reference_data_path, obs_dict[varname][ref_dataset_name]["template"]
+        )
+        print("ref_data_full_path:", ref_data_full_path)
+
         # load data and regrid
         ds_ref = load_and_regrid(
-            data_path=ref_data_full_path, 
-            varname=varname, 
-            level=level, 
-            t_grid=t_grid, 
-            # decode_times=False, 
-            decode_times=True, 
-            regrid_tool=regrid_tool, 
-            debug=debug)
+            data_path=ref_data_full_path,
+            varname=varname,
+            level=level,
+            t_grid=t_grid,
+            # decode_times=False,
+            decode_times=True,
+            regrid_tool=regrid_tool,
+            debug=debug,
+        )
 
         ds_ref_dict = OrderedDict()
-        
+
         # for record in output json
         result_dict["References"][ref] = obs_dict[varname][ref_dataset_name]
 
@@ -421,7 +425,7 @@ for var in vars:
                                     )
 
                             # compute metrics
-                            
+
                             print("compute metrics start")
                             result_dict["RESULTS"][model][ref][run][
                                 region
@@ -469,11 +473,7 @@ for var in vars:
         # write collective JSON --- all models / all obs / single variable
         json_filename = "_".join([var, target_grid, regrid_tool, "metrics", case_id])
         mean_climate_metrics_to_json(
-            metrics_output_path,
-            json_filename,
-            result_dict,
-            cmec_flag=cmec,
-            debug=debug
+            metrics_output_path, json_filename, result_dict, cmec_flag=cmec, debug=debug
         )
 
 print("pmp mean clim driver completed")

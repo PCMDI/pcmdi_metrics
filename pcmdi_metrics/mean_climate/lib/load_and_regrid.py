@@ -34,16 +34,15 @@ def load_and_regrid(
 
     # load data
     ds = xcdat_open(
-        data_path, 
-        data_var=varname_in_file, 
-        decode_times=decode_times)  # NOTE: decode_times=False will be removed once obs4MIP written using xcdat
-    
+        data_path, data_var=varname_in_file, decode_times=decode_times
+    )  # NOTE: decode_times=False will be removed once obs4MIP written using xcdat
+
     # SET CONDITIONAL ON INPUT VARIABLE
     if varname == "pr":
-        print('Adjust units for pr')
+        print("Adjust units for pr")
         if ds[varname_in_file].units == "kg m-2 s-1":
             ds[varname_in_file] = ds[varname_in_file] * 86400
-            print('pr units adjusted to [mm d-1] from [kg m-2 s-1] by 86400 multiplied')
+            print("pr units adjusted to [mm d-1] from [kg m-2 s-1] by 86400 multiplied")
 
     """
     # calendar quality check
@@ -64,20 +63,22 @@ def load_and_regrid(
             ds.time.attrs["calendar"] = 'standard'
             print('[WARNING]: calendar info not found for time axis. ds.time.attrs["calendar"] is adjusted to standard')
     """
-    
+
     # time bound check #1 -- add proper time bound info if cdms-generated annual cycle is loaded
-    if isinstance(ds.time.values[0], np.float64):  # and "units" not in list(ds.time.attrs.keys()):
-        ds.time.attrs['units'] = "days since 0001-01-01"
+    if isinstance(
+        ds.time.values[0], np.float64
+    ):  # and "units" not in list(ds.time.attrs.keys()):
+        ds.time.attrs["units"] = "days since 0001-01-01"
         ds = xc.decode_time(ds)
         if debug:
-            print('decode_time done')
-            
+            print("decode_time done")
+
     # time bound check #2 -- add time bounds itself it it is missing
-    if 'bounds' in list(ds.time.attrs.keys()):
-        time_bnds_key = ds.time.attrs['bounds']
+    if "bounds" in list(ds.time.attrs.keys()):
+        time_bnds_key = ds.time.attrs["bounds"]
         if time_bnds_key not in list(ds.keys()):
-            ds = ds.bounds.add_missing_bounds(['T'])
-            print('[WARNING]: bounds.add_missing_bounds conducted for T axis')
+            ds = ds.bounds.add_missing_bounds(["T"])
+            print("[WARNING]: bounds.add_missing_bounds conducted for T axis")
 
     # level - extract a specific level if needed
     if level is not None:
@@ -143,15 +144,14 @@ def load_and_regrid(
 
     ds_regridded[varname] = ds_regridded[varname].assign_attrs({"units": units})
 
-    ds_regridded[varname] = ds_regridded[varname].assign_attrs({'units': units})
-    
+    ds_regridded[varname] = ds_regridded[varname].assign_attrs({"units": units})
+
     # time bound check #3 -- preserve time bnds in regridded dataset
-    if 'bounds' in list(ds_regridded.time.attrs.keys()):
-        time_bnds_key = ds_regridded.time.attrs['bounds']
+    if "bounds" in list(ds_regridded.time.attrs.keys()):
+        time_bnds_key = ds_regridded.time.attrs["bounds"]
         if time_bnds_key not in list(ds_regridded.keys()):
-            ds_regridded = ds_regridded.bounds.add_missing_bounds(['T'])
-            print('[WARNING]: bounds.add_missing_bounds conducted for T axis')
-        
+            ds_regridded = ds_regridded.bounds.add_missing_bounds(["T"])
+            print("[WARNING]: bounds.add_missing_bounds conducted for T axis")
 
     if debug:
         print("ds_regridded:", ds_regridded)

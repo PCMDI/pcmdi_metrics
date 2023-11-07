@@ -35,23 +35,23 @@ def compute_metrics(Var, dm, do, debug=False):
 
     # unify time and time bounds between observation and model
     if debug:
-        print('before time and time bounds unifying')
-        print('dm.time: ', dm['time'])
-        print('do.time: ', do['time'])
+        print("before time and time bounds unifying")
+        print("dm.time: ", dm["time"])
+        print("do.time: ", do["time"])
 
     """
     # Below is temporary...
     dm['time'] = do['time']
     dm[dm.time.encoding['bounds']] = do[do.time.attrs['bounds']]
     """
-    
+
     if debug:
-        print('after time and time bounds unifying')
-        print('dm.time: ', dm['time'])
-        print('do.time: ', do['time'])
-        
-        dm.to_netcdf('dm.nc')
-        do.to_netcdf('do.nc')
+        print("after time and time bounds unifying")
+        print("dm.time: ", dm["time"])
+        print("do.time: ", do["time"])
+
+        dm.to_netcdf("dm.nc")
+        do.to_netcdf("do.nc")
 
     metrics_dictionary = OrderedDict()
 
@@ -65,15 +65,15 @@ def compute_metrics(Var, dm, do, debug=False):
 
     print("compute_metrics, rms_xyt")
     rms_xyt = pcmdi_metrics.mean_climate.lib.rms_xyt(dm, do, var)
-    print('compute_metrics, rms_xyt:', rms_xyt)
+    print("compute_metrics, rms_xyt:", rms_xyt)
 
     print("compute_metrics, stdObs_xyt")
     stdObs_xyt = pcmdi_metrics.mean_climate.lib.std_xyt(do, var)
-    print('compute_metrics, stdObs_xyt:', stdObs_xyt)
+    print("compute_metrics, stdObs_xyt:", stdObs_xyt)
 
     print("compute_metrics, std_xyt")
     std_xyt = pcmdi_metrics.mean_climate.lib.std_xyt(dm, var)
-    print('compute_metrics, std_xyt:', std_xyt)
+    print("compute_metrics, std_xyt:", std_xyt)
 
     # CALCULATE ANNUAL MEANS
     print("compute_metrics-CALCULATE ANNUAL MEANS")
@@ -82,23 +82,23 @@ def compute_metrics(Var, dm, do, debug=False):
     # CALCULATE ANNUAL MEAN BIAS
     print("compute_metrics-CALCULATE ANNUAL MEAN BIAS")
     bias_xy = pcmdi_metrics.mean_climate.lib.bias_xy(dm_am, do_am, var)
-    print('compute_metrics-CALCULATE ANNUAL MEAN BIAS, bias_xy:', bias_xy)
+    print("compute_metrics-CALCULATE ANNUAL MEAN BIAS, bias_xy:", bias_xy)
 
     # CALCULATE MEAN ABSOLUTE ERROR
     print("compute_metrics-CALCULATE MSE")
     mae_xy = pcmdi_metrics.mean_climate.lib.meanabs_xy(dm_am, do_am, var)
-    print('compute_metrics-CALCULATE MSE, mae_xy:', mae_xy)
+    print("compute_metrics-CALCULATE MSE, mae_xy:", mae_xy)
 
     # CALCULATE ANNUAL MEAN RMS (centered and uncentered)
     print("compute_metrics-CALCULATE MEAN RMS")
     rms_xy = pcmdi_metrics.mean_climate.lib.rms_xy(dm_am, do_am, var)
     rmsc_xy = pcmdi_metrics.mean_climate.lib.rmsc_xy(dm_am, do_am, var)
-    print('compute_metrics-CALCULATE MEAN RMS: rms_xy, rmsc_xy: ', rms_xy, rmsc_xy)
+    print("compute_metrics-CALCULATE MEAN RMS: rms_xy, rmsc_xy: ", rms_xy, rmsc_xy)
 
     # CALCULATE ANNUAL MEAN CORRELATION
     print("compute_metrics-CALCULATE MEAN CORR")
     cor_xy = pcmdi_metrics.mean_climate.lib.cor_xy(dm_am, do_am, var)
-    print('compute_metrics-CALCULATE MEAN CORR: cor_xy:', cor_xy)
+    print("compute_metrics-CALCULATE MEAN CORR: cor_xy:", cor_xy)
 
     # CALCULATE ANNUAL OBS and MOD STD
     print("compute_metrics-CALCULATE ANNUAL OBS AND MOD STD")
@@ -166,9 +166,7 @@ def compute_metrics(Var, dm, do, debug=False):
     metrics_dictionary["std_xy"]["ann"] = format(std_xy, sig_digits)
     metrics_dictionary["std-obs_xyt"]["ann"] = format(stdObs_xyt, sig_digits)
     metrics_dictionary["std_xyt"]["ann"] = format(std_xyt, sig_digits)
-    metrics_dictionary["std-obs_xy_devzm"]["ann"] = format(
-        stdObs_xy_devzm, sig_digits
-    )
+    metrics_dictionary["std-obs_xy_devzm"]["ann"] = format(stdObs_xy_devzm, sig_digits)
     metrics_dictionary["std_xy_devzm"]["ann"] = format(std_xy_devzm, sig_digits)
     metrics_dictionary["rms_xyt"]["ann"] = format(rms_xyt, sig_digits)
     metrics_dictionary["rms_xy"]["ann"] = format(rms_xy, sig_digits)
