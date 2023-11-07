@@ -693,7 +693,7 @@ for mod in mods:
 
     nr = 0  # Number fo individual model runs
 
-    for ir in range(0, len(runs)):
+    for run, ver in zip(runs, vers):
         nr = nr + 1
         # Reading the sea ice concentration (sic)
         infile = (
@@ -701,19 +701,16 @@ for mod in mods:
             + "cmip5."
             + mod
             + ".historical."
-            + runs[ir]
+            + run
             + ".mo.seaIce.sic."
-            + vers[ir]
+            + ver
             + ".xml"
         )
         print(infile)
 
         f = cdms.open(infile)
-        if (
-            (mod == "HadGEM2-CC" and (runs[ir] == "r1i1p1" or runs[ir] == "r3i1p1"))
-            or mod == "HadGEM2-ES"
-            and (runs[ir] == "r2i1p1" or runs[ir] == "r3i1p1" or runs[ir] == "r4i1p1")
-        ):
+        if ((mod == "HadGEM2-CC" and (run in ["r1i1p1", "r3i1p1"])
+            or mod == "HadGEM2-ES" and (run in ["r2i1p1", "r3i1p1", "r4i1p1"]))):
             sic = f(var, time=("1978-12-1", "2006-1-1"))
         else:
             sic = f(var, time=("1979-1-1", "2006-1-1"))
@@ -814,7 +811,7 @@ for mod in mods:
             MV.greater_equal(sic, 0.15), ice_area, 0.0
         )  # Masking out the sic<0.15
 
-        #    arctic=MV.logical_and(MV.greater_equal(lats,35.),MV.less(lats,87.2))         #SSM/I limited to 87.2N
+        # arctic=MV.logical_and(MV.greater_equal(lats,35.),MV.less(lats,87.2))  # SSM/I limited to 87.2N
         arctic = MV.logical_and(
             MV.greater_equal(lats, 35.0), MV.less(lats, 90.0)
         )  # Adding currently in SSM/I 100% in the area >87.2N
