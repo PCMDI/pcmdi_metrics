@@ -8,8 +8,6 @@ import numpy as np
 
 
 def tgrid(t):
-    import cdtime
-
     time = t[:] * 0.0
     if t[0] == 0.0:
         dt = 0.0
