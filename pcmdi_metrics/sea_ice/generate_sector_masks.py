@@ -4,9 +4,9 @@ import sys
 
 import cdms2
 import MV2 as MV
-from sector_mask_defs import *
+from sector_mask_defs import getmask
 
-from pcmdi_metrics.pcmdi.pmp_parser import *
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 
 P = PMPParser()
 

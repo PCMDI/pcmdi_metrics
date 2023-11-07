@@ -1,6 +1,7 @@
-def getmask(sector, lats, lons, lons_a, lons_p, land_mask):
-    import MV2 as MV
+import MV2 as MV
 
+
+def getmask(sector, lats, lons, lons_a, lons_p, land_mask):
     # Arctic Regions
     # Central Arctic
     if sector == "ca":
