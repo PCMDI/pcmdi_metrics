@@ -16,6 +16,7 @@ def portrait_plot(
     ax=None,
     annotate=False,
     annotate_data=None,
+    annotate_textcolors=("black", "white"),
     annotate_fontsize=15,
     annotate_format="{x:.2f}",
     figsize=(12, 10),
@@ -61,6 +62,7 @@ def portrait_plot(
     - `annotate`: bool, default=False, add annotating text if true,
                   but work only for heatmap style map (i.e., no triangles)
     - `annotate_data`: 2d numpy array, default=None. If None, the image's data is used.  Optional.
+    - `annotate_textcolors`: Tuple. A pair of colors for annotation text. Default is ("black", "white")
     - `annotate_fontsize`: number (int/float), default=15. Font size for annotation
     - `annotate_format`: format for annotate value, default="{x:.2f}"
     - `figsize`: tuple of two numbers (width, height), default=(12, 10), figure size in inches
@@ -175,6 +177,7 @@ def portrait_plot(
                 data=data,
                 annotate_data=annotate_data,
                 valfmt=annotate_format,
+                textcolors=annotate_textcolors,
                 threshold=(2, -2),
                 fontsize=annotate_fontsize,
             )
