@@ -505,7 +505,7 @@ def annotate_heatmap(
                 kw.update(color=textcolors[int(data[i, j] > threshold)])
             text = ax.text(j + 0.5, i + 0.5, valfmt(annotate_data[i, j], None), **kw)
             texts.append(text)
-            
+
     return ax
 
 
