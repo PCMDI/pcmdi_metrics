@@ -427,20 +427,24 @@ for var in vars:
                             # compute metrics
                             print("compute metrics start")
                             try:
-                                result_dict["RESULTS"][model][ref][run][region] = compute_metrics(
+                                result_dict["RESULTS"][model][ref][run][
+                                    region
+                                ] = compute_metrics(
                                     varname,
                                     ds_test_dict[region],
                                     ds_ref_dict[region],
                                     debug=debug,
                                 )
                             except Exception:
-                                result_dict["RESULTS"][model][ref][run][region] = compute_metrics(
+                                result_dict["RESULTS"][model][ref][run][
+                                    region
+                                ] = compute_metrics(
                                     varname,
                                     ds_test_dict[region],
                                     ds_ref_dict[region],
                                     debug=debug,
-                                    time_dim_sync=True
-                                )                                
+                                    time_dim_sync=True,
+                                )
 
                             # write individual JSON
                             # --- single simulation, obs (need to accumulate later) / single variable
