@@ -15,11 +15,10 @@ import genutil
 import MV2
 import numpy
 import xcdat
+import xcdat as xc
 
 import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
-
-import xcdat as xc
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
@@ -83,7 +82,12 @@ def update_dict(d, u):
 
 
 def generateProvenance():
-    extra_pairs = {"matplotlib": "matplotlib ", "scipy": "scipy", "xcdat": "xcdat", "xarray": "xarray"}
+    extra_pairs = {
+        "matplotlib": "matplotlib ",
+        "scipy": "scipy",
+        "xcdat": "xcdat",
+        "xarray": "xarray",
+    }
     prov = cdat_info.generateProvenance(extra_pairs=extra_pairs)
     prov["packages"]["PMP"] = pcmdi_metrics.version.__git_tag_describe__
     prov["packages"][
@@ -361,7 +365,9 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         if self.is_masking():
             self.var_from_file = self.mask_var(self.var_from_file)
 
-        self.var_from_file = self.set_target_grid_and_mask_in_var(self.var_from_file, var)
+        self.var_from_file = self.set_target_grid_and_mask_in_var(
+            self.var_from_file, var
+        )
 
         self.var_from_file = self.set_domain_in_var(self.var_from_file, self.region)
 
@@ -374,10 +380,12 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         try:
             ds = xc.open_mfdataset(self(), data_var=var_in_file, decode_times=True)
         except Exception:
-            ds = xc.open_mfdataset(self(), data_var=var_in_file, decode_times=False)  # Temporary part to read in cdms written obs4MIP AC files
+            ds = xc.open_mfdataset(
+                self(), data_var=var_in_file, decode_times=False
+            )  # Temporary part to read in cdms written obs4MIP AC files
 
-        if 'level' in list(kwargs.keys()):
-            level = kwargs['level']
+        if "level" in list(kwargs.keys()):
+            level = kwargs["level"]
             ds = ds.sel(plev=level)
 
         extracted_var = ds
@@ -395,7 +403,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         self: <pcmdi_metrics.io.base.Base object at 0x7f24a0768a60>
         var: <xarray.Dataset>
         """
-        var_shape = tuple(var.dims[d] for d in ['lat', 'lon'])
+        var_shape = tuple(var.dims[d] for d in ["lat", "lon"])
 
         if self.mask is None:
             self.set_file_mask_template()
@@ -414,7 +422,9 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         self(): string, path to input file
         """
         if self.target_grid is not None:
-            var = var.regridder.horizontal(var_in_file, self.target_grid, tool=self.regrid_tool)
+            var = var.regridder.horizontal(
+                var_in_file, self.target_grid, tool=self.regrid_tool
+            )
             if self.target_mask is not None:
                 # if self.target_mask.shape != var.shape:
                 if self.target_mask.shape != var[var_in_file].shape:
@@ -430,10 +440,11 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         var: <xarray.Dataset>
         region: <class 'dict'>, e.g., {'domain': Selector(<cdutil.region.DomainComponent object at 0x7fdbe2b70760>), 'id': 'NHEX'}
         """
-        region_id = region['id']
+        region_id = region["id"]
         from pcmdi_metrics.io import load_regions_specs, region_subset
+
         regions_specs = load_regions_specs()
-        if region_id not in ['global', 'land', 'ocean']:
+        if region_id not in ["global", "land", "ocean"]:
             var = region_subset(var, regions_specs, region=region_id)
 
         return var
@@ -465,7 +476,9 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         self.regrid_method = regrid_method
         if target == "2.5x2.5":
             # self.target_grid = cdms2.createUniformGrid(-88.875, 72, 2.5, 0, 144, 2.5)
-            self.target_grid = xcdat.create_uniform_grid(-88.875, 88.625, 2.5, 0, 357.5, 2.5)
+            self.target_grid = xcdat.create_uniform_grid(
+                -88.875, 88.625, 2.5, 0, 357.5, 2.5
+            )
             self.target_grid_name = target
         elif cdms2.isGrid(target):
             self.target_grid = target

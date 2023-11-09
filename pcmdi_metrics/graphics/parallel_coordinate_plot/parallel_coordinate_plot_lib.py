@@ -15,8 +15,11 @@ def parallel_coordinate_plot(
     metric_names,
     model_names,
     models_to_highlight=list(),
+    models_to_highlight_by_line=True,
     models_to_highlight_colors=None,
     models_to_highlight_labels=None,
+    models_to_highlight_markers=["s", "o", "^", "*"],
+    models_to_highlight_markers_size=10,
     fig=None,
     ax=None,
     figsize=(15, 5),
@@ -37,7 +40,10 @@ def parallel_coordinate_plot(
     group2_name="group2",
     comparing_models=None,
     fill_between_lines=False,
-    fill_between_lines_colors=("green", "red"),
+    fill_between_lines_colors=("red", "green"),
+    arrow_between_lines=False,
+    arrow_between_lines_colors=("red", "green"),
+    arrow_alpha=1,
     vertical_center=None,
     vertical_center_line=False,
     vertical_center_line_label=None,
@@ -50,9 +56,12 @@ def parallel_coordinate_plot(
     - `data`: 2-d numpy array for metrics
     - `metric_names`: list, names of metrics for individual vertical axes (axis=1)
     - `model_names`: list, name of models for markers/lines (axis=0)
-    - `models_to_highlight`: list, default=None, List of models to highlight as lines
+    - `models_to_highlight`: list, default=None, List of models to highlight as lines or marker
+    - `models_to_highlight_by_line`: bool, default=True, highlight as lines. If False, as marker
     - `models_to_highlight_colors`: list, default=None, List of colors for models to highlight as lines
     - `models_to_highlight_labels`: list, default=None, List of string labels for models to highlight as lines
+    - `models_to_highlight_markers`: list, matplotlib markers for models to highlight if as marker
+    - `models_to_highlight_markers_size`: float, size of matplotlib markers for models to highlight if as marker
     - `fig`: `matplotlib.figure` instance to which the parallel coordinate plot is plotted.
              If not provided, use current axes or create a new one.  Optional.
     - `ax`: `matplotlib.axes.Axes` instance to which the parallel coordinate plot is plotted.
@@ -76,7 +85,10 @@ def parallel_coordinate_plot(
     - `group2_name`: string, needed for violin plot legend if splited to two groups, for the 2nd group. Default is 'group2'.
     - `comparing_models`: tuple or list containing two strings for models to compare with colors filled between the two lines.
     - `fill_between_lines`: bool, default=False, fill color between lines for models in comparing_models
-    - `fill_between_lines_colors`: tuple or list containing two strings for colors filled between the two lines. Default=('green', 'red')
+    - `fill_between_lines_colors`: tuple or list containing two strings of colors for filled between the two lines. Default=('red', 'green')
+    - `arrow_between_lines`: bool, default=False, place arrows between two lines for models in comparing_models
+    - `arrow_between_lines_colors`: tuple or list containing two strings of colors for arrow between the two lines. Default=('red', 'green')
+    - `arrow_alpha`: float, default=1, transparency of arrow (faction between 0 to 1)
     - `vertical_center`: string ("median", "mean")/float/integer, default=None, adjust range of vertical axis to set center of vertical axis as median, mean, or given number
     - `vertical_center_line`: bool, default=False, show median as line
     - `vertical_center_line_label`: str, default=None, label in legend for the horizontal vertical center line. If not given, it will be automatically assigned. It can be turned off by "off"
@@ -89,7 +101,7 @@ def parallel_coordinate_plot(
     - `ax`: matplotlib component for axis
 
     Author: Jiwoo Lee @ LLNL (2021. 7)
-    Update history: 
+    Update history:
     2021-07 Plotting code created. Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
     2022-09 violin plots added
     2023-03 median centered option added
@@ -185,7 +197,9 @@ def parallel_coordinate_plot(
                     showextrema=False,
                 )
                 for pc in violin["bodies"]:
-                    if isinstance(violin_colors, tuple) or isinstance(violin_colors, list):
+                    if isinstance(violin_colors, tuple) or isinstance(
+                        violin_colors, list
+                    ):
                         violin_color = violin_colors[0]
                     else:
                         violin_color = violin_colors
@@ -219,18 +233,28 @@ def parallel_coordinate_plot(
     for j, model in enumerate(model_names):
         # to just draw straight lines between the axes:
         if model in models_to_highlight:
-            
             if models_to_highlight_colors is not None:
                 color = models_to_highlight_colors[mh_index]
             else:
                 color = colors[j]
-                
+
             if models_to_highlight_labels is not None:
                 label = models_to_highlight_labels[mh_index]
             else:
                 label = model
-                
-            ax.plot(range(N), zs[j, :], "-", c=color, label=label, lw=3)
+
+            if models_to_highlight_by_line:
+                ax.plot(range(N), zs[j, :], "-", c=color, label=label, lw=3)
+            else:
+                ax.plot(
+                    range(N),
+                    zs[j, :],
+                    models_to_highlight_markers[mh_index],
+                    c=color,
+                    label=label,
+                    markersize=models_to_highlight_markers_size,
+                )
+
             mh_index += 1
         else:
             if identify_all_models:
@@ -242,16 +266,16 @@ def parallel_coordinate_plot(
                     label=model,
                     clip_on=False,
                 )
-    
+
     if vertical_center_line:
         if vertical_center_line_label is None:
             vertical_center_line_label = str(vertical_center)
         elif vertical_center_line_label == "off":
-             vertical_center_line_label = None     
+            vertical_center_line_label = None
         ax.plot(range(N), zs_middle, "-", c="k", label=vertical_center_line_label, lw=1)
 
-    # Fill between lines
-    if fill_between_lines and (comparing_models is not None):
+    # Compare two models
+    if comparing_models is not None:
         if isinstance(comparing_models, tuple) or (
             isinstance(comparing_models, list) and len(comparing_models) == 2
         ):
@@ -260,24 +284,49 @@ def parallel_coordinate_plot(
             m2 = model_names.index(comparing_models[1])
             y1 = zs[m1, :]
             y2 = zs[m2, :]
-            ax.fill_between(
-                x,
-                y1,
-                y2,
-                where=y2 >= y1,
-                facecolor=fill_between_lines_colors[0],
-                interpolate=True,
-                alpha=0.5,
-            )
-            ax.fill_between(
-                x,
-                y1,
-                y2,
-                where=y2 <= y1,
-                facecolor=fill_between_lines_colors[1],
-                interpolate=True,
-                alpha=0.5,
-            )
+
+            # Fill between lines
+            if fill_between_lines:
+                ax.fill_between(
+                    x,
+                    y1,
+                    y2,
+                    where=(y2 > y1),
+                    facecolor=fill_between_lines_colors[0],
+                    interpolate=False,
+                    alpha=0.5,
+                )
+                ax.fill_between(
+                    x,
+                    y1,
+                    y2,
+                    where=(y2 < y1),
+                    facecolor=fill_between_lines_colors[1],
+                    interpolate=False,
+                    alpha=0.5,
+                )
+
+            if arrow_between_lines:
+                # Add vertical arrows
+                for xi, yi1, yi2 in zip(x, y1, y2):
+                    if yi2 > yi1:
+                        arrow_color = arrow_between_lines_colors[0]
+                    elif yi2 < yi1:
+                        arrow_color = arrow_between_lines_colors[1]
+                    else:
+                        arrow_color = None
+                    arrow_length = yi2 - yi1
+                    ax.arrow(
+                        xi,
+                        yi1,
+                        0,
+                        arrow_length,
+                        color=arrow_color,
+                        length_includes_head=True,
+                        alpha=arrow_alpha,
+                        width=0.05,
+                        head_width=0.15,
+                    )
 
     ax.set_xlim(-0.5, N - 0.5)
     ax.set_xticks(range(N))
@@ -341,15 +390,15 @@ def _data_transform(
         ymaxs = np.nanmax(ys, axis=0)  # maximum (ignore nan value)
     else:
         ymaxs = np.repeat(ymax, N)
-        
+
     if ymin is None:
         ymins = np.nanmin(ys, axis=0)  # minimum (ignore nan value)
     else:
         ymins = np.repeat(ymin, N)
-    
+
     ymeds = np.nanmedian(ys, axis=0)  # median
     ymean = np.nanmean(ys, axis=0)  # mean
-    
+
     if vertical_center is not None:
         if vertical_center == "median":
             ymids = ymeds
@@ -358,7 +407,9 @@ def _data_transform(
         else:
             ymids = np.repeat(vertical_center, N)
         for i in range(0, N):
-            max_distance_from_middle = max(abs(ymaxs[i] - ymids[i]), abs(ymids[i] - ymins[i]))
+            max_distance_from_middle = max(
+                abs(ymaxs[i] - ymids[i]), abs(ymids[i] - ymins[i])
+            )
             ymaxs[i] = ymids[i] + max_distance_from_middle
             ymins[i] = ymids[i] - max_distance_from_middle
 
@@ -373,7 +424,7 @@ def _data_transform(
     zs = np.zeros_like(ys)
     zs[:, 0] = ys[:, 0]
     zs[:, 1:] = (ys[:, 1:] - ymins[1:]) / dys[1:] * dys[0] + ymins[0]
-    
+
     if vertical_center is not None:
         zs_middle = (ymids[:] - ymins[:]) / dys[:] * dys[0] + ymins[0]
     else:

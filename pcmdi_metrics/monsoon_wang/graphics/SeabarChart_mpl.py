@@ -4,7 +4,6 @@ import numpy as np
 
 class BarChart(object):
     def __init__(self, mods, data, uni, fig=None, rect=111, **kwargs):
-
         print("IN FCN..... ")
 
         # Canvas setup

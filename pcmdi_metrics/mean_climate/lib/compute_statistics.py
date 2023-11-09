@@ -65,7 +65,7 @@ def bias_xy(dm, do, var=None, weights=None):
         }
     dif = dm[var] - do[var]
     if weights is None:
-        weights = dm.spatial.get_weights(axis=['X', 'Y'])
+        weights = dm.spatial.get_weights(axis=["X", "Y"])
     stat = float(dif.weighted(weights).mean(("lon", "lat")))
     return float(stat)
 
@@ -79,8 +79,10 @@ def bias_xyt(dm, do, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     ds = dm.copy(deep=True)
-    ds['dif'] = dm[var] - do[var]
-    stat = ds.spatial.average('dif', axis=['X', 'Y']).temporal.average('dif')['dif'].values
+    ds["dif"] = dm[var] - do[var]
+    stat = (
+        ds.spatial.average("dif", axis=["X", "Y"]).temporal.average("dif")["dif"].values
+    )
     return float(stat)
 
 
@@ -93,12 +95,17 @@ def cor_xy(dm, do, var=None, weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     if weights is None:
-        weights = dm.spatial.get_weights(axis=['X', 'Y'])
+        weights = dm.spatial.get_weights(axis=["X", "Y"])
 
-    dm_avg = dm.spatial.average(var, axis=['X', 'Y'], weights=weights)[var].values
-    do_avg = do.spatial.average(var, axis=['X', 'Y'], weights=weights)[var].values
+    dm_avg = dm.spatial.average(var, axis=["X", "Y"], weights=weights)[var].values
+    do_avg = do.spatial.average(var, axis=["X", "Y"], weights=weights)[var].values
 
-    covariance = ((dm[var] - dm_avg) * (do[var] - do_avg)).weighted(weights).mean(dim=['lon', 'lat']).values
+    covariance = (
+        ((dm[var] - dm_avg) * (do[var] - do_avg))
+        .weighted(weights)
+        .mean(dim=["lon", "lat"])
+        .values
+    )
     std_dm = std_xy(dm, var)
     std_do = std_xy(do, var)
     stat = covariance / (std_dm * std_do)
@@ -116,7 +123,7 @@ def mean_xy(d, var=None, weights=None):
         }
 
     if weights is None:
-        weights = d.spatial.get_weights(axis=['X', 'Y'])
+        weights = d.spatial.get_weights(axis=["X", "Y"])
     stat = float(d[var].weighted(weights).mean(("lon", "lat")))
     return float(stat)
 
@@ -131,7 +138,7 @@ def meanabs_xy(dm, do, var=None, weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     if weights is None:
-        weights = dm.spatial.get_weights(axis=['X', 'Y'])
+        weights = dm.spatial.get_weights(axis=["X", "Y"])
     dif = abs(dm[var] - do[var])
     stat = dif.weighted(weights).mean(("lon", "lat"))
     return float(stat)
@@ -147,8 +154,12 @@ def meanabs_xyt(dm, do, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     ds = dm.copy(deep=True)
-    ds['absdif'] = abs(dm[var] - do[var])
-    stat = ds.spatial.average('absdif', axis=['X', 'Y']).temporal.average('absdif')['absdif'].values
+    ds["absdif"] = abs(dm[var] - do[var])
+    stat = (
+        ds.spatial.average("absdif", axis=["X", "Y"])
+        .temporal.average("absdif")["absdif"]
+        .values
+    )
     return float(stat)
 
 
@@ -160,9 +171,9 @@ def rms_0(dm, do, var=None, weighted=True):
             "Abstract": "Compute Root Mean Square over the first axis",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    dif_square = (dm[var] - do[var])**2
+    dif_square = (dm[var] - do[var]) ** 2
     if weighted:
-        weights = dm.spatial.get_weights(axis=['Y'])
+        weights = dm.spatial.get_weights(axis=["Y"])
         stat = math.sqrt(dif_square.weighted(weights).mean(("lat")))
     else:
         stat = math.sqrt(dif_square.mean(("lat")))
@@ -177,9 +188,9 @@ def rms_xy(dm, do, var=None, weights=None):
             "Abstract": "Compute Spatial Root Mean Square",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    dif_square = (dm[var] - do[var])**2
+    dif_square = (dm[var] - do[var]) ** 2
     if weights is None:
-        weights = dm.spatial.get_weights(axis=['X', 'Y'])
+        weights = dm.spatial.get_weights(axis=["X", "Y"])
     stat = math.sqrt(dif_square.weighted(weights).mean(("lon", "lat")))
     return float(stat)
 
@@ -193,9 +204,11 @@ def rms_xyt(dm, do, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     ds = dm.copy(deep=True)
-    ds['diff_square'] = (dm[var] - do[var])**2
-    ds['diff_square_sqrt'] = np.sqrt(ds.spatial.average('diff_square', axis=['X', 'Y'])['diff_square'])
-    stat = ds.temporal.average('diff_square_sqrt')['diff_square_sqrt'].values
+    ds["diff_square"] = (dm[var] - do[var]) ** 2
+    ds["diff_square_sqrt"] = np.sqrt(
+        ds.spatial.average("diff_square", axis=["X", "Y"])["diff_square"]
+    )
+    stat = ds.temporal.average("diff_square_sqrt")["diff_square_sqrt"].values
     return float(stat)
 
 
@@ -208,11 +221,11 @@ def rmsc_xy(dm, do, var=None, weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     if weights is None:
-        weights = dm.spatial.get_weights(axis=['X', 'Y'])
+        weights = dm.spatial.get_weights(axis=["X", "Y"])
 
     dm_anomaly = dm[var] - dm[var].weighted(weights).mean(("lon", "lat"))
     do_anomaly = do[var] - do[var].weighted(weights).mean(("lon", "lat"))
-    diff_square = (dm_anomaly - do_anomaly)**2
+    diff_square = (dm_anomaly - do_anomaly) ** 2
 
     stat = math.sqrt(diff_square.weighted(weights).mean(("lon", "lat")))
     return float(stat)
@@ -227,9 +240,9 @@ def std_xy(d, var=None, weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     if weights is None:
-        weights = d.spatial.get_weights(axis=['X', 'Y'])
+        weights = d.spatial.get_weights(axis=["X", "Y"])
     average = float(d[var].weighted(weights).mean(("lon", "lat")))
-    anomaly = (d[var] - average)**2
+    anomaly = (d[var] - average) ** 2
     variance = float(anomaly.weighted(weights).mean(("lon", "lat")))
     std = math.sqrt(variance)
     return float(std)
@@ -244,11 +257,13 @@ def std_xyt(d, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     ds = d.copy(deep=True)
-    average = d.spatial.average(var, axis=['X', 'Y']).temporal.average(var)[var]
-    ds['anomaly'] = (d[var] - average)**2
-    variance = ds.spatial.average('anomaly').temporal.average('anomaly')['anomaly'].values
+    average = d.spatial.average(var, axis=["X", "Y"]).temporal.average(var)[var]
+    ds["anomaly"] = (d[var] - average) ** 2
+    variance = (
+        ds.spatial.average("anomaly").temporal.average("anomaly")["anomaly"].values
+    )
     std = math.sqrt(variance)
-    return(std)
+    return std
 
 
 def zonal_mean(dm, do, var=None):
@@ -260,6 +275,6 @@ def zonal_mean(dm, do, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
             "Comments": "",
         }
-    dm_zm = dm.spatial.average(var, axis=['X'])
-    do_zm = do.spatial.average(var, axis=['X'])
+    dm_zm = dm.spatial.average(var, axis=["X"])
+    do_zm = do.spatial.average(var, axis=["X"])
     return dm_zm, do_zm  # DataSets

@@ -2,11 +2,9 @@ def AddParserArgument(P):
     P.add_argument(
         "--mip", type=str, dest="mip", default=None, help="cmip5, cmip6 or other mip"
     )
-    P.add_argument("--exp",
-               type=str,
-               dest='exp',
-               default=None,
-               help="amip, cmip or others")
+    P.add_argument(
+        "--exp", type=str, dest="exp", default=None, help="amip, cmip or others"
+    )
     P.add_argument("--mod", type=str, dest="mod", default=None, help="model")
     P.add_argument(
         "--var", type=str, dest="var", default=None, help="pr or other variable"

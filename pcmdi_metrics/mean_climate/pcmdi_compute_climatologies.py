@@ -4,9 +4,8 @@ import datetime
 
 from genutil import StringConstructor
 
-from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPMetricsParser
 from pcmdi_metrics.mean_climate.lib import calculate_climatology
-
+from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPMetricsParser
 
 ver = datetime.datetime.now().strftime("v%Y%m%d")
 
@@ -31,9 +30,19 @@ P.add_argument(
 )
 P.add_argument("--end", dest="end", help="Defines end year and month", required=False)
 
-P.add_argument("--periodinname", dest="periodinname", help="Include clim period in name (default yes) or not", required=False)
+P.add_argument(
+    "--periodinname",
+    dest="periodinname",
+    help="Include clim period in name (default yes) or not",
+    required=False,
+)
 
-P.add_argument("--climlist", dest="climlist", help="Defines list of clim seasons to output (default='all')", required=False)
+P.add_argument(
+    "--climlist",
+    dest="climlist",
+    help="Defines list of clim seasons to output (default='all')",
+    required=False,
+)
 
 args = P.get_parameter()
 
@@ -67,11 +76,22 @@ for var in varlist:
     outfilename = OutFileName()
     outpath = OutPath()
 
-    print('var:', var)
-    print('infile:', infile)
-    print('outfile:', outfile)
-    print('outfilename:', outfilename)
-    print('outpath:', outpath)
+    print("var:", var)
+    print("infile:", infile)
+    print("outfile:", outfile)
+    print("outfilename:", outfilename)
+    print("outpath:", outpath)
 
     # calculate climatologies for this variable
-    calculate_climatology(var, infile, outfile, outpath, outfilename, start, end, ver, periodinname, climlist)
+    calculate_climatology(
+        var,
+        infile,
+        outfile,
+        outpath,
+        outfilename,
+        start,
+        end,
+        ver,
+        periodinname,
+        climlist,
+    )
