@@ -3,7 +3,7 @@ from collections import OrderedDict
 import pcmdi_metrics
 
 
-def compute_metrics(Var, dm, do, debug=False):
+def compute_metrics(Var, dm, do, debug=False, time_dim_sync=False):
     # Var is sometimes sent with level associated
     var = Var.split("_")[0]
     # Did we send data? Or do we just want the info?
@@ -35,23 +35,21 @@ def compute_metrics(Var, dm, do, debug=False):
 
     # unify time and time bounds between observation and model
     if debug:
-        print("before time and time bounds unifying")
         print("dm.time: ", dm["time"])
         print("do.time: ", do["time"])
 
-    """
-    # Below is temporary...
-    dm['time'] = do['time']
-    dm[dm.time.encoding['bounds']] = do[do.time.attrs['bounds']]
-    """
+    if time_dim_sync:
+        # Below is temporary...
+        dm['time'] = do['time']
+        dm[dm.time.encoding['bounds']] = do[do.time.attrs['bounds']]
 
-    if debug:
-        print("after time and time bounds unifying")
-        print("dm.time: ", dm["time"])
-        print("do.time: ", do["time"])
+        if debug:
+            print("time and time bounds synced")
+            print("dm.time: ", dm["time"])
+            print("do.time: ", do["time"])
 
-        dm.to_netcdf("dm.nc")
-        do.to_netcdf("do.nc")
+            dm.to_netcdf("dm.nc")
+            do.to_netcdf("do.nc")
 
     metrics_dictionary = OrderedDict()
 
