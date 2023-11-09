@@ -16,6 +16,8 @@ def portrait_plot(
     ax=None,
     annotate=False,
     annotate_data=None,
+    annotate_textcolors=("black", "white"),
+    annotate_textcolors_threshold=(-2, 2),
     annotate_fontsize=15,
     annotate_format="{x:.2f}",
     figsize=(12, 10),
@@ -61,6 +63,8 @@ def portrait_plot(
     - `annotate`: bool, default=False, add annotating text if true,
                   but work only for heatmap style map (i.e., no triangles)
     - `annotate_data`: 2d numpy array, default=None. If None, the image's data is used.  Optional.
+    - `annotate_textcolors`: Tuple. A pair of colors for annotation text. Default is ("black", "white")
+    - `annotate_textcolors_threshold`: Tuple or float. Value in data units according to which the colors from textcolors are applied. Default=(-2, 2)
     - `annotate_fontsize`: number (int/float), default=15. Font size for annotation
     - `annotate_format`: format for annotate value, default="{x:.2f}"
     - `figsize`: tuple of two numbers (width, height), default=(12, 10), figure size in inches
@@ -169,13 +173,14 @@ def portrait_plot(
                     sys.exit("Error: annotate_data has different size than data")
             else:
                 annotate_data = data
-            annotate_heatmap(
+            ax = annotate_heatmap(
                 im,
                 ax=ax,
                 data=data,
                 annotate_data=annotate_data,
                 valfmt=annotate_format,
-                threshold=(2, -2),
+                textcolors=annotate_textcolors,
+                threshold=annotate_textcolors_threshold,
                 fontsize=annotate_fontsize,
             )
 
@@ -501,6 +506,8 @@ def annotate_heatmap(
             text = ax.text(j + 0.5, i + 0.5, valfmt(annotate_data[i, j], None), **kw)
             texts.append(text)
 
+    return ax
+
 
 # ======================================================================
 # Portrait plot 2 (two triangles)
@@ -520,7 +527,6 @@ def triamatrix_wrap_up(
     inner_line_color="k",
     inner_line_width=0.5,
 ):
-
     # Colorbar range
     if norm is None:
         norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
