@@ -40,8 +40,8 @@ def compute_metrics(Var, dm, do, debug=False, time_dim_sync=False):
 
     if time_dim_sync:
         # Below is temporary...
-        dm['time'] = do['time']
-        dm[dm.time.encoding['bounds']] = do[do.time.attrs['bounds']]
+        dm["time"] = do["time"]
+        dm[dm.time.encoding["bounds"]] = do[do.time.attrs["bounds"]]
 
         if debug:
             print("time and time bounds synced")
