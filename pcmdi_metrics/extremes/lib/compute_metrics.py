@@ -284,7 +284,15 @@ def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     # Use this function for any general dataset updates.
     ds.lat.attrs["standard_name"] = "Y"
     ds.lon.attrs["standard_name"] = "X"
-    ds = ds.bounds.add_missing_bounds()
+    bnds_dict = {"lat": "Y", "lon": "X", "time": "T"}
+    for item in bnds_dict:
+        if "bounds" in ds[item].attrs:
+            bnds_var = ds[item].attrs["bounds"]
+            if bnds_var not in ds.keys():
+                ds[item].attrs["bounds"] = ""
+                ds = ds.bounds.add_missing_bounds(bnds_dict[item])
+        else:
+            ds = ds.bounds.add_missing_bounds(bnds_dict[item])
     ds.attrs["december_mode"] = str(dec_mode)
     ds.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
     ds.attrs["annual_strict"] = str(annual_strict)
