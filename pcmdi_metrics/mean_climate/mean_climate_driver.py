@@ -250,16 +250,28 @@ for var in vars:
         print("ref_data_full_path:", ref_data_full_path)
 
         # load data and regrid
-        ds_ref = load_and_regrid(
-            data_path=ref_data_full_path,
-            varname=varname,
-            level=level,
-            t_grid=t_grid,
-            # decode_times=False,
-            decode_times=True,
-            regrid_tool=regrid_tool,
-            debug=debug,
-        )
+        try:
+            ds_ref = load_and_regrid(
+                data_path=ref_data_full_path,
+                varname=varname,
+                level=level,
+                t_grid=t_grid,
+                decode_times=True,
+                regrid_tool=regrid_tool,
+                debug=debug,
+            )
+        except Exception:
+            ds_ref = load_and_regrid(
+                data_path=ref_data_full_path,
+                varname=varname,
+                level=level,
+                t_grid=t_grid,
+                decode_times=False,
+                regrid_tool=regrid_tool,
+                debug=debug,
+            )
+
+        print("ref_data load_and_regrid done")
 
         ds_ref_dict = OrderedDict()
 
