@@ -340,8 +340,10 @@ def parallel_coordinate_plot(
     ax.set_title(title, fontsize=18)
 
     if not legend_off:
-        #ax.legend(loc="upper center", ncol=6, bbox_to_anchor=(0.5, -0.14))
-        ax.legend(loc="upper center", ncol=legend_ncol, bbox_to_anchor=legend_bbox_to_anchor)
+        # ax.legend(loc="upper center", ncol=6, bbox_to_anchor=(0.5, -0.14))
+        ax.legend(
+            loc="upper center", ncol=legend_ncol, bbox_to_anchor=legend_bbox_to_anchor
+        )
 
     if not logo_off:
         fig, ax = add_logo(fig, ax, logo_rect)
@@ -401,7 +403,7 @@ def _data_transform(
     else:
         ymins = np.repeat(ymin, N)
 
-    ymeds = np.nanmedian(ys, axis=0)  # median   
+    ymeds = np.nanmedian(ys, axis=0)  # median
     ymean = np.nanmean(ys, axis=0)  # mean
 
     if vertical_center is not None:
