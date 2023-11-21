@@ -241,23 +241,40 @@ for var in vars:
 
     for ref in reference_data_set:
         print("ref:", ref)
+
         # identify data to load (annual cycle (AC) data is loading in)
         ref_dataset_name = obs_dict[varname][ref]
         ref_data_full_path = os.path.join(
             reference_data_path, obs_dict[varname][ref_dataset_name]["template"]
         )
         print("ref_data_full_path:", ref_data_full_path)
+
         # load data and regrid
-        ds_ref = load_and_regrid(
-            data_path=ref_data_full_path,
-            varname=varname,
-            level=level,
-            t_grid=t_grid,
-            decode_times=False,
-            regrid_tool=regrid_tool,
-            debug=debug,
-        )
+        try:
+            ds_ref = load_and_regrid(
+                data_path=ref_data_full_path,
+                varname=varname,
+                level=level,
+                t_grid=t_grid,
+                decode_times=True,
+                regrid_tool=regrid_tool,
+                debug=debug,
+            )
+        except Exception:
+            ds_ref = load_and_regrid(
+                data_path=ref_data_full_path,
+                varname=varname,
+                level=level,
+                t_grid=t_grid,
+                decode_times=False,
+                regrid_tool=regrid_tool,
+                debug=debug,
+            )
+
+        print("ref_data load_and_regrid done")
+
         ds_ref_dict = OrderedDict()
+
         # for record in output json
         result_dict["References"][ref] = obs_dict[varname][ref_dataset_name]
 
@@ -295,6 +312,7 @@ for var in vars:
 
             for run in realizations:
                 # identify data to load (annual cycle (AC) data is loading in)
+
                 test_data_full_path = (
                     os.path.join(test_data_path, filename_template)
                     .replace("%(variable)", varname)
@@ -420,14 +438,25 @@ for var in vars:
 
                             # compute metrics
                             print("compute metrics start")
-                            result_dict["RESULTS"][model][ref][run][
-                                region
-                            ] = compute_metrics(
-                                varname,
-                                ds_test_dict[region],
-                                ds_ref_dict[region],
-                                debug=debug,
-                            )
+                            try:
+                                result_dict["RESULTS"][model][ref][run][
+                                    region
+                                ] = compute_metrics(
+                                    varname,
+                                    ds_test_dict[region],
+                                    ds_ref_dict[region],
+                                    debug=debug,
+                                )
+                            except Exception:
+                                result_dict["RESULTS"][model][ref][run][
+                                    region
+                                ] = compute_metrics(
+                                    varname,
+                                    ds_test_dict[region],
+                                    ds_ref_dict[region],
+                                    debug=debug,
+                                    time_dim_sync=True,
+                                )
 
                             # write individual JSON
                             # --- single simulation, obs (need to accumulate later) / single variable
@@ -466,10 +495,7 @@ for var in vars:
         # write collective JSON --- all models / all obs / single variable
         json_filename = "_".join([var, target_grid, regrid_tool, "metrics", case_id])
         mean_climate_metrics_to_json(
-            metrics_output_path,
-            json_filename,
-            result_dict,
-            cmec_flag=cmec,
+            metrics_output_path, json_filename, result_dict, cmec_flag=cmec, debug=debug
         )
 
 print("pmp mean clim driver completed")
