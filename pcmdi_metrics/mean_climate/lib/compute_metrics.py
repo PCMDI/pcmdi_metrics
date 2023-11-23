@@ -3,7 +3,7 @@ from collections import OrderedDict
 import pcmdi_metrics
 
 
-def compute_metrics(Var, dm, do, debug=False):
+def compute_metrics(Var, dm, do, debug=False, time_dim_sync=False):
     # Var is sometimes sent with level associated
     var = Var.split("_")[0]
     # Did we send data? Or do we just want the info?
@@ -35,30 +35,23 @@ def compute_metrics(Var, dm, do, debug=False):
 
     # unify time and time bounds between observation and model
     if debug:
-        print("before time and time bounds unifying")
         print("dm.time: ", dm["time"])
         print("do.time: ", do["time"])
 
-    # Below is temporary...
-    dm["time"] = do["time"]
-    dm[dm.time.attrs["bounds"]] = do[do.time.attrs["bounds"]]
+    if time_dim_sync:
+        # Below is temporary...
+        dm["time"] = do["time"]
+        dm[dm.time.encoding["bounds"]] = do[do.time.attrs["bounds"]]
 
-    if debug:
-        print("after time and time bounds unifying")
-        print("dm.time: ", dm["time"])
-        print("do.time: ", do["time"])
+        if debug:
+            print("time and time bounds synced")
+            print("dm.time: ", dm["time"])
+            print("do.time: ", do["time"])
 
-    # if debug:
-    #    dm.to_netcdf('dm.nc')
-    #    do.to_netcdf('do.nc')
+            dm.to_netcdf("dm.nc")
+            do.to_netcdf("do.nc")
 
     metrics_dictionary = OrderedDict()
-
-    # SET CONDITIONAL ON INPUT VARIABLE
-    if var == "pr":
-        conv = 86400.0
-    else:
-        conv = 1.0
 
     if var in ["hus"]:
         sig_digits = ".5f"
@@ -67,12 +60,18 @@ def compute_metrics(Var, dm, do, debug=False):
 
     # CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD
     print("compute_metrics-CALCULATE ANNUAL CYCLE SPACE-TIME RMS, CORRELATIONS and STD")
+
     print("compute_metrics, rms_xyt")
     rms_xyt = pcmdi_metrics.mean_climate.lib.rms_xyt(dm, do, var)
+    print("compute_metrics, rms_xyt:", rms_xyt)
+
     print("compute_metrics, stdObs_xyt")
     stdObs_xyt = pcmdi_metrics.mean_climate.lib.std_xyt(do, var)
+    print("compute_metrics, stdObs_xyt:", stdObs_xyt)
+
     print("compute_metrics, std_xyt")
     std_xyt = pcmdi_metrics.mean_climate.lib.std_xyt(dm, var)
+    print("compute_metrics, std_xyt:", std_xyt)
 
     # CALCULATE ANNUAL MEANS
     print("compute_metrics-CALCULATE ANNUAL MEANS")
@@ -81,19 +80,23 @@ def compute_metrics(Var, dm, do, debug=False):
     # CALCULATE ANNUAL MEAN BIAS
     print("compute_metrics-CALCULATE ANNUAL MEAN BIAS")
     bias_xy = pcmdi_metrics.mean_climate.lib.bias_xy(dm_am, do_am, var)
+    print("compute_metrics-CALCULATE ANNUAL MEAN BIAS, bias_xy:", bias_xy)
 
     # CALCULATE MEAN ABSOLUTE ERROR
     print("compute_metrics-CALCULATE MSE")
     mae_xy = pcmdi_metrics.mean_climate.lib.meanabs_xy(dm_am, do_am, var)
+    print("compute_metrics-CALCULATE MSE, mae_xy:", mae_xy)
 
     # CALCULATE ANNUAL MEAN RMS (centered and uncentered)
     print("compute_metrics-CALCULATE MEAN RMS")
     rms_xy = pcmdi_metrics.mean_climate.lib.rms_xy(dm_am, do_am, var)
     rmsc_xy = pcmdi_metrics.mean_climate.lib.rmsc_xy(dm_am, do_am, var)
+    print("compute_metrics-CALCULATE MEAN RMS: rms_xy, rmsc_xy: ", rms_xy, rmsc_xy)
 
     # CALCULATE ANNUAL MEAN CORRELATION
     print("compute_metrics-CALCULATE MEAN CORR")
     cor_xy = pcmdi_metrics.mean_climate.lib.cor_xy(dm_am, do_am, var)
+    print("compute_metrics-CALCULATE MEAN CORR: cor_xy:", cor_xy)
 
     # CALCULATE ANNUAL OBS and MOD STD
     print("compute_metrics-CALCULATE ANNUAL OBS AND MOD STD")
@@ -155,25 +158,23 @@ def compute_metrics(Var, dm, do, debug=False):
     ):
         metrics_dictionary[stat] = OrderedDict()
 
-    metrics_dictionary["mean-obs_xy"]["ann"] = format(meanObs_xy * conv, sig_digits)
-    metrics_dictionary["mean_xy"]["ann"] = format(mean_xy * conv, sig_digits)
-    metrics_dictionary["std-obs_xy"]["ann"] = format(stdObs_xy * conv, sig_digits)
-    metrics_dictionary["std_xy"]["ann"] = format(std_xy * conv, sig_digits)
-    metrics_dictionary["std-obs_xyt"]["ann"] = format(stdObs_xyt * conv, sig_digits)
-    metrics_dictionary["std_xyt"]["ann"] = format(std_xyt * conv, sig_digits)
-    metrics_dictionary["std-obs_xy_devzm"]["ann"] = format(
-        stdObs_xy_devzm * conv, sig_digits
-    )
-    metrics_dictionary["std_xy_devzm"]["ann"] = format(std_xy_devzm * conv, sig_digits)
-    metrics_dictionary["rms_xyt"]["ann"] = format(rms_xyt * conv, sig_digits)
-    metrics_dictionary["rms_xy"]["ann"] = format(rms_xy * conv, sig_digits)
-    metrics_dictionary["rmsc_xy"]["ann"] = format(rmsc_xy * conv, sig_digits)
+    metrics_dictionary["mean-obs_xy"]["ann"] = format(meanObs_xy, sig_digits)
+    metrics_dictionary["mean_xy"]["ann"] = format(mean_xy, sig_digits)
+    metrics_dictionary["std-obs_xy"]["ann"] = format(stdObs_xy, sig_digits)
+    metrics_dictionary["std_xy"]["ann"] = format(std_xy, sig_digits)
+    metrics_dictionary["std-obs_xyt"]["ann"] = format(stdObs_xyt, sig_digits)
+    metrics_dictionary["std_xyt"]["ann"] = format(std_xyt, sig_digits)
+    metrics_dictionary["std-obs_xy_devzm"]["ann"] = format(stdObs_xy_devzm, sig_digits)
+    metrics_dictionary["std_xy_devzm"]["ann"] = format(std_xy_devzm, sig_digits)
+    metrics_dictionary["rms_xyt"]["ann"] = format(rms_xyt, sig_digits)
+    metrics_dictionary["rms_xy"]["ann"] = format(rms_xy, sig_digits)
+    metrics_dictionary["rmsc_xy"]["ann"] = format(rmsc_xy, sig_digits)
     metrics_dictionary["cor_xy"]["ann"] = format(cor_xy, sig_digits)
-    metrics_dictionary["bias_xy"]["ann"] = format(bias_xy * conv, sig_digits)
-    metrics_dictionary["mae_xy"]["ann"] = format(mae_xy * conv, sig_digits)
+    metrics_dictionary["bias_xy"]["ann"] = format(bias_xy, sig_digits)
+    metrics_dictionary["mae_xy"]["ann"] = format(mae_xy, sig_digits)
     # ZONAL MEAN CONTRIBUTIONS
-    metrics_dictionary["rms_y"]["ann"] = format(rms_y * conv, sig_digits)
-    metrics_dictionary["rms_devzm"]["ann"] = format(rms_xy_devzm * conv, sig_digits)
+    metrics_dictionary["rms_y"]["ann"] = format(rms_y, sig_digits)
+    metrics_dictionary["rms_devzm"]["ann"] = format(rms_xy_devzm, sig_digits)
 
     # CALCULATE SEASONAL MEANS
     for sea in ["djf", "mam", "jja", "son"]:
@@ -195,17 +196,15 @@ def compute_metrics(Var, dm, do, debug=False):
         meanObs_xy_sea = pcmdi_metrics.mean_climate.lib.mean_xy(do_sea, var)
         mean_xy_sea = pcmdi_metrics.mean_climate.lib.mean_xy(dm_sea, var)
 
-        metrics_dictionary["bias_xy"][sea] = format(bias_sea * conv, sig_digits)
-        metrics_dictionary["rms_xy"][sea] = format(rms_sea * conv, sig_digits)
-        metrics_dictionary["rmsc_xy"][sea] = format(rmsc_sea * conv, sig_digits)
+        metrics_dictionary["bias_xy"][sea] = format(bias_sea, sig_digits)
+        metrics_dictionary["rms_xy"][sea] = format(rms_sea, sig_digits)
+        metrics_dictionary["rmsc_xy"][sea] = format(rmsc_sea, sig_digits)
         metrics_dictionary["cor_xy"][sea] = format(cor_sea, ".2f")
-        metrics_dictionary["mae_xy"][sea] = format(mae_sea * conv, sig_digits)
-        metrics_dictionary["std-obs_xy"][sea] = format(stdObs_xy_sea * conv, sig_digits)
-        metrics_dictionary["std_xy"][sea] = format(std_xy_sea * conv, sig_digits)
-        metrics_dictionary["mean-obs_xy"][sea] = format(
-            meanObs_xy_sea * conv, sig_digits
-        )
-        metrics_dictionary["mean_xy"][sea] = format(mean_xy_sea * conv, sig_digits)
+        metrics_dictionary["mae_xy"][sea] = format(mae_sea, sig_digits)
+        metrics_dictionary["std-obs_xy"][sea] = format(stdObs_xy_sea, sig_digits)
+        metrics_dictionary["std_xy"][sea] = format(std_xy_sea, sig_digits)
+        metrics_dictionary["mean-obs_xy"][sea] = format(meanObs_xy_sea, sig_digits)
+        metrics_dictionary["mean_xy"][sea] = format(mean_xy_sea, sig_digits)
 
     rms_mo_l = []
     rmsc_mo_l = []
@@ -251,15 +250,15 @@ def compute_metrics(Var, dm, do, debug=False):
         meanObs_xy_mo = pcmdi_metrics.mean_climate.lib.mean_xy(do_mo, var)
         mean_xy_mo = pcmdi_metrics.mean_climate.lib.mean_xy(dm_mo, var)
 
-        rms_mo_l.append(format(rms_mo * conv, sig_digits))
-        rmsc_mo_l.append(format(rmsc_mo * conv, sig_digits))
+        rms_mo_l.append(format(rms_mo, sig_digits))
+        rmsc_mo_l.append(format(rmsc_mo, sig_digits))
         cor_mo_l.append(format(cor_mo, ".2f"))
-        mae_mo_l.append(format(mae_mo * conv, sig_digits))
-        bias_mo_l.append(format(bias_mo * conv, sig_digits))
-        stdObs_xy_mo_l.append(format(stdObs_xy_mo * conv, sig_digits))
-        std_xy_mo_l.append(format(std_xy_mo * conv, sig_digits))
-        meanObs_xy_mo_l.append(format(meanObs_xy_mo * conv, sig_digits))
-        mean_xy_mo_l.append(format(mean_xy_mo * conv, sig_digits))
+        mae_mo_l.append(format(mae_mo, sig_digits))
+        bias_mo_l.append(format(bias_mo, sig_digits))
+        stdObs_xy_mo_l.append(format(stdObs_xy_mo, sig_digits))
+        std_xy_mo_l.append(format(std_xy_mo, sig_digits))
+        meanObs_xy_mo_l.append(format(meanObs_xy_mo, sig_digits))
+        mean_xy_mo_l.append(format(mean_xy_mo, sig_digits))
 
     metrics_dictionary["bias_xy"]["CalendarMonths"] = bias_mo_l
     metrics_dictionary["rms_xy"]["CalendarMonths"] = rms_mo_l
@@ -276,8 +275,8 @@ def compute_metrics(Var, dm, do, debug=False):
 
 # ZONAL AND SEASONAL MEAN CONTRIBUTIONS
 #           metrics_dictionary['rms_y'][sea] = format(
-#               rms_y * conv,
+#               rms_y,
 #               sig_digits)
 #           metrics_dictionary['rms_devzm'][sea] = format(
-#               rms_xy_devzm * conv,
+#               rms_xy_devzm,
 #               sig_digits)
