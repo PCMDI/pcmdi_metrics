@@ -33,6 +33,8 @@ def parallel_coordinate_plot(
     colormap="viridis",
     num_color=20,
     legend_off=False,
+    legend_ncol=6,
+    legend_bbox_to_anchor=(0.5, -0.14),
     logo_rect=None,
     logo_off=False,
     model_names2=None,
@@ -77,6 +79,8 @@ def parallel_coordinate_plot(
     - `colormap`: string, default='viridis', matplotlib colormap
     - `num_color`: integer, default=20, how many color to use.
     - `legend_off`: bool, default=False, turn off legend
+    - `legend_ncol`: integer, default=6, number of columns for legend text
+    - `legend_bbox_to_anchor`: tuple, defulat=(0.5, -0.14), set legend box location
     - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes.
                    All quantities are in fractions of figure width and height.  Optional.
     - `logo_off`: bool, default=False, turn off PMP logo
@@ -336,7 +340,10 @@ def parallel_coordinate_plot(
     ax.set_title(title, fontsize=18)
 
     if not legend_off:
-        ax.legend(loc="upper center", ncol=6, bbox_to_anchor=(0.5, -0.14))
+        # ax.legend(loc="upper center", ncol=6, bbox_to_anchor=(0.5, -0.14))
+        ax.legend(
+            loc="upper center", ncol=legend_ncol, bbox_to_anchor=legend_bbox_to_anchor
+        )
 
     if not logo_off:
         fig, ax = add_logo(fig, ax, logo_rect)
