@@ -41,8 +41,9 @@ dc = 0.15  # minimum ice concentration contour
 
 
 # Observations
-dlist_n = ["ssmi_nt_n_names.asc", "ssmi_bt_n_names.asc"]
-dlist_s = ["ssmi_nt_s_names.asc", "ssmi_bt_s_names.asc"]
+
+dlist_n = ["/home/ordonez4/seaice/ssmi_nt_n_names.asc", "/home/ordonez4/seaice/ssmi_bt_n_names.asc"]
+dlist_s = ["/home/ordonez4/seaice/ssmi_nt_s_names.asc", "/home/ordonez4/seaice/ssmi_bt_s_names.asc"]
 
 annual_cycle_obs_arctic = []
 annual_cycle_obs_antarctic = []
@@ -89,9 +90,9 @@ for dl in range(0, len(dlist_n)):
         lons_p = MV.where(MV.less(lons_n, 0.0), lons_n + 360.0, lons_n)
         lons_a = lons_n
 
-        print("Obs")
-        print("lons_na= ", MV.min(lons_a), MV.max(lons_a))
-        print("lons_np= ", MV.min(lons_p), MV.max(lons_p))
+        #print("Obs")
+        #print("lons_na= ", MV.min(lons_a), MV.max(lons_a))
+        #print("lons_np= ", MV.min(lons_p), MV.max(lons_p))
 
         mask_ca = MV.zeros(area_n.shape)
         mask_na = MV.zeros(area_n.shape)
@@ -166,11 +167,11 @@ for dl in range(0, len(dlist_n)):
         ta_na[i] = MV.sum(area_sic_na)
         ta_np[i] = MV.sum(area_sic_np)
 
-        print("data_n= ", data_n[i])
-        print("ta_na= ", ta_na[i])
-        print("ta_np= ", ta_np[i])
+        #print("data_n= ", data_n[i])
+        #print("ta_na= ", ta_na[i])
+        #print("ta_np= ", ta_np[i])
 
-        print(MV.average(sic_n))
+        #print(MV.average(sic_n))
 
     obs_n[:, dl] = MV.array(data_n, id="sic")
     obs_ca[:, dl] = MV.array(ta_ca, id="sic")
@@ -201,9 +202,9 @@ for dl in range(0, len(dlist_s)):
         lons_sp = MV.where(MV.less(lons_s, 0.0), lons_s + 360, lons_s)
         lons_io = lons_sp
 
-        print("Obs")
-        print("lons_sa= ", MV.min(lons_sa), MV.max(lons_sa))
-        print("lons_sp= ", MV.min(lons_sp), MV.max(lons_sp))
+        #print("Obs")
+        #print("lons_sa= ", MV.min(lons_sa), MV.max(lons_sa))
+        #print("lons_sp= ", MV.min(lons_sp), MV.max(lons_sp))
 
         mask_sa = MV.zeros(area_s.shape)
         mask_sp = MV.zeros(area_s.shape)
@@ -255,7 +256,7 @@ for dl in range(0, len(dlist_s)):
         ta_sp[i] = MV.sum(area_sic_sp)
         ta_io[i] = MV.sum(area_sic_io)
 
-        print(MV.average(sic_s))
+        #print(MV.average(sic_s))
 
     obs_s[:, dl] = MV.array(data_s, id="sic")
     obs_s = MV.masked_equal(obs_s, -9999.0)
@@ -274,10 +275,10 @@ for iy in range(1979, 2006):
 timeax = []
 for date in zip(years, months):
     yr, mo = date
-    print(yr)
+    #print(yr)
     c = cdtime.comptime(yr, mo)
-    print(c)
-    print(c.torel("days since 1979-1-1").value)
+    #print(c)
+    #print(c.torel("days since 1979-1-1").value)
     timeax = timeax + [int(c.torel("days since 1979-1-1").value)]
 
 time = cdms.createAxis(timeax)
@@ -344,13 +345,21 @@ for im in range(0, 12):
 # NSIDC-0192
 # SSM/I Arctic
 # Area
+#dlist_n = [
+#    "nasateam/gsfc.nasateam.month.area.1978-2010.n.asc",
+#    "bootstrap/gsfc.bootstrap.month.area.1978-2010.n.asc",
+#]
+#dlist_s = [
+#    "nasateam/gsfc.nasateam.month.area.1978-2010.s.asc",
+#    "bootstrap/gsfc.bootstrap.month.area.1978-2010.s.asc",
+#]
 dlist_n = [
-    "nasateam/gsfc.nasateam.month.area.1978-2010.n.asc",
-    "bootstrap/gsfc.bootstrap.month.area.1978-2010.n.asc",
+    "/p/user_pub/hoang1-backups/ARCHIVE/ivanova2/IceData/AreaExtent/NSIDC-0192/ice-extent/nasateam/gsfc.nasateam.month.area.1978-2010.n.asc",
+    "/p/user_pub/hoang1-backups/ARCHIVE/ivanova2/IceData/AreaExtent/NSIDC-0192/ice-extent/bootstrap/gsfc.bootstrap.month.area.1978-2010.n.asc"
 ]
 dlist_s = [
-    "nasateam/gsfc.nasateam.month.area.1978-2010.s.asc",
-    "bootstrap/gsfc.bootstrap.month.area.1978-2010.s.asc",
+    "/p/user_pub/hoang1-backups/ARCHIVE/ivanova2/IceData/AreaExtent/NSIDC-0192/ice-extent/nasateam/gsfc.nasateam.month.area.1978-2010.s.asc",
+    "/p/user_pub/hoang1-backups/ARCHIVE/ivanova2/IceData/AreaExtent/NSIDC-0192/ice-extent/bootstrap/gsfc.bootstrap.month.area.1978-2010.s.asc"
 ]
 # Extent
 # dlist_n=['nasateam/gsfc.nasateam.month.extent.1978-2010.n.asc','bootstrap/gsfc.bootstrap.month.extent.1978-2010.n.asc']
@@ -376,11 +385,11 @@ for dl in range(0, len(dlist_n)):
     data_sp = []
     data_io = []
 
-    f = open("/export/ivanova2/IceData/AreaExtent/NSIDC-0192/ice-extent/" + dlist_n[dl])
+    f = open(dlist_n[dl])
     lines_n = f.readlines()
     f.close
 
-    g = open("/export/ivanova2/IceData/AreaExtent/NSIDC-0192/ice-extent/" + dlist_s[dl])
+    g = open(dlist_s[dl])
     lines_s = g.readlines()
     g.close
 
@@ -451,15 +460,14 @@ obs1_sa = MV.multiply(obs1_sa, factor1)
 obs1_sp = MV.multiply(obs1_sp, factor1)
 obs1_io = MV.multiply(obs1_io, factor1)
 
-
 # Create Time Axis
 timeax = []
 for date in zip(years, months):
     yr, mo = date
-    print(yr)
+    #print(yr)
     c = cdtime.comptime(yr, mo)
-    print(c)
-    print(c.torel("days since 1979-1-1").value)
+    #print(c)
+    #print(c.torel("days since 1979-1-1").value)
     timeax = timeax + [int(c.torel("days since 1979-1-1").value)]
 
 time = cdms.createAxis(timeax[0:324])
@@ -522,6 +530,7 @@ for im in range(0, 12):
     annual_cycle_std_obs1_io[im, :] = np.array(
         genutil.statistics.std(obs1_io[im:324:12, :])
     )
+print(annual_cycle_std_obs1_arctic)
 
 # Calculate the Obs RMS
 rms_arctic_obs1 = genutil.statistics.rms(
@@ -548,7 +557,19 @@ rms_sp_obs1 = genutil.statistics.rms(
 rms_io_obs1 = genutil.statistics.rms(
     annual_cycle_obs1_io[:, 1], annual_cycle_obs1_io[:, 0], axis=0
 )
+import pickle
+import sys
 
+data_dict = {"Arctic": rms_arctic_obs1.data.item(),
+    "Antarctic": rms_antarctic_obs1.data.item(),
+    "CA": rms_ca_obs1.data.item(),
+    "NA": rms_na_obs1.data.item(),
+    "NP": rms_np_obs1.data.item(),
+    "SA": rms_sa_obs1.data.item(),
+    "SP": rms_sp_obs1.data.item(),
+    "IO": rms_io_obs1.data.item()}
+with open('obs_rms_data.pkl','wb') as handle:
+    pickle.dump(data_dict,handle)
 
 # CMIP5 Native grid
 var = "sic"
@@ -578,7 +599,8 @@ lines_m = [
 # lines_d = ['bo-','g*-']
 # cols_d=['b','g']
 
-flist = open("./cmip5_sic_names_all_xml_012413_conserv.asc")
+flist = open("/home/ordonez4/seaice/cmip5_sic_names_all_xml_012413_conserv.asc")
+#flist = open("./cmip5_sic_names_all_xml_012413_conserv.asc")
 # flist=open('./cmip5_sic_names_all_xml_012413_conserv_ccsm4.asc')
 # flist=open('./cmip5_sic_names_all_xml_121212_conserv.asc')
 # flist=open('./cmip5_sic_names_all_xml_121212_ncar.asc')
@@ -586,8 +608,8 @@ flist = open("./cmip5_sic_names_all_xml_012413_conserv.asc")
 # flist=open('./cmip5_sic_names_all_xml_102412_hadgem.asc')
 fnames = flist.readlines()
 
-
-glist = open("./cmip5_areacell_names_nc_012413_conserv.asc")
+glist = open("/home/ordonez4/seaice/cmip5_areacell_names_nc_012413_conserv.asc")
+#glist = open("./cmip5_areacell_names_nc_012413_conserv.asc")
 # glist=open('./cmip5_areacell_names_nc_012413_conserv_ccsm4.asc')
 # glist=open('./cmip5_areacell_names_nc.asc')
 # glist=open('./cmip5_areacell_names_all_xml_121212.asc')
@@ -694,15 +716,23 @@ for mod in mods:
     for run, ver in zip(runs, vers):
         nr = nr + 1
         # Reading the sea ice concentration (sic)
+        #infile = (
+        #    "/work/cmip5/historical/seaIce/mo/sic/"
+        #    + "cmip5."
+        #    + mod
+        #    + ".historical."
+        #    + run
+        #    + ".mo.seaIce.sic."
+        #    + ver
+        #    + ".xml"
+        #)
         infile = (
-            "/work/cmip5/historical/seaIce/mo/sic/"
+            "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/additional_xmls/latest/v20231104/cmip5/historical/seaIce/mon/sic/"
             + "cmip5."
-            + mod
-            + ".historical."
-            + run
-            + ".mo.seaIce.sic."
-            + ver
-            + ".xml"
+            + "historical."
+            + mod + "."
+            + run + "."
+            + "mon.sic.xml"
         )
         print(infile)
 
@@ -718,7 +748,7 @@ for mod in mods:
         lon = sic.getLongitude()
         sic = MV.multiply(sic, factor2)
 
-        if MV.rank(lat) == 1:
+        if np.ndim(lat) == 1:
             tmp2d = f(var, time=slice(0, 1), squeeze=1)
             lats = MV.zeros(tmp2d.shape)
             for ii in range(0, len(lon)):
@@ -726,7 +756,7 @@ for mod in mods:
         else:
             lats = lat
 
-        if MV.rank(lon) == 1:
+        if np.ndim(lon) == 1:
             tmp2d = f(var, time=slice(0, 1), squeeze=1)
             lons = MV.zeros(tmp2d.shape)
             for ii in range(0, len(lat)):
@@ -739,9 +769,9 @@ for mod in mods:
         # Creating regional masks
         lons_a = MV.where(MV.greater(lons, 180.0), lons - 360, lons)
         lons_p = lons
-        print("CMIP5")
-        print("lons_na= ", MV.min(lons_a), MV.max(lons_a))
-        print("lons_np= ", MV.min(lons_p), MV.max(lons_p))
+        #print("CMIP5")
+        #print("lons_na= ", MV.min(lons_a), MV.max(lons_a))
+        #print("lons_np= ", MV.min(lons_p), MV.max(lons_p))
         mask_ca = MV.zeros(area.shape)
         mask_na = MV.zeros(area.shape)
         mask_np = MV.zeros(area.shape)
@@ -949,14 +979,14 @@ ann_sp_mma = ann_sp_mma / nm
 ann_io_mma = ann_io_mma / nm
 
 [ni, nj] = std_arctic.shape
-tta_std_arctic = MV.zeros([12, 324 / 12, len(mods)])
-tta_std_antarctic = MV.zeros([12, 324 / 12, len(mods)])
-tta_std_ca = MV.zeros([12, 324 / 12, len(mods)])
-tta_std_na = MV.zeros([12, 324 / 12, len(mods)])
-tta_std_np = MV.zeros([12, 324 / 12, len(mods)])
-tta_std_sa = MV.zeros([12, 324 / 12, len(mods)])
-tta_std_sp = MV.zeros([12, 324 / 12, len(mods)])
-tta_std_io = MV.zeros([12, 324 / 12, len(mods)])
+tta_std_arctic = MV.zeros([12, int(324 / 12), len(mods)])
+tta_std_antarctic = MV.zeros([12, int(324 / 12), len(mods)])
+tta_std_ca = MV.zeros([12, int(324 / 12), len(mods)])
+tta_std_na = MV.zeros([12, int(324 / 12), len(mods)])
+tta_std_np = MV.zeros([12, int(324 / 12), len(mods)])
+tta_std_sa = MV.zeros([12, int(324 / 12), len(mods)])
+tta_std_sp = MV.zeros([12, int(324 / 12), len(mods)])
+tta_std_io = MV.zeros([12, int(324 / 12), len(mods)])
 
 for im in range(0, 12):
     tta_std_arctic[im, :, :] = std_arctic[im:ni:12, :]
@@ -998,20 +1028,19 @@ for im in range(0, 12):
 # Bar Plots of the RMS
 labels = [
     "ACCESS1-3",
-    "BNU-ESM",
-    "CCSM4",
-    "CESM1-BGC",
-    "CESM1-CAM5-1-FV2",
-    "CESM1-CAM5",
-    "CESM1-FASTCHEM",
+#    "BNU-ESM",
+#    "CCSM4",
+#    "CESM1-BGC",
+#    "CESM1-CAM5-1-FV2",
+#    "CESM1-CAM5",
+#    "CESM1-FASTCHEM",
     "CNRM-CM5",
     "CSIRO-Mk3-6-0",
     "CanCM4",
     "CanESM2",
     "GFDL-CM2p1",
     "GFDL-CM3",
-    "GFDL-ES\
-M2G",
+    "GFDL-ESM2G",
     "GFDL-ESM2M",
     "GISS-E2-H-CC",
     "GISS-E2-H",
@@ -1024,30 +1053,29 @@ M2G",
     "IPSL-CM5A-MR",
     "IPSL-CM5B-LR",
     "MIROC-ESM-CHEM",
-    "MI\
-ROC-ESM",
+    "MIROC-ESM",
     "MIROC4h",
     "MIROC5",
     "MPI-ESM-LR",
     "MPI-ESM-MR",
     "MPI-ESM-P",
     "NorESM1-ME",
-    "bcc-csm1-1-m",
-    "bcc-csm1-1",
+#    "bcc-csm1-1-m",
+#    "bcc-csm1-1",
 ]
 # labels=["CCSM4","CESM1-BGC","CESM1-CAM5-1-FV2","CESM1-CAM5","CESM1-FASTCHEM","CNRM-CM5","CSIRO-Mk3-6-0","CanCM4","CanESM2","GFDL-CM3","GFDL-ES\
 # M2G","GFDL-ESM2M","GISS-E2-H-CC","GISS-E2-H","GISS-E2-R","HadCM3","HadGEM2-CC","HadGEM2-ES","IPSL-CM5A-MR","IPSL-CM5B-LR","MIROC-ESM-CHEM","MI\
 # ROC-ESM","MIROC4h","MIROC5","MPI-ESM-LR","MPI-ESM-MR","MPI-ESM-P","NorESM1-ME","bcc-csm1-1"]
 # labels=["HadCM3","HadGEM2-CC"]
 mlabels = np.append(labels, "RMS-Obs")
-rms_arctic = np.append(rms_ann_arctic[0, :], rms_arctic_obs)
-rms_antarctic = np.append(rms_ann_antarctic[0, :], rms_antarctic_obs)
-rms_ca = np.append(rms_ann_ca[0, :], rms_ca_obs)
-rms_na = np.append(rms_ann_na[0, :], rms_na_obs)
-rms_np = np.append(rms_ann_np[0, :], rms_np_obs)
-rms_sa = np.append(rms_ann_sa[0, :], rms_sa_obs)
-rms_sp = np.append(rms_ann_sp[0, :], rms_sp_obs)
-rms_io = np.append(rms_ann_io[0, :], rms_io_obs)
+rms_arctic = np.append(rms_ann_arctic[0, :], rms_arctic_obs1)
+rms_antarctic = np.append(rms_ann_antarctic[0, :], rms_antarctic_obs1)
+rms_ca = np.append(rms_ann_ca[0, :], rms_ca_obs1)
+rms_na = np.append(rms_ann_na[0, :], rms_na_obs1)
+rms_np = np.append(rms_ann_np[0, :], rms_np_obs1)
+rms_sa = np.append(rms_ann_sa[0, :], rms_sa_obs1)
+rms_sp = np.append(rms_ann_sp[0, :], rms_sp_obs1)
+rms_io = np.append(rms_ann_io[0, :], rms_io_obs1)
 
 
 ind = np.arange(len(mods))  # the x locations for the groups
@@ -1055,138 +1083,40 @@ ind = np.arange(len(mods))  # the x locations for the groups
 width = 0.3
 n = len(ind) - 1
 
-# fig1 = plt.figure(1)
-plt.subplot(411)
-plt.bar(ind, rms_ann_arctic[0, :], width, color="r")
-plt.hold
-plt.bar(ind[n] + 2.5 * width, rms_arctic_obs, width, color="b")
-plt.xticks(ind + width / 2.0, mlabels, rotation=20, size=8)
-# plt.xticks(ind[n]+3*width,mlabels[n+1],rotation=20)
-# plt.text
-plt.hold
-# plt.ylim(0.,ymax)
-plt.ylabel("RMS of Total Sea Ice Area, 10${^6}$km${^2}$")
-# plt.title('Arctic')
-plt.annotate("Arctic", (0.5, 0.9), xycoords="axes fraction", size=15)
-plt.grid(True)
-# plt.legend(mods_obs,bbox_to_anchor=(0.0, 0., 1, 1), bbox_transform=plt.gcf().transFigure)
-
-# fig2 = plt.figure(2)
-plt.subplot(412)
-plt.bar(ind, rms_ann_ca[0, :], width, color="r")
-plt.bar(ind[n] + 2.5 * width, rms_ca_obs, width, color="b")
-# plt.bar(ind+width,rms_ann_na[1,:],width,color='b')
-plt.xticks(ind + width / 2.0, mlabels, rotation=20, size=8)
-# plt.xticks(ind[n]+3*width,mlabels[n+1],rotation=20)
-plt.ylabel("RMS of Total Sea Ice Area, 10${^6}$km${^2}$")
-# plt.title('Central Arctic Sector')
-plt.annotate("Central Arctic Sector", (0.4, 0.9), xycoords="axes fraction", size=15)
-plt.grid(True)
-plt.hold
-
-# fig3 = plt.figure(3)
-plt.subplot(413)
-plt.bar(ind, rms_ann_na[0, :], width, color="r")
-plt.bar(ind[n] + 2.5 * width, rms_na_obs, width, color="b")
-# plt.bar(ind+width,rms_ann_na[1,:],width,color='b')
-plt.xticks(ind + width / 2.0, mlabels, rotation=20, size=8)
-# plt.xticks(ind[n]+3*width,mlabels[n+1],rotation=20)
-plt.ylabel("RMS of Total Sea Ice Area, 10${^6}$km${^2}$")
-# plt.title('North Atlantic Arctic Sector')
-plt.annotate(
-    "North Atlantic Arctic Sector", (0.4, 0.9), xycoords="axes fraction", size=15
-)
-plt.grid(True)
-plt.hold
-
-# fig4 = plt.figure(4)
-plt.subplot(414)
-plt.bar(ind, rms_ann_np[0, :], width, color="r")
-# Plot the  annual cycle
-plt.bar(ind[n] + 2.5 * width, rms_np_obs, width, color="b")
-# plt.bar(ind+width,rms_ann_np[1,:],width,color='b')
-plt.xticks(ind + width / 2.0, mlabels, rotation=20, size=8)
-# plt.xticks(ind[n]+3*width,mlabels[n+1],rotation=20)
-plt.hold
-# plt.ylim(0.,ymax)
-plt.ylabel("RMS of Total Sea Ice Area, 10${^6}$km${^2}$")
-# plt.title('North Pacific Arctic Sector')
-plt.annotate(
-    "North Pacific Arctic Sector", (0.4, 0.9), xycoords="axes fraction", size=15
-)
-plt.grid(True)
-# plt.legend(mods_obs,loc=(.55,0.65))
-
-plt.show()
-
-# Antarctic
-fig5 = plt.figure(5)
-plt.subplot(411)
-plt.bar(ind, rms_ann_antarctic[0, :], width, color="r")
-plt.bar(ind[n] + 2.5 * width, rms_antarctic_obs, width, color="b")
-# plt.bar(ind+width,rms_ann_antarctic[1,:],width,color='b')
-plt.xticks(ind + width / 2.0, mlabels, rotation=20, size=8)
-# plt.xticks(ind[n]+3*width,mlabels[n+1],rotation=20)
-plt.hold
-# plt.ylim(0.,ymax)
-plt.ylabel("RMS of Total Sea Ice Area, 10${^6}$km${^2}$")
-# plt.title('Antarctic')
-plt.annotate("Antarctic", (0.5, 0.9), xycoords="axes fraction", size=15)
-# plt.legend(mods_obs,bbox_to_anchor=(0.0, 0., 1, 1), bbox_transform=plt.gcf().transFigure)
-plt.grid(True)
-
-# fig6 = plt.figure(6)
-plt.subplot(412)
-plt.bar(ind, rms_ann_sa[0, :], width, color="r")
-plt.bar(ind[n] + 2.5 * width, rms_sa_obs, width, color="b")
-# plt.bar(ind+width,rms_ann_sa[1,:],width,color='b')
-plt.xticks(ind + width / 2.0, mlabels, rotation=20, size=8)
-# plt.xticks(ind[n]+3*width,mlabels[n+1],rotation=20)
-plt.hold
-# plt.ylim(0.,ymax)
-plt.ylabel("RMS of Total Sea Ice Area, 10${^6}$km${^2}$")
-# plt.title('South Atlantic Antarctic Sector')
-plt.annotate(
-    "South Atlantic Ocean Antarctic Sector",
-    (0.4, 0.9),
-    xycoords="axes fraction",
-    size=15,
-)
-plt.grid(True)
-
-# fig7 = plt.figure(7)
-plt.subplot(413)
-plt.bar(ind, rms_ann_sp[0, :], width, color="r")
-plt.bar(ind[n] + 2.5 * width, rms_sp_obs, width, color="b")
-# plt.bar(ind+width,rms_ann_sp[1,:],width,color='b')
-plt.xticks(ind + width / 2.0, mlabels, rotation=20, size=8)
-plt.hold
-# plt.ylim(0.,ymax)
-plt.ylabel("RMS of Total Sea Ice Area, 10${^6}$km${^2}$")
-# plt.title('South Pacific Antarctic Sector')
-plt.annotate(
-    "South Pacific Ocean Antarctic Sector",
-    (0.4, 0.9),
-    xycoords="axes fraction",
-    size=15,
-)
-# plt.legend(obs_mods,loc=(.05,0.65))
-plt.grid(True)
-
-# fig8 = plt.figure(8)
-plt.subplot(414)
-plt.bar(ind, rms_ann_io[0, :], width, color="r")
-plt.bar(ind[n] + 2.5 * width, rms_io_obs, width, color="b")
-# plt.bar(ind+width,rms_ann_io[1,:],width,color='b')
-plt.xticks(ind + width / 2.0, mlabels, rotation=20, size=8)
-# plt.xticks(ind[n]+3*width,mlabels[n+1],rotation=20)
-plt.hold
-
-plt.ylabel("RMS of Total Sea Ice Area, 10${^6}$km${^2}$")
-plt.annotate(
-    "South Indian Ocean Antarctic Sector", (0.4, 0.9), xycoords="axes fraction", size=15
-)
-# plt.title('South Indian Ocean Antarctic Sector')
-plt.grid(True)
-
-plt.show()
+import pickle
+import sys
+with open('model_antarctic_plotting.pkl', 'wb') as handle:
+    pickle.dump(rms_ann_antarctic,handle)
+with open('model_sp_plotting.pkl', 'wb') as handle:
+    pickle.dump(rms_ann_sp,handle)
+with open('model_sa_plotting.pkl', 'wb') as handle:
+    pickle.dump(rms_ann_sa,handle)
+with open('model_io_plotting.pkl', 'wb') as handle:
+    pickle.dump(rms_ann_io,handle)
+with open('model_na_plotting.pkl', 'wb') as handle:
+    pickle.dump(rms_ann_na,handle)
+with open('model_ca_plotting.pkl', 'wb') as handle:
+    pickle.dump(rms_ann_ca,handle)
+with open('model_np_plotting.pkl', 'wb') as handle:
+    pickle.dump(rms_ann_np,handle)
+sys.exit()
+for sector in sector_list:
+    fig7 = plt.figure(7)
+    plt.subplot(413)
+    plt.bar(ind, rms_ann_sp[0, :], width, color="r")
+    plt.bar(ind[n] + 2.5 * width, rms_sp_obs1, width, color="b")
+    # plt.bar(ind+width,rms_ann_sp[1,:],width,color='b')
+    plt.xticks(ind + width / 2.0, mlabels, rotation=20, size=8)
+    #plt.hold
+    # plt.ylim(0.,ymax)
+    plt.ylabel("RMS of Total Sea Ice Area, 10${^6}$km${^2}$")
+    # plt.title('South Pacific Antarctic Sector')
+    plt.annotate(
+        "South Pacific Ocean Antarctic Sector",
+        (0.4, 0.9),
+        xycoords="axes fraction",
+        size=15,
+    )
+    # plt.legend(obs_mods,loc=(.05,0.65))
+    plt.grid(True)
+    fig7.savefig("fig7.png")
