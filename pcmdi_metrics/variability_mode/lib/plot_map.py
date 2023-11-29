@@ -1,7 +1,6 @@
 import faulthandler
 import sys
 
-# import cartopy
 import cartopy.crs as ccrs
 import matplotlib.path as mpath
 import matplotlib.pyplot as plt

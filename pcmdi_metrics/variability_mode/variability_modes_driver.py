@@ -46,8 +46,7 @@ government or Lawrence Livermore National Security, LLC, and shall not be used
 for advertising or product endorsement purposes.
 """
 
-from __future__ import print_function
-
+import shapely  # noqa
 import glob
 import json
 import os
