@@ -8,6 +8,10 @@ Overview
 ========
 With the global domain partitioned into 62 regions, including 46 land and 16 ocean regions, we apply 10 established precipitation distribution metrics. The collection includes metrics focused on the maximum peak, lower 10th percentile, and upper 90th percentile in precipitation amount and frequency distributions; the similarity between observed and modeled frequency distributions; an unevenness measure based on cumulative amount; average total intensity on all days with precipitation; and number of precipitating days each year. 
 
+Demo
+====
+In preparation
+
 Exampe parameter files
 ======================
 A set of example parameter files for models and observations can be viewed at `this link`_.
