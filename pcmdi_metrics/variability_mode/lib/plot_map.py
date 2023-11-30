@@ -267,12 +267,9 @@ def plot_map_cartopy(
         # every 1 degree so that the result is smooth:
         # https://stackoverflow.com/questions/43463643/cartopy-albersequalarea-limit-region-using-lon-and-lat
 
-        # vertices = [
-        #    (lon - 180, lat_min) for lon in range(int(lon_min), int(lon_max + 1), 1)
-        # ] + [(lon - 180, lat_max) for lon in range(int(lon_max), int(lon_min - 1), -1)]
         vertices = [
-            (lon - 180, lat_min) for lon in range(int(lon_min), int(lon_max), 1)
-        ] + [(lon - 180, lat_max) for lon in range(int(lon_max), int(lon_min), -1)]
+            (lon - 180, lat_min) for lon in range(int(lon_min), int(lon_max + 1), 1)
+        ] + [(lon - 180, lat_max) for lon in range(int(lon_max), int(lon_min - 1), -1)]
         boundary = mpath.Path(vertices)
         ax.set_boundary(
             boundary, transform=ccrs.PlateCarree(central_longitude=180)
