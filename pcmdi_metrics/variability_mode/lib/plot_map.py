@@ -100,7 +100,7 @@ def plot_map(
         central_longitude = 0
     else:
         central_longitude = 180
-           
+
     # Convert cdms variable to xarray
     lons = eof_Nth.getLongitude()
     lats = eof_Nth.getLatitude()
@@ -108,7 +108,9 @@ def plot_map(
     lon = np.array(lons)
     lat = np.array(lats)
     lon, lat = np.meshgrid(lon, lat)
-    data_array = xr.DataArray(np.array(data), coords={'lon': lon[0, :], 'lat': lat[:, 0]}, dims=('lat', 'lon'))
+    data_array = xr.DataArray(
+        np.array(data), coords={"lon": lon[0, :], "lat": lat[:, 0]}, dims=("lat", "lon")
+    )
     data_array = data_array.where(data_array != 1e20, np.nan)
 
     plot_map_cartopy(
@@ -166,13 +168,13 @@ def plot_map_cartopy(
 
     lon = data_array.lon
     lat = data_array.lat
-    
+
     # Determine the extent based on the longitude range where data exists
     lon_min = lon.min().item()
     lon_max = lon.max().item()
     lat_min = lat.min().item()
     lat_max = lat.max().item()
-    
+
     if debug:
         print(lon_min, lon_max, lat_min, lat_max)
 
@@ -196,8 +198,8 @@ def plot_map_cartopy(
         central_longitude = (lon_min + lon_max) / 2.0
         central_latitude = (lat_min + lat_max) / 2.0
         projection = ccrs.AlbersEqualArea(
-            central_longitude=central_longitude, 
-            central_latitude=central_latitude, 
+            central_longitude=central_longitude,
+            central_latitude=central_latitude,
             standard_parallels=(20, lat_max),
         )
     else:
@@ -208,7 +210,7 @@ def plot_map_cartopy(
         print("projection:", projection)
 
     # Generate plot
-    fig, ax = plt.subplots(subplot_kw={'projection': projection}, figsize=(8, 6))
+    fig, ax = plt.subplots(subplot_kw={"projection": projection}, figsize=(8, 6))
     debug_print("fig, ax done", debug)
 
     # Add coastlines
@@ -264,15 +266,17 @@ def plot_map_cartopy(
         # the bottom left and go round anticlockwise, creating a boundary point
         # every 1 degree so that the result is smooth:
         # https://stackoverflow.com/questions/43463643/cartopy-albersequalarea-limit-region-using-lon-and-lat
-        
+
         vertices = [
             (lon - 180, lat_min) for lon in range(int(lon_min), int(lon_max + 1), 1)
         ] + [(lon - 180, lat_max) for lon in range(int(lon_max), int(lon_min - 1), -1)]
         boundary = mpath.Path(vertices)
-        ax.set_boundary(boundary, transform=ccrs.PlateCarree(central_longitude=central_longitude))
-        
+        ax.set_boundary(
+            boundary, transform=ccrs.PlateCarree(central_longitude=central_longitude)
+        )
+
         ax.set_extent([lon_min, lon_max, lat_min, lat_max], crs=ccrs.PlateCarree())
-        
+
         if gridline:
             gl = ax.gridlines(
                 draw_labels=True,
@@ -291,7 +295,7 @@ def plot_map_cartopy(
                 right_label = ea.get_position()[0] > 0
                 if right_label:
                     ea.set_visible(False)
-        
+
     debug_print("projection completed", debug)
 
     # Plot contours from the data
@@ -305,7 +309,7 @@ def plot_map_cartopy(
         transform=ccrs.PlateCarree(),
     )
     debug_print("contourf done", debug)
-    
+
     # Maskout
     if maskout is not None:
         if maskout == "land":
@@ -333,5 +337,5 @@ def plot_map_cartopy(
     if filename is not None:
         debug_print("plot done, save figure as " + filename, debug)
         fig.savefig(filename)
-        
+
     plt.close("all")
