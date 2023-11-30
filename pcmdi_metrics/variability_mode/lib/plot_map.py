@@ -179,7 +179,7 @@ def plot_map_cartopy(
 
     debug_print("Central longitude setup starts", debug)
     debug_print("proj: " + proj, debug)
-    
+
     # map types example:
     # https://github.com/SciTools/cartopy-tutorial/blob/master/tutorial/projections_crs_and_terms.ipynb
 
@@ -267,13 +267,16 @@ def plot_map_cartopy(
         # every 1 degree so that the result is smooth:
         # https://stackoverflow.com/questions/43463643/cartopy-albersequalarea-limit-region-using-lon-and-lat
 
+        # vertices = [
+        #    (lon - 180, lat_min) for lon in range(int(lon_min), int(lon_max + 1), 1)
+        # ] + [(lon - 180, lat_max) for lon in range(int(lon_max), int(lon_min - 1), -1)]
         vertices = [
-            (lon - 180, lat_min) for lon in range(int(lon_min), int(lon_max + 1), 1)
-        ] + [(lon - 180, lat_max) for lon in range(int(lon_max), int(lon_min - 1), -1)]
+            (lon - 180, lat_min) for lon in range(int(lon_min), int(lon_max), 1)
+        ] + [(lon - 180, lat_max) for lon in range(int(lon_max), int(lon_min), -1)]
         boundary = mpath.Path(vertices)
         ax.set_boundary(
-            boundary, transform=ccrs.PlateCarree(central_longitude=central_longitude)
-        )
+            boundary, transform=ccrs.PlateCarree(central_longitude=180)
+        )  # Here, 180 should be hardcoded, otherwise AMO map will be at out of figure box
 
         ax.set_extent([lon_min, lon_max, lat_min, lat_max], crs=ccrs.PlateCarree())
 
@@ -299,7 +302,7 @@ def plot_map_cartopy(
     debug_print("projection completed", debug)
 
     # Plot contours from the data
-    im = ax.contourf(
+    contourf_plot = ax.contourf(
         lon,
         lat,
         data_array,
@@ -326,11 +329,11 @@ def plot_map_cartopy(
     # Add title
     ax.set_title(title, pad=15, fontsize=15)
 
-    # Add colorbar
+    # Add a colorbar
     posn = ax.get_position()
     cbar_ax = fig.add_axes([0, 0, 0.1, 0.1])
-    cbar_ax.set_position([posn.x0 + posn.width + 0.01, posn.y0, 0.01, posn.height])
-    cbar = plt.colorbar(im, cax=cbar_ax)
+    cbar_ax.set_position([posn.x0 + posn.width + 0.03, posn.y0, 0.01, posn.height])
+    cbar = plt.colorbar(contourf_plot, cax=cbar_ax)
     cbar.ax.tick_params(labelsize=10)
 
     # Done, save figure
