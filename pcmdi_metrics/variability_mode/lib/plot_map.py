@@ -174,9 +174,6 @@ def plot_map_cartopy(
     lat_min = lat.min().item()
     lat_max = lat.max().item()
 
-    if debug:
-        print(lon_min, lon_max, lat_min, lat_max)
-
     debug_print("Central longitude setup starts", debug)
     debug_print("proj: " + proj, debug)
 
@@ -266,7 +263,6 @@ def plot_map_cartopy(
         # the bottom left and go round anticlockwise, creating a boundary point
         # every 1 degree so that the result is smooth:
         # https://stackoverflow.com/questions/43463643/cartopy-albersequalarea-limit-region-using-lon-and-lat
-
         vertices = [
             (lon - 180, lat_min) for lon in range(int(lon_min), int(lon_max + 1), 1)
         ] + [(lon - 180, lat_max) for lon in range(int(lon_max), int(lon_min - 1), -1)]
@@ -274,9 +270,7 @@ def plot_map_cartopy(
         ax.set_boundary(
             boundary, transform=ccrs.PlateCarree(central_longitude=180)
         )  # Here, 180 should be hardcoded, otherwise AMO map will be at out of figure box
-
         ax.set_extent([lon_min, lon_max, lat_min, lat_max], crs=ccrs.PlateCarree())
-
         if gridline:
             gl = ax.gridlines(
                 draw_labels=True,
@@ -295,6 +289,8 @@ def plot_map_cartopy(
                 right_label = ea.get_position()[0] > 0
                 if right_label:
                     ea.set_visible(False)
+    else:
+        sys.exit("Projection, " + proj + ", is not defined.")
 
     debug_print("projection completed", debug)
 
