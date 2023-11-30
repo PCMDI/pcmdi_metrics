@@ -6,7 +6,7 @@ Precipitation Distribution
 
 Overview
 ========
-
+With the global domain partitioned into 62 regions, including 46 land and 16 ocean regions, we apply 10 established precipitation distribution metrics. The collection includes metrics focused on the maximum peak, lower 10th percentile, and upper 90th percentile in precipitation amount and frequency distributions; the similarity between observed and modeled frequency distributions; an unevenness measure based on cumulative amount; average total intensity on all days with precipitation; and number of precipitating days each year. 
 
 Exampe parameter files
 ======================
@@ -63,3 +63,7 @@ Options available to set in the parameter file include:
 
 
 .. _this link: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/precip_distribution/param
+
+Reference
+=========
+Ahn, M.-S., P. A. Ullrich, P. J. Gleckler, J. Lee, A. C. Ordonez, and A. G. Pendergrass, 2023: Evaluating Precipitation Distributions at Regional Scales: A Benchmarking Framework and Application to CMIP5 and CMIP6. Geoscientific Model Development, 16, 3927–3951, https://doi.org/10.5194/gmd-16-3927-2023
