@@ -122,7 +122,7 @@ for dl in range(0, len(dlist_n)):
 
         # NA region
         lat_bound = MV.logical_and(
-            MV.greater(lats_n, 35.0), MV.less_equal(lats_n, 80.0)
+            MV.greater(lats_n, 45.0), MV.less_equal(lats_n, 80.0)
         )
         lon_bound = MV.logical_and(
             MV.greater(lons_a, -120.0), MV.less_equal(lons_a, 90.0)
@@ -131,7 +131,7 @@ for dl in range(0, len(dlist_n)):
 
         # NP region
         lat_bound = MV.logical_and(
-            MV.greater(lats_n, 35.0), MV.less_equal(lats_n, 65.0)
+            MV.greater(lats_n, 45.0), MV.less_equal(lats_n, 65.0)
         )
         lon_bound = MV.logical_and(
             MV.greater(lons_p, 90.0), MV.less_equal(lons_p, 240.0)
@@ -212,7 +212,7 @@ for dl in range(0, len(dlist_s)):
 
         # Antarctic Regions
         lat_bound = MV.logical_and(
-            MV.greater(lats_s, -90.0), MV.less_equal(lats_s, -40.0)
+            MV.greater(lats_s, -90.0), MV.less_equal(lats_s, -55.0)
         )
 
         # SA region
@@ -343,6 +343,7 @@ for im in range(0, 12):
 
 
 # NSIDC-0192
+
 # SSM/I Arctic
 # Area
 #dlist_n = [
@@ -796,21 +797,21 @@ for mod in mods:
         mask_ca = MV.where(MV.logical_or(reg1_ca, reg2_ca), 1, 0)
 
         # NA region
-        lat_bound = MV.logical_and(MV.greater(lats, 35.0), MV.less_equal(lats, 80.0))
+        lat_bound = MV.logical_and(MV.greater(lats, 45.0), MV.less_equal(lats, 80.0))
         lon_bound = MV.logical_and(
             MV.greater(lons_a, -120.0), MV.less_equal(lons_a, 90.0)
         )
         mask_na = MV.where(MV.logical_and(lat_bound, lon_bound), 1, 0)
 
         # NP region
-        lat_bound = MV.logical_and(MV.greater(lats, 35.0), MV.less_equal(lats, 65.0))
+        lat_bound = MV.logical_and(MV.greater(lats, 45.0), MV.less_equal(lats, 65.0))
         lon_bound = MV.logical_and(
             MV.greater(lons_p, 90.0), MV.less_equal(lons_p, 240.0)
         )
         mask_np = MV.where(MV.logical_and(lat_bound, lon_bound), 1, 0)
 
         # Antarctic Regions
-        lat_bound = MV.logical_and(MV.greater(lats, -90.0), MV.less_equal(lats, -40.0))
+        lat_bound = MV.logical_and(MV.greater(lats, -90.0), MV.less_equal(lats, -55.0))
 
         # SA region
         lon_bound = MV.logical_and(
@@ -841,9 +842,9 @@ for mod in mods:
 
         # arctic=MV.logical_and(MV.greater_equal(lats,35.),MV.less(lats,87.2))  # SSM/I limited to 87.2N
         arctic = MV.logical_and(
-            MV.greater_equal(lats, 35.0), MV.less(lats, 90.0)
+            MV.greater_equal(lats, 45.0), MV.less(lats, 90.0)
         )  # Adding currently in SSM/I 100% in the area >87.2N
-        antarctic = MV.logical_and(MV.greater_equal(lats, -90.0), MV.less(lats, -40.0))
+        antarctic = MV.logical_and(MV.greater_equal(lats, -90.0), MV.less(lats, -55.0))
 
         for nt in range(len(t)):
             aice_arctic = MV.where(MV.equal(arctic, True), ice_area[nt], 0.0)
@@ -1087,6 +1088,8 @@ import pickle
 import sys
 with open('model_antarctic_plotting.pkl', 'wb') as handle:
     pickle.dump(rms_ann_antarctic,handle)
+with open('model_arctic_plotting.pkl', 'wb') as handle:
+    pickle.dump(rms_ann_arctic,handle)
 with open('model_sp_plotting.pkl', 'wb') as handle:
     pickle.dump(rms_ann_sp,handle)
 with open('model_sa_plotting.pkl', 'wb') as handle:
