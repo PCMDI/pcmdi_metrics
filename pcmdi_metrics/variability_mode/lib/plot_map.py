@@ -43,7 +43,6 @@ def plot_map(
     """
     # Map Projection
     if "teleconnection" in mode:
-        # projection = "PlateCarree"
         projection = "Robinson"
     elif mode in ["NAO", "PNA", "NPO", "PDO", "NPGO", "AMO"]:
         projection = "Lambert"
@@ -180,6 +179,7 @@ def plot_map_cartopy(
 
     debug_print("Central longitude setup starts", debug)
     debug_print("proj: " + proj, debug)
+    
     # map types example:
     # https://github.com/SciTools/cartopy-tutorial/blob/master/tutorial/projections_crs_and_terms.ipynb
 
