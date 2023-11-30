@@ -11,7 +11,7 @@ dependencies:
     - python=3.10.10
     - pip=23.1.2
     - numpy=1.23.5
-    - cartopy=0.21.1
+    - cartopy=0.22.0
     - matplotlib=3.7.1
     - cdat_info=8.2.1
     - cdms2=3.1.5
