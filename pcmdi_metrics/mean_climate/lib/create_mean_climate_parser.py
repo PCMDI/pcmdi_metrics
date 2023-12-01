@@ -96,7 +96,7 @@ def create_mean_climate_parser():
     parser.add_argument(
         "--target_grid",
         dest="target_grid",
-        help='Options are "2.5x2.5" or an actual cdms2 grid object',
+        help='Set to "LATxLON" resolution in degrees. Default is "2.5x2.5"',
         required=False,
         default="2.5x2.5",
     )
