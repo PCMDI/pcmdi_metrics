@@ -46,9 +46,9 @@ def create_random_precip(years, max_val=None, min_val=None):
         }
     )
 
-    fake_ds = fake_ds.bounds.add_missing_bounds()
     fake_ds["time"].encoding["calendar"] = "noleap"
     fake_ds["time"].encoding["units"] = "days since 0000-01-01"
+    fake_ds = fake_ds.bounds.add_missing_bounds()
 
     if max_val is not None:
         fake_ds["pr"] = fake_ds.pr.where(fake_ds.pr <= max_val, max_val)
@@ -67,7 +67,7 @@ def create_random_precip(years, max_val=None, min_val=None):
             )
         }
     )
-    sftlf = sftlf.bounds.add_missing_bounds()
+    sftlf = sftlf.bounds.add_missing_bounds(["X", "Y"])
 
     return fake_ds, fake_cov, sftlf
 
@@ -109,9 +109,9 @@ def create_seasonal_precip(season):
         ),
         0.0,
     )
-    fake_ds = fake_ds.bounds.add_missing_bounds()
     fake_ds["time"].encoding["calendar"] = "noleap"
     fake_ds["time"].encoding["units"] = "days since 0000-01-01"
+    fake_ds = fake_ds.bounds.add_missing_bounds()
 
     sftlf_arr = np.ones((latd, lond)) * 100
     sftlf_arr[0, 0] = 0
@@ -125,7 +125,7 @@ def create_seasonal_precip(season):
             )
         }
     )
-    sftlf = sftlf.bounds.add_missing_bounds()
+    sftlf = sftlf.bounds.add_missing_bounds(["X", "Y"])
 
     return fake_ds, sftlf
 
