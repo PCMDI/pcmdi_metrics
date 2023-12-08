@@ -535,28 +535,28 @@ print(annual_cycle_std_obs1_arctic)
 
 # Calculate the Obs RMS
 rms_arctic_obs1 = genutil.statistics.rms(
-    annual_cycle_obs1_arctic[:, 1], annual_cycle_obs1_arctic[:, 0], axis=0
+    annual_cycle_obs_arctic[:, 1], annual_cycle_obs_arctic[:, 0], axis=0
 )
 rms_antarctic_obs1 = genutil.statistics.rms(
-    annual_cycle_obs1_antarctic[:, 1], annual_cycle_obs1_antarctic[:, 0], axis=0
+    annual_cycle_obs_antarctic[:, 1], annual_cycle_obs_antarctic[:, 0], axis=0
 )
 rms_ca_obs1 = genutil.statistics.rms(
-    annual_cycle_obs1_ca[:, 1], annual_cycle_obs1_ca[:, 0], axis=0
+    annual_cycle_obs_ca[:, 1], annual_cycle_obs_ca[:, 0], axis=0
 )
 rms_na_obs1 = genutil.statistics.rms(
-    annual_cycle_obs1_na[:, 1], annual_cycle_obs1_na[:, 0], axis=0
+    annual_cycle_obs_na[:, 1], annual_cycle_obs_na[:, 0], axis=0
 )
 rms_np_obs1 = genutil.statistics.rms(
-    annual_cycle_obs1_np[:, 1], annual_cycle_obs1_np[:, 0], axis=0
+    annual_cycle_obs_np[:, 1], annual_cycle_obs_np[:, 0], axis=0
 )
 rms_sa_obs1 = genutil.statistics.rms(
-    annual_cycle_obs1_sa[:, 1], annual_cycle_obs1_sa[:, 0], axis=0
+    annual_cycle_obs_sa[:, 1], annual_cycle_obs_sa[:, 0], axis=0
 )
 rms_sp_obs1 = genutil.statistics.rms(
-    annual_cycle_obs1_sp[:, 1], annual_cycle_obs1_sp[:, 0], axis=0
+    annual_cycle_obs_sp[:, 1], annual_cycle_obs_sp[:, 0], axis=0
 )
 rms_io_obs1 = genutil.statistics.rms(
-    annual_cycle_obs1_io[:, 1], annual_cycle_obs1_io[:, 0], axis=0
+    annual_cycle_obs_io[:, 1], annual_cycle_obs_io[:, 0], axis=0
 )
 import pickle
 import sys
@@ -846,6 +846,8 @@ for mod in mods:
         )  # Adding currently in SSM/I 100% in the area >87.2N
         antarctic = MV.logical_and(MV.greater_equal(lats, -90.0), MV.less(lats, -55.0))
 
+
+
         for nt in range(len(t)):
             aice_arctic = MV.where(MV.equal(arctic, True), ice_area[nt], 0.0)
             aice_antarctic = MV.where(MV.equal(antarctic, True), ice_area[nt], 0.0)
@@ -863,6 +865,15 @@ for mod in mods:
             total_area_sa[nt] = total_area_sa[nt] + MV.sum(area_sic_sa)
             total_area_sp[nt] = total_area_sp[nt] + MV.sum(area_sic_sp)
             total_area_io[nt] = total_area_io[nt] + MV.sum(area_sic_io)
+        #plt.pcolormesh(aice_arctic.data)
+        #plt.colorbar()
+        #plt.savefig("figs/"+mod+"_"+run+"_arctic.png")
+        #plt.close()
+        #plt.colorbar()
+        #plt.pcolormesh(area_sic_io.data)
+        #plt.savefig("figs/"+mod+"_"+run+"_io.png")
+        #plt.close()
+        #continue
 
     #        print 'total_area_arctic= ',total_area_arctic[nt]
     #        print 'total_area_na= ',total_area_na[nt]
@@ -967,7 +978,7 @@ for mod in mods:
         rms_ann_io[j, i] = genutil.statistics.rms(
             ann_io[:, i], annual_cycle_obs_io[:, j], axis=0
         )
-
+sys.exit()
 
 # CMIP5 MME
 ann_arctic_mma = ann_arctic_mma / nm
