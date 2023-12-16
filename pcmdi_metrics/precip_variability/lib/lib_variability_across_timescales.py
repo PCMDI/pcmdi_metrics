@@ -402,8 +402,8 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
             dmask = d
 
         dmask = dmask.to_dataset(name="ps")
-        dmask = dmask.bounds.add_bounds(axis="X", width=0.5)
-        dmask = dmask.bounds.add_bounds(axis="Y", width=0.5)
+        dmask = dmask.bounds.add_bounds(axis="X")
+        dmask = dmask.bounds.add_bounds(axis="Y")
 
         if "50S50N" in dom:
             am = dmask.sel(lat=slice(-50, 50)).spatial.average(
