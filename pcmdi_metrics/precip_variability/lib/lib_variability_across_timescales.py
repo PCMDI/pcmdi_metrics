@@ -11,7 +11,7 @@ from scipy import signal
 from scipy.stats import chi2
 from xcdat.regridder import grid
 
-import pcmdi_metrics
+from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.utils import create_land_sea_mask
 
 
@@ -94,9 +94,7 @@ def precip_variability_across_timescale(
     outfilename = (
         "PS_pr." + str(dfrq) + "_regrid.180x90_area.freq.mean_" + dat + ".json"
     )
-    JSON = pcmdi_metrics.io.base.Base(
-        outdir.replace("%(output_type)", "metrics_results"), outfilename
-    )
+    JSON = Base(outdir.replace("%(output_type)", "metrics_results"), outfilename)
     JSON.write(
         psdmfm,
         json_structure=["model+realization", "variability type", "domain", "frequency"],
