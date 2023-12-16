@@ -3,7 +3,6 @@ import math
 import os
 import sys
 
-import cdutil
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -13,6 +12,7 @@ from scipy.stats import chi2
 from xcdat.regridder import grid
 
 import pcmdi_metrics
+from pcmdi_metrics.utils import create_land_sea_mask
 
 
 # ==================================================================================
@@ -389,9 +389,8 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
     else:
         sys.exit("ERROR: frc " + frc + " is not defined!")
 
-    d_cdms = xr.DataArray.to_cdms2(d[0])
-    mask = cdutil.generateLandSeaMask(d_cdms)
-    mask = xr.DataArray.from_cdms2(mask)
+    # generate land sea mask
+    mask = create_land_sea_mask(d[0])
 
     psdmfm = {}
     for dom in domains:
