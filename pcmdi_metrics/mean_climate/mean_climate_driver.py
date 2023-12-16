@@ -6,11 +6,6 @@ import os
 from collections import OrderedDict
 from re import split
 
-import cdms2
-import cdutil
-import numpy as np
-import xcdat as xc
-
 from pcmdi_metrics import resources
 from pcmdi_metrics.io import load_regions_specs, region_subset
 from pcmdi_metrics.mean_climate.lib import (
@@ -20,6 +15,8 @@ from pcmdi_metrics.mean_climate.lib import (
     mean_climate_metrics_to_json,
 )
 from pcmdi_metrics.variability_mode.lib import sort_human, tree
+from pcmdi_metrics.utils import create_land_sea_mask
+from pcmdi_metrics.utils import create_target_grid
 
 parser = create_mean_climate_parser()
 parameter = parser.get_parameter(argparse_vals_only=False)
@@ -147,34 +144,14 @@ print(
 print("--- prepare mean climate metrics calculation ---")
 
 # generate target grid
-res = target_grid.split("x")
-lat_res = float(res[0])
-lon_res = float(res[1])
-start_lat = -90.0 + lat_res / 2
-start_lon = 0.0
-end_lat = 90.0 - lat_res / 2
-end_lon = 360.0 - lon_res
-nlat = ((end_lat - start_lat) * 1.0 / lat_res) + 1
-nlon = ((end_lon - start_lon) * 1.0 / lon_res) + 1
-t_grid = xc.create_uniform_grid(
-    start_lat, end_lat, lat_res, start_lon, end_lon, lon_res
-)
-if debug:
-    print(
-        "type(t_grid):", type(t_grid)
-    )  # Expected type is 'xarray.core.dataset.Dataset'
-    print("t_grid:", t_grid)
-# identical target grid in cdms2 to use generateLandSeaMask function that is yet to exist in xcdat
-t_grid_cdms2 = cdms2.createUniformGrid(
-    start_lat, nlat, lat_res, start_lon, nlon, lon_res
-)
+t_grid = create_target_grid(target_grid)
+
 # generate land sea mask for the target grid
-sft = cdutil.generateLandSeaMask(t_grid_cdms2)
-if debug:
-    print("sft:", sft)
-    print("sft.getAxisList():", sft.getAxisList())
+sft = create_land_sea_mask(t_grid)
+
 # add sft to target grid dataset
-t_grid["sftlf"] = (["lat", "lon"], np.array(sft))
+t_grid["sftlf"] = sft
+
 if debug:
     print("t_grid (after sftlf added):", t_grid)
     t_grid.to_netcdf("target_grid.nc")
@@ -188,8 +165,6 @@ else:
     obs_file_path = os.path.join(egg_pth, obs_file_name)
 with open(obs_file_path) as fo:
     obs_dict = json.loads(fo.read())
-# if debug:
-# print('obs_dict:', json.dumps(obs_dict, indent=4, sort_keys=True))
 
 print("--- start mean climate metrics calculation ---")
 
