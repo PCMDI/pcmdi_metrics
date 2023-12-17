@@ -17,6 +17,8 @@ from pcmdi_metrics.mean_climate.lib import (
 from pcmdi_metrics.utils import apply_landmask, create_land_sea_mask, create_target_grid
 from pcmdi_metrics.variability_mode.lib import sort_human, tree
 
+print("--- prepare mean climate metrics calculation ---")
+
 parser = create_mean_climate_parser()
 parameter = parser.get_parameter(argparse_vals_only=False)
 
@@ -74,73 +76,35 @@ if regions_specs is None or not bool(regions_specs):
     regions_specs = load_regions_specs()
 
 default_regions = ["global", "NHEX", "SHEX", "TROPICS"]
-print(
-    "case_id: ",
-    case_id,
-    "\n",
-    "test_data_set:",
-    test_data_set,
-    "\n",
-    "realization:",
-    realization,
-    "\n",
-    "vars:",
-    vars,
-    "\n",
-    "varname_in_test_data:",
-    varname_in_test_data,
-    "\n",
-    "reference_data_set:",
-    reference_data_set,
-    "\n",
-    "target_grid:",
-    target_grid,
-    "\n",
-    "regrid_tool:",
-    regrid_tool,
-    "\n",
-    "regrid_tool_ocn:",
-    regrid_tool_ocn,
-    "\n",
-    "save_test_clims:",
-    save_test_clims,
-    "\n",
-    "test_clims_interpolated_output:",
-    test_clims_interpolated_output,
-    "\n",
-    "filename_template:",
-    filename_template,
-    "\n",
-    "sftlf_filename_template:",
-    sftlf_filename_template,
-    "\n",
-    "generate_sftlf:",
-    generate_sftlf,
-    "\n",
-    "regions_specs:",
-    regions_specs,
-    "\n",
-    "regions:",
-    regions,
-    "\n",
-    "test_data_path:",
-    test_data_path,
-    "\n",
-    "reference_data_path:",
-    reference_data_path,
-    "\n",
-    "metrics_output_path:",
-    metrics_output_path,
-    "\n",
-    "diagnostics_output_path:",
-    diagnostics_output_path,
-    "\n",
-    "debug:",
-    debug,
-    "\n",
+
+config_variables = OrderedDict(
+    [
+        ("case_id", case_id),
+        ("test_data_set", test_data_set),
+        ("realization", realization),
+        ("vars", vars),
+        ("varname_in_test_data", varname_in_test_data),
+        ("reference_data_set", reference_data_set),
+        ("target_grid", target_grid),
+        ("regrid_tool", regrid_tool),
+        ("regrid_tool_ocn", regrid_tool_ocn),
+        ("save_test_clims", save_test_clims),
+        ("test_clims_interpolated_output", test_clims_interpolated_output),
+        ("filename_template", filename_template),
+        ("sftlf_filename_template", sftlf_filename_template),
+        ("generate_sftlf", generate_sftlf),
+        ("regions_specs", regions_specs),
+        ("regions", regions),
+        ("test_data_path", test_data_path),
+        ("reference_data_path", reference_data_path),
+        ("metrics_output_path", metrics_output_path),
+        ("diagnostics_output_path", diagnostics_output_path),
+        ("debug", debug),
+    ]
 )
 
-print("--- prepare mean climate metrics calculation ---")
+for key, value in config_variables.items():
+    print(f"{key}: {value}")
 
 # generate target grid
 t_grid = create_target_grid(target_grid_resolution=target_grid)
