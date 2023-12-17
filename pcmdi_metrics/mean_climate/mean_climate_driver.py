@@ -327,58 +327,35 @@ for var in vars:
                             print("region:", region)
 
                             # land/sea mask -- conduct masking only for variable data array, not entire data
-                            if ("land" in region.split("_")) or (
-                                "ocean" in region.split("_")
+                            if any(
+                                keyword in region.split("_")
+                                for keyword in ["land", "ocean"]
                             ):
                                 ds_test_tmp = ds_test.copy(deep=True)
                                 ds_ref_tmp = ds_ref.copy(deep=True)
                                 if "land" in region.split("_"):
                                     ds_test_tmp[varname] = apply_landmask(
-                                        ds_test,
-                                        data_var=varname,
+                                        ds_test[varname],
                                         landfrac=t_grid["sftlf"],
-                                        mask_land=False,
-                                        mask_ocean=True,
+                                        keep_over="land",
                                     )
                                     ds_ref_tmp[varname] = apply_landmask(
-                                        ds_ref,
-                                        data_var=varname,
+                                        ds_ref[varname],
                                         landfrac=t_grid["sftlf"],
-                                        mask_land=False,
-                                        mask_ocean=True,
+                                        keep_over="land",
                                     )
-                                    """
-                                    ds_test_tmp[varname] = ds_test[varname].where(
-                                        t_grid["sftlf"] != 0.0
-                                    )
-                                    ds_ref_tmp[varname] = ds_ref[varname].where(
-                                        t_grid["sftlf"] != 0.0
-                                    )
-                                    """
                                 elif "ocean" in region.split("_"):
                                     ds_test_tmp[varname] = apply_landmask(
-                                        ds_test,
-                                        data_var=varname,
+                                        ds_test[varname],
                                         landfrac=t_grid["sftlf"],
-                                        mask_land=True,
-                                        mask_ocean=False,
+                                        keep_over="ocean",
                                     )
                                     ds_ref_tmp[varname] = apply_landmask(
-                                        ds_ref,
-                                        data_var=varname,
+                                        ds_ref[varname],
                                         landfrac=t_grid["sftlf"],
-                                        mask_land=True,
-                                        mask_ocean=False,
+                                        keep_over="ocean",
                                     )
-                                    """
-                                    ds_test_tmp[varname] = ds_test[varname].where(
-                                        t_grid["sftlf"] == 0.0
-                                    )
-                                    ds_ref_tmp[varname] = ds_ref[varname].where(
-                                        t_grid["sftlf"] == 0.0
-                                    )
-                                    """
-                                    print("mask done")
+                                print("mask done")
                             else:
                                 ds_test_tmp = ds_test
                                 ds_ref_tmp = ds_ref
