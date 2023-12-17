@@ -3,21 +3,20 @@ import xarray as xr
 import xcdat as xc
 
 
-def create_land_sea_mask(ds: xr.Dataset, boolean: bool = False) -> xr.DataArray:
-    """A function generates land sea mask (1: land, 0: sea) for given xarray Dataset,
-    assuming the given xarray dataset and has latitude and longitude coordinates.
+def create_land_sea_mask(ds: xr.Dataset, as_boolean: bool = False) -> xr.DataArray:
+    """Generate a land-sea mask (1 for land, 0 for sea) for a given xarray Dataset.
 
     Parameters
     ----------
     ds : xr.Dataset
         A Dataset object.
-    boolen : bool, optional
-        Set mask value to True (land) or False (ocean), by default False, thus 1 (land) abd 0 (ocean)
+    as_boolean : bool, optional
+        Set mask value to True (land) or False (ocean), by default False, thus 1 (land) and 0 (ocean).
 
     Returns
     -------
     xr.DataArray
-        A DataArray of land sea mask (1|0 or True|False for land|sea)
+        A DataArray of land-sea mask (1 or 0 for land or sea, or True or False for land or sea).
 
     Examples
     --------
@@ -25,13 +24,13 @@ def create_land_sea_mask(ds: xr.Dataset, boolean: bool = False) -> xr.DataArray:
 
     >>> from pcmdi_metrics.utils import create_land_sea_mask
 
-    Generate land-sea mask (land: 1, ocean: 0):
+    Generate land-sea mask (land: 1, sea: 0):
 
     >>> mask = create_land_sea_mask(ds)
 
-    Generate land-sea mask (land: True, ocean: False):
+    Generate land-sea mask (land: True, sea: False):
 
-    >>> mask = create_land_sea_mask(ds, boolean=True)
+    >>> mask = create_land_sea_mask(ds, as_boolean=True)
     """
     # Create a land-sea mask using regionmask
     land_mask = regionmask.defined_regions.natural_earth_v5_0_0.land_110
@@ -46,7 +45,7 @@ def create_land_sea_mask(ds: xr.Dataset, boolean: bool = False) -> xr.DataArray:
     # Mask the land-sea mask to match the dataset's coordinates
     land_sea_mask = land_mask.mask(lon, lat)
 
-    if not boolean:
+    if not as_boolean:
         # Convert the land-sea mask to a boolean mask
         land_sea_mask = xr.where(land_sea_mask, 0, 1)
 
@@ -54,10 +53,34 @@ def create_land_sea_mask(ds: xr.Dataset, boolean: bool = False) -> xr.DataArray:
 
 
 def find_max(da: xr.DataArray) -> float:
+    """Find the maximum value in a given xarray DataArray.
+
+    Parameters
+    ----------
+    da : xr.DataArray
+        Input DataArray.
+
+    Returns
+    -------
+    float
+        Maximum value in the DataArray.
+    """
     return float(da.max().values)
 
 
 def find_min(da: xr.DataArray) -> float:
+    """Find the minimum value in a given xarray DataArray.
+
+    Parameters
+    ----------
+    da : xr.DataArray
+        Input DataArray.
+
+    Returns
+    -------
+    float
+        Minimum value in the DataArray.
+    """
     return float(da.min().values)
 
 
@@ -65,34 +88,34 @@ def apply_landmask(
     ds: xr.Dataset,
     data_var: str,
     landfrac: xr.DataArray,
-    maskland: bool = True,
-    maskocean: bool = False,
-    land_criteria=0.8,
-    ocean_criteria=0.2,
+    mask_land: bool = True,
+    mask_ocean: bool = False,
+    land_criteria: float = 0.8,
+    ocean_criteria: float = 0.2,
 ) -> xr.DataArray:
-    """_summary_
+    """Apply a land-sea mask to a given DataArray in an xarray Dataset.
 
     Parameters
     ----------
     ds : xr.Dataset
-        Dataset that inlcudes a DataArray to apply land-sea mask
+        Dataset that includes a DataArray to apply a land-sea mask.
     data_var : str
-        name of DataArray in the Dataset
+        Name of DataArray in the Dataset.
     landfrac : xr.DataArray
-        data array for land fraction that consists 0 for ocean and 1 for land (fraction for grid along coastline)
-    maskland : bool, optional
-        mask out land region (thus value will exist over ocean only), by default True
-    maskocean : bool, optional
-        mask out ocean region (thus value will exist over land only), by default False
+        Data array for land fraction that consists of 0 for ocean and 1 for land (fraction for grid along coastline).
+    mask_land : bool, optional
+        Mask out land region (thus value will exist over ocean only), by default True.
+    mask_ocean : bool, optional
+        Mask out ocean region (thus value will exist over land only), by default False.
     land_criteria : float, optional
-        when fraction is equal to land_criteria or larger, grid will be considered as land, by default 0.8
+        When the fraction is equal to land_criteria or larger, the grid will be considered as land, by default 0.8.
     ocean_criteria : float, optional
-        when fraction is equal to ocean_criteria or smaller, grid will be considered as ocean, by default 0.2
+        When the fraction is equal to ocean_criteria or smaller, the grid will be considered as ocean, by default 0.2.
 
     Returns
     -------
     xr.DataArray
-        land-sea mask applied DataArray
+        Land-sea mask applied DataArray.
 
     Examples
     --------
@@ -100,23 +123,24 @@ def apply_landmask(
 
     >>> from pcmdi_metrics.utils import apply_landmask
 
-    Mask over land (values over ocean only):
+    Mask over land (keep values over ocean only):
 
-    >>> da_masked = apply_landmask(ds, data_var="ts", landmask=mask, maskland=True, maskocean=False)
+    >>> da_masked = apply_landmask(ds, data_var="ts", landfrac=mask, mask_land=True, mask_ocean=False)
 
-    Mask over ocean (values over land only):
+    Mask over ocean (keep values over land only):
 
-    >>> da_masked = apply_landmask(ds, data_var="ts", landmask=mask, maskland=False, maskocean=True)
+    >>> da_masked = apply_landmask(ds, data_var="ts", landfrac=mask, mask_land=False, mask_ocean=True)
     """
-    da = ds[data_var].copy()
-    # if land = 100 instead of 1, divides landmask by 100
-    if (find_min(landfrac) == 0 and find_max(landfrac) == 100) or (
-        "units" in list(landfrac.attrs.keys()) and landfrac.units == "%"
-    ):
-        landfrac = landfrac / 100.0
-    if maskland is True:
-        da = da.where(landfrac <= ocean_criteria)
-    if maskocean is True:
-        da = da.where(landfrac >= land_criteria)
+    data_array = ds[data_var].copy()
 
-    return da
+    # Convert landfrac to a fraction if it's in percentage form
+    if landfrac.units == "%" or (find_min(landfrac) == 0 and find_max(landfrac) == 100):
+        landfrac /= 100.0
+
+    # Apply land and ocean masks
+    if mask_land:
+        data_array = data_array.where(landfrac <= ocean_criteria)
+    if mask_ocean:
+        data_array = data_array.where(landfrac >= land_criteria)
+
+    return data_array

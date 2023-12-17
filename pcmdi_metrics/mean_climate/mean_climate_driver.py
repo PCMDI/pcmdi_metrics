@@ -14,7 +14,7 @@ from pcmdi_metrics.mean_climate.lib import (
     load_and_regrid,
     mean_climate_metrics_to_json,
 )
-from pcmdi_metrics.utils import create_land_sea_mask, create_target_grid
+from pcmdi_metrics.utils import apply_landmask, create_land_sea_mask, create_target_grid
 from pcmdi_metrics.variability_mode.lib import sort_human, tree
 
 parser = create_mean_climate_parser()
@@ -143,7 +143,7 @@ print(
 print("--- prepare mean climate metrics calculation ---")
 
 # generate target grid
-t_grid = create_target_grid(target_grid)
+t_grid = create_target_grid(target_grid_resolution=target_grid)
 
 # generate land sea mask for the target grid
 sft = create_land_sea_mask(t_grid)
@@ -333,19 +333,51 @@ for var in vars:
                                 ds_test_tmp = ds_test.copy(deep=True)
                                 ds_ref_tmp = ds_ref.copy(deep=True)
                                 if "land" in region.split("_"):
+                                    ds_test_tmp[varname] = apply_landmask(
+                                        ds_test,
+                                        data_var=varname,
+                                        landfrac=t_grid["sftlf"],
+                                        mask_land=False,
+                                        mask_ocean=True,
+                                    )
+                                    ds_ref_tmp[varname] = apply_landmask(
+                                        ds_ref,
+                                        data_var=varname,
+                                        landfrac=t_grid["sftlf"],
+                                        mask_land=False,
+                                        mask_ocean=True,
+                                    )
+                                    """
                                     ds_test_tmp[varname] = ds_test[varname].where(
                                         t_grid["sftlf"] != 0.0
                                     )
                                     ds_ref_tmp[varname] = ds_ref[varname].where(
                                         t_grid["sftlf"] != 0.0
                                     )
+                                    """
                                 elif "ocean" in region.split("_"):
+                                    ds_test_tmp[varname] = apply_landmask(
+                                        ds_test,
+                                        data_var=varname,
+                                        landfrac=t_grid["sftlf"],
+                                        mask_land=True,
+                                        mask_ocean=False,
+                                    )
+                                    ds_ref_tmp[varname] = apply_landmask(
+                                        ds_ref,
+                                        data_var=varname,
+                                        landfrac=t_grid["sftlf"],
+                                        mask_land=True,
+                                        mask_ocean=False,
+                                    )
+                                    """
                                     ds_test_tmp[varname] = ds_test[varname].where(
                                         t_grid["sftlf"] == 0.0
                                     )
                                     ds_ref_tmp[varname] = ds_ref[varname].where(
                                         t_grid["sftlf"] == 0.0
                                     )
+                                    """
                                     print("mask done")
                             else:
                                 ds_test_tmp = ds_test
