@@ -29,11 +29,8 @@ modnames='all'
 
 realization='all'
 
-num_workers=5
-
-#param_dir='../../../sample_setups/pcmdi_parameter_files/variability_modes'
+param_dir='../../../sample_setups/pcmdi_parameter_files/variability_modes'
 #param_dir='../../../sample_setups/pcmdi_parameter_files/variability_modes/alternative_obs'
-param_dir='../param'
 
 for mip in $mips; do
     echo $mip
@@ -51,15 +48,8 @@ for mip in $mips; do
         mkdir -p ./log/$mip/$exp/$case_id
         # Run
         for mode in $modes_list; do
-
-            if [ $mode == 'PDO' ] || [ $mode == 'NPGO' ] || [ $mode == 'AMO' ]; then
-                mode_o='PDO'
-            else
-                mode_o='NAM'
-            fi
-
             echo $mip $exp $mode $case_id
-            python ./parallel_driver.py -p ${param_dir}/myParam_${mode_o}_${mip}.py --param_dir $param_dir --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode --num_workers $num_workers >& ./log/$mip/$exp/$case_id/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
+            python ./parallel_driver.py -p ${param_dir}/myParam_${mode}_${mip}.py --param_dir $param_dir --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode >& ./log/$mip/$exp/$case_id/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
             disown
             sleep 1
         done
