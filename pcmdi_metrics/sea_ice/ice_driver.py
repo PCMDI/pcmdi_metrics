@@ -9,7 +9,7 @@ import os
 
 from pcmdi_metrics.mean_climate.lib import compute_statistics
 
-def rms_t(dm, do, var=None):
+def mse_t(dm, do, var=None):
     """Computes rms"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -18,11 +18,11 @@ def rms_t(dm, do, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     ds = dm.copy(deep=True)
-    ds["diff_square"] = ((dm[var] - do[var]) ** 2) / len(dm["time"])
+    ds["diff_square"] = np.sum((dm[var] - do[var]) ** 2) / len(dm["time"])
     stat = ds["diff_square"].data
     return stat
 
-def rms_model(dm, do, var=None):
+def mse_model(dm, do, var=None):
     """Computes rms"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -31,9 +31,18 @@ def rms_model(dm, do, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     ds = dm.copy(deep=True)
-    ds["diff_square"] = ((dm[var] - do[var]) ** 2)
+    if var is not None:
+        ds["diff_square"] = ((dm[var] - do[var]) ** 2)
+    else:
+        ds["diff_square"] = ((dm - do) ** 2)
     stat = ds["diff_square"].data
     return stat
+
+def to_ice_con_ds(da,obs):
+    ds = xr.Dataset(data_vars={"ice_con": da,
+                               "time_bnds": obs.time_bnds},
+                 coords = {"time": obs.time})
+    return ds
 
 parser = create_sea_ice_parser.create_sea_ice_parser()
 parameter = parser.get_parameter(argparse_vals_only=False)
@@ -43,7 +52,7 @@ parameter = parser.get_parameter(argparse_vals_only=False)
 case_id = parameter.case_id
 model_list = parameter.test_data_set
 realization = parameter.realization
-variable_list = parameter.vars
+varname = parameter.vars
 filename_template = parameter.filename_template
 test_data_path = parameter.test_data_path
 reference_data_path = parameter.reference_data_path
@@ -51,9 +60,10 @@ reference_data_set = parameter.reference_data_set
 reference_sftlf_template = parameter.reference_sftlf_template
 metrics_output_path = parameter.metrics_output_path
 area_template = parameter.grid_area
+area_var = parameter.area_var
 ModUnitsAdjust = parameter.ModUnitsAdjust
 ObsUnitsAdjust = parameter.ObsUnitsAdjust
-plots = parameter.plots
+#plots = parameter.plots
 msyear = parameter.msyear
 meyear = parameter.meyear
 osyear = parameter.osyear
@@ -99,54 +109,101 @@ f_nt_s = "/home/ordonez4/seaice/data/icecon_ssmi_nt_s.nc"
 f_bt_n = "/home/ordonez4/seaice/data/icecon_ssmi_bt_n.nc"
 f_bt_s = "/home/ordonez4/seaice/data/icecon_ssmi_bt_s.nc"
 
-obs = xc.open_dataset(f_nt_n)
-# Get regions
-data_arctic = obs[var].where(obs.lat > 0)
-data_antarctic = obs[var].where(obs.lat < 0)
-data_ca1 = obs[var].where(((obs.lat > 80) & (obs.lat <= 87.2) & (obs.lon > -120) & (obs.lon <= 90)))
-data_ca2 = obs[var].where(((obs.lat > 65) & (obs.lat < 87.2)) & ((obs.lon > 90) | (obs.lon <= -120)))
-data_ca = data_ca1 + data_ca2
-data_np = obs[var].where((obs.lat > 35) & (obs.lat <= 65) & ((obs.lon > 90) | (obs.lon <= -120)))
-data_na = obs[var].data.where((obs.lat > 45) & (obs.lat <= 80) & (obs.lon > -120) & (obs.lon <= 90)) 
-data_na = data_na - data_na.where((obs.lat > 45) & (obs.lat <= 50) & (obs.lon > 30) & (obs.lon <= 60))
-data_sa = obs[var].where(
-    (obs.lat > -90) & (obs.lat <= -55) & 
-    (obs.lon > -60) & (obs.lon <= 20))
-data_sp = obs[var].where(
-    (obs.lat > -90) & (obs.lat <= -55) & 
-    ((obs.lon > 90) | (obs.lon <= -60)))
-data_io = obs[var].where(
-    (obs.lat > -90) & (obs.lat <= -55) & 
-    (obs.lon > 20) & (obs.lon <= 90))
-# Get ice extent TODO - convert area units?
-total_extent_arctic_obs = (data_arctic.where(data_arctic > 15) * area).sum(skipna=True)
-total_extent_antarctic_obs = (data_antarctic.where(data_antarctic > 15) * area).sum(skipna=True)
-total_extent_ca_obs = (data_ca.where(data_ca > 15) * obs.area).sum(("lon","lat"),skipna=True)
-total_extent_np_obs = (data_np.where(data_np > 15) * obs.area).sum(("lon","lat"),skipna=True)
-total_extent_na_obs = (data_na.where(data_na > 15) * obs.area).sum(("lon","lat"),skipna=True)
-total_extent_sa_obs = (data_sa.where(data_sa > 15) * obs.area).sum(("lon","lat"),skipna=True)
-total_extent_sp_obs = (data_sp.where(data_sp > 15) * obs.area).sum(("lon","lat"),skipna=True)
-total_extent_io_obs = (data_io.where(data_io > 15) * obs.area).sum(("lon","lat"),skipna=True)
+arctic_clims = {}
+arctic_means = {}
+arctic_files = {"nt": f_nt_n, "bt": f_bt_n}
+for source in arctic_files:
+    obs = xc.open_dataset(arctic_files[source])
+    obs["ice_con"] = obs["ice_con"] * 0.01
+    obs["area"] = obs["area"] * 1e-6
+    # Get regions
+    data_arctic = obs[var].where(obs.lat > 0)
+    data_ca1 = obs[var].where(((obs.lat > 80) & (obs.lat <= 87.2) & (obs.lon > -120) & (obs.lon <= 90)))
+    data_ca2 = obs[var].where(((obs.lat > 65) & (obs.lat < 87.2)) & ((obs.lon > 90) | (obs.lon <= -120)))
+    data_ca = obs[var].where((data_ca1 > 0) | (data_ca2 > 0))
+    data_np = obs[var].where((obs.lat > 35) & (obs.lat <= 65) & ((obs.lon > 90) | (obs.lon <= -120)))
+    data_na = obs[var].where((obs.lat > 45) & (obs.lat <= 80) & (obs.lon > -120) & (obs.lon <= 90))
 
-clim_arctic_obs = total_extent_arctic_obs.temporal.climatology(freq="month")
-clim_antarctic_obs = total_area_antarctic_obs.temporal.climatology(freq="month")
-clim_ca_obs = total_extent_ca_obs.temporal.climatology(freq="month")
-clim_np_obs = total_extent_np_obs.temporal.climatology(freq="month")
-clim_na_obs = total_extent_na_obs.temporal.climatology(freq="month")
-clim_sa_obs = total_extent_sa_obs.temporal.climatology(freq="month")
-clim_sp_obs = total_extent_sp_obs.temporal.climatology(freq="month")
-clim_io_obs = total_extent_io_obs.temporal.climatology(freq="month")
+    # Get ice extent TODO - convert area units?
+    total_extent_arctic_obs = (data_arctic.where(data_arctic > 15) * obs.area).sum(("x","y"),skipna=True)
+    total_extent_ca_obs = (data_ca.where(data_ca > 0.15) * obs.area).sum(("x","y"),skipna=True)
+    total_extent_np_obs = (data_np.where(data_np > 0.15) * obs.area).sum(("x","y"),skipna=True)
+    total_extent_na_obs = (data_na.where(data_na > 0.15) * obs.area).sum(("x","y"),skipna=True)
+
+    clim_arctic_obs = to_ice_con_ds(total_extent_arctic_obs,obs).temporal.climatology(var,freq="month")
+    clim_ca_obs = to_ice_con_ds(total_extent_ca_obs,obs).temporal.climatology(var,freq="month")
+    clim_np_obs = to_ice_con_ds(total_extent_np_obs,obs).temporal.climatology(var,freq="month")
+    clim_na_obs = to_ice_con_ds(total_extent_na_obs,obs).temporal.climatology(var,freq="month")
+
+    arctic_clims[source] = {
+        "arctic": clim_arctic_obs,
+        "ca": clim_ca_obs,
+        "np": clim_np_obs,
+        "na": clim_na_obs
+    }
+
+    arctic_means[source] = {
+        "arctic": total_extent_arctic_obs.mean("time"),
+        "ca": total_extent_ca_obs.mean("time"),
+        "np": total_extent_np_obs.mean("time"),
+        "na": total_extent_na_obs.mean("time")  
+    }
+    obs.close()
+
+antarctic_clims = {}
+antarctic_means = {}
+antarctic_files = {"nt": f_nt_s, "bt": f_bt_s}
+for source in antarctic_files:
+    obs = xc.open_dataset(antarctic_files[source])
+    obs["ice_con"] = obs["ice_con"] * 0.01
+    obs["area"] = obs["area"] * 1e-6
+    data_antarctic = obs[var].where(obs.lat < 0)
+    data_sa = obs[var].where(
+        (obs.lat > -90) & (obs.lat <= -55) & 
+        (obs.lon > -60) & (obs.lon <= 20))
+    data_sp = obs[var].where(
+        (obs.lat > -90) & (obs.lat <= -55) & 
+        ((obs.lon > 90) | (obs.lon <= -60)))
+    data_io = obs[var].where(
+        (obs.lat > -90) & (obs.lat <= -55) & 
+        (obs.lon > 20) & (obs.lon <= 90))
+
+    total_extent_antarctic_obs = (data_antarctic.where(data_antarctic > 15) * obs.area).sum(("x","y"),skipna=True)
+    total_extent_sa_obs = (data_sa.where(data_sa > 0.15) * obs.area).sum(("x","y"),skipna=True)
+    total_extent_sp_obs = (data_sp.where(data_sp > 0.15) * obs.area).sum(("x","y"),skipna=True)
+    total_extent_io_obs = (data_io.where(data_io > 0.15) * obs.area).sum(("x","y"),skipna=True)
+
+    clim_antarctic_obs = to_ice_con_ds(total_extent_antarctic_obs,obs).temporal.climatology(var,freq="month")
+    clim_sa_obs = to_ice_con_ds(total_extent_sa_obs,obs).temporal.climatology(var,freq="month")
+    clim_sp_obs = to_ice_con_ds(total_extent_sp_obs,obs).temporal.climatology(var,freq="month")
+    clim_io_obs = to_ice_con_ds(total_extent_io_obs,obs).temporal.climatology(var,freq="month")
+
+    antarctic_clims[source] = {
+        "antarctic": clim_antarctic_obs,
+        "io": clim_io_obs,
+        "sp": clim_sp_obs,
+        "sa": clim_sa_obs
+    }
+
+    antarctic_means[source] = {
+        "antarctic": total_extent_antarctic_obs.mean("time"),
+        "io": total_extent_io_obs.mean("time"),
+        "sp": total_extent_sp_obs.mean("time"),
+        "sa": total_extent_sa_obs.mean("time")  
+    }
+    obs.close()
 
 # Get climatology
 # get errors for climo and mean
 
 #### Do model part
 # Loop over models
+
 for model in model_loop_list:
     if find_all_realizations:
         tags = {"%(model)": model, "%(model_version)": model, "%(realization)": "*"}
         test_data_full_path = os.path.join(test_data_path, filename_template)
-        test_data_full_path = utilities.replace_multi(test_data_full_path, tags)
+        test_data_full_path = replace_multi(test_data_full_path, tags)
         ncfiles = glob.glob(test_data_full_path)
         realizations = []
         for ncfile in ncfiles:
@@ -161,7 +218,7 @@ for model in model_loop_list:
 
     mean_extents = None
     # Loop over realizations
-    for run in list_of_runs:
+    for run_ind,run in enumerate(list_of_runs):
 
         # Get areacello
 
@@ -180,8 +237,8 @@ for model in model_loop_list:
                 "%(realization)": run,
         }
         test_data_full_path = os.path.join(test_data_path, filename_template)
-        test_data_full_path = utilities.replace_multi(test_data_full_path, tags)
-        area_path = utilities.replace_multi(area_template,tags)
+        test_data_full_path = replace_multi(test_data_full_path, tags)
+        area_path = replace_multi(area_template,tags)
         start_year = msyear
         end_year = meyear
         yrs = [str(start_year), str(end_year)]  # for output file names
@@ -201,16 +258,22 @@ for model in model_loop_list:
                 print("  ", t)
 
         # Load and prep data
-        ds = utilities.load_dataset(test_data_full_path)
-        area = utilities.load_dataset(area_path) #TODO: only once per model
+        ds = load_dataset(test_data_full_path)
+        area = load_dataset(area_path) #TODO: only once per model
+        area[areaname] = area[areaname] * area_units_adjust
+        
+        xvar = get_longitude(ds).name
+        yvar = get_latitude(ds).name
 
-        if any(ds.lon < -180) | any(ds.lon > 360):
+        if (ds.lon < -180).any() | (ds.lon > 360).any():
             print("Invalid longitude range")
             continue
+        if ds.lon.min() > -1:
+            ds["lon"] = ds.lon - 180
 
         # Get time slice if year parameters exist
         if start_year is not None:
-            ds = utilities.slice_dataset(ds, start_year, end_year)
+            ds = slice_dataset(ds, start_year, end_year)
         else:
             # Get labels for start/end years from dataset
             yrs = [str(int(ds.time.dt.year[0])), str(int(ds.time.dt.year[-1]))]
@@ -219,12 +282,12 @@ for model in model_loop_list:
 
         data_arctic = ds[var].where(ds.lat > 0)
         data_antarctic = ds[var].where(ds.lat < 0)
-        data_ca1 = ds[var].where(((ds.lat > 80) & (ds.lat <= 87.2) & (ds.lon > -120) & (ds.lon <= 90)))
-        data_ca2 = ds[var].where(((ds.lat > 65) & (ds.lat < 87.2)) & ((ds.lon > 90) | (ds.lon <= -120)))
+        data_ca1 = ds[var].where(((ds.lat > 80) & (ds.lat <= 87.2) & (ds.lon > -120) & (ds.lon <= 90)),0)
+        data_ca2 = ds[var].where(((ds.lat > 65) & (ds.lat < 87.2)) & ((ds.lon > 90) | (ds.lon <= -120)),0)
         data_ca = data_ca1 + data_ca2
-        data_np = ds[var].where((ds.lat > 35) & (ds.lat <= 65) & ((ds.lon > 90) | (ds.lon <= -120)))
-        data_na = ds[var].data.where((ds.lat > 45) & (ds.lat <= 80) & (ds.lon > -120) & (ds.lon <= 90)) 
-        data_na = data_na - data_na.where((ds.lat > 45) & (ds.lat <= 50) & (ds.lon > 30) & (ds.lon <= 60))
+        data_np = ds[var].where((ds.lat > 35) & (ds.lat <= 65) & ((ds.lon > 90) | (ds.lon <= -120)),0)
+        data_na = ds[var].where((ds.lat > 45) & (ds.lat <= 80) & (ds.lon > -120) & (ds.lon <= 90),0) 
+        data_na = data_na - data_na.where((ds.lat > 45) & (ds.lat <= 50) & (ds.lon > 30) & (ds.lon <= 60),0)
         data_sa = ds[var].where(
             (ds.lat > -90) & (ds.lat <= -55) & 
             (ds.lon > -60) & (ds.lon <= 20))
@@ -236,44 +299,66 @@ for model in model_loop_list:
             (ds.lon > 20) & (ds.lon <= 90))
 
         if mean_extents is None:
-            total_extent_arctic = np.zeros((len(list_of_runs),len(ds.time)))
-            total_extent_antarctic = np.zeros((len(list_of_runs),len(ds.time)))
-            total_extent_ca = np.zeros((len(list_of_runs),len(ds.time)))
-            total_extent_np = np.zeros((len(list_of_runs),len(ds.time)))
-            total_extent_na = np.zeros((len(list_of_runs),len(ds.time)))
-            total_extent_sa = np.zeros((len(list_of_runs),len(ds.time)))
-            total_extent_sp = np.zeros((len(list_of_runs),len(ds.time)))
-            total_extent_io = np.zeros((len(list_of_runs),len(ds.time)))
-
-        total_extent_arctic[run_ind,:] = (data_arctic.where(data_arctic > 15) * area).sum(skipna=True)
-        total_extent_antarctic[run_ind,:] = (data_antarctic.where(data_antarctic > 15) * area).sum(skipna=True)
-        total_extent_ca[run_ind,:] = (data_ca.where(data_ca > 15) * area).sum(("lon","lat"),skipna=True)
-        total_extent_np[run_ind,:] = (data_np.where(data_np > 15) * area).sum(("lon","lat"),skipna=True)
-        total_extent_na[run_ind,:] = (data_na.where(data_na > 15) * area).sum(("lon","lat"),skipna=True)
-        total_extent_sa[run_ind,:] = (data_sa.where(data_sa > 15) * area).sum(("lon","lat"),skipna=True)
-        total_extent_sp[run_ind,:] = (data_sp.where(data_sp > 15) * area).sum(("lon","lat"),skipna=True)
-        total_extent_io[run_ind,:] = (data_io.where(data_io > 15) * area).sum(("lon","lat"),skipna=True)
+            total_extent_arctic = (data_arctic.where(data_arctic > 15)/100 * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_antarctic = (data_antarctic.where(data_antarctic > 15)/100 * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_ca = (data_ca.where(data_ca > 15)/100 * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_np = (data_np.where(data_np > 15)/100 * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_na = (data_na.where(data_na > 15)/100 * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_sa = (data_sa.where(data_sa > 15)/100 * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_sp = (data_sp.where(data_sp > 15)/100 * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_io = (data_io.where(data_io > 15)/100 * area[areaname]).sum((xvar,yvar),skipna=True)
+        else:
+            total_extent_arctic = total_extent_arctic + (data_arctic.where(data_arctic > 15) * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_antarctic = total_extent_antarctic + (data_antarctic.where(data_antarctic > 15) * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_ca = total_extent_ca + (data_ca.where(data_ca > 15) * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_np = total_extent_np + (data_np.where(data_np > 15) * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_na = total_extent_na + (data_na.where(data_na > 15) * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_sa = total_extent_sa + (data_sa.where(data_sa > 15) * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_sp = total_extent_sp + (data_sp.where(data_sp > 15) * area[areaname]).sum((xvar,yvar),skipna=True)
+            total_extent_io = total_extent_io + (data_io.where(data_io > 15) * area[areaname]).sum((xvar,yvar),skipna=True)
 
     # Get average total over all realizations for this model
     # Get annual cycle of model average tseries
     # Get error compared to obs
-    total_extent_arctic = np.mean(total_extent_arctic,axis=0)
-    total_extent_antarctic = np.mean(total_extent_antarctic,axis=0)
-    total_extent_ca = np.mean(total_extent_ca,axis=0)
-    total_extent_np = np.mean(total_extent_np,axis=0)
-    total_extent_na = np.mean(total_extent_na,axis=0)
-    total_extent_sa = np.mean(total_extent_sa,axis=0)
-    total_extent_sp = np.mean(total_extent_sp,axis=0)
-    total_extent_io = np.mean(total_extent_io,axis=0)
 
-    total_extent_arctic = ds.copy(data=total_extent_arctic).temporal.climatology(freq="month")
-    total_extent_antarctic = ds.copy(data=total_extent_antarctic).temporal.climatology(freq="month")
-    total_extent_ca = ds.copy(data=total_extent_ca).temporal.climatology(freq="month")
-    total_extent_np = ds.copy(data=total_extent_np).temporal.climatology(freq="month")
-    total_extent_na = ds.copy(data=total_extent_na).temporal.climatology(freq="month")
-    total_extent_sa = ds.copy(data=total_extent_sa).temporal.climatology(freq="month")
-    total_extent_sp = ds.copy(data=total_extent_sp).temporal.climatology(freq="month")
-    total_extent_io = ds.copy(data=total_extent_io).temporal.climatology(freq="month")
+    # TODO: compute only for dask arrays
+    total_extent_arctic = (total_extent_arctic / len(list_of_runs)).compute().to_dataset(name=varname)
+    total_extent_antarctic = (total_extent_antarctic / len(list_of_runs)).compute().to_dataset(name=varname)
+    total_extent_ca = (total_extent_ca / len(list_of_runs)).compute().to_dataset(name=varname)
+    total_extent_np = (total_extent_np / len(list_of_runs)).compute().to_dataset(name=varname)
+    total_extent_na = (total_extent_na / len(list_of_runs)).compute().to_dataset(name=varname)
+    total_extent_sa = (total_extent_sa / len(list_of_runs)).compute().to_dataset(name=varname)
+    total_extent_sp = (total_extent_sp / len(list_of_runs)).compute().to_dataset(name=varname)
+    total_extent_io = (total_extent_io / len(list_of_runs)).compute().to_dataset(name=varname)
+    
+    total_extent_arctic.time.attrs.pop("bounds")
+    total_extent_antarctic.time.attrs.pop("bounds")
+    total_extent_ca.time.attrs.pop("bounds")
+    total_extent_np.time.attrs.pop("bounds")
+    total_extent_na.time.attrs.pop("bounds")
+    total_extent_sa.time.attrs.pop("bounds")
+    total_extent_sp.time.attrs.pop("bounds")
+    total_extent_io.time.attrs.pop("bounds")
+    
+    total_extent_arctic = total_extent_arctic.bounds.add_missing_bounds()
+    total_extent_antarctic = total_extent_antarctic.bounds.add_missing_bounds()
+    total_extent_ca = total_extent_ca.bounds.add_missing_bounds()
+    total_extent_np = total_extent_np.bounds.add_missing_bounds()
+    total_extent_na = total_extent_na.bounds.add_missing_bounds()
+    total_extent_sa = total_extent_sa.bounds.add_missing_bounds()
+    total_extent_sp = total_extent_sp.bounds.add_missing_bounds()
+    total_extent_io = total_extent_io.bounds.add_missing_bounds()
+
+    clim_extent_arctic = total_extent_arctic.temporal.climatology("ice_con",freq=varname)
+    clim_extent_antarctic = total_extent_antarctic.temporal.climatology("ice_con",freq=varname)
+    clim_extent_ca = total_extent_ca.temporal.climatology(varname,freq="month")
+    clim_extent_np = total_extent_np.temporal.climatology(varname,freq="month")
+    clim_extent_na = total_extent_na.temporal.climatology(varname,freq="month")
+    clim_extent_sa = total_extent_sa.temporal.climatology(varname,freq="month")
+    clim_extent_sp = total_extent_sp.temporal.climatology(varname,freq="month")
+    clim_extent_io = total_extent_io.temporal.climatology(varname,freq="month")
+
+    
 
     # get RMS for model mean annual cycle
 
