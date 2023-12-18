@@ -61,7 +61,7 @@ import MV2
 
 from pcmdi_metrics import resources
 from pcmdi_metrics.mean_climate.lib import pmp_parser
-from pcmdi_metrics.utils import fill_template
+from pcmdi_metrics.utils import fill_template, sort_human, tree
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
     VariabilityModeCheck,
@@ -78,8 +78,6 @@ from pcmdi_metrics.variability_mode.lib import (
     linear_regression_on_globe_for_teleconnection,
     plot_map,
     read_data_in,
-    sort_human,
-    tree,
     variability_metrics_to_json,
     write_nc_output,
 )

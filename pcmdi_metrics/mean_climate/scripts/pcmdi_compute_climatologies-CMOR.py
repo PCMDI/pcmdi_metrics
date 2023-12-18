@@ -9,10 +9,10 @@ import cdms2
 import cdp
 import cdtime
 import cdutil
-import genutil
 import numpy
 
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
+from pcmdi_metrics.utils import StringConstructor
 
 try:
     import cmor
@@ -201,7 +201,7 @@ load_parser(parser)
 
 for A in As:
     for tmpl in [A.modpath, A.filename_template, A.output_filename_template]:
-        con = genutil.StringConstructor(tmpl)
+        con = StringConstructor(tmpl)
         print("TEMPLE:", con.template)
         for k in con.keys():
             print("ADDING OPTION:", k)
@@ -648,7 +648,7 @@ def runClim(A):
                 print(B1.tocomp(cal), "<", t, "<", B2.tocomp(cal))
             bounds.append([B1.torel(Tunits, cal).value, B2.torel(Tunits, cal).value])
 
-    fnmout = genutil.StringConstructor(A.output_filename_template)
+    fnmout = StringConstructor(A.output_filename_template)
 
     if "model_id" in fnmout.keys():
         model_id = checkCMORAttribute("model_id")
