@@ -10,7 +10,7 @@ def tree():
 
     Examples
     --------
-    >>> import pcmdi_metrics.utils import tree
+    >>> from pcmdi_metrics.utils import tree
     >>> my_tree = tree()
     >>> my_tree['level1']['level2']['level3'] = 'value'
     >>> print(my_tree['level1']['level2']['level3'])  # Output: 'value'
