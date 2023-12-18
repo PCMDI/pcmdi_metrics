@@ -173,7 +173,7 @@ if LandMask:
 
 # Check given model option
 models = param.modnames
-    
+
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
     model_index_path = re.split(". |_", modpath.split("/")[-1]).index("%(model)")
@@ -182,7 +182,7 @@ if ("all" in [m.lower() for m in models]) or (models == "all"):
         for p in glob.glob(
             fill_template(
                 modpath, mip=mip, exp=exp, model="*", realization="*", variable=var
-            )        
+            )
         )
     ]
     # remove duplicates
