@@ -3,16 +3,12 @@ import datetime
 import os
 import sys
 
-import cdms2
-import cdutil
 import cftime
-import numpy as np
-import xarray as xr
 import xcdat
-from pcmdi_utils import land_sea_mask
 
 from pcmdi_metrics.io import xcdat_openxml
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.utils import create_land_sea_mask
 
 
 def load_dataset(filepath):
@@ -138,37 +134,8 @@ def set_up_realizations(realization):
 
 def generate_land_sea_mask(data, debug=False):
     # generate sftlf if not provided.
-    mask = land_sea_mask.generate_land_sea_mask(data, tool="pcmdi", maskname="sftlf")
-    mask = mask * 100.0
-    mask = mask.to_dataset()
+    sft = create_land_sea_mask(data)
+    sftlf = data.copy(data=None)
+    sftlf["sftlf"] = sft
 
-    return mask
-
-
-def generate_land_sea_mask_cdutil(data, debug=False):
-    latArray = data["lat"]
-    lat = cdms2.createAxis(latArray, id="latitude")
-    lat.designateLatitude()
-    lat.units = "degrees_north"
-
-    lonArray = data["lon"]
-    lon = cdms2.createAxis(lonArray, id="longitude")
-    lon.designateLongitude()
-    lon.units = "degrees_east"
-
-    t_grid_cdms2 = cdms2.grid.TransientRectGrid(lat, lon, "yx", "uniform")
-    sft = cdutil.generateLandSeaMask(t_grid_cdms2)
-
-    if debug:
-        print("sft:", sft)
-        print("sft.getAxisList():", sft.getAxisList())
-
-    # add sft to target grid dataset
-    t_grid = xr.DataArray(
-        np.array(sft), coords={"lat": latArray, "lon": lonArray}, dims=["lat", "lon"]
-    ).to_dataset(name="sftlf")
-    t_grid = t_grid * 100
-    if debug:
-        print("t_grid (after sftlf added):", t_grid)
-        t_grid.to_netcdf("target_grid.nc")
-    return t_grid
+    return sftlf
