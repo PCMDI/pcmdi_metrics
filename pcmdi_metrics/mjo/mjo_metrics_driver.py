@@ -39,10 +39,7 @@ import re
 import sys
 import time
 from argparse import RawTextHelpFormatter
-from collections import defaultdict
 from shutil import copyfile
-
-from genutil import StringConstructor
 
 import pcmdi_metrics
 from pcmdi_metrics.mean_climate.lib import pmp_parser
@@ -52,6 +49,7 @@ from pcmdi_metrics.mjo.lib import (
     mjo_metric_ewr_calculation,
     mjo_metrics_to_json,
 )
+from pcmdi_metrics.utils import fill_template, tree
 
 # To avoid below error
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
@@ -126,18 +124,15 @@ print("realization: ", realization)
 # case id
 case_id = param.case_id
 
-# Output
+# Output directory
 outdir_template = param.process_templated_argument("results_dir")
-outdir = StringConstructor(
-    str(
-        outdir_template(output_type="%(output_type)", mip=mip, exp=exp, case_id=case_id)
-    )
-)
 
-# Create output directory
+# Create output directories
 for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
-    os.makedirs(outdir(output_type=output_type), exist_ok=True)
-    print(outdir(output_type=output_type))
+    outdir = fill_template(
+        outdir_template, output_type=output_type, mip=mip, exp=exp, case_id=case_id
+    )
+    os.makedirs(outdir, exist_ok=True)
 
 # Generate CMEC compliant json
 if hasattr(param, "cmec"):
@@ -175,12 +170,6 @@ print("parallel:", parallel)
 # =================================================
 # Declare dictionary for .json record
 # -------------------------------------------------
-
-
-def tree():
-    return defaultdict(tree)
-
-
 result_dict = tree()
 
 # Define output json file
