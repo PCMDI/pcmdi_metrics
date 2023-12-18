@@ -634,6 +634,9 @@ def metrics_json_return_value(
             met_dict[stat][region][k] = seasons_dict.copy()
 
     rv_tmp = rv.copy(deep=True)
+
+    obs = obs.bounds.add_missing_bounds()
+
     for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
         # Global mean over land
         rv_tmp[season] = remove_outliers(rv[season], blockex[season])
