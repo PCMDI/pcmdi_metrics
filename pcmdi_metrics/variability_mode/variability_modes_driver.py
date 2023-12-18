@@ -50,6 +50,7 @@ import shapely  # noqa
 import glob
 import json
 import os
+import re
 import sys
 from argparse import RawTextHelpFormatter
 from shutil import copyfile
@@ -172,16 +173,16 @@ if LandMask:
 
 # Check given model option
 models = param.modnames
-
+    
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
-    model_index_path = modpath.split("/")[-1].split(".").index("%(model)")
+    model_index_path = re.split(". |_", modpath.split("/")[-1]).index("%(model)")
     models = [
-        p.split("/")[-1].split(".")[model_index_path]
+        re.split(". |_", p.split("/")[-1])[model_index_path]
         for p in glob.glob(
             fill_template(
                 modpath, mip=mip, exp=exp, model="*", realization="*", variable=var
-            )
+            )        
         )
     ]
     # remove duplicates

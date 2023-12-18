@@ -98,18 +98,20 @@ reference_data_name = param.reference_data_name
 reference_data_path = param.reference_data_path
 
 # Path to model data as string template
-modpath = param.process_templated_argument("modpath")
+modpath = param.modpath
 
 # Check given model option
 models = param.modnames
 
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
-    model_index_path = re.split(". |_", param.modpath.split("/")[-1]).index("%(model)")
+    model_index_path = re.split(". |_", modpath.split("/")[-1]).index("%(model)")
     models = [
         re.split(". |_", p.split("/")[-1])[model_index_path]
         for p in glob.glob(
-            modpath(mip=mip, exp=exp, model="*", realization="*", variable=varModel)
+            fill_template(
+                modpath, mip=mip, exp=exp, model="*", realization="*", variable=varModel
+            )
         )
     ]
     # remove duplicates
@@ -125,14 +127,25 @@ print("realization: ", realization)
 case_id = param.case_id
 
 # Output directory
-outdir_template = param.process_templated_argument("results_dir")
+outdir_template = param.results_dir
 
 # Create output directories
-for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
-    outdir = fill_template(
-        outdir_template, output_type=output_type, mip=mip, exp=exp, case_id=case_id
+output_types = ["graphics", "diagnostic_results", "metrics_results"]
+dir_paths = {}
+
+print("output directories:")
+
+for output_type in output_types:
+    dir_path = fill_template(
+        outdir_template,
+        output_type=output_type,
+        mip=mip,
+        exp=exp,
+        case_id=case_id,
     )
-    os.makedirs(outdir, exist_ok=True)
+    os.makedirs(dir_path, exist_ok=True)
+    print(output_type, ":", dir_path)
+    dir_paths[output_type] = dir_path
 
 # Generate CMEC compliant json
 if hasattr(param, "cmec"):
@@ -176,9 +189,9 @@ result_dict = tree()
 json_filename = "_".join(
     ["mjo_stat", mip, exp, fq, realm, str(msyear) + "-" + str(meyear)]
 )
-json_file = os.path.join(outdir(output_type="metrics_results"), json_filename + ".json")
+json_file = os.path.join(dir_paths["metrics_results"], json_filename + ".json")
 json_file_org = os.path.join(
-    outdir(output_type="metrics_results"),
+    dir_paths["metrics_results"],
     "_".join([json_filename, "org", str(os.getpid())]) + ".json",
 )
 
@@ -225,7 +238,8 @@ for model in models:
             eyear = meyear
             # variable data
             model_path_list = glob.glob(
-                modpath(
+                fill_template(
+                    modpath,
                     mip=mip,
                     exp=exp,
                     realm="atmos",
@@ -251,9 +265,9 @@ for model in models:
                     run = reference_data_name
                 else:
                     if realization in ["all", "All", "ALL", "*"]:
-                        run_index = re.split(
-                            ". |_", param.modpath.split("/")[-1]
-                        ).index("%(realization)")
+                        run_index = re.split(". |_", modpath.split("/")[-1]).index(
+                            "%(realization)"
+                        )
                         run = re.split(". |_", model_path.split("/")[-1])[run_index]
                     else:
                         run = realization
@@ -288,7 +302,7 @@ for model in models:
                         syear,
                         eyear,
                         segmentLength,
-                        outdir,
+                        dir_paths,
                         season=season,
                     )
 
@@ -324,7 +338,11 @@ for model in models:
                     ]
                 )
                 mjo_metrics_to_json(
-                    outdir, json_filename_tmp, result_dict, model=model, run=run
+                    dir_paths["metrics_results"],
+                    json_filename_tmp,
+                    result_dict,
+                    model=model,
+                    run=run,
                 )
                 # =================================================
                 # Write dictionary to json file
@@ -332,7 +350,7 @@ for model in models:
                 # -------------------------------------------------
                 if not parallel:
                     JSON = pcmdi_metrics.io.base.Base(
-                        outdir(output_type="metrics_results"), json_filename
+                        dir_paths["metrics_results"], json_filename
                     )
                     JSON.write(
                         result_dict,
@@ -344,12 +362,14 @@ for model in models:
                     if cmec:
                         JSON.write_cmec(indent=4, separators=(",", ": "))
                 print("Done")
+
             except Exception as err:
                 if debug:
                     raise
                 else:
                     print("warning: failed for ", model, run, err)
                     pass
+
         # --- Realization loop end
 
     except Exception as err:
@@ -358,6 +378,7 @@ for model in models:
         else:
             print("warning: failed for ", model, err)
             pass
+
 # --- Model loop end
 
 sys.exit(0)
