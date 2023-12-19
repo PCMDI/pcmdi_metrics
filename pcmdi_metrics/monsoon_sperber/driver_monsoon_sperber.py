@@ -35,6 +35,7 @@ for advertising or product endorsement purposes.
 """
 
 from __future__ import print_function
+import shapely  # noqa
 
 import copy
 import json
@@ -74,7 +75,8 @@ def tree():
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+#list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+list_monsoon_regions = ["AUS", "Sahel"]
 
 # How many elements each
 # list should have
@@ -126,9 +128,27 @@ reference_data_lf_path = param.reference_data_lf_path
 modpath = param.process_templated_argument("modpath")
 modpath_lf = param.process_templated_argument("modpath_lf")
 
+print('modpath  = ', modpath)
+print('modpath_lf  = ', modpath_lf)
+
 # Check given model option
 models = param.modnames
 print("models:", models)
+
+# Include all models if conditioned
+if ("all" in [m.lower() for m in models]) or (models == "all"):
+    model_index_path = param.modpath.split("/")[-1].split(".").index("%(model)")
+    models = [
+        p.split("/")[-1].split(".")[model_index_path]
+        for p in glob(
+            modpath(mip=mip, exp=exp, model="*", realization="*")
+        )
+    ]
+    # remove duplicates
+    models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
+
+print("models:", models)
+print("number of models:", len(models))
 
 # Realizations
 realization = param.realization
@@ -615,28 +635,29 @@ for model in models:
                                     ls="--",
                                 )
                         # obs
-                        ax[region].plot(
-                            np.array(dict_obs_composite[reference_data_name][region]),
-                            c="blue",
-                            label=reference_data_name,
-                        )
-                        for idx in [
-                            monsoon_stat_dic["REF"][reference_data_name][region][
-                                "onset_index"
-                            ],
-                            monsoon_stat_dic["REF"][reference_data_name][region][
-                                "decay_index"
-                            ],
-                        ]:
-                            ax[region].axvline(
-                                x=idx,
-                                ymin=0,
-                                ymax=dict_obs_composite[reference_data_name][region][
-                                    idx
-                                ],
+                        if "obs" in models:
+                            ax[region].plot(
+                                np.array(dict_obs_composite[reference_data_name][region]),
                                 c="blue",
-                                ls="--",
+                                label=reference_data_name,
                             )
+                            for idx in [
+                                monsoon_stat_dic["REF"][reference_data_name][region][
+                                    "onset_index"
+                                ],
+                                monsoon_stat_dic["REF"][reference_data_name][region][
+                                    "decay_index"
+                                ],
+                            ]:
+                                ax[region].axvline(
+                                    x=idx,
+                                    ymin=0,
+                                    ymax=dict_obs_composite[reference_data_name][region][
+                                        idx
+                                    ],
+                                    c="blue",
+                                    ls="--",
+                                )
                         # title
                         ax[region].set_title(region)
                         if region == list_monsoon_regions[0]:
