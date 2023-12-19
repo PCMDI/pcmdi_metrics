@@ -13,7 +13,8 @@ import MV2
 import numpy
 import pkg_resources
 import vcs
-from genutil import StringConstructor
+
+from pcmdi_metrics.utils import StringConstructor
 
 pmp_egg_path = pkg_resources.resource_filename(
     pkg_resources.Requirement.parse("pcmdi_metrics"), "share"
