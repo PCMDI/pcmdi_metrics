@@ -7,8 +7,7 @@ import glob
 import json
 import os
 
-from genutil import StringConstructor
-
+from pcmdi_metrics.utils import StringConstructor
 from pcmdi_metrics.variability_mode.lib import dict_merge
 
 

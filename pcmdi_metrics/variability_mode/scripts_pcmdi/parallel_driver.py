@@ -6,10 +6,9 @@ import glob
 import os
 from argparse import RawTextHelpFormatter
 
-from genutil import StringConstructor
-
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.misc.scripts import parallel_submitter
+from pcmdi_metrics.utils import StringConstructor
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
     VariabilityModeCheck,
@@ -94,6 +93,10 @@ outdir = StringConstructor(
 debug = param.debug
 print("debug:", debug)
 
+# number of tasks to submit at the same time
+# num_workers = 20
+num_workers = param.num_workers
+
 # =================================================
 # Create output directories
 # -------------------------------------------------
@@ -153,8 +156,7 @@ for m, model in enumerate(models):
     for r, run in enumerate(runs_list):
         # command line for queue
         cmd = [
-            "python",
-            "../variability_modes_driver.py",
+            "variability_modes_driver.py",
             "-p",
             param_file,
             "--case_id",
@@ -189,12 +191,6 @@ if debug:
 # log dir
 log_dir = outdir(output_type="log")
 os.makedirs(log_dir, exist_ok=True)
-
-# number of tasks to submit at the same time
-num_workers = 3
-# num_workers = 5
-# num_workers = 10
-# num_workers = 30
 
 parallel_submitter(
     cmds_list,

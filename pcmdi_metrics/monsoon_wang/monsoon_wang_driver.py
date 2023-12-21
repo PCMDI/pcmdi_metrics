@@ -4,7 +4,6 @@ import collections
 import os
 
 import cdms2
-import genutil
 import numpy
 from genutil import statistics
 
@@ -12,6 +11,7 @@ import pcmdi_metrics
 from pcmdi_metrics import resources
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
+from pcmdi_metrics.utils import StringConstructor
 
 
 def create_monsoon_wang_parser():
@@ -78,7 +78,7 @@ def create_monsoon_wang_parser():
 
 def monsoon_wang_runner(args):
     # args = P.parse_args(sys.argv[1:])
-    modpath = genutil.StringConstructor(args.test_data_path)
+    modpath = StringConstructor(args.test_data_path)
     modpath.variable = args.modvar
     outpathdata = args.results_dir
     if isinstance(args.modnames, str):

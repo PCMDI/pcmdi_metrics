@@ -46,11 +46,11 @@ government or Lawrence Livermore National Security, LLC, and shall not be used
 for advertising or product endorsement purposes.
 """
 
-from __future__ import print_function
-
+import shapely  # noqa
 import glob
 import json
 import os
+import re
 import sys
 from argparse import RawTextHelpFormatter
 from shutil import copyfile
@@ -58,10 +58,10 @@ from shutil import copyfile
 import cdtime
 import cdutil
 import MV2
-from genutil import StringConstructor
 
 from pcmdi_metrics import resources
 from pcmdi_metrics.mean_climate.lib import pmp_parser
+from pcmdi_metrics.utils import fill_template, sort_human, tree
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
     VariabilityModeCheck,
@@ -78,8 +78,6 @@ from pcmdi_metrics.variability_mode.lib import (
     linear_regression_on_globe_for_teleconnection,
     plot_map,
     read_data_in,
-    sort_human,
-    tree,
     variability_metrics_to_json,
     write_nc_output,
 )
@@ -167,20 +165,22 @@ obs_path = param.reference_data_path
 obs_var = param.varOBS
 
 # Path to model data as string template
-modpath = StringConstructor(param.modpath)
+modpath = param.modpath
 if LandMask:
-    modpath_lf = StringConstructor(param.modpath_lf)
+    modpath_lf = param.modpath_lf
 
 # Check given model option
 models = param.modnames
 
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
-    model_index_path = param.modpath.split("/")[-1].split(".").index("%(model)")
+    model_index_path = re.split(". |_", modpath.split("/")[-1]).index("%(model)")
     models = [
-        p.split("/")[-1].split(".")[model_index_path]
+        re.split(". |_", p.split("/")[-1])[model_index_path]
         for p in glob.glob(
-            modpath(mip=mip, exp=exp, model="*", realization="*", variable=var)
+            fill_template(
+                modpath, mip=mip, exp=exp, model="*", realization="*", variable=var
+            )
         )
     ]
     # remove duplicates
@@ -200,21 +200,6 @@ eofn_mod = int(param.eofn_mod)
 # case id
 case_id = param.case_id
 
-# Output
-outdir_template = param.process_templated_argument("results_dir")
-outdir = StringConstructor(
-    str(
-        outdir_template(
-            output_type="%(output_type)",
-            mip=mip,
-            exp=exp,
-            variability_mode=mode,
-            reference_data_name=obs_name,
-            case_id=case_id,
-        )
-    )
-)
-
 # Debug
 debug = param.debug
 
@@ -231,13 +216,13 @@ YearCheck(osyear, oeyear, P)
 ObsUnitsAdjust = param.ObsUnitsAdjust
 ModUnitsAdjust = param.ModUnitsAdjust
 
-# lon1g and lon2g is for global map plotting
+# lon1_global and lon2_global is for global map plotting
 if mode in ["PDO", "NPGO"]:
-    lon1g = 0
-    lon2g = 360
+    lon1_global = 0
+    lon2_global = 360
 else:
-    lon1g = -180
-    lon2g = 180
+    lon1_global = -180
+    lon2_global = 180
 
 # parallel
 parallel = param.parallel
@@ -266,9 +251,26 @@ region_subdomain = get_domain_range(mode, regions_specs)
 # =================================================
 # Create output directories
 # -------------------------------------------------
-for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
-    os.makedirs(outdir(output_type=output_type), exist_ok=True)
-    print(outdir(output_type=output_type))
+outdir_template = param.results_dir
+
+output_types = ["graphics", "diagnostic_results", "metrics_results"]
+dir_paths = {}
+
+print("output directories:")
+
+for output_type in output_types:
+    dir_path = fill_template(
+        outdir_template,
+        output_type=output_type,
+        mip=mip,
+        exp=exp,
+        variability_mode=mode,
+        reference_data_name=obs_name,
+        case_id=case_id,
+    )
+    os.makedirs(dir_path, exist_ok=True)
+    print(output_type, ":", dir_path)
+    dir_paths[output_type] = dir_path
 
 # =================================================
 # Set dictionary for .json record
@@ -290,10 +292,10 @@ json_filename = "_".join(
         str(msyear) + "-" + str(meyear),
     ]
 )
+json_file = os.path.join(dir_paths["metrics_results"], json_filename + ".json")
 
-json_file = os.path.join(outdir(output_type="metrics_results"), json_filename + ".json")
 json_file_org = os.path.join(
-    outdir(output_type="metrics_results"),
+    dir_paths["metrics_results"],
     "_".join([json_filename, "org", str(os.getpid())]) + ".json",
 )
 
@@ -436,28 +438,12 @@ if obs_compare:
         if EofScaling:
             output_filename_obs += "_EOFscaled"
 
-        # Save global map, pc timeseries, and fraction in NetCDF output
-        if nc_out_obs:
-            output_nc_file_obs = os.path.join(
-                outdir(output_type="diagnostic_results"), output_filename_obs
-            )
-            write_nc_output(
-                output_nc_file_obs,
-                eof_lr_obs[season],
-                pc_obs[season],
-                frac_obs[season],
-                slope_obs,
-                intercept_obs,
-            )
-
-        # Plotting
+        # Plot
         if plot_obs:
+            debug_print("plot obs", debug)
             output_img_file_obs = os.path.join(
-                outdir(output_type="graphics"), output_filename_obs
+                dir_paths["graphics"], output_filename_obs
             )
-            # plot_map(mode, '[REF] '+obs_name, osyear, oeyear, season,
-            #          eof_obs[season], frac_obs[season],
-            #          output_img_file_obs+'_org_eof')
             plot_map(
                 mode,
                 "[REF] " + obs_name,
@@ -467,6 +453,7 @@ if obs_compare:
                 eof_lr_obs[season](region_subdomain),
                 frac_obs[season],
                 output_img_file_obs,
+                debug=debug,
             )
             plot_map(
                 mode + "_teleconnection",
@@ -474,11 +461,28 @@ if obs_compare:
                 osyear,
                 oeyear,
                 season,
-                eof_lr_obs[season](longitude=(lon1g, lon2g)),
+                eof_lr_obs[season](longitude=(lon1_global, lon2_global)),
                 frac_obs[season],
                 output_img_file_obs + "_teleconnection",
+                debug=debug,
             )
             debug_print("obs plotting end", debug)
+
+        # NetCDF: Save global map, pc timeseries, and fraction in NetCDF output
+
+        if nc_out_obs:
+            debug_print("write obs nc", debug)
+            output_nc_file_obs = os.path.join(
+                dir_paths["diagnostic_results"], output_filename_obs
+            )
+            write_nc_output(
+                output_nc_file_obs,
+                eof_lr_obs[season],
+                pc_obs[season],
+                frac_obs[season],
+                slope_obs,
+                intercept_obs,
+            )
 
         # Save stdv of PC time series in dictionary
         dict_head_obs["stdv_pc"] = stdv_pc_obs[season]
@@ -508,7 +512,14 @@ for model in models:
         result_dict["RESULTS"][model] = {}
 
     model_path_list = glob.glob(
-        modpath(mip=mip, exp=exp, model=model, realization=realization, variable=var)
+        fill_template(
+            modpath,
+            mip=mip,
+            exp=exp,
+            model=model,
+            realization=realization,
+            variable=var,
+        )
     )
 
     model_path_list = sort_human(model_path_list)
@@ -518,8 +529,13 @@ for model in models:
     # Find where run can be gripped from given filename template for modpath
     if realization == "*":
         run_in_modpath = (
-            modpath(
-                mip=mip, exp=exp, model=model, realization=realization, variable=var
+            fill_template(
+                modpath,
+                mip=mip,
+                exp=exp,
+                model=model,
+                realization=realization,
+                variable=var,
             )
             .split("/")[-1]
             .split(".")
@@ -530,7 +546,8 @@ for model in models:
     # Run
     # -------------------------------------------------
     for model_path in model_path_list:
-        try:
+        # try:
+        if 1:
             if realization == "*":
                 run = (model_path.split("/")[-1]).split(".")[run_in_modpath]
             else:
@@ -552,7 +569,7 @@ for model in models:
             ] = eofn_mod
 
             if LandMask:
-                model_lf_path = modpath_lf(mip=mip, exp=exp, model=model)
+                model_lf_path = fill_template(modpath_lf, mip=mip, exp=exp, model=model)
             else:
                 model_lf_path = None
 
@@ -730,7 +747,7 @@ for model in models:
                     # Diagnostics results -- data to NetCDF
                     # Save global map, pc timeseries, and fraction in NetCDF output
                     output_nc_file = os.path.join(
-                        outdir(output_type="diagnostic_results"), output_filename
+                        dir_paths["diagnostic_results"], output_filename
                     )
                     if nc_out_model:
                         write_nc_output(
@@ -744,7 +761,7 @@ for model in models:
 
                     # Graphics -- plot map image to PNG
                     output_img_file = os.path.join(
-                        outdir(output_type="graphics"), output_filename
+                        dir_paths["graphics"], output_filename
                     )
                     if plot_model:
                         plot_map(
@@ -756,6 +773,7 @@ for model in models:
                             eof_lr_cbf(region_subdomain),
                             frac_cbf,
                             output_img_file + "_cbf",
+                            debug=debug,
                         )
                         plot_map(
                             mode + "_teleconnection",
@@ -763,9 +781,10 @@ for model in models:
                             msyear,
                             meyear,
                             season,
-                            eof_lr_cbf(longitude=(lon1g, lon2g)),
+                            eof_lr_cbf(longitude=(lon1_global, lon2_global)),
                             frac_cbf,
                             output_img_file + "_cbf_teleconnection",
+                            debug=debug,
                         )
 
                     debug_print("cbf pcs end", debug)
@@ -902,7 +921,7 @@ for model in models:
                         # Diagnostics results -- data to NetCDF
                         # Save global map, pc timeseries, and fraction in NetCDF output
                         output_nc_file = os.path.join(
-                            outdir(output_type="diagnostic_results"), output_filename
+                            dir_paths["diagnostic_results"], output_filename
                         )
                         if nc_out_model:
                             write_nc_output(
@@ -911,14 +930,9 @@ for model in models:
 
                         # Graphics -- plot map image to PNG
                         output_img_file = os.path.join(
-                            outdir(output_type="graphics"), output_filename
+                            dir_paths["graphics"], output_filename
                         )
                         if plot_model:
-                            # plot_map(mode,
-                            #          mip.upper()+' '+model+' ('+run+')',
-                            #          msyear, meyear, season,
-                            #          eof, frac,
-                            #          output_img_file+'_org_eof')
                             plot_map(
                                 mode,
                                 mip.upper()
@@ -934,6 +948,7 @@ for model in models:
                                 eof_lr(region_subdomain),
                                 frac,
                                 output_img_file,
+                                debug=debug,
                             )
                             plot_map(
                                 mode + "_teleconnection",
@@ -947,9 +962,10 @@ for model in models:
                                 msyear,
                                 meyear,
                                 season,
-                                eof_lr(longitude=(lon1g, lon2g)),
+                                eof_lr(longitude=(lon1_global, lon2_global)),
                                 frac,
                                 output_img_file + "_teleconnection",
+                                debug=debug,
                             )
 
                         # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -999,21 +1015,21 @@ for model in models:
                 ]
             )
             variability_metrics_to_json(
-                outdir,
+                dir_paths["metrics_results"],
                 json_filename_tmp,
                 result_dict,
                 model=model,
                 run=run,
                 cmec_flag=cmec,
             )
-
+        """
         except Exception as err:
             if debug:
                 raise
             else:
                 print("warning: failed for ", model, run, err)
                 pass
-
+        """
 # ========================================================================
 # Dictionary to JSON: collective JSON at the end of model_realization loop
 # ------------------------------------------------------------------------
@@ -1034,7 +1050,9 @@ if not parallel and (len(models) > 1):
             str(msyear) + "-" + str(meyear),
         ]
     )
-    variability_metrics_to_json(outdir, json_filename_all, result_dict, cmec_flag=cmec)
+    variability_metrics_to_json(
+        dir_paths["metrics_results"], json_filename_all, result_dict, cmec_flag=cmec
+    )
 
 if not debug:
     sys.exit(0)

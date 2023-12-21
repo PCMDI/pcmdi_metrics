@@ -3,7 +3,6 @@ import math
 import os
 import sys
 
-import cdutil
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -12,7 +11,8 @@ from scipy import signal
 from scipy.stats import chi2
 from xcdat.regridder import grid
 
-import pcmdi_metrics
+from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.utils import create_land_sea_mask
 
 
 # ==================================================================================
@@ -94,9 +94,7 @@ def precip_variability_across_timescale(
     outfilename = (
         "PS_pr." + str(dfrq) + "_regrid.180x90_area.freq.mean_" + dat + ".json"
     )
-    JSON = pcmdi_metrics.io.base.Base(
-        outdir.replace("%(output_type)", "metrics_results"), outfilename
-    )
+    JSON = Base(outdir.replace("%(output_type)", "metrics_results"), outfilename)
     JSON.write(
         psdmfm,
         json_structure=["model+realization", "variability type", "domain", "frequency"],
@@ -389,9 +387,8 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
     else:
         sys.exit("ERROR: frc " + frc + " is not defined!")
 
-    d_cdms = xr.DataArray.to_cdms2(d[0])
-    mask = cdutil.generateLandSeaMask(d_cdms)
-    mask = xr.DataArray.from_cdms2(mask)
+    # generate land sea mask
+    mask = create_land_sea_mask(d[0])
 
     psdmfm = {}
     for dom in domains:
@@ -405,8 +402,8 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
             dmask = d
 
         dmask = dmask.to_dataset(name="ps")
-        dmask = dmask.bounds.add_bounds(axis="X", width=0.5)
-        dmask = dmask.bounds.add_bounds(axis="Y", width=0.5)
+        dmask = dmask.bounds.add_bounds(axis="X")
+        dmask = dmask.bounds.add_bounds(axis="Y")
 
         if "50S50N" in dom:
             am = dmask.sel(lat=slice(-50, 50)).spatial.average(
