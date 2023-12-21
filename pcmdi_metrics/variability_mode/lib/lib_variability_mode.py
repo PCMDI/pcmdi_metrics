@@ -161,9 +161,7 @@ def variability_metrics_to_json(
     outdir, json_filename, result_dict, model=None, run=None, cmec_flag=False
 ):
     # Open JSON
-    JSON = pcmdi_metrics.io.base.Base(
-        outdir(output_type="metrics_results"), json_filename
-    )
+    JSON = pcmdi_metrics.io.base.Base(outdir, json_filename)
     # Dict for JSON
     json_dict = copy.deepcopy(result_dict)
     if model is not None or run is not None:

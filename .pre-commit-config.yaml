@@ -28,6 +28,7 @@ repos:
       rev: 5.12.0
       hooks:
           - id: isort
+            args: ["--honor-noqa"]
 
     # =======================
     # Python linting

@@ -38,7 +38,7 @@ def mjo_metric_ewr_calculation(
     startYear,
     endYear,
     segmentLength,
-    outdir,
+    dir_paths,
     season="NDJFMA",
 ):
     # Open file to read daily dataset
@@ -107,8 +107,8 @@ def mjo_metric_ewr_calculation(
     daSeaCyc.setAxis(2, lon)
     segment_ano[year].setAxis(1, lat)
     segment_ano[year].setAxis(2, lon)
-    """
-    Space-time power spectra
+
+    """ Space-time power spectra
 
     Handle each segment (i.e. each year) separately.
     1. Get daily time series (3D: time and spatial 2D)
@@ -117,6 +117,7 @@ def mjo_metric_ewr_calculation(
     4. Proceed 2-D FFT to get power.
     Then get multi-year averaged power after the year loop.
     """
+
     # Define array for archiving power from each year segment
     Power = np.zeros((numYear, NT + 1, NL + 1), np.float)
 
@@ -150,62 +151,37 @@ def mjo_metric_ewr_calculation(
     print("west power: ", westPower)
 
     # Output
-    output_filename = "{}_{}_{}_{}_{}_{}-{}_{}".format(
-        mip, model, exp, run, "mjo", startYear, endYear, season
-    )
+    output_filename = f"{mip}_{model}_{exp}_{run}_mjo_{startYear}-{endYear}_{season}"
     if cmmGrid:
         output_filename += "_cmmGrid"
 
     # NetCDF output
     if nc_out:
-        os.makedirs(outdir(output_type="diagnostic_results"), exist_ok=True)
-        fout = os.path.join(outdir(output_type="diagnostic_results"), output_filename)
+        os.makedirs(dir_paths["diagnostic_results"], exist_ok=True)
+        fout = os.path.join(dir_paths["diagnostic_results"], output_filename)
         write_netcdf_output(OEE, fout)
 
     # Plot
     if plot:
-        os.makedirs(outdir(output_type="graphics"), exist_ok=True)
-        fout = os.path.join(outdir(output_type="graphics"), output_filename)
+        os.makedirs(dir_paths["graphics"], exist_ok=True)
+        fout = os.path.join(dir_paths["graphics"], output_filename)
         if model == "obs":
-            title = (
-                " OBS ("
-                + run
-                + ") \n"
-                + var.capitalize()
-                + ", "
-                + season
-                + " "
-                + str(startYear)
-                + "-"
-                + str(endYear)
-            )
+            title = f"OBS ({run})\n{var.capitalize()}, {season} {startYear}-{endYear}"
         else:
-            title = (
-                mip.upper()
-                + ": "
-                + model
-                + " ("
-                + run
-                + ") \n"
-                + var.capitalize()
-                + ", "
-                + season
-                + " "
-                + str(startYear)
-                + "-"
-                + str(endYear)
-            )
+            title = f"{mip.upper()}: {model} ({run})\n{var.capitalize()}, {season} {startYear}-{endYear}"
+
         if cmmGrid:
             title += ", common grid (2.5x2.5deg)"
         plot_power(OEE, title, fout, ewr)
 
     # Output to JSON
-    metrics_result = {}
-    metrics_result["east_power"] = eastPower
-    metrics_result["west_power"] = westPower
-    metrics_result["east_west_power_ratio"] = ewr
-    metrics_result["analysis_time_window_start_year"] = startYear
-    metrics_result["analysis_time_window_end_year"] = endYear
+    metrics_result = {
+        "east_power": eastPower,
+        "west_power": westPower,
+        "east_west_power_ratio": ewr,
+        "analysis_time_window_start_year": startYear,
+        "analysis_time_window_end_year": endYear,
+    }
 
     # Debug checking plot
     if debug and plot:
