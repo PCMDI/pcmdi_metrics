@@ -14,11 +14,19 @@ def create_sea_ice_parser():
 
     parser.add_argument(
         "-v",
-        "--vars",
+        "--var",
         type=str,
         nargs="+",
-        dest="vars",
-        help="Variables to use",
+        dest="var",
+        help="Name of model sea ice concentration variable",
+        required=False,
+    )
+
+    parser.add_argument(
+        "--area_var",
+        type=str,
+        dest="area_var",
+        help="Name of model area variable",
         required=False,
     )
 
@@ -90,10 +98,10 @@ def create_sea_ice_parser():
     )
 
     parser.add_argument(
-        "--grid_area",
-        des="areacell",
-        help="Filename template for grid area",
-        required=True
+        "--area_template",
+        dest="area_template",
+        help="Filename template for model grid area",
+        required=False
     )
 
     parser.add_argument(
@@ -130,20 +138,35 @@ def create_sea_ice_parser():
     parser.add_argument(
         "--ObsUnitsAdjust",
         type=tuple,
-        default=(False, 0, 0, None),
-        help="For unit adjust for OBS dataset. For example:\n"
-        "- (True, 'divide', 100.0, 'hPa')  # Pa to hPa\n"
-        "- (True, 'subtract', 273.15, 'C')  # degK to degC\n"
-        "- (False, 0, 0, None) # No adjustment (default)",
+        default=(False, 0, 0),
+        help="Factor to convert obs sea ice concentration to decimal. For example:\n"
+        "- (True, 'divide', 100.0)  # percentage to decimal\n"
+        "- (False, 0, 0) # No adjustment (default)",
     )
     parser.add_argument(
         "--ModUnitsAdjust",
         type=tuple,
-        default=(False, 0, 0, None),
-        help="For unit adjust for model dataset. For example:\n"
-        "- (True, 'divide', 100.0, 'hPa')  # Pa to hPa\n"
-        "- (True, 'subtract', 273.15, 'C')  # degK to degC\n"
-        "- (False, 0, 0, None) # No adjustment (default)",
+        default=(False, 0, 0),
+        help="Factor to convert model sea ice concentration to decimal. For example:\n"
+        "- (True, 'divide', 100.0)  # percentage to decimal\n"
+        "- (False, 0, 0) # No adjustment (default)",
+    )
+    parser.add_argument(
+        "--AreaUnitsAdjust",
+        type=tuple,
+        default=(False, 0, 0),
+        help="Factor to convert area data to km^2. For example:\n"
+        "- (True, 'multiply', 1e-6)  # m^2 to km^2\n"
+        "- (False, 0, 0) # No adjustment (default)",
+    )
+
+    parser.add_argument(
+        "--ObsAreaUnitsAdjust",
+        type=tuple,
+        default=(False, 0, 0),
+        help="Factor to convert area data to km^2. For example:\n"
+        "- (True, 'multiply', 1e-6)  # m^2 to km^2\n"
+        "- (False, 0, 0) # No adjustment (default)",
     )
 
     return parser
