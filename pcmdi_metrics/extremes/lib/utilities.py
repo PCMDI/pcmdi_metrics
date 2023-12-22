@@ -136,6 +136,6 @@ def generate_land_sea_mask(data, debug=False):
     # generate sftlf if not provided.
     sft = create_land_sea_mask(data)
     sftlf = data.copy(data=None)
-    sftlf["sftlf"] = sft
+    sftlf["sftlf"] = sft * 100
 
     return sftlf
