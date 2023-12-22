@@ -19,6 +19,7 @@ import xcdat as xc
 
 import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
+from pcmdi_metrics.utils import StringConstructor
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
@@ -143,9 +144,9 @@ class CDMSDomainsEncoder(json.JSONEncoder):
         return {o.id: "cdutil.region.domain(%s)" % args}
 
 
-class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
+class Base(cdp.cdp_io.CDPIO, StringConstructor):
     def __init__(self, root, file_template, file_mask_template=None):
-        genutil.StringConstructor.__init__(self, root + "/" + file_template)
+        StringConstructor.__init__(self, root + "/" + file_template)
         self.target_grid = None
         self.mask = None
         self.target_mask = None
@@ -156,7 +157,7 @@ class Base(cdp.cdp_io.CDPIO, genutil.StringConstructor):
         self.setup_cdms2()
 
     def __call__(self):
-        path = os.path.abspath(genutil.StringConstructor.__call__(self))
+        path = os.path.abspath(StringConstructor.__call__(self))
         if self.type in path:
             return path
         else:
