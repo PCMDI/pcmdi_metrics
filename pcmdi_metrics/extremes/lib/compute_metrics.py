@@ -622,6 +622,7 @@ def metrics_json_return_value(
     # If new statistics are added, be sure to update
     # "statistic" entry in init_metrics_dict()
     if obs is not None:
+        obs = obs.bounds.add_missing_bounds()
         for k in [
             "std-obs_xy",
             "pct_dif",
@@ -634,8 +635,6 @@ def metrics_json_return_value(
             met_dict[stat][region][k] = seasons_dict.copy()
 
     rv_tmp = rv.copy(deep=True)
-
-    obs = obs.bounds.add_missing_bounds()
 
     for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
         # Global mean over land
