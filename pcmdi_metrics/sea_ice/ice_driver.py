@@ -103,17 +103,6 @@ def get_latitude(ds: xr.Dataset) -> xr.DataArray:
     lat = ds[key_lat]
     return(lat)
 
-def slice_dataset(ds, start_year, end_year):
-    cal = ds.time.encoding["calendar"]
-    start_time = cftime.datetime(start_year, 1, 1, calendar=cal) - datetime.timedelta(
-        days=0
-    )
-    end_time = cftime.datetime(end_year + 1, 1, 1, calendar=cal) - datetime.timedelta(
-        days=1
-    )
-    ds = ds.sel(time=slice(start_time, end_time))
-    return ds
-
 def to_ice_con_ds(da,obs):
     ds = xr.Dataset(data_vars={"ice_con": da,
                                "time_bnds": obs.time_bnds},
@@ -166,6 +155,7 @@ def set_up_realizations(realization):
     elif isinstance(realization, str):
         if realization.lower() in ["all", "*"]:
             find_all_realizations = True
+            realizations=[""]
         else:
             realizations = [realization]
     elif isinstance(realization, list):
@@ -244,15 +234,14 @@ if __name__ == "__main__":
     # Initialize output.json file
     meta = MetadataFile(metrics_output_path)
 
-    # Initialize other directories
-    nc_dir = os.path.join(metrics_output_path, "netcdf")
-    os.makedirs(nc_dir, exist_ok=True)
+
     #if plots:
     #    plot_dir_maps = os.path.join(metrics_output_path, "plots", "maps")
     #    os.makedirs(plot_dir_maps, exist_ok=True)
 
     # Setting up model realization list
     find_all_realizations, realizations = set_up_realizations(realization)
+    print("Find all realizations:",find_all_realizations)
 
     #### Do Obs part
     ObsUnitsAdjust=(True,"multiply",1e-2)
@@ -273,6 +262,7 @@ if __name__ == "__main__":
         obs = xc.open_dataset(arctic_files[source])
         obs[obs_var] = adjust_units(obs[obs_var],ObsUnitsAdjust)
         obs["area"] = adjust_units(obs["area"],ObsAreaUnitsAdjust)
+        #mask=create_land_sea_mask(obs,lon_key="lon",lat_key="lat")
         # Get regions
         data_arctic = obs[obs_var].where((obs.lat > 0),0)
         data_ca1 = obs[obs_var].where(((obs.lat > 80) & (obs.lat <= 87.2) & (obs.lon > -120) & (obs.lon <= 90)),0)
@@ -394,20 +384,21 @@ if __name__ == "__main__":
             "model": model_list,
         },
         "RESULTS": {},
+        "model_year_range": {}
     }
-
-    find_all_realizations, realizations = set_up_realizations(realization)
 
     for model in model_list:
         tags = {
                 "%(variable)": var,
                 "%(model)": model,
-                "%(model_version)": model
+                "%(model_version)": model,
+                "%(realization)": "*"
             }
         if find_all_realizations:
-            test_data_full_path = os.path.join(test_data_path, filename_template)
-            test_data_full_path = replace_multi(test_data_full_path, tags)
-            ncfiles = glob.glob(test_data_full_path)
+            test_data_full_path_tmp = os.path.join(test_data_path, filename_template)
+            test_data_full_path_tmp = replace_multi(test_data_full_path_tmp, tags)
+            ncfiles = glob.glob(test_data_full_path_tmp)
+            print(ncfiles)
             realizations = []
             for ncfile in ncfiles:
                 realizations.append(ncfile.split("/")[-1].split(".")[3])
@@ -416,10 +407,10 @@ if __name__ == "__main__":
             list_of_runs = realizations
         else:
             list_of_runs = realizations
-            
-        # Model grid area
-        area = load_dataset(replace_multi(area_template,tags))
-        area[area_var] = adjust_units(area[area_var],AreaUnitsAdjust)
+        print(list_of_runs)
+
+        start_year = msyear
+        end_year = meyear
 
         totals_dict = {"arctic": 0,
                     "ca": 0,
@@ -446,10 +437,6 @@ if __name__ == "__main__":
             }
             test_data_full_path = os.path.join(test_data_path, filename_template)
             test_data_full_path = replace_multi(test_data_full_path, tags)
-            area_path = replace_multi(area_template,tags)
-            start_year = msyear
-            end_year = meyear
-            yrs = [str(start_year), str(end_year)]  # for output file names
             test_data_full_path = glob.glob(test_data_full_path)
             test_data_full_path.sort()
             if len(test_data_full_path) == 0:
@@ -465,23 +452,29 @@ if __name__ == "__main__":
                 for t in test_data_full_path:
                     print("  ", t)
 
+            # Model grid area
+            print(area_template)
+            print(replace_multi(area_template,tags))
+            area = load_dataset(replace_multi(area_template,tags))
+            area[area_var] = adjust_units(area[area_var],AreaUnitsAdjust)
+
             # Load and prep data
             ds = load_dataset(test_data_full_path)
             ds[var] = adjust_units(ds[var],ModUnitsAdjust)
             xvar = get_longitude(ds).name
             yvar = get_latitude(ds).name
-            if (ds.lon < -180).any() | (ds.lon > 360).any():
-                print("Invalid longitude range")
-                continue
+            if (ds.lon < -180).any():
+                ds["lon"] = ds.lon.where(ds.lon >= -180, ds.lon+360)
             if ds.lon.min() >= 0:
-                ds["lon"] = ds.lon - 180
+                ds["lon"] = ds.lon.where(ds.lon >= 180, ds.lon-360)
 
             # Get time slice if year parameters exist
             if start_year is not None:
-                ds = slice_dataset(ds, start_year, end_year)
+                ds = ds.sel({"time":slice("{0}-01-01".format(start_year), "{0}-12-31".format(end_year))})
+                yr_range = [str(start_year),str(end_year)]
             else:
                 # Get labels for start/end years from dataset
-                yrs = [str(int(ds.time.dt.year[0])), str(int(ds.time.dt.year[-1]))]
+                yr_range = [str(int(ds.time.dt.year[0])),str(int(ds.time.dt.year[-1]))]
             
             # Get regions
             data_arctic = ds[var].where(ds.lat > 0, 0)
@@ -557,6 +550,9 @@ if __name__ == "__main__":
             mse[model]["bootstrap"][rgn]["monthly_clim"]["mse"] = str(mse_t(clim_extent[var],obs_clims["bt"][rgn]["ice_con"],weights=clim_wts)*1e-12)
             mse[model]["nasateam"][rgn]["total_extent"]["mse"] = str(mse_model(total,obs_means["nt"][rgn])*1e-12)
             mse[model]["bootstrap"][rgn]["total_extent"]["mse"] = str(mse_model(total,obs_means["bt"][rgn])*1e-12)
+        
+        # Update year list
+        metrics["model_year_range"][model] = [str(start_year),str(end_year)]
 
     metrics["RESULTS"]=mse
 
