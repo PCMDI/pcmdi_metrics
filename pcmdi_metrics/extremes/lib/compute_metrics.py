@@ -290,9 +290,9 @@ def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
             bnds_var = ds[item].attrs["bounds"]
             if bnds_var not in ds.keys():
                 ds[item].attrs["bounds"] = ""
-                ds = ds.bounds.add_missing_bounds(bnds_dict[item])
+                ds = ds.bounds.add_missing_bounds([bnds_dict[item]])
         else:
-            ds = ds.bounds.add_missing_bounds(bnds_dict[item])
+            ds = ds.bounds.add_missing_bounds([bnds_dict[item]])
     ds.attrs["december_mode"] = str(dec_mode)
     ds.attrs["drop_incomplete_djf"] = str(drop_incomplete_djf)
     ds.attrs["annual_strict"] = str(annual_strict)
@@ -562,6 +562,7 @@ def metrics_json(data_dict, obs_dict={}, region="land", regrid=True):
                 # Regrid obs to model grid
                 if regrid:
                     target = xc.create_grid(ds_m.lat, ds_m.lon)
+                    target = target.bounds.add_missing_bounds(["X", "Y"])
                     obs_m = obs_dict[m].regridder.horizontal(
                         season, target, tool="regrid2"
                     )
@@ -648,6 +649,7 @@ def metrics_json_return_value(
             # Regrid obs to model grid
             if regrid:
                 target = xc.create_grid(rv_tmp.lat, rv_tmp.lon)
+                target = target.bounds.add_missing_bounds(["X", "Y"])
                 obs_m = obs.regridder.horizontal(season, target, tool="regrid2")
             else:
                 obs_m = obs
