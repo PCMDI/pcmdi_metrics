@@ -294,7 +294,7 @@ if __name__ == "__main__":
             "arctic": total_extent_arctic_obs.mean("time",skipna=True).data.item(),
             "ca": total_extent_ca_obs.mean("time",skipna=True).data.item(),
             "np": total_extent_np_obs.mean("time",skipna=True).data.item(),
-            "na": total_extent_na_obs.mean("time",skipna=True).data.item()  
+            "na": total_extent_na_obs.mean("time",skipna=True).data.item()
         }
         obs.close()
 
@@ -308,13 +308,13 @@ if __name__ == "__main__":
         obs["area"] = adjust_units(obs["area"],ObsAreaUnitsAdjust)
         data_antarctic = obs[obs_var].where((obs.lat < 0),0)
         data_sa = obs[obs_var].where(
-            (obs.lat > -90) & (obs.lat <= -55) & 
+            (obs.lat > -90) & (obs.lat <= -55) &
             (obs.lon > -60) & (obs.lon <= 20),0)
         data_sp = obs[obs_var].where(
-            (obs.lat > -90) & (obs.lat <= -55) & 
+            (obs.lat > -90) & (obs.lat <= -55) &
             ((obs.lon > 90) | (obs.lon <= -60)),0)
         data_io = obs[obs_var].where(
-            (obs.lat > -90) & (obs.lat <= -55) & 
+            (obs.lat > -90) & (obs.lat <= -55) &
             (obs.lon > 20) & (obs.lon <= 90),0)
 
         total_extent_antarctic_obs = (data_antarctic.where(data_antarctic > 0.15) * obs.area).sum(("x","y"),skipna=True)
@@ -338,10 +338,10 @@ if __name__ == "__main__":
             "antarctic": total_extent_antarctic_obs.mean("time",skipna=True).data.item(),
             "io": total_extent_io_obs.mean("time",skipna=True).data.item(),
             "sp": total_extent_sp_obs.mean("time",skipna=True).data.item(),
-            "sa": total_extent_sa_obs.mean("time",skipna=True).data.item()  
+            "sa": total_extent_sa_obs.mean("time",skipna=True).data.item()
         }
         obs.close()
-        
+
     obs_clims = {"nt": {},"bt":{}}
     obs_means = {"nt": {},"bt":{}}
     for item in antarctic_clims["nt"]:
@@ -424,7 +424,7 @@ if __name__ == "__main__":
             "nasateam": {},
             "bootstrap": {}
         }
-        
+
         # Loop over realizations
         for run_ind,run in enumerate(list_of_runs):
 
@@ -475,41 +475,41 @@ if __name__ == "__main__":
             else:
                 # Get labels for start/end years from dataset
                 yr_range = [str(int(ds.time.dt.year[0])),str(int(ds.time.dt.year[-1]))]
-            
+
             # Get regions
             data_arctic = ds[var].where(ds.lat > 0, 0)
             data_antarctic = ds[var].where(ds.lat < 0, 0)
             data_ca1 = ds[var].where((
-                (ds.lat > 80) & 
-                (ds.lat <= 87.2) & 
-                (ds.lon > -120) & 
+                (ds.lat > 80) &
+                (ds.lat <= 87.2) &
+                (ds.lon > -120) &
                 (ds.lon <= 90)),0)
             data_ca2 = ds[var].where(
-                ((ds.lat > 65) & (ds.lat < 87.2)) & 
+                ((ds.lat > 65) & (ds.lat < 87.2)) &
                 ((ds.lon > 90) | (ds.lon <= -120)),0)
             data_ca = data_ca1 + data_ca2
             data_np = ds[var].where(
-                (ds.lat > 35) & 
-                (ds.lat <= 65) & 
+                (ds.lat > 35) &
+                (ds.lat <= 65) &
                 ((ds.lon > 90) | (ds.lon <= -120)),0)
             data_na = ds[var].where(
-                (ds.lat > 45) & 
-                (ds.lat <= 80) & 
-                (ds.lon > -120) & 
-                (ds.lon <= 90),0) 
+                (ds.lat > 45) &
+                (ds.lat <= 80) &
+                (ds.lon > -120) &
+                (ds.lon <= 90),0)
             data_na = data_na - data_na.where(
-                (ds.lat > 45) & 
-                (ds.lat <= 50) & 
-                (ds.lon > 30) & 
+                (ds.lat > 45) &
+                (ds.lat <= 50) &
+                (ds.lon > 30) &
                 (ds.lon <= 60),0)
             data_sa = ds[var].where(
-                (ds.lat > -90) & (ds.lat <= -55) & 
+                (ds.lat > -90) & (ds.lat <= -55) &
                 (ds.lon > -60) & (ds.lon <= 20))
             data_sp = ds[var].where(
-                (ds.lat > -90) & (ds.lat <= -55) & 
+                (ds.lat > -90) & (ds.lat <= -55) &
                 ((ds.lon > 90) | (ds.lon <= -60)))
             data_io = ds[var].where(
-                (ds.lat > -90) & (ds.lat <= -55) & 
+                (ds.lat > -90) & (ds.lat <= -55) &
                 (ds.lon > 20) & (ds.lon <= 90))
 
             regions_dict = {
@@ -527,9 +527,9 @@ if __name__ == "__main__":
             for rgn in regions_dict:
                 data = regions_dict[rgn]
                 totals_dict[rgn] = totals_dict[rgn] + (data.where(data > 0.15, 0) * area[area_var]).sum((xvar,yvar),skipna=True)
-            
+
             ds.close()
-        
+
         for rgn in regions_dict:
             # Set up metrics dictionary
             for key in ["nasateam","bootstrap"]:
@@ -537,20 +537,20 @@ if __name__ == "__main__":
                     "monthly_clim": {"mse": None},
                     "total_extent": {"mse": None}
                 }
-            
+
             # Average all realizations, fix bounds, get climatologies and totals
             total_rgn = (totals_dict[rgn] / len(list_of_runs)).to_dataset(name=var)
             #total_rgn.time.attrs.pop("bounds")
             total_rgn = total_rgn.bounds.add_missing_bounds()
             clim_extent = total_rgn.temporal.climatology(var,freq="month")
             total = total_rgn.mean("time")[var].data
-            
+
             # Get errors, convert to 1e-12 km^-4
             mse[model]["nasateam"][rgn]["monthly_clim"]["mse"] = str(mse_t(clim_extent[var],obs_clims["nt"][rgn]["ice_con"],weights=clim_wts)*1e-12)
             mse[model]["bootstrap"][rgn]["monthly_clim"]["mse"] = str(mse_t(clim_extent[var],obs_clims["bt"][rgn]["ice_con"],weights=clim_wts)*1e-12)
             mse[model]["nasateam"][rgn]["total_extent"]["mse"] = str(mse_model(total,obs_means["nt"][rgn])*1e-12)
             mse[model]["bootstrap"][rgn]["total_extent"]["mse"] = str(mse_model(total,obs_means["bt"][rgn])*1e-12)
-        
+
         # Update year list
         metrics["model_year_range"][model] = [str(start_year),str(end_year)]
 
@@ -616,7 +616,7 @@ if __name__ == "__main__":
             ticks = range(0,round(ymax),2)
             labels = [str(round(x,0)) for x in ticks]
         ax7[inds].set_yticks(ticks,labels,fontsize=6)
-        
+
         ax7[inds].set_ylabel("10${^12}$km${^4}$",size=6)
         ax7[inds].grid(True,linestyle=":")
         ax7[inds].annotate(
