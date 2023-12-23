@@ -3,7 +3,7 @@ from collections import OrderedDict
 from pcmdi_metrics import stats
 
 
-def metrics(Var, dm, do, debug=False, time_dim_sync=False):
+def compute_metrics(Var, dm, do, debug=False, time_dim_sync=False):
     # Var is sometimes sent with level associated
     var = Var.split("_")[0]
     # Did we send data? Or do we just want the info?
