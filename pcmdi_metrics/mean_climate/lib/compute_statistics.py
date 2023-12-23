@@ -1,10 +1,14 @@
 import math
+import warnings
 
 import numpy as np
 
 
 def annual_mean(dm, do, var=None):
     """Computes ANNUAL MEAN"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.annual_mean is deprecated. Please consider use pcmdi_metrics.stats.annual_mean, instead"
+    )
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Annual Mean",
@@ -19,6 +23,9 @@ def annual_mean(dm, do, var=None):
 
 def seasonal_mean(d, season, var=None):
     """Computes SEASONAL MEAN"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.seasonal_mean is deprecated. Please consider use pcmdi_metrics.stats.seasonal_mean, instead"
+    )
     if d is None and season is None:  # just want the doc
         return {
             "Name": "Seasonal Mean",
@@ -57,6 +64,9 @@ def seasonal_mean(d, season, var=None):
 
 def bias_xy(dm, do, var=None, weights=None):
     """Computes bias"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.bias_xy is deprecated. Please consider use pcmdi_metrics.stats.bias_xy, instead"
+    )
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Bias",
@@ -72,6 +82,9 @@ def bias_xy(dm, do, var=None, weights=None):
 
 def bias_xyt(dm, do, var=None):
     """Computes bias"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.bias_xyt is deprecated. Please consider use pcmdi_metrics.stats.bias_xyt, instead"
+    )
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Bias",
@@ -88,6 +101,9 @@ def bias_xyt(dm, do, var=None):
 
 def cor_xy(dm, do, var=None, weights=None):
     """Computes correlation"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.cor_xy is deprecated. Please consider use pcmdi_metrics.stats.cor_xy, instead"
+    )
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Spatial Correlation",
@@ -115,6 +131,9 @@ def cor_xy(dm, do, var=None, weights=None):
 
 def mean_xy(d, var=None, weights=None):
     """Computes bias"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.mean_xy is deprecated. Please consider use pcmdi_metrics.stats.mean_xy, instead"
+    )
     if d is None:  # just want the doc
         return {
             "Name": "Mean",
@@ -130,6 +149,9 @@ def mean_xy(d, var=None, weights=None):
 
 def meanabs_xy(dm, do, var=None, weights=None):
     """Computes Mean Absolute Error"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.meanabs_xy is deprecated. Please consider use pcmdi_metrics.stats.meanabs_xy, instead"
+    )
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Mean Absolute Error",
@@ -146,6 +168,9 @@ def meanabs_xy(dm, do, var=None, weights=None):
 
 def meanabs_xyt(dm, do, var=None):
     """Computes Mean Absolute Error"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.meanabs_xyt is deprecated. Please consider use pcmdi_metrics.stats.meanabs_xyt, instead"
+    )
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Mean Absolute Error",
@@ -165,6 +190,9 @@ def meanabs_xyt(dm, do, var=None):
 
 def rms_0(dm, do, var=None, weighted=True):
     """Computes rms over first axis -- compare two zonal mean fields"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.rms_0 is deprecated. Please consider use pcmdi_metrics.stats.rms_0, instead"
+    )
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Root Mean Square over First Axis",
@@ -182,6 +210,9 @@ def rms_0(dm, do, var=None, weighted=True):
 
 def rms_xy(dm, do, var=None, weights=None):
     """Computes rms"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.rms_xy is deprecated. Please consider use pcmdi_metrics.stats.rms_xy, instead"
+    )
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Spatial Root Mean Square",
@@ -197,6 +228,9 @@ def rms_xy(dm, do, var=None, weights=None):
 
 def rms_xyt(dm, do, var=None):
     """Computes rms"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.rms_xyt is deprecated. Please consider use pcmdi_metrics.stats.rms_xyt, instead"
+    )
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Spatio-Temporal Root Mean Square",
@@ -214,6 +248,9 @@ def rms_xyt(dm, do, var=None):
 
 def rmsc_xy(dm, do, var=None, weights=None):
     """Computes centered rms"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.rmsc_xy is deprecated. Please consider use pcmdi_metrics.stats.rmsc_xy, instead"
+    )
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Spatial Root Mean Square",
@@ -233,6 +270,9 @@ def rmsc_xy(dm, do, var=None, weights=None):
 
 def std_xy(d, var=None, weights=None):
     """Computes std"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.std_xy is deprecated. Please consider use pcmdi_metrics.stats.std_xy, instead"
+    )
     if d is None:  # just want the doc
         return {
             "Name": "Spatial Standard Deviation",
@@ -250,6 +290,9 @@ def std_xy(d, var=None, weights=None):
 
 def std_xyt(d, var=None):
     """Computes std"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.std_xyt is deprecated. Please consider use pcmdi_metrics.stats.std_xyt, instead"
+    )
     if d is None:  # just want the doc
         return {
             "Name": "Spatial-temporal Standard Deviation",
@@ -268,6 +311,9 @@ def std_xyt(d, var=None):
 
 def zonal_mean(dm, do, var=None):
     """Computes ZONAL MEAN assumes rectilinear/regular grid"""
+    warnings.warn(
+        "pcmdi_metrics.mean_climate.lib.zonal_mean is deprecated. Please consider use pcmdi_metrics.stats.zonal_mean, instead"
+    )
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Zonal Mean",
