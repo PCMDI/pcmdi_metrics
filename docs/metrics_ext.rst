@@ -73,7 +73,7 @@ The PMP extremes metrics can be controlled via an input parameter file, the comm
 
 or as a combination of an input parameter file and the command line, e.g.: ::
 
-   extremes_driver.py  -p basic_param.py --vars rlut pr 
+   extremes_driver.py  -p basic_param.py --vars tasmax pr 
 
 The following parameters are **required to be set by the user** either in a parameter file or on the command line:  
 
