@@ -1,4 +1,10 @@
-def select_subset(ds: xr.Dataset, lat: tuple = None, lon: tuple = None, time: tuple = None) -> xr.Dataset:
+import xarray as xr
+import xcdat as xc
+
+
+def select_subset(
+    ds: xr.Dataset, lat: tuple = None, lon: tuple = None, time: tuple = None
+) -> xr.Dataset:
     """
     Selects a subset of the given xarray dataset based on specified latitude, longitude, and time ranges.
 
@@ -21,13 +27,13 @@ def select_subset(ds: xr.Dataset, lat: tuple = None, lon: tuple = None, time: tu
     lon_tuple = (110, 130)  # Longitude range
     time_tuple = (cftime.datetime(1850, 1, 1, 0, 0, 0, 0),
                   cftime.datetime(1851, 12, 31, 23, 59, 59, 0))  # Time range
-    
+
     # Load your xarray dataset (ds) here
 
     # Select subset based on specified ranges
     ds_subset = select_subset(ds, lat=lat_tuple, lon=lon_tuple, time=time_tuple)
     ```
-    """    
+    """
     sel_keys = {}
     if lat is not None:
         lat_key = xc.axis.get_dim_keys(ds, axis="Y")
