@@ -1,4 +1,4 @@
-from .statistics import (
+from .compute_statistics import (
     annual_mean,
     bias_xy,
     bias_xyt,
