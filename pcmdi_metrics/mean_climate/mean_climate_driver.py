@@ -14,8 +14,13 @@ from pcmdi_metrics.mean_climate.lib import (
     load_and_regrid,
     mean_climate_metrics_to_json,
 )
-from pcmdi_metrics.utils import apply_landmask, create_land_sea_mask, create_target_grid
-from pcmdi_metrics.variability_mode.lib import sort_human, tree
+from pcmdi_metrics.utils import (
+    apply_landmask,
+    create_land_sea_mask,
+    create_target_grid,
+    sort_human,
+    tree,
+)
 
 print("--- prepare mean climate metrics calculation ---")
 
