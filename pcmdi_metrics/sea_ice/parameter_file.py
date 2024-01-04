@@ -18,16 +18,16 @@
 
 # CMIP6
 #=======
-test_data_set=["E3SM-1-0","MIROC6"]
+#test_data_set=["E3SM-1-0"]
 realization="*"
-test_data_path="/p/user_pub/cmip/CMIP6/CMIP/*/%(model)/historical/%(realization)/SImon/siconc/*/*/"
-filename_template="siconc_SImon_%(model)_historical_%(realization)_*_*.nc"
+#test_data_path="/p/user_pub/cmip/CMIP6/CMIP/*/%(model)/historical/%(realization)/SImon/siconc/*/v20190806/"
+#filename_template="siconc_SImon_%(model)_historical_%(realization)_*_*.nc"
 var="siconc"
-msyear=1981
+msyear=1991
 meyear=2010
 ModUnitsAdjust=(True,"multiply",1e-2)
 
-area_template="/p/css03/esgf_publish/CMIP6/CMIP/*/%(model)/historical/%(realization)/fx/areacella/*/*/areacella_fx_%(model)_historical_%(realization)_*.nc"
+area_template="/p/css03/esgf_publish/CMIP6/CMIP/*/%(model)/historical/*/fx/areacella/*/*/areacella_fx_%(model)_historical_%(realization)_*.nc"
 area_var="areacella"
 AreaUnitsAdjust=(True,"multiply",1e-6)
 
