@@ -6,6 +6,7 @@ from .default_regions_define import load_regions_specs  # noqa
 from .default_regions_define import region_subset  # noqa
 from .xcdat_dataset_io import (  # noqa
     get_axis_list,
+    get_data_list,
     get_latitude_bounds_key,
     get_latitude_key,
     get_latitude,
