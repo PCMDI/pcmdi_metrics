@@ -11,15 +11,21 @@ def _find_key(
 ) -> str:
     try:
         key = xc.get_dim_keys(ds, axis)
-    except Exception:
+    except Exception as e:
         axes = get_axis_list(ds)
         key_candidates = [k for k in axes if k.lower() in potential_names]
         if len(key_candidates) > 0:
             key = key_candidates[0]
         else:
-            key_candidates = [k for k in axes if k.lower() in potential_names]
+            data_keys = get_data_list(ds)
+            key_candidates = [k for k in data_keys if k.lower() in potential_names]
             if len(key_candidates) > 0:
                 key = key_candidates[0]
+            else:
+                all_keys = ", ".join(axes + data_keys)
+                print(
+                    f"Error: Cannot find a proper key name for {axis} from keys:{all_keys} {e}"
+                )
     return key
 
 
