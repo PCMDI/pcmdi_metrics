@@ -14,6 +14,8 @@ from pcmdi_metrics.mean_climate.lib import compute_statistics
 from pcmdi_metrics.io import xcdat_openxml
 from pcmdi_metrics.io.base import Base
 
+import sys
+
 class MetadataFile:
     # This class organizes the contents for the CMEC
     # metadata file called output.json, which describes
@@ -386,6 +388,7 @@ if __name__ == "__main__":
         "RESULTS": {},
         "model_year_range": {}
     }
+    print(model_list)
 
     for model in model_list:
         tags = {
@@ -401,13 +404,19 @@ if __name__ == "__main__":
             print(ncfiles)
             realizations = []
             for ncfile in ncfiles:
-                realizations.append(ncfile.split("/")[-1].split(".")[3])
+                basename = ncfile.split("/")[-1]
+                if len(basename.split(".")) <= 2:
+                    if basename.split("_")[4] not in realizations:
+                        realizations.append(basename.split("_")[4])
+                else:
+                    if basename.split(".")[3] not in realizations:
+                        realizations.append(basename.split(".")[3])
+                    
             print("=================================")
             print("model, runs:", model, realizations)
             list_of_runs = realizations
         else:
             list_of_runs = realizations
-        print(list_of_runs)
 
         start_year = msyear
         end_year = meyear
@@ -424,6 +433,11 @@ if __name__ == "__main__":
             "nasateam": {},
             "bootstrap": {}
         }
+
+        # Model grid area
+        print(replace_multi(area_template,tags))
+        area = xc.open_dataset(glob.glob(replace_multi(area_template,tags))[0])
+        area[area_var] = adjust_units(area[area_var],AreaUnitsAdjust)
 
         # Loop over realizations
         for run_ind,run in enumerate(list_of_runs):
@@ -452,21 +466,22 @@ if __name__ == "__main__":
                 for t in test_data_full_path:
                     print("  ", t)
 
-            # Model grid area
-            print(area_template)
-            print(replace_multi(area_template,tags))
-            area = load_dataset(replace_multi(area_template,tags))
-            area[area_var] = adjust_units(area[area_var],AreaUnitsAdjust)
-
             # Load and prep data
             ds = load_dataset(test_data_full_path)
             ds[var] = adjust_units(ds[var],ModUnitsAdjust)
-            xvar = get_longitude(ds).name
-            yvar = get_latitude(ds).name
-            if (ds.lon < -180).any():
-                ds["lon"] = ds.lon.where(ds.lon >= -180, ds.lon+360)
-            if ds.lon.min() >= 0:
-                ds["lon"] = ds.lon.where(ds.lon >= 180, ds.lon-360)
+            try:
+                xvar = get_longitude(ds).name
+                yvar = get_latitude(ds).name
+            except Exception as e:
+                print("Could not get latitude or longitude variables")
+                print("  Error:",e)
+                continue
+            print("xvar", xvar)
+            print("yvar", yvar)
+            if (ds[xvar] < -180).any():
+                ds[xvar] = ds[xvar].where(ds[xvar] >= -180, ds[xvar]+360)
+            if ds[xvar].min() >= 0:
+                ds[xvar] = ds[xvar].where(ds[xvar] >= 180, ds[xvar]-360)
 
             # Get time slice if year parameters exist
             if start_year is not None:
@@ -477,40 +492,40 @@ if __name__ == "__main__":
                 yr_range = [str(int(ds.time.dt.year[0])),str(int(ds.time.dt.year[-1]))]
 
             # Get regions
-            data_arctic = ds[var].where(ds.lat > 0, 0)
-            data_antarctic = ds[var].where(ds.lat < 0, 0)
+            data_arctic = ds[var].where(ds[yvar] > 0, 0)
+            data_antarctic = ds[var].where(ds[yvar] < 0, 0)
             data_ca1 = ds[var].where((
-                (ds.lat > 80) &
-                (ds.lat <= 87.2) &
-                (ds.lon > -120) &
-                (ds.lon <= 90)),0)
+                (ds[yvar] > 80) &
+                (ds[yvar] <= 87.2) &
+                (ds[xvar] > -120) &
+                (ds[xvar] <= 90)),0)
             data_ca2 = ds[var].where(
-                ((ds.lat > 65) & (ds.lat < 87.2)) &
-                ((ds.lon > 90) | (ds.lon <= -120)),0)
+                ((ds[yvar] > 65) & (ds[yvar] < 87.2)) &
+                ((ds[xvar] > 90) | (ds[xvar] <= -120)),0)
             data_ca = data_ca1 + data_ca2
             data_np = ds[var].where(
-                (ds.lat > 35) &
-                (ds.lat <= 65) &
-                ((ds.lon > 90) | (ds.lon <= -120)),0)
+                (ds[yvar] > 35) &
+                (ds[yvar] <= 65) &
+                ((ds[xvar] > 90) | (ds[xvar] <= -120)),0)
             data_na = ds[var].where(
-                (ds.lat > 45) &
-                (ds.lat <= 80) &
-                (ds.lon > -120) &
-                (ds.lon <= 90),0)
+                (ds[yvar] > 45) &
+                (ds[yvar] <= 80) &
+                (ds[xvar] > -120) &
+                (ds[xvar] <= 90),0)
             data_na = data_na - data_na.where(
-                (ds.lat > 45) &
-                (ds.lat <= 50) &
-                (ds.lon > 30) &
-                (ds.lon <= 60),0)
+                (ds[yvar] > 45) &
+                (ds[yvar] <= 50) &
+                (ds[xvar] > 30) &
+                (ds[xvar] <= 60),0)
             data_sa = ds[var].where(
-                (ds.lat > -90) & (ds.lat <= -55) &
-                (ds.lon > -60) & (ds.lon <= 20))
+                (ds[yvar] > -90) & (ds[yvar] <= -55) &
+                (ds[xvar] > -60) & (ds[xvar] <= 20))
             data_sp = ds[var].where(
-                (ds.lat > -90) & (ds.lat <= -55) &
-                ((ds.lon > 90) | (ds.lon <= -60)))
+                (ds[yvar] > -90) & (ds[yvar] <= -55) &
+                ((ds[xvar] > 90) | (ds[xvar] <= -60)))
             data_io = ds[var].where(
-                (ds.lat > -90) & (ds.lat <= -55) &
-                (ds.lon > 20) & (ds.lon <= 90))
+                (ds[yvar] > -90) & (ds[yvar] <= -55) &
+                (ds[xvar] > 20) & (ds[xvar] <= 90))
 
             regions_dict = {
                 "arctic": data_arctic,
@@ -530,7 +545,9 @@ if __name__ == "__main__":
 
             ds.close()
 
+        print("Calculating model average metrics")
         for rgn in regions_dict:
+            print(rgn)
             # Set up metrics dictionary
             for key in ["nasateam","bootstrap"]:
                 mse[model][key][rgn] = {
@@ -609,12 +626,13 @@ if __name__ == "__main__":
         elif ymax < 4:
             ticks = np.linspace(0,round(ymax),num=round(ymax/2)*4+1)
             labels = [str(round(x,1)) for x in ticks]
-        elif ymax < 10:
+        elif ymax > 10:
+            ticks = range(0,round(ymax),5)
+            labels = [str(round(x,0)) for x in ticks]
+        else:
             ticks = range(0,round(ymax))
             labels = [str(round(x,0)) for x in ticks]
-        elif ymax > 10:
-            ticks = range(0,round(ymax),2)
-            labels = [str(round(x,0)) for x in ticks]
+
         ax7[inds].set_yticks(ticks,labels,fontsize=6)
 
         ax7[inds].set_ylabel("10${^12}$km${^4}$",size=6)
