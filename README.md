@@ -98,6 +98,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.2]        | New metric added: **Extremes**
 | [v3.1.2]      | Technical update
 | [v3.1.1]      | Technical and documentation update
 | [v3.1]        | New metric added: **Precipitation Benchmarking -- distribution bimodality**
@@ -124,6 +125,7 @@ Release Notes and History
 
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.2
 [v3.1.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.1.2
 [v3.1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.1.1
 [v3.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.1
@@ -144,7 +146,7 @@ Release Notes and History
 [v2.1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.1.0
 [v2.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v2.0
 [v1.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.2
-[v1.1.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1.2
+[v1.1.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/1.1.2
 [v1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1
 [v1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0
 
