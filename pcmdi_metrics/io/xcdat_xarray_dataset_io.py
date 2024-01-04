@@ -20,7 +20,7 @@ def get_time_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     return time_key
 
 
-def get_lat_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
+def get_latitude_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     try:
         lat_key = xc.get_dim_keys(ds, "Y")
     except Exception:
@@ -29,7 +29,7 @@ def get_lat_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     return lat_key
 
 
-def get_lon_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
+def get_longitude_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     try:
         lon_key = xc.get_dim_keys(ds, "X")
     except Exception:
@@ -46,13 +46,13 @@ def get_time_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     return ds[lat_key].attrs["bounds"]
 
 
-def get_lat_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
-    lat_key = get_lat_key(ds)
+def get_latitude_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
+    lat_key = get_latitude_key(ds)
     return ds[lat_key].attrs["bounds"]
 
 
-def get_lon_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
-    lon_key = get_lon_key(ds)
+def get_longitude_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
+    lon_key = get_longitude_key(ds)
     return ds[lon_key].attrs["bounds"]
 
 
@@ -66,13 +66,13 @@ def get_time(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
 
 
 def get_longitude(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
-    lon_key = get_lon_key(ds)
+    lon_key = get_longitude_key(ds)
     lon = ds[lon_key]
     return lon
 
 
 def get_latitude(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
-    lat_key = get_lat_key(ds)
+    lat_key = get_latitude_key(ds)
     lat = ds[lat_key]
     return lat
 
@@ -87,13 +87,13 @@ def get_time_bounds(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
 
 
 def get_longitude_bounds(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
-    lon_bounds_key = get_lon_bounds_key(ds)
+    lon_bounds_key = get_longitude_bounds_key(ds)
     lon_bounds = ds[lon_bounds_key]
     return lon_bounds
 
 
 def get_latitude_bounds(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
-    lat_bounds_key = get_lat_bounds_key(ds)
+    lat_bounds_key = get_latitude_bounds_key(ds)
     lat_bounds = ds[lat_bounds_key]
     return lat_bounds
 
@@ -135,10 +135,10 @@ def select_subset(
     """
     sel_keys = {}
     if lat is not None:
-        lat_key = get_lat_key(ds)
+        lat_key = get_latitude_key(ds)
         sel_keys[lat_key] = slice(*lat)
     if lon is not None:
-        lon_key = get_lon_key(ds)
+        lon_key = get_longitude_key(ds)
         sel_keys[lon_key] = slice(*lon)
     if time is not None:
         time_key = get_time_key(ds)
