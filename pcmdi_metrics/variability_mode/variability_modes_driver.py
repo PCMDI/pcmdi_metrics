@@ -546,8 +546,7 @@ for model in models:
     # Run
     # -------------------------------------------------
     for model_path in model_path_list:
-        # try:
-        if 1:
+        try:
             if realization == "*":
                 run = (model_path.split("/")[-1]).split(".")[run_in_modpath]
             else:
@@ -1022,14 +1021,12 @@ for model in models:
                 run=run,
                 cmec_flag=cmec,
             )
-        """
         except Exception as err:
             if debug:
                 raise
             else:
                 print("warning: failed for ", model, run, err)
                 pass
-        """
 # ========================================================================
 # Dictionary to JSON: collective JSON at the end of model_realization loop
 # ------------------------------------------------------------------------
