@@ -135,10 +135,10 @@ def select_subset(
     """
     sel_keys = {}
     if lat is not None:
-        lat_key = get_lat_key(ds) 
+        lat_key = get_lat_key(ds)
         sel_keys[lat_key] = slice(*lat)
     if lon is not None:
-        lon_key = get_lon_key(ds) 
+        lon_key = get_lon_key(ds)
         sel_keys[lon_key] = slice(*lon)
     if time is not None:
         time_key = get_time_key(ds)
