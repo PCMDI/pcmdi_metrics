@@ -2,10 +2,9 @@
 
 import datetime
 
-from genutil import StringConstructor
-
 from pcmdi_metrics.mean_climate.lib import calculate_climatology
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPMetricsParser
+from pcmdi_metrics.utils import StringConstructor
 
 ver = datetime.datetime.now().strftime("v%Y%m%d")
 
