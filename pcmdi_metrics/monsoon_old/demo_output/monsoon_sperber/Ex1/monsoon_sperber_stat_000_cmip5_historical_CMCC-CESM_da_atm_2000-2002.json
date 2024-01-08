@@ -1,0 +1,239 @@
+{
+    "REF": {},
+    "RESULTS": {
+        "ACCESS1-0": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 49,
+                    "duration": 15,
+                    "onset_index": 35,
+                    "slope": 0.04484002869910438
+                },
+                "Sahel": {
+                    "decay_index": 46,
+                    "duration": 19,
+                    "onset_index": 28,
+                    "slope": 0.03450343762369387
+                }
+            }
+        },
+        "ACCESS1-3": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 55,
+                    "duration": 19,
+                    "onset_index": 37,
+                    "slope": 0.033454867228844026
+                },
+                "Sahel": {
+                    "decay_index": 45,
+                    "duration": 17,
+                    "onset_index": 29,
+                    "slope": 0.03837334907993753
+                }
+            }
+        },
+        "BCC-CSM1-1": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 51,
+                    "duration": 15,
+                    "onset_index": 37,
+                    "slope": 0.04648171076341607
+                },
+                "Sahel": {
+                    "decay_index": 48,
+                    "duration": 19,
+                    "onset_index": 30,
+                    "slope": 0.03320468955795527
+                }
+            }
+        },
+        "BCC-CSM1-1-M": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 54,
+                    "duration": 20,
+                    "onset_index": 35,
+                    "slope": 0.029473845544818775
+                },
+                "Sahel": {
+                    "decay_index": 48,
+                    "duration": 17,
+                    "onset_index": 32,
+                    "slope": 0.036083645686190394
+                }
+            }
+        },
+        "BNU-ESM": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 53,
+                    "duration": 17,
+                    "onset_index": 37,
+                    "slope": 0.03805215347633588
+                },
+                "Sahel": {
+                    "decay_index": 47,
+                    "duration": 15,
+                    "onset_index": 33,
+                    "slope": 0.04490750608349154
+                }
+            }
+        },
+        "CCSM4": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 49,
+                    "duration": 17,
+                    "onset_index": 33,
+                    "slope": 0.036910136162872254
+                },
+                "Sahel": {
+                    "decay_index": 49,
+                    "duration": 17,
+                    "onset_index": 33,
+                    "slope": 0.036958305053421604
+                }
+            }
+        },
+        "CESM1-BGC": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 53,
+                    "duration": 19,
+                    "onset_index": 35,
+                    "slope": 0.035204252207461144
+                },
+                "Sahel": {
+                    "decay_index": 50,
+                    "duration": 20,
+                    "onset_index": 31,
+                    "slope": 0.03190522074198897
+                }
+            }
+        },
+        "CESM1-CAM5": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 50,
+                    "duration": 17,
+                    "onset_index": 34,
+                    "slope": 0.036025336321858066
+                },
+                "Sahel": {
+                    "decay_index": 50,
+                    "duration": 18,
+                    "onset_index": 33,
+                    "slope": 0.036755426401155304
+                }
+            }
+        },
+        "CESM1-FASTCHEM": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 52,
+                    "duration": 19,
+                    "onset_index": 34,
+                    "slope": 0.03387700983094605
+                },
+                "Sahel": {
+                    "decay_index": 50,
+                    "duration": 19,
+                    "onset_index": 32,
+                    "slope": 0.03441121227915454
+                }
+            }
+        },
+        "CMCC-CESM": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 50,
+                    "duration": 15,
+                    "onset_index": 36,
+                    "slope": 0.041857787115826384
+                },
+                "Sahel": {
+                    "decay_index": 52,
+                    "duration": 15,
+                    "onset_index": 38,
+                    "slope": 0.04329389662775928
+                }
+            }
+        },
+        "CanCM4": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 50,
+                    "duration": 15,
+                    "onset_index": 36,
+                    "slope": 0.04208375661273472
+                },
+                "Sahel": {
+                    "decay_index": 48,
+                    "duration": 20,
+                    "onset_index": 29,
+                    "slope": 0.031111599199212015
+                }
+            }
+        },
+        "CanESM2": {
+            "r1i1p1": {}
+        }
+    },
+    "json_structure": [
+        "model",
+        "realization",
+        "monsoon_region",
+        "metric"
+    ],
+    "json_version": 3.0,
+    "provenance": {
+        "commandLine": "driver_monsoon_sperber_000.py -p /home/dong12/PMP/pcmdi_metrics/doc/jupyter/Demo/basic_monsoon_sperber_param.py --osyear 2000 --oeyear 2002 --msyear 2000 --meyear 2002 --modnames all",
+        "conda": {
+            "Platform": "linux-64",
+            "PythonVersion": "3.10.12.final.0",
+            "Version": "23.7.2",
+            "buildVersion": "not installed"
+        },
+        "date": "2023-12-06 16:04:04",
+        "openGL": {
+            "GLX": {
+                "client": {},
+                "server": {}
+            }
+        },
+        "osAccess": false,
+        "packages": {
+            "PMP": "v3.0.2-11-g06b151f",
+            "PMPObs": "See 'References' key below, for detailed obs provenance information.",
+            "blas": "0.3.25",
+            "cdat_info": "8.2.1",
+            "cdms": "3.1.5",
+            "cdp": "1.7.0",
+            "cdtime": "3.1.4",
+            "cdutil": "8.2.1",
+            "clapack": null,
+            "esmf": "8.4.2",
+            "esmpy": "8.4.2",
+            "genutil": "8.2.1",
+            "lapack": "3.9.0",
+            "matplotlib": null,
+            "mesalib": null,
+            "numpy": "1.22.4",
+            "python": "3.10.13",
+            "scipy": "1.11.4",
+            "uvcdat": null,
+            "vcs": null,
+            "vtk": null,
+            "xarray": "2023.11.0",
+            "xcdat": "0.5.0"
+        },
+        "platform": {
+            "Name": "gates.llnl.gov",
+            "OS": "Linux",
+            "Version": "3.10.0-1160.71.1.el7.x86_64"
+        },
+        "userId": "dong12"
+    }
+}

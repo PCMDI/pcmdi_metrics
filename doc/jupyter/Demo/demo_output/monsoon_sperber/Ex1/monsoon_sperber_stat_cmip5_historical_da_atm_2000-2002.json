@@ -1,0 +1,139 @@
+{
+    "REF": {
+        "GPCP-IP": {
+            "AIR": {
+                "decay_index": 52,
+                "duration": 21,
+                "onset_index": 32,
+                "slope": 0.03081945597537674
+            },
+            "AUS": {
+                "decay_index": 49,
+                "duration": 18,
+                "onset_index": 32,
+                "slope": 0.033984655889357715
+            },
+            "GoG": {
+                "decay_index": 31,
+                "duration": 15,
+                "onset_index": 17,
+                "slope": 0.02872523158397035
+            },
+            "NAmo": {
+                "decay_index": 54,
+                "duration": 21,
+                "onset_index": 34,
+                "slope": 0.030638273462939857
+            },
+            "SAmo": {
+                "decay_index": 55,
+                "duration": 31,
+                "onset_index": 25,
+                "slope": 0.020073948594955537
+            },
+            "Sahel": {
+                "decay_index": 47,
+                "duration": 11,
+                "onset_index": 37,
+                "slope": 0.05919145779670126
+            }
+        }
+    },
+    "RESULTS": {
+        "ACCESS1-0": {
+            "r1i1p1": {
+                "AIR": {
+                    "decay_index": 49,
+                    "duration": 11,
+                    "onset_index": 39,
+                    "slope": 0.05237035018316287
+                },
+                "AUS": {
+                    "decay_index": 45,
+                    "duration": 12,
+                    "onset_index": 34,
+                    "slope": 0.054539792896061284
+                },
+                "GoG": {
+                    "decay_index": 37,
+                    "duration": 18,
+                    "onset_index": 20,
+                    "slope": 0.023422706866820384
+                },
+                "NAmo": {
+                    "decay_index": 52,
+                    "duration": 34,
+                    "onset_index": 19,
+                    "slope": 0.01851729942693997
+                },
+                "SAmo": {
+                    "decay_index": 53,
+                    "duration": 29,
+                    "onset_index": 25,
+                    "slope": 0.02143484319171578
+                },
+                "Sahel": {
+                    "decay_index": 46,
+                    "duration": 20,
+                    "onset_index": 27,
+                    "slope": 0.03216030711966106
+                }
+            }
+        }
+    },
+    "json_structure": [
+        "model",
+        "realization",
+        "monsoon_region",
+        "metric"
+    ],
+    "json_version": 3.0,
+    "provenance": {
+        "commandLine": "/home/dong12/miniconda3/envs/PMP_2311/bin/driver_monsoon_sperber.py -p cdms_param.py --osyear 2000 --oeyear 2002 --msyear 2000 --meyear 2002 --debug True",
+        "conda": {
+            "Platform": "linux-64",
+            "PythonVersion": "3.10.12.final.0",
+            "Version": "23.7.2",
+            "buildVersion": "not installed"
+        },
+        "date": "2023-12-06 13:25:27",
+        "openGL": {
+            "GLX": {
+                "client": {},
+                "server": {}
+            }
+        },
+        "osAccess": false,
+        "packages": {
+            "PMP": "v3.0.2-11-g06b151f",
+            "PMPObs": "See 'References' key below, for detailed obs provenance information.",
+            "blas": "0.3.25",
+            "cdat_info": "8.2.1",
+            "cdms": "3.1.5",
+            "cdp": "1.7.0",
+            "cdtime": "3.1.4",
+            "cdutil": "8.2.1",
+            "clapack": null,
+            "esmf": "8.4.2",
+            "esmpy": "8.4.2",
+            "genutil": "8.2.1",
+            "lapack": "3.9.0",
+            "matplotlib": null,
+            "mesalib": null,
+            "numpy": "1.22.4",
+            "python": "3.10.13",
+            "scipy": "1.11.4",
+            "uvcdat": null,
+            "vcs": null,
+            "vtk": null,
+            "xarray": "2023.11.0",
+            "xcdat": "0.5.0"
+        },
+        "platform": {
+            "Name": "gates.llnl.gov",
+            "OS": "Linux",
+            "Version": "3.10.0-1160.71.1.el7.x86_64"
+        },
+        "userId": "dong12"
+    }
+}

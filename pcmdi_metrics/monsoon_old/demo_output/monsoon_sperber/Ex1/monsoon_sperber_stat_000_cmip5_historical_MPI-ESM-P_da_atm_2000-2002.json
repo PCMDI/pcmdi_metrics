@@ -1,0 +1,594 @@
+{
+    "REF": {},
+    "RESULTS": {
+        "ACCESS1-0": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 49,
+                    "duration": 15,
+                    "onset_index": 35,
+                    "slope": 0.04484002869910438
+                },
+                "Sahel": {
+                    "decay_index": 46,
+                    "duration": 19,
+                    "onset_index": 28,
+                    "slope": 0.03450343762369387
+                }
+            }
+        },
+        "ACCESS1-3": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 55,
+                    "duration": 19,
+                    "onset_index": 37,
+                    "slope": 0.033454867228844026
+                },
+                "Sahel": {
+                    "decay_index": 45,
+                    "duration": 17,
+                    "onset_index": 29,
+                    "slope": 0.03837334907993753
+                }
+            }
+        },
+        "BCC-CSM1-1": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 51,
+                    "duration": 15,
+                    "onset_index": 37,
+                    "slope": 0.04648171076341607
+                },
+                "Sahel": {
+                    "decay_index": 48,
+                    "duration": 19,
+                    "onset_index": 30,
+                    "slope": 0.03320468955795527
+                }
+            }
+        },
+        "BCC-CSM1-1-M": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 54,
+                    "duration": 20,
+                    "onset_index": 35,
+                    "slope": 0.029473845544818775
+                },
+                "Sahel": {
+                    "decay_index": 48,
+                    "duration": 17,
+                    "onset_index": 32,
+                    "slope": 0.036083645686190394
+                }
+            }
+        },
+        "BNU-ESM": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 53,
+                    "duration": 17,
+                    "onset_index": 37,
+                    "slope": 0.03805215347633588
+                },
+                "Sahel": {
+                    "decay_index": 47,
+                    "duration": 15,
+                    "onset_index": 33,
+                    "slope": 0.04490750608349154
+                }
+            }
+        },
+        "CCSM4": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 49,
+                    "duration": 17,
+                    "onset_index": 33,
+                    "slope": 0.036910136162872254
+                },
+                "Sahel": {
+                    "decay_index": 49,
+                    "duration": 17,
+                    "onset_index": 33,
+                    "slope": 0.036958305053421604
+                }
+            }
+        },
+        "CESM1-BGC": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 53,
+                    "duration": 19,
+                    "onset_index": 35,
+                    "slope": 0.035204252207461144
+                },
+                "Sahel": {
+                    "decay_index": 50,
+                    "duration": 20,
+                    "onset_index": 31,
+                    "slope": 0.03190522074198897
+                }
+            }
+        },
+        "CESM1-CAM5": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 50,
+                    "duration": 17,
+                    "onset_index": 34,
+                    "slope": 0.036025336321858066
+                },
+                "Sahel": {
+                    "decay_index": 50,
+                    "duration": 18,
+                    "onset_index": 33,
+                    "slope": 0.036755426401155304
+                }
+            }
+        },
+        "CESM1-FASTCHEM": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 52,
+                    "duration": 19,
+                    "onset_index": 34,
+                    "slope": 0.03387700983094605
+                },
+                "Sahel": {
+                    "decay_index": 50,
+                    "duration": 19,
+                    "onset_index": 32,
+                    "slope": 0.03441121227915454
+                }
+            }
+        },
+        "CMCC-CESM": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 50,
+                    "duration": 15,
+                    "onset_index": 36,
+                    "slope": 0.041857787115826384
+                },
+                "Sahel": {
+                    "decay_index": 52,
+                    "duration": 15,
+                    "onset_index": 38,
+                    "slope": 0.04329389662775928
+                }
+            }
+        },
+        "CMCC-CM": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 50,
+                    "duration": 11,
+                    "onset_index": 40,
+                    "slope": 0.05806918495244399
+                },
+                "Sahel": {
+                    "decay_index": 50,
+                    "duration": 13,
+                    "onset_index": 38,
+                    "slope": 0.04821129094945478
+                }
+            }
+        },
+        "CMCC-CMS": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 55,
+                    "duration": 16,
+                    "onset_index": 40,
+                    "slope": 0.04061286623565894
+                },
+                "Sahel": {
+                    "decay_index": 52,
+                    "duration": 14,
+                    "onset_index": 39,
+                    "slope": 0.04912777578058955
+                }
+            }
+        },
+        "CNRM-CM5": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 52,
+                    "duration": 19,
+                    "onset_index": 34,
+                    "slope": 0.03375659241956913
+                },
+                "Sahel": {
+                    "decay_index": 50,
+                    "duration": 16,
+                    "onset_index": 35,
+                    "slope": 0.041441483014241776
+                }
+            }
+        },
+        "CSIRO-Mk3-6-0": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 50,
+                    "duration": 16,
+                    "onset_index": 35,
+                    "slope": 0.04020334222161443
+                },
+                "Sahel": {
+                    "decay_index": 51,
+                    "duration": 20,
+                    "onset_index": 32,
+                    "slope": 0.03273349586900537
+                }
+            }
+        },
+        "CanCM4": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 50,
+                    "duration": 15,
+                    "onset_index": 36,
+                    "slope": 0.04208375661273472
+                },
+                "Sahel": {
+                    "decay_index": 48,
+                    "duration": 20,
+                    "onset_index": 29,
+                    "slope": 0.031111599199212015
+                }
+            }
+        },
+        "CanESM2": {
+            "r1i1p1": {}
+        },
+        "EC-EARTH": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 48,
+                    "duration": 17,
+                    "onset_index": 32,
+                    "slope": 0.03815476410526078
+                },
+                "Sahel": {
+                    "decay_index": 48,
+                    "duration": 19,
+                    "onset_index": 30,
+                    "slope": 0.03387142438026599
+                }
+            }
+        },
+        "FGOALS-g2": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 52,
+                    "duration": 18,
+                    "onset_index": 35,
+                    "slope": 0.0356232325847335
+                },
+                "Sahel": {
+                    "decay_index": 52,
+                    "duration": 22,
+                    "onset_index": 31,
+                    "slope": 0.028339588772191095
+                }
+            }
+        },
+        "GFDL-CM3": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 52,
+                    "duration": 18,
+                    "onset_index": 35,
+                    "slope": 0.035637426324769746
+                },
+                "Sahel": {
+                    "decay_index": 53,
+                    "duration": 20,
+                    "onset_index": 34,
+                    "slope": 0.03167132895080293
+                }
+            }
+        },
+        "GFDL-ESM2G": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 49,
+                    "duration": 15,
+                    "onset_index": 35,
+                    "slope": 0.04413821278860779
+                },
+                "Sahel": {
+                    "decay_index": 52,
+                    "duration": 22,
+                    "onset_index": 31,
+                    "slope": 0.028819140642303825
+                }
+            }
+        },
+        "GFDL-ESM2M": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 50,
+                    "duration": 13,
+                    "onset_index": 38,
+                    "slope": 0.04828071612515992
+                },
+                "Sahel": {
+                    "decay_index": 52,
+                    "duration": 18,
+                    "onset_index": 35,
+                    "slope": 0.03579633503327809
+                }
+            }
+        },
+        "GISS-E2-H": {},
+        "GISS-E2-R": {},
+        "HadGEM2-AO": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 51,
+                    "duration": 16,
+                    "onset_index": 36,
+                    "slope": 0.0411877003451405
+                },
+                "Sahel": {
+                    "decay_index": 48,
+                    "duration": 13,
+                    "onset_index": 36,
+                    "slope": 0.05150452061887561
+                }
+            }
+        },
+        "HadGEM2-CC": {},
+        "HadGEM2-ES": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 51,
+                    "duration": 14,
+                    "onset_index": 38,
+                    "slope": 0.04593203881946285
+                },
+                "Sahel": {
+                    "decay_index": 47,
+                    "duration": 16,
+                    "onset_index": 32,
+                    "slope": 0.041544537170795336
+                }
+            }
+        },
+        "INMCM4": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 49,
+                    "duration": 23,
+                    "onset_index": 27,
+                    "slope": 0.027449735813008545
+                },
+                "Sahel": {
+                    "decay_index": 48,
+                    "duration": 23,
+                    "onset_index": 26,
+                    "slope": 0.027384730010844162
+                }
+            }
+        },
+        "IPSL-CM5A-LR": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 48,
+                    "duration": 12,
+                    "onset_index": 37,
+                    "slope": 0.053035371897006994
+                },
+                "Sahel": {
+                    "decay_index": 48,
+                    "duration": 13,
+                    "onset_index": 36,
+                    "slope": 0.05392117071222796
+                }
+            }
+        },
+        "IPSL-CM5A-MR": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 51,
+                    "duration": 14,
+                    "onset_index": 38,
+                    "slope": 0.04525959891942863
+                },
+                "Sahel": {
+                    "decay_index": 48,
+                    "duration": 9,
+                    "onset_index": 40,
+                    "slope": 0.07302814201645914
+                }
+            }
+        },
+        "IPSL-CM5B-LR": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 54,
+                    "duration": 17,
+                    "onset_index": 38,
+                    "slope": 0.04201193793020673
+                },
+                "Sahel": {
+                    "decay_index": 47,
+                    "duration": 9,
+                    "onset_index": 39,
+                    "slope": 0.07477584825806727
+                }
+            }
+        },
+        "MIROC-ESM": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 49,
+                    "duration": 22,
+                    "onset_index": 28,
+                    "slope": 0.028420008851268882
+                },
+                "Sahel": {
+                    "decay_index": 49,
+                    "duration": 24,
+                    "onset_index": 26,
+                    "slope": 0.025539580033394186
+                }
+            }
+        },
+        "MIROC-ESM-CHEM": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 47,
+                    "duration": 21,
+                    "onset_index": 27,
+                    "slope": 0.02994345727855562
+                },
+                "Sahel": {
+                    "decay_index": 49,
+                    "duration": 23,
+                    "onset_index": 27,
+                    "slope": 0.026203968247974496
+                }
+            }
+        },
+        "MIROC4h": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 48,
+                    "duration": 16,
+                    "onset_index": 33,
+                    "slope": 0.040566264368748876
+                },
+                "Sahel": {
+                    "decay_index": 48,
+                    "duration": 17,
+                    "onset_index": 32,
+                    "slope": 0.03819116223458818
+                }
+            }
+        },
+        "MIROC5": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 48,
+                    "duration": 18,
+                    "onset_index": 31,
+                    "slope": 0.03536510433081513
+                },
+                "Sahel": {
+                    "decay_index": 49,
+                    "duration": 17,
+                    "onset_index": 33,
+                    "slope": 0.03781420452880625
+                }
+            }
+        },
+        "MPI-ESM-LR": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 49,
+                    "duration": 16,
+                    "onset_index": 34,
+                    "slope": 0.03889342860300629
+                },
+                "Sahel": {
+                    "decay_index": 50,
+                    "duration": 12,
+                    "onset_index": 39,
+                    "slope": 0.05426644348848453
+                }
+            }
+        },
+        "MPI-ESM-MR": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 52,
+                    "duration": 13,
+                    "onset_index": 40,
+                    "slope": 0.04830711252837531
+                },
+                "Sahel": {
+                    "decay_index": 51,
+                    "duration": 13,
+                    "onset_index": 39,
+                    "slope": 0.051369020812376175
+                }
+            }
+        },
+        "MPI-ESM-P": {
+            "r1i1p1": {
+                "AUS": {
+                    "decay_index": 48,
+                    "duration": 18,
+                    "onset_index": 31,
+                    "slope": 0.03529714367838615
+                },
+                "Sahel": {
+                    "decay_index": 50,
+                    "duration": 13,
+                    "onset_index": 38,
+                    "slope": 0.05064876820053219
+                }
+            }
+        }
+    },
+    "json_structure": [
+        "model",
+        "realization",
+        "monsoon_region",
+        "metric"
+    ],
+    "json_version": 3.0,
+    "provenance": {
+        "commandLine": "driver_monsoon_sperber_000.py -p /home/dong12/PMP/pcmdi_metrics/doc/jupyter/Demo/basic_monsoon_sperber_param.py --osyear 2000 --oeyear 2002 --msyear 2000 --meyear 2002 --modnames all",
+        "conda": {
+            "Platform": "linux-64",
+            "PythonVersion": "3.10.12.final.0",
+            "Version": "23.7.2",
+            "buildVersion": "not installed"
+        },
+        "date": "2023-12-06 17:16:07",
+        "openGL": {
+            "GLX": {
+                "client": {},
+                "server": {}
+            }
+        },
+        "osAccess": false,
+        "packages": {
+            "PMP": "v3.0.2-11-g06b151f",
+            "PMPObs": "See 'References' key below, for detailed obs provenance information.",
+            "blas": "0.3.25",
+            "cdat_info": "8.2.1",
+            "cdms": "3.1.5",
+            "cdp": "1.7.0",
+            "cdtime": "3.1.4",
+            "cdutil": "8.2.1",
+            "clapack": null,
+            "esmf": "8.4.2",
+            "esmpy": "8.4.2",
+            "genutil": "8.2.1",
+            "lapack": "3.9.0",
+            "matplotlib": null,
+            "mesalib": null,
+            "numpy": "1.22.4",
+            "python": "3.10.13",
+            "scipy": "1.11.4",
+            "uvcdat": null,
+            "vcs": null,
+            "vtk": null,
+            "xarray": "2023.11.0",
+            "xcdat": "0.5.0"
+        },
+        "platform": {
+            "Name": "gates.llnl.gov",
+            "OS": "Linux",
+            "Version": "3.10.0-1160.71.1.el7.x86_64"
+        },
+        "userId": "dong12"
+    }
+}
