@@ -1,4 +1,4 @@
-from .compute_statistics import (
+from .compute_statistics_dataset import (
     annual_mean,
     bias_xy,
     bias_xyt,
@@ -14,4 +14,9 @@ from .compute_statistics import (
     std_xy,
     std_xyt,
     zonal_mean,
+)
+
+from .compute_statistics_dataArray import (
+    calculate_temporal_correlation,
+    calculate_spatial_correlation
 )
