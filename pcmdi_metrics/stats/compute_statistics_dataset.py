@@ -1,25 +1,23 @@
 import math
-
-import numpy as np
-import xcdat as xc
-import xarray as xr
 from typing import Union
 
+import numpy as np
+import xarray as xr
+import xcdat as xc
 
 
-def check_data_convert_to_ds_if_needed(da: Union[xr.Dataset, xr.DataArray], var: str=None):
+def check_data_convert_to_ds_if_needed(
+    da: Union[xr.Dataset, xr.DataArray], var: str = "variable"
+):
     if isinstance(da, xr.Dataset):
         return da
     elif isinstance(da, xr.DataArray):
-        if var is None:
-            var = "variable"  # assign arbitrary variable name
-        return da.to_dataset(name=var)
+        return da.to_dataset(name=var).bounds.add_missing_bounds()
     else:
         raise TypeError("Input must be an instance of DataArray or Dataset")
-    
 
 
-def annual_mean(dm, do, var=None):
+def annual_mean(dm, do, var="variable"):
     """Computes ANNUAL MEAN"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -28,16 +26,16 @@ def annual_mean(dm, do, var=None):
             "Contact": "pcmdi-metrics@llnl.gov",
             "Comments": "Assumes input are 12 months climatology",
         }
-        
+
     dm = check_data_convert_to_ds_if_needed(dm, var)
     do = check_data_convert_to_ds_if_needed(do, var)
-    
+
     dm_am = dm.temporal.average(var)
     do_am = do.temporal.average(var)
     return dm_am, do_am  # DataSets
 
 
-def seasonal_mean(d, season, var=None):
+def seasonal_mean(d, season, var="variable"):
     """Computes SEASONAL MEAN"""
     if d is None and season is None:  # just want the doc
         return {
@@ -75,7 +73,7 @@ def seasonal_mean(d, season, var=None):
 # Metrics calculations
 
 
-def bias_xy(dm, do, var=None, weights=None):
+def bias_xy(dm, do, var="variable", weights=None):
     """Computes bias"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -94,7 +92,7 @@ def bias_xy(dm, do, var=None, weights=None):
     return float(stat)
 
 
-def bias_xyt(dm, do, var=None):
+def bias_xyt(dm, do, var="variable"):
     """Computes bias"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -114,7 +112,7 @@ def bias_xyt(dm, do, var=None):
     return float(stat)
 
 
-def cor_xy(dm, do, var=None, weights=None):
+def cor_xy(dm, do, var="variable", weights=None):
     """Computes correlation"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -125,7 +123,7 @@ def cor_xy(dm, do, var=None, weights=None):
 
     dm = check_data_convert_to_ds_if_needed(dm, var)
     do = check_data_convert_to_ds_if_needed(do, var)
-        
+
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
 
@@ -145,7 +143,7 @@ def cor_xy(dm, do, var=None, weights=None):
     return float(stat)
 
 
-def mean_xy(d, var=None, weights=None):
+def mean_xy(d, var="variable", weights=None):
     """Computes bias"""
     if d is None:  # just want the doc
         return {
@@ -162,7 +160,7 @@ def mean_xy(d, var=None, weights=None):
     return float(stat)
 
 
-def meanabs_xy(dm, do, var=None, weights=None):
+def meanabs_xy(dm, do, var="variable", weights=None):
     """Computes Mean Absolute Error"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -171,18 +169,19 @@ def meanabs_xy(dm, do, var=None, weights=None):
             + "Absolute Difference Between Model And Observation",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    if weights is None:
-        weights = dm.spatial.get_weights(axis=["X", "Y"])
 
     dm = check_data_convert_to_ds_if_needed(dm, var)
     do = check_data_convert_to_ds_if_needed(do, var)
+    
+    if weights is None:
+        weights = dm.spatial.get_weights(axis=["X", "Y"])
 
     dif = abs(dm[var] - do[var])
     stat = dif.weighted(weights).mean(("lon", "lat"))
     return float(stat)
 
 
-def meanabs_xyt(dm, do, var=None):
+def meanabs_xyt(dm, do, var="variable"):
     """Computes Mean Absolute Error"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -205,7 +204,7 @@ def meanabs_xyt(dm, do, var=None):
     return float(stat)
 
 
-def rms_0(dm, do, var=None, weighted=True):
+def rms_0(dm, do, var="variable", weighted=True):
     """Computes rms over first axis -- compare two zonal mean fields"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -226,7 +225,7 @@ def rms_0(dm, do, var=None, weighted=True):
     return float(stat)
 
 
-def rms_xy(dm, do, var=None, weights=None):
+def rms_xy(dm, do, var="variable", weights=None):
     """Computes rms"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -245,7 +244,7 @@ def rms_xy(dm, do, var=None, weights=None):
     return float(stat)
 
 
-def rms_xyt(dm, do, var=None):
+def rms_xyt(dm, do, var="variable"):
     """Computes rms"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -266,7 +265,7 @@ def rms_xyt(dm, do, var=None):
     return float(stat)
 
 
-def rmsc_xy(dm, do, var=None, weights=None):
+def rmsc_xy(dm, do, var="variable", weights=None):
     """Computes centered rms"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -277,7 +276,7 @@ def rmsc_xy(dm, do, var=None, weights=None):
 
     dm = check_data_convert_to_ds_if_needed(dm, var)
     do = check_data_convert_to_ds_if_needed(do, var)
-        
+
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
 
@@ -305,7 +304,7 @@ def rmsc_xy(dm, do, var=None, weights=None):
     return float(stat)
 
 
-def std_xy(ds, var=None, weights=None):
+def std_xy(ds, var="variable", weights=None):
     """Computes std"""
     if ds is None:  # just want the doc
         return {
@@ -313,10 +312,11 @@ def std_xy(ds, var=None, weights=None):
             "Abstract": "Compute Spatial Standard Deviation",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    if weights is None:
-        weights = ds.spatial.get_weights(axis=["X", "Y"])
 
     ds = check_data_convert_to_ds_if_needed(ds, var)
+
+    if weights is None:
+        weights = ds.spatial.get_weights(axis=["X", "Y"])
 
     lat_key = xc.axis.get_dim_keys(ds, axis="Y")
     lon_key = xc.axis.get_dim_keys(ds, axis="X")
@@ -328,7 +328,7 @@ def std_xy(ds, var=None, weights=None):
     return float(std)
 
 
-def std_xyt(d, var=None):
+def std_xyt(d, var="variable"):
     """Computes std"""
     if d is None:  # just want the doc
         return {
@@ -347,7 +347,7 @@ def std_xyt(d, var=None):
     return std
 
 
-def zonal_mean(dm, do, var=None):
+def zonal_mean(dm, do, var="variable"):
     """Computes ZONAL MEAN assumes rectilinear/regular grid"""
     if dm is None and do is None:  # just want the doc
         return {
