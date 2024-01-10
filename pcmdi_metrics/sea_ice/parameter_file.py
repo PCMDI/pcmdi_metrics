@@ -18,18 +18,30 @@
 
 # CMIP6
 #=======
-#test_data_set=["E3SM-1-0"]
+case_id="cmip6"
+test_data_set=[
+    "E3SM-1-0", 
+    "CanESM5",
+    "CAS-ESM2-0", 
+    "GFDL-ESM4", 
+    "E3SM-2-0", 
+    "MIROC6", 
+    "ACCESS-CM2", 
+    "ACCESS-ESM1-5"
+    ]
 realization="*"
-#test_data_path="/p/user_pub/cmip/CMIP6/CMIP/*/%(model)/historical/%(realization)/SImon/siconc/*/v20190806/"
-#filename_template="siconc_SImon_%(model)_historical_%(realization)_*_*.nc"
+test_data_path="links_siconc/%(model)/historical/%(realization)/siconc/"
+filename_template="siconc_SImon_%(model)_historical_%(realization)_*_*.nc"
 var="siconc"
-msyear=1991
-meyear=2010
+msyear=1981
+meyear=2000
 ModUnitsAdjust=(True,"multiply",1e-2)
 
-area_template="/p/css03/esgf_publish/CMIP6/CMIP/*/%(model)/historical/*/fx/areacella/*/*/areacella_fx_%(model)_historical_%(realization)_*.nc"
-area_var="areacella"
+area_template="links_area/%(model)/*.nc"
+area_var="areacello"
 AreaUnitsAdjust=(True,"multiply",1e-6)
+
+metrics_output_path="demo/%(case_id)/"
 
 
 # Reference is hard coded currently so this is a placeholder
