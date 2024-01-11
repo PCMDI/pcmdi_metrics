@@ -6,15 +6,15 @@ import xarray as xr
 import xcdat as xc
 
 
-def check_data_convert_to_ds_if_needed(
-    da: Union[xr.Dataset, xr.DataArray], var: str = "variable"
+def _check_data_convert_to_ds_if_needed(
+    d: Union[xr.Dataset, xr.DataArray], var: str = "variable"
 ):
-    if isinstance(da, xr.Dataset):
-        return da
-    elif isinstance(da, xr.DataArray):
-        return da.to_dataset(name=var).bounds.add_missing_bounds()
+    if isinstance(d, xr.Dataset):
+        return d.copy()
+    elif isinstance(d, xr.DataArray):
+        return d.to_dataset(name=var).bounds.add_missing_bounds().copy()
     else:
-        raise TypeError("Input must be an instance of DataArray or Dataset")
+        raise TypeError("Input must be an instance of either xarrary.DataArray or xarrary.Dataset")
 
 
 def annual_mean(dm, do, var="variable"):
@@ -27,8 +27,8 @@ def annual_mean(dm, do, var="variable"):
             "Comments": "Assumes input are 12 months climatology",
         }
 
-    dm = check_data_convert_to_ds_if_needed(dm, var)
-    do = check_data_convert_to_ds_if_needed(do, var)
+    dm = _check_data_convert_to_ds_if_needed(dm, var)
+    do = _check_data_convert_to_ds_if_needed(do, var)
 
     dm_am = dm.temporal.average(var)
     do_am = do.temporal.average(var)
@@ -82,13 +82,14 @@ def bias_xy(dm, do, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = check_data_convert_to_ds_if_needed(dm, var)
-    do = check_data_convert_to_ds_if_needed(do, var)
+    dm = _check_data_convert_to_ds_if_needed(dm, var)
+    do = _check_data_convert_to_ds_if_needed(do, var)
 
     dif = dm[var] - do[var]
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
-    stat = float(dif.weighted(weights).mean(("lon", "lat")))
+    #stat = float(dif.weighted(weights).mean(("lon", "lat")))
+    stat = mean_xy(dif, weights=weights)
     return float(stat)
 
 
@@ -101,8 +102,8 @@ def bias_xyt(dm, do, var="variable"):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = check_data_convert_to_ds_if_needed(dm, var)
-    do = check_data_convert_to_ds_if_needed(do, var)
+    dm = _check_data_convert_to_ds_if_needed(dm, var)
+    do = _check_data_convert_to_ds_if_needed(do, var)
 
     ds = dm.copy(deep=True)
     ds["dif"] = dm[var] - do[var]
@@ -121,8 +122,8 @@ def cor_xy(dm, do, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = check_data_convert_to_ds_if_needed(dm, var)
-    do = check_data_convert_to_ds_if_needed(do, var)
+    dm = _check_data_convert_to_ds_if_needed(dm, var)
+    do = _check_data_convert_to_ds_if_needed(do, var)
 
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
@@ -152,11 +153,14 @@ def mean_xy(d, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    d = check_data_convert_to_ds_if_needed(d, var)
+    d = _check_data_convert_to_ds_if_needed(d, var)
+    
+    lat_key = xc.axis.get_dim_keys(d, axis="Y")
+    lon_key = xc.axis.get_dim_keys(d, axis="X")
 
     if weights is None:
         weights = d.spatial.get_weights(axis=["X", "Y"])
-    stat = float(d[var].weighted(weights).mean(("lon", "lat")))
+    stat = d[var].weighted(weights).mean((lat_key, lon_key))
     return float(stat)
 
 
@@ -170,8 +174,8 @@ def meanabs_xy(dm, do, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = check_data_convert_to_ds_if_needed(dm, var)
-    do = check_data_convert_to_ds_if_needed(do, var)
+    dm = _check_data_convert_to_ds_if_needed(dm, var)
+    do = _check_data_convert_to_ds_if_needed(do, var)
     
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
@@ -191,8 +195,8 @@ def meanabs_xyt(dm, do, var="variable"):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = check_data_convert_to_ds_if_needed(dm, var)
-    do = check_data_convert_to_ds_if_needed(do, var)
+    dm = _check_data_convert_to_ds_if_needed(dm, var)
+    do = _check_data_convert_to_ds_if_needed(do, var)
 
     ds = dm.copy(deep=True)
     ds["absdif"] = abs(dm[var] - do[var])
@@ -213,8 +217,8 @@ def rms_0(dm, do, var="variable", weighted=True):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = check_data_convert_to_ds_if_needed(dm, var)
-    do = check_data_convert_to_ds_if_needed(do, var)
+    dm = _check_data_convert_to_ds_if_needed(dm, var)
+    do = _check_data_convert_to_ds_if_needed(do, var)
 
     dif_square = (dm[var] - do[var]) ** 2
     if weighted:
@@ -234,13 +238,13 @@ def rms_xy(dm, do, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = check_data_convert_to_ds_if_needed(dm, var)
-    do = check_data_convert_to_ds_if_needed(do, var)
+    dm = _check_data_convert_to_ds_if_needed(dm, var)
+    do = _check_data_convert_to_ds_if_needed(do, var)
 
     dif_square = (dm[var] - do[var]) ** 2
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
-    stat = math.sqrt(dif_square.weighted(weights).mean(("lon", "lat")))
+    stat = math.sqrt(mean_xy(dif_square, var=var, weights=weights))
     return float(stat)
 
 
@@ -253,8 +257,8 @@ def rms_xyt(dm, do, var="variable"):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = check_data_convert_to_ds_if_needed(dm, var)
-    do = check_data_convert_to_ds_if_needed(do, var)
+    dm = _check_data_convert_to_ds_if_needed(dm, var)
+    do = _check_data_convert_to_ds_if_needed(do, var)
 
     ds = dm.copy(deep=True)
     ds["diff_square"] = (dm[var] - do[var]) ** 2
@@ -265,7 +269,7 @@ def rms_xyt(dm, do, var="variable"):
     return float(stat)
 
 
-def rmsc_xy(dm, do, var="variable", weights=None):
+def rmsc_xy(dm, do, var="variable", weights=None, NormalizeByOwnSTDV=False):
     """Computes centered rms"""
     if dm is None and do is None:  # just want the doc
         return {
@@ -274,33 +278,24 @@ def rmsc_xy(dm, do, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = check_data_convert_to_ds_if_needed(dm, var)
-    do = check_data_convert_to_ds_if_needed(do, var)
+    dm = _check_data_convert_to_ds_if_needed(dm, var)
+    do = _check_data_convert_to_ds_if_needed(do, var)
 
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
-
-    lat_key_dm = xc.axis.get_dim_keys(dm, axis="Y")
-    lon_key_dm = xc.axis.get_dim_keys(dm, axis="X")
-
-    lat_key_do = xc.axis.get_dim_keys(do, axis="Y")
-    lon_key_do = xc.axis.get_dim_keys(do, axis="X")
-
-    if lat_key_dm == lat_key_do:
-        lat_key = lat_key_dm
+        
+    if NormalizeByOwnSTDV:
+        dm_tmp = dm[var] / std_xy(dm[var], var=var, weights=weights)
+        do_tmp = do[var] / std_xy(do[var], var=var, weights=weights)
     else:
-        print("Different key names: lat_key_dm, lat_key_do: ", lat_key_dm, lat_key_do)
-
-    if lon_key_dm == lon_key_do:
-        lon_key = lon_key_dm
-    else:
-        print("Different key names: lon_key_dm, lon_key_do: ", lon_key_dm, lon_key_do)
-
-    dm_anomaly = dm[var] - dm[var].weighted(weights).mean((lat_key_dm, lon_key_dm))
-    do_anomaly = do[var] - do[var].weighted(weights).mean((lat_key_do, lon_key_do))
-    diff_square = (dm_anomaly - do_anomaly) ** 2
-
-    stat = math.sqrt(diff_square.weighted(weights).mean((lat_key, lon_key)))
+        dm_tmp = dm[var].copy()
+        do_tmp = do[var].copy()
+    
+    # Remove mean
+    dm_anomaly = dm_tmp - mean_xy(dm_tmp, var=var, weights=weights)
+    do_anomaly = do_tmp - mean_xy(do_tmp, var=var, weights=weights)    
+    
+    stat = rms_xy(dm_anomaly, do_anomaly, var=var, weights=weights)
     return float(stat)
 
 
@@ -313,7 +308,7 @@ def std_xy(ds, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    ds = check_data_convert_to_ds_if_needed(ds, var)
+    ds = _check_data_convert_to_ds_if_needed(ds, var)
 
     if weights is None:
         weights = ds.spatial.get_weights(axis=["X", "Y"])
@@ -337,7 +332,7 @@ def std_xyt(d, var="variable"):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     ds = d.copy(deep=True)
-    ds = check_data_convert_to_ds_if_needed(ds, var)
+    ds = _check_data_convert_to_ds_if_needed(ds, var)
     average = d.spatial.average(var, axis=["X", "Y"]).temporal.average(var)[var]
     ds["anomaly"] = (d[var] - average) ** 2
     variance = (
@@ -356,8 +351,8 @@ def zonal_mean(dm, do, var="variable"):
             "Contact": "pcmdi-metrics@llnl.gov",
             "Comments": "",
         }
-    dm = check_data_convert_to_ds_if_needed(dm, var)
-    do = check_data_convert_to_ds_if_needed(do, var)
+    dm = _check_data_convert_to_ds_if_needed(dm, var)
+    do = _check_data_convert_to_ds_if_needed(do, var)
 
     dm_zm = dm.spatial.average(var, axis=["X"])
     do_zm = do.spatial.average(var, axis=["X"])
