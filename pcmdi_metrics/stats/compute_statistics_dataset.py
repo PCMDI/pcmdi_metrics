@@ -14,7 +14,9 @@ def _check_data_convert_to_ds_if_needed(
     elif isinstance(d, xr.DataArray):
         return d.to_dataset(name=var).bounds.add_missing_bounds().copy()
     else:
-        raise TypeError("Input must be an instance of either xarrary.DataArray or xarrary.Dataset")
+        raise TypeError(
+            "Input must be an instance of either xarrary.DataArray or xarrary.Dataset"
+        )
 
 
 def annual_mean(dm, do, var="variable"):
@@ -88,7 +90,7 @@ def bias_xy(dm, do, var="variable", weights=None):
     dif = dm[var] - do[var]
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
-    #stat = float(dif.weighted(weights).mean(("lon", "lat")))
+    # stat = float(dif.weighted(weights).mean(("lon", "lat")))
     stat = mean_xy(dif, weights=weights)
     return float(stat)
 
@@ -154,7 +156,7 @@ def mean_xy(d, var="variable", weights=None):
         }
 
     d = _check_data_convert_to_ds_if_needed(d, var)
-    
+
     lat_key = xc.axis.get_dim_keys(d, axis="Y")
     lon_key = xc.axis.get_dim_keys(d, axis="X")
 
@@ -176,7 +178,7 @@ def meanabs_xy(dm, do, var="variable", weights=None):
 
     dm = _check_data_convert_to_ds_if_needed(dm, var)
     do = _check_data_convert_to_ds_if_needed(do, var)
-    
+
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
 
@@ -283,18 +285,18 @@ def rmsc_xy(dm, do, var="variable", weights=None, NormalizeByOwnSTDV=False):
 
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
-        
+
     if NormalizeByOwnSTDV:
         dm_tmp = dm[var] / std_xy(dm[var], var=var, weights=weights)
         do_tmp = do[var] / std_xy(do[var], var=var, weights=weights)
     else:
         dm_tmp = dm[var].copy()
         do_tmp = do[var].copy()
-    
+
     # Remove mean
     dm_anomaly = dm_tmp - mean_xy(dm_tmp, var=var, weights=weights)
-    do_anomaly = do_tmp - mean_xy(do_tmp, var=var, weights=weights)    
-    
+    do_anomaly = do_tmp - mean_xy(do_tmp, var=var, weights=weights)
+
     stat = rms_xy(dm_anomaly, do_anomaly, var=var, weights=weights)
     return float(stat)
 
