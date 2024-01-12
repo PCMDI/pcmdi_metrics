@@ -13,6 +13,7 @@ from sea_ice_parser import create_sea_ice_parser
 
 from pcmdi_metrics.io import xcdat_openxml
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.utils import create_land_sea_mask
 
 from pcmdi_metrics.io import (  # noqa
     get_axis_list,
@@ -77,6 +78,110 @@ class MetadataFile:
     def write(self):
         with open(self.outfile, "w") as f:
             json.dump(self.json, f, indent=4)
+
+
+def sea_ice_regions(ds, var, xvar, yvar):
+    # Two sets of region definitions are provided, one for
+    # -180:180 and one for 0:360 longitude ranges
+    data_arctic = ds[var].where(ds[yvar] > 0, 0)
+    data_antarctic = ds[var].where(ds[yvar] < 0, 0)
+    if (ds[xvar] > 180).any():  # 0 to 360
+        data_ca1 = ds[var].where(
+            (
+                (ds[yvar] > 80)
+                & (ds[yvar] <= 87.2)
+                & ((ds[xvar] > 240) | (ds[xvar] <= 90))
+            ),
+            0,
+        )
+        data_ca2 = ds[var].where(
+            ((ds[yvar] > 65) & (ds[yvar] < 87.2))
+            & ((ds[xvar] > 90) & (ds[xvar] <= 240)),
+            0,
+        )
+        data_ca = data_ca1 + data_ca2
+        data_np = ds[var].where(
+            (ds[yvar] > 35) & (ds[yvar] <= 65) & ((ds[xvar] > 90) & (ds[xvar] <= 240)),
+            0,
+        )
+        data_na = ds[var].where(
+            (ds[yvar] > 45) & (ds[yvar] <= 80) & ((ds[xvar] > 240) | (ds[xvar] <= 90)),
+            0,
+        )
+        data_na = data_na - data_na.where(
+            (ds[yvar] > 45) & (ds[yvar] <= 50) & (ds[xvar] > 30) & (ds[xvar] <= 60),
+            0,
+        )
+        data_sa = ds[var].where(
+            (ds[yvar] > -90)
+            & (ds[yvar] <= -40)
+            & ((ds[xvar] > 300) | (ds[xvar] <= 20)),
+            0,
+        )
+        data_sp = ds[var].where(
+            (ds[yvar] > -90)
+            & (ds[yvar] <= -40)
+            & ((ds[xvar] > 90) & (ds[xvar] <= 300)),
+            0,
+        )
+        data_io = ds[var].where(
+            (ds[yvar] > -90) & (ds[yvar] <= -40) & (ds[xvar] > 20) & (ds[xvar] <= 90),
+            0,
+        )
+    else:  # -180 to 180
+        data_ca1 = ds[var].where(
+            (
+                (ds[yvar] > 80)
+                & (ds[yvar] <= 87.2)
+                & (ds[xvar] > -120)
+                & (ds[xvar] <= 90)
+            ),
+            0,
+        )
+        data_ca2 = ds[var].where(
+            ((ds[yvar] > 65) & (ds[yvar] < 87.2))
+            & ((ds[xvar] > 90) | (ds[xvar] <= -120)),
+            0,
+        )
+        data_ca = data_ca1 + data_ca2
+        data_np = ds[var].where(
+            (ds[yvar] > 35) & (ds[yvar] <= 65) & ((ds[xvar] > 90) | (ds[xvar] <= -120)),
+            0,
+        )
+        data_na = ds[var].where(
+            (ds[yvar] > 45) & (ds[yvar] <= 80) & (ds[xvar] > -120) & (ds[xvar] <= 90),
+            0,
+        )
+        data_na = data_na - data_na.where(
+            (ds[yvar] > 45) & (ds[yvar] <= 50) & (ds[xvar] > 30) & (ds[xvar] <= 60),
+            0,
+        )
+        data_sa = ds[var].where(
+            (ds[yvar] > -90) & (ds[yvar] <= -40) & (ds[xvar] > -60) & (ds[xvar] <= 20),
+            0,
+        )
+        data_sp = ds[var].where(
+            (ds[yvar] > -90)
+            & (ds[yvar] <= -40)
+            & ((ds[xvar] > 90) | (ds[xvar] <= -60)),
+            0,
+        )
+        data_io = ds[var].where(
+            (ds[yvar] > -90) & (ds[yvar] <= -40) & (ds[xvar] > 20) & (ds[xvar] <= 90),
+            0,
+        )
+
+    regions_dict = {
+        "arctic": data_arctic.copy(deep=True),
+        "ca": data_ca.copy(deep=True),
+        "np": data_np.copy(deep=True),
+        "na": data_na.copy(deep=True),
+        "antarctic": data_antarctic.copy(deep=True),
+        "sa": data_sa.copy(deep=True),
+        "sp": data_sp.copy(deep=True),
+        "io": data_io.copy(deep=True),
+    }
+    return regions_dict
 
 
 def find_lon(ds):
@@ -293,9 +398,12 @@ if __name__ == "__main__":
         obs = xc.open_dataset(arctic_files[source])
         obs[obs_var] = adjust_units(obs[obs_var], ObsUnitsAdjust)
         obs["area"] = adjust_units(obs["area"], ObsAreaUnitsAdjust)
-        # mask=create_land_sea_mask(obs,lon_key="lon",lat_key="lat")
+        # Remove land areas (including lakes)
+        mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
+        obs[obs_var] = obs[obs_var].where(mask < 1)
         # Get regions
-        data_arctic = obs[obs_var].where((obs.lat > 0), 0)
+        rgn_dict = sea_ice_regions(obs, obs_var, "lon", "lat")
+        """data_arctic = obs[obs_var].where((obs.lat > 0), 0)
         data_ca1 = obs[obs_var].where(
             ((obs.lat > 80) & (obs.lat <= 87.2) & (obs.lon > -120) & (obs.lon <= 90)), 0
         )
@@ -312,22 +420,21 @@ if __name__ == "__main__":
         )
         data_na = data_na - data_na.where(
             (obs.lat > 45) & (obs.lat <= 50) & (obs.lon > 30) & (obs.lon <= 60), 0
-        )
-        # TODO: land/sea masking to remove lakes
+        )"""
 
         # Get ice extent
         total_extent_arctic_obs = (
-            data_arctic.where(data_arctic > 0.15) * obs.area
+            rgn_dict["arctic"].where(rgn_dict["arctic"] > 0.15) * obs.area
         ).sum(("x", "y"), skipna=True)
-        total_extent_ca_obs = (data_ca.where(data_ca > 0.15) * obs.area).sum(
-            ("x", "y"), skipna=True
-        )
-        total_extent_np_obs = (data_np.where(data_np > 0.15) * obs.area).sum(
-            ("x", "y"), skipna=True
-        )
-        total_extent_na_obs = (data_na.where(data_na > 0.15) * obs.area).sum(
-            ("x", "y"), skipna=True
-        )
+        total_extent_ca_obs = (
+            rgn_dict["ca"].where(rgn_dict["ca"] > 0.15) * obs.area
+        ).sum(("x", "y"), skipna=True)
+        total_extent_np_obs = (
+            rgn_dict["np"].where(rgn_dict["np"] > 0.15) * obs.area
+        ).sum(("x", "y"), skipna=True)
+        total_extent_na_obs = (
+            rgn_dict["na"].where(rgn_dict["na"] > 0.15) * obs.area
+        ).sum(("x", "y"), skipna=True)
 
         clim_arctic_obs = to_ice_con_ds(
             total_extent_arctic_obs, obs
@@ -365,7 +472,11 @@ if __name__ == "__main__":
         obs = xc.open_dataset(antarctic_files[source])
         obs[obs_var] = adjust_units(obs[obs_var], ObsUnitsAdjust)
         obs["area"] = adjust_units(obs["area"], ObsAreaUnitsAdjust)
-        data_antarctic = obs[obs_var].where((obs.lat < 0), 0)
+        # Remove land areas (including lakes)
+        mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
+        obs[obs_var] = obs[obs_var].where(mask < 1)
+        rgn_dict = sea_ice_regions(obs, obs_var, "lon", "lat")
+        """data_antarctic = obs[obs_var].where((obs.lat < 0), 0)
         data_sa = obs[obs_var].where(
             (obs.lat > -90) & (obs.lat <= -55) & (obs.lon > -60) & (obs.lon <= 20), 0
         )
@@ -374,21 +485,20 @@ if __name__ == "__main__":
         )
         data_io = obs[obs_var].where(
             (obs.lat > -90) & (obs.lat <= -55) & (obs.lon > 20) & (obs.lon <= 90), 0
-        )
-        # TODO: land/sea masking to remove lakes; do antarctica for consistency
+        )"""
 
         total_extent_antarctic_obs = (
-            data_antarctic.where(data_antarctic > 0.15) * obs.area
+            rgn_dict["antarctic"].where(rgn_dict["antarctic"] > 0.15) * obs.area
         ).sum(("x", "y"), skipna=True)
-        total_extent_sa_obs = (data_sa.where(data_sa > 0.15) * obs.area).sum(
-            ("x", "y"), skipna=True
-        )
-        total_extent_sp_obs = (data_sp.where(data_sp > 0.15) * obs.area).sum(
-            ("x", "y"), skipna=True
-        )
-        total_extent_io_obs = (data_io.where(data_io > 0.15) * obs.area).sum(
-            ("x", "y"), skipna=True
-        )
+        total_extent_sa_obs = (
+            rgn_dict["sa"].where(rgn_dict["sa"] > 0.15) * obs.area
+        ).sum(("x", "y"), skipna=True)
+        total_extent_sp_obs = (
+            rgn_dict["sp"].where(rgn_dict["sp"] > 0.15) * obs.area
+        ).sum(("x", "y"), skipna=True)
+        total_extent_io_obs = (
+            rgn_dict["io"].where(rgn_dict["io"] > 0.15) * obs.area
+        ).sum(("x", "y"), skipna=True)
 
         clim_antarctic_obs = to_ice_con_ds(
             total_extent_antarctic_obs, obs
@@ -511,7 +621,7 @@ if __name__ == "__main__":
         area = xc.open_dataset(glob.glob(replace_multi(area_template, tags))[0])
         area[area_var] = adjust_units(area[area_var], AreaUnitsAdjust)
 
-        if len(list_of_runs) > 1:
+        if len(list_of_runs) > 0:
             # Loop over realizations
             for run_ind, run in enumerate(list_of_runs):
                 # Find model data, determine number of files, check if they exist
@@ -529,7 +639,7 @@ if __name__ == "__main__":
                     print("")
                     print("-----------------------")
                     print("Not found: model, run, variable:", model, run, var)
-                    continue
+                    break
                 else:
                     print("")
                     print("-----------------------")
@@ -545,11 +655,9 @@ if __name__ == "__main__":
                 yvar = find_lat(ds)
                 if xvar is None or yvar is None:
                     print("Could not get latitude or longitude variables")
-                    continue
+                    break
                 if (ds[xvar] < -180).any():
                     ds[xvar] = ds[xvar].where(ds[xvar] >= -180, ds[xvar] + 360)
-                # if ds[xvar].min() >= 0:
-                #    ds[xvar] = ds[xvar].where(ds[xvar] <= 180, ds[xvar]-360)
 
                 # Get time slice if year parameters exist
                 if start_year is not None:
@@ -570,132 +678,8 @@ if __name__ == "__main__":
                     ]
 
                 # Get regions
-                data_arctic = ds[var].where(ds[yvar] > 0, 0)
-                data_antarctic = ds[var].where(ds[yvar] < 0, 0)
+                regions_dict = sea_ice_regions(ds, var, xvar, yvar)
 
-                # Define regions depending on -180:180 or 0:360 map
-                if (ds[xvar] > 180).any():
-                    data_ca1 = ds[var].where(
-                        (
-                            (ds[yvar] > 80)
-                            & (ds[yvar] <= 87.2)
-                            & ((ds[xvar] > 240) | (ds[xvar] <= 90))
-                        ),
-                        0,
-                    )
-                    data_ca2 = ds[var].where(
-                        ((ds[yvar] > 65) & (ds[yvar] < 87.2))
-                        & ((ds[xvar] > 90) & (ds[xvar] <= 240)),
-                        0,
-                    )
-                    data_ca = data_ca1 + data_ca2
-                    data_np = ds[var].where(
-                        (ds[yvar] > 35)
-                        & (ds[yvar] <= 65)
-                        & ((ds[xvar] > 90) & (ds[xvar] <= 240)),
-                        0,
-                    )
-                    data_na = ds[var].where(
-                        (ds[yvar] > 45)
-                        & (ds[yvar] <= 80)
-                        & ((ds[xvar] > 240) | (ds[xvar] <= 90)),
-                        0,
-                    )
-                    data_na = data_na - data_na.where(
-                        (ds[yvar] > 45)
-                        & (ds[yvar] <= 50)
-                        & (ds[xvar] > 30)
-                        & (ds[xvar] <= 60),
-                        0,
-                    )
-                    data_sa = ds[var].where(
-                        (ds[yvar] > -90)
-                        & (ds[yvar] <= -55)
-                        & ((ds[xvar] > 300) | (ds[xvar] <= 20)),
-                        0,
-                    )
-                    data_sp = ds[var].where(
-                        (ds[yvar] > -90)
-                        & (ds[yvar] <= -55)
-                        & ((ds[xvar] > 90) & (ds[xvar] <= 300)),
-                        0,
-                    )
-                    data_io = ds[var].where(
-                        (ds[yvar] > -90)
-                        & (ds[yvar] <= -55)
-                        & (ds[xvar] > 20)
-                        & (ds[xvar] <= 90),
-                        0,
-                    )
-                else:
-                    data_ca1 = ds[var].where(
-                        (
-                            (ds[yvar] > 80)
-                            & (ds[yvar] <= 87.2)
-                            & (ds[xvar] > -120)
-                            & (ds[xvar] <= 90)
-                        ),
-                        0,
-                    )
-                    data_ca2 = ds[var].where(
-                        ((ds[yvar] > 65) & (ds[yvar] < 87.2))
-                        & ((ds[xvar] > 90) | (ds[xvar] <= -120)),
-                        0,
-                    )
-                    data_ca = data_ca1 + data_ca2
-                    data_np = ds[var].where(
-                        (ds[yvar] > 35)
-                        & (ds[yvar] <= 65)
-                        & ((ds[xvar] > 90) | (ds[xvar] <= -120)),
-                        0,
-                    )
-                    data_na = ds[var].where(
-                        (ds[yvar] > 45)
-                        & (ds[yvar] <= 80)
-                        & (ds[xvar] > -120)
-                        & (ds[xvar] <= 90),
-                        0,
-                    )
-                    data_na = data_na - data_na.where(
-                        (ds[yvar] > 45)
-                        & (ds[yvar] <= 50)
-                        & (ds[xvar] > 30)
-                        & (ds[xvar] <= 60),
-                        0,
-                    )
-                    data_sa = ds[var].where(
-                        (ds[yvar] > -90)
-                        & (ds[yvar] <= -55)
-                        & (ds[xvar] > -60)
-                        & (ds[xvar] <= 20),
-                        0,
-                    )
-                    data_sp = ds[var].where(
-                        (ds[yvar] > -90)
-                        & (ds[yvar] <= -55)
-                        & ((ds[xvar] > 90) | (ds[xvar] <= -60)),
-                        0,
-                    )
-                    data_io = (
-                        ds[var].where(
-                            (ds[yvar] > -90)
-                            & (ds[yvar] <= -55)
-                            & (ds[xvar] > 20)
-                            & (ds[xvar] <= 90)
-                        ),
-                        0,
-                    )
-
-                regions_dict = {
-                    "arctic": data_arctic.copy(deep=True),
-                    "antarctic": data_antarctic.copy(deep=True),
-                    "ca": data_ca.copy(deep=True),
-                    "np": data_np.copy(deep=True),
-                    "na": data_na.copy(deep=True),
-                    "sa": data_sa.copy(deep=True),
-                    "sp": data_sp.copy(deep=True),
-                    "io": data_io.copy(deep=True),
-                }
                 ds.close()
                 # Running sum of all realizations
                 for rgn in regions_dict:
@@ -770,8 +754,8 @@ if __name__ == "__main__":
 
     metrics["RESULTS"] = mse
 
-    metricsfile = os.path.join(metrics_output_path, "metrics_demo.json")
-    JSON = Base(metrics_output_path, "metrics_demo.json")
+    metricsfile = os.path.join(metrics_output_path, "sea_ice_metrics.json")
+    JSON = Base(metrics_output_path, "sea_ice_metrics.json")
     json_structure = metrics["DIMENSIONS"]["json_structure"]
     JSON.write(
         metrics,
@@ -858,7 +842,7 @@ if __name__ == "__main__":
             xycoords="axes fraction",
             size=8,
         )
-    figfile = os.path.join(metrics_output_path, "demo_fig.png")
+    figfile = os.path.join(metrics_output_path, "MSE_bar_chart.png")
     plt.savefig(figfile)
     meta.update_plots(
         "bar_chart", figfile, "regional_bar_chart", "Bar chart of regional MSE"
