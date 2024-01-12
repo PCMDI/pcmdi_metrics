@@ -55,7 +55,6 @@ import sys
 from argparse import RawTextHelpFormatter
 from shutil import copyfile
 
-import cdtime
 import cdutil
 import MV2
 
@@ -81,15 +80,6 @@ from pcmdi_metrics.variability_mode.lib import (
     variability_metrics_to_json,
     write_nc_output,
 )
-
-# To avoid below error
-# OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
-os.environ["OPENBLAS_NUM_THREADS"] = "1"
-
-# Must be done before any CDAT library is called.
-# https://github.com/CDAT/cdat/issues/2213
-if "UVCDAT_ANONYMOUS_LOG" not in os.environ:
-    os.environ["UVCDAT_ANONYMOUS_LOG"] = "no"
 
 regions_specs = {}
 egg_pth = resources.resource_path()
@@ -231,17 +221,11 @@ print("parallel:", parallel)
 # =================================================
 # Time period adjustment
 # -------------------------------------------------
-start_time = cdtime.comptime(msyear, 1, 1, 0, 0)
-end_time = cdtime.comptime(meyear, 12, 31, 23, 59)
+if osyear is None:
+    osyear = msyear
 
-try:
-    # osyear and oeyear variables were defined.
-    start_time_obs = cdtime.comptime(osyear, 1, 1, 0, 0)
-    end_time_obs = cdtime.comptime(oeyear, 12, 31, 23, 59)
-except NameError:
-    # osyear, oeyear variables were NOT defined
-    start_time_obs = start_time
-    end_time_obs = end_time
+if oeyear is None:
+    oeyear = meyear
 
 # =================================================
 # Region control
@@ -320,13 +304,12 @@ if obs_compare:
 
     # read data in
     obs_timeseries, osyear, oeyear = read_data_in(
-        obs_name,
         obs_path,
         obs_lf_path,
         obs_var,
         var,
-        start_time_obs,
-        end_time_obs,
+        osyear,
+        oeyear,
         ObsUnitsAdjust,
         LandMask,
         debug=debug,
@@ -546,7 +529,8 @@ for model in models:
     # Run
     # -------------------------------------------------
     for model_path in model_path_list:
-        try:
+        # try:
+        if 1:
             if realization == "*":
                 run = (model_path.split("/")[-1]).split(".")[run_in_modpath]
             else:
@@ -574,13 +558,12 @@ for model in models:
 
             # read data in
             model_timeseries, msyear, meyear = read_data_in(
-                model,
                 model_path,
                 model_lf_path,
                 var,
                 var,
-                start_time,
-                end_time,
+                msyear,
+                meyear,
                 ModUnitsAdjust,
                 LandMask,
                 debug=debug,
@@ -1021,12 +1004,14 @@ for model in models:
                 run=run,
                 cmec_flag=cmec,
             )
+        """
         except Exception as err:
             if debug:
                 raise
             else:
                 print("warning: failed for ", model, run, err)
                 pass
+        """
 # ========================================================================
 # Dictionary to JSON: collective JSON at the end of model_realization loop
 # ------------------------------------------------------------------------

@@ -1,10 +1,10 @@
 from time import gmtime, strftime
 
-import cdutil
-import genutil
-import MV2
-
-# from pcmdi_metrics.variability_mode.lib import debug_print
+from pcmdi_metrics.stats import bias_xy as calcBias
+from pcmdi_metrics.stats import cor_xy as calcSCOR
+from pcmdi_metrics.stats import mean_xy
+from pcmdi_metrics.stats import rms_xy as calcRMS
+from pcmdi_metrics.stats import rmsc_xy as calcRMSc
 
 
 def calc_stats_save_dict(
@@ -47,8 +47,8 @@ def calc_stats_save_dict(
     debug_print("frac and stdv_pc end", debug)
 
     # Mean
-    mean = cdutil.averager(eof, axis="yx", weights="weighted")
-    mean_glo = cdutil.averager(eof_lr, axis="yx", weights="weighted")
+    mean = mean_xy(eof)
+    mean_glo = mean_xy(eof_lr)
     dict_head["mean"] = float(mean)
     dict_head["mean_glo"] = float(mean_glo)
     debug_print("mean end", debug)
@@ -77,11 +77,10 @@ def calc_stats_save_dict(
         if method == "eof":
             # Double check for arbitrary sign control
             if cor < 0:
-                eof = MV2.multiply(eof, -1)
-                pc = MV2.multiply(pc, -1)
-                eof_lr = MV2.multiply(eof_lr, -1)
-                eof_model_global = MV2.multiply(eof_model_global, -1)
-                eof_model = MV2.multiply(eof_model, -1)
+                variables_to_flip_sign = [eof, pc, eof_lr, eof_model_global, eof_model]
+                for variable in variables_to_flip_sign:
+                    variable *= -1
+
                 # Calc cor again
                 cor = calcSCOR(eof_model, eof_obs)
                 cor_glo = calcSCOR(eof_model_global, eof_lr_obs)
@@ -115,65 +114,12 @@ def calc_stats_save_dict(
         return dict_head, eof_lr
 
 
-def calcBias(a, b):
-    # Calculate bias
-    # a, b: cdms 2d variables (lat, lon)
-    result = cdutil.averager(a, axis="xy", weights="weighted") - cdutil.averager(
-        b, axis="xy", weights="weighted"
-    )
-    return float(result)
-
-
-def calcRMS(a, b):
-    # Calculate root mean square (RMS) difference
-    # a, b: cdms 2d variables on the same grid (lat, lon)
-    result = genutil.statistics.rms(a, b, axis="xy", weights="weighted")
-    return float(result)
-
-
-def calcRMSc(a, b, NormalizeByOwnSTDV=True):
-    # Calculate centered root mean square (RMS) difference
-    # Reference: Taylor 2001 Journal of Geophysical Research, 106:7183-7192
-    # a, b: cdms 2d variables on the same grid (lat, lon)
-    # NormalizeByOwnSTDV: True (default) or False. Normalize pattern by its own standard deviation
-    if NormalizeByOwnSTDV:
-        # Normalize pattern by its standard deviation to have unit variance
-        a = a / calcSTDmap(a)
-        b = b / calcSTDmap(b)
-    # Get centered rmsc by using rms function
-    # that consider removing bias by mean subtraction
-    result = genutil.statistics.rms(a, b, axis="xy", centered=1, weights="weighted")
-    return float(result)
-
-
-def calcSCOR(a, b):
-    # Calculate spatial correlation
-    # a, b: cdms 2d variables on the same grid (lat, lon)
-    result = genutil.statistics.correlation(a, b, weights="generate", axis="xy")
-    return float(result)
-
-
-def calcTCOR(a, b):
-    # Calculate temporal correlation
-    # a, b: cdms 1d variables
-    result = genutil.statistics.correlation(a, b)
-    return float(result)
-
-
 def calcSTD(a):
     # Calculate standard deviation
-    # a: cdms 1d variables
+    # a: xarray DataArray 1d variables
     # biased=0 option enables divided by N-1 instead of N
-    result = genutil.statistics.std(a, biased=0)
+    result = a.std(ddof=1).values.item()
     return float(result)
-
-
-def calcSTDmap(a):
-    # Calculate spatial standard deviation from 2D map field
-    # a: cdms 2d (xy) variables
-    wts = cdutil.area_weights(a)
-    std = genutil.statistics.std(a, axis="xy", weights=wts)
-    return float(std)
 
 
 def debug_print(string, debug):
