@@ -1,8 +1,7 @@
-from __future__ import print_function
 import sys
+
 import numpy as np
 import scipy.interpolate as interp
-import time
 
 """ For pentad,
 Code taken from https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
@@ -14,7 +13,6 @@ Code taken from https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
 def divide_chunks(data, n):
     # looping till length data
     for i in range(0, data.time.shape[0], n):
-
         yield data[i : i + n]
 
 
@@ -35,7 +33,7 @@ def divide_chunks_advanced(data, n, debug=False):
         sys.exit(
             "error: first day of year time series is " + str(month) + "/" + str(day)
         )
-        
+
     # Check number of days in given year
     nday = data.time.shape[0]
 
@@ -50,7 +48,6 @@ def divide_chunks_advanced(data, n, debug=False):
             # Check if leap year date included
             leap_detect = False
             for ii in range(i, i + n):
-
                 date = data.time.dt
                 month = date.month[ii]
                 day = date.day[ii]
@@ -65,7 +62,6 @@ def divide_chunks_advanced(data, n, debug=False):
                 break
             else:
                 yield data[i : i + n]
-                
 
         # after leap year day passed
         if leap_detect:
@@ -75,10 +71,10 @@ def divide_chunks_advanced(data, n, debug=False):
         # Speacial case handling for HadGEM2 family where time bounds was not
         # properly saved, so include next year's first day in time series
         if debug:
-
+            print("debug: 361 to 360 revise: l.shape, before:", data.shape)
         data = data[0:360]
         if debug:
-
+            print("debug: 361 to 360 revise: l.shape, after:", data.shape)
         # looping till length data
         for i in range(0, nday, n):
             yield data[i : i + n]

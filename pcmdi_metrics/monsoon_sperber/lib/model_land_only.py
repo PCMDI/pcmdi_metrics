@@ -1,15 +1,13 @@
 import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
-import xcdat as xc
 import numpy as np
-import xarray as xr
 
 
 def model_land_only(model, model_timeseries, lf, debug=False):
     # -------------------------------------------------
     # Mask out over ocean grid
     # - - - - - - - - - - - - - - - - - - - - - - - - -
-    
+
     if debug:
         plot_map(model_timeseries[0], "_".join(["test", model, "beforeMask.png"]))
         print("debug: plot for beforeMask done")
@@ -19,23 +17,20 @@ def model_land_only(model, model_timeseries, lf, debug=False):
 
     if np.max(lf) == 1.0:
         lf = lf * 100.0
-    
+
     opt1 = False
 
     if opt1:  # Masking out partial ocean grids as well
         # Mask out ocean even fractional (leave only pure ocean grid)
-        model_timeseries_masked = model_timeseries.where( lf > 0 & lf < 100)
-        
+        model_timeseries_masked = model_timeseries.where(lf > 0 & lf < 100)
+
     else:  # Mask out only full ocean grid & use weighting for partial ocean grid
         model_timeseries_masked = model_timeseries.where(lf > 0)
 
-    
         if model == "EC-EARTH":
             # Mask out over 90% land grids for models those consider river as
             # part of land-sea fraction. So far only 'EC-EARTH' does..
             model_timeseries_masked = model_timeseries.where(lf > 90)
-
-        lf2 = lf/100.0
 
     if debug:
         plot_map(model_timeseries_masked[0], "_".join(["test", model, "afterMask.png"]))

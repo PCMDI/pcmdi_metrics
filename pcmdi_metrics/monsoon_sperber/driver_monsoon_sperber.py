@@ -34,15 +34,12 @@ government or Lawrence Livermore National Security, LLC, and shall not be used
 for advertising or product endorsement purposes.
 """
 
-import xcdat as xc
-import xarray as xr
-
 import copy
 import json
 import math
 import os
+import re
 import sys
-import time
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
 from glob import glob
@@ -50,9 +47,13 @@ from shutil import copyfile
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import xarray as xr
+import xcdat as xc
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
+from pcmdi_metrics.io import load_regions_specs, region_subset
 from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.monsoon_sperber.lib import (
     AddParserArgument,
@@ -62,9 +63,7 @@ from pcmdi_metrics.monsoon_sperber.lib import (
     model_land_only,
     sperber_metrics,
 )
-from pcmdi_metrics.io import load_regions_specs, region_subset
 from pcmdi_metrics.utils import fill_template
-import re
 
 
 def tree():
@@ -137,7 +136,7 @@ if ("all" in [m.lower() for m in models]) or (models == "all"):
         re.split(". |_", p.split("/")[-1])[model_index_path]
         for p in glob.glob(
             fill_template(
-                modpath, mip=mip, exp=exp, model="*", realization="*", variable=var
+                modpath, mip=mip, exp=exp, model="*", realization="*", variable="pr"
             )
         )
     ]
@@ -237,8 +236,7 @@ if includeOBS:
 
 for model in models:
     print(" ----- ", model, " ---------------------")
-    #try:
-    if 1:
+    try:
         # Conditions depending obs or model
         if model == "obs":
             var = varOBS
@@ -279,14 +277,13 @@ for model in models:
         # Read land fraction
 
         ds_lf = xc.open_mfdataset(model_lf_path)
-        lf = ds_lf.sftlf.sel(lat=slice(-90,90))  # land frac file must be global
+        lf = ds_lf.sftlf.sel(lat=slice(-90, 90))  # land frac file must be global
 
         # -------------------------------------------------
         # Loop start - Realization
         # -------------------------------------------------
         for model_path in model_path_list:
-            timechk1 = time.time()
-            if 1:
+            try:
                 if model == "obs":
                     run = "obs"
                 else:
@@ -300,11 +297,11 @@ for model in models:
                 print(" --- ", run, " ---")
 
                 # Get time coordinate information
-                
+
                 dc = xc.open_mfdataset(model_path)
-                dc = dc.assign_coords({'lon':lf.lon,'lat':lf.lat})
+                dc = dc.assign_coords({"lon": lf.lon, "lat": lf.lat})
                 c = xc.center_times(dc)
-                
+
                 # Get starting and ending year and month
                 startYear = c.time.values[0].year
                 startMonth = c.time.values[0].month
@@ -321,7 +318,7 @@ for model in models:
                 # Final selection of starting and ending years
                 startYear = max(syear, startYear)
                 endYear = min(eyear, endYear)
-                
+
                 # Check calendar (just checking..)
 
                 if debug:
@@ -335,11 +332,10 @@ for model in models:
                 list_pentad_time_series = {}
                 list_pentad_time_series_cumsum = {}  # Cumulative time series
                 for region in list_monsoon_regions:
-                    print('region = ',region)
+                    print("region = ", region)
                     list_pentad_time_series[region] = []
                     list_pentad_time_series_cumsum[region] = []
-           
-                        
+
                 # Write individual year time series for each monsoon domain
                 # in a netCDF file
                 output_filename = "{}_{}_{}_{}_{}_{}-{}".format(
@@ -349,15 +345,18 @@ for model in models:
                     output_filename = "{}_{}_{}_{}_{}_{}-{}".format(
                         mip, model, exp, run, "monsoon_sperber", startYear, endYear
                     )
-                    
-                    fout = cdms2.open(
-                        os.path.join(
-                            outdir(output_type="diagnostic_results"),
-                            output_filename + ".nc",
-                        ),
-                        "w",
+
+                    file_path = os.path.join(
+                        outdir(output_type="diagnostic_results"),
+                        output_filename + ".nc",
                     )
-                    
+                    try:
+                        fout = xr.open_dataset(
+                            file_path, mode="a"
+                        )  # 'a' stands for append mode
+                    except FileNotFoundError:
+                        fout = xr.Dataset()
+
                 # Plotting setup
                 if plot:
                     ax = {}
@@ -408,8 +407,13 @@ for model in models:
 
                 # year loop, endYear+1 to include last year
                 for year in range(startYear, endYear + 1):
-                    d = dc.pr.sel(time=slice(str(year)+"-01-01 00:00:00",str(year)+"-12-31 23:59:59"), lat=slice(-90,90))
-                    print("xxx d =, ",d)
+                    d = dc.pr.sel(
+                        time=slice(
+                            str(year) + "-01-01 00:00:00", str(year) + "-12-31 23:59:59"
+                        ),
+                        lat=slice(-90, 90),
+                    )
+                    print("xxx d =, ", d)
                     print("type d type,", type(d))
                     # unit adjust
                     if UnitsAdjust[0]:
@@ -417,73 +421,93 @@ for model in models:
                         d = MV2.multiply(d, 86400.)
                         d.units = 'mm/d'
                         """
-                        d.values = d.values * 86400.
+                        d.values = d.values * 86400.0
                         d["units"] = units
-                  
+
                     # variable for over land only
                     d_land = model_land_only(model, d, lf, debug=debug)
 
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
                     # Loop start - Monsoon region
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
-                    
-                    regions_specs = load_regions_specs()
-                    
-                    for region in list_monsoon_regions:
 
+                    regions_specs = load_regions_specs()
+
+                    for region in list_monsoon_regions:
                         # extract for monsoon region
                         if region in ["GoG", "NAmo"]:
                             # all grid point rainfall
                             d_sub_ds = region_subset(dc, regions_specs, region=region)
                             # must be entire calendar years
-                            d_sub_pr = d_sub_ds.pr.sel(time=slice(str(year)+"-01-01 00:00:00",
-                                                      str(year)+"-12-31 23:59:59"))
-                            
+                            d_sub_pr = d_sub_ds.pr.sel(
+                                time=slice(
+                                    str(year) + "-01-01 00:00:00",
+                                    str(year) + "-12-31 23:59:59",
+                                )
+                            )
+
                         else:
                             # land-only rainfall
-                            
+
                             d_sub_ds = region_subset(dc, regions_specs, region=region)
-                            d_sub_pr = d_sub_ds.pr.sel(time=slice(str(year)+"-01-01 00:00:00",
-                                                                  str(year)+"-12-31 23:59:59"))
-                            lf_sub_ds = region_subset(ds_lf, regions_specs, region=region)
+                            d_sub_pr = d_sub_ds.pr.sel(
+                                time=slice(
+                                    str(year) + "-01-01 00:00:00",
+                                    str(year) + "-12-31 23:59:59",
+                                )
+                            )
+                            lf_sub_ds = region_subset(
+                                ds_lf, regions_specs, region=region
+                            )
                             lf_sub = lf_sub_ds.sftlf
-                            d_sub_pr = model_land_only(model, d_sub_pr, lf_sub, debug=debug)
-                            
+                            d_sub_pr = model_land_only(
+                                model, d_sub_pr, lf_sub, debug=debug
+                            )
+
                         # Area average
 
                         ds_sub_pr = d_sub_pr.to_dataset().compute()
-                        ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds('X')
-                        ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds('Y')
-                        ds_sub_aave = ds_sub_pr.spatial.average("pr", axis=["X", "Y"],weights="generate").compute()
+                        ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("X")
+                        ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("Y")
+                        ds_sub_aave = ds_sub_pr.spatial.average(
+                            "pr", axis=["X", "Y"], weights="generate"
+                        ).compute()
                         d_sub_aave = ds_sub_aave.pr
 
                         if debug:
                             print("debug: region:", region)
-                            print("debug: d_sub.shape:", d_sub.shape)
-                            print("debug: d_sub_aave.shape:", d_sub_aave.shape)                         
-                            
-
+                            print("debug: d_sub_pr.shape:", d_sub_pr.shape)
+                            print("debug: d_sub_aave.shape:", d_sub_aave.shape)
 
                         # Southern Hemisphere monsoon domain
                         # set time series as 7/1~6/30
                         if region in ["AUS", "SAmo"]:
                             if year == startYear:
-                                start_t = str(year)+"-07-01 00:00:00"
-                                end_t = str(year)+"-12-31 23:59:59"
-                                temporary[region] = d_sub_aave.sel(time=slice(start_t, end_t))
+                                start_t = str(year) + "-07-01 00:00:00"
+                                end_t = str(year) + "-12-31 23:59:59"
+                                temporary[region] = d_sub_aave.sel(
+                                    time=slice(start_t, end_t)
+                                )
 
                                 continue
                             else:
                                 # n-1 year 7/1~12/31
                                 part1 = copy.copy(temporary[region])
                                 # n year 1/1~6/30
-                                part2 = d_sub_aave.sel(time=slice(str(year)+"-01-01 00:00:00",str(year)+"-06-30 23:59:59"))
-                                start_t = str(year)+"-07-01 00:00:00"
-                                end_t = str(year)+"-12-31 23:59:59"
-                                temporary[region] = d_sub_aave.sel(time=slice(start_t, end_t))
+                                part2 = d_sub_aave.sel(
+                                    time=slice(
+                                        str(year) + "-01-01 00:00:00",
+                                        str(year) + "-06-30 23:59:59",
+                                    )
+                                )
+                                start_t = str(year) + "-07-01 00:00:00"
+                                end_t = str(year) + "-12-31 23:59:59"
+                                temporary[region] = d_sub_aave.sel(
+                                    time=slice(start_t, end_t)
+                                )
 
-                                d_sub_aave = xr.concat([part1, part2], dim='time')
-                                
+                                d_sub_aave = xr.concat([part1, part2], dim="time")
+
                                 if debug:
                                     print(
                                         "debug: ",
@@ -492,50 +516,62 @@ for model in models:
                                         d_sub_aave.time,
                                     )
 
-
                         # get pentad time series
                         list_d_sub_aave_chunks = list(
                             divide_chunks_advanced(d_sub_aave, n, debug=debug)
                         )
-                        
+
                         pentad_time_series = []
-                        
+                        time_coords = np.array([], dtype="datetime64")
+
                         for d_sub_aave_chunk in list_d_sub_aave_chunks:
                             # ignore when chunk length is shorter than defined
                             if d_sub_aave_chunk.shape[0] >= n:
-
                                 aa = d_sub_aave_chunk.to_numpy()
                                 aa_mean = np.mean(aa)
-                                ave_chunk = d_sub_aave_chunk.mean(axis=0, skipna=True).compute()
+                                ave_chunk = d_sub_aave_chunk.mean(
+                                    axis=0, skipna=True
+                                ).compute()
                                 pentad_time_series.append(float(ave_chunk))
-                                
+                                datetime_str = str(d_sub_aave_chunk["time"][0].values)
+                                datetime = pd.to_datetime([datetime_str[:10]])
+                                time_coords = np.concatenate([time_coords, datetime])
+                                time_coords = pd.to_datetime(time_coords)
+
                         if debug:
                             print(
                                 "debug: pentad_time_series length: ",
                                 len(pentad_time_series),
                             )
 
-                            
                         # Keep pentad time series length in consistent
                         ref_length = int(365 / n)
                         if len(pentad_time_series) < ref_length:
                             pentad_time_series = interp1d(
                                 pentad_time_series, ref_length, debug=debug
                             )
-                            
-                            
+
                         pentad_time_series_cumsum = np.cumsum(pentad_time_series)
-                        pentad_time_series = xr.DataArray(pentad_time_series)
-                        pentad_time_series.attrs['units'] = d.units
-                        
+                        pentad_time_series = xr.DataArray(
+                            pentad_time_series,
+                            dims="time",
+                            name=region + "_" + str(year),
+                        )
+                        pentad_time_series.attrs["units"] = str(d.units.values)
+                        pentad_time_series.coords["time"] = time_coords
+
+                        pentad_time_series_cumsum = xr.DataArray(
+                            pentad_time_series_cumsum,
+                            dims="time",
+                            name=region + "_" + str(year) + "_cumsum",
+                        )
+                        pentad_time_series_cumsum.attrs["units"] = str(d.units.values)
+                        pentad_time_series_cumsum.coords["time"] = time_coords
 
                         if nc_out:
                             # Archive individual year time series in netCDF file
-                            fout.write(pentad_time_series, id=region + "_" + str(year))
-                            fout.write(
-                                pentad_time_series_cumsum,
-                                id=region + "_" + str(year) + "_cumsum",
-                            )
+                            pentad_time_series.to_netcdf(file_path, mode="a")
+                            pentad_time_series_cumsum.to_netcdf(file_path, mode="a")
 
                         """
                         if plot:
@@ -555,24 +591,23 @@ for model in models:
                             pentad_time_series_cumsum
                         )
 
-
                     # --- Monsoon region loop end
                 # --- Year loop end
-                #fc.close()
-                dc.close()      
-                
-                
+                # fc.close()
+                dc.close()
+
                 # -------------------------------------------------
                 # Loop start: Monsoon region without year: Composite
                 # -------------------------------------------------
                 if debug:
                     print("debug: composite start")
-                    
 
                 for region in list_monsoon_regions:
                     # Get composite for each region
 
-                    composite_pentad_time_series = np.array(list_pentad_time_series[region]).mean(axis=0)
+                    composite_pentad_time_series = np.array(
+                        list_pentad_time_series[region]
+                    ).mean(axis=0)
 
                     # Get accumulation ts from the composite
                     composite_pentad_time_series_cumsum = np.cumsum(
@@ -580,20 +615,46 @@ for model in models:
                     )
 
                     # Maintain axis information
-                    
+
                     # - - - - - - - - - - -
                     # Metrics for composite
                     # - - - - - - - - - - -
 
                     metrics_result = sperber_metrics(
                         composite_pentad_time_series_cumsum, region, debug=debug
-                    )         
-                
+                    )
 
                     # Normalized cummulative pentad time series
                     composite_pentad_time_series_cumsum_normalized = metrics_result[
                         "frac_accum"
                     ]
+
+                    composite_pentad_time_series = xr.DataArray(
+                        composite_pentad_time_series, dims="time", name=region + "_comp"
+                    )
+                    composite_pentad_time_series.attrs["units"] = str(d.units)
+                    composite_pentad_time_series.coords["time"] = time_coords
+
+                    composite_pentad_time_series_cumsum = xr.DataArray(
+                        composite_pentad_time_series_cumsum,
+                        dims="time",
+                        name=region + "_comp_cumsum",
+                    )
+                    composite_pentad_time_series_cumsum.attrs["units"] = str(d.units)
+                    composite_pentad_time_series_cumsum.coords["time"] = time_coords
+
+                    composite_pentad_time_series_cumsum_normalized = xr.DataArray(
+                        composite_pentad_time_series_cumsum_normalized,
+                        dims="time",
+                        name=region + "_comp_cumsum_fraction",
+                    )
+                    composite_pentad_time_series_cumsum_normalized.attrs["units"] = str(
+                        d.units
+                    )
+                    composite_pentad_time_series_cumsum_normalized.coords[
+                        "time"
+                    ] = time_coords
+
                     if model == "obs":
                         dict_obs_composite[reference_data_name][region] = {}
                         dict_obs_composite[reference_data_name][
@@ -616,15 +677,14 @@ for model in models:
 
                     # Archice in netCDF file
                     if nc_out:
-                        fout.write(composite_pentad_time_series, id=region + "_comp")
-                        fout.write(
-                            composite_pentad_time_series_cumsum,
-                            id=region + "_comp_cumsum",
+                        composite_pentad_time_series.to_netcdf(file_path, mode="a")
+                        composite_pentad_time_series_cumsum.to_netcdf(
+                            file_path, mode="a"
                         )
-                        fout.write(
-                            composite_pentad_time_series_cumsum_normalized,
-                            id=region + "_comp_cumsum_fraction",
+                        composite_pentad_time_series_cumsum_normalized.to_netcdf(
+                            file_path, mode="a"
                         )
+
                         if region == list_monsoon_regions[-1]:
                             fout.close()
 
@@ -648,7 +708,7 @@ for model in models:
                                     ymin=0,
                                     ymax=composite_pentad_time_series_cumsum_normalized[
                                         idx
-                                    ],
+                                    ].item(),
                                     c="red",
                                     ls="--",
                                 )
@@ -671,7 +731,7 @@ for model in models:
                                 ymin=0,
                                 ymax=dict_obs_composite[reference_data_name][region][
                                     idx
-                                ],
+                                ].item(),
                                 c="blue",
                                 ls="--",
                             )
@@ -717,23 +777,19 @@ for model in models:
                 if cmec:
                     JSON.write_cmec(indent=4, separators=(",", ": "))
 
-            """
             except Exception as err:
                 if debug:
                     raise
                 else:
                     print("warning: faild for ", model, run, err)
                     pass
-            """
         # --- Realization loop end
-    """
     except Exception as err:
         if debug:
             raise
         else:
             print("warning: faild for ", model, err)
             pass
-    """
 # --- Model loop end
 
 if not debug:
