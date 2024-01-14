@@ -55,11 +55,11 @@ import sys
 from argparse import RawTextHelpFormatter
 from shutil import copyfile
 
-import cdutil
 import MV2
 
 from pcmdi_metrics import resources
 from pcmdi_metrics.mean_climate.lib import pmp_parser
+from pcmdi_metrics.stats import mean_xy
 from pcmdi_metrics.utils import fill_template, sort_human, tree
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
@@ -472,10 +472,12 @@ if obs_compare:
         dict_head_obs["frac"] = float(frac_obs[season])
 
         # Mean
-        mean_obs = cdutil.averager(eof_obs[season], axis="yx", weights="weighted")
-        mean_glo_obs = cdutil.averager(
-            eof_lr_obs[season], axis="yx", weights="weighted"
-        )
+        # mean_obs = cdutil.averager(eof_obs[season], axis="yx", weights="weighted")
+        mean_obs = mean_xy(eof_obs[season])
+        # mean_glo_obs = cdutil.averager(
+        #    eof_lr_obs[season], axis="yx", weights="weighted"
+        # )
+        mean_glo_obs = mean_xy(eof_lr_obs[season])
         dict_head_obs["mean"] = float(mean_obs)
         dict_head_obs["mean_glo"] = float(mean_glo_obs)
         debug_print("obs mean end", debug)

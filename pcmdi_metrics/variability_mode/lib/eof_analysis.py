@@ -1,21 +1,24 @@
-from __future__ import print_function
-
-import sys
 from time import gmtime, strftime
 
-import cdms2
-import cdutil
-import genutil
-import MV2
 import numpy as np
-from eofs.cdms import Eof
+import xarray as xr
+from eofs.xarray import Eof
 
-# from pcmdi_metrics.variability_mode.lib import debug_print
+from pcmdi_metrics.io import (
+    get_latitude,
+    get_latitude_key,
+    get_longitude,
+    get_longitude_key,
+    load_regions_specs,
+    region_subset,
+)
+from pcmdi_metrics.utils import calculate_area_weights, calculate_grid_area
 
 
 def eof_analysis_get_variance_mode(
     mode,
-    timeseries,
+    ds,
+    data_var,
     eofn,
     eofn_max=None,
     debug=False,
@@ -23,12 +26,12 @@ def eof_analysis_get_variance_mode(
     save_multiple_eofs=False,
 ):
     """
-    NOTE: Proceed EOF analysis
+    Proceed EOF analysis
     Input
     - mode (string): mode of variability is needed for arbitrary sign
                      control, which is characteristics of EOF analysis
-    - timeseries (cdms2 variable): time varying 2d array, so 3d array
-                                  (time, lat, lon)
+    - ds (xarray Dataset): that containing a dataArray: time varying 2d array, so 3d array (time, lat, lon)
+    - data_var (string): name of the dataArray
     - eofn (integer): Target eofs to be return
     - eofn_max (integer): number of eofs to diagnose (1~N)
     Output
@@ -49,16 +52,17 @@ def eof_analysis_get_variance_mode(
         - reverse_sign_list: list of bool
         - solver
     """
-    if debug:
-        print("Lib-EOF: timeseries.shape:", timeseries.shape)
-    debug_print("Lib-EOF: solver", debug)
+    debug_print("Lib-EOF: eof_analysis_get_variance_mode function starts", debug)
 
     if eofn_max is None:
         eofn_max = eofn
         save_multiple_eofs = False
 
     # EOF (take only first variance mode...) ---
-    solver = Eof(timeseries, weights="area")
+    grid_area = calculate_grid_area(ds)
+    area_weights = calculate_area_weights(grid_area)
+    da = ds[data_var]
+    solver = Eof(da, weights=area_weights)
     debug_print("Lib-EOF: eof", debug)
 
     # pcscaling=1 by default, return normalized EOFs
@@ -73,7 +77,7 @@ def eof_analysis_get_variance_mode(
         pc = solver.pcs(npcs=eofn_max)  # pcscaling=0 by default
 
     # fraction of explained variance
-    frac = solver.varianceFraction()
+    frac = solver.varianceFraction(neigs=eofn_max)
     debug_print("Lib-EOF: frac", debug)
 
     # For each EOFs...
@@ -82,30 +86,23 @@ def eof_analysis_get_variance_mode(
     frac_list = []
     reverse_sign_list = []
 
-    for n in range(0, eofn_max):
+    for n in range(eofn_max):
         eof_Nth = eof[n]
         pc_Nth = pc[:, n]
-        frac_Nth = cdms2.createVariable(frac[n])
+        frac_Nth = frac[n]
 
         # Arbitrary sign control, attempt to make all plots have the same sign
         reverse_sign = arbitrary_checking(mode, eof_Nth)
 
         if reverse_sign:
-            eof_Nth = MV2.multiply(eof_Nth, -1.0)
-            pc_Nth = MV2.multiply(pc_Nth, -1.0)
-
-        # time axis
-        pc_Nth.setAxis(0, timeseries.getTime())
+            eof_Nth *= -1.0
+            pc_Nth *= -1.0
 
         # Supplement NetCDF attributes
-        frac_Nth.units = "ratio"
-        pc_Nth.comment = "".join(
-            [
-                "Non-scaled time series for principal component of ",
-                str(eofn),
-                "th variance mode",
-            ]
-        )
+        frac_Nth.attrs["units"] = "ratio"
+        pc_Nth.attrs[
+            "comment"
+        ] = f"Non-scaled time series for principal component of {eofn}th variance mode"
 
         # append to lists for returning
         eof_list.append(eof_Nth)
@@ -127,72 +124,52 @@ def eof_analysis_get_variance_mode(
 
 def arbitrary_checking(mode, eof_Nth):
     """
-    NOTE: To keep sign of EOF pattern consistent across observations or models,
-          this function check whether multiplying -1 to EOF pattern and PC
-          is needed or not
+    To keep sign of EOF pattern consistent across observations or models,
+    this function check whether multiplying -1 to EOF pattern and PC is needed or not
     Input
     - mode: string, modes of variability. e.g., 'PDO', 'PNA', 'NAM', 'SAM'
-    - eof_Nth: cdms2 array from eofs, eof pattern
+    - eof_Nth: xarray DataArray, eof pattern
     Ouput
     - reverse_sign: bool, True or False
     """
     reverse_sign = False
+
+    # Get latitude and longitude keys
+    lat_key = get_latitude_key(eof_Nth)
+    lon_key = get_longitude_key(eof_Nth)
+
     # Explicitly check average of geographical region for each mode
     if mode == "PDO":
         if (
-            float(
-                cdutil.averager(
-                    eof_Nth(latitude=(30, 40), longitude=(150, 180)),
-                    axis="xy",
-                    weights="weighted",
-                )
-            )
+            eof_Nth.sel({lat_key: slice(30, 40), lon_key: slice(150, 180)})
+            .mean()
+            .item()
             >= 0
         ):
             reverse_sign = True
     elif mode == "PNA":
-        if (
-            float(
-                cdutil.averager(
-                    eof_Nth(latitude=(80, 90)), axis="xy", weights="weighted"
-                )
-            )
-            <= 0
-        ):
+        if eof_Nth.sel({lat_key: slice(80, 90)}).mean().item() <= 0:
             reverse_sign = True
-    elif mode == "NAM" or mode == "NAO":
-        if (
-            float(
-                cdutil.averager(
-                    eof_Nth(latitude=(60, 80)), axis="xy", weights="weighted"
-                )
-            )
-            >= 0
-        ):
+    elif mode in ["NAM", "NAO"]:
+        if eof_Nth.sel({lat_key: slice(60, 80)}).mean().item() >= 0:
             reverse_sign = True
     elif mode == "SAM":
-        if (
-            float(
-                cdutil.averager(
-                    eof_Nth(latitude=(-60, -90)), axis="xy", weights="weighted"
-                )
-            )
-            >= 0
-        ):
+        if eof_Nth.sel({lat_key: slice(-60, -90)}).mean().item() >= 0:
             reverse_sign = True
     else:  # Minimum sign control part was left behind for any future usage..
-        if float(eof_Nth[-1][-1]) is not eof_Nth.missing:
-            if float(eof_Nth[-1][-1]) >= 0:
+        if not np.isnan(eof_Nth[-1, -1].item()):
+            if eof_Nth[-1, -1].item() >= 0:
                 reverse_sign = True
-        elif float(eof_Nth[-2][-2]) is not eof_Nth.missing:
-            if float(eof_Nth[-2][-2]) >= 0:  # Double check missing value at pole
+        elif not np.isnan(eof_Nth[-2, -2].item()):  # Double check missing value at pole
+            if eof_Nth[-2, -2].item() >= 0:
                 reverse_sign = True
+
     # return result
     return reverse_sign
 
 
 def linear_regression_on_globe_for_teleconnection(
-    pc, model_timeseries, stdv_pc, RmDomainMean, EofScaling, debug=False
+    pc, model_timeseries, stdv_pc, RmDomainMean=True, EofScaling=False, debug=False
 ):
     """
     - Reconstruct EOF fist mode including teleconnection purpose as well
@@ -204,13 +181,12 @@ def linear_regression_on_globe_for_teleconnection(
 
     # Linear regression to have extended global map; teleconnection purpose
     slope, intercept = linear_regression(pc, model_timeseries)
-    if RmDomainMean:
-        eof_lr = MV2.add(MV2.multiply(slope, stdv_pc), intercept)
-    else:
-        if not EofScaling:
-            eof_lr = MV2.add(MV2.multiply(slope, stdv_pc), intercept)
-        else:
-            eof_lr = MV2.add(slope, intercept)
+
+    factor = stdv_pc
+    if not RmDomainMean and EofScaling:
+        factor = 1
+
+    eof_lr = (slope * factor) + intercept
 
     debug_print("linear regression done", debug)
 
@@ -228,34 +204,33 @@ def linear_regression(x, y):
     - intercept: 2d array, spatial map, linear regression intercept on each grid
     """
     # get original global dimension
-    lat = y.getLatitude()
-    lon = y.getLongitude()
+    lat = get_latitude(y)
+    lon = get_longitude(y)
     # Convert 3d (time, lat, lon) to 2d (time, lat*lon) for polyfit applying
     im = y.shape[2]
     jm = y.shape[1]
-    y_2d = y.reshape(y.shape[0], jm * im)
+    y_2d = y.data.reshape(y.shape[0], jm * im)
+    print("x.shape:", x.shape)
+    print("y_2d.shape:", y_2d.shape)
     # Linear regression
-    slope_1d, intercept_1d = np.polyfit(x, y_2d, 1)
+    slope_1d, intercept_1d = np.polyfit(np.array(x), np.array(y_2d), 1)
     # Retreive to cdms2 variabile from numpy array
-    slope = MV2.array(slope_1d.reshape(jm, im))
-    intercept = MV2.array(intercept_1d.reshape(jm, im))
+    slope = np.array(slope_1d.reshape(jm, im))
+    intercept = np.array(intercept_1d.reshape(jm, im))
     # Set lat/lon coordinates
-    slope.setAxis(0, lat)
-    slope.setAxis(1, lon)
-    slope.mask = y.mask
-    intercept.setAxis(0, lat)
-    intercept.setAxis(1, lon)
-    intercept.mask = y.mask
+    slope = xr.DataArray(slope, coords={"lat": lat, "lon": lon}, dims=["lat", "lon"])
+    intercept = xr.DataArray(
+        intercept, coords={"lat": lat, "lon": lon}, dims=["lat", "lon"]
+    )
     # return result
     return slope, intercept
 
 
 def gain_pseudo_pcs(
-    solver, field_to_be_projected, eofn, reverse_sign, EofScaling=False
+    solver, field_to_be_projected, eofn, reverse_sign=False, EofScaling=False
 ):
     """
-    NOTE: Given a data set, projects it onto the n-th EOF to generate a
-          corresponding set of pseudo-PCs
+    Given a data set, projects it onto the n-th EOF to generate a corresponding set of pseudo-PCs
     """
     if not EofScaling:
         pseudo_pcs = solver.projectField(
@@ -269,12 +244,19 @@ def gain_pseudo_pcs(
     pseudo_pcs = pseudo_pcs[:, eofn - 1]
     # Arbitrary sign control, attempt to make all plots have the same sign
     if reverse_sign:
-        pseudo_pcs = MV2.multiply(pseudo_pcs, -1.0)
+        # pseudo_pcs = MV2.multiply(pseudo_pcs, -1.0)
+        pseudo_pcs *= -1
     # return result
     return pseudo_pcs
 
 
-def gain_pcs_fraction(full_field, eof_pattern, pcs, debug=False):
+def gain_pcs_fraction(
+    full_field: xr.DataArray,
+    eof_pattern: xr.DataArray,
+    pcs: xr.DataArray,
+    weights: xr.DataArray = None,
+    debug: bool = False,
+):
     """
     NOTE: This function is designed for getting fraction of variace obtained by
           pseudo pcs
@@ -288,10 +270,14 @@ def gain_pcs_fraction(full_field, eof_pattern, pcs, debug=False):
                 fraction of explained variance
     """
     # 1) Get total variacne ---
+    """
     variance_total = genutil.statistics.variance(full_field, axis="t")
     variance_total_area_ave = cdutil.averager(
         variance_total, axis="xy", weights="weighted"
     )
+    """
+    variance_total = np.var(full_field, axis=0)
+    variance_total_area_ave = np.average(variance_total, weights=weights)
     # 2) Get variance for pseudo pattern ---
     # 2-1) Reconstruct field based on pseudo pattern
     if debug:
@@ -299,18 +285,28 @@ def gain_pcs_fraction(full_field, eof_pattern, pcs, debug=False):
         print("full_field.shape (before grower): ", full_field.shape)
         print("eof_pattern.shape (before grower): ", eof_pattern.shape)
     # Extend eof_pattern (add 3rd dimension as time then copy same 2d value for all time step)
+    """
     reconstructed_field = genutil.grower(full_field, eof_pattern)[
         1
     ]  # Matching dimension (add time axis)
     for t in range(0, len(pcs)):
         reconstructed_field[t] = MV2.multiply(reconstructed_field[t], pcs[t])
+    """
+    reconstructed_field = full_field * pcs
     # 2-2) Get variance of reconstructed field
+    """
     variance_partial = genutil.statistics.variance(reconstructed_field, axis="t")
     variance_partial_area_ave = cdutil.averager(
         variance_partial, axis="xy", weights="weighted"
     )
+    """
+    variance_partial = np.var(reconstructed_field, axis=0)
+    variance_partial_area_ave = np.average(variance_partial, weights=weights)
     # 3) Calculate fraction ---
+    """
     fraction = MV2.divide(variance_partial_area_ave, variance_total_area_ave)
+    """
+    fraction = variance_partial_area_ave / variance_total_area_ave
     # debugging
     if debug:
         print("full_field.shape (after grower): ", full_field.shape)
@@ -323,29 +319,37 @@ def gain_pcs_fraction(full_field, eof_pattern, pcs, debug=False):
     return fraction
 
 
-def adjust_timeseries(timeseries, mode, season, region_subdomain, RmDomainMean):
+def adjust_timeseries(
+    ds: xr.Dataset,
+    data_var: str,
+    mode: str,
+    season: str,
+    regions_specs: dict = None,
+    RmDomainMean: bool = True,
+) -> xr.Dataset:
     """
-    NOTE
     Remove annual cycle (for all modes) and get its seasonal mean time series if
     needed. Then calculate residual by subtraction domain (or global) average.
     Input
-    - timeseries: cdms2 array (t, y, x)
+    - ds: cdms2 array (t, y, x)
     Output
     - timeseries_season: cdms2 array (t, y, x)
     """
+    if regions_specs is None:
+        regions_specs = load_regions_specs()
     # Reomove annual cycle (for all modes) and get its seasonal mean time series if needed
-    timeseries_ano = get_anomaly_timeseries(timeseries, season)
+    ds_anomaly = get_anomaly_timeseries(ds, data_var, season)
     # Calculate residual by subtracting domain (or global) average
-    timeseries_season = get_residual_timeseries(
-        timeseries_ano, mode, region_subdomain, RmDomainMean=RmDomainMean
+    ds_residual = get_residual_timeseries(
+        ds_anomaly, data_var, mode, regions_specs, RmDomainMean=RmDomainMean
     )
     # return result
-    return timeseries_season
+    return ds_residual
 
 
-def get_anomaly_timeseries(timeseries, season):
+def get_anomaly_timeseries(ds: xr.Dataset, data_var: str, season: str) -> xr.Dataset:
     """
-    NOTE: Get anomaly time series by removing annual cycle
+    Get anomaly time series by removing annual cycle
     Input
     - timeseries: cdms variable
     - season: string
@@ -354,45 +358,32 @@ def get_anomaly_timeseries(timeseries, season):
     """
     # Get anomaly field
     if season == "yearly":
-        timeseries_ano = cdutil.YEAR.departures(timeseries)
+        ds_anomaly = ds.temporal.departures(data_var, freq="year", weighted=True)
     else:
-        # Special treat for DJF
-        if season == "DJF":
-            # Input field must be monthly, starting at Jan and ending at Dec
-            smon = timeseries.getTime().asComponentTime()[0].month
-            emon = timeseries.getTime().asComponentTime()[-1].month
-            if smon == 1 and emon == 12:
-                # Truncate first Jan Feb and last Dec
-                timeseries = timeseries[2:-1, :, :]
-            else:
-                sys.exit(
-                    " ".join(
-                        [
-                            "ERROR: Starting month",
-                            str(smon),
-                            "and ending month",
-                            str(emon),
-                            "must be 1 and 12, respectively",
-                        ]
-                    )
-                )
-        # Reomove annual cycle
-        timeseries_ano = cdutil.ANNUALCYCLE.departures(timeseries)
+        # Remove annual cycle
+        ds_anomaly = ds.temporal.departures(data_var, freq="month", weighted=True)
         if season != "monthly":
-            # Get seasonal mean time series
-            # each season chunk should have 100% of data
-            timeseries_ano = getattr(cdutil, season)(
-                timeseries_ano, criteriaarg=[1.0, None]
+            ds_anomaly = ds_anomaly.temporal.departures(
+                data_var,
+                freq="season",
+                weighted=True,
+                season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},
             )
     # return result
-    return timeseries_ano
+    return ds_anomaly
 
 
-def get_residual_timeseries(timeseries_ano, mode, region_subdomain, RmDomainMean=True):
+def get_residual_timeseries(
+    ds_anomaly: xr.Dataset,
+    data_var: str,
+    mode: str,
+    regions_specs: dict,
+    RmDomainMean=True,
+) -> xr.Dataset:
     """
-    NOTE: Calculate residual by subtracting domain average (or global mean)
+    Calculate residual by subtracting domain average (or global mean)
     Input
-    - timeseries_ano: anomaly time series, cdms2 array, 3d (t, y, x)
+    - ds_anomaly: anomaly time series, cdms2 array, 3d (t, y, x)
     - mode: string, mode name, must be defined in regions_specs
     - RmDomainMean: bool (True or False).
           If True, remove domain mean of each time step.
@@ -408,37 +399,27 @@ def get_residual_timeseries(timeseries_ano, mode, region_subdomain, RmDomainMean
           extracted from regions_specs -- that is a dict contains domain
           lat lon ragne for given mode
     Output
-    - timeseries_residual: cdms2 array, 3d (t, y, x)
+    - ds_residual: cdms2 array, 3d (t, y, x)
     """
+    ds_residual = ds_anomaly.copy()
     if RmDomainMean:
         # Get domain mean
-        regional_ano_mean_timeseries = cdutil.averager(
-            timeseries_ano(region_subdomain), axis="xy", weights="weighted"
-        )
-        # Match dimension
-        timeseries_ano, regional_ano_mean_timeseries = genutil.grower(
-            timeseries_ano, regional_ano_mean_timeseries
-        )
+        ds_anomaly_mean = region_subset(
+            ds_anomaly, regions_specs, mode
+        ).spatial.average(data_var)
         # Subtract domain mean
-        timeseries_residual = MV2.subtract(timeseries_ano, regional_ano_mean_timeseries)
+        ds_residual[data_var] = ds_anomaly[data_var] - ds_anomaly_mean[data_var]
     else:
         if mode in ["PDO", "NPGO", "AMO"]:
-            # Get global mean
-            global_ano_mean_timeseries = cdutil.averager(
-                timeseries_ano(latitude=(-60, 70)), axis="xy", weights="weighted"
-            )
-            # Match dimension
-            timeseries_ano, global_ano_mean_timeseries = genutil.grower(
-                timeseries_ano, global_ano_mean_timeseries
-            )
+            # Get global mean (latitude -60 to 70)
+            lat_key = get_latitude_key(ds_anomaly)
+            ds_anomaly_mean = ds_anomaly.sel({lat_key: slice(-60, 70)}).spatial.average(
+                data_var
+            )[data_var]
             # Subtract global mean
-            timeseries_residual = MV2.subtract(
-                timeseries_ano, global_ano_mean_timeseries
-            )
-        else:
-            timeseries_residual = timeseries_ano
+            ds_residual[data_var] = ds_anomaly[data_var] - ds_anomaly_mean[data_var]
     # return result
-    return timeseries_residual
+    return ds_residual
 
 
 def debug_print(string, debug):
