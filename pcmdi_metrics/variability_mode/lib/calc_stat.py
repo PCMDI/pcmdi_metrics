@@ -27,14 +27,14 @@ def calc_stats_save_dict(
     NOTE: Calculate statistics and save numbers to dictionary for JSON.
     Input
     - dict_head: [dict] subset of dictionary
-    - eof: [2d cdms2 field] linear regressed eof pattern (eof domain)
-    - eof_lr: [2d cdms2 field] linear regressed eof pattern (global)
-    - slope: [2d cdms2 field] slope from above linear regression (bring it here to calculate rmsc)
-    - pc: [1d cdms2 field] principle component time series
+    - eof: [2d field] linear regressed eof pattern (eof domain)
+    - eof_lr: [2d field] linear regressed eof pattern (global)
+    - slope: [2d field] slope from above linear regression (bring it here to calculate rmsc)
+    - pc: [1d field] principle component time series
     - stdv_pc: [float] standard deviation of principle component time series
-    - frac: [1 number cdms2 field] fraction of explained variance
-    - eof_obs: [2d cdms2 field] eof pattern over subdomain from observation
-    - eof_lr_obs: [2d cdms2 field] eof pattern over globe (linear regressed) from observation
+    - frac: [1 number field] fraction of explained variance
+    - eof_obs: [2d field] eof pattern over subdomain from observation
+    - eof_lr_obs: [2d field] eof pattern over globe (linear regressed) from observation
     - stdv_pc_obs: [float] standard deviation of principle component time series of observation
     - obs_compare: [bool] calculate statistics against given observation (default=True)
     - method: [string] 'eof' or 'cbf'

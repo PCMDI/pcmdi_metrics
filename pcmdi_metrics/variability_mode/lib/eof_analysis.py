@@ -38,16 +38,16 @@ def eof_analysis_get_variance_mode(
       1) When 'save_multiple_eofs = False'
         - eof_Nth: eof pattern (map) for given eofs as eofn
         - pc_Nth: corresponding principle component time series
-        - frac_Nth: cdms2 array but for 1 single number which is float.
-                 Preserve cdms2 array type for netCDF recording.
+        - frac_Nth: array but for 1 single number which is float.
+                 Preserve array type for netCDF recording.
                  fraction of explained variance
         - reverse_sign_Nth: bool
         - solver
       2) When 'save_multiple_eofs = True'
         - eof_list: list of eof patterns (map) for given eofs as eofn
         - pc_list: list of corresponding principle component time series
-        - frac_list: list of cdms2 array but for 1 single number which is float.
-                 Preserve cdms2 array type for netCDF recording.
+        - frac_list: list of array but for 1 single number which is float.
+                 Preserve array type for netCDF recording.
                  fraction of explained variance
         - reverse_sign_list: list of bool
         - solver
@@ -214,7 +214,7 @@ def linear_regression(x, y):
     print("y_2d.shape:", y_2d.shape)
     # Linear regression
     slope_1d, intercept_1d = np.polyfit(np.array(x), np.array(y_2d), 1)
-    # Retreive to cdms2 variabile from numpy array
+    # Retreive to variabile from numpy array
     slope = np.array(slope_1d.reshape(jm, im))
     intercept = np.array(intercept_1d.reshape(jm, im))
     # Set lat/lon coordinates
@@ -265,8 +265,8 @@ def gain_pcs_fraction(
     - eof_pattern (y,x)
     - pcs (t)
     Output:
-    - fraction: cdms2 array but for 1 single number which is float.
-                Preserve cdms2 array type for netCDF recording.
+    - fraction: array but for 1 single number which is float.
+                Preserve array type for netCDF recording.
                 fraction of explained variance
     """
     # 1) Get total variacne ---
@@ -331,9 +331,9 @@ def adjust_timeseries(
     Remove annual cycle (for all modes) and get its seasonal mean time series if
     needed. Then calculate residual by subtraction domain (or global) average.
     Input
-    - ds: cdms2 array (t, y, x)
+    - ds: array (t, y, x)
     Output
-    - timeseries_season: cdms2 array (t, y, x)
+    - timeseries_season: array (t, y, x)
     """
     if regions_specs is None:
         regions_specs = load_regions_specs()
@@ -351,10 +351,10 @@ def get_anomaly_timeseries(ds: xr.Dataset, data_var: str, season: str) -> xr.Dat
     """
     Get anomaly time series by removing annual cycle
     Input
-    - timeseries: cdms variable
+    - timeseries: variable
     - season: string
     Output
-    - timeseries_ano: cdms variable
+    - timeseries_ano: variable
     """
     # Get anomaly field
     if season == "yearly":
@@ -383,7 +383,7 @@ def get_residual_timeseries(
     """
     Calculate residual by subtracting domain average (or global mean)
     Input
-    - ds_anomaly: anomaly time series, cdms2 array, 3d (t, y, x)
+    - ds_anomaly: anomaly time series, array, 3d (t, y, x)
     - mode: string, mode name, must be defined in regions_specs
     - RmDomainMean: bool (True or False).
           If True, remove domain mean of each time step.
@@ -399,7 +399,7 @@ def get_residual_timeseries(
           extracted from regions_specs -- that is a dict contains domain
           lat lon ragne for given mode
     Output
-    - ds_residual: cdms2 array, 3d (t, y, x)
+    - ds_residual: array, 3d (t, y, x)
     """
     ds_residual = ds_anomaly.copy()
     if RmDomainMean:

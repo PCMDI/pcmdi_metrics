@@ -6,7 +6,6 @@ from collections import defaultdict
 from datetime import datetime
 from time import gmtime, strftime
 
-import cdms2
 import cftime
 import numpy as np
 import xarray as xr
@@ -25,16 +24,20 @@ def tree():
 
 
 def write_nc_output(output_file_name, eofMap, pc, frac, slopeMap, interceptMap):
-    fout = cdms2.open(output_file_name + ".nc", "w")
-    # 1-d timeseries having time dimension: write time first
-    fout.write(pc, id="pc")
-    # 2-d maps having no time axis
-    fout.write(eofMap, id="eof")
-    fout.write(slopeMap, id="slope")
-    fout.write(interceptMap, id="intercept")
-    # single number having no axis
-    fout.write(frac, id="frac")
-    fout.close()
+    # Create a dataset
+    ds = xr.Dataset(
+        {
+            "pc": pc,  # 1-d timeseries having time dimension
+            "eof": eofMap,  # 2-d maps having no time axis
+            "slope": slopeMap,
+            "intercept": interceptMap,
+            "frac": xr.DataArray(
+                frac, dims=(), coords={}
+            ),  # single number having no axis
+        }
+    )
+    ds.to_netcdf(output_file_name + ".nc")
+    ds.close()
 
 
 def get_domain_range(mode, regions_specs):
