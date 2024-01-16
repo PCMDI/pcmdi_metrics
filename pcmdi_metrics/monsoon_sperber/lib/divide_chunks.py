@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import sys
 
 import numpy as np
@@ -14,7 +12,7 @@ Code taken from https://www.geeksforgeeks.org/break-list-chunks-size-n-python/
 
 def divide_chunks(data, n):
     # looping till length data
-    for i in range(0, len(data), n):
+    for i in range(0, data.time.shape[0], n):
         yield data[i : i + n]
 
 
@@ -24,10 +22,11 @@ def divide_chunks(data, n):
 
 def divide_chunks_advanced(data, n, debug=False):
     # Double check first date should be Jan 1 (except for SH monsoon)
-    tim = data.getTime()
-    calendar = tim.calendar
-    month = tim.asComponentTime()[0].month
-    day = tim.asComponentTime()[0].day
+
+    tim = data.time.dt
+    month = tim.month[0]
+    day = tim.day[0]
+    calendar = "gregorian"
     if debug:
         print("debug: first day of year is " + str(month) + "/" + str(day))
     if month not in [1, 7] or day != 1:
@@ -36,31 +35,34 @@ def divide_chunks_advanced(data, n, debug=False):
         )
 
     # Check number of days in given year
-    nday = len(data)
+    nday = data.time.shape[0]
 
     if nday in [365, 360]:
         # looping till length data
         for i in range(0, nday, n):
             yield data[i : i + n]
+
     elif nday == 366:
         # until leap year day detected
         for i in range(0, nday, n):
             # Check if leap year date included
             leap_detect = False
             for ii in range(i, i + n):
-                date = data.getTime().asComponentTime()[ii]
-                month = date.month
-                day = date.day
+                date = data.time.dt
+                month = date.month[ii]
+                day = date.day[ii]
                 if month == 2 and day > 28:
                     if debug:
                         print("debug: leap year detected:", month, "/", day)
                     leap_detect = True
+
             if leap_detect:
                 yield data[i : i + n + 1]
                 tmp = i + n + 1
                 break
             else:
                 yield data[i : i + n]
+
         # after leap year day passed
         if leap_detect:
             for i in range(tmp, nday, n):
@@ -76,6 +78,7 @@ def divide_chunks_advanced(data, n, debug=False):
         # looping till length data
         for i in range(0, nday, n):
             yield data[i : i + n]
+
     else:
         sys.exit("error: number of days in year is " + str(nday))
 
