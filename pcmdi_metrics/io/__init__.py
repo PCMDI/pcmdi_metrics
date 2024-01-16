@@ -22,4 +22,3 @@ from .xcdat_dataset_io import (  # noqa
     select_subset,
 )
 from .string_constructor import StringConstructor, fill_template
-

@@ -19,7 +19,7 @@ import xcdat as xc
 
 import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
-from pcmdi_metrics.utils import StringConstructor
+from pcmdi_metrics.io import StringConstructor
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
