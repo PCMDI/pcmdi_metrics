@@ -60,6 +60,7 @@ import MV2
 from pcmdi_metrics import resources
 from pcmdi_metrics.io import fill_template
 from pcmdi_metrics.mean_climate.lib import pmp_parser
+from pcmdi_metrics.stats import calculate_temporal_correlation as calcTCOR
 from pcmdi_metrics.stats import mean_xy
 from pcmdi_metrics.utils import sort_human, tree
 from pcmdi_metrics.variability_mode.lib import (
@@ -69,7 +70,6 @@ from pcmdi_metrics.variability_mode.lib import (
     adjust_timeseries,
     calc_stats_save_dict,
     calcSTD,
-    calcTCOR,
     debug_print,
     eof_analysis_get_variance_mode,
     gain_pcs_fraction,
