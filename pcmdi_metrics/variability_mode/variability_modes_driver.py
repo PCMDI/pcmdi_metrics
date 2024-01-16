@@ -58,9 +58,10 @@ from shutil import copyfile
 import MV2
 
 from pcmdi_metrics import resources
+from pcmdi_metrics.io import fill_template
 from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.stats import mean_xy
-from pcmdi_metrics.utils import fill_template, sort_human, tree
+from pcmdi_metrics.utils import sort_human, tree
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
     VariabilityModeCheck,
