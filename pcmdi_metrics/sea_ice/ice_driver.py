@@ -15,24 +15,6 @@ from pcmdi_metrics.io import xcdat_openxml
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.utils import create_land_sea_mask
 
-from pcmdi_metrics.io import (  # noqa
-    get_axis_list,
-    get_data_list,
-    get_latitude_bounds_key,
-    get_latitude_key,
-    get_latitude,
-    get_latitude_bounds,
-    get_longitude_bounds_key,
-    get_longitude_key,
-    get_longitude,
-    get_longitude_bounds,
-    get_time,
-    get_time_bounds,
-    get_time_bounds_key,
-    get_time_key,
-    select_subset,
-)
-
 
 class MetadataFile:
     # This class organizes the contents for the CMEC
@@ -238,9 +220,11 @@ def mse_model(dm, do, var=None):
     return stat
 
 
-def to_ice_con_ds(da, obs):
+def to_ice_con_ds(da, ds):
+    # Convert sea ice data array to dataset using
+    # coordinates from another dataset
     ds = xr.Dataset(
-        data_vars={"ice_con": da, "time_bnds": obs.time_bnds}, coords={"time": obs.time}
+        data_vars={"ice_con": da, "time_bnds": ds.time_bnds}, coords={"time": ds.time}
     )
     return ds
 
@@ -556,6 +540,7 @@ if __name__ == "__main__":
         "DIMENSIONS": {
             "json_structure": [
                 "model",
+                "realization",
                 "obs",
                 "region",
                 "index",
@@ -578,17 +563,36 @@ if __name__ == "__main__":
         start_year = msyear
         end_year = meyear
 
-        totals_dict = {
-            "arctic": 0,
-            "ca": 0,
-            "na": 0,
-            "np": 0,
-            "antarctic": 0,
-            "sp": 0,
-            "sa": 0,
-            "io": 0,
+        # totals_dict = {
+        #    "arctic": 0,
+        #    "ca": 0,
+        #    "na": 0,
+        #    "np": 0,
+        #    "antarctic": 0,
+        #    "sp": 0,
+        #    "sa": 0,
+        #    "io": 0,
+        # }
+        real_dict = {
+            "arctic": {"model_mean": 0},
+            "ca": {"model_mean": 0},
+            "na": {"model_mean": 0},
+            "np": {"model_mean": 0},
+            "antarctic": {"model_mean": 0},
+            "sp": {"model_mean": 0},
+            "sa": {"model_mean": 0},
+            "io": {"model_mean": 0},
         }
-        mse[model] = {"nasateam": {}, "bootstrap": {}}
+        mse[model] = {
+            "arctic": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
+            "ca": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
+            "na": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
+            "np": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
+            "antarctic": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
+            "sp": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
+            "sa": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
+            "io": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
+        }
 
         tags = {
             "%(variable)": var,
@@ -693,60 +697,79 @@ if __name__ == "__main__":
                         lon_i = yvar
                     # area data doesn't always use same coordinates as siconc data in CMIP6
                     # so we multiply by area.data, dropping the coordinates
-                    totals_dict[rgn] = totals_dict[rgn] + (
-                        data.where(data > 0.15, 0) * area[area_var].data
-                    ).sum((lon_j, lon_i), skipna=True)
+                    rgn_total = (data.where(data > 0.15, 0) * area[area_var].data).sum(
+                        (lon_j, lon_i), skipna=True
+                    )
+                    real_dict[rgn][run] = rgn_total
+                    # totals_dict[rgn] = totals_dict[rgn] + rgn_total
+                    real_dict[rgn]["model_mean"] = (
+                        real_dict[rgn]["model_mean"] + rgn_total
+                    )
 
             print("\n-------------------------------------------")
             print("Calculating model regional average metrics \nfor ", model)
             print("--------------------------------------------")
-            for rgn in totals_dict:
+            for rgn in real_dict:
                 print(rgn)
-                # Set up metrics dictionary
-                for key in ["nasateam", "bootstrap"]:
-                    mse[model][key][rgn] = {
-                        "monthly_clim": {"mse": None},
-                        "total_extent": {"mse": None},
-                    }
 
                 # Average all realizations, fix bounds, get climatologies and totals
-                total_rgn = (totals_dict[rgn] / len(list_of_runs)).to_dataset(name=var)
-                # total_rgn.time.attrs.pop("bounds")
-                total_rgn = total_rgn.bounds.add_missing_bounds()
-                clim_extent = total_rgn.temporal.climatology(var, freq="month")
-                total = total_rgn.mean("time")[var].data
+                # total_rgn = (totals_dict[rgn] / len(list_of_runs)).to_dataset(name=var)
+                real_dict[rgn]["model_mean"] = real_dict[rgn]["model_mean"] / len(
+                    list_of_runs
+                )
 
-                # Get errors, convert to 1e-12 km^-4
-                mse[model]["nasateam"][rgn]["monthly_clim"]["mse"] = str(
-                    mse_t(
-                        clim_extent[var],
-                        obs_clims["nt"][rgn]["ice_con"],
-                        weights=clim_wts,
+                for run in real_dict[rgn]:
+                    # Set up metrics dictionary
+                    if run not in mse[model][rgn]:
+                        mse[model][rgn][run] = {}
+                    for key in ["nasateam", "bootstrap"]:
+                        mse[model][rgn][run].update(
+                            {
+                                key: {
+                                    "monthly_clim": {"mse": None},
+                                    "total_extent": {"mse": None},
+                                }
+                            }
+                        )
+
+                    run_data = real_dict[rgn][run].to_dataset(name=var)
+                    # total_rgn.time.attrs.pop("bounds")
+                    # total_rgn = total_rgn.bounds.add_missing_bounds()
+                    run_data = run_data.bounds.add_missing_bounds()
+                    clim_extent = run_data.temporal.climatology(var, freq="month")
+                    total = run_data.mean("time")[var].data
+
+                    # Get errors, convert to 1e12 km^-4
+                    mse[model][rgn][run]["nasateam"]["monthly_clim"]["mse"] = str(
+                        mse_t(
+                            clim_extent[var],
+                            obs_clims["nt"][rgn]["ice_con"],
+                            weights=clim_wts,
+                        )
+                        * 1e-12
                     )
-                    * 1e-12
-                )
-                mse[model]["bootstrap"][rgn]["monthly_clim"]["mse"] = str(
-                    mse_t(
-                        clim_extent[var],
-                        obs_clims["bt"][rgn]["ice_con"],
-                        weights=clim_wts,
+                    mse[model][rgn][run]["bootstrap"]["monthly_clim"]["mse"] = str(
+                        mse_t(
+                            clim_extent[var],
+                            obs_clims["bt"][rgn]["ice_con"],
+                            weights=clim_wts,
+                        )
+                        * 1e-12
                     )
-                    * 1e-12
-                )
-                mse[model]["nasateam"][rgn]["total_extent"]["mse"] = str(
-                    mse_model(total, obs_means["nt"][rgn]) * 1e-12
-                )
-                mse[model]["bootstrap"][rgn]["total_extent"]["mse"] = str(
-                    mse_model(total, obs_means["bt"][rgn]) * 1e-12
-                )
+                    mse[model][rgn][run]["nasateam"]["total_extent"]["mse"] = str(
+                        mse_model(total, obs_means["nt"][rgn]) * 1e-12
+                    )
+                    mse[model][rgn][run]["bootstrap"]["total_extent"]["mse"] = str(
+                        mse_model(total, obs_means["bt"][rgn]) * 1e-12
+                    )
 
             # Update year list
             metrics["model_year_range"][model] = [str(start_year), str(end_year)]
         else:
-            for rgn in totals_dict:
+            for rgn in mse[model]:
                 # Set up metrics dictionary
                 for key in ["nasateam", "bootstrap"]:
-                    mse[model][key][rgn] = {
+                    mse[model][rgn]["model_mean"][key] = {
                         "monthly_clim": {"mse": None},
                         "total_extent": {"mse": None},
                     }
@@ -793,10 +816,18 @@ if __name__ == "__main__":
         rgn = sector_short[inds]
         for model in model_list:
             mse_clim.append(
-                float(metrics["RESULTS"][model]["nasateam"][rgn]["monthly_clim"]["mse"])
+                float(
+                    metrics["RESULTS"][model][rgn]["model_mean"]["nasateam"][
+                        "monthly_clim"
+                    ]["mse"]
+                )
             )
             mse_ext.append(
-                float(metrics["RESULTS"][model]["nasateam"][rgn]["total_extent"]["mse"])
+                float(
+                    metrics["RESULTS"][model][rgn]["model_mean"]["nasateam"][
+                        "total_extent"
+                    ]["mse"]
+                )
             )
         mse_clim.append(
             mse_t(
@@ -811,6 +842,8 @@ if __name__ == "__main__":
         # Make figure
         ax7[inds].bar(ind, mse_clim, width, color="b")
         ax7[inds].bar(ind, mse_ext, width, color="r")
+        # ax7[inds].errorbar(ind, mse_clim, yerr=clim_err, fmt="o", color="r")
+        # ax7[inds].errorbar(ind, mse_ext, yerr=ext_err, fmt="o", color="r")
         # ax7[inds].bar(ind[n], obs[sector_short[inds]]**2, width, color="b")
         if inds == len(sector_list) - 1:
             ax7[inds].set_xticks(ind + width / 2.0, mlabels, rotation=90, size=5)
