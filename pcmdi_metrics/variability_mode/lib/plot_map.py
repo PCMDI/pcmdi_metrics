@@ -12,9 +12,8 @@ from cartopy.feature import OCEAN as cartopy_ocean
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
-from pcmdi_metrics.variability_mode.lib import debug_print
-
 from pcmdi_metrics.io import get_latitude, get_longitude
+from pcmdi_metrics.variability_mode.lib import debug_print
 
 faulthandler.enable()
 

@@ -89,7 +89,7 @@ def region_subset(
         ds = da_to_ds(ds, varname)
     else:
         is_dataArray = False
-    
+
     if regions_specs is None:
         regions_specs = load_regions_specs()
 
@@ -131,7 +131,7 @@ def region_subset(
                 ds = ds.sel(longitude=slice(lon0, lon1))
             elif "lon" in (ds.coords.dims):
                 ds = ds.sel(lon=slice(lon0, lon1))
-                
+
     if is_dataArray:
         return ds["variable"]
     else:
