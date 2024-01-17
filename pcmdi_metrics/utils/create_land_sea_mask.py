@@ -98,9 +98,6 @@ def find_min(da: xr.DataArray) -> float:
     return float(da.min().values)
 
 
-
-
-
 def apply_landmask(
     obj: Union[xr.Dataset, xr.DataArray],
     data_var: str = None,
@@ -187,13 +184,19 @@ def apply_landmask(
     return data_array
 
 
-
 def apply_oceanmask(
     obj: Union[xr.Dataset, xr.DataArray],
     data_var: str = None,
     landfrac: xr.DataArray = None,
     land_criteria: float = 0.8,
     ocean_criteria: float = 0.2,
-) -> xr.DataArray:   
-    masked_data_array = apply_landmask(obj, data_var=data_var, landfrac=landfrac, keep_over="land", land_criteria=land_criteria, ocean_criteria=ocean_criteria)
+) -> xr.DataArray:
+    masked_data_array = apply_landmask(
+        obj,
+        data_var=data_var,
+        landfrac=landfrac,
+        keep_over="land",
+        land_criteria=land_criteria,
+        ocean_criteria=ocean_criteria,
+    )
     return masked_data_array
