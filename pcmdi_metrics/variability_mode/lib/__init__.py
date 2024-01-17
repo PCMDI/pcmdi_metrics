@@ -5,13 +5,7 @@ from .argparse_functions import (  # noqa
 )
 from .calc_stat import (  # noqa
     calc_stats_save_dict,
-    calcBias,
-    calcRMS,
-    calcRMSc,
-    calcSCOR,
     calcSTD,
-    calcSTDmap,
-    calcTCOR,
 )
 from .dict_merge import dict_merge  # noqa
 from .eof_analysis import (  # noqa

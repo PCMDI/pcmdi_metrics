@@ -167,3 +167,33 @@ def select_subset(
 
     ds = ds.sel(**sel_keys)
     return ds
+
+
+def da_to_ds(d: Union[xr.Dataset, xr.DataArray], var: str = "variable") -> xr.Dataset:
+    """Convert xarray DataArray to Dataset
+
+    Parameters
+    ----------
+    d : Union[xr.Dataset, xr.DataArray]
+        Input dataArray. If dataset is given, no process will be done
+    var : str, optional
+        Name of dataArray, by default "variable"
+
+    Returns
+    -------
+    xr.Dataset
+        xarray Dataset
+
+    Raises
+    ------
+    TypeError
+        Raised when given input is not xarray based variables
+    """
+    if isinstance(d, xr.Dataset):
+        return d.copy()
+    elif isinstance(d, xr.DataArray):
+        return d.to_dataset(name=var).bounds.add_missing_bounds().copy()
+    else:
+        raise TypeError(
+            "Input must be an instance of either xarrary.DataArray or xarrary.Dataset"
+        )

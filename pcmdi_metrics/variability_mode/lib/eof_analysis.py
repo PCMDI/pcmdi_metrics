@@ -5,11 +5,11 @@ import xarray as xr
 from eofs.xarray import Eof
 
 from pcmdi_metrics.io import (
+    da_to_ds,
     get_latitude,
     get_latitude_key,
     get_longitude,
     get_longitude_key,
-    load_regions_specs,
     region_subset,
 )
 from pcmdi_metrics.utils import calculate_area_weights, calculate_grid_area
@@ -335,8 +335,8 @@ def adjust_timeseries(
     Output
     - timeseries_season: array (t, y, x)
     """
-    if regions_specs is None:
-        regions_specs = load_regions_specs()
+    if isinstance(ds, xr.DataArray):
+        ds = da_to_ds(ds, data_var)
     # Reomove annual cycle (for all modes) and get its seasonal mean time series if needed
     ds_anomaly = get_anomaly_timeseries(ds, data_var, season)
     # Calculate residual by subtracting domain (or global) average
@@ -404,9 +404,8 @@ def get_residual_timeseries(
     ds_residual = ds_anomaly.copy()
     if RmDomainMean:
         # Get domain mean
-        ds_anomaly_mean = region_subset(
-            ds_anomaly, regions_specs, mode
-        ).spatial.average(data_var)
+        ds_anomaly_region = region_subset(ds_anomaly, mode, regions_specs)
+        ds_anomaly_mean = ds_anomaly_region.spatial.average(data_var)
         # Subtract domain mean
         ds_residual[data_var] = ds_anomaly[data_var] - ds_anomaly_mean[data_var]
     else:

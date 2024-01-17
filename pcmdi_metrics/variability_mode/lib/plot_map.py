@@ -14,6 +14,8 @@ from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
 from pcmdi_metrics.variability_mode.lib import debug_print
 
+from pcmdi_metrics.io import get_latitude, get_longitude
+
 faulthandler.enable()
 
 
@@ -101,14 +103,12 @@ def plot_map(
         central_longitude = 180
 
     # Convert cdms variable to xarray
-    lons = eof_Nth.getLongitude()
-    lats = eof_Nth.getLatitude()
+    lon = get_longitude(eof_Nth)
+    lat = get_latitude(eof_Nth)
     data = np.array(eof_Nth)
-    lon = np.array(lons)
-    lat = np.array(lats)
     lon, lat = np.meshgrid(lon, lat)
     data_array = xr.DataArray(
-        np.array(data), coords={"lon": lon[0, :], "lat": lat[:, 0]}, dims=("lat", "lon")
+        data, coords={"lon": lon[0, :], "lat": lat[:, 0]}, dims=("lat", "lon")
     )
     data_array = data_array.where(data_array != 1e20, np.nan)
 

@@ -5,6 +5,7 @@ import warnings
 from collections import defaultdict
 from datetime import datetime
 from time import gmtime, strftime
+from typing import Union
 
 import cftime
 import numpy as np
@@ -53,38 +54,85 @@ def get_domain_range(mode, regions_specs):
 
 
 def read_data_in(
-    path,
-    lf_path,
-    var_in_data,
-    var_to_consider,
-    syear,
-    eyear,
-    UnitsAdjust,
-    LandMask,
+    path: str,
+    lf_path: str,
+    var_in_data: str,
+    var_to_consider: str,
+    syear: Union[str, int, float],
+    eyear: Union[str, int, float],
+    UnitsAdjust: tuple,
+    LandMask: bool,
     debug=False,
-):
+) -> xr.DataArray:
     # Open data file
     ds = xcdat_open(path)
 
+    # Time subset
+    ds_time_subsetted = subset_time(ds, syear, eyear, debug=debug)
+    data_timeseries = ds_time_subsetted[var_in_data]
+
+    # Sanity checks
+    time_coord = get_time(data_timeseries)
+    data_syear = time_coord[0].item().year
+    data_eyear = time_coord[-1].item().year
+
+    if int(data_syear) != int(syear):
+        print(f"Warning: Data now starts from {data_syear} instead of {syear}")
+
+    if int(data_eyear) != int(eyear):
+        print(f"Warning: Data now ends at {data_eyear} instead of {eyear}")
+
+    # missing data check
+    check_missing_data(data_timeseries)
+
+    # Adjust units
+    data_timeseries = adjust_units(data_timeseries, UnitsAdjust)
+
+    # Masking
+    if var_to_consider == "ts" and LandMask:
+        # Replace temperature below -1.8 C to -1.8 C (sea ice)
+        data_timeseries = sea_ice_adjust(data_timeseries)
+
+    # landmask if required
+    if LandMask:
+        # Extract SST (land region mask out)
+        # data_timeseries = data_land_mask_out(dataname, data_timeseries, lf_path=lf_path)
+        if lf_path is not None:
+            if os.path.isfile(lf_path):
+                landfrac = xcdat_open(lf_path)
+        data_timeseries = apply_landmask(data_timeseries, landfrac=landfrac)
+
+    return data_timeseries, data_syear, data_eyear
+
+
+def subset_time(
+    ds: xr.Dataset,
+    syear: Union[str, int, float],
+    eyear: Union[str, int, float],
+    debug=False,
+) -> xr.Dataset:
     #
     # Time subset
     #
     eday = pick_year_last_day(ds)
+
+    if not isinstance(syear, int):
+        syear = int(syear)
+
+    if not isinstance(eyear, int):
+        eyear = int(eyear)
 
     time1 = cftime.datetime(syear, 1, 1, 0, 0, 0, 0)
     time2 = cftime.datetime(eyear, 12, eday, 23, 59, 59, 0)
     time_tuple = (time1, time2)
 
     # First trimming
-    data_timeseries = select_subset(ds, time=time_tuple)[var_in_data]
-
-    # missing data check
-    check_missing_data(data_timeseries)
+    ds = select_subset(ds, time=time_tuple)
 
     # Check available time window and adjust again if needed
-    time = get_time(data_timeseries)
-    data_stime = time[0]
-    data_etime = time[-1]
+    time_coord = get_time(ds)
+    data_stime = time_coord[0]
+    data_etime = time_coord[-1]
     data_syear = data_stime.item().year
     data_smonth = data_stime.item().month
     data_eyear = data_etime.item().year
@@ -108,39 +156,18 @@ def read_data_in(
         time2 = cftime.datetime(data_eyear, 12, eday, 23, 59, 59, 0)
         time_tuple = (time1, time2)
         # Second trimming
-        data_timeseries = select_subset(data_timeseries, time=time_tuple)
+        ds = select_subset(ds, time=time_tuple)
 
-    #
-    # Adjust units
-    #
-    data_timeseries = adjust_units(data_timeseries, UnitsAdjust)
-
-    #
-    # Masking
-    #
-    if var_to_consider == "ts" and LandMask:
-        # Replace temperature below -1.8 C to -1.8 C (sea ice)
-        data_timeseries = sea_ice_adjust(data_timeseries)
-
-    # landmask if required
-    if LandMask:
-        # Extract SST (land region mask out)
-        # data_timeseries = data_land_mask_out(dataname, data_timeseries, lf_path=lf_path)
-        if lf_path is not None:
-            if os.path.isfile(lf_path):
-                landfrac = xcdat_open(lf_path)
-        data_timeseries = apply_landmask(data_timeseries, landfrac=landfrac)
-
-    return data_timeseries, data_syear, data_eyear
+    return ds
 
 
-def adjust_units(ds, adjust_tuple):
+def adjust_units(da: xr.DataArray, adjust_tuple: tuple) -> xr.DataArray:
     action_dict = {"multiply": "*", "divide": "/", "add": "+", "subtract": "-"}
     if adjust_tuple[0]:
         print("Converting units by ", adjust_tuple[1], adjust_tuple[2])
-        cmd = " ".join(["ds", str(action_dict[adjust_tuple[1]]), str(adjust_tuple[2])])
-        ds = eval(cmd)
-    return ds
+        cmd = " ".join(["da", str(action_dict[adjust_tuple[1]]), str(adjust_tuple[2])])
+        da = eval(cmd)
+    return da
 
 
 def check_missing_data(da: xr.DataArray):

@@ -1,5 +1,6 @@
 from time import gmtime, strftime
 
+from pcmdi_metrics.io import region_subset
 from pcmdi_metrics.stats import bias_xy as calcBias
 from pcmdi_metrics.stats import cor_xy as calcSCOR
 from pcmdi_metrics.stats import mean_xy
@@ -8,14 +9,14 @@ from pcmdi_metrics.stats import rmsc_xy as calcRMSc
 
 
 def calc_stats_save_dict(
+    mode,
     dict_head,
     eof,
     eof_lr,
-    slope,
     pc,
     stdv_pc,
     frac,
-    region_subdomain,
+    regions_specs,
     eof_obs=None,
     eof_lr_obs=None,
     stdv_pc_obs=None,
@@ -67,7 +68,8 @@ def calc_stats_save_dict(
             )
             debug_print("regrid end", debug)
             # Extract subdomain
-            eof_model = eof_model_global(region_subdomain)
+            # eof_model = eof_model_global(region_subdomain)
+            eof_model = region_subset(eof_model_global, mode, regions_specs)
 
         # Spatial correlation weighted by area ('generate' option for weights)
         cor = calcSCOR(eof_model, eof_obs)

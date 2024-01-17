@@ -57,13 +57,13 @@ from shutil import copyfile
 
 import MV2
 
-from pcmdi_metrics import resources
-from pcmdi_metrics.io import fill_template
+# from pcmdi_metrics import resources
+from pcmdi_metrics.io import fill_template, load_regions_specs, region_subset
 from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.stats import calculate_temporal_correlation as calcTCOR
 from pcmdi_metrics.stats import mean_xy
 from pcmdi_metrics.utils import sort_human, tree
-from pcmdi_metrics.variability_mode.lib import (
+from pcmdi_metrics.variability_mode.lib import (  # get_domain_range,
     AddParserArgument,
     VariabilityModeCheck,
     YearCheck,
@@ -74,22 +74,11 @@ from pcmdi_metrics.variability_mode.lib import (
     eof_analysis_get_variance_mode,
     gain_pcs_fraction,
     gain_pseudo_pcs,
-    get_domain_range,
     linear_regression_on_globe_for_teleconnection,
     plot_map,
     read_data_in,
     variability_metrics_to_json,
     write_nc_output,
-)
-
-regions_specs = {}
-egg_pth = resources.resource_path()
-exec(
-    compile(
-        open(os.path.join(egg_pth, "default_regions.py")).read(),
-        os.path.join(egg_pth, "default_regions.py"),
-        "exec",
-    )
 )
 
 # =================================================
@@ -231,7 +220,8 @@ if oeyear is None:
 # =================================================
 # Region control
 # -------------------------------------------------
-region_subdomain = get_domain_range(mode, regions_specs)
+regions_specs = load_regions_specs()
+# region_subdomain = get_domain_range(mode, regions_specs)
 
 # =================================================
 # Create output directories
@@ -317,7 +307,7 @@ if obs_compare:
     )
 
     # Save global grid information for regrid below
-    ref_grid_global = obs_timeseries.getGrid()
+    # ref_grid_global = obs_timeseries.getGrid()
 
     # Declare dictionary variables to keep information from observation
     eof_obs = {}
@@ -363,11 +353,14 @@ if obs_compare:
         # and subtracting domain (or global) mean of each time step)
         debug_print("time series adjustment", debug)
         obs_timeseries_season = adjust_timeseries(
-            obs_timeseries, mode, season, region_subdomain, RmDomainMean
+            obs_timeseries, obs_var, mode, season, regions_specs, RmDomainMean
         )
 
         # Extract subdomain
-        obs_timeseries_season_subdomain = obs_timeseries_season(region_subdomain)
+        # obs_timeseries_season_subdomain = obs_timeseries_season(region_subdomain)
+        obs_timeseries_season_subdomain = region_subset(
+            obs_timeseries_season, mode, regions_specs
+        )
 
         # EOF analysis
         debug_print("EOF analysis", debug)
@@ -380,6 +373,7 @@ if obs_compare:
         ) = eof_analysis_get_variance_mode(
             mode,
             obs_timeseries_season_subdomain,
+            obs_var,
             eofn=eofn_obs,
             debug=debug,
             EofScaling=EofScaling,
@@ -396,7 +390,7 @@ if obs_compare:
             intercept_obs,
         ) = linear_regression_on_globe_for_teleconnection(
             pc_obs[season],
-            obs_timeseries_season,
+            obs_timeseries_season[obs_var],
             stdv_pc_obs[season],
             RmDomainMean,
             EofScaling,
@@ -434,7 +428,8 @@ if obs_compare:
                 osyear,
                 oeyear,
                 season,
-                eof_lr_obs[season](region_subdomain),
+                # eof_lr_obs[season](region_subdomain),
+                region_subset(eof_lr_obs[season], mode, regions_specs),
                 frac_obs[season],
                 output_img_file_obs,
                 debug=debug,
@@ -445,7 +440,8 @@ if obs_compare:
                 osyear,
                 oeyear,
                 season,
-                eof_lr_obs[season](longitude=(lon1_global, lon2_global)),
+                # eof_lr_obs[season](longitude=(lon1_global, lon2_global)),
+                eof_lr_obs[season],
                 frac_obs[season],
                 output_img_file_obs + "_teleconnection",
                 debug=debug,
@@ -594,13 +590,16 @@ for model in models:
                 # and subtracting domain (or global) mean of each time step)
                 debug_print("time series adjustment", debug)
                 model_timeseries_season = adjust_timeseries(
-                    model_timeseries, mode, season, region_subdomain, RmDomainMean
+                    model_timeseries, var, mode, season, regions_specs, RmDomainMean
                 )
 
                 # Extract subdomain
                 debug_print("extract subdomain", debug)
-                model_timeseries_season_subdomain = model_timeseries_season(
-                    region_subdomain
+                # model_timeseries_season_subdomain = model_timeseries_season(
+                #    region_subdomain
+                # )
+                model_timeseries_season_subdomain = region_subset(
+                    model_timeseries_season, mode, regions_specs
                 )
 
                 # -------------------------------------------------
@@ -624,8 +623,11 @@ for model in models:
                     model_timeseries_season_regrid = model_timeseries_season.regrid(
                         ref_grid_global, regridTool="regrid2", mkCyclic=True
                     )
-                    model_timeseries_season_regrid_subdomain = (
-                        model_timeseries_season_regrid(region_subdomain)
+                    # model_timeseries_season_regrid_subdomain = (
+                    #    model_timeseries_season_regrid(region_subdomain)
+                    # )
+                    model_timeseries_season_regrid_subdomain = region_subset(
+                        model_timeseries_season_regrid, mode, regions_specs
                     )
 
                     # Matching model's missing value location to that of observation
@@ -659,7 +661,7 @@ for model in models:
                         intercept_cbf,
                     ) = linear_regression_on_globe_for_teleconnection(
                         cbf_pc,
-                        model_timeseries_season,
+                        model_timeseries_season[var],
                         stdv_cbf_pc,
                         # cbf_pc, model_timeseries_season_regrid, stdv_cbf_pc,
                         RmDomainMean,
@@ -668,7 +670,10 @@ for model in models:
                     )
 
                     # Extract subdomain for statistics
-                    eof_lr_cbf_subdomain = eof_lr_cbf(region_subdomain)
+                    # eof_lr_cbf_subdomain = eof_lr_cbf(region_subdomain)
+                    eof_lr_cbf_subdomain = region_subset(
+                        eof_lr_cbf, mode, regions_specs
+                    )
 
                     # Calculate fraction of variance explained by cbf pc
                     frac_cbf = gain_pcs_fraction(
@@ -694,14 +699,14 @@ for model in models:
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
                     # Metrics results -- statistics to JSON
                     dict_head, eof_lr_cbf = calc_stats_save_dict(
+                        mode,
                         dict_head,
                         eof_lr_cbf_subdomain,
                         eof_lr_cbf,
-                        slope_cbf,
                         cbf_pc,
                         stdv_cbf_pc,
                         frac_cbf,
-                        region_subdomain,
+                        regions_specs,
                         eof_obs[season],
                         eof_lr_obs[season],
                         stdv_pc_obs[season],
@@ -755,7 +760,7 @@ for model in models:
                             msyear,
                             meyear,
                             season,
-                            eof_lr_cbf(region_subdomain),
+                            eof_lr_cbf_subdomain,
                             frac_cbf,
                             output_img_file + "_cbf",
                             debug=debug,
@@ -766,7 +771,8 @@ for model in models:
                             msyear,
                             meyear,
                             season,
-                            eof_lr_cbf(longitude=(lon1_global, lon2_global)),
+                            # eof_lr_cbf(longitude=(lon1_global, lon2_global)),
+                            eof_lr_cbf,
                             frac_cbf,
                             output_img_file + "_cbf_teleconnection",
                             debug=debug,
@@ -791,6 +797,7 @@ for model in models:
                     ) = eof_analysis_get_variance_mode(
                         mode,
                         model_timeseries_season_subdomain,
+                        var,
                         eofn=eofn_mod,
                         eofn_max=eofn_mod_max,
                         debug=debug,
@@ -835,7 +842,7 @@ for model in models:
                             intercept,
                         ) = linear_regression_on_globe_for_teleconnection(
                             pc,
-                            model_timeseries_season,
+                            model_timeseries_season[var],
                             stdv_pc,
                             RmDomainMean,
                             EofScaling,
@@ -851,11 +858,10 @@ for model in models:
                                 dict_head,
                                 eof,
                                 eof_lr,
-                                slope,
                                 pc,
                                 stdv_pc,
                                 frac,
-                                region_subdomain,
+                                regions_specs,
                                 eof_obs=eof_obs[season],
                                 eof_lr_obs=eof_lr_obs[season],
                                 stdv_pc_obs=stdv_pc_obs[season],
@@ -868,11 +874,10 @@ for model in models:
                                 dict_head,
                                 eof,
                                 eof_lr,
-                                slope,
                                 pc,
                                 stdv_pc,
                                 frac,
-                                region_subdomain,
+                                regions_specs,
                                 obs_compare=obs_compare,
                                 method="eof",
                                 debug=debug,
@@ -930,7 +935,8 @@ for model in models:
                                 msyear,
                                 meyear,
                                 season,
-                                eof_lr(region_subdomain),
+                                # eof_lr(region_subdomain),
+                                region_subset(eof_lr, mode, regions_specs),
                                 frac,
                                 output_img_file,
                                 debug=debug,
@@ -947,7 +953,8 @@ for model in models:
                                 msyear,
                                 meyear,
                                 season,
-                                eof_lr(longitude=(lon1_global, lon2_global)),
+                                # eof_lr(longitude=(lon1_global, lon2_global)),
+                                eof_lr,
                                 frac,
                                 output_img_file + "_teleconnection",
                                 debug=debug,
