@@ -21,6 +21,7 @@ from .eof_analysis import (  # noqa
 )
 from .landmask import data_land_mask_out, estimate_landmask  # noqa
 from .lib_variability_mode import (  # noqa
+    check_start_end_year,
     debug_print,
     get_domain_range,
     read_data_in,

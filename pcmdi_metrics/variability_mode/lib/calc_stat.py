@@ -1,11 +1,12 @@
 from time import gmtime, strftime
 
-from pcmdi_metrics.io import region_subset
+from pcmdi_metrics.io import get_grid, region_subset
 from pcmdi_metrics.stats import bias_xy as calcBias
 from pcmdi_metrics.stats import cor_xy as calcSCOR
 from pcmdi_metrics.stats import mean_xy
 from pcmdi_metrics.stats import rms_xy as calcRMS
 from pcmdi_metrics.stats import rmsc_xy as calcRMSc
+from pcmdi_metrics.utils import regrid
 
 
 def calc_stats_save_dict(
@@ -60,12 +61,13 @@ def calc_stats_save_dict(
     # . . . . . . . . . . . . . . . . . . . . . . . . .
     if obs_compare:
         if method in ["eof", "cbf"]:
-            ref_grid_global = eof_lr_obs.getGrid()
+            ref_grid_global = get_grid(eof_lr_obs)
             # Regrid (interpolation, model grid to ref grid)
             debug_print("regrid (global) start", debug)
-            eof_model_global = eof_lr.regrid(
-                ref_grid_global, regridTool="regrid2", mkCyclic=True
-            )
+            # eof_model_global = eof_lr.regrid(eof_lr,
+            #    ref_grid_global, regridTool="regrid2", mkCyclic=True
+            # )
+            eof_model_global = regrid(eof_lr, ref_grid_global)
             debug_print("regrid end", debug)
             # Extract subdomain
             # eof_model = eof_model_global(region_subdomain)

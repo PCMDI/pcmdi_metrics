@@ -6,7 +6,7 @@ import xarray as xr
 import xcdat as xc
 
 
-def _check_data_convert_to_ds_if_needed(
+def da_to_ds(
     d: Union[xr.Dataset, xr.DataArray], var: str = "variable"
 ):
     if isinstance(d, xr.Dataset):
@@ -29,8 +29,8 @@ def annual_mean(dm, do, var="variable"):
             "Comments": "Assumes input are 12 months climatology",
         }
 
-    dm = _check_data_convert_to_ds_if_needed(dm, var)
-    do = _check_data_convert_to_ds_if_needed(do, var)
+    dm = da_to_ds(dm, var)
+    do = da_to_ds(do, var)
 
     dm_am = dm.temporal.average(var)
     do_am = do.temporal.average(var)
@@ -84,8 +84,8 @@ def bias_xy(dm, do, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = _check_data_convert_to_ds_if_needed(dm, var)
-    do = _check_data_convert_to_ds_if_needed(do, var)
+    dm = da_to_ds(dm, var)
+    do = da_to_ds(do, var)
 
     dif = dm[var] - do[var]
     if weights is None:
@@ -104,8 +104,8 @@ def bias_xyt(dm, do, var="variable"):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = _check_data_convert_to_ds_if_needed(dm, var)
-    do = _check_data_convert_to_ds_if_needed(do, var)
+    dm = da_to_ds(dm, var)
+    do = da_to_ds(do, var)
 
     ds = dm.copy(deep=True)
     ds["dif"] = dm[var] - do[var]
@@ -124,8 +124,8 @@ def cor_xy(dm, do, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = _check_data_convert_to_ds_if_needed(dm, var)
-    do = _check_data_convert_to_ds_if_needed(do, var)
+    dm = da_to_ds(dm, var)
+    do = da_to_ds(do, var)
 
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
@@ -155,7 +155,7 @@ def mean_xy(d, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    d = _check_data_convert_to_ds_if_needed(d, var)
+    d = da_to_ds(d, var)
 
     lat_key = xc.axis.get_dim_keys(d, axis="Y")
     lon_key = xc.axis.get_dim_keys(d, axis="X")
@@ -176,8 +176,8 @@ def meanabs_xy(dm, do, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = _check_data_convert_to_ds_if_needed(dm, var)
-    do = _check_data_convert_to_ds_if_needed(do, var)
+    dm = da_to_ds(dm, var)
+    do = da_to_ds(do, var)
 
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
@@ -197,8 +197,8 @@ def meanabs_xyt(dm, do, var="variable"):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = _check_data_convert_to_ds_if_needed(dm, var)
-    do = _check_data_convert_to_ds_if_needed(do, var)
+    dm = da_to_ds(dm, var)
+    do = da_to_ds(do, var)
 
     ds = dm.copy(deep=True)
     ds["absdif"] = abs(dm[var] - do[var])
@@ -219,8 +219,8 @@ def rms_0(dm, do, var="variable", weighted=True):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = _check_data_convert_to_ds_if_needed(dm, var)
-    do = _check_data_convert_to_ds_if_needed(do, var)
+    dm = da_to_ds(dm, var)
+    do = da_to_ds(do, var)
 
     dif_square = (dm[var] - do[var]) ** 2
     if weighted:
@@ -240,8 +240,8 @@ def rms_xy(dm, do, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = _check_data_convert_to_ds_if_needed(dm, var)
-    do = _check_data_convert_to_ds_if_needed(do, var)
+    dm = da_to_ds(dm, var)
+    do = da_to_ds(do, var)
 
     dif_square = (dm[var] - do[var]) ** 2
     if weights is None:
@@ -259,8 +259,8 @@ def rms_xyt(dm, do, var="variable"):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = _check_data_convert_to_ds_if_needed(dm, var)
-    do = _check_data_convert_to_ds_if_needed(do, var)
+    dm = da_to_ds(dm, var)
+    do = da_to_ds(do, var)
 
     ds = dm.copy(deep=True)
     ds["diff_square"] = (dm[var] - do[var]) ** 2
@@ -280,8 +280,8 @@ def rmsc_xy(dm, do, var="variable", weights=None, NormalizeByOwnSTDV=False):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = _check_data_convert_to_ds_if_needed(dm, var)
-    do = _check_data_convert_to_ds_if_needed(do, var)
+    dm = da_to_ds(dm, var)
+    do = da_to_ds(do, var)
 
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
@@ -310,7 +310,7 @@ def std_xy(ds, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    ds = _check_data_convert_to_ds_if_needed(ds, var)
+    ds = da_to_ds(ds, var)
 
     if weights is None:
         weights = ds.spatial.get_weights(axis=["X", "Y"])
@@ -334,7 +334,7 @@ def std_xyt(d, var="variable"):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     ds = d.copy(deep=True)
-    ds = _check_data_convert_to_ds_if_needed(ds, var)
+    ds = da_to_ds(ds, var)
     average = d.spatial.average(var, axis=["X", "Y"]).temporal.average(var)[var]
     ds["anomaly"] = (d[var] - average) ** 2
     variance = (
@@ -353,8 +353,8 @@ def zonal_mean(dm, do, var="variable"):
             "Contact": "pcmdi-metrics@llnl.gov",
             "Comments": "",
         }
-    dm = _check_data_convert_to_ds_if_needed(dm, var)
-    do = _check_data_convert_to_ds_if_needed(do, var)
+    dm = da_to_ds(dm, var)
+    do = da_to_ds(do, var)
 
     dm_zm = dm.spatial.average(var, axis=["X"])
     do_zm = do.spatial.average(var, axis=["X"])

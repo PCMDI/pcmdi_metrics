@@ -5,25 +5,30 @@ import xarray as xr
 from eofs.xarray import Eof
 
 from pcmdi_metrics.io import (
-    da_to_ds,
     get_latitude,
+    get_latitude_bounds,
+    get_latitude_bounds_key,
     get_latitude_key,
     get_longitude,
+    get_longitude_bounds,
+    get_longitude_bounds_key,
     get_longitude_key,
+    get_time_key,
     region_subset,
+    select_subset,
 )
 from pcmdi_metrics.utils import calculate_area_weights, calculate_grid_area
 
 
 def eof_analysis_get_variance_mode(
-    mode,
-    ds,
-    data_var,
-    eofn,
-    eofn_max=None,
-    debug=False,
-    EofScaling=False,
-    save_multiple_eofs=False,
+    mode: str,
+    ds: xr.Dataset,
+    data_var: str,
+    eofn: int,
+    eofn_max: int = None,
+    debug: bool = False,
+    EofScaling: bool = False,
+    save_multiple_eofs: bool = False,
 ):
     """
     Proceed EOF analysis
@@ -227,7 +232,11 @@ def linear_regression(x, y):
 
 
 def gain_pseudo_pcs(
-    solver, field_to_be_projected, eofn, reverse_sign=False, EofScaling=False
+    solver,
+    field_to_be_projected: xr.DataArray,
+    eofn,
+    reverse_sign=False,
+    EofScaling=False,
 ):
     """
     Given a data set, projects it onto the n-th EOF to generate a corresponding set of pseudo-PCs
@@ -335,8 +344,10 @@ def adjust_timeseries(
     Output
     - timeseries_season: array (t, y, x)
     """
-    if isinstance(ds, xr.DataArray):
-        ds = da_to_ds(ds, data_var)
+    if not isinstance(ds, xr.Dataset):
+        raise TypeError(
+            "The first parameter of adjust_timeseries must be an xarray Dataset"
+        )
     # Reomove annual cycle (for all modes) and get its seasonal mean time series if needed
     ds_anomaly = get_anomaly_timeseries(ds, data_var, season)
     # Calculate residual by subtracting domain (or global) average
@@ -356,6 +367,10 @@ def get_anomaly_timeseries(ds: xr.Dataset, data_var: str, season: str) -> xr.Dat
     Output
     - timeseries_ano: variable
     """
+    if not isinstance(ds, xr.Dataset):
+        raise TypeError(
+            "The first parameter of get_anomaly_timeseries must be an xarray Dataset"
+        )
     # Get anomaly field
     if season == "yearly":
         ds_anomaly = ds.temporal.departures(data_var, freq="year", weighted=True)
@@ -363,22 +378,34 @@ def get_anomaly_timeseries(ds: xr.Dataset, data_var: str, season: str) -> xr.Dat
         # Remove annual cycle
         ds_anomaly = ds.temporal.departures(data_var, freq="month", weighted=True)
         if season != "monthly":
-            ds_anomaly = ds_anomaly.temporal.departures(
+            ds_anomaly_all_seasons = ds_anomaly.temporal.departures(
                 data_var,
                 freq="season",
                 weighted=True,
                 season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},
             )
+            ds_anomaly = select_by_season(ds_anomaly_all_seasons, season)
     # return result
     return ds_anomaly
+
+
+def select_by_season(ds: xr.Dataset, season: str) -> xr.Dataset:
+    time_key = get_time_key(ds)
+    lat_bnds_key = get_latitude_bounds_key(ds)
+    lon_bnds_key = get_longitude_bounds_key(ds)
+    ds_subset = ds.where(ds[time_key].dt.season == season, drop=True)
+    # Preserve original spatial bounds info
+    ds_subset[lat_bnds_key] = get_latitude_bounds(ds)
+    ds_subset[lon_bnds_key] = get_longitude_bounds(ds)
+    return ds_subset
 
 
 def get_residual_timeseries(
     ds_anomaly: xr.Dataset,
     data_var: str,
     mode: str,
-    regions_specs: dict,
-    RmDomainMean=True,
+    regions_specs: dict = None,
+    RmDomainMean: bool = True,
 ) -> xr.Dataset:
     """
     Calculate residual by subtracting domain average (or global mean)
@@ -401,22 +428,28 @@ def get_residual_timeseries(
     Output
     - ds_residual: array, 3d (t, y, x)
     """
+    if not isinstance(ds_anomaly, xr.Dataset):
+        raise TypeError(
+            "The first parameter of get_residual_timeseries must be an xarray Dataset"
+        )
     ds_residual = ds_anomaly.copy()
     if RmDomainMean:
         # Get domain mean
-        ds_anomaly_region = region_subset(ds_anomaly, mode, regions_specs)
+        ds_anomaly_region = region_subset(
+            ds_anomaly, mode, data_var=data_var, regions_specs=regions_specs
+        )
         ds_anomaly_mean = ds_anomaly_region.spatial.average(data_var)
         # Subtract domain mean
         ds_residual[data_var] = ds_anomaly[data_var] - ds_anomaly_mean[data_var]
     else:
         if mode in ["PDO", "NPGO", "AMO"]:
             # Get global mean (latitude -60 to 70)
-            lat_key = get_latitude_key(ds_anomaly)
-            ds_anomaly_mean = ds_anomaly.sel({lat_key: slice(-60, 70)}).spatial.average(
-                data_var
-            )[data_var]
+            ds_anomaly_subset = select_subset(ds_anomaly, lat=(-60, 70))
+            ds_anomaly_subset_mean = ds_anomaly_subset.spatial.average(data_var)
             # Subtract global mean
-            ds_residual[data_var] = ds_anomaly[data_var] - ds_anomaly_mean[data_var]
+            ds_residual[data_var] = (
+                ds_anomaly[data_var] - ds_anomaly_subset_mean[data_var]
+            )
     # return result
     return ds_residual
 

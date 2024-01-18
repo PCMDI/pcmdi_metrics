@@ -7,6 +7,7 @@ from .xcdat_dataset_io import (  # noqa  # isort:skip
     da_to_ds,
     get_axis_list,
     get_data_list,
+    get_grid,
     get_latitude_bounds_key,
     get_latitude_key,
     get_latitude,
@@ -21,4 +22,4 @@ from .xcdat_dataset_io import (  # noqa  # isort:skip
     get_time_key,
     select_subset,
 )
-from .default_regions_define import load_regions_specs, region_subset  # noqa
+from .regions import load_regions_specs, region_subset  # noqa

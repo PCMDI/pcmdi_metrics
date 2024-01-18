@@ -45,8 +45,8 @@ herein do not necessarily state or reflect those of the United States
 government or Lawrence Livermore National Security, LLC, and shall not be used
 for advertising or product endorsement purposes.
 """
+# import shapely  # noqa
 
-import shapely  # noqa
 import glob
 import json
 import os
@@ -55,21 +55,19 @@ import sys
 from argparse import RawTextHelpFormatter
 from shutil import copyfile
 
-import MV2
-
-# from pcmdi_metrics import resources
-from pcmdi_metrics.io import fill_template, load_regions_specs, region_subset
+from pcmdi_metrics.io import fill_template, get_grid, load_regions_specs, region_subset
 from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.stats import calculate_temporal_correlation as calcTCOR
 from pcmdi_metrics.stats import mean_xy
-from pcmdi_metrics.utils import sort_human, tree
-from pcmdi_metrics.variability_mode.lib import (  # get_domain_range,
+from pcmdi_metrics.utils import regrid, sort_human, tree
+from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
     VariabilityModeCheck,
     YearCheck,
     adjust_timeseries,
     calc_stats_save_dict,
     calcSTD,
+    check_start_end_year,
     debug_print,
     eof_analysis_get_variance_mode,
     gain_pcs_fraction,
@@ -154,9 +152,9 @@ models = param.modnames
 
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
-    model_index_path = re.split(". |_", modpath.split("/")[-1]).index("%(model)")
+    model_index_path = re.split("[._]", modpath.split("/")[-1]).index("%(model)")
     models = [
-        re.split(". |_", p.split("/")[-1])[model_index_path]
+        re.split("[._]", p.split("/")[-1])[model_index_path]
         for p in glob.glob(
             fill_template(
                 modpath, mip=mip, exp=exp, model="*", realization="*", variable=var
@@ -282,9 +280,9 @@ if os.path.isfile(json_file) and os.stat(json_file).st_size > 0:
         result_dict = json.loads(fj.read())
         fj.close()
 
-if "REF" not in list(result_dict.keys()):
+if "REF" not in result_dict:
     result_dict["REF"] = {}
-if "RESULTS" not in list(result_dict.keys()):
+if "RESULTS" not in result_dict:
     result_dict["RESULTS"] = {}
 
 # =================================================
@@ -294,7 +292,7 @@ if obs_compare:
     obs_lf_path = None
 
     # read data in
-    obs_timeseries, osyear, oeyear = read_data_in(
+    obs_timeseries = read_data_in(
         obs_path,
         obs_lf_path,
         obs_var,
@@ -308,6 +306,7 @@ if obs_compare:
 
     # Save global grid information for regrid below
     # ref_grid_global = obs_timeseries.getGrid()
+    ref_grid_global = get_grid(obs_timeseries)
 
     # Declare dictionary variables to keep information from observation
     eof_obs = {}
@@ -319,13 +318,13 @@ if obs_compare:
     stdv_pc_obs = {}
 
     # Dictonary for json archive
-    if "obs" not in list(result_dict["REF"].keys()):
+    if "obs" not in result_dict["REF"]:
         result_dict["REF"]["obs"] = {}
-    if "defaultReference" not in list(result_dict["REF"]["obs"].keys()):
+    if "defaultReference" not in result_dict["REF"]["obs"]:
         result_dict["REF"]["obs"]["defaultReference"] = {}
-    if "source" not in list(result_dict["REF"]["obs"]["defaultReference"].keys()):
+    if "source" not in result_dict["REF"]["obs"]["defaultReference"]:
         result_dict["REF"]["obs"]["defaultReference"]["source"] = {}
-    if mode not in list(result_dict["REF"]["obs"]["defaultReference"].keys()):
+    if mode not in result_dict["REF"]["obs"]["defaultReference"]:
         result_dict["REF"]["obs"]["defaultReference"][mode] = {}
 
     result_dict["REF"]["obs"]["defaultReference"]["source"] = obs_path
@@ -342,9 +341,7 @@ if obs_compare:
     for season in seasons:
         debug_print("season: " + season, debug)
 
-        if season not in list(
-            result_dict["REF"]["obs"]["defaultReference"][mode].keys()
-        ):
+        if season not in result_dict["REF"]["obs"]["defaultReference"][mode]:
             result_dict["REF"]["obs"]["defaultReference"][mode][season] = {}
 
         dict_head_obs = result_dict["REF"]["obs"]["defaultReference"][mode][season]
@@ -385,7 +382,7 @@ if obs_compare:
 
         # Linear regression to have extended global map; teleconnection purpose
         (
-            eof_lr_obs[season],
+            eof_lr_obs_season,
             slope_obs,
             intercept_obs,
         ) = linear_regression_on_globe_for_teleconnection(
@@ -396,23 +393,17 @@ if obs_compare:
             EofScaling,
             debug=debug,
         )
-
+        eof_lr_obs[season] = eof_lr_obs_season
         # - - - - - - - - - - - - - - - - - - - - - - - - -
         # Record results
         # . . . . . . . . . . . . . . . . . . . . . . . . .
         debug_print("record results", debug)
 
         # Set output file name for NetCDF and plot
-        output_filename_obs = "_".join(
-            [
-                mode,
-                var,
-                "EOF" + str(eofn_obs),
-                season,
-                "obs",
-                str(osyear) + "-" + str(oeyear),
-            ]
+        output_filename_obs = (
+            f"{mode}_{var}_EOF{eofn_obs}_{season}_obs_{osyear}-{oeyear}"
         )
+
         if EofScaling:
             output_filename_obs += "_EOFscaled"
 
@@ -422,14 +413,16 @@ if obs_compare:
             output_img_file_obs = os.path.join(
                 dir_paths["graphics"], output_filename_obs
             )
+            eof_lr_obs_season_region = region_subset(
+                eof_lr_obs_season, mode, regions_specs
+            )
             plot_map(
                 mode,
                 "[REF] " + obs_name,
                 osyear,
                 oeyear,
                 season,
-                # eof_lr_obs[season](region_subdomain),
-                region_subset(eof_lr_obs[season], mode, regions_specs),
+                eof_lr_obs_season_region,
                 frac_obs[season],
                 output_img_file_obs,
                 debug=debug,
@@ -490,7 +483,7 @@ if obs_compare:
 for model in models:
     print(" ----- ", model, " ---------------------")
 
-    if model not in list(result_dict["RESULTS"].keys()):
+    if model not in result_dict["RESULTS"]:
         result_dict["RESULTS"][model] = {}
 
     model_path_list = glob.glob(
@@ -510,7 +503,8 @@ for model in models:
 
     # Find where run can be gripped from given filename template for modpath
     if realization == "*":
-        run_in_modpath = (
+        run_in_modpath = re.split(
+            "[._]",
             fill_template(
                 modpath,
                 mip=mip,
@@ -518,11 +512,8 @@ for model in models:
                 model=model,
                 realization=realization,
                 variable=var,
-            )
-            .split("/")[-1]
-            .split(".")
-            .index(realization)
-        )
+            ).split("/")[-1],
+        ).index(realization)
 
     # -------------------------------------------------
     # Run
@@ -531,21 +522,22 @@ for model in models:
         # try:
         if 1:
             if realization == "*":
-                run = (model_path.split("/")[-1]).split(".")[run_in_modpath]
+                run = re.split("[._]", (model_path.split("/")[-1]).split("."))[
+                    run_in_modpath
+                ]
             else:
                 run = realization
             print(" --- ", run, " ---")
 
-            if run not in list(result_dict["RESULTS"][model].keys()):
+            if run not in result_dict["RESULTS"][model]:
                 result_dict["RESULTS"][model][run] = {}
-            if "defaultReference" not in list(
-                result_dict["RESULTS"][model][run].keys()
-            ):
+
+            if "defaultReference" not in result_dict["RESULTS"][model][run]:
                 result_dict["RESULTS"][model][run]["defaultReference"] = {}
-            if mode not in list(
-                result_dict["RESULTS"][model][run]["defaultReference"].keys()
-            ):
+
+            if mode not in result_dict["RESULTS"][model][run]["defaultReference"]:
                 result_dict["RESULTS"][model][run]["defaultReference"][mode] = {}
+
             result_dict["RESULTS"][model][run]["defaultReference"][mode][
                 "target_model_eofs"
             ] = eofn_mod
@@ -556,7 +548,7 @@ for model in models:
                 model_lf_path = None
 
             # read data in
-            model_timeseries, msyear, meyear = read_data_in(
+            model_timeseries = read_data_in(
                 model_path,
                 model_lf_path,
                 var,
@@ -564,9 +556,11 @@ for model in models:
                 msyear,
                 meyear,
                 ModUnitsAdjust,
-                LandMask,
+                LandMask=LandMask,
                 debug=debug,
             )
+
+            msyear, meyear = check_start_end_year(model_timeseries)
 
             debug_print("msyear: " + str(msyear) + " meyear: " + str(meyear), debug)
 
@@ -576,8 +570,9 @@ for model in models:
             for season in seasons:
                 debug_print("season: " + season, debug)
 
-                if season not in list(
-                    result_dict["RESULTS"][model][run]["defaultReference"][mode].keys()
+                if (
+                    season
+                    not in result_dict["RESULTS"][model][run]["defaultReference"][mode]
                 ):
                     result_dict["RESULTS"][model][run]["defaultReference"][mode][
                         season
@@ -606,10 +601,11 @@ for model in models:
                 # Common Basis Function Approach
                 # - - - - - - - - - - - - - - - - - - - - - - - - -
                 if CBF and obs_compare:
-                    if "cbf" not in list(
-                        result_dict["RESULTS"][model][run]["defaultReference"][mode][
-                            season
-                        ].keys()
+                    if (
+                        "cbf"
+                        not in result_dict["RESULTS"][model][run]["defaultReference"][
+                            mode
+                        ][season]
                     ):
                         result_dict["RESULTS"][model][run]["defaultReference"][mode][
                             season
@@ -620,8 +616,11 @@ for model in models:
                     debug_print("CBF approach start", debug)
 
                     # Regrid (interpolation, model grid to ref grid)
-                    model_timeseries_season_regrid = model_timeseries_season.regrid(
-                        ref_grid_global, regridTool="regrid2", mkCyclic=True
+                    # model_timeseries_season_regrid = model_timeseries_season.regrid(
+                    #    ref_grid_global, regridTool="regrid2", mkCyclic=True
+                    # )
+                    model_timeseries_season_regrid = regrid(
+                        model_timeseries_season, var, ref_grid_global
                     )
                     # model_timeseries_season_regrid_subdomain = (
                     #    model_timeseries_season_regrid(region_subdomain)
@@ -631,8 +630,10 @@ for model in models:
                     )
 
                     # Matching model's missing value location to that of observation
+                    """
                     # Save axes for preserving
-                    axes = model_timeseries_season_regrid_subdomain.getAxisList()
+                    # axes = model_timeseries_season_regrid_subdomain.getAxisList()
+                    axes = get_axis_list(model_timeseries_season_regrid_subdomain)
                     # 1) Replace model's masked grid to 0, so theoritically won't affect to result
                     model_timeseries_season_regrid_subdomain = MV2.array(
                         model_timeseries_season_regrid_subdomain.filled(0.0)
@@ -641,11 +642,12 @@ for model in models:
                     model_timeseries_season_regrid_subdomain.mask = eof_obs[season].mask
                     # Preserve axes
                     model_timeseries_season_regrid_subdomain.setAxisList(axes)
+                    """
 
                     # CBF PC time series
                     cbf_pc = gain_pseudo_pcs(
                         solver_obs[season],
-                        model_timeseries_season_regrid_subdomain,
+                        model_timeseries_season_regrid_subdomain[var],
                         eofn_obs,
                         reverse_sign_obs[season],
                         EofScaling=EofScaling,
@@ -678,7 +680,9 @@ for model in models:
                     # Calculate fraction of variance explained by cbf pc
                     frac_cbf = gain_pcs_fraction(
                         # model_timeseries_season_regrid_subdomain,  # regridded model anomaly space
-                        model_timeseries_season_subdomain,  # native grid model anomaly space
+                        model_timeseries_season_subdomain[
+                            var
+                        ],  # native grid model anomaly space
                         eof_lr_cbf_subdomain,
                         cbf_pc / stdv_cbf_pc,
                         debug=debug,
@@ -687,7 +691,7 @@ for model in models:
                     # SENSITIVITY TEST ---
                     # Calculate fraction of variance explained by cbf pc (on regrid domain)
                     frac_cbf_regrid = gain_pcs_fraction(
-                        model_timeseries_season_regrid_subdomain,
+                        model_timeseries_season_regrid_subdomain[var],
                         eof_lr_cbf_subdomain,
                         cbf_pc / stdv_cbf_pc,
                         debug=debug,
@@ -716,21 +720,7 @@ for model in models:
                     )
 
                     # Set output file name for NetCDF and plot images
-                    output_filename = "_".join(
-                        [
-                            mode,
-                            var,
-                            "EOF" + str(eofn_mod),
-                            season,
-                            mip,
-                            model,
-                            exp,
-                            run,
-                            fq,
-                            realm,
-                            str(msyear) + "-" + str(meyear),
-                        ]
-                    )
+                    output_filename = f"{mode}_{var}_EOF{eofn_mod}_{season}_{mip}_{model}_{exp}_{run}_{fq}_{realm}_{msyear}-{meyear}"
                     if EofScaling:
                         output_filename += "_EOFscaled"
 
@@ -756,7 +746,7 @@ for model in models:
                     if plot_model:
                         plot_map(
                             mode,
-                            mip.upper() + " " + model + " (" + run + ")" + " - CBF",
+                            f"{mip.upper()} {model} ({run}) - CBF",
                             msyear,
                             meyear,
                             season,
@@ -767,7 +757,7 @@ for model in models:
                         )
                         plot_map(
                             mode + "_teleconnection",
-                            mip.upper() + " " + model + " (" + run + ")" + " - CBF",
+                            f"{mip.upper()} {model} ({run}) - CBF",
                             msyear,
                             meyear,
                             season,
@@ -815,10 +805,11 @@ for model in models:
 
                     for n in range(0, eofn_mod_max):
                         eofs = "eof" + str(n + 1)
-                        if eofs not in list(
-                            result_dict["RESULTS"][model][run]["defaultReference"][
-                                mode
-                            ][season].keys()
+                        if (
+                            eofs
+                            not in result_dict["RESULTS"][model][run][
+                                "defaultReference"
+                            ][mode][season]
                         ):
                             result_dict["RESULTS"][model][run]["defaultReference"][
                                 mode
@@ -890,21 +881,7 @@ for model in models:
                             dict_head["tcor_cbf_vs_eof_pc"] = tc
 
                         # Set output file name for NetCDF and plot images
-                        output_filename = "_".join(
-                            [
-                                mode,
-                                var,
-                                "EOF" + str(n + 1),
-                                season,
-                                mip,
-                                model,
-                                exp,
-                                run,
-                                fq,
-                                realm,
-                                str(msyear) + "-" + str(meyear),
-                            ]
-                        )
+                        output_filename = f"{mode}_{var}_EOF{n+1}_{season}_{mip}_{model}_{exp}_{run}_{fq}_{realm}_{msyear}-{meyear}"
                         if EofScaling:
                             output_filename += "_EOFscaled"
 
@@ -925,13 +902,7 @@ for model in models:
                         if plot_model:
                             plot_map(
                                 mode,
-                                mip.upper()
-                                + " "
-                                + model
-                                + " ("
-                                + run
-                                + ") - EOF"
-                                + str(n + 1),
+                                f"{mip.upper()} {model} ({run}) - EOF{n + 1}",
                                 msyear,
                                 meyear,
                                 season,
@@ -943,13 +914,7 @@ for model in models:
                             )
                             plot_map(
                                 mode + "_teleconnection",
-                                mip.upper()
-                                + " "
-                                + model
-                                + " ("
-                                + run
-                                + ") - EOF"
-                                + str(n + 1),
+                                f"{mip.upper()} {model} ({run}) - EOF{n + 1}",
                                 msyear,
                                 meyear,
                                 season,
@@ -990,22 +955,8 @@ for model in models:
             # =================================================================
             # Dictionary to JSON: individual JSON during model_realization loop
             # -----------------------------------------------------------------
-            json_filename_tmp = "_".join(
-                [
-                    "var",
-                    "mode",
-                    mode,
-                    "EOF" + str(eofn_mod),
-                    "stat",
-                    mip,
-                    exp,
-                    fq,
-                    realm,
-                    model,
-                    run,
-                    str(msyear) + "-" + str(meyear),
-                ]
-            )
+            json_filename_tmp = f"var_mode_{mode}_EOF{eofn_mod}_stat_{mip}_{exp}_{fq}_{realm}_{model}_{run}_{msyear}-{meyear}"
+
             variability_metrics_to_json(
                 dir_paths["metrics_results"],
                 json_filename_tmp,
@@ -1026,22 +977,7 @@ for model in models:
 # Dictionary to JSON: collective JSON at the end of model_realization loop
 # ------------------------------------------------------------------------
 if not parallel and (len(models) > 1):
-    json_filename_all = "_".join(
-        [
-            "var",
-            "mode",
-            mode,
-            "EOF" + str(eofn_mod),
-            "stat",
-            mip,
-            exp,
-            fq,
-            realm,
-            "allModels",
-            "allRuns",
-            str(msyear) + "-" + str(meyear),
-        ]
-    )
+    json_filename_all = f"var_mode_{mode}_EOF{eofn_mod}_stat_{mip}_{exp}_{fq}_{realm}_allModels_allRuns_{msyear}-{meyear}"
     variability_metrics_to_json(
         dir_paths["metrics_results"], json_filename_all, result_dict, cmec_flag=cmec
     )

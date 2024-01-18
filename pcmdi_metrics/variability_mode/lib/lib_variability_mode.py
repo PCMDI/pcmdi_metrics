@@ -61,11 +61,14 @@ def read_data_in(
     syear: Union[str, int, float],
     eyear: Union[str, int, float],
     UnitsAdjust: tuple,
-    LandMask: bool,
-    debug=False,
-) -> xr.DataArray:
+    LandMask: bool = False,
+    debug: bool = False,
+) -> xr.Dataset:
     # Open data file
     ds = xcdat_open(path)
+    ds = (
+        ds.bounds.add_missing_bounds()
+    )  # https://xcdat.readthedocs.io/en/latest/generated/xarray.Dataset.bounds.add_missing_bounds.html
 
     # Time subset
     ds_time_subsetted = subset_time(ds, syear, eyear, debug=debug)
@@ -102,7 +105,17 @@ def read_data_in(
                 landfrac = xcdat_open(lf_path)
         data_timeseries = apply_landmask(data_timeseries, landfrac=landfrac)
 
-    return data_timeseries, data_syear, data_eyear
+    ds_time_subsetted[var_in_data] = data_timeseries
+
+    return ds_time_subsetted
+
+
+def check_start_end_year(ds):
+    time_coord = get_time(ds)
+    time_coord = get_time(ds)
+    data_syear = time_coord[0].item().year
+    data_eyear = time_coord[-1].item().year
+    return data_syear, data_eyear
 
 
 def subset_time(
@@ -256,7 +269,12 @@ def sea_ice_adjust(data_array: xr.DataArray) -> xr.DataArray:
 
 
 def variability_metrics_to_json(
-    outdir, json_filename, result_dict, model=None, run=None, cmec_flag=False
+    outdir: str,
+    json_filename: str,
+    result_dict: dict,
+    model: str = None,
+    run: str = None,
+    cmec_flag: bool = False,
 ):
     # Open JSON
     JSON = pcmdi_metrics.io.base.Base(outdir, json_filename)

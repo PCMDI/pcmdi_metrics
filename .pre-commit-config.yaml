@@ -25,7 +25,7 @@ repos:
           - id: black
 
     - repo: https://github.com/timothycrosley/isort
-      rev: 5.12.0
+      rev: 5.13.2
       hooks:
           - id: isort
             args: ["--honor-noqa"]
@@ -34,7 +34,7 @@ repos:
     # Python linting
     # =======================
     - repo: https://github.com/pycqa/flake8
-      rev: 6.0.0
+      rev: 7.0.0
       hooks:
           - id: flake8
             args: ["--config=setup.cfg"]
