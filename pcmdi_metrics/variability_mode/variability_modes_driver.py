@@ -387,11 +387,21 @@ if obs_compare:
             intercept_obs,
         ) = linear_regression_on_globe_for_teleconnection(
             pc_obs[season],
-            obs_timeseries_season[obs_var],
+            obs_timeseries_season,
+            obs_var,
             stdv_pc_obs[season],
             RmDomainMean,
             EofScaling,
             debug=debug,
+        )
+
+        obs_timeseries_season["eof_lr"] = eof_lr_obs_season
+        obs_timeseries_season["slope"] = slope_obs
+        obs_timeseries_season["intercept"] = intercept_obs
+
+        # Extract subdomain for plot
+        obs_timeseries_season_region = region_subset(
+            obs_timeseries_season, mode, regions_specs=regions_specs
         )
         eof_lr_obs[season] = eof_lr_obs_season
         # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -413,16 +423,14 @@ if obs_compare:
             output_img_file_obs = os.path.join(
                 dir_paths["graphics"], output_filename_obs
             )
-            eof_lr_obs_season_region = region_subset(
-                eof_lr_obs_season, mode, regions_specs
-            )
+
             plot_map(
                 mode,
                 "[REF] " + obs_name,
                 osyear,
                 oeyear,
                 season,
-                eof_lr_obs_season_region,
+                obs_timeseries_season_region["eof_lr"],
                 frac_obs[season],
                 output_img_file_obs,
                 debug=debug,
@@ -434,7 +442,7 @@ if obs_compare:
                 oeyear,
                 season,
                 # eof_lr_obs[season](longitude=(lon1_global, lon2_global)),
-                eof_lr_obs[season],
+                eof_lr_obs_season,
                 frac_obs[season],
                 output_img_file_obs + "_teleconnection",
                 debug=debug,
@@ -663,36 +671,39 @@ for model in models:
                         intercept_cbf,
                     ) = linear_regression_on_globe_for_teleconnection(
                         cbf_pc,
-                        model_timeseries_season[var],
+                        model_timeseries_season,
+                        var,
                         stdv_cbf_pc,
-                        # cbf_pc, model_timeseries_season_regrid, stdv_cbf_pc,
                         RmDomainMean,
                         EofScaling,
                         debug=debug,
                     )
 
+                    model_timeseries_season["eof_lr_cbf"] = eof_lr_cbf
+                    model_timeseries_season["slope_cbf"] = slope_cbf
+                    model_timeseries_season["intercept_cbf"] = intercept_cbf
+
                     # Extract subdomain for statistics
                     # eof_lr_cbf_subdomain = eof_lr_cbf(region_subdomain)
-                    eof_lr_cbf_subdomain = region_subset(
-                        eof_lr_cbf, mode, regions_specs
+                    model_timeseries_season_subdomain = region_subset(
+                        model_timeseries_season,
+                        mode,
+                        regions_specs=regions_specs,
                     )
 
-                    # Calculate fraction of variance explained by cbf pc
+                    # Calculate fraction of variance explained by cbf pc (native grid)
                     frac_cbf = gain_pcs_fraction(
-                        # model_timeseries_season_regrid_subdomain,  # regridded model anomaly space
-                        model_timeseries_season_subdomain[
-                            var
-                        ],  # native grid model anomaly space
-                        eof_lr_cbf_subdomain,
+                        model_timeseries_season_subdomain[var],
+                        model_timeseries_season_subdomain["eof_lr_cbf"],
                         cbf_pc / stdv_cbf_pc,
                         debug=debug,
                     )
 
                     # SENSITIVITY TEST ---
-                    # Calculate fraction of variance explained by cbf pc (on regrid domain)
+                    # Calculate fraction of variance explained by cbf pc (regrid domain)
                     frac_cbf_regrid = gain_pcs_fraction(
                         model_timeseries_season_regrid_subdomain[var],
-                        eof_lr_cbf_subdomain,
+                        model_timeseries_season_subdomain["eof_lr_cbf"],
                         cbf_pc / stdv_cbf_pc,
                         debug=debug,
                     )
@@ -705,7 +716,7 @@ for model in models:
                     dict_head, eof_lr_cbf = calc_stats_save_dict(
                         mode,
                         dict_head,
-                        eof_lr_cbf_subdomain,
+                        model_timeseries_season_subdomain["eof_lr_cbf"],
                         eof_lr_cbf,
                         cbf_pc,
                         stdv_cbf_pc,
@@ -750,7 +761,7 @@ for model in models:
                             msyear,
                             meyear,
                             season,
-                            eof_lr_cbf_subdomain,
+                            model_timeseries_season_subdomain["eof_lr_cbf"],
                             frac_cbf,
                             output_img_file + "_cbf",
                             debug=debug,
@@ -846,6 +857,7 @@ for model in models:
                         # Metrics results -- statistics to JSON
                         if obs_compare:
                             dict_head, eof_lr = calc_stats_save_dict(
+                                mode,
                                 dict_head,
                                 eof,
                                 eof_lr,
@@ -862,6 +874,7 @@ for model in models:
                             )
                         else:
                             dict_head, eof_lr = calc_stats_save_dict(
+                                mode,
                                 dict_head,
                                 eof,
                                 eof_lr,

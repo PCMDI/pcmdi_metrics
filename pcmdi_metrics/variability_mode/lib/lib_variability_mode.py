@@ -217,10 +217,14 @@ def diff_month(date1, date2):
     return (date2.year - date1.year) * 12 + date2.month - date1.month + 1
 
 
-def debug_print(string, debug):
+def debug_print(to_check, debug):
     if debug:
         nowtime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-        print("debug: " + nowtime + " " + string)
+        if isinstance(to_check, str):
+            print("debug: " + nowtime + " " + to_check)
+        else:
+            print("debug: " + nowtime)
+            print(to_check)
 
 
 def pick_year_last_day(ds):

@@ -19,7 +19,15 @@ faulthandler.enable()
 
 
 def plot_map(
-    mode, model, syear, eyear, season, eof_Nth, frac_Nth, output_file_name, debug=False
+    mode: str,
+    model: str,
+    syear: int,
+    eyear: int,
+    season: str,
+    eof_pattern: xr.DataArray,
+    eof_variance_fraction: float,
+    output_file_name: str,
+    debug=False,
 ):
     """Plot dive down map and save
 
@@ -35,9 +43,9 @@ def plot_map(
         End year from analysis
     season : str
         season ("DJF", "MAM", "JJA", "SON", "monthly", or "yearly") that was used for analysis and will be shown in figure title
-    eof_Nth : cdms2.TransientVariable
+    eof_pattern : cdms2.TransientVariable
         EOF pattern to plot, 2D cdms2 TransientVariable with lat/lon coordinates attached
-    frac_Nth : float
+    eof_variance_fraction : float
         Fraction of explained variability (0 to 1), which will be shown in the figure as percentage after multiplying 100
     output_file_name : str
         Name of output image file (e.g., "output_file.png")
@@ -55,26 +63,14 @@ def plot_map(
         sys.exit("Projection for " + mode + "is not defined.")
 
     # title
-    if frac_Nth != -999:
+    if eof_variance_fraction != -999:
         percentage = (
-            str(round(float(frac_Nth * 100.0), 1)) + "%"
+            str(round(float(eof_variance_fraction * 100.0), 1)) + "%"
         )  # % with one floating number
     else:
         percentage = ""
 
-    plot_title = (
-        mode
-        + ": "
-        + model
-        + "\n"
-        + str(syear)
-        + "-"
-        + str(eyear)
-        + " "
-        + season
-        + " "
-        + percentage
-    )
+    plot_title = f"{mode}: {model}\n{syear}-{eyear} {season} {percentage}"
 
     debug_print(
         "plot_map: projection, plot_title:" + projection + ", " + plot_title, debug
@@ -102,13 +98,7 @@ def plot_map(
         central_longitude = 180
 
     # Convert cdms variable to xarray
-    lon = get_longitude(eof_Nth)
-    lat = get_latitude(eof_Nth)
-    data = np.array(eof_Nth)
-    lon, lat = np.meshgrid(lon, lat)
-    data_array = xr.DataArray(
-        data, coords={"lon": lon[0, :], "lat": lat[:, 0]}, dims=("lat", "lon")
-    )
+    data_array = eof_pattern
     data_array = data_array.where(data_array != 1e20, np.nan)
 
     plot_map_cartopy(
@@ -164,8 +154,8 @@ def plot_map_cartopy(
 
     debug_print("plot_map_cartopy starts", debug)
 
-    lon = data_array.lon
-    lat = data_array.lat
+    lon = get_longitude(data_array)
+    lat = get_latitude(data_array)
 
     # Determine the extent based on the longitude range where data exists
     lon_min = lon.min().item()

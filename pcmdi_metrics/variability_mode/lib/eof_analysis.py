@@ -174,7 +174,7 @@ def arbitrary_checking(mode, eof_Nth):
 
 
 def linear_regression_on_globe_for_teleconnection(
-    pc, model_timeseries, stdv_pc, RmDomainMean=True, EofScaling=False, debug=False
+    pc, ds, data_var, stdv_pc, RmDomainMean=True, EofScaling=False, debug=False
 ):
     """
     - Reconstruct EOF fist mode including teleconnection purpose as well
@@ -182,14 +182,15 @@ def linear_regression_on_globe_for_teleconnection(
     - Note that eof_lr has global field
     """
     if debug:
-        print("pc.shape, timeseries.shape:", pc.shape, model_timeseries.shape)
+        print("pc.shape, timeseries.shape:", pc.shape, ds[data_var].shape)
 
     # Linear regression to have extended global map; teleconnection purpose
-    slope, intercept = linear_regression(pc, model_timeseries)
+    slope, intercept = linear_regression(pc, ds[data_var])
 
-    factor = stdv_pc
     if not RmDomainMean and EofScaling:
         factor = 1
+    else:
+        factor = stdv_pc
 
     eof_lr = (slope * factor) + intercept
 

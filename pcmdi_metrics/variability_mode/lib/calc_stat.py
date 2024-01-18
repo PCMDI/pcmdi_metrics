@@ -1,5 +1,7 @@
 from time import gmtime, strftime
 
+import xarray as xr
+
 from pcmdi_metrics.io import get_grid, region_subset
 from pcmdi_metrics.stats import bias_xy as calcBias
 from pcmdi_metrics.stats import cor_xy as calcSCOR
@@ -10,14 +12,14 @@ from pcmdi_metrics.utils import regrid
 
 
 def calc_stats_save_dict(
-    mode,
-    dict_head,
-    eof,
-    eof_lr,
+    mode: str,
+    dict_head: dict,
+    eof: xr.Dataset,
+    eof_lr: xr.Dataset,
     pc,
     stdv_pc,
     frac,
-    regions_specs,
+    regions_specs: dict = None,
     eof_obs=None,
     eof_lr_obs=None,
     stdv_pc_obs=None,
@@ -28,6 +30,7 @@ def calc_stats_save_dict(
     """
     NOTE: Calculate statistics and save numbers to dictionary for JSON.
     Input
+    - mode: [str] name of variability mode
     - dict_head: [dict] subset of dictionary
     - eof: [2d field] linear regressed eof pattern (eof domain)
     - eof_lr: [2d field] linear regressed eof pattern (global)
@@ -60,18 +63,17 @@ def calc_stats_save_dict(
     # Note: '_glo' indicates statistics calculated over global domain
     # . . . . . . . . . . . . . . . . . . . . . . . . .
     if obs_compare:
-        if method in ["eof", "cbf"]:
-            ref_grid_global = get_grid(eof_lr_obs)
-            # Regrid (interpolation, model grid to ref grid)
-            debug_print("regrid (global) start", debug)
-            # eof_model_global = eof_lr.regrid(eof_lr,
-            #    ref_grid_global, regridTool="regrid2", mkCyclic=True
-            # )
-            eof_model_global = regrid(eof_lr, ref_grid_global)
-            debug_print("regrid end", debug)
-            # Extract subdomain
-            # eof_model = eof_model_global(region_subdomain)
-            eof_model = region_subset(eof_model_global, mode, regions_specs)
+        ref_grid_global = get_grid(eof_lr_obs)
+        # Regrid (interpolation, model grid to ref grid)
+        debug_print("regrid (global) start", debug)
+        # eof_model_global = eof_lr.regrid(eof_lr,
+        #    ref_grid_global, regridTool="regrid2", mkCyclic=True
+        # )
+        eof_model_global = regrid(eof_lr, ref_grid_global)
+        debug_print("regrid end", debug)
+        # Extract subdomain
+        # eof_model = eof_model_global(region_subdomain)
+        eof_model = region_subset(eof_model_global, mode, regions_specs=regions_specs)
 
         # Spatial correlation weighted by area ('generate' option for weights)
         cor = calcSCOR(eof_model, eof_obs)
