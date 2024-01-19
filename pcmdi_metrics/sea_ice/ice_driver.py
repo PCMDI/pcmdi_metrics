@@ -139,17 +139,17 @@ def sea_ice_regions(ds, var, xvar, yvar):
             0,
         )
         data_sa = ds[var].where(
-            (ds[yvar] > -90) & (ds[yvar] <= -40) & (ds[xvar] > -60) & (ds[xvar] <= 20),
+            (ds[yvar] > -90) & (ds[yvar] <= -55) & (ds[xvar] > -60) & (ds[xvar] <= 20),
             0,
         )
         data_sp = ds[var].where(
             (ds[yvar] > -90)
-            & (ds[yvar] <= -40)
+            & (ds[yvar] <= -55)
             & ((ds[xvar] > 90) | (ds[xvar] <= -60)),
             0,
         )
         data_io = ds[var].where(
-            (ds[yvar] > -90) & (ds[yvar] <= -40) & (ds[xvar] > 20) & (ds[xvar] <= 90),
+            (ds[yvar] > -90) & (ds[yvar] <= -55) & (ds[xvar] > 20) & (ds[xvar] <= 90),
             0,
         )
 
@@ -220,11 +220,11 @@ def mse_model(dm, do, var=None):
     return stat
 
 
-def to_ice_con_ds(da, ds):
+def to_ice_con_ds(da, ds, obs_var):
     # Convert sea ice data array to dataset using
     # coordinates from another dataset
     ds = xr.Dataset(
-        data_vars={"ice_con": da, "time_bnds": ds.time_bnds}, coords={"time": ds.time}
+        data_vars={obs_var: da, "time_bnds": ds.time_bnds}, coords={"time": ds.time}
     )
     return ds
 
@@ -305,6 +305,15 @@ def replace_multi(string, rdict):
     return string
 
 
+def get_xy_coords(ds, xvar):
+    if len(ds[xvar].dims) == 2:
+        lon_j, lon_i = ds[xvar].dims
+    elif len(ds[xvar].dims) == 1:
+        lon_j = find_lon(ds)
+        lon_i = find_lat(ds)
+    return lon_i, lon_j
+
+
 if __name__ == "__main__":
     parser = create_sea_ice_parser()
     parameter = parser.get_parameter(argparse_vals_only=False)
@@ -317,12 +326,19 @@ if __name__ == "__main__":
     filename_template = parameter.filename_template
     test_data_path = parameter.test_data_path
     model_list = parameter.test_data_set
-    reference_data_path = parameter.reference_data_path
+    reference_data_path_nh = parameter.reference_data_path_nh
+    reference_data_path_sh = parameter.reference_data_path_sh
     reference_data_set = parameter.reference_data_set
     metrics_output_path = parameter.metrics_output_path
     area_template = parameter.area_template
     area_var = parameter.area_var
     AreaUnitsAdjust = parameter.AreaUnitsAdjust
+    obs_area_var = parameter.obs_area_var
+    obs_var = parameter.obs_var
+    obs_area_template_nh = parameter.obs_area_template_nh
+    obs_area_template_sh = parameter.obs_area_template_sh
+    obs_cell_area = parameter.obs_cell_area
+    ObsAreaUnitsAdjust = parameter.ObsAreaUnitsAdjust
     ModUnitsAdjust = parameter.ModUnitsAdjust
     ObsUnitsAdjust = parameter.ObsUnitsAdjust
     # plots = parameter.plots
@@ -364,168 +380,153 @@ if __name__ == "__main__":
     print("Find all realizations:", find_all_realizations)
 
     #### Do Obs part
-    ObsUnitsAdjust = (True, "multiply", 1e-2)
-    ObsAreaUnitsAdjust = (False, 0, 0)
-
-    f_nt_n = "/home/ordonez4/seaice/data/icecon_ssmi_nt_n_edited.nc"
-    f_nt_s = "/home/ordonez4/seaice/data/icecon_ssmi_nt_s_edited.nc"
-    f_bt_n = "/home/ordonez4/seaice/data/icecon_ssmi_bt_n_edited.nc"
-    f_bt_s = "/home/ordonez4/seaice/data/icecon_ssmi_bt_s_edited.nc"
-
     arctic_clims = {}
     arctic_means = {}
-    arctic_files = {"nt": f_nt_n, "bt": f_bt_n}
-    obs_var = "ice_con"
 
     print("OBS: Arctic")
-    for source in arctic_files:
-        obs = xc.open_dataset(arctic_files[source])
-        obs[obs_var] = adjust_units(obs[obs_var], ObsUnitsAdjust)
-        obs["area"] = adjust_units(obs["area"], ObsAreaUnitsAdjust)
-        # Remove land areas (including lakes)
-        mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
-        obs[obs_var] = obs[obs_var].where(mask < 1)
-        # Get regions
-        rgn_dict = sea_ice_regions(obs, obs_var, "lon", "lat")
-        """data_arctic = obs[obs_var].where((obs.lat > 0), 0)
-        data_ca1 = obs[obs_var].where(
-            ((obs.lat > 80) & (obs.lat <= 87.2) & (obs.lon > -120) & (obs.lon <= 90)), 0
-        )
-        data_ca2 = obs[obs_var].where(
-            ((obs.lat > 65) & (obs.lat < 87.2)) & ((obs.lon > 90) | (obs.lon <= -120)),
-            0,
-        )
-        data_ca = obs[obs_var].where((data_ca1 > 0) | (data_ca2 > 0), 0)
-        data_np = obs[obs_var].where(
-            (obs.lat > 35) & (obs.lat <= 65) & ((obs.lon > 90) | (obs.lon <= -120)), 0
-        )
-        data_na = obs[obs_var].where(
-            (obs.lat > 45) & (obs.lat <= 80) & (obs.lon > -120) & (obs.lon <= 90), 0
-        )
-        data_na = data_na - data_na.where(
-            (obs.lat > 45) & (obs.lat <= 50) & (obs.lon > 30) & (obs.lon <= 60), 0
-        )"""
+    obs = load_dataset(reference_data_path_nh)
+    xvar = find_lon(obs)
+    yvar = find_lat(obs)
+    coord_i, coord_j = get_xy_coords(obs, xvar)
+    if osyear is not None:
+        obs = obs.sel(
+            {
+                "time": slice(
+                    "{0}-01-01".format(osyear),
+                    "{0}-12-31".format(oeyear),
+                )
+            }
+        ).compute()  # TODO: won't always need to compute
+    obs[obs_var] = adjust_units(obs[obs_var], ObsUnitsAdjust)
+    if obs_area_var is not None:
+        obs[obs_area_var] = adjust_units(obs[obs_area_var], ObsAreaUnitsAdjust)
+        area_val = obs[obs_area_var]
+    else:
+        area_val = obs_cell_area
+    # Remove land areas (including lakes)
+    mask = create_land_sea_mask(obs, lon_key=xvar, lat_key=yvar)
+    obs[obs_var] = obs[obs_var].where(mask < 1)
+    # Get regions
+    rgn_dict = sea_ice_regions(obs, obs_var, xvar, yvar)
 
-        # Get ice extent
-        total_extent_arctic_obs = (
-            rgn_dict["arctic"].where(rgn_dict["arctic"] > 0.15) * obs.area
-        ).sum(("x", "y"), skipna=True)
-        total_extent_ca_obs = (
-            rgn_dict["ca"].where(rgn_dict["ca"] > 0.15) * obs.area
-        ).sum(("x", "y"), skipna=True)
-        total_extent_np_obs = (
-            rgn_dict["np"].where(rgn_dict["np"] > 0.15) * obs.area
-        ).sum(("x", "y"), skipna=True)
-        total_extent_na_obs = (
-            rgn_dict["na"].where(rgn_dict["na"] > 0.15) * obs.area
-        ).sum(("x", "y"), skipna=True)
+    # Get ice extent
+    total_extent_arctic_obs = (
+        rgn_dict["arctic"].where(rgn_dict["arctic"] > 0.15) * area_val
+    ).sum((coord_i, coord_j), skipna=True)
+    total_extent_ca_obs = (rgn_dict["ca"].where(rgn_dict["ca"] > 0.15) * area_val).sum(
+        (coord_i, coord_j), skipna=True
+    )
+    total_extent_np_obs = (rgn_dict["np"].where(rgn_dict["np"] > 0.15) * area_val).sum(
+        (coord_i, coord_j), skipna=True
+    )
+    total_extent_na_obs = (rgn_dict["na"].where(rgn_dict["na"] > 0.15) * area_val).sum(
+        (coord_i, coord_j), skipna=True
+    )
 
-        clim_arctic_obs = to_ice_con_ds(
-            total_extent_arctic_obs, obs
-        ).temporal.climatology(obs_var, freq="month")
-        clim_ca_obs = to_ice_con_ds(total_extent_ca_obs, obs).temporal.climatology(
-            obs_var, freq="month"
-        )
-        clim_np_obs = to_ice_con_ds(total_extent_np_obs, obs).temporal.climatology(
-            obs_var, freq="month"
-        )
-        clim_na_obs = to_ice_con_ds(total_extent_na_obs, obs).temporal.climatology(
-            obs_var, freq="month"
-        )
+    clim_arctic_obs = to_ice_con_ds(
+        total_extent_arctic_obs, obs, obs_var
+    ).temporal.climatology(obs_var, freq="month")
+    clim_ca_obs = to_ice_con_ds(total_extent_ca_obs, obs, obs_var).temporal.climatology(
+        obs_var, freq="month"
+    )
+    clim_np_obs = to_ice_con_ds(total_extent_np_obs, obs, obs_var).temporal.climatology(
+        obs_var, freq="month"
+    )
+    clim_na_obs = to_ice_con_ds(total_extent_na_obs, obs, obs_var).temporal.climatology(
+        obs_var, freq="month"
+    )
 
-        arctic_clims[source] = {
-            "arctic": clim_arctic_obs,
-            "ca": clim_ca_obs,
-            "np": clim_np_obs,
-            "na": clim_na_obs,
-        }
+    arctic_clims = {
+        "arctic": clim_arctic_obs,
+        "ca": clim_ca_obs,
+        "np": clim_np_obs,
+        "na": clim_na_obs,
+    }
 
-        arctic_means[source] = {
-            "arctic": total_extent_arctic_obs.mean("time", skipna=True).data.item(),
-            "ca": total_extent_ca_obs.mean("time", skipna=True).data.item(),
-            "np": total_extent_np_obs.mean("time", skipna=True).data.item(),
-            "na": total_extent_na_obs.mean("time", skipna=True).data.item(),
-        }
-        obs.close()
+    arctic_means = {
+        "arctic": total_extent_arctic_obs.mean("time", skipna=True).data.item(),
+        "ca": total_extent_ca_obs.mean("time", skipna=True).data.item(),
+        "np": total_extent_np_obs.mean("time", skipna=True).data.item(),
+        "na": total_extent_na_obs.mean("time", skipna=True).data.item(),
+    }
+    obs.close()
 
     antarctic_clims = {}
     antarctic_means = {}
-    antarctic_files = {"nt": f_nt_s, "bt": f_bt_s}
     print("OBS: Antarctic")
-    for source in antarctic_files:
-        obs = xc.open_dataset(antarctic_files[source])
-        obs[obs_var] = adjust_units(obs[obs_var], ObsUnitsAdjust)
-        obs["area"] = adjust_units(obs["area"], ObsAreaUnitsAdjust)
-        # Remove land areas (including lakes)
-        mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
-        obs[obs_var] = obs[obs_var].where(mask < 1)
-        rgn_dict = sea_ice_regions(obs, obs_var, "lon", "lat")
-        """data_antarctic = obs[obs_var].where((obs.lat < 0), 0)
-        data_sa = obs[obs_var].where(
-            (obs.lat > -90) & (obs.lat <= -55) & (obs.lon > -60) & (obs.lon <= 20), 0
-        )
-        data_sp = obs[obs_var].where(
-            (obs.lat > -90) & (obs.lat <= -55) & ((obs.lon > 90) | (obs.lon <= -60)), 0
-        )
-        data_io = obs[obs_var].where(
-            (obs.lat > -90) & (obs.lat <= -55) & (obs.lon > 20) & (obs.lon <= 90), 0
-        )"""
+    obs = load_dataset(reference_data_path_sh)
+    xvar = find_lon(obs)
+    yvar = find_lat(obs)
+    coord_i, coord_j = get_xy_coords(obs, xvar)
+    if osyear is not None:
+        obs = obs.sel(
+            {
+                "time": slice(
+                    "{0}-01-01".format(osyear),
+                    "{0}-12-31".format(oeyear),
+                )
+            }
+        ).compute()
+    obs[obs_var] = adjust_units(obs[obs_var], ObsUnitsAdjust)
+    if obs_area_var is not None:
+        obs[obs_area_var] = adjust_units(obs[obs_area_var], ObsAreaUnitsAdjust)
+        area_val = obs[obs_area_var]
+    else:
+        area_val = obs_cell_area
+    # Remove land areas (including lakes)
+    mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
+    obs[obs_var] = obs[obs_var].where(mask < 1)
+    rgn_dict = sea_ice_regions(obs, obs_var, "lon", "lat")
 
-        total_extent_antarctic_obs = (
-            rgn_dict["antarctic"].where(rgn_dict["antarctic"] > 0.15) * obs.area
-        ).sum(("x", "y"), skipna=True)
-        total_extent_sa_obs = (
-            rgn_dict["sa"].where(rgn_dict["sa"] > 0.15) * obs.area
-        ).sum(("x", "y"), skipna=True)
-        total_extent_sp_obs = (
-            rgn_dict["sp"].where(rgn_dict["sp"] > 0.15) * obs.area
-        ).sum(("x", "y"), skipna=True)
-        total_extent_io_obs = (
-            rgn_dict["io"].where(rgn_dict["io"] > 0.15) * obs.area
-        ).sum(("x", "y"), skipna=True)
+    total_extent_antarctic_obs = (
+        rgn_dict["antarctic"].where(rgn_dict["antarctic"] > 0.15) * area_val
+    ).sum((coord_i, coord_j), skipna=True)
+    total_extent_sa_obs = (rgn_dict["sa"].where(rgn_dict["sa"] > 0.15) * area_val).sum(
+        (coord_i, coord_j), skipna=True
+    )
+    total_extent_sp_obs = (rgn_dict["sp"].where(rgn_dict["sp"] > 0.15) * area_val).sum(
+        (coord_i, coord_j), skipna=True
+    )
+    total_extent_io_obs = (rgn_dict["io"].where(rgn_dict["io"] > 0.15) * area_val).sum(
+        (coord_i, coord_j), skipna=True
+    )
 
-        clim_antarctic_obs = to_ice_con_ds(
-            total_extent_antarctic_obs, obs
-        ).temporal.climatology(obs_var, freq="month")
-        clim_sa_obs = to_ice_con_ds(total_extent_sa_obs, obs).temporal.climatology(
-            obs_var, freq="month"
-        )
-        clim_sp_obs = to_ice_con_ds(total_extent_sp_obs, obs).temporal.climatology(
-            obs_var, freq="month"
-        )
-        clim_io_obs = to_ice_con_ds(total_extent_io_obs, obs).temporal.climatology(
-            obs_var, freq="month"
-        )
+    clim_antarctic_obs = to_ice_con_ds(
+        total_extent_antarctic_obs, obs, obs_var
+    ).temporal.climatology(obs_var, freq="month")
+    clim_sa_obs = to_ice_con_ds(total_extent_sa_obs, obs, obs_var).temporal.climatology(
+        obs_var, freq="month"
+    )
+    clim_sp_obs = to_ice_con_ds(total_extent_sp_obs, obs, obs_var).temporal.climatology(
+        obs_var, freq="month"
+    )
+    clim_io_obs = to_ice_con_ds(total_extent_io_obs, obs, obs_var).temporal.climatology(
+        obs_var, freq="month"
+    )
 
-        antarctic_clims[source] = {
-            "antarctic": clim_antarctic_obs,
-            "io": clim_io_obs,
-            "sp": clim_sp_obs,
-            "sa": clim_sa_obs,
-        }
+    antarctic_clims = {
+        "antarctic": clim_antarctic_obs,
+        "io": clim_io_obs,
+        "sp": clim_sp_obs,
+        "sa": clim_sa_obs,
+    }
 
-        antarctic_means[source] = {
-            "antarctic": total_extent_antarctic_obs.mean(
-                "time", skipna=True
-            ).data.item(),
-            "io": total_extent_io_obs.mean("time", skipna=True).data.item(),
-            "sp": total_extent_sp_obs.mean("time", skipna=True).data.item(),
-            "sa": total_extent_sa_obs.mean("time", skipna=True).data.item(),
-        }
-        obs.close()
+    antarctic_means = {
+        "antarctic": total_extent_antarctic_obs.mean("time", skipna=True).data.item(),
+        "io": total_extent_io_obs.mean("time", skipna=True).compute().data.item(),
+        "sp": total_extent_sp_obs.mean("time", skipna=True).compute().data.item(),
+        "sa": total_extent_sa_obs.mean("time", skipna=True).compute().data.item(),
+    }
+    obs.close()
 
-    obs_clims = {"nt": {}, "bt": {}}
-    obs_means = {"nt": {}, "bt": {}}
-    for item in antarctic_clims["nt"]:
-        obs_clims["nt"][item] = antarctic_clims["nt"][item]
-        obs_means["nt"][item] = antarctic_means["nt"][item]
-        obs_clims["bt"][item] = antarctic_clims["bt"][item]
-        obs_means["bt"][item] = antarctic_means["bt"][item]
-    for item in arctic_clims["nt"]:
-        obs_clims["nt"][item] = arctic_clims["nt"][item]
-        obs_means["nt"][item] = arctic_means["nt"][item]
-        obs_clims["bt"][item] = arctic_clims["bt"][item]
-        obs_means["bt"][item] = arctic_means["bt"][item]
+    obs_clims = {reference_data_set: {}}
+    obs_means = {reference_data_set: {}}
+    for item in antarctic_clims:
+        obs_clims[reference_data_set][item] = antarctic_clims[item]
+        obs_means[reference_data_set][item] = antarctic_means[item]
+    for item in arctic_clims:
+        obs_clims[reference_data_set][item] = arctic_clims[item]
+        obs_means[reference_data_set][item] = arctic_means[item]
 
     # Get climatology
     # get errors for climo and mean
@@ -533,8 +534,10 @@ if __name__ == "__main__":
     #### Do model part
     # Loop over models
 
+    # Needs to weigh months by length for metrics later
     clim_wts = [31.0, 28.0, 31.0, 30.0, 31.0, 30.0, 31.0, 31.0, 30.0, 31.0, 30.0, 31.0]
     clim_wts = [x / 365 for x in clim_wts]
+    # Initialize JSON data
     mse = {}
     metrics = {
         "DIMENSIONS": {
@@ -557,22 +560,12 @@ if __name__ == "__main__":
         "RESULTS": {},
         "model_year_range": {},
     }
-    print(model_list)
+    print("Model list:", model_list)
 
     for model in model_list:
         start_year = msyear
         end_year = meyear
 
-        # totals_dict = {
-        #    "arctic": 0,
-        #    "ca": 0,
-        #    "na": 0,
-        #    "np": 0,
-        #    "antarctic": 0,
-        #    "sp": 0,
-        #    "sa": 0,
-        #    "io": 0,
-        # }
         real_dict = {
             "arctic": {"model_mean": 0},
             "ca": {"model_mean": 0},
@@ -584,14 +577,14 @@ if __name__ == "__main__":
             "io": {"model_mean": 0},
         }
         mse[model] = {
-            "arctic": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
-            "ca": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
-            "na": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
-            "np": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
-            "antarctic": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
-            "sp": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
-            "sa": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
-            "io": {"model_mean": {"nasateam": {}, "bootstrap": {}}},
+            "arctic": {"model_mean": {reference_data_set: {}}},
+            "ca": {"model_mean": {reference_data_set: {}}},
+            "na": {"model_mean": {reference_data_set: {}}},
+            "np": {"model_mean": {reference_data_set: {}}},
+            "antarctic": {"model_mean": {reference_data_set: {}}},
+            "sp": {"model_mean": {reference_data_set: {}}},
+            "sa": {"model_mean": {reference_data_set: {}}},
+            "io": {"model_mean": {reference_data_set: {}}},
         }
 
         tags = {
@@ -690,11 +683,7 @@ if __name__ == "__main__":
                     data = regions_dict[rgn]
                     # coordinates aren't always the same as lat/lon names,
                     # especially if lat/lon are 2D
-                    if len(data[xvar].dims) == 2:
-                        lon_j, lon_i = data[xvar].dims
-                    elif len(data[xvar].dims) == 1:
-                        lon_j = xvar
-                        lon_i = yvar
+                    lon_i, lon_j = get_xy_coords(data, xvar)
                     # area data doesn't always use same coordinates as siconc data in CMIP6
                     # so we multiply by area.data, dropping the coordinates
                     rgn_total = (data.where(data > 0.15, 0) * area[area_var].data).sum(
@@ -722,15 +711,14 @@ if __name__ == "__main__":
                     # Set up metrics dictionary
                     if run not in mse[model][rgn]:
                         mse[model][rgn][run] = {}
-                    for key in ["nasateam", "bootstrap"]:
-                        mse[model][rgn][run].update(
-                            {
-                                key: {
-                                    "monthly_clim": {"mse": None},
-                                    "total_extent": {"mse": None},
-                                }
+                    mse[model][rgn][run].update(
+                        {
+                            reference_data_set: {
+                                "monthly_clim": {"mse": None},
+                                "total_extent": {"mse": None},
                             }
-                        )
+                        }
+                    )
 
                     run_data = real_dict[rgn][run].to_dataset(name=var)
                     # total_rgn.time.attrs.pop("bounds")
@@ -740,27 +728,20 @@ if __name__ == "__main__":
                     total = run_data.mean("time")[var].data
 
                     # Get errors, convert to 1e12 km^-4
-                    mse[model][rgn][run]["nasateam"]["monthly_clim"]["mse"] = str(
+                    mse[model][rgn][run][reference_data_set]["monthly_clim"][
+                        "mse"
+                    ] = str(
                         mse_t(
                             clim_extent[var],
-                            obs_clims["nt"][rgn]["ice_con"],
+                            obs_clims[reference_data_set][rgn][obs_var],
                             weights=clim_wts,
                         )
                         * 1e-12
                     )
-                    mse[model][rgn][run]["bootstrap"]["monthly_clim"]["mse"] = str(
-                        mse_t(
-                            clim_extent[var],
-                            obs_clims["bt"][rgn]["ice_con"],
-                            weights=clim_wts,
-                        )
-                        * 1e-12
-                    )
-                    mse[model][rgn][run]["nasateam"]["total_extent"]["mse"] = str(
-                        mse_model(total, obs_means["nt"][rgn]) * 1e-12
-                    )
-                    mse[model][rgn][run]["bootstrap"]["total_extent"]["mse"] = str(
-                        mse_model(total, obs_means["bt"][rgn]) * 1e-12
+                    mse[model][rgn][run][reference_data_set]["total_extent"][
+                        "mse"
+                    ] = str(
+                        mse_model(total, obs_means[reference_data_set][rgn]) * 1e-12
                     )
 
             # Update year list
@@ -768,13 +749,15 @@ if __name__ == "__main__":
         else:
             for rgn in mse[model]:
                 # Set up metrics dictionary
-                for key in ["nasateam", "bootstrap"]:
-                    mse[model][rgn]["model_mean"][key] = {
-                        "monthly_clim": {"mse": None},
-                        "total_extent": {"mse": None},
-                    }
+                mse[model][rgn]["model_mean"][reference_data_set] = {
+                    "monthly_clim": {"mse": None},
+                    "total_extent": {"mse": None},
+                }
                 metrics["model_year_range"][model] = ["", ""]
 
+    # -----------------
+    # Update metrics
+    # -----------------
     metrics["RESULTS"] = mse
 
     metricsfile = os.path.join(metrics_output_path, "sea_ice_metrics.json")
@@ -794,6 +777,9 @@ if __name__ == "__main__":
         "JSON file containig regional sea ice metrics",
     )
 
+    # ----------------
+    # Make figure
+    # ----------------
     sector_list = [
         "Central Arctic Sector",
         "North Atlantic Sector",
@@ -804,52 +790,96 @@ if __name__ == "__main__":
     ]
     sector_short = ["ca", "na", "np", "io", "sa", "sp"]
     fig7, ax7 = plt.subplots(6, 1, figsize=(5, 9))
-    mlabels = model_list + ["bootstrap"]
+    # mlabels = model_list + ["bootstrap"]
+    mlabels = model_list
     ind = np.arange(len(mlabels))  # the x locations for the groups
     # ind = np.arange(len(mods)+1)  # the x locations for the groups
     width = 0.3
-    n = len(ind) - 1
+    # n = len(ind) - 1
+    n = len(ind)
     for inds, sector in enumerate(sector_list):
         # Assemble data
         mse_clim = []
         mse_ext = []
+        clim_range = []
+        ext_range = []
         rgn = sector_short[inds]
         for model in model_list:
             mse_clim.append(
                 float(
-                    metrics["RESULTS"][model][rgn]["model_mean"]["nasateam"][
+                    metrics["RESULTS"][model][rgn]["model_mean"][reference_data_set][
                         "monthly_clim"
                     ]["mse"]
                 )
             )
             mse_ext.append(
                 float(
-                    metrics["RESULTS"][model][rgn]["model_mean"]["nasateam"][
+                    metrics["RESULTS"][model][rgn]["model_mean"][reference_data_set][
                         "total_extent"
                     ]["mse"]
                 )
             )
-        mse_clim.append(
-            mse_t(
-                obs_clims["bt"][rgn]["ice_con"],
-                obs_clims["nt"][rgn]["ice_con"],
-                weights=clim_wts,
-            )
-            * 1e-12
-        )
-        mse_ext.append(mse_model(obs_means["bt"][rgn], obs_means["nt"][rgn]) * 1e-12)
+            # Get spread
+            clim_err = []
+            ext_err = []
+            for r in metrics["RESULTS"][model][rgn]:
+                if r != "model_mean":
+                    clim_err.append(
+                        float(
+                            metrics["RESULTS"][model][rgn][r][reference_data_set][
+                                "monthly_clim"
+                            ]["mse"]
+                        )
+                    )
+                    ext_err.append(
+                        float(
+                            metrics["RESULTS"][model][rgn][r][reference_data_set][
+                                "total_extent"
+                            ]["mse"]
+                        )
+                    )
+            clim_range.append(np.max(clim_err) - np.min(clim_err))
+            ext_range.append(np.max(ext_err) - np.min(ext_err))
+
+        # mse_clim.append(
+        #    mse_t(
+        #        obs_clims["bt"][rgn]["ice_con"],
+        #        obs_clims["nt"][rgn]["ice_con"],
+        #        weights=clim_wts,
+        #    )
+        #    * 1e-12
+        # )
+        # mse_ext.append(mse_model(obs_means["bt"][rgn], obs_means["nt"][rgn]) * 1e-12)
+        # clim_range.append(0)
+        # ext_range.append(0)
 
         # Make figure
-        ax7[inds].bar(ind, mse_clim, width, color="b")
+        ax7[inds].bar(ind - width / 2.0, mse_clim, width, color="b")
+        ax7[inds].errorbar(
+            ind - width / 2.0,
+            mse_clim,
+            yerr=clim_range,
+            fmt="none",
+            color=[0, 10 / 255, 130 / 255],
+            elinewidth=3,
+            capsize=3,
+        )
         ax7[inds].bar(ind, mse_ext, width, color="r")
-        # ax7[inds].errorbar(ind, mse_clim, yerr=clim_err, fmt="o", color="r")
-        # ax7[inds].errorbar(ind, mse_ext, yerr=ext_err, fmt="o", color="r")
-        # ax7[inds].bar(ind[n], obs[sector_short[inds]]**2, width, color="b")
+        # https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.errorbar.html
+        ax7[inds].errorbar(
+            ind,
+            mse_ext,
+            yerr=ext_range,
+            fmt="none",
+            color=[130 / 255, 0, 0],
+            elinewidth=3,
+            capsize=3,
+        )
         if inds == len(sector_list) - 1:
             ax7[inds].set_xticks(ind + width / 2.0, mlabels, rotation=90, size=5)
         else:
             ax7[inds].set_xticks(ind + width / 2.0, labels="")
-        datamax = np.max(mse_clim)
+        datamax = np.max(np.array(mse_clim) + (np.array(clim_range) / 2))
         ymax = (datamax) * 1.3
         ax7[inds].set_ylim(0.0, ymax)
         if ymax < 1:
@@ -891,6 +921,7 @@ if __name__ == "__main__":
         print("Error: Could not get provenance from metrics json for output.json.")
 
     meta.update_provenance("modeldata", test_data_path)
-    if reference_data_path is not None:
-        meta.update_provenance("obsdata", reference_data_path)
+    if reference_data_path_nh is not None:
+        meta.update_provenance("obsdata_nh", reference_data_path_nh)
+        meta.update_provenance("obsdata_sh", reference_data_path_sh)
     meta.write()
