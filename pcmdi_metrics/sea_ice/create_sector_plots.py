@@ -12,9 +12,9 @@ from pcmdi_metrics.utils import create_land_sea_mask
 # ----------
 print("Creating Arctic map")
 # Load and process data
-f_os_n = "/p/user_pub/PCMDIobs/obs4MIPs_input/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/*nh*"
-obs = xc.open_mfdataset(f_os_n)
-obs = obs.sel({"time": slice("1988-01-01", "2020-12-31")}).mean("time").compute()
+f_os_n = "/p/user_pub/pmp/demo/sea-ice/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
+obs = xc.open_dataset(f_os_n)
+obs = obs.sel({"time": slice("1988-01-01", "2020-12-31")}).mean("time")
 mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
 obs["ice_conc"] = obs["ice_conc"].where(mask < 1)
 ds = obs.assign_coords(
@@ -80,9 +80,9 @@ obs.close()
 # ----------
 print("Creating Antarctic map")
 # Load and process data
-f_os_s = "/p/user_pub/PCMDIobs/obs4MIPs_input/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/*sh*"
-obs = xc.open_mfdataset(f_os_s)
-obs = obs.sel({"time": slice("1988-01-01", "2020-12-31")}).mean("time").compute()
+f_os_s = "/p/user_pub/pmp/demo/sea-ice/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/ice_conc_sh_ease2-250_cdr-v3p0_198801-202012.nc"
+obs = xc.open_dataset(f_os_s)
+obs = obs.sel({"time": slice("1988-01-01", "2020-12-31")}).mean("time")
 mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
 obs["ice_conc"] = obs["ice_conc"].where(mask < 1)
 ds = obs.assign_coords(
@@ -113,7 +113,7 @@ arctic_regions.plot_regions(
     label="abbrev",
     line_kws={"color": [0.2, 0.2, 0.25], "linewidth": 3},
 )
-ax.set_extent([-180, 180, -55, -90], ccrs.PlateCarree())
+ax.set_extent([-180, 180, -53, -90], ccrs.PlateCarree())
 ax.coastlines(color=[0.3, 0.3, 0.3])
 plt.annotate(
     "South Pacific",
@@ -125,7 +125,7 @@ plt.annotate(
 )
 plt.annotate(
     "Indian\nOcean",
-    (0.93, 0.66),
+    (0.89, 0.66),
     xycoords="axes fraction",
     horizontalalignment="right",
     verticalalignment="bottom",

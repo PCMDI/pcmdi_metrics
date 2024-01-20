@@ -31,11 +31,11 @@ arctic_ds = xr.Dataset(
     coords={"time": ds.time},
 )
 arctic_clim = arctic_ds.sel(
-    {"time": slice("1980-01-01", "2010-12-31")}
+    {"time": slice("1981-01-01", "2010-12-31")}
 ).temporal.climatology("siconc", freq="month")
 arctic_clim["time"] = [x for x in range(1, 13)]
 arctic_clim.siconc.plot()
-plt.title("E3SM-1-0 Arctic climatological sea ice extent")
+plt.title("E3SM-1-0 Arctic climatological sea ice extent\n1981-2010")
 plt.xlabel("Month")
 plt.ylabel("Extent (km2)")
 plt.xlim([1, 12])
