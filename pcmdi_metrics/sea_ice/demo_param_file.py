@@ -39,8 +39,8 @@ case_id = "ex1"
 metrics_output_path = "sea_ice_demo/%(case_id)/"
 
 # Settings for the observational data
-reference_data_path_nh = "/work/ordonez4/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
-reference_data_path_sh = "/work/ordonez4/ice_conc_sh_ease2-250_cdr-v3p0_198801-202012.nc"
+reference_data_path_nh = "/p/user_pub/pmp/demo/sea-ice/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
+reference_data_path_sh = "/p/user_pub/pmp/demo/sea-ice/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/ice_conc_sh_ease2-250_cdr-v3p0_198801-202012.nc"
 ObsUnitsAdjust=(True,"multiply",1e-2)
 reference_data_set="OSI-SAF"
 osyear=1988
