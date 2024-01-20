@@ -16,9 +16,16 @@ def create_sea_ice_parser():
         "-v",
         "--var",
         type=str,
-        nargs="+",
         dest="var",
         help="Name of model sea ice concentration variable",
+        required=False,
+    )
+
+    parser.add_argument(
+        "--obs_var",
+        type=str,
+        dest="obs_var",
+        help="Name of obs sea ice concentration variable",
         required=False,
     )
 
@@ -28,6 +35,15 @@ def create_sea_ice_parser():
         dest="area_var",
         help="Name of model area variable",
         required=False,
+    )
+
+    parser.add_argument(
+        "--obs_area_var",
+        type=str,
+        dest="obs_area_var",
+        help="Name of reference data area variable",
+        required=False,
+        default=None,
     )
 
     parser.add_argument(
@@ -101,7 +117,31 @@ def create_sea_ice_parser():
         "--area_template",
         dest="area_template",
         help="Filename template for model grid area",
-        required=False
+        required=False,
+    )
+
+    parser.add_argument(
+        "--obs_area_template_nh",
+        dest="obs_area_template_nh",
+        help="Filename template for obs grid area in Northern Hemisphere",
+        required=False,
+        default=None,
+    )
+
+    parser.add_argument(
+        "--obs_area_template_sh",
+        dest="obs_area_template_sh",
+        help="Filename template for obs grid area in Southern Hemisphere",
+        required=False,
+        default=None,
+    )
+
+    parser.add_argument(
+        "--obs_cell_area",
+        dest="obs_cell_area",
+        help="For equal area grids, the cell area in km",
+        required=False,
+        default=None,
     )
 
     parser.add_argument(
