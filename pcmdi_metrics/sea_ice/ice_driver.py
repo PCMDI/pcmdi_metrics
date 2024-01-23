@@ -803,8 +803,11 @@ if __name__ == "__main__":
         mse_ext = []
         clim_range = []
         ext_range = []
+        clim_err_x = []
+        clim_err_y = []
+        ext_err_y = []
         rgn = sector_short[inds]
-        for model in model_list:
+        for nmod, model in enumerate(model_list):
             mse_clim.append(
                 float(
                     metrics["RESULTS"][model][rgn]["model_mean"][reference_data_set][
@@ -819,74 +822,64 @@ if __name__ == "__main__":
                     ]["mse"]
                 )
             )
-            # Get spread
-            clim_err = []
-            ext_err = []
-            for r in metrics["RESULTS"][model][rgn]:
-                if r != "model_mean":
-                    clim_err.append(
-                        float(
-                            metrics["RESULTS"][model][rgn][r][reference_data_set][
-                                "monthly_clim"
-                            ]["mse"]
+            # Get spread, only if there are multiple realizations
+            if len(metrics["RESULTS"][model][rgn].keys()) > 2:
+                for r in metrics["RESULTS"][model][rgn]:
+                    if r != "model_mean":
+                        clim_err_x.append(ind[nmod])
+                        clim_err_y.append(
+                            float(
+                                metrics["RESULTS"][model][rgn][r][reference_data_set][
+                                    "monthly_clim"
+                                ]["mse"]
+                            )
                         )
-                    )
-                    ext_err.append(
-                        float(
-                            metrics["RESULTS"][model][rgn][r][reference_data_set][
-                                "total_extent"
-                            ]["mse"]
+                        ext_err_y.append(
+                            float(
+                                metrics["RESULTS"][model][rgn][r][reference_data_set][
+                                    "total_extent"
+                                ]["mse"]
+                            )
                         )
-                    )
-            clim_range.append(np.max(clim_err) - np.min(clim_err))
-            ext_range.append(np.max(ext_err) - np.min(ext_err))
 
-        # mse_clim.append(
-        #    mse_t(
-        #        obs_clims["bt"][rgn]["ice_con"],
-        #        obs_clims["nt"][rgn]["ice_con"],
-        #        weights=clim_wts,
-        #    )
-        #    * 1e-12
-        # )
-        # mse_ext.append(mse_model(obs_means["bt"][rgn], obs_means["nt"][rgn]) * 1e-12)
-        # clim_range.append(0)
-        # ext_range.append(0)
-
-        # Make figure
-        ax7[inds].bar(ind - width / 2.0, mse_clim, width, color="b")
-        ax7[inds].errorbar(
-            ind - width / 2.0,
-            mse_clim,
-            yerr=clim_range,
-            fmt="none",
-            color=[0, 10 / 255, 130 / 255],
-            elinewidth=3,
-            capsize=3,
-        )
-        ax7[inds].bar(ind, mse_ext, width, color="r")
-        # https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.errorbar.html
-        ax7[inds].errorbar(
-            ind,
-            mse_ext,
-            yerr=ext_range,
-            fmt="none",
-            color=[130 / 255, 0, 0],
-            elinewidth=3,
-            capsize=3,
-        )
+        # plot data
+        if len(model_list) < 4:
+            mark_size = 9
+        elif len(model_list) < 12:
+            mark_size = 3
+        else:
+            mark_size = 1
+        ax7[inds].bar(ind - width / 2.0, mse_clim, width, color="b", label="Ann. Cycle")
+        ax7[inds].bar(ind, mse_ext, width, color="r", label="Ann. Mean")
+        if len(clim_err_x) > 0:
+            ax7[inds].scatter(
+                [x - width / 2.0 for x in clim_err_x],
+                clim_err_y,
+                marker="D",
+                s=mark_size,
+                color="k",
+            )
+            ax7[inds].scatter(clim_err_x, ext_err_y, marker="D", s=mark_size, color="k")
+        # xticks
         if inds == len(sector_list) - 1:
-            ax7[inds].set_xticks(ind + width / 2.0, mlabels, rotation=90, size=5)
+            ax7[inds].set_xticks(ind + width / 2.0, mlabels, rotation=90, size=7)
         else:
             ax7[inds].set_xticks(ind + width / 2.0, labels="")
-        datamax = np.max(np.array(mse_clim) + (np.array(clim_range) / 2))
+        # yticks
+        if len(clim_err_y) > 0:
+            datamax = np.max(np.array(clim_err_y))
+        else:
+            datamax = np.max(np.array(mse_clim))
         ymax = (datamax) * 1.3
         ax7[inds].set_ylim(0.0, ymax)
-        if ymax < 1:
+        if ymax < 0.1:
+            ticks = np.linspace(0, 0.1, 6)
+            labels = [str(round(x, 3)) for x in ticks]
+        elif ymax < 1:
             ticks = np.linspace(0, 1, 5)
             labels = [str(round(x, 1)) for x in ticks]
         elif ymax < 4:
-            ticks = np.linspace(0, round(ymax), num=round(ymax / 2) * 4 + 1)
+            ticks = np.linspace(0, round(ymax), num=round(ymax / 2) * 2 + 1)
             labels = [str(round(x, 1)) for x in ticks]
         elif ymax > 10:
             ticks = range(0, round(ymax), 5)
@@ -895,16 +888,18 @@ if __name__ == "__main__":
             ticks = range(0, round(ymax))
             labels = [str(round(x, 0)) for x in ticks]
 
-        ax7[inds].set_yticks(ticks, labels, fontsize=6)
-
-        ax7[inds].set_ylabel("10${^12}$km${^4}$", size=6)
+        ax7[inds].set_yticks(ticks, labels, fontsize=8)
+        # labels etc
+        ax7[inds].set_ylabel("10${^12}$km${^4}$", size=8)
         ax7[inds].grid(True, linestyle=":")
         ax7[inds].annotate(
             sector,
             (0.35, 0.8),
             xycoords="axes fraction",
-            size=8,
+            size=9,
         )
+    # Add legend, save figure
+    ax7[0].legend(loc="upper right", fontsize=6)
     figfile = os.path.join(metrics_output_path, "MSE_bar_chart.png")
     plt.savefig(figfile)
     meta.update_plots(
