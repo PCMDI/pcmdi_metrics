@@ -341,7 +341,6 @@ if __name__ == "__main__":
     ObsAreaUnitsAdjust = parameter.ObsAreaUnitsAdjust
     ModUnitsAdjust = parameter.ModUnitsAdjust
     ObsUnitsAdjust = parameter.ObsUnitsAdjust
-    # plots = parameter.plots
     msyear = parameter.msyear
     meyear = parameter.meyear
     osyear = parameter.osyear
@@ -370,10 +369,6 @@ if __name__ == "__main__":
 
     # Initialize output.json file
     meta = MetadataFile(metrics_output_path)
-
-    # if plots:
-    #    plot_dir_maps = os.path.join(metrics_output_path, "plots", "maps")
-    #    os.makedirs(plot_dir_maps, exist_ok=True)
 
     # Setting up model realization list
     find_all_realizations, realizations = set_up_realizations(realization)
@@ -528,11 +523,7 @@ if __name__ == "__main__":
         obs_clims[reference_data_set][item] = arctic_clims[item]
         obs_means[reference_data_set][item] = arctic_means[item]
 
-    # Get climatology
-    # get errors for climo and mean
-
     #### Do model part
-    # Loop over models
 
     # Needs to weigh months by length for metrics later
     clim_wts = [31.0, 28.0, 31.0, 30.0, 31.0, 30.0, 31.0, 31.0, 30.0, 31.0, 30.0, 31.0]
@@ -562,6 +553,7 @@ if __name__ == "__main__":
     }
     print("Model list:", model_list)
 
+    # Loop over models and realizations to generate metrics
     for model in model_list:
         start_year = msyear
         end_year = meyear
@@ -690,7 +682,6 @@ if __name__ == "__main__":
                         (lon_j, lon_i), skipna=True
                     )
                     real_dict[rgn][run] = rgn_total
-                    # totals_dict[rgn] = totals_dict[rgn] + rgn_total
                     real_dict[rgn]["model_mean"] = (
                         real_dict[rgn]["model_mean"] + rgn_total
                     )
@@ -721,8 +712,6 @@ if __name__ == "__main__":
                     )
 
                     run_data = real_dict[rgn][run].to_dataset(name=var)
-                    # total_rgn.time.attrs.pop("bounds")
-                    # total_rgn = total_rgn.bounds.add_missing_bounds()
                     run_data = run_data.bounds.add_missing_bounds()
                     clim_extent = run_data.temporal.climatology(var, freq="month")
                     total = run_data.mean("time")[var].data
