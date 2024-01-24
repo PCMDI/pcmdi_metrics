@@ -316,6 +316,7 @@ if obs_compare:
     reverse_sign_obs = {}
     eof_lr_obs = {}
     stdv_pc_obs = {}
+    obs_timeseries_season_dict = {}
 
     # Dictonary for json archive
     if "obs" not in result_dict["REF"]:
@@ -399,6 +400,8 @@ if obs_compare:
         obs_timeseries_season["slope"] = slope_obs
         obs_timeseries_season["intercept"] = intercept_obs
 
+        obs_timeseries_season_dict[season] = obs_timeseries_season
+
         # Extract subdomain for plot
         obs_timeseries_season_region = region_subset(
             obs_timeseries_season, mode, regions_specs=regions_specs
@@ -458,7 +461,8 @@ if obs_compare:
             )
             write_nc_output(
                 output_nc_file_obs,
-                eof_lr_obs[season],
+                # eof_lr_obs[season],
+                eof_lr_obs_season,
                 pc_obs[season],
                 frac_obs[season],
                 slope_obs,
@@ -713,22 +717,27 @@ for model in models:
                     # Record results
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
                     # Metrics results -- statistics to JSON
-                    dict_head, eof_lr_cbf = calc_stats_save_dict(
-                        mode,
-                        dict_head,
-                        model_timeseries_season_subdomain["eof_lr_cbf"],
-                        eof_lr_cbf,
-                        cbf_pc,
-                        stdv_cbf_pc,
-                        frac_cbf,
-                        regions_specs,
-                        eof_obs[season],
-                        eof_lr_obs[season],
-                        stdv_pc_obs[season],
-                        obs_compare=obs_compare,
-                        method="cbf",
-                        debug=debug,
-                    )
+                    common_args_cbf = {
+                        "mode": mode,
+                        "dict_head": dict_head,
+                        "model_ds": model_timeseries_season,
+                        "model_data_var": "eof_lr_cbf",
+                        "eof": model_timeseries_season_subdomain["eof_lr_cbf"],
+                        "eof_lr": eof_lr_cbf,
+                        "pc": cbf_pc,
+                        "stdv_pc": stdv_cbf_pc,
+                        "frac": frac_cbf,
+                        "regions_specs": regions_specs,
+                        "obs_ds": obs_timeseries_season_dict[season],
+                        "eof_obs": eof_obs[season],
+                        "eof_lr_obs": eof_lr_obs[season],
+                        "stdv_pc_obs": stdv_pc_obs[season],
+                        "obs_compare": obs_compare,
+                        "method": "cbf",
+                        "debug": debug,
+                    }
+
+                    dict_head, eof_lr_cbf = calc_stats_save_dict(**common_args_cbf)
 
                     # Set output file name for NetCDF and plot images
                     output_filename = f"{mode}_{var}_EOF{eofn_mod}_{season}_{mip}_{model}_{exp}_{run}_{fq}_{realm}_{msyear}-{meyear}"
@@ -844,48 +853,49 @@ for model in models:
                             intercept,
                         ) = linear_regression_on_globe_for_teleconnection(
                             pc,
-                            model_timeseries_season[var],
+                            model_timeseries_season,
+                            var,
                             stdv_pc,
                             RmDomainMean,
                             EofScaling,
                             debug=debug,
                         )
 
+                        model_timeseries_season["eof_lr"] = eof_lr
+                        model_timeseries_season["slope"] = slope
+                        model_timeseries_season["intercept"] = intercept
+
                         # - - - - - - - - - - - - - - - - - - - - - - - - -
                         # Record results
                         # - - - - - - - - - - - - - - - - - - - - - - - - -
                         # Metrics results -- statistics to JSON
+                        common_args = {
+                            "mode": mode,
+                            "dict_head": dict_head,
+                            "model_ds": model_timeseries_season,
+                            "model_data_var": "eof_lr",
+                            "eof": eof,
+                            "eof_lr": eof_lr,
+                            "pc": pc,
+                            "stdv_pc": stdv_pc,
+                            "frac": frac,
+                            "regions_specs": regions_specs,
+                            "obs_compare": obs_compare,
+                            "method": "eof",
+                            "debug": debug,
+                        }
+
                         if obs_compare:
-                            dict_head, eof_lr = calc_stats_save_dict(
-                                mode,
-                                dict_head,
-                                eof,
-                                eof_lr,
-                                pc,
-                                stdv_pc,
-                                frac,
-                                regions_specs,
-                                eof_obs=eof_obs[season],
-                                eof_lr_obs=eof_lr_obs[season],
-                                stdv_pc_obs=stdv_pc_obs[season],
-                                obs_compare=obs_compare,
-                                method="eof",
-                                debug=debug,
+                            common_args.update(
+                                {
+                                    "obs_ds": obs_timeseries_season_dict[season],
+                                    "eof_obs": eof_obs[season],
+                                    "eof_lr_obs": eof_lr_obs[season],
+                                    "stdv_pc_obs": stdv_pc_obs[season],
+                                }
                             )
-                        else:
-                            dict_head, eof_lr = calc_stats_save_dict(
-                                mode,
-                                dict_head,
-                                eof,
-                                eof_lr,
-                                pc,
-                                stdv_pc,
-                                frac,
-                                regions_specs,
-                                obs_compare=obs_compare,
-                                method="eof",
-                                debug=debug,
-                            )
+
+                        dict_head, eof_lr = calc_stats_save_dict(**common_args)
 
                         # Temporal correlation between CBF PC timeseries and usual model PC timeseries
                         if CBF:
@@ -920,7 +930,13 @@ for model in models:
                                 meyear,
                                 season,
                                 # eof_lr(region_subdomain),
-                                region_subset(eof_lr, mode, regions_specs),
+                                # region_subset(eof_lr, mode, regions_specs),
+                                region_subset(
+                                    model_timeseries_season,
+                                    mode,
+                                    data_var="eof_lr",
+                                    regions_specs=regions_specs,
+                                )["eof_lr"],
                                 frac,
                                 output_img_file,
                                 debug=debug,

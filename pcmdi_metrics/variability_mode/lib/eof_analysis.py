@@ -182,6 +182,7 @@ def linear_regression_on_globe_for_teleconnection(
     - Note that eof_lr has global field
     """
     if debug:
+        print("type(pc), type(ds):", type(pc), type(ds))
         print("pc.shape, timeseries.shape:", pc.shape, ds[data_var].shape)
 
     # Linear regression to have extended global map; teleconnection purpose
