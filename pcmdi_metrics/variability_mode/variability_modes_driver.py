@@ -73,6 +73,7 @@ from pcmdi_metrics.variability_mode.lib import (
     gain_pcs_fraction,
     gain_pseudo_pcs,
     linear_regression_on_globe_for_teleconnection,
+    north_test,
     plot_map,
     read_data_in,
     variability_metrics_to_json,
@@ -219,7 +220,6 @@ if oeyear is None:
 # Region control
 # -------------------------------------------------
 regions_specs = load_regions_specs()
-# region_subdomain = get_domain_range(mode, regions_specs)
 
 # =================================================
 # Create output directories
@@ -305,7 +305,6 @@ if obs_compare:
     )
 
     # Save global grid information for regrid below
-    # ref_grid_global = obs_timeseries.getGrid()
     ref_grid_global = get_grid(obs_timeseries)
 
     # Declare dictionary variables to keep information from observation
@@ -355,7 +354,6 @@ if obs_compare:
         )
 
         # Extract subdomain
-        # obs_timeseries_season_subdomain = obs_timeseries_season(region_subdomain)
         obs_timeseries_season_subdomain = region_subset(
             obs_timeseries_season, mode, regions_specs
         )
@@ -453,7 +451,6 @@ if obs_compare:
             debug_print("obs plotting end", debug)
 
         # NetCDF: Save global map, pc timeseries, and fraction in NetCDF output
-
         if nc_out_obs:
             debug_print("write obs nc", debug)
             output_nc_file_obs = os.path.join(
@@ -474,18 +471,14 @@ if obs_compare:
         dict_head_obs["frac"] = float(frac_obs[season])
 
         # Mean
-        # mean_obs = cdutil.averager(eof_obs[season], axis="yx", weights="weighted")
         mean_obs = mean_xy(eof_obs[season])
-        # mean_glo_obs = cdutil.averager(
-        #    eof_lr_obs[season], axis="yx", weights="weighted"
-        # )
         mean_glo_obs = mean_xy(eof_lr_obs[season])
         dict_head_obs["mean"] = float(mean_obs)
         dict_head_obs["mean_glo"] = float(mean_glo_obs)
         debug_print("obs mean end", debug)
 
-        # North test -- make this available as option later...
-        # execfile('../north_test.py')
+        # North test
+        north_test(solver_obs[season], mode, season, obs_name, osyear, oeyear)
 
     debug_print("obs end", debug)
 

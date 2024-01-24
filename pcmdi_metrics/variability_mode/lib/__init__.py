@@ -30,5 +30,6 @@ from .lib_variability_mode import (  # noqa
     tree,
     variability_metrics_to_json,
     write_nc_output,
+    north_test,
 )
 from .plot_map import plot_map  # noqa
