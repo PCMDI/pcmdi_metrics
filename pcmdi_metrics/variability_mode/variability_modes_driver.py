@@ -478,7 +478,15 @@ if obs_compare:
         debug_print("obs mean end", debug)
 
         # North test
-        north_test(solver_obs[season], mode, season, obs_name, osyear, oeyear)
+        north_test(
+            solver_obs[season],
+            mode,
+            season,
+            obs_name,
+            osyear,
+            oeyear,
+            dir_paths["diagnostic_results"],
+        )
 
     debug_print("obs end", debug)
 
