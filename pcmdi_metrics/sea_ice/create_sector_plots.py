@@ -36,7 +36,12 @@ proj = ccrs.NorthPolarStereo()
 ax = plt.subplot(111, projection=proj)
 ax.set_global()
 ds.ice_conc.plot.pcolormesh(
-    ax=ax, x="xc", y="yc", transform=ccrs.PlateCarree(), cmap=cmap
+    ax=ax,
+    x="xc",
+    y="yc",
+    transform=ccrs.PlateCarree(),
+    cmap=cmap,
+    cbar_kwargs={"label": "ice concentration (%)"},
 )
 arctic_regions.plot_regions(
     ax=ax,
@@ -105,7 +110,12 @@ proj = ccrs.SouthPolarStereo()
 ax = plt.subplot(111, projection=proj)
 ax.set_global()
 ds.ice_conc.plot.pcolormesh(
-    ax=ax, x="xc", y="yc", transform=ccrs.PlateCarree(), cmap=cmap
+    ax=ax,
+    x="xc",
+    y="yc",
+    transform=ccrs.PlateCarree(),
+    cmap=cmap,
+    cbar_kwargs={"label": "ice concentration (%)"},
 )
 arctic_regions.plot_regions(
     ax=ax,
