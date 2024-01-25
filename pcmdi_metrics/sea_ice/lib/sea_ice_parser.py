@@ -59,10 +59,18 @@ def create_sea_ice_parser():
     )
 
     parser.add_argument(
-        "--reference_data_path",
+        "--reference_data_path_nh",
         default=None,
-        dest="reference_data_path",
-        help="Path for the reference climitologies",
+        dest="reference_data_path_nh",
+        help="Path for the reference climatologies for southern hemisphere",
+        required=False,
+    )
+
+    parser.add_argument(
+        "--reference_data_path_sh",
+        default=None,
+        dest="reference_data_path_sh",
+        help="Path for the reference climatologies for northern hemisphere",
         required=False,
     )
 
