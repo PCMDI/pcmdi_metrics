@@ -4,7 +4,7 @@ import datetime
 
 from pcmdi_metrics.mean_climate.lib import calculate_climatology
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPMetricsParser
-from pcmdi_metrics.utils import StringConstructor
+from pcmdi_metrics.io import StringConstructor
 
 ver = datetime.datetime.now().strftime("v%Y%m%d")
 

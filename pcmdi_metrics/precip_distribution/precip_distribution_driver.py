@@ -14,7 +14,7 @@ from pcmdi_metrics.precip_distribution.lib import (
     precip_distribution_cum,
     precip_distribution_frq_amt,
 )
-from pcmdi_metrics.utils import StringConstructor
+from pcmdi_metrics.io import StringConstructor
 
 # Read parameters
 P = PMPParser()
