@@ -458,7 +458,6 @@ if obs_compare:
             )
             write_nc_output(
                 output_nc_file_obs,
-                # eof_lr_obs[season],
                 eof_lr_obs_season,
                 pc_obs[season],
                 frac_obs[season],
@@ -604,9 +603,6 @@ for model in models:
 
                 # Extract subdomain
                 debug_print("extract subdomain", debug)
-                # model_timeseries_season_subdomain = model_timeseries_season(
-                #    region_subdomain
-                # )
                 model_timeseries_season_subdomain = region_subset(
                     model_timeseries_season, mode, regions_specs
                 )
@@ -630,15 +626,10 @@ for model in models:
                     debug_print("CBF approach start", debug)
 
                     # Regrid (interpolation, model grid to ref grid)
-                    # model_timeseries_season_regrid = model_timeseries_season.regrid(
-                    #    ref_grid_global, regridTool="regrid2", mkCyclic=True
-                    # )
                     model_timeseries_season_regrid = regrid(
                         model_timeseries_season, var, ref_grid_global
                     )
-                    # model_timeseries_season_regrid_subdomain = (
-                    #    model_timeseries_season_regrid(region_subdomain)
-                    # )
+                    # crop to subdomain
                     model_timeseries_season_regrid_subdomain = region_subset(
                         model_timeseries_season_regrid, mode, regions_specs
                     )
@@ -934,8 +925,6 @@ for model in models:
                                 msyear,
                                 meyear,
                                 season,
-                                # eof_lr(region_subdomain),
-                                # region_subset(eof_lr, mode, regions_specs),
                                 region_subset(
                                     model_timeseries_season,
                                     mode,
