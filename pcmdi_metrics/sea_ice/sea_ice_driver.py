@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import datetime
 import glob
 import json
@@ -9,10 +11,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 import xcdat as xc
-from sea_ice_parser import create_sea_ice_parser
 
 from pcmdi_metrics.io import xcdat_openxml
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.sea_ice.lib import create_sea_ice_parser
 from pcmdi_metrics.utils import create_land_sea_mask
 
 
