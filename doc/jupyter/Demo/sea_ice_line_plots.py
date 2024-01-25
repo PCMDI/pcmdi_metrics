@@ -30,7 +30,7 @@ plt.xlim(
     ]
 )
 plt.legend(loc="upper right", fontsize=9)
-plt.savefig("E3SM_arctic_tseries.png")
+plt.savefig("Arctic_tseries.png")
 plt.close()
 
 # Climatology plot
@@ -57,5 +57,5 @@ plt.xlabel("month")
 plt.ylabel("Extent (km${^2}$)")
 plt.xlim([1, 12])
 plt.legend(loc="upper right", fontsize=9)
-plt.savefig("E3SM_arctic_clim.png")
+plt.savefig("Arctic_clim.png")
 plt.close()
