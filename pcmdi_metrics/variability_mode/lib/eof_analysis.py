@@ -262,70 +262,93 @@ def gain_pseudo_pcs(
 
 
 def gain_pcs_fraction(
-    full_field: xr.DataArray,
-    eof_pattern: xr.DataArray,
+    ds_full_field: xr.Dataset,
+    varname_full_field: str,
+    ds_eof_pattern: xr.Dataset,
+    varname_eof_pattern: str,
     pcs: xr.DataArray,
-    weights: xr.DataArray = None,
     debug: bool = False,
 ):
     """
     NOTE: This function is designed for getting fraction of variace obtained by
           pseudo pcs
     Input: (dimension x, y, t should be identical for above inputs)
-    - full_field (t,y,x)
-    - eof_pattern (y,x)
+    - ds_full_field: xarray dataset that includes full_field (t, y, x)
+    - varname_full_field: name of full_field in the dataset
+    - ds_eof_pattern: xarray dataset that includes eof pattern (y, x)
+    - varname_eof_pattern: name of the eof_pattern in the dataset
     - pcs (t)
     Output:
     - fraction: array but for 1 single number which is float.
                 Preserve array type for netCDF recording.
                 fraction of explained variance
     """
-    # 1) Get total variacne ---
-    """
-    variance_total = genutil.statistics.variance(full_field, axis="t")
-    variance_total_area_ave = cdutil.averager(
-        variance_total, axis="xy", weights="weighted"
+
+    full_field = ds_full_field[varname_full_field]
+    eof_pattern = ds_eof_pattern[varname_eof_pattern]
+
+    # 1) Get total variacne --- using full_field
+    time_key = get_time_key(full_field)
+    variance_total = full_field.var(dim=[time_key])
+    # area average
+    varname_variance_total = "variance_total"
+    ds_full_field[varname_variance_total] = variance_total
+    variance_total_area_ave = float(
+        ds_full_field.spatial.average(varname_variance_total, weights="generate")[
+            varname_variance_total
+        ]
     )
-    """
-    variance_total = np.var(full_field, axis=0)
-    variance_total_area_ave = np.average(variance_total, weights=weights)
-    # 2) Get variance for pseudo pattern ---
+
+    # 2) Get variance for pseudo pattern --- using eof_pattern
     # 2-1) Reconstruct field based on pseudo pattern
-    if debug:
-        print("from gain_pcs_fraction:")
-        print("full_field.shape (before grower): ", full_field.shape)
-        print("eof_pattern.shape (before grower): ", eof_pattern.shape)
-    # Extend eof_pattern (add 3rd dimension as time then copy same 2d value for all time step)
-    """
-    reconstructed_field = genutil.grower(full_field, eof_pattern)[
-        1
-    ]  # Matching dimension (add time axis)
-    for t in range(0, len(pcs)):
-        reconstructed_field[t] = MV2.multiply(reconstructed_field[t], pcs[t])
-    """
-    reconstructed_field = full_field * pcs
+    reconstructed_field = eof_pattern * pcs
+
     # 2-2) Get variance of reconstructed field
-    """
-    variance_partial = genutil.statistics.variance(reconstructed_field, axis="t")
-    variance_partial_area_ave = cdutil.averager(
-        variance_partial, axis="xy", weights="weighted"
+    time_key_2 = get_time_key(reconstructed_field)
+    variance_partial = reconstructed_field.var(dim=[time_key_2])
+    # area average
+    varname_variance_partial = "variance_partial"
+    ds_full_field[varname_variance_partial] = variance_partial
+    variance_partial_area_ave = float(
+        ds_full_field.spatial.average(varname_variance_partial, weights="generate")[
+            varname_variance_partial
+        ]
     )
-    """
-    variance_partial = np.var(reconstructed_field, axis=0)
-    variance_partial_area_ave = np.average(variance_partial, weights=weights)
+
     # 3) Calculate fraction ---
-    """
-    fraction = MV2.divide(variance_partial_area_ave, variance_total_area_ave)
-    """
-    fraction = variance_partial_area_ave / variance_total_area_ave
+    fraction = float(variance_partial_area_ave / variance_total_area_ave)
+
     # debugging
     if debug:
-        print("full_field.shape (after grower): ", full_field.shape)
+        print("from gain_pcs_fraction:")
+        print("full_field.shape: ", full_field.shape)
+        print("eof_pattern.shape: ", eof_pattern.shape)
+        print("full_field.dims:", full_field.dims)
+        print("pcs.dims:", pcs.dims)
+        print("pcs.shape: ", pcs.shape)
+        print("pcs[0:5]:", pcs[0:5].values.tolist())
+        print(
+            "full_field: max, min:",
+            np.max(full_field.to_numpy()),
+            np.min(full_field.to_numpy()),
+        )
+        print("pcs: max, min:", np.max(pcs.to_numpy()), np.min(pcs.to_numpy()))
+        print(
+            "reconstructed_field: max, min:",
+            np.max(reconstructed_field.to_numpy()),
+            np.min(reconstructed_field.to_numpy()),
+        )
+        print(
+            "variance_partial: max, min:",
+            np.max(variance_partial.to_numpy()),
+            np.min(variance_partial.to_numpy()),
+        )
         print("reconstructed_field.shape: ", reconstructed_field.shape)
         print("variance_partial_area_ave: ", variance_partial_area_ave)
         print("variance_total_area_ave: ", variance_total_area_ave)
         print("fraction: ", fraction)
         print("from gain_pcs_fraction done")
+
     # return result
     return fraction
 

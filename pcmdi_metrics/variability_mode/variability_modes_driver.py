@@ -478,14 +478,15 @@ if obs_compare:
         debug_print("obs mean end", debug)
 
         # North test
+        north_test_plot_title = f"{mode}, {season}, {obs_name} {osyear}-{oeyear}"
+        north_test_output_filename = (
+            f"EG_Spec_North_test_{mode}_{season}_{obs_name}_{osyear}-{oeyear}"
+        )
         north_test(
             solver_obs[season],
-            mode,
-            season,
-            obs_name,
-            osyear,
-            oeyear,
-            dir_paths["diagnostic_results"],
+            outdir=dir_paths["diagnostic_results"],
+            output_filename=north_test_output_filename,
+            plot_title=north_test_plot_title,
         )
 
     debug_print("obs end", debug)
@@ -689,31 +690,34 @@ for model in models:
                     model_timeseries_season["intercept_cbf"] = intercept_cbf
 
                     # Extract subdomain for statistics
-                    # eof_lr_cbf_subdomain = eof_lr_cbf(region_subdomain)
                     model_timeseries_season_subdomain = region_subset(
                         model_timeseries_season,
                         mode,
                         regions_specs=regions_specs,
                     )
 
-                    # Calculate fraction of variance explained by cbf pc (native grid)
+                    # Calculate fraction of variance explained by cbf pc
+                    # (native grid)
                     frac_cbf = gain_pcs_fraction(
-                        model_timeseries_season_subdomain[var],
-                        model_timeseries_season_subdomain["eof_lr_cbf"],
+                        model_timeseries_season_subdomain,
+                        var,
+                        model_timeseries_season_subdomain,
+                        "eof_lr_cbf",
                         cbf_pc / stdv_cbf_pc,
                         debug=debug,
                     )
-
-                    # SENSITIVITY TEST ---
-                    # Calculate fraction of variance explained by cbf pc (regrid domain)
+                    
+                    # (regrid domain): sensitivity test purpose
                     frac_cbf_regrid = gain_pcs_fraction(
-                        model_timeseries_season_regrid_subdomain[var],
-                        model_timeseries_season_subdomain["eof_lr_cbf"],
+                        model_timeseries_season_regrid_subdomain,
+                        var,
+                        model_timeseries_season_subdomain,
+                        "eof_lr_cbf",
                         cbf_pc / stdv_cbf_pc,
                         debug=debug,
                     )
                     dict_head["frac_cbf_regrid"] = float(frac_cbf_regrid)
-
+                    
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
                     # Record results
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
