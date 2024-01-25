@@ -706,7 +706,7 @@ for model in models:
                         cbf_pc / stdv_cbf_pc,
                         debug=debug,
                     )
-                    
+
                     # (regrid domain): sensitivity test purpose
                     frac_cbf_regrid = gain_pcs_fraction(
                         model_timeseries_season_regrid_subdomain,
@@ -717,7 +717,7 @@ for model in models:
                         debug=debug,
                     )
                     dict_head["frac_cbf_regrid"] = float(frac_cbf_regrid)
-                    
+
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
                     # Record results
                     # - - - - - - - - - - - - - - - - - - - - - - - - -

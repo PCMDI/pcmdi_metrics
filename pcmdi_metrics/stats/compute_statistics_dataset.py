@@ -6,9 +6,7 @@ import xarray as xr
 import xcdat as xc
 
 
-def da_to_ds(
-    d: Union[xr.Dataset, xr.DataArray], var: str = "variable"
-):
+def da_to_ds(d: Union[xr.Dataset, xr.DataArray], var: str = "variable"):
     if isinstance(d, xr.Dataset):
         return d.copy()
     elif isinstance(d, xr.DataArray):
