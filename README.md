@@ -98,6 +98,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.3]        | New metric added: **Sea-Ice**
 | [v3.2]        | New metric added: **Extremes**
 | [v3.1.2]      | Technical update
 | [v3.1.1]      | Technical and documentation update
@@ -125,6 +126,7 @@ Release Notes and History
 
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.3]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.3
 [v3.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.2
 [v3.1.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.1.2
 [v3.1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.1.1
