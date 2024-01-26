@@ -41,7 +41,7 @@ def write_nc_output(output_file_name, eofMap, pc, frac, slopeMap, interceptMap):
     ds.close()
 
 
-def get_domain_range(mode, regions_specs):
+def get_domain_range(mode: str, regions_specs: dict):
     if mode == "NPGO":
         mode_origin_domain = "PDO"
     elif mode == "NPO":
@@ -55,12 +55,13 @@ def get_domain_range(mode, regions_specs):
 
 def read_data_in(
     path: str,
-    lf_path: str,
     var_in_data: str,
     var_to_consider: str,
     syear: Union[str, int, float],
     eyear: Union[str, int, float],
-    UnitsAdjust: tuple,
+    UnitsAdjust: tuple = None,
+    lf_path: str = None,
+    var_lf: str = "sftlf",
     LandMask: bool = False,
     debug: bool = False,
 ) -> xr.Dataset:
@@ -89,7 +90,8 @@ def read_data_in(
     check_missing_data(data_timeseries)
 
     # Adjust units
-    data_timeseries = adjust_units(data_timeseries, UnitsAdjust)
+    if UnitsAdjust is not None:
+        data_timeseries = adjust_units(data_timeseries, UnitsAdjust)
 
     # Masking
     if var_to_consider == "ts" and LandMask:
@@ -102,7 +104,8 @@ def read_data_in(
         landfrac = None
         if lf_path is not None:
             if os.path.isfile(lf_path):
-                landfrac = xcdat_open(lf_path)
+                landfrac_ds = xcdat_open(lf_path)
+                landfrac = landfrac_ds[var_lf]
         data_timeseries = apply_landmask(data_timeseries, landfrac=landfrac)
 
     ds_time_subsetted[var_in_data] = data_timeseries
@@ -110,7 +113,7 @@ def read_data_in(
     return ds_time_subsetted
 
 
-def check_start_end_year(ds):
+def check_start_end_year(ds: Union[xr.Dataset, xr.DataArray]):
     time_coord = get_time(ds)
     time_coord = get_time(ds)
     data_syear = time_coord[0].item().year

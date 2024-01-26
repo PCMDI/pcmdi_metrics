@@ -294,13 +294,13 @@ if obs_compare:
     # read data in
     obs_timeseries = read_data_in(
         obs_path,
-        obs_lf_path,
         obs_var,
         var,
         osyear,
         oeyear,
-        ObsUnitsAdjust,
-        LandMask,
+        UnitsAdjust=ObsUnitsAdjust,
+        lf_path=obs_lf_path,
+        LandMask=LandMask,
         debug=debug,
     )
 
@@ -532,6 +532,7 @@ for model in models:
     # Run
     # -------------------------------------------------
     for model_path in model_path_list:
+        print("model_path:", model_path)
         # try:
         if 1:
             if realization == "*":
@@ -559,16 +560,17 @@ for model in models:
                 model_lf_path = fill_template(modpath_lf, mip=mip, exp=exp, model=model)
             else:
                 model_lf_path = None
+            print("model_lf_path:", model_lf_path)
 
             # read data in
             model_timeseries = read_data_in(
                 model_path,
-                model_lf_path,
                 var,
                 var,
                 msyear,
                 meyear,
-                ModUnitsAdjust,
+                UnitsAdjust=ModUnitsAdjust,
+                lf_path=model_lf_path,
                 LandMask=LandMask,
                 debug=debug,
             )
