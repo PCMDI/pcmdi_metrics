@@ -40,6 +40,7 @@ scripts = [
     "pcmdi_metrics/precip_distribution/precip_distribution_driver.py",
     "pcmdi_metrics/cloud_feedback/cloud_feedback_driver.py",
     "pcmdi_metrics/extremes/extremes_driver.py",
+    "pcmdi_metrics/sea_ice/sea_ice_driver.py",
 ]
 
 entry_points = {
