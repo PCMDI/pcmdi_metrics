@@ -79,7 +79,7 @@ def find_max(da: xr.DataArray) -> float:
     float
         Maximum value in the DataArray.
     """
-    return float(da.max().values)
+    return float(da.max())
 
 
 def find_min(da: xr.DataArray) -> float:
@@ -95,7 +95,7 @@ def find_min(da: xr.DataArray) -> float:
     float
         Minimum value in the DataArray.
     """
-    return float(da.min().values)
+    return float(da.min())
 
 
 def apply_landmask(
