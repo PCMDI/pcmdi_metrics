@@ -6,11 +6,6 @@ import os
 from collections import OrderedDict
 from re import split
 
-import cdms2
-import cdutil
-import numpy as np
-import xcdat as xc
-
 from pcmdi_metrics import resources
 from pcmdi_metrics.io import load_regions_specs, region_subset
 from pcmdi_metrics.mean_climate.lib import (
@@ -19,7 +14,15 @@ from pcmdi_metrics.mean_climate.lib import (
     load_and_regrid,
     mean_climate_metrics_to_json,
 )
-from pcmdi_metrics.variability_mode.lib import sort_human, tree
+from pcmdi_metrics.utils import (
+    apply_landmask,
+    create_land_sea_mask,
+    create_target_grid,
+    sort_human,
+    tree,
+)
+
+print("--- prepare mean climate metrics calculation ---")
 
 parser = create_mean_climate_parser()
 parameter = parser.get_parameter(argparse_vals_only=False)
@@ -78,103 +81,45 @@ if regions_specs is None or not bool(regions_specs):
     regions_specs = load_regions_specs()
 
 default_regions = ["global", "NHEX", "SHEX", "TROPICS"]
-print(
-    "case_id: ",
-    case_id,
-    "\n",
-    "test_data_set:",
-    test_data_set,
-    "\n",
-    "realization:",
-    realization,
-    "\n",
-    "vars:",
-    vars,
-    "\n",
-    "varname_in_test_data:",
-    varname_in_test_data,
-    "\n",
-    "reference_data_set:",
-    reference_data_set,
-    "\n",
-    "target_grid:",
-    target_grid,
-    "\n",
-    "regrid_tool:",
-    regrid_tool,
-    "\n",
-    "regrid_tool_ocn:",
-    regrid_tool_ocn,
-    "\n",
-    "save_test_clims:",
-    save_test_clims,
-    "\n",
-    "test_clims_interpolated_output:",
-    test_clims_interpolated_output,
-    "\n",
-    "filename_template:",
-    filename_template,
-    "\n",
-    "sftlf_filename_template:",
-    sftlf_filename_template,
-    "\n",
-    "generate_sftlf:",
-    generate_sftlf,
-    "\n",
-    "regions_specs:",
-    regions_specs,
-    "\n",
-    "regions:",
-    regions,
-    "\n",
-    "test_data_path:",
-    test_data_path,
-    "\n",
-    "reference_data_path:",
-    reference_data_path,
-    "\n",
-    "metrics_output_path:",
-    metrics_output_path,
-    "\n",
-    "diagnostics_output_path:",
-    diagnostics_output_path,
-    "\n",
-    "debug:",
-    debug,
-    "\n",
+
+config_variables = OrderedDict(
+    [
+        ("case_id", case_id),
+        ("test_data_set", test_data_set),
+        ("realization", realization),
+        ("vars", vars),
+        ("varname_in_test_data", varname_in_test_data),
+        ("reference_data_set", reference_data_set),
+        ("target_grid", target_grid),
+        ("regrid_tool", regrid_tool),
+        ("regrid_tool_ocn", regrid_tool_ocn),
+        ("save_test_clims", save_test_clims),
+        ("test_clims_interpolated_output", test_clims_interpolated_output),
+        ("filename_template", filename_template),
+        ("sftlf_filename_template", sftlf_filename_template),
+        ("generate_sftlf", generate_sftlf),
+        ("regions_specs", regions_specs),
+        ("regions", regions),
+        ("test_data_path", test_data_path),
+        ("reference_data_path", reference_data_path),
+        ("metrics_output_path", metrics_output_path),
+        ("diagnostics_output_path", diagnostics_output_path),
+        ("debug", debug),
+    ]
 )
 
-print("--- prepare mean climate metrics calculation ---")
+for key, value in config_variables.items():
+    print(f"{key}: {value}")
 
 # generate target grid
-res = target_grid.split("x")
-lat_res = float(res[0])
-lon_res = float(res[1])
-start_lat = -90.0 + lat_res / 2
-start_lon = 0.0
-end_lat = 90.0 - lat_res / 2
-end_lon = 360.0 - lon_res
-nlat = ((end_lat - start_lat) * 1.0 / lat_res) + 1
-nlon = ((end_lon - start_lon) * 1.0 / lon_res) + 1
-t_grid = xc.create_uniform_grid(
-    start_lat, end_lat, lat_res, start_lon, end_lon, lon_res
-)
-if debug:
-    print(
-        "type(t_grid):", type(t_grid)
-    )  # Expected type is 'xarray.core.dataset.Dataset'
-    print("t_grid:", t_grid)
-# identical target grid in cdms2 to use generateLandSeaMask function that is yet to exist in xcdat
-t_grid_cdms2 = cdms2.createUniformGrid(
-    start_lat, nlat, lat_res, start_lon, nlon, lon_res
-)
+t_grid = create_target_grid(target_grid_resolution=target_grid)
+
 # generate land sea mask for the target grid
-sft = cdutil.generateLandSeaMask(t_grid_cdms2)
-if debug:
-    print("sft:", sft)
-    print("sft.getAxisList():", sft.getAxisList())
+sft = create_land_sea_mask(t_grid)
+
 # add sft to target grid dataset
-t_grid["sftlf"] = (["lat", "lon"], np.array(sft))
+t_grid["sftlf"] = sft
+
 if debug:
     print("t_grid (after sftlf added):", t_grid)
     t_grid.to_netcdf("target_grid.nc")
@@ -188,8 +133,6 @@ else:
     obs_file_path = os.path.join(egg_pth, obs_file_name)
 with open(obs_file_path) as fo:
     obs_dict = json.loads(fo.read())
-# if debug:
-# print('obs_dict:', json.dumps(obs_dict, indent=4, sort_keys=True))
 
 print("--- start mean climate metrics calculation ---")
 
@@ -353,26 +296,35 @@ for var in vars:
                             print("region:", region)
 
                             # land/sea mask -- conduct masking only for variable data array, not entire data
-                            if ("land" in region.split("_")) or (
-                                "ocean" in region.split("_")
+                            if any(
+                                keyword in region.split("_")
+                                for keyword in ["land", "ocean"]
                             ):
                                 ds_test_tmp = ds_test.copy(deep=True)
                                 ds_ref_tmp = ds_ref.copy(deep=True)
                                 if "land" in region.split("_"):
-                                    ds_test_tmp[varname] = ds_test[varname].where(
-                                        t_grid["sftlf"] != 0.0
+                                    ds_test_tmp[varname] = apply_landmask(
+                                        ds_test[varname],
+                                        landfrac=t_grid["sftlf"],
+                                        keep_over="land",
                                     )
-                                    ds_ref_tmp[varname] = ds_ref[varname].where(
-                                        t_grid["sftlf"] != 0.0
+                                    ds_ref_tmp[varname] = apply_landmask(
+                                        ds_ref[varname],
+                                        landfrac=t_grid["sftlf"],
+                                        keep_over="land",
                                     )
                                 elif "ocean" in region.split("_"):
-                                    ds_test_tmp[varname] = ds_test[varname].where(
-                                        t_grid["sftlf"] == 0.0
+                                    ds_test_tmp[varname] = apply_landmask(
+                                        ds_test[varname],
+                                        landfrac=t_grid["sftlf"],
+                                        keep_over="ocean",
                                     )
-                                    ds_ref_tmp[varname] = ds_ref[varname].where(
-                                        t_grid["sftlf"] == 0.0
+                                    ds_ref_tmp[varname] = apply_landmask(
+                                        ds_ref[varname],
+                                        landfrac=t_grid["sftlf"],
+                                        keep_over="ocean",
                                     )
-                                    print("mask done")
+                                print("mask done")
                             else:
                                 ds_test_tmp = ds_test
                                 ds_ref_tmp = ds_ref

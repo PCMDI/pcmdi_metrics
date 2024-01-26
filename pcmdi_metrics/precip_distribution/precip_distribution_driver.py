@@ -6,7 +6,6 @@ import os
 
 import MV2 as MV
 import xarray as xr
-from genutil import StringConstructor
 
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.precip_distribution.lib import (
@@ -15,6 +14,7 @@ from pcmdi_metrics.precip_distribution.lib import (
     precip_distribution_cum,
     precip_distribution_frq_amt,
 )
+from pcmdi_metrics.utils import StringConstructor
 
 # Read parameters
 P = PMPParser()

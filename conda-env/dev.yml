@@ -28,6 +28,8 @@ dependencies:
     - regionmask=0.9.0
     - rasterio=1.3.6
     - shapely=2.0.1
+    - numdifftools
+    - nc-time-axis
     # ==================
     # Testing
     # ==================

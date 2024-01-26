@@ -6,10 +6,9 @@ import glob
 import os
 from argparse import RawTextHelpFormatter
 
-from genutil import StringConstructor
-
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.misc.scripts import parallel_submitter
+from pcmdi_metrics.utils import StringConstructor
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
     VariabilityModeCheck,
