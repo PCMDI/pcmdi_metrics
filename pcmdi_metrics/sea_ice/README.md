@@ -2,13 +2,15 @@
 
 ## Summary
 
+The PCMDI Metrics Package (PMP) sea ice driver produces metrics that compare modeled and observed sea ice extent.
+
 ## Demo
 
 * Link to notebook
 
 ## Inputs
 
-### Sectors
+The sea ice driver uses monthly mean sea ice concentration and grid area data to generate sea ice extent metrics. An unlimited number of test data sets (typically model data) may be provided, along with a single reference data set (typical observations or a model control run). See the Parameters section for more details about inputs.
 
 ## Run
 
@@ -27,6 +29,10 @@ sea_ice_driver.py -p parameter_file.py --msyear 1991 --meyear 2020
 ## Outputs
 
 The driver produces a JSON file containing mean square error metrics for all input models and realizations relative to the reference data set. It also produces a bar chart displaying these metrics.
+
+### Sectors
+
+The metrics results are provided for eight different geographic regions. In the Northern Hemisphere there are the Arctic, North Pacific, North Atlantic, and Central Arctic regions. In the Southern Hemisphere there are the Antarctic, South Pacific, South Atlantic, and Indian Ocean regions. The region definitions can be found in Ivanova (2016).
 
 ## Parameters
 
