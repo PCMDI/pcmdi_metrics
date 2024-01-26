@@ -99,7 +99,7 @@ def read_data_in(
     # landmask if required
     if LandMask:
         # Extract SST (land region mask out)
-        # data_timeseries = data_land_mask_out(dataname, data_timeseries, lf_path=lf_path)
+        landfrac = None
         if lf_path is not None:
             if os.path.isfile(lf_path):
                 landfrac = xcdat_open(lf_path)
