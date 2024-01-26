@@ -398,7 +398,18 @@ def get_anomaly_timeseries(ds: xr.Dataset, data_var: str, season: str) -> xr.Dat
         )
     # Get anomaly field
     if season == "yearly":
-        ds_anomaly = ds.temporal.departures(data_var, freq="year", weighted=True)
+        # remove seasonal cycle
+        ds_anomaly = ds.temporal.departures(data_var, freq="month", weighted=True)
+        # yearly time series
+        ds_anomaly = ds_anomaly.temporal.group_average(
+            data_var, freq="year", weighted=True
+        )
+        # restore bounds (especially time bounds)
+        ds_anomaly = ds_anomaly.bounds.add_missing_bounds()
+        # get overall average
+        ds_ave = ds_anomaly.temporal.average(data_var)
+        # anomaly
+        ds_anomaly[data_var] = ds_anomaly[data_var] - ds_ave[data_var]
     else:
         # Remove annual cycle
         ds_anomaly = ds.temporal.departures(data_var, freq="month", weighted=True)

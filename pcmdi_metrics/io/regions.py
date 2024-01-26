@@ -41,6 +41,7 @@ def load_regions_specs() -> dict:
         "SAM": {"domain": {"latitude": (-20.0, -90), "longitude": (0, 360)}},
         "PNA": {"domain": {"latitude": (20.0, 85), "longitude": (120, 240)}},
         "PDO": {"domain": {"latitude": (20.0, 70), "longitude": (110, 260)}},
+        "AMO": {"domain": {"latitude": (0.0, 70), "longitude": (-80, 0)}},
         # Monsoon domains for Wang metrics
         # All monsoon domains
         "AllMW": {"domain": {"latitude": (-40.0, 45.0), "longitude": (0.0, 360.0)}},
