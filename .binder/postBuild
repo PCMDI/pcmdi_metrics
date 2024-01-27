@@ -1,0 +1,3 @@
+#!/bin/bash
+set -eux
+python -m pip install -vv --no-deps --no-build-isolation -e .
