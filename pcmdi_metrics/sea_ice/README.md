@@ -6,7 +6,7 @@ The PCMDI Metrics Package (PMP) sea ice driver produces metrics that compare mod
 
 ## Demo
 
-* Link to notebook
+* [Sea ice demo notebook](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_9_seaIceExtent_ivanova.ipynb)
 
 ## Inputs
 
@@ -35,6 +35,8 @@ The driver produces a JSON file containing mean square error metrics for all inp
 The metrics results are provided for eight different geographic regions. In the Northern Hemisphere there are the Arctic, North Pacific, North Atlantic, and Central Arctic regions. In the Southern Hemisphere there are the Antarctic, South Pacific, South Atlantic, and Indian Ocean regions. The region definitions can be found in Ivanova (2016).
 
 ## Parameters
+
+A [demo parameter file](https://github.com/PCMDI/pcmdi_metrics/blob/405_sic_ao/pcmdi_metrics/sea_ice/param/parameter_file.py) is provided in the sea ice code.  
 
 * **case_id**: Save JSON and figure files into this subdirectory so that results from multiple tests can be readily organized.
 * **test_data_set**: List of model names.
