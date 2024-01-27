@@ -2,7 +2,7 @@
 
 ## Summary
 
-The PCMDI Metrics Package (PMP) sea ice driver produces metrics that compare modeled and observed sea ice extent.
+The PCMDI Metrics Package (PMP) sea ice driver produces metrics that compare modeled and observed sea ice extent as shown in Ivanova (2016). These metrics can be compared across models, realizations, and eight spatial regions. 
 
 ## Demo
 
@@ -10,7 +10,7 @@ The PCMDI Metrics Package (PMP) sea ice driver produces metrics that compare mod
 
 ## Inputs
 
-The sea ice driver uses monthly mean sea ice concentration and grid area data to generate sea ice extent metrics. An unlimited number of test data sets (typically model data) may be provided, along with a single reference data set (typical observations or a model control run). See the Parameters section for more details about inputs.
+The sea ice driver uses monthly mean sea ice concentration and grid area data to generate sea ice extent metrics. An unlimited number of test data sets (typically model data) may be provided if file names follow a common template. A single reference data set is required, which is typically a observational data set or a model control run. For best results, all data files should contain latitude and longitude variables that are named "latitude" and "longitude" or "lat" and "lon". Data may use an irregular grid if latitude and longitude variables are included, preferably as additional coordinates. If multiple realizations of a model are provided, all realizations must all use the same grid. See the Parameters section for more details about inputs.
 
 ## Run
 
@@ -40,7 +40,7 @@ A [demo parameter file](https://github.com/PCMDI/pcmdi_metrics/blob/405_sic_ao/p
 
 * **case_id**: Save JSON and figure files into this subdirectory so that results from multiple tests can be readily organized.
 * **test_data_set**: List of model names.
-* **realization**: List of realizations.
+* **realization**: List of realizations or "*" to use all realizations.
 * **test_data_path**: File path to directory containing model/test data.
 * **filename_template**: File name template for test data, e.g., "CMIP5.historical.%(model_version).r1i1p1.mon.%(variable).19810-200512.AC.v2019022512.nc" where "model_version" and "variable" will be analyzed for each of the entries in test_data_set and vars.
 * **var**: Name of model sea ice variable
