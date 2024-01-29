@@ -49,7 +49,7 @@ A [demo parameter file](https://github.com/PCMDI/pcmdi_metrics/blob/405_sic_ao/p
 * **ModUnitsAdjust**: Factor to convert model sea ice data to fraction of 1. Uses format (flag (bool), operation (str), value (float)). Operation can be "add", "subtract", "multiply", or "divide". For example, use (True, 'multiply', 1e-2) to convert from percent concentration to decimal concentration.
 * **area_template**: File path of model grid area data.
 * **area_var**: Name of model area variable, e.g. "areacello"
-* **AreaUnitsAdjust**: Factor to convert model area data to units of km2. Uses format (flag (bool), operation (str), value (float)). Operation can be "add", "subtract", "multiply", or "divide". For example, use (True, 'multiply', 1e6) to convert from m2 to km2.
+* **AreaUnitsAdjust**: Factor to convert model area data to units of km2. Uses format (flag (bool), operation (str), value (float)). Operation can be "add", "subtract", "multiply", or "divide". For example, use (True, 'multiply', 1e-6) to convert from m2 to km2.
 * **metrics_output_path**: Directory path for metrics output in JSON files, e.g., '~/demo_data/PMP_metrics/'. The %(case_id) variable can be used here. If exists, should be empty before run.
 * **reference_data_path_nh**: The reference data file path for the northern hemisphere. If data is global, provide same path for nh and sh.
 * **reference_data_path_sh**: The reference data file path for the southern hemisphere. If data is global, provide same path for nh and sh.
@@ -58,7 +58,7 @@ A [demo parameter file](https://github.com/PCMDI/pcmdi_metrics/blob/405_sic_ao/p
 * **osyear**: Start year for reference data set.
 * **oeyear**: End year for reference data set.
 * **obs_var**: Name of reference sea ice variable.
-* **ObsAreaUnitsAdjust**: Factor to convert model area data to units of km2. Uses format (flag (bool), operation (str), value (float)). Operation can be "add", "subtract", "multiply", or "divide". For example, use (True, 'multiply', 1e6) to convert from m2 to km2.
+* **ObsAreaUnitsAdjust**: Factor to convert model area data to units of km2. Uses format (flag (bool), operation (str), value (float)). Operation can be "add", "subtract", "multiply", or "divide". For example, use (True, 'multiply', 1e-6) to convert from m2 to km2.
 * **obs_area_template**: File path of grid area data. If unavailalbe, skip and use "obs_cell_area".
 * **obs_area_var**: Name of reference area variable, if available. If unavailable, skip and use "obs_cell_area".
 * **obs_cell_area**: For equal area grids, the area of a single grid cell in units of km2. Only required if obs area file is not available.
