@@ -61,7 +61,7 @@ A [demo parameter file](https://github.com/PCMDI/pcmdi_metrics/blob/405_sic_ao/p
 * **ObsAreaUnitsAdjust**: Factor to convert model area data to units of km2. Uses format (flag (bool), operation (str), value (float)). Operation can be "add", "subtract", "multiply", or "divide". For example, use (True, 'multiply', 1e6) to convert from m2 to km2.
 * **obs_area_template**: File path of grid area data. If unavailalbe, skip and use "obs_cell_area".
 * **obs_area_var**: Name of reference area variable, if available. If unavailable, skip and use "obs_cell_area".
-* **obs_cell_area**: For equal area grids, the area of a single grid cell in units of km2.
+* **obs_cell_area**: For equal area grids, the area of a single grid cell in units of km2. Only required if obs area file is not available.
 
 
 ## Reference
