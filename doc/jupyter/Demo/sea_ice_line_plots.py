@@ -11,7 +11,7 @@ area = xc.open_dataset(
 )
 
 arctic = (
-    ds.where(ds.lat > 0).where(ds.si_conc >= 15) * 1e-2 * area.areacello * 1e-6
+    ds.where(ds.lat > 0).where(ds.siconc >= 15) * 1e-2 * area.areacello * 1e-6
 ).sum(("lat", "lon"))
 
 f_os_n = "/p/user_pub/pmp/demo/sea-ice/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
