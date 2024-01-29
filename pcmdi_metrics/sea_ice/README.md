@@ -10,7 +10,7 @@ The PCMDI Metrics Package (PMP) sea ice driver produces metrics that compare mod
 
 ## Inputs
 
-The sea ice driver uses monthly mean sea ice concentration and grid area data to generate sea ice extent metrics. An unlimited number of test data sets (typically model data) may be provided if file names follow a common template. A single reference data set is required, which is typically a observational data set or a model control run. For best results, all data files should contain latitude and longitude variables that are named "latitude" and "longitude" or "lat" and "lon". Data may use an irregular grid if latitude and longitude variables are included, preferably as additional coordinates. If multiple realizations of a model are provided, all realizations must all use the same grid. See the Parameters section for more details about inputs.
+The sea ice driver uses monthly mean sea ice concentration and grid area data to generate sea ice extent metrics. An unlimited number of test data sets (typically model data) may be provided if file names follow a common template. A single reference data set is required, which is typically a observational data set or a model control run. For best results, all data files should contain latitude and longitude variables that are named "latitude" and "longitude" or "lat" and "lon". Data may use an irregular grid if latitude and longitude variables are included, preferably as additional coordinates. If multiple realizations of a model are provided, all realizations must use the same grid. See the Parameters section for more details about inputs.
 
 ## Run
 
