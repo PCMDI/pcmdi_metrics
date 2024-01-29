@@ -11,7 +11,7 @@ if "--enable-devel" in sys.argv:
 else:
     install_dev = False
 
-release_version = "3.1.2"
+release_version = "3.3"
 
 p = subprocess.Popen(
     ("git", "describe", "--tags"),
@@ -40,6 +40,7 @@ scripts = [
     "pcmdi_metrics/precip_distribution/precip_distribution_driver.py",
     "pcmdi_metrics/cloud_feedback/cloud_feedback_driver.py",
     "pcmdi_metrics/extremes/extremes_driver.py",
+    "pcmdi_metrics/sea_ice/sea_ice_driver.py",
 ]
 
 entry_points = {
