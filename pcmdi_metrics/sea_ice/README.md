@@ -32,7 +32,7 @@ The driver produces a JSON file containing mean square error metrics for all inp
 
 ### Sectors
 
-The metrics results are provided for eight different geographic regions. In the Northern Hemisphere there are the Arctic, North Pacific, North Atlantic, and Central Arctic regions. In the Southern Hemisphere there are the Antarctic, South Pacific, South Atlantic, and Indian Ocean regions. The region definitions can be found in Ivanova (2016).
+The metrics results are provided for eight different geographic regions. In the Northern Hemisphere there are the Arctic, North Pacific, North Atlantic, and Central Arctic regions. In the Southern Hemisphere there are the Antarctic, South Pacific, South Atlantic, and Indian Ocean regions. The region definitions can be found in [Ivanova (2016)](https://doi.org/10.1175/JCLI-D-16-0026.1).
 
 ## Parameters
 
