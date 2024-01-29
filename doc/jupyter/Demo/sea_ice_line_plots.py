@@ -10,12 +10,16 @@ area = xc.open_dataset(
     "/p/user_pub/pmp/demo/sea-ice/links_area/E3SM-1-0/areacello_Ofx_E3SM-1-0_historical_r1i1p1f1_gr.nc"
 )
 
-arctic = (ds.where(ds.lat > 0) * 1e-2 * area.areacello * 1e-6).sum(("lat", "lon"))
+arctic = (
+    ds.where(ds.lat > 0).where(ds.si_conc >= 15) * 1e-2 * area.areacello * 1e-6
+).sum(("lat", "lon"))
 
 f_os_n = "/p/user_pub/pmp/demo/sea-ice/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
 obs = xc.open_dataset(f_os_n)
 obs_area = 625
-obs_arctic = (obs.ice_conc.where(obs.lat > 0) * 1e-2 * obs_area).sum(("xc", "yc"))
+obs_arctic = (
+    obs.ice_conc.where(obs.lat > 0).where(obs.ice_conc >= 15) * 1e-2 * obs_area
+).sum(("xc", "yc"))
 
 # Time series plot
 arctic.siconc.sel({"time": slice("1981-01-01", "2010-12-31")}).plot(label="E3SM-1-0")
