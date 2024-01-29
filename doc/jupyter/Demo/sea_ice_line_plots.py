@@ -14,12 +14,12 @@ area = xc.open_dataset(
 
 arctic = (
     (ds.siconc.where(ds.lat > 0) * 1e-2 * area.areacello * 1e-6)
-    .where(ds.siconc > 0.15)
+    .where(ds.siconc > 15)
     .sum(("lat", "lon"))
 )
 """
 Note for the above line
-- where siconc > 0.15: to consider sea ice extent instead of total sea ice area
+- where siconc > 15: to consider sea ice extent instead of total sea ice area (criteria: 15%)
 - multiply 1e-2: to convert percentage (%) to fraction
 """
 
@@ -29,12 +29,12 @@ obs_file = "/p/user_pub/pmp/demo/sea-ice/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/ic
 obs = xc.open_dataset(obs_file)
 obs_area = 625
 obs_arctic = (
-    obs.ice_conc.where(obs.lat > 0).where(obs.ice_conc > 0.15) * 1e-2 * obs_area
+    obs.ice_conc.where(obs.lat > 0).where(obs.ice_conc > 15) * 1e-2 * obs_area
 ).sum(("xc", "yc"))
 """
 Note for the above lines
 - obs_area = 625  # area size represented by each grid (625 km^2 = 25 km x 25 km resolution)
-- where siconc > 0.15: to consider sea ice extent instead of total sea ice area
+- where siconc > 15: to consider sea ice extent instead of total sea ice area (criteria: 15%)
 - multiply 1e-2: to convert percentage (%) to fraction
 """
 
