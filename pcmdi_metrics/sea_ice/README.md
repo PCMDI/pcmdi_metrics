@@ -42,7 +42,7 @@ A [demo parameter file](https://github.com/PCMDI/pcmdi_metrics/blob/405_sic_ao/p
 * **test_data_set**: List of model names.
 * **realization**: List of realizations or "*" to use all realizations.
 * **test_data_path**: File path to directory containing model/test data.
-* **filename_template**: File name template for test data, e.g., "CMIP5.historical.%(model_version).r1i1p1.mon.%(variable).19810-200512.AC.v2019022512.nc" where "model_version" and "variable" will be analyzed for each of the entries in test_data_set and vars.
+* **filename_template**: File name template for test data, e.g., "%(variable)\_SImon_%(model_version)_historical_r1i2p2f1_gr_201001-201112.nc" where "model_version" and "variable" will be analyzed for each of the entries in test_data_set and vars.
 * **var**: Name of model sea ice variable
 * **msyear**: Start year for test data set.
 * **meyear**: End year for test data set.
