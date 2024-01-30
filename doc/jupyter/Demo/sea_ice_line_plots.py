@@ -11,6 +11,7 @@ ds = xc.open_mfdataset(
 area = xc.open_dataset(
     "/p/user_pub/pmp/demo/sea-ice/links_area/E3SM-1-0/areacello_Ofx_E3SM-1-0_historical_r1i1p1f1_gr.nc"
 )
+
 arctic = (
     (ds.siconc.where(ds.lat > 0) * 1e-2 * area.areacello * 1e-6)
     .where(ds.siconc > 15)
