@@ -12,11 +12,11 @@ A suite of demo scripts and interactive Jupyter notebooks are provided with `thi
    :maxdepth: 1
 
    metrics_mean-clim
-   subdaily-precipitation
-   metrics_mov
    metrics_enso
+   metrics_mov
    metrics_mjo
    metrics_monsoon
    metrics_ext
    metrics_precip-variability
    metrics_precip-distribution
+   subdaily-precipitation
