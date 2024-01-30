@@ -1,6 +1,1 @@
-texlive-science
-texlive-xetex
-texlive-font-utils
-texlive-fonts-extra
-texlive-fonts-recommended
-texlive-latex-recommended
+texlive-full
