@@ -20,7 +20,7 @@ Demo
 * `PMP demo Jupyter notebook`_
 
 Results
-=========
+=======
 * `Interactive graphics for PMP-calculated ENSO Metrics`_
 * `Description for included metrics`_
 * `Description for the results`_
