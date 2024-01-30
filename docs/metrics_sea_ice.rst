@@ -4,7 +4,7 @@ Sea Ice
 
 Summary
 ========
-The PCMDI Metrics Package (PMP) sea ice driver produces metrics that compare modeled and observed sea ice extent as shown in Ivanova (2016). These metrics can be compared across models, realizations, and eight spatial regions. 
+The PCMDI Metrics Package (PMP) sea ice driver produces metrics that compare modeled and observed sea ice extent as shown in Ivanova (2016). These metrics are generated for total sea ice extent in eight preset sectors. They can be compared across models, realizations, and regions.
 
 Demo
 =====
@@ -46,7 +46,7 @@ A `demo parameter file`_ is provided in the sea ice code.
 * **test_data_set**: List of model names.
 * **realization**: List of realizations or "*" to use all realizations.
 * **test_data_path**: File path to directory containing model/test data.
-* **filename_template**: File name template for test data, e.g., "CMIP5.historical.%(model_version).r1i1p1.mon.%(variable).19810-200512.AC.v2019022512.nc" where "model_version" and "variable" will be analyzed for each of the entries in test_data_set and vars.
+* **filename_template**: File name template for test data, e.g., "%(variable)_SImon_%(model_version)_historical_r1i2p2f1_gr_201001-201112.nc" where "model_version" and "variable" will be analyzed for each of the entries in test_data_set and vars.
 * **var**: Name of model sea ice variable
 * **msyear**: Start year for test data set.
 * **meyear**: End year for test data set.
