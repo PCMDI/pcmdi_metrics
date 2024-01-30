@@ -19,4 +19,4 @@ A suite of demo scripts and interactive Jupyter notebooks are provided with `thi
    metrics_ext
    metrics_precip-variability
    metrics_precip-distribution
-   subdaily-precipitation
+   metrics_subdaily-precipitation
