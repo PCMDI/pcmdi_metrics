@@ -6,10 +6,6 @@ Contributing Guide
 
 Contributions are welcome and greatly appreciated! Every little bit helps, and credit will always be given.
 
-Overview
---------
-The PCMDI Metrics Package (PMP) is a Python package that curates various climate model analysis workflows as subpackages.
-
 Types of Contributions
 ----------------------
 
@@ -48,9 +44,17 @@ Take a look at the `GitHub Discussions`_ page to get involved, share ideas, or a
 .. _GitHub Discussions: https://github.com/PCMDI/pcmdi_metrics/discussions
 
 New metrics subpackage
-~~~~~~~~~~~~~~~~~~~~~~
+----------------------
 
 Developers working on new metrics packages to contribute to the PMP are highly encouraged to explore the `PMP source code`_ and examine how existing metrics workflows are structured. In general each subpackage contains a driver script, additional library code needed to run the driver script, and example parameter files.
+
+Steps to contributing a new subpackage:
+
+1. Open a `Feature Request`_ describing the new subpackage.
+2. Follow the instructions in `Local Development`_ and `Pull Request Guidelines`_ while working on code.
+3. Add the new subpackage to the `GitHub.io documentation`_.
+
+.. _GitHub.io documentation: https://github.com/PCMDI/pcmdi_metrics/tree/main/docs
 
 Please keep in mind that:
 
