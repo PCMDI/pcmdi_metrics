@@ -14,7 +14,7 @@ Types of Contributions
 ----------------------
 
 PCMDI Metrics Package (PMP) includes issue templates based on the contribution type: https://github.com/PCMDI/pcmdi_metrics/issues/new/choose.
-Note, new contributions must be made under the Apache-2.0 with LLVM exception license.
+Note, new contributions must be made under the BSD-3-Clause license.
 
 Bug Report
 ~~~~~~~~~~
