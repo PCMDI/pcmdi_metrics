@@ -50,7 +50,7 @@ Take a look at the `GitHub Discussions`_ page to get involved, share ideas, or a
 New metrics subpackage
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Developers working on new metrics packages to contribute to the PMP are highly encouraged to explore the `PMP source code`_ and examine how existing metrics workflows are structured. In general each subpackage contains a driver script, additional library code, and example parameter files.
+Developers working on new metrics packages to contribute to the PMP are highly encouraged to explore the `PMP source code`_ and examine how existing metrics workflows are structured. In general each subpackage contains a driver script, additional library code needed to run the driver script, and example parameter files.
 
 Please keep in mind that:
 
@@ -59,10 +59,18 @@ Please keep in mind that:
 * Input data sets are expected to follow the `CF Metadata Conventions`_.
 * Providing `unit tests`_ is highly encouraged.
 
+Quick links to useful code sections:
+
+* See `pcmdi_metrics/io`_ and `pcmdi_metrics/utils`_ to find functions for tasks like land masking, grid subsetting, and more.
+* Graphics code for post-processing metrics is found in `pcmdi_metrics/graphics`_
+
 .. _PMP source code: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics
 .. _dev.yml file: https://github.com/PCMDI/pcmdi_metrics/blob/main/conda-env/dev.yml#L6
 .. _CF Metadata Conventions: https://cfconventions.org/
 .. _unit tests: https://github.com/PCMDI/pcmdi_metrics/tree/main/tests
+.. _pcmdi_metrics/io: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/io
+.. _pcmdi_metrics/utils: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/utils
+.. _pcmdi_metrics/graphics: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/graphics
 
 Version Control
 ---------------
