@@ -243,9 +243,7 @@ Before you submit a pull request, check that it meets these guidelines:
 
 1. The pull request should include tests for new or modified code.
 2. Link issues to pull requests.
-3. If the pull request adds functionality, the docs should be updated. Put
-   your new functionality into a function with a docstring, and add the
-   feature to the list in README.rst.
+3. If the pull request adds functionality, the docs should be updated.
 4. Squash and rebase commits for a clean and navigable Git history.
 
 When you open a pull request on GitHub, there is a template available for use.
