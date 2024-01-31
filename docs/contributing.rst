@@ -243,11 +243,10 @@ Before you submit a pull request, check that it meets these guidelines:
 
 1. The pull request should include tests for new or modified code.
 2. Link issues to pull requests.
-3. If the pull request adds functionality, the docs should be updated.
+3. If the pull request adds functionality, the `docs`_ should be updated.
 4. Squash and rebase commits for a clean and navigable Git history.
 
-When you open a pull request on GitHub, there is a template available for use.
-
+.. _docs: http://pcmdi.github.io/pcmdi_metrics/overview.html
 
 Style Guide
 -----------
