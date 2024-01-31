@@ -55,7 +55,7 @@ Developers working on new metrics packages to contribute to the PMP are highly e
 Please keep in mind that:
 
 * All metrics code must be in Python, and it is the responsibility of the developer to deliver Python code. The PMP team has limited bandwidth to assist with code conversion to Python.
-* Current PMP dependencies can be found in `dev.yml file`_. New dependencies must be discussed with the PMP team.
+* Current PMP dependencies can be found in `dev.yml file`_. Dependencies cannot be added without the approval of the PMP team.
 * Input data sets are expected to follow the `CF Metadata Conventions`_.
 * Providing `unit tests`_ is highly encouraged.
 
