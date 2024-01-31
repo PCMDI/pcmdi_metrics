@@ -6,6 +6,10 @@ Contributing Guide
 
 Contributions are welcome and greatly appreciated! Every little bit helps, and credit will always be given.
 
+Overview
+--------
+The PCMDI Metrics Package (PMP) is a Python package that curates various climate model analysis workflows as subpackages.
+
 Types of Contributions
 ----------------------
 
@@ -42,6 +46,23 @@ Take a look at the `GitHub Discussions`_ page to get involved, share ideas, or a
 .. _CF convention: http://cfconventions.org/
 .. _GitHub Issues: https://github.com/PCMDI/pcmdi_metrics/issues
 .. _GitHub Discussions: https://github.com/PCMDI/pcmdi_metrics/discussions
+
+New metrics subpackage
+~~~~~~~~~~~~~~~~~~~~~~
+
+Developers working on new metrics packages to contribute to the PMP are highly encouraged to explore the `PMP source code`_ and examine how existing metrics workflows are structured. In general each subpackage contains a driver script, additional library code, and example parameter files.
+
+Please keep in mind that:
+
+* All metrics code must be in Python, and it is the responsibility of the developer to deliver Python code. The PMP team has limited bandwidth to assist with code conversion to Python.
+* Current PMP dependencies can be found in `dev.yml file`_. New dependencies must be discussed with the PMP team.
+* Input data sets are expected to follow the `CF Metadata Conventions`_.
+* Providing `unit tests`_ is highly encouraged.
+
+.. _PMP source code: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics
+.. _dev.yml file: https://github.com/PCMDI/pcmdi_metrics/blob/main/conda-env/dev.yml#L6
+.. _CF Metadata Conventions: https://cfconventions.org/
+.. _unit tests: https://github.com/PCMDI/pcmdi_metrics/tree/main/tests
 
 Version Control
 ---------------
