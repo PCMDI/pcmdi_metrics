@@ -43,24 +43,27 @@ Take a look at the `GitHub Discussions`_ page to get involved, share ideas, or a
 .. _GitHub Issues: https://github.com/PCMDI/pcmdi_metrics/issues
 .. _GitHub Discussions: https://github.com/PCMDI/pcmdi_metrics/discussions
 
-New metrics subpackage
-----------------------
+Contributing metrics
+---------------------
 
-Developers working on new metrics packages to contribute to the PMP are highly encouraged to explore the `PMP source code`_ and examine how existing metrics workflows are structured. In general each subpackage contains a driver script, additional library code needed to run the driver script, and example parameter files.
+Developers working on new metrics to contribute to the PMP are highly encouraged to explore the `PMP source code`_ and examine how existing metrics are structured. Metrics are grouped into `subpackages`_ by topic; for example, the Mean Climate metrics, MJO metrics, and Extremes metrics are different subpackages. 
 
-Steps to contributing a new subpackage:
+In general each subpackage contains a driver script, additional library code needed to run the driver script, and example parameter files. Each subpackage must output a JSON file containing metrics and may also produce figures or other data files. New contributions may expand existing metrics subpackages or add a new subpackage.
 
-1. Open a Feature Request describing the new subpackage.
-2. Follow the instructions in **Get Started** and **Pull Request Guidelines** while working on code.
-3. Add the new subpackage to the `GitHub.io documentation`_.
+Steps to contributing new metrics:
+
+1. Open a Feature Request describing the planned metrics.
+2. Follow the instructions in **Get Started** and **Pull Request Guidelines** (below) while working on code.
+3. Update the `GitHub.io documentation`_ as needed.
 
 .. _GitHub.io documentation: https://github.com/PCMDI/pcmdi_metrics/tree/main/docs
 
 Please keep in mind that:
 
-* All metrics code must be in Python, and it is the responsibility of the developer to deliver Python code. The PMP team has limited bandwidth to assist with code conversion to Python.
+* It is never too early to open a Feature Request or contact the PMP team with your idea.
+* All metrics code must be in Python, and it is the responsibility of the contributor to deliver Python code. The PMP team has limited bandwidth to assist with code conversion to Python.
 * Current PMP dependencies can be found in `dev.yml file`_. Dependencies cannot be added without the approval of the PMP team.
-* Input data sets are expected to follow the `CF Metadata Conventions`_.
+* Input data sets are expected to follow the `CF Metadata Conventions`_ (e.g. CMIP, obs4mips).
 * Providing `unit tests`_ is highly encouraged.
 
 Quick links to useful code sections:
@@ -68,7 +71,8 @@ Quick links to useful code sections:
 * See `pcmdi_metrics/io`_ and `pcmdi_metrics/utils`_ to find functions for tasks like land masking, grid subsetting, and more.
 * Graphics code for post-processing metrics is found in `pcmdi_metrics/graphics`_
 
-.. _PMP source code: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics
+.. _PMP source code: https://github.com/PCMDI/pcmdi_metrics/
+.. _subpackages: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics
 .. _dev.yml file: https://github.com/PCMDI/pcmdi_metrics/blob/main/conda-env/dev.yml#L6
 .. _CF Metadata Conventions: https://cfconventions.org/
 .. _unit tests: https://github.com/PCMDI/pcmdi_metrics/tree/main/tests
