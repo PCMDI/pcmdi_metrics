@@ -50,8 +50,8 @@ Developers working on new metrics packages to contribute to the PMP are highly e
 
 Steps to contributing a new subpackage:
 
-1. Open a `Feature Request`_ describing the new subpackage.
-2. Follow the instructions in `Local Development`_ and `Pull Request Guidelines`_ while working on code.
+1. Open a Feature Request describing the new subpackage.
+2. Follow the instructions in **Get Started** and **Pull Request Guidelines** while working on code.
 3. Add the new subpackage to the `GitHub.io documentation`_.
 
 .. _GitHub.io documentation: https://github.com/PCMDI/pcmdi_metrics/tree/main/docs
