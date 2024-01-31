@@ -22,6 +22,11 @@ Each of these steps is included in the
 along with a series of examples that demonstrate the options. 
 These steps are also summarized below.
 
+Demo
+====
+* `PMP demo Jupyter notebook1a`_ (Compute climatologies)
+* `PMP demo Jupyter notebook1b`_ (Run mean climate driver)
+
 
 Observational climatologies
 ###########################
@@ -102,3 +107,6 @@ In addition to the minimum set of parameters noted above, the following **additi
 * **save_test_clims** Select to save (or not) interpolated climatologies including masking
 * **case_id** Save JSON and netCDF files into a subdirectory so that results from multiple tests can be readily organized
  
+.. _PMP demo Jupyter notebook1a: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_1a_compute_climatologies.ipynb
+.. _PMP demo Jupyter notebook1b: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_1b_mean_climate.ipynb
+
