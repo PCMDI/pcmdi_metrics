@@ -4,7 +4,7 @@ Sea Ice
 
 Summary
 ========
-The PCMDI Metrics Package (PMP) sea ice driver produces metrics that compare modeled and observed sea ice extent as shown in Ivanova (2016). These metrics are generated for total sea ice extent in eight preset sectors. They can be compared across models, realizations, and regions.
+The PCMDI Metrics Package (PMP) sea ice driver produces metrics that compare modeled and observed sea ice extent as shown in `Ivanova et al. (2016)`_. These metrics are generated for total sea ice extent in eight preset sectors. They can be compared across models, realizations, and regions.
 
 Demo
 =====
