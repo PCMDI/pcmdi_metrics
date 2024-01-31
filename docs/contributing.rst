@@ -86,11 +86,12 @@ Guidelines
 
 1. ``main`` must always be deployable
 2. All changes are made through support branches
-3. Rebase with the latest ``main`` to avoid/resolve conflicts
-4. Make sure pre-commit quality assurance checks pass when committing (enforced in CI/CD build)
-5. Open a pull request early for discussion
-6. Once the CI/CD build passes and pull request is approved, squash and rebase your commits
-7. Merge pull request into ``main`` and delete the branch
+3. Branch names should follow the pattern "issuenumber_initials_description"
+4. Rebase with the latest ``main`` to avoid/resolve conflicts
+5. Make sure pre-commit quality assurance checks pass when committing (enforced in CI/CD build)
+6. Open a pull request early for discussion
+7. Once the CI/CD build passes and pull request is approved, squash and rebase your commits
+8. Merge pull request into ``main`` and delete the branch
 
 Things to Avoid
 ~~~~~~~~~~~~~~~
