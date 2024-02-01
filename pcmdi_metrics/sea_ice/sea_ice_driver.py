@@ -156,14 +156,14 @@ def sea_ice_regions(ds, var, xvar, yvar):
         )
 
     regions_dict = {
-        "arctic": data_arctic.copy(deep=True),
-        "ca": data_ca.copy(deep=True),
-        "np": data_np.copy(deep=True),
-        "na": data_na.copy(deep=True),
-        "antarctic": data_antarctic.copy(deep=True),
-        "sa": data_sa.copy(deep=True),
-        "sp": data_sp.copy(deep=True),
-        "io": data_io.copy(deep=True),
+        "arctic": data_arctic,
+        "ca": data_ca,
+        "np": data_np,
+        "na": data_na,
+        "antarctic": data_antarctic,
+        "sa": data_sa,
+        "sp": data_sp,
+        "io": data_io,
     }
     return regions_dict
 
