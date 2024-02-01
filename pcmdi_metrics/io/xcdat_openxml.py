@@ -82,6 +82,6 @@ def xcdat_openxml(
             ncfile_list, data_var=data_var, decode_times=decode_times
         )
     else:
-        ds = xc.open_dataset(ncfile_list, data_var=data_var, decode_times=decode_times)
+        ds = xc.open_dataset(ncfile_list[0], data_var=data_var, decode_times=decode_times)
 
     return ds
