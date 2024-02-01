@@ -26,6 +26,18 @@ def xcdat_open(
     -------
     xr.Dataset
         xarray dataset opened via xcdat
+        
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import xcdat_open
+    # Open a single netCDF file
+    >>> ds = xcdat_open('mydata.nc')
+    # Open multiple files
+    >>> ds2 = xcdat_open(['mydata1.nc', 'mydata2.nc']  # Open multipe netCDF files
+    # Open with specifing the variable 'ts'
+    >>> ds3 = xcdat_open(['mydata1.nc', 'mydata2.nc'], data_var='ts')   
+    # Open an xml file
+    >>> ds = xcdat_open('mydata.xml')
     """
     if isinstance(infile, list):
         ds = xc.open_mfdataset(infile, data_var=data_var, decode_times=decode_times)
