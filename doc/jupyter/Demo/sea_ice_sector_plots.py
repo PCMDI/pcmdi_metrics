@@ -1,3 +1,5 @@
+import logging
+
 import cartopy.crs as ccrs
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
@@ -6,6 +8,8 @@ import regionmask
 import xcdat as xc
 
 from pcmdi_metrics.utils import create_land_sea_mask
+
+logging.getLogger("xcdat").setLevel(logging.ERROR)
 
 # ----------
 # Arctic
