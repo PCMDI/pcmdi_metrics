@@ -5,6 +5,7 @@ import glob
 import json
 import os
 import sys
+import warnings
 
 import dask
 import matplotlib.pyplot as plt
@@ -16,6 +17,8 @@ from pcmdi_metrics.io import xcdat_openxml
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.sea_ice.lib import create_sea_ice_parser
 from pcmdi_metrics.utils import create_land_sea_mask
+
+warnings.simplefilter("ignore")
 
 
 class MetadataFile:
