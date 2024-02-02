@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-
 import datetime
 import glob
 import json
+import logging
 import os
 import sys
 
@@ -397,6 +397,8 @@ def get_xy_coords(ds, xvar):
 
 
 if __name__ == "__main__":
+    logging.getLogger("xcdat").setLevel(logging.ERROR)
+
     parser = create_sea_ice_parser()
     parameter = parser.get_parameter(argparse_vals_only=False)
 
