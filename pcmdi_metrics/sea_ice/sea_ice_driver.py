@@ -729,8 +729,7 @@ if __name__ == "__main__":
             print("--------------------------------------------")
             for rgn in real_clim:
                 print(rgn)
-                # Average all realizations, fix bounds, get climatologies and totals
-                # total_rgn = (totals_dict[rgn] / len(list_of_runs)).to_dataset(name=var)
+                # Get model mean
                 real_clim[rgn]["model_mean"][var] = real_clim[rgn]["model_mean"][
                     var
                 ] / len(list_of_runs)
@@ -815,12 +814,9 @@ if __name__ == "__main__":
     ]
     sector_short = ["ca", "na", "np", "io", "sa", "sp"]
     fig7, ax7 = plt.subplots(6, 1, figsize=(5, 9))
-    # mlabels = model_list + ["bootstrap"]
     mlabels = model_list
     ind = np.arange(len(mlabels))  # the x locations for the groups
-    # ind = np.arange(len(mods)+1)  # the x locations for the groups
     width = 0.3
-    # n = len(ind) - 1
     n = len(ind)
     for inds, sector in enumerate(sector_list):
         # Assemble data
