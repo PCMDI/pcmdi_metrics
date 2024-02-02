@@ -64,13 +64,9 @@ class MetadataFile:
             json.dump(self.json, f, indent=4)
 
 
-def sea_ice_regions(ds, var, xvar, yvar):
-    # Two sets of region definitions are provided, one for
-    # -180:180 and one for 0:360 longitude ranges
-    data_arctic = ds[var].where(ds[yvar] > 0, 0)
-    data_antarctic = ds[var].where(ds[yvar] < 0, 0)
+def central_arctic(ds, ds_var, xvar, yvar):
     if (ds[xvar] > 180).any():  # 0 to 360
-        data_ca1 = ds[var].where(
+        data_ca1 = ds[ds_var].where(
             (
                 (ds[yvar] > 80)
                 & (ds[yvar] <= 87.2)
@@ -78,42 +74,14 @@ def sea_ice_regions(ds, var, xvar, yvar):
             ),
             0,
         )
-        data_ca2 = ds[var].where(
+        data_ca2 = ds[ds_var].where(
             ((ds[yvar] > 65) & (ds[yvar] < 87.2))
             & ((ds[xvar] > 90) & (ds[xvar] <= 240)),
             0,
         )
         data_ca = data_ca1 + data_ca2
-        data_np = ds[var].where(
-            (ds[yvar] > 35) & (ds[yvar] <= 65) & ((ds[xvar] > 90) & (ds[xvar] <= 240)),
-            0,
-        )
-        data_na = ds[var].where(
-            (ds[yvar] > 45) & (ds[yvar] <= 80) & ((ds[xvar] > 240) | (ds[xvar] <= 90)),
-            0,
-        )
-        data_na = data_na - data_na.where(
-            (ds[yvar] > 45) & (ds[yvar] <= 50) & (ds[xvar] > 30) & (ds[xvar] <= 60),
-            0,
-        )
-        data_sa = ds[var].where(
-            (ds[yvar] > -90)
-            & (ds[yvar] <= -40)
-            & ((ds[xvar] > 300) | (ds[xvar] <= 20)),
-            0,
-        )
-        data_sp = ds[var].where(
-            (ds[yvar] > -90)
-            & (ds[yvar] <= -40)
-            & ((ds[xvar] > 90) & (ds[xvar] <= 300)),
-            0,
-        )
-        data_io = ds[var].where(
-            (ds[yvar] > -90) & (ds[yvar] <= -40) & (ds[xvar] > 20) & (ds[xvar] <= 90),
-            0,
-        )
     else:  # -180 to 180
-        data_ca1 = ds[var].where(
+        data_ca1 = ds[ds_var].where(
             (
                 (ds[yvar] > 80)
                 & (ds[yvar] <= 87.2)
@@ -122,17 +90,41 @@ def sea_ice_regions(ds, var, xvar, yvar):
             ),
             0,
         )
-        data_ca2 = ds[var].where(
+        data_ca2 = ds[ds_var].where(
             ((ds[yvar] > 65) & (ds[yvar] < 87.2))
             & ((ds[xvar] > 90) | (ds[xvar] <= -120)),
             0,
         )
         data_ca = data_ca1 + data_ca2
-        data_np = ds[var].where(
+    return data_ca
+
+
+def north_pacific(ds, ds_var, xvar, yvar):
+    if (ds[xvar] > 180).any():  # 0 to 360
+        data_np = ds[ds_var].where(
+            (ds[yvar] > 35) & (ds[yvar] <= 65) & ((ds[xvar] > 90) & (ds[xvar] <= 240)),
+            0,
+        )
+    else:
+        data_np = ds[ds_var].where(
             (ds[yvar] > 35) & (ds[yvar] <= 65) & ((ds[xvar] > 90) | (ds[xvar] <= -120)),
             0,
         )
-        data_na = ds[var].where(
+    return data_np
+
+
+def north_atlantic(ds, ds_var, xvar, yvar):
+    if (ds[xvar] > 180).any():  # 0 to 360
+        data_na = ds[ds_var].where(
+            (ds[yvar] > 45) & (ds[yvar] <= 80) & ((ds[xvar] > 240) | (ds[xvar] <= 90)),
+            0,
+        )
+        data_na = data_na - data_na.where(
+            (ds[yvar] > 45) & (ds[yvar] <= 50) & (ds[xvar] > 30) & (ds[xvar] <= 60),
+            0,
+        )
+    else:
+        data_na = ds[ds_var].where(
             (ds[yvar] > 45) & (ds[yvar] <= 80) & (ds[xvar] > -120) & (ds[xvar] <= 90),
             0,
         )
@@ -140,32 +132,120 @@ def sea_ice_regions(ds, var, xvar, yvar):
             (ds[yvar] > 45) & (ds[yvar] <= 50) & (ds[xvar] > 30) & (ds[xvar] <= 60),
             0,
         )
-        data_sa = ds[var].where(
+    return data_na
+
+
+def south_atlantic(ds, ds_var, xvar, yvar):
+    if (ds[xvar] > 180).any():  # 0 to 360
+        data_sa = ds[ds_var].where(
+            (ds[yvar] > -90)
+            & (ds[yvar] <= -40)
+            & ((ds[xvar] > 300) | (ds[xvar] <= 20)),
+            0,
+        )
+    else:  # -180 to 180
+        data_sa = ds[ds_var].where(
             (ds[yvar] > -90) & (ds[yvar] <= -55) & (ds[xvar] > -60) & (ds[xvar] <= 20),
             0,
         )
-        data_sp = ds[var].where(
+    return data_sa
+
+
+def south_pacific(ds, ds_var, xvar, yvar):
+    if (ds[xvar] > 180).any():  # 0 to 360
+        data_sp = ds[ds_var].where(
+            (ds[yvar] > -90)
+            & (ds[yvar] <= -40)
+            & ((ds[xvar] > 90) & (ds[xvar] <= 300)),
+            0,
+        )
+    else:
+        data_sp = ds[ds_var].where(
             (ds[yvar] > -90)
             & (ds[yvar] <= -55)
             & ((ds[xvar] > 90) | (ds[xvar] <= -60)),
             0,
         )
-        data_io = ds[var].where(
+    return data_sp
+
+
+def indian_ocean(ds, ds_var, xvar, yvar):
+    if (ds[xvar] > 180).any():  # 0 to 360
+        data_io = ds[ds_var].where(
+            (ds[yvar] > -90) & (ds[yvar] <= -40) & (ds[xvar] > 20) & (ds[xvar] <= 90),
+            0,
+        )
+    else:  # -180 to 180
+        data_io = ds[ds_var].where(
             (ds[yvar] > -90) & (ds[yvar] <= -55) & (ds[xvar] > 20) & (ds[xvar] <= 90),
             0,
         )
+    return data_io
 
-    regions_dict = {
-        "arctic": data_arctic.copy(deep=True),
-        "ca": data_ca.copy(deep=True),
-        "np": data_np.copy(deep=True),
-        "na": data_na.copy(deep=True),
-        "antarctic": data_antarctic.copy(deep=True),
-        "sa": data_sa.copy(deep=True),
-        "sp": data_sp.copy(deep=True),
-        "io": data_io.copy(deep=True),
-    }
-    return regions_dict
+
+def arctic(ds, ds_var, xvar, yvar):
+    data_arctic = ds[ds_var].where(ds[yvar] > 0, 0)
+    return data_arctic
+
+
+def antarctic(ds, ds_var, xvar, yvar):
+    data_antarctic = ds[ds_var].where(ds[yvar] < 0, 0)
+    return data_antarctic
+
+
+def choose_region(region, ds, ds_var, xvar, yvar):
+    if region == "arctic":
+        return arctic(ds, ds_var, xvar, yvar)
+    elif region == "na":
+        return north_atlantic(ds, ds_var, xvar, yvar)
+    elif region == "ca":
+        return central_arctic(ds, ds_var, xvar, yvar)
+    elif region == "np":
+        return north_pacific(ds, ds_var, xvar, yvar)
+    elif region == "antarctic":
+        return antarctic(ds, ds_var, xvar, yvar)
+    elif region == "sa":
+        return south_atlantic(ds, ds_var, xvar, yvar)
+    elif region == "sp":
+        return south_pacific(ds, ds_var, xvar, yvar)
+    elif region == "io":
+        return indian_ocean(ds, ds_var, xvar, yvar)
+
+
+def get_total_extent(data, ds_area):
+    xvar = find_lon(data)
+    coord_i, coord_j = get_xy_coords(data, xvar)
+    total_extent = (data.where(data > 0.15) * ds_area).sum(
+        (coord_i, coord_j), skipna=True
+    )
+    if isinstance(total_extent.data, dask.array.core.Array):
+        te_mean = total_extent.mean("time", skipna=True).data.compute().item()
+    else:
+        te_mean = total_extent.mean("time", skipna=True).data.item()
+    return total_extent, te_mean
+
+
+def get_clim(total_extent, ds, ds_var):
+    clim = to_ice_con_ds(total_extent, ds, ds_var).temporal.climatology(
+        ds_var, freq="month"
+    )
+    return clim
+
+
+def process_by_region(ds, ds_var, ds_area):
+    regions_list = ["arctic", "antarctic", "ca", "na", "np", "sa", "sp", "io"]
+    clims = {}
+    means = {}
+    for region in regions_list:
+        xvar = find_lon(ds)
+        yvar = find_lat(ds)
+        data = choose_region(region, ds, ds_var, xvar, yvar)
+        total_extent, te_mean = get_total_extent(data, ds_area)
+        clim = get_clim(total_extent, ds, ds_var)
+        clims[region] = clim
+        means[region] = te_mean
+        del data
+    return clims, means
 
 
 def find_lon(ds):
@@ -405,47 +485,20 @@ if __name__ == "__main__":
     mask = create_land_sea_mask(obs, lon_key=xvar, lat_key=yvar)
     obs[obs_var] = obs[obs_var].where(mask < 1)
     # Get regions
-    rgn_dict = sea_ice_regions(obs, obs_var, xvar, yvar)
-
-    # Get ice extent
-    total_extent_arctic_obs = (
-        rgn_dict["arctic"].where(rgn_dict["arctic"] > 0.15) * area_val
-    ).sum((coord_i, coord_j), skipna=True)
-    total_extent_ca_obs = (rgn_dict["ca"].where(rgn_dict["ca"] > 0.15) * area_val).sum(
-        (coord_i, coord_j), skipna=True
-    )
-    total_extent_np_obs = (rgn_dict["np"].where(rgn_dict["np"] > 0.15) * area_val).sum(
-        (coord_i, coord_j), skipna=True
-    )
-    total_extent_na_obs = (rgn_dict["na"].where(rgn_dict["na"] > 0.15) * area_val).sum(
-        (coord_i, coord_j), skipna=True
-    )
-
-    clim_arctic_obs = to_ice_con_ds(
-        total_extent_arctic_obs, obs, obs_var
-    ).temporal.climatology(obs_var, freq="month")
-    clim_ca_obs = to_ice_con_ds(total_extent_ca_obs, obs, obs_var).temporal.climatology(
-        obs_var, freq="month"
-    )
-    clim_np_obs = to_ice_con_ds(total_extent_np_obs, obs, obs_var).temporal.climatology(
-        obs_var, freq="month"
-    )
-    clim_na_obs = to_ice_con_ds(total_extent_na_obs, obs, obs_var).temporal.climatology(
-        obs_var, freq="month"
-    )
+    clims, means = process_by_region(obs, obs_var, area_val)
 
     arctic_clims = {
-        "arctic": clim_arctic_obs,
-        "ca": clim_ca_obs,
-        "np": clim_np_obs,
-        "na": clim_na_obs,
+        "arctic": clims["arctic"],
+        "ca": clims["ca"],
+        "np": clims["np"],
+        "na": clims["na"],
     }
 
     arctic_means = {
-        "arctic": total_extent_arctic_obs.mean("time", skipna=True).data.item(),
-        "ca": total_extent_ca_obs.mean("time", skipna=True).data.item(),
-        "np": total_extent_np_obs.mean("time", skipna=True).data.item(),
-        "na": total_extent_na_obs.mean("time", skipna=True).data.item(),
+        "arctic": means["arctic"],
+        "ca": means["ca"],
+        "np": means["np"],
+        "na": means["na"],
     }
     obs.close()
 
@@ -475,46 +528,19 @@ if __name__ == "__main__":
     # Remove land areas (including lakes)
     mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
     obs[obs_var] = obs[obs_var].where(mask < 1)
-    rgn_dict = sea_ice_regions(obs, obs_var, "lon", "lat")
-
-    total_extent_antarctic_obs = (
-        rgn_dict["antarctic"].where(rgn_dict["antarctic"] > 0.15) * area_val
-    ).sum((coord_i, coord_j), skipna=True)
-    total_extent_sa_obs = (rgn_dict["sa"].where(rgn_dict["sa"] > 0.15) * area_val).sum(
-        (coord_i, coord_j), skipna=True
-    )
-    total_extent_sp_obs = (rgn_dict["sp"].where(rgn_dict["sp"] > 0.15) * area_val).sum(
-        (coord_i, coord_j), skipna=True
-    )
-    total_extent_io_obs = (rgn_dict["io"].where(rgn_dict["io"] > 0.15) * area_val).sum(
-        (coord_i, coord_j), skipna=True
-    )
-
-    clim_antarctic_obs = to_ice_con_ds(
-        total_extent_antarctic_obs, obs, obs_var
-    ).temporal.climatology(obs_var, freq="month")
-    clim_sa_obs = to_ice_con_ds(total_extent_sa_obs, obs, obs_var).temporal.climatology(
-        obs_var, freq="month"
-    )
-    clim_sp_obs = to_ice_con_ds(total_extent_sp_obs, obs, obs_var).temporal.climatology(
-        obs_var, freq="month"
-    )
-    clim_io_obs = to_ice_con_ds(total_extent_io_obs, obs, obs_var).temporal.climatology(
-        obs_var, freq="month"
-    )
-
+    clims, means = process_by_region(obs, obs_var, area_val)
     antarctic_clims = {
-        "antarctic": clim_antarctic_obs,
-        "io": clim_io_obs,
-        "sp": clim_sp_obs,
-        "sa": clim_sa_obs,
+        "antarctic": clims["antarctic"],
+        "io": clims["io"],
+        "sp": clims["sp"],
+        "sa": clims["sa"],
     }
 
     antarctic_means = {
-        "antarctic": total_extent_antarctic_obs.mean("time", skipna=True).data.item(),
-        "io": total_extent_io_obs.mean("time", skipna=True).compute().data.item(),
-        "sp": total_extent_sp_obs.mean("time", skipna=True).compute().data.item(),
-        "sa": total_extent_sa_obs.mean("time", skipna=True).compute().data.item(),
+        "antarctic": means["antarctic"],
+        "io": means["io"],
+        "sp": means["sp"],
+        "sa": means["sa"],
     }
     obs.close()
 
@@ -562,7 +588,17 @@ if __name__ == "__main__":
         start_year = msyear
         end_year = meyear
 
-        real_dict = {
+        real_clim = {
+            "arctic": {"model_mean": None},
+            "ca": {"model_mean": None},
+            "na": {"model_mean": None},
+            "np": {"model_mean": None},
+            "antarctic": {"model_mean": None},
+            "sp": {"model_mean": None},
+            "sa": {"model_mean": None},
+            "io": {"model_mean": None},
+        }
+        real_mean = {
             "arctic": {"model_mean": 0},
             "ca": {"model_mean": 0},
             "na": {"model_mean": 0},
@@ -671,38 +707,37 @@ if __name__ == "__main__":
                     ]
 
                 # Get regions
-                regions_dict = sea_ice_regions(ds, var, xvar, yvar)
+                clims, means = process_by_region(ds, var, area[area_var].data)
 
                 ds.close()
                 # Running sum of all realizations
-                for rgn in regions_dict:
-                    data = regions_dict[rgn]
-                    # coordinates aren't always the same as lat/lon names,
-                    # especially if lat/lon are 2D
-                    lon_i, lon_j = get_xy_coords(data, xvar)
-                    # area data doesn't always use same coordinates as siconc data in CMIP6
-                    # so we multiply by area.data, dropping the coordinates
-                    rgn_total = (data.where(data > 0.15, 0) * area[area_var].data).sum(
-                        (lon_j, lon_i), skipna=True
-                    )
-                    real_dict[rgn][run] = rgn_total
-                    real_dict[rgn]["model_mean"] = (
-                        real_dict[rgn]["model_mean"] + rgn_total
+                for rgn in clims:
+                    real_clim[rgn][run] = clims[rgn]
+                    if real_clim[rgn]["model_mean"] is None:
+                        real_clim[rgn]["model_mean"] = clims[rgn]
+                    else:
+                        real_clim[rgn]["model_mean"][var] = (
+                            real_clim[rgn]["model_mean"][var] + clims[rgn][var]
+                        )
+                    real_mean[rgn][run] = means[rgn]
+                    real_mean[rgn]["model_mean"] = (
+                        real_mean[rgn]["model_mean"] + means[rgn]
                     )
 
             print("\n-------------------------------------------")
             print("Calculating model regional average metrics \nfor ", model)
             print("--------------------------------------------")
-            for rgn in real_dict:
+            for rgn in real_clim:
                 print(rgn)
-
-                # Average all realizations, fix bounds, get climatologies and totals
-                # total_rgn = (totals_dict[rgn] / len(list_of_runs)).to_dataset(name=var)
-                real_dict[rgn]["model_mean"] = real_dict[rgn]["model_mean"] / len(
+                # Get model mean
+                real_clim[rgn]["model_mean"][var] = real_clim[rgn]["model_mean"][
+                    var
+                ] / len(list_of_runs)
+                real_mean[rgn]["model_mean"] = real_mean[rgn]["model_mean"] / len(
                     list_of_runs
                 )
 
-                for run in real_dict[rgn]:
+                for run in real_clim[rgn]:
                     # Set up metrics dictionary
                     if run not in mse[model][rgn]:
                         mse[model][rgn][run] = {}
@@ -714,18 +749,12 @@ if __name__ == "__main__":
                             }
                         }
                     )
-
-                    run_data = real_dict[rgn][run].to_dataset(name=var)
-                    run_data = run_data.bounds.add_missing_bounds()
-                    clim_extent = run_data.temporal.climatology(var, freq="month")
-                    total = run_data.mean("time")[var].data
-
                     # Get errors, convert to 1e12 km^-4
                     mse[model][rgn][run][reference_data_set]["monthly_clim"][
                         "mse"
                     ] = str(
                         mse_t(
-                            clim_extent[var],
+                            real_clim[rgn][run][var],
                             obs_clims[reference_data_set][rgn][obs_var],
                             weights=clim_wts,
                         )
@@ -734,9 +763,11 @@ if __name__ == "__main__":
                     mse[model][rgn][run][reference_data_set]["total_extent"][
                         "mse"
                     ] = str(
-                        mse_model(total, obs_means[reference_data_set][rgn]) * 1e-12
+                        mse_model(
+                            real_mean[rgn][run], obs_means[reference_data_set][rgn]
+                        )
+                        * 1e-12
                     )
-
             # Update year list
             metrics["model_year_range"][model] = [str(start_year), str(end_year)]
         else:
@@ -783,12 +814,9 @@ if __name__ == "__main__":
     ]
     sector_short = ["ca", "na", "np", "io", "sa", "sp"]
     fig7, ax7 = plt.subplots(6, 1, figsize=(5, 9))
-    # mlabels = model_list + ["bootstrap"]
     mlabels = model_list
     ind = np.arange(len(mlabels))  # the x locations for the groups
-    # ind = np.arange(len(mods)+1)  # the x locations for the groups
     width = 0.3
-    # n = len(ind) - 1
     n = len(ind)
     for inds, sector in enumerate(sector_list):
         # Assemble data
