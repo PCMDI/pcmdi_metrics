@@ -74,7 +74,8 @@ def tree():
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+#list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+list_monsoon_regions = ["AUS"]
 
 # How many elements each
 # list should have
@@ -461,6 +462,8 @@ for model in models:
                                         year,
                                         d_sub_aave.getTime().asComponentTime(),
                                     )
+                        print("XXXXXXXXXyy")
+                        print("d_sub_aave = ", d_sub_aave)
 
                         # get pentad time series
                         list_d_sub_aave_chunks = list(
@@ -485,9 +488,16 @@ for model in models:
                                 pentad_time_series, ref_length, debug=debug
                             )
 
+                        print('DDDDDDDDDDDDDDDD')
+                        print('pentad_time_series = ',pentad_time_series)
+
                         pentad_time_series = MV2.array(pentad_time_series)
                         pentad_time_series.units = d.units
                         pentad_time_series_cumsum = np.cumsum(pentad_time_series)
+
+                        print('pentad_time_series = ',pentad_time_series)
+                        print('pentad_time_series_cumsum = ', pentad_time_series_cumsum)
+                        print('EEEEEEEEEEEEEEEEEE')
 
                         if nc_out:
                             # Archive individual year time series in netCDF file
@@ -533,10 +543,15 @@ for model in models:
                         weights="unweighted",
                     )
 
+                    print("UUUUUUUUUUU region = ",region)
+                    print('composite_pentad_time_series =. ',composite_pentad_time_series)
+
                     # Get accumulation ts from the composite
                     composite_pentad_time_series_cumsum = np.cumsum(
                         composite_pentad_time_series
                     )
+
+                    print('composite_pentad_time_series_cumsum =.  ',composite_pentad_time_series_cumsum)
 
                     # Maintain axis information
                     axis0 = pentad_time_series.getAxis(0)

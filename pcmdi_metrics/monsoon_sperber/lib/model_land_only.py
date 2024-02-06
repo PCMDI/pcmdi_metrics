@@ -9,7 +9,7 @@ def model_land_only(model, model_timeseries, lf, debug=False):
     # Mask out over ocean grid
     # - - - - - - - - - - - - - - - - - - - - - - - - -
     if debug:
-        plot_map(model_timeseries[0], "_".join(["test", model, "beforeMask.png"]))
+#        plot_map(model_timeseries[0], "_".join(["test", model, "beforeMask.png"]))
         print("debug: plot for beforeMask done")
 
     # Check land fraction variable to see if it meet criteria
