@@ -73,7 +73,7 @@ def tree():
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+#list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
 
 
 # How many elements each list should have
@@ -128,6 +128,10 @@ modpath_lf = param.process_templated_argument("modpath_lf")
 # Check given model option
 models = param.modnames
 print("models:", models)
+
+# list of regions
+list_monsoon_regions = param.list_monsoon_regions
+print("regions:", list_monsoon_regions)
 
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
@@ -551,6 +555,9 @@ for model in models:
                                 pentad_time_series, ref_length, debug=debug
                             )
 
+                        print('DDDDDDDDDDDDDDDD')
+                        print('pentad_time_series = ',pentad_time_series)
+
                         pentad_time_series_cumsum = np.cumsum(pentad_time_series)
                         pentad_time_series = xr.DataArray(
                             pentad_time_series,
@@ -567,6 +574,10 @@ for model in models:
                         )
                         pentad_time_series_cumsum.attrs["units"] = str(d.units.values)
                         pentad_time_series_cumsum.coords["time"] = time_coords
+
+                        print('pentad_time_series = ',pentad_time_series)
+                        print('pentad_time_series_cumsum = ', pentad_time_series_cumsum)
+                        print('EEEEEEEEEEEEEEEEEE')
 
                         if nc_out:
                             # Archive individual year time series in netCDF file
@@ -613,6 +624,10 @@ for model in models:
                     composite_pentad_time_series_cumsum = np.cumsum(
                         composite_pentad_time_series
                     )
+
+                    print("UUUUUUUUUUU region = ",region)
+                    print('composite_pentad_time_series =. ',composite_pentad_time_series)
+                    print('composite_pentad_time_series_cumsum =.  ',composite_pentad_time_series_cumsum)
 
                     # Maintain axis information
 

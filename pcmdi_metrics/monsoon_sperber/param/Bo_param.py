@@ -13,13 +13,15 @@ realm = "atm"
 # Miscellaneous
 # -------------------------------------------------
 update_json = False
-debug = False
+debug = True
 
+#list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+list_monsoon_regions = ["AUS"]
 # =================================================
 # Observation
 # -------------------------------------------------
 reference_data_name = "GPCP-1-3"
-reference_data_path = "/p/user_pub/PCMDIobs/PCMDIobs2/atmos/day/pr/GPCP-1-3/gn/v20200924/pr_day_GPCP-1-3_BE_gn_v20200924_19961002-20170101.nc"  # noqa
+reference_data_path = "/p/user_pub/PCMDIobs/obs4MIPs/NASA-GSFC/GPCP-1DD-CDR-v1-3/day/pr/1x1/latest/pr_day_GPCP-1DD-CDR-v1-3_PCMDIFROGS_1x1_19961001-20201231.nc"
 reference_data_lf_path = (
     "/work/lee1043/DATA/LandSeaMask_1x1_NCL/NCL_LandSeaMask_rewritten.nc"  # noqa
 )
@@ -59,7 +61,7 @@ pmprdir = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2"
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 
 if debug:
-    pmprdir = "/work/lee1043/imsi/result_test"
+    pmprdir = "/p/user_pub/climate_work/dong12/PMP_result/"
     case_id = "{:v%Y%m%d-%H%M}".format(datetime.datetime.now())
 
 results_dir = os.path.join(
