@@ -74,6 +74,7 @@ def tree():
 # Hard coded options... will be moved out later
 # -------------------------------------------------
 #list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+list_monsoon_regions = ["AUS"]
 
 
 # How many elements each list should have
@@ -130,8 +131,8 @@ models = param.modnames
 print("models:", models)
 
 # list of regions
-list_monsoon_regions = param.list_monsoon_regions
-print("regions:", list_monsoon_regions)
+#list_monsoon_regions = param.list_monsoon_regions
+#print("regions:", list_monsoon_regions)
 
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
@@ -411,13 +412,17 @@ for model in models:
 
                 # year loop, endYear+1 to include last year
                 for year in range(startYear, endYear + 1):
+                    print("\n")
+                    print("XXXXXX year = ", year)
+                    print("\n")
                     d = dc.pr.sel(
                         time=slice(
                             str(year) + "-01-01 00:00:00", str(year) + "-12-31 23:59:59"
                         ),
                         lat=slice(-90, 90),
                     )
-                    print("xxx d =, ", d)
+                    #print("xxx d =, ", d.values)
+                    print("xxx d =, ", d.values[0,0,0])
                     print("type d type,", type(d))
                     # unit adjust
                     if UnitsAdjust[0]:
@@ -427,6 +432,10 @@ for model in models:
                         """
                         d.values = d.values * 86400.0
                         d["units"] = units
+
+                    print("UnitAdjust[0] =  ", UnitsAdjust[0])
+                    print("xxx d =, ", d[0,0,0])
+                    print("\n")
 
                     # variable for over land only
                     d_land = model_land_only(model, d, lf, debug=debug)
@@ -450,6 +459,9 @@ for model in models:
                                 )
                             )
 
+                            d_sub_pr.values = d_sub_pr.values * 86400.0
+                            d_sub_pr["units"] = units
+
                         else:
                             # land-only rainfall
 
@@ -468,6 +480,12 @@ for model in models:
                                 model, d_sub_pr, lf_sub, debug=debug
                             )
 
+                            d_sub_pr.values = d_sub_pr.values * 86400.0
+                            d_sub_pr["units"] = units
+
+                        print("HHHHHHHH d_sub_pr  =  ", d_sub_pr.values[0,0,0])
+                        print("HHHHHHHH d_sub_pr.size  =  ", d_sub_pr.size)
+
                         # Area average
 
                         ds_sub_pr = d_sub_pr.to_dataset().compute()
@@ -477,6 +495,10 @@ for model in models:
                             "pr", axis=["X", "Y"], weights="generate"
                         ).compute()
                         d_sub_aave = ds_sub_aave.pr
+
+
+                        print("PPPPPPPPPP  d_sub_aave =  ", d_sub_aave.values[0:10])
+                        print("PPPPPPPPPP  d_sub_aave.pr =  ", ds_sub_aave.pr.values[0:10])
 
                         if debug:
                             print("debug: region:", region)
@@ -519,6 +541,8 @@ for model in models:
                                         year,
                                         d_sub_aave.time,
                                     )
+                        print("XXXXXXXXX")
+                        print("d_sub_aave", d_sub_aave)
 
                         # get pentad time series
                         list_d_sub_aave_chunks = list(
