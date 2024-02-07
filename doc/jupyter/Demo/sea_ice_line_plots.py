@@ -1,7 +1,11 @@
+import logging
+
 import cftime
 import matplotlib.pyplot as plt
 import xarray as xr
 import xcdat as xc
+
+logging.getLogger("xcdat").setLevel(logging.ERROR)
 
 # Load data -- model
 
