@@ -396,10 +396,10 @@ def get_anomaly_timeseries(ds: xr.Dataset, data_var: str, season: str) -> xr.Dat
         raise TypeError(
             "The first parameter of get_anomaly_timeseries must be an xarray Dataset"
         )
-    # Get anomaly field
+    # Get anomaly field by removing annual cycle
+    ds_anomaly = ds.temporal.departures(data_var, freq="month", weighted=True)
+    # Get temporal average if needed
     if season == "yearly":
-        # remove seasonal cycle
-        ds_anomaly = ds.temporal.departures(data_var, freq="month", weighted=True)
         # yearly time series
         ds_anomaly = ds_anomaly.temporal.group_average(
             data_var, freq="year", weighted=True
@@ -410,17 +410,14 @@ def get_anomaly_timeseries(ds: xr.Dataset, data_var: str, season: str) -> xr.Dat
         ds_ave = ds_anomaly.temporal.average(data_var)
         # anomaly
         ds_anomaly[data_var] = ds_anomaly[data_var] - ds_ave[data_var]
-    else:
-        # Remove annual cycle
-        ds_anomaly = ds.temporal.departures(data_var, freq="month", weighted=True)
-        if season != "monthly":
-            ds_anomaly_all_seasons = ds_anomaly.temporal.departures(
-                data_var,
-                freq="season",
-                weighted=True,
-                season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},
-            )
-            ds_anomaly = select_by_season(ds_anomaly_all_seasons, season)
+    elif season.upper() in ["DJF", "MAM", "JJA", "SON"]:
+        ds_anomaly_all_seasons = ds_anomaly.temporal.departures(
+            data_var,
+            freq="season",
+            weighted=True,
+            season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},
+        )
+        ds_anomaly = select_by_season(ds_anomaly_all_seasons, season)
     # return result
     return ds_anomaly
 
