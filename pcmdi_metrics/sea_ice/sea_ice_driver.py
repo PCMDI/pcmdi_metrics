@@ -572,14 +572,13 @@ if __name__ == "__main__":
     metrics = {
         "DIMENSIONS": {
             "json_structure": [
-                "model",
+                "region",
                 "realization",
                 "obs",
-                "region",
                 "index",
                 "statistic",
             ],
-            "region": {},
+            "region": ["arctic", "ca", "na", "np", "antarctic", "io", "sa", "sp"],
             "index": {
                 "monthly_clim": "Monthly climatology of extent",
                 "total_extent": "Sum of ice coverage where concentration > 15%",
