@@ -12,7 +12,7 @@ import numpy as np
 import xarray as xr
 import xcdat as xc
 
-from pcmdi_metrics.io import xcdat_openxml
+from pcmdi_metrics.io import xcdat_dataset_io, xcdat_openxml
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.sea_ice.lib import create_sea_ice_parser
 from pcmdi_metrics.utils import create_land_sea_mask
@@ -226,9 +226,16 @@ def get_total_extent(data, ds_area):
 
 
 def get_clim(total_extent, ds, ds_var):
-    clim = to_ice_con_ds(total_extent, ds, ds_var).temporal.climatology(
-        ds_var, freq="month"
-    )
+    try:
+        clim = to_ice_con_ds(total_extent, ds, ds_var).temporal.climatology(
+            ds_var, freq="month"
+        )
+    except IndexError:  # Issue with time bounds
+        tmp = to_ice_con_ds(total_extent, ds, ds_var)
+        tbkey = xcdat_dataset_io.get_time_bounds_key(tmp)
+        tmp = tmp.drop_vars(tbkey)
+        tmp = tmp.bounds.add_missing_bounds()
+        clim = tmp.temporal.climatology(ds_var, freq="month")
     return clim
 
 
@@ -305,9 +312,8 @@ def mse_model(dm, do, var=None):
 def to_ice_con_ds(da, ds, obs_var):
     # Convert sea ice data array to dataset using
     # coordinates from another dataset
-    ds = xr.Dataset(
-        data_vars={obs_var: da, "time_bnds": ds.time_bnds}, coords={"time": ds.time}
-    )
+    tbkey = xcdat_dataset_io.get_time_bounds_key(ds)
+    ds = xr.Dataset(data_vars={obs_var: da, tbkey: ds[tbkey]}, coords={"time": ds.time})
     return ds
 
 
