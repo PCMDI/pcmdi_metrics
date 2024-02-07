@@ -8,8 +8,8 @@ Sample model and observational data are provided via a `jupyter notebook demo <h
 For users that are unfamiliar with Jupyter notebooks or just want to download the sample data without interactively running the demo, you can download the data by launching python from a PMP environment created from conda.  You can then enter the following form the python command prompt :: 
 
     import requests
-    r = requests.get("https://pcmdiweb.llnl.gov/pss/pmpdata/cmec_tutorial_files.txt")
-    with open("data_files.txt","wb") as f:
+    r = requests.get("https://pcmdiweb.llnl.gov/pss/pmpdata/pmp_tutorial_files.v20240201.txt")
+    with open("data_files.txt", "wb") as f:
        f.write(r.content)
 
 A location where you want to store the demo data locally can be set: ::
