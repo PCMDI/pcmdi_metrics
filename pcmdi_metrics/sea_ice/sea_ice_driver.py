@@ -48,7 +48,7 @@ if __name__ == "__main__":
     oeyear = parameter.oeyear
     plot = parameter.plot
 
-    print(model_list)
+    print("Model list:", model_list)
     model_list.sort()
     # Verifying output directory
     metrics_output_path = lib.verify_output_path(metrics_output_path, case_id)
