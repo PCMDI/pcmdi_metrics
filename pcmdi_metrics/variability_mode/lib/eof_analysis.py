@@ -424,10 +424,12 @@ def get_anomaly_timeseries(ds: xr.Dataset, data_var: str, season: str) -> xr.Dat
 
 def select_by_season(ds: xr.Dataset, season: str) -> xr.Dataset:
     time_key = get_time_key(ds)
-    lat_bnds_key = get_latitude_bounds_key(ds)
-    lon_bnds_key = get_longitude_bounds_key(ds)
     ds_subset = ds.where(ds[time_key].dt.season == season, drop=True)
     # Preserve original spatial bounds info
+    # Extract original bounds
+    lat_bnds_key = get_latitude_bounds_key(ds)
+    lon_bnds_key = get_longitude_bounds_key(ds)
+    # Assign back to the new dataset
     ds_subset[lat_bnds_key] = get_latitude_bounds(ds)
     ds_subset[lon_bnds_key] = get_longitude_bounds(ds)
     return ds_subset
