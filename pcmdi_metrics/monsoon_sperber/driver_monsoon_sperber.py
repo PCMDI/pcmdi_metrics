@@ -391,6 +391,10 @@ for model in models:
 
                 # year loop, endYear+1 to include last year
                 for year in range(startYear, endYear + 1):
+                    print("\n")
+                    print("XXXXXX year = ", year)
+                    print("\n")
+
                     d = fc(
                         var,
                         time=(
@@ -399,6 +403,10 @@ for model in models:
                         ),
                         latitude=(-90, 90),
                     )
+                    print("xxx d =, ", d[0,0,0])
+                    print("xxx d =, ", d)
+                    print("type d type,", type(d))
+
                     # unit adjust
                     if UnitsAdjust[0]:
                         """Below two lines are identical to following:
@@ -409,6 +417,7 @@ for model in models:
                         d.units = units
                     # variable for over land only
                     d_land = model_land_only(model, d, lf, debug=debug)
+                    #d_land = d
 
                     print("check: year, d.shape: ", year, d.shape)
 
@@ -427,6 +436,12 @@ for model in models:
                         d_sub_aave = cdutil.averager(
                             d_sub, axis="xy", weights="weighted"
                         )
+
+                        print("HHHHHHHH d_sub  =  ", d_sub)
+                        print("HHHHHHHH d_sub  =  ", d_sub[0,0,0])
+                        #print("HHHHHHHH d_sub_pr.size  =  ", d_sub_pr.size)
+                        print("PPPPPPPPPP  d_sub_aave =  ", d_sub_aave[0:10])
+#                        print("PPPPPPPPPP  d_sub_aave.pr =  ", ds_sub_aave.pr.values[0:10])
 
                         if debug:
                             print("debug: region:", region)
