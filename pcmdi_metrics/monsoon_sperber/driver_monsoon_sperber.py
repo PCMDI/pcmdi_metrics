@@ -74,7 +74,8 @@ def tree():
 # Hard coded options... will be moved out later
 # -------------------------------------------------
 #list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
-list_monsoon_regions = ["AUS"]
+#list_monsoon_regions = ["AUS"]
+list_monsoon_regions = ["Sahel"]
 
 
 # How many elements each list should have
