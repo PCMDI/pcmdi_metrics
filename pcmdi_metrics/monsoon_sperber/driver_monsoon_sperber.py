@@ -405,7 +405,7 @@ for model in models:
                         latitude=(-90, 90),
                     )
                     print("xxx d =, ", d[0,0,0])
-                    print("xxx d =, ", d)
+                    #print("xxx d =, ", d)
                     print("type d type,", type(d))
 
                     # unit adjust
