@@ -485,6 +485,8 @@ for model in models:
                             )
 
                             #d_sub_pr.to_netcdf("test_region_land_xcdat.nc")
+                            #print("\n")
+                            #print("KKKKKKKKK  save nc save nc  save nc")
 
                             d_sub_pr.values = d_sub_pr.values * 86400.0
                             d_sub_pr["units"] = units
