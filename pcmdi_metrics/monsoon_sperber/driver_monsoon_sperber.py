@@ -432,13 +432,20 @@ for model in models:
                             d_sub = d(regions_specs[region]["domain"])
                         else:
                             # land-only rainfall
-                            #ffo = cdms2.open('test_region_cdms.nc','w')
-                            #ffo.write(d(regions_specs[region]["domain"]), id="pr")
-                            #ffo.close()
+
+                            ffo = cdms2.open('test_region_cdms.nc','w')
+                            ffo.write(d(regions_specs[region]["domain"]), id="pr")
+                            ffo.close()
+
                             d_sub = d_land(regions_specs[region]["domain"])
-                            #ffo2 = cdms2.open('test_region_land_cdms.nc','w')
-                            #ffo2.write(d_sub, id="pr")
-                            #ffo2.close()
+
+                            ffo2 = cdms2.open('test_region_land_cdms.nc','w')
+                            ffo2.write(d_sub, id="pr")
+                            ffo2.close()
+
+                            print("\n")
+                            print("KKKKKKK  save nc save nc save nc")
+
                             #d_sub = d(regions_specs[region]["domain"])
                         # Area average
                         d_sub_aave = cdutil.averager(
