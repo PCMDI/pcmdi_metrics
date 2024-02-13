@@ -433,6 +433,7 @@ for model in models:
                         else:
                             # land-only rainfall
                             d_sub = d_land(regions_specs[region]["domain"])
+                            #d_sub = d(regions_specs[region]["domain"])
                         # Area average
                         d_sub_aave = cdutil.averager(
                             d_sub, axis="xy", weights="weighted"
