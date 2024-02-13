@@ -473,6 +473,9 @@ for model in models:
                                     str(year) + "-12-31 23:59:59",
                                 )
                             )
+
+                            #d_sub_pr.to_netcdf("test_region_xcdat.nc")
+
                             lf_sub_ds = region_subset(
                                 ds_lf, regions_specs, region=region
                             )
@@ -480,6 +483,8 @@ for model in models:
                             d_sub_pr = model_land_only(
                                 model, d_sub_pr, lf_sub, debug=debug
                             )
+
+                            #d_sub_pr.to_netcdf("test_region_land_xcdat.nc")
 
                             d_sub_pr.values = d_sub_pr.values * 86400.0
                             d_sub_pr["units"] = units
