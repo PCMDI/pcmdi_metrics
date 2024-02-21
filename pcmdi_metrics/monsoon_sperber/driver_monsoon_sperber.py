@@ -75,7 +75,8 @@ def tree():
 # -------------------------------------------------
 #list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
 #list_monsoon_regions = ["AUS"]
-list_monsoon_regions = ["Sahel"]
+#list_monsoon_regions = ["Sahel"]
+list_monsoon_regions = ["GoG"]
 
 
 # How many elements each list should have
@@ -463,6 +464,11 @@ for model in models:
                             d_sub_pr.values = d_sub_pr.values * 86400.0
                             d_sub_pr["units"] = units
 
+                            d_sub_pr.to_netcdf("test_region_global_xcdat.nc")
+                            print("\n")
+                            print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                            print("\n")
+
                         else:
                             # land-only rainfall
 
@@ -474,7 +480,10 @@ for model in models:
                                 )
                             )
 
-                            #d_sub_pr.to_netcdf("test_region_xcdat.nc")
+                            d_sub_pr.to_netcdf("test_region_xcdat.nc")
+                            print("\n")
+                            print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                            print("\n")
 
                             lf_sub_ds = region_subset(
                                 ds_lf, regions_specs, region=region
@@ -484,7 +493,10 @@ for model in models:
                                 model, d_sub_pr, lf_sub, debug=debug
                             )
 
-                            #d_sub_pr.to_netcdf("test_region_land_xcdat.nc")
+                            d_sub_pr.to_netcdf("test_region_land_xcdat.nc")
+                            print("\n")
+                            print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                            print("\n")
                             #print("\n")
                             #print("KKKKKKKKK  save nc save nc  save nc")
 
