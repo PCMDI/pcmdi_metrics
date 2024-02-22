@@ -138,12 +138,11 @@ def subset_time(
     if not isinstance(eyear, int):
         eyear = int(eyear)
 
-    time1 = cftime.datetime(syear, 1, 1, 0, 0, 0, 0)
-    time2 = cftime.datetime(eyear, 12, eday, 23, 59, 59, 0)
-    time_tuple = (time1, time2)
+    time1 = f"{syear}-01-01 00:00:00"
+    time2 = f"{eyear}-12-{eday} 23:59:59"
 
     # First trimming
-    ds = select_subset(ds, time=time_tuple)
+    ds = select_subset(ds, time=(time1, time2))
 
     # Check available time window and adjust again if needed
     time_coord = get_time(ds)
@@ -168,11 +167,10 @@ def subset_time(
     )
 
     if adjust_time_length:
-        time1 = cftime.datetime(data_syear, 1, 1, 0, 0, 0, 0)
-        time2 = cftime.datetime(data_eyear, 12, eday, 23, 59, 59, 0)
-        time_tuple = (time1, time2)
+        time1 = f"{data_syear}-01-01 00:00:00"
+        time2 = f"{data_eyear}-12-{eday} 23:59:59"
         # Second trimming
-        ds = select_subset(ds, time=time_tuple)
+        ds = select_subset(ds, time=(time1, time2))
 
     return ds
 
