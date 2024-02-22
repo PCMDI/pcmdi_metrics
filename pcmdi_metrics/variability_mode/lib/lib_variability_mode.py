@@ -7,7 +7,6 @@ from datetime import datetime
 from time import gmtime, strftime
 from typing import Union
 
-import cftime
 import numpy as np
 import xarray as xr
 import xcdat as xc

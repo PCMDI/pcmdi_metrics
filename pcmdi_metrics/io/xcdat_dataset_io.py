@@ -146,7 +146,7 @@ def select_subset(
     lat_tuple = (30, 50)  # Latitude range
     lon_tuple = (110, 130)  # Longitude range
     time_tuple = ("1850-01-01 00:00:00", "1851-12-31 23:59:59") # Time range
-     
+
     # Load your xarray dataset (ds) here
 
     # Select subset based on specified ranges
