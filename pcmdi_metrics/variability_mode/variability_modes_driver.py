@@ -304,10 +304,10 @@ if obs_compare:
         debug=debug,
     )
 
-    # Save global grid information for regrid below
+    # Get global grid information for later use: regrid
     ref_grid_global = get_grid(obs_timeseries)
 
-    # Declare dictionary variables to keep information from observation
+    # Set dictionary variables to keep information from observation in the memory during the season and model loop
     eof_obs = {}
     pc_obs = {}
     frac_obs = {}
@@ -317,7 +317,7 @@ if obs_compare:
     stdv_pc_obs = {}
     obs_timeseries_season_dict = {}
 
-    # Dictonary for json archive
+    # Set dictonary for json archive
     if "obs" not in result_dict["REF"]:
         result_dict["REF"]["obs"] = {}
     if "defaultReference" not in result_dict["REF"]["obs"]:
