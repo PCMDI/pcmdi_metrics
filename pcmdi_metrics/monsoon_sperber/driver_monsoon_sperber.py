@@ -76,7 +76,10 @@ def tree():
 # -------------------------------------------------
 #list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
 #list_monsoon_regions = ["AUS"]
-list_monsoon_regions = ["Sahel"]
+#list_monsoon_regions = ["Sahel"]
+#list_monsoon_regions = ["GoG"]
+#list_monsoon_regions = ["global"]
+list_monsoon_regions = ["NHEX"]
 
 # How many elements each
 # list should have
@@ -430,6 +433,14 @@ for model in models:
                         if region in ["GoG", "NAmo"]:
                             # all grid point rainfall
                             d_sub = d(regions_specs[region]["domain"])
+
+                            ffo2 = cdms2.open('test_region_global_cdms.nc','w')
+                            ffo2.write(d_sub, id="pr")
+                            ffo2.close()
+                            print("\n")
+                            print("NetCDF file saved $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                            print("\n")
+
                         else:
                             # land-only rainfall
 
