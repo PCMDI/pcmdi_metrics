@@ -281,7 +281,7 @@ def mse_t(dm, do, weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
     if weights is None:
-        stat = np.sum(((dm.data - do.data) ** 2)) / len(dm, axis=0)
+        stat = np.sum(((dm.data - do.data) ** 2)) / len(dm)
     else:
         stat = np.sum(((dm.data - do.data) ** 2) * weights, axis=0)
     if isinstance(stat, dask.array.core.Array):
