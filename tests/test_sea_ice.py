@@ -16,6 +16,7 @@ def create_fake_sea_ice_ds():
     latd = 2
     lond = 2
 
+    # All cells have 100% ice coverage
     values = np.ones((len(times), latd, lond)) * 100.0
     lat = np.arange(80, 80 + latd)
     lon = np.arange(0, lond)
@@ -30,6 +31,7 @@ def create_fake_sea_ice_ds():
         }
     )
 
+    # All grid cells have area of 600 km2
     area = np.ones((latd, lond)) * 600
     fake_area = xr.Dataset(
         {
