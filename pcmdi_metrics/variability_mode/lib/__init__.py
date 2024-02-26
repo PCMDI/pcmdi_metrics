@@ -1,3 +1,8 @@
+from .adjust_timeseries import (  # noqa
+    adjust_timeseries,
+    get_anomaly_timeseries,
+    get_residual_timeseries,
+)
 from .argparse_functions import (  # noqa
     AddParserArgument,
     VariabilityModeCheck,
@@ -9,13 +14,10 @@ from .calc_stat import (  # noqa
 )
 from .dict_merge import dict_merge  # noqa
 from .eof_analysis import (  # noqa
-    adjust_timeseries,
     arbitrary_checking,
     eof_analysis_get_variance_mode,
     gain_pcs_fraction,
     gain_pseudo_pcs,
-    get_anomaly_timeseries,
-    get_residual_timeseries,
     linear_regression,
     linear_regression_on_globe_for_teleconnection,
 )
