@@ -7,7 +7,6 @@ from datetime import datetime
 from time import gmtime, strftime
 from typing import Union
 
-import cftime
 import numpy as np
 import xarray as xr
 import xcdat as xc
@@ -138,12 +137,10 @@ def subset_time(
     if not isinstance(eyear, int):
         eyear = int(eyear)
 
+    # First trimming
     time1 = f"{syear}-01-01 00:00:00"
     time2 = f"{eyear}-12-{eday} 23:59:59"
-    time_tuple = (time1, time2)
-
-    # First trimming
-    ds = select_subset(ds, time=time_tuple)
+    ds = select_subset(ds, time=(time1, time2))
 
     # Check available time window and adjust again if needed
     time_coord = get_time(ds)
@@ -167,12 +164,11 @@ def subset_time(
         "data_syear: " + str(data_syear) + " data_eyear: " + str(data_eyear), debug
     )
 
+    # Second trimming
     if adjust_time_length:
-        time1 = cftime.datetime(data_syear, 1, 1, 0, 0, 0, 0)
-        time2 = cftime.datetime(data_eyear, 12, eday, 23, 59, 59, 0)
-        time_tuple = (time1, time2)
-        # Second trimming
-        ds = select_subset(ds, time=time_tuple)
+        time1 = f"{data_syear}-01-01 00:00:00"
+        time2 = f"{data_eyear}-12-{eday} 23:59:59"
+        ds = select_subset(ds, time=(time1, time2))
 
     return ds
 

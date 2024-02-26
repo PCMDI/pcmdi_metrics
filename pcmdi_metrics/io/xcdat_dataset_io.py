@@ -133,7 +133,7 @@ def select_subset(
     - lat (tuple, optional): Latitude range in the form of (min, max).
     - lon (tuple, optional): Longitude range in the form of (min, max).
     - time (tuple, optional): Time range. If time is specified, it should be in the form of (start_time, end_time),
-      where start_time and end_time can be integers, floats, or cftime.DatetimeProlepticGregorian objects.
+      where start_time and end_time can be integers, floats, string, or cftime.datetime objects.
 
     Returns:
     - xr.Dataset: Subset of the input dataset based on the specified latitude, longitude, and time ranges.
@@ -145,8 +145,7 @@ def select_subset(
     # Define latitude, longitude, and time ranges
     lat_tuple = (30, 50)  # Latitude range
     lon_tuple = (110, 130)  # Longitude range
-    time_tuple = (cftime.datetime(1850, 1, 1, 0, 0, 0, 0),
-                  cftime.datetime(1851, 12, 31, 23, 59, 59, 0))  # Time range
+    time_tuple = ("1850-01-01 00:00:00", "1851-12-31 23:59:59") # Time range
 
     # Load your xarray dataset (ds) here
 
