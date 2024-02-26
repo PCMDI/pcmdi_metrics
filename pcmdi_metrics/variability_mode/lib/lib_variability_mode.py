@@ -137,10 +137,9 @@ def subset_time(
     if not isinstance(eyear, int):
         eyear = int(eyear)
 
+    # First trimming
     time1 = f"{syear}-01-01 00:00:00"
     time2 = f"{eyear}-12-{eday} 23:59:59"
-
-    # First trimming
     ds = select_subset(ds, time=(time1, time2))
 
     # Check available time window and adjust again if needed
@@ -165,10 +164,10 @@ def subset_time(
         "data_syear: " + str(data_syear) + " data_eyear: " + str(data_eyear), debug
     )
 
+    # Second trimming
     if adjust_time_length:
         time1 = f"{data_syear}-01-01 00:00:00"
         time2 = f"{data_eyear}-12-{eday} 23:59:59"
-        # Second trimming
         ds = select_subset(ds, time=(time1, time2))
 
     return ds
@@ -233,6 +232,9 @@ def pick_year_last_day(ds):
         time_key = xc.axis.get_dim_keys(ds, axis="T")
         if "calendar" in ds[time_key].attrs.keys():
             if "360" in ds[time_key]["calendar"]:
+                eday = 30
+        else:
+            if "360" in ds[time_key][0].values.item().calendar:
                 eday = 30
     except Exception:
         pass
