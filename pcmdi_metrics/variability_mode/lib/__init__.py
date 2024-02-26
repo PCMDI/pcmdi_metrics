@@ -1,7 +1,7 @@
 from .adjust_timeseries import (  # noqa
     adjust_timeseries,
     get_anomaly_timeseries,
-    get_residual_timeseries,    
+    get_residual_timeseries,
 )
 from .argparse_functions import (  # noqa
     AddParserArgument,
