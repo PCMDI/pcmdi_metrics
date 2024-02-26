@@ -138,8 +138,8 @@ def subset_time(
     if not isinstance(eyear, int):
         eyear = int(eyear)
 
-    time1 = cftime.datetime(syear, 1, 1, 0, 0, 0, 0)
-    time2 = cftime.datetime(eyear, 12, eday, 23, 59, 59, 0)
+    time1 = f"{syear}-01-01 00:00:00"
+    time2 = f"{eyear}-12-{eday} 23:59:59"
     time_tuple = (time1, time2)
 
     # First trimming
@@ -236,6 +236,9 @@ def pick_year_last_day(ds):
         time_key = xc.axis.get_dim_keys(ds, axis="T")
         if "calendar" in ds[time_key].attrs.keys():
             if "360" in ds[time_key]["calendar"]:
+                eday = 30
+        else:
+            if "360" in ds[time_key][0].values.item().calendar:
                 eday = 30
     except Exception:
         pass
