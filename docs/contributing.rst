@@ -10,7 +10,7 @@ Types of Contributions
 ----------------------
 
 PCMDI Metrics Package (PMP) includes issue templates based on the contribution type: https://github.com/PCMDI/pcmdi_metrics/issues/new/choose.
-Note, new contributions must be made under the Apache-2.0 with LLVM exception license.
+Note, new contributions must be made under the BSD-3-Clause license.
 
 Bug Report
 ~~~~~~~~~~
@@ -43,6 +43,43 @@ Take a look at the `GitHub Discussions`_ page to get involved, share ideas, or a
 .. _GitHub Issues: https://github.com/PCMDI/pcmdi_metrics/issues
 .. _GitHub Discussions: https://github.com/PCMDI/pcmdi_metrics/discussions
 
+Contributing metrics
+---------------------
+
+Developers working on new metrics to contribute to the PMP are highly encouraged to explore the `PMP source code`_ and examine how existing metrics are structured. Metrics are grouped into `subpackages`_ by topic; for example, the Mean Climate metrics, MJO metrics, and Extremes metrics are different subpackages. 
+
+In general each subpackage contains a driver script, additional library code needed to run the driver script, and example parameter files. Each subpackage must output a JSON file containing metrics and may also produce figures or other data files. New contributions may expand existing metrics subpackages or add a new subpackage.
+
+Steps to contributing new metrics:
+
+1. Open a Feature Request describing the planned metrics.
+2. Follow the instructions in **Get Started** and **Pull Request Guidelines** (below) while working on code.
+3. Update the `GitHub.io documentation`_ as needed.
+
+.. _GitHub.io documentation: https://github.com/PCMDI/pcmdi_metrics/tree/main/docs
+
+Please keep in mind that:
+
+* It is never too early to open a Feature Request or contact the PMP team with your idea.
+* All metrics code must be in Python, and it is the responsibility of the contributor to deliver Python code. The PMP team has limited bandwidth to assist with code conversion to Python.
+* Current PMP dependencies can be found in `dev.yml file`_. Dependencies cannot be added without the approval of the PMP team.
+* Input data sets are expected to follow the `CF Metadata Conventions`_ (e.g. CMIP, obs4mips).
+* Providing `unit tests`_ is highly encouraged.
+
+Quick links to useful code sections:
+
+* See `pcmdi_metrics/io`_ and `pcmdi_metrics/utils`_ to find functions for tasks like land masking, grid subsetting, and more.
+* Graphics code for post-processing metrics is found in `pcmdi_metrics/graphics`_
+
+.. _PMP source code: https://github.com/PCMDI/pcmdi_metrics/
+.. _subpackages: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics
+.. _dev.yml file: https://github.com/PCMDI/pcmdi_metrics/blob/main/conda-env/dev.yml#L6
+.. _CF Metadata Conventions: https://cfconventions.org/
+.. _unit tests: https://github.com/PCMDI/pcmdi_metrics/tree/main/tests
+.. _pcmdi_metrics/io: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/io
+.. _pcmdi_metrics/utils: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/utils
+.. _pcmdi_metrics/graphics: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/graphics
+
 Version Control
 ---------------
 
@@ -57,11 +94,12 @@ Guidelines
 
 1. ``main`` must always be deployable
 2. All changes are made through support branches
-3. Rebase with the latest ``main`` to avoid/resolve conflicts
-4. Make sure pre-commit quality assurance checks pass when committing (enforced in CI/CD build)
-5. Open a pull request early for discussion
-6. Once the CI/CD build passes and pull request is approved, squash and rebase your commits
-7. Merge pull request into ``main`` and delete the branch
+3. Branch names should follow the pattern "issuenumber_initials_description"
+4. Rebase with the latest ``main`` to avoid/resolve conflicts
+5. Make sure pre-commit quality assurance checks pass when committing (enforced in CI/CD build)
+6. Open a pull request early for discussion
+7. Once the CI/CD build passes and pull request is approved, squash and rebase your commits
+8. Merge pull request into ``main`` and delete the branch
 
 Things to Avoid
 ~~~~~~~~~~~~~~~
@@ -209,13 +247,10 @@ Before you submit a pull request, check that it meets these guidelines:
 
 1. The pull request should include tests for new or modified code.
 2. Link issues to pull requests.
-3. If the pull request adds functionality, the docs should be updated. Put
-   your new functionality into a function with a docstring, and add the
-   feature to the list in README.rst.
+3. If the pull request adds functionality, the `docs`_ should be updated.
 4. Squash and rebase commits for a clean and navigable Git history.
 
-When you open a pull request on GitHub, there is a template available for use.
-
+.. _docs: http://pcmdi.github.io/pcmdi_metrics/overview.html
 
 Style Guide
 -----------

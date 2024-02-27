@@ -1,3 +1,5 @@
+import logging
+
 import cartopy.crs as ccrs
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
@@ -7,13 +9,15 @@ import xcdat as xc
 
 from pcmdi_metrics.utils import create_land_sea_mask
 
+logging.getLogger("xcdat").setLevel(logging.ERROR)
+
 # ----------
 # Arctic
 # ----------
 print("Creating Arctic map")
 # Load and process data
-f_os_n = "/p/user_pub/pmp/demo/sea-ice/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
-obs = xc.open_dataset(f_os_n)
+obs_file = "/p/user_pub/pmp/demo/sea-ice/EUMETSAT/OSI-SAF-450-a-3-0/v20231201/ice_conc_nh_ease2-250_cdr-v3p0_198801-202012.nc"
+obs = xc.open_dataset(obs_file)
 obs = obs.mean("time")
 mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
 obs["ice_conc"] = obs["ice_conc"].where(mask < 1)
