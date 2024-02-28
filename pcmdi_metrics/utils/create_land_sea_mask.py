@@ -76,7 +76,10 @@ def create_land_sea_mask(
         # Mask the land-sea mask to match the dataset's coordinates
         land_sea_mask = land_mask.mask(lon, lat=lat)
 
-        if not as_boolean:
+        if as_boolean:
+            # Convert the 0/nan land-sea mask to a boolean mask
+            land_sea_mask = xr.where(land_sea_mask, False, True)
+        else:
             # Convert the boolean land-sea mask to a 0/1 mask
             land_sea_mask = xr.where(land_sea_mask, 0, 1)
 
