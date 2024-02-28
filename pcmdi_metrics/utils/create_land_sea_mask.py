@@ -77,10 +77,10 @@ def create_land_sea_mask(
         land_sea_mask = land_mask.mask(lon, lat=lat)
 
         if as_boolean:
-            # Convert the 0/nan land-sea mask to a boolean mask
+            # Convert the 0 (land) & nan (ocean) land-sea mask to a boolean mask
             land_sea_mask = xr.where(land_sea_mask, False, True)
         else:
-            # Convert the boolean land-sea mask to a 0/1 mask
+            # Convert the boolean land-sea mask to a 1/0 mask
             land_sea_mask = xr.where(land_sea_mask, 0, 1)
 
     elif method.lower() == "pcmdi":
@@ -88,7 +88,7 @@ def create_land_sea_mask(
         land_sea_mask = generate_land_sea_mask__pcmdi(obj)
 
         if as_boolean:
-            # Convert the 0/1 land-sea mask to a boolean mask
+            # Convert the 1/0 land-sea mask to a boolean mask
             land_sea_mask = land_sea_mask.astype(bool)
 
     else:
