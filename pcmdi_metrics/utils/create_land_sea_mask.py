@@ -86,7 +86,7 @@ def create_land_sea_mask(
 
         if as_boolean:
             # Convert the 0/1 land-sea mask to a boolean mask
-            land_sea_mask = xr.where(land_sea_mask == 1, True, False)
+            land_sea_mask = land_sea_mask.astype(bool)
 
     else:
         raise ValueError("Unknown method '%s'. Please choose 'regionmask' or 'pcmdi'")
