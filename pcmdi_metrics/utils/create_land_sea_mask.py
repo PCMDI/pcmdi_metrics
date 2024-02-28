@@ -77,20 +77,19 @@ def create_land_sea_mask(
         land_sea_mask = land_mask.mask(lon, lat=lat)
 
         if not as_boolean:
-            # Convert the land-sea mask to a boolean mask
+            # Convert the boolean land-sea mask to a 0/1 mask
             land_sea_mask = xr.where(land_sea_mask, 0, 1)
 
     elif method.lower() == "pcmdi":
         # Use the PCMDI method developed by Taylor and Doutriaux (2000)
         land_sea_mask = generate_land_sea_mask__pcmdi(obj)
-        
+
         if as_boolean:
-            land_sea_mask = xr.where(land_sea_mask==1, True, False)
-            
+            # Convert the 0/1 land-sea mask to a boolean mask
+            land_sea_mask = xr.where(land_sea_mask == 1, True, False)
+
     else:
         raise ValueError("Unknown method '%s'. Please choose 'regionmask' or 'pcmdi'")
-
-
 
     return land_sea_mask
 
@@ -369,7 +368,7 @@ def generate_land_sea_mask__pcmdi(
     mask = mask.rename(maskname)
 
     # Reverse the values (0 to 1 and 1 to 0)
-    #mask = xr.where(mask == 0, 1, 0)
+    # mask = xr.where(mask == 0, 1, 0)
 
     return mask
 
