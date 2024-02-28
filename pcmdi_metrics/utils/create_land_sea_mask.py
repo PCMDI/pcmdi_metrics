@@ -83,6 +83,10 @@ def create_land_sea_mask(
     elif method.lower() == "pcmdi":
         # Use the PCMDI method developed by Taylor and Doutriaux (2000)
         land_sea_mask = generate_land_sea_mask__pcmdi(obj)
+        
+        if as_boolean:
+            land_sea_mask = xr.where(land_sea_mask==1, True, False)
+            
     else:
         raise ValueError("Unknown method '%s'. Please choose 'regionmask' or 'pcmdi'")
 
