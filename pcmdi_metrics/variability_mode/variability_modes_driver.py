@@ -46,7 +46,6 @@ government or Lawrence Livermore National Security, LLC, and shall not be used
 for advertising or product endorsement purposes.
 """
 # import shapely  # noqa
-
 import glob
 import json
 import os
@@ -533,8 +532,7 @@ for model in models:
     # -------------------------------------------------
     for model_path in model_path_list:
         print("model_path:", model_path)
-        # try:
-        if 1:
+        try:
             if realization == "*":
                 run = re.split("[._]", (model_path.split("/")[-1]).split("."))[
                     run_in_modpath
@@ -990,14 +988,14 @@ for model in models:
                 run=run,
                 cmec_flag=cmec,
             )
-        """
+
         except Exception as err:
             if debug:
                 raise
             else:
                 print("warning: failed for ", model, run, err)
                 pass
-        """
+
 # ========================================================================
 # Dictionary to JSON: collective JSON at the end of model_realization loop
 # ------------------------------------------------------------------------
