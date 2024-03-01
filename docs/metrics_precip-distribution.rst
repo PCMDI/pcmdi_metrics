@@ -12,8 +12,8 @@ Demo
 ====
 In preparation
 
-Exampe parameter files
-======================
+Example parameter files
+=======================
 A set of example parameter files for models and observations can be viewed at `this link`_.
 
 Required data sets 
