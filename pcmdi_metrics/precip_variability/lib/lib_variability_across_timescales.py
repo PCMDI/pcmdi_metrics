@@ -25,10 +25,19 @@ def precip_variability_across_timescale(
     """
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
     """
-
+    from time import perf_counter
+    t1_start = perf_counter() 
     psdmfm = {"RESULTS": {}}
 
-    f = xcdat.open_mfdataset(file)
+    try:
+        f = xcdat.open_mfdataset(file)
+    except ValueError:
+        f = xcdat.open_mfdataset(file, decode_times=False)
+        cal = f.time.calendar
+        # Add any calendar fixes here
+        cal = cal.replace("-","_")
+        f.time.attrs["calendar"] = cal
+        f = xcdat.decode_time(f)
     cal = f.time.encoding["calendar"]   
     if "360" in cal:
         ldy = 30
@@ -41,9 +50,16 @@ def precip_variability_across_timescale(
         do = f.sel(time=slice(str(iyr) + "-01-01 00:00:00",str(iyr) + "-12-" + str(ldy) + " 23:59:59"))
         
         # Regridding
-        rgtmp_ds = RegridHoriz(do, var, res, regions_specs)
+        rgtmp_ds = RegridHoriz(do, var, res)
+        if regions_specs is not None or bool(regions_specs):
+            print("Cropping region from bounds")
+            t2_start = perf_counter() 
+            rgtmp_ds = CropLatLon(rgtmp_ds, regions_specs)
+            t2_stop = perf_counter()
+            print("Elapsed time cropping",t2_stop-t2_start)
         if fshp is not None:
-            rgtmp_ds = region_from_file(rgtmp_ds,fshp,feature,attr)
+            print("Cropping from shapefile")
+            rgtmp_ds = region_from_file(rgtmp_ds,fshp,attr,feature)
         rgtmp = rgtmp_ds[var]*float(fac)
         if iyr == syr:
             drg = copy.deepcopy(rgtmp)
@@ -102,6 +118,8 @@ def precip_variability_across_timescale(
     )
     if cmec:
         JSON.write_cmec(indent=4, separators=(",", ": "))
+    t1_stop = perf_counter()
+    print("Elapsed time cropping",t1_stop-t1_start)
 
 
 # ==================================================================================
