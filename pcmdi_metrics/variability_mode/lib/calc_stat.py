@@ -58,7 +58,6 @@ def calc_stats_save_dict(
     # Note: '_glo' indicates statistics calculated over global domain
     # . . . . . . . . . . . . . . . . . . . . . . . . .
     if obs_compare:
-
         if method in ["eof", "cbf"]:
             ref_grid_global = eof_lr_obs.getGrid()
             # Regrid (interpolation, model grid to ref grid)

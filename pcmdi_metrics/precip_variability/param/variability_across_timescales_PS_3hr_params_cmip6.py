@@ -10,7 +10,15 @@ ver = "v20230407"
 case_id = "{:v%Y%m%d}".format(datetime.datetime.now())
 # case_id = ver
 pmpdir = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2"
-results_dir = os.path.join(pmpdir, "%(output_type)", "precip", "%(mip)", exp, "%(case_id)", "variability_across_timescales")
+results_dir = os.path.join(
+    pmpdir,
+    "%(output_type)",
+    "precip",
+    "%(mip)",
+    exp,
+    "%(case_id)",
+    "variability_across_timescales",
+)
 
 prd = [1985, 2004]  # analysis period
 fac = 86400  # factor to make unit of [mm/day]

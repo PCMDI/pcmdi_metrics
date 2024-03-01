@@ -5,14 +5,17 @@
 Team
 ****
 
-Core developers
-===============
+Core Team Members
+=================
 
 * Jiwoo Lee (LLNL)
 * Ana Ordonez (LLNL)
+* Peter Gleckler (LLNL)
+* Yann Planton (Monash University)
 * Paul Ullrich (LLNL)
 * Bo Dong (LLNL)
-* Peter Gleckler (LLNL)
+* Kristin Chang (LLNL)
+* Paul Durack (LLNL)
 * Min-Seop Ahn (NASA)
 
-pcmdi-metrics@llnl.gov
+Contact: pcmdi-metrics@llnl.gov

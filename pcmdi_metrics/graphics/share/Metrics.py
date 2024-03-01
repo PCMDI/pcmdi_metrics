@@ -33,7 +33,6 @@ class Metrics:
         # or if it is a directory containing json files
 
         if isinstance(files, str):
-
             assert os.path.exists(files), "Specified path does not exist."
 
             if os.path.isfile(files):
@@ -42,7 +41,6 @@ class Metrics:
                 files = glob.glob(f"{files}/*.json")
 
         else:
-
             assert isinstance(
                 files, list
             ), "Input must either be a single file, directory, or list of files."
@@ -92,19 +90,16 @@ class Metrics:
         # loop over superset of `stats`
         stats = set(self.df_dict.keys()).union(metrics_obj.df_dict.keys())
         for stat in sorted(stats):
-
             # loop over superset of seasons
             seasons = set(self.df_dict[stat].keys()).union(
                 metrics_obj.df_dict[stat].keys()
             )
             for season in seasons:
-
                 # loop over superset of regions
                 regions = set(self.df_dict[stat][season].keys()).union(
                     metrics_obj.df_dict[stat][season].keys()
                 )
                 for region in regions:
-
                     # consider both the current Metrics instance and
                     # candidate `metrics_obj` instance and determine if the
                     # [stat][season][region] nesting contains a pd.DataFrame.

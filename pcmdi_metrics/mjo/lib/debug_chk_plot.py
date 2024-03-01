@@ -6,7 +6,6 @@ from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
 
 def debug_chk_plot(d_seg_x_ano, Power, OEE, segment_year, daSeaCyc, segment_ano_year):
-
     os.makedirs("debug", exist_ok=True)
 
     """ FIX ME ---

@@ -1,0 +1,29 @@
+# Settings for extremes driver
+
+# These settings are required
+vars = ['pr'] # Choices are 'pr','tasmax', 'tasmin'
+test_data_set = ['GISS-E2-H']
+realization = ['r6i1p1']
+test_data_path = '$OUTPUT_DIR$/extremes_tmp/'
+filename_template = '%(variable)_day_%(model)_historical_%(realization)_20000101-20051231.nc'
+metrics_output_path = '$OUTPUT_DIR$/%(case_id)'
+
+# Note: You can use the following placeholders in file templates:
+# %(variable) to substitute variable name from "vars" (except in sftlf filenames)
+# %(model) to substitute model name from "test_data_set"
+# %(realization) to substitute realization from "realization"
+
+# Optional settings
+# See the README for more information about these settings
+case_id = 'extremes_ex1'
+#sftlf_filename_template = 'demo_data/CMIP5_demo_data/cmip5.historical.%(model).sftlf.nc'
+
+ModUnitsAdjust = (True,'multiply',86400.,'mm/day') # Convert model units from kg/m2/s to mm/day
+ObsUnitsAdjust = (True,'multiply',86400.,'mm/day') # Convert obs units
+dec_mode='JFD'
+annual_strict = True
+drop_incomplete_djf = True
+regrid=False
+plots=False
+generate_sftlf = True
+return_period = 2

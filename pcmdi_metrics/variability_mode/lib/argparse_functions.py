@@ -150,13 +150,25 @@ def AddParserArgument(P):
         "--nc_out",
         type=bool,
         default=True,
-        help="Option for generate netCDF file output: True (default) / False",
+        help="Option for generate netCDF file output for models: True (default) / False",
     )
     P.add_argument(
         "--plot",
         type=bool,
         default=True,
-        help="Option for generate individual plots: True (default) / False",
+        help="Option for generate individual plots for models: True (default) / False",
+    )
+    P.add_argument(
+        "--nc_out_obs",
+        type=bool,
+        default=True,
+        help="Option for generate netCDF file output for obs: True (default) / False",
+    )
+    P.add_argument(
+        "--plot_obs",
+        type=bool,
+        default=True,
+        help="Option for generate individual plots for obs: True (default) / False",
     )
     P.add_argument(
         "--parallel",

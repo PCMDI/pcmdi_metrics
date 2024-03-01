@@ -8,7 +8,6 @@ from matplotlib.patches import Rectangle
 
 
 def plot_power(d, title, fout, ewr=None):
-
     y = d.getAxis(0)[:]
     x = d.getAxis(1)[:]
 
@@ -119,7 +118,6 @@ def plot_power(d, title, fout, ewr=None):
 
 
 if __name__ == "__main__":
-
     datadir = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/mjo/cmip5/historical/v20190628"
     ncfile = "cmip5_obs_historical_obs_mjo_1997-2010_cmmGrid.nc"
     title = "OBS (GPCP-1-3) \n Pr, NDJFMA, 1997-2010, common grid (2.5x2.5deg)"

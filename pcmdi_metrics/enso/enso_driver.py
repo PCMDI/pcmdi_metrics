@@ -15,7 +15,6 @@ from EnsoMetrics.EnsoCollectionsLib import (
     defCollection,
 )
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
-from genutil import StringConstructor
 
 from pcmdi_metrics import resources
 from pcmdi_metrics.enso.lib import (
@@ -25,8 +24,8 @@ from pcmdi_metrics.enso.lib import (
     get_file,
     match_obs_name,
     metrics_to_json,
-    sort_human,
 )
+from pcmdi_metrics.utils import StringConstructor, sort_human
 
 # To avoid below error when using multi cores
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
@@ -362,7 +361,6 @@ for mod in models:
     # Loop for Realizations
     # -------------------------------------------------
     for run in runs_list:
-
         print(" --- run: ", run, " ---")
         mod_run = "_".join([mod, run])
         dict_mod = {mod_run: {}}

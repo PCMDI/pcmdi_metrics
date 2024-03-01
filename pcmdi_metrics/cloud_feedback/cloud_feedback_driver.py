@@ -25,7 +25,6 @@ grid_label = param.grid_label
 version = param.version
 input_files_json = param.input_files_json
 path = param.path
-xml_path = param.xml_path
 data_path = param.data_path
 figure_path = param.figure_path
 output_path = param.output_path
@@ -45,7 +44,6 @@ print("grid_label:", grid_label)
 print("version:", version)
 print("path:", path)
 print("input_files_json:", input_files_json)
-print("xml_path:", xml_path)
 print("figure_path:", figure_path)
 print("output_path:", output_path)
 print("output_json_filename:", output_json_filename)
@@ -57,16 +55,16 @@ if get_ecs:
 else:
     exps = ["amip", "amip-p4K"]
 
-# generate xmls pointing to the cmorized netcdf files
-os.makedirs(xml_path, exist_ok=True)
-
 filenames = dict()
 
 if input_files_json is not None:
     with open(input_files_json) as f:
         ncfiles = json.load(f)
 else:
-    print('Warning: input files were not explicitly given. They will be searched from ', path)
+    print(
+        "Warning: input files were not explicitly given. They will be searched from ",
+        path,
+    )
 
 for exp in exps:
     filenames[exp] = dict()
@@ -108,9 +106,7 @@ for exp in exps:
             searchstring = os.path.join(
                 ncfiles[exp][field]["path"], ncfiles[exp][field]["file"]
             )
-        xmlname = os.path.join(xml_path, ".".join([exp, model, variant, field, "xml"]))
-        os.system("cdscan -x " + xmlname + " " + searchstring)
-        filenames[exp][field] = xmlname
+        filenames[exp][field] = searchstring
 
 if debug:
     with open(os.path.join(output_path, "filenames.json"), "w") as f:
@@ -123,9 +119,9 @@ print("calc done")
 
 # add this model's results to the pre-existing json file containing other models' results:
 updated_fbk_dict, updated_obsc_fbk_dict = organize_fbk_jsons(
-    fbk_dict, obsc_fbk_dict, model, variant, datadir=data_path
+    fbk_dict, obsc_fbk_dict, model, variant
 )
-updated_err_dict = organize_err_jsons(err_dict, model, variant, datadir=data_path)
+updated_err_dict = organize_err_jsons(err_dict, model, variant)
 
 ecs = None
 if get_ecs:
@@ -133,7 +129,7 @@ if get_ecs:
     ecs = compute_ECS(filenames)
     print("calc ECS done")
     print("ecs: ", ecs)
-updated_ecs_dict = organize_ecs_jsons(ecs, model, variant, datadir=data_path)
+updated_ecs_dict = organize_ecs_jsons(ecs, model, variant)
 
 os.makedirs(output_path, exist_ok=True)
 if debug:
@@ -176,15 +172,33 @@ output_dict["RESULTS"] = OrderedDict()
 output_dict["RESULTS"][model] = OrderedDict()
 output_dict["RESULTS"][model][variant] = OrderedDict()
 output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"] = OrderedDict()
-output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["high_cloud_altitude"] = assessed_cld_fbk[0]
-output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["tropical_marine_low_cloud"] = assessed_cld_fbk[1]
-output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["tropical_anvil_cloud_area"] = assessed_cld_fbk[2]
-output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["land_cloud_amount"] = assessed_cld_fbk[3]
-output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["middle_latitude_marine_low_cloud_amount"] = assessed_cld_fbk[4]
-output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["high_latitude_low_cloud_optical_depth"] = assessed_cld_fbk[5]
-output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["implied_unassessed"] = assessed_cld_fbk[6]
-output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["sum_of_assessed"] = assessed_cld_fbk[7]
-output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"]["total_cloud_feedback"] = assessed_cld_fbk[8]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
+    "high_cloud_altitude"
+] = assessed_cld_fbk[0]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
+    "tropical_marine_low_cloud"
+] = assessed_cld_fbk[1]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
+    "tropical_anvil_cloud_area"
+] = assessed_cld_fbk[2]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
+    "land_cloud_amount"
+] = assessed_cld_fbk[3]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
+    "middle_latitude_marine_low_cloud_amount"
+] = assessed_cld_fbk[4]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
+    "high_latitude_low_cloud_optical_depth"
+] = assessed_cld_fbk[5]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
+    "implied_unassessed"
+] = assessed_cld_fbk[6]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
+    "sum_of_assessed"
+] = assessed_cld_fbk[7]
+output_dict["RESULTS"][model][variant]["assessed_cloud_feedback"][
+    "total_cloud_feedback"
+] = assessed_cld_fbk[8]
 output_dict["RESULTS"][model][variant]["clim_cloud_rmse"] = climo_cld_rmse
 output_dict["RESULTS"][model][variant]["cloud_feedback_rmse"] = cld_fbk_rmse
 output_dict["RESULTS"][model][variant]["equilibrium_climate_sensitivity"] = ecs

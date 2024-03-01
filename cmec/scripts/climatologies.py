@@ -2,7 +2,7 @@ import os
 import subprocess
 import sys
 
-import genutil
+from pcmdi_metrics.utils import StringConstructor
 
 
 def make_climatologies(settings, model_dir, wk_dir):
@@ -12,7 +12,7 @@ def make_climatologies(settings, model_dir, wk_dir):
     realization = settings.get("realization", "")
     period = settings.get("period", "")
     tmp = os.path.join(model_dir, filename_template)
-    model_file = genutil.StringConstructor(tmp)
+    model_file = StringConstructor(tmp)
     model_file.period = period
     model_file.realization = realization
     out_base = os.path.join(wk_dir, "AC")

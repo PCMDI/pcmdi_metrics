@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-
 import copy
 import glob
 import json
 import os
 
-from genutil import StringConstructor
-
 from pcmdi_metrics.mjo.lib import dict_merge
+from pcmdi_metrics.utils import StringConstructor
 
 
 def main():

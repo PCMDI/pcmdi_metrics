@@ -192,7 +192,6 @@ model_tweaks = {
 
 # USER CUSTOMIZED REGIONS
 if regional == "y":
-
     regions_specs = {
         "Nino34": {
             "value": 0.0,

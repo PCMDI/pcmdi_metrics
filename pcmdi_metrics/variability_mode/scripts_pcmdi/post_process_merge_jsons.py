@@ -7,8 +7,7 @@ import glob
 import json
 import os
 
-from genutil import StringConstructor
-
+from pcmdi_metrics.utils import StringConstructor
 from pcmdi_metrics.variability_mode.lib import dict_merge
 
 
@@ -36,7 +35,6 @@ def main():
 
     for mip in mips:
         for exp in exps:
-
             if exp == "amip":
                 modes = ["NAM", "NAO", "PNA", "SAM", "NPO"]
                 # modes = ['SAM']

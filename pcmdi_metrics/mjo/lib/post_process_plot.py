@@ -7,7 +7,6 @@ from plot_wavenumber_frequency_power import plot_power
 
 
 def main():
-
     # mip = 'cmip5'
     mip = "cmip6"
     exp = "historical"

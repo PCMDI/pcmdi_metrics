@@ -22,6 +22,11 @@ Each of these steps is included in the
 along with a series of examples that demonstrate the options. 
 These steps are also summarized below.
 
+Demo
+====
+* `PMP demo Jupyter notebook1a`_ (Compute climatologies)
+* `PMP demo Jupyter notebook1b`_ (Run mean climate driver)
+
 
 Observational climatologies
 ###########################
@@ -80,7 +85,7 @@ where the list of variables (vars) to run the analysis on includes 'rlut' (outgo
 * **test_data_path**: the path/template where the test_data resides, e.g.: 
 * **reference_data_set**: a python list that specifies 'default', 'alternate1', 'alternate2' or 'all', e.g., ['default']
 * **reference_data_path**: the root path to the observational climatology database, e.g., '~/demo_data/PCMDIobs2_clims/'
-* **target_grid**: '2.5x2.5' or an actual cdms2 grid object
+* **target_grid**: a string giving the desired horizontal resolution in degrees following the form 'LATxLON', e.g. '2.5x2.5'
 * **regrid_tool**: options include 'esmf' and 'regrid2'  
 * **metric_output_path**: the full path to the metrics output in JSON files, e.g., '~/demo_data/PMP_metrics/' 
 
@@ -102,3 +107,6 @@ In addition to the minimum set of parameters noted above, the following **additi
 * **save_test_clims** Select to save (or not) interpolated climatologies including masking
 * **case_id** Save JSON and netCDF files into a subdirectory so that results from multiple tests can be readily organized
  
+.. _PMP demo Jupyter notebook1a: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_1a_compute_climatologies.ipynb
+.. _PMP demo Jupyter notebook1b: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_1b_mean_climate.ipynb
+

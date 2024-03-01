@@ -1,10 +1,6 @@
 #!/bin/sh
 set -ax
 
-# Working conda env
-# - Crunchy: pmp_nightly_20181128, pmp_nightly_20190617
-# - Grim: pmp_nightly_20190522
-
 ver=`date +"%Y%m%d"`
 mips='cmip3 cmip5 cmip6'
 mips='cmip6'

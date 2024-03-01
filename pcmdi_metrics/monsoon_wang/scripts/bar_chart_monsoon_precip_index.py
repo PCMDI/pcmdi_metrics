@@ -6,8 +6,8 @@ import matplotlib.pyplot as PLT
 import MV2
 from SeabarChart_mpl import BarChart
 
-from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.io.base import JSONs
+from pcmdi_metrics.mean_climate.lib import pmp_parser
 
 test = False
 # test = True

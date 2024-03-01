@@ -100,12 +100,12 @@
         },
         "GPCP-2-3": {
             "CMIP_CMOR_TABLE": "Amon",
-            "MD5sum": "3792901034585d3d495722f10a0dfecb",
+            "MD5sum": "036e14d0124f4d00921d58e3c1c3e9e1",
             "RefTrackingDate": "Wed Aug  4 12:22:10 2021",
-            "filename": "pr_mon_GPCP-2-3_PCMDI_gn.200301-201812.AC.v20210804.nc",
+            "filename": "pr_monC_GPCP-2-3_PCMDI_gn_197901-201907.AC.v20230516.nc",
             "period": "200301-201812",
             "shape": "(12, 72, 144)",
-            "template": "pr/GPCP-2-3/v20210804/pr_mon_GPCP-2-3_PCMDI_gn.200301-201812.AC.v20210804.nc"
+            "template": "NOAA-NCEI/GPCP-2-3/monC/pr/gn/v20230516/pr_monC_GPCP-2-3_PCMDI_gn_197901-201907.AC.v20230516.nc"
         },
         "TRMM-3B43v-7": {
             "CMIP_CMOR_TABLE": "Amon",

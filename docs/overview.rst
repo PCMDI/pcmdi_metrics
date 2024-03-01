@@ -9,6 +9,12 @@ The primary application of the PMP is to evaluate simulations from the `Coupled 
 It can also be used to provide objective performance summaries during the model development process as well as selected research purposes.  
 The notes below provide a brief summary of some of the key aspects of the PMP design.  
 
+.. raw:: html
+
+    <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 80%; height: auto; margin-left: auto; margin-right: auto">
+        <iframe src="https://www.youtube.com/embed/STfCq5Biqf0" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+    </div>
+
 Software framework and dependencies
 -----------------------------------
 

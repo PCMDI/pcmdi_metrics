@@ -69,9 +69,7 @@ class PMPDriver(object):
         """Loads obs_info_dictionary.json and appends
         custom_observations from the parameter file if needed."""
         obs_file_name = "obs_info_dictionary.json"
-        obs_json_file = DataSet.load_path_as_file_obj(
-            obs_file_name
-        )
+        obs_json_file = DataSet.load_path_as_file_obj(obs_file_name)
         obs_dict = json.loads(obs_json_file.read())
         obs_json_file.close()
 
@@ -104,11 +102,9 @@ class PMPDriver(object):
     def load_default_regions_and_regions_specs(self):
         """Gets the default_regions dict and regions_specs dict
         from default_regions.py and stores them as attributes."""
-        default_regions_file = (
-            DataSet.load_path_as_file_obj(
-                "default_regions.py"
-                # "default_regions_xcdat.py"
-            )
+        default_regions_file = DataSet.load_path_as_file_obj(
+            "default_regions.py"
+            # "default_regions_xcdat.py"
         )
         exec(
             compile(
@@ -158,7 +154,7 @@ class PMPDriver(object):
         reference_data_set = self.parameter.reference_data_set
         test_data_set = self.parameter.test_data_set
 
-        print('jwlee-test-0, test_data_set:', test_data_set)
+        print("jwlee-test-0, test_data_set:", test_data_set)
 
         reference_data_set_is_obs = self.is_data_set_obs(reference_data_set)
         test_data_set_is_obs = self.is_data_set_obs(test_data_set)
@@ -180,8 +176,8 @@ class PMPDriver(object):
                 test_data_set, self.obs_dict, self.var
             )
 
-        print('jwlee-test-1, test_data_set:', test_data_set)
-        print('jwlee-test-1, test_data_set_is_obs:', test_data_set_is_obs)
+        print("jwlee-test-1, test_data_set:", test_data_set)
+        print("jwlee-test-1, test_data_set_is_obs:", test_data_set_is_obs)
 
         if len(reference_data_set) == 0:  # We did not find any ref!!!
             raise RuntimeError("No reference dataset found!")
@@ -206,7 +202,12 @@ class PMPDriver(object):
                 )
                 self.output_metric.add_region(self.region)
                 try:
-                    print('jwlee-test-1.5, test_data_set_is_obs, test, self.parameter.test_data_path:', test_data_set_is_obs, test, self.parameter.test_data_path)
+                    print(
+                        "jwlee-test-1.5, test_data_set_is_obs, test, self.parameter.test_data_path:",
+                        test_data_set_is_obs,
+                        test,
+                        self.parameter.test_data_path,
+                    )
                     tst = self.determine_obs_or_model(
                         test_data_set_is_obs, test, self.parameter.test_data_path
                     )
@@ -222,9 +223,13 @@ class PMPDriver(object):
                     break
 
                 try:
-                    print('jwlee-test-2: type(self), ref, tst:', type(self), ref, tst)
-                    print('jwlee-test-2: self.var, self.var_name_long:', self.var, self.var_name_long)
-                    print('jwlee-test-2: tst()[self.var].shape:', tst()[self.var].shape)
+                    print("jwlee-test-2: type(self), ref, tst:", type(self), ref, tst)
+                    print(
+                        "jwlee-test-2: self.var, self.var_name_long:",
+                        self.var,
+                        self.var_name_long,
+                    )
+                    print("jwlee-test-2: tst()[self.var].shape:", tst()[self.var].shape)
                     self.output_metric.calculate_and_output_metrics(ref, tst)
                 except RuntimeError:
                     continue
@@ -251,7 +256,12 @@ class PMPDriver(object):
         return data_set_is_obs
 
     def determine_obs_or_model(self, is_obs, ref_or_test, data_path):
-        print('jwlee-test-1.5-1: is_obs, ref_or_test, data_path:', is_obs, ref_or_test, data_path)
+        print(
+            "jwlee-test-1.5-1: is_obs, ref_or_test, data_path:",
+            is_obs,
+            ref_or_test,
+            data_path,
+        )
         """Actually create Observation or Module object
         based on if ref_or_test is an obs or model."""
         if is_obs:

@@ -16,7 +16,6 @@ class OBS(Base):
     """Creates an output the netCDF file for an observation."""
 
     def __init__(self, root, var, obs_dict, obs="default", file_mask_template=None):
-
         logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)
 
         if obs not in obs_dict[var]:
@@ -132,7 +131,7 @@ class Observation(DataSet):
         """Gets the variable based on the region and level (if given) for
         the file from data_path, which is defined in the initializer."""
         try:
-            print('jwlee-test-observation-get, self.level:', self.level)
+            print("jwlee-test-observation-get, self.level:", self.level)
             if self.level is not None:
                 data_obs = self._obs_file.get(
                     self.var, level=self.level, region=self.region

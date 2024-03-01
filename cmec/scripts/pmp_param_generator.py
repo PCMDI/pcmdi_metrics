@@ -67,6 +67,18 @@ if __name__ == "__main__":
             print("\nGenerating climatologies")
             settings = make_climatologies(settings, model_dir, wk_dir)
 
+    if pmp_config == "extremes":
+        settings["test_data_path"] = model_dir
+        settings["metrics_output_path"] = wk_dir
+        if "sftlf_filename_template" in settings:
+            settings["sftlf_filename_template"] = os.path.join(
+                model_dir, settings["sftlf_filename_template"]
+            )
+        if obs_dir is not None and "reference_data_path" in settings:
+            settings["reference_data_path"] = os.path.join(
+                obs_dir, settings["reference_data_path"]
+            )
+
     if pmp_config == "monsoon_wang":
         settings["test_data_path"] = os.path.join(model_dir, settings["test_data_path"])
         settings["reference_data_path"] = os.path.join(

@@ -2,9 +2,9 @@ import logging
 import os
 
 import cdp.cdp_parameter
-import genutil
 
 from pcmdi_metrics import LOG_LEVEL
+from pcmdi_metrics.utils import StringConstructor
 
 try:
     basestring  # noqa
@@ -17,12 +17,12 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
         logging.getLogger("pmp").setLevel(LOG_LEVEL)
 
     def process_templated_argument(self, name, default_value="*", extras=None):
-        """Applies arg parse values to a genutil.StringConstructor template type argument
+        """Applies arg parse values to a StringConstructor template type argument
         Input:
            name: name of the argument to process
            extra: other object(s) to get keys from, superseeds argparse object
         Output:
-           formatted argument as a genutil.StringConstructor
+           formatted argument as a StringConstructor
         """
 
         process = getattr(self, name, None)
@@ -31,7 +31,7 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
         ):  # Ok not an argument from arg_parse maybe a template or string constructor itself
             if isinstance(name, basestring):
                 process = name
-            elif isinstance(name, genutil.StringConstructor):
+            elif isinstance(name, StringConstructor):
                 process = name.template
             else:
                 raise RuntimeError(
@@ -49,7 +49,7 @@ class PMPParameter(cdp.cdp_parameter.CDPParameter):
             sources = [extras]
 
         sources.insert(0, self)  # will use itself as default source
-        process = genutil.StringConstructor(process)
+        process = StringConstructor(process)
         for key in process.keys():
             for source in sources:
                 setattr(process, key, getattr(source, key, default_value))
