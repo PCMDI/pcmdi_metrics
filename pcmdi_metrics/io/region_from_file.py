@@ -1,5 +1,3 @@
-import shapely
-
 import geopandas as gpd
 import regionmask
 
@@ -14,7 +12,7 @@ def region_from_file(data, rgn_path, attr, feature):
 
     lon = data["lon"].data
     lat = data["lat"].data
-    
+
     print("Reading region from file.")
     try:
         regions_df = gpd.read_file(rgn_path)

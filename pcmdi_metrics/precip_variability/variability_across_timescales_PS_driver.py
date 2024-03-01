@@ -1,7 +1,4 @@
 #!/usr/bin/env python
-#import faulthandler; faulthandler.enable()
-import geopandas
-from pcmdi_metrics.io.region_from_file import region_from_file
 import glob
 import os
 
@@ -65,6 +62,21 @@ print(file_list)
 syr = prd[0]
 eyr = prd[1]
 precip_variability_across_timescale(
-        file_list, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, res, regions_specs, \
-        outdir_template, cmec, fshp, feature, attr
-    )
+    file_list,
+    syr,
+    eyr,
+    dfrq,
+    mip,
+    dat,
+    var,
+    fac,
+    nperseg,
+    noverlap,
+    res,
+    regions_specs,
+    outdir_template,
+    cmec,
+    fshp,
+    feature,
+    attr,
+)

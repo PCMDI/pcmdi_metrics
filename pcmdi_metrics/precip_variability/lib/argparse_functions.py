@@ -1,5 +1,6 @@
 import ast
 
+
 def AddParserArgument(P):
     P.add_argument(
         "--mip", type=str, dest="mip", default=None, help="cmip5, cmip6 or other mip"
@@ -92,19 +93,16 @@ def AddParserArgument(P):
         "--region_file",
         dest="region_file",
         help="File containing vector region of interest.",
-        default=None
+        default=None,
     )
     P.add_argument(
-        "--feature",
-        dest="feature",
-        help="Feature in vectorized region.",
-        default=None
+        "--feature", dest="feature", help="Feature in vectorized region.", default=None
     )
     P.add_argument(
         "--attr",
         dest="attr",
         help="Attribute containing feature in vectorized region.",
-        default=None
+        default=None,
     )
     P.set_defaults(cmec=False)
 
