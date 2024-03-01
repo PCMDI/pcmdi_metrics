@@ -40,9 +40,6 @@ def precip_variability_across_timescale(
     """
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
     """
-    from time import perf_counter
-
-    t1_start = perf_counter()
     psdmfm = {"RESULTS": {}}
 
     try:
@@ -73,10 +70,7 @@ def precip_variability_across_timescale(
         rgtmp_ds = RegridHoriz(do, var, res)
         if regions_specs is not None or bool(regions_specs):
             print("Cropping region from bounds")
-            t2_start = perf_counter()
             rgtmp_ds = CropLatLon(rgtmp_ds, regions_specs)
-            t2_stop = perf_counter()
-            print("Elapsed time cropping", t2_stop - t2_start)
         if fshp is not None:
             print("Cropping from shapefile")
             rgtmp_ds = region_from_file(rgtmp_ds, fshp, attr, feature)
@@ -163,8 +157,6 @@ def precip_variability_across_timescale(
     )
     if cmec:
         JSON.write_cmec(indent=4, separators=(",", ": "))
-    t1_stop = perf_counter()
-    print("Elapsed time cropping", t1_stop - t1_start)
 
 
 # ==================================================================================
