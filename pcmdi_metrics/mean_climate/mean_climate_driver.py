@@ -20,6 +20,7 @@ from pcmdi_metrics.mean_climate.lib import (
     mean_climate_metrics_to_json,
 )
 from pcmdi_metrics.variability_mode.lib import tree
+from pcmdi_metrics.variability_mode.lib import sort_human
 
 
 parser = create_mean_climate_parser()
@@ -49,6 +50,7 @@ diagnostics_output_path = parameter.diagnostics_output_path
 custom_obs = parameter.custom_observations
 debug = parameter.debug
 cmec = parameter.cmec
+parallel = parameter.parallel
 
 if metrics_output_path is not None:
     metrics_output_path = parameter.metrics_output_path.replace('%(case_id)', case_id)
@@ -59,15 +61,15 @@ if diagnostics_output_path is None:
 diagnostics_output_path = diagnostics_output_path.replace('%(case_id)', case_id)
 
 find_all_realizations = False
+first_realization_only = False
 if realization is None:
     realization = ""
-    realizations = [realization]
 elif isinstance(realization, str):
     if realization.lower() in ["all", "*"]:
         find_all_realizations = True
-        realizations = "Search for all realizations!!"
-    else:
-        realizations = [realization]
+    elif realization.lower() in ["first", "first_only"]:
+        first_realization_only = True
+realizations = [realization]
 
 if debug:
     print('regions_specs (before loading internally defined):', regions_specs)
@@ -145,6 +147,9 @@ print('--- start mean climate metrics calculation ---')
 # -------------
 # variable loop
 # -------------
+if isinstance(vars, str):
+    vars = [vars]
+
 for var in vars:
 
     if '_' in var or '-' in var:
@@ -206,7 +211,7 @@ for var in vars:
 
             result_dict["RESULTS"][model][ref]["source"] = ref_dataset_name 
 
-            if find_all_realizations:
+            if find_all_realizations or first_realization_only:
                 test_data_full_path = os.path.join(
                     test_data_path,
                     filename_template).replace('%(variable)', varname).replace('%(model)', model).replace('%(model_version)', model).replace('%(realization)', '*')
@@ -215,6 +220,9 @@ for var in vars:
                 realizations = []
                 for ncfile in ncfiles:
                     realizations.append(ncfile.split('/')[-1].split('.')[3])
+                realizations = sort_human(realizations)
+                if first_realization_only:
+                    realizations = realizations[0:1]
                 print('realizations (after search): ', realizations)
 
             for run in realizations:
@@ -279,7 +287,7 @@ for var in vars:
 
                             if debug:
                                 print('ds_test_tmp:', ds_test_tmp)
-                                ds_test_dict[region].to_netcdf('_'.join([var, 'model', model, run, region + '.nc']))
+                                ds_test_dict[region].to_netcdf('_'.join([var, 'model', model, run, region, case_id + '.nc']))
                                 if model == test_data_set[0] and run == realizations[0]:
                                     ds_ref_dict[region].to_netcdf('_'.join([var, 'ref', region + '.nc']))
 
@@ -287,18 +295,18 @@ for var in vars:
                             print('compute metrics start')
                             result_dict["RESULTS"][model][ref][run][region] = compute_metrics(varname, ds_test_dict[region], ds_ref_dict[region], debug=debug)
 
-                        # write individual JSON
-                        # --- single simulation, obs (need to accumulate later) / single variable
-                        json_filename_tmp = "_".join([model, var, target_grid, regrid_tool, "metrics", ref])
-                        mean_climate_metrics_to_json(
-                            os.path.join(metrics_output_path, var),
-                            json_filename_tmp,
-                            result_dict,
-                            model=model,
-                            run=run,
-                            cmec_flag=cmec,
-                            debug=debug
-                        )
+                            # write individual JSON
+                            # --- single simulation, obs (need to accumulate later) / single variable
+                            json_filename_tmp = "_".join([var, model, run, target_grid, regrid_tool, "metrics", ref, case_id])
+                            mean_climate_metrics_to_json(
+                                os.path.join(metrics_output_path, var),
+                                json_filename_tmp,
+                                result_dict,
+                                model=model,
+                                run=run,
+                                cmec_flag=cmec,
+                                debug=debug
+                            )
  
                     except Exception as e:
                         if debug:
@@ -306,12 +314,17 @@ for var in vars:
                         print('error occured for ', model, run)
                         print(e)
 
-    # write collective JSON --- all models / all obs / single variable
-    json_filename = "_".join([var, target_grid, regrid_tool, "metrics"])
-    mean_climate_metrics_to_json(
-        metrics_output_path,
-        json_filename,
-        result_dict,
-        cmec_flag=cmec,
-    )
-    print('pmp mean clim driver completed')
+    # ========================================================================
+    # Dictionary to JSON: collective JSON at the end of model_realization loop
+    # ------------------------------------------------------------------------
+    if not parallel:
+        # write collective JSON --- all models / all obs / single variable
+        json_filename = "_".join([var, target_grid, regrid_tool, "metrics", case_id])
+        mean_climate_metrics_to_json(
+            metrics_output_path,
+            json_filename,
+            result_dict,
+            cmec_flag=cmec,
+        )
+
+print('pmp mean clim driver completed')
