@@ -1,4 +1,4 @@
-from .create_land_sea_mask import apply_landmask, apply_oceanmask, create_land_sea_mask
+from .land_sea_mask import apply_landmask, apply_oceanmask, create_land_sea_mask
 from .grid import (
     calculate_area_weights,
     calculate_grid_area,

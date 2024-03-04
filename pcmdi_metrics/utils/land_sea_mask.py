@@ -143,10 +143,11 @@ def apply_landmask(
     ----------
     obj : Union[xr.Dataset, xr.DataArray]
         The Dataset or DataArray object to apply a land-sea mask.
-    landfrac : xr.DataArray
-        Data array for land fraction that consists of 0 for ocean and 1 for land (fraction for grid along coastline).
     data_var : str
         Name of DataArray in the Dataset, required if obs is an Dataset.
+    landfrac : xr.DataArray
+        Data array for land fraction that consists of 0 for ocean and 1 for land (fraction for grid along coastline), by default None.
+        If None, it is going to be created.
     keep_over : str
         Specify whether to keep values "land" or "ocean".
     land_criteria : float, optional
