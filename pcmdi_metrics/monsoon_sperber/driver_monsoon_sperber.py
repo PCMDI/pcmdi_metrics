@@ -64,6 +64,7 @@ from pcmdi_metrics.monsoon_sperber.lib import (
     sperber_metrics,
 )
 from pcmdi_metrics.utils import fill_template
+from pcmdi_metrics.utils import create_land_sea_mask
 
 
 def tree():
@@ -292,6 +293,11 @@ for model in models:
         # Read land fraction
 
         ds_lf = xc.open_mfdataset(model_lf_path)
+        #  use pcmdi mask
+        #lf_array = create_land_sea_mask(ds_lf, method="pcmdi")
+        #ds_lf = lf_array.to_dataset().compute()
+        #ds_lf = ds_lf.rename_vars({'lsmask': 'sftlf'})
+        # ^^^^  block above ^^^^^  
         lf = ds_lf.sftlf.sel(lat=slice(-90, 90))  # land frac file must be global
 
         # -------------------------------------------------
@@ -512,6 +518,7 @@ for model in models:
                                 model, d_sub_pr, lf_sub, debug=debug
                             )
 
+                            #lf_sub.to_netcdf("lf_"+region+"_xcdat_pcmdi.nc")
                             lf_sub.to_netcdf("lf_"+region+"_xcdat.nc")
                             d_sub_pr.to_netcdf("test_region_land_"+region+"_xcdat.nc")
 #                            print("\n")
