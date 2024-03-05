@@ -74,12 +74,12 @@ def tree():
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-#list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
 #list_monsoon_regions = ["AUS"]
 #list_monsoon_regions = ["Sahel"]
 #list_monsoon_regions = ["GoG"]
 #list_monsoon_regions = ["global"]
-list_monsoon_regions = ["NHEX"]
+#list_monsoon_regions = ["NHEX"]
 
 # How many elements each
 # list should have
@@ -223,7 +223,7 @@ if includeOBS:
     models.insert(0, "obs")
 
 for model in models:
-    print(" ----- ", model, " ---------------------")
+    print(" ----------------------- ", model, " ---------------------")
     try:
         # Conditions depending obs or model
         if model == "obs":
@@ -262,6 +262,8 @@ for model in models:
             if model not in list(monsoon_stat_dic["RESULTS"].keys()):
                 monsoon_stat_dic["RESULTS"][model] = {}
 
+            dict_obs_composite = {}
+            dict_obs_composite[reference_data_name] = {}
         # Read land fraction
         print("lf_path: ", model_lf_path)
         f_lf = cdms2.open(model_lf_path)
@@ -272,6 +274,9 @@ for model in models:
         # Loop start - Realization
         # -------------------------------------------------
         for model_path in model_path_list:
+            print("\n")
+            print("======================== model = "+model+"  ==========================")
+            print("\n")
             timechk1 = time.time()
             try:
                 if model == "obs":
@@ -395,7 +400,7 @@ for model in models:
 
                 # year loop, endYear+1 to include last year
                 for year in range(startYear, endYear + 1):
-                    print("\n")
+#                    print("\n")
                     print("XXXXXX year = ", year)
                     print("\n")
 
@@ -407,9 +412,9 @@ for model in models:
                         ),
                         latitude=(-90, 90),
                     )
-                    print("xxx d =, ", d[0,0,0])
+#                    print("xxx d =, ", d[0,0,0])
                     #print("xxx d =, ", d)
-                    print("type d type,", type(d))
+#                    print("type d type,", type(d))
 
                     # unit adjust
                     if UnitsAdjust[0]:
@@ -429,6 +434,8 @@ for model in models:
                     # Loop start - Monsoon region
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
                     for region in list_monsoon_regions:
+                        print("\n")
+                        print("^^^^^^^^^  ^^^^^^^^^^^  ^^^^^^^^^   region = ", region)
                         # extract for monsoon region
                         if region in ["GoG", "NAmo"]:
                             # all grid point rainfall
@@ -437,9 +444,9 @@ for model in models:
                             ffo2 = cdms2.open('test_region_global_cdms.nc','w')
                             ffo2.write(d_sub, id="pr")
                             ffo2.close()
-                            print("\n")
+#                            print("\n")
                             print("NetCDF file saved $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-                            print("\n")
+#                            print("\n")
 
                         else:
                             # land-only rainfall
@@ -463,11 +470,11 @@ for model in models:
                             d_sub, axis="xy", weights="weighted"
                         )
 
-                        print("HHHHHHHH d_sub  =  ", d_sub)
-                        print("HHHHHHHH d_sub  =  ", d_sub[0,0,0])
-                        #print("HHHHHHHH d_sub_pr.size  =  ", d_sub_pr.size)
-                        print("PPPPPPPPPP  d_sub_aave =  ", d_sub_aave[0:10])
-#                        print("PPPPPPPPPP  d_sub_aave.pr =  ", ds_sub_aave.pr.values[0:10])
+#                        print("HHHHHHHH d_sub  =  ", d_sub)
+#                        print("HHHHHHHH d_sub  =  ", d_sub[0,0,0])
+#                        #print("HHHHHHHH d_sub_pr.size  =  ", d_sub_pr.size)
+#                        print("PPPPPPPPPP  d_sub_aave =  ", d_sub_aave[0:10])
+##                        print("PPPPPPPPPP  d_sub_aave.pr =  ", ds_sub_aave.pr.values[0:10])
 
                         if debug:
                             print("debug: region:", region)
@@ -503,8 +510,8 @@ for model in models:
                                         year,
                                         d_sub_aave.getTime().asComponentTime(),
                                     )
-                        print("XXXXXXXXXyy")
-                        print("d_sub_aave = ", d_sub_aave)
+#                        print("XXXXXXXXXyy")
+#                        print("d_sub_aave = ", d_sub_aave)
 
                         # get pentad time series
                         list_d_sub_aave_chunks = list(
@@ -529,16 +536,16 @@ for model in models:
                                 pentad_time_series, ref_length, debug=debug
                             )
 
-                        print('DDDDDDDDDDDDDDDD')
-                        print('pentad_time_series = ',pentad_time_series)
+#                        print('DDDDDDDDDDDDDDDD')
+#                        print('pentad_time_series = ',pentad_time_series)
 
                         pentad_time_series = MV2.array(pentad_time_series)
                         pentad_time_series.units = d.units
                         pentad_time_series_cumsum = np.cumsum(pentad_time_series)
 
-                        print('pentad_time_series = ',pentad_time_series)
-                        print('pentad_time_series_cumsum = ', pentad_time_series_cumsum)
-                        print('EEEEEEEEEEEEEEEEEE')
+#                        print('pentad_time_series = ',pentad_time_series)
+#                        print('pentad_time_series_cumsum = ', pentad_time_series_cumsum)
+#                        print('EEEEEEEEEEEEEEEEEE')
 
                         if nc_out:
                             # Archive individual year time series in netCDF file
@@ -584,15 +591,15 @@ for model in models:
                         weights="unweighted",
                     )
 
-                    print("UUUUUUUUUUU region = ",region)
-                    print('composite_pentad_time_series =. ',composite_pentad_time_series)
+#                    print("UUUUUUUUUUU region = ",region)
+#                    print('composite_pentad_time_series =. ',composite_pentad_time_series)
 
                     # Get accumulation ts from the composite
                     composite_pentad_time_series_cumsum = np.cumsum(
                         composite_pentad_time_series
                     )
 
-                    print('composite_pentad_time_series_cumsum =.  ',composite_pentad_time_series_cumsum)
+#                    print('composite_pentad_time_series_cumsum =.  ',composite_pentad_time_series_cumsum)
 
                     # Maintain axis information
                     axis0 = pentad_time_series.getAxis(0)
@@ -671,28 +678,29 @@ for model in models:
                                     ls="--",
                                 )
                         # obs
-                        ax[region].plot(
-                            np.array(dict_obs_composite[reference_data_name][region]),
-                            c="blue",
-                            label=reference_data_name,
-                        )
-                        for idx in [
-                            monsoon_stat_dic["REF"][reference_data_name][region][
-                                "onset_index"
-                            ],
-                            monsoon_stat_dic["REF"][reference_data_name][region][
-                                "decay_index"
-                            ],
-                        ]:
-                            ax[region].axvline(
-                                x=idx,
-                                ymin=0,
-                                ymax=dict_obs_composite[reference_data_name][region][
-                                    idx
-                                ],
+                        if model == "obs":
+                            ax[region].plot(
+                                np.array(dict_obs_composite[reference_data_name][region]),
                                 c="blue",
-                                ls="--",
+                                label=reference_data_name,
                             )
+                            for idx in [
+                                monsoon_stat_dic["REF"][reference_data_name][region][
+                                    "onset_index"
+                                ],
+                                monsoon_stat_dic["REF"][reference_data_name][region][
+                                    "decay_index"
+                                ],
+                            ]:
+                                ax[region].axvline(
+                                    x=idx,
+                                    ymin=0,
+                                    ymax=dict_obs_composite[reference_data_name][region][
+                                        idx
+                                    ],
+                                    c="blue",
+                                    ls="--",
+                                )
                         # title
                         ax[region].set_title(region)
                         if region == list_monsoon_regions[0]:
