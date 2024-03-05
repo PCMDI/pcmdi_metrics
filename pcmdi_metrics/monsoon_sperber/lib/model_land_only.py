@@ -9,7 +9,7 @@ def model_land_only(model, model_timeseries, lf, debug=False):
     # - - - - - - - - - - - - - - - - - - - - - - - - -
 
     if debug:
-        plot_map(model_timeseries[0], "_".join(["test", model, "beforeMask.png"]))
+        #plot_map(model_timeseries[0], "_".join(["test", model, "beforeMask.png"]))
         print("debug: plot for beforeMask done")
 
     # Check land fraction variable to see if it meet criteria
@@ -33,7 +33,7 @@ def model_land_only(model, model_timeseries, lf, debug=False):
             model_timeseries_masked = model_timeseries.where(lf > 90)
 
     if debug:
-        plot_map(model_timeseries_masked[0], "_".join(["test", model, "afterMask.png"]))
+        #plot_map(model_timeseries_masked[0], "_".join(["test", model, "afterMask.png"]))
         print("debug: plot for afterMask done")
 
     return model_timeseries_masked
