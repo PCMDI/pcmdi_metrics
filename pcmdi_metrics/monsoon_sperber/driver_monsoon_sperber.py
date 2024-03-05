@@ -73,11 +73,12 @@ def tree():
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+#list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
 #list_monsoon_regions = ["AUS"]
 #list_monsoon_regions = ["Sahel"]
 #list_monsoon_regions = ["GoG"]
 #list_monsoon_regions = ["NHEX"]
+list_monsoon_regions = ["AIR"]
 #list_monsoon_regions = ["all"]
 
 
@@ -511,6 +512,7 @@ for model in models:
                                 model, d_sub_pr, lf_sub, debug=debug
                             )
 
+                            lf_sub.to_netcdf("lf_"+region+"_xcdat.nc")
                             d_sub_pr.to_netcdf("test_region_land_"+region+"_xcdat.nc")
 #                            print("\n")
                             print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
