@@ -74,12 +74,13 @@ def tree():
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+#list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
 #list_monsoon_regions = ["AUS"]
 #list_monsoon_regions = ["Sahel"]
 #list_monsoon_regions = ["GoG"]
 #list_monsoon_regions = ["global"]
 #list_monsoon_regions = ["NHEX"]
+list_monsoon_regions = ["AIR"]
 
 # How many elements each
 # list should have
@@ -451,14 +452,19 @@ for model in models:
                         else:
                             # land-only rainfall
 
-                            ffo = cdms2.open('test_region_cdms.nc','w')
+                            ffo = cdms2.open('test_'+region+'_cdms.nc','w')
                             ffo.write(d(regions_specs[region]["domain"]), id="pr")
                             ffo.close()
 
                             d_sub = d_land(regions_specs[region]["domain"])
+                            lf_sub = lf(regions_specs[region]["domain"])
 
-                            ffo2 = cdms2.open('test_region_land_cdms.nc','w')
+                            ffo2 = cdms2.open('test_'+region+'_land_cdms.nc','w')
                             ffo2.write(d_sub, id="pr")
+                            ffo2.close()
+
+                            ffo2 = cdms2.open('lf_'+region+'_cdms.nc','w')
+                            ffo2.write(lf_sub, id="sftlf")
                             ffo2.close()
 
                             print("\n")
