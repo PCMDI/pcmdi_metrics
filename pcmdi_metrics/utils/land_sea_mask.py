@@ -5,11 +5,13 @@ import warnings
 from typing import Union
 
 import numpy as np
+import numpy.ma as ma
 import regionmask
 import xarray as xr
 import xcdat as xc
 
 from pcmdi_metrics import resources
+from pcmdi_metrics.io import get_grid
 
 
 def create_land_sea_mask(
@@ -183,7 +185,24 @@ def apply_landmask(
             data_array = obj[data_var].copy()
 
     # Validate landfrac
+    generateLandSeaMask = False
+    where_method = "xarray"
     if landfrac is None:
+        generateLandSeaMask = True
+    else:
+        data_grid = get_grid(data_array)
+        lf_grid = get_grid(landfrac)
+
+        if data_grid.identical(lf_grid):
+            pass
+        else:
+            if data_grid.equals(lf_grid):
+                pass
+            else:
+                if data_grid.sizes == lf_grid.sizes:
+                    where_method = "numpy"
+
+    if generateLandSeaMask:
         landfrac = create_land_sea_mask(data_array)
         warnings.warn(
             "landfrac is not provided thus generated using the 'create_land_sea_mask' function"
@@ -199,7 +218,7 @@ def apply_landmask(
 
     # Convert landfrac to a fraction if it's in percentage form
     if percentage:
-        landfrac /= 100.0
+        landfrac = landfrac.copy() / 100.0
 
     # Validate keep_over parameter
     if keep_over not in ["land", "ocean"]:
@@ -208,10 +227,28 @@ def apply_landmask(
         )
 
     # Apply land and ocean masks
-    if keep_over == "land":
-        data_array = data_array.where(landfrac >= land_criteria)
-    elif keep_over == "ocean":
-        data_array = data_array.where(landfrac <= ocean_criteria)
+    if where_method == "xarray":
+        if keep_over == "land":
+            data_array = data_array.where(landfrac >= land_criteria)
+        elif keep_over == "ocean":
+            data_array = data_array.where(landfrac <= ocean_criteria)
+
+    elif where_method == "numpy":
+        # Expand data1 to match the shape of landfrac along the time dimension
+        expanded_landfrac = np.expand_dims(landfrac.data, axis=0)
+        expanded_landfrac = np.repeat(
+            expanded_landfrac, data_array.shape[0], axis=0
+        )  # Repeat along the time dimension
+
+        # Mask data based on landfrac
+        if keep_over == "land":
+            data_array.data = ma.masked_where(
+                expanded_landfrac < land_criteria, data_array.data
+            )
+        elif keep_over == "ocean":
+            data_array.data = ma.masked_where(
+                expanded_landfrac > ocean_criteria, data_array.data
+            )
 
     return data_array
 
@@ -233,7 +270,7 @@ def apply_oceanmask(
     )
     return masked_data_array
 
-  
+
 def generate_land_sea_mask__pcmdi(
     target_grid,
     source=None,

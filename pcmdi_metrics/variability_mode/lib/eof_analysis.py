@@ -194,7 +194,7 @@ def linear_regression_on_globe_for_teleconnection(
     return eof_lr, slope, intercept
 
 
-def linear_regression(x, y):
+def linear_regression(x, y, debug=False):
     """
     NOTE: Proceed linear regression
     Input
@@ -211,8 +211,9 @@ def linear_regression(x, y):
     im = y.shape[2]
     jm = y.shape[1]
     y_2d = y.data.reshape(y.shape[0], jm * im)
-    print("x.shape:", x.shape)
-    print("y_2d.shape:", y_2d.shape)
+    if debug:
+        print("x.shape:", x.shape)
+        print("y_2d.shape:", y_2d.shape)
     # Linear regression
     slope_1d, intercept_1d = np.polyfit(np.array(x), np.array(y_2d), 1)
     # Retreive to variabile from numpy array

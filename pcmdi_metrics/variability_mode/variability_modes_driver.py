@@ -532,7 +532,8 @@ for model in models:
     # -------------------------------------------------
     for model_path in model_path_list:
         print("model_path:", model_path)
-        try:
+        # try:
+        if 1:
             if realization == "*":
                 run = re.split("[._]", (model_path.split("/")[-1]).split("."))[
                     run_in_modpath
@@ -627,7 +628,11 @@ for model in models:
 
                     # Regrid (interpolation, model grid to ref grid)
                     model_timeseries_season_regrid = regrid(
-                        model_timeseries_season, var, ref_grid_global
+                        model_timeseries_season,
+                        var,
+                        ref_grid_global,
+                        regrid_tool="xesmf",
+                        fill_zero=True,
                     )
                     # crop to subdomain
                     model_timeseries_season_regrid_subdomain = region_subset(
@@ -988,14 +993,14 @@ for model in models:
                 run=run,
                 cmec_flag=cmec,
             )
-
+        """
         except Exception as err:
             if debug:
                 raise
             else:
                 print("warning: failed for ", model, run, err)
                 pass
-
+        """
 # ========================================================================
 # Dictionary to JSON: collective JSON at the end of model_realization loop
 # ------------------------------------------------------------------------

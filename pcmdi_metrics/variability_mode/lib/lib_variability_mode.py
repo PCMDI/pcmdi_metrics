@@ -100,11 +100,15 @@ def read_data_in(
     # landmask if required
     if LandMask:
         # Extract SST (land region mask out)
-        landfrac = None
+        landfrac = None  # by default, generate a land sea mask
         if lf_path is not None:
             if os.path.isfile(lf_path):
-                landfrac_ds = xcdat_open(lf_path)
-                landfrac = landfrac_ds[var_lf]
+                try:
+                    landfrac_ds = xcdat_open(lf_path)
+                    landfrac = landfrac_ds[var_lf]
+                except Exception:
+                    landfrac = None  # if unsuccessful, generate a land sea mask
+
         data_timeseries = apply_landmask(data_timeseries, landfrac=landfrac)
 
     ds_time_subsetted[var_in_data] = data_timeseries

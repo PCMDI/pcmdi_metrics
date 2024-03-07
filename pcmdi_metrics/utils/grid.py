@@ -3,6 +3,7 @@ import xarray as xr
 import xcdat as xc
 
 from pcmdi_metrics.io import (
+    get_grid,
     get_latitude_bounds_key,
     get_latitude_key,
     get_longitude_bounds_key,
@@ -143,8 +144,23 @@ def regrid(
     data_var: str,
     target_grid: xr.Dataset,
     regrid_tool: str = "regrid2",
-    regrid_method: str = None,
+    regrid_method: str = "bilinear",
+    fill_zero: bool = False,
 ) -> xr.Dataset:
+    """regrid the dataset to a given grid
+
+    Args:
+        ds (xr.Dataset): dataset to regrid
+        data_var (str): variable in the dataset
+        target_grid (xr.Dataset): grid for interpolate to
+        regrid_tool (str, optional): Regrid option: "regrid2" or "xesmf". Defaults to "regrid2".
+        regrid_method (str, optional): Regrid method option that is required for xesmf regridder. Defaults to "bilinear".
+        fill_zero (bool, optional): Fill NaN value with zero if exists. Defaluts to False
+
+    Returns:
+        xr.Dataset: Regridded dataset
+    """
+    target_grid = get_grid(target_grid)  # To remove time dimension if exist
     # regrid
     if regrid_tool == "regrid2":
         ds_regridded = ds.regridder.horizontal(data_var, target_grid, tool=regrid_tool)
@@ -154,4 +170,9 @@ def regrid(
         ds_regridded = ds.regridder.horizontal(
             data_var, target_grid, tool=regrid_tool, method=regrid_method
         )
+
+    if fill_zero:
+        ds_regridded = ds_regridded.fillna(0)
+
+    ds_regridded = ds_regridded.bounds.add_missing_bounds()  # just in case
     return ds_regridded

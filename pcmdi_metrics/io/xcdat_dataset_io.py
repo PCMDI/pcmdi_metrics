@@ -199,13 +199,13 @@ def da_to_ds(d: Union[xr.Dataset, xr.DataArray], var: str = "variable") -> xr.Da
 
 
 def get_grid(
-    ds: xr.Dataset,
+    d: Union[xr.Dataset, xr.DataArray],
 ) -> xr.Dataset:
     """Get grid information
 
     Parameters
     ----------
-    ds : xr.Dataset
+    d : Union[xr.Dataset, xr.DataArray]
         xarray dataset to extract grid information that has latitude, longitude, and their bounds included
 
     Returns
@@ -213,8 +213,10 @@ def get_grid(
     xr.Dataset
         xarray dataset with grid information
     """
-    lat_key = get_latitude_key(ds)
-    lon_key = get_longitude_key(ds)
-    lat_bnds_key = get_latitude_bounds_key(ds)
-    lon_bnds_key = get_longitude_bounds_key(ds)
-    return ds[[lat_key, lon_key, lat_bnds_key, lon_bnds_key]]
+    if isinstance(d, xr.DataArray):
+        d = da_to_ds(d, d.name)
+    lat_key = get_latitude_key(d)
+    lon_key = get_longitude_key(d)
+    lat_bnds_key = get_latitude_bounds_key(d)
+    lon_bnds_key = get_longitude_bounds_key(d)
+    return d[[lat_key, lon_key, lat_bnds_key, lon_bnds_key]]
