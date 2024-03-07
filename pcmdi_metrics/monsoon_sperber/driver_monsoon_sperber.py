@@ -70,16 +70,29 @@ from pcmdi_metrics.utils import create_land_sea_mask
 def tree():
     return defaultdict(tree)
 
+def pick_year_last_day(ds):
+    eday = 31
+    try:
+        time_key = xc.axis.get_dim_keys(ds, axis="T")
+        if "calendar" in ds[time_key].attrs.keys():
+            if "360" in ds[time_key]["calendar"]:
+                eday = 30
+        else:
+            if "360" in ds[time_key][0].values.item().calendar:
+                eday = 30
+    except Exception:
+        pass
+    return eday
 
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-#list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
 #list_monsoon_regions = ["AUS"]
 #list_monsoon_regions = ["Sahel"]
 #list_monsoon_regions = ["GoG"]
 #list_monsoon_regions = ["NHEX"]
-list_monsoon_regions = ["AIR"]
+#list_monsoon_regions = ["AIR"]
 #list_monsoon_regions = ["all"]
 
 
@@ -294,9 +307,9 @@ for model in models:
 
         ds_lf = xc.open_mfdataset(model_lf_path)
         #  use pcmdi mask
-        #lf_array = create_land_sea_mask(ds_lf, method="pcmdi")
-        #ds_lf = lf_array.to_dataset().compute()
-        #ds_lf = ds_lf.rename_vars({'lsmask': 'sftlf'})
+        lf_array = create_land_sea_mask(ds_lf, method="pcmdi")
+        ds_lf = lf_array.to_dataset().compute()
+        ds_lf = ds_lf.rename_vars({'lsmask': 'sftlf'})
         # ^^^^  block above ^^^^^  
         lf = ds_lf.sftlf.sel(lat=slice(-90, 90))  # land frac file must be global
 
@@ -324,6 +337,7 @@ for model in models:
                 dc = xc.open_mfdataset(model_path, decode_times=True, add_bounds=['T','X','Y'])
                 dc = dc.assign_coords({"lon": lf.lon, "lat": lf.lat})
                 c = xc.center_times(dc)
+                eday = pick_year_last_day(dc)
 
                 # Get starting and ending year and month
                 startYear = c.time.values[0].year
@@ -440,7 +454,8 @@ for model in models:
                     print("\n")
                     d = dc.pr.sel(
                         time=slice(
-                            str(year) + "-01-01 00:00:00", str(year) + "-12-31 23:59:59"
+                            #str(year) + "-01-01 00:00:00", str(year) + "-12-31 23:59:59"
+                            str(year) + "-01-01 00:00:00", str(year) + f"-12-{eday} 23:59:59"
                         ),
                         lat=slice(-90, 90),
                     )
@@ -482,7 +497,8 @@ for model in models:
                             d_sub_pr = d_sub_ds.pr.sel(
                                 time=slice(
                                     str(year) + "-01-01 00:00:00",
-                                    str(year) + "-12-31 23:59:59",
+                                    #str(year) + "-12-31 23:59:59",
+                                    str(year) + f"-12-{eday} 23:59:59",
                                 )
                             )
 
@@ -501,7 +517,8 @@ for model in models:
                             d_sub_pr = d_sub_ds.pr.sel(
                                 time=slice(
                                     str(year) + "-01-01 00:00:00",
-                                    str(year) + "-12-31 23:59:59",
+                                    #str(year) + "-12-31 23:59:59",
+                                    str(year) + f"-12-{eday} 23:59:59",
                                 )
                             )
 
@@ -557,7 +574,8 @@ for model in models:
                         if region in ["AUS", "SAmo"]:
                             if year == startYear:
                                 start_t = str(year) + "-07-01 00:00:00"
-                                end_t = str(year) + "-12-31 23:59:59"
+                                #end_t = str(year) + "-12-31 23:59:59"
+                                end_t = str(year) + f"-12-{eday} 23:59:59"
                                 temporary[region] = d_sub_aave.sel(
                                     time=slice(start_t, end_t)
                                 )
@@ -574,7 +592,8 @@ for model in models:
                                     )
                                 )
                                 start_t = str(year) + "-07-01 00:00:00"
-                                end_t = str(year) + "-12-31 23:59:59"
+                                #end_t = str(year) + "-12-31 23:59:59"
+                                end_t = str(year) + f"-12-{eday} 23:59:59"
                                 temporary[region] = d_sub_aave.sel(
                                     time=slice(start_t, end_t)
                                 )
