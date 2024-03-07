@@ -12,14 +12,14 @@ test_data_set = [
     "ACCESS-ESM1-5",
 ]
 realization = "*"
-test_data_path = "links_siconc/%(model)/historical/%(realization)/siconc/"
+test_data_path = "/p/user_pub/pmp/demo/sea-ice/links_siconc/%(model)/historical/%(realization)/siconc/"
 filename_template = "siconc_SImon_%(model)_historical_%(realization)_*_*.nc"
 var = "siconc"
 msyear = 1981
 meyear = 2000
 ModUnitsAdjust = (True, "multiply", 1e-2)
 
-area_template = "links_area/%(model)/*.nc"
+area_template = "/p/user_pub/pmp/demo/sea-ice/links_area/%(model)/*.nc"
 area_var = "areacello"
 AreaUnitsAdjust = (True, "multiply", 1e-6)
 

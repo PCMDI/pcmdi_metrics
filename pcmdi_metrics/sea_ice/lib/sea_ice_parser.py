@@ -217,4 +217,10 @@ def create_sea_ice_parser():
         "- (False, 0, 0) # No adjustment (default)",
     )
 
+    parser.add_argument(
+        "--plot",
+        type=bool,
+        default=True,
+        help="Option for generate individual plots for models: True (default) / False",
+    )
     return parser
