@@ -47,6 +47,10 @@ def compute_metrics(Var, dm, do, debug=False, time_dim_sync=False):
 
     metrics_dictionary = OrderedDict()
 
+    # QC for bounds
+    dm = dm.bounds.add_missing_bounds()
+    do = do.bounds.add_missing_bounds()
+
     if var in ["hus"]:
         sig_digits = ".5f"
     else:

@@ -1,7 +1,7 @@
 import numpy as np
 import xcdat as xc
 
-from pcmdi_metrics.io import xcdat_open
+from pcmdi_metrics.io import xcdat_open, get_latitude, get_longitude
 
 
 def load_and_regrid(
@@ -40,9 +40,12 @@ def load_and_regrid(
     # SET CONDITIONAL ON INPUT VARIABLE
     if varname == "pr":
         print("Adjust units for pr")
-        if ds[varname_in_file].units == "kg m-2 s-1":
-            ds[varname_in_file] = ds[varname_in_file] * 86400
-            print("pr units adjusted to [mm d-1] from [kg m-2 s-1] by 86400 multiplied")
+        if "units" in ds[varname_in_file].attrs:
+            if ds[varname_in_file].units == "kg m-2 s-1":
+                ds[varname_in_file] = ds[varname_in_file] * 86400
+                print("pr units adjusted to [mm d-1] from [kg m-2 s-1] by 86400 multiplied")
+        else:
+            ds[varname_in_file] = ds[varname_in_file] * 86400  # Assumed as kg m-2 s-1
 
     """
     # calendar quality check
@@ -117,6 +120,14 @@ def load_and_regrid(
             print("  Coordinates keys in the nc file:", list(ds.coords.keys()))
             print("ERROR: load and regrid can not complete")
             return
+
+    # axis
+    lat = get_latitude(ds)
+    lon = get_longitude(ds)
+    if "axis" not in lat.attrs:
+        ds[lat.name].attrs["axis"] = "Y"
+    if "axis" not in lon.attrs:
+        ds[lon.name].attrs["axis"] = "X"
 
     # regrid
     if regrid_tool == "regrid2":
