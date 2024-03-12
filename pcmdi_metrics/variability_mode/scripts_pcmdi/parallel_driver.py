@@ -26,9 +26,7 @@ P = AddParserArgument(P)
 P.add_argument(
     "--param_dir", type=str, default=None, help="directory for parameter files"
 )
-P.add_argument(
-    "--num_workers", type=int, default=None, help="number of CPUs to use"
-)
+P.add_argument("--num_workers", type=int, default=None, help="number of CPUs to use")
 param = P.get_parameter()
 
 # Pre-defined options
