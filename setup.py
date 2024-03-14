@@ -58,6 +58,20 @@ entry_points = {
 
 data_files = (
     (
+        "share/pmp/graphics/png",
+        [   
+            "share/pcmdi/PCMDILogo_1588x520px_300dpi.png",
+            "share/pcmdi/PCMDILogo_200x65px_72dpi.png",
+            "share/pcmdi/PCMDILogo_300x98px_72dpi.png",
+            "share/pcmdi/PCMDILogo_400x131px_72dpi.png",
+            "share/pcmdi/PCMDILogo_500x164px_72dpi.png",
+            "share/pcmdi/PCMDILogoText_1365x520px_300dpi.png",
+            "share/pcmdi/PMPLogoText_1359x1146px_300dpi.png",
+            "share/pcmdi/PMPLogo_1359x1146px_300dpi.png",
+            "share/pcmdi/PMPLogo_500x421px_72dpi.png",
+        ],
+    ),
+    (
         "share/pmp",
         (
             "doc/obs_info_dictionary.json",
