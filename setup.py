@@ -11,7 +11,7 @@ if "--enable-devel" in sys.argv:
 else:
     install_dev = False
 
-release_version = "3.3.1"
+release_version = "3.3.2"
 
 p = subprocess.Popen(
     ("git", "describe", "--tags"),
@@ -60,11 +60,6 @@ data_files = (
     (
         "share/pmp/graphics/png",
         [
-            "share/pcmdi/CDATLogo_140x49px_72dpi.png",
-            "share/pcmdi/CDATLogo_1866x651px_300dpi.png",
-            "share/pcmdi/CDATLogo_200x70px_72dpi.png",
-            "share/pcmdi/CDATLogoText_1898x863px_300dpi.png",
-            "share/pcmdi/CDATLogoText_200x91px_72dpi.png",
             "share/pcmdi/PCMDILogo_1588x520px_300dpi.png",
             "share/pcmdi/PCMDILogo_200x65px_72dpi.png",
             "share/pcmdi/PCMDILogo_300x98px_72dpi.png",
