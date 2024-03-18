@@ -298,7 +298,13 @@ def gain_pcs_fraction(full_field, eof_pattern, pcs, debug=False):
         print("from gain_pcs_fraction:")
         print("full_field.shape (before grower): ", full_field.shape)
         print("eof_pattern.shape (before grower): ", eof_pattern.shape)
-    # Extend eof_pattern (add 3rd dimension as time then copy same 2d value for all time step)
+        print("pcs.shape: ", pcs.shape)
+        print("pcs[0:5]:", pcs[0:5])
+        print("full_field: max, min:", np.max(full_field), np.min(full_field))
+        print("eof_pattern: max, min:", np.max(eof_pattern), np.min(eof_pattern))
+        print(
+            "pcs: max, min:", np.max(pcs), np.min(pcs)
+        )  # Extend eof_pattern (add 3rd dimension as time then copy same 2d value for all time step)
     reconstructed_field = genutil.grower(full_field, eof_pattern)[
         1
     ]  # Matching dimension (add time axis)
@@ -313,11 +319,28 @@ def gain_pcs_fraction(full_field, eof_pattern, pcs, debug=False):
     fraction = MV2.divide(variance_partial_area_ave, variance_total_area_ave)
     # debugging
     if debug:
+        print(
+            "reconstructed_field: max, min:",
+            np.max(reconstructed_field),
+            np.min(reconstructed_field),
+        )
+        print(
+            "variance_partial: max, min:",
+            np.max(variance_partial),
+            np.min(variance_partial),
+        )
+
         print("full_field.shape (after grower): ", full_field.shape)
         print("reconstructed_field.shape: ", reconstructed_field.shape)
         print("variance_partial_area_ave: ", variance_partial_area_ave)
         print("variance_total_area_ave: ", variance_total_area_ave)
         print("fraction: ", fraction)
+        """
+        ftest = cdms2.open('gain_pseudo_fraction_test.nc', 'w')
+        ftest.write(full_field, id='full_field')
+        ftest.write(pcs, id='pcs')
+        ftest.write(reconstructed_field, id='reconstructed_field')
+        """
         print("from gain_pcs_fraction done")
     # return result
     return fraction
@@ -381,9 +404,16 @@ def get_anomaly_timeseries(timeseries, season):
         if season != "monthly":
             # Get seasonal mean time series
             # each season chunk should have 100% of data
-            timeseries_ano = getattr(cdutil, season)(
-                timeseries_ano, criteriaarg=[1.0, None]
-            )
+            if season.upper() in ["DJF", "MAM", "JJA", "SON"]:
+                timeseries_ano = getattr(cdutil, season)(
+                    timeseries_ano, criteriaarg=[1.0, None]
+                )
+            else:
+                custom_season_accessor = cdutil.times.Seasons(season.upper())
+                timeseries_ano = custom_season_accessor(
+                    timeseries_ano, criteriaarg=[1.0, None]
+                )
+
     # return result
     return timeseries_ano
 
