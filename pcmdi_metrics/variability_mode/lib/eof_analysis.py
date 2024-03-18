@@ -305,13 +305,14 @@ def gain_pcs_fraction(full_field, eof_pattern, pcs, debug=False):
         print("pcs: max, min:", np.max(pcs), np.min(pcs))
 
     # Extend eof_pattern (add 3rd dimension as time then copy same 2d value for all time step)
+    # Matching dimension (add time axis)
     reconstructed_field = genutil.grower(full_field, eof_pattern)[1]
 
-    # Matching dimension (add time axis)
+    # Reconstruct field
     for t in range(0, len(pcs)):
         reconstructed_field[t] = MV2.multiply(reconstructed_field[t], pcs[t])
 
-    # 2-2) Get variance of reconstructed field
+    # 2-2) Get variance of the reconstructed field
     variance_partial = genutil.statistics.variance(reconstructed_field, axis="t")
     variance_partial_area_ave = cdutil.averager(
         variance_partial, axis="xy", weights="weighted"
