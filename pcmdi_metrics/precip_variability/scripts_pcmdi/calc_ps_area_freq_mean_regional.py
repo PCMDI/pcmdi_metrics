@@ -7,15 +7,18 @@ import pickle
 import numpy as np
 
 
-def prdday_to_frq3hridx(prdday, frequency):
-    frq3hr = 1.0 / (float(prdday) * 8.0)
-    idx = (np.abs(frequency - frq3hr)).argmin()
-    return int(idx)
-
-
-def prdday_to_frq1didx(prdday, frequency):
-    frq24hr = 1.0 / (float(prdday))
-    idx = (np.abs(frequency - frq24hr)).argmin()
+def prdday_to_frqidx(prdday, frequency, ntd):
+    """
+    Find frequency index from input period
+    Input
+    - prdday: period (day)
+    - frequency: frequency
+    - ntd: number of time steps per day (daily: 1, 3-hourly: 8)
+    Output
+    - idx: frequency index
+    """
+    frq = 1.0 / (float(prdday) * ntd)
+    idx = (np.abs(frequency - frq)).argmin()
     return int(idx)
 
 
@@ -37,6 +40,7 @@ ver = datetime.datetime.now().strftime("v%Y%m%d")
 if hr == "day":
     frqs_forced = ["semi-annual", "annual"]
     frqs_unforced = ["synoptic", "sub-seasonal", "seasonal-annual", "interannual"]
+    ntd = 1
 elif hr == "3hr":
     frqs_forced = ["semi-diurnal", "diurnal", "semi-annual", "annual"]
     frqs_unforced = [
@@ -46,6 +50,7 @@ elif hr == "3hr":
         "seasonal-annual",
         "interannual",
     ]
+    ntd = 8
 
 infile = open(fname, "rb")
 psdm = pickle.load(infile)
@@ -74,59 +79,36 @@ for frc in psdm.keys():
                     for frq in frqs:
                         print(frq)
                         if frq == "semi-diurnal":  # pr=0.5day
-                            idx = prdday_to_frq1didx(0.5, frequency)
+                            idx = prdday_to_frqidx(0.5, frequency, ntd)
                             amfm = am[idx]
                         elif frq == "diurnal":  # pr=1day
-                            idx = prdday_to_frq1didx(1, frequency)
+                            idx = prdday_to_frqidx(1, frequency, ntd)
                             amfm = am[idx]
                         if frq == "semi-annual":  # 180day=<pr=<183day
-                            if hr == "day":
-                                idx2 = prdday_to_frq1didx(180, frequency)
-                                idx1 = prdday_to_frq1didx(183, frequency)
-                            elif hr == "3hr":
-                                idx2 = prdday_to_frq3hridx(180, frequency)
-                                idx1 = prdday_to_frq3hridx(183, frequency)
-                            amfm = np.nanmean(am[idx1 : idx2 + 1])
+                            idx2 = prdday_to_frqidx(180, frequency, ntd)
+                            idx1 = prdday_to_frqidx(183, frequency, ntd)
+                            amfm = np.amax(am[idx1 : idx2 + 1])
                         elif frq == "annual":  # 360day=<pr=<366day
-                            if hr == "day":
-                                idx2 = prdday_to_frq1didx(360, frequency)
-                                idx1 = prdday_to_frq1didx(366, frequency)
-                            elif hr == "3hr":
-                                idx2 = prdday_to_frq3hridx(360, frequency)
-                                idx1 = prdday_to_frq3hridx(366, frequency)
-                            amfm = np.nanmean(am[idx1 : idx2 + 1])
+                            idx2 = prdday_to_frqidx(360, frequency, ntd)
+                            idx1 = prdday_to_frqidx(366, frequency, ntd)
+                            amfm = np.amax(am[idx1 : idx2 + 1])
                         elif frq == "sub-daily":  # pr<1day
-                            idx1 = prdday_to_frq1didx(1, frequency)
+                            idx1 = prdday_to_frqidx(1, frequency, ntd)
                             amfm = np.nanmean(am[idx1 + 1 :])
                         elif frq == "synoptic":  # 1day=<pr<20day
-                            if hr == "day":
-                                idx2 = prdday_to_frq1didx(1, frequency)
-                                idx1 = prdday_to_frq1didx(20, frequency)
-                            elif hr == "3hr":
-                                idx2 = prdday_to_frq3hridx(1, frequency)
-                                idx1 = prdday_to_frq3hridx(20, frequency)
+                            idx2 = prdday_to_frqidx(1, frequency, ntd)
+                            idx1 = prdday_to_frqidx(20, frequency, ntd)
                             amfm = np.nanmean(am[idx1 + 1 : idx2 + 1])
                         elif frq == "sub-seasonal":  # 20day=<pr<90day
-                            if hr == "day":
-                                idx2 = prdday_to_frq1didx(20, frequency)
-                                idx1 = prdday_to_frq1didx(90, frequency)
-                            elif hr == "3hr":
-                                idx2 = prdday_to_frq3hridx(20, frequency)
-                                idx1 = prdday_to_frq3hridx(90, frequency)
+                            idx2 = prdday_to_frqidx(20, frequency, ntd)
+                            idx1 = prdday_to_frqidx(90, frequency, ntd)
                             amfm = np.nanmean(am[idx1 + 1 : idx2 + 1])
                         elif frq == "seasonal-annual":  # 90day=<pr<365day
-                            if hr == "day":
-                                idx2 = prdday_to_frq1didx(90, frequency)
-                                idx1 = prdday_to_frq1didx(365, frequency)
-                            elif hr == "3hr":
-                                idx2 = prdday_to_frq3hridx(90, frequency)
-                                idx1 = prdday_to_frq3hridx(365, frequency)
+                            idx2 = prdday_to_frqidx(90, frequency, ntd)
+                            idx1 = prdday_to_frqidx(365, frequency, ntd)
                             amfm = np.nanmean(am[idx1 + 1 : idx2 + 1])
                         elif frq == "interannual":  # 365day=<pr
-                            if hr == "day":
-                                idx2 = prdday_to_frq1didx(365, frequency)
-                            elif hr == "3hr":
-                                idx2 = prdday_to_frq3hridx(365, frequency)
+                            idx2 = prdday_to_frqidx(365, frequency, ntd)
                             amfm = np.nanmean(am[: idx2 + 1])
 
                         psdmfm[frc][mip][dat][var][dom][frq] = amfm.tolist()
