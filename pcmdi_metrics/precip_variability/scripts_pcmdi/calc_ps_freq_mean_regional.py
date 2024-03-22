@@ -138,7 +138,9 @@ for ifc, frc in enumerate(frcs):
                     elif frq == "sub-daily":  # pr<1day
                         idx1 = prdday_to_frqidx(1, frequency, ntd)
                         fm = (
-                            power.isel({"frequency": slice(idx1 + 1,:)})
+                            power.isel(
+                                {"frequency": slice(idx1 + 1, len(frequency) - 1)}
+                            )
                             .mean("frequency")
                             .data
                         )
