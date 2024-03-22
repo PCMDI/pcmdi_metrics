@@ -22,7 +22,7 @@ Demo: [precipitation variability across timescales](https://github.com/PCMDI/pcm
   
 ## Figure scripts:
 
-These scripts can be modified by the user to postprocess the output from `variability_across_timescales_PS_driver.py` as a step needed to create Figure 6. The `_regional.py` scripts are used for the custom region output case, not the default region set.
+These scripts can be modified by the user to postprocess the output from `variability_across_timescales_PS_driver.py` as a step needed to create Figure 6. The `*_regional.py` scripts are used for the custom region output case, not the default region set.
 
 - `scripts_pcmdi/`
   - `calc_ps_area_freq_mean_regional.py`
