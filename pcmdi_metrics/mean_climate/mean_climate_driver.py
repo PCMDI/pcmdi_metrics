@@ -398,6 +398,7 @@ for var in vars:
                                     ds_test_dict[region],
                                     ds_ref_dict[region],
                                     debug=debug,
+                                    time_dim_sync=True,
                                 )
                             except Exception:
                                 result_dict["RESULTS"][model][ref][run][
@@ -407,7 +408,7 @@ for var in vars:
                                     ds_test_dict[region],
                                     ds_ref_dict[region],
                                     debug=debug,
-                                    time_dim_sync=True,
+                                    time_dim_sync=False,
                                 )
 
                             # write individual JSON
