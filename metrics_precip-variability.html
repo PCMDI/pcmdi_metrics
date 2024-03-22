@@ -1,0 +1,618 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Precipitation Variability Across Timescales &#8212; PMP Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.1/css/all.min.css?digest=8d27b9dea8ad943066ae" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.1/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=384b581d" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
+  <script src="_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
+
+    <script src="_static/jquery.js?v=5d32c60e"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=efea14e4"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'metrics_precip-variability';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Precipitation Distribution" href="metrics_precip-distribution.html" />
+    <link rel="prev" title="Extremes" href="metrics_ext.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a id="pst-skip-link" class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/PMPLogo_500x421px_72dpi.png" class="logo__image only-light" alt="PMP Documentation - Home"/>
+    <script>document.write(`<img src="_static/PMPLogo_500x421px_72dpi.png" class="logo__image only-dark" alt="PMP Documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">For users:</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="start.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supporting-data.html">Retrieving data for demos and use of the PMP</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="metrics.html">PMP Metrics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_sea_ice.html">Sea Ice</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">Results</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">For developers/contributors:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="resources.html">Resources</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pmpparser.html">PMPParser</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">Team</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">GitHub repository</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Community</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">GitHub discussions</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/PCMDI/pcmdi_metrics" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PCMDI/pcmdi_metrics/edit/main/docs/metrics_precip-variability.rst" target="_blank"
+   class="btn btn-sm btn-source-edit-button dropdown-item"
+   title="Suggest edit"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-pencil-alt"></i>
+  </span>
+<span class="btn__text-container">Suggest edit</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PCMDI/pcmdi_metrics/issues/new?title=Issue%20on%20page%20%2Fmetrics_precip-variability.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/metrics_precip-variability.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Precipitation Variability Across Timescales</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo">Demo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-parameter-files">Example parameter files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#required-data-sets">Required data sets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-averages">Spectral averages</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metric">Metric</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="precipitation-variability-across-timescales">
+<span id="metrics-precip-variability"></span><h1>Precipitation Variability Across Timescales<a class="headerlink" href="#precipitation-variability-across-timescales" title="Link to this heading">#</a></h1>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>This set of metrics is designed to measure precipitation variabilty across multiple timescales, including subdaily.</p>
+</section>
+<section id="demo">
+<h2>Demo<a class="headerlink" href="#demo" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_7_precip_variability.ipynb">PMP demo Jupyter notebook</a></p></li>
+</ul>
+</section>
+<section id="example-parameter-files">
+<h2>Example parameter files<a class="headerlink" href="#example-parameter-files" title="Link to this heading">#</a></h2>
+<p>A set of example parameter files for models and observations can be viewed at <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/precip_variability/param">this link</a>.</p>
+</section>
+<section id="required-data-sets">
+<h2>Required data sets<a class="headerlink" href="#required-data-sets" title="Link to this heading">#</a></h2>
+<p>Input files must use the following name convention:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">variable_frequency_model_experiment_ensemble_startdate</span><span class="o">-</span><span class="n">enddate</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+<p>Because underscores are used to separate these elements, they may not be used anywhere else in the file name.</p>
+<p>Start and end dates must use the YYYYMMDD or YYYYMMDDHHHH format.</p>
+<p>For example, these are valid input file names:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pr_day_bcc</span><span class="o">-</span><span class="n">csm1</span><span class="o">-</span><span class="mi">1</span><span class="n">_historical_r1i1p1_19800101</span><span class="o">-</span><span class="mf">19841231.</span><span class="n">nc</span>
+<span class="n">pr_3hr_IMERG</span><span class="o">-</span><span class="n">v06B</span><span class="o">-</span><span class="n">Final_PCMDI_2x2_201004010000</span><span class="o">-</span><span class="mf">201004302100.</span><span class="n">nc</span>
+</pre></div>
+</div>
+<p>If the time series for a single data set is spread across multiple files, those files must be located in a single directory.</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<section id="spectral-averages">
+<h3>Spectral averages<a class="headerlink" href="#spectral-averages" title="Link to this heading">#</a></h3>
+<p>Users will set up a parameter file and run the precipitation variability driver on the command line.
+To run the driver, use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">variability_across_timescales_PS_driver</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">p</span> <span class="n">parameter_file</span>
+</pre></div>
+</div>
+<p>Results are reported on a 2x2 degree latitude/longitude world grid.</p>
+<p>Options available to set in the parameter file include:</p>
+<ul class="simple">
+<li><p><strong>mip</strong>: Name of MIP. Use “obs” for reference datasets.</p></li>
+<li><p><strong>exp</strong>: Name of experiment.</p></li>
+<li><p><strong>var</strong>: Name of data set variable, e.g. “pr”.</p></li>
+<li><p><strong>frq</strong>: Frequency of data set, either “day” or “3hr”.</p></li>
+<li><p><strong>modpath</strong>: Path to directory containing input data files.</p></li>
+<li><p><strong>mod</strong>: Name of model file or wildcard “*” to use all files in directory. Symlinks may be used.</p></li>
+<li><p><strong>results_dir</strong>: Results directory path.</p></li>
+<li><p><strong>case_id</strong>: Case id.</p></li>
+<li><p><strong>prd</strong>: Start and end years for analysis as list, e.g. [start_year, end_year].</p></li>
+<li><p><strong>fac</strong>: Factor to convert from data set units to mm/day. Set to 1 for no conversion.</p></li>
+<li><p><strong>nperseg</strong>: Length of segment in power spectra.</p></li>
+<li><p><strong>noverlap</strong>: Length of overlap between segments in power spectra.</p></li>
+<li><p><strong>ref</strong>: Reference data path.</p></li>
+<li><p><strong>cmec</strong>: Set to True to output CMEC formatted JSON.</p></li>
+</ul>
+</section>
+<section id="metric">
+<h3>Metric<a class="headerlink" href="#metric" title="Link to this heading">#</a></h3>
+<p>The precipitation variability metric can be generated after model and observational spectral averages are made.</p>
+<p>A script called <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/precip_variability/scripts_pcmdi/calc_ratio.py">calc_ratio.py</a> is provided in the precip_variability codebase. This script can be called with three arguments to generate the ratio.</p>
+<ul class="simple">
+<li><p><strong>ref</strong>: path to obs results JSON</p></li>
+<li><p><strong>modpath</strong>: directory containing model results JSONS (not CMEC formatted JSONs)</p></li>
+<li><p><strong>results_dir</strong>: directory for calc_ratio.py results</p></li>
+</ul>
+<p>The calc_ratio.py script must be called with python directly. For example, to run this script using files from a directory called “results”:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">pcmdi_metrics</span><span class="o">/</span><span class="n">pcmdi_metrics</span><span class="o">/</span><span class="n">precip_variability</span><span class="o">/</span><span class="n">scripts_pcmdi</span><span class="o">/</span><span class="n">calc_ratio</span><span class="o">.</span><span class="n">py</span> \
+<span class="o">--</span><span class="n">ref</span> <span class="n">results</span><span class="o">/</span><span class="n">precip_variability</span><span class="o">/</span><span class="n">GPCP</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="mi">3</span><span class="o">/</span><span class="n">PS_pr</span><span class="o">.</span><span class="n">day_regrid</span><span class="mf">.180</span><span class="n">x90_area</span><span class="o">.</span><span class="n">freq</span><span class="o">.</span><span class="n">mean_GPCP</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="mf">3.</span><span class="n">json</span> \
+<span class="o">--</span><span class="n">modpath</span> <span class="n">results</span><span class="o">/</span><span class="n">precip_variability</span><span class="o">/</span><span class="n">GISS</span><span class="o">-</span><span class="n">E2</span><span class="o">-</span><span class="n">H</span><span class="o">/</span> \
+<span class="o">--</span><span class="n">results_dir</span> <span class="n">results</span><span class="o">/</span><span class="n">precip_variability</span><span class="o">/</span><span class="n">ratio</span><span class="o">/</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading">#</a></h2>
+<p>Ahn, M.-S., P. J. Gleckler, J. Lee, A. G. Pendergrass, and C. Jakob, 2022: Benchmarking Simulated Precipitation Variability Amplitude across Timescales. Journal of Climate. <a class="reference external" href="https://doi.org/10.1175/JCLI-D-21-0542.1">https://doi.org/10.1175/JCLI-D-21-0542.1</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="metrics_ext.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Extremes</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="metrics_precip-distribution.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Precipitation Distribution</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#demo">Demo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-parameter-files">Example parameter files</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#required-data-sets">Required data sets</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spectral-averages">Spectral averages</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#metric">Metric</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reference">Reference</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By PCMDI
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023 PCMDI.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=8d27b9dea8ad943066ae"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
