@@ -11,21 +11,46 @@ from scipy import signal
 from scipy.stats import chi2
 from xcdat.regridder import grid
 
+from pcmdi_metrics.io import region_subset
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.io.region_from_file import region_from_file
 from pcmdi_metrics.utils import create_land_sea_mask
 
 
 # ==================================================================================
 def precip_variability_across_timescale(
-    file, syr, eyr, dfrq, mip, dat, var, fac, nperseg, noverlap, outdir, cmec
+    file,
+    syr,
+    eyr,
+    dfrq,
+    mip,
+    dat,
+    var,
+    fac,
+    nperseg,
+    noverlap,
+    res,
+    regions_specs,
+    outdir,
+    cmec,
+    fshp,
+    feature,
+    attr,
 ):
     """
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
     """
-
     psdmfm = {"RESULTS": {}}
 
-    f = xcdat.open_mfdataset(file)
+    try:
+        f = xcdat.open_mfdataset(file)
+    except ValueError:
+        f = xcdat.open_mfdataset(file, decode_times=False)
+        cal = f.time.calendar
+        # Add any calendar fixes here
+        cal = cal.replace("-", "_")
+        f.time.attrs["calendar"] = cal
+        f = xcdat.decode_time(f)
     cal = f.time.encoding["calendar"]
     if "360" in cal:
         ldy = 30
@@ -42,13 +67,21 @@ def precip_variability_across_timescale(
         )
 
         # Regridding
-        rgtmp = Regrid2deg(do, var) * float(fac)
+        rgtmp_ds = RegridHoriz(do, var, res)
+        if regions_specs is not None or bool(regions_specs):
+            print("Cropping region from bounds")
+            rgtmp_ds = CropLatLon(rgtmp_ds, regions_specs)
+        if fshp is not None:
+            print("Cropping from shapefile")
+            rgtmp_ds = region_from_file(rgtmp_ds, fshp, attr, feature)
+        rgtmp = rgtmp_ds[var] * float(fac)
         if iyr == syr:
             drg = copy.deepcopy(rgtmp)
         else:
             drg = xr.concat([drg, rgtmp], dim="time")
         print(iyr, drg.shape)
-
+    nlon = str(len(drg.lon))
+    nlat = str(len(drg.lat))
     f.close()
 
     # Anomaly
@@ -63,9 +96,11 @@ def precip_variability_across_timescale(
     # Power spectum of total
     freqs, ps, rn, sig95 = Powerspectrum(drg, nperseg, noverlap)
     # Domain & Frequency average
-    psdmfm_forced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "forced")
+    psdmfm_forced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "forced", regions_specs)
     # Write data (nc file)
-    outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + ".nc"
+    outfilename = (
+        "PS_pr." + str(dfrq) + "_regrid." + nlon + "x" + nlat + "_" + dat + ".nc"
+    )
     custom_dataset = xr.merge([freqs, ps, rn, sig95])
     custom_dataset.to_netcdf(
         path=os.path.join(
@@ -76,9 +111,19 @@ def precip_variability_across_timescale(
     # Power spectum of anomaly
     freqs, ps, rn, sig95 = Powerspectrum(anom, nperseg, noverlap)
     # Domain & Frequency average
-    psdmfm_unforced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "unforced")
+    psdmfm_unforced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "unforced", regions_specs)
     # Write data (nc file)
-    outfilename = "PS_pr." + str(dfrq) + "_regrid.180x90_" + dat + "_unforced.nc"
+    outfilename = (
+        "PS_pr."
+        + str(dfrq)
+        + "_regrid."
+        + nlon
+        + "x"
+        + nlat
+        + "_"
+        + dat
+        + "_unforced.nc"
+    )
     custom_dataset = xr.merge([freqs, ps, rn, sig95])
     custom_dataset.to_netcdf(
         path=os.path.join(
@@ -92,7 +137,15 @@ def precip_variability_across_timescale(
     psdmfm["RESULTS"][dat]["unforced"] = psdmfm_unforced
 
     outfilename = (
-        "PS_pr." + str(dfrq) + "_regrid.180x90_area.freq.mean_" + dat + ".json"
+        "PS_pr."
+        + str(dfrq)
+        + "_regrid."
+        + nlon
+        + "x"
+        + nlat
+        + "_area.freq.mean_"
+        + dat
+        + ".json"
     )
     JSON = Base(outdir.replace("%(output_type)", "metrics_results"), outfilename)
     JSON.write(
@@ -107,7 +160,7 @@ def precip_variability_across_timescale(
 
 
 # ==================================================================================
-def Regrid2deg(d, var):
+def RegridHoriz(d, var, res, regions_specs=None):
     """
     Regrid to 2deg (180lon*90lat) horizontal resolution
     Input
@@ -116,13 +169,44 @@ def Regrid2deg(d, var):
     Output
     - drg: xCDAT variable with 2deg horizontal resolution
     """
-    tgrid = grid.create_uniform_grid(-89, 89, 2.0, 0.0, 358.0, 2.0)
-    drg = d.regridder.horizontal(
-        var, tgrid, tool="xesmf", method="conservative_normed", periodic=True
-    )[var]
 
-    print("Complete regridding from", d[var].shape, "to", drg.shape)
+    start_lat = -90.0 + res / 2.0
+    start_lon = 0.0
+    end_lat = 90.0 - res / 2.0
+    end_lon = 360.0 - res
+
+    tgrid = grid.create_uniform_grid(start_lat, end_lat, res, start_lon, end_lon, res)
+    if regions_specs is not None:
+        tgrid = CropLatLon(tgrid, regions_specs)
+    drg = d.regridder.horizontal(
+        var,
+        tgrid,
+        tool="xesmf",
+        method="conservative_normed",
+        periodic=True,
+        unmapped_to_nan=True,
+    )
+
+    print("Complete regridding from", d[var].shape, "to", drg[var].shape)
+
     return drg
+
+
+# ==================================================================================
+def CropLatLon(d, regions_specs):
+    """
+    Select a subgrid of the dataset defined by the regions_specs dictionary.
+    Input
+    - d: xCDAT variable
+    - regions_specs: a dictionary
+    Output
+    - dnew: xCDAT variable selected over region of interest
+    """
+    region_name = list(regions_specs.keys())[0]
+
+    dnew = region_subset(d, regions_specs, region=region_name)
+
+    return dnew
 
 
 # ==================================================================================
@@ -142,7 +226,7 @@ def ClimAnom(d, ntd, syr, eyr, cal):
 
     # Year segment
     nyr = eyr - syr + 1
-    if "gregorian" in cal:
+    if "gregorian" in cal or "standard" in cal:
         ndy = 366
         ldy = 31
         dseg = np.zeros((nyr, ndy, ntd, d.shape[1], d.shape[2]), dtype=float)
@@ -194,7 +278,7 @@ def ClimAnom(d, ntd, syr, eyr, cal):
 
     # Anomaly
     anom = np.array([])
-    if "gregorian" in cal:
+    if "gregorian" in cal or "standard" in cal:
         for iyr, year in enumerate(range(syr, eyr + 1)):
             yrtmp = d.sel(
                 time=slice(
@@ -337,7 +421,7 @@ def RedNoiseSignificanceLevel(nu, rn, p=0.050):
 
 
 # ==================================================================================
-def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
+def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc, regions_specs):
     """
     Domain and Frequency average of spectral power
     Input
@@ -347,6 +431,7 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
     - dat: model name
     - mip: mip name
     - frc: forced or unforced
+    - regions_specs: dictionary defining custom region
     Output
     - psdmfm: Domain and Frequency averaged of spectral power (json)
     """
@@ -364,6 +449,8 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
         "Ocean_50S30S",
         "Land_50S30S",
     ]
+    if regions_specs:
+        domains = list(regions_specs.keys())
 
     if ntd == 8:  # 3-hourly data
         frqs_forced = ["semi-diurnal", "diurnal", "semi-annual", "annual"]
@@ -394,9 +481,9 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
     for dom in domains:
         psdmfm[dom] = {}
 
-        if "Ocean" in dom:
+        if "Ocean" in dom or regions_specs[dom].get("value", -1) == 0:
             dmask = d.where(mask == 0)
-        elif "Land" in dom:
+        elif "Land" in dom or regions_specs[dom].get("value", -1) == 1:
             dmask = d.where(mask == 1)
         else:
             dmask = d
@@ -409,18 +496,22 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc):
             am = dmask.sel(lat=slice(-50, 50)).spatial.average(
                 "ps", axis=["X", "Y"], weights="generate"
             )["ps"]
-        if "30N50N" in dom:
+        elif "30N50N" in dom:
             am = dmask.sel(lat=slice(30, 50)).spatial.average(
                 "ps", axis=["X", "Y"], weights="generate"
             )["ps"]
-        if "30S30N" in dom:
+        elif "30S30N" in dom:
             am = dmask.sel(lat=slice(-30, 30)).spatial.average(
                 "ps", axis=["X", "Y"], weights="generate"
             )["ps"]
-        if "50S30S" in dom:
+        elif "50S30S" in dom:
             am = dmask.sel(lat=slice(-50, -30)).spatial.average(
                 "ps", axis=["X", "Y"], weights="generate"
             )["ps"]
+        else:
+            # Custom region. Don't need to slice again because d only covered this region
+            am = dmask.spatial.average("ps", axis=["X", "Y"], weights="generate")["ps"]
+
         am = np.array(am)
 
         for frq in frqs:

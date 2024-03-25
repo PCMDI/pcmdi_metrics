@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import glob
 import os
 
@@ -22,10 +21,16 @@ prd = param.prd
 fac = param.fac
 nperseg = param.nperseg
 noverlap = param.noverlap
+res = param.res
+regions_specs = param.regions_specs
+fshp = param.region_file
+feature = param.feature
+attr = param.attr
 print(modpath)
 print(mod)
 print(prd)
 print(nperseg, noverlap)
+print(res)
 
 # Get flag for CMEC output
 cmec = param.cmec
@@ -43,6 +48,7 @@ for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
 
 # Check data in advance
 file_list = sorted(glob.glob(os.path.join(modpath, mod)))
+print(file_list)
 if mip == "obs":
     dat = file_list[0].split("/")[-1].split("_")[2]
 else:
@@ -66,6 +72,11 @@ precip_variability_across_timescale(
     fac,
     nperseg,
     noverlap,
+    res,
+    regions_specs,
     outdir_template,
     cmec,
+    fshp,
+    feature,
+    attr,
 )
