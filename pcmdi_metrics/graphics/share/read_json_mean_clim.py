@@ -157,8 +157,8 @@ def extract_data(results_dict, var_list, region, stat, season, mip, debug=False)
             model_list = sorted(
                 list(results_dict["rlut"]["RESULTS"].keys()), key=str.casefold
             )
-
-    print("extract_data:: model_list: ", model_list)
+    if debug:
+        print("extract_data:: model_list: ", model_list)
 
     data_list = []
     for model in model_list:
