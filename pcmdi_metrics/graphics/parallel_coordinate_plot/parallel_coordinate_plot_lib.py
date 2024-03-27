@@ -353,19 +353,24 @@ def parallel_coordinate_plot(
             # Get labels for legend
             labels = [violin_label] + [line.get_label() for line in ax.lines]
             # Remove unnessasary lines that its name starts with '_' to avoid the burden of warning message
-            lines = [aa for aa, bb in zip(lines, labels) if not bb.startswith('_')]
-            labels = [bb for bb in labels if not bb.startswith('_')]
+            lines = [aa for aa, bb in zip(lines, labels) if not bb.startswith("_")]
+            labels = [bb for bb in labels if not bb.startswith("_")]
             # Add legend
             ax.legend(
-                lines, labels,
-                loc=legend_loc, ncol=legend_ncol, bbox_to_anchor=legend_bbox_to_anchor,
-                fontsize=legend_fontsize
+                lines,
+                labels,
+                loc=legend_loc,
+                ncol=legend_ncol,
+                bbox_to_anchor=legend_bbox_to_anchor,
+                fontsize=legend_fontsize,
             )
         else:
             # Add legend
             ax.legend(
-                loc=legend_loc, ncol=legend_ncol, bbox_to_anchor=legend_bbox_to_anchor,
-                fontsize=legend_fontsize
+                loc=legend_loc,
+                ncol=legend_ncol,
+                bbox_to_anchor=legend_bbox_to_anchor,
+                fontsize=legend_fontsize,
             )
 
     if not logo_off:
