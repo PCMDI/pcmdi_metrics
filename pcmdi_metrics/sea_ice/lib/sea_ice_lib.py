@@ -64,32 +64,21 @@ class MetadataFile:
 def central_arctic(ds, ds_var, xvar, yvar):
     if (ds[xvar] > 180).any():  # 0 to 360
         data_ca1 = ds[ds_var].where(
-            (
-                (ds[yvar] > 80)
-                & (ds[yvar] <= 87.2)
-                & ((ds[xvar] > 240) | (ds[xvar] <= 90))
-            ),
+            ((ds[yvar] > 80) & ((ds[xvar] > 240) | (ds[xvar] <= 90))),
             0,
         )
         data_ca2 = ds[ds_var].where(
-            ((ds[yvar] > 65) & (ds[yvar] < 87.2))
-            & ((ds[xvar] > 90) & (ds[xvar] <= 240)),
+            (ds[yvar] > 65) & ((ds[xvar] > 90) & (ds[xvar] <= 240)),
             0,
         )
         data_ca = data_ca1 + data_ca2
     else:  # -180 to 180
         data_ca1 = ds[ds_var].where(
-            (
-                (ds[yvar] > 80)
-                & (ds[yvar] <= 87.2)
-                & (ds[xvar] > -120)
-                & (ds[xvar] <= 90)
-            ),
+            ((ds[yvar] > 80) & (ds[xvar] > -120) & (ds[xvar] <= 90)),
             0,
         )
         data_ca2 = ds[ds_var].where(
-            ((ds[yvar] > 65) & (ds[yvar] < 87.2))
-            & ((ds[xvar] > 90) | (ds[xvar] <= -120)),
+            (ds[yvar] > 65) & ((ds[xvar] > 90) | (ds[xvar] <= -120)),
             0,
         )
         data_ca = data_ca1 + data_ca2
