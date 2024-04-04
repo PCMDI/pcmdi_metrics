@@ -69,7 +69,10 @@ def AddParserArgument(P):
     P.add_argument("--varOBS", type=str, help="Name of variable in reference data")
     P.add_argument("--varModel", type=str, help="Name of variable in model(s)")
     P.add_argument(
-        "--eofn_obs", type=int, default=None, help="EOF mode from observation as reference"
+        "--eofn_obs",
+        type=int,
+        default=None,
+        help="EOF mode from observation as reference",
     )
     P.add_argument("--eofn_mod", type=int, default=None, help="EOF mode from model")
     P.add_argument(

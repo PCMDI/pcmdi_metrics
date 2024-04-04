@@ -666,7 +666,11 @@ for model in models:
 
                     # QC
                     if var == "ts":
-                        model_timeseries_season_regrid[var] = model_timeseries_season_regrid[var].where(model_timeseries_season_regrid[var] < 1e10)
+                        model_timeseries_season_regrid[
+                            var
+                        ] = model_timeseries_season_regrid[var].where(
+                            model_timeseries_season_regrid[var] < 1e10
+                        )
 
                     # crop to subdomain
                     model_timeseries_season_regrid_subdomain = region_subset(

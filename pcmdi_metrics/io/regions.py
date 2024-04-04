@@ -53,7 +53,7 @@ def load_regions_specs() -> dict:
         # South American Monsoon
         "SAMM": {"domain": {"latitude": (-45.0, 0.0), "longitude": (240.0, 330.0)}},
         # North African Monsoon
-        #"NAFM": {"domain": {"latitude": (0.0, 45.0), "longitude": (310.0, 60.0)}},
+        # "NAFM": {"domain": {"latitude": (0.0, 45.0), "longitude": (310.0, 60.0)}},
         "NAFM": {"domain": {"latitude": (0.0, 45.0), "longitude": (-50.0, 60.0)}},
         # South African Monsoon
         "SAFM": {"domain": {"latitude": (-45.0, 0.0), "longitude": (0.0, 90.0)}},
@@ -122,7 +122,7 @@ def region_subset(
             # proceed subset
             ds = select_subset(ds, lat=(min(lat0, lat1), max(lat0, lat1)))
             if debug:
-                print('region_subset, latitude subsetted, ds:', ds)
+                print("region_subset, latitude subsetted, ds:", ds)
 
         if "longitude" in regions_specs[region]["domain"]:
             lon0 = regions_specs[region]["domain"]["longitude"][0]
@@ -143,10 +143,10 @@ def region_subset(
                     ds = xc.swap_lon_axis(ds, to=(-180, 180))
 
             # proceed subset
-            #ds = select_subset(ds, lon=(min(lon0, lon1), max(lon0, lon1)))
+            # ds = select_subset(ds, lon=(min(lon0, lon1), max(lon0, lon1)))
             ds = select_subset(ds, lon=(lon0, lon1))
             if debug:
-                print('region_subset, longitude subsetted, ds:', ds)
+                print("region_subset, longitude subsetted, ds:", ds)
 
     # return the same type
     if is_dataArray:

@@ -283,11 +283,11 @@ def gain_pcs_fraction(
     eof_pattern = ds_eof_pattern[varname_eof_pattern]
 
     if debug:
-        print('ds_full_field:', ds_full_field)
-        print('ds_eof_pattern:', ds_eof_pattern)
+        print("ds_full_field:", ds_full_field)
+        print("ds_eof_pattern:", ds_eof_pattern)
 
     # 1) Get total variacne --- using full_field
-    #time_key = get_time_key(full_field)
+    # time_key = get_time_key(full_field)
     time_key = get_time_key(ds_full_field)
     variance_total = full_field.var(dim=[time_key])
     # area average
@@ -304,7 +304,7 @@ def gain_pcs_fraction(
     reconstructed_field = eof_pattern * pcs
 
     # 2-2) Get variance of reconstructed field
-    #time_key_2 = get_time_key(reconstructed_field)
+    # time_key_2 = get_time_key(reconstructed_field)
     time_key_2 = get_time_key(ds_eof_pattern)
     variance_partial = reconstructed_field.var(dim=[time_key_2])
     # area average
