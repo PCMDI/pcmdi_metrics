@@ -38,7 +38,7 @@ def adjust_timeseries(
         ds_anomaly, data_var, mode, regions_specs, RmDomainMean=RmDomainMean
     )
     # return result
-    return ds_residual
+    return ds_residual.bounds.add_missing_bounds()
 
 
 def get_anomaly_timeseries(ds: xr.Dataset, data_var: str, season: str) -> xr.Dataset:
