@@ -40,7 +40,9 @@ def load_regions_specs() -> dict:
         "NAO": {"domain": {"latitude": (20.0, 80), "longitude": (-90, 40)}},
         "SAM": {"domain": {"latitude": (-20.0, -90), "longitude": (0, 360)}},
         "PNA": {"domain": {"latitude": (20.0, 85), "longitude": (120, 240)}},
+        "NPO": {"domain": {"latitude": (20.0, 85), "longitude": (120, 240)}},
         "PDO": {"domain": {"latitude": (20.0, 70), "longitude": (110, 260)}},
+        "NPGO": {"domain": {"latitude": (20.0, 70), "longitude": (110, 260)}},
         "AMO": {"domain": {"latitude": (0.0, 70), "longitude": (-80, 0)}},
         # Monsoon domains for Wang metrics
         # All monsoon domains
@@ -51,7 +53,8 @@ def load_regions_specs() -> dict:
         # South American Monsoon
         "SAMM": {"domain": {"latitude": (-45.0, 0.0), "longitude": (240.0, 330.0)}},
         # North African Monsoon
-        "NAFM": {"domain": {"latitude": (0.0, 45.0), "longitude": (310.0, 60.0)}},
+        #"NAFM": {"domain": {"latitude": (0.0, 45.0), "longitude": (310.0, 60.0)}},
+        "NAFM": {"domain": {"latitude": (0.0, 45.0), "longitude": (-50.0, 60.0)}},
         # South African Monsoon
         "SAFM": {"domain": {"latitude": (-45.0, 0.0), "longitude": (0.0, 90.0)}},
         # Asian Summer Monsoon
@@ -140,7 +143,8 @@ def region_subset(
                     ds = xc.swap_lon_axis(ds, to=(-180, 180))
 
             # proceed subset
-            ds = select_subset(ds, lon=(min(lon0, lon1), max(lon0, lon1)))
+            #ds = select_subset(ds, lon=(min(lon0, lon1), max(lon0, lon1)))
+            ds = select_subset(ds, lon=(lon0, lon1))
             if debug:
                 print('region_subset, longitude subsetted, ds:', ds)
 
