@@ -172,8 +172,31 @@ realization = param.realization
 print("realization: ", realization)
 
 # EOF ordinal number
-eofn_obs = int(param.eofn_obs)
-eofn_mod = int(param.eofn_mod)
+eofn_obs = param.eofn_obs
+eofn_mod = param.eofn_mod
+
+if eofn_obs is None:
+    if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
+        eofn_obs = 1
+    elif mode in ["NPGO", "NPO"]:
+        eofn_obs = 2
+    else:
+        raise ValueError(f"{eofn_obs} is not given for {mode}")
+else:
+    eofn_obs = int(eofn_obs)
+
+if eofn_mod is None:
+    if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
+        eofn_mod = 1
+    elif mode in ["NPGO", "NPO"]:
+        eofn_mod = 2
+    else:
+        raise ValueError(f"{eofn_mod} is not given for {mode}")
+else:
+    eofn_mod = int(eofn_mod)
+
+print("eofn_obs:", eofn_obs)
+print("eofn_mod:", eofn_mod)
 
 # case id
 case_id = param.case_id
