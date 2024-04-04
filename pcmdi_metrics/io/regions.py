@@ -81,6 +81,7 @@ def region_subset(
     region: str,
     data_var: str = "variable",
     regions_specs: dict = None,
+    debug: bool = False,
 ) -> Union[xr.Dataset, xr.DataArray]:
     """_summary_
 
@@ -94,6 +95,8 @@ def region_subset(
         _description_, by default None
     regions_specs : dict, optional
         _description_, by default None
+    debug: bool, optional
+        Turn on debug print, by default False
 
     Returns
     -------
@@ -114,7 +117,9 @@ def region_subset(
             lat0 = regions_specs[region]["domain"]["latitude"][0]
             lat1 = regions_specs[region]["domain"]["latitude"][1]
             # proceed subset
-            ds = select_subset(ds, lat=(lat0, lat1))
+            ds = select_subset(ds, lat=(min(lat0, lat1), max(lat0, lat1)))
+            if debug:
+                print('region_subset, latitude subsetted, ds:', ds)
 
         if "longitude" in regions_specs[region]["domain"]:
             lon0 = regions_specs[region]["domain"]["longitude"][0]
@@ -135,8 +140,11 @@ def region_subset(
                     ds = xc.swap_lon_axis(ds, to=(-180, 180))
 
             # proceed subset
-            ds = select_subset(ds, lon=(lon0, lon1))
+            ds = select_subset(ds, lon=(min(lon0, lon1), max(lon0, lon1)))
+            if debug:
+                print('region_subset, longitude subsetted, ds:', ds)
 
+    # return the same type
     if is_dataArray:
         return ds[data_var]
     else:
