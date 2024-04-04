@@ -38,7 +38,10 @@ def get_axis_list(ds: Union[xr.Dataset, xr.DataArray]) -> list[str]:
 
 
 def get_data_list(ds: Union[xr.Dataset, xr.DataArray]) -> list[str]:
-    return list(ds.data_vars.keys())
+    if isinstance(ds, xr.Dataset):
+        return list(ds.data_vars.keys())
+    elif isinstance(ds, xr.DataArray):
+        return [ds.name]
 
 
 def get_time_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
