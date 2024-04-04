@@ -180,7 +180,7 @@ def linear_regression_on_globe_for_teleconnection(
         print("pc.shape, timeseries.shape:", pc.shape, ds[data_var].shape)
 
     # Linear regression to have extended global map; teleconnection purpose
-    slope, intercept = linear_regression(pc, ds[data_var])
+    slope, intercept = linear_regression(pc, ds[data_var], debug=debug)
 
     if not RmDomainMean and EofScaling:
         factor = 1
@@ -198,8 +198,8 @@ def linear_regression(x, y, debug=False):
     """
     NOTE: Proceed linear regression
     Input
-    - x: 1d timeseries (time)
-    - y: time varying 2d field (time, lat, lon)
+    - x: xr.DataArray, 1d timeseries (time)
+    - y: xr.DataArray, time varying 2d field (time, lat, lon)
     Output
     - slope: 2d array, spatial map, linear regression slope on each grid
     - intercept: 2d array, spatial map, linear regression intercept on each grid
@@ -225,7 +225,7 @@ def linear_regression(x, y, debug=False):
         intercept, coords={"lat": lat, "lon": lon}, dims=["lat", "lon"]
     )
     # return result
-    return slope, intercept
+    return slope.where(slope != 1e20), intercept.where(intercept != 1e20)
 
 
 def gain_pseudo_pcs(
@@ -282,8 +282,13 @@ def gain_pcs_fraction(
     full_field = ds_full_field[varname_full_field]
     eof_pattern = ds_eof_pattern[varname_eof_pattern]
 
+    if debug:
+        print('ds_full_field:', ds_full_field)
+        print('ds_eof_pattern:', ds_eof_pattern)
+
     # 1) Get total variacne --- using full_field
-    time_key = get_time_key(full_field)
+    #time_key = get_time_key(full_field)
+    time_key = get_time_key(ds_full_field)
     variance_total = full_field.var(dim=[time_key])
     # area average
     varname_variance_total = "variance_total"
@@ -299,7 +304,8 @@ def gain_pcs_fraction(
     reconstructed_field = eof_pattern * pcs
 
     # 2-2) Get variance of reconstructed field
-    time_key_2 = get_time_key(reconstructed_field)
+    #time_key_2 = get_time_key(reconstructed_field)
+    time_key_2 = get_time_key(ds_eof_pattern)
     variance_partial = reconstructed_field.var(dim=[time_key_2])
     # area average
     varname_variance_partial = "variance_partial"

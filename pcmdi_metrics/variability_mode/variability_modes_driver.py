@@ -352,10 +352,16 @@ if obs_compare:
             obs_timeseries, obs_var, mode, season, regions_specs, RmDomainMean
         )
 
+        if debug:
+            print("obs_timeseries_season", obs_timeseries_season)
+
         # Extract subdomain
         obs_timeseries_season_subdomain = region_subset(
             obs_timeseries_season, mode, regions_specs
         )
+
+        if debug:
+            print("obs_timeseries_season_subdomain", obs_timeseries_season_subdomain)
 
         # EOF analysis
         debug_print("EOF analysis", debug)
@@ -631,12 +637,17 @@ for model in models:
                         model_timeseries_season,
                         var,
                         ref_grid_global,
-                        regrid_tool="xesmf",
+                        regrid_tool="regrid2",
                         fill_zero=True,
                     )
+
+                    # QC
+                    if var == "ts":
+                        model_timeseries_season_regrid[var] = model_timeseries_season_regrid[var].where(model_timeseries_season_regrid[var] < 1e10)
+
                     # crop to subdomain
                     model_timeseries_season_regrid_subdomain = region_subset(
-                        model_timeseries_season_regrid, mode, regions_specs
+                        model_timeseries_season_regrid, mode, regions_specs, debug=debug
                     )
 
                     # Matching model's missing value location to that of observation
