@@ -9,6 +9,8 @@ set -a
 
 ver=`date +"%Y%m%d-%H%M"`
 case_id="v"`date +"%Y%m%d"`
+#case_id="v20240311"
+#case_id="v20240401"
 
 #mips='cmip3 cmip5 cmip6'
 #mips='cmip5 cmip6'
@@ -26,6 +28,8 @@ modes='all'
 #modes='NAO NPO PNA'
 #modes='NAM NAO PNA NPO'
 #modes='SAM PDO NPGO'
+#modes="NAO NPO PNA SAM NPGO"
+#modes="NAM PDO"
 
 modnames='all'
 
@@ -62,8 +66,8 @@ for mip in $mips; do
                 mode_o='NAM'
             fi
 
-            echo $mip $exp $mode $case_id
-             ./parallel_driver.py -p ${param_dir}/myParam_pcmdi_${mode_o}.py --param_dir $param_dir --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode --num_workers $num_workers >& ./log/$mip/$exp/$case_id/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
+            echo $mip $exp $mode $case_id $mode_o
+            ./parallel_driver.py -p ${param_dir}/myParam_pcmdi_${mode_o}.py --param_dir $param_dir --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode --num_workers $num_workers >& ./log/$mip/$exp/$case_id/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
             disown
             sleep 1
         done

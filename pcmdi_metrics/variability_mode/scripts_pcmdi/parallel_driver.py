@@ -109,7 +109,7 @@ for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
 # -------------------------------------------------
 param_dir = param.param_dir
 
-if mode in ["PDO", "NPO", "AMO"]:
+if mode in ["PDO", "NPGO", "AMO"]:
     mode_param = "PDO"
 elif mode in ["SAM"]:
     mode_param = "SAM"
@@ -171,6 +171,8 @@ for m, model in enumerate(models):
             param_file,
             "--case_id",
             case_id,
+            "--variability_mode",
+            mode,
             "--mip",
             mip,
             "--exp",
