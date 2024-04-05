@@ -9,7 +9,6 @@ set -a
 
 ver=`date +"%Y%m%d-%H%M"`
 case_id="v"`date +"%Y%m%d"`
-#case_id="v20240311"
 #case_id="v20240401"
 
 #mips='cmip3 cmip5 cmip6'
@@ -30,6 +29,7 @@ modes='all'
 #modes='SAM PDO NPGO'
 #modes="NAO NPO PNA SAM NPGO"
 #modes="NAM PDO"
+#modes="NPO NPGO"
 
 modnames='all'
 
