@@ -87,9 +87,9 @@ def pick_year_last_day(ds):
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+#list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
 #list_monsoon_regions = ["AUS"]
-#list_monsoon_regions = ["Sahel"]
+list_monsoon_regions = ["Sahel"]
 #list_monsoon_regions = ["GoG"]
 #list_monsoon_regions = ["NHEX"]
 #list_monsoon_regions = ["AIR"]
@@ -333,9 +333,19 @@ for model in models:
                 #print("\n")
 
                 # Get time coordinate information
-
+                print("model_path =   " , model_path)
+                #dc = xc.open_mfdataset(model_path, decode_times=False)
+                #dc = xc.open_mfdataset(model_path, decode_times=True)
+                #dc = xc.open_mfdataset(model_path, decode_times=True, preprocess=lambda dc: dc.isel(time=slice(0, -1)))
+                #print(dc.lat)
+                #print(dc.lat.values)
+                #dc = xc.open_mfdataset(model_path, decode_times=True)
+                #print(dc.lat)
+                #print(dc.lat.values)
                 dc = xc.open_mfdataset(model_path, decode_times=True, add_bounds=['T','X','Y'])
                 dc = dc.assign_coords({"lon": lf.lon, "lat": lf.lat})
+                print("dc.time = ", dc.time)
+                print("dc.time = ", dc.time.values)
                 c = xc.center_times(dc)
                 eday = pick_year_last_day(dc)
 
@@ -450,7 +460,7 @@ for model in models:
                 # year loop, endYear+1 to include last year
                 for year in range(startYear, endYear + 1):
                     print("\n")
-                    print("XXXXXX year = ", year)
+                    print(" year = ", year)
                     print("\n")
                     d = dc.pr.sel(
                         time=slice(
@@ -487,7 +497,7 @@ for model in models:
                     for region in list_monsoon_regions:
                         print("\n")
                         print("=====================================================================================================")
-                        print("XXXXXX region = ", region)
+                        print(" region = ", region)
                         print("\n")
                         # extract for monsoon region
                         if region in ["GoG", "NAmo"]:
@@ -505,9 +515,9 @@ for model in models:
                             d_sub_pr.values = d_sub_pr.values * 86400.0
                             d_sub_pr["units"] = units
 
-                            d_sub_pr.to_netcdf("test_region_global_xcdat.nc")
+#                            d_sub_pr.to_netcdf("test_region_global_xcdat.nc")
 #                            print("\n")
-                            print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+#                            print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 #                            print("\n")
 
                         else:
@@ -522,9 +532,9 @@ for model in models:
                                 )
                             )
 
-                            d_sub_pr.to_netcdf("test_region_"+region+"_xcdat.nc")
+#                            d_sub_pr.to_netcdf("test_region_"+region+"_xcdat.nc")
 #                            print("\n")
-                            print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+#                            print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 #                            print("\n")
 
                             lf_sub_ds = region_subset(
@@ -536,10 +546,10 @@ for model in models:
                             )
 
                             #lf_sub.to_netcdf("lf_"+region+"_xcdat_pcmdi.nc")
-                            lf_sub.to_netcdf("lf_"+region+"_xcdat.nc")
-                            d_sub_pr.to_netcdf("test_region_land_"+region+"_xcdat.nc")
+#                            lf_sub.to_netcdf("lf_"+region+"_xcdat.nc")
+#                            d_sub_pr.to_netcdf("test_region_land_"+region+"_xcdat.nc")
 #                            print("\n")
-                            print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+#                            print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 #                            print("\n")
                             #print("\n")
                             #print("KKKKKKKKK  save nc save nc  save nc")
@@ -553,8 +563,38 @@ for model in models:
                         # Area average
 
                         ds_sub_pr = d_sub_pr.to_dataset().compute()
+#                        print("\n")
+#                        print("#############################################")
+#                        print("ds_sub_pr.shape = ", ds_sub_pr.dims)
+#                        print("ds_sub_pr.variables.keys() = ", list(ds_sub_pr.variables.keys()))
+#                        print("ds_sub_pr.variable = ", ds_sub_pr.variables)
+#                        print("ds_sub_pr.keys() = ", list(ds_sub_pr.keys()))
+#                        print("ds_sub_pr.lat = ", ds_sub_pr['lat'])
+#                        print("ds_sub_pr.lat.attrs.lat_bounds = ", ds_sub_pr['lat'].attrs.get('bounds'))
+#                        print("ds_sub_pr.units = ", ds_sub_pr['units'])
+                        #print("ds_sub_pr.lat.attrs.lat_bnds.balues = ", ds_sub_pr['lon_bnds'])
+#                        print("\n")
+                        dc = dc.bounds.add_missing_bounds("X")
+#                        print("dc lat bnds =   ", dc['lat'].attrs['bounds'])
+#                        #print("dc lat bnds values =   ", dc['lat'].attrs['bounds'].values)
+#                        print("dc lat bnds values =   ", dc['lat_bnds'])
+#                        print("dc lat bnds values =   ", dc['lat_bnds'].values)
+#                        print("dc.lat =   ", dc['lat'].sel(lat=ds_sub_pr['lat']))
+#                        print("dc.lat_bnds =   ", dc['lat_bnds'].sel(lat=ds_sub_pr['lat']))
+#                        print("dc.lat_bnds.values =   ", dc['lat_bnds'].sel(lat=ds_sub_pr['lat'].values))
+#                        print("\n")
                         ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("X")
                         ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("Y")
+ #                       print("d_sub_pr = , ", d_sub_pr)
+                        #lat_bnds = dc['lat_bnds'].sel(lat=ds_sub_pr['lat'])
+                        #ds_sub_pr['lat'].attrs['bounds'] = 'lat_bnds'
+                        #ds_sub_pr['lat'].attrs['bounds'] = lat_bnds
+                        #ds_sub_pr['lat_bnds'] = lat_bnds
+                        if 'lat_bnds' not in ds_sub_pr.variables:
+                            lat_bnds = dc['lat_bnds'].sel(lat=ds_sub_pr['lat'])
+                            ds_sub_pr['lat_bnds'] = lat_bnds
+
+#                        print("d_sub_pr = , ", d_sub_pr)
                         ds_sub_aave = ds_sub_pr.spatial.average(
                             "pr", axis=["X", "Y"], weights="generate"
                         ).compute()
