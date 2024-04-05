@@ -49,7 +49,6 @@ ModUnitsAdjust = (True, "subtract", 273.15)  # degK to degC
 
 osyear = 1900
 oeyear = 2005
-eofn_obs = 1
 
 # =================================================
 # Models
@@ -75,7 +74,6 @@ ModUnitsAdjust = (True, "subtract", 273.15)  # degK to degC
 
 msyear = 1900
 meyear = 2005
-eofn_mod = 1
 
 # =================================================
 # Output

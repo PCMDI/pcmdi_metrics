@@ -52,7 +52,6 @@ ObsUnitsAdjust = (True, "divide", 100.0)  # Pa to hPa; or (False, 0, 0)
 
 osyear = 1955
 oeyear = 2005
-eofn_obs = 1
 
 # =================================================
 # Models
@@ -72,7 +71,6 @@ ModUnitsAdjust = (True, "divide", 100.0)  # Pa to hPa
 
 msyear = 1900
 meyear = 2005
-eofn_mod = 1
 
 # =================================================
 # Output
