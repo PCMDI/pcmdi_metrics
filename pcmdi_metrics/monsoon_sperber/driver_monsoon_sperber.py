@@ -335,24 +335,14 @@ for model in models:
                         monsoon_stat_dic["RESULTS"][model][run] = {}
                 print("\n")
                 print(" --- ", run, " ---")
-                # print("\n")
 
                 # Get time coordinate information
                 print("model_path =   ", model_path)
-                # dc = xc.open_mfdataset(model_path, decode_times=False)
-                # dc = xc.open_mfdataset(model_path, decode_times=True)
-                # dc = xc.open_mfdataset(model_path, decode_times=True, preprocess=lambda dc: dc.isel(time=slice(0, -1)))
-                # print(dc.lat)
-                # print(dc.lat.values)
-                # dc = xc.open_mfdataset(model_path, decode_times=True)
-                # print(dc.lat)
-                # print(dc.lat.values)
+
                 dc = xc.open_mfdataset(
                     model_path, decode_times=True, add_bounds=["T", "X", "Y"]
                 )
                 dc = dc.assign_coords({"lon": lf.lon, "lat": lf.lat})
-                print("dc.time = ", dc.time)
-                print("dc.time = ", dc.time.values)
                 c = xc.center_times(dc)
                 eday = pick_year_last_day(dc)
 
@@ -386,10 +376,6 @@ for model in models:
                 list_pentad_time_series = {}
                 list_pentad_time_series_cumsum = {}  # Cumulative time series
                 for region in list_monsoon_regions:
-                    #                    print("\n")
-                    #                    print("==========  region =  "+region+"   ===============================================================================")
-                    #                    print("\n")
-                    #                    print("region = ", region)
                     list_pentad_time_series[region] = []
                     list_pentad_time_series_cumsum[region] = []
 
@@ -481,9 +467,6 @@ for model in models:
                         ),
                         lat=slice(-90, 90),
                     )
-                    # print("xxx d =, ", d.values)
-                    #                    print("xxx d =, ", d.values[0,0,0])
-                    #                    print("type d type,", type(d))
                     # unit adjust
                     if UnitsAdjust[0]:
                         """Below two lines are identical to following:
@@ -493,9 +476,6 @@ for model in models:
                         d.values = d.values * 86400.0
                         d["units"] = units
 
-                    #                    print("UnitAdjust[0] =  ", UnitsAdjust[0])
-                    #                    print("xxx d =, ", d[0,0,0])
-                    #                    print("\n")
 
                     # variable for over land only
                     d_land = model_land_only(model, d, lf, debug=debug)
@@ -508,9 +488,6 @@ for model in models:
 
                     for region in list_monsoon_regions:
                         print("\n")
-                        print(
-                            "====================================================================================================="
-                        )
                         print(" region = ", region)
                         print("\n")
                         # extract for monsoon region
@@ -529,10 +506,6 @@ for model in models:
                             d_sub_pr.values = d_sub_pr.values * 86400.0
                             d_sub_pr["units"] = units
 
-                        #                            d_sub_pr.to_netcdf("test_region_global_xcdat.nc")
-                        #                            print("\n")
-                        #                            print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-                        #                            print("\n")
 
                         else:
                             # land-only rainfall
@@ -546,10 +519,6 @@ for model in models:
                                 )
                             )
 
-                            #                            d_sub_pr.to_netcdf("test_region_"+region+"_xcdat.nc")
-                            #                            print("\n")
-                            #                            print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-                            #                            print("\n")
 
                             lf_sub_ds = region_subset(
                                 ds_lf, regions_specs, region=region
@@ -559,63 +528,27 @@ for model in models:
                                 model, d_sub_pr, lf_sub, debug=debug
                             )
 
-                            # lf_sub.to_netcdf("lf_"+region+"_xcdat_pcmdi.nc")
-                            #                            lf_sub.to_netcdf("lf_"+region+"_xcdat.nc")
-                            #                            d_sub_pr.to_netcdf("test_region_land_"+region+"_xcdat.nc")
-                            #                            print("\n")
-                            #                            print("NetCDF file saved  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-                            #                            print("\n")
-                            # print("\n")
-                            # print("KKKKKKKKK  save nc save nc  save nc")
 
                             d_sub_pr.values = d_sub_pr.values * 86400.0
                             d_sub_pr["units"] = units
 
-                        #                        print("HHHHHHHH d_sub_pr  =  ", d_sub_pr.values[0,0,0])
-                        #                        print("HHHHHHHH d_sub_pr.size  =  ", d_sub_pr.size)
 
                         # Area average
 
                         ds_sub_pr = d_sub_pr.to_dataset().compute()
-                        #                        print("\n")
-                        #                        print("#############################################")
-                        #                        print("ds_sub_pr.shape = ", ds_sub_pr.dims)
-                        #                        print("ds_sub_pr.variables.keys() = ", list(ds_sub_pr.variables.keys()))
-                        #                        print("ds_sub_pr.variable = ", ds_sub_pr.variables)
-                        #                        print("ds_sub_pr.keys() = ", list(ds_sub_pr.keys()))
-                        #                        print("ds_sub_pr.lat = ", ds_sub_pr['lat'])
-                        #                        print("ds_sub_pr.lat.attrs.lat_bounds = ", ds_sub_pr['lat'].attrs.get('bounds'))
-                        #                        print("ds_sub_pr.units = ", ds_sub_pr['units'])
-                        # print("ds_sub_pr.lat.attrs.lat_bnds.balues = ", ds_sub_pr['lon_bnds'])
-                        #                        print("\n")
                         dc = dc.bounds.add_missing_bounds("X")
-                        #                        print("dc lat bnds =   ", dc['lat'].attrs['bounds'])
-                        #                        #print("dc lat bnds values =   ", dc['lat'].attrs['bounds'].values)
-                        #                        print("dc lat bnds values =   ", dc['lat_bnds'])
-                        #                        print("dc lat bnds values =   ", dc['lat_bnds'].values)
-                        #                        print("dc.lat =   ", dc['lat'].sel(lat=ds_sub_pr['lat']))
-                        #                        print("dc.lat_bnds =   ", dc['lat_bnds'].sel(lat=ds_sub_pr['lat']))
-                        #                        print("dc.lat_bnds.values =   ", dc['lat_bnds'].sel(lat=ds_sub_pr['lat'].values))
-                        #                        print("\n")
                         ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("X")
                         ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("Y")
-                        #                       print("d_sub_pr = , ", d_sub_pr)
-                        # lat_bnds = dc['lat_bnds'].sel(lat=ds_sub_pr['lat'])
-                        # ds_sub_pr['lat'].attrs['bounds'] = 'lat_bnds'
-                        # ds_sub_pr['lat'].attrs['bounds'] = lat_bnds
-                        # ds_sub_pr['lat_bnds'] = lat_bnds
+
                         if "lat_bnds" not in ds_sub_pr.variables:
                             lat_bnds = dc["lat_bnds"].sel(lat=ds_sub_pr["lat"])
                             ds_sub_pr["lat_bnds"] = lat_bnds
 
-                        #                        print("d_sub_pr = , ", d_sub_pr)
                         ds_sub_aave = ds_sub_pr.spatial.average(
                             "pr", axis=["X", "Y"], weights="generate"
                         ).compute()
                         d_sub_aave = ds_sub_aave.pr
 
-                        #                        print("PPPPPPPPPP  d_sub_aave =  ", d_sub_aave.values[0:10])
-                        #                        print("PPPPPPPPPP  d_sub_aave.pr =  ", ds_sub_aave.pr.values[0:10])
 
                         if debug:
                             print("debug: region:", region)
@@ -660,8 +593,6 @@ for model in models:
                                         year,
                                         d_sub_aave.time,
                                     )
-                        #                        print("XXXXXXXXX")
-                        #                        print("d_sub_aave", d_sub_aave)
 
                         # get pentad time series
                         list_d_sub_aave_chunks = list(
@@ -698,8 +629,6 @@ for model in models:
                                 pentad_time_series, ref_length, debug=debug
                             )
 
-                        #                        print('DDDDDDDDDDDDDDDD')
-                        #                        print('pentad_time_series = ',pentad_time_series)
 
                         pentad_time_series_cumsum = np.cumsum(pentad_time_series)
                         pentad_time_series = xr.DataArray(
@@ -718,9 +647,6 @@ for model in models:
                         pentad_time_series_cumsum.attrs["units"] = str(d.units.values)
                         pentad_time_series_cumsum.coords["time"] = time_coords
 
-                        #                        print('pentad_time_series = ',pentad_time_series)
-                        #                        print('pentad_time_series_cumsum = ', pentad_time_series_cumsum)
-                        #                        print('EEEEEEEEEEEEEEEEEE')
 
                         if nc_out:
                             # Archive individual year time series in netCDF file
@@ -767,10 +693,6 @@ for model in models:
                     composite_pentad_time_series_cumsum = np.cumsum(
                         composite_pentad_time_series
                     )
-
-                    #                    print("UUUUUUUUUUU region = ",region)
-                    #                    print('composite_pentad_time_series =. ',composite_pentad_time_series)
-                    #                    print('composite_pentad_time_series_cumsum =.  ',composite_pentad_time_series_cumsum)
 
                     # Maintain axis information
 
