@@ -55,10 +55,8 @@ def calc_stats_save_dict(
     debug_print("frac and stdv_pc end", debug)
 
     # Mean
-    mean = mean_xy(eof)
-    mean_glo = mean_xy(eof_lr)
-    dict_head["mean"] = float(mean)
-    dict_head["mean_glo"] = float(mean_glo)
+    dict_head["mean"] = mean_xy(eof)
+    dict_head["mean_glo"] = mean_xy(eof_lr)
     debug_print("mean end", debug)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -85,18 +83,30 @@ def calc_stats_save_dict(
         # Spatial correlation weighted by area ('generate' option for weights)
         cor = calcSCOR(eof_model, eof_obs)
         cor_glo = calcSCOR(eof_model_global, eof_lr_obs)
+        debug_print(f"cor: {cor}", debug)
         debug_print("cor end", debug)
 
         if method == "eof":
             # Double check for arbitrary sign control
             if cor < 0:
-                variables_to_flip_sign = [eof, pc, eof_lr, eof_model_global, eof_model]
-                for variable in variables_to_flip_sign:
-                    variable *= -1
+                debug_print("eof pattern pcor < 0, flip sign!", debug)
+                #variables_to_flip_sign = [eof, pc, eof_lr, eof_model_global, eof_model]
+                #for variable in variables_to_flip_sign:
+                #    variable *= -1
+                eof.values = eof.values * -1
+                pc.values = pc.values * -1
+                eof_lr.values = eof_lr.values * -1
+                eof_model.values = eof_model.values * -1
+                eof_model_global.values = eof_model_global.values * -1
 
                 # Calc cor again
                 cor = calcSCOR(eof_model, eof_obs)
                 cor_glo = calcSCOR(eof_model_global, eof_lr_obs)
+                debug_print(f"cor (revised): {cor}", debug)
+
+                # Also update mean value
+                dict_head["mean"] = mean_xy(eof)
+                dict_head["mean_glo"] = mean_xy(eof_lr)
 
         # RMS (uncentered) difference
         rms = calcRMS(eof_model, eof_obs)
