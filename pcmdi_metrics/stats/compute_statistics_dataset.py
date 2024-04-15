@@ -285,17 +285,14 @@ def rmsc_xy(dm, do, var="variable", weights=None, NormalizeByOwnSTDV=False):
         weights = dm.spatial.get_weights(axis=["X", "Y"])
 
     if NormalizeByOwnSTDV:
-        dm_tmp = dm[var] / std_xy(dm[var], var=var, weights=weights)
-        do_tmp = do[var] / std_xy(do[var], var=var, weights=weights)
+        dm_tmp = dm[var] / std_xy(dm, var=var, weights=weights)
+        do_tmp = do[var] / std_xy(do, var=var, weights=weights)
     else:
-        dm_tmp = dm[var].copy()
-        do_tmp = do[var].copy()
+        # Remove mean
+        dm_tmp = dm[var] - mean_xy(dm, var=var, weights=weights)
+        do_tmp = do[var] - mean_xy(do, var=var, weights=weights)
 
-    # Remove mean
-    dm_anomaly = dm_tmp - mean_xy(dm_tmp, var=var, weights=weights)
-    do_anomaly = do_tmp - mean_xy(do_tmp, var=var, weights=weights)
-
-    stat = rms_xy(dm_anomaly, do_anomaly, var=var, weights=weights)
+    stat = rms_xy(dm_tmp, do_tmp, var=var, weights=weights)
     return float(stat)
 
 
