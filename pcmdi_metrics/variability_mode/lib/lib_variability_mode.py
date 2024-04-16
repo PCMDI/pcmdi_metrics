@@ -66,9 +66,6 @@ def read_data_in(
 ) -> xr.Dataset:
     # Open data file
     ds = xcdat_open(path)
-    ds = (
-        ds.bounds.add_missing_bounds()
-    )  # https://xcdat.readthedocs.io/en/latest/generated/xarray.Dataset.bounds.add_missing_bounds.html
 
     # Time subset
     ds_time_subsetted = subset_time(ds, syear, eyear, debug=debug)
