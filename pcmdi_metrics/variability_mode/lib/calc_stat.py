@@ -90,8 +90,8 @@ def calc_stats_save_dict(
             # Double check for arbitrary sign control
             if cor < 0:
                 debug_print("eof pattern pcor < 0, flip sign!", debug)
-                #variables_to_flip_sign = [eof, pc, eof_lr, eof_model_global, eof_model]
-                #for variable in variables_to_flip_sign:
+                # variables_to_flip_sign = [eof, pc, eof_lr, eof_model_global, eof_model]
+                # for variable in variables_to_flip_sign:
                 #    variable *= -1
                 eof.values = eof.values * -1
                 pc.values = pc.values * -1
