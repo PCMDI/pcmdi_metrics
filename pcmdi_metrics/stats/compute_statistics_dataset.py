@@ -182,6 +182,8 @@ def meanabs_xy(dm, do, var="variable", weights=None):
 
     dif = abs(dm[var] - do[var])
     stat = dif.weighted(weights).mean(("lon", "lat"))
+
+    del dif
     return float(stat)
 
 
@@ -205,6 +207,8 @@ def meanabs_xyt(dm, do, var="variable"):
         .temporal.average("absdif")["absdif"]
         .values
     )
+
+    del ds
     return float(stat)
 
 
@@ -291,6 +295,8 @@ def rms_xyt(dm, do, var="variable"):
         ds.spatial.average("diff_square", axis=["X", "Y"])["diff_square"]
     )
     stat = ds.temporal.average("diff_square_sqrt")["diff_square_sqrt"].values
+
+    del ds
     return float(stat)
 
 
