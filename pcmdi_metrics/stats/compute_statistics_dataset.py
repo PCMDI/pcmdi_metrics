@@ -311,7 +311,7 @@ def rmsc_xy(dm, do, var="variable", weights=None, NormalizeByOwnSTDV=False):
             "Abstract": "Compute Centered Spatial Root Mean Square",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
-    
+
     if isinstance(dm, xr.DataArray):
         dm = da_to_ds(dm, var)
 
@@ -332,7 +332,7 @@ def rmsc_xy(dm, do, var="variable", weights=None, NormalizeByOwnSTDV=False):
 
     del dm_tmp
     del do_tmp
-    
+
     return float(stat)
 
 
