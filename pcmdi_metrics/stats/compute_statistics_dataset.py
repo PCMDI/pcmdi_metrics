@@ -229,8 +229,17 @@ def rms_0(dm, do, var="variable", weighted=True):
     return float(stat)
 
 
-def rms_xy(dm, do, var="variable", weights=None):
-    """Computes rms"""
+def rms_xy(dm, do, var="variable", weights=None, centered=False):
+    """Computes root-mean-square error/difference (RMSE)"
+
+    Args:
+        dm (xarray Dataset or DataArray): Input data
+        do (xarray Dataset or DataArray): Second input data to compare with
+        var (str, optional): Name of DataArray in Dataset when dm and do are xarray Dataset. Defaults to "variable".
+        weights (xarray DataArray, optional): Weights. Defaults to None.
+        centered (bool, optional): If centered, calculate centered RMSE. Defaults to False.
+    """
+
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Spatial Root Mean Square",
@@ -238,13 +247,29 @@ def rms_xy(dm, do, var="variable", weights=None):
             "Contact": "pcmdi-metrics@llnl.gov",
         }
 
-    dm = da_to_ds(dm, var)
-    do = da_to_ds(do, var)
+    if isinstance(dm, xr.DataArray):
+        dm = da_to_ds(dm, var)
 
-    dif_square = (dm[var] - do[var]) ** 2
+    if isinstance(do, xr.DataArray):
+        do = da_to_ds(do, var)
+
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
+
+    dm_tmp = dm.copy()
+    do_tmp = do.copy()
+
+    if centered:
+        dm_tmp[var] = dm[var] - mean_xy(dm, var=var, weights=weights)
+        do_tmp[var] = do[var] - mean_xy(do, var=var, weights=weights)
+
+    dif_square = (dm_tmp[var] - do_tmp[var]) ** 2
+
     stat = math.sqrt(mean_xy(dif_square, var=var, weights=weights))
+
+    del dm_tmp
+    del do_tmp
+
     return float(stat)
 
 
@@ -270,29 +295,44 @@ def rms_xyt(dm, do, var="variable"):
 
 
 def rmsc_xy(dm, do, var="variable", weights=None, NormalizeByOwnSTDV=False):
-    """Computes centered rms"""
+    """Computes centered root-mean-square error/difference (RMSE)"
+
+    Args:
+        dm (xarray Dataset or DataArray): Input data
+        do (xarray Dataset or DataArray): Second input data to compare with
+        var (str, optional): Name of DataArray in Dataset when dm and do are xarray Dataset. Defaults to "variable".
+        weights (xarray DataArray, optional): Weights. Defaults to None.
+        NormalizeByOwnSTDV (bool, optional): _description_. Defaults to False.
+    """
+
     if dm is None and do is None:  # just want the doc
         return {
             "Name": "Spatial Root Mean Square",
             "Abstract": "Compute Centered Spatial Root Mean Square",
             "Contact": "pcmdi-metrics@llnl.gov",
         }
+    
+    if isinstance(dm, xr.DataArray):
+        dm = da_to_ds(dm, var)
 
-    dm = da_to_ds(dm, var)
-    do = da_to_ds(do, var)
+    if isinstance(do, xr.DataArray):
+        do = da_to_ds(do, var)
 
     if weights is None:
         weights = dm.spatial.get_weights(axis=["X", "Y"])
 
-    if NormalizeByOwnSTDV:
-        dm_tmp = dm[var] / std_xy(dm, var=var, weights=weights)
-        do_tmp = do[var] / std_xy(do, var=var, weights=weights)
-    else:
-        # Remove mean
-        dm_tmp = dm[var] - mean_xy(dm, var=var, weights=weights)
-        do_tmp = do[var] - mean_xy(do, var=var, weights=weights)
+    dm_tmp = dm.copy()
+    do_tmp = do.copy()
 
-    stat = rms_xy(dm_tmp, do_tmp, var=var, weights=weights)
+    if NormalizeByOwnSTDV:
+        dm_tmp[var] = dm[var] / std_xy(dm, var=var, weights=weights)
+        do_tmp[var] = do[var] / std_xy(do, var=var, weights=weights)
+
+    stat = rms_xy(dm_tmp, do_tmp, var=var, weights=weights, centered=True)
+
+    del dm_tmp
+    del do_tmp
+    
     return float(stat)
 
 
