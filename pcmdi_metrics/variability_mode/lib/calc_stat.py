@@ -3,11 +3,7 @@ from time import gmtime, strftime
 import xarray as xr
 
 from pcmdi_metrics.io import get_grid, region_subset
-from pcmdi_metrics.stats import bias_xy as calcBias
-from pcmdi_metrics.stats import cor_xy as calcSCOR
-from pcmdi_metrics.stats import mean_xy
-from pcmdi_metrics.stats import rms_xy as calcRMS
-from pcmdi_metrics.stats import rmsc_xy as calcRMSc
+from pcmdi_metrics.stats import bias_xy, cor_xy, mean_xy, rms_xy, rmsc_xy
 from pcmdi_metrics.utils import regrid
 
 
@@ -81,8 +77,8 @@ def calc_stats_save_dict(
         eof_model = region_subset(eof_model_global, mode, regions_specs=regions_specs)
 
         # Spatial correlation weighted by area ('generate' option for weights)
-        cor = calcSCOR(eof_model, eof_obs)
-        cor_glo = calcSCOR(eof_model_global, eof_lr_obs)
+        cor = cor_xy(eof_model, eof_obs)
+        cor_glo = cor_xy(eof_model_global, eof_lr_obs)
         debug_print(f"cor: {cor}", debug)
         debug_print("cor end", debug)
 
@@ -100,8 +96,8 @@ def calc_stats_save_dict(
                 eof_model_global.values = eof_model_global.values * -1
 
                 # Calc cor again
-                cor = calcSCOR(eof_model, eof_obs)
-                cor_glo = calcSCOR(eof_model_global, eof_lr_obs)
+                cor = cor_xy(eof_model, eof_obs)
+                cor_glo = cor_xy(eof_model_global, eof_lr_obs)
                 debug_print(f"cor (revised): {cor}", debug)
 
                 # Also update mean value
@@ -109,18 +105,18 @@ def calc_stats_save_dict(
                 dict_head["mean_glo"] = mean_xy(eof_lr)
 
         # RMS (uncentered) difference
-        rms = calcRMS(eof_model, eof_obs)
-        rms_glo = calcRMS(eof_model_global, eof_lr_obs)
+        rms = rms_xy(eof_model, eof_obs)
+        rms_glo = rms_xy(eof_model_global, eof_lr_obs)
         debug_print("rms end", debug)
 
         # RMS (centered) difference
-        rmsc = calcRMSc(eof_model, eof_obs)
-        rmsc_glo = calcRMSc(eof_model_global, eof_lr_obs)
+        rmsc = rmsc_xy(eof_model, eof_obs, NormalizeByOwnSTDV=True)
+        rmsc_glo = rmsc_xy(eof_model_global, eof_lr_obs, NormalizeByOwnSTDV=True)
         debug_print("rmsc end", debug)
 
         # Bias
-        bias = calcBias(eof_model, eof_obs)
-        bias_glo = calcBias(eof_model_global, eof_lr_obs)
+        bias = bias_xy(eof_model, eof_obs)
+        bias_glo = bias_xy(eof_model_global, eof_lr_obs)
         debug_print("bias end", debug)
 
         # Add to dictionary for json output
