@@ -381,9 +381,6 @@ def prepare_data(data, xaxis_labels, yaxis_labels, debug=False):
     if debug:
         print("num_divide:", num_divide)
 
-    # Mask out nan data
-    data = np.ma.masked_invalid(data)
-
     return data, num_divide
 
 
