@@ -30,6 +30,7 @@ modes='all'
 #modes="NAO NPO PNA SAM NPGO"
 #modes="NAM PDO"
 #modes="NPO NPGO"
+#modes="SAM"
 
 modnames='all'
 

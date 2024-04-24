@@ -22,8 +22,7 @@ def main():
     # exps = ['20c3m', 'amip']
     # exps = ['20c3m']
 
-    # case_id = "v20240227"
-    case_id = "v20240402"
+    case_id = "v20240419"
 
     syear = 1900
     eyear = 2005
