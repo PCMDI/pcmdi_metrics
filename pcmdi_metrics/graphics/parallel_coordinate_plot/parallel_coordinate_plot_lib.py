@@ -26,6 +26,7 @@ def parallel_coordinate_plot(
     show_boxplot=False,
     show_violin=False,
     violin_colors=("lightgrey", "pink"),
+    violin_label=None,
     title=None,
     identify_all_models=True,
     xtick_labelsize=None,
@@ -35,6 +36,8 @@ def parallel_coordinate_plot(
     legend_off=False,
     legend_ncol=6,
     legend_bbox_to_anchor=(0.5, -0.14),
+    legend_loc="upper center",
+    legend_fontsize=10,
     logo_rect=None,
     logo_off=False,
     model_names2=None,
@@ -72,6 +75,7 @@ def parallel_coordinate_plot(
     - `show_boxplot`: bool, default=False, show box and wiskers plot
     - `show_violin`: bool, default=False, show violin plot
     - `violin_colors`: tuple or list containing two strings for colors of violin. Default=("lightgrey", "pink")
+    - `violin_label`: string to label the violin plot, when violin plot is not splited. Default is None.
     - `title`: string, default=None, plot title
     - `identify_all_models`: bool, default=True. Show and identify all models using markers
     - `xtick_labelsize`: number, fontsize for x-axis tick labels (optional)
@@ -81,6 +85,8 @@ def parallel_coordinate_plot(
     - `legend_off`: bool, default=False, turn off legend
     - `legend_ncol`: integer, default=6, number of columns for legend text
     - `legend_bbox_to_anchor`: tuple, defulat=(0.5, -0.14), set legend box location
+    - `legend_loc`: string, default="upper center", set legend box location
+    - `legend_fontsize`: float, default=8, legend font size
     - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes.
                    All quantities are in fractions of figure width and height.  Optional.
     - `logo_off`: bool, default=False, turn off PMP logo
@@ -110,6 +116,7 @@ def parallel_coordinate_plot(
     2022-09 violin plots added
     2023-03 median centered option added
     2023-04 vertical center option diversified (median, mean, or given number)
+    2024-03 parameter added for violin plot label
     """
     params = {
         "legend.fontsize": "large",
@@ -340,10 +347,31 @@ def parallel_coordinate_plot(
     ax.set_title(title, fontsize=18)
 
     if not legend_off:
-        # ax.legend(loc="upper center", ncol=6, bbox_to_anchor=(0.5, -0.14))
-        ax.legend(
-            loc="upper center", ncol=legend_ncol, bbox_to_anchor=legend_bbox_to_anchor
-        )
+        if violin_label is not None:
+            # Get all lines for legend
+            lines = [violin["bodies"][0]] + ax.lines
+            # Get labels for legend
+            labels = [violin_label] + [line.get_label() for line in ax.lines]
+            # Remove unnessasary lines that its name starts with '_' to avoid the burden of warning message
+            lines = [aa for aa, bb in zip(lines, labels) if not bb.startswith("_")]
+            labels = [bb for bb in labels if not bb.startswith("_")]
+            # Add legend
+            ax.legend(
+                lines,
+                labels,
+                loc=legend_loc,
+                ncol=legend_ncol,
+                bbox_to_anchor=legend_bbox_to_anchor,
+                fontsize=legend_fontsize,
+            )
+        else:
+            # Add legend
+            ax.legend(
+                loc=legend_loc,
+                ncol=legend_ncol,
+                bbox_to_anchor=legend_bbox_to_anchor,
+                fontsize=legend_fontsize,
+            )
 
     if not logo_off:
         fig, ax = add_logo(fig, ax, logo_rect)
