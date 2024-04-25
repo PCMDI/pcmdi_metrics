@@ -354,6 +354,9 @@ if __name__ == "__main__":
                         str(int(ds.time.dt.year[-1])),
                     ]
 
+                mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
+                ds[var] = ds[var].where(mask < 1)
+
                 # Get regions
                 clims, means = lib.process_by_region(ds, var, area[area_var].data)
 
