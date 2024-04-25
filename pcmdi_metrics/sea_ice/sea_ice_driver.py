@@ -404,7 +404,6 @@ if __name__ == "__main__":
                     )
 
                     # Organize the clims and mean for writing to file
-                    # TODO: Handle model mean case
                     df[model][rgn][run].update(
                         {
                             "monthly_climatology": [],
