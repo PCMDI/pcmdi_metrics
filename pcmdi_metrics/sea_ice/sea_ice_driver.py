@@ -336,7 +336,7 @@ if __name__ == "__main__":
                 if (ds[xvar] < -180).any():
                     ds[xvar] = ds[xvar].where(ds[xvar] >= -180, ds[xvar] + 360)
 
-                # Get time slice if year parameters existq
+                # Get time slice if year parameters exist
                 if start_year is not None:
                     ds = ds.sel(
                         {
