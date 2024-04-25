@@ -74,13 +74,13 @@ def tree():
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-#list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
 #list_monsoon_regions = ["AUS"]
 #list_monsoon_regions = ["Sahel"]
-#list_monsoon_regions = ["GoG"]
+#list_monsoon_regions = ["GoG", "Sahel"]
 #list_monsoon_regions = ["global"]
 #list_monsoon_regions = ["NHEX"]
-list_monsoon_regions = ["AIR"]
+#list_monsoon_regions = ["AIR"]
 
 # How many elements each
 # list should have
@@ -268,7 +268,11 @@ for model in models:
         # Read land fraction
         print("lf_path: ", model_lf_path)
         f_lf = cdms2.open(model_lf_path)
-        lf = f_lf("sftlf", latitude=(-90, 90))
+        try:
+            lf = f_lf("sftlf", latitude=(-90, 90))
+        
+        except:
+            lf = f_lf("sftlf", latitude=(90, -90))
         f_lf.close()
 
         # -------------------------------------------------
@@ -442,11 +446,11 @@ for model in models:
                             # all grid point rainfall
                             d_sub = d(regions_specs[region]["domain"])
 
-                            ffo2 = cdms2.open('test_region_global_cdms.nc','w')
-                            ffo2.write(d_sub, id="pr")
-                            ffo2.close()
+#                            ffo2 = cdms2.open('test_region_global_cdms.nc','w')
+#                            ffo2.write(d_sub, id="pr")
+#                            ffo2.close()
 #                            print("\n")
-                            print("NetCDF file saved $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+#                            print("NetCDF file saved $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 #                            print("\n")
 
                         else:
@@ -514,7 +518,7 @@ for model in models:
                                         "debug: ",
                                         region,
                                         year,
-                                        d_sub_aave.getTime().asComponentTime(),
+#                                        d_sub_aave.getTime().asComponentTime(),
                                     )
 #                        print("XXXXXXXXXyy")
 #                        print("d_sub_aave = ", d_sub_aave)
