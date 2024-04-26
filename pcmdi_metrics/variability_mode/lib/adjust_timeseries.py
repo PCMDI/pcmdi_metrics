@@ -9,6 +9,7 @@ from pcmdi_metrics.io import (
     region_subset,
     select_subset,
 )
+from pcmdi_metrics.utils import custom_season_departure
 
 
 def adjust_timeseries(
@@ -68,6 +69,8 @@ def get_anomaly_timeseries(ds: xr.Dataset, data_var: str, season: str) -> xr.Dat
         ds_ave = ds_anomaly.temporal.average(data_var)
         # anomaly
         ds_anomaly[data_var] = ds_anomaly[data_var] - ds_ave[data_var]
+    elif season == "monthly":
+        pass
     elif season.upper() in ["DJF", "MAM", "JJA", "SON"]:
         ds_anomaly_all_seasons = ds_anomaly.temporal.departures(
             data_var,
@@ -76,6 +79,12 @@ def get_anomaly_timeseries(ds: xr.Dataset, data_var: str, season: str) -> xr.Dat
             season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},
         )
         ds_anomaly = select_by_season(ds_anomaly_all_seasons, season)
+    else:
+        try:
+            ds_anomaly = custom_season_departure(ds_anomaly, data_var, season)
+        except ValueError as e:
+            print(f"Error: season code {season} is not recognized")
+            raise e
     # return result
     return ds_anomaly
 
