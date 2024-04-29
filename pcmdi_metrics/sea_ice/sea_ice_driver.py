@@ -48,6 +48,7 @@ if __name__ == "__main__":
     osyear = parameter.osyear
     oeyear = parameter.oeyear
     plot = parameter.plot
+    pole = parameter.pole
 
     print("Model list:", model_list)
     model_list.sort()
@@ -106,7 +107,7 @@ if __name__ == "__main__":
     mask = create_land_sea_mask(obs, lon_key=xvar, lat_key=yvar)
     obs[obs_var] = obs[obs_var].where(mask < 1)
     # Get regions
-    clims, means = lib.process_by_region(obs, obs_var, area_val)
+    clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
 
     arctic_clims = {
         "arctic": clims["arctic"],
@@ -149,7 +150,7 @@ if __name__ == "__main__":
     # Remove land areas (including lakes)
     mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
     obs[obs_var] = obs[obs_var].where(mask < 1)
-    clims, means = lib.process_by_region(obs, obs_var, area_val)
+    clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
     antarctic_clims = {
         "antarctic": clims["antarctic"],
         "io": clims["io"],
@@ -358,7 +359,7 @@ if __name__ == "__main__":
                 ds[var] = ds[var].where(mask < 1)
 
                 # Get regions
-                clims, means = lib.process_by_region(ds, var, area[area_var].data)
+                clims, means = lib.process_by_region(ds, var, area[area_var].data, pole)
 
                 ds.close()
                 # Running sum of all realizations
