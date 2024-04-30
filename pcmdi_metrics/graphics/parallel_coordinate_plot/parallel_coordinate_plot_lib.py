@@ -421,16 +421,29 @@ def _data_transform(
     # Data to plot
     ys = data  # stacked y-axis values
     N = ys.shape[1]  # number of vertical axis (i.e., =len(metric_names))
+    
     if ymax is None:
         ymaxs = np.nanmax(ys, axis=0)  # maximum (ignore nan value)
     else:
-        ymaxs = np.repeat(ymax, N)
+        try:
+            if isinstance(ymax, str) and ymax == "percentile":
+                ymaxs = np.percentile(ys, 95, axis=0)
+            else:
+                ymaxs = np.repeat(ymax, N)
+        except ValueError:
+            print(f"Invalid input for ymax: {ymax}")
 
     if ymin is None:
         ymins = np.nanmin(ys, axis=0)  # minimum (ignore nan value)
     else:
-        ymins = np.repeat(ymin, N)
-
+        try:
+            if isinstance(ymin, str) and ymin == "percentile":
+                ymins = np.percentile(ys, 5, axis=0)
+            else:
+                ymins = np.repeat(ymin, N)
+        except ValueError:
+            print(f"Invalid input for ymin: {ymin}")
+            
     ymeds = np.nanmedian(ys, axis=0)  # median
     ymean = np.nanmean(ys, axis=0)  # mean
 
@@ -439,14 +452,17 @@ def _data_transform(
             ymids = ymeds
         elif vertical_center == "mean":
             ymids = ymean
-        else:
+        elif isinstance(vertical_center, float) or isinstance(vertical_center, int):
             ymids = np.repeat(vertical_center, N)
+        else:
+            raise ValueError(f"vertical center {vertical_center} unknown.")
+            
         for i in range(0, N):
-            max_distance_from_middle = max(
+            distance_from_middle = max(
                 abs(ymaxs[i] - ymids[i]), abs(ymids[i] - ymins[i])
             )
-            ymaxs[i] = ymids[i] + max_distance_from_middle
-            ymins[i] = ymids[i] - max_distance_from_middle
+            ymaxs[i] = ymids[i] + distance_from_middle
+            ymins[i] = ymids[i] - distance_from_middle
 
     dys = ymaxs - ymins
     if ymin is None:
