@@ -66,6 +66,7 @@ A `demo parameter file`_ is provided in the sea ice code.
 * **obs_area_template**: File path of grid area data. If unavailalbe, skip and use "obs_cell_area".
 * **obs_area_var**: Name of reference area variable, if available. If unavailable, skip and use "obs_cell_area".
 * **obs_cell_area**: For equal area grids, the area of a single grid cell in units of km :sup:`2` . Only required if obs area file is not available.
+* **pole**: Set the maximum latitude for the Central Arctic and Arctic regions to exclude ice over the pole. Default is 90.1 to include all ice.
 
 Reference
 =========
