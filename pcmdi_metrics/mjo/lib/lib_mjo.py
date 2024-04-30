@@ -15,6 +15,12 @@ import numpy as np
 from scipy import signal
 
 import pcmdi_metrics
+import xarray as xr
+
+from typing import Union
+from pcmdi_metrics.io import get_time_key
+from pcmdi_metrics.utils import create_target_grid, regrid
+from pcmdi_metrics.io import select_subset
 
 
 def interp2commonGrid(d, dlat, debug=False):
@@ -34,7 +40,20 @@ def interp2commonGrid(d, dlat, debug=False):
     return d2
 
 
-def subSliceSegment(d, year, mon, day, length):
+def interp2commonGrid_xcdat(ds, data_var, dlat, dlon=None, debug=False):
+    if dlon  is None:
+        dlon = dlat
+    nlat = int(180/dlat)
+    nlon = int(360/dlon)
+    grid = create_target_grid(target_grid_resolution=f"{dlat}x{dlon}")
+    ds_regrid = regrid(ds, data_var, grid)
+    ds_regrid_subset = select_subset(ds, lat=(-10, 10))
+    if debug:
+        print("debug: ds_regrid_subset[data_var] shape:", ds_regrid_subset[data_var].shape)
+    return ds_regrid_subset
+
+
+def subSliceSegment(ds, data_var, year, mon, day, length):
     """
     Note: From given cdms array (3D: time and spatial 2D)
           Subslice to get segment with given length starting from given time.
@@ -54,6 +73,24 @@ def subSliceSegment(d, year, mon, day, length):
     n = comTim.index(cptime)  # time dimension index of above start date
     d2 = d.subSlice((n, n + length))  # slie 180 time steps starting from above index
     return d2
+
+
+def subSliceSegment_xcdat(ds: Union[xr.Dataset, xr.DataArray], year: int, mon: int, day:int, length: int) -> Union[xr.Dataset, xr.DataArray]:
+    """
+    Note: From given cdms array (3D: time and spatial 2D)
+          Subslice to get segment with given length starting from given time.
+    input
+    - ds: xarray dataset or dataArray
+    - year: segment starting year (integer)
+    - mon: segment starting month (integer)
+    - day: segement starting day (integer)
+    - length: segment length (integer)
+    """
+   
+    time_key = get_time_key(ds)
+    n = list(ds[time_key].values).index(ds.sel(time=f'{year:04}-{mon:02}-{day:02}')[time_key])
+    
+    return ds.isel(time=slice(n, n + length))  # slie 180 time steps starting from above index
 
 
 def Remove_dailySeasonalCycle(d, d_cyc):
