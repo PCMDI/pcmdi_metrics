@@ -152,7 +152,7 @@ def parallel_coordinate_plot(
         ymax=ymax,
         ymin=ymin,
     )
-    
+
     if debug:
         print("ymins:", ymins)
         print("ymaxs:", ymaxs)
@@ -438,7 +438,7 @@ def _data_transform(
     # Data to plot
     ys = data  # stacked y-axis values
     N = ys.shape[1]  # number of vertical axis (i.e., =len(metric_names))
-    
+
     if ymax is None:
         ymaxs = np.nanmax(ys, axis=0)  # maximum (ignore nan value)
     else:
@@ -460,7 +460,7 @@ def _data_transform(
                 ymins = np.repeat(ymin, N)
         except ValueError:
             print(f"Invalid input for ymin: {ymin}")
-            
+
     ymeds = np.nanmedian(ys, axis=0)  # median
     ymean = np.nanmean(ys, axis=0)  # mean
 
@@ -473,7 +473,7 @@ def _data_transform(
             ymids = np.repeat(vertical_center, N)
         else:
             raise ValueError(f"vertical center {vertical_center} unknown.")
-            
+
         for i in range(0, N):
             distance_from_middle = max(
                 abs(ymaxs[i] - ymids[i]), abs(ymids[i] - ymins[i])
