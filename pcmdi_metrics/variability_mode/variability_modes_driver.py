@@ -564,9 +564,7 @@ for model in models:
         # try:
         if 1:
             if realization == "*":
-                run = re.split("[._]", (model_path.split("/")[-1]).split("."))[
-                    run_in_modpath
-                ]
+                run = re.split("[._]", model_path.split("/")[-1])[run_in_modpath]
             else:
                 run = realization
             print(" --- ", run, " ---")
