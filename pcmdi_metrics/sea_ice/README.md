@@ -28,7 +28,7 @@ sea_ice_driver.py -p parameter_file.py --msyear 1991 --meyear 2020
 
 ## Outputs
 
-The driver produces a JSON file containing mean square error metrics for all input models and realizations relative to the reference data set. It also produces a bar chart displaying these metrics.
+The driver produces two JSON files. The first contains mean square error metrics for all input models and realizations relative to the reference data set. The second contains sea ice climatology and area data. The driver also produces a bar chart displaying these metrics.
 
 ### Sectors
 
