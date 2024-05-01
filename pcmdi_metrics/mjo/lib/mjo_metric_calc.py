@@ -1,22 +1,19 @@
 import os
 from datetime import datetime
 
-# import cdms2
-# import cdtime
-# import MV2
 import numpy as np
 import xarray as xr
 
 from pcmdi_metrics.io import get_latitude, get_longitude, get_time_key, xcdat_open
-from pcmdi_metrics.mjo.lib import (  # calculate_ewr,; generate_axes_and_decorate,; get_daily_ano_segment,; interp2commonGrid,; output_power_spectra,; space_time_spectrum,; subSliceSegment,; unit_conversion,; Remove_dailySeasonalCycle,; write_netcdf_output,
-    calculate_ewr_xcdat,
-    generate_axes_and_decorate_xcdat,
-    get_daily_ano_segment_xcdat,
-    interp2commonGrid_xcdat,
-    output_power_spectra_xcdat,
-    space_time_spectrum_xcdat,
-    subSliceSegment_xcdat,
-    write_netcdf_output_xcdat,
+from pcmdi_metrics.mjo.lib import (
+    calculate_ewr,
+    generate_axes_and_decorate,
+    get_daily_ano_segment,
+    interp2commonGrid,
+    output_power_spectra,
+    space_time_spectrum,
+    subSliceSegment,
+    write_netcdf_output,
 )
 from pcmdi_metrics.utils import adjust_units
 
@@ -106,7 +103,7 @@ def mjo_metric_ewr_calculation(
     # Loop over years
     for year in range(startYear, endYear):
         print(year)
-        segment[year] = subSliceSegment_xcdat(ds, year, mon, day, NT)
+        segment[year] = subSliceSegment(ds, year, mon, day, NT)
         # units conversion
         segment[year][data_var] = adjust_units(segment[year][data_var], UnitsAdjust)
         if debug:
@@ -116,9 +113,6 @@ def mjo_metric_ewr_calculation(
                 segment[year][data_var].shape,
             )
         # Get climatology of daily seasonal cycle
-        # daSeaCyc_values = np.add(
-        #    np.divide(segment[year][data_var].values, float(numYear)), daSeaCyc_values
-        # )
         daSeaCyc_values = (
             segment[year][data_var].values / float(numYear)
         ) + daSeaCyc_values
@@ -132,7 +126,7 @@ def mjo_metric_ewr_calculation(
     if numYear > 1:
         # Loop over years
         for year in range(startYear, endYear):
-            # segment_ano[year] = Remove_dailySeasonalCycle(segment[year], daSeaCyc)
+            # Remove daily Seasonal Cycle
             segment_ano[year] = segment[year].copy()
             segment_ano[year][data_var].values = (
                 segment[year][data_var].values - daSeaCyc.values
@@ -162,29 +156,29 @@ def mjo_metric_ewr_calculation(
         d_seg = segment_ano[year]
         # Regrid: interpolation to common grid
         if cmmGrid:
-            d_seg = interp2commonGrid_xcdat(d_seg, data_var, degX, debug=debug)
+            d_seg = interp2commonGrid(d_seg, data_var, degX, debug=debug)
         # Subregion, meridional average, and remove segment time mean
-        d_seg_x_ano = get_daily_ano_segment_xcdat(d_seg, data_var)
+        d_seg_x_ano = get_daily_ano_segment(d_seg, data_var)
         # Compute space-time spectrum
         if debug:
             print("debug: compute space-time spectrum")
-        Power[n, :, :] = space_time_spectrum_xcdat(d_seg_x_ano, data_var)
+        Power[n, :, :] = space_time_spectrum(d_seg_x_ano, data_var)
 
     # Multi-year averaged power
     Power = np.average(Power, axis=0)
 
     # Generates axes for the decoration
-    Power = generate_axes_and_decorate_xcdat(Power, NT, NL)
+    Power = generate_axes_and_decorate(Power, NT, NL)
 
     # Output for wavenumber-frequency power spectra
-    OEE = output_power_spectra_xcdat(NL, NT, Power)
+    OEE = output_power_spectra(NL, NT, Power)
 
     if debug:
         print("OEE:", OEE)
         print("OEE.shape:", OEE.shape)
 
     # E/W ratio
-    ewr, eastPower, westPower = calculate_ewr_xcdat(OEE)
+    ewr, eastPower, westPower = calculate_ewr(OEE)
 
     print("ewr: ", ewr)
     print("east power: ", eastPower)
@@ -199,7 +193,7 @@ def mjo_metric_ewr_calculation(
     if nc_out:
         os.makedirs(dir_paths["diagnostic_results"], exist_ok=True)
         fout = os.path.join(dir_paths["diagnostic_results"], output_filename)
-        write_netcdf_output_xcdat(OEE, fout)
+        write_netcdf_output(OEE, fout)
 
     # Plot
     if plot:

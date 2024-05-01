@@ -8,11 +8,6 @@ from matplotlib.patches import Rectangle
 
 
 def plot_power(d, title, fout, ewr=None):
-    # y = d.getAxis(0)[:]
-    # x = d.getAxis(1)[:]
-
-    # y, x = d.indexes.values()
-    # x, y = d.indexes.values()
     x = d["frequency"]
     y = d["zonalwavenumber"]
 
