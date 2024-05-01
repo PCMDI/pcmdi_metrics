@@ -61,18 +61,18 @@ class MetadataFile:
 # ------------------------------------
 # Define region coverage in functions
 # ------------------------------------
-def central_arctic(ds, ds_var, xvar, yvar):
+def central_arctic(ds, ds_var, xvar, yvar, pole):
     if (ds[xvar] > 180).any():  # 0 to 360
         data_ca1 = ds[ds_var].where(
             (
                 (ds[yvar] > 80)
-                & (ds[yvar] <= 87.2)
+                & (ds[yvar] <= pole)
                 & ((ds[xvar] > 240) | (ds[xvar] <= 90))
             ),
             0,
         )
         data_ca2 = ds[ds_var].where(
-            ((ds[yvar] > 65) & (ds[yvar] < 87.2))
+            ((ds[yvar] > 65) & (ds[yvar] < pole))
             & ((ds[xvar] > 90) & (ds[xvar] <= 240)),
             0,
         )
@@ -81,14 +81,14 @@ def central_arctic(ds, ds_var, xvar, yvar):
         data_ca1 = ds[ds_var].where(
             (
                 (ds[yvar] > 80)
-                & (ds[yvar] <= 87.2)
+                & (ds[yvar] <= pole)
                 & (ds[xvar] > -120)
                 & (ds[xvar] <= 90)
             ),
             0,
         )
         data_ca2 = ds[ds_var].where(
-            ((ds[yvar] > 65) & (ds[yvar] < 87.2))
+            ((ds[yvar] > 65) & (ds[yvar] < pole))
             & ((ds[xvar] > 90) | (ds[xvar] <= -120)),
             0,
         )
@@ -180,8 +180,8 @@ def indian_ocean(ds, ds_var, xvar, yvar):
     return data_io
 
 
-def arctic(ds, ds_var, xvar, yvar):
-    data_arctic = ds[ds_var].where(ds[yvar] > 0, 0)
+def arctic(ds, ds_var, xvar, yvar, pole):
+    data_arctic = ds[ds_var].where((ds[yvar] > 0) & (ds[yvar] < pole), 0)
     return data_arctic
 
 
@@ -190,13 +190,13 @@ def antarctic(ds, ds_var, xvar, yvar):
     return data_antarctic
 
 
-def choose_region(region, ds, ds_var, xvar, yvar):
+def choose_region(region, ds, ds_var, xvar, yvar, pole):
     if region == "arctic":
-        return arctic(ds, ds_var, xvar, yvar)
+        return arctic(ds, ds_var, xvar, yvar, pole)
     elif region == "na":
         return north_atlantic(ds, ds_var, xvar, yvar)
     elif region == "ca":
-        return central_arctic(ds, ds_var, xvar, yvar)
+        return central_arctic(ds, ds_var, xvar, yvar, pole)
     elif region == "np":
         return north_pacific(ds, ds_var, xvar, yvar)
     elif region == "antarctic":
@@ -236,14 +236,14 @@ def get_clim(total_extent, ds, ds_var):
     return clim
 
 
-def process_by_region(ds, ds_var, ds_area):
+def process_by_region(ds, ds_var, ds_area, pole):
     regions_list = ["arctic", "antarctic", "ca", "na", "np", "sa", "sp", "io"]
     clims = {}
     means = {}
     for region in regions_list:
         xvar = find_lon(ds)
         yvar = find_lat(ds)
-        data = choose_region(region, ds, ds_var, xvar, yvar)
+        data = choose_region(region, ds, ds_var, xvar, yvar, pole)
         total_extent, te_mean = get_total_extent(data, ds_area)
         clim = get_clim(total_extent, ds, ds_var)
         clims[region] = clim
