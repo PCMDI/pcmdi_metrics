@@ -4,6 +4,10 @@ import copy
 import glob
 import os
 
+# isort: off
+import shapely  # noqa: F401
+
+# isort: on
 import MV2 as MV
 import xarray as xr
 
