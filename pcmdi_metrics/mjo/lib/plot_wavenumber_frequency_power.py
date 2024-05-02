@@ -1,13 +1,13 @@
 import copy
 import os
 
-import cdms2
 import matplotlib.cm
 import matplotlib.pyplot as plt
+import xarray as xr
 from matplotlib.patches import Rectangle
 
 
-def plot_power(d, title, fout, ewr=None):
+def plot_power(d: xr.DataArray, title: str, fout: str, ewr=None):
     x = d["frequency"]
     y = d["zonalwavenumber"]
 
@@ -132,8 +132,9 @@ if __name__ == "__main__":
 
     imgdir = "."
 
-    f = cdms2.open(os.path.join(datadir, ncfile))
-    d = f("power")
+    ds = xr.open_dataset(os.path.join(datadir, ncfile))
+    d = ds["power"]
+
     fout = os.path.join(imgdir, pngfilename)
 
     plot_power(d, title, fout, ewr=ewr)

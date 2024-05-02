@@ -2,6 +2,9 @@
 Code written by Jiwoo Lee, LLNL. Feb. 2019
 Inspired by Daehyun Kim and Min-Seop Ahn's MJO metrics.
 
+Code update history
+2024-05 converted to use xcdat as base building block (Jiwoo Lee)
+
 Reference:
 Ahn, MS., Kim, D., Sperber, K.R. et al. Clim Dyn (2017) 49: 4023.
 https://doi.org/10.1007/s00382-017-3558-4
@@ -36,7 +39,7 @@ def subSliceSegment(
     ds: Union[xr.Dataset, xr.DataArray], year: int, mon: int, day: int, length: int
 ) -> Union[xr.Dataset, xr.DataArray]:
     """
-    Note: From given cdms array (3D: time and spatial 2D)
+    Note: From given array (3D: time and spatial 2D)
           Subslice to get segment with given length starting from given time.
     input
     - ds: xarray dataset or dataArray
@@ -56,7 +59,7 @@ def subSliceSegment(
     )  # slie 180 time steps starting from above index
 
 
-def get_daily_ano_segment(d_seg, data_var):
+def get_daily_ano_segment(d_seg: xr.Dataset, data_var: str) -> xr.Dataset:
     """
     Note: 1. Get daily time series (3D: time and spatial 2D)
           2. Meridionally average (2D: time and spatial, i.e., longitude)
@@ -83,12 +86,13 @@ def get_daily_ano_segment(d_seg, data_var):
     return d_seg_x_ano
 
 
-def space_time_spectrum(d_seg_x_ano, data_var):
+def space_time_spectrum(d_seg_x_ano: xr.Dataset, data_var: str) -> np.ndarray:
     """
     input
-    - d: 2d cdms MV2 array (t (time), n (space))
+    - d: xarray dataset that contains 2d DataArray (t (time), n (space)) named as `data_var`
+    - data_var: name of the 2d DataArray
     output
-    - p: 2d array for power
+    - p: 2d numpy array for power
     NOTE: Below code taken from
     https://github.com/CDAT/wk/blob/2b953281c7a4c5d0ac2d79fcc3523113e31613d5/WK/process.py#L188
     """
@@ -123,7 +127,7 @@ def taper(data):
     """
     Note: taper first and last 45 days with cosine window, using scipy.signal function
     input
-    - data: cdms 2d array (t, n) t: time, n: space (meridionally averaged)
+    - data: 2d array (t, n) t: time, n: space (meridionally averaged)
     output:
     - data: tapered data
     """
@@ -134,7 +138,7 @@ def taper(data):
     return data2
 
 
-def generate_axes_and_decorate(Power, NT, NL):
+def generate_axes_and_decorate(Power, NT: int, NL: int) -> xr.DataArray:
     """
     Note: Generates axes for the decoration
     input
@@ -142,9 +146,7 @@ def generate_axes_and_decorate(Power, NT, NL):
     - NT: integer, number of time step
     - NL: integer, number of spatial grid
     output
-    - Power: decorated 2d cdms array
-    - ff: frequency axis
-    - ss: wavenumber axis
+    - xr.DataArray that contains Power 2d DataArray that has frequency and zonalwavenumber axes
     """
     # frequency
     ff = []
@@ -177,7 +179,7 @@ def generate_axes_and_decorate(Power, NT, NL):
     return da
 
 
-def output_power_spectra(NL, NT, Power):
+def output_power_spectra(NL: int, NT: int, Power):
     """
     Below code taken and modified from Daehyun Kim's Fortran code (MSD/level_2/sample/stps/stps.sea.f.sample)
     """
@@ -225,12 +227,14 @@ def output_power_spectra(NL, NT, Power):
     # return OEE
 
 
-def write_netcdf_output(da, fname):
+def write_netcdf_output(da: xr.DataArray, fname):
     """
     Note: write array in a netcdf file
     input
-    - d: array
-    - fname: string. directory path and name of the netcd file, without .nc
+    - d: xr.DataArray object
+    - fname: string of filename. Directory path that includes file name without .nc
+    output
+    - None
     """
     ds = xr.Dataset({da.name: da})
     ds.to_netcdf(fname + ".nc")
