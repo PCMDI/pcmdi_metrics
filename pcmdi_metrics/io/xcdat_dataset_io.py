@@ -38,7 +38,10 @@ def get_axis_list(ds: Union[xr.Dataset, xr.DataArray]) -> list[str]:
 
 
 def get_data_list(ds: Union[xr.Dataset, xr.DataArray]) -> list[str]:
-    return list(ds.data_vars.keys())
+    if isinstance(ds, xr.Dataset):
+        return list(ds.data_vars.keys())
+    elif isinstance(ds, xr.DataArray):
+        return [ds.name]
 
 
 def get_time_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
@@ -133,7 +136,7 @@ def select_subset(
     - lat (tuple, optional): Latitude range in the form of (min, max).
     - lon (tuple, optional): Longitude range in the form of (min, max).
     - time (tuple, optional): Time range. If time is specified, it should be in the form of (start_time, end_time),
-      where start_time and end_time can be integers, floats, or cftime.DatetimeProlepticGregorian objects.
+      where start_time and end_time can be integers, floats, string, or cftime.datetime objects.
 
     Returns:
     - xr.Dataset: Subset of the input dataset based on the specified latitude, longitude, and time ranges.
@@ -145,8 +148,7 @@ def select_subset(
     # Define latitude, longitude, and time ranges
     lat_tuple = (30, 50)  # Latitude range
     lon_tuple = (110, 130)  # Longitude range
-    time_tuple = (cftime.datetime(1850, 1, 1, 0, 0, 0, 0),
-                  cftime.datetime(1851, 12, 31, 23, 59, 59, 0))  # Time range
+    time_tuple = ("1850-01-01 00:00:00", "1851-12-31 23:59:59") # Time range
 
     # Load your xarray dataset (ds) here
 
@@ -167,3 +169,57 @@ def select_subset(
 
     ds = ds.sel(**sel_keys)
     return ds
+
+
+def da_to_ds(d: Union[xr.Dataset, xr.DataArray], var: str = "variable") -> xr.Dataset:
+    """Convert xarray DataArray to Dataset
+
+    Parameters
+    ----------
+    d : Union[xr.Dataset, xr.DataArray]
+        Input dataArray. If dataset is given, no process will be done
+    var : str, optional
+        Name of dataArray, by default "variable"
+
+    Returns
+    -------
+    xr.Dataset
+        xarray Dataset
+
+    Raises
+    ------
+    TypeError
+        Raised when given input is not xarray based variables
+    """
+    if isinstance(d, xr.Dataset):
+        return d.copy()
+    elif isinstance(d, xr.DataArray):
+        return d.to_dataset(name=var).bounds.add_missing_bounds().copy()
+    else:
+        raise TypeError(
+            "Input must be an instance of either xarrary.DataArray or xarrary.Dataset"
+        )
+
+
+def get_grid(
+    d: Union[xr.Dataset, xr.DataArray],
+) -> xr.Dataset:
+    """Get grid information
+
+    Parameters
+    ----------
+    d : Union[xr.Dataset, xr.DataArray]
+        xarray dataset to extract grid information that has latitude, longitude, and their bounds included
+
+    Returns
+    -------
+    xr.Dataset
+        xarray dataset with grid information
+    """
+    if isinstance(d, xr.DataArray):
+        d = da_to_ds(d, d.name)
+    lat_key = get_latitude_key(d)
+    lon_key = get_longitude_key(d)
+    lat_bnds_key = get_latitude_bounds_key(d)
+    lon_bnds_key = get_longitude_bounds_key(d)
+    return d[[lat_key, lon_key, lat_bnds_key, lon_bnds_key]]

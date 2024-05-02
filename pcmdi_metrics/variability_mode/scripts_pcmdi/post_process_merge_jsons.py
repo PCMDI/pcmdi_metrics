@@ -17,12 +17,12 @@ def main():
     # mips = ['cmip3']
 
     # exps = ['historical', 'amip']
-    # exps = ['historical']
-    exps = ["amip"]
+    exps = ["historical"]
+    # exps = ["amip"]
     # exps = ['20c3m', 'amip']
     # exps = ['20c3m']
 
-    case_id = "v20210119"
+    case_id = "v20240419"
 
     syear = 1900
     eyear = 2005
