@@ -39,7 +39,7 @@ such as datasets from the `obs4MIPs`_ project.
 
 References
 ==========
-Lee et al. (in prep, to be submitted soon), Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3, Geoscientific Model Development
+Lee, J., P. J. Gleckler, M.-S. Ahn, A. Ordonez, P. Ullrich, K. R. Sperber, K. E. Taylor, Y. Y. Planton, E. Guilyardi, P. Durack, C. Bonfils, M. D. Zelinka, L.-W. Chao, B. Dong, C. Doutriaux, C. Zhang, T. Vo, J. Boutte, M. F. Wehner, A. G. Pendergrass, D. Kim, Z. Xue, A. T. Wittenberg, and J. Krasting, 2024: Systematic and Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3. Geoscientific Model Development (accepted, publication in progress) [`preprint<https://egusphere.copernicus.org/preprints/2023/egusphere-2023-2720/>`_].
 
 Gleckler et al. (2016), A more powerful reality test for climate models, Eos, 97, `doi:10.1029/2016EO051663 <https://eos.org/science-updates/a-more-powerful-reality-test-for-climate-models>`_.
 

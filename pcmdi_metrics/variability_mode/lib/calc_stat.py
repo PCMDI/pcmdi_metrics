@@ -1,21 +1,24 @@
 from time import gmtime, strftime
 
-import cdutil
-import genutil
-import MV2
+import xarray as xr
 
-# from pcmdi_metrics.variability_mode.lib import debug_print
+from pcmdi_metrics.io import get_grid, region_subset
+from pcmdi_metrics.stats import bias_xy, cor_xy, mean_xy, rms_xy, rmsc_xy
+from pcmdi_metrics.utils import regrid
 
 
 def calc_stats_save_dict(
-    dict_head,
-    eof,
-    eof_lr,
-    slope,
+    mode: str,
+    dict_head: dict,
+    model_ds: xr.Dataset,
+    model_data_var: str,
+    eof: xr.Dataset,
+    eof_lr: xr.Dataset,
     pc,
     stdv_pc,
     frac,
-    region_subdomain,
+    regions_specs: dict = None,
+    obs_ds: xr.Dataset = None,
     eof_obs=None,
     eof_lr_obs=None,
     stdv_pc_obs=None,
@@ -26,15 +29,16 @@ def calc_stats_save_dict(
     """
     NOTE: Calculate statistics and save numbers to dictionary for JSON.
     Input
+    - mode: [str] name of variability mode
     - dict_head: [dict] subset of dictionary
-    - eof: [2d cdms2 field] linear regressed eof pattern (eof domain)
-    - eof_lr: [2d cdms2 field] linear regressed eof pattern (global)
-    - slope: [2d cdms2 field] slope from above linear regression (bring it here to calculate rmsc)
-    - pc: [1d cdms2 field] principle component time series
+    - eof: [2d field] linear regressed eof pattern (eof domain)
+    - eof_lr: [2d field] linear regressed eof pattern (global)
+    - slope: [2d field] slope from above linear regression (bring it here to calculate rmsc)
+    - pc: [1d field] principle component time series
     - stdv_pc: [float] standard deviation of principle component time series
-    - frac: [1 number cdms2 field] fraction of explained variance
-    - eof_obs: [2d cdms2 field] eof pattern over subdomain from observation
-    - eof_lr_obs: [2d cdms2 field] eof pattern over globe (linear regressed) from observation
+    - frac: [1 number field] fraction of explained variance
+    - eof_obs: [2d field] eof pattern over subdomain from observation
+    - eof_lr_obs: [2d field] eof pattern over globe (linear regressed) from observation
     - stdv_pc_obs: [float] standard deviation of principle component time series of observation
     - obs_compare: [bool] calculate statistics against given observation (default=True)
     - method: [string] 'eof' or 'cbf'
@@ -47,10 +51,8 @@ def calc_stats_save_dict(
     debug_print("frac and stdv_pc end", debug)
 
     # Mean
-    mean = cdutil.averager(eof, axis="yx", weights="weighted")
-    mean_glo = cdutil.averager(eof_lr, axis="yx", weights="weighted")
-    dict_head["mean"] = float(mean)
-    dict_head["mean_glo"] = float(mean_glo)
+    dict_head["mean"] = mean_xy(eof)
+    dict_head["mean_glo"] = mean_xy(eof_lr)
     debug_print("mean end", debug)
 
     # - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -58,47 +60,63 @@ def calc_stats_save_dict(
     # Note: '_glo' indicates statistics calculated over global domain
     # . . . . . . . . . . . . . . . . . . . . . . . . .
     if obs_compare:
-        if method in ["eof", "cbf"]:
-            ref_grid_global = eof_lr_obs.getGrid()
-            # Regrid (interpolation, model grid to ref grid)
-            debug_print("regrid (global) start", debug)
-            eof_model_global = eof_lr.regrid(
-                ref_grid_global, regridTool="regrid2", mkCyclic=True
-            )
-            debug_print("regrid end", debug)
-            # Extract subdomain
-            eof_model = eof_model_global(region_subdomain)
+        # ref_grid_global = get_grid(eof_lr_obs)
+        ref_grid_global = get_grid(obs_ds)
+        # Regrid (interpolation, model grid to ref grid)
+        debug_print("regrid (global) start", debug)
+        # eof_model_global = eof_lr.regrid(eof_lr,
+        #    ref_grid_global, regridTool="regrid2", mkCyclic=True
+        # )
+        # eof_model_global = regrid(eof_lr, ref_grid_global)
+        eof_model_global = regrid(
+            model_ds, data_var=model_data_var, target_grid=ref_grid_global
+        )[model_data_var]
+        debug_print("regrid end", debug)
+        # Extract subdomain
+        # eof_model = eof_model_global(region_subdomain)
+        eof_model = region_subset(eof_model_global, mode, regions_specs=regions_specs)
 
         # Spatial correlation weighted by area ('generate' option for weights)
-        cor = calcSCOR(eof_model, eof_obs)
-        cor_glo = calcSCOR(eof_model_global, eof_lr_obs)
+        cor = cor_xy(eof_model, eof_obs)
+        cor_glo = cor_xy(eof_model_global, eof_lr_obs)
+        debug_print(f"cor: {cor}", debug)
         debug_print("cor end", debug)
 
         if method == "eof":
             # Double check for arbitrary sign control
             if cor < 0:
-                eof = MV2.multiply(eof, -1)
-                pc = MV2.multiply(pc, -1)
-                eof_lr = MV2.multiply(eof_lr, -1)
-                eof_model_global = MV2.multiply(eof_model_global, -1)
-                eof_model = MV2.multiply(eof_model, -1)
+                debug_print("eof pattern pcor < 0, flip sign!", debug)
+                # variables_to_flip_sign = [eof, pc, eof_lr, eof_model_global, eof_model]
+                # for variable in variables_to_flip_sign:
+                #    variable *= -1
+                eof.values = eof.values * -1
+                pc.values = pc.values * -1
+                eof_lr.values = eof_lr.values * -1
+                eof_model.values = eof_model.values * -1
+                eof_model_global.values = eof_model_global.values * -1
+
                 # Calc cor again
-                cor = calcSCOR(eof_model, eof_obs)
-                cor_glo = calcSCOR(eof_model_global, eof_lr_obs)
+                cor = cor_xy(eof_model, eof_obs)
+                cor_glo = cor_xy(eof_model_global, eof_lr_obs)
+                debug_print(f"cor (revised): {cor}", debug)
+
+                # Also update mean value
+                dict_head["mean"] = mean_xy(eof)
+                dict_head["mean_glo"] = mean_xy(eof_lr)
 
         # RMS (uncentered) difference
-        rms = calcRMS(eof_model, eof_obs)
-        rms_glo = calcRMS(eof_model_global, eof_lr_obs)
+        rms = rms_xy(eof_model, eof_obs)
+        rms_glo = rms_xy(eof_model_global, eof_lr_obs)
         debug_print("rms end", debug)
 
         # RMS (centered) difference
-        rmsc = calcRMSc(eof_model, eof_obs)
-        rmsc_glo = calcRMSc(eof_model_global, eof_lr_obs)
+        rmsc = rmsc_xy(eof_model, eof_obs, NormalizeByOwnSTDV=True)
+        rmsc_glo = rmsc_xy(eof_model_global, eof_lr_obs, NormalizeByOwnSTDV=True)
         debug_print("rmsc end", debug)
 
         # Bias
-        bias = calcBias(eof_model, eof_obs)
-        bias_glo = calcBias(eof_model_global, eof_lr_obs)
+        bias = bias_xy(eof_model, eof_obs)
+        bias_glo = bias_xy(eof_model_global, eof_lr_obs)
         debug_print("bias end", debug)
 
         # Add to dictionary for json output
@@ -115,65 +133,12 @@ def calc_stats_save_dict(
         return dict_head, eof_lr
 
 
-def calcBias(a, b):
-    # Calculate bias
-    # a, b: cdms 2d variables (lat, lon)
-    result = cdutil.averager(a, axis="xy", weights="weighted") - cdutil.averager(
-        b, axis="xy", weights="weighted"
-    )
-    return float(result)
-
-
-def calcRMS(a, b):
-    # Calculate root mean square (RMS) difference
-    # a, b: cdms 2d variables on the same grid (lat, lon)
-    result = genutil.statistics.rms(a, b, axis="xy", weights="weighted")
-    return float(result)
-
-
-def calcRMSc(a, b, NormalizeByOwnSTDV=True):
-    # Calculate centered root mean square (RMS) difference
-    # Reference: Taylor 2001 Journal of Geophysical Research, 106:7183-7192
-    # a, b: cdms 2d variables on the same grid (lat, lon)
-    # NormalizeByOwnSTDV: True (default) or False. Normalize pattern by its own standard deviation
-    if NormalizeByOwnSTDV:
-        # Normalize pattern by its standard deviation to have unit variance
-        a = a / calcSTDmap(a)
-        b = b / calcSTDmap(b)
-    # Get centered rmsc by using rms function
-    # that consider removing bias by mean subtraction
-    result = genutil.statistics.rms(a, b, axis="xy", centered=1, weights="weighted")
-    return float(result)
-
-
-def calcSCOR(a, b):
-    # Calculate spatial correlation
-    # a, b: cdms 2d variables on the same grid (lat, lon)
-    result = genutil.statistics.correlation(a, b, weights="generate", axis="xy")
-    return float(result)
-
-
-def calcTCOR(a, b):
-    # Calculate temporal correlation
-    # a, b: cdms 1d variables
-    result = genutil.statistics.correlation(a, b)
-    return float(result)
-
-
 def calcSTD(a):
     # Calculate standard deviation
-    # a: cdms 1d variables
+    # a: xarray DataArray 1d variables
     # biased=0 option enables divided by N-1 instead of N
-    result = genutil.statistics.std(a, biased=0)
+    result = a.std(ddof=1).values.item()
     return float(result)
-
-
-def calcSTDmap(a):
-    # Calculate spatial standard deviation from 2D map field
-    # a: cdms 2d (xy) variables
-    wts = cdutil.area_weights(a)
-    std = genutil.statistics.std(a, axis="xy", weights=wts)
-    return float(std)
 
 
 def debug_print(string, debug):
