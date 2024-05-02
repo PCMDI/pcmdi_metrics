@@ -104,6 +104,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.4]        | Technical update: Modes of variability [xCDAT](https://xcdat.readthedocs.io/en/latest/) conversion
 | [v3.3.4]      | Technical update
 | [v3.3.3]      | Technical update
 | [v3.3.2]      | Technical update
@@ -136,6 +137,7 @@ Release Notes and History
 
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.4]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.4
 [v3.3.4]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.3.4
 [v3.3.3]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.3.3
 [v3.3.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.3.2
