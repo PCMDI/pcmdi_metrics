@@ -47,6 +47,10 @@ from collections import defaultdict
 from glob import glob
 from shutil import copyfile
 
+# isort: off
+import shapely  # noqa: F401
+
+# isort: on
 import cdms2
 import cdtime
 import cdutil
