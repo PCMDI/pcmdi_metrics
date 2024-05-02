@@ -5,11 +5,13 @@ import warnings
 from typing import Union
 
 import numpy as np
+import numpy.ma as ma
 import regionmask
 import xarray as xr
 import xcdat as xc
 
 from pcmdi_metrics import resources
+from pcmdi_metrics.io import get_grid
 
 
 def create_land_sea_mask(
@@ -110,7 +112,7 @@ def find_max(da: xr.DataArray) -> float:
     float
         Maximum value in the DataArray.
     """
-    return float(da.max().values)
+    return float(da.max())
 
 
 def find_min(da: xr.DataArray) -> float:
@@ -126,14 +128,14 @@ def find_min(da: xr.DataArray) -> float:
     float
         Minimum value in the DataArray.
     """
-    return float(da.min().values)
+    return float(da.min())
 
 
 def apply_landmask(
     obj: Union[xr.Dataset, xr.DataArray],
     data_var: str = None,
     landfrac: xr.DataArray = None,
-    keep_over: str = None,
+    keep_over: str = "ocean",
     land_criteria: float = 0.8,
     ocean_criteria: float = 0.2,
 ) -> xr.DataArray:
@@ -143,10 +145,11 @@ def apply_landmask(
     ----------
     obj : Union[xr.Dataset, xr.DataArray]
         The Dataset or DataArray object to apply a land-sea mask.
-    landfrac : xr.DataArray
-        Data array for land fraction that consists of 0 for ocean and 1 for land (fraction for grid along coastline).
     data_var : str
         Name of DataArray in the Dataset, required if obs is an Dataset.
+    landfrac : xr.DataArray
+        Data array for land fraction that consists of 0 for ocean and 1 for land (fraction for grid along coastline), by default None.
+        If None, it is going to be created.
     keep_over : str
         Specify whether to keep values "land" or "ocean".
     land_criteria : float, optional
@@ -182,7 +185,24 @@ def apply_landmask(
             data_array = obj[data_var].copy()
 
     # Validate landfrac
+    generateLandSeaMask = False
+    where_method = "xarray"
     if landfrac is None:
+        generateLandSeaMask = True
+    else:
+        data_grid = get_grid(data_array)
+        lf_grid = get_grid(landfrac)
+
+        if data_grid.identical(lf_grid):
+            pass
+        else:
+            if data_grid.equals(lf_grid):
+                pass
+            else:
+                if data_grid.sizes == lf_grid.sizes:
+                    where_method = "numpy"
+
+    if generateLandSeaMask:
         landfrac = create_land_sea_mask(data_array)
         warnings.warn(
             "landfrac is not provided thus generated using the 'create_land_sea_mask' function"
@@ -198,7 +218,7 @@ def apply_landmask(
 
     # Convert landfrac to a fraction if it's in percentage form
     if percentage:
-        landfrac /= 100.0
+        landfrac = landfrac.copy() / 100.0
 
     # Validate keep_over parameter
     if keep_over not in ["land", "ocean"]:
@@ -207,12 +227,48 @@ def apply_landmask(
         )
 
     # Apply land and ocean masks
-    if keep_over == "land":
-        data_array = data_array.where(landfrac >= land_criteria)
-    elif keep_over == "ocean":
-        data_array = data_array.where(landfrac <= ocean_criteria)
+    if where_method == "xarray":
+        if keep_over == "land":
+            data_array = data_array.where(landfrac >= land_criteria)
+        elif keep_over == "ocean":
+            data_array = data_array.where(landfrac <= ocean_criteria)
+
+    elif where_method == "numpy":
+        # Expand data1 to match the shape of landfrac along the time dimension
+        expanded_landfrac = np.expand_dims(landfrac.data, axis=0)
+        expanded_landfrac = np.repeat(
+            expanded_landfrac, data_array.shape[0], axis=0
+        )  # Repeat along the time dimension
+
+        # Mask data based on landfrac
+        if keep_over == "land":
+            data_array.data = ma.masked_where(
+                expanded_landfrac < land_criteria, data_array.data
+            )
+        elif keep_over == "ocean":
+            data_array.data = ma.masked_where(
+                expanded_landfrac > ocean_criteria, data_array.data
+            )
 
     return data_array
+
+
+def apply_oceanmask(
+    obj: Union[xr.Dataset, xr.DataArray],
+    data_var: str = None,
+    landfrac: xr.DataArray = None,
+    land_criteria: float = 0.8,
+    ocean_criteria: float = 0.2,
+) -> xr.DataArray:
+    masked_data_array = apply_landmask(
+        obj,
+        data_var=data_var,
+        landfrac=landfrac,
+        keep_over="land",
+        land_criteria=land_criteria,
+        ocean_criteria=ocean_criteria,
+    )
+    return masked_data_array
 
 
 def generate_land_sea_mask__pcmdi(

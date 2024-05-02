@@ -342,12 +342,12 @@ def portrait_plot(
 # ----------------------------------------------------------------------
 def prepare_data(data, xaxis_labels, yaxis_labels, debug=False):
     # In case data was given as list of arrays, convert it to numpy (stacked) array
-    if type(data) == list:
+    if isinstance(data, list):
         if debug:
             print("data type is list")
             print("len(data):", len(data))
         if len(data) == 1:  # list has only 1 array as element
-            if (type(data[0]) == np.ndarray) and (len(data[0].shape) == 2):
+            if isinstance(data[0], np.ndarray) and (len(data[0].shape) == 2):
                 data = data[0]
                 num_divide = 1
             else:
@@ -366,7 +366,7 @@ def prepare_data(data, xaxis_labels, yaxis_labels, debug=False):
     if data.shape[-2] != len(yaxis_labels) and len(yaxis_labels) > 0:
         sys.exit("Error: Number of elements in yaxis_label mismatchs to the data")
 
-    if type(data) == np.ndarray:
+    if isinstance(data, np.ndarray):
         # data = np.squeeze(data)
         if len(data.shape) == 2:
             num_divide = 1

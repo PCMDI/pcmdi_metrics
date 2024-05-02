@@ -47,7 +47,7 @@ def xcdat_open(
         else:
             ds = xc.open_dataset(infile, data_var=data_var, decode_times=decode_times)
 
-    return ds
+    return ds.bounds.add_missing_bounds()
 
 
 def xcdat_openxml(

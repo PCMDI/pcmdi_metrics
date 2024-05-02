@@ -8,6 +8,10 @@ import os
 import sys
 import time
 
+# isort: off
+import shapely  # noqa: F401
+
+# isort: on
 import cdms2
 from EnsoMetrics.EnsoCollectionsLib import (
     CmipVariables,
