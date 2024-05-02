@@ -540,7 +540,7 @@ for model in models:
 
     model_path_list = sort_human(model_path_list)
 
-    debug_print("model_path_list: " + str(model_path_list), debug)
+    debug_print(f"model_path_list: f{model_path_list}", debug)
 
     # Find where run can be gripped from given filename template for modpath
     if realization == "*":
@@ -561,12 +561,9 @@ for model in models:
     # -------------------------------------------------
     for model_path in model_path_list:
         print("model_path:", model_path)
-        # try:
-        if 1:
+        try:
             if realization == "*":
-                run = re.split("[._]", (model_path.split("/")[-1]).split("."))[
-                    run_in_modpath
-                ]
+                run = re.split("[._]", model_path.split("/")[-1])[run_in_modpath]
             else:
                 run = realization
             print(" --- ", run, " ---")
@@ -1031,14 +1028,14 @@ for model in models:
                 run=run,
                 cmec_flag=cmec,
             )
-        """
+
         except Exception as err:
             if debug:
                 raise
             else:
                 print("warning: failed for ", model, run, err)
                 pass
-        """
+
 # ========================================================================
 # Dictionary to JSON: collective JSON at the end of model_realization loop
 # ------------------------------------------------------------------------
