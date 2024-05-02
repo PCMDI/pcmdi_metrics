@@ -3,12 +3,13 @@ set -a
 
 # To avoid below error
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
-export OMP_NUM_THREADS=1
+# export OMP_NUM_THREADS=1
 
 # Working conda env in gates: cdat82_20191107_py27
 
 ver=`date +"%Y%m%d-%H%M"`
 case_id="v"`date +"%Y%m%d"`
+#case_id="v20240401"
 
 #mips='cmip3 cmip5 cmip6'
 #mips='cmip5 cmip6'
@@ -22,8 +23,14 @@ mips='cmip6'
 exps='historical'
 #exps='amip'
 
-#modes='all'
-modes='NAO NPO PNA'
+modes='all'
+#modes='NAO NPO PNA'
+#modes='NAM NAO PNA NPO'
+#modes='SAM PDO NPGO'
+#modes="NAO NPO PNA SAM NPGO"
+#modes="NAM PDO"
+#modes="NPO NPGO"
+#modes="SAM"
 
 modnames='all'
 
@@ -54,12 +61,14 @@ for mip in $mips; do
 
             if [ $mode == 'PDO' ] || [ $mode == 'NPGO' ] || [ $mode == 'AMO' ]; then
                 mode_o='PDO'
+            elif [ $mode == "SAM" ]; then
+                mode_o='SAM'
             else
                 mode_o='NAM'
             fi
 
-            echo $mip $exp $mode $case_id
-            python ./parallel_driver.py -p ${param_dir}/myParam_${mode_o}_${mip}.py --param_dir $param_dir --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode --num_workers $num_workers >& ./log/$mip/$exp/$case_id/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
+            echo $mip $exp $mode $case_id $mode_o
+            ./parallel_driver.py -p ${param_dir}/myParam_pcmdi_${mode_o}.py --param_dir $param_dir --mip $mip --exp $exp --case_id $case_id --modnames $modnames --realization $realization --variability_mode $mode --num_workers $num_workers >& ./log/$mip/$exp/$case_id/log.${mip}.${exp}.${mode}.all.v${ver}.txt &
             disown
             sleep 1
         done
