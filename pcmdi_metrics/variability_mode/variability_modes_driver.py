@@ -540,7 +540,7 @@ for model in models:
 
     model_path_list = sort_human(model_path_list)
 
-    debug_print("model_path_list: " + str(model_path_list), debug)
+    debug_print(f"model_path_list: f{model_path_list}", debug)
 
     # Find where run can be gripped from given filename template for modpath
     if realization == "*":
