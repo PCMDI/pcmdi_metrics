@@ -54,8 +54,18 @@ def mjo_metric_ewr_calculation(
         print("debug: check time")
 
     time_key = get_time_key(ds)
-    first_time = ds.indexes[time_key].to_datetimeindex()[0].to_pydatetime()
-    last_time = ds.indexes[time_key].to_datetimeindex()[-1].to_pydatetime()
+
+    # Get first time step date
+    first_time_year = ds[time_key][0].item().year
+    first_time_month = ds[time_key][0].item().month
+    first_time_day = ds[time_key][0].item().day
+    first_time = datetime(first_time_year, first_time_month, first_time_day)
+
+    # Get last time step date
+    last_time_year = ds[time_key][-1].item().year
+    last_time_month = ds[time_key][-1].item().month
+    last_time_day = ds[time_key][-1].item().day
+    last_time = datetime(last_time_year, last_time_month, last_time_day)
 
     if season == "NDJFMA":
         # Adjust years to consider only when continuous NDJFMA is available
