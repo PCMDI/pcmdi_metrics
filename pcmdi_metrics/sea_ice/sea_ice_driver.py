@@ -424,7 +424,6 @@ if __name__ == "__main__":
                         )
                         * 1e-12
                     )
-
                     mse[model][rgn][run][reference_data_set]["total_extent"][
                         "mse"
                     ] = str(
