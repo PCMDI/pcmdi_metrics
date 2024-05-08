@@ -301,7 +301,6 @@ if __name__ == "__main__":
 
         if len(list_of_runs) > 0:
             # Loop over realizations
-            real_count = len(list_of_runs)
             for run_ind, run in enumerate(list_of_runs):
                 # Find model data, determine number of files, check if they exist
                 tags = {
