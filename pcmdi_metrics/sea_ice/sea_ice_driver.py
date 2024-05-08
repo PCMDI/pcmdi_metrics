@@ -228,14 +228,14 @@ if __name__ == "__main__":
         end_year = meyear
 
         real_clim = {
-            "arctic": {"model_mean": None},
-            "ca": {"model_mean": None},
-            "na": {"model_mean": None},
-            "np": {"model_mean": None},
-            "antarctic": {"model_mean": None},
-            "sp": {"model_mean": None},
-            "sa": {"model_mean": None},
-            "io": {"model_mean": None},
+            "arctic": {"model_mean": {}},
+            "ca": {"model_mean": {}},
+            "na": {"model_mean": {}},
+            "np": {"model_mean": {}},
+            "antarctic": {"model_mean": {}},
+            "sp": {"model_mean": {}},
+            "sa": {"model_mean": {}},
+            "io": {"model_mean": {}},
         }
         real_mean = {
             "arctic": {"model_mean": 0},
@@ -301,6 +301,7 @@ if __name__ == "__main__":
 
         if len(list_of_runs) > 0:
             # Loop over realizations
+            real_count = len(list_of_runs)
             for run_ind, run in enumerate(list_of_runs):
                 # Find model data, determine number of files, check if they exist
                 tags = {
@@ -365,16 +366,7 @@ if __name__ == "__main__":
                 # Running sum of all realizations
                 for rgn in clims:
                     real_clim[rgn][run] = clims[rgn]
-                    if real_clim[rgn]["model_mean"] is None:
-                        real_clim[rgn]["model_mean"] = clims[rgn]
-                    else:
-                        real_clim[rgn]["model_mean"][var] = (
-                            real_clim[rgn]["model_mean"][var] + clims[rgn][var]
-                        )
                     real_mean[rgn][run] = means[rgn]
-                    real_mean[rgn]["model_mean"] = (
-                        real_mean[rgn]["model_mean"] + means[rgn]
-                    )
 
             print("\n-------------------------------------------")
             print("Calculating model regional average metrics \nfor ", model)
@@ -382,12 +374,12 @@ if __name__ == "__main__":
             for rgn in real_clim:
                 print(rgn)
                 # Get model mean
-                real_clim[rgn]["model_mean"][var] = real_clim[rgn]["model_mean"][
-                    var
-                ] / len(list_of_runs)
-                real_mean[rgn]["model_mean"] = real_mean[rgn]["model_mean"] / len(
-                    list_of_runs
+                datalist = [real_clim[rgn][r][var].data for r in list_of_runs]
+                real_clim[rgn]["model_mean"][var] = np.nanmean(
+                    np.array(datalist), axis=0
                 )
+                datalist = [real_mean[rgn][r] for r in list_of_runs]
+                real_mean[rgn]["model_mean"] = np.nanmean(np.array(datalist))
 
                 for run in real_clim[rgn]:
                     # Set up metrics dictionary
@@ -433,6 +425,7 @@ if __name__ == "__main__":
                         )
                         * 1e-12
                     )
+
                     mse[model][rgn][run][reference_data_set]["total_extent"][
                         "mse"
                     ] = str(
