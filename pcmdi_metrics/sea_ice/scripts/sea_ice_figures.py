@@ -128,7 +128,7 @@ for inds, sector in enumerate(sector_list):
     datamax = np.nanmax(np.concatenate((np.array(mse_clim), np.array(mse_ext))))
     ymax = (datamax) * 1.3
     ax7[inds].set_ylim(0.0, ymax)
-    print(ymax)
+
     if ymax < 0.1:
         ticks = np.linspace(0, 0.1, 6)
         labels = [str(round(x, 3)) for x in ticks]
@@ -155,7 +155,6 @@ for inds, sector in enumerate(sector_list):
         xycoords="axes fraction",
         size=9,
     )
-    aw = 0.07
 
 # Add legend, save figure
 ax7[0].legend(loc="upper right", fontsize=6)
