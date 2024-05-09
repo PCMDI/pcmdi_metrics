@@ -37,10 +37,12 @@ print(filelist)
 metrics = {"RESULTS": {}}
 for metrics_file in glob.glob(filelist):
     with open(metrics_file) as mf:
-        results = json.load(mf)["RESULTS"]
-    model_list.append(list(results.keys())[0])
-    metrics["RESULTS"].update(results)
+        results = json.load(mf)
+    for item in results["DIMENSIONS"]["model"]:
+        model_list.append(item)
+    metrics["RESULTS"].update(results["RESULTS"])
 
+model_list.sort()
 tmp = model_list[0]
 reference_data_set = list(metrics["RESULTS"][tmp]["arctic"]["model_mean"].keys())[0]
 
@@ -115,27 +117,18 @@ for inds, sector in enumerate(sector_list):
         mark_size = 1
     ax7[inds].bar(ind - width / 2.0, mse_clim, width, color="b", label="Ann. Cycle")
     ax7[inds].bar(ind, mse_ext, width, color="r", label="Ann. Mean")
-    if len(clim_err_x) > 0:
-        ax7[inds].scatter(
-            [x - width / 2.0 for x in clim_err_x],
-            clim_err_y,
-            marker="D",
-            s=mark_size,
-            color="k",
-        )
-        ax7[inds].scatter(clim_err_x, ext_err_y, marker="D", s=mark_size, color="k")
-    # xticks
+
+    # X axis label
     if inds == len(sector_list) - 1:
         ax7[inds].set_xticks(ind + width / 2.0, mlabels, rotation=90, size=7)
     else:
         ax7[inds].set_xticks(ind + width / 2.0, labels="")
-    # yticks
-    if len(clim_err_y) > 0:
-        datamax = np.max(np.array(clim_err_y))
-    else:
-        datamax = np.max(np.array(mse_clim))
+
+    # Y axis
+    datamax = np.nanmax(np.concatenate((np.array(mse_clim), np.array(mse_ext))))
     ymax = (datamax) * 1.3
     ax7[inds].set_ylim(0.0, ymax)
+    print(ymax)
     if ymax < 0.1:
         ticks = np.linspace(0, 0.1, 6)
         labels = [str(round(x, 3)) for x in ticks]
@@ -151,8 +144,8 @@ for inds, sector in enumerate(sector_list):
     else:
         ticks = range(0, round(ymax))
         labels = [str(round(x, 0)) for x in ticks]
-
     ax7[inds].set_yticks(ticks, labels, fontsize=8)
+
     # labels etc
     ax7[inds].set_ylabel("10${^1}{^2}$km${^4}$", size=8)
     ax7[inds].grid(True, linestyle=":")
@@ -162,6 +155,8 @@ for inds, sector in enumerate(sector_list):
         xycoords="axes fraction",
         size=9,
     )
+    aw = 0.07
+
 # Add legend, save figure
 ax7[0].legend(loc="upper right", fontsize=6)
 plt.suptitle("Mean Square Error relative to " + reference_data_set, y=0.91)
