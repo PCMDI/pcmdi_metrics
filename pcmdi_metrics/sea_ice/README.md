@@ -64,6 +64,16 @@ A [demo parameter file](https://github.com/PCMDI/pcmdi_metrics/blob/405_sic_ao/p
 * **obs_cell_area**: For equal area grids, the area of a single grid cell in units of km2. Only required if obs area file is not available.
 * **pole**: Set the maximum latitude for the Central Arctic and Arctic regions to exclude ice over the pole. Default is 90.1 to include all ice.
 
+## Postprocessing
+
+A script is provided to create a multi-model bar chart using results from multiple runs of the sea ice driver. This script can be found in `./scripts/sea_ice_figures.py`. 
+
+To run, use:
+```
+python sea_ice_figures.py --filelist 'path/to/models/*/sea_ice_metrics.json' --output_path '.'
+```
+
+A wildcard `*` can be used to glob multiple folders of results. The final path in the `--filelist` parameter must be the sea_ice_metrics.json file. The `--output_path` parameter can be any valid path.
 
 ## Reference
 
