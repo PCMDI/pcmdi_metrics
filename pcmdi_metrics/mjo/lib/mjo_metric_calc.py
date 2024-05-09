@@ -94,6 +94,7 @@ def mjo_metric_ewr_calculation(
     elif season == "MJJASO":
         mon = 5
         numYear = endYear - startYear + 1
+
     day = 1
 
     # Store each year's segment in a dictionary: segment[year]
@@ -103,7 +104,7 @@ def mjo_metric_ewr_calculation(
     daSeaCyc = xr.DataArray(
         np.zeros((NT, ds[data_var].shape[1], ds[data_var].shape[2])),
         dims=["day", "lat", "lon"],
-        coords={"day": np.arange(180), "lat": lat, "lon": lon},
+        coords={"day": np.arange(NT), "lat": lat, "lon": lon},
     )
     daSeaCyc_values = daSeaCyc.values.copy()
 
