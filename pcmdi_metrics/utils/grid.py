@@ -86,7 +86,7 @@ def create_target_grid(
         grid = grid.sel(lat=slice(start_lat, end_lat), lon=slice(start_lon, end_lon))
     else:
         raise ValueError(
-            f"grid_type {grid_type} is undefined. Please use either `uniform` or `gaussian"
+            f"grid_type {grid_type} is undefined. Please use either 'uniform' or 'gaussian'"
         )
 
     return grid
