@@ -14,33 +14,20 @@ from typing import Union
 
 import numpy as np
 import xarray as xr
-import xcdat as xc
 from scipy import signal
 
 from pcmdi_metrics.io import base, get_time_key, select_subset
-from pcmdi_metrics.utils import regrid
-
-# from pcmdi_metrics.utils import create_target_grid
+from pcmdi_metrics.utils import create_target_grid, regrid
 
 
 def interp2commonGrid(ds, data_var, dlat, dlon=None, debug=False):
     if dlon is None:
         dlon = dlat
 
-    # grid = create_target_grid(target_grid_resolution=f"{dlat}x{dlon}")
-    nlat = int(180 / dlat)
-    grid = xc.create_gaussian_grid(nlat)
-
-    # If the longitude values include 0 and 360, then remove 360 to avoid having repeating grid
-    if 0 in grid.lon.values and 360 in grid.lon.values:
-        min_lon = grid.lon.values[0]  # 0
-        # max_lon = grid.lon.values[-1]  # 360
-        second_max_lon = grid.lon.values[-2]  # 360-dlat
-        grid = grid.sel(lon=slice(min_lon, second_max_lon))
-
-    # Reverse latitude if needed
-    if grid.lat.values[0] > grid.lat.values[-1]:
-        grid = grid.isel(lat=slice(None, None, -1))
+    # Generate grid
+    grid = create_target_grid(
+        target_grid_resolution=f"{dlat}x{dlon}", grid_type="uniform"
+    )
 
     # Regrid
     ds_regrid = regrid(ds, data_var, grid)
