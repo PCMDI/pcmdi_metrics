@@ -68,7 +68,7 @@ A [demo parameter file](https://github.com/PCMDI/pcmdi_metrics/blob/405_sic_ao/p
 
 A script is provided to create a multi-model bar chart using results from multiple runs of the sea ice driver. This script can be found in `./scripts/sea_ice_figures.py`. 
 
-To run, use:
+Example command:
 ```
 python sea_ice_figures.py --filelist 'path/to/models/*/sea_ice_metrics.json' --output_path '.'
 ```
