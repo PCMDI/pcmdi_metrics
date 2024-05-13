@@ -93,11 +93,6 @@ def pick_year_last_day(ds):
 # Hard coded options... will be moved out later
 # -------------------------------------------------
 list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
-# list_monsoon_regions = ["AUS"]
-# list_monsoon_regions = ["Sahel"]
-# list_monsoon_regions = ["GoG"]
-# list_monsoon_regions = ["NHEX"]
-# list_monsoon_regions = ["AIR"]
 # list_monsoon_regions = ["all"]
 
 
@@ -158,7 +153,6 @@ print("models:", models)
 
 # list of regions
 # list_monsoon_regions = param.list_monsoon_regions
-# print("regions:", list_monsoon_regions)
 
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
@@ -174,7 +168,6 @@ if ("all" in [m.lower() for m in models]) or (models == "all"):
     # remove duplicates
     models = sorted(list(dict.fromkeys(models)), key=lambda s: s.lower())
 
-#print("models:", models)
 print("number of models:", len(models))
 
 # Realizations
@@ -266,8 +259,6 @@ if includeOBS:
     models.insert(0, "obs")
 
 for model in models:
-    print(" ----- ", model, " ---------------------")
-    print("\n")
     print(
         "==========  model = "
         + model
@@ -318,7 +309,6 @@ for model in models:
             dict_obs_composite[reference_data_name] = {}
         # Read land fraction
 
-        #ds_lf = xc.open_mfdataset(model_lf_path)
         if model_lf_path is not None:
             if os.path.isfile(model_lf_path):
                 try:
@@ -331,12 +321,11 @@ for model in models:
             ds_lf = lf_array.to_dataset().compute()
             ds_lf = ds_lf.rename_vars({"lsmask": "sftlf"})
 
-#        ds_lf = xcdat_open(model_lf_path)
-        #  use pcmdi mask
-#        lf_array = create_land_sea_mask(ds_lf, method="pcmdi")
-#        ds_lf = lf_array.to_dataset().compute()
-#        ds_lf = ds_lf.rename_vars({"lsmask": "sftlf"})
-        # ^^^^  block above ^^^^^
+	#  use pcmdi mask
+	#  lf_array = create_land_sea_mask(ds_lf, method="pcmdi")
+	#  ds_lf = lf_array.to_dataset().compute()
+	#  ds_lf = ds_lf.rename_vars({"lsmask": "sftlf"})
+
         if model in [ "EC-EARTH" ]: #, "BNU-ESM" ]:
             ds_lf = ds_lf.isel(lat=slice(None, None, -1))
         lf = ds_lf.sftlf.sel(lat=slice(-90, 90))  # land frac file must be global
@@ -362,39 +351,19 @@ for model in models:
                 # Get time coordinate information
                 print("model_path =   ", model_path)
 
-#                dc = xc.open_mfdataset(
-#                    model_path, add_bounds=["T", "X", "Y"]
-#                )
 
-#                print("XXXXXXXX    check point AAAAAAAAAAAA")
                 dc = xcdat_open(model_path, decode_times=True)
-#                dc = xcdat_open(glob("/p/user_pub/climate_work/dong12/pr/cmip5.CSIRO-Mk3-6-0.historical.r1i1p1.day.pr/*.nc"), decode_times=True)
-#                print("dc.shape  = ", dc.pr.shape)
                 dc['time'].attrs['axis'] = 'T'
                 dc['time'].attrs['standard_name'] = 'time'
-#                print("XXXXXXXX    check point BBBBBBBBBBBBBB")
                 dc = xr.decode_cf(dc, decode_times=True)
                 dc = dc.bounds.add_missing_bounds("X")
                 dc = dc.bounds.add_missing_bounds("Y")
                 dc = dc.bounds.add_missing_bounds("T")
-#                print("XXXXXXXX    check point DDDDDDDDDDDDDDD")
 
-#                try:
-#                    dc = xc.open_mfdataset(
-#                        model_path, decode_times=True, add_bounds=["T", "X", "Y"]
-#                    ).loads()
-#                except:
-#                    # QC loading datafiles
-#                    break
-
-#                print("dc = , ", dc)
-#                print("lf = , ", lf)
                 dc = dc.assign_coords({"lon": lf.lon, "lat": lf.lat})
-#                print("XXXXXXXX    check point CCCCCCCCCCCCCC")
                 c = xc.center_times(dc)
                 eday = pick_year_last_day(dc)
 
-                #print("dc.time =  ", dc.time)
 
                 # Get starting and ending year and month
                 startYear = c.time.values[0].year
@@ -497,8 +466,6 @@ for model in models:
                 # Loop start - Year
                 # -------------------------------------------------
                 temporary = {}
-                print("\n")
-                print(
                     "==========  model = "
                     + model
                     + "   ==============================================================================="
@@ -569,19 +536,13 @@ for model in models:
                                 )
                             )
 
-#                            print("regions_specs = ", regions_specs)
                             lf_sub_ds = region_subset(
                                 ds_lf, regions_specs, region=region
                             )
                             lf_sub = lf_sub_ds.sftlf
-#                            print("ds_lf.lat = ", ds_lf.lat)
-#                            print("lf_sub.lat = ", lf_sub.lat)
-#                            print("d_sub_pr.shape  =  ", d_sub_pr.shape)
-#                            print("lf_sub.shape  =  ", lf_sub.shape)
                             d_sub_pr = model_land_only(
                                 model, d_sub_pr, lf_sub, debug=debug
                             )
-#                            print("d_sub_pr.shape  =  ", d_sub_pr.shape)
 
 
                             d_sub_pr.values = d_sub_pr.values * 86400.0
@@ -596,8 +557,6 @@ for model in models:
                         ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("Y")
                         ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("T")
 
-#                        print('d_sub_pr.time  =   ', d_sub_pr.time)
-#                        print('ds_sub_pr.time  =   ', ds_sub_pr.time)
 
                         if "lat_bnds" not in ds_sub_pr.variables:
                             lat_bnds = dc["lat_bnds"].sel(lat=ds_sub_pr["lat"])
@@ -608,15 +567,10 @@ for model in models:
                         ).compute()
                         d_sub_aave = ds_sub_aave.pr
 
-#                        print('ds_sub_aave.time    =   ', ds_sub_aave.time)
-#                        print('d_sub_aave.time    =   ', d_sub_aave.time)
 
 
-#                        print("XXXXX checkpoint  GGGGGGGGGGGGGGGG  ")
                         if debug:
                             print("debug: region:", region)
-#                            print("debug: d_sub_pr.shape:", d_sub_pr.shape)
-#                            print("debug: d_sub_aave.shape:", d_sub_aave.shape)
 
                         # Southern Hemisphere monsoon domain
                         # set time series as 7/1~6/30
@@ -649,21 +603,17 @@ for model in models:
 
                                 d_sub_aave = xr.concat([part1, part2], dim="time")
 
-#                                print('after concat   d_sub_aave.time    =   ', d_sub_aave.time)
 
                                 if debug:
                                     print(
                                         "debug: ",
                                         region,
                                         year,
-#                                        d_sub_aave.time,
                                     )
-#                        print("XXXXX checkpoint  EEEEEEEEEEEEEEEE  ")
                         # get pentad time series
                         list_d_sub_aave_chunks = list(
                             divide_chunks_advanced(d_sub_aave, n, debug=debug)
                         )
-#                        print("XXXXX checkpoint  FFFFFFFFFFFFFFFF  ")
 
                         pentad_time_series = []
                         time_coords = np.array([], dtype="datetime64")
@@ -681,22 +631,12 @@ for model in models:
                                 datetime = pd.to_datetime([datetime_str[:10]])
                                 time_coords = np.concatenate([time_coords, datetime])
                                 time_coords = pd.to_datetime(time_coords)
-#                                print("pentad_time_series = ", pentad_time_series)
-#                                pentad_time_series = xr.DataArray(
-#                                    pentad_time_series,
-#                                    dims="time",
-#                                )
-#                                print("pentad_time_series = ", pentad_time_series)
-#                                pentad_time_series.coords["time"] = time_coords
 
                         pentad_time_series = xr.DataArray(
                             pentad_time_series,
                             dims="time",
                             coords={"time": time_coords},
                         )
-#                        print("pentad_time_series = ", pentad_time_series)
-#                        pentad_time_series.coords["time"] = time_coords
-#                        print("pentad_time_series = ", pentad_time_series)
 
 
                         if debug:
@@ -707,26 +647,13 @@ for model in models:
 
                         # Keep pentad time series length in consistent
                         ref_length = int(365 / n)
-#                        if model == "obs":
-#                            time_coords_ref = time_coords
                         if len(pentad_time_series) < ref_length:
-#                            pentad_time_series = interp1d(
-#                                pentad_time_series, ref_length, debug=debug
-#                            )
-#                            pentad_time_series = xr.DataArray(
-#                                pentad_time_series,
-#                                dims="time",
-#                            )
 
                             pentad_time_series = pentad_time_series.interp(
                                 time=pd.date_range(time_coords[0], time_coords[-1], periods=ref_length)
                             )
 
-#                            print("time_coords_ref = , ", time_coords_ref)
-#                            print("time_coords = , ", time_coords)
-#                            pentad_time_series.coords["time"] = time_coords_ref
                             time_coords = pentad_time_series.coords["time"]
-#                            print("time_coords = , ", time_coords)
 
 
                         pentad_time_series_cumsum = np.cumsum(pentad_time_series)
@@ -736,7 +663,6 @@ for model in models:
                             name=region + "_" + str(year),
                         )
                         pentad_time_series.attrs["units"] = str(d.units.values)
-#                        pentad_time_series.coords["time"] = time_coords
 
                         pentad_time_series_cumsum = xr.DataArray(
                             pentad_time_series_cumsum,
@@ -772,7 +698,6 @@ for model in models:
 
                     # --- Monsoon region loop end
                 # --- Year loop end
-                # fc.close()
                 dc.close()
 
                 # -------------------------------------------------
