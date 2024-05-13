@@ -1,0 +1,288 @@
+#!/usr/bin/env python
+import glob
+import os
+
+import xcdat
+
+from pcmdi_metrics.drcdm.lib import (
+    compute_metrics,
+    create_extremes_parser,
+    metadata,
+    region_utilities,
+    utilities,
+)
+
+##########
+# Set up
+##########
+
+parser = create_extremes_parser.create_extremes_parser()
+parameter = parser.get_parameter(argparse_vals_only=False)
+
+# Parameters
+# I/O settings
+case_id = parameter.case_id
+model_list = parameter.test_data_set
+realization = parameter.realization
+variable_list = parameter.vars
+filename_template = parameter.filename_template
+sftlf_filename_template = parameter.sftlf_filename_template
+test_data_path = parameter.test_data_path
+reference_data_path = parameter.reference_data_path
+reference_data_set = parameter.reference_data_set
+reference_sftlf_template = parameter.reference_sftlf_template
+metrics_output_path = parameter.metrics_output_path
+ModUnitsAdjust = parameter.ModUnitsAdjust
+ObsUnitsAdjust = parameter.ObsUnitsAdjust
+plots = parameter.plots
+debug = parameter.debug
+cmec = parameter.cmec
+msyear = parameter.msyear
+meyear = parameter.meyear
+osyear = parameter.osyear
+oeyear = parameter.oeyear
+generate_sftlf = parameter.generate_sftlf
+regrid = parameter.regrid
+cov_file = parameter.covariate_path
+cov_name = parameter.covariate
+return_period = parameter.return_period
+# Block extrema related settings
+annual_strict = parameter.annual_strict
+exclude_leap = parameter.exclude_leap
+dec_mode = parameter.dec_mode
+drop_incomplete_djf = parameter.drop_incomplete_djf
+# Region masking
+shp_path = parameter.shp_path
+col = parameter.attribute
+region_name = parameter.region_name
+coords = parameter.coords
+
+# Check the region masking parameters, if provided
+use_region_mask, region_name, coords = region_utilities.check_region_params(
+    shp_path, coords, region_name, col, "land"
+)
+
+# Verifying output directory
+metrics_output_path = utilities.verify_output_path(metrics_output_path, case_id)
+
+if isinstance(reference_data_set, list):
+    # Fix a command line issue
+    reference_data_set = reference_data_set[0]
+
+# Verify years
+ok_mod = utilities.verify_years(
+    msyear,
+    meyear,
+    msg="Error: Model msyear and meyear must both be set or both be None (unset).",
+)
+ok_obs = utilities.verify_years(
+    osyear,
+    oeyear,
+    msg="Error: Obs osyear and oeyear must both be set or both be None (unset).",
+)
+
+# Initialize output.json file
+meta = metadata.MetadataFile(metrics_output_path)
+
+# Initialize other directories
+# Not sure if needed so commented for now.
+# nc_dir = os.path.join(metrics_output_path, "netcdf")
+# os.makedirs(nc_dir, exist_ok=True)
+# if plots:
+#    plot_dir_maps = os.path.join(metrics_output_path, "plots", "maps")
+#    os.makedirs(plot_dir_maps, exist_ok=True)
+
+# Setting up model realization list
+find_all_realizations, realizations = utilities.set_up_realizations(realization)
+
+# Only include reference data in loop if it exists
+if reference_data_path is not None:
+    model_loop_list = ["Reference"] + model_list
+else:
+    model_loop_list = model_list
+
+# Initialize output JSON structures
+# FYI: if the analysis output JSON is changed, remember to update this function!
+metrics_dict = compute_metrics.init_metrics_dict(
+    model_loop_list,
+    variable_list,
+    dec_mode,
+    drop_incomplete_djf,
+    annual_strict,
+    region_name,
+)
+
+obs = {}
+
+##############
+# Run Analysis
+##############
+
+# Loop over models
+for model in model_loop_list:
+    if model == "Reference":
+        list_of_runs = [str(reference_data_set)]
+    elif find_all_realizations:
+        tags = {"%(model)": model, "%(model_version)": model, "%(realization)": "*"}
+        test_data_full_path = os.path.join(test_data_path, filename_template)
+        test_data_full_path = utilities.replace_multi(test_data_full_path, tags)
+        ncfiles = glob.glob(test_data_full_path)
+        realizations = []
+        for ncfile in ncfiles:
+            realizations.append(ncfile.split("/")[-1].split(".")[3])
+        print("=================================")
+        print("model, runs:", model, realizations)
+        list_of_runs = realizations
+    else:
+        list_of_runs = realizations
+
+    metrics_dict["RESULTS"][model] = {}
+
+    # Loop over realizations
+    for run in list_of_runs:
+        # Finding land/sea mask
+        sftlf_exists = True
+        if run == reference_data_set:
+            if reference_sftlf_template is not None and os.path.exists(
+                reference_sftlf_template
+            ):
+                sftlf_filename = reference_sftlf_template
+            else:
+                print("No reference sftlf file template provided.")
+                if not generate_sftlf:
+                    print("Skipping reference data")
+                else:
+                    # Set flag to generate sftlf after loading data
+                    sftlf_exists = False
+        else:
+            try:
+                tags = {
+                    "%(model)": model,
+                    "%(model_version)": model,
+                    "%(realization)": run,
+                }
+                sftlf_filename_list = utilities.replace_multi(
+                    sftlf_filename_template, tags
+                )
+                sftlf_filename = glob.glob(sftlf_filename_list)[0]
+            except (AttributeError, IndexError):
+                print("No sftlf file found for", model, run)
+                if not generate_sftlf:
+                    print("Skipping realization", run)
+                    continue
+                else:
+                    # Set flag to generate sftlf after loading data
+                    sftlf_exists = False
+        if sftlf_exists:
+            sftlf = xcdat.open_dataset(sftlf_filename, decode_times=False)
+            # Note: we should expect SFTLF to be between 0-1 like the rest of the metrics
+            # in the PMP do, not 0-100 like extremes.
+            if use_region_mask:
+                print("\nCreating region mask for land/sea mask.")
+                sftlf = region_utilities.mask_region(
+                    sftlf, region_name, coords=coords, shp_path=shp_path, column=col
+                )
+
+        if run == reference_data_set:
+            units_adjust = ObsUnitsAdjust
+        else:
+            units_adjust = ModUnitsAdjust
+
+        # Initialize results dictionary for this mode/run
+        # Presumably we will be populating this will metrics as we go
+        metrics_dict["RESULTS"][model][run] = {}
+
+        # In extremes we are looping over different variables. I am really
+        # not sure what will be the best way to approach this, if we should loop
+        # over variables, take in multiple variables at once, etc.
+        for varname in variable_list:
+            # Populate the filename templates to get actual data path
+            if run == reference_data_set:
+                test_data_full_path = reference_data_path
+                start_year = osyear
+                end_year = oeyear
+            else:
+                tags = {
+                    "%(variable)": varname,
+                    "%(model)": model,
+                    "%(model_version)": model,
+                    "%(realization)": run,
+                }
+                test_data_full_path = os.path.join(test_data_path, filename_template)
+                test_data_full_path = utilities.replace_multi(test_data_full_path, tags)
+                start_year = msyear
+                end_year = meyear
+            yrs = [str(start_year), str(end_year)]  # for output file names
+            test_data_full_path = glob.glob(test_data_full_path)
+            test_data_full_path.sort()
+            if len(test_data_full_path) == 0:
+                print("")
+                print("-----------------------")
+                print("Not found: model, run, variable:", model, run, varname)
+                continue
+            else:
+                print("")
+                print("-----------------------")
+                print("model, run, variable:", model, run, varname)
+                print("test_data (model in this case) full_path:")
+                for t in test_data_full_path:
+                    print("  ", t)
+
+            # Load and prep data
+            # TODO: substitute PMP version of loading
+            ds = utilities.load_dataset(test_data_full_path)
+
+            if not sftlf_exists and generate_sftlf:
+                print("Generating land sea mask.")
+                sftlf = utilities.generate_land_sea_mask(ds, debug=debug)
+                if use_region_mask:
+                    # TODO: any way to not create the land/sea mask in two different places?
+                    print("\nCreating region mask for land/sea mask.")
+                    sftlf = region_utilities.mask_region(
+                        sftlf, region_name, coords=coords, shp_path=shp_path, column=col
+                    )
+
+            # Mask out Antarctica
+            sftlf["sftlf"] = sftlf["sftlf"].where(sftlf.lat > -60)
+
+            if use_region_mask:
+                print("Creating dataset mask.")
+                ds = region_utilities.mask_region(
+                    ds, region_name, coords=coords, shp_path=shp_path, column=col
+                )
+
+            # Get time slice if year parameters exist
+            if start_year is not None:
+                ds = utilities.slice_dataset(ds, start_year, end_year)
+            else:
+                # Get labels for start/end years from dataset
+                yrs = [str(int(ds.time.dt.year[0])), str(int(ds.time.dt.year[-1]))]
+
+            # If any of the metrics use daily data we'll want to keep
+            # something like this calendar handling
+            if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
+                ds = ds.convert_calendar("noleap")
+
+            # -------------------------------
+            # Metrics go here
+            # -------------------------------
+
+
+# -------------------------------
+# Output JSON with metrics here
+# -------------------------------
+
+# Update and write metadata file
+# Will want something similar to below code I've left commented
+# try:
+#    with open(fname, "r") as f:
+#        tmp = json.load(f)
+#   meta.update_provenance("environment", tmp["provenance"])
+# except Exception:
+#    # Skip provenance if there's an issue
+#    print("Error: Could not get provenance from extremes json for output.json.")
+
+meta.update_provenance("modeldata", test_data_path)
+if reference_data_path is not None:
+    meta.update_provenance("obsdata", reference_data_path)
+meta.write()
