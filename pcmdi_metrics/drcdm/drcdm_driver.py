@@ -6,7 +6,7 @@ import xcdat
 
 from pcmdi_metrics.drcdm.lib import (
     compute_metrics,
-    create_extremes_parser,
+    create_drcdm_parser,
     metadata,
     region_utilities,
     utilities,
@@ -16,7 +16,7 @@ from pcmdi_metrics.drcdm.lib import (
 # Set up
 ##########
 
-parser = create_extremes_parser.create_extremes_parser()
+parser = create_drcdm_parser.create_extremes_parser()
 parameter = parser.get_parameter(argparse_vals_only=False)
 
 # Parameters
