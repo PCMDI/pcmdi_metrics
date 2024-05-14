@@ -87,8 +87,8 @@ def plot_power(d: xr.DataArray, title: str, fout: str, ewr=None):
     currentAxis = plt.gca()
     currentAxis.add_patch(
         Rectangle(
-            (0.0166667, 1),
-            0.0333333 - 0.0166667,
+            (0.016, 1),
+            0.034 - 0.016,
             2,
             edgecolor="black",
             ls="--",
@@ -97,8 +97,8 @@ def plot_power(d: xr.DataArray, title: str, fout: str, ewr=None):
     )
     currentAxis.add_patch(
         Rectangle(
-            (-0.0333333, 1),
-            0.0333333 - 0.0166667,
+            (-0.034, 1),
+            0.034 - 0.016,
             2,
             edgecolor="black",
             ls="--",

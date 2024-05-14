@@ -255,10 +255,10 @@ def calculate_ewr(OEE):
     Actual ranges of frequency and wavenumber have been checked and applied.
     """
     east_power_domain = OEE.sel(
-        zonalwavenumber=slice(1, 3), frequency=slice(0.0166667, 0.0333333)
+        zonalwavenumber=slice(1, 3), frequency=slice(0.016, 0.034)
     )
     west_power_domain = OEE.sel(
-        zonalwavenumber=slice(1, 3), frequency=slice(-0.0333333, -0.0166667)
+        zonalwavenumber=slice(1, 3), frequency=slice(-0.034, -0.016)
     )
     eastPower = np.average(east_power_domain)
     westPower = np.average(west_power_domain)
