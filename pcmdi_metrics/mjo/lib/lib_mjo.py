@@ -185,7 +185,7 @@ def generate_axes_and_decorate(Power, NT: int, NL: int) -> xr.DataArray:
     return da
 
 
-def output_power_spectra(NL: int, NT: int, Power, debug: bool = False):
+def output_power_spectra(NL: int, NT: int, Power, debug: bool = False) -> xr.DataArray:
     """
     Below code taken and modified from Daehyun Kim's Fortran code (MSD/level_2/sample/stps/stps.sea.f.sample)
     """
@@ -205,7 +205,6 @@ def output_power_spectra(NL: int, NT: int, Power, debug: bool = False):
     b = list((ss[i] for i in range(int(NL / 2), int(NL / 2) + 1 + 10)))
     a = np.array(a)
     b = np.array(b)
-    # Decoration
 
     # Add name attributes to x and y coordinates
     x_coords = xr.IndexVariable(
