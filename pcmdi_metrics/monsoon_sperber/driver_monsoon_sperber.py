@@ -378,11 +378,11 @@ for model in models:
                     endYear = startYear + 1
 
                 # Prepare archiving individual year pentad time series for composite
-                list_pentad_time_series = {}
-                list_pentad_time_series_cumsum = {}  # Cumulative time series
+                list_pentad_ts = {}
+                list_pentad_ts_cumsum = {}  # Cumulative time series
                 for region in list_monsoon_regions:
-                    list_pentad_time_series[region] = []
-                    list_pentad_time_series_cumsum[region] = []
+                    list_pentad_ts[region] = []
+                    list_pentad_ts_cumsum[region] = []
 
                 # Write individual year time series for each monsoon domain
                 # in a netCDF file
@@ -527,11 +527,7 @@ for model in models:
 
                         # Area average
                         ds_sub_pr = d_sub_pr.to_dataset().compute()
-                        # dc = dc.bounds.add_missing_bounds("X")
                         dc = dc.bounds.add_missing_bounds()
-                        # ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("X")
-                        # ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("Y")
-                        # ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("T")
                         ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds()
 
                         if "lat_bnds" not in ds_sub_pr.variables:
@@ -586,7 +582,7 @@ for model in models:
                             divide_chunks_advanced(d_sub_aave, n, debug=debug)
                         )
 
-                        pentad_time_series = []
+                        pentad_ts = []
                         time_coords = np.array([], dtype="datetime64")
 
                         for d_sub_aave_chunk in list_d_sub_aave_chunks:
@@ -597,55 +593,55 @@ for model in models:
                                 ave_chunk = d_sub_aave_chunk.mean(
                                     axis=0, skipna=True
                                 ).compute()
-                                pentad_time_series.append(float(ave_chunk))
+                                pentad_ts.append(float(ave_chunk))
                                 datetime_str = str(d_sub_aave_chunk["time"][0].values)
                                 datetime = pd.to_datetime([datetime_str[:10]])
                                 time_coords = np.concatenate([time_coords, datetime])
                                 time_coords = pd.to_datetime(time_coords)
 
-                        pentad_time_series = xr.DataArray(
-                            pentad_time_series,
+                        pentad_ts = xr.DataArray(
+                            pentad_ts,
                             dims="time",
                             coords={"time": time_coords},
                         )
 
                         if debug:
                             print(
-                                "debug: pentad_time_series length: ",
-                                len(pentad_time_series),
+                                "debug: pentad_ts length: ",
+                                len(pentad_ts),
                             )
 
                         # Keep pentad time series length in consistent
                         ref_length = int(365 / n)
-                        if len(pentad_time_series) < ref_length:
-                            pentad_time_series = pentad_time_series.interp(
+                        if len(pentad_ts) < ref_length:
+                            pentad_ts = pentad_ts.interp(
                                 time=pd.date_range(
                                     time_coords[0], time_coords[-1], periods=ref_length
                                 )
                             )
 
-                            time_coords = pentad_time_series.coords["time"]
+                            time_coords = pentad_ts.coords["time"]
 
-                        pentad_time_series_cumsum = np.cumsum(pentad_time_series)
-                        pentad_time_series = xr.DataArray(
-                            pentad_time_series,
+                        pentad_ts_cumsum = np.cumsum(pentad_ts)
+                        pentad_ts = xr.DataArray(
+                            pentad_ts,
                             dims="time",
                             name=region + "_" + str(year),
                         )
-                        pentad_time_series.attrs["units"] = str(d.units.values)
+                        pentad_ts.attrs["units"] = str(d.units.values)
 
-                        pentad_time_series_cumsum = xr.DataArray(
-                            pentad_time_series_cumsum,
+                        pentad_ts_cumsum = xr.DataArray(
+                            pentad_ts_cumsum,
                             dims="time",
                             name=region + "_" + str(year) + "_cumsum",
                         )
-                        pentad_time_series_cumsum.attrs["units"] = str(d.units.values)
-                        pentad_time_series_cumsum.coords["time"] = time_coords
+                        pentad_ts_cumsum.attrs["units"] = str(d.units.values)
+                        pentad_ts_cumsum.coords["time"] = time_coords
 
                         if nc_out:
                             # Archive individual year time series in netCDF file
-                            pentad_time_series.to_netcdf(file_path, mode="a")
-                            pentad_time_series_cumsum.to_netcdf(file_path, mode="a")
+                            pentad_ts.to_netcdf(file_path, mode="a")
+                            pentad_ts_cumsum.to_netcdf(file_path, mode="a")
 
                         """
                         if plot:
@@ -655,15 +651,13 @@ for model in models:
                             else:
                                 label = ''
                             ax[region].plot(
-                                np.array(pentad_time_series_cumsum),
+                                np.array(pentad_ts_cumsum),
                                 c='grey', label=label)
                         """
 
                         # Append individual year: save for following composite
-                        list_pentad_time_series[region].append(pentad_time_series)
-                        list_pentad_time_series_cumsum[region].append(
-                            pentad_time_series_cumsum
-                        )
+                        list_pentad_ts[region].append(pentad_ts)
+                        list_pentad_ts_cumsum[region].append(pentad_ts_cumsum)
 
                     # --- Monsoon region loop end
                 # --- Year loop end
@@ -678,9 +672,7 @@ for model in models:
                 for region in list_monsoon_regions:
                     # Get composite for each region
 
-                    composite_pentad_ts = np.array(
-                        list_pentad_time_series[region]
-                    ).mean(axis=0)
+                    composite_pentad_ts = np.array(list_pentad_ts[region]).mean(axis=0)
 
                     # Get accumulation ts from the composite
                     composite_pentad_ts_cumsum = np.cumsum(composite_pentad_ts)
