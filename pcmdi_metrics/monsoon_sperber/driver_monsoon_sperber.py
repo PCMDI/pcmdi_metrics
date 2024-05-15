@@ -2,7 +2,9 @@
 """
 Calculate monsoon metrics
 
-Bo Dong (dong12@llnl.gov) and Jiwoo Lee (lee1043@llnl.gov)
+Code History:
+- First implemented by Jiwoo Lee (lee1043@llnl.gov), 2018. 9.
+- Updated using xarray/xcdat by Bo Dong (dong12@llnl.gov) and Jiwoo Lee, 2024. 4.
 
 Reference:
 Sperber, K. and H. Annamalai, 2014:
@@ -46,28 +48,26 @@ from glob import glob
 from shutil import copyfile
 
 import matplotlib
-matplotlib.use('Agg')
-#import matplotlib.pyplot as plt
-from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 import xarray as xr
 import xcdat as xc
+from matplotlib import pyplot as plt
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
-from pcmdi_metrics.io import load_regions_specs, region_subset
+from pcmdi_metrics.io import load_regions_specs, region_subset, xcdat_open
 from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.monsoon_sperber.lib import (
     AddParserArgument,
     YearCheck,
     divide_chunks_advanced,
-    interp1d,
     model_land_only,
     sperber_metrics,
 )
 from pcmdi_metrics.utils import create_land_sea_mask, fill_template
-from pcmdi_metrics.io import xcdat_open
+
+matplotlib.use("Agg")
 
 
 def tree():
@@ -87,13 +87,6 @@ def pick_year_last_day(ds):
     except Exception:
         pass
     return eday
-
-
-# =================================================
-# Hard coded options... will be moved out later
-# -------------------------------------------------
-list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
-# list_monsoon_regions = ["all"]
 
 
 # How many elements each list should have
@@ -152,7 +145,7 @@ models = param.modnames
 print("models:", models)
 
 # list of regions
-# list_monsoon_regions = param.list_monsoon_regions
+list_monsoon_regions = param.list_monsoon_regions
 
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
@@ -259,12 +252,7 @@ if includeOBS:
     models.insert(0, "obs")
 
 for model in models:
-    print(
-        "==========  model = "
-        + model
-        + "   ==============================================================================="
-    )
-    print("\n")
+    print(f"====  model: {model} ======================================")
     try:
         # Conditions depending obs or model
         if model == "obs":
@@ -292,7 +280,16 @@ for model in models:
                 modpath(model=model, exp=exp, realization=realization, variable=var)
             )
             if debug:
-                print("model: ", model, "   exp: ", exp, "  realization: ", realization, "  variable: ", var)
+                print(
+                    "model: ",
+                    model,
+                    "   exp: ",
+                    exp,
+                    "  realization: ",
+                    realization,
+                    "  variable: ",
+                    var,
+                )
                 print("debug: model_path_list: ", model_path_list)
             # land fraction
             model_lf_path = modpath_lf(model=model)
@@ -307,26 +304,21 @@ for model in models:
 
             dict_obs_composite = {}
             dict_obs_composite[reference_data_name] = {}
-        # Read land fraction
 
+        # Read land fraction
         if model_lf_path is not None:
             if os.path.isfile(model_lf_path):
                 try:
                     ds_lf = xcdat_open(model_lf_path)
                 except Exception:
                     ds_lf = None
-        
-        if not ds_lf: 
+
+        if not ds_lf:
             lf_array = create_land_sea_mask(ds_lf, method="pcmdi")
             ds_lf = lf_array.to_dataset().compute()
             ds_lf = ds_lf.rename_vars({"lsmask": "sftlf"})
 
-	#  use pcmdi mask
-	#  lf_array = create_land_sea_mask(ds_lf, method="pcmdi")
-	#  ds_lf = lf_array.to_dataset().compute()
-	#  ds_lf = ds_lf.rename_vars({"lsmask": "sftlf"})
-
-        if model in [ "EC-EARTH" ]: #, "BNU-ESM" ]:
+        if model in ["EC-EARTH"]:  # , "BNU-ESM" ]:
             ds_lf = ds_lf.isel(lat=slice(None, None, -1))
         lf = ds_lf.sftlf.sel(lat=slice(-90, 90))  # land frac file must be global
 
@@ -345,16 +337,15 @@ for model in models:
                         run = realization
                     if run not in monsoon_stat_dic["RESULTS"][model]:
                         monsoon_stat_dic["RESULTS"][model][run] = {}
-                print("\n")
-                print(" --- ", run, " ---")
+
+                print(f" --- {run} ---")
 
                 # Get time coordinate information
                 print("model_path =   ", model_path)
 
-
                 dc = xcdat_open(model_path, decode_times=True)
-                dc['time'].attrs['axis'] = 'T'
-                dc['time'].attrs['standard_name'] = 'time'
+                dc["time"].attrs["axis"] = "T"
+                dc["time"].attrs["standard_name"] = "time"
                 dc = xr.decode_cf(dc, decode_times=True)
                 dc = dc.bounds.add_missing_bounds("X")
                 dc = dc.bounds.add_missing_bounds("Y")
@@ -363,7 +354,6 @@ for model in models:
                 dc = dc.assign_coords({"lon": lf.lon, "lat": lf.lat})
                 c = xc.center_times(dc)
                 eday = pick_year_last_day(dc)
-
 
                 # Get starting and ending year and month
                 startYear = c.time.values[0].year
@@ -466,10 +456,6 @@ for model in models:
                 # Loop start - Year
                 # -------------------------------------------------
                 temporary = {}
-                    "==========  model = "
-                    + model
-                    + "   ==============================================================================="
-                )
                 print("\n")
                 # year loop, endYear+1 to include last year
                 for year in range(startYear, endYear + 1):
@@ -478,7 +464,6 @@ for model in models:
                     print("\n")
                     d = dc.pr.sel(
                         time=slice(
-                            # str(year) + "-01-01 00:00:00", str(year) + "-12-31 23:59:59"
                             str(year) + "-01-01 00:00:00",
                             str(year) + f"-12-{eday} 23:59:59",
                         ),
@@ -493,14 +478,12 @@ for model in models:
                         d.values = d.values * 86400.0
                         d["units"] = units
 
-
                     # variable for over land only
                     d_land = model_land_only(model, d, lf, debug=debug)
 
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
                     # Loop start - Monsoon region
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
-
                     regions_specs = load_regions_specs()
 
                     for region in list_monsoon_regions:
@@ -515,14 +498,12 @@ for model in models:
                             d_sub_pr = d_sub_ds.pr.sel(
                                 time=slice(
                                     str(year) + "-01-01 00:00:00",
-                                    # str(year) + "-12-31 23:59:59",
                                     str(year) + f"-12-{eday} 23:59:59",
                                 )
                             )
 
                             d_sub_pr.values = d_sub_pr.values * 86400.0
                             d_sub_pr["units"] = units
-
 
                         else:
                             # land-only rainfall
@@ -544,10 +525,8 @@ for model in models:
                                 model, d_sub_pr, lf_sub, debug=debug
                             )
 
-
                             d_sub_pr.values = d_sub_pr.values * 86400.0
                             d_sub_pr["units"] = units
-
 
                         # Area average
 
@@ -556,7 +535,6 @@ for model in models:
                         ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("X")
                         ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("Y")
                         ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("T")
-
 
                         if "lat_bnds" not in ds_sub_pr.variables:
                             lat_bnds = dc["lat_bnds"].sel(lat=ds_sub_pr["lat"])
@@ -567,8 +545,6 @@ for model in models:
                         ).compute()
                         d_sub_aave = ds_sub_aave.pr
 
-
-
                         if debug:
                             print("debug: region:", region)
 
@@ -577,7 +553,6 @@ for model in models:
                         if region in ["AUS", "SAmo"]:
                             if year == startYear:
                                 start_t = str(year) + "-07-01 00:00:00"
-                                # end_t = str(year) + "-12-31 23:59:59"
                                 end_t = str(year) + f"-12-{eday} 23:59:59"
                                 temporary[region] = d_sub_aave.sel(
                                     time=slice(start_t, end_t)
@@ -595,14 +570,12 @@ for model in models:
                                     )
                                 )
                                 start_t = str(year) + "-07-01 00:00:00"
-                                # end_t = str(year) + "-12-31 23:59:59"
                                 end_t = str(year) + f"-12-{eday} 23:59:59"
                                 temporary[region] = d_sub_aave.sel(
                                     time=slice(start_t, end_t)
                                 )
 
                                 d_sub_aave = xr.concat([part1, part2], dim="time")
-
 
                                 if debug:
                                     print(
@@ -638,7 +611,6 @@ for model in models:
                             coords={"time": time_coords},
                         )
 
-
                         if debug:
                             print(
                                 "debug: pentad_time_series length: ",
@@ -648,13 +620,13 @@ for model in models:
                         # Keep pentad time series length in consistent
                         ref_length = int(365 / n)
                         if len(pentad_time_series) < ref_length:
-
                             pentad_time_series = pentad_time_series.interp(
-                                time=pd.date_range(time_coords[0], time_coords[-1], periods=ref_length)
+                                time=pd.date_range(
+                                    time_coords[0], time_coords[-1], periods=ref_length
+                                )
                             )
 
                             time_coords = pentad_time_series.coords["time"]
-
 
                         pentad_time_series_cumsum = np.cumsum(pentad_time_series)
                         pentad_time_series = xr.DataArray(
@@ -671,7 +643,6 @@ for model in models:
                         )
                         pentad_time_series_cumsum.attrs["units"] = str(d.units.values)
                         pentad_time_series_cumsum.coords["time"] = time_coords
-
 
                         if nc_out:
                             # Archive individual year time series in netCDF file
