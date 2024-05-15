@@ -4,9 +4,14 @@ import copy
 import glob
 import os
 
+# isort: off
+import shapely  # noqa: F401
+
+# isort: on
 import MV2 as MV
 import xarray as xr
 
+from pcmdi_metrics.io import StringConstructor
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.precip_distribution.lib import (
     AddParserArgument,
@@ -14,7 +19,6 @@ from pcmdi_metrics.precip_distribution.lib import (
     precip_distribution_cum,
     precip_distribution_frq_amt,
 )
-from pcmdi_metrics.utils import StringConstructor
 
 # Read parameters
 P = PMPParser()

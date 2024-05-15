@@ -48,6 +48,11 @@ Documentation
 * [View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
 
 
+**Reference**
+
+Lee, J., P. J. Gleckler, M.-S. Ahn, A. Ordonez, P. Ullrich, K. R. Sperber, K. E. Taylor, Y. Y. Planton, E. Guilyardi, P. Durack, C. Bonfils, M. D. Zelinka, L.-W. Chao, B. Dong, C. Doutriaux, C. Zhang, T. Vo, J. Boutte, M. F. Wehner, A. G. Pendergrass, D. Kim, Z. Xue, A. T. Wittenberg, and J. Krasting, 2024: Systematic and Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3. Geoscientific Model Development (_accepted, publication in progress_) [[preprint](https://egusphere.copernicus.org/preprints/2023/egusphere-2023-2720/)]
+
+
 Contact
 -------
 
@@ -104,6 +109,8 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.4.1]      | Technical update
+| [v3.4]        | Technical update: Modes of variability [xCDAT](https://xcdat.readthedocs.io/en/latest/) conversion
 | [v3.3.4]      | Technical update
 | [v3.3.3]      | Technical update
 | [v3.3.2]      | Technical update
@@ -136,6 +143,8 @@ Release Notes and History
 
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.4.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.4.1
+[v3.4]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.4
 [v3.3.4]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.3.4
 [v3.3.3]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.3.3
 [v3.3.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.3.2

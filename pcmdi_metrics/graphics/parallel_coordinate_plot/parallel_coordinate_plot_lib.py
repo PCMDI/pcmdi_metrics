@@ -26,6 +26,7 @@ def parallel_coordinate_plot(
     show_boxplot=False,
     show_violin=False,
     violin_colors=("lightgrey", "pink"),
+    violin_label=None,
     title=None,
     identify_all_models=True,
     xtick_labelsize=None,
@@ -35,6 +36,8 @@ def parallel_coordinate_plot(
     legend_off=False,
     legend_ncol=6,
     legend_bbox_to_anchor=(0.5, -0.14),
+    legend_loc="upper center",
+    legend_fontsize=10,
     logo_rect=None,
     logo_off=False,
     model_names2=None,
@@ -46,11 +49,16 @@ def parallel_coordinate_plot(
     arrow_between_lines=False,
     arrow_between_lines_colors=("red", "green"),
     arrow_alpha=1,
+    arrow_width=0.05,
+    arrow_linewidth=0,
+    arrow_head_width=0.15,
+    arrow_head_length=0.15,
     vertical_center=None,
     vertical_center_line=False,
     vertical_center_line_label=None,
     ymax=None,
     ymin=None,
+    debug=False,
 ):
     """
     Parameters
@@ -72,6 +80,7 @@ def parallel_coordinate_plot(
     - `show_boxplot`: bool, default=False, show box and wiskers plot
     - `show_violin`: bool, default=False, show violin plot
     - `violin_colors`: tuple or list containing two strings for colors of violin. Default=("lightgrey", "pink")
+    - `violin_label`: string to label the violin plot, when violin plot is not splited. Default is None.
     - `title`: string, default=None, plot title
     - `identify_all_models`: bool, default=True. Show and identify all models using markers
     - `xtick_labelsize`: number, fontsize for x-axis tick labels (optional)
@@ -81,6 +90,8 @@ def parallel_coordinate_plot(
     - `legend_off`: bool, default=False, turn off legend
     - `legend_ncol`: integer, default=6, number of columns for legend text
     - `legend_bbox_to_anchor`: tuple, defulat=(0.5, -0.14), set legend box location
+    - `legend_loc`: string, default="upper center", set legend box location
+    - `legend_fontsize`: float, default=8, legend font size
     - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the new Axes.
                    All quantities are in fractions of figure width and height.  Optional.
     - `logo_off`: bool, default=False, turn off PMP logo
@@ -93,11 +104,15 @@ def parallel_coordinate_plot(
     - `arrow_between_lines`: bool, default=False, place arrows between two lines for models in comparing_models
     - `arrow_between_lines_colors`: tuple or list containing two strings of colors for arrow between the two lines. Default=('red', 'green')
     - `arrow_alpha`: float, default=1, transparency of arrow (faction between 0 to 1)
+    - `arrow_width`: float, default is 0.05, width of arrow
+    - `arrow_linewidth`: float, default is 0, width of arrow edge line
+    - `arrow_head_width`: float, default is 0.15, widht of arrow head
+    - `arrow_head_length`: float, default is 0.15, length of arrow head
     - `vertical_center`: string ("median", "mean")/float/integer, default=None, adjust range of vertical axis to set center of vertical axis as median, mean, or given number
     - `vertical_center_line`: bool, default=False, show median as line
     - `vertical_center_line_label`: str, default=None, label in legend for the horizontal vertical center line. If not given, it will be automatically assigned. It can be turned off by "off"
-    - `ymax`: int or float, default=None, specify value of vertical axis top
-    - `ymin`: int or float, default=None, specify value of vertical axis bottom
+    - `ymax`: int or float or string ('percentile'), default=None, specify value of vertical axis top. If percentile, 95th percentile or extended for top
+    - `ymin`: int or float or string ('percentile'), default=None, specify value of vertical axis bottom. If percentile, 5th percentile or extended for bottom
 
     Return
     ------
@@ -110,6 +125,8 @@ def parallel_coordinate_plot(
     2022-09 violin plots added
     2023-03 median centered option added
     2023-04 vertical center option diversified (median, mean, or given number)
+    2024-03 parameter added for violin plot label
+    2024-04 parameters added for arrow and option added for ymax/ymin setting
     """
     params = {
         "legend.fontsize": "large",
@@ -135,6 +152,10 @@ def parallel_coordinate_plot(
         ymax=ymax,
         ymin=ymin,
     )
+
+    if debug:
+        print("ymins:", ymins)
+        print("ymaxs:", ymaxs)
 
     # Prepare plot
     if N > 20:
@@ -310,8 +331,8 @@ def parallel_coordinate_plot(
                     alpha=0.5,
                 )
 
+            # Add vertical arrows
             if arrow_between_lines:
-                # Add vertical arrows
                 for xi, yi1, yi2 in zip(x, y1, y2):
                     if yi2 > yi1:
                         arrow_color = arrow_between_lines_colors[0]
@@ -328,8 +349,11 @@ def parallel_coordinate_plot(
                         color=arrow_color,
                         length_includes_head=True,
                         alpha=arrow_alpha,
-                        width=0.05,
-                        head_width=0.15,
+                        width=arrow_width,
+                        linewidth=arrow_linewidth,
+                        head_width=arrow_head_width,
+                        head_length=arrow_head_length,
+                        zorder=999,
                     )
 
     ax.set_xlim(-0.5, N - 0.5)
@@ -340,10 +364,31 @@ def parallel_coordinate_plot(
     ax.set_title(title, fontsize=18)
 
     if not legend_off:
-        # ax.legend(loc="upper center", ncol=6, bbox_to_anchor=(0.5, -0.14))
-        ax.legend(
-            loc="upper center", ncol=legend_ncol, bbox_to_anchor=legend_bbox_to_anchor
-        )
+        if violin_label is not None:
+            # Get all lines for legend
+            lines = [violin["bodies"][0]] + ax.lines
+            # Get labels for legend
+            labels = [violin_label] + [line.get_label() for line in ax.lines]
+            # Remove unnessasary lines that its name starts with '_' to avoid the burden of warning message
+            lines = [aa for aa, bb in zip(lines, labels) if not bb.startswith("_")]
+            labels = [bb for bb in labels if not bb.startswith("_")]
+            # Add legend
+            ax.legend(
+                lines,
+                labels,
+                loc=legend_loc,
+                ncol=legend_ncol,
+                bbox_to_anchor=legend_bbox_to_anchor,
+                fontsize=legend_fontsize,
+            )
+        else:
+            # Add legend
+            ax.legend(
+                loc=legend_loc,
+                ncol=legend_ncol,
+                bbox_to_anchor=legend_bbox_to_anchor,
+                fontsize=legend_fontsize,
+            )
 
     if not logo_off:
         fig, ax = add_logo(fig, ax, logo_rect)
@@ -393,15 +438,28 @@ def _data_transform(
     # Data to plot
     ys = data  # stacked y-axis values
     N = ys.shape[1]  # number of vertical axis (i.e., =len(metric_names))
+
     if ymax is None:
         ymaxs = np.nanmax(ys, axis=0)  # maximum (ignore nan value)
     else:
-        ymaxs = np.repeat(ymax, N)
+        try:
+            if isinstance(ymax, str) and ymax == "percentile":
+                ymaxs = np.nanpercentile(ys, 95, axis=0)
+            else:
+                ymaxs = np.repeat(ymax, N)
+        except ValueError:
+            print(f"Invalid input for ymax: {ymax}")
 
     if ymin is None:
         ymins = np.nanmin(ys, axis=0)  # minimum (ignore nan value)
     else:
-        ymins = np.repeat(ymin, N)
+        try:
+            if isinstance(ymin, str) and ymin == "percentile":
+                ymins = np.nanpercentile(ys, 5, axis=0)
+            else:
+                ymins = np.repeat(ymin, N)
+        except ValueError:
+            print(f"Invalid input for ymin: {ymin}")
 
     ymeds = np.nanmedian(ys, axis=0)  # median
     ymean = np.nanmean(ys, axis=0)  # mean
@@ -411,14 +469,17 @@ def _data_transform(
             ymids = ymeds
         elif vertical_center == "mean":
             ymids = ymean
-        else:
+        elif isinstance(vertical_center, float) or isinstance(vertical_center, int):
             ymids = np.repeat(vertical_center, N)
+        else:
+            raise ValueError(f"vertical center {vertical_center} unknown.")
+
         for i in range(0, N):
-            max_distance_from_middle = max(
+            distance_from_middle = max(
                 abs(ymaxs[i] - ymids[i]), abs(ymids[i] - ymins[i])
             )
-            ymaxs[i] = ymids[i] + max_distance_from_middle
-            ymins[i] = ymids[i] - max_distance_from_middle
+            ymaxs[i] = ymids[i] + distance_from_middle
+            ymins[i] = ymids[i] - distance_from_middle
 
     dys = ymaxs - ymins
     if ymin is None:
