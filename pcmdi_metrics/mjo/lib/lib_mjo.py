@@ -185,7 +185,7 @@ def generate_axes_and_decorate(Power, NT: int, NL: int) -> xr.DataArray:
     return da
 
 
-def output_power_spectra(NL: int, NT: int, Power):
+def output_power_spectra(NL: int, NT: int, Power, debug: bool = False):
     """
     Below code taken and modified from Daehyun Kim's Fortran code (MSD/level_2/sample/stps/stps.sea.f.sample)
     """
@@ -224,10 +224,13 @@ def output_power_spectra(NL: int, NT: int, Power):
     )
 
     # Transpose for visualization
-    # OEE = np.transpose(OEE, (1, 0))
-    print("before transpose, OEE.shape:", OEE.shape)
+    if debug:
+        print("before transpose, OEE.shape:", OEE.shape)
+
     transposed_OEE = OEE.transpose()
-    print("after transpose, transposed_OEE.shape:", transposed_OEE.shape)
+
+    if debug:
+        print("after transpose, transposed_OEE.shape:", transposed_OEE.shape)
     return transposed_OEE
 
     # return OEE
