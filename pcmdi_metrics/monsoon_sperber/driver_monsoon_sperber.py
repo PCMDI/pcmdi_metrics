@@ -272,7 +272,7 @@ for model in models:
             syear = msyear
             eyear = meyear
             # variable data
-            model_path_list = glob(
+            model_path_list = glob.glob(
                 modpath(model=model, exp=exp, realization=realization, variable=var)
             )
             if debug:
@@ -485,7 +485,9 @@ for model in models:
                         # extract for monsoon region
                         if region in ["GoG", "NAmo"]:
                             # all grid point rainfall
-                            d_sub_ds = region_subset(dc, regions_specs, region=region)
+                            d_sub_ds = region_subset(
+                                dc, region, data_var="pr", regions_specs=regions_specs
+                            )
                             # must be entire calendar years
                             d_sub_pr = d_sub_ds.pr.sel(
                                 time=slice(
@@ -499,7 +501,6 @@ for model in models:
 
                         else:
                             # land-only rainfall
-
                             d_sub_ds = region_subset(
                                 dc, region, data_var="pr", regions_specs=regions_specs
                             )
@@ -525,7 +526,6 @@ for model in models:
                             d_sub_pr["units"] = units
 
                         # Area average
-
                         ds_sub_pr = d_sub_pr.to_dataset().compute()
                         dc = dc.bounds.add_missing_bounds("X")
                         ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("X")
