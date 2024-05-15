@@ -37,6 +37,7 @@ for advertising or product endorsement purposes.
 """
 
 import copy
+import glob
 import json
 import math
 import os
@@ -44,7 +45,6 @@ import re
 import sys
 from argparse import RawTextHelpFormatter
 from collections import defaultdict
-from glob import glob
 from shutil import copyfile
 
 import matplotlib
@@ -54,9 +54,9 @@ import xarray as xr
 import xcdat as xc
 from matplotlib import pyplot as plt
 
-import pcmdi_metrics
 from pcmdi_metrics import resources
 from pcmdi_metrics.io import load_regions_specs, region_subset, xcdat_open
+from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.monsoon_sperber.lib import (
     AddParserArgument,
@@ -146,6 +146,11 @@ print("models:", models)
 
 # list of regions
 list_monsoon_regions = param.list_monsoon_regions
+
+if list_monsoon_regions is None:
+    list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+
+print("list_monsoon_regions:", list_monsoon_regions)
 
 # Include all models if conditioned
 if ("all" in [m.lower() for m in models]) or (models == "all"):
@@ -843,9 +848,7 @@ for model in models:
                 # Write dictionary to json file
                 # (let the json keep overwritten in model loop)
                 # -------------------------------------------------
-                JSON = pcmdi_metrics.io.base.Base(
-                    outdir(output_type="metrics_results"), json_filename
-                )
+                JSON = Base(outdir(output_type="metrics_results"), json_filename)
                 JSON.write(
                     monsoon_stat_dic,
                     json_structure=["model", "realization", "monsoon_region", "metric"],
