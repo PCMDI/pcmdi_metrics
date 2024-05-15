@@ -54,7 +54,6 @@ import xarray as xr
 import xcdat as xc
 from matplotlib import pyplot as plt
 
-from pcmdi_metrics import resources
 from pcmdi_metrics.io import load_regions_specs, region_subset, xcdat_open
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.mean_climate.lib import pmp_parser
@@ -238,17 +237,9 @@ if "RESULTS" not in list(monsoon_stat_dic.keys()):
     monsoon_stat_dic["RESULTS"] = {}
 
 # =================================================
-# Loop start for given models
+# Load region information
 # -------------------------------------------------
-regions_specs = {}
-egg_pth = resources.resource_path()
-exec(
-    compile(
-        open(os.path.join(egg_pth, "default_regions.py")).read(),
-        os.path.join(egg_pth, "default_regions.py"),
-        "exec",
-    )
-)
+regions_specs = load_regions_specs()
 
 # =================================================
 # Loop start for given models
@@ -489,12 +480,8 @@ for model in models:
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
                     # Loop start - Monsoon region
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
-                    regions_specs = load_regions_specs()
-
                     for region in list_monsoon_regions:
-                        print("\n")
                         print(" region = ", region)
-                        print("\n")
                         # extract for monsoon region
                         if region in ["GoG", "NAmo"]:
                             # all grid point rainfall
@@ -513,17 +500,21 @@ for model in models:
                         else:
                             # land-only rainfall
 
-                            d_sub_ds = region_subset(dc, regions_specs, region=region)
+                            d_sub_ds = region_subset(
+                                dc, region, data_var="pr", regions_specs=regions_specs
+                            )
                             d_sub_pr = d_sub_ds.pr.sel(
                                 time=slice(
                                     str(year) + "-01-01 00:00:00",
-                                    # str(year) + "-12-31 23:59:59",
                                     str(year) + f"-12-{eday} 23:59:59",
                                 )
                             )
 
                             lf_sub_ds = region_subset(
-                                ds_lf, regions_specs, region=region
+                                ds_lf,
+                                region,
+                                data_var="sftlf",
+                                regions_specs=regions_specs,
                             )
                             lf_sub = lf_sub_ds.sftlf
                             d_sub_pr = model_land_only(
