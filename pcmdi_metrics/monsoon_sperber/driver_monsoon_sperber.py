@@ -527,10 +527,12 @@ for model in models:
 
                         # Area average
                         ds_sub_pr = d_sub_pr.to_dataset().compute()
-                        dc = dc.bounds.add_missing_bounds("X")
-                        ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("X")
-                        ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("Y")
-                        ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("T")
+                        # dc = dc.bounds.add_missing_bounds("X")
+                        dc = dc.bounds.add_missing_bounds()
+                        # ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("X")
+                        # ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("Y")
+                        # ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds("T")
+                        ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds()
 
                         if "lat_bnds" not in ds_sub_pr.variables:
                             lat_bnds = dc["lat_bnds"].sel(lat=ds_sub_pr["lat"])
@@ -676,61 +678,51 @@ for model in models:
                 for region in list_monsoon_regions:
                     # Get composite for each region
 
-                    composite_pentad_time_series = np.array(
+                    composite_pentad_ts = np.array(
                         list_pentad_time_series[region]
                     ).mean(axis=0)
 
                     # Get accumulation ts from the composite
-                    composite_pentad_time_series_cumsum = np.cumsum(
-                        composite_pentad_time_series
-                    )
-
-                    # Maintain axis information
+                    composite_pentad_ts_cumsum = np.cumsum(composite_pentad_ts)
 
                     # - - - - - - - - - - -
                     # Metrics for composite
                     # - - - - - - - - - - -
 
                     metrics_result = sperber_metrics(
-                        composite_pentad_time_series_cumsum, region, debug=debug
+                        composite_pentad_ts_cumsum, region, debug=debug
                     )
 
                     # Normalized cummulative pentad time series
-                    composite_pentad_time_series_cumsum_normalized = metrics_result[
-                        "frac_accum"
-                    ]
+                    composite_pentad_ts_cumsum_normalized = metrics_result["frac_accum"]
 
-                    composite_pentad_time_series = xr.DataArray(
-                        composite_pentad_time_series, dims="time", name=region + "_comp"
+                    composite_pentad_ts = xr.DataArray(
+                        composite_pentad_ts, dims="time", name=region + "_comp"
                     )
-                    composite_pentad_time_series.attrs["units"] = str(d.units)
-                    composite_pentad_time_series.coords["time"] = time_coords
+                    composite_pentad_ts.attrs["units"] = str(d.units)
+                    composite_pentad_ts.coords["time"] = time_coords
 
-                    composite_pentad_time_series_cumsum = xr.DataArray(
-                        composite_pentad_time_series_cumsum,
+                    composite_pentad_ts_cumsum = xr.DataArray(
+                        composite_pentad_ts_cumsum,
                         dims="time",
                         name=region + "_comp_cumsum",
                     )
-                    composite_pentad_time_series_cumsum.attrs["units"] = str(d.units)
-                    composite_pentad_time_series_cumsum.coords["time"] = time_coords
+                    composite_pentad_ts_cumsum.attrs["units"] = str(d.units)
+                    composite_pentad_ts_cumsum.coords["time"] = time_coords
 
-                    composite_pentad_time_series_cumsum_normalized = xr.DataArray(
-                        composite_pentad_time_series_cumsum_normalized,
+                    composite_pentad_ts_cumsum_normalized = xr.DataArray(
+                        composite_pentad_ts_cumsum_normalized,
                         dims="time",
                         name=region + "_comp_cumsum_fraction",
                     )
-                    composite_pentad_time_series_cumsum_normalized.attrs["units"] = str(
-                        d.units
-                    )
-                    composite_pentad_time_series_cumsum_normalized.coords[
-                        "time"
-                    ] = time_coords
+                    composite_pentad_ts_cumsum_normalized.attrs["units"] = str(d.units)
+                    composite_pentad_ts_cumsum_normalized.coords["time"] = time_coords
 
                     if model == "obs":
                         dict_obs_composite[reference_data_name][region] = {}
                         dict_obs_composite[reference_data_name][
                             region
-                        ] = composite_pentad_time_series_cumsum_normalized
+                        ] = composite_pentad_ts_cumsum_normalized
 
                     # Archive as dict for JSON
                     if model == "obs":
@@ -748,11 +740,9 @@ for model in models:
 
                     # Archice in netCDF file
                     if nc_out:
-                        composite_pentad_time_series.to_netcdf(file_path, mode="a")
-                        composite_pentad_time_series_cumsum.to_netcdf(
-                            file_path, mode="a"
-                        )
-                        composite_pentad_time_series_cumsum_normalized.to_netcdf(
+                        composite_pentad_ts.to_netcdf(file_path, mode="a")
+                        composite_pentad_ts_cumsum.to_netcdf(file_path, mode="a")
+                        composite_pentad_ts_cumsum_normalized.to_netcdf(
                             file_path, mode="a"
                         )
 
@@ -764,9 +754,7 @@ for model in models:
                         if model != "obs":
                             # model
                             ax[region].plot(
-                                np.array(
-                                    composite_pentad_time_series_cumsum_normalized
-                                ),
+                                np.array(composite_pentad_ts_cumsum_normalized),
                                 c="red",
                                 label=model,
                             )
@@ -777,7 +765,7 @@ for model in models:
                                 ax[region].axvline(
                                     x=idx,
                                     ymin=0,
-                                    ymax=composite_pentad_time_series_cumsum_normalized[
+                                    ymax=composite_pentad_ts_cumsum_normalized[
                                         idx
                                     ].item(),
                                     c="red",
@@ -855,14 +843,12 @@ for model in models:
                     raise
                 else:
                     print("warning: faild for ", model, run, err)
-                    pass
         # --- Realization loop end
     except Exception as err:
         if debug:
             raise
         else:
             print("warning: faild for ", model, err)
-            pass
 # --- Model loop end
 
 if not debug:
