@@ -19,8 +19,8 @@ def sperber_metrics(d, region, debug=False):
     """d: input, 1d array of cumulative pentad time series"""
     # Convert accumulation to fractional accumulation; normalize by sum
     d_sum = d[-1]
-    # Normalize
 
+    # Normalize
     frac_accum = d / d_sum
 
     # Stat 1: Onset

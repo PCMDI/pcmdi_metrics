@@ -47,7 +47,7 @@ from argparse import RawTextHelpFormatter
 from collections import defaultdict
 from shutil import copyfile
 
-import matplotlib
+# import matplotlib
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -66,7 +66,7 @@ from pcmdi_metrics.monsoon_sperber.lib import (
 )
 from pcmdi_metrics.utils import create_land_sea_mask, fill_template
 
-matplotlib.use("Agg")
+# matplotlib.use("Agg")
 
 
 def tree():
@@ -178,7 +178,7 @@ outdir = param.process_templated_argument("results_dir")
 for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
     if not os.path.exists(outdir(output_type=output_type)):
         os.makedirs(outdir(output_type=output_type))
-    print(outdir(output_type=output_type))
+    print(f"output dir for {output_type}: {outdir(output_type=output_type)}")
 
 # Debug
 debug = param.debug
@@ -247,6 +247,9 @@ regions_specs = load_regions_specs()
 if includeOBS:
     models.insert(0, "obs")
 
+if debug:
+    print("models:", models)
+
 for model in models:
     print(f"====  model: {model} ======================================")
     try:
@@ -266,6 +269,8 @@ for model in models:
             # dict for plottng
             dict_obs_composite = {}
             dict_obs_composite[reference_data_name] = {}
+            # plot
+            plot_line_color = "black"
         else:  # for rest of models
             var = varModel
             UnitsAdjust = ModUnitsAdjust
@@ -277,14 +282,7 @@ for model in models:
             )
             if debug:
                 print(
-                    "model: ",
-                    model,
-                    "   exp: ",
-                    exp,
-                    "  realization: ",
-                    realization,
-                    "  variable: ",
-                    var,
+                    f"model: {model}, exp: {exp}, realization: {realization}, variable: {var}"
                 )
                 print("debug: model_path_list: ", model_path_list)
             # land fraction
@@ -297,9 +295,8 @@ for model in models:
             # dict for output JSON
             if model not in list(monsoon_stat_dic["RESULTS"].keys()):
                 monsoon_stat_dic["RESULTS"][model] = {}
-
-            dict_obs_composite = {}
-            dict_obs_composite[reference_data_name] = {}
+            # plot
+            plot_line_color = "red"
 
         # Read land fraction
         if model_lf_path is not None:
@@ -387,16 +384,11 @@ for model in models:
                     list_pentad_ts[region] = []
                     list_pentad_ts_cumsum[region] = []
 
-                # Write individual year time series for each monsoon domain
-                # in a netCDF file
-                output_filename = "{}_{}_{}_{}_{}_{}-{}".format(
-                    mip, model, exp, run, "monsoon_sperber", startYear, endYear
+                # Write individual year time series for each monsoon domain in a netCDF file
+                output_filename = (
+                    f"{mip}_{model}_{exp}_{run}_monsoon_sperber_{startYear}-{endYear}"
                 )
                 if nc_out:
-                    output_filename = "{}_{}_{}_{}_{}_{}-{}".format(
-                        mip, model, exp, run, "monsoon_sperber", startYear, endYear
-                    )
-
                     file_path = os.path.join(
                         outdir(output_type="diagnostic_results"),
                         output_filename + ".nc",
@@ -424,18 +416,9 @@ for model in models:
                     for i, region in enumerate(list_monsoon_regions):
                         ax[region] = plt.subplot(nrows, ncols, i + 1)
                         ax[region].set_ylim(0, 1)
-                        # ax[region].set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1])
-                        # ax[region].set_xticks([0, 10, 20, 30, 40, 50, 60, 70])
                         ax[region].margins(x=0)
                         print(
-                            "plot: region",
-                            region,
-                            "nrows",
-                            nrows,
-                            "ncols",
-                            ncols,
-                            "index",
-                            i + 1,
+                            f"plot:: region: {region}, nrows: {nrows}, ncols: {ncols}, index: {i + 1}"
                         )
                         if nrows > 1 and math.ceil((i + 1) / float(ncols)) < nrows:
                             ax[region].set_xticklabels([])
@@ -617,7 +600,6 @@ for model in models:
                             dims="time",
                             name=region + "_" + str(year),
                         )
-                        # pentad_ts.attrs["units"] = str(d.units.values)
                         pentad_ts.attrs["units"] = str(d.units)
 
                         pentad_ts_cumsum = xr.DataArray(
@@ -625,7 +607,6 @@ for model in models:
                             dims="time",
                             name=region + "_" + str(year) + "_cumsum",
                         )
-                        # pentad_ts_cumsum.attrs["units"] = str(d.units.values)
                         pentad_ts_cumsum.attrs["units"] = str(d.units)
                         pentad_ts_cumsum.coords["time"] = time_coords
 
@@ -635,14 +616,21 @@ for model in models:
                             pentad_ts_cumsum.to_netcdf(file_path, mode="a")
 
                         if plot:
-                            # Add grey line for individual year in plot
+                            if debug:
+                                print(
+                                    f"debug: plot individual year for {model}, {year}"
+                                )
+                            # Set label for line
                             if year == startYear:
                                 label = "Individual yr"
                             else:
                                 label = ""
+                            # Add thin line for individual year in plot
                             ax[region].plot(
                                 np.array(pentad_ts_cumsum / pentad_ts_cumsum[-1]),
-                                c="grey",
+                                c=plot_line_color,
+                                alpha=0.5,
+                                lw=0.5,
                                 label=label,
                             )
 
@@ -662,7 +650,6 @@ for model in models:
 
                 for region in list_monsoon_regions:
                     # Get composite for each region
-
                     composite_pentad_ts = np.array(list_pentad_ts[region]).mean(axis=0)
 
                     # Get accumulation ts from the composite
@@ -671,7 +658,6 @@ for model in models:
                     # - - - - - - - - - - -
                     # Metrics for composite
                     # - - - - - - - - - - -
-
                     metrics_result = sperber_metrics(
                         composite_pentad_ts_cumsum, region, debug=debug
                     )
@@ -734,13 +720,14 @@ for model in models:
 
                     # Add line in plot
                     if plot:
+                        # line for model
                         if model != "obs":
-                            # model
                             ax[region].plot(
                                 np.array(composite_pentad_ts_cumsum_normalized),
                                 c="red",
                                 label=model,
                             )
+                            # vertical line for onset and decay
                             for idx in [
                                 metrics_result["onset_index"],
                                 metrics_result["decay_index"],
@@ -755,36 +742,56 @@ for model in models:
                                     ls="--",
                                 )
 
-                        # obs
-                        if model == "obs":
-                            ax[region].plot(
-                                np.array(
-                                    dict_obs_composite[reference_data_name][region]
-                                ),
-                                c="blue",
-                                label=reference_data_name,
+                        # superimpose line for obs
+                        ax[region].plot(
+                            np.array(dict_obs_composite[reference_data_name][region]),
+                            c="black",
+                            label=reference_data_name,
+                        )
+                        # vertical line for onset and decay
+                        for idx in [
+                            monsoon_stat_dic["REF"][reference_data_name][region][
+                                "onset_index"
+                            ],
+                            monsoon_stat_dic["REF"][reference_data_name][region][
+                                "decay_index"
+                            ],
+                        ]:
+                            ax[region].axvline(
+                                x=idx,
+                                ymin=0,
+                                ymax=dict_obs_composite[reference_data_name][region][
+                                    idx
+                                ].item(),
+                                c="black",
+                                ls="--",
                             )
-                            for idx in [
-                                monsoon_stat_dic["REF"][reference_data_name][region][
-                                    "onset_index"
-                                ],
-                                monsoon_stat_dic["REF"][reference_data_name][region][
-                                    "decay_index"
-                                ],
-                            ]:
-                                ax[region].axvline(
-                                    x=idx,
-                                    ymin=0,
-                                    ymax=dict_obs_composite[reference_data_name][
-                                        region
-                                    ][idx].item(),
-                                    c="blue",
-                                    ls="--",
-                                )
+
+                        # Re-order legend
+                        handles, labels = ax[
+                            list_monsoon_regions[0]
+                        ].get_legend_handles_labels()
+                        handles.reverse()
+                        labels.reverse()
+                        ax[list_monsoon_regions[0]].legend(handles, labels)
+                        """
+                        if debug:
+                            print("debug: handles", handles)
+                            print("debug: labels", labels)
+
+                        if model == "obs":
+                            order = [1, 0]
+                        else:
+                            order = [2, 1, 0]
+
+                        # Add revised legend
+                        ax[list_monsoon_regions[0]].legend(
+                            [handles[idx] for idx in order],
+                            [labels[idx] for idx in order],
+                        )
+                        """
                         # title
                         ax[region].set_title(region)
-                        if region == list_monsoon_regions[0]:
-                            ax[region].legend(loc=2)
                         if region == list_monsoon_regions[-1]:
                             if model == "obs":
                                 data_name = "OBS: " + reference_data_name
