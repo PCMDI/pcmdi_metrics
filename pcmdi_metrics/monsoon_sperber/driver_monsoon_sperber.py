@@ -343,9 +343,6 @@ for model in models:
                 dc["time"].attrs["axis"] = "T"
                 dc["time"].attrs["standard_name"] = "time"
                 dc = xr.decode_cf(dc, decode_times=True)
-                # dc = dc.bounds.add_missing_bounds("X")
-                # dc = dc.bounds.add_missing_bounds("Y")
-                # dc = dc.bounds.add_missing_bounds("T")
                 dc = dc.bounds.add_missing_bounds()
 
                 dc = dc.assign_coords({"lon": lf.lon, "lat": lf.lat})
