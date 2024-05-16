@@ -343,13 +343,19 @@ for model in models:
                 dc["time"].attrs["axis"] = "T"
                 dc["time"].attrs["standard_name"] = "time"
                 dc = xr.decode_cf(dc, decode_times=True)
-                dc = dc.bounds.add_missing_bounds("X")
-                dc = dc.bounds.add_missing_bounds("Y")
-                dc = dc.bounds.add_missing_bounds("T")
+                # dc = dc.bounds.add_missing_bounds("X")
+                # dc = dc.bounds.add_missing_bounds("Y")
+                # dc = dc.bounds.add_missing_bounds("T")
+                dc = dc.bounds.add_missing_bounds()
 
                 dc = dc.assign_coords({"lon": lf.lon, "lat": lf.lat})
                 c = xc.center_times(dc)
                 eday = pick_year_last_day(dc)
+
+                # Adjust Units
+                if UnitsAdjust[0]:
+                    dc[var].values = dc[var].values * 86400.0
+                    dc[var].attrs["units"] = units  # 'mm/d'
 
                 # Get starting and ending year and month
                 startYear = c.time.values[0].year
@@ -465,14 +471,6 @@ for model in models:
                         ),
                         lat=slice(-90, 90),
                     )
-                    # unit adjust
-                    if UnitsAdjust[0]:
-                        """Below two lines are identical to following:
-                        d = MV2.multiply(d, 86400.)
-                        d.units = 'mm/d'
-                        """
-                        d.values = d.values * 86400.0
-                        d["units"] = units
 
                     # variable for over land only
                     d_land = model_land_only(model, d, lf, debug=debug)
@@ -496,9 +494,6 @@ for model in models:
                                 )
                             )
 
-                            d_sub_pr.values = d_sub_pr.values * 86400.0
-                            d_sub_pr["units"] = units
-
                         else:
                             # land-only rainfall
                             d_sub_ds = region_subset(
@@ -521,9 +516,6 @@ for model in models:
                             d_sub_pr = model_land_only(
                                 model, d_sub_pr, lf_sub, debug=debug
                             )
-
-                            d_sub_pr.values = d_sub_pr.values * 86400.0
-                            d_sub_pr["units"] = units
 
                         # Area average
                         ds_sub_pr = d_sub_pr.to_dataset().compute()
@@ -628,14 +620,16 @@ for model in models:
                             dims="time",
                             name=region + "_" + str(year),
                         )
-                        pentad_ts.attrs["units"] = str(d.units.values)
+                        # pentad_ts.attrs["units"] = str(d.units.values)
+                        pentad_ts.attrs["units"] = str(d.units)
 
                         pentad_ts_cumsum = xr.DataArray(
                             pentad_ts_cumsum,
                             dims="time",
                             name=region + "_" + str(year) + "_cumsum",
                         )
-                        pentad_ts_cumsum.attrs["units"] = str(d.units.values)
+                        # pentad_ts_cumsum.attrs["units"] = str(d.units.values)
+                        pentad_ts_cumsum.attrs["units"] = str(d.units)
                         pentad_ts_cumsum.coords["time"] = time_coords
 
                         if nc_out:
@@ -643,17 +637,17 @@ for model in models:
                             pentad_ts.to_netcdf(file_path, mode="a")
                             pentad_ts_cumsum.to_netcdf(file_path, mode="a")
 
-                        """
                         if plot:
                             # Add grey line for individual year in plot
                             if year == startYear:
-                                label = 'Individual yr'
+                                label = "Individual yr"
                             else:
-                                label = ''
+                                label = ""
                             ax[region].plot(
-                                np.array(pentad_ts_cumsum),
-                                c='grey', label=label)
-                        """
+                                np.array(pentad_ts_cumsum / pentad_ts_cumsum[-1]),
+                                c="grey",
+                                label=label,
+                            )
 
                         # Append individual year: save for following composite
                         list_pentad_ts[region].append(pentad_ts)
