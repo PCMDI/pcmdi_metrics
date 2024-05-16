@@ -92,7 +92,8 @@ def pick_year_last_day(ds):
 # =================================================
 # Hard coded options... will be moved out later
 # -------------------------------------------------
-list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+#list_monsoon_regions = ["AIR", "AUS", "Sahel", "GoG", "NAmo", "SAmo"]
+list_monsoon_regions = ["AIR", "Sahel"]
 # list_monsoon_regions = ["all"]
 
 
@@ -305,8 +306,6 @@ for model in models:
             if model not in list(monsoon_stat_dic["RESULTS"].keys()):
                 monsoon_stat_dic["RESULTS"][model] = {}
 
-            dict_obs_composite = {}
-            dict_obs_composite[reference_data_name] = {}
         # Read land fraction
 
         if model_lf_path is not None:
@@ -466,6 +465,7 @@ for model in models:
                 # Loop start - Year
                 # -------------------------------------------------
                 temporary = {}
+                print(
                     "==========  model = "
                     + model
                     + "   ==============================================================================="
@@ -818,31 +818,30 @@ for model in models:
                                 )
 
                         # obs
-                        if model == "obs":
-                            ax[region].plot(
-                                np.array(
-                                    dict_obs_composite[reference_data_name][region]
-                                ),
+                        ax[region].plot(
+                            np.array(
+                                dict_obs_composite[reference_data_name][region]
+                            ),
+                            c="blue",
+                            label=reference_data_name,
+                        )
+                        for idx in [
+                            monsoon_stat_dic["REF"][reference_data_name][region][
+                                "onset_index"
+                            ],
+                            monsoon_stat_dic["REF"][reference_data_name][region][
+                                "decay_index"
+                            ],
+                        ]:
+                            ax[region].axvline(
+                                x=idx,
+                                ymin=0,
+                                ymax=dict_obs_composite[reference_data_name][
+                                    region
+                                ][idx].item(),
                                 c="blue",
-                                label=reference_data_name,
+                                ls="--",
                             )
-                            for idx in [
-                                monsoon_stat_dic["REF"][reference_data_name][region][
-                                    "onset_index"
-                                ],
-                                monsoon_stat_dic["REF"][reference_data_name][region][
-                                    "decay_index"
-                                ],
-                            ]:
-                                ax[region].axvline(
-                                    x=idx,
-                                    ymin=0,
-                                    ymax=dict_obs_composite[reference_data_name][
-                                        region
-                                    ][idx].item(),
-                                    c="blue",
-                                    ls="--",
-                                )
                         # title
                         ax[region].set_title(region)
                         if region == list_monsoon_regions[0]:
