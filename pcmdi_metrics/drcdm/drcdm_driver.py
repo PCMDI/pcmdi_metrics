@@ -11,6 +11,7 @@ from pcmdi_metrics.drcdm.lib import (
     region_utilities,
     utilities,
 )
+from pcmdi_metrics.utils import create_land_sea_mask
 
 ##########
 # Set up
@@ -170,8 +171,6 @@ for model in model_loop_list:
                     sftlf_exists = False
         if sftlf_exists:
             sftlf = xcdat.open_dataset(sftlf_filename, decode_times=False)
-            # Note: we should expect SFTLF to be between 0-1 like the rest of the metrics
-            # in the PMP do, not 0-100 like extremes.
             if use_region_mask:
                 print("\nCreating region mask for land/sea mask.")
                 sftlf = region_utilities.mask_region(
@@ -229,10 +228,10 @@ for model in model_loop_list:
 
             if not sftlf_exists and generate_sftlf:
                 print("Generating land sea mask.")
-                # TODO: are we using PMP version of land/sea mask?
-                sftlf = utilities.generate_land_sea_mask(ds, debug=False)
+                sft = create_land_sea_mask(ds)
+                sftlf = ds.copy(data=None)
+                sftlf["sftlf"] = sft
                 if use_region_mask:
-                    # TODO: any way to not create the land/sea mask in two different places?
                     print("\nCreating region mask for land/sea mask.")
                     sftlf = region_utilities.mask_region(
                         sftlf, region_name, coords=coords, shp_path=shp_path, column=col
