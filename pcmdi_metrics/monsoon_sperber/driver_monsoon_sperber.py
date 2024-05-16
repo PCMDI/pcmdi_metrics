@@ -460,32 +460,21 @@ for model in models:
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
                     for region in list_monsoon_regions:
                         print(" region = ", region)
-                        # extract for monsoon region
-                        if region in ["GoG", "NAmo"]:
-                            # all grid point rainfall
-                            d_sub_ds = region_subset(
-                                dc, region, data_var="pr", regions_specs=regions_specs
-                            )
-                            # must be entire calendar years
-                            d_sub_pr = d_sub_ds.pr.sel(
-                                time=slice(
-                                    str(year) + "-01-01 00:00:00",
-                                    str(year) + f"-12-{eday} 23:59:59",
-                                )
-                            )
 
-                        else:
-                            # land-only rainfall
-                            d_sub_ds = region_subset(
-                                dc, region, data_var="pr", regions_specs=regions_specs
+                        # all grid point rainfall
+                        d_sub_ds = region_subset(
+                            dc, region, data_var="pr", regions_specs=regions_specs
+                        )
+                        # must be entire calendar years
+                        d_sub_pr = d_sub_ds.pr.sel(
+                            time=slice(
+                                str(year) + "-01-01 00:00:00",
+                                str(year) + f"-12-{eday} 23:59:59",
                             )
-                            d_sub_pr = d_sub_ds.pr.sel(
-                                time=slice(
-                                    str(year) + "-01-01 00:00:00",
-                                    str(year) + f"-12-{eday} 23:59:59",
-                                )
-                            )
+                        )
 
+                        # land-only rainfall
+                        if region not in ["GoG", "NAmo"]:
                             lf_sub_ds = region_subset(
                                 ds_lf,
                                 region,
