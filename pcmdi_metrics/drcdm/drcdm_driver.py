@@ -268,8 +268,19 @@ for model in model_loop_list:
             #         annual_tasmax_ge_100F, annual_tasmax_ge_105F, tasmax_q50, tasmax_q99p9
             # tasmin: annualmean_tasmin, annual_tasmin_le_32F, annual_tnn
             # ETTCDI has some metrics for tas as well
-            # Putting a placeholder here for now:
-            print(model, run, varname)
+
+            # In the extremes metrics, I go by variable and call compute_metrics.temperature_indices() or
+            # compute_metrics.precipitation_indices() and those functions handle all the data wrangling
+            # for getting all the indices for that variable. Not sure if that's the best way to do it here.
+            # For example:
+            Rx1day, Rx5day = compute_metrics.precipitation_indices(
+                ds,
+                sftlf,
+                units_adjust,
+                dec_mode,
+                drop_incomplete_djf,
+                annual_strict,
+            )
 
 
 # -------------------------------
