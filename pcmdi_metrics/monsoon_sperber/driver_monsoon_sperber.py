@@ -323,7 +323,7 @@ for model in models:
                 if model == "obs":
                     run = "obs"
                 else:
-                    if realization in ["all", "All", "ALL", "*"]:
+                    if realization.lower() in ["all", "*"]:
                         run_index = modpath.split(".").index("%(realization)")
                         run = model_path.split("/")[-1].split(".")[run_index]
                     else:
