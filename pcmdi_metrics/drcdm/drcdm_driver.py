@@ -24,6 +24,7 @@ parameter = parser.get_parameter(argparse_vals_only=False)
 case_id = parameter.case_id
 model_list = parameter.test_data_set
 realization = parameter.realization
+# Expected variables - pr, tasmax, tasmin, tas
 variable_list = parameter.vars
 filename_template = parameter.filename_template
 sftlf_filename_template = parameter.sftlf_filename_template
@@ -32,20 +33,16 @@ reference_data_path = parameter.reference_data_path
 reference_data_set = parameter.reference_data_set
 reference_sftlf_template = parameter.reference_sftlf_template
 metrics_output_path = parameter.metrics_output_path
+# Do we require variables to use certain units?
 ModUnitsAdjust = parameter.ModUnitsAdjust
 ObsUnitsAdjust = parameter.ObsUnitsAdjust
 plots = parameter.plots
-debug = parameter.debug
-cmec = parameter.cmec
+# TODO: Some metrics require a baseline period. Do we use obs for that? Allow two model date ranges?
 msyear = parameter.msyear
 meyear = parameter.meyear
 osyear = parameter.osyear
 oeyear = parameter.oeyear
 generate_sftlf = parameter.generate_sftlf
-regrid = parameter.regrid
-cov_file = parameter.covariate_path
-cov_name = parameter.covariate
-return_period = parameter.return_period
 # Block extrema related settings
 annual_strict = parameter.annual_strict
 exclude_leap = parameter.exclude_leap
@@ -111,8 +108,6 @@ metrics_dict = compute_metrics.init_metrics_dict(
     annual_strict,
     region_name,
 )
-
-obs = {}
 
 ##############
 # Run Analysis
@@ -234,7 +229,8 @@ for model in model_loop_list:
 
             if not sftlf_exists and generate_sftlf:
                 print("Generating land sea mask.")
-                sftlf = utilities.generate_land_sea_mask(ds, debug=debug)
+                # TODO: are we using PMP version of land/sea mask?
+                sftlf = utilities.generate_land_sea_mask(ds, debug=False)
                 if use_region_mask:
                     # TODO: any way to not create the land/sea mask in two different places?
                     print("\nCreating region mask for land/sea mask.")
@@ -266,6 +262,15 @@ for model in model_loop_list:
             # -------------------------------
             # Metrics go here
             # -------------------------------
+            # Maybe start with the metrics from this paper: https://climatemodeling.science.energy.gov/sites/default/files/2023-11/Validation%20of%20LOCA2%20and%20STAR-ESDM%20Statistically%20Downscaled%20Products%20v2.pdf
+            #
+            # pr: annualmean_pr, seasonalmean_pr, pr_q50, pr_q99p9, annual pxx
+            # tasmax: annualmean_tasmax, seasonalmean_tasmax, annual txx, annual_tasmax_ge_95F,
+            #         annual_tasmax_ge_100F, annual_tasmax_ge_105F, tasmax_q50, tasmax_q99p9
+            # tasmin: annualmean_tasmin, annual_tasmin_le_32F, annual_tnn
+            # ETTCDI has some metrics for tas as well
+            # Putting a placeholder here for now:
+            print(model, run, varname)
 
 
 # -------------------------------
