@@ -53,8 +53,8 @@ class SeasonalAverager:
         self.sftlf = sftlf["sftlf"]
 
     def masked_ds(self, ds):
-        # Mask land where 50<=sftlf<=100
-        return ds.where(self.sftlf >= 50).where(self.sftlf <= 100)
+        # Mask land where 0.5<=sftlf<=1
+        return ds.where(self.sftlf >= 0.5).where(self.sftlf <= 1)
 
     def calc_5day_mean(self):
         # Get the 5-day mean dataset
@@ -460,7 +460,7 @@ def init_metrics_dict(
                 "statistic",
                 "season",
             ],
-            "region": {region_name: "Areas where 50<=sftlf<=100"},
+            "region": {region_name: "Areas where 0.5<=sftlf<=1"},
             "season": ["ANN", "DJF", "MAM", "JJA", "SON"],
             "index": {},
             "statistic": {
