@@ -437,7 +437,7 @@ for model in models:
                 # -------------------------------------------------
                 # Loop start - Year
                 # -------------------------------------------------
-                temporary = {}
+                temporary_dict = {}
                 print("\n")
                 # year loop, endYear+1 to include last year
                 for year in range(startYear, endYear + 1):
@@ -520,14 +520,14 @@ for model in models:
                             if year == startYear:
                                 start_t = str(year) + "-07-01 00:00:00"
                                 end_t = str(year) + f"-12-{eday} 23:59:59"
-                                temporary[region] = d_sub_aave.sel(
+                                temporary_dict[region] = d_sub_aave.sel(
                                     time=slice(start_t, end_t)
                                 )
 
                                 continue
                             else:
                                 # n-1 year 7/1~12/31
-                                part1 = copy.copy(temporary[region])
+                                part1 = copy.copy(temporary_dict[region])
                                 # n year 1/1~6/30
                                 part2 = d_sub_aave.sel(
                                     time=slice(
@@ -537,7 +537,7 @@ for model in models:
                                 )
                                 start_t = str(year) + "-07-01 00:00:00"
                                 end_t = str(year) + f"-12-{eday} 23:59:59"
-                                temporary[region] = d_sub_aave.sel(
+                                temporary_dict[region] = d_sub_aave.sel(
                                     time=slice(start_t, end_t)
                                 )
 
