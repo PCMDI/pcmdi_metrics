@@ -389,13 +389,13 @@ for model in models:
                     f"{mip}_{model}_{exp}_{run}_monsoon_sperber_{startYear}-{endYear}"
                 )
                 if nc_out:
-                    file_path = os.path.join(
+                    nc_file_path = os.path.join(
                         outdir(output_type="diagnostic_results"),
                         output_filename + ".nc",
                     )
                     try:
                         fout = xr.open_dataset(
-                            file_path, mode="a"
+                            nc_file_path, mode="a"
                         )  # 'a' stands for append mode
                     except FileNotFoundError:
                         fout = xr.Dataset()
@@ -473,18 +473,28 @@ for model in models:
                             )
                         )
 
-                        # land-only rainfall
+                        # get land fraction
+                        lf_sub_ds = region_subset(
+                            ds_lf,
+                            region,
+                            data_var="sftlf",
+                            regions_specs=regions_specs,
+                        )
+                        lf_sub = lf_sub_ds["sftlf"]
+
+                        # keep rainfall over land only
                         if region not in ["GoG", "NAmo"]:
-                            lf_sub_ds = region_subset(
-                                ds_lf,
-                                region,
-                                data_var="sftlf",
-                                regions_specs=regions_specs,
-                            )
-                            lf_sub = lf_sub_ds.sftlf
                             d_sub_pr = model_land_only(
                                 model, d_sub_pr, lf_sub, debug=debug
                             )
+
+                        if debug:
+                            if year == startYear:
+                                nc_file_path_region = os.path.join(
+                                    outdir(output_type="diagnostic_results"),
+                                    f"monsoon_{model}_{region}.nc",
+                                )
+                                lf_sub_ds.to_netcdf(nc_file_path_region)
 
                         # Area average
                         ds_sub_pr = d_sub_pr.to_dataset().compute()
@@ -601,8 +611,8 @@ for model in models:
 
                         if nc_out:
                             # Archive individual year time series in netCDF file
-                            pentad_ts.to_netcdf(file_path, mode="a")
-                            pentad_ts_cumsum.to_netcdf(file_path, mode="a")
+                            pentad_ts.to_netcdf(nc_file_path, mode="a")
+                            pentad_ts_cumsum.to_netcdf(nc_file_path, mode="a")
 
                         if plot:
                             if debug:
@@ -698,10 +708,10 @@ for model in models:
 
                     # Archice in netCDF file
                     if nc_out:
-                        composite_pentad_ts.to_netcdf(file_path, mode="a")
-                        composite_pentad_ts_cumsum.to_netcdf(file_path, mode="a")
+                        composite_pentad_ts.to_netcdf(nc_file_path, mode="a")
+                        composite_pentad_ts_cumsum.to_netcdf(nc_file_path, mode="a")
                         composite_pentad_ts_cumsum_normalized.to_netcdf(
-                            file_path, mode="a"
+                            nc_file_path, mode="a"
                         )
 
                         if region == list_monsoon_regions[-1]:
