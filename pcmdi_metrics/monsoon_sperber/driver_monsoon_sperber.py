@@ -336,20 +336,20 @@ for model in models:
                 # Get time coordinate information
                 print("model_path =   ", model_path)
 
-                dc = xcdat_open(model_path, decode_times=True)
-                dc["time"].attrs["axis"] = "T"
-                dc["time"].attrs["standard_name"] = "time"
-                dc = xr.decode_cf(dc, decode_times=True)
-                dc = dc.bounds.add_missing_bounds()
+                ds = xcdat_open(model_path, decode_times=True)
+                ds["time"].attrs["axis"] = "T"
+                ds["time"].attrs["standard_name"] = "time"
+                ds = xr.decode_cf(ds, decode_times=True)
+                ds = ds.bounds.add_missing_bounds()
 
-                dc = dc.assign_coords({"lon": lf.lon, "lat": lf.lat})
-                c = xc.center_times(dc)
-                eday = pick_year_last_day(dc)
+                ds = ds.assign_coords({"lon": lf.lon, "lat": lf.lat})
+                c = xc.center_times(ds)
+                eday = pick_year_last_day(ds)
 
                 # Adjust Units
                 if UnitsAdjust[0]:
-                    dc[var].values = dc[var].values * 86400.0
-                    dc[var].attrs["units"] = units  # 'mm/d'
+                    ds[var].values = ds[var].values * 86400.0
+                    ds[var].attrs["units"] = units  # 'mm/d'
 
                 # Get starting and ending year and month
                 startYear = c.time.values[0].year
@@ -444,7 +444,7 @@ for model in models:
                     print("\n")
                     print(" year = ", year)
                     print("\n")
-                    d = dc.pr.sel(
+                    d = ds["pr"].sel(
                         time=slice(
                             str(year) + "-01-01 00:00:00",
                             str(year) + f"-12-{eday} 23:59:59",
@@ -459,14 +459,14 @@ for model in models:
                     # Loop start - Monsoon region
                     # - - - - - - - - - - - - - - - - - - - - - - - - -
                     for region in list_monsoon_regions:
-                        print(" region = ", region)
+                        print("region = ", region)
 
                         # all grid point rainfall
                         d_sub_ds = region_subset(
-                            dc, region, data_var="pr", regions_specs=regions_specs
+                            ds, region, data_var="pr", regions_specs=regions_specs
                         )
                         # must be entire calendar years
-                        d_sub_pr = d_sub_ds.pr.sel(
+                        d_sub_pr = d_sub_ds["pr"].sel(
                             time=slice(
                                 str(year) + "-01-01 00:00:00",
                                 str(year) + f"-12-{eday} 23:59:59",
@@ -497,18 +497,16 @@ for model in models:
                                 lf_sub_ds.to_netcdf(nc_file_path_region)
 
                         # Area average
-                        ds_sub_pr = d_sub_pr.to_dataset().compute()
-                        dc = dc.bounds.add_missing_bounds()
-                        ds_sub_pr = ds_sub_pr.bounds.add_missing_bounds()
+                        ds_sub_pr = d_sub_pr.to_dataset().bounds.add_missing_bounds()
 
                         if "lat_bnds" not in ds_sub_pr.variables:
-                            lat_bnds = dc["lat_bnds"].sel(lat=ds_sub_pr["lat"])
+                            lat_bnds = ds["lat_bnds"].sel(lat=ds_sub_pr["lat"])
                             ds_sub_pr["lat_bnds"] = lat_bnds
 
                         ds_sub_aave = ds_sub_pr.spatial.average(
                             "pr", axis=["X", "Y"], weights="generate"
                         ).compute()
-                        d_sub_aave = ds_sub_aave.pr
+                        da_sub_aave = ds_sub_aave["pr"]
 
                         if debug:
                             print("debug: region:", region)
@@ -519,16 +517,16 @@ for model in models:
                             if year == startYear:
                                 start_t = str(year) + "-07-01 00:00:00"
                                 end_t = str(year) + f"-12-{eday} 23:59:59"
-                                temporary_dict[region] = d_sub_aave.sel(
+                                temporary_dict[region] = da_sub_aave.sel(
                                     time=slice(start_t, end_t)
                                 )
 
                                 continue
                             else:
-                                # n-1 year 7/1~12/31
+                                # n-1 year's 7/1~12/31
                                 part1 = copy.copy(temporary_dict[region])
-                                # n year 1/1~6/30
-                                part2 = d_sub_aave.sel(
+                                # n year's 1/1~6/30
+                                part2 = da_sub_aave.sel(
                                     time=slice(
                                         str(year) + "-01-01 00:00:00",
                                         str(year) + "-06-30 23:59:59",
@@ -536,11 +534,11 @@ for model in models:
                                 )
                                 start_t = str(year) + "-07-01 00:00:00"
                                 end_t = str(year) + f"-12-{eday} 23:59:59"
-                                temporary_dict[region] = d_sub_aave.sel(
+                                temporary_dict[region] = da_sub_aave.sel(
                                     time=slice(start_t, end_t)
                                 )
 
-                                d_sub_aave = xr.concat([part1, part2], dim="time")
+                                da_sub_aave = xr.concat([part1, part2], dim="time")
 
                                 if debug:
                                     print(
@@ -549,23 +547,23 @@ for model in models:
                                         year,
                                     )
                         # get pentad time series
-                        list_d_sub_aave_chunks = list(
-                            divide_chunks_advanced(d_sub_aave, n, debug=debug)
+                        list_da_sub_aave_chunks = list(
+                            divide_chunks_advanced(da_sub_aave, n, debug=debug)
                         )
 
                         pentad_ts = []
                         time_coords = np.array([], dtype="datetime64")
 
-                        for d_sub_aave_chunk in list_d_sub_aave_chunks:
+                        for da_sub_aave_chunk in list_da_sub_aave_chunks:
                             # ignore when chunk length is shorter than defined
-                            if d_sub_aave_chunk.shape[0] >= n:
-                                aa = d_sub_aave_chunk.to_numpy()
+                            if da_sub_aave_chunk.shape[0] >= n:
+                                aa = da_sub_aave_chunk.to_numpy()
                                 aa_mean = np.mean(aa)
-                                ave_chunk = d_sub_aave_chunk.mean(
+                                ave_chunk = da_sub_aave_chunk.mean(
                                     axis=0, skipna=True
                                 ).compute()
                                 pentad_ts.append(float(ave_chunk))
-                                datetime_str = str(d_sub_aave_chunk["time"][0].values)
+                                datetime_str = str(da_sub_aave_chunk["time"][0].values)
                                 datetime = pd.to_datetime([datetime_str[:10]])
                                 time_coords = np.concatenate([time_coords, datetime])
                                 time_coords = pd.to_datetime(time_coords)
@@ -639,7 +637,7 @@ for model in models:
 
                     # --- Monsoon region loop end
                 # --- Year loop end
-                dc.close()
+                ds.close()
 
                 # -------------------------------------------------
                 # Loop start: Monsoon region without year: Composite
