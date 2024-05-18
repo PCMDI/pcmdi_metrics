@@ -49,6 +49,7 @@ if __name__ == "__main__":
     oeyear = parameter.oeyear
     plot = parameter.plot
     pole = parameter.pole
+    to_nc = parameter.netcdf
 
     print("Model list:", model_list)
     model_list.sort()
@@ -357,6 +358,22 @@ if __name__ == "__main__":
 
                 mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
                 ds[var] = ds[var].where(mask < 1)
+
+                if to_nc:
+                    # Generate netcdf files of climatologies
+                    # TODO: this requires a refactoring of the get_clim function
+                    # to accept valid datasets as well as data arrays
+                    nc_dir = os.path.join(metrics_output_path, "netcdf")
+                    if not os.path.exists(nc_dir):
+                        os.mkdir(nc_dir)
+                    nc_climo = lib.get_clim(ds, var, ds=None)
+                    fname = (
+                        "sic_climatology_"
+                        + "_".join(model, run, yr_range[0], yr_range[1])
+                        + ".nc"
+                    )
+                    fname = os.path.join(nc_dir, fname)
+                    nc_climo.to_netcdf(fname)
 
                 # Get regions
                 clims, means = lib.process_by_region(ds, var, area[area_var].data, pole)
