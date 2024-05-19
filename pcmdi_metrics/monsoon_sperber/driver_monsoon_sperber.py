@@ -520,7 +520,6 @@ for model in models:
                                 temporary_dict[region] = da_sub_aave.sel(
                                     time=slice(start_t, end_t)
                                 )
-
                                 continue
                             else:
                                 # n-1 year's 7/1~12/31
