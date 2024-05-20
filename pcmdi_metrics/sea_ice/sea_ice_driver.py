@@ -363,13 +363,15 @@ if __name__ == "__main__":
                     # Generate netcdf files of climatologies
                     # TODO: this requires a refactoring of the get_clim function
                     # to accept valid datasets as well as data arrays
+                    print("Generating climatology for netcdf")
                     nc_dir = os.path.join(metrics_output_path, "netcdf")
                     if not os.path.exists(nc_dir):
                         os.mkdir(nc_dir)
                     nc_climo = lib.get_clim(ds, var, ds=None)
+                    print("Writing climatology netcdf")
                     fname = (
-                        "sic_climatology_"
-                        + "_".join(model, run, yr_range[0], yr_range[1])
+                        "sic_clim_"
+                        + "_".join([model, run, yr_range[0], yr_range[1]])
                         + ".nc"
                     )
                     fname = os.path.join(nc_dir, fname)
