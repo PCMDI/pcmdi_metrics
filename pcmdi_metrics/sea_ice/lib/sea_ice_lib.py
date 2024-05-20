@@ -222,17 +222,22 @@ def get_total_extent(data, ds_area):
     return total_extent, te_mean
 
 
-def get_clim(total_extent, ds, ds_var):
-    try:
-        clim = to_ice_con_ds(total_extent, ds, ds_var).temporal.climatology(
-            ds_var, freq="month"
-        )
-    except IndexError:  # Issue with time bounds
-        tmp = to_ice_con_ds(total_extent, ds, ds_var)
-        tbkey = xcdat_dataset_io.get_time_bounds_key(tmp)
-        tmp = tmp.drop_vars(tbkey)
-        tmp = tmp.bounds.add_missing_bounds()
-        clim = tmp.temporal.climatology(ds_var, freq="month")
+def get_clim(total_extent, ds_var, ds=None):
+    # ds is a dataset that contains the dimensions
+    # needed to turn total_extent into a dataset
+    if ds is None:
+        clim = total_extent.temporal.climatology(ds_var, freq="month")
+    else:
+        try:
+            clim = to_ice_con_ds(total_extent, ds, ds_var).temporal.climatology(
+                ds_var, freq="month"
+            )
+        except IndexError:  # Issue with time bounds
+            tmp = to_ice_con_ds(total_extent, ds, ds_var)
+            tbkey = xcdat_dataset_io.get_time_bounds_key(tmp)
+            tmp = tmp.drop_vars(tbkey)
+            tmp = tmp.bounds.add_missing_bounds()
+            clim = tmp.temporal.climatology(ds_var, freq="month")
     return clim
 
 
@@ -245,7 +250,7 @@ def process_by_region(ds, ds_var, ds_area, pole):
         yvar = find_lat(ds)
         data = choose_region(region, ds, ds_var, xvar, yvar, pole)
         total_extent, te_mean = get_total_extent(data, ds_area)
-        clim = get_clim(total_extent, ds, ds_var)
+        clim = get_clim(total_extent, ds_var, ds)
         clims[region] = clim
         means[region] = te_mean
         del data
