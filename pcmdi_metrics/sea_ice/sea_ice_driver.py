@@ -11,6 +11,7 @@ import xcdat as xc
 
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.sea_ice.lib import create_sea_ice_parser
+from pcmdi_metrics.sea_ice.lib import sea_ice_figures as fig
 from pcmdi_metrics.sea_ice.lib import sea_ice_lib as lib
 from pcmdi_metrics.utils import create_land_sea_mask
 
@@ -361,8 +362,6 @@ if __name__ == "__main__":
 
                 if to_nc:
                     # Generate netcdf files of climatologies
-                    # TODO: this requires a refactoring of the get_clim function
-                    # to accept valid datasets as well as data arrays
                     print("Generating climatology for netcdf")
                     nc_dir = os.path.join(metrics_output_path, "netcdf")
                     if not os.path.exists(nc_dir):
@@ -376,6 +375,27 @@ if __name__ == "__main__":
                     )
                     fname = os.path.join(nc_dir, fname)
                     nc_climo.to_netcdf(fname)
+
+                    # Filling in NaNs with zeros for prettier plot
+                    nc_climo = nc_climo.fillna(0)
+                    nc_climo[var] = nc_climo[var].where(mask < 1)
+                    fig_dir = os.path.join(metrics_output_path, "plot")
+                    if not os.path.exists(fig_dir):
+                        os.mkdir(fig_dir)
+                    for mo in range(0, 12):
+                        tmp_title = "_".join([model, str(mo + 1)])
+                        fig.create_arctic_map(
+                            nc_climo.isel({"time": mo}),
+                            fig_dir,
+                            varname="siconc",
+                            title=tmp_title,
+                        )
+                        fig.create_antarctic_map(
+                            nc_climo.isel({"time": mo}),
+                            fig_dir,
+                            varname="siconc",
+                            title=tmp_title,
+                        )
 
                 # Get regions
                 clims, means = lib.process_by_region(ds, var, area[area_var].data, pole)
