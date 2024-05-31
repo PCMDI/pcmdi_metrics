@@ -648,7 +648,7 @@ def xc_to_dataset(idata):
     idata = idata.to_dataset(name="data")
     if "height" in idata.coords:
         idata = idata.drop("height")
-    idata = idata.bounds.add_missing_bounds(axes=['X', 'Y', 'T'])   
+    idata = idata.bounds.add_missing_bounds(axes=['X','Y','T'])
     #idata = idata.bounds.add_missing_bounds()
     return idata
 
