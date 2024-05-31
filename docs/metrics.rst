@@ -21,3 +21,4 @@ A suite of demo scripts and interactive Jupyter notebooks are provided with `thi
    metrics_precip-distribution
    metrics_subdaily-precipitation
    metrics_sea_ice
+   Cloud Feedbacks <https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/cloud_feedback>
