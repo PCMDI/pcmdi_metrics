@@ -36,8 +36,8 @@ cutoff = int(len(binmids) / 2)
 # [:cutoff] = ascent; [cutoff:-1] = descent; [-1] = land
 
 # Define the grid
-LAT = np.arange(-89,91,2.0)
-LON = np.arange(1.25,360,2.5)
+LAT = np.arange(-89, 91, 2.0)
+LON = np.arange(1.25, 360, 2.5)
 lat_axis = xc.create_axis("lat", LAT)
 lon_axis = xc.create_axis("lon", LON)
 output_grid = xc.create_grid(x=lon_axis, y=lat_axis)
@@ -75,14 +75,14 @@ def get_amip_data(filename, var, lev=None):
     ).load()
     if lev:
         f = f.sel(time=tslice, plev=lev)
-        #f = f.drop_vars(["plev", "plev_bnds"])
+        # f = f.drop_vars(["plev", "plev_bnds"])
     else:
         f = f.sel(time=tslice)
 
     # Compute climatological monthly means
     avg = f.temporal.climatology(var, freq="month", weighted=True)
     # Regrid to cloud kernel grid
-    #output_grid = xc.create_grid(land_mask.lat.values, land_mask.lon.values)
+    # output_grid = xc.create_grid(land_mask.lat.values, land_mask.lon.values)
     output = avg.regridder.horizontal(
         var, output_grid, tool="xesmf", method="bilinear", extrap_method="inverse_dist"
     )
@@ -648,8 +648,8 @@ def xc_to_dataset(idata):
     idata = idata.to_dataset(name="data")
     if "height" in idata.coords:
         idata = idata.drop("height")
-    idata = idata.bounds.add_missing_bounds(axes=['X','Y','T'])
-    #idata = idata.bounds.add_missing_bounds()
+    idata = idata.bounds.add_missing_bounds(axes=["X", "Y", "T"])
+    # idata = idata.bounds.add_missing_bounds()
     return idata
 
 
@@ -662,7 +662,7 @@ def monthly_anomalies(idata):
     """
     idata["time"].encoding["calendar"] = "noleap"
     idata = xc_to_dataset(idata)
-    #idata["time"].encoding["calendar"] = "noleap"
+    # idata["time"].encoding["calendar"] = "noleap"
     clim = idata.temporal.climatology("data", freq="month", weighted=True)
     anom = idata.temporal.departures("data", freq="month", weighted=True)
 
