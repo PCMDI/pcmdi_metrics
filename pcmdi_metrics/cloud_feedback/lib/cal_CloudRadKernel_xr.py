@@ -13,7 +13,10 @@ from datetime import date
 import numpy as np
 import xarray as xr
 import xcdat as xc
-from global_land_mask import globe
+
+from pcmdi_metrics.utils import create_land_sea_mask
+
+# from global_land_mask import globe
 
 # =============================================
 # define necessary information
@@ -43,6 +46,7 @@ lon_axis = xc.create_axis("lon", LON)
 output_grid = xc.create_grid(x=lon_axis, y=lat_axis)
 
 # load land sea mask (90x144):
+"""
 lat = np.arange(-89, 90, 2.0)
 lon = np.arange(1.25, 360, 2.5) - 180
 lon_grid, lat_grid = np.meshgrid(lon, lat)
@@ -59,6 +63,9 @@ land_mask = xr.concat((E, W), dim="lon")
 land_mask = xr.where(land_mask, 1.0, 0.0)
 ocean_mask = xr.where(land_mask == 1.0, 0.0, 1.0)
 del E, W
+"""
+land_mask = create_land_sea_mask(output_grid)
+ocean_mask = xr.where(land_mask == 1.0, 0.0, 1.0)
 
 
 ###########################################################################
