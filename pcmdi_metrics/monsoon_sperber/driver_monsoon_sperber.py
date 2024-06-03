@@ -44,7 +44,6 @@ import os
 import re
 import sys
 from argparse import RawTextHelpFormatter
-from collections import defaultdict
 from shutil import copyfile
 
 # import matplotlib
@@ -62,31 +61,11 @@ from pcmdi_metrics.monsoon_sperber.lib import (
     YearCheck,
     divide_chunks_advanced,
     model_land_only,
+    pick_year_last_day,
     sperber_metrics,
+    tree,
 )
 from pcmdi_metrics.utils import create_land_sea_mask, fill_template
-
-# matplotlib.use("Agg")
-
-
-def tree():
-    return defaultdict(tree)
-
-
-def pick_year_last_day(ds):
-    eday = 31
-    try:
-        time_key = xc.axis.get_dim_keys(ds, axis="T")
-        if "calendar" in ds[time_key].attrs.keys():
-            if "360" in ds[time_key]["calendar"]:
-                eday = 30
-        else:
-            if "360" in ds[time_key][0].values.item().calendar:
-                eday = 30
-    except Exception:
-        pass
-    return eday
-
 
 # How many elements each list should have
 n = 5  # pentad
@@ -654,9 +633,7 @@ for model in models:
                     # - - - - - - - - - - -
                     # Metrics for composite
                     # - - - - - - - - - - -
-                    metrics_result = sperber_metrics(
-                        composite_pentad_ts_cumsum, region, debug=debug
-                    )
+                    metrics_result = sperber_metrics(composite_pentad_ts_cumsum, region)
 
                     # Normalized cummulative pentad time series
                     composite_pentad_ts_cumsum_normalized = metrics_result["frac_accum"]
