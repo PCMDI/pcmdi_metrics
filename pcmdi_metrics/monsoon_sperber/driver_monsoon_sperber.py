@@ -100,8 +100,6 @@ reference_data_lf_path = param.reference_data_lf_path
 # Path to model data as string template
 modpath = param.process_templated_argument("modpath")
 modpath_lf = param.process_templated_argument("modpath_lf")
-print("modpath = ", modpath)
-print("modpath_lf = ", modpath_lf)
 
 # Check given model option
 models = param.modnames
@@ -298,7 +296,7 @@ for model in models:
                 print(f" --- {run} ---")
 
                 # Get time coordinate information
-                print("model_path =   ", model_path)
+                print("model_path = ", model_path)
 
                 ds = xcdat_open(model_path, decode_times=True)
                 ds["time"].attrs["axis"] = "T"
@@ -734,22 +732,7 @@ for model in models:
                         handles.reverse()
                         labels.reverse()
                         ax[list_monsoon_regions[0]].legend(handles, labels)
-                        """
-                        if debug:
-                            print("debug: handles", handles)
-                            print("debug: labels", labels)
 
-                        if model == "obs":
-                            order = [1, 0]
-                        else:
-                            order = [2, 1, 0]
-
-                        # Add revised legend
-                        ax[list_monsoon_regions[0]].legend(
-                            [handles[idx] for idx in order],
-                            [labels[idx] for idx in order],
-                        )
-                        """
                         # title
                         ax[region].set_title(region)
                         if region == list_monsoon_regions[-1]:
