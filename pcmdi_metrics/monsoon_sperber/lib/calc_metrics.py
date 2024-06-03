@@ -15,7 +15,7 @@ https://stackoverflow.com/questions/2236906/first-python-list-index-greater-than
 """
 
 
-def sperber_metrics(d, region, debug=False):
+def sperber_metrics(d, region):
     """d: input, 1d array of cumulative pentad time series"""
     # Convert accumulation to fractional accumulation; normalize by sum
     d_sum = d[-1]

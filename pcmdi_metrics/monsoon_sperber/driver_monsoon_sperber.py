@@ -78,21 +78,6 @@ P = pmp_parser.PMPParser(
     formatter_class=RawTextHelpFormatter,
 )
 P = AddParserArgument(P)
-P.add_argument(
-    "--cmec",
-    dest="cmec",
-    default=False,
-    action="store_true",
-    help="Use to save CMEC format metrics JSON",
-)
-P.add_argument(
-    "--no_cmec",
-    dest="cmec",
-    default=False,
-    action="store_false",
-    help="Do not save CMEC format metrics JSON",
-)
-P.set_defaults(cmec=False)
 param = P.get_parameter()
 
 # Pre-defined options

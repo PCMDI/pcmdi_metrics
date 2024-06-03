@@ -29,9 +29,10 @@ def divide_chunks_advanced(data, n, debug=False):
     month = month.values
     day = day.values
     calendar = "gregorian"
+
     if debug:
-        # print("month = ", month, "day = ", day)
         print("debug: first day of year is " + str(month) + "/" + str(day))
+
     if month not in [1, 7] or day != 1:
         sys.exit(
             "error: first day of year time series is " + str(month) + "/" + str(day)
