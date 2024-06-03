@@ -15,7 +15,7 @@ https://stackoverflow.com/questions/2236906/first-python-list-index-greater-than
 """
 
 
-def sperber_metrics(d, region):
+def sperber_metrics(d, region, debug=False):
     """d: input, 1d array of cumulative pentad time series"""
     # Convert accumulation to fractional accumulation; normalize by sum
     d_sum = d[-1]
@@ -28,7 +28,10 @@ def sperber_metrics(d, region):
     onset_index = next(onset_index)
     i = onset_index
     v = frac_accum[i]
-    print("i = , ", i, "  v =  ", v)
+
+    if debug:
+        print("i = , ", i, "  v =  ", v)
+
     # Stat 2: Decay
     if region == "GoG":
         decay_threshold = 0.6
@@ -42,8 +45,10 @@ def sperber_metrics(d, region):
     slope = (frac_accum[decay_index] - frac_accum[onset_index]) / float(
         decay_index - onset_index
     )
+
     # Stat 4: Duration
     duration = decay_index - onset_index + 1
+
     # Calc done, return result as dic
     return {
         "frac_accum": frac_accum,

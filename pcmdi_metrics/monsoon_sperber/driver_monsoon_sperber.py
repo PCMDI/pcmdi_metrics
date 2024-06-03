@@ -618,7 +618,9 @@ for model in models:
                     # - - - - - - - - - - -
                     # Metrics for composite
                     # - - - - - - - - - - -
-                    metrics_result = sperber_metrics(composite_pentad_ts_cumsum, region)
+                    metrics_result = sperber_metrics(
+                        composite_pentad_ts_cumsum, region, debug=debug
+                    )
 
                     # Normalized cummulative pentad time series
                     composite_pentad_ts_cumsum_normalized = metrics_result["frac_accum"]
