@@ -261,6 +261,7 @@ for model in models:
             plot_line_color = "red"
 
         # Read land fraction
+        ds_lf = None
         if model_lf_path is not None:
             if os.path.isfile(model_lf_path):
                 try:
@@ -268,14 +269,13 @@ for model in models:
                 except Exception:
                     ds_lf = None
 
-        if not ds_lf:
-            lf_array = create_land_sea_mask(ds_lf, method="pcmdi")
-            ds_lf = lf_array.to_dataset().compute()
-            ds_lf = ds_lf.rename_vars({"lsmask": "sftlf"})
-
-        if model in ["EC-EARTH"]:  # , "BNU-ESM" ]:
+        # Speacial case handling
+        if (
+            model in ["EC-EARTH", "BNU-ESM"]
+            and model_lf_path is not None
+            and ds_lf is not None
+        ):
             ds_lf = ds_lf.isel(lat=slice(None, None, -1))
-        lf = ds_lf.sftlf.sel(lat=slice(-90, 90))  # land frac file must be global
 
         # -------------------------------------------------
         # Loop start - Realization
@@ -304,9 +304,28 @@ for model in models:
                 ds = xr.decode_cf(ds, decode_times=True)
                 ds = ds.bounds.add_missing_bounds()
 
-                ds = ds.assign_coords({"lon": lf.lon, "lat": lf.lat})
                 c = xc.center_times(ds)
                 eday = pick_year_last_day(ds)
+
+                # estimate land sea mask if needed
+                if ds_lf is None:
+                    try:
+                        lf_array = create_land_sea_mask(ds, method="pcmdi")
+                        print("land mask is estimated using pcmdi method.")
+                    except Exception:
+                        lf_array = create_land_sea_mask(ds, method="regionmask")
+                        print("land mask is estimated using regionmask method.")
+
+                    ds_lf = lf_array.to_dataset().compute()
+                    ds_lf = ds_lf.rename_vars({"lsmask": "sftlf"})
+                    if debug:
+                        print("land mask is estimated.")
+                        print("ds_lf:", ds_lf)
+
+                lf = ds_lf["sftlf"].sel(
+                    lat=slice(-90, 90)
+                )  # land frac file must be global
+                ds = ds.assign_coords({"lon": lf.lon, "lat": lf.lat})
 
                 # Adjust Units
                 if UnitsAdjust[0]:
