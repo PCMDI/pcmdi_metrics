@@ -1,4 +1,8 @@
-from .compute_statistics import (
+from .compute_statistics_dataArray import (
+    calculate_spatial_correlation,
+    calculate_temporal_correlation,
+)
+from .compute_statistics_dataset import (
     annual_mean,
     bias_xy,
     bias_xyt,

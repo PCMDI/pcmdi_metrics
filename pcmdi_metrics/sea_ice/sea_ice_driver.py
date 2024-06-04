@@ -6,6 +6,7 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+import xarray
 import xcdat as xc
 
 from pcmdi_metrics.io.base import Base
@@ -47,6 +48,7 @@ if __name__ == "__main__":
     osyear = parameter.osyear
     oeyear = parameter.oeyear
     plot = parameter.plot
+    pole = parameter.pole
 
     print("Model list:", model_list)
     model_list.sort()
@@ -105,7 +107,7 @@ if __name__ == "__main__":
     mask = create_land_sea_mask(obs, lon_key=xvar, lat_key=yvar)
     obs[obs_var] = obs[obs_var].where(mask < 1)
     # Get regions
-    clims, means = lib.process_by_region(obs, obs_var, area_val)
+    clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
 
     arctic_clims = {
         "arctic": clims["arctic"],
@@ -148,7 +150,7 @@ if __name__ == "__main__":
     # Remove land areas (including lakes)
     mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
     obs[obs_var] = obs[obs_var].where(mask < 1)
-    clims, means = lib.process_by_region(obs, obs_var, area_val)
+    clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
     antarctic_clims = {
         "antarctic": clims["antarctic"],
         "io": clims["io"],
@@ -180,6 +182,18 @@ if __name__ == "__main__":
     clim_wts = [x / 365 for x in clim_wts]
     # Initialize JSON data
     mse = {}
+    df = {
+        "Reference": {
+            "arctic": {reference_data_set: {}},
+            "ca": {reference_data_set: {}},
+            "na": {reference_data_set: {}},
+            "np": {reference_data_set: {}},
+            "antarctic": {reference_data_set: {}},
+            "sp": {reference_data_set: {}},
+            "sa": {reference_data_set: {}},
+            "io": {reference_data_set: {}},
+        }
+    }
     metrics = {
         "DIMENSIONS": {
             "json_structure": [
@@ -200,6 +214,12 @@ if __name__ == "__main__":
         "RESULTS": {},
         "model_year_range": {},
     }
+    data_file = {
+        "DIMENSIONS": {
+            "json_structure": ["region", "realization", "data"],
+        },
+        "RESULTS": {},
+    }
     print("Model list:", model_list)
 
     # Loop over models and realizations to generate metrics
@@ -208,14 +228,14 @@ if __name__ == "__main__":
         end_year = meyear
 
         real_clim = {
-            "arctic": {"model_mean": None},
-            "ca": {"model_mean": None},
-            "na": {"model_mean": None},
-            "np": {"model_mean": None},
-            "antarctic": {"model_mean": None},
-            "sp": {"model_mean": None},
-            "sa": {"model_mean": None},
-            "io": {"model_mean": None},
+            "arctic": {"model_mean": {}},
+            "ca": {"model_mean": {}},
+            "na": {"model_mean": {}},
+            "np": {"model_mean": {}},
+            "antarctic": {"model_mean": {}},
+            "sp": {"model_mean": {}},
+            "sa": {"model_mean": {}},
+            "io": {"model_mean": {}},
         }
         real_mean = {
             "arctic": {"model_mean": 0},
@@ -236,6 +256,16 @@ if __name__ == "__main__":
             "sp": {"model_mean": {reference_data_set: {}}},
             "sa": {"model_mean": {reference_data_set: {}}},
             "io": {"model_mean": {reference_data_set: {}}},
+        }
+        df[model] = {
+            "arctic": {},
+            "ca": {},
+            "na": {},
+            "np": {},
+            "antarctic": {},
+            "sp": {},
+            "sa": {},
+            "io": {},
         }
 
         tags = {
@@ -279,7 +309,15 @@ if __name__ == "__main__":
                     "%(model_version)": model,
                     "%(realization)": run,
                 }
-                test_data_full_path = os.path.join(test_data_path, filename_template)
+                test_data_tmp = lib.replace_multi(test_data_path, tags)
+                if "*" in test_data_tmp:
+                    # Get the most recent version for last wildcard
+                    ind = test_data_tmp.split("/")[::-1].index("*")
+                    tmp1 = "/".join(test_data_tmp.split("/")[0:-ind])
+                    globbed = glob.glob(tmp1)
+                    globbed.sort()
+                    test_data_tmp = globbed[-1]
+                test_data_full_path = os.path.join(test_data_tmp, filename_template)
                 test_data_full_path = lib.replace_multi(test_data_full_path, tags)
                 test_data_full_path = glob.glob(test_data_full_path)
                 test_data_full_path.sort()
@@ -325,23 +363,17 @@ if __name__ == "__main__":
                         str(int(ds.time.dt.year[-1])),
                     ]
 
+                mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
+                ds[var] = ds[var].where(mask < 1)
+
                 # Get regions
-                clims, means = lib.process_by_region(ds, var, area[area_var].data)
+                clims, means = lib.process_by_region(ds, var, area[area_var].data, pole)
 
                 ds.close()
                 # Running sum of all realizations
                 for rgn in clims:
                     real_clim[rgn][run] = clims[rgn]
-                    if real_clim[rgn]["model_mean"] is None:
-                        real_clim[rgn]["model_mean"] = clims[rgn]
-                    else:
-                        real_clim[rgn]["model_mean"][var] = (
-                            real_clim[rgn]["model_mean"][var] + clims[rgn][var]
-                        )
                     real_mean[rgn][run] = means[rgn]
-                    real_mean[rgn]["model_mean"] = (
-                        real_mean[rgn]["model_mean"] + means[rgn]
-                    )
 
             print("\n-------------------------------------------")
             print("Calculating model regional average metrics \nfor ", model)
@@ -349,17 +381,19 @@ if __name__ == "__main__":
             for rgn in real_clim:
                 print(rgn)
                 # Get model mean
-                real_clim[rgn]["model_mean"][var] = real_clim[rgn]["model_mean"][
-                    var
-                ] / len(list_of_runs)
-                real_mean[rgn]["model_mean"] = real_mean[rgn]["model_mean"] / len(
-                    list_of_runs
+                datalist = [real_clim[rgn][r][var].data for r in list_of_runs]
+                real_clim[rgn]["model_mean"][var] = np.nanmean(
+                    np.array(datalist), axis=0
                 )
+                datalist = [real_mean[rgn][r] for r in list_of_runs]
+                real_mean[rgn]["model_mean"] = np.nanmean(np.array(datalist))
 
                 for run in real_clim[rgn]:
                     # Set up metrics dictionary
                     if run not in mse[model][rgn]:
                         mse[model][rgn][run] = {}
+                    if run not in df[model][rgn]:
+                        df[model][rgn][run] = {}
                     mse[model][rgn][run].update(
                         {
                             reference_data_set: {
@@ -368,13 +402,32 @@ if __name__ == "__main__":
                             }
                         }
                     )
+
+                    # Organize the clims and mean for writing to file
+                    df[model][rgn][run].update(
+                        {
+                            "monthly_climatology": [],
+                            "time_mean_extent": str(real_mean[rgn][run] * 1e-6),
+                        }
+                    )
+                    if isinstance(
+                        real_clim[rgn][run][var], xarray.core.dataarray.DataArray
+                    ):
+                        df_list = list(real_clim[rgn][run][var].compute().data)
+                    else:
+                        df_list = list(real_clim[rgn][run][var].data)
+                    df[model][rgn][run]["monthly_climatology"] = [
+                        str(x * 1e-6) for x in df_list
+                    ]
+
                     # Get errors, convert to 1e12 km^-4
                     mse[model][rgn][run][reference_data_set]["monthly_clim"][
                         "mse"
                     ] = str(
                         lib.mse_t(
-                            real_clim[rgn][run][var],
-                            obs_clims[reference_data_set][rgn][obs_var],
+                            real_clim[rgn][run][var] - real_mean[rgn][run],
+                            obs_clims[reference_data_set][rgn][obs_var]
+                            - obs_means[reference_data_set][rgn],
                             weights=clim_wts,
                         )
                         * 1e-12
@@ -387,6 +440,7 @@ if __name__ == "__main__":
                         )
                         * 1e-12
                     )
+
             # Update year list
             metrics["model_year_range"][model] = [str(start_year), str(end_year)]
         else:
@@ -418,6 +472,46 @@ if __name__ == "__main__":
         metricsfile,
         "metrics_JSON",
         "JSON file containig regional sea ice metrics",
+    )
+
+    # -----------------
+    # Update supporting data
+    # -----------------
+    # Write obs data to dict
+    for rgn in df["Reference"]:
+        df["Reference"][rgn][reference_data_set].update(
+            {
+                "monthly_climatology": [],
+                "time_mean_extent": str(obs_means[reference_data_set][rgn] * 1e-6),
+            }
+        )
+        if isinstance(
+            obs_clims[reference_data_set][rgn][obs_var], xarray.core.dataarray.DataArray
+        ):
+            df_list = list(obs_clims[reference_data_set][rgn][obs_var].compute().data)
+        else:
+            df_list = list(obs_clims[reference_data_set][rgn][obs_var].data)
+        df["Reference"][rgn][reference_data_set]["monthly_climatology"] = [
+            str(x * 1e-6) for x in df_list
+        ]
+
+    # Write data to file
+    data_file["RESULTS"] = df
+    datafile = os.path.join(metrics_output_path, "sea_ice_data.json")
+    JSONDF = Base(metrics_output_path, "sea_ice_data.json")
+    json_structure = data_file["DIMENSIONS"]["json_structure"]
+    JSONDF.write(
+        data_file,
+        json_structure=json_structure,
+        sort_keys=True,
+        indent=4,
+        separators=(",", ": "),
+    )
+    meta.update_data(
+        "supporting_data",
+        datafile,
+        "supporting_data",
+        "JSON file containig regional sea ice data",
     )
 
     # ----------------
@@ -512,9 +606,13 @@ if __name__ == "__main__":
                 ax7[inds].set_xticks(ind + width / 2.0, labels="")
             # yticks
             if len(clim_err_y) > 0:
-                datamax = np.max(np.array(clim_err_y))
+                datamax = np.max(
+                    np.concatenate((np.array(clim_err_y), np.array(ext_err_y)))
+                )
             else:
-                datamax = np.max(np.array(mse_clim))
+                datamax = np.max(
+                    np.concatenate((np.array(mse_clim), np.array(mse_ext)))
+                )
             ymax = (datamax) * 1.3
             ax7[inds].set_ylim(0.0, ymax)
             if ymax < 0.1:
@@ -552,7 +650,10 @@ if __name__ == "__main__":
             "bar_chart", figfile, "regional_bar_chart", "Bar chart of regional MSE"
         )
 
-    # Update and write metadata file
+    # -----------------
+    # Update and write
+    # metadata file
+    # -----------------
     try:
         with open(os.path.join(metricsfile), "r") as f:
             tmp = json.load(f)

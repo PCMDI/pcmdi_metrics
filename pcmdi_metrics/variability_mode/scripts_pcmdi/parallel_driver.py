@@ -26,6 +26,7 @@ P = AddParserArgument(P)
 P.add_argument(
     "--param_dir", type=str, default=None, help="directory for parameter files"
 )
+P.add_argument("--num_workers", type=int, default=None, help="number of CPUs to use")
 param = P.get_parameter()
 
 # Pre-defined options
@@ -94,7 +95,6 @@ debug = param.debug
 print("debug:", debug)
 
 # number of tasks to submit at the same time
-# num_workers = 20
 num_workers = param.num_workers
 
 # =================================================
@@ -108,9 +108,19 @@ for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
 # Generates list of command
 # -------------------------------------------------
 param_dir = param.param_dir
+
+if mode in ["PDO", "NPGO", "AMO"]:
+    mode_param = "PDO"
+elif mode in ["SAM"]:
+    mode_param = "SAM"
+else:
+    mode_param = "NAM"
+
+param_filename = f"myParam_pcmdi_{mode_param}.py"
+
 if param_dir is None:
     param_dir = "../../../sample_setups/pcmdi_parameter_files/variability_modes"
-param_filename = "myParam_" + mode + "_" + mip + ".py"
+    param_filename = "myParam_" + mode + "_" + mip + ".py"
 
 if debug:
     param_filename = "myParam_test.py"
@@ -161,6 +171,8 @@ for m, model in enumerate(models):
             param_file,
             "--case_id",
             case_id,
+            "--variability_mode",
+            mode,
             "--mip",
             mip,
             "--exp",
