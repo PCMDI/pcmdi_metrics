@@ -24,8 +24,7 @@ def sperber_metrics(d, region, debug=False):
     frac_accum = d / d_sum
 
     # Stat 1: Onset
-    onset_index = (i for i, v in enumerate(frac_accum) if v >= 0.2)
-    onset_index = next(onset_index)
+    onset_index = next(i for i, v in enumerate(frac_accum) if v >= 0.2)
     i = onset_index
     v = frac_accum[i]
 
@@ -38,8 +37,7 @@ def sperber_metrics(d, region, debug=False):
     else:
         decay_threshold = 0.8
 
-    decay_index = (i for i, v in enumerate(frac_accum) if v >= decay_threshold)
-    decay_index = next(decay_index)
+    decay_index = next(i for i, v in enumerate(frac_accum) if v >= decay_threshold)
 
     # Stat 3: Slope
     slope = (frac_accum[decay_index] - frac_accum[onset_index]) / float(
