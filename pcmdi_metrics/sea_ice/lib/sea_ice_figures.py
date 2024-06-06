@@ -5,8 +5,19 @@ import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import numpy as np
 import regionmask
+import xarray as xr
 
 from pcmdi_metrics.sea_ice.lib import sea_ice_lib as lib
+
+
+def replace_nan_zero(da):
+    da_new = xr.where(np.isnan(da), 0, da)
+    return da_new
+
+
+def replace_fill_zero(da, val):
+    da_new = xr.where(da > val, 0, da)
+    return da_new
 
 
 def create_arctic_map(ds, metrics_output_path, varname="siconc", title=None):
@@ -14,6 +25,11 @@ def create_arctic_map(ds, metrics_output_path, varname="siconc", title=None):
     # Load and process data
     xvar = lib.find_lon(ds)
     yvar = lib.find_lat(ds)
+
+    # Some models have NaN values in coordinates
+    # that can't be plotted by pcolormesh
+    ds[xvar] = replace_nan_zero(ds[xvar])
+    ds[yvar] = replace_nan_zero(ds[yvar])
 
     # Set up regions
     region_NA = np.array([[-120, 45], [-120, 80], [90, 80], [90, 45]])
@@ -38,7 +54,7 @@ def create_arctic_map(ds, metrics_output_path, varname="siconc", title=None):
         y=yvar,
         transform=ccrs.PlateCarree(),
         cmap=cmap,
-        cbar_kwargs={"label": "ice concentration (%)"},
+        cbar_kwargs={"label": "ice fraction"},
     )
     arctic_regions.plot_regions(
         ax=ax,
@@ -92,6 +108,11 @@ def create_antarctic_map(ds, metrics_output_path, varname="siconc", title=None):
     xvar = lib.find_lon(ds)
     yvar = lib.find_lat(ds)
 
+    # Some models have NaN values in coordinates
+    # that can't be plotted by pcolormesh
+    ds[xvar] = replace_nan_zero(ds[xvar])
+    ds[yvar] = replace_nan_zero(ds[yvar])
+
     # Set up regions
     region_IO = np.array([[20, -90], [90, -90], [90, -55], [20, -55]])
     region_SA = np.array([[20, -90], [-60, -90], [-60, -55], [20, -55]])
@@ -119,7 +140,7 @@ def create_antarctic_map(ds, metrics_output_path, varname="siconc", title=None):
         y=yvar,
         transform=ccrs.PlateCarree(),
         cmap=cmap,
-        cbar_kwargs={"label": "ice concentration (%)"},
+        cbar_kwargs={"label": "ice fraction"},
     )
     arctic_regions.plot_regions(
         ax=ax,

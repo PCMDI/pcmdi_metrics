@@ -391,7 +391,7 @@ if __name__ == "__main__":
                     if not os.path.exists(fig_dir):
                         os.mkdir(fig_dir)
                     for mo in range(0, 12):
-                        tmp_title = "_".join([model, str(mo + 1)])
+                        tmp_title = "_".join([model, run, str(mo + 1)])
                         fig.create_arctic_map(
                             nc_climo.isel({"time": mo}),
                             fig_dir,
