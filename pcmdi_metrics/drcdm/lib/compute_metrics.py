@@ -118,12 +118,20 @@ class SeasonalAverager:
                     .groupby("time.year")
                     .min(dim="time")
                 )
+            elif stat == "mean":
+                ds_ann = (
+                    ds.sel(time=date_range, method="nearest")
+                    .groupby("time.year")
+                    .mean(dim="time")
+                )
         else:
             # Group by date
             if stat == "max":
                 ds_ann = ds.groupby("time.year").max(dim="time")
             elif stat == "min":
                 ds_ann = ds.groupby("time.year").min(dim="time")
+            elif stat == "mean":
+                ds_ann = ds.groupby("time.year").mean(dim="time")
 
         # Need to fix time axis if groupby operation happened
         if "year" in ds_ann.coords:
@@ -157,6 +165,8 @@ class SeasonalAverager:
                 ds_stat = ds.resample(time="QS-DEC").max(dim="time")
             elif stat == "min":
                 ds_stat = ds.resample(time="QS-DEC").min(dim="time")
+            elif stat == "mean":
+                ds_stat = ds.resample(time="QS-DEC").mean(dim="time")
 
             ds_stat = ds_stat.isel(time=ds_stat.time.dt.month.isin([12]))
 
@@ -232,6 +242,12 @@ class SeasonalAverager:
                     .groupby("time.year")
                     .min(dim="time")
                 )
+            elif stat == "mean":
+                ds_stat = (
+                    ds.sel(time=date_range, method="nearest")
+                    .groupby("time.year")
+                    .mean(dim="time")
+                )
 
         else:  # Other 3 seasons
             dates = {  # Month/day tuples
@@ -271,6 +287,12 @@ class SeasonalAverager:
                     ds.sel(time=date_range, method="nearest")
                     .groupby("time.year")
                     .min(dim="time")
+                )
+            elif stat == "mean":
+                ds_stat = (
+                    ds.sel(time=date_range, method="nearest")
+                    .groupby("time.year")
+                    .mean(dim="time")
                 )
 
         # Need to fix time axis if groupby operation happened
@@ -342,7 +364,7 @@ def convert_units(data, units_adjust):
 def temperature_indices(
     ds, varname, sftlf, units_adjust, dec_mode, drop_incomplete_djf, annual_strict
 ):
-    # Returns annual max and min of provided temperature dataset
+    # Returns annual daily mean of provided temperature dataset
     # Temperature input can be "tasmax" or "tasmin".
 
     print("Generating temperature block extrema.")
@@ -358,19 +380,17 @@ def temperature_indices(
         annual_strict=annual_strict,
     )
 
-    Tmax = xr.Dataset()
-    Tmin = xr.Dataset()
-    Tmax["ANN"] = S.annual_stats("max")
-    Tmin["ANN"] = S.annual_stats("min")
+    Tmean = xr.Dataset()
+    Tmean["ANN"] = S.annual_stats("mean")
 
     for season in ["DJF", "MAM", "JJA", "SON"]:
-        Tmax[season] = S.seasonal_stats(season, "max")
-        Tmin[season] = S.seasonal_stats(season, "min")
+        Tmean[season] = S.seasonal_stats(season, "mean")
 
-    Tmax = update_nc_attrs(Tmax, dec_mode, drop_incomplete_djf, annual_strict)
-    Tmin = update_nc_attrs(Tmin, dec_mode, drop_incomplete_djf, annual_strict)
+    Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
 
-    return Tmax, Tmin
+    # TODO: add quantile metrics
+
+    return Tmean
 
 
 def precipitation_indices(
@@ -395,7 +415,7 @@ def precipitation_indices(
 
     # Rx1day
     P1day = xr.Dataset()
-    P1day["ANN"] = S.annual_stats("max", pentad=False)
+    P1day["ANN"] = S.annual_stats("mean", pentad=False)
     # Can end up with very small negative values that should be 0
     # Possibly related to this issue? https://github.com/pydata/bottleneck/issues/332
     # (from https://github.com/pydata/xarray/issues/3855)
@@ -403,7 +423,7 @@ def precipitation_indices(
         P1day["ANN"].where(P1day["ANN"] > 0, 0).where(~np.isnan(P1day["ANN"]), np.nan)
     )
     for season in ["DJF", "MAM", "JJA", "SON"]:
-        P1day[season] = S.seasonal_stats(season, "max", pentad=False)
+        P1day[season] = S.seasonal_stats(season, "mean", pentad=False)
         P1day[season] = (
             P1day[season]
             .where(P1day[season] > 0, 0)
@@ -411,22 +431,7 @@ def precipitation_indices(
         )
     P1day = update_nc_attrs(P1day, dec_mode, drop_incomplete_djf, annual_strict)
 
-    # Rx5day
-    P5day = xr.Dataset()
-    P5day["ANN"] = S.annual_stats("max", pentad=True)
-    P5day["ANN"] = (
-        P5day["ANN"].where(P5day["ANN"] > 0, 0).where(~np.isnan(P5day["ANN"]), np.nan)
-    )
-    for season in ["DJF", "MAM", "JJA", "SON"]:
-        P5day[season] = S.seasonal_stats(season, "max", pentad=True)
-        P5day[season] = (
-            P5day[season]
-            .where(P5day[season] > 0, 0)
-            .where(~np.isnan(P5day[season]), np.nan)
-        )
-    P5day = update_nc_attrs(P5day, dec_mode, drop_incomplete_djf, annual_strict)
-
-    return P1day, P5day
+    return P1day
 
 
 # A couple of statistics that aren't being loaded from mean_climate
@@ -595,105 +600,3 @@ def metrics_json(data_dict, obs_dict={}, region="land", regrid=True):
                 met_dict[m][region]["std-obs_xy"][season] = std_obs_xy
 
     return met_dict
-
-
-def metrics_json_return_value(
-    rv, blockex, obs, blockex_obs, stat, region="land", regrid=True
-):
-    # Generate metrics for stationary return value comparing model and obs
-    # Arguments:
-    #   rv: dataset
-    #   blockex: dataset
-    #   obs: dataset
-    #   stat: string
-    #   region: string
-    #   regrid: bool
-    # Returns:
-    #    met_dict: dictionary
-    met_dict = {stat: {}}
-    seasons_dict = {"ANN": "", "DJF": "", "MAM": "", "JJA": "", "SON": ""}
-
-    # Looping over each type of extrema in data_dict
-    met_dict[stat] = {
-        region: {"mean": seasons_dict.copy(), "std_xy": seasons_dict.copy()}
-    }
-    # If obs available, add metrics comparing with obs
-    # If new statistics are added, be sure to update
-    # "statistic" entry in init_metrics_dict()
-    if obs is not None:
-        obs = obs.bounds.add_missing_bounds()
-        for k in [
-            "std-obs_xy",
-            "pct_dif",
-            "bias_xy",
-            "cor_xy",
-            "mae_xy",
-            "rms_xy",
-            "rmsc_xy",
-        ]:
-            met_dict[stat][region][k] = seasons_dict.copy()
-
-    rv_tmp = rv.copy(deep=True)
-
-    for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-        # Global mean over land
-        rv_tmp[season] = remove_outliers(rv[season], blockex[season])
-        met_dict[stat][region]["mean"][season] = mean_xy(rv_tmp, season)
-        std_xy = pmp_stats.std_xy(rv_tmp, season)
-        met_dict[stat][region]["std_xy"][season] = std_xy
-
-        if obs is not None and not obs[season].equals(rv_tmp):
-            obs[season] = remove_outliers(obs[season], blockex_obs[season])
-            # Regrid obs to model grid
-            if regrid:
-                target = xc.create_grid(rv_tmp.lat, rv_tmp.lon)
-                target = target.bounds.add_missing_bounds(["X", "Y"])
-                obs_m = obs.regridder.horizontal(season, target, tool="regrid2")
-            else:
-                obs_m = obs
-                shp1 = (len(rv_tmp.lat), len(rv_tmp.lon))
-                shp2 = (len(obs.lat), len(obs.lon))
-                assert (
-                    shp1 == shp2
-                ), "Model and Reference data dimensions 'lat' and 'lon' must match."
-
-            # Get xy stats for temporal average
-            weights = rv_tmp.spatial.get_weights(axis=["X", "Y"])
-            rms_xy = pmp_stats.rms_xy(rv_tmp, obs_m, var=season, weights=weights)
-            meanabs_xy = pmp_stats.meanabs_xy(
-                rv_tmp, obs_m, var=season, weights=weights
-            )
-            bias_xy = pmp_stats.bias_xy(rv_tmp, obs_m, var=season, weights=weights)
-            cor_xy = pmp_stats.cor_xy(rv_tmp, obs_m, var=season, weights=weights)
-            rmsc_xy = pmp_stats.rmsc_xy(rv_tmp, obs_m, var=season, weights=weights)
-            std_obs_xy = pmp_stats.std_xy(rv_tmp, season)
-            pct_dif = percent_difference(obs_m, bias_xy, season, weights)
-
-            met_dict[stat][region]["pct_dif"][season] = pct_dif
-            met_dict[stat][region]["rms_xy"][season] = rms_xy
-            met_dict[stat][region]["mae_xy"][season] = meanabs_xy
-            met_dict[stat][region]["bias_xy"][season] = bias_xy
-            met_dict[stat][region]["cor_xy"][season] = cor_xy
-            met_dict[stat][region]["rmsc_xy"][season] = rmsc_xy
-            met_dict[stat][region]["std-obs_xy"][season] = std_obs_xy
-
-    return met_dict
-
-
-def remove_outliers(rv, blockex):
-    # Remove outlier return values for metrics computation
-    # filtering by comparing to the block extreme values
-    # rv: data array
-    # blckex: data array
-    block_max = blockex.max("time", skipna=True).data
-    block_min = blockex.min("time", skipna=True).data
-    block_std = blockex.std("time", skipna=True).data
-
-    # Remove values that are either:
-    # 8 standard deviations above the max value in block extema
-    # 8 standard deviations below the min value in block extrema
-    tol = 8 * block_std
-    plussig = block_max + tol
-    minsig = block_min - tol
-    rv_remove_outliers = rv.where((rv < plussig) & (rv > minsig))
-    return rv_remove_outliers
