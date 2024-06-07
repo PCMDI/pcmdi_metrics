@@ -273,14 +273,7 @@ for model in model_loop_list:
             # compute_metrics.precipitation_indices() and those functions handle all the data wrangling
             # for getting all the indices for that variable. Not sure if that's the best way to do it here.
             # For example:
-            Rx1day, Rx5day = compute_metrics.precipitation_indices(
-                ds,
-                sftlf,
-                units_adjust,
-                dec_mode,
-                drop_incomplete_djf,
-                annual_strict,
-            )
+            tasmax_metrics = compute_metrics.temperature_indices(ds)
 
 
 # -------------------------------
