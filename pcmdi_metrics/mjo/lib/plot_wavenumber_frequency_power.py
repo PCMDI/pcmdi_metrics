@@ -1,15 +1,15 @@
 import copy
 import os
 
-import cdms2
 import matplotlib.cm
 import matplotlib.pyplot as plt
+import xarray as xr
 from matplotlib.patches import Rectangle
 
 
-def plot_power(d, title, fout, ewr=None):
-    y = d.getAxis(0)[:]
-    x = d.getAxis(1)[:]
+def plot_power(d: xr.DataArray, title: str, fout: str, ewr=None):
+    x = d["frequency"]
+    y = d["zonalwavenumber"]
 
     # adjust font size
     SMALL_SIZE = 8
@@ -87,8 +87,8 @@ def plot_power(d, title, fout, ewr=None):
     currentAxis = plt.gca()
     currentAxis.add_patch(
         Rectangle(
-            (0.0166667, 1),
-            0.0333333 - 0.0166667,
+            (0.016, 1),
+            0.034 - 0.016,
             2,
             edgecolor="black",
             ls="--",
@@ -97,8 +97,8 @@ def plot_power(d, title, fout, ewr=None):
     )
     currentAxis.add_patch(
         Rectangle(
-            (-0.0333333, 1),
-            0.0333333 - 0.0166667,
+            (-0.034, 1),
+            0.034 - 0.016,
             2,
             edgecolor="black",
             ls="--",
@@ -132,8 +132,9 @@ if __name__ == "__main__":
 
     imgdir = "."
 
-    f = cdms2.open(os.path.join(datadir, ncfile))
-    d = f("power")
+    ds = xr.open_dataset(os.path.join(datadir, ncfile))
+    d = ds["power"]
+
     fout = os.path.join(imgdir, pngfilename)
 
     plot_power(d, title, fout, ewr=ewr)
