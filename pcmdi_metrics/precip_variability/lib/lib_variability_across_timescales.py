@@ -41,7 +41,7 @@ def precip_variability_across_timescale(
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
     """
     psdmfm = {"RESULTS": {}}
-    
+
     if dfrq == "day":
         ntd = 1
     elif dfrq == "3hr":
@@ -87,9 +87,9 @@ def precip_variability_across_timescale(
         else:
             drg = xr.concat([drg, rgtmp], dim="time")
         print(iyr, drg.shape)
-        
-    xvar = lib.find_lon(drg)
-    yvar = lib.find_lat(drg)
+
+    xvar = find_lon(drg)
+    yvar = find_lat(drg)
     nlon = str(len(xvar))
     nlat = str(len(yvar))
     f.close()
@@ -162,6 +162,7 @@ def precip_variability_across_timescale(
     if cmec:
         JSON.write_cmec(indent=4, separators=(",", ": "))
 
+
 # ==================================================================================
 def find_lon(ds):
     for key in ds.coords:
@@ -172,6 +173,7 @@ def find_lon(ds):
             return key
     return None
 
+
 # ==================================================================================
 def find_lat(ds):
     for key in ds.coords:
@@ -181,6 +183,7 @@ def find_lat(ds):
         if key in ["lat", "latitude"]:
             return key
     return None
+
 
 # ==================================================================================
 def RegridHoriz(d, var, res, regions_specs=None):
@@ -499,7 +502,7 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc, regions_specs):
 
     # generate land sea mask
     mask = create_land_sea_mask(d[0])
-    yvar = lib.find_lat(drg)
+    yvar = find_lat(d)
 
     psdmfm = {}
     for dom in domains:
