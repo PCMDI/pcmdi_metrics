@@ -80,8 +80,11 @@ def precip_variability_across_timescale(
         else:
             drg = xr.concat([drg, rgtmp], dim="time")
         print(iyr, drg.shape)
-    nlon = str(len(drg.lon))
-    nlat = str(len(drg.lat))
+        
+    xvar = lib.find_lon(drg)
+    yvar = lib.find_lat(drg)
+    nlon = str(len(xvar))
+    nlat = str(len(yvar))
     f.close()
 
     # Anomaly
@@ -158,6 +161,25 @@ def precip_variability_across_timescale(
     if cmec:
         JSON.write_cmec(indent=4, separators=(",", ": "))
 
+# ==================================================================================
+def find_lon(ds):
+    for key in ds.coords:
+        if key in ["lon", "longitude"]:
+            return key
+    for key in ds.keys():
+        if key in ["lon", "longitude"]:
+            return key
+    return None
+
+# ==================================================================================
+def find_lat(ds):
+    for key in ds.coords:
+        if key in ["lat", "latitude"]:
+            return key
+    for key in ds.keys():
+        if key in ["lat", "latitude"]:
+            return key
+    return None
 
 # ==================================================================================
 def RegridHoriz(d, var, res, regions_specs=None):
@@ -476,6 +498,7 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc, regions_specs):
 
     # generate land sea mask
     mask = create_land_sea_mask(d[0])
+    yvar = lib.find_lat(drg)
 
     psdmfm = {}
     for dom in domains:
@@ -493,19 +516,19 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc, regions_specs):
         dmask = dmask.bounds.add_bounds(axis="Y")
 
         if "50S50N" in dom:
-            am = dmask.sel(lat=slice(-50, 50)).spatial.average(
+            am = dmask.sel({yvar: slice(-50, 50)}).spatial.average(
                 "ps", axis=["X", "Y"], weights="generate"
             )["ps"]
         elif "30N50N" in dom:
-            am = dmask.sel(lat=slice(30, 50)).spatial.average(
+            am = dmask.sel({yvar: slice(30, 50)}).spatial.average(
                 "ps", axis=["X", "Y"], weights="generate"
             )["ps"]
         elif "30S30N" in dom:
-            am = dmask.sel(lat=slice(-30, 30)).spatial.average(
+            am = dmask.sel({yvar: slice(-30, 30)}).spatial.average(
                 "ps", axis=["X", "Y"], weights="generate"
             )["ps"]
         elif "50S30S" in dom:
-            am = dmask.sel(lat=slice(-50, -30)).spatial.average(
+            am = dmask.sel({yvar: slice(-50, -30)}).spatial.average(
                 "ps", axis=["X", "Y"], weights="generate"
             )["ps"]
         else:
