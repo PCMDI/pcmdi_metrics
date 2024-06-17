@@ -16,6 +16,8 @@ from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.io.region_from_file import region_from_file
 from pcmdi_metrics.utils import create_land_sea_mask
 
+import resource
+
 
 # ==================================================================================
 def precip_variability_across_timescale(
@@ -40,6 +42,7 @@ def precip_variability_across_timescale(
     """
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
     """
+    print("Start:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     psdmfm = {"RESULTS": {}}
 
     if dfrq == "day":
@@ -87,6 +90,7 @@ def precip_variability_across_timescale(
         else:
             drg = xr.concat([drg, rgtmp], dim="time")
         print(iyr, drg.shape)
+        print("Mem:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
 
     xvar = find_lon(drg)
     yvar = find_lat(drg)
@@ -230,7 +234,7 @@ def CropLatLon(d, regions_specs):
     """
     region_name = list(regions_specs.keys())[0]
 
-    dnew = region_subset(d, regions_specs, region=region_name)
+    dnew = region_subset(d, region_name, None, regions_specs, False)
 
     return dnew
 
@@ -249,7 +253,8 @@ def ClimAnom(d, ntd, syr, eyr, cal):
     - clim: climatology (climatological diurnal and annual cycles)
     - anom: anomaly departure from the climatological diurnal and annual cycles
     """
-
+    print("ClimAnom Start:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+    
     # Year segment
     nyr = eyr - syr + 1
     if "gregorian" in cal or "standard" in cal:
@@ -301,7 +306,7 @@ def ClimAnom(d, ntd, syr, eyr, cal):
 
     # Climatology
     clim = np.nanmean(dseg, axis=0)
-
+    print("ClimAnom post-mean:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     # Anomaly
     anom = np.array([])
     if "gregorian" in cal or "standard" in cal:
@@ -325,8 +330,11 @@ def ClimAnom(d, ntd, syr, eyr, cal):
             anom = np.append(anom, (dseg[iyr] - clim))
 
     # Reahape and Dimension information
+    print("Starting reshape")
     clim = np.reshape(clim, (ndy * ntd, d.shape[1], d.shape[2]))
+    print("ClimAnom post clim reshape:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     anom = np.reshape(anom, (d.shape[0], d.shape[1], d.shape[2]))
+    print("ClimAnom post Anom reshape:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
 
     climtime = pd.period_range(
         start="0001-01-01", periods=clim.shape[0], freq=str(24 / ntd) + "H"
@@ -354,6 +362,7 @@ def Powerspectrum(d, nperseg, noverlap):
     - rn: Rednoise
     - sig95: 95% rednoise confidence level
     """
+    print("Powerspectrum Start:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     # Fill missing date using interpolation
     dnp = np.array(d)
     dfm = np.zeros((d.shape[0], d.shape[1], d.shape[2]), dtype=float)
@@ -364,9 +373,11 @@ def Powerspectrum(d, nperseg, noverlap):
             dfm[:, iy, ix] = np.array(ypfm)
 
     # Calculate power spectrum
+    print("Pre-welch:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     freqs, psd = signal.welch(
         dfm, scaling="spectrum", nperseg=nperseg, noverlap=noverlap, axis=0
     )
+    print("Post-welch:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
 
     # Signigicance test of power spectra (from J. Lee's MOV code)
     nps = max(
@@ -380,7 +391,7 @@ def Powerspectrum(d, nperseg, noverlap):
             rn[:, iy, ix] = rednoise(psd[:, iy, ix], len(freqs), r1)
             nu = 2 * nps
             sig95[:, iy, ix] = RedNoiseSignificanceLevel(nu, rn[:, iy, ix])
-
+    print("Post-sig:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     # Decorate arrays with dimensions
     # axisfrq = np.arange(len(freqs))
     axisfrq = range(len(freqs))
