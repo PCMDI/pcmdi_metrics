@@ -41,6 +41,13 @@ def precip_variability_across_timescale(
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
     """
     psdmfm = {"RESULTS": {}}
+    
+    if dfrq == "day":
+        ntd = 1
+    elif dfrq == "3hr":
+        ntd = 8
+    else:
+        sys.exit("ERROR: dfrq " + dfrq + " is not defined!")
 
     try:
         f = xcdat.open_mfdataset(file)
@@ -88,12 +95,6 @@ def precip_variability_across_timescale(
     f.close()
 
     # Anomaly
-    if dfrq == "day":
-        ntd = 1
-    elif dfrq == "3hr":
-        ntd = 8
-    else:
-        sys.exit("ERROR: dfrq " + dfrq + " is not defined!")
     clim, anom = ClimAnom(drg, ntd, syr, eyr, cal)
 
     # Power spectum of total
