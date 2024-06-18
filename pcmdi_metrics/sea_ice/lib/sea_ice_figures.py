@@ -20,16 +20,15 @@ def replace_fill_zero(da, val):
     return da_new
 
 
-def create_arctic_map(ds, metrics_output_path, varname="siconc", title=None):
-    print("Creating Arctic map")
+def create_arctic_map(ds, obs, metrics_output_path, meta, varname="siconc", title=None):
     # Load and process data
     xvar = lib.find_lon(ds)
     yvar = lib.find_lat(ds)
 
     # Some models have NaN values in coordinates
     # that can't be plotted by pcolormesh
-    ds[xvar] = replace_nan_zero(ds[xvar])
-    ds[yvar] = replace_nan_zero(ds[yvar])
+    # ds[xvar] = replace_nan_zero(ds[xvar])
+    # ds[yvar] = replace_nan_zero(ds[yvar])
 
     # Set up regions
     region_NA = np.array([[-120, 45], [-120, 80], [90, 80], [90, 45]])
@@ -45,73 +44,146 @@ def create_arctic_map(ds, metrics_output_path, varname="siconc", title=None):
         "", [[0, 85 / 255, 182 / 255], "white"]
     )
     proj = ccrs.NorthPolarStereo()
-    ax = plt.subplot(111, projection=proj)
-    ax.set_global()
-    # TODO: get xvar and yvar
-    ds[varname].plot.pcolormesh(
-        ax=ax,
-        x=xvar,
-        y=yvar,
-        transform=ccrs.PlateCarree(),
-        cmap=cmap,
-        cbar_kwargs={"label": "ice fraction"},
-    )
-    arctic_regions.plot_regions(
-        ax=ax,
-        add_label=False,
-        label="abbrev",
-        line_kws={"color": [0.2, 0.2, 0.25], "linewidth": 3},
-    )
-    ax.set_extent([-180, 180, 43, 90], ccrs.PlateCarree())
-    ax.coastlines(color=[0.3, 0.3, 0.3])
-    plt.annotate(
-        "North Atlantic",
-        (0.5, 0.2),
-        xycoords="axes fraction",
-        horizontalalignment="right",
-        verticalalignment="bottom",
-        color="white",
-    )
-    plt.annotate(
-        "North Pacific",
-        (0.65, 0.88),
-        xycoords="axes fraction",
-        horizontalalignment="right",
-        verticalalignment="bottom",
-        color="white",
-    )
-    plt.annotate(
-        "Central\nArctic ",
-        (0.56, 0.56),
-        xycoords="axes fraction",
-        horizontalalignment="right",
-        verticalalignment="bottom",
-    )
-    ax.set_facecolor([0.55, 0.55, 0.6])
+    f1, axs = plt.subplots(12, 2, figsize=(10, 60), subplot_kw={"projection": proj})
+    pos1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    pos2 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ]
+    for mo in range(0, 12):
+        ax = axs[pos1[mo], pos2[mo]]
+        ax.set_global()
+
+        ds[varname].isel({"time": mo}).plot.pcolormesh(
+            ax=ax,
+            x=xvar,
+            y=yvar,
+            transform=ccrs.PlateCarree(),
+            cmap=cmap,
+            cbar_kwargs={"label": "ice fraction", "fraction": 0.046, "pad": 0.04},
+        )
+        arctic_regions.plot_regions(
+            ax=ax,
+            add_label=False,
+            label="abbrev",
+            line_kws={"color": [0.2, 0.2, 0.25], "linewidth": 3},
+        )
+        ax.set_extent([-180, 180, 43, 90], ccrs.PlateCarree())
+        ax.coastlines(color=[0.3, 0.3, 0.3])
+        """plt.annotate(
+            "North Atlantic",
+            (0.5, 0.2),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+        )
+        plt.annotate(
+            "North Pacific",
+            (0.65, 0.88),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+        )
+        plt.annotate(
+            "Central\nArctic ",
+            (0.56, 0.56),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+        )"""
+        ax.set_facecolor([0.55, 0.55, 0.6])
+        ax.set_title(months[mo])
+    for mo in range(0, 12):
+        ax = axs[pos1[mo], pos2[mo]]
+        ax.set_global()
+
+        obs[varname].isel({"time": mo}).plot.pcolormesh(
+            ax=ax,
+            x=xvar,
+            y=yvar,
+            transform=ccrs.PlateCarree(),
+            cmap=cmap,
+            cbar_kwargs={"label": "ice fraction", "fraction": 0.046, "pad": 0.04},
+        )
+        arctic_regions.plot_regions(
+            ax=ax,
+            add_label=False,
+            label="abbrev",
+            line_kws={"color": [0.2, 0.2, 0.25], "linewidth": 3},
+        )
+        ax.set_extent([-180, 180, 43, 90], ccrs.PlateCarree())
+        ax.coastlines(color=[0.3, 0.3, 0.3])
+        """plt.annotate(
+            "North Atlantic",
+            (0.5, 0.2),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+        )
+        plt.annotate(
+            "North Pacific",
+            (0.65, 0.88),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+        )
+        plt.annotate(
+            "Central\nArctic ",
+            (0.56, 0.56),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+        )"""
+        ax.set_facecolor([0.55, 0.55, 0.6])
+        ax.set_title("Obs", months[mo])
     if title is not None:
-        plt.title(title)
+        plt.suptitle(title.replace("_", " "), fontsize=20)
         fig_path = os.path.join(
             metrics_output_path, title.replace(" ", "_") + "_arctic_regions.png"
         )
     else:
         fig_path = os.path.join(metrics_output_path, "arctic_regions.png")
+    plt.tight_layout(rect=[0, 0.03, 1, 0.97])
     plt.savefig(fig_path)
     plt.close()
+    meta.update_plots(
+        "Arctic" + title.replace(" ", "_"),
+        fig_path,
+        "Arctic_map",
+        "Maps of monthly Antarctic ice fraction",
+    )
+    return meta
 
 
 # ----------
 # Antarctic
 # ----------
-def create_antarctic_map(ds, metrics_output_path, varname="siconc", title=None):
-    print("Creating Antarctic map")
+def create_antarctic_map(
+    ds, obs, metrics_output_path, meta, varname="siconc", title=None
+):
     # Load and process data
     xvar = lib.find_lon(ds)
     yvar = lib.find_lat(ds)
 
     # Some models have NaN values in coordinates
     # that can't be plotted by pcolormesh
-    ds[xvar] = replace_nan_zero(ds[xvar])
-    ds[yvar] = replace_nan_zero(ds[yvar])
+    # ds[xvar] = replace_nan_zero(ds[xvar])
+    # ds[yvar] = replace_nan_zero(ds[yvar])
 
     # Set up regions
     region_IO = np.array([[20, -90], [90, -90], [90, -55], [20, -55]])
@@ -120,7 +192,7 @@ def create_antarctic_map(ds, metrics_output_path, varname="siconc", title=None):
 
     names = ["Indian Ocean", "South Atlantic", "South Pacific"]
     abbrevs = ["IO", "SA", "SP"]
-    arctic_regions = regionmask.Regions(
+    antarctic_regions = regionmask.Regions(
         [region_IO, region_SA, region_SP],
         names=names,
         abbrevs=abbrevs,
@@ -128,59 +200,330 @@ def create_antarctic_map(ds, metrics_output_path, varname="siconc", title=None):
     )
 
     # Do plotting
+
     cmap = colors.LinearSegmentedColormap.from_list(
         "", [[0, 85 / 255, 182 / 255], "white"]
     )
     proj = ccrs.SouthPolarStereo()
-    ax = plt.subplot(111, projection=proj)
-    ax.set_global()
-    ds[varname].plot.pcolormesh(
-        ax=ax,
-        x=xvar,
-        y=yvar,
-        transform=ccrs.PlateCarree(),
-        cmap=cmap,
-        cbar_kwargs={"label": "ice fraction"},
-    )
-    arctic_regions.plot_regions(
-        ax=ax,
-        add_label=False,
-        label="abbrev",
-        line_kws={"color": [0.2, 0.2, 0.25], "linewidth": 3},
-    )
-    ax.set_extent([-180, 180, -53, -90], ccrs.PlateCarree())
-    ax.coastlines(color=[0.3, 0.3, 0.3])
-    plt.annotate(
-        "South Pacific",
-        (0.50, 0.2),
-        xycoords="axes fraction",
-        horizontalalignment="right",
-        verticalalignment="bottom",
-        color="black",
-    )
-    plt.annotate(
-        "Indian\nOcean",
-        (0.89, 0.66),
-        xycoords="axes fraction",
-        horizontalalignment="right",
-        verticalalignment="bottom",
-        color="black",
-    )
-    plt.annotate(
-        "South Atlantic",
-        (0.54, 0.82),
-        xycoords="axes fraction",
-        horizontalalignment="right",
-        verticalalignment="bottom",
-        color="black",
-    )
-    ax.set_facecolor([0.55, 0.55, 0.6])
+    f1, axs = plt.subplots(12, 2, figsize=(10, 60), subplot_kw={"projection": proj})
+    pos1 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    pos2 = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+    months = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ]
+    for mo in range(0, 12):
+        ax = axs[pos1[mo], pos2[mo]]
+        ax.set_global()
+        ds[varname].isel({"time": mo}).plot.pcolormesh(
+            ax=ax,
+            x=xvar,
+            y=yvar,
+            transform=ccrs.PlateCarree(),
+            cmap=cmap,
+            cbar_kwargs={"label": "ice fraction", "fraction": 0.046, "pad": 0.04},
+        )
+        antarctic_regions.plot_regions(
+            ax=ax,
+            add_label=False,
+            label="abbrev",
+            line_kws={"color": [0.2, 0.2, 0.25], "linewidth": 3},
+        )
+        ax.set_extent([-180, 180, -53, -90], ccrs.PlateCarree())
+        ax.coastlines(color=[0.3, 0.3, 0.3])
+        """ax.annotate(
+            "South Pacific",
+            (0.50, 0.2),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="black",
+        )
+        ax.annotate(
+            "Indian\nOcean",
+            (0.89, 0.66),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="black",
+        )
+        ax.annotate(
+            "South Atlantic",
+            (0.54, 0.82),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="black",
+        )"""
+        ax.set_facecolor([0.55, 0.55, 0.6])
+        ax.set_title(months[mo])
     if title is not None:
-        plt.title(title)
+        plt.suptitle(title.replace("_", " "), fontsize=20)
         fig_path = os.path.join(
             metrics_output_path, title.replace(" ", "_") + "_antarctic_regions.png"
         )
     else:
         fig_path = os.path.join(metrics_output_path, "antarctic_regions.png")
+    plt.tight_layout(rect=[0, 0.03, 1, 0.97])
     plt.savefig(fig_path)
     plt.close()
+    meta.update_plots(
+        "Antarctic" + title.replace(" ", "_"),
+        fig_path,
+        "Antarctic_map",
+        "Maps of monthly Antarctic ice fraction",
+    )
+    return meta
+
+
+def annual_cycle_plots(df, fig_dir, reference_data_set, meta):
+    # Annual cycle line figure
+    # Model mean climatology
+    labels = {
+        "antarctic": "Antarctic",
+        "arctic": "Arctic",
+        "ca": "Central Arctic",
+        "na": "North Atlantic",
+        "np": "North Pacific",
+        "io": "Indian Ocean",
+        "sa": "South Atlantic",
+        "sp": "South Pacific",
+    }
+    pos = {
+        "antarctic": (0, 1),
+        "arctic": (0, 0),
+        "ca": (1, 0),
+        "na": (2, 0),
+        "np": (3, 0),
+        "io": (1, 1),
+        "sa": (2, 1),
+        "sp": (3, 1),
+    }
+    wts = np.array([31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]) / 365
+    for mod in df:
+        try:
+            f1, axs = plt.subplots(4, 2, figsize=(8, 8))
+            if mod != "Reference":
+                for rgn in ["arctic", "antarctic", "ca", "sa", "np", "sp", "na", "io"]:
+                    # Get realization spread
+                    climr = []
+                    for real in df[mod][rgn]:
+                        if real != "model_mean":
+                            tmp = df[mod][rgn][real]["monthly_climatology"]
+                            tmp = [float(x) for x in tmp]
+                            climr = climr + tmp
+                    climr = np.array(climr)
+                    climr = np.reshape(climr, (int(len(climr) / 12), 12))
+                    mins = np.min(climr, axis=0)
+                    maxs = np.max(climr, axis=0)
+
+                    # Get means
+                    clim = df[mod][rgn]["model_mean"]["monthly_climatology"]
+                    climobs = df["Reference"][rgn][reference_data_set][
+                        "monthly_climatology"
+                    ]
+                    clim = np.array([float(x) for x in clim])
+                    climobs = np.array([float(x) for x in climobs])
+                    time = np.array([x for x in range(1, 13)])
+                    climmean = np.ones(12) * np.average(clim, weights=wts)
+                    climmeanobs = np.ones(12) * np.average(climobs, weights=wts)
+
+                    # Make figure
+                    ind1 = pos[rgn][0]
+                    ind2 = pos[rgn][1]
+                    axs[ind1, ind2].plot(
+                        time,
+                        climmean,
+                        color="darkorange",
+                        linewidth=1.5,
+                        linestyle="dashed",
+                        zorder=1,
+                    )
+                    axs[ind1, ind2].plot(
+                        time,
+                        climmeanobs,
+                        color=[0.2, 0.2, 0.2],
+                        linewidth=1.5,
+                        linestyle="dashed",
+                        zorder=1,
+                    )
+                    axs[ind1, ind2].fill_between(
+                        time, mins, maxs, color="darkorange", alpha=0.3, zorder=1
+                    )
+                    axs[ind1, ind2].plot(time, clim, color="darkorange", label=mod)
+                    axs[ind1, ind2].plot(
+                        time, climobs, color=[0.2, 0.2, 0.2], label=reference_data_set
+                    )
+                    axs[ind1, ind2].set_title(labels[rgn], fontsize=10)
+                    axs[ind1, ind2].xaxis.set_tick_params(which="minor", bottom=False)
+                    axs[ind1, ind2].set_xlim([1, 12])
+                    axs[ind1, ind2].set_xticks([])
+                    axs[ind1, ind2].minorticks_on()
+                    if ind2 == 0:
+                        axs[ind1, ind2].set_ylabel("$10^6$ $km^2$")
+                axs[3, 0].set_xticks(time)
+                axs[3, 1].set_xticks(time)
+                axs[3, 0].set_xlabel("month")
+                axs[3, 1].set_xlabel("month")
+                axs[0, 0].legend(loc="upper right", fontsize=9)
+                plt.suptitle(mod)
+                figfile = os.path.join(fig_dir, mod + "_annual_cycle.png")
+                plt.savefig(figfile)
+                plt.close()
+                meta.update_plots(
+                    "ann_cycle_" + mod,
+                    figfile,
+                    "annual_cycle_plot",
+                    "Plot of model mean regional annual cycles in sea ice area",
+                )
+        except Exception as e:
+            print("Could not create annual cycle plots for model", mod)
+            print(e)
+    return meta
+
+
+def metrics_bar_chart(model_list, metrics, reference_data_set, fig_dir, meta):
+    try:
+        sector_list = [
+            "Central Arctic Sector",
+            "North Atlantic Sector",
+            "North Pacific Sector",
+            "Indian Ocean Sector",
+            "South Atlantic Sector",
+            "South Pacific Sector",
+        ]
+        sector_short = ["ca", "na", "np", "io", "sa", "sp"]
+        fig7, ax7 = plt.subplots(6, 1, figsize=(5, 9))
+        mlabels = model_list
+        ind = np.arange(len(mlabels))  # the x locations for the groups
+        width = 0.3
+        for inds, sector in enumerate(sector_list):
+            # Assemble data
+            mse_clim = []
+            mse_ext = []
+            clim_err_x = []
+            clim_err_y = []
+            ext_err_y = []
+            rgn = sector_short[inds]
+            for nmod, model in enumerate(model_list):
+                mse_clim.append(
+                    float(
+                        metrics["RESULTS"][model][rgn]["model_mean"][
+                            reference_data_set
+                        ]["monthly_clim"]["mse"]
+                    )
+                )
+                mse_ext.append(
+                    float(
+                        metrics["RESULTS"][model][rgn]["model_mean"][
+                            reference_data_set
+                        ]["total_extent"]["mse"]
+                    )
+                )
+                # Get spread, only if there are multiple realizations
+                if len(metrics["RESULTS"][model][rgn].keys()) > 2:
+                    for r in metrics["RESULTS"][model][rgn]:
+                        if r != "model_mean":
+                            clim_err_x.append(ind[nmod])
+                            clim_err_y.append(
+                                float(
+                                    metrics["RESULTS"][model][rgn][r][
+                                        reference_data_set
+                                    ]["monthly_clim"]["mse"]
+                                )
+                            )
+                            ext_err_y.append(
+                                float(
+                                    metrics["RESULTS"][model][rgn][r][
+                                        reference_data_set
+                                    ]["total_extent"]["mse"]
+                                )
+                            )
+
+            # plot data
+            if len(model_list) < 4:
+                mark_size = 9
+            elif len(model_list) < 12:
+                mark_size = 3
+            else:
+                mark_size = 1
+            ax7[inds].bar(
+                ind - width / 2.0, mse_clim, width, color="b", label="Ann. Cycle"
+            )
+            ax7[inds].bar(ind, mse_ext, width, color="r", label="Ann. Mean")
+            if len(clim_err_x) > 0:
+                ax7[inds].scatter(
+                    [x - width / 2.0 for x in clim_err_x],
+                    clim_err_y,
+                    marker="D",
+                    s=mark_size,
+                    color="k",
+                )
+                ax7[inds].scatter(
+                    clim_err_x, ext_err_y, marker="D", s=mark_size, color="k"
+                )
+            # xticks
+            if inds == len(sector_list) - 1:
+                ax7[inds].set_xticks(ind + width / 2.0, mlabels, rotation=90, size=7)
+            else:
+                ax7[inds].set_xticks(ind + width / 2.0, labels="")
+            # yticks
+            if len(clim_err_y) > 0:
+                datamax = np.max(
+                    np.concatenate((np.array(clim_err_y), np.array(ext_err_y)))
+                )
+            else:
+                datamax = np.max(
+                    np.concatenate((np.array(mse_clim), np.array(mse_ext)))
+                )
+            ymax = (datamax) * 1.3
+            ax7[inds].set_ylim(0.0, ymax)
+            if ymax < 0.1:
+                ticks = np.linspace(0, 0.1, 6)
+                labels = [str(round(x, 3)) for x in ticks]
+            elif ymax < 1:
+                ticks = np.linspace(0, 1, 5)
+                labels = [str(round(x, 1)) for x in ticks]
+            elif ymax < 4:
+                ticks = np.linspace(0, round(ymax), num=round(ymax / 2) * 2 + 1)
+                labels = [str(round(x, 1)) for x in ticks]
+            elif ymax > 10:
+                ticks = range(0, round(ymax), 5)
+                labels = [str(round(x, 0)) for x in ticks]
+            else:
+                ticks = range(0, round(ymax))
+                labels = [str(round(x, 0)) for x in ticks]
+
+            ax7[inds].set_yticks(ticks, labels, fontsize=8)
+            # labels etc
+            ax7[inds].set_ylabel("10${^1}{^2}$km${^4}$", size=8)
+            ax7[inds].grid(True, linestyle=":")
+            ax7[inds].annotate(
+                sector,
+                (0.35, 0.8),
+                xycoords="axes fraction",
+                size=9,
+            )
+        # Add legend, save figure
+        ax7[0].legend(loc="upper right", fontsize=6)
+        plt.suptitle("Mean Square Error relative to " + reference_data_set, y=0.91)
+        figfile = os.path.join(fig_dir, "MSE_bar_chart.png")
+        plt.savefig(figfile)
+        plt.close()
+        meta.update_plots(
+            "bar_chart", figfile, "regional_bar_chart", "Bar chart of regional MSE"
+        )
+    except Exception as e:
+        print("Could not create metrics plot.")
+        print(e)
+    return meta
