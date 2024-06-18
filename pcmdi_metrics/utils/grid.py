@@ -17,6 +17,7 @@ def create_target_grid(
     lon1: float = 0.0,
     lon2: float = 360.0,
     target_grid_resolution: str = "2.5x2.5",
+    grid_type: str = "uniform",
 ) -> xr.Dataset:
     """Generate a uniform grid for given latitude/longitude ranges and resolution
 
@@ -32,6 +33,8 @@ def create_target_grid(
         Starting latitude, by default 360.
     target_grid_resolution : str, optional
         grid resolution in degree for lat and lon, by default "2.5x2.5"
+    grid_type : str, optional
+        type of the grid ('uniform' or 'gaussian'), by default "uniform"
 
     Returns
     -------
@@ -46,11 +49,11 @@ def create_target_grid(
 
     Global uniform grid:
 
-    >>> t_grid = create_target_grid(-90, 90, 0, 360, target_grid="5x5")
+    >>> grid = create_target_grid(-90, 90, 0, 360, target_grid="5x5")
 
     Regional uniform grid:
 
-    >>> t_grid = create_target_grid(30, 50, 100, 150, target_grid="0.5x0.5")
+    >>> grid = create_target_grid(30, 50, 100, 150, target_grid="0.5x0.5")
     """
     # generate target grid
     res = target_grid_resolution.split("x")
@@ -60,10 +63,33 @@ def create_target_grid(
     start_lon = lon1 + lon_res / 2.0
     end_lat = lat2 - lat_res / 2
     end_lon = lon2 - lon_res / 2
-    t_grid = xc.create_uniform_grid(
-        start_lat, end_lat, lat_res, start_lon, end_lon, lon_res
-    )
-    return t_grid
+
+    if grid_type == "uniform":
+        grid = xc.create_uniform_grid(
+            start_lat, end_lat, lat_res, start_lon, end_lon, lon_res
+        )
+    elif grid_type == "gaussian":
+        nlat = int(180 / lat_res)
+        grid = xc.create_gaussian_grid(nlat)
+
+        # If the longitude values include 0 and 360, then remove 360 to avoid having repeating grid
+        if 0 in grid.lon.values and 360 in grid.lon.values:
+            min_lon = grid.lon.values[0]  # 0
+            # max_lon = grid.lon.values[-1]  # 360
+            second_max_lon = grid.lon.values[-2]  # 360-dlat
+            grid = grid.sel(lon=slice(min_lon, second_max_lon))
+
+        # Reverse latitude if needed
+        if grid.lat.values[0] > grid.lat.values[-1]:
+            grid = grid.isel(lat=slice(None, None, -1))
+
+        grid = grid.sel(lat=slice(start_lat, end_lat), lon=slice(start_lon, end_lon))
+    else:
+        raise ValueError(
+            f"grid_type {grid_type} is undefined. Please use either 'uniform' or 'gaussian'"
+        )
+
+    return grid
 
 
 def __haversine(lat1, lon1, lat2, lon2):
