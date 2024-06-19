@@ -269,12 +269,44 @@ for model in model_loop_list:
             # tasmin: annualmean_tasmin, annual_tasmin_le_32F, annual_tnn
             # ETTCDI has some metrics for tas as well
 
-            # In the extremes metrics, I go by variable and call compute_metrics.temperature_indices() or
-            # compute_metrics.precipitation_indices() and those functions handle all the data wrangling
-            # for getting all the indices for that variable. Not sure if that's the best way to do it here.
-            # For example:
-            tasmax_metrics = compute_metrics.temperature_indices(ds)
+            if varname == "tasmax":
+                # tasmax metrics
+                (
+                    Tmean,
+                    Tmedian,
+                    Tq99p9,
+                    Tge95,
+                    Tge100,
+                    Tge105,
+                ) = compute_metrics.tasmax_indices(
+                    ds,
+                    sftlf,
+                    units_adjust,
+                    dec_mode,
+                    drop_incomplete_djf,
+                    annual_strict,
+                )
 
+                # Printing the arrays just to check that they exist for development purposes.
+                print(Tmean)
+                print(Tmedian)
+                print(Tq99p9)
+                print(Tge95)
+                print(Tge100)
+                print(Tge105)
+            elif varname == "tasmin":
+                # tasmin metrics
+                Tmean, Tmin, Tle32 = compute_metrics.tasmin_indices(
+                    ds,
+                    sftlf,
+                    units_adjust,
+                    dec_mode,
+                    drop_incomplete_djf,
+                    annual_strict,
+                )
+                print(Tmean)
+                print(Tmin)
+                print(Tle32)
 
 # -------------------------------
 # Output JSON with metrics here
