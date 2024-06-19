@@ -124,6 +124,43 @@ class SeasonalAverager:
                     .groupby("time.year")
                     .mean(dim="time")
                 )
+            elif stat == "median":
+                ds_ann = (
+                    ds.sel(time=date_range, method="nearest")
+                    .groupby("time.year")
+                    .median(dim="time")
+                )
+            elif stat == "q99p9":
+                ds_ann = (
+                    ds.sel(time=date_range, method="nearest")
+                    .groupby("time.year")
+                    .quantile(0.999, dim="time")
+                )
+            elif stat.startswith("ge"):
+                num = int(stat.replace("ge", ""))
+                ds_ann = (
+                    ds.where(ds >= num)
+                    .groupby("time.year")
+                    .sel(time=date_range, method="nearest")
+                    .count(dim="time")
+                    / ds.sel(time=date_range, method="nearest")
+                    .groupby("time.year")
+                    .count(dim="time")
+                    * 100
+                )
+            elif stat.startswith("le"):
+                num = int(stat.replace("le", ""))
+                ds_ann = (
+                    ds.where(ds <= num)
+                    .groupby("time.year")
+                    .sel(time=date_range, method="nearest")
+                    .count(dim="time")
+                    / ds.sel(time=date_range, method="nearest")
+                    .groupby("time.year")
+                    .count(dim="time")
+                    * 100
+                )
+
         else:
             # Group by date
             if stat == "max":
@@ -132,6 +169,24 @@ class SeasonalAverager:
                 ds_ann = ds.groupby("time.year").min(dim="time")
             elif stat == "mean":
                 ds_ann = ds.groupby("time.year").mean(dim="time")
+            elif stat == "median":
+                ds_ann = ds.groupby("time.year").median(dim="time")
+            elif stat == "q99p9":
+                ds_ann = ds.groupby("time.year").quantile(0.999, dim="time")
+            elif stat.startswith("ge"):
+                num = int(stat.replace("ge", ""))
+                ds_ann = (
+                    ds.where(ds >= num).groupby("time.year").count(dim="time")
+                    / ds.groupby("time.year").count(dim="time")
+                    * 100
+                )
+            elif stat.startswith("le"):
+                num = int(stat.replace("le", ""))
+                ds_ann = (
+                    ds.where(ds <= num).groupby("time.year").count(dim="time")
+                    / ds.groupby("time.year").count(dim="time")
+                    * 100
+                )
 
         # Need to fix time axis if groupby operation happened
         if "year" in ds_ann.coords:
@@ -167,6 +222,8 @@ class SeasonalAverager:
                 ds_stat = ds.resample(time="QS-DEC").min(dim="time")
             elif stat == "mean":
                 ds_stat = ds.resample(time="QS-DEC").mean(dim="time")
+            elif stat == "median":
+                ds_stat = ds.resample(time="QS-DEC").median(dim="time")
 
             ds_stat = ds_stat.isel(time=ds_stat.time.dt.month.isin([12]))
 
@@ -248,6 +305,12 @@ class SeasonalAverager:
                     .groupby("time.year")
                     .mean(dim="time")
                 )
+            elif stat == "median":
+                ds_stat = (
+                    ds.sel(time=date_range, method="nearest")
+                    .groupby("time.year")
+                    .median(dim="time")
+                )
 
         else:  # Other 3 seasons
             dates = {  # Month/day tuples
@@ -294,6 +357,12 @@ class SeasonalAverager:
                     .groupby("time.year")
                     .mean(dim="time")
                 )
+            elif stat == "median":
+                ds_stat = (
+                    ds.sel(time=date_range, method="nearest")
+                    .groupby("time.year")
+                    .median(dim="time")
+                )
 
         # Need to fix time axis if groupby operation happened
         if "year" in ds_stat.coords:
@@ -327,7 +396,8 @@ def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     ds.lon_bnds.encoding["_FillValue"] = None
     ds.time_bnds.encoding["_FillValue"] = None
     for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-        ds[season].encoding["_FillValue"] = float(1e20)
+        if season in ds:
+            ds[season].encoding["_FillValue"] = float(1e20)
 
     # Drop type attribute that comes from land mask
     if "type" in ds:
@@ -361,14 +431,14 @@ def convert_units(data, units_adjust):
     return data
 
 
-def temperature_indices(
-    ds, varname, sftlf, units_adjust, dec_mode, drop_incomplete_djf, annual_strict
+def tasmax_indices(
+    ds, sftlf, units_adjust, dec_mode, drop_incomplete_djf, annual_strict
 ):
     # Returns annual daily mean of provided temperature dataset
     # Temperature input can be "tasmax" or "tasmin".
 
     print("Generating temperature block extrema.")
-
+    varname = "tasmax"
     ds[varname] = convert_units(ds[varname], units_adjust)
 
     TS = TimeSeriesData(ds, varname)
@@ -381,16 +451,71 @@ def temperature_indices(
     )
 
     Tmean = xr.Dataset()
+    Tmedian = xr.Dataset()
+    Tq99p9 = xr.Dataset()
+    Tge95 = xr.Dataset()
+    Tge100 = xr.Dataset()
+    Tge105 = xr.Dataset()
     Tmean["ANN"] = S.annual_stats("mean")
+    Tmedian["ANN"] = S.annual_stats("median")
+    Tq99p9["ANN"] = S.annual_stats("q99p9")
+    Tge95["ANN"] = S.annual_stats("ge95")
+    Tge100["ANN"] = S.annual_stats("ge100")
+    Tge105["ANN"] = S.annual_stats("ge105")
 
     for season in ["DJF", "MAM", "JJA", "SON"]:
         Tmean[season] = S.seasonal_stats(season, "mean")
 
+    Tge95.attrs["units"] = "%"
+    Tge100.attrs["units"] = "%"
+    Tge105.attrs["units"] = "%"
+
     Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
+    Tmedian = update_nc_attrs(Tmedian, dec_mode, drop_incomplete_djf, annual_strict)
+    Tq99p9 = update_nc_attrs(Tq99p9, dec_mode, drop_incomplete_djf, annual_strict)
+    Tge95 = update_nc_attrs(Tge95, dec_mode, drop_incomplete_djf, annual_strict)
+    Tge100 = update_nc_attrs(Tge100, dec_mode, drop_incomplete_djf, annual_strict)
+    Tge105 = update_nc_attrs(Tge105, dec_mode, drop_incomplete_djf, annual_strict)
 
-    # TODO: add quantile metrics
+    return Tmean, Tmedian, Tq99p9, Tge95, Tge100, Tge105
 
-    return Tmean
+
+def tasmin_indices(
+    ds, sftlf, units_adjust, dec_mode, drop_incomplete_djf, annual_strict
+):
+    # Returns annual daily mean of provided temperature dataset
+    # Temperature input can be "tasmax" or "tasmin".
+
+    print("Generating temperature block extrema.")
+    varname = "tasmin"
+    ds[varname] = convert_units(ds[varname], units_adjust)
+
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+
+    Tmean = xr.Dataset()
+    Tmin = xr.Dataset()
+    Tle32 = xr.Dataset()
+    Tmean["ANN"] = S.annual_stats("mean")
+    Tmin["ANN"] = S.annual_stats("min")
+    Tle32["ANN"] = S.annual_stats("le32")
+
+    for season in ["DJF", "MAM", "JJA", "SON"]:
+        Tmean[season] = S.seasonal_stats(season, "mean")
+
+    Tle32.attrs["units"] = "%"
+
+    Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
+    Tmin = update_nc_attrs(Tmin, dec_mode, drop_incomplete_djf, annual_strict)
+    Tle32 = update_nc_attrs(Tle32, dec_mode, drop_incomplete_djf, annual_strict)
+
+    return Tmean, Tmin, Tle32
 
 
 def precipitation_indices(
