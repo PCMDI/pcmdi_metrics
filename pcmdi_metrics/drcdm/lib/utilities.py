@@ -19,9 +19,9 @@ def load_dataset(filepath):
         # Final item of sorted list would have most recent version date
         ds = xcdat_openxml.xcdat_openxml(filepath[-1])
     elif len(filepath) > 1:
-        ds = xcdat.open_mfdataset(filepath, chunks=None)
+        ds = xcdat.open_mfdataset(filepath, chunks={"time": -1})
     else:
-        ds = xcdat.open_dataset(filepath[0])
+        ds = xcdat.open_dataset(filepath[0], chunks={"time": -1})
     return ds
 
 
