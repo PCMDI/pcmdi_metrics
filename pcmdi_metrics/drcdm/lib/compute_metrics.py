@@ -431,16 +431,9 @@ def convert_units(data, units_adjust):
     return data
 
 
-def tasmax_indices(
-    ds, sftlf, units_adjust, dec_mode, drop_incomplete_djf, annual_strict
-):
-    # Returns annual daily mean of provided temperature dataset
-    # Temperature input can be "tasmax" or "tasmin".
-
-    print("Generating temperature block extrema.")
+def get_annual_txx(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
+    print("annual_txx")
     varname = "tasmax"
-    ds[varname] = convert_units(ds[varname], units_adjust)
-
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         TS,
@@ -451,45 +444,107 @@ def tasmax_indices(
     )
 
     Tmean = xr.Dataset()
+    Tmean["ANN"] = S.annual_stats("mean")
+    for season in ["DJF", "MAM", "JJA", "SON"]:
+        Tmean[season] = S.seasonal_stats(season, "mean")
+    Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
+    return Tmean
+
+
+def get_tasmax_q50(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
+    print("tasmax_q50")
+    varname = "tasmax"
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
     Tmedian = xr.Dataset()
-    Tq99p9 = xr.Dataset()
-    Tge95 = xr.Dataset()
-    Tge100 = xr.Dataset()
-    Tge105 = xr.Dataset()
-    Tmean["ANN"] = S.annual_stats("mean")
     Tmedian["ANN"] = S.annual_stats("median")
-    Tq99p9["ANN"] = S.annual_stats("q99p9")
-    Tge95["ANN"] = S.annual_stats("ge95")
-    Tge100["ANN"] = S.annual_stats("ge100")
-    Tge105["ANN"] = S.annual_stats("ge105")
-
-    for season in ["DJF", "MAM", "JJA", "SON"]:
-        Tmean[season] = S.seasonal_stats(season, "mean")
-
-    Tge95.attrs["units"] = "%"
-    Tge100.attrs["units"] = "%"
-    Tge105.attrs["units"] = "%"
-
-    Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
     Tmedian = update_nc_attrs(Tmedian, dec_mode, drop_incomplete_djf, annual_strict)
+    return Tmedian
+
+
+def get_tasmax_q99p9(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
+    print("tasmax_q99p99")
+    varname = "tasmax"
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    Tq99p9 = xr.Dataset()
+    Tq99p9["ANN"] = S.annual_stats("q99p9")
     Tq99p9 = update_nc_attrs(Tq99p9, dec_mode, drop_incomplete_djf, annual_strict)
+    return Tq99p9
+
+
+def get_annual_tasmax_ge_95F(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
+    print("annual_tasmax_ge_95F")
+    varname = "tasmax"
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+
+    Tge95 = xr.Dataset()
+    Tge95["ANN"] = S.annual_stats("ge95")
+    Tge95.attrs["units"] = "%"
     Tge95 = update_nc_attrs(Tge95, dec_mode, drop_incomplete_djf, annual_strict)
+    return Tge95
+
+
+def get_annual_tasmax_ge_100F(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
+    print("annual_tasmax_ge_100F")
+    varname = "tasmax"
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+
+    Tge100 = xr.Dataset()
+    Tge100["ANN"] = S.annual_stats("ge95")
+    Tge100.attrs["units"] = "%"
     Tge100 = update_nc_attrs(Tge100, dec_mode, drop_incomplete_djf, annual_strict)
+    return Tge100
+
+
+def get_annual_tasmax_ge_105F(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
+    print("annual_tasmax_ge_105F")
+    varname = "tasmax"
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+
+    Tge105 = xr.Dataset()
+    Tge105["ANN"] = S.annual_stats("ge95")
+    Tge105.attrs["units"] = "%"
     Tge105 = update_nc_attrs(Tge105, dec_mode, drop_incomplete_djf, annual_strict)
+    return Tge105
 
-    return Tmean, Tmedian, Tq99p9, Tge95, Tge100, Tge105
 
-
-def tasmin_indices(
-    ds, sftlf, units_adjust, dec_mode, drop_incomplete_djf, annual_strict
-):
-    # Returns annual daily mean of provided temperature dataset
-    # Temperature input can be "tasmax" or "tasmin".
-
-    print("Generating temperature block extrema.")
+def get_annual_tnn(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
+    print("annual_tnn")
     varname = "tasmin"
-    ds[varname] = convert_units(ds[varname], units_adjust)
-
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         TS,
@@ -500,22 +555,49 @@ def tasmin_indices(
     )
 
     Tmean = xr.Dataset()
-    Tmin = xr.Dataset()
-    Tle32 = xr.Dataset()
     Tmean["ANN"] = S.annual_stats("mean")
-    Tmin["ANN"] = S.annual_stats("min")
-    Tle32["ANN"] = S.annual_stats("le32")
-
     for season in ["DJF", "MAM", "JJA", "SON"]:
         Tmean[season] = S.seasonal_stats(season, "mean")
-
-    Tle32.attrs["units"] = "%"
-
     Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
-    Tmin = update_nc_attrs(Tmin, dec_mode, drop_incomplete_djf, annual_strict)
-    Tle32 = update_nc_attrs(Tle32, dec_mode, drop_incomplete_djf, annual_strict)
+    return Tmean
 
-    return Tmean, Tmin, Tle32
+
+def get_annualmean_tasmin(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
+    print("annualmean_tasmin")
+    varname = "tasmin"
+
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+
+    Tmin = xr.Dataset()
+    Tmin["ANN"] = S.annual_stats("min")
+    Tmin = update_nc_attrs(Tmin, dec_mode, drop_incomplete_djf, annual_strict)
+    return Tmin
+
+
+def get_annual_tasmin_le_32F(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
+    print("annual_tasmin_le_32F")
+    varname = "tasmin"
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+
+    Tle32 = xr.Dataset()
+    Tle32["ANN"] = S.annual_stats("le32")
+    Tle32.attrs["units"] = "%"
+    Tle32 = update_nc_attrs(Tle32, dec_mode, drop_incomplete_djf, annual_strict)
+    return Tle32
 
 
 def precipitation_indices(
@@ -682,46 +764,50 @@ def metrics_json(data_dict, obs_dict={}, region="land", regrid=True):
 
         ds_m = data_dict[m]
         for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-            # Global mean over land
-            met_dict[m][region]["mean"][season] = mean_xy(ds_m, season)
-            a = ds_m.temporal.average(season)
-            std_xy = pmp_stats.std_xy(a, season)
-            met_dict[m][region]["std_xy"][season] = std_xy
-
-            if len(obs_dict) > 0 and not obs_dict[m].equals(ds_m):
-                # Regrid obs to model grid
-                if regrid:
-                    target = xc.create_grid(ds_m.lat, ds_m.lon)
-                    target = target.bounds.add_missing_bounds(["X", "Y"])
-                    obs_m = obs_dict[m].regridder.horizontal(
-                        season, target, tool="regrid2"
-                    )
-                else:
-                    obs_m = obs_dict[m]
-                    shp1 = (len(ds_m[season].lat), len(ds_m[season].lon))
-                    shp2 = (len(obs_m[season].lat), len(obs_m[season].lon))
-                    assert (
-                        shp1 == shp2
-                    ), "Model and Reference data dimensions 'lat' and 'lon' must match."
-
-                # Get xy stats for temporal average
+            if season in ds_m:
+                # Global mean over land
+                met_dict[m][region]["mean"][season] = mean_xy(ds_m, season)
                 a = ds_m.temporal.average(season)
-                b = obs_m.temporal.average(season)
-                weights = ds_m.spatial.get_weights(axis=["X", "Y"])
-                rms_xy = pmp_stats.rms_xy(a, b, var=season, weights=weights)
-                meanabs_xy = pmp_stats.meanabs_xy(a, b, var=season, weights=weights)
-                bias_xy = pmp_stats.bias_xy(a, b, var=season, weights=weights)
-                cor_xy = pmp_stats.cor_xy(a, b, var=season, weights=weights)
-                rmsc_xy = pmp_stats.rmsc_xy(a, b, var=season, weights=weights)
-                std_obs_xy = pmp_stats.std_xy(b, season)
-                pct_dif = percent_difference(b, bias_xy, season, weights)
+                std_xy = pmp_stats.std_xy(a, season)
+                met_dict[m][region]["std_xy"][season] = std_xy
 
-                met_dict[m][region]["pct_dif"][season] = pct_dif
-                met_dict[m][region]["rms_xy"][season] = rms_xy
-                met_dict[m][region]["mae_xy"][season] = meanabs_xy
-                met_dict[m][region]["bias_xy"][season] = bias_xy
-                met_dict[m][region]["cor_xy"][season] = cor_xy
-                met_dict[m][region]["rmsc_xy"][season] = rmsc_xy
-                met_dict[m][region]["std-obs_xy"][season] = std_obs_xy
+                if len(obs_dict) > 0 and not obs_dict[m].equals(ds_m):
+                    # Regrid obs to model grid
+                    if regrid:
+                        target = xc.create_grid(ds_m.lat, ds_m.lon)
+                        target = target.bounds.add_missing_bounds(["X", "Y"])
+                        obs_m = obs_dict[m].regridder.horizontal(
+                            season, target, tool="regrid2"
+                        )
+                    else:
+                        obs_m = obs_dict[m]
+                        shp1 = (len(ds_m[season].lat), len(ds_m[season].lon))
+                        shp2 = (len(obs_m[season].lat), len(obs_m[season].lon))
+                        assert (
+                            shp1 == shp2
+                        ), "Model and Reference data dimensions 'lat' and 'lon' must match."
+
+                    # Get xy stats for temporal average
+                    a = ds_m.temporal.average(season)
+                    b = obs_m.temporal.average(season)
+                    weights = ds_m.spatial.get_weights(axis=["X", "Y"])
+                    rms_xy = pmp_stats.rms_xy(a, b, var=season, weights=weights)
+                    meanabs_xy = pmp_stats.meanabs_xy(a, b, var=season, weights=weights)
+                    bias_xy = pmp_stats.bias_xy(a, b, var=season, weights=weights)
+                    cor_xy = pmp_stats.cor_xy(a, b, var=season, weights=weights)
+                    rmsc_xy = pmp_stats.rmsc_xy(a, b, var=season, weights=weights)
+                    std_obs_xy = pmp_stats.std_xy(b, season)
+                    pct_dif = percent_difference(b, bias_xy, season, weights)
+
+                    met_dict[m][region]["pct_dif"][season] = pct_dif
+                    met_dict[m][region]["rms_xy"][season] = rms_xy
+                    met_dict[m][region]["mae_xy"][season] = meanabs_xy
+                    met_dict[m][region]["bias_xy"][season] = bias_xy
+                    met_dict[m][region]["cor_xy"][season] = cor_xy
+                    met_dict[m][region]["rmsc_xy"][season] = rmsc_xy
+                    met_dict[m][region]["std-obs_xy"][season] = std_obs_xy
+            else:
+                for item in met_dict[m][region]:
+                    met_dict[m][region][item].pop(season)
 
     return met_dict
