@@ -56,6 +56,8 @@ if __name__ == "__main__":
     col = parameter.attribute
     region_name = parameter.region_name
     coords = parameter.coords
+    nc_out = parameter.netcdf
+    plots = parameter.plot
 
     # Check the region masking parameters, if provided
     use_region_mask, region_name, coords = region_utilities.check_region_params(
@@ -85,12 +87,12 @@ if __name__ == "__main__":
     meta = metadata.MetadataFile(metrics_output_path)
 
     # Initialize other directories
-    # Not sure if needed so commented for now.
-    # nc_dir = os.path.join(metrics_output_path, "netcdf")
-    # os.makedirs(nc_dir, exist_ok=True)
-    # if plots:
-    #    plot_dir_maps = os.path.join(metrics_output_path, "plots", "maps")
-    #    os.makedirs(plot_dir_maps, exist_ok=True)
+    if nc_out:
+        nc_dir = os.path.join(metrics_output_path, "netcdf")
+        os.makedirs(nc_dir, exist_ok=True)
+    if plots:
+        fig_dir = os.path.join(metrics_output_path, "plots")
+        os.makedirs(fig_dir, exist_ok=True)
 
     # Setting up model realization list
     find_all_realizations, realizations = utilities.set_up_realizations(realization)
@@ -229,7 +231,6 @@ if __name__ == "__main__":
                         print("  ", t)
 
                 # Load and prep data
-                # TODO: substitute PMP version of loading
                 ds = utilities.load_dataset(test_data_full_path)
 
                 if not sftlf_exists and generate_sftlf:
@@ -280,51 +281,64 @@ if __name__ == "__main__":
                 # tasmin: annualmean_tasmin, annual_tasmin_le_32F, annual_tnn
                 # ETTCDI has some metrics for tas as well
 
+                if nc_out:
+                    # $index will be replaced with index name in metrics function
+                    nc_base = os.path.join(nc_dir, "_".join([model, run, "$index.nc"]))
+                else:
+                    nc_base = None
+                if plots:
+                    fig_base = os.path.join(nc_dir, "_".join([model, run, "$index.nc"]))
+
                 if varname == "tasmax":
-                    # tasmax metrics
-                    index = compute_metrics.get_annual_txx(
+                    # Example using get_annual_txx
+                    # Need to work all temperature metrics this way
+                    result_dict = compute_metrics.get_mean_tasmax(
                         ds,
                         sftlf,
-                        units_adjust,
                         dec_mode,
                         drop_incomplete_djf,
                         annual_strict,
+                        fig_base,
+                        nc_base,
                     )
-                    # This returns Tmean
-
-                    stats_dict = {"annual_txx": index}
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    result_dict = compute_metrics.get_tasmax_q99p9(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
 
                 elif varname == "tasmin":
                     # tasmin metrics
-                    index = compute_metrics.get_annual_tnn(
+                    result_dict = compute_metrics.get_annual_tnn(
                         ds,
                         sftlf,
                         dec_mode,
                         drop_incomplete_djf,
                         annual_strict,
+                        fig_base,
+                        nc_base,
                     )
-                    stats_dict = {"annual_tnn": index}
-                # Compute mean metric: this needs to get moved to some function in compute_metrics
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+
+                    result_dict = compute_metrics.get_annual_tasmin_le_32F(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
 
                 if run not in metrics_dict["DIMENSIONS"]["realization"]:
                     metrics_dict["DIMENSIONS"]["realization"].append(run)
-
-                # TODO: This needs to get wrapped up in a functions somewhere so it can
-                # be run separately for each index. We cannot have many grids for many
-                # different indices accumulating, basically want to compute the metrics
-                # and delete the xr.Dataset before moving on to the next one.
-                if model != "Reference":
-                    # Get stats and update metrics dictionary
-                    print("Generating metrics.")
-                    result_dict = compute_metrics.metrics_json(
-                        stats_dict, obs_dict={}, region=region_name, regrid=False
-                    )
-                    metrics_dict["RESULTS"][model][run].update(result_dict)
-                    if run not in metrics_dict["DIMENSIONS"]["realization"]:
-                        metrics_dict["DIMENSIONS"]["realization"].append(run)
-
-                del stats_dict
-                del index
 
         # Output JSON with metrics for single model
         if model != "Reference":
