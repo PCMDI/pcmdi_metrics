@@ -460,7 +460,7 @@ def get_mean_tasmax(
         annual_strict=annual_strict,
     )
     Tmean = xr.Dataset()
-    Tmean["ANN"] = S.annual_stats("max")
+    Tmean["ANN"] = S.annual_stats("mean")
     for season in ["DJF", "MAM", "JJA", "SON"]:
         Tmean[season] = S.seasonal_stats(season, "mean")
     Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
