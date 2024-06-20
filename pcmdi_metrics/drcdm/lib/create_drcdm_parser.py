@@ -269,6 +269,8 @@ def create_extremes_parser():
         help="For unit adjust for OBS dataset. For example:\n"
         "- (True, 'divide', 100.0, 'hPa')  # Pa to hPa\n"
         "- (True, 'subtract', 273.15, 'C')  # degK to degC\n"
+        "- (True, 'KtoF', '', 'F')  # degK to degF, leave position 3 empty\n"
+        "- (True, 'CtoF', '', 'F')  # degC to degF, leave position 3 empty\n"
         "- (False, 0, 0, None) # No adjustment (default)",
     )
     parser.add_argument(
@@ -278,6 +280,8 @@ def create_extremes_parser():
         help="For unit adjust for model dataset. For example:\n"
         "- (True, 'divide', 100.0, 'hPa')  # Pa to hPa\n"
         "- (True, 'subtract', 273.15, 'C')  # degK to degC\n"
+        "- (True, 'KtoF', 0, 'F')  # degK to degF, leave position 3 as 0\n"
+        "- (True, 'CtoF', 0, 'F')  # degC to degF, leave position 3 as 0\n"
         "- (False, 0, 0, None) # No adjustment (default)",
     )
 
@@ -286,6 +290,20 @@ def create_extremes_parser():
         type=int,
         default=20,
         help="Return period, in years, for obtaining return values.",
+    )
+
+    parser.add_argument(
+        "--netcdf",
+        action="store_true",
+        default=False,
+        help="Use to save netcdf intermediate results",
+    )
+
+    parser.add_argument(
+        "--plot",
+        type=bool,
+        default=False,
+        help="Option for generate individual plots for models: True (default) / False",
     )
 
     return parser
