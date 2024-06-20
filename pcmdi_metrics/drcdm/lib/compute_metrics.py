@@ -130,11 +130,12 @@ class SeasonalAverager:
                     .groupby("time.year")
                     .median(dim="time")
                 )
-            elif stat == "q99p9":
+            elif stat.startswith("q"):
+                num = float(stat.replace("q", "").replace("p", ".")) / 100.0
                 ds_ann = (
                     ds.sel(time=date_range, method="nearest")
                     .groupby("time.year")
-                    .quantile(0.999, dim="time")
+                    .quantile(num, dim="time")
                 )
             elif stat.startswith("ge"):
                 num = int(stat.replace("ge", ""))
@@ -171,8 +172,9 @@ class SeasonalAverager:
                 ds_ann = ds.groupby("time.year").mean(dim="time")
             elif stat == "median":
                 ds_ann = ds.groupby("time.year").median(dim="time")
-            elif stat == "q99p9":
-                ds_ann = ds.groupby("time.year").quantile(0.999, dim="time")
+            elif stat.startswith("q"):
+                num = float(stat.replace("q", "").replace("p", ".")) / 100.0
+                ds_ann = ds.groupby("time.year").quantile(num, dim="time")
             elif stat.startswith("ge"):
                 num = int(stat.replace("ge", ""))
                 ds_ann = (
@@ -412,7 +414,14 @@ def convert_units(data, units_adjust):
     # For example, (True, "multiply", 86400., "mm/day")
     # If flag is False, data is returned unaltered.
     if bool(units_adjust[0]):
-        op_dict = {"add": "+", "subtract": "-", "multiply": "*", "divide": "/"}
+        op_dict = {
+            "add": "+",
+            "subtract": "-",
+            "multiply": "*",
+            "divide": "/",
+            "CtoF": ")*(9/5)+32",
+            "KtoF": "-273)*(9/5)+32",
+        }
         if str(units_adjust[1]) not in op_dict:
             print(
                 "Error in units conversion. Operation must be add, subtract, multiply, or divide."
@@ -421,7 +430,11 @@ def convert_units(data, units_adjust):
             return data
         op = op_dict[str(units_adjust[1])]
         val = float(units_adjust[2])
-        operation = "data {0} {1}".format(op, val)
+        if units_adjust[1] in ["KtoF", "CtoF"]:
+            # more complex equation for fahrenheit conversion
+            operation = "(data{0}".format(op)
+        else:
+            operation = "data {0} {1}".format(op, val)
         data = eval(operation)
         data.attrs["units"] = str(units_adjust[3])
     else:
@@ -431,8 +444,12 @@ def convert_units(data, units_adjust):
     return data
 
 
-def get_annual_txx(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
-    print("annual_txx")
+def get_mean_tasmax(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Get annual and seasonal mean maximum daily temperature.
+    index = "mean_tasmax"
+    print("Metric:", index)
     varname = "tasmax"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -442,17 +459,65 @@ def get_annual_txx(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-
     Tmean = xr.Dataset()
-    Tmean["ANN"] = S.annual_stats("mean")
+    Tmean["ANN"] = S.annual_stats("max")
     for season in ["DJF", "MAM", "JJA", "SON"]:
         Tmean[season] = S.seasonal_stats(season, "mean")
     Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
-    return Tmean
+
+    # Compute statistics
+    result_dict = metrics_json({index: Tmean}, obs_dict={}, region="land", regrid=False)
+
+    if fig_file is not None:
+        # Figures:
+        # Map of time mean value of Tmean
+        #
+
+        # can replace the $index substring with any other string
+        # for specific file name. fig_file already contains the
+        # rest of the file path and the model and run names.
+        fig_file1 = fig_file.replace("$index", index)
+        print(fig_file1)
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmean.to_netcdf(nc_file, "w")
+
+    del Tmean
+    return result_dict
 
 
-def get_tasmax_q50(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
-    print("tasmax_q50")
+def get_annual_txx(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Get annual max of maximum daily temperature.
+    index = "annual_txx"
+    print(index)
+    varname = "tasmax"
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    Tmax = xr.Dataset()
+    Tmax["ANN"] = S.annual_stats("max")
+    Tmax = update_nc_attrs(Tmax, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json({index: Tmax}, obs_dict={}, region="land", regrid=False)
+
+    del Tmax
+    return result_dict
+
+
+def get_tasmax_q50(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Get annual median maximum daily temperature
+    index = "tasmax_q50"
     varname = "tasmax"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -465,11 +530,22 @@ def get_tasmax_q50(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
     Tmedian = xr.Dataset()
     Tmedian["ANN"] = S.annual_stats("median")
     Tmedian = update_nc_attrs(Tmedian, dec_mode, drop_incomplete_djf, annual_strict)
-    return Tmedian
+
+    # Compute statistics
+    result_dict = metrics_json(
+        {index: Tmedian}, obs_dict={}, region="land", regrid=False
+    )
+
+    del Tmedian
+    return result_dict
 
 
-def get_tasmax_q99p9(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
-    print("tasmax_q99p99")
+def get_tasmax_q99p9(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Get annual 99.9 percentile maximum daily temperature.
+    index = "tasmax_q99p9"
+    print("Metric:", index)
     varname = "tasmax"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -482,11 +558,22 @@ def get_tasmax_q99p9(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
     Tq99p9 = xr.Dataset()
     Tq99p9["ANN"] = S.annual_stats("q99p9")
     Tq99p9 = update_nc_attrs(Tq99p9, dec_mode, drop_incomplete_djf, annual_strict)
-    return Tq99p9
+
+    # Compute statistics
+    result_dict = metrics_json(
+        {index: Tq99p9}, obs_dict={}, region="land", regrid=False
+    )
+
+    del Tq99p9
+    return result_dict
 
 
-def get_annual_tasmax_ge_95F(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
-    print("annual_tasmax_ge_95F")
+def get_annual_tasmax_ge_95F(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Get annual fraction of days with max temperature greater than or equal to 95F
+    index = "annual_tasmax_ge_95F"
+    print("Metric:", index)
     varname = "tasmax"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -496,16 +583,24 @@ def get_annual_tasmax_ge_95F(ds, sftlf, dec_mode, drop_incomplete_djf, annual_st
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-
     Tge95 = xr.Dataset()
     Tge95["ANN"] = S.annual_stats("ge95")
     Tge95.attrs["units"] = "%"
     Tge95 = update_nc_attrs(Tge95, dec_mode, drop_incomplete_djf, annual_strict)
-    return Tge95
+
+    # Compute statistics
+    result_dict = metrics_json({index: Tge95}, obs_dict={}, region="land", regrid=False)
+
+    del Tge95
+    return result_dict
 
 
-def get_annual_tasmax_ge_100F(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
-    print("annual_tasmax_ge_100F")
+def get_annual_tasmax_ge_100F(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Get annual fraction of days with max temperature greater than or equal to 100F
+    index = "annual_tasmax_ge_100F"
+    print("Metric:", index)
     varname = "tasmax"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -515,16 +610,26 @@ def get_annual_tasmax_ge_100F(ds, sftlf, dec_mode, drop_incomplete_djf, annual_s
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-
     Tge100 = xr.Dataset()
     Tge100["ANN"] = S.annual_stats("ge95")
     Tge100.attrs["units"] = "%"
     Tge100 = update_nc_attrs(Tge100, dec_mode, drop_incomplete_djf, annual_strict)
-    return Tge100
+
+    # Compute statistics
+    result_dict = metrics_json(
+        {index: Tge100}, obs_dict={}, region="land", regrid=False
+    )
+
+    del Tge100
+    return result_dict
 
 
-def get_annual_tasmax_ge_105F(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
-    print("annual_tasmax_ge_105F")
+def get_annual_tasmax_ge_105F(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Get annual fraction of days with max temperature greater than or equal to 105F
+    index = "annual_tasmax_ge_105F"
+    print("Metric:", index)
     varname = "tasmax"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -534,16 +639,28 @@ def get_annual_tasmax_ge_105F(ds, sftlf, dec_mode, drop_incomplete_djf, annual_s
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-
     Tge105 = xr.Dataset()
     Tge105["ANN"] = S.annual_stats("ge95")
     Tge105.attrs["units"] = "%"
     Tge105 = update_nc_attrs(Tge105, dec_mode, drop_incomplete_djf, annual_strict)
-    return Tge105
+
+    # Do plots or saving files here
+
+    # Compute statistics
+    result_dict = metrics_json(
+        {index: Tge105}, obs_dict={}, region="land", regrid=False
+    )
+
+    del Tge105
+    return result_dict
 
 
-def get_annual_tnn(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
-    print("annual_tnn")
+def get_annual_tnn(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Get annual minimum daily minimum temperature.
+    index = "annual_tnn"
+    print("Metric:", index)
     varname = "tasmin"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -553,19 +670,24 @@ def get_annual_tnn(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-
     Tmean = xr.Dataset()
     Tmean["ANN"] = S.annual_stats("mean")
-    for season in ["DJF", "MAM", "JJA", "SON"]:
-        Tmean[season] = S.seasonal_stats(season, "mean")
     Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
-    return Tmean
+
+    # Compute statistics
+    result_dict = metrics_json({index: Tmean}, obs_dict={}, region="land", regrid=False)
+
+    del Tmean
+    return result_dict
 
 
-def get_annualmean_tasmin(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
-    print("annualmean_tasmin")
+def get_annualmean_tasmin(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Get annual mean daily minimum temperature.
+    index = "annualmean_tasmin"
+    print("Metric:", index)
     varname = "tasmin"
-
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         TS,
@@ -574,15 +696,23 @@ def get_annualmean_tasmin(ds, sftlf, dec_mode, drop_incomplete_djf, annual_stric
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-
     Tmin = xr.Dataset()
     Tmin["ANN"] = S.annual_stats("min")
     Tmin = update_nc_attrs(Tmin, dec_mode, drop_incomplete_djf, annual_strict)
-    return Tmin
+
+    # Compute statistics
+    result_dict = metrics_json({index: Tmin}, obs_dict={}, region="land", regrid=False)
+
+    del Tmin
+    return result_dict
 
 
-def get_annual_tasmin_le_32F(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict):
-    print("annual_tasmin_le_32F")
+def get_annual_tasmin_le_32F(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Get annual percentage of days with daily minimum temperature less than or
+    # equal to 32F.
+    index = "annual_tasmin_le_32F"
     varname = "tasmin"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -592,20 +722,106 @@ def get_annual_tasmin_le_32F(ds, sftlf, dec_mode, drop_incomplete_djf, annual_st
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-
     Tle32 = xr.Dataset()
     Tle32["ANN"] = S.annual_stats("le32")
     Tle32.attrs["units"] = "%"
     Tle32 = update_nc_attrs(Tle32, dec_mode, drop_incomplete_djf, annual_strict)
-    return Tle32
+
+    # Compute statistics
+    result_dict = metrics_json({index: Tle32}, obs_dict={}, region="land", regrid=False)
+
+    del Tle32
+    return result_dict
+
+
+# TODO: Fill out precipitation metrics
+def get_annualmean_pr(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    varname = "pr"
+    PR = TimeSeriesData(ds, "pr")
+    S = SeasonalAverager(
+        PR,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    print(varname, S)
+    return
+
+
+def get_seasonalmean_pr(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    varname = "pr"
+    PR = TimeSeriesData(ds, "pr")
+    S = SeasonalAverager(
+        PR,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    print(varname, S)
+    return
+
+
+def get_pr_q50(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    varname = "pr"
+    PR = TimeSeriesData(ds, "pr")
+    S = SeasonalAverager(
+        PR,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    print(varname, S)
+    return
+
+
+def get_pr_q99p9(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    varname = "pr"
+    PR = TimeSeriesData(ds, "pr")
+    S = SeasonalAverager(
+        PR,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    print(varname, S)
+    return
+
+
+def get_annual_pxx(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    varname = "pr"
+    PR = TimeSeriesData(ds, "pr")
+    S = SeasonalAverager(
+        PR,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    print(varname, S)
+    return
 
 
 def precipitation_indices(
     ds, sftlf, units_adjust, dec_mode, drop_incomplete_djf, annual_strict
 ):
-    # Returns annual Rx1day and Rx5day of provided precipitation dataset.
-    # Precipitation variable must be called "pr".
-    # Input data expected to have units of kg/m2/s
+    # TODO: the precipitation metrics need to be broken out the way the
+    # temperature metrics were.
+
+    # annualmean_pr, seasonalmean_pr, pr_q50, pr_q99p9, annual pxx
 
     print("Generating precipitation block extrema.")
 
@@ -704,26 +920,14 @@ def init_metrics_dict(
     # Only include the definitions for the indices in this particular analysis.
     for v in var_list:
         if v == "tasmax":
-            metrics["DIMENSIONS"]["index"].update(
-                {"TXx": "Maximum value of daily maximum temperature"}
-            )
-            metrics["DIMENSIONS"]["index"].update(
-                {"TXn": "Minimum value of daily maximum temperature"}
-            )
+            metrics["DIMENSIONS"]["index"].update({"": ""})
+            metrics["DIMENSIONS"]["index"].update({"": ""})
         if v == "tasmin":
-            metrics["DIMENSIONS"]["index"].update(
-                {"TNx": "Maximum value of daily minimum temperature"}
-            )
-            metrics["DIMENSIONS"]["index"].update(
-                {"TNn": "Minimum value of daily minimum temperature"}
-            )
+            metrics["DIMENSIONS"]["index"].update({"": ""})
+            metrics["DIMENSIONS"]["index"].update({"": ""})
         if v in ["pr", "PRECT", "precip"]:
-            metrics["DIMENSIONS"]["index"].update(
-                {"Rx5day": "Maximum consecutive 5-day mean precipitation, mm/day"}
-            )
-            metrics["DIMENSIONS"]["index"].update(
-                {"Rx1day": "Maximum daily precipitation, mm/day"}
-            )
+            metrics["DIMENSIONS"]["index"].update({"": ""})
+            metrics["DIMENSIONS"]["index"].update({"": ""})
 
     return metrics
 
