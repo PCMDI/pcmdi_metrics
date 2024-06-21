@@ -125,7 +125,6 @@ if __name__ == "__main__":
     }
     if to_nc:
         # Generate netcdf files of climatologies
-        print("Generating climatology for netcdf")
         nc_dir = os.path.join(metrics_output_path, "netcdf")
         if not os.path.exists(nc_dir):
             os.mkdir(nc_dir)
@@ -183,7 +182,6 @@ if __name__ == "__main__":
     }
     if to_nc:
         # Generate netcdf files of climatologies
-        print("Generating climatology for netcdf")
         nc_dir = os.path.join(metrics_output_path, "netcdf")
         if not os.path.exists(nc_dir):
             os.mkdir(nc_dir)
@@ -401,7 +399,6 @@ if __name__ == "__main__":
 
                 if to_nc:
                     # Generate netcdf files of climatologies
-                    print("Generating climatology for netcdf")
                     nc_dir = os.path.join(metrics_output_path, "netcdf")
                     if not os.path.exists(nc_dir):
                         os.mkdir(nc_dir)
@@ -603,18 +600,20 @@ if __name__ == "__main__":
                 meta = fig.create_arctic_map(
                     nc_climo,
                     obs_nh,
+                    var,
+                    obs_var,
                     fig_dir,
                     meta,
-                    varname=var,
-                    title=tmp_title,
+                    tmp_title,
                 )
                 meta = fig.create_antarctic_map(
                     nc_climo,
                     obs_sh,
+                    var,
+                    obs_var,
                     fig_dir,
                     meta,
-                    varname=var,
-                    title=tmp_title,
+                    tmp_title,
                 )
             except Exception as e:
                 print("Error making figures for model", model, "realization", run)
@@ -631,25 +630,29 @@ if __name__ == "__main__":
                 else:
                     nc_climo_mean[var] = nc_climo_mean[var] + nc_climo[var]
             nc_climo_mean[var] = nc_climo_mean[var] / (count + 1)
-            try:
-                tmp_title = "_".join([model, "model_mean"])
-                meta = fig.create_arctic_map(
-                    nc_climo_mean,
-                    fig_dir,
-                    meta,
-                    varname="siconc",
-                    title=tmp_title,
-                )
-                meta = fig.create_antarctic_map(
-                    nc_climo_mean,
-                    fig_dir,
-                    meta,
-                    varname="siconc",
-                    title=tmp_title,
-                )
-            except Exception as e:
-                print("Error making figures for model", model, "mean.")
-                print("  ", e)
+            # try:
+            tmp_title = "_".join([model, "model_mean"])
+            meta = fig.create_arctic_map(
+                nc_climo_mean,
+                obs_nh,
+                var,
+                obs_var,
+                fig_dir,
+                meta,
+                tmp_title,
+            )
+            meta = fig.create_antarctic_map(
+                nc_climo_mean,
+                obs_sh,
+                var,
+                obs_var,
+                fig_dir,
+                meta,
+                tmp_title,
+            )
+            # except Exception as e:
+            #    print("Error making figures for model",model,"mean.")
+            #    print("  ",e)
 
     # -----------------
     # Update and write
