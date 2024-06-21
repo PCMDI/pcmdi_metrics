@@ -291,7 +291,9 @@ class SeasonalAverager:
 
             if stat == "max":
                 ds_stat = (
-                    ds.sel(time=date_range, method="nearest")
+                    ds.sel(
+                        time=date_range, method="nearest"
+                    )  # could also do ds.sel(time = slice(*(begin_cftime, end_cftime)))
                     .groupby("time.year")
                     .max(dim="time")
                 )
@@ -738,8 +740,13 @@ def get_annual_tasmin_le_32F(
 def get_annualmean_pr(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
+    index = "annualmean_pr"
     varname = "pr"
-    PR = TimeSeriesData(ds, "pr")
+    print("Metric:", index)
+
+    # Get annual mean precipitation
+
+    PR = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         PR,
         sftlf,
@@ -747,15 +754,29 @@ def get_annualmean_pr(
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-    print(varname, S)
-    return
+    PRmean = xr.Dataset()
+    PRmean["ANN"] = S.annual_stats("mean")
+
+    PRmean = update_nc_attrs(PRmean, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # compute statistics
+    result_dict = metrics_json(
+        {index: PRmean}, obs_dict={}, region="land", regrid=False
+    )
+
+    del PRmean
+    return result_dict
 
 
 def get_seasonalmean_pr(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
+    index = "seasonalmean_pr"
     varname = "pr"
-    PR = TimeSeriesData(ds, "pr")
+    print("Metric", index)
+
+    # Get seasonal mean precipitation
+    PR = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         PR,
         sftlf,
@@ -763,15 +784,28 @@ def get_seasonalmean_pr(
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-    print(varname, S)
-    return
+    PRmean = xr.Dataset()
+    for season in ["DJF", "MAM", "JJA", "SON"]:
+        PRmean[season] = S.seasonal_stats(season, "mean")
+    PRmean = update_nc_attrs(PRmean, dec_mode, drop_incomplete_djf, annual_strict)
+
+    result_dict = metrics_json(
+        {index: PRmean}, obs_dict={}, region="land", regrid=False
+    )
+
+    del PRmean
+    return result_dict
 
 
 def get_pr_q50(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
+    index = "pr_q50"
     varname = "pr"
-    PR = TimeSeriesData(ds, "pr")
+    print("Metric:", index)
+
+    # Get median (q50) precipitation
+    PR = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         PR,
         sftlf,
@@ -779,15 +813,23 @@ def get_pr_q50(
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-    print(varname, S)
-    return
+
+    PRq50 = xr.Dataset()
+    PRq50["ANN"] = S.annual_stats("median")
+
+    result_dict = metrics_json({index: PRq50}, obs_dict={}, region="land", regrid=False)
+
+    del PRq50
+    return result_dict
 
 
-def get_pr_q99p9(
-    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
-):
+def get_pr_q99p9(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, nc_file=None):
+    index = "pr_q99p9"
     varname = "pr"
-    PR = TimeSeriesData(ds, "pr")
+    print("Metric:", index)
+
+    # Get 99.9th percentile daily precipitation
+    PR = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         PR,
         sftlf,
@@ -795,15 +837,32 @@ def get_pr_q99p9(
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-    print(varname, S)
-    return
+    PRq99p9 = xr.Dataset()
+    PRq99p9["ANN"] = S.annual_stats("q99p9")
+
+    result_dict = metrics_json(
+        {index: PRq99p9}, obs_dict={}, region="land", regrid=False
+    )
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        PRq99p9.to_netcdf(nc_file, "w")
+
+    del PRq99p9
+    return result_dict
 
 
 def get_annual_pxx(
-    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+    ds,
+    sftlf,
+    dec_mode,
+    drop_incomplete_djf,
+    annual_strict,
 ):
     varname = "pr"
-    PR = TimeSeriesData(ds, "pr")
+    index = "annual_pxx"
+
+    # Get annual max precipitation
+    PR = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         PR,
         sftlf,
@@ -811,8 +870,14 @@ def get_annual_pxx(
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-    print(varname, S)
-    return
+
+    Pmax = xr.Dataset()
+    Pmax["ANN"] = S.annual_stats("max")
+
+    result_dict = metrics_json({index: Pmax}, obs_dict={}, region="land", regrid=False)
+
+    del Pmax
+    return result_dict
 
 
 def precipitation_indices(
