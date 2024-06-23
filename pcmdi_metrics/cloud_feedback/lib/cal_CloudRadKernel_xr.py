@@ -13,7 +13,10 @@ from datetime import date
 import numpy as np
 import xarray as xr
 import xcdat as xc
-from global_land_mask import globe
+
+from pcmdi_metrics.utils import create_land_sea_mask
+
+# from global_land_mask import globe
 
 # =============================================
 # define necessary information
@@ -35,7 +38,15 @@ binmids = x1 + width / 2.0
 cutoff = int(len(binmids) / 2)
 # [:cutoff] = ascent; [cutoff:-1] = descent; [-1] = land
 
+# Define the grid
+LAT = np.arange(-89, 91, 2.0)
+LON = np.arange(1.25, 360, 2.5)
+lat_axis = xc.create_axis("lat", LAT)
+lon_axis = xc.create_axis("lon", LON)
+output_grid = xc.create_grid(x=lon_axis, y=lat_axis)
+
 # load land sea mask (90x144):
+"""
 lat = np.arange(-89, 90, 2.0)
 lon = np.arange(1.25, 360, 2.5) - 180
 lon_grid, lat_grid = np.meshgrid(lon, lat)
@@ -52,6 +63,9 @@ land_mask = xr.concat((E, W), dim="lon")
 land_mask = xr.where(land_mask, 1.0, 0.0)
 ocean_mask = xr.where(land_mask == 1.0, 0.0, 1.0)
 del E, W
+"""
+land_mask = create_land_sea_mask(output_grid)
+ocean_mask = xr.where(land_mask == 1.0, 0.0, 1.0)
 
 
 ###########################################################################
@@ -68,14 +82,14 @@ def get_amip_data(filename, var, lev=None):
     ).load()
     if lev:
         f = f.sel(time=tslice, plev=lev)
-        f = f.drop_vars(["plev", "plev_bnds"])
+        # f = f.drop_vars(["plev", "plev_bnds"])
     else:
         f = f.sel(time=tslice)
 
     # Compute climatological monthly means
     avg = f.temporal.climatology(var, freq="month", weighted=True)
     # Regrid to cloud kernel grid
-    output_grid = xc.create_grid(land_mask.lat.values, land_mask.lon.values)
+    # output_grid = xc.create_grid(land_mask.lat.values, land_mask.lon.values)
     output = avg.regridder.horizontal(
         var, output_grid, tool="xesmf", method="bilinear", extrap_method="inverse_dist"
     )
@@ -641,7 +655,8 @@ def xc_to_dataset(idata):
     idata = idata.to_dataset(name="data")
     if "height" in idata.coords:
         idata = idata.drop("height")
-    idata = idata.bounds.add_missing_bounds()
+    idata = idata.bounds.add_missing_bounds(axes=["X", "Y", "T"])
+    # idata = idata.bounds.add_missing_bounds()
     return idata
 
 
@@ -652,8 +667,9 @@ def monthly_anomalies(idata):
     usage:
     anom,avg = monthly_anomalies(data)
     """
-    idata = xc_to_dataset(idata)
     idata["time"].encoding["calendar"] = "noleap"
+    idata = xc_to_dataset(idata)
+    # idata["time"].encoding["calendar"] = "noleap"
     clim = idata.temporal.climatology("data", freq="month", weighted=True)
     anom = idata.temporal.departures("data", freq="month", weighted=True)
 
