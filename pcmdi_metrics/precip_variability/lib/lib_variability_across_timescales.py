@@ -16,8 +16,6 @@ from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.io.region_from_file import region_from_file
 from pcmdi_metrics.utils import create_land_sea_mask
 
-import resource
-
 
 # ==================================================================================
 def precip_variability_across_timescale(
@@ -42,7 +40,6 @@ def precip_variability_across_timescale(
     """
     Regridding -> Anomaly -> Power spectra -> Domain&Frequency average -> Write
     """
-    print("Start:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     psdmfm = {"RESULTS": {}}
 
     if dfrq == "day":
@@ -68,34 +65,22 @@ def precip_variability_across_timescale(
         ldy = 31
     print(dat, cal)
     print("syr, eyr:", syr, eyr)
-    for iyr in range(syr, eyr + 1):
-        print(iyr)
-        do = f.sel(
-            time=slice(
-                str(iyr) + "-01-01 00:00:00", str(iyr) + "-12-" + str(ldy) + " 23:59:59"
-            )
-        )
 
-        # Regridding
-        rgtmp_ds = RegridHoriz(do, var, res)
-        if regions_specs is not None or bool(regions_specs):
-            print("Cropping region from bounds")
-            rgtmp_ds = CropLatLon(rgtmp_ds, regions_specs)
-        if fshp is not None:
-            print("Cropping from shapefile")
-            rgtmp_ds = region_from_file(rgtmp_ds, fshp, attr, feature)
-        rgtmp = rgtmp_ds[var] * float(fac)
-        if iyr == syr:
-            drg = copy.deepcopy(rgtmp)
-        else:
-            drg = xr.concat([drg, rgtmp], dim="time")
-        print(iyr, drg.shape)
-        print("Mem:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
-
-    xvar = find_lon(drg)
-    yvar = find_lat(drg)
+    # Regridding
+    xvar = find_lon(f)
+    yvar = find_lat(f)
     nlon = str(len(xvar))
     nlat = str(len(yvar))
+    if np.min(f[xvar]) < 0:
+        lon_range = [-180.,180.]
+    else:
+        lon_range = [0.,360.]
+    rgtmp = RegridHoriz(f, var, res, regions_specs, lon_range)
+    if fshp is not None:
+        print("Cropping from shapefile")
+        rgtmp = region_from_file(rgtmp, fshp, attr, feature)
+    drg = rgtmp[var] * float(fac)
+
     f.close()
 
     # Anomaly
@@ -190,7 +175,7 @@ def find_lat(ds):
 
 
 # ==================================================================================
-def RegridHoriz(d, var, res, regions_specs=None):
+def RegridHoriz(d, var, res, regions_specs=None, lon_range=[0.,360.]):
     """
     Regrid to 2deg (180lon*90lat) horizontal resolution
     Input
@@ -201,9 +186,9 @@ def RegridHoriz(d, var, res, regions_specs=None):
     """
 
     start_lat = -90.0 + res / 2.0
-    start_lon = 0.0
+    start_lon = lon_range[0]
     end_lat = 90.0 - res / 2.0
-    end_lon = 360.0 - res
+    end_lon = lon_range[1] - res
 
     tgrid = grid.create_uniform_grid(start_lat, end_lat, res, start_lon, end_lon, res)
     if regions_specs is not None:
@@ -253,7 +238,6 @@ def ClimAnom(d, ntd, syr, eyr, cal):
     - clim: climatology (climatological diurnal and annual cycles)
     - anom: anomaly departure from the climatological diurnal and annual cycles
     """
-    print("ClimAnom Start:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     
     # Year segment
     nyr = eyr - syr + 1
@@ -306,7 +290,7 @@ def ClimAnom(d, ntd, syr, eyr, cal):
 
     # Climatology
     clim = np.nanmean(dseg, axis=0)
-    print("ClimAnom post-mean:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+
     # Anomaly
     anom = np.array([])
     if "gregorian" in cal or "standard" in cal:
@@ -330,11 +314,8 @@ def ClimAnom(d, ntd, syr, eyr, cal):
             anom = np.append(anom, (dseg[iyr] - clim))
 
     # Reahape and Dimension information
-    print("Starting reshape")
     clim = np.reshape(clim, (ndy * ntd, d.shape[1], d.shape[2]))
-    print("ClimAnom post clim reshape:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     anom = np.reshape(anom, (d.shape[0], d.shape[1], d.shape[2]))
-    print("ClimAnom post Anom reshape:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
 
     climtime = pd.period_range(
         start="0001-01-01", periods=clim.shape[0], freq=str(24 / ntd) + "H"
@@ -362,7 +343,7 @@ def Powerspectrum(d, nperseg, noverlap):
     - rn: Rednoise
     - sig95: 95% rednoise confidence level
     """
-    print("Powerspectrum Start:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+
     # Fill missing date using interpolation
     dnp = np.array(d)
     dfm = np.zeros((d.shape[0], d.shape[1], d.shape[2]), dtype=float)
@@ -373,11 +354,9 @@ def Powerspectrum(d, nperseg, noverlap):
             dfm[:, iy, ix] = np.array(ypfm)
 
     # Calculate power spectrum
-    print("Pre-welch:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
     freqs, psd = signal.welch(
         dfm, scaling="spectrum", nperseg=nperseg, noverlap=noverlap, axis=0
     )
-    print("Post-welch:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
 
     # Signigicance test of power spectra (from J. Lee's MOV code)
     nps = max(
@@ -391,7 +370,7 @@ def Powerspectrum(d, nperseg, noverlap):
             rn[:, iy, ix] = rednoise(psd[:, iy, ix], len(freqs), r1)
             nu = 2 * nps
             sig95[:, iy, ix] = RedNoiseSignificanceLevel(nu, rn[:, iy, ix])
-    print("Post-sig:",resource.getrusage(resource.RUSAGE_SELF).ru_maxrss)
+
     # Decorate arrays with dimensions
     # axisfrq = np.arange(len(freqs))
     axisfrq = range(len(freqs))
