@@ -1,4 +1,3 @@
-import copy
 import math
 import os
 import sys
@@ -59,10 +58,6 @@ def precip_variability_across_timescale(
         f.time.attrs["calendar"] = cal
         f = xcdat.decode_time(f)
     cal = f.time.encoding["calendar"]
-    if "360" in cal:
-        ldy = 30
-    else:
-        ldy = 31
     print(dat, cal)
     print("syr, eyr:", syr, eyr)
 
@@ -72,9 +67,9 @@ def precip_variability_across_timescale(
     nlon = str(len(xvar))
     nlat = str(len(yvar))
     if np.min(f[xvar]) < 0:
-        lon_range = [-180.,180.]
+        lon_range = [-180.0, 180.0]
     else:
-        lon_range = [0.,360.]
+        lon_range = [0.0, 360.0]
     rgtmp = RegridHoriz(f, var, res, regions_specs, lon_range)
     if fshp is not None:
         print("Cropping from shapefile")
@@ -175,7 +170,7 @@ def find_lat(ds):
 
 
 # ==================================================================================
-def RegridHoriz(d, var, res, regions_specs=None, lon_range=[0.,360.]):
+def RegridHoriz(d, var, res, regions_specs=None, lon_range=[0.0, 360.0]):
     """
     Regrid to 2deg (180lon*90lat) horizontal resolution
     Input
@@ -238,7 +233,7 @@ def ClimAnom(d, ntd, syr, eyr, cal):
     - clim: climatology (climatological diurnal and annual cycles)
     - anom: anomaly departure from the climatological diurnal and annual cycles
     """
-    
+
     # Year segment
     nyr = eyr - syr + 1
     if "gregorian" in cal or "standard" in cal:
