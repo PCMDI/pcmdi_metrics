@@ -816,6 +816,7 @@ def get_pr_q50(
 
     PRq50 = xr.Dataset()
     PRq50["ANN"] = S.annual_stats("median")
+    PRq50 = update_nc_attrs(PRq50, dec_mode, drop_incomplete_djf, annual_strict)
 
     result_dict = metrics_json({index: PRq50}, obs_dict={}, region="land", regrid=False)
 
@@ -823,7 +824,9 @@ def get_pr_q50(
     return result_dict
 
 
-def get_pr_q99p9(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, nc_file=None):
+def get_pr_q99p9(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
     index = "pr_q99p9"
     varname = "pr"
     print("Metric:", index)
@@ -839,10 +842,11 @@ def get_pr_q99p9(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, nc_fil
     )
     PRq99p9 = xr.Dataset()
     PRq99p9["ANN"] = S.annual_stats("q99p9")
-
+    PRq99p9 = update_nc_attrs(PRq99p9, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: PRq99p9}, obs_dict={}, region="land", regrid=False
     )
+
     if nc_file is not None:
         nc_file = nc_file.replace("$index", index)
         PRq99p9.to_netcdf(nc_file, "w")
@@ -852,11 +856,7 @@ def get_pr_q99p9(ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, nc_fil
 
 
 def get_annual_pxx(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     varname = "pr"
     index = "annual_pxx"
@@ -873,6 +873,7 @@ def get_annual_pxx(
 
     Pmax = xr.Dataset()
     Pmax["ANN"] = S.annual_stats("max")
+    Pmax = update_nc_attrs(Pmax, dec_mode, drop_incomplete_djf, annual_strict)
 
     result_dict = metrics_json({index: Pmax}, obs_dict={}, region="land", regrid=False)
 
