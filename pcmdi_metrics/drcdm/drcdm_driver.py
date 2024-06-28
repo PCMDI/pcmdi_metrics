@@ -288,6 +288,8 @@ if __name__ == "__main__":
                     nc_base = None
                 if plots:
                     fig_base = os.path.join(nc_dir, "_".join([model, run, "$index.nc"]))
+                else:
+                    fig_base = None
 
                 if varname == "tasmax":
                     # Example using get_annual_txx
@@ -312,10 +314,47 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-
-                elif varname == "tasmin":
-                    # tasmin metrics
-                    result_dict = compute_metrics.get_annual_tnn(
+                    result_dict = compute_metrics.get_tasmax_q50(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    result_dict = compute_metrics.get_annual_txx(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    result_dict = compute_metrics.get_annual_tasmax_ge_95F(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    result_dict = compute_metrics.get_annual_tasmax_ge_100F(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    result_dict = compute_metrics.get_annual_tasmax_ge_105F(
                         ds,
                         sftlf,
                         dec_mode,
@@ -326,6 +365,17 @@ if __name__ == "__main__":
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
 
+                elif varname == "tasmin":
+                    result_dict = compute_metrics.get_annual_tnn(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
                     result_dict = compute_metrics.get_annual_tasmin_le_32F(
                         ds,
                         sftlf,
@@ -337,6 +387,72 @@ if __name__ == "__main__":
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
 
+                    result_dict = compute_metrics.get_annualmean_tasmin(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                elif varname == "pr":
+                    # Annual mean precipitation
+                    result_dict = compute_metrics.get_annualmean_pr(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Seasonal mean precipitation
+                    result_dict = compute_metrics.get_seasonalmean_pr(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Median
+                    result_dict = compute_metrics.get_pr_q50(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # 99.9 percentile
+                    result_dict = compute_metrics.get_pr_q99p9(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Max daily precip
+                    result_dict = compute_metrics.get_annual_pxx(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
                 if run not in metrics_dict["DIMENSIONS"]["realization"]:
                     metrics_dict["DIMENSIONS"]["realization"].append(run)
 
