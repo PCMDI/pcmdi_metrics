@@ -62,7 +62,7 @@ def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
     return
 
 
-def generateProvenance_cdat(extra_pairs={}, history=True):
+def generateProvenance(extra_pairs={}, history=True):
     """Generates provenance info for PMP
     extra_pairs is a dictionary of format: {"name_in_provenance_list" : "python_package"}
     """
@@ -109,8 +109,12 @@ def generateProvenance_cdat(extra_pairs={}, history=True):
         "cdutil": "cdutil ",
         "esmf": "esmf ",
         "esmpy": "esmpy ",
+        "matplotlib": "matplotlib ",
         "numpy": "numpy ",
         "python": "python ",
+        "scipy": "scipy",
+        "xcdat": "xcdat",
+        "xarray": "xarray",
     }
     # Actual environement used
     p = Popen(shlex.split(CONDA + " env export"), stdout=PIPE, stderr=PIPE)
@@ -143,6 +147,11 @@ def generateProvenance_cdat(extra_pairs={}, history=True):
         "version": "client glx version string",
     }
     populate_prov(prov["openGL"]["GLX"]["client"], "glxinfo", pairs, sep=":", index=-1)
+
+    prov["packages"]["PMP"] = pcmdi_metrics.version.__git_tag_describe__
+    prov["packages"][
+        "PMPObs"
+    ] = "See 'References' key below, for detailed obs provenance information."
 
     # Now the history if requested
     if history:
@@ -223,21 +232,6 @@ def update_dict(d, u):
         else:
             d[k] = u[k]
     return d
-
-
-def generateProvenance():
-    extra_pairs = {
-        "matplotlib": "matplotlib ",
-        "scipy": "scipy",
-        "xcdat": "xcdat",
-        "xarray": "xarray",
-    }
-    prov = generateProvenance_cdat(extra_pairs=extra_pairs)
-    prov["packages"]["PMP"] = pcmdi_metrics.version.__git_tag_describe__
-    prov["packages"][
-        "PMPObs"
-    ] = "See 'References' key below, for detailed obs provenance information."
-    return prov
 
 
 def sort_human(input_list):
