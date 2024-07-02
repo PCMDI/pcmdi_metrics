@@ -60,4 +60,4 @@ for file in files:
             header = f.readline().strip()
             version = header.split("_")[-1]
             pathout = os.path.join(p.output_path, version)
-    download_sample_data_files(file, path=pathout)
+    download_sample_data_files(file, pathout)
