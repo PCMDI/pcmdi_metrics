@@ -17,6 +17,7 @@ import cdutil
 import genutil
 import MV2
 import numpy
+import requests
 import xcdat
 import xcdat as xc
 
@@ -41,6 +42,62 @@ if CONDA != "":
     CONDA = os.path.join(os.path.dirname(CONDA), "conda")
 else:
     CONDA = "conda"
+
+
+def download_sample_data_files(files_md5, path):
+    """Downloads sample data from a list of files
+    Default download directory is os.environ["CDAT_SETUP_PATH"]
+    then data will be downloaded to that path.
+
+    :Example:
+
+        .. doctest:: download_sample_data
+
+            >>> import os # use this to check if sample data already exists
+            >>> if not os.path.isdir(os.environ['CDAT_SETUP_PATH']):
+            ...     cdat_info.download_sample_data_files()
+
+    :param path: String of a valid filepath.
+        If None, sample data will be downloaded into the
+        vcs.sample_data directory.
+    :type path: `str`_ or `None`_
+    """
+    if not os.path.exists(files_md5) or os.path.isdir(files_md5):
+        raise RuntimeError("Invalid file type for list of files: %s" % files_md5)
+    samples = open(files_md5).readlines()
+    download_url_root = samples[0].strip()
+    for sample in samples[1:]:
+        good_md5, name = sample.split()
+        local_filename = os.path.join(path, name)
+        try:
+            os.makedirs(os.path.dirname(local_filename))
+        except BaseException:
+            pass
+        attempts = 0
+        while attempts < 3:
+            md5 = hashlib.md5()
+            if os.path.exists(local_filename):
+                f = open(local_filename, "rb")
+                md5.update(f.read())
+                if md5.hexdigest() == good_md5:
+                    attempts = 5
+                    continue
+            print(
+                "Downloading: '%s' from '%s' in: %s"
+                % (name, download_url_root, local_filename)
+            )
+            r = requests.get("%s/%s" % (download_url_root, name), stream=True)
+            with open(local_filename, "wb") as f:
+                for chunk in r.iter_content(chunk_size=1024):
+                    if chunk:  # filter local_filename keep-alive new chunks
+                        f.write(chunk)
+                        md5.update(chunk)
+            f.close()
+            if md5.hexdigest() == good_md5:
+                attempts = 5
+            else:
+                attempts += 1
+    return
 
 
 def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
