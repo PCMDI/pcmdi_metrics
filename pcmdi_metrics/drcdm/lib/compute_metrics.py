@@ -135,7 +135,7 @@ class SeasonalAverager:
                 ds_ann = (
                     ds.sel(time=date_range, method="nearest")
                     .groupby("time.year")
-                    .quantile(num, dim="time")
+                    .quantile(num, dim="time", skipna=True)
                 )
             elif stat.startswith("ge"):
                 num = int(stat.replace("ge", ""))
@@ -174,7 +174,7 @@ class SeasonalAverager:
                 ds_ann = ds.groupby("time.year").median(dim="time")
             elif stat.startswith("q"):
                 num = float(stat.replace("q", "").replace("p", ".")) / 100.0
-                ds_ann = ds.groupby("time.year").quantile(num, dim="time")
+                ds_ann = ds.groupby("time.year").quantile(num, dim="time", skipna=True)
             elif stat.startswith("ge"):
                 num = int(stat.replace("ge", ""))
                 ds_ann = (
