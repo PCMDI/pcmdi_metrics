@@ -45,23 +45,7 @@ else:
 
 
 def download_sample_data_files(files_md5, path):
-    """Downloads sample data from a list of files
-    Default download directory is os.environ["CDAT_SETUP_PATH"]
-    then data will be downloaded to that path.
-
-    :Example:
-
-        .. doctest:: download_sample_data
-
-            >>> import os # use this to check if sample data already exists
-            >>> if not os.path.isdir(os.environ['CDAT_SETUP_PATH']):
-            ...     cdat_info.download_sample_data_files()
-
-    :param path: String of a valid filepath.
-        If None, sample data will be downloaded into the
-        vcs.sample_data directory.
-    :type path: `str`_ or `None`_
-    """
+    """Downloads sample data from a list of files"""
     if not os.path.exists(files_md5) or os.path.isdir(files_md5):
         raise RuntimeError("Invalid file type for list of files: %s" % files_md5)
     samples = open(files_md5).readlines()
