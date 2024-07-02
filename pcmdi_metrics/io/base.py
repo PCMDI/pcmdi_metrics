@@ -109,12 +109,12 @@ def generateProvenance(extra_pairs={}, history=True):
         "cdutil": "cdutil ",
         "esmf": "esmf ",
         "esmpy": "esmpy ",
-        "matplotlib": "matplotlib ",
+        "matplotlib": "matplotlib-base ",
         "numpy": "numpy ",
         "python": "python ",
-        "scipy": "scipy",
-        "xcdat": "xcdat",
-        "xarray": "xarray",
+        "scipy": "scipy ",
+        "xcdat": "xcdat ",
+        "xarray": "xarray ",
     }
     # Actual environement used
     p = Popen(shlex.split(CONDA + " env export"), stdout=PIPE, stderr=PIPE)
