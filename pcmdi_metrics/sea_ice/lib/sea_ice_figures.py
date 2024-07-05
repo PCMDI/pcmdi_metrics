@@ -235,7 +235,9 @@ def create_summary_maps_antarctic(ds, var_ice, metrics_output_path, meta, model)
     return meta
 
 
-def create_arctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, model):
+def create_arctic_map(
+    ds, obs, var_ice, var_obs, metrics_output_path, meta, model, title
+):
     # Load and process data
     xvar = lib.find_lon(ds)
     yvar = lib.find_lat(ds)
@@ -260,9 +262,11 @@ def create_arctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, mode
             "", [[0, 85 / 255, 182 / 255], "white"]
         )
         proj = ccrs.NorthPolarStereo()
-        f1, axs = plt.subplots(3, 8, figsize=(30, 12), subplot_kw={"projection": proj})
-        pos1 = [1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0]
-        pos2 = [1, 1, 3, 3, 3, 5, 5, 5, 7, 7, 7, 1]
+        f1, axs = plt.subplots(
+            4, 6, figsize=(21, 13), subplot_kw={"projection": proj}, layout="compressed"
+        )
+        pos1 = [1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3]  # row
+        pos2 = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]  # col
         months = [
             "January",
             "February",
@@ -279,16 +283,18 @@ def create_arctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, mode
         ]
         for mo in range(0, 12):
             ax = axs[pos1[mo], pos2[mo]]
-            ax.set_global()  # to use cartopy polar proj
-
-            ds[var_ice].isel({"time": mo}).plot(
-                ax=ax,
-                x=xvar,
-                y=yvar,
-                levels=[0.15, 0.4, 0.6, 0.8, 1],
-                transform=ccrs.PlateCarree(),
-                cmap=cmap,
-                cbar_kwargs={"label": "ice fraction", "fraction": 0.046, "pad": 0.04},
+            fds = (
+                ds[var_ice]
+                .isel({"time": mo})
+                .plot(
+                    ax=ax,
+                    x=xvar,
+                    y=yvar,
+                    levels=[0.15, 0.4, 0.6, 0.8, 1],
+                    transform=ccrs.PlateCarree(),
+                    cmap=cmap,
+                    add_colorbar=False,
+                )
             )
             arctic_regions.plot_regions(
                 ax=ax,
@@ -296,17 +302,27 @@ def create_arctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, mode
                 label="abbrev",
                 line_kws={"color": [0.2, 0.2, 0.25], "linewidth": 3},
             )
+            if pos2[mo] == 0:
+                ax.text(
+                    0.03,
+                    0.04,
+                    model.replace("_", " "),
+                    horizontalalignment="left",
+                    verticalalignment="center",
+                    transform=ax.transAxes,
+                    backgroundcolor="white",
+                    fontsize=14,
+                )
             ax.set_extent([-180, 180, 43, 90], ccrs.PlateCarree())
             ax.coastlines(color=[0.3, 0.3, 0.3])
             ax.set_facecolor([0.55, 0.55, 0.6])
-            ax.set_title(months[mo] + "\n" + model.replace("_", " "), fontsize=12)
-        pos1 = [1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0]
-        pos2 = [0, 0, 2, 2, 2, 4, 4, 4, 6, 6, 6, 0]
+            ax.set_title("")
+        pos1 = [0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2]  # row
+        pos2 = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]  # col
         xvar = lib.find_lon(obs)
         yvar = lib.find_lat(obs)
         for mo in range(0, 12):
             ax = axs[pos1[mo], pos2[mo]]
-            # ax.set_global()
             obs[var_obs].isel({"time": mo}).plot(
                 ax=ax,
                 x=xvar,
@@ -314,7 +330,7 @@ def create_arctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, mode
                 levels=[0.15, 0.4, 0.6, 0.8, 1],
                 transform=ccrs.PlateCarree(),
                 cmap=cmap,
-                cbar_kwargs={"label": "ice fraction", "fraction": 0.046, "pad": 0.04},
+                add_colorbar=False,
             )
             arctic_regions.plot_regions(
                 ax=ax,
@@ -322,16 +338,42 @@ def create_arctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, mode
                 label="abbrev",
                 line_kws={"color": [0.2, 0.2, 0.25], "linewidth": 3},
             )
+            if pos2[mo] == 0:
+                ax.text(
+                    0.03,
+                    0.04,
+                    "Reference",
+                    horizontalalignment="left",
+                    verticalalignment="center",
+                    transform=ax.transAxes,
+                    backgroundcolor="white",
+                    fontsize=14,
+                )
             ax.set_extent([-180, 180, 43, 90], ccrs.PlateCarree())
             ax.coastlines(color=[0.3, 0.3, 0.3])
             ax.set_facecolor([0.55, 0.55, 0.6])
-            ax.set_title(months[mo] + "\nReference", fontsize=12)
+            ax.set_title(months[mo], fontsize=18)
 
-        plt.suptitle("Arctic", fontsize=30)
+        plt.suptitle(title, fontsize=26)
         fig_path = os.path.join(
             metrics_output_path, model.replace(" ", "_") + "_arctic_regions.png"
         )
-        plt.tight_layout(rect=[0, 0.03, 1, 0.97])
+        cbar = plt.colorbar(
+            fds,
+            ax=axs[0:2, :],
+            pad=0.02,
+            aspect=25,
+        )
+        cbar.ax.tick_params(labelsize=18)
+        cbar.set_label(label="ice fraction", size=18)
+        cbar = plt.colorbar(
+            fds,
+            ax=axs[2:, :],
+            pad=0.02,
+            aspect=25,
+        )
+        cbar.ax.tick_params(labelsize=18)
+        cbar.set_label(label="ice fraction", size=18)
         plt.savefig(fig_path)
         plt.close()
         meta.update_plots(
@@ -351,7 +393,9 @@ def create_arctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, mode
 # ----------
 # Antarctic
 # ----------
-def create_antarctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, model):
+def create_antarctic_map(
+    ds, obs, var_ice, var_obs, metrics_output_path, meta, model, title
+):
     # Load and process data
     xvar = lib.find_lon(ds)
     yvar = lib.find_lat(ds)
@@ -381,9 +425,11 @@ def create_antarctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, m
             "", [[0, 85 / 255, 182 / 255], "white"]
         )
         proj = ccrs.SouthPolarStereo()
-        f1, axs = plt.subplots(3, 8, figsize=(30, 12), subplot_kw={"projection": proj})
-        pos1 = [1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0]
-        pos2 = [1, 1, 3, 3, 3, 5, 5, 5, 7, 7, 7, 1]
+        f1, axs = plt.subplots(
+            4, 6, figsize=(21, 13), subplot_kw={"projection": proj}, layout="compressed"
+        )
+        pos1 = [1, 1, 1, 1, 1, 1, 3, 3, 3, 3, 3, 3]  # row
+        pos2 = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]  # col
         months = [
             "January",
             "February",
@@ -400,15 +446,18 @@ def create_antarctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, m
         ]
         for mo in range(0, 12):
             ax = axs[pos1[mo], pos2[mo]]
-            ax.set_global()
-            ds[var_ice].isel({"time": mo}).plot(
-                ax=ax,
-                x=xvar,
-                y=yvar,
-                levels=[0.15, 0.4, 0.6, 0.8, 1],
-                transform=ccrs.PlateCarree(),
-                cmap=cmap,
-                cbar_kwargs={"label": "ice fraction", "fraction": 0.046, "pad": 0.04},
+            fds = (
+                ds[var_ice]
+                .isel({"time": mo})
+                .plot(
+                    ax=ax,
+                    x=xvar,
+                    y=yvar,
+                    levels=[0.15, 0.4, 0.6, 0.8, 1],
+                    transform=ccrs.PlateCarree(),
+                    cmap=cmap,
+                    add_colorbar=False,
+                )
             )
             antarctic_regions.plot_regions(
                 ax=ax,
@@ -416,17 +465,27 @@ def create_antarctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, m
                 label="abbrev",
                 line_kws={"color": [0.2, 0.2, 0.25], "linewidth": 3},
             )
+            if pos2[mo] == 0:
+                ax.text(
+                    0.03,
+                    0.04,
+                    model.replace("_", " "),
+                    horizontalalignment="left",
+                    verticalalignment="center",
+                    transform=ax.transAxes,
+                    backgroundcolor="white",
+                    fontsize=14,
+                )
             ax.set_extent([-180, 180, -53, -90], ccrs.PlateCarree())
             ax.coastlines(color=[0.3, 0.3, 0.3])
             ax.set_facecolor([0.55, 0.55, 0.6])
-            ax.set_title(months[mo] + "\n" + model.replace("_", " "), fontsize=12)
-        pos1 = [1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0]
-        pos2 = [0, 0, 2, 2, 2, 4, 4, 4, 6, 6, 6, 0]
+            ax.set_title("")
+        pos1 = [0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2]  # row
+        pos2 = [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5]  # col
         xvar = lib.find_lon(obs)
         yvar = lib.find_lat(obs)
         for mo in range(0, 12):
             ax = axs[pos1[mo], pos2[mo]]
-            # ax.set_global()
             obs[var_obs].isel({"time": mo}).plot(
                 ax=ax,
                 x=xvar,
@@ -434,7 +493,7 @@ def create_antarctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, m
                 levels=[0.15, 0.4, 0.6, 0.8, 1],
                 transform=ccrs.PlateCarree(),
                 cmap=cmap,
-                cbar_kwargs={"label": "ice fraction", "fraction": 0.046, "pad": 0.04},
+                add_colorbar=False,
             )
             antarctic_regions.plot_regions(
                 ax=ax,
@@ -442,15 +501,41 @@ def create_antarctic_map(ds, obs, var_ice, var_obs, metrics_output_path, meta, m
                 label="abbrev",
                 line_kws={"color": [0.2, 0.2, 0.25], "linewidth": 3},
             )
+            if pos2[mo] == 0:
+                ax.text(
+                    0.03,
+                    0.04,
+                    "Reference",
+                    horizontalalignment="left",
+                    verticalalignment="center",
+                    transform=ax.transAxes,
+                    backgroundcolor="white",
+                    fontsize=14,
+                )
             ax.set_extent([-180, 180, -53, -90], ccrs.PlateCarree())
             ax.coastlines(color=[0.3, 0.3, 0.3])
             ax.set_facecolor([0.55, 0.55, 0.6])
-            ax.set_title(months[mo] + "\nReference", fontsize=12)
-        plt.suptitle(model.replace("_", " "), fontsize=20)
+            ax.set_title(months[mo], fontsize=18)
+        plt.suptitle(title, fontsize=26)
+        cbar = plt.colorbar(
+            fds,
+            ax=axs[0:2, :],
+            pad=0.02,
+            aspect=25,
+        )
+        cbar.ax.tick_params(labelsize=18)
+        cbar.set_label(label="ice fraction", size=18)
+        cbar = plt.colorbar(
+            fds,
+            ax=axs[2:, :],
+            pad=0.02,
+            aspect=25,
+        )
+        cbar.ax.tick_params(labelsize=18)
+        cbar.set_label(label="ice fraction", size=18)
         fig_path = os.path.join(
             metrics_output_path, model.replace(" ", "_") + "_antarctic_regions.png"
         )
-        plt.tight_layout(rect=[0, 0.03, 1, 0.97])
         plt.savefig(fig_path)
         plt.close()
         meta.update_plots(
