@@ -596,7 +596,8 @@ if __name__ == "__main__":
             if model == reference_data_set:
                 continue
             try:
-                tmp_title = "_".join([model, run])
+                tmp_model = "_".join([model, run])
+                tmp_title = "{0}-{1} Arctic sea ice".format(yr_range[0], yr_range[1])
                 meta = fig.create_arctic_map(
                     nc_climo,
                     obs_nh,
@@ -604,8 +605,10 @@ if __name__ == "__main__":
                     obs_var,
                     fig_dir,
                     meta,
+                    tmp_model,
                     tmp_title,
                 )
+                tmp_title = "{0}-{1} Antarctic sea ice".format(yr_range[0], yr_range[1])
                 meta = fig.create_antarctic_map(
                     nc_climo,
                     obs_sh,
@@ -613,6 +616,7 @@ if __name__ == "__main__":
                     obs_var,
                     fig_dir,
                     meta,
+                    tmp_model,
                     tmp_title,
                 )
             except Exception as e:
@@ -630,29 +634,22 @@ if __name__ == "__main__":
                 else:
                     nc_climo_mean[var] = nc_climo_mean[var] + nc_climo[var]
             nc_climo_mean[var] = nc_climo_mean[var] / (count + 1)
-            # try:
-            tmp_title = "_".join([model, "model_mean"])
+            tmp_model = "_".join([model, "model_mean"])
+            tmp_title = "{0}-{1} Arctic sea ice".format(yr_range[0], yr_range[1])
             meta = fig.create_arctic_map(
-                nc_climo_mean,
-                obs_nh,
-                var,
-                obs_var,
-                fig_dir,
-                meta,
-                tmp_title,
+                nc_climo_mean, obs_nh, var, obs_var, fig_dir, meta, tmp_model, tmp_title
             )
+            tmp_title = "{0}-{1} Antarctic sea ice".format(yr_range[0], yr_range[1])
             meta = fig.create_antarctic_map(
-                nc_climo_mean,
-                obs_sh,
-                var,
-                obs_var,
-                fig_dir,
-                meta,
-                tmp_title,
+                nc_climo_mean, obs_sh, var, obs_var, fig_dir, meta, tmp_model, tmp_title
             )
-            # except Exception as e:
-            #    print("Error making figures for model",model,"mean.")
-            #    print("  ",e)
+
+            meta = fig.create_summary_maps_arctic(
+                nc_climo_mean, var, fig_dir, meta, tmp_model
+            )
+            meta = fig.create_summary_maps_antarctic(
+                nc_climo_mean, var, fig_dir, meta, tmp_model
+            )
 
     # -----------------
     # Update and write
