@@ -1,5 +1,6 @@
 [project]
 name = "pcmdi_metrics"
+dynamic = ["version"]
 authors = [
   {name = "PCMDI", email = "pcmdi-metrics@llnl.gov"}
 ]
