@@ -1,4 +1,5 @@
 [project]
+name = "pcmdi_metrics"
 authors = [
   {name = "PCMDI", email = "pcmdi-metrics@llnl.gov"}
 ]
