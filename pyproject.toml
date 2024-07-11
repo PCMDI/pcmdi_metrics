@@ -1,3 +1,8 @@
+[project]
+authors = [
+  {name = "PCMDI", email = "pcmdi-metrics@llnl.gov"}
+]
+
 [tool.black]
 line-length = 88
 target-version = ['py39']
