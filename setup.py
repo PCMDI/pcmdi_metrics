@@ -91,7 +91,6 @@ setup(
     name="pcmdi_metrics",
     version=release_version,
     author="PCMDI",
-    author_email="pcmdi-metrics@llnl.gov",
     description="model metrics tools",
     url="http://github.com/PCMDI/pcmdi_metrics",
     packages=packages,
