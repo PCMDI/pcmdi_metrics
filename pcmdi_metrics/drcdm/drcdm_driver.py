@@ -287,7 +287,9 @@ if __name__ == "__main__":
                 else:
                     nc_base = None
                 if plots:
-                    fig_base = os.path.join(nc_dir, "_".join([model, run, "$index.nc"]))
+                    fig_base = os.path.join(
+                        fig_dir, "_".join([model, run, "$index.png"])
+                    )
                 else:
                     fig_base = None
 
