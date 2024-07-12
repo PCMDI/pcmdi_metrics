@@ -511,6 +511,10 @@ def get_annual_txx(
     # Compute statistics
     result_dict = metrics_json({index: Tmax}, obs_dict={}, region="land", regrid=False)
 
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmax.to_netcdf(nc_file, "w")
+
     del Tmax
     return result_dict
 
@@ -537,6 +541,10 @@ def get_tasmax_q50(
     result_dict = metrics_json(
         {index: Tmedian}, obs_dict={}, region="land", regrid=False
     )
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmedian.to_netcdf(nc_file, "w")
 
     del Tmedian
     return result_dict
@@ -566,6 +574,10 @@ def get_tasmax_q99p9(
         {index: Tq99p9}, obs_dict={}, region="land", regrid=False
     )
 
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tq99p9.to_netcdf(nc_file, "w")
+
     del Tq99p9
     return result_dict
 
@@ -592,6 +604,10 @@ def get_annual_tasmax_ge_95F(
 
     # Compute statistics
     result_dict = metrics_json({index: Tge95}, obs_dict={}, region="land", regrid=False)
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tge95.to_netcdf(nc_file, "w")
 
     del Tge95
     return result_dict
@@ -621,6 +637,10 @@ def get_annual_tasmax_ge_100F(
     result_dict = metrics_json(
         {index: Tge100}, obs_dict={}, region="land", regrid=False
     )
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tge100.to_netcdf(nc_file, "w")
 
     del Tge100
     return result_dict
@@ -653,6 +673,10 @@ def get_annual_tasmax_ge_105F(
         {index: Tge105}, obs_dict={}, region="land", regrid=False
     )
 
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tge105.to_netcdf(nc_file, "w")
+
     del Tge105
     return result_dict
 
@@ -678,6 +702,10 @@ def get_annual_tnn(
 
     # Compute statistics
     result_dict = metrics_json({index: Tmean}, obs_dict={}, region="land", regrid=False)
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmean.to_netcdf(nc_file, "w")
 
     del Tmean
     return result_dict
@@ -705,6 +733,10 @@ def get_annualmean_tasmin(
     # Compute statistics
     result_dict = metrics_json({index: Tmin}, obs_dict={}, region="land", regrid=False)
 
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmin.to_netcdf(nc_file, "w")
+
     del Tmin
     return result_dict
 
@@ -731,6 +763,10 @@ def get_annual_tasmin_le_32F(
 
     # Compute statistics
     result_dict = metrics_json({index: Tle32}, obs_dict={}, region="land", regrid=False)
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tle32.to_netcdf(nc_file, "w")
 
     del Tle32
     return result_dict
@@ -764,6 +800,10 @@ def get_annualmean_pr(
         {index: PRmean}, obs_dict={}, region="land", regrid=False
     )
 
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        PRmean.to_netcdf(nc_file, "w")
+
     del PRmean
     return result_dict
 
@@ -793,6 +833,10 @@ def get_seasonalmean_pr(
         {index: PRmean}, obs_dict={}, region="land", regrid=False
     )
 
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        PRmean.to_netcdf(nc_file, "w")
+
     del PRmean
     return result_dict
 
@@ -819,6 +863,10 @@ def get_pr_q50(
     PRq50 = update_nc_attrs(PRq50, dec_mode, drop_incomplete_djf, annual_strict)
 
     result_dict = metrics_json({index: PRq50}, obs_dict={}, region="land", regrid=False)
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        PRq50.to_netcdf(nc_file, "w")
 
     del PRq50
     return result_dict
@@ -877,50 +925,12 @@ def get_annual_pxx(
 
     result_dict = metrics_json({index: Pmax}, obs_dict={}, region="land", regrid=False)
 
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Pmax.to_netcdf(nc_file, "w")
+
     del Pmax
     return result_dict
-
-
-def precipitation_indices(
-    ds, sftlf, units_adjust, dec_mode, drop_incomplete_djf, annual_strict
-):
-    # TODO: the precipitation metrics need to be broken out the way the
-    # temperature metrics were.
-
-    # annualmean_pr, seasonalmean_pr, pr_q50, pr_q99p9, annual pxx
-
-    print("Generating precipitation block extrema.")
-
-    ds["pr"] = convert_units(ds["pr"], units_adjust)
-
-    PR = TimeSeriesData(ds, "pr")
-    S = SeasonalAverager(
-        PR,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-
-    # Rx1day
-    P1day = xr.Dataset()
-    P1day["ANN"] = S.annual_stats("mean", pentad=False)
-    # Can end up with very small negative values that should be 0
-    # Possibly related to this issue? https://github.com/pydata/bottleneck/issues/332
-    # (from https://github.com/pydata/xarray/issues/3855)
-    P1day["ANN"] = (
-        P1day["ANN"].where(P1day["ANN"] > 0, 0).where(~np.isnan(P1day["ANN"]), np.nan)
-    )
-    for season in ["DJF", "MAM", "JJA", "SON"]:
-        P1day[season] = S.seasonal_stats(season, "mean", pentad=False)
-        P1day[season] = (
-            P1day[season]
-            .where(P1day[season] > 0, 0)
-            .where(~np.isnan(P1day[season]), np.nan)
-        )
-    P1day = update_nc_attrs(P1day, dec_mode, drop_incomplete_djf, annual_strict)
-
-    return P1day
 
 
 # A couple of statistics that aren't being loaded from mean_climate
