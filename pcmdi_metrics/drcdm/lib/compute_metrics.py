@@ -1043,6 +1043,9 @@ def get_pr_q50(
     varname = "pr"
     print("Metric:", index)
 
+    # Need at least 1mm rain
+    ds[varname] = ds[varname].where(ds[varname] >= 1)
+
     # Get median (q50) precipitation
     PR = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -1082,6 +1085,9 @@ def get_pr_q99p9(
     index = "pr_q99p9"
     varname = "pr"
     print("Metric:", index)
+
+    # Need at least 1mm rain
+    ds[varname] = ds[varname].where(ds[varname] >= 1)
 
     # Get 99.9th percentile daily precipitation
     PR = TimeSeriesData(ds, varname)
