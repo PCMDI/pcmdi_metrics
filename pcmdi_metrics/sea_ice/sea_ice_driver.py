@@ -608,6 +608,9 @@ if __name__ == "__main__":
                     tmp_model,
                     tmp_title,
                 )
+                meta = fig.create_summary_maps_arctic(
+                    nc_climo, var, fig_dir, meta, tmp_model
+                )
                 tmp_title = "{0}-{1} Antarctic sea ice".format(yr_range[0], yr_range[1])
                 meta = fig.create_antarctic_map(
                     nc_climo,
@@ -618,6 +621,9 @@ if __name__ == "__main__":
                     meta,
                     tmp_model,
                     tmp_title,
+                )
+                meta = fig.create_summary_maps_antarctic(
+                    nc_climo, var, fig_dir, meta, tmp_model
                 )
             except Exception as e:
                 print("Error making figures for model", model, "realization", run)
