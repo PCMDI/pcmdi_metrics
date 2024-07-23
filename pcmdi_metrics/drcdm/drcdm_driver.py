@@ -264,23 +264,12 @@ if __name__ == "__main__":
                     # Get labels for start/end years from dataset
                     yrs = [str(int(ds.time.dt.year[0])), str(int(ds.time.dt.year[-1]))]
 
-                # If any of the metrics use daily data we'll want to keep
-                # something like this calendar handling
                 if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
                     ds = ds.convert_calendar("noleap")
 
                 ds[varname] = compute_metrics.convert_units(ds[varname], ModUnitsAdjust)
-                # -------------------------------
-                # Metrics go here
-                # -------------------------------
-                # Maybe start with the metrics from this paper: https://climatemodeling.science.energy.gov/sites/default/files/2023-11/Validation%20of%20LOCA2%20and%20STAR-ESDM%20Statistically%20Downscaled%20Products%20v2.pdf
-                #
-                # pr: annualmean_pr, seasonalmean_pr, pr_q50, pr_q99p9, annual pxx
-                # tasmax: annualmean_tasmax, seasonalmean_tasmax, annual txx, annual_tasmax_ge_95F,
-                #         annual_tasmax_ge_100F, annual_tasmax_ge_105F, tasmax_q50, tasmax_q99p9
-                # tasmin: annualmean_tasmin, annual_tasmin_le_32F, annual_tnn
-                # ETTCDI has some metrics for tas as well
 
+                # Set up output file names
                 if nc_out:
                     # $index will be replaced with index name in metrics function
                     nc_base = os.path.join(nc_dir, "_".join([model, run, "$index.nc"]))
@@ -293,9 +282,8 @@ if __name__ == "__main__":
                 else:
                     fig_base = None
 
+                # Do metrics calculation
                 if varname == "tasmax":
-                    # Example using get_annual_txx
-                    # Need to work all temperature metrics this way
                     result_dict = compute_metrics.get_mean_tasmax(
                         ds,
                         sftlf,
