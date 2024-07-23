@@ -24,11 +24,6 @@ def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
     xvar = lib.find_lon(ds)
     yvar = lib.find_lat(ds)
 
-    # Some models have NaN values in coordinates
-    # that can't be plotted by pcolormesh
-    # ds[xvar] = replace_nan_zero(ds[xvar])
-    # ds[yvar] = replace_nan_zero(ds[yvar])
-
     # Set up regions
     region_NA = np.array([[-120, 45], [-120, 80], [90, 80], [90, 45]])
     region_NP = np.array([[90, 45], [90, 65], [240, 65], [240, 45]])
@@ -127,11 +122,6 @@ def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
 def create_summary_maps_antarctic(ds, var_ice, metrics_output_path, meta, model):
     xvar = lib.find_lon(ds)
     yvar = lib.find_lat(ds)
-
-    # Some models have NaN values in coordinates
-    # that can't be plotted by pcolormesh
-    # ds[xvar] = replace_nan_zero(ds[xvar])
-    # ds[yvar] = replace_nan_zero(ds[yvar])
 
     # Set up regions
     region_IO = np.array([[20, -90], [90, -90], [90, -55], [20, -55]])
