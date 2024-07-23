@@ -16,7 +16,7 @@ metrics_output_path = "/home/ordonez4/pmp_results/drcdm/test/"
 
 # Optional settings
 # See the README for more information about these settings
-case_id = "test"
+case_id = "test_tasmin"
 # sftlf_filename_template = '/p/css03/esgf_publish/CMIP6/CMIP/MIROC/MIROC6/piControl/r1i1p1f1/fx/sftlf/gn/v20190311/sftlf_fx_MIROC6_piControl_r1i1p1f1_gn.nc'
 
 ModUnitsAdjust = (
@@ -25,11 +25,13 @@ ModUnitsAdjust = (
     86400.0,
     "mm/day",
 )  # Convert model units from kg/m2/s to mm/day
+# ModUnitsAdjust=(True, 'KtoF', 0, 'F')
 dec_mode = "DJF"
 annual_strict = False
 drop_incomplete_djf = True
 regrid = False
-plots = False
+plot = True
+netcdf = True
 generate_sftlf = True
 msyear = 3300
 meyear = 3349
