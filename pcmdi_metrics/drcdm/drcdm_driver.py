@@ -294,15 +294,15 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                    result_dict = compute_metrics.get_tasmax_q99p9(
-                        ds,
-                        sftlf,
-                        dec_mode,
-                        drop_incomplete_djf,
-                        annual_strict,
-                        fig_base,
-                        nc_base,
-                    )
+                    # result_dict = compute_metrics.get_tasmax_q99p9(
+                    #    ds,
+                    #    sftlf,
+                    #    dec_mode,
+                    #    drop_incomplete_djf,
+                    #    annual_strict,
+                    #    fig_base,
+                    #    nc_base,
+                    # )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
                     result_dict = compute_metrics.get_tasmax_q50(
                         ds,
@@ -324,36 +324,19 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                    result_dict = compute_metrics.get_annual_tasmax_ge_95F(
-                        ds,
-                        sftlf,
-                        dec_mode,
-                        drop_incomplete_djf,
-                        annual_strict,
-                        fig_base,
-                        nc_base,
-                    )
-                    metrics_dict["RESULTS"][model][run].update(result_dict)
-                    result_dict = compute_metrics.get_annual_tasmax_ge_100F(
-                        ds,
-                        sftlf,
-                        dec_mode,
-                        drop_incomplete_djf,
-                        annual_strict,
-                        fig_base,
-                        nc_base,
-                    )
-                    metrics_dict["RESULTS"][model][run].update(result_dict)
-                    result_dict = compute_metrics.get_annual_tasmax_ge_105F(
-                        ds,
-                        sftlf,
-                        dec_mode,
-                        drop_incomplete_djf,
-                        annual_strict,
-                        fig_base,
-                        nc_base,
-                    )
-                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    for deg in [86, 90, 95, 100, 105, 110, 115]:
+                        # TODO: figure out how to handle C units
+                        result_dict = compute_metrics.get_annual_tasmax_ge_XF(
+                            ds,
+                            sftlf,
+                            deg,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            fig_base,
+                            nc_base,
+                        )
+                        metrics_dict["RESULTS"][model][run].update(result_dict)
 
                 elif varname == "tasmin":
                     result_dict = compute_metrics.get_annual_tnn(
@@ -366,36 +349,30 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                    result_dict = compute_metrics.get_annual_tasmin_le_32F(
-                        ds,
-                        sftlf,
-                        dec_mode,
-                        drop_incomplete_djf,
-                        annual_strict,
-                        fig_base,
-                        nc_base,
-                    )
-                    metrics_dict["RESULTS"][model][run].update(result_dict)
-                    result_dict = compute_metrics.get_annual_tasmin_le_0F(
-                        ds,
-                        sftlf,
-                        dec_mode,
-                        drop_incomplete_djf,
-                        annual_strict,
-                        fig_base,
-                        nc_base,
-                    )
-                    metrics_dict["RESULTS"][model][run].update(result_dict)
-                    result_dict = compute_metrics.get_annual_tasmin_ge_70F(
-                        ds,
-                        sftlf,
-                        dec_mode,
-                        drop_incomplete_djf,
-                        annual_strict,
-                        fig_base,
-                        nc_base,
-                    )
-                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    for deg in [0, 32]:
+                        result_dict = compute_metrics.get_annual_tasmin_le_XF(
+                            ds,
+                            sftlf,
+                            deg,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            fig_base,
+                            nc_base,
+                        )
+                        metrics_dict["RESULTS"][model][run].update(result_dict)
+                    for deg in [70, 75, 80, 85, 90]:
+                        result_dict = compute_metrics.get_annual_tasmin_ge_XF(
+                            ds,
+                            sftlf,
+                            deg,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            fig_base,
+                            nc_base,
+                        )
+                        metrics_dict["RESULTS"][model][run].update(result_dict)
                     result_dict = compute_metrics.get_annualmean_tasmin(
                         ds,
                         sftlf,
@@ -441,16 +418,16 @@ if __name__ == "__main__":
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
                     # 99.9 percentile
-                    result_dict = compute_metrics.get_pr_q99p9(
-                        ds,
-                        sftlf,
-                        dec_mode,
-                        drop_incomplete_djf,
-                        annual_strict,
-                        fig_base,
-                        nc_base,
-                    )
-                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # result_dict = compute_metrics.get_pr_q99p9(
+                    #    ds,
+                    #    sftlf,
+                    #    dec_mode,
+                    #    drop_incomplete_djf,
+                    #    annual_strict,
+                    #    fig_base,
+                    #    nc_base,
+                    # )
+                    # metrics_dict["RESULTS"][model][run].update(result_dict)
                     # Max daily precip
                     result_dict = compute_metrics.get_annual_pxx(
                         ds,
