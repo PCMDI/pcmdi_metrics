@@ -611,11 +611,18 @@ def get_tasmax_q99p9(
     return result_dict
 
 
-def get_annual_tasmax_ge_95F(
-    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+def get_annual_tasmax_ge_XF(
+    ds,
+    sftlf,
+    deg,
+    dec_mode,
+    drop_incomplete_djf,
+    annual_strict,
+    fig_file=None,
+    nc_file=None,
 ):
-    # Get annual fraction of days with max temperature greater than or equal to 95F
-    index = "annual_tasmax_ge_95F"
+    # Get annual fraction of days with max temperature greater than or equal to deg F
+    index = "annual_tasmax_ge_{0}F".format(deg)
     print("Metric:", index)
     varname = "tasmax"
     TS = TimeSeriesData(ds, varname)
@@ -626,20 +633,25 @@ def get_annual_tasmax_ge_95F(
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-    Tge95 = xr.Dataset()
-    Tge95["ANN"] = S.annual_stats("ge95")
-    Tge95.attrs["units"] = "%"
-    Tge95 = update_nc_attrs(Tge95, dec_mode, drop_incomplete_djf, annual_strict)
+    TgeX = xr.Dataset()
+    print("ge{0}".format(deg))
+    TgeX["ANN"] = S.annual_stats("ge{0}".format(deg))
+    TgeX.attrs["units"] = "%"
+    TgeX = update_nc_attrs(TgeX, dec_mode, drop_incomplete_djf, annual_strict)
 
     # Compute statistics
-    result_dict = metrics_json({index: Tge95}, obs_dict={}, region="land", regrid=False)
+    result_dict = metrics_json({index: TgeX}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
-        Tge95["ANN"].mean("time").plot(
+        TgeX["ANN"].mean("time").plot(
             cmap="Oranges", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
         )
         fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Mean percentage of days per year\nwith high temperature >= 95F")
+        plt.title(
+            "Mean percentage of days per year\nwith high temperature >= {0}F".format(
+                deg
+            )
+        )
         ax = plt.gca()
         ax.set_facecolor(bgclr)
         plt.savefig(fig_file1)
@@ -647,97 +659,9 @@ def get_annual_tasmax_ge_95F(
 
     if nc_file is not None:
         nc_file = nc_file.replace("$index", index)
-        Tge95.to_netcdf(nc_file, "w")
+        TgeX.to_netcdf(nc_file, "w")
 
-    del Tge95
-    return result_dict
-
-
-def get_annual_tasmax_ge_100F(
-    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
-):
-    # Get annual fraction of days with max temperature greater than or equal to 100F
-    index = "annual_tasmax_ge_100F"
-    print("Metric:", index)
-    varname = "tasmax"
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Tge100 = xr.Dataset()
-    Tge100["ANN"] = S.annual_stats("ge95")
-    Tge100.attrs["units"] = "%"
-    Tge100 = update_nc_attrs(Tge100, dec_mode, drop_incomplete_djf, annual_strict)
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index: Tge100}, obs_dict={}, region="land", regrid=False
-    )
-
-    if fig_file is not None:
-        Tge100["ANN"].mean("time").plot(
-            cmap="Oranges", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
-        )
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Mean percentage of days per year\nwith high temperature >= 100F")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
-
-    if nc_file is not None:
-        nc_file = nc_file.replace("$index", index)
-        Tge100.to_netcdf(nc_file, "w")
-
-    del Tge100
-    return result_dict
-
-
-def get_annual_tasmax_ge_105F(
-    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
-):
-    # Get annual fraction of days with max temperature greater than or equal to 105F
-    index = "annual_tasmax_ge_105F"
-    print("Metric:", index)
-    varname = "tasmax"
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Tge105 = xr.Dataset()
-    Tge105["ANN"] = S.annual_stats("ge95")
-    Tge105.attrs["units"] = "%"
-    Tge105 = update_nc_attrs(Tge105, dec_mode, drop_incomplete_djf, annual_strict)
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index: Tge105}, obs_dict={}, region="land", regrid=False
-    )
-
-    if fig_file is not None:
-        Tge105["ANN"].mean("time").plot(
-            cmap="Oranges", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
-        )
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Mean percentage of days per year\nwith high temperature >= 105F")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
-
-    if nc_file is not None:
-        nc_file = nc_file.replace("$index", index)
-        Tge105.to_netcdf(nc_file, "w")
-
-    del Tge105
+    del TgeX
     return result_dict
 
 
@@ -819,12 +743,19 @@ def get_annualmean_tasmin(
     return result_dict
 
 
-def get_annual_tasmin_le_32F(
-    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+def get_annual_tasmin_le_XF(
+    ds,
+    sftlf,
+    deg,
+    dec_mode,
+    drop_incomplete_djf,
+    annual_strict,
+    fig_file=None,
+    nc_file=None,
 ):
     # Get annual percentage of days with daily minimum temperature less than or
-    # equal to 32F.
-    index = "annual_tasmin_le_32F"
+    # equal to deg F.
+    index = "annual_tasmin_le_{0}F".format(deg)
     varname = "tasmin"
     print("Metric:", index)
     TS = TimeSeriesData(ds, varname)
@@ -835,20 +766,22 @@ def get_annual_tasmin_le_32F(
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-    Tle32 = xr.Dataset()
-    Tle32["ANN"] = S.annual_stats("le32")
-    Tle32.attrs["units"] = "%"
-    Tle32 = update_nc_attrs(Tle32, dec_mode, drop_incomplete_djf, annual_strict)
+    TleX = xr.Dataset()
+    TleX["ANN"] = S.annual_stats("le{0}".format(deg))
+    TleX.attrs["units"] = "%"
+    TleX = update_nc_attrs(TleX, dec_mode, drop_incomplete_djf, annual_strict)
 
     # Compute statistics
-    result_dict = metrics_json({index: Tle32}, obs_dict={}, region="land", regrid=False)
+    result_dict = metrics_json({index: TleX}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
-        Tle32["ANN"].mean("time").plot(
+        TleX["ANN"].mean("time").plot(
             cmap="RdPu", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
         )
         fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Mean percentage of days per year\nwith low temperature <= 32F")
+        plt.title(
+            "Mean percentage of days per year\nwith low temperature <= {0}F".format(deg)
+        )
         ax = plt.gca()
         ax.set_facecolor(bgclr)
         plt.savefig(fig_file1)
@@ -856,18 +789,25 @@ def get_annual_tasmin_le_32F(
 
     if nc_file is not None:
         nc_file = nc_file.replace("$index", index)
-        Tle32.to_netcdf(nc_file, "w")
+        TleX.to_netcdf(nc_file, "w")
 
-    del Tle32
+    del TleX
     return result_dict
 
 
-def get_annual_tasmin_le_0F(
-    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+def get_annual_tasmin_ge_XF(
+    ds,
+    sftlf,
+    deg,
+    dec_mode,
+    drop_incomplete_djf,
+    annual_strict,
+    fig_file=None,
+    nc_file=None,
 ):
-    # Get annual percentage of days with daily minimum temperature less than or
-    # equal to 0F.
-    index = "annual_tasmin_le_0F"
+    # Get annual percentage of days with daily minimum temperature
+    # greater than or equal to deg F (warm nights)
+    index = "annual_tasmin_ge_{0}F".format(deg)
     varname = "tasmin"
     print("Metric:", index)
     TS = TimeSeriesData(ds, varname)
@@ -878,20 +818,22 @@ def get_annual_tasmin_le_0F(
         drop_incomplete_djf=drop_incomplete_djf,
         annual_strict=annual_strict,
     )
-    Tle0 = xr.Dataset()
-    Tle0["ANN"] = S.annual_stats("le0")
-    Tle0.attrs["units"] = "%"
-    Tle0 = update_nc_attrs(Tle0, dec_mode, drop_incomplete_djf, annual_strict)
+    TgeX = xr.Dataset()
+    TgeX["ANN"] = S.annual_stats("ge{0}".format(deg))
+    TgeX.attrs["units"] = "%"
+    TgeX = update_nc_attrs(TgeX, dec_mode, drop_incomplete_djf, annual_strict)
 
     # Compute statistics
-    result_dict = metrics_json({index: Tle0}, obs_dict={}, region="land", regrid=False)
+    result_dict = metrics_json({index: TgeX}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
-        Tle0["ANN"].mean("time").plot(
+        TgeX["ANN"].mean("time").plot(
             cmap="RdPu", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
         )
         fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Mean percentage of days per year\nwith low temperature <= 0F")
+        plt.title(
+            "Mean percentage of days per year\nwith low temperature >= {0}F".format(deg)
+        )
         ax = plt.gca()
         ax.set_facecolor(bgclr)
         plt.savefig(fig_file1)
@@ -899,9 +841,9 @@ def get_annual_tasmin_le_0F(
 
     if nc_file is not None:
         nc_file = nc_file.replace("$index", index)
-        Tle0.to_netcdf(nc_file, "w")
+        TgeX.to_netcdf(nc_file, "w")
 
-    del Tle0
+    del TgeX
     return result_dict
 
 
