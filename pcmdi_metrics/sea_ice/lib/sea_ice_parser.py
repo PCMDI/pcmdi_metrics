@@ -237,4 +237,12 @@ def create_sea_ice_parser():
         default=False,
         help="Use to save netcdf intermediate results",
     )
+
+    parser.add_argument(
+        "--generate_sftlf",
+        action="store_true",
+        help="Flag to generate land sea mask if not found.",
+        required=False,
+    )
+
     return parser
