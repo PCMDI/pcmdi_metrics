@@ -214,7 +214,7 @@ def CropLatLon(d, regions_specs):
     """
     region_name = list(regions_specs.keys())[0]
 
-    dnew = region_subset(d, region_name, None, regions_specs, False)
+    dnew = region_subset(d, region_name, regions_specs=regions_specs)
 
     return dnew
 
