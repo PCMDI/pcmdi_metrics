@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 import xcdat as xc
+import xclim
 
 from pcmdi_metrics.stats import compute_statistics_dataset as pmp_stats
 
@@ -1100,6 +1101,39 @@ def get_annual_pxx(
         Pmax.to_netcdf(nc_file, "w")
 
     del Pmax
+    return result_dict
+
+
+def get_annual_cwd(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    index = "annual_cwd"
+
+    # Get annual max precipitation
+    ds["pr"] = ds["pr"].where(sftlf.sftlf >= 0.5).where(sftlf.sftlf <= 1)
+    Pcwd = xr.Dataset()
+    Pcwd["ANN"] = xclim.indices.maximum_consecutive_wet_days(
+        ds.pr, thresh="1 mm/day", freq="YS", resample_before_rl=True
+    )
+    Pcwd["time"]["encoding"]["calendar"] = ds.time.encoding["calendar"]
+    Pcwd = update_nc_attrs(Pcwd, dec_mode, drop_incomplete_djf, annual_strict)
+
+    result_dict = metrics_json({index: Pcwd}, obs_dict={}, region="land", regrid=False)
+
+    if fig_file is not None:
+        Pcwd["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "count"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title("Average annual max count of consecutive wet days")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Pcwd.to_netcdf(nc_file, "w")
+
+    del Pcwd
     return result_dict
 
 
