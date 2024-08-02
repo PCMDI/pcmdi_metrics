@@ -1115,7 +1115,7 @@ def get_annual_cwd(
     Pcwd["ANN"] = xclim.indices.maximum_consecutive_wet_days(
         ds.pr, thresh="1 mm/day", freq="YS", resample_before_rl=True
     )
-    Pcwd["time"]["encoding"]["calendar"] = ds.time.encoding["calendar"]
+    Pcwd["time"].encoding["calendar"] = ds.time.encoding["calendar"]
     Pcwd = update_nc_attrs(Pcwd, dec_mode, drop_incomplete_djf, annual_strict)
 
     result_dict = metrics_json({index: Pcwd}, obs_dict={}, region="land", regrid=False)
