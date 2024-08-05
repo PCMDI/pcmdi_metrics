@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import datetime
 
 import cftime
@@ -6,9 +5,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 import xcdat as xc
-import xclim
 
 from pcmdi_metrics.stats import compute_statistics_dataset as pmp_stats
+
+# import xclim
+
 
 bgclr = [0.45, 0.45, 0.45]
 
@@ -1070,6 +1071,7 @@ def get_annual_pxx(
 ):
     varname = "pr"
     index = "annual_pxx"
+    print("Metric:", index)
 
     # Get annual max precipitation
     PR = TimeSeriesData(ds, varname)
@@ -1104,10 +1106,12 @@ def get_annual_pxx(
     return result_dict
 
 
+"""
 def get_annual_cwd(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     index = "annual_cwd"
+    print("Metric:", index)
 
     # Get annual max precipitation
     ds["pr"] = ds["pr"].where(sftlf.sftlf >= 0.5).where(sftlf.sftlf <= 1)
@@ -1115,7 +1119,7 @@ def get_annual_cwd(
     Pcwd["ANN"] = xclim.indices.maximum_consecutive_wet_days(
         ds.pr, thresh="1 mm/day", freq="YS", resample_before_rl=True
     )
-    Pcwd["time"].encoding["calendar"] = ds.time.encoding["calendar"]
+    Pcwd["time"].encoding["calendar"] = ds.time["calendar"]
     Pcwd = update_nc_attrs(Pcwd, dec_mode, drop_incomplete_djf, annual_strict)
 
     result_dict = metrics_json({index: Pcwd}, obs_dict={}, region="land", regrid=False)
@@ -1135,6 +1139,7 @@ def get_annual_cwd(
 
     del Pcwd
     return result_dict
+"""
 
 
 # A couple of statistics that aren't being loaded from mean_climate
