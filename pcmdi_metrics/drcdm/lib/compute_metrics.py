@@ -1110,14 +1110,17 @@ def get_annual_cwd(
     index = "annual_cwd"
     print("Metric:", index)
 
-    # Get annual max precipitation
-    ds["pr"] = ds["pr"].where(sftlf.sftlf >= 0.5).where(sftlf.sftlf <= 1)
+    # Get continuous wet days
     Pcwd = xr.Dataset()
-    Pcwd["ANN"] = xclim.indices.maximum_consecutive_wet_days(
-        ds.pr, thresh="1 mm/day", freq="YS", resample_before_rl=True
+    Pcwd["ANN"] = (
+        xclim.indices.maximum_consecutive_wet_days(
+            ds.pr, thresh="1 mm/day", freq="YS", resample_before_rl=True
+        )
+        .where(sftlf.sftlf >= 0.5)
+        .where(sftlf.sftlf <= 1)
     )
     Pcwd.time.encoding["calendar"] = ds.time.encoding["calendar"]
-    Pcwd = update_nc_attrs(Pcwd, dec_mode, drop_incomplete_djf, annual_strict)
+    Pcwd = update_nc_attrs(Pcwd, dec_mode, drop_incomplete_djf, True)
 
     result_dict = metrics_json({index: Pcwd}, obs_dict={}, region="land", regrid=False)
 
@@ -1135,6 +1138,43 @@ def get_annual_cwd(
         Pcwd.to_netcdf(nc_file, "w")
 
     del Pcwd
+    return result_dict
+
+
+def get_annual_cdd(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    index = "annual_cdd"
+    print("Metric:", index)
+
+    # Get continuous dry days
+    Pcdd = xr.Dataset()
+    Pcdd["ANN"] = (
+        xclim.indices.maximum_consecutive_dry_days(
+            ds.pr, thresh="1 mm/day", freq="YS", resample_before_rl=True
+        )
+        .where(sftlf.sftlf >= 0.5)
+        .where(sftlf.sftlf <= 1)
+    )
+    Pcdd.time.encoding["calendar"] = ds.time.encoding["calendar"]
+    Pcdd = update_nc_attrs(Pcdd, dec_mode, drop_incomplete_djf, True)
+
+    result_dict = metrics_json({index: Pcdd}, obs_dict={}, region="land", regrid=False)
+
+    if fig_file is not None:
+        Pcdd["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "count"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title("Average annual max count of consecutive dry days")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Pcdd.to_netcdf(nc_file, "w")
+
+    del Pcdd
     return result_dict
 
 
