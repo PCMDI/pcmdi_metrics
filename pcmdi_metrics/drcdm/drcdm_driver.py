@@ -406,28 +406,6 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                    # Median
-                    result_dict = compute_metrics.get_pr_q50(
-                        ds,
-                        sftlf,
-                        dec_mode,
-                        drop_incomplete_djf,
-                        annual_strict,
-                        fig_base,
-                        nc_base,
-                    )
-                    metrics_dict["RESULTS"][model][run].update(result_dict)
-                    # 99.9 percentile
-                    # result_dict = compute_metrics.get_pr_q99p9(
-                    #    ds,
-                    #    sftlf,
-                    #    dec_mode,
-                    #    drop_incomplete_djf,
-                    #    annual_strict,
-                    #    fig_base,
-                    #    nc_base,
-                    # )
-                    # metrics_dict["RESULTS"][model][run].update(result_dict)
                     # Max daily precip
                     result_dict = compute_metrics.get_annual_pxx(
                         ds,
@@ -439,7 +417,44 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Consecutive wet days
                     result_dict = compute_metrics.get_annual_cwd(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Consecutive dry days
+                    result_dict = compute_metrics.get_annual_cdd(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Median
+                    # This function must come after the consecutive dry days function
+                    # Otherwise cdd generates all zeros. Unsure why.
+                    result_dict = compute_metrics.get_pr_q50(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # 99.9 percentile
+                    # Long running, can take 50 min per reals
+                    result_dict = compute_metrics.get_pr_q99p9(
                         ds,
                         sftlf,
                         dec_mode,
