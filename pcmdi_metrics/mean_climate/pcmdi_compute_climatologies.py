@@ -32,6 +32,7 @@ P.add_argument("--end", dest="end", help="Defines end year and month", required=
 P.add_argument(
     "--periodinname",
     dest="periodinname",
+    default=True,
     help="Include clim period in name (default yes) or not",
     required=False,
 )
