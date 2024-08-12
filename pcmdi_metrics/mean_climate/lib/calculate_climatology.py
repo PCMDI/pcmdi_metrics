@@ -145,7 +145,9 @@ def calculate_climatology(
             else f".{s}.{ver}.nc"
         )
         # Replace the .nc extension in the base output file with the defined suffix
-        out_season = os.path.join(outdir, outfilename or outfile).replace(".nc", addf)
+        out_season = os.path.join(
+            outdir, outfilename or outfile.split("/")[-1]
+        ).replace(".nc", addf)
 
         print("output file is", out_season)
         # Save the climatology to the output NetCDF file, including global attributes
