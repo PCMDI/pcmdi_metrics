@@ -294,15 +294,15 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                    # result_dict = compute_metrics.get_tasmax_q99p9(
-                    #    ds,
-                    #    sftlf,
-                    #    dec_mode,
-                    #    drop_incomplete_djf,
-                    #    annual_strict,
-                    #    fig_base,
-                    #    nc_base,
-                    # )
+                    result_dict = compute_metrics.get_tasmax_q99p9(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
                     result_dict = compute_metrics.get_tasmax_q50(
                         ds,
