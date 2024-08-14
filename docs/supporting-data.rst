@@ -19,7 +19,7 @@ A location where you want to store the demo data locally can be set: ::
 
 After you have set the location for the demo_output you can download it by entering the following: ::
 
-    import cdat_info
-    cdat_info.download_sample_data_files("data_files.txt", demo_data_directory)
+    from pcmdi_metrics.io.base import download_sample_data_files
+    download_sample_data_files("data_files.txt", demo_data_directory)
 
 The PMP demo data is used for multiple demos. It is ~300MB. The best way to run these demos is via Jupyter notebooks.  Running this initial demo for downloading sample data also on-the-fly creates demo parameter files with the user selection of the demo_data_directory. 
