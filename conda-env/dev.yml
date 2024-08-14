@@ -23,9 +23,9 @@ dependencies:
     - xcdat>=0.7.0
     - xmltodict=0.13.0
     - setuptools=67.7.2
-    - netcdf4=1.6.3
+    - netcdf4>=1.6.3
     - regionmask=0.9.0
-    - rasterio=1.3.6
+    - rasterio>=1.3.6
     - shapely=2.0.1
     - numdifftools
     - nc-time-axis
