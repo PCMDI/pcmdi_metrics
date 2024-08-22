@@ -293,6 +293,10 @@ def create_arctic_map(
                 line_kws={"color": [0.2, 0.2, 0.25], "linewidth": 3},
             )
             if pos2[mo] == 0:
+                if len(model) > 12:
+                    fsize = 12
+                else:
+                    fsize = 14
                 ax.text(
                     0.03,
                     0.04,
@@ -301,7 +305,7 @@ def create_arctic_map(
                     verticalalignment="center",
                     transform=ax.transAxes,
                     backgroundcolor="white",
-                    fontsize=14,
+                    fontsize=fsize,
                 )
             ax.set_extent([-180, 180, 43, 90], ccrs.PlateCarree())
             ax.coastlines(color=[0.3, 0.3, 0.3])
@@ -456,6 +460,10 @@ def create_antarctic_map(
                 line_kws={"color": [0.2, 0.2, 0.25], "linewidth": 3},
             )
             if pos2[mo] == 0:
+                if len(model) > 12:
+                    fsize = 12
+                else:
+                    fsize = 14
                 ax.text(
                     0.03,
                     0.04,
@@ -464,7 +472,7 @@ def create_antarctic_map(
                     verticalalignment="center",
                     transform=ax.transAxes,
                     backgroundcolor="white",
-                    fontsize=14,
+                    fontsize=fsize,
                 )
             ax.set_extent([-180, 180, -53, -90], ccrs.PlateCarree())
             ax.coastlines(color=[0.3, 0.3, 0.3])
