@@ -7,6 +7,7 @@ import xarray as xr
 import xcdat as xc
 import xclim
 
+from pcmdi_metrics.io.xcdat_dataset_io import get_latitude_key, get_longitude_key
 from pcmdi_metrics.stats import compute_statistics_dataset as pmp_stats
 
 bgclr = [0.45, 0.45, 0.45]
@@ -380,9 +381,13 @@ class SeasonalAverager:
 def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     # Add bounds and record user settings in attributes
     # Use this function for any general dataset updates.
-    ds.lat.attrs["standard_name"] = "Y"
-    ds.lon.attrs["standard_name"] = "X"
-    bnds_dict = {"lat": "Y", "lon": "X", "time": "T"}
+    xvar = get_longitude_key(ds)
+    yvar = get_latitude_key(ds)
+    xvarbnds = xvar + "_bnds"
+    yvarbnds = yvar + "_bnds"
+    ds[yvar].attrs["standard_name"] = "Y"
+    ds[xvar].attrs["standard_name"] = "X"
+    bnds_dict = {yvar: "Y", xvar: "X", "time": "T"}
     for item in bnds_dict:
         if "bounds" in ds[item].attrs:
             bnds_var = ds[item].attrs["bounds"]
@@ -396,11 +401,11 @@ def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     ds.attrs["annual_strict"] = str(annual_strict)
 
     # Update fill value encoding
-    ds.lat.encoding["_FillValue"] = None
-    ds.lon.encoding["_FillValue"] = None
+    ds[yvar].encoding["_FillValue"] = None
+    ds[xvar].encoding["_FillValue"] = None
     ds.time.encoding["_FillValue"] = None
-    ds.lat_bnds.encoding["_FillValue"] = None
-    ds.lon_bnds.encoding["_FillValue"] = None
+    ds[yvarbnds].encoding["_FillValue"] = None
+    ds[xvarbnds].encoding["_FillValue"] = None
     ds.time_bnds.encoding["_FillValue"] = None
     for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
         if season in ds:
@@ -681,7 +686,7 @@ def get_annual_tnn(
         annual_strict=annual_strict,
     )
     Tmean = xr.Dataset()
-    Tmean["ANN"] = S.annual_stats("mean")
+    Tmean["ANN"] = S.annual_stats("min")
     Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
 
     # Compute statistics
@@ -720,7 +725,7 @@ def get_annualmean_tasmin(
         annual_strict=annual_strict,
     )
     Tmin = xr.Dataset()
-    Tmin["ANN"] = S.annual_stats("min")
+    Tmin["ANN"] = S.annual_stats("mean")
     Tmin = update_nc_attrs(Tmin, dec_mode, drop_incomplete_djf, annual_strict)
 
     # Compute statistics
