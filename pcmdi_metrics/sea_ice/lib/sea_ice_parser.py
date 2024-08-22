@@ -239,9 +239,16 @@ def create_sea_ice_parser():
     )
 
     parser.add_argument(
-        "--generate_sftlf",
+        "--generate_mask",
         action="store_true",
         help="Flag to generate land sea mask if not found.",
+        required=False,
+    )
+
+    parser.add_argument(
+        "--sft_filename_template",
+        dest="sft_filename_template",
+        help='Filename template for landsea masks ("sftlf" or "sftof")',
         required=False,
     )
 
