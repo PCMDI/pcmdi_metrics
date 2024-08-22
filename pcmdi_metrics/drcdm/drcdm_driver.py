@@ -12,6 +12,7 @@ from pcmdi_metrics.drcdm.lib import (
     region_utilities,
     utilities,
 )
+from pcmdi_metrics.io.xcdat_dataset_io import get_latitude_key
 from pcmdi_metrics.utils import create_land_sea_mask
 
 if __name__ == "__main__":
@@ -249,7 +250,8 @@ if __name__ == "__main__":
                         )
 
                 # Mask out Antarctica
-                sftlf["sftlf"] = sftlf["sftlf"].where(sftlf.lat > -60)
+                sflat = get_latitude_key(sftlf)
+                sftlf["sftlf"] = sftlf["sftlf"].where(sftlf[sflat] > -60)
 
                 if use_region_mask:
                     print("Creating dataset mask.")
