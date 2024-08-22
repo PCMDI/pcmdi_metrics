@@ -8,20 +8,37 @@ import xcdat
 
 from pcmdi_metrics.io import xcdat_openxml
 from pcmdi_metrics.io.base import Base
-from pcmdi_metrics.utils import create_land_sea_mask
 
 
 def load_dataset(filepath):
     # Load an xarray dataset from the given filepath.
     # If list of netcdf files, opens mfdataset.
     # If list of xmls, open last file in list.
+    def fix_calendar(ds):
+        cal = ds.time.calendar
+        # Add any calendar fixes here
+        cal = cal.replace("-", "_")
+        ds.time.attrs["calendar"] = cal
+        ds = xcdat.decode_time(ds)
+        return ds
+
     if filepath[-1].endswith(".xml"):
         # Final item of sorted list would have most recent version date
         ds = xcdat_openxml.xcdat_openxml(filepath[-1])
     elif len(filepath) > 1:
-        ds = xcdat.open_mfdataset(filepath, chunks={"time": -1})
+        try:
+            ds = xcdat.open_mfdataset(filepath, chunks={"time": -1})
+        except ValueError:
+            ds = xcdat.open_mfdataset(filepath, chunks={"time": -1}, decode_times=False)
+            ds = fix_calendar(ds)
     else:
-        ds = xcdat.open_dataset(filepath[0], chunks={"time": -1})
+        try:
+            ds = xcdat.open_dataset(filepath[0], chunks={"time": -1})
+        except ValueError:
+            ds = xcdat.open_dataset(
+                filepath[0], chunks={"time": -1}, decode_times=False
+            )
+            ds = fix_calendar(ds)
     return ds
 
 
@@ -131,12 +148,3 @@ def set_up_realizations(realization):
         realizations = realization
 
     return find_all_realizations, realizations
-
-
-def generate_land_sea_mask(data, debug=False):
-    # generate sftlf if not provided.
-    sft = create_land_sea_mask(data)
-    sftlf = data.copy(data=None)
-    sftlf["sftlf"] = sft * 100
-
-    return sftlf
