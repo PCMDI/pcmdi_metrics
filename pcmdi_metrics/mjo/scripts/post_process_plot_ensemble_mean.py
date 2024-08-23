@@ -1,8 +1,8 @@
 import glob
 import os
 
-import cdms2
-import MV2
+import numpy as np
+import xarray as xr
 from lib_mjo import calculate_ewr
 from plot_wavenumber_frequency_power import plot_power
 
@@ -62,18 +62,21 @@ def main():
                         )
                         + ".nc"
                     )
-                    f = cdms2.open(os.path.join(datadir, ncfile))
-                    d = f("power")
+
+                    ds = xr.open_dataset(os.path.join(datadir, ncfile))
+                    d = ds["power"]
+
                     d_runs.append(d)
-                    f.close()
+
                 except Exception as err:
                     print(model, run, "cannnot load:", err)
                     pass
+
                 if run == runs_list[-1]:
                     num_runs = len(d_runs)
                     # ensemble mean
-                    d_avg = MV2.average(d_runs, axis=0)
-                    d_avg.setAxisList(d.getAxisList())
+                    d_avg = np.average(d_runs, axis=0)
+                    # d_avg.setAxisList(d.getAxisList())
                     title = (
                         mip.upper()
                         + ": "
