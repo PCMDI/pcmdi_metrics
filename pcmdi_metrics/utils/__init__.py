@@ -1,7 +1,4 @@
-from .adjust_units import (
-    adjust_units,
-    fix_tuple
-)
+from .adjust_units import adjust_units, fix_tuple
 from .custom_season import (
     custom_season_average,
     custom_season_departure,
