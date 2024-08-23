@@ -451,7 +451,7 @@ if __name__ == "__main__":
                     if np.max(mask) > 50:
                         mask = mask / 100
                 ds[var] = ds[var].where(mask < 1)
-                area[area_var] = area[area_var] * (1 - mask)
+                # area[area_var] = area[area_var] * (1 - mask)
 
                 if to_nc:
                     # Generate netcdf files of climatologies
