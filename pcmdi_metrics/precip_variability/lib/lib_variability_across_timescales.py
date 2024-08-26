@@ -61,11 +61,24 @@ def precip_variability_across_timescale(
     print(dat, cal)
     print("syr, eyr:", syr, eyr)
 
+    if "360" in cal:
+        f = f.sel(
+            time=slice(
+                str(syr) + "-01-01 00:00:00",
+                str(eyr) + "-12-" + str(30) + " 23:59:59",
+            )
+        )
+    else:
+        f = f.sel(
+            time=slice(
+                str(syr) + "-01-01 00:00:00",
+                str(eyr) + "-12-" + str(31) + " 23:59:59",
+            )
+        )
+
     # Regridding
     xvar = find_lon(f)
     yvar = find_lat(f)
-    nlon = str(len(xvar))
-    nlat = str(len(yvar))
     if np.min(f[xvar]) < 0:
         lon_range = [-180.0, 180.0]
     else:
@@ -75,6 +88,8 @@ def precip_variability_across_timescale(
         print("Cropping from shapefile")
         rgtmp = region_from_file(rgtmp, fshp, attr, feature)
     drg = rgtmp[var] * float(fac)
+    nlon = str(len(drg[xvar]))
+    nlat = str(len(drg[yvar]))
 
     f.close()
 
@@ -296,6 +311,8 @@ def ClimAnom(d, ntd, syr, eyr, cal):
                     str(year) + "-12-" + str(ldy) + " 23:59:59",
                 )
             )
+            print(str(year) + "-01-01 00:00:00")
+            print(str(year) + "-12-" + str(ldy) + " 23:59:59")
 
             if yrtmp.shape[0] == 365 * ntd:
                 anom = np.append(
@@ -303,6 +320,7 @@ def ClimAnom(d, ntd, syr, eyr, cal):
                     (np.delete(dseg[iyr], 59, axis=0) - np.delete(clim, 59, axis=0)),
                 )
             else:
+                print("other")
                 anom = np.append(anom, (dseg[iyr] - clim))
     else:
         for iyr, year in enumerate(range(syr, eyr + 1)):
