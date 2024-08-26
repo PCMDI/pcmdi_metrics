@@ -25,3 +25,23 @@ def adjust_units(da: xr.DataArray, adjust_tuple: tuple) -> xr.DataArray:
         if len(adjust_tuple) > 3:
             da.assign_attrs(units=adjust_tuple[3])
     return da
+
+
+def fix_tuple(target: tuple) -> tuple:
+    """Fix formatting of tuple read from the command line.
+
+    Parameters
+    ----------
+    tuple : tuple
+        Any tuple
+
+    Returns
+    -------
+    target: tuple
+        The tuple is reformatted as needed.
+    """
+    if target[0] == "(":
+        # Tuple has been split by character rather than commas
+        target = "".join(target)
+        target = eval(target)
+    return target
