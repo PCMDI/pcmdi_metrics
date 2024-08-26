@@ -7,6 +7,7 @@
 # to expert-assessed values from Sherwood et al (2020)
 # =============================================
 
+import os
 from datetime import date
 
 # IMPORT STUFF:
@@ -16,13 +17,9 @@ import xcdat as xc
 
 from pcmdi_metrics.utils import create_land_sea_mask
 
-# from global_land_mask import globe
-
 # =============================================
 # define necessary information
 # =============================================
-
-datadir = "./data/"
 
 # Define a python dictionary containing the sections of the histogram to consider
 # These are the same as in Zelinka et al, GRL, 2016
@@ -145,14 +142,14 @@ def get_model_data(filepath):
 
 
 ###########################################################################
-def get_CRK_data(filepath):
+def get_CRK_data(filepath, datadir):
     # Read in data, regrid
 
     # Load in regridded monthly mean climatologies from control and perturbed simulation
     print("get data")
     ctl, fut = get_model_data(filepath)
     print("get LW and SW kernel")
-    LWK, SWK = get_kernel_regrid(ctl)
+    LWK, SWK = get_kernel_regrid(ctl, datadir)
 
     # global mean and annual average delta tas
     avgdtas0 = fut["tas"] - ctl["tas"]
@@ -202,10 +199,12 @@ def get_CRK_data(filepath):
 
 
 ###########################################################################
-def get_kernel_regrid(ctl):
+def get_kernel_regrid(ctl, datadir):
     # Read in data and map kernels to lat/lon
 
-    f = xc.open_mfdataset(datadir + "cloud_kernels2.nc", decode_times=False)
+    f = xc.open_mfdataset(
+        os.path.join(datadir, "cloud_kernels2.nc"), decode_times=False
+    )
     f = f.rename({"mo": "time", "tau_midpt": "tau", "p_midpt": "plev"})
     f["time"] = ctl["time"].copy()
     f["tau"] = np.arange(7)
@@ -1011,13 +1010,13 @@ def klein_metrics(obs_clisccp, gcm_clisccp, LWkern, SWkern, WTS):
 
 ###########################################################################
 def cal_Klein_metrics(
-    ctl_clisccp, LWK, SWK, area_wts, ctl_clisccp_wap, LWK_wap, SWK_wap
+    ctl_clisccp, LWK, SWK, area_wts, ctl_clisccp_wap, LWK_wap, SWK_wap, datadir
 ):
     ##########################################################
     ##### Load in ISCCP HGG clisccp climo annual cycle  ######
     ##########################################################
 
-    f = xc.open_dataset(datadir + "AC_clisccp_ISCCP_HGG_198301-200812.nc")
+    f = xc.open_dataset(os.path.join(datadir, "AC_clisccp_ISCCP_HGG_198301-200812.nc"))
     # f.history='Written by /work/zelinka1/scripts/load_ISCCP_HGG.py on feedback.llnl.gov'
     # f.comment='Monthly-resolved climatological annual cycle over 198301-200812'
     obs_clisccp_AC = f["AC_clisccp"]
@@ -1027,7 +1026,9 @@ def cal_Klein_metrics(
     obs_clisccp_AC["plev"] = np.arange(7)
     del f
 
-    f = xc.open_dataset(datadir + "AC_clisccp_wap_ISCCP_HGG_198301-200812.nc")
+    f = xc.open_dataset(
+        os.path.join(datadir, "AC_clisccp_wap_ISCCP_HGG_198301-200812.nc")
+    )
     # f.history='Written by /work/zelinka1/scripts/load_ISCCP_HGG.py on feedback.llnl.gov'
     # f.comment='Monthly-resolved climatological annual cycle over 198301-200812, in omega500 space'
     obs_clisccp_AC_wap = f["AC_clisccp_wap"]
@@ -1128,7 +1129,7 @@ def regional_breakdown(data, OCN, LND, area_wts, norm=False):
 
 
 ###########################################################################
-def CloudRadKernel(filepath):
+def CloudRadKernel(filepath, datadir):
     (
         ctl_clisccp,
         fut_clisccp,
@@ -1142,7 +1143,7 @@ def CloudRadKernel(filepath):
         SWK_wap,
         ctl_N,
         fut_N,
-    ) = get_CRK_data(filepath)
+    ) = get_CRK_data(filepath, datadir)
 
     OCN = ocean_mask.copy()
     LND = land_mask.copy()
@@ -1152,7 +1153,7 @@ def CloudRadKernel(filepath):
     ##############################################################################
     print("Compute Klein et al error metrics")
     KEM_dict = cal_Klein_metrics(
-        ctl_clisccp, LWK, SWK, area_wts, ctl_clisccp_wap, LWK_wap, SWK_wap
+        ctl_clisccp, LWK, SWK, area_wts, ctl_clisccp_wap, LWK_wap, SWK_wap, datadir
     )
     # [sec][region][sfc][ID], ID=E_TCA,E_ctpt,E_LW,E_SW,E_NET
 
