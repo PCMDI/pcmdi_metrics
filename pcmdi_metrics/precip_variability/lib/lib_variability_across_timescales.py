@@ -446,6 +446,13 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc, regions_specs):
     Output
     - psdmfm: Domain and Frequency averaged of spectral power (json)
     """
+
+    def val_from_rs(regions_specs, dom):
+        if regions_specs is not None:
+            if dom in regions_specs:
+                return regions_specs[dom].get("value", -1)
+        return -1
+
     domains = [
         "Total_50S50N",
         "Ocean_50S50N",
@@ -493,9 +500,9 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc, regions_specs):
     for dom in domains:
         psdmfm[dom] = {}
 
-        if "Ocean" in dom or regions_specs[dom].get("value", -1) == 0:
+        if "Ocean" in dom or val_from_rs(regions_specs, dom) == 0:
             dmask = d.where(mask == 0)
-        elif "Land" in dom or regions_specs[dom].get("value", -1) == 1:
+        elif "Land" in dom or val_from_rs(regions_specs, dom) == 1:
             dmask = d.where(mask == 1)
         else:
             dmask = d
