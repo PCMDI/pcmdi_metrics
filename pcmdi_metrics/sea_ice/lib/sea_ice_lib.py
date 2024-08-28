@@ -385,7 +385,7 @@ def load_dataset(filepath):
         if filepath.endswith(".xml"):
             ds = xcdat_openxml.xcdat_openxml(filepath)
         else:
-            ds = xc.open_dataset(filepath[0])
+            ds = xc.open_dataset(filepath)
     return ds
 
 
