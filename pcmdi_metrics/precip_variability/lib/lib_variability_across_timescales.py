@@ -59,7 +59,7 @@ def precip_variability_across_timescale(
         f = xcdat.decode_time(f)
     cal = f.time.encoding["calendar"]
     print(dat, cal)
-    print("syr, eyr:", syr, eyr)
+    print(syr, eyr)
 
     if "360" in cal:
         f = f.sel(
@@ -99,6 +99,17 @@ def precip_variability_across_timescale(
     # Power spectum of total
     freqs, ps, rn, sig95 = Powerspectrum(drg, nperseg, noverlap)
     # Domain & Frequency average
+    if fshp and regions_specs is None:
+        # Set up the regions_specs to cover the whole earth; areas outside
+        # the shapefile region are NaN, and will not be included.
+        regions_specs = {
+            feature: {
+                "domain": {
+                    "latitude": (-90, 90),
+                    "longitude": (lon_range[0], lon_range[1]),
+                }
+            }
+        }
     psdmfm_forced = Avg_PS_DomFrq(ps, freqs, ntd, dat, mip, "forced", regions_specs)
     # Write data (nc file)
     outfilename = (
@@ -311,8 +322,6 @@ def ClimAnom(d, ntd, syr, eyr, cal):
                     str(year) + "-12-" + str(ldy) + " 23:59:59",
                 )
             )
-            print(str(year) + "-01-01 00:00:00")
-            print(str(year) + "-12-" + str(ldy) + " 23:59:59")
 
             if yrtmp.shape[0] == 365 * ntd:
                 anom = np.append(
@@ -320,7 +329,6 @@ def ClimAnom(d, ntd, syr, eyr, cal):
                     (np.delete(dseg[iyr], 59, axis=0) - np.delete(clim, 59, axis=0)),
                 )
             else:
-                print("other")
                 anom = np.append(anom, (dseg[iyr] - clim))
     else:
         for iyr, year in enumerate(range(syr, eyr + 1)):
@@ -465,10 +473,10 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc, regions_specs):
     - psdmfm: Domain and Frequency averaged of spectral power (json)
     """
 
-    def val_from_rs(regions_specs, dom):
-        if regions_specs is not None:
-            if dom in regions_specs:
-                return regions_specs[dom].get("value", -1)
+    def val_from_rs(regions_specs, reg_dom):
+        if regions_specs:
+            if reg_dom in regions_specs:
+                return regions_specs[reg_dom].get("value", -1)
         return -1
 
     domains = [
@@ -518,9 +526,9 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc, regions_specs):
     for dom in domains:
         psdmfm[dom] = {}
 
-        if "Ocean" in dom or val_from_rs(regions_specs, dom) == 0:
+        if "Ocean_" in dom or val_from_rs(regions_specs, dom) == 0:
             dmask = d.where(mask == 0)
-        elif "Land" in dom or val_from_rs(regions_specs, dom) == 1:
+        elif "Land_" in dom or val_from_rs(regions_specs, dom) == 1:
             dmask = d.where(mask == 1)
         else:
             dmask = d
@@ -550,6 +558,19 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc, regions_specs):
             am = dmask.spatial.average("ps", axis=["X", "Y"], weights="generate")["ps"]
 
         am = np.array(am)
+
+        def check_nan(data):
+            if isinstance(data, list):
+                data2 = []
+                for item in data:
+                    if np.isnan(item):
+                        data2.append(str(data))
+                    else:
+                        data2.append(data)
+                return data2
+            if np.isnan(data):
+                return str(data)
+            return data
 
         for frq in frqs:
             if frq == "semi-diurnal":  # pr=0.5day
@@ -584,7 +605,7 @@ def Avg_PS_DomFrq(d, frequency, ntd, dat, mip, frc, regions_specs):
             elif frq == "interannual":  # 365day=<pr
                 idx2 = prdday_to_frqidx(365, frequency, ntd)
                 amfm = np.nanmean(am[: idx2 + 1])
-            psdmfm[dom][frq] = amfm.tolist()
+            psdmfm[dom][frq] = check_nan(amfm.tolist())
 
     print("Complete domain and frequency average of spectral power")
     return psdmfm
