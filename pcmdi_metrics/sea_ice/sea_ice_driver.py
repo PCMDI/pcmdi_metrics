@@ -13,7 +13,7 @@ from pcmdi_metrics.io.xcdat_dataset_io import get_latitude_key, get_longitude_ke
 from pcmdi_metrics.sea_ice.lib import create_sea_ice_parser
 from pcmdi_metrics.sea_ice.lib import sea_ice_figures as fig
 from pcmdi_metrics.sea_ice.lib import sea_ice_lib as lib
-from pcmdi_metrics.utils import adjust_units, create_land_sea_mask
+from pcmdi_metrics.utils import create_land_sea_mask, fix_tuple
 
 if __name__ == "__main__":
     logging.getLogger("xcdat").setLevel(logging.ERROR)
@@ -76,10 +76,10 @@ if __name__ == "__main__":
     )
 
     # Fix issues that can come from command line tuples
-    ModUnitsAdjust = adjust_units.fix_tuples(ModUnitsAdjust)
-    AreaUnitsAdjust = adjust_units.fix_tuples(AreaUnitsAdjust)
-    ObsUnitsAdjust = adjust_units.fix_tuples(ObsUnitsAdjust)
-    ObsAreaUnitsAdjust = adjust_units.fix_tuples(ObsAreaUnitsAdjust)
+    ModUnitsAdjust = fix_tuple(ModUnitsAdjust)
+    AreaUnitsAdjust = fix_tuple(AreaUnitsAdjust)
+    ObsUnitsAdjust = fix_tuple(ObsUnitsAdjust)
+    ObsAreaUnitsAdjust = fix_tuple(ObsAreaUnitsAdjust)
 
     # Initialize output.json file
     meta = lib.MetadataFile(metrics_output_path)
