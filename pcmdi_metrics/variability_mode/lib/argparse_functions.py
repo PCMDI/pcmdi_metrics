@@ -224,6 +224,8 @@ def VariabilityModeCheck(mode, P):
             "NAM",
             "NAO",
             "SAM",
+            "PSA1",
+            "PSA2",
             "PNA",
             "PDO",
             "NPO",

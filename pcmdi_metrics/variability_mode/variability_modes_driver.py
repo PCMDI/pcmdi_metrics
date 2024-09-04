@@ -15,6 +15,10 @@
 ## EOF2 based variability modes
 - NPO: North Pacific Oscillation (2nd EOFs of PNA domain)
 - NPGO: North Pacific Gyre Oscillation (2nd EOFs of PDO domain)
+- PSA2: Pacific South America Mode (2nd EOFs of SAM domain)
+
+## EOF3 based variability modes
+- PSA3: Pacific South America Mode (3rd EOFs of SAM domain)
 
 ## Reference:
 Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
@@ -178,8 +182,10 @@ eofn_mod = param.eofn_mod
 if eofn_obs is None:
     if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
         eofn_obs = 1
-    elif mode in ["NPGO", "NPO"]:
+    elif mode in ["NPGO", "NPO", "PSA1"]:
         eofn_obs = 2
+    elif mode in ["PSA2"]:
+        eofn_obs = 3
     else:
         raise ValueError(f"{eofn_obs} is not given for {mode}")
 else:
@@ -188,8 +194,10 @@ else:
 if eofn_mod is None:
     if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
         eofn_mod = 1
-    elif mode in ["NPGO", "NPO"]:
+    elif mode in ["NPGO", "NPO", "PSA2"]:
         eofn_mod = 2
+    elif mode in ["PSA2"]:
+        eofn_mod = 3
     else:
         raise ValueError(f"{eofn_mod} is not given for {mode}")
 else:
