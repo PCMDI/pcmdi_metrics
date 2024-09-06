@@ -15,7 +15,7 @@ from monsoon_precip_index_fncs import mpd, mpi_skill_scores
 from monsoon_precip_index_fncs import regrid, da_to_ds
 from pcmdi_metrics.utils import StringConstructor
 import sys
-#import xcdat as xc
+import xcdat as xc
 import xarray as xr
 from pcmdi_metrics.io import load_regions_specs, region_subset
 #import da_to_ds
@@ -163,7 +163,7 @@ def monsoon_wang_runner(args):
         raise RuntimeError("No model file found!")
 
     print("nout = ", nout)
-    print("jout = ", jout)
+    #print("jout = ", jout)
     print("gmods = ", gmods)
     #########################################
 
@@ -182,18 +182,19 @@ def monsoon_wang_runner(args):
 
     #print("locals = ", locals)
     #print("globals = ", globals)
-    #print('os.path.join(egg_pth, "default_regions.py")  = ', os.path.join(egg_pth, "default_regions.py"))
+    print('os.path.join(egg_pth, "default_regions.py")  = ', os.path.join(egg_pth, "default_regions.py"))
     # /home/dong12/miniconda3/envs/PMP_240423/share/pmp/default_regions.py
 
     regions_specs = locals["regions_specs"]
-    #doms = ["AllMW", "AllM", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
-    doms = ["AllMW"]#, "AllM", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
-    doms = ["AUSM"]
-    doms = ["NAMM"]
+    doms = ["AllMW", "AllM", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
+    #doms = ["AllMW"]#, "AllM", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
+    #doms = ["AUSM"]
+    #doms = ["NAMM"]
+    #doms = ["NAFM"]
     
     #print('region_specs = ',regions_specs)
-    print('region_specs["AllMW"] = ',regions_specs['AllMW'])
-    print('region_specs["AllMW"]["domain"] = ',regions_specs['AllMW']['domain'])
+    #print('region_specs["AllMW"] = ',regions_specs['AllMW'])
+    #print('region_specs["AllMW"]["domain"] = ',regions_specs['AllMW']['domain'])
     #print('region_specs["AllM"]["domain"] = ',regions_specs['AllM']['domain'])
     #print('region_specs["ASM"]["domain"] = ',regions_specs['ASM']['domain'])
 
@@ -229,10 +230,10 @@ def monsoon_wang_runner(args):
 
         annrange_mod, mpi_mod = mpd(d_orig)
 
-        print('mod_annrange.dims = ', annrange_mod.dims)
-        print('obs_annrange_dims = ', annrange_obs.dims)
-        print('mod_annrange.coords = ', annrange_mod.coords)
-        print('obs_annrange_coords = ', annrange_obs.coords)
+        #print('mod_annrange.dims = ', annrange_mod.dims)
+        #print('obs_annrange_dims = ', annrange_obs.dims)
+        #print('mod_annrange.coords = ', annrange_mod.coords)
+        #print('obs_annrange_coords = ', annrange_obs.coords)
 
 
 #        sys.exit()
@@ -269,6 +270,7 @@ def monsoon_wang_runner(args):
 
         regions_specs = load_regions_specs()
         #print("regions_specs - ", regions_specs)
+        print("list(regions_specs.keys())",  list(regions_specs.keys()))
 
         for dom in doms:
             mpi_stats_dic[mod][dom] = {}
@@ -277,8 +279,13 @@ def monsoon_wang_runner(args):
 
             print("dom =  ", dom)
 
-            #mpi_obs_reg = region_subset(mpi_obs, dom, data_var="pr", regions_specs=regions_specs)
-            mpi_obs_reg = region_subset(mpi_obs, regions_specs=regions_specs, region=dom)
+            #mpi_obs.to_netcdf("xd_mpi_obs.nc")
+
+            mpi_obs_reg = region_subset(mpi_obs, dom, data_var="pr", regions_specs=regions_specs)
+            #mpi_obs_reg = region_subset(mpi_obs, dom)#, var="pr", regions_specs=regions_specs)
+            #mpi_obs_reg = region_subset(mpi_obs, dom, var="pr")#, regions_specs=regions_specs)
+            #mpi_obs_reg = region_subset(mpi_obs, regions_specs, region=dom)#, var="pr", regions_specs=regions_specs)
+            #mpi_obs_reg = region_subset(mpi_obs, regions_specs=regions_specs, region=dom)
 
             #print("mpi_obs_reg =  ", mpi_obs_reg)
             #sys.exit()
@@ -289,7 +296,8 @@ def monsoon_wang_runner(args):
             mpi_obs_reg_sd = mpi_obs_reg.std(dim=['lat', 'lon'])
 
             #mpi_mod_reg = mpi_mod(reg_sel)
-            mpi_mod_reg = region_subset(mpi_mod, regions_specs=regions_specs, region=dom)
+            #mpi_mod_reg = region_subset(mpi_mod, regions_specs=regions_specs, region=dom)
+            mpi_mod_reg = region_subset(mpi_mod, dom)
 
             #cor = float(statistics.correlation(mpi_mod_reg, mpi_obs_reg, axis="xy"))
             da1_flat = mpi_mod_reg.values.ravel()
@@ -307,29 +315,37 @@ def monsoon_wang_runner(args):
             #annrange_mod_dom = annrange_mod(reg_sel)
             #annrange_obs_dom = annrange_obs(reg_sel)
 
-            annrange_mod_dom = region_subset(annrange_mod, regions_specs=regions_specs, region=dom)
-            annrange_obs_dom = region_subset(annrange_obs, regions_specs=regions_specs, region=dom)
+            #annrange_mod_dom = region_subset(annrange_mod, regions_specs=regions_specs, region=dom)
+            #annrange_obs_dom = region_subset(annrange_obs, regions_specs=regions_specs, region=dom)
+            annrange_mod_dom = region_subset(annrange_mod, dom)
+            annrange_obs_dom = region_subset(annrange_obs, dom)
 
             # SKILL SCORES
             #  HIT/(HIT + MISSED + FALSE ALARMS)
-#            hit, missed, falarm, score, hitmap, missmap, falarmmap = mpi_skill_scores(
-#                annrange_mod_dom, annrange_obs_dom, thr
-#            )
+            hit, missed, falarm, score, hitmap, missmap, falarmmap = mpi_skill_scores(
+                annrange_mod_dom, annrange_obs_dom, thr
+            )
 
             #  POPULATE DICTIONARY FOR JSON FILES
             mpi_stats_dic[mod][dom] = {}
             mpi_stats_dic[mod][dom]["cor"] = format(cor, sig_digits)
             mpi_stats_dic[mod][dom]["rmsn"] = format(rmsn, sig_digits)
-#            mpi_stats_dic[mod][dom]["threat_score"] = format(score, sig_digits)
+            mpi_stats_dic[mod][dom]["threat_score"] = format(score, sig_digits)
 
             # SAVE ANNRANGE AND HIT MISS AND FALSE ALARM FOR EACH MOD DOM
-            fm = os.path.join(nout, "_".join([mod, dom, "wang-monsoon.nc"]))
-            g = cdms2.open(fm, "w")
-            g.write(annrange_mod_dom)
+            fm = os.path.join(nout, "_".join([mod, dom, "wang-monsoon_xcdat.nc"]))
+            #g = cdms2.open(fm, "w")
+            #g.write(annrange_mod_dom)
             #g.write(hitmap, dtype=numpy.int32)
             #g.write(missmap, dtype=numpy.int32)
             #g.write(falarmmap, dtype=numpy.int32)
-            g.close()
+            #g.close()
+            ds_out = xr.Dataset({
+                    "hitmap": hitmap,
+                    "missmap": missmap,
+                    "falarmmap": falarmmap
+                    })
+            ds_out.to_netcdf(fm)
         f.close()
 
     #  OUTPUT METRICS TO JSON FILE

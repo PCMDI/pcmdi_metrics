@@ -93,11 +93,11 @@ def mpd(data):
     #print("mjjas = ", mjjas)
     #print("data  = ", data)
     #print("data.dims = ", data.dims)
-    print("data.coords = ", data.coords)
+    #print("data.coords = ", data.coords)
 
     #data_map = data.drop("time")
     data_map = data.isel(time=0)
-    print("data_map =  ", data_map.dims)
+    #print("data_map =  ", data_map.dims)
 
     #sys.exit()
 
@@ -122,12 +122,16 @@ def mpd(data):
 #        e = tmp
 
     #print('annrange = ', annrange)
-    print('annrange.shape = ', annrange.shape)
+    #print('annrange.shape = ', annrange.shape)
     #print('lat = ', lat)
     #print('i = ', i, '   e = ', e)
 
     #annrange[slice(i, e)] = -annrange[slice(i, e)]
-    annrange = np.absolute(annrange)
+
+    #annrange = np.absolute(annrange)
+
+    da_annrange = xr.DataArray(annrange, coords = data_map.coords, dims = data_map.dims)
+    da_annrange = da_annrange.where(da_annrange.lat >= 0, da_annrange*-1)
 
     #print('slice = ', slice(i, e))
     #print('annrange = ', annrange)
@@ -136,21 +140,23 @@ def mpd(data):
 
 #    sys.exit()
 
-    mpi = np.divide(annrange, ann, where=ann.astype(bool))
+    #mpi = np.divide(annrange, ann, where=ann.astype(bool))
+    mpi = np.divide(da_annrange.values, ann, where=ann.astype(bool))
+
     #mpi = MV2.divide(annrange, ann)
     #mpi.id = data.id + "_int"
     #mpi.longname = "intensity"
 
-    print('mpi.shape = ', mpi.shape)
-    print('annrange.shape = ', annrange.shape)
+    #print('mpi.shape = ', mpi.shape)
+    #print('annrange.shape = ', annrange.shape)
 
-    da_annrange = xr.DataArray(annrange, coords = data_map.coords, dims = data_map.dims)
+    #da_annrange = xr.DataArray(annrange, coords = data_map.coords, dims = data_map.dims)
     da_mpi = xr.DataArray(mpi, coords = data_map.coords, dims = data_map.dims)
 
-    print('da_annrange.dims = ', da_annrange.dims)
-    print('da_mpi_dims = ', da_mpi.dims)
-    print('da_annrange.coords = ', da_annrange.coords)
-    print('da_mpi_coords = ', da_mpi.coords)
+    #print('da_annrange.dims = ', da_annrange.dims)
+    #print('da_mpi_dims = ', da_mpi.dims)
+    #print('da_annrange.coords = ', da_annrange.coords)
+    #print('da_mpi_coords = ', da_mpi.coords)
 
     #print("da_mpi = ", da_mpi)
 
@@ -180,34 +186,60 @@ def mpi_skill_scores(annrange_mod_dom, annrange_obs_dom, threshold=2.5 / 86400.0
     """
     #print('annrange_mod_dom = ', annrange_mod_dom)
     print('annrange_mod_dom.shape = ', annrange_mod_dom.shape)
-    print('threshold = ', threshold)
+    #print('threshold = ', threshold)
     mt = np.ma.greater(annrange_mod_dom, threshold)
     ot = np.ma.greater(annrange_obs_dom, threshold)
 
-    print('mt = ', mt)
-    print('type mt = ', type(mt))
-    print('mt.shape = ', mt.shape)
+    #print('mt = ', mt)
+    #print('type mt = ', type(mt))
+    #print('mt.shape = ', mt.shape)
 
     hitmap = mt * ot  # only where both  mt and ot are True
     hit = float(hitmap.sum())
+    #print("hitmap = ", hitmap)
+    #print("hit = ", hit)
 
     xor = np.ma.logical_xor(mt, ot)
     missmap = xor * ot
-    missed = float(MV2.sum(missmap))
+    #missed = float(MV2.sum(missmap))
+    #print("xor = ", xor)
+    #print("missmap = ", missmap)
+    #print("missed = ", missed)
+    missed = float(missmap.sum())
+    #print("missed = ", missed)
 
     falarmmap = xor * mt
-    falarm = float(MV2.sum(falarmmap))
+    #falarm = float(MV2.sum(falarmmap))
+    #print("falarm = ", falarm)
+    falarm = float(falarmmap.sum())
+    #print("falarm = ", falarm)
 
     if (hit + missed + falarm) > 0.0:
         score = hit / (hit + missed + falarm)
     else:
         score = 1.0e20
 
-    hitmap.id = "hit"
-    missmap.id = "miss"
-    falarmmap.id = "false_alarm"
+    #hitmap.id = "hit"
+    #missmap.id = "miss"
+    #falarmmap.id = "false_alarm"
 
-    for a in [hitmap, missmap, falarmmap]:
-        a.setAxisList(annrange_mod_dom.getAxisList())
+    #for a in [hitmap, missmap, falarmmap]:
+    #    a.setAxisList(annrange_mod_dom.getAxisList())
 
-    return hit, missed, falarm, score, hitmap, missmap, falarmmap
+
+    xr_hitmap = xr.DataArray(hitmap, name='hitmap',\
+        coords={ 'lat': annrange_mod_dom.lat, 'lon': annrange_mod_dom.lon},\
+        dims=[ 'lat', 'lon'])
+
+    xr_missmap = xr.DataArray(missmap, name='missmap',\
+        coords={ 'lat': annrange_mod_dom.lat, 'lon': annrange_mod_dom.lon},\
+        dims=[ 'lat', 'lon'])
+
+    xr_falarmmap = xr.DataArray(falarmmap, name='falarmmap',\
+        coords={ 'lat': annrange_mod_dom.lat, 'lon': annrange_mod_dom.lon},\
+        dims=[ 'lat', 'lon'])
+
+
+
+    #return hit, missed, falarm, score, hitmap, missmap, falarmmap
+    return hit, missed, falarm, score, xr_hitmap, xr_missmap, xr_falarmmap
