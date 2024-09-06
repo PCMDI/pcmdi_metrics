@@ -20,4 +20,5 @@ from .xcdat_dataset_io import (  # noqa
     get_time_bounds_key,
     get_time_key,
     select_subset,
+    da_to_ds,
 )
