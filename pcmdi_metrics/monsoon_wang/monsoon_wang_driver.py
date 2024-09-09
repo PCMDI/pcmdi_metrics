@@ -160,6 +160,7 @@ def monsoon_wang_runner(args):
             gmods.append(mod)
 
     if len(gmods) == 0:
+        print("gmods = ", gmods)
         raise RuntimeError("No model file found!")
 
     print("nout = ", nout)
