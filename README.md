@@ -217,6 +217,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://sites.google.com/uw.edu/kimresearchgroup"><img src="https://scholar.googleusercontent.com/citations?view_op=view_photo&user=3xLjsIsAAAAJ&citpid=3?s=100" width="100px;" alt="Daehyun Kim"/><br /><sub><b>Daehyun Kim</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=" title="Code">💻</a> <a href="#research" title="Research">🔬</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/bosup"><img src="https://avatars.githubusercontent.com/u/130708142?v=4?s=100" width="100px;" alt="Bo"/><br /><sub><b>Bo</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=bosup" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
