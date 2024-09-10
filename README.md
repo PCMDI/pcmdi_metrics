@@ -109,6 +109,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.5.1]      | Technical update
 | [v3.5]        | Technical update: MJO and Monsoon Sperber [xCDAT](https://xcdat.readthedocs.io/en/latest/) conversion
 | [v3.4.1]      | Technical update
 | [v3.4]        | Technical update: Modes of variability [xCDAT](https://xcdat.readthedocs.io/en/latest/) conversion
@@ -144,6 +145,7 @@ Release Notes and History
 
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.5.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5.1
 [v3.5]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5
 [v3.4.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.4.1
 [v3.4]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.4
