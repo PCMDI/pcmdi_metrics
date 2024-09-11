@@ -130,8 +130,21 @@ def get_model_run_out_path(interim_output_path_dict, var):
     return path
 
 
-def get_ref_catalogue(ref_catalogue_file_path):
+def get_ref_catalogue(ref_catalogue_file_path, ref_data_head=None):
     refs_dict = load_json_as_dict(ref_catalogue_file_path)
+    if ref_data_head:
+        for var in refs_dict:
+            for data in refs_dict[var]:
+                data_path = os.path.join(
+                    ref_data_head, refs_dict[var][data]["template"]
+                )
+                refs_dict[var][data].update(
+                    {
+                        "path": os.path.dirname(data_path),
+                        "filename": os.path.basename(data_path),
+                        "template": data_path,
+                    }
+                )
     return refs_dict
 
 
