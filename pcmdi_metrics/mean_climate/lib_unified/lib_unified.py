@@ -308,7 +308,7 @@ def process_dataset(
         data_path = get_model_run_data_path(data_dict, var, model, run)
         out_path = get_model_run_out_path(interim_output_path_dict, var)
         models_dict[var][model][run]["path_ac"] = out_path
-        if varname in models_dict[var][model][run]:
+        if "varname" in models_dict[var][model][run]:
             varname = models_dict[var][model][run]["varname"]
         else:
             varname = var
@@ -379,7 +379,7 @@ def calculate_and_save_metrics(
 
     # Dump the dictionary as a JSON file per run
     dict_to_write = multi_level_dict()
-    
+
     if level is None:
         var_key = var
     else:
