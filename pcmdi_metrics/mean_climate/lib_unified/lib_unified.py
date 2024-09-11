@@ -1,4 +1,5 @@
 import os
+import re
 from typing import Dict, List, Optional
 
 from pcmdi_metrics.mean_climate.lib_unified.lib_unified_dict import (
@@ -67,15 +68,21 @@ def get_model_catalogue(
     model_data_path_template: Optional[str] = None,
 ) -> Dict[str, Dict[str, Dict[str, Dict[str, str]]]]:
     def update_model_dict(
-        model_dict: Dict, model_data_path_template: str, var: str, model: str, run: str
+        model_dict: Dict,
+        model_data_path_template: str,
+        varname: str,
+        model: str,
+        run: str,
     ) -> None:
-        data_path = generate_model_data_path(model_data_path_template, var, model, run)
+        data_path = generate_model_data_path(
+            model_data_path_template, varname, model, run
+        )
         model_dict[var][model][run].update(
             {
                 "path": os.path.dirname(data_path),
                 "filename": os.path.basename(data_path),
                 "template": data_path,
-                "varname": var,
+                "varname": varname,
             }
         )
 
@@ -98,7 +105,11 @@ def get_model_catalogue(
                 runs = runs_dict[model]
                 for run in runs:
                     update_model_dict(
-                        models_dict, model_data_path_template, var, model, run
+                        models_dict,
+                        model_data_path_template,
+                        split_string(var)[0],
+                        model,
+                        run,
                     )
     else:
         raise ValueError(
@@ -337,7 +348,7 @@ def process_dataset(
         ac_level_interp = interpolate(ac_level, common_grid)
 
         ### implement plot here if necessary
-
+        print("level:", level)
         ### implement save
 
         if data_type == "ref":
@@ -400,3 +411,7 @@ def calculate_and_save_metrics(
 
 def remove_duplicates(tmp: list) -> list:
     return sorted(list(dict.fromkeys(tmp)))
+
+
+def split_string(s):
+    return re.split(r"[-_]", s)
