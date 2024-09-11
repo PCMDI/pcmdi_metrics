@@ -296,7 +296,10 @@ def process_dataset(
         data_path = get_ref_data_path(refs_dict, var, ref)
         out_path = get_ref_out_path(interim_output_path_dict, var)
         refs_dict[var][ref]["path_ac"] = out_path
-        varname = refs_dict[var][ref]["varname"]
+        if "varname" in refs_dict[var][ref]:
+            varname = refs_dict[var][ref]["varname"]
+        else:
+            varname = var
     else:
         model, run = data_name
         models_dict = data_dict
@@ -305,7 +308,10 @@ def process_dataset(
         data_path = get_model_run_data_path(data_dict, var, model, run)
         out_path = get_model_run_out_path(interim_output_path_dict, var)
         models_dict[var][model][run]["path_ac"] = out_path
-        varname = models_dict[var][model][run]["varname"]
+        if varname in models_dict[var][model][run]:
+            varname = models_dict[var][model][run]["varname"]
+        else:
+            varname = var
 
     print(
         f"Processing {data_type} dataset - varname: {varname}, data: {data_name}, path: {data_path}"
@@ -392,7 +398,7 @@ def calculate_and_save_metrics(
     if debug:
         print_dict(dict_to_write)
 
-    return
+    return metrics_dict
 
 
 def remove_duplicates(tmp: list) -> list:
