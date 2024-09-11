@@ -100,14 +100,18 @@ def get_model_catalogue(
     elif all(var is not None for var in (variables, models, runs_dict)):
         # Option 2: Create models_dict from given parameters (variables, models, runs_dict, and model_data_path_template) info
         models_dict = multi_level_dict()
-        for var in variables:
+
+        variables_dict = get_unique_bases(variables)
+        variables_unique = list(variables_dict.keys())
+
+        for var in variables_unique:
             for model in models:
                 runs = runs_dict[model]
                 for run in runs:
                     update_model_dict(
                         models_dict,
                         model_data_path_template,
-                        split_string(var)[0],
+                        var,
                         model,
                         run,
                     )
