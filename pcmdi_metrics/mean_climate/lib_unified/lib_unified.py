@@ -379,18 +379,15 @@ def calculate_and_save_metrics(
 
     # Dump the dictionary as a JSON file per run
     dict_to_write = multi_level_dict()
+    
     if level is None:
-        dict_to_write[var][model][run] = metrics_dict[var][model][run]
-        output_dir = os.path.join(output_path, var)
-        output_file = os.path.join(output_dir, f"output_{var}_{model}_{run}.json")
+        var_key = var
     else:
-        dict_to_write[f"{var}-{level}"][model][run] = metrics_dict[f"{var}-{level}"][
-            model
-        ][run]
-        output_dir = os.path.join(output_path, f"{var}-{level}")
-        output_file = os.path.join(
-            output_dir, f"output_{var}-{level}_{model}_{run}.json"
-        )
+        var_key = f"{var}-{level}"
+
+    dict_to_write[var_key][model][run] = metrics_dict[var_key][model][run]
+    output_dir = os.path.join(output_path, var_key)
+    output_file = os.path.join(output_dir, f"output_{var_key}_{model}_{run}.json")
 
     os.makedirs(output_dir, exist_ok=True)
     write_to_json(dict_to_write, output_file)
@@ -398,7 +395,7 @@ def calculate_and_save_metrics(
     if debug:
         print_dict(dict_to_write)
 
-    return metrics_dict
+    return
 
 
 def remove_duplicates(tmp: list) -> list:
