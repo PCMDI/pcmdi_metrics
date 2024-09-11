@@ -303,7 +303,11 @@ def monsoon_wang_runner(args):
             #cor = float(statistics.correlation(mpi_mod_reg, mpi_obs_reg, axis="xy"))
             da1_flat = mpi_mod_reg.values.ravel()
             da2_flat = mpi_obs_reg.values.ravel()
+            #print("da1_flat = ", da1_flat)
+            #print("da2_flat = ", da2_flat)
             cor = np.corrcoef(da1_flat, da2_flat)[0, 1]
+            print("cor = ", cor)
+            #sys.exit()
 
             #rms = float(statistics.rms(mpi_mod_reg, mpi_obs_reg, axis="xy"))
             squared_diff = (mpi_mod_reg - mpi_obs_reg) ** 2
@@ -311,6 +315,7 @@ def monsoon_wang_runner(args):
             rms = np.sqrt(mean_squared_error)
 
             rmsn = rms / mpi_obs_reg_sd
+            del(mpi_mod_reg)
 
             #  DOMAIN SELECTED FROM GLOBAL ANNUAL RANGE FOR MODS AND OBS
             #annrange_mod_dom = annrange_mod(reg_sel)
