@@ -250,7 +250,7 @@ def compute_metrics(Var, dm, do, debug=False, time_dim_sync=False):
 
         rms_mo_l.append(format(rms_mo, sig_digits))
         rmsc_mo_l.append(format(rmsc_mo, sig_digits))
-        cor_mo_l.append(format(cor_mo, ".2f"))
+        cor_mo_l.append(format(cor_mo, sig_digits))
         mae_mo_l.append(format(mae_mo, sig_digits))
         bias_mo_l.append(format(bias_mo, sig_digits))
         stdObs_xy_mo_l.append(format(stdObs_xy_mo, sig_digits))
