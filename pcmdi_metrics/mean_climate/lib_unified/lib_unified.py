@@ -401,7 +401,7 @@ def calculate_and_save_metrics(
     dict_to_write["RESULTS"][model][run] = metrics_dict[var_key]["RESULTS"][model][run]
     dict_to_write["References"] = refs_dict[var]
 
-    metrics_dict.update({var_key: {"References": refs_dict[var]}})
+    metrics_dict[var_key].update({"References": refs_dict[var]})
 
     output_dir = os.path.join(output_path, var_key)
     output_file = os.path.join(output_dir, f"output_{var_key}_{model}_{run}.json")
