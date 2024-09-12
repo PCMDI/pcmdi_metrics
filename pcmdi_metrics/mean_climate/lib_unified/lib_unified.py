@@ -394,11 +394,11 @@ def calculate_and_save_metrics(
             metrics = calc_metrics(ac_ref_dict[var][ref], ac_model_run_level_interp)
 
             # Save to dict for later use (accumulated dict)
-            metrics_dict["RESULTS"][var_key][model][run][ref][region] = metrics
+            metrics_dict[var_key]["RESULTS"][model][run][ref][region] = metrics
 
     # Dump the dictionary as a JSON file per run
     dict_to_write = multi_level_dict()
-    dict_to_write["RESULTS"][model][run] = metrics_dict["RESULTS"][var_key][model][run]
+    dict_to_write["RESULTS"][model][run] = metrics_dict[var_key]["RESULTS"][model][run]
     dict_to_write["References"] = refs_dict[var]
 
     metrics_dict.update({"References": {var_key: refs_dict[var]}})
