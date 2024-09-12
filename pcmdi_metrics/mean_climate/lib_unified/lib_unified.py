@@ -373,11 +373,18 @@ def calculate_and_save_metrics(
     ac_ref_dict,
     ac_model_run_level_interp,
     output_path,
+    refs_dict,
     metrics_dict,
     debug=False,
 ):
     print("refs:", refs)
     print("ac_ref_dict[var].keys():", ac_ref_dict[var].keys())
+
+    if level is None:
+        var_key = var
+    else:
+        var_key = f"{var}-{level}"
+
     for ref in refs:
         if ref not in ac_ref_dict[var].keys():
             raise KeyError(f"Reference data {ref} is not available for {var}.")
@@ -387,20 +394,12 @@ def calculate_and_save_metrics(
             metrics = calc_metrics(ac_ref_dict[var][ref], ac_model_run_level_interp)
 
             # Save to dict for later use (accumulated dict)
-            if level is None:
-                metrics_dict[var][model][run][ref][region] = metrics
-            else:
-                metrics_dict[f"{var}-{level}"][model][run][ref][region] = metrics
+            metrics_dict["RESULTS"][var_key][model][run][ref][region] = metrics
 
     # Dump the dictionary as a JSON file per run
     dict_to_write = multi_level_dict()
-
-    if level is None:
-        var_key = var
-    else:
-        var_key = f"{var}-{level}"
-
-    dict_to_write[var_key][model][run] = metrics_dict[var_key][model][run]
+    dict_to_write["RESULTS"][model][run] = metrics_dict["RESULTS"][var_key][model][run]
+    dict_to_write["References"] = metrics_dict[var]["References"]
     output_dir = os.path.join(output_path, var_key)
     output_file = os.path.join(output_dir, f"output_{var_key}_{model}_{run}.json")
 
