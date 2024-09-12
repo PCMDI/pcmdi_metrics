@@ -399,7 +399,10 @@ def calculate_and_save_metrics(
     # Dump the dictionary as a JSON file per run
     dict_to_write = multi_level_dict()
     dict_to_write["RESULTS"][model][run] = metrics_dict["RESULTS"][var_key][model][run]
-    dict_to_write["References"] = metrics_dict[var]["References"]
+    dict_to_write["References"] = refs_dict[var]
+
+    metrics_dict.update({"References": {var_key: refs_dict[var]}})
+
     output_dir = os.path.join(output_path, var_key)
     output_file = os.path.join(output_dir, f"output_{var_key}_{model}_{run}.json")
 
