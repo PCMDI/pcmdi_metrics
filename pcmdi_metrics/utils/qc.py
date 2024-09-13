@@ -1,5 +1,56 @@
 import cftime
+import numpy as np
 import xarray as xr
+
+
+def daily_time_axis_checker(ds, time_key="time"):
+    """
+    Check if the time axis in an xarray dataset follows a correct daily sequence, considering all CFTime calendars.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset or xarray.DataArray
+        The dataset or data array containing the time axis to be checked.
+    time_key : str, optional
+        The key corresponding to the time dimension in the dataset (default is 'time').
+
+    Returns
+    -------
+    bool
+        True if the time axis has incrementally increasing days, otherwise False.
+
+    Raises
+    ------
+    ValueError
+        If the time axis does not follow a correct daily sequence.
+
+    Example
+    -------
+    >>> ds = xr.Dataset({"time": xr.cftime_range("2000-01-01", periods=400, freq="D", calendar="gregorian")})  # dummy data to test
+    >>> daily_time_axis_checker(ds, "time")
+    True
+    """
+    # Extract the time values from the dataset
+    time_data = ds[time_key].values
+
+    # Check if the time axis is based on CFTime objects
+    if not isinstance(time_data[0], cftime.datetime):
+        raise ValueError(
+            f"The time axis does not use CFTime objects (uses {type(time_data[0])})."
+        )
+
+    # Convert time_data into numpy datetime64 for delta comparison
+    for i in range(1, len(time_data)):
+        # Calculate the difference in days between consecutive time points
+        delta = time_data[i] - time_data[i - 1]
+
+        # Check if the difference is exactly 1 day (as a timedelta64 object)
+        if np.abs(delta) != np.timedelta64(1, "D"):
+            print("Time axis is not correct!")
+            print(f"Error at index {i}: {time_data[i - 1]} to {time_data[i]}")
+            return False
+
+    return True
 
 
 def monthly_time_axis_checker(ds: xr.Dataset, time_key: str = "time") -> bool:
