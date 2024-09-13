@@ -12,6 +12,7 @@ from .grid import (
     regrid,
 )
 from .land_sea_mask import apply_landmask, apply_oceanmask, create_land_sea_mask
+from .qc import monthly_time_axis_checker, monthly_time_bnds_checker
 from .sort_human import sort_human
 from .string_constructor import StringConstructor, fill_template
 from .tree_dict import tree
