@@ -1,5 +1,3 @@
-import cftime
-import numpy as np
 import pytest
 import xarray as xr
 
@@ -7,7 +5,6 @@ from pcmdi_metrics.utils import (
     daily_time_axis_checker,
     last_day_of_month,
     monthly_time_axis_checker,
-    monthly_time_bnds_checker,
     repeating_months,
 )
 
