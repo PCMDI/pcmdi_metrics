@@ -45,7 +45,6 @@ dependencies:
     # Documentation
     # ==================
     - sphinx
-    - sphinx-autosummary-accessors
     - sphinx-book-theme
     - sphinx-copybutton
     - sphinx-design
