@@ -13,7 +13,7 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('../pcmdi_metrics/utils'))
 
-import sphinx_autosummary_accessors
+# import sphinx_autosummary_accessors
 
 # -- Project information -----------------------------------------------------
 
@@ -39,7 +39,7 @@ author = 'PCMDI'
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx_rtd_theme', 'sphinx.ext.napoleon']
 
 # autosummary and autodoc configurations
-autosummary_generate = True
+# autosummary_generate = True
 """
 autodoc_member_order = "bysource"
 autodoc_default_options = {
@@ -58,7 +58,8 @@ napoleon_use_rtype = False
 napoleon_preprocess_types = True
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates', sphinx_autosummary_accessors.templates_path]
+# templates_path = ['_templates', sphinx_autosummary_accessors.templates_path]
+templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
