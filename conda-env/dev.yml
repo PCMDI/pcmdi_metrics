@@ -48,6 +48,7 @@ dependencies:
     - sphinx-autosummary-accessors
     - sphinx-book-theme
     - sphinx-copybutton
+    - sphinx-design
     - sphinx_rtd_theme
     - nbsphinx
     - pandoc
