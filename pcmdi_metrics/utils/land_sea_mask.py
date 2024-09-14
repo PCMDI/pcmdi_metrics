@@ -43,22 +43,10 @@ def create_land_sea_mask(
 
     Examples
     --------
-    Import:
-
-    >>> from pcmdi_metrics.utils import create_land_sea_mask
-
-    Generate land-sea mask (land: 1, sea: 0):
-
-    >>> mask = create_land_sea_mask(ds)
-
-    Generate land-sea mask (land: True, sea: False):
-
-    >>> mask = create_land_sea_mask(ds, as_boolean=True)
-
-    Use PCMDI method:
-
-    >>> mask = create_land_sea_mask(ds, method="pcmdi")
-
+    >>> from pcmdi_metrics.utils import create_land_sea_mask  # import function
+    >>> mask = create_land_sea_mask(ds)  #  Generate land-sea mask (land: 1, sea: 0)
+    >>> mask = create_land_sea_mask(ds, as_boolean=True)  # Generate land-sea mask (land: True, sea: False)
+    >>> mask = create_land_sea_mask(ds, method="pcmdi")  # Use PCMDI method
     """
 
     # Create a land-sea mask
@@ -164,14 +152,11 @@ def apply_landmask(
 
     Examples
     --------
-    Import:
     >>> from pcmdi_metrics.utils import apply_landmask
-
-    Keep values over land only (mask over ocean):
+    >>> # To keep values over land only (mask over ocean)
     >>> da_land = apply_landmask(da, landfrac=mask, keep_over="land")  # use DataArray
     >>> da_land = apply_landmask(ds, data_var="ts", landfrac=mask, keep_over="land")  # use DataSet
-
-    Keep values over ocean only (mask over land):
+    >>> # To Keep values over ocean only (mask over land):
     >>> da_ocean = apply_landmask(da, landfrac=mask, keep_over="ocean")  # use DataArray
     >>> da_ocean = apply_landmask(ds, data_var="ts", landfrac=mask, keep_over="ocean")  # use DataSet
     """

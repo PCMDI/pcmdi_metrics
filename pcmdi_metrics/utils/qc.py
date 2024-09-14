@@ -26,6 +26,7 @@ def daily_time_axis_checker(ds, time_key="time"):
 
     Example
     -------
+    >>> from pcmdi_metrics.utils import daily_time_axis_checker
     >>> ds = xr.Dataset({"time": xr.cftime_range("2000-01-01", periods=400, freq="D", calendar="gregorian")})  # dummy data to test
     >>> daily_time_axis_checker(ds, "time")
     True
@@ -90,6 +91,7 @@ def monthly_time_axis_checker(ds: xr.Dataset, time_key: str = "time") -> bool:
 
     Example
     -------
+    >>> from pcmdi_metrics.utils import monthly_time_axis_checker
     >>> import xarray as xr
     >>> import pandas as pd
     >>> dates = pd.date_range('2020-03-01', periods=14, freq='M')
