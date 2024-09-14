@@ -47,7 +47,6 @@ dependencies:
     - sphinx
     - sphinx-book-theme
     - sphinx-copybutton
-    - sphinx-design
     - sphinx_rtd_theme
     - nbsphinx
     - pandoc
