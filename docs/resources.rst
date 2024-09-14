@@ -6,7 +6,6 @@ Resources
 
 .. toctree::
    :maxdepth: 1
-   
+
    utils
-   pmp-using-cdp-guide
-   pmpparser
+   resources_legacy
