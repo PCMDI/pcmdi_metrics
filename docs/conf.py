@@ -9,9 +9,6 @@
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-
-import pcmdi_metrics
-
 import sys
 import os
 sys.path.insert(0, os.path.abspath('../pcmdi_metrics/utils'))
@@ -29,9 +26,10 @@ author = 'PCMDI'
 # the built documents.
 #
 # The short X.Y version.
-version = pcmdi_metrics.__version__
+# import pcmdi_metrics
+# version = pcmdi_metrics.__version__
 # The full version, including alpha/beta/rc tags.
-release = pcmdi_metrics.__version__
+# release = pcmdi_metrics.__version__
 
 # -- General configuration ---------------------------------------------------
 
