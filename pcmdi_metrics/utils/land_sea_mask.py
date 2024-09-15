@@ -43,22 +43,10 @@ def create_land_sea_mask(
 
     Examples
     --------
-    Import:
-
-    >>> from pcmdi_metrics.utils import create_land_sea_mask
-
-    Generate land-sea mask (land: 1, sea: 0):
-
-    >>> mask = create_land_sea_mask(ds)
-
-    Generate land-sea mask (land: True, sea: False):
-
-    >>> mask = create_land_sea_mask(ds, as_boolean=True)
-
-    Use PCMDI method:
-
-    >>> mask = create_land_sea_mask(ds, method="pcmdi")
-
+    >>> from pcmdi_metrics.utils import create_land_sea_mask  # import function
+    >>> mask = create_land_sea_mask(ds)  #  Generate land-sea mask (land: 1, sea: 0)
+    >>> mask = create_land_sea_mask(ds, as_boolean=True)  # Generate land-sea mask (land: True, sea: False)
+    >>> mask = create_land_sea_mask(ds, method="pcmdi")  # Use PCMDI method
     """
 
     # Create a land-sea mask
@@ -139,40 +127,51 @@ def apply_landmask(
     land_criteria: float = 0.8,
     ocean_criteria: float = 0.2,
 ) -> xr.DataArray:
-    """Apply a land-sea mask to a given DataArray in an xarray Dataset.
+    """
+    Apply a land-sea mask to a given DataArray or Dataset.
+
+    This function applies a land-sea mask to either a DataArray or a variable within a Dataset.
+    It can keep values over land or ocean based on the specified criteria.
 
     Parameters
     ----------
     obj : Union[xr.Dataset, xr.DataArray]
-        The Dataset or DataArray object to apply a land-sea mask.
-    data_var : str
-        Name of DataArray in the Dataset, required if obs is an Dataset.
-    landfrac : xr.DataArray
-        Data array for land fraction that consists of 0 for ocean and 1 for land (fraction for grid along coastline), by default None.
-        If None, it is going to be created.
-    keep_over : str
-        Specify whether to keep values "land" or "ocean".
+        The Dataset or DataArray to which the land-sea mask will be applied.
+    data_var : str, optional
+        Name of the DataArray in the Dataset. Required if `obj` is a Dataset.
+    landfrac : xr.DataArray, optional
+        Land fraction data array. Values should range from 0 (ocean) to 1 (land).
+        If None, a land-sea mask will be created automatically.
+    keep_over : {'land', 'ocean'}, optional
+        Specifies whether to keep values over "land" or "ocean". Default is "ocean".
     land_criteria : float, optional
-        When the fraction is equal to land_criteria or larger, the grid will be considered as land, by default 0.8.
+        Threshold for considering a grid cell as land. Default is 0.8.
     ocean_criteria : float, optional
-        When the fraction is equal to ocean_criteria or smaller, the grid will be considered as ocean, by default 0.2.
+        Threshold for considering a grid cell as ocean. Default is 0.2.
 
     Returns
     -------
     xr.DataArray
-        Land-sea mask applied DataArray.
+        DataArray with the land-sea mask applied.
+
+    Raises
+    ------
+    ValueError
+        If `data_var` is not provided when `obj` is a Dataset, or if `keep_over` is invalid.
+
+    Notes
+    -----
+    - If `landfrac` is not provided, it will be generated using the 'create_land_sea_mask' function.
+    - The function can handle land fraction data in both percentage (0-100) and fractional (0-1) formats.
 
     Examples
     --------
-    Import:
     >>> from pcmdi_metrics.utils import apply_landmask
-
-    Keep values over land only (mask over ocean):
-    >>> da_land = apply_landmask(da, landfrac=mask, keep_over="land")  # use DataArray
-    >>> da_land = apply_landmask(ds, data_var="ts", landfrac=mask, keep_over="land")  # use DataSet
-
-    Keep values over ocean only (mask over land):
-    >>> da_ocean = apply_landmask(da, landfrac=mask, keep_over="ocean")  # use DataArray
+    >>> # Keep values over land (mask ocean)
+    >>> da_land = apply_landmask(da, landfrac=mask, keep_over="land")  # when input is DataArray
+    >>> da_land = apply_landmask(ds, data_var="ts", landfrac=mask, keep_over="land")  # DataSet
+    >>> # Keep values over ocean (mask land)
+    >>> da_ocean = apply_landmask(da, landfrac=mask, keep_over="ocean")  # when input is DataArray
     >>> da_ocean = apply_landmask(ds, data_var="ts", landfrac=mask, keep_over="ocean")  # use DataSet
     """
 
@@ -260,6 +259,41 @@ def apply_oceanmask(
     land_criteria: float = 0.8,
     ocean_criteria: float = 0.2,
 ) -> xr.DataArray:
+    """
+    Apply an ocean mask to a given DataArray or Dataset.
+
+    This function is a wrapper around `apply_landmask` that specifically masks land areas,
+    effectively creating an ocean mask.
+
+    Parameters
+    ----------
+    obj : Union[xr.Dataset, xr.DataArray]
+        The Dataset or DataArray to which the ocean mask will be applied.
+    data_var : str, optional
+        Name of the DataArray in the Dataset. Required if `obj` is a Dataset.
+    landfrac : xr.DataArray, optional
+        Land fraction data array. Values should range from 0 (ocean) to 1 (land).
+        If None, a land-sea mask will be created automatically.
+    land_criteria : float, optional
+        Threshold for considering a grid cell as land. Default is 0.8.
+    ocean_criteria : float, optional
+        Threshold for considering a grid cell as ocean. Default is 0.2.
+
+    Returns
+    -------
+    xr.DataArray
+        DataArray with the ocean mask applied (land areas masked).
+
+    See Also
+    --------
+    apply_landmask : The underlying function used to apply the mask.
+
+    Examples
+    --------
+    >>> from pcmdi_metrics.utils import apply_oceanmask
+    >>> da_ocean = apply_oceanmask(da, landfrac=mask)
+    >>> ds_ocean = apply_oceanmask(ds, data_var="ts", landfrac=mask)
+    """
     masked_data_array = apply_landmask(
         obj,
         data_var=data_var,

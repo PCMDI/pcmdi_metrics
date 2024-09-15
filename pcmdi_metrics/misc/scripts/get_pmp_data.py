@@ -4,9 +4,9 @@ from __future__ import print_function
 import os
 import tempfile
 
-import cdat_info
 import requests
 
+from pcmdi_metrics.io.base import download_sample_data_files
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 
 
@@ -60,4 +60,4 @@ for file in files:
             header = f.readline().strip()
             version = header.split("_")[-1]
             pathout = os.path.join(p.output_path, version)
-    cdat_info.download_sample_data_files(file, path=pathout)
+    download_sample_data_files(file, pathout)

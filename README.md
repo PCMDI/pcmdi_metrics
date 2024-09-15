@@ -50,7 +50,7 @@ Documentation
 
 **Reference**
 
-Lee, J., P. J. Gleckler, M.-S. Ahn, A. Ordonez, P. Ullrich, K. R. Sperber, K. E. Taylor, Y. Y. Planton, E. Guilyardi, P. Durack, C. Bonfils, M. D. Zelinka, L.-W. Chao, B. Dong, C. Doutriaux, C. Zhang, T. Vo, J. Boutte, M. F. Wehner, A. G. Pendergrass, D. Kim, Z. Xue, A. T. Wittenberg, and J. Krasting, 2024: Systematic and Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3. Geoscientific Model Development (_accepted, publication in progress_) [[preprint](https://egusphere.copernicus.org/preprints/2023/egusphere-2023-2720/)]
+Lee, J., P. J. Gleckler, M.-S. Ahn, A. Ordonez, P. Ullrich, K. R. Sperber, K. E. Taylor, Y. Y. Planton, E. Guilyardi, P. Durack, C. Bonfils, M. D. Zelinka, L.-W. Chao, B. Dong, C. Doutriaux, C. Zhang, T. Vo, J. Boutte, M. F. Wehner, A. G. Pendergrass, D. Kim, Z. Xue, A. T. Wittenberg, and J. Krasting, 2024: Systematic and Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3. Geoscientific Model Development, 17, 3919–3948, doi: [10.5194/gmd-17-3919-2024](https://doi.org/10.5194/gmd-17-3919-2024)
 
 
 Contact
@@ -109,6 +109,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.5.1]      | Technical update
 | [v3.5]        | Technical update: MJO and Monsoon Sperber [xCDAT](https://xcdat.readthedocs.io/en/latest/) conversion
 | [v3.4.1]      | Technical update
 | [v3.4]        | Technical update: Modes of variability [xCDAT](https://xcdat.readthedocs.io/en/latest/) conversion
@@ -144,6 +145,7 @@ Release Notes and History
 
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.5.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5.1
 [v3.5]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5
 [v3.4.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.4.1
 [v3.4]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.4
@@ -217,6 +219,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://sites.google.com/uw.edu/kimresearchgroup"><img src="https://scholar.googleusercontent.com/citations?view_op=view_photo&user=3xLjsIsAAAAJ&citpid=3?s=100" width="100px;" alt="Daehyun Kim"/><br /><sub><b>Daehyun Kim</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=" title="Code">💻</a> <a href="#research" title="Research">🔬</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/bosup"><img src="https://avatars.githubusercontent.com/u/130708142?v=4?s=100" width="100px;" alt="Bo"/><br /><sub><b>Bo Dong</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=bosup" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
