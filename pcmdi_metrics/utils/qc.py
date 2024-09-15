@@ -3,7 +3,7 @@ import numpy as np
 import xarray as xr
 
 
-def daily_time_axis_checker(ds, time_key="time"):
+def check_daily_time_axis(ds, time_key="time"):
     """
     Check if the time axis in an xarray dataset follows a correct daily sequence, considering all CFTime calendars.
 
@@ -26,9 +26,9 @@ def daily_time_axis_checker(ds, time_key="time"):
 
     Example
     -------
-    >>> from pcmdi_metrics.utils import daily_time_axis_checker
+    >>> from pcmdi_metrics.utils import check_daily_time_axis
     >>> ds = xr.Dataset({"time": xr.cftime_range("2000-01-01", periods=400, freq="D", calendar="gregorian")})  # dummy data to test
-    >>> daily_time_axis_checker(ds, "time")
+    >>> check_daily_time_axis(ds, "time")
     # No output if check passes
     """
     # Extract the time values from the dataset
@@ -54,7 +54,7 @@ def daily_time_axis_checker(ds, time_key="time"):
     # If we've made it through the loop without raising an error, the check has passed
 
 
-def monthly_time_axis_checker(ds: xr.Dataset, time_key: str = "time") -> None:
+def check_monthly_time_axis(ds: xr.Dataset, time_key: str = "time") -> None:
     """
     Check if the time axis of a dataset follows a correct monthly sequence.
 
@@ -85,12 +85,12 @@ def monthly_time_axis_checker(ds: xr.Dataset, time_key: str = "time") -> None:
 
     Example
     -------
-    >>> from pcmdi_metrics.utils import monthly_time_axis_checker
+    >>> from pcmdi_metrics.utils import check_monthly_time_axis
     >>> import xarray as xr
     >>> import pandas as pd
     >>> dates = pd.date_range('2020-03-01', periods=14, freq='M')
     >>> ds = xr.Dataset({'time': dates})
-    >>> monthly_time_axis_checker(ds)
+    >>> check_monthly_time_axis(ds)
     # No output if check passes
     """
 
