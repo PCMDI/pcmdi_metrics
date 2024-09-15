@@ -14,8 +14,8 @@ from .grid import (
 from .land_sea_mask import apply_landmask, apply_oceanmask, create_land_sea_mask
 from .qc import (
     check_daily_time_axis,
-    last_day_of_month,
     check_monthly_time_axis,
+    last_day_of_month,
     repeating_months,
 )
 from .sort_human import sort_human
