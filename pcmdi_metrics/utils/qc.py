@@ -16,20 +16,20 @@ def daily_time_axis_checker(ds, time_key="time"):
 
     Returns
     -------
-    bool
-        True if the time axis has incrementally increasing days, otherwise False.
+    None
+        The function doesn't return a value if the check passes.
 
     Raises
     ------
     ValueError
-        If the time axis does not follow a correct daily sequence.
+        If the time axis does not use CFTime objects or does not follow a correct daily sequence.
 
     Example
     -------
     >>> from pcmdi_metrics.utils import daily_time_axis_checker
     >>> ds = xr.Dataset({"time": xr.cftime_range("2000-01-01", periods=400, freq="D", calendar="gregorian")})  # dummy data to test
     >>> daily_time_axis_checker(ds, "time")
-    True
+    # No output if check passes
     """
     # Extract the time values from the dataset
     time_data = ds[time_key].values
@@ -47,14 +47,14 @@ def daily_time_axis_checker(ds, time_key="time"):
 
         # Check if the difference is exactly 1 day (as a timedelta64 object)
         if np.abs(delta) != np.timedelta64(1, "D"):
-            print("Time axis is not correct!")
-            print(f"Error at index {i}: {time_data[i - 1]} to {time_data[i]}")
-            return False
+            raise ValueError(
+                f"Time axis is not correct! Error at index {i}: {time_data[i - 1]} to {time_data[i]}"
+            )
 
-    return True
+    # If we've made it through the loop without raising an error, the check has passed
 
 
-def monthly_time_axis_checker(ds: xr.Dataset, time_key: str = "time") -> bool:
+def monthly_time_axis_checker(ds: xr.Dataset, time_key: str = "time") -> None:
     """
     Check if the time axis of a dataset follows a correct monthly sequence.
 
@@ -71,16 +71,8 @@ def monthly_time_axis_checker(ds: xr.Dataset, time_key: str = "time") -> bool:
 
     Returns
     -------
-    bool
-        True if the time axis follows the correct monthly sequence,
-        False otherwise.
-
-    Prints
-    ------
-    If the check fails, the function prints:
-    - An error message
-    - The actual months from the data
-    - The expected months sequence
+    None
+        The function doesn't return a value if the check passes.
 
     Raises
     ------
@@ -88,6 +80,8 @@ def monthly_time_axis_checker(ds: xr.Dataset, time_key: str = "time") -> bool:
         If the specified time_key is not found in the dataset.
     AttributeError
         If the time dimension doesn't have a 'dt' accessor (i.e., not a datetime type).
+    ValueError
+        If the time axis does not follow the correct monthly sequence.
 
     Example
     -------
@@ -97,7 +91,7 @@ def monthly_time_axis_checker(ds: xr.Dataset, time_key: str = "time") -> bool:
     >>> dates = pd.date_range('2020-03-01', periods=14, freq='M')
     >>> ds = xr.Dataset({'time': dates})
     >>> monthly_time_axis_checker(ds)
-    True
+    # No output if check passes
     """
 
     try:
@@ -113,13 +107,14 @@ def monthly_time_axis_checker(ds: xr.Dataset, time_key: str = "time") -> bool:
     num_time_steps = len(months_data)
     months_expected = repeating_months(start_month, num_time_steps)
 
-    if months_data == months_expected:
-        return True
-    else:
-        print("DATA ERROR: time is not correct!")
-        print("Months from data:", months_data)
-        print("Months expected:", months_expected)
-        return False
+    if months_data != months_expected:
+        raise ValueError(
+            f"DATA ERROR: time is not correct!\n"
+            f"Months from data: {months_data}\n"
+            f"Months expected: {months_expected}"
+        )
+
+    # If we've made it here without raising an error, the check has passed
 
 
 def repeating_months(start: int, length: int) -> list:
