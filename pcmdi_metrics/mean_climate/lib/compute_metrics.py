@@ -197,7 +197,7 @@ def compute_metrics(Var, dm, do, debug=False, time_dim_sync=False):
         metrics_dictionary["bias_xy"][sea] = format(bias_sea, sig_digits)
         metrics_dictionary["rms_xy"][sea] = format(rms_sea, sig_digits)
         metrics_dictionary["rmsc_xy"][sea] = format(rmsc_sea, sig_digits)
-        metrics_dictionary["cor_xy"][sea] = format(cor_sea, ".2f")
+        metrics_dictionary["cor_xy"][sea] = format(cor_sea, sig_digits)
         metrics_dictionary["mae_xy"][sea] = format(mae_sea, sig_digits)
         metrics_dictionary["std-obs_xy"][sea] = format(stdObs_xy_sea, sig_digits)
         metrics_dictionary["std_xy"][sea] = format(std_xy_sea, sig_digits)
@@ -250,7 +250,7 @@ def compute_metrics(Var, dm, do, debug=False, time_dim_sync=False):
 
         rms_mo_l.append(format(rms_mo, sig_digits))
         rmsc_mo_l.append(format(rmsc_mo, sig_digits))
-        cor_mo_l.append(format(cor_mo, ".2f"))
+        cor_mo_l.append(format(cor_mo, sig_digits))
         mae_mo_l.append(format(mae_mo, sig_digits))
         bias_mo_l.append(format(bias_mo, sig_digits))
         stdObs_xy_mo_l.append(format(stdObs_xy_mo, sig_digits))

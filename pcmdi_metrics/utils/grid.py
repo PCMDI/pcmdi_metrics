@@ -173,19 +173,30 @@ def regrid(
     regrid_method: str = "bilinear",
     fill_zero: bool = False,
 ) -> xr.Dataset:
-    """regrid the dataset to a given grid
-
-    Args:
-        ds (xr.Dataset): dataset to regrid
-        data_var (str): variable in the dataset
-        target_grid (xr.Dataset): grid for interpolate to
-        regrid_tool (str, optional): Regrid option: "regrid2" or "xesmf". Defaults to "regrid2".
-        regrid_method (str, optional): Regrid method option that is required for xesmf regridder. Defaults to "bilinear".
-        fill_zero (bool, optional): Fill NaN value with zero if exists. Defaluts to False
-
-    Returns:
-        xr.Dataset: Regridded dataset
     """
+    Regrid the dataset to a given grid.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        Dataset to regrid.
+    data_var : str
+        Variable in the dataset.
+    target_grid : xr.Dataset
+        Grid to interpolate to.
+    regrid_tool : str, optional
+        Regrid option: "regrid2" or "xesmf". Default is "regrid2".
+    regrid_method : str, optional
+        Regrid method option that is required for xesmf regridder. Default is "bilinear".
+    fill_zero : bool, optional
+        Fill NaN value with zero if exists. Default is False.
+
+    Returns
+    -------
+    xr.Dataset
+        Regridded dataset.
+    """
+
     target_grid = get_grid(target_grid)  # To remove time dimension if exist
     # regrid
     if regrid_tool == "regrid2":
