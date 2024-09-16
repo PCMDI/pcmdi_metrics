@@ -176,8 +176,8 @@ realization = param.realization
 print("realization: ", realization)
 
 # EOF ordinal number
-eofn_obs = int(param.eofn_obs)
-eofn_mod = int(param.eofn_mod)
+eofn_obs = param.eofn_obs
+eofn_mod = param.eofn_mod
 
 if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
     eofn_expected = 1
@@ -193,6 +193,7 @@ else:
 if eofn_obs is None:
     eofn_obs = eofn_expected
 else:
+    eofn_obs = int(eofn_obs)
     if eofn_obs != eofn_expected:
         raise ValueError(
             f"Observation EOF number ({eofn_obs}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
@@ -201,6 +202,7 @@ else:
 if eofn_mod is None:
     eofn_mod = eofn_expected
 else:
+    eofn_mod = int(eofn_mod)
     if eofn_mod != eofn_expected:
         raise ValueError(
             f"Model EOF number ({eofn_mod}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
