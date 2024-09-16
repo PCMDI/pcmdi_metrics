@@ -176,32 +176,35 @@ realization = param.realization
 print("realization: ", realization)
 
 # EOF ordinal number
-eofn_obs = param.eofn_obs
-eofn_mod = param.eofn_mod
+eofn_obs = int(param.eofn_obs)
+eofn_mod = int(param.eofn_mod)
+
+if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
+    eofn_expected = 1
+elif mode in ["NPGO", "NPO", "PSA1"]:
+    eofn_expected = 2
+elif mode in ["PSA2"]:
+    eofn_expected = 3
+else:
+    raise ValueError(
+        f"Mode '{mode}' is not defiend with associated expected EOF number"
+    )
 
 if eofn_obs is None:
-    if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
-        eofn_obs = 1
-    elif mode in ["NPGO", "NPO", "PSA1"]:
-        eofn_obs = 2
-    elif mode in ["PSA2"]:
-        eofn_obs = 3
-    else:
-        raise ValueError(f"{eofn_obs} is not given for {mode}")
+    eofn_obs = eofn_expected
 else:
-    eofn_obs = int(eofn_obs)
+    if eofn_obs != eofn_expected:
+        raise ValueError(
+            f"Observation EOF number ({eofn_obs}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
+        )
 
 if eofn_mod is None:
-    if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
-        eofn_mod = 1
-    elif mode in ["NPGO", "NPO", "PSA2"]:
-        eofn_mod = 2
-    elif mode in ["PSA2"]:
-        eofn_mod = 3
-    else:
-        raise ValueError(f"{eofn_mod} is not given for {mode}")
+    eofn_mod = eofn_expected
 else:
-    eofn_mod = int(eofn_mod)
+    if eofn_mod != eofn_expected:
+        raise ValueError(
+            f"Model EOF number ({eofn_mod}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
+        )
 
 print("eofn_obs:", eofn_obs)
 print("eofn_mod:", eofn_mod)
