@@ -843,7 +843,7 @@ for model in models:
                 # Conventional EOF approach as supplementary
                 # - - - - - - - - - - - - - - - - - - - - - - - - -
                 if ConvEOF:
-                    eofn_mod_max = 3
+                    eofn_mod_max = max(3, eofn_mod)
 
                     # EOF analysis
                     debug_print("conventional EOF analysis start", debug)
@@ -989,7 +989,7 @@ for model in models:
                                 debug=debug,
                             )
                             plot_map(
-                                mode + "_teleconnection",
+                                f"{mode}_teleconnection",
                                 f"{mip.upper()} {model} ({run}) - EOF{n + 1}",
                                 msyear,
                                 meyear,
@@ -997,7 +997,7 @@ for model in models:
                                 # eof_lr(longitude=(lon1_global, lon2_global)),
                                 eof_lr,
                                 frac,
-                                output_img_file + "_teleconnection",
+                                f"{output_img_file}_teleconnection",
                                 debug=debug,
                             )
 
