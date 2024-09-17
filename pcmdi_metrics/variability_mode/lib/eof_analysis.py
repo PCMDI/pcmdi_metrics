@@ -155,6 +155,22 @@ def arbitrary_checking(mode, eof_Nth):
     elif mode == "SAM":
         if eof_Nth.sel({lat_key: slice(-60, -90)}).mean().item() >= 0:
             reverse_sign = True
+    elif mode == "PSA1":
+        if (
+            eof_Nth.sel({lat_key: slice(-59.5, -64.5), lon_key: slice(207.5, 212.5)})
+            .mean()
+            .item()
+            >= 0
+        ):
+            reverse_sign = True
+    elif mode == "PSA2":
+        if (
+            eof_Nth.sel({lat_key: slice(-57.5, -62.5), lon_key: slice(277.5, 282.5)})
+            .mean()
+            .item()
+            >= 0
+        ):
+            reverse_sign = True
     else:  # Minimum sign control part was left behind for any future usage..
         if not np.isnan(eof_Nth[-1, -1].item()):
             if eof_Nth[-1, -1].item() >= 0:
