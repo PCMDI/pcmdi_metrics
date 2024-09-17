@@ -15,6 +15,10 @@
 ## EOF2 based variability modes
 - NPO: North Pacific Oscillation (2nd EOFs of PNA domain)
 - NPGO: North Pacific Gyre Oscillation (2nd EOFs of PDO domain)
+- PSA2: Pacific South America Mode (2nd EOFs of SAM domain)
+
+## EOF3 based variability modes
+- PSA3: Pacific South America Mode (3rd EOFs of SAM domain)
 
 ## Reference:
 Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
@@ -175,25 +179,34 @@ print("realization: ", realization)
 eofn_obs = param.eofn_obs
 eofn_mod = param.eofn_mod
 
+if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
+    eofn_expected = 1
+elif mode in ["NPGO", "NPO", "PSA1"]:
+    eofn_expected = 2
+elif mode in ["PSA2"]:
+    eofn_expected = 3
+else:
+    raise ValueError(
+        f"Mode '{mode}' is not defiend with associated expected EOF number"
+    )
+
 if eofn_obs is None:
-    if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
-        eofn_obs = 1
-    elif mode in ["NPGO", "NPO"]:
-        eofn_obs = 2
-    else:
-        raise ValueError(f"{eofn_obs} is not given for {mode}")
+    eofn_obs = eofn_expected
 else:
     eofn_obs = int(eofn_obs)
+    if eofn_obs != eofn_expected:
+        raise ValueError(
+            f"Observation EOF number ({eofn_obs}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
+        )
 
 if eofn_mod is None:
-    if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
-        eofn_mod = 1
-    elif mode in ["NPGO", "NPO"]:
-        eofn_mod = 2
-    else:
-        raise ValueError(f"{eofn_mod} is not given for {mode}")
+    eofn_mod = eofn_expected
 else:
     eofn_mod = int(eofn_mod)
+    if eofn_mod != eofn_expected:
+        raise ValueError(
+            f"Model EOF number ({eofn_mod}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
+        )
 
 print("eofn_obs:", eofn_obs)
 print("eofn_mod:", eofn_mod)
@@ -830,7 +843,7 @@ for model in models:
                 # Conventional EOF approach as supplementary
                 # - - - - - - - - - - - - - - - - - - - - - - - - -
                 if ConvEOF:
-                    eofn_mod_max = 3
+                    eofn_mod_max = max(3, eofn_mod)
 
                     # EOF analysis
                     debug_print("conventional EOF analysis start", debug)
@@ -976,7 +989,7 @@ for model in models:
                                 debug=debug,
                             )
                             plot_map(
-                                mode + "_teleconnection",
+                                f"{mode}_teleconnection",
                                 f"{mip.upper()} {model} ({run}) - EOF{n + 1}",
                                 msyear,
                                 meyear,
@@ -984,7 +997,7 @@ for model in models:
                                 # eof_lr(longitude=(lon1_global, lon2_global)),
                                 eof_lr,
                                 frac,
-                                output_img_file + "_teleconnection",
+                                f"{output_img_file}_teleconnection",
                                 debug=debug,
                             )
 
