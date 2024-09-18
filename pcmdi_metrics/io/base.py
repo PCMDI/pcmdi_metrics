@@ -4,22 +4,26 @@ import json
 import logging
 import os
 import re
+import shlex
+import sys
 from collections import OrderedDict
 from collections.abc import Mapping
+from datetime import datetime
+from subprocess import PIPE, Popen
 
-import cdat_info
 import cdms2
 import cdp.cdp_io
 import cdutil
 import genutil
 import MV2
 import numpy
+import requests
 import xcdat
 import xcdat as xc
 
 import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
-from pcmdi_metrics.utils import StringConstructor
+from pcmdi_metrics.io import StringConstructor
 
 value = 0
 cdms2.setNetcdfShuffleFlag(value)  # where value is either 0 or 1
@@ -32,6 +36,195 @@ try:
     basestring  # noqa
 except Exception:
     basestring = str
+
+CONDA = os.environ.get("CONDA_PYTHON_EXE", "")
+if CONDA != "":
+    CONDA = os.path.join(os.path.dirname(CONDA), "conda")
+else:
+    CONDA = "conda"
+
+
+def download_sample_data_files(files_md5, path):
+    """Downloads sample data from a list of files"""
+    if not os.path.exists(files_md5) or os.path.isdir(files_md5):
+        raise RuntimeError("Invalid file type for list of files: %s" % files_md5)
+    samples = open(files_md5).readlines()
+    download_url_root = samples[0].strip()
+    for sample in samples[1:]:
+        good_md5, name = sample.split()
+        local_filename = os.path.join(path, name)
+        try:
+            os.makedirs(os.path.dirname(local_filename))
+        except BaseException:
+            pass
+        attempts = 0
+        while attempts < 3:
+            md5 = hashlib.md5()
+            if os.path.exists(local_filename):
+                f = open(local_filename, "rb")
+                md5.update(f.read())
+                if md5.hexdigest() == good_md5:
+                    attempts = 5
+                    continue
+            print(
+                "Downloading: '%s' from '%s' in: %s"
+                % (name, download_url_root, local_filename)
+            )
+            r = requests.get("%s/%s" % (download_url_root, name), stream=True)
+            with open(local_filename, "wb") as f:
+                for chunk in r.iter_content(chunk_size=1024):
+                    if chunk:  # filter local_filename keep-alive new chunks
+                        f.write(chunk)
+                        md5.update(chunk)
+            f.close()
+            if md5.hexdigest() == good_md5:
+                attempts = 5
+            else:
+                attempts += 1
+    return
+
+
+def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
+    try:
+        p = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE)
+    except Exception:
+        return
+    out, stde = p.communicate()
+    if stde.decode("utf-8") != "":
+        return
+    for strBit in out.decode("utf-8").splitlines():
+        for key, value in pairs.items():
+            if value in strBit:
+                prov[key] = strBit.split(sep)[index].strip()
+    if fill_missing is not False:
+        for k in pairs:
+            if k not in prov:
+                prov[k] = fill_missing
+    return
+
+
+def generateProvenance(extra_pairs={}, history=True):
+    """Generates provenance info for PMP
+    extra_pairs is a dictionary of format: {"name_in_provenance_list" : "python_package"}
+    """
+    prov = OrderedDict()
+    platform = os.uname()
+    platfrm = OrderedDict()
+    platfrm["OS"] = platform[0]
+    platfrm["Version"] = platform[2]
+    platfrm["Name"] = platform[1]
+    prov["platform"] = platfrm
+    try:
+        logname = os.getlogin()
+    except Exception:
+        try:
+            import pwd
+
+            logname = pwd.getpwuid(os.getuid())[0]
+        except Exception:
+            try:
+                logname = os.environ.get("LOGNAME", "unknown")
+            except Exception:
+                logname = "unknown-loginname"
+    prov["userId"] = logname
+    prov["osAccess"] = bool(os.access("/", os.W_OK) * os.access("/", os.R_OK))
+    prov["commandLine"] = " ".join(sys.argv)
+    prov["date"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    prov["conda"] = OrderedDict()
+    pairs = {
+        "Platform": "platform ",
+        "Version": "conda version ",
+        "IsPrivate": "conda is private ",
+        "envVersion": "conda-env version ",
+        "buildVersion": "conda-build version ",
+        "PythonVersion": "python version ",
+        "RootEnvironment": "root environment ",
+        "DefaultEnvironment": "default environment ",
+    }
+    populate_prov(prov["conda"], CONDA + " info", pairs, sep=":", index=-1)
+    pairs = {
+        "cdp": "cdp ",
+        "cdat_info": "cdat_info ",
+        "cdms": "cdms2 ",
+        "cdtime": "cdtime ",
+        "cdutil": "cdutil ",
+        "esmf": "esmf ",
+        "esmpy": "esmpy ",
+        "matplotlib": "matplotlib-base ",
+        "numpy": "numpy ",
+        "python": "python ",
+        "scipy": "scipy ",
+        "xcdat": "xcdat ",
+        "xarray": "xarray ",
+    }
+    # Actual environement used
+    p = Popen(shlex.split(CONDA + " env export"), stdout=PIPE, stderr=PIPE)
+    o, e = p.communicate()
+    prov["conda"]["yaml"] = o.decode("utf-8")
+    prov["packages"] = OrderedDict()
+    populate_prov(prov["packages"], CONDA + " list", pairs, fill_missing=None)
+    populate_prov(prov["packages"], CONDA + " list", extra_pairs, fill_missing=None)
+    # Trying to capture glxinfo
+    pairs = {
+        "vendor": "OpenGL vendor string",
+        "renderer": "OpenGL renderer string",
+        "version": "OpenGL version string",
+        "shading language version": "OpenGL shading language version string",
+    }
+    prov["openGL"] = OrderedDict()
+    populate_prov(prov["openGL"], "glxinfo", pairs, sep=":", index=-1)
+    prov["openGL"]["GLX"] = {"server": OrderedDict(), "client": OrderedDict()}
+    pairs = {
+        "version": "GLX version",
+    }
+    populate_prov(prov["openGL"]["GLX"], "glxinfo", pairs, sep=":", index=-1)
+    pairs = {
+        "vendor": "server glx vendor string",
+        "version": "server glx version string",
+    }
+    populate_prov(prov["openGL"]["GLX"]["server"], "glxinfo", pairs, sep=":", index=-1)
+    pairs = {
+        "vendor": "client glx vendor string",
+        "version": "client glx version string",
+    }
+    populate_prov(prov["openGL"]["GLX"]["client"], "glxinfo", pairs, sep=":", index=-1)
+
+    prov["packages"]["PMP"] = pcmdi_metrics.version.__git_tag_describe__
+    prov["packages"][
+        "PMPObs"
+    ] = "See 'References' key below, for detailed obs provenance information."
+
+    # Now the history if requested
+    if history:
+        session_history = ""
+        try:
+            import IPython
+
+            profile_hist = IPython.core.history.HistoryAccessor()
+            session = profile_hist.get_last_session_id()
+            cursor = profile_hist.get_range(session)
+            for session_id, line, cmd in cursor.fetchall():
+                session_history += "{}\n".format(cmd)
+            if session_history == "":  # empty history
+                # trying to force fallback on readline
+                raise
+        except Exception:
+            # Fallback but does not seem to always work
+            import readline
+
+            for i in range(readline.get_current_history_length()):
+                session_history += "{}\n".format(readline.get_history_item(i + 1))
+            pass
+        try:
+            import __main__
+
+            with open(__main__.__file__) as f:
+                script = f.read()
+            prov["script"] = script
+        except Exception:
+            pass
+        prov["history"] = session_history
+    return prov
 
 
 # Convert cdms MVs to json
@@ -80,21 +273,6 @@ def update_dict(d, u):
         else:
             d[k] = u[k]
     return d
-
-
-def generateProvenance():
-    extra_pairs = {
-        "matplotlib": "matplotlib ",
-        "scipy": "scipy",
-        "xcdat": "xcdat",
-        "xarray": "xarray",
-    }
-    prov = cdat_info.generateProvenance(extra_pairs=extra_pairs)
-    prov["packages"]["PMP"] = pcmdi_metrics.version.__git_tag_describe__
-    prov["packages"][
-        "PMPObs"
-    ] = "See 'References' key below, for detailed obs provenance information."
-    return prov
 
 
 def sort_human(input_list):
@@ -235,13 +413,6 @@ class Base(cdp.cdp_io.CDPIO, StringConstructor):
             f.close()
 
         elif self.type == "nc":
-            """
-            f = cdms2.open(file_name, "w")
-            f.write(data, *args, **kwargs)
-            f.metrics_git_sha1 = pcmdi_metrics.__git_sha1__
-            f.uvcdat_version = cdat_info.get_version()
-            f.close()
-            """
             data.to_netcdf(file_name)
 
         else:

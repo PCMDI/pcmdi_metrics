@@ -28,7 +28,7 @@ or as a combination of an input parameter file and the command line, e.g.: ::
 
 Outputs
 =======
-The driver produces a JSON file containing mean square error metrics for all input models and realizations relative to the reference data set. It also produces a bar chart displaying these metrics.
+The driver produces two JSON files. The first contains mean square error metrics for all input models and realizations relative to the reference data set. The second contains sea ice climatology and area data. The driver also produces a bar chart displaying these metrics.
 
 Sectors
 ########
@@ -66,6 +66,19 @@ A `demo parameter file`_ is provided in the sea ice code.
 * **obs_area_template**: File path of grid area data. If unavailalbe, skip and use "obs_cell_area".
 * **obs_area_var**: Name of reference area variable, if available. If unavailable, skip and use "obs_cell_area".
 * **obs_cell_area**: For equal area grids, the area of a single grid cell in units of km :sup:`2` . Only required if obs area file is not available.
+* **pole**: Set the maximum latitude for the Central Arctic and Arctic regions to exclude ice over the pole. Default is 90.1 to include all ice.
+
+Postprocessing
+==============
+
+A script is provided to create a multi-model bar chart using results from multiple runs of the sea ice driver. This script can be found in ./scripts/sea_ice_figures.py. 
+
+Example command: ::
+
+    python sea_ice_figures.py --filelist 'path/to/models/*/sea_ice_metrics.json' --output_path '.'
+
+
+A wildcard '*' can be used to glob multiple folders of results. The final path in the --filelist parameter must be the sea_ice_metrics.json file. The --output_path parameter can be any valid path.
 
 Reference
 =========

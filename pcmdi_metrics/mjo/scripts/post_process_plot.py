@@ -1,7 +1,7 @@
 import glob
 import os
 
-import cdms2
+import xarray as xr
 from lib_mjo import calculate_ewr
 from plot_wavenumber_frequency_power import plot_power
 
@@ -48,10 +48,9 @@ def main():
                 ncfile = (
                     "_".join([mip, model, exp, run, "mjo", period, "cmmGrid"]) + ".nc"
                 )
-                f = cdms2.open(os.path.join(datadir, ncfile))
-                d = f("power")
+                ds = xr.open_dataset(os.path.join(datadir, ncfile))
+                d = ds["power"]
                 d_runs.append(d)
-                f.close()
                 title = (
                     mip.upper()
                     + ": "
@@ -69,6 +68,7 @@ def main():
                 fout = os.path.join(imgdir, pngfilename)
                 # plot
                 plot_power(d, title, fout, ewr)
+                ds.close()
             except Exception:
                 print(model, run, "cannnot load")
                 pass

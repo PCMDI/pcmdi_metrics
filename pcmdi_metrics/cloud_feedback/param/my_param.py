@@ -5,6 +5,8 @@ variant = "r1i1p1f1"
 
 input_files_json = "./param/input_files.json"
 
+data_path = "./data"
+
 # Flag to compute ECS
 # True: compute ECS using abrupt-4xCO2 run
 # False: do not compute, instead rely on ECS value present in the json file (if it exists)

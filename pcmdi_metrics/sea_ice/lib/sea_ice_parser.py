@@ -223,4 +223,18 @@ def create_sea_ice_parser():
         default=True,
         help="Option for generate individual plots for models: True (default) / False",
     )
+
+    parser.add_argument(
+        "--pole",
+        type=float,
+        default=90.1,
+        help="Set to a latitude value to exclude sea ice at North pole. Must be > 80.",
+    )
+
+    parser.add_argument(
+        "--netcdf",
+        action="store_true",
+        default=False,
+        help="Use to save netcdf intermediate results",
+    )
     return parser

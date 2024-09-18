@@ -27,8 +27,8 @@ reference_data_lf_path = (
 varOBS = "pr"
 ObsUnitsAdjust = (True, "multiply", 86400.0)  # kg m-2 s-1 to mm day-1
 
-osyear = 1996
-oeyear = 2016
+osyear = 1998
+oeyear = 1999
 
 includeOBS = True
 
@@ -49,7 +49,7 @@ varModel = "pr"
 ModUnitsAdjust = (True, "multiply", 86400.0)  # kg m-2 s-1 to mm day-1
 units = "mm/d"
 
-msyear = 1961
+msyear = 1998
 meyear = 1999
 
 # =================================================

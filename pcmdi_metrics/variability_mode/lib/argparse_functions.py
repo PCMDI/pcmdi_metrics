@@ -33,6 +33,8 @@ def AddParserArgument(P):
         "- NAM: Northern Annular Mode\n"
         "- NAO: Northern Atlantic Oscillation\n"
         "- SAM: Southern Annular Mode\n"
+        "- PSA1: Pacific–South American pattern 1\n"
+        "- PSA2: Pacific–South American pattern 2\n"
         "- PNA: Pacific North American Pattern\n"
         "- PDO: Pacific Decadal Oscillation\n"
         "- NPO: North Pacific Oscillation\n"
@@ -69,9 +71,12 @@ def AddParserArgument(P):
     P.add_argument("--varOBS", type=str, help="Name of variable in reference data")
     P.add_argument("--varModel", type=str, help="Name of variable in model(s)")
     P.add_argument(
-        "--eofn_obs", type=int, default=1, help="EOF mode from observation as reference"
+        "--eofn_obs",
+        type=int,
+        default=None,
+        help="EOF mode from observation as reference",
     )
-    P.add_argument("--eofn_mod", type=int, default=1, help="EOF mode from model")
+    P.add_argument("--eofn_mod", type=int, default=None, help="EOF mode from model")
     P.add_argument(
         "--osyear", type=int, default=1900, help="Start year for reference data"
     )
@@ -221,6 +226,8 @@ def VariabilityModeCheck(mode, P):
             "NAM",
             "NAO",
             "SAM",
+            "PSA1",
+            "PSA2",
             "PNA",
             "PDO",
             "NPO",
