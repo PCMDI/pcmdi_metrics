@@ -39,6 +39,8 @@ def load_regions_specs() -> dict:
         "NAM": {"domain": {"latitude": (20.0, 90), "longitude": (-180, 180)}},
         "NAO": {"domain": {"latitude": (20.0, 80), "longitude": (-90, 40)}},
         "SAM": {"domain": {"latitude": (-20.0, -90), "longitude": (0, 360)}},
+        "PSA1": {"domain": {"latitude": (-20.0, -90), "longitude": (0, 360)}},
+        "PSA2": {"domain": {"latitude": (-20.0, -90), "longitude": (0, 360)}},
         "PNA": {"domain": {"latitude": (20.0, 85), "longitude": (120, 240)}},
         "NPO": {"domain": {"latitude": (20.0, 85), "longitude": (120, 240)}},
         "PDO": {"domain": {"latitude": (20.0, 70), "longitude": (110, 260)}},

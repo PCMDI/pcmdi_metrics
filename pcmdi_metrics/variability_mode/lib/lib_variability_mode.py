@@ -13,7 +13,7 @@ import xcdat as xc
 
 import pcmdi_metrics
 from pcmdi_metrics.io import get_time, select_subset, xcdat_open
-from pcmdi_metrics.utils import apply_landmask
+from pcmdi_metrics.utils import apply_landmask, check_monthly_time_axis
 
 
 def tree():
@@ -66,6 +66,9 @@ def read_data_in(
 ) -> xr.Dataset:
     # Open data file
     ds = xcdat_open(path)
+
+    # Data QC check -- time axis check
+    check_monthly_time_axis(ds)
 
     # Time subset
     ds_time_subsetted = subset_time(ds, syear, eyear, debug=debug)

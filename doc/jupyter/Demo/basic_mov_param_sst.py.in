@@ -25,7 +25,6 @@ varModel = 'ts'
 ModUnitsAdjust = (True, "subtract", 273.15)  # degK to degC
 msyear = 1900
 meyear = 2005
-eofn_mod = 1
 
 # OBSERVATIONS SETTINGS
 reference_data_path = '$INPUT_DIR$/obs4MIPs_PCMDI_monthly/MOHC/HadISST-1-1/mon/ts/gn/v20210727/ts_mon_HadISST-1-1_PCMDI_gn_187001-201907.nc'
@@ -34,7 +33,6 @@ varOBS = 'ts'
 ObsUnitsAdjust = (True, "subtract", 273.15)  # degK to degC
 osyear = 1900
 oeyear = 2005
-eofn_obs = 1
 
 # DIRECTORY WHERE TO PUT RESULTS
 results_dir = os.path.join(
