@@ -430,7 +430,7 @@ def convert_units(data, units_adjust):
             "multiply": "*",
             "divide": "/",
             "CtoF": ")*(9/5)+32",
-            "KtoF": "-273)*(9/5)+32",
+            "KtoF": "-273.15)*(9/5)+32",
         }
         if str(units_adjust[1]) not in op_dict:
             print(
