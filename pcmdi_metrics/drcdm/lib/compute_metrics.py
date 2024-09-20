@@ -145,8 +145,8 @@ class SeasonalAverager:
                 num = int(stat.replace("ge", ""))
                 ds_ann = (
                     ds.where(ds >= num)
-                    .groupby("time.year")
                     .sel(time=date_range, method="nearest")
+                    .groupby("time.year")
                     .count(dim="time")
                     / ds.sel(time=date_range, method="nearest")
                     .groupby("time.year")
