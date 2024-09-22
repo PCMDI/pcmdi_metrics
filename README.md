@@ -181,6 +181,15 @@ Release Notes and History
 [v1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1
 [v1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0
 
+Current Core Team Members at LLNL
+---------------------------------
+* Jiwoo Lee
+* Ana Ordonez
+* Peter Gleckler
+* Paul Ullrich
+* Bo Dong
+* Kristin Chang
+
 
 Contributors
 ------------
