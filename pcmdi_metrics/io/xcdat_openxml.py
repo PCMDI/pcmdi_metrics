@@ -39,7 +39,7 @@ def xcdat_open(
     # Open an xml file
     >>> ds = xcdat_open('mydata.xml')
     """
-    if isinstance(infile, list):
+    if isinstance(infile, list) or "*" in infile:
         ds = xc.open_mfdataset(infile, data_var=data_var, decode_times=decode_times)
     else:
         if infile.split(".")[-1].lower() == "xml":
