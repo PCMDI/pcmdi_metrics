@@ -181,8 +181,8 @@ Release Notes and History
 [v1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1
 [v1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0
 
-Current Core Team Members at LLNL
----------------------------------
+Current Core Team Members at PCMDI/LLNL
+---------------------------------------
 * Jiwoo Lee
 * Ana Ordonez
 * Peter Gleckler
