@@ -1,23 +1,29 @@
 import datetime
 import os
 
-import dask
+from pcmdi_metrics.io import select_subset, xcdat_open
+from pcmdi_metrics.utils import (
+    check_monthly_time_axis,
+    extract_date_components,
+    find_overlapping_dates,
+    regenerate_monthly_time_axis,
+)
 
-from pcmdi_metrics.io import xcdat_open, select_subset
-from pcmdi_metrics.utils import check_monthly_time_axis, find_overlapping_dates
+# import dask
 
 
 def calculate_climatology(
     var: str,
     infile: str,
-    outfile: str=None,
-    outpath: str=None,
-    outfilename: str=None,
-    start: str=None,
-    end: str=None,
-    ver: str=None,
-    periodinname: bool=None,
-    climlist: list=None,
+    outfile: str = None,
+    outpath: str = None,
+    outfilename: str = None,
+    outfilename_default_template: bool = True,
+    start: str = None,
+    end: str = None,
+    ver: str = None,
+    periodinname: bool = None,
+    climlist: list = None,
 ):
     """
     Calculate climatology from a dataset over a specified period.
@@ -38,6 +44,8 @@ def calculate_climatology(
         The directory to save output files (default is None, uses the directory of outfile).
     outfilename : str, optional
         The specific output filename (default is None, uses infile name).
+    outfilename_default_template: bool ,optional
+        Use default template to rename output file name to add information (default is True).
     start : str, optional
         The start date for the climatology period in 'YYYY-MM' format (default is None).
     end : str, optional
@@ -87,7 +95,11 @@ def calculate_climatology(
     print("atts:", ds.attrs)  # Print dataset attributes
 
     # Check if dataset time axis is okay
-    check_monthly_time_axis(ds)
+    try:
+        check_monthly_time_axis(ds)
+    except ValueError:
+        print(f"Error: time axis error from {infilename}")
+        ds = regenerate_monthly_time_axis(ds)
 
     # Determine the output directory, using outpath if provided, else use the directory of outfile
     outdir = outpath or os.path.dirname(outfile)
@@ -96,10 +108,6 @@ def calculate_climatology(
 
     # Define the climatology period based on the provided start and end dates, or use the entire time series
     if start is not None and end is not None:
-        # Extract the start and end year, month, and day from the dataset time coordinate
-        start_yr, start_mo, start_da = extract_date_components(ds, index=0)
-        end_yr, end_mo, end_da = extract_date_components(ds, index=-1)
-    else:
         # If a period is specified by the user, parse the start and end dates
         start_yr, start_mo = map(int, start.split("-")[:2])
         start_da = 1  # Default to the first day of the start month
@@ -109,21 +117,26 @@ def calculate_climatology(
             ds.time.dt.days_in_month.sel(time=ds.time.dt.year == end_yr)[end_mo - 1]
         )
 
-    # Format the start and end dates as strings (YYYY-MM-DD)
-    start_str = f"{start_yr:04d}-{start_mo:02d}-{start_da:02d}"
-    end_str = f"{end_yr:04d}-{end_mo:02d}-{end_da:02d}"
+        # Format the start and end dates as strings (YYYY-MM-DD)
+        start_str = f"{start_yr:04d}-{start_mo:02d}-{start_da:02d}"
+        end_str = f"{end_yr:04d}-{end_mo:02d}-{end_da:02d}"
 
-    # Update start and end dates strings to those overlaps with the actual dataset
-    start_str, end_str = find_overlapping_dates(ds, start_str, end_str)
+        # Update start and end dates strings to those overlaps with the actual dataset
+        start_str, end_str = find_overlapping_dates(ds, start_str, end_str)
 
-    # Subset the dataset to the selected time period
-    ds = select_subset(ds, time=(start_str, end_str))
+        # Subset the dataset to the selected time period
+        ds = select_subset(ds, time=(start_str, end_str))
 
-    print("start_str:", start_str)
-    print("end_str:", end_str)
+    # Extract the start and end year, month, and day from the dataset time coordinate
+    start_yr, start_mo, start_da = extract_date_components(ds, index=0)
+    end_yr, end_mo, end_da = extract_date_components(ds, index=-1)
+
+    print(f"start: {start_yr:04d}-{start_mo:02d}-{start_da:02d}")
+    print(f"end: {end_yr:04d}-{end_mo:02d}-{end_da:02d}")
 
     # Configure Dask to handle large chunks and calculate climatology
     # dask.config.set(**{"array.slicing.split_large_chunks": True})
+
     # Compute seasonal climatology (weighted)
     ds_clim = ds.temporal.climatology(
         var,
@@ -148,30 +161,37 @@ def calculate_climatology(
 
     # Iterate over the selected climatologies and save each to a NetCDF file
     for s in clims:
-        # Define the output filename suffix based on the climatology and period (if specified)
-        addf = (
-            f".{start_yr:04d}{start_mo:02d}-{end_yr:04d}{end_mo:02d}.{s}.{ver}.nc"
-            if periodinname
-            else f".{s}.{ver}.nc"
-        )
-        # Replace the .nc extension in the base output file with the defined suffix
-        if outfilename is not None:
-            outpath_season = os.path.join(outdir, outfilename.replace(".nc", addf))
-        elif  outfile is not None:
-            outpath_season = os.path.join(outdir, str(os.path.basename(outfile)).replace(".nc", addf))
+        if outfilename_default_template:
+            # Define the output filename suffix based on the climatology and period (if specified)
+            addf = (
+                f".{start_yr:04d}{start_mo:02d}-{end_yr:04d}{end_mo:02d}.{s}.{ver}.nc"
+                if periodinname
+                else f".{s}.{ver}.nc"
+            )
+            # Replace the .nc extension in the base output file with the defined suffix
+            if outfilename is not None:
+                outpath_season = os.path.join(outdir, outfilename.replace(".nc", addf))
+            elif outfile is not None:
+                outpath_season = os.path.join(
+                    outdir, str(os.path.basename(outfile)).replace(".nc", addf)
+                )
+            else:
+                outpath_season = os.path.join(
+                    outdir, str(os.path.basename(infile)).replace(".nc", addf)
+                )
         else:
-            outpath_season = os.path.join(outdir, str(os.path.basename(infile)).replace(".nc", addf))
+            outpath_season = os.path.join(
+                outdir,
+                outfilename.replace(
+                    "%(start-yyyymm)-%(end-yyyymm)",
+                    f"{start_yr:04d}{start_mo:02d}-{end_yr:04d}{end_mo:02d}",
+                ).replace("%(season)", s),
+            )
 
         print(f"output file for {s} is {outpath_season}")
         # Save the climatology to the output NetCDF file, including global attributes
         ds_clim_dict[s].to_netcdf(outpath_season)
 
+    ds.close()
+
     return ds_clim_dict  # Return the dictionary of all climatology datasets
-
-
-
-def extract_date_components(ds, index=0):
-    date = ds.time.values[index]
-    return date.year, date.month, date.day
-
-
