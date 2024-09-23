@@ -44,7 +44,18 @@ def read_mean_clim_json_files(
             dict_temp = json.load(fj)  # e.g., load contents of precipitation json file
         var = dict_temp["Variable"]["id"]  # e.g., 'pr'
         if "level" in list(dict_temp["Variable"].keys()):
-            var += "-" + str(int(dict_temp["Variable"]["level"] / 100.0))  # Pa to hPa
+            # defaul PCMDI prefers name convention for pressulre level variables with "name"-"pressure(hPa)"
+            # e.g. ua-200, zg-500 etc. In case the user used a pressure in Pa rather than hPa, we add a check
+            # with warning message and convert unit to hPa to be consistent with the default PCMDI setup
+            level = int(dict_temp["Variable"]["level"])
+            if level > 1100:
+                print(
+                    "Warning: level = {}hPa in data, I guess this should be Pa".format(
+                        level
+                    )
+                )
+                level = int(level / 100.0)
+            var += "-" + str(level)  # always hPa
         results_dict[var] = dict_temp
         unit = extract_unit(var, results_dict[var])
         if unit is not None:
