@@ -2,20 +2,22 @@ import datetime
 import os
 
 import dask
-import xcdat as xc
+
+from pcmdi_metrics.io import xcdat_open, select_subset
+from pcmdi_metrics.utils import check_monthly_time_axis, find_overlapping_dates
 
 
 def calculate_climatology(
-    var,
-    infile,
-    outfile=None,
-    outpath=None,
-    outfilename=None,
-    start=None,
-    end=None,
-    ver=None,
-    periodinname=None,
-    climlist=None,
+    var: str,
+    infile: str,
+    outfile: str=None,
+    outpath: str=None,
+    outfilename: str=None,
+    start: str=None,
+    end: str=None,
+    ver: str=None,
+    periodinname: bool=None,
+    climlist: list=None,
 ):
     """
     Calculate climatology from a dataset over a specified period.
@@ -80,9 +82,12 @@ def calculate_climatology(
     print("infilename:", infilename)
 
     # Open the dataset using xcdat's open_mfdataset function
-    d = xc.open_mfdataset(infile, data_var=var)
-    print("type(d):", type(d))
-    print("atts:", d.attrs)  # Print dataset attributes
+    ds = xcdat_open(infile, data_var=var)
+    print("type(d):", type(ds))
+    print("atts:", ds.attrs)  # Print dataset attributes
+
+    # Check if dataset time axis is okay
+    check_monthly_time_axis(ds)
 
     # Determine the output directory, using outpath if provided, else use the directory of outfile
     outdir = outpath or os.path.dirname(outfile)
@@ -90,10 +95,10 @@ def calculate_climatology(
     print("outdir:", outdir)
 
     # Define the climatology period based on the provided start and end dates, or use the entire time series
-    if not start and not end:
+    if start is not None and end is not None:
         # Extract the start and end year, month, and day from the dataset time coordinate
-        start_yr, start_mo, start_da = map(int, d.time[["year", "month", "day"]][0])
-        end_yr, end_mo, end_da = map(int, d.time[["year", "month", "day"]][-1])
+        start_yr, start_mo, start_da = extract_date_components(ds, index=0)
+        end_yr, end_mo, end_da = extract_date_components(ds, index=-1)
     else:
         # If a period is specified by the user, parse the start and end dates
         start_yr, start_mo = map(int, start.split("-")[:2])
@@ -101,40 +106,45 @@ def calculate_climatology(
         end_yr, end_mo = map(int, end.split("-")[:2])
         # Determine the last day of the end month
         end_da = int(
-            d.time.dt.days_in_month.sel(time=d.time.dt.year == end_yr)[end_mo - 1]
+            ds.time.dt.days_in_month.sel(time=ds.time.dt.year == end_yr)[end_mo - 1]
         )
 
     # Format the start and end dates as strings (YYYY-MM-DD)
     start_str = f"{start_yr:04d}-{start_mo:02d}-{start_da:02d}"
     end_str = f"{end_yr:04d}-{end_mo:02d}-{end_da:02d}"
 
+    # Update start and end dates strings to those overlaps with the actual dataset
+    start_str, end_str = find_overlapping_dates(ds, start_str, end_str)
+
     # Subset the dataset to the selected time period
-    d = d.sel(time=slice(start_str, end_str))
+    ds = select_subset(ds, time=(start_str, end_str))
 
     print("start_str:", start_str)
     print("end_str:", end_str)
 
     # Configure Dask to handle large chunks and calculate climatology
-    dask.config.set(**{"array.slicing.split_large_chunks": True})
+    # dask.config.set(**{"array.slicing.split_large_chunks": True})
     # Compute seasonal climatology (weighted)
-    d_clim = d.temporal.climatology(
+    ds_clim = ds.temporal.climatology(
         var,
         freq="season",
         weighted=True,
         season_config={"dec_mode": "DJF", "drop_incomplete_djf": True},
     )
     # Compute monthly climatology (weighted)
-    d_ac = d.temporal.climatology(var, freq="month", weighted=True)
+    ds_ac = ds.temporal.climatology(var, freq="month", weighted=True)
 
     # Organize the computed climatologies into a dictionary
-    d_clim_dict = {
-        season: d_clim.isel(time=i)
+    ds_clim_dict = {
+        season: ds_clim.isel(time=i)
         for i, season in enumerate(["DJF", "MAM", "JJA", "SON"])
     }
-    d_clim_dict["AC"] = d_ac  # Add the annual cycle climatology
+    ds_clim_dict["AC"] = ds_ac  # Add the annual cycle climatology
 
     # Determine which climatologies to process, defaulting to all if none are specified
     clims = climlist or ["AC", "DJF", "MAM", "JJA", "SON"]
+
+    print("outdir, outfilename, outfile:", outdir, outfilename, outfile)
 
     # Iterate over the selected climatologies and save each to a NetCDF file
     for s in clims:
@@ -145,12 +155,23 @@ def calculate_climatology(
             else f".{s}.{ver}.nc"
         )
         # Replace the .nc extension in the base output file with the defined suffix
-        out_season = os.path.join(
-            outdir, outfilename or outfile.split("/")[-1]
-        ).replace(".nc", addf)
+        if outfilename is not None:
+            outpath_season = os.path.join(outdir, outfilename.replace(".nc", addf))
+        elif  outfile is not None:
+            outpath_season = os.path.join(outdir, str(os.path.basename(outfile)).replace(".nc", addf))
+        else:
+            outpath_season = os.path.join(outdir, str(os.path.basename(infile)).replace(".nc", addf))
 
-        print("output file is", out_season)
+        print(f"output file for {s} is {outpath_season}")
         # Save the climatology to the output NetCDF file, including global attributes
-        d_clim_dict[s].to_netcdf(out_season)
+        ds_clim_dict[s].to_netcdf(outpath_season)
 
-    return d_clim_dict  # Return the dictionary of all climatology datasets
+    return ds_clim_dict  # Return the dictionary of all climatology datasets
+
+
+
+def extract_date_components(ds, index=0):
+    date = ds.time.values[index]
+    return date.year, date.month, date.day
+
+
