@@ -9,8 +9,7 @@ from pcmdi_metrics.mean_climate.lib_unified.lib_unified_dict import (
     write_to_json,
 )
 from pcmdi_metrics.mean_climate.lib_unified.lib_unified_rad import derive_rad_var
-
-# from pcmdi_metrics.mean_climate.lib import calculate_climatology
+from pcmdi_metrics.mean_climate.lib import calculate_climatology
 
 
 def extract_info_from_model_catalogue(
@@ -123,6 +122,12 @@ def get_model_catalogue(
     return dict(models_dict)
 
 
+def get_interim_out_path(interim_output_path_dict_data, path_key, var):
+    path = interim_output_path_dict_data[path_key].replace("%(var)", var)
+    os.makedirs(path, exist_ok=True)
+    return path
+
+
 def get_model_run_data_path(models_dict, var, model, run):
     if (
         "path" in models_dict[var][model][run]
@@ -138,11 +143,6 @@ def get_model_run_data_path(models_dict, var, model, run):
         raise ValueError(f"No path, filename, or template found for model: {model}")
     return model_data_path
 
-
-def get_model_run_out_path(interim_output_path_dict, var):
-    path = interim_output_path_dict["model"].replace("%(var)", var)
-    os.makedirs(path, exist_ok=True)
-    return path
 
 
 def get_ref_catalogue(ref_catalogue_file_path, ref_data_head=None):
@@ -173,12 +173,6 @@ def get_ref_data_path(refs_dict, var, ref):
     else:
         raise ValueError(f"No path, filename, or template found for ref: {ref}")
     return ref_data_path
-
-
-def get_ref_out_path(interim_output_path_dict, var):
-    path = interim_output_path_dict["ref"].replace("%(var)", var)
-    os.makedirs(path, exist_ok=True)
-    return path
 
 
 def get_unique_bases(variables):
@@ -221,36 +215,27 @@ def get_unique_bases(variables):
     return result
 
 
-def get_annual_cycle(var, data_path, common_grid=None, in_progress=True):
-    if in_progress:
-        return
+def get_annual_cycle(var, data_path, out_path):
 
-    """
-    outfile = None
-    outpath = None
-    outfilename = None
     start = None
     end = None
     ver = None
 
+    print('get_annual_cycle, var:', var)
+    print('data_path:', data_path)
+    print('out_path:', out_path)
+
     d_clim_dict = calculate_climatology(
         var,
-        data_path,
-        outfile,
-        outpath,
-        outfilename,
-        start,
-        end,
-        ver,
+        infile=data_path,
+        outpath=out_path,
+        start=start,
+        end=end,
+        ver=ver,
         periodinname=True,
-        climlist=["AC"],
     )
 
-    result = d_clim_dict["AC"]
-    """
-    result = None
-
-    return result
+    return d_clim_dict
 
 
 def calc_metrics(ac_ref, ac_run, in_progress=True):
@@ -287,7 +272,7 @@ def process_dataset(
     encountered_variables,
     levels,
     common_grid,
-    interim_output_path_dict,
+    interim_output_path_dict_data,
     data_type="ref",
 ):
     # Sanity checks
@@ -309,7 +294,7 @@ def process_dataset(
         print(f"Processing data for: {ref}")
         # Construct paths
         data_path = get_ref_data_path(refs_dict, var, ref)
-        out_path = get_ref_out_path(interim_output_path_dict, var)
+        out_path = get_interim_out_path(interim_output_path_dict_data, "path_ac", var)
         refs_dict[var][ref]["path_ac"] = out_path
         if "varname" in refs_dict[var][ref]:
             varname = refs_dict[var][ref]["varname"]
@@ -321,7 +306,7 @@ def process_dataset(
         print(f"Processing data for: {model}, {run}")
         # Construct paths
         data_path = get_model_run_data_path(data_dict, var, model, run)
-        out_path = get_model_run_out_path(interim_output_path_dict, var)
+        out_path = get_interim_out_path(interim_output_path_dict_data, "path_ac", var)
         models_dict[var][model][run]["path_ac"] = out_path
         if "varname" in models_dict[var][model][run]:
             varname = models_dict[var][model][run]["varname"]
@@ -331,6 +316,12 @@ def process_dataset(
     print(
         f"Processing {data_type} dataset - varname: {varname}, data: {data_name}, path: {data_path}"
     )
+
+    # Open dataset here
+    ### ds = xc.open_mfdataset(data_path)
+
+    # Check if dataset is okay ...
+    ### check_monthly_time_axis(ds)
 
     # Calculate the annual cycle and save annual cycle
     if var not in rad_diagnostic_variables:
