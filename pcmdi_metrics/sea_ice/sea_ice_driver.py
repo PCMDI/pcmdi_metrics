@@ -4,13 +4,13 @@ import json
 import logging
 import os
 
-import matplotlib.pyplot as plt
 import numpy as np
 import xarray
 import xcdat as xc
 
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.sea_ice.lib import create_sea_ice_parser
+from pcmdi_metrics.sea_ice.lib import sea_ice_figures as fig
 from pcmdi_metrics.sea_ice.lib import sea_ice_lib as lib
 from pcmdi_metrics.utils import create_land_sea_mask
 
@@ -49,6 +49,7 @@ if __name__ == "__main__":
     oeyear = parameter.oeyear
     plot = parameter.plot
     pole = parameter.pole
+    to_nc = parameter.netcdf
 
     print("Model list:", model_list)
     model_list.sort()
@@ -122,6 +123,21 @@ if __name__ == "__main__":
         "np": means["np"],
         "na": means["na"],
     }
+    if to_nc:
+        # Generate netcdf files of climatologies
+        nc_dir = os.path.join(metrics_output_path, "netcdf")
+        if not os.path.exists(nc_dir):
+            os.mkdir(nc_dir)
+        nc_climo = lib.get_clim(obs, obs_var, ds=None)
+        print("Writing climatology netcdf")
+        fname_nh = (
+            "sic_clim_"
+            + "_".join([reference_data_set, "nh", str(osyear), str(oeyear)])
+            + ".nc"
+        )
+        fname_nh = os.path.join(nc_dir, fname_nh)
+        nc_climo.to_netcdf(fname_nh)
+        del nc_climo
     obs.close()
 
     antarctic_clims = {}
@@ -164,6 +180,21 @@ if __name__ == "__main__":
         "sp": means["sp"],
         "sa": means["sa"],
     }
+    if to_nc:
+        # Generate netcdf files of climatologies
+        nc_dir = os.path.join(metrics_output_path, "netcdf")
+        if not os.path.exists(nc_dir):
+            os.mkdir(nc_dir)
+        nc_climo = lib.get_clim(obs, obs_var, ds=None)
+        print("Writing climatology netcdf")
+        fname_sh = (
+            "sic_clim_"
+            + "_".join([reference_data_set, "sh", str(osyear), str(oeyear)])
+            + ".nc"
+        )
+        fname_sh = os.path.join(nc_dir, fname_sh)
+        nc_climo.to_netcdf(fname_sh)
+        del nc_climo
     obs.close()
 
     obs_clims = {reference_data_set: {}}
@@ -228,14 +259,14 @@ if __name__ == "__main__":
         end_year = meyear
 
         real_clim = {
-            "arctic": {"model_mean": None},
-            "ca": {"model_mean": None},
-            "na": {"model_mean": None},
-            "np": {"model_mean": None},
-            "antarctic": {"model_mean": None},
-            "sp": {"model_mean": None},
-            "sa": {"model_mean": None},
-            "io": {"model_mean": None},
+            "arctic": {"model_mean": {}},
+            "ca": {"model_mean": {}},
+            "na": {"model_mean": {}},
+            "np": {"model_mean": {}},
+            "antarctic": {"model_mean": {}},
+            "sp": {"model_mean": {}},
+            "sa": {"model_mean": {}},
+            "io": {"model_mean": {}},
         }
         real_mean = {
             "arctic": {"model_mean": 0},
@@ -309,7 +340,15 @@ if __name__ == "__main__":
                     "%(model_version)": model,
                     "%(realization)": run,
                 }
-                test_data_full_path = os.path.join(test_data_path, filename_template)
+                test_data_tmp = lib.replace_multi(test_data_path, tags)
+                if "*" in test_data_tmp:
+                    # Get the most recent version for last wildcard
+                    ind = test_data_tmp.split("/")[::-1].index("*")
+                    tmp1 = "/".join(test_data_tmp.split("/")[0:-ind])
+                    globbed = glob.glob(tmp1)
+                    globbed.sort()
+                    test_data_tmp = globbed[-1]
+                test_data_full_path = os.path.join(test_data_tmp, filename_template)
                 test_data_full_path = lib.replace_multi(test_data_full_path, tags)
                 test_data_full_path = glob.glob(test_data_full_path)
                 test_data_full_path.sort()
@@ -358,6 +397,22 @@ if __name__ == "__main__":
                 mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
                 ds[var] = ds[var].where(mask < 1)
 
+                if to_nc:
+                    # Generate netcdf files of climatologies
+                    nc_dir = os.path.join(metrics_output_path, "netcdf")
+                    if not os.path.exists(nc_dir):
+                        os.mkdir(nc_dir)
+                    nc_climo = lib.get_clim(ds, var, ds=None)
+                    print("Writing climatology netcdf")
+                    fname = (
+                        "sic_clim_"
+                        + "_".join([model, run, yr_range[0], yr_range[1]])
+                        + ".nc"
+                    )
+                    fname = os.path.join(nc_dir, fname)
+                    nc_climo.to_netcdf(fname)
+                    del nc_climo
+
                 # Get regions
                 clims, means = lib.process_by_region(ds, var, area[area_var].data, pole)
 
@@ -365,16 +420,7 @@ if __name__ == "__main__":
                 # Running sum of all realizations
                 for rgn in clims:
                     real_clim[rgn][run] = clims[rgn]
-                    if real_clim[rgn]["model_mean"] is None:
-                        real_clim[rgn]["model_mean"] = clims[rgn]
-                    else:
-                        real_clim[rgn]["model_mean"][var] = (
-                            real_clim[rgn]["model_mean"][var] + clims[rgn][var]
-                        )
                     real_mean[rgn][run] = means[rgn]
-                    real_mean[rgn]["model_mean"] = (
-                        real_mean[rgn]["model_mean"] + means[rgn]
-                    )
 
             print("\n-------------------------------------------")
             print("Calculating model regional average metrics \nfor ", model)
@@ -382,12 +428,12 @@ if __name__ == "__main__":
             for rgn in real_clim:
                 print(rgn)
                 # Get model mean
-                real_clim[rgn]["model_mean"][var] = real_clim[rgn]["model_mean"][
-                    var
-                ] / len(list_of_runs)
-                real_mean[rgn]["model_mean"] = real_mean[rgn]["model_mean"] / len(
-                    list_of_runs
+                datalist = [real_clim[rgn][r][var].data for r in list_of_runs]
+                real_clim[rgn]["model_mean"][var] = np.nanmean(
+                    np.array(datalist), axis=0
                 )
+                datalist = [real_mean[rgn][r] for r in list_of_runs]
+                real_mean[rgn]["model_mean"] = np.nanmean(np.array(datalist))
 
                 for run in real_clim[rgn]:
                     # Set up metrics dictionary
@@ -519,137 +565,97 @@ if __name__ == "__main__":
     # Make figure
     # ----------------
     if plot:
-        sector_list = [
-            "Central Arctic Sector",
-            "North Atlantic Sector",
-            "North Pacific Sector",
-            "Indian Ocean Sector",
-            "South Atlantic Sector",
-            "South Pacific Sector",
-        ]
-        sector_short = ["ca", "na", "np", "io", "sa", "sp"]
-        fig7, ax7 = plt.subplots(6, 1, figsize=(5, 9))
-        mlabels = model_list
-        ind = np.arange(len(mlabels))  # the x locations for the groups
-        width = 0.3
-        n = len(ind)
-        for inds, sector in enumerate(sector_list):
-            # Assemble data
-            mse_clim = []
-            mse_ext = []
-            clim_range = []
-            ext_range = []
-            clim_err_x = []
-            clim_err_y = []
-            ext_err_y = []
-            rgn = sector_short[inds]
-            for nmod, model in enumerate(model_list):
-                mse_clim.append(
-                    float(
-                        metrics["RESULTS"][model][rgn]["model_mean"][
-                            reference_data_set
-                        ]["monthly_clim"]["mse"]
-                    )
-                )
-                mse_ext.append(
-                    float(
-                        metrics["RESULTS"][model][rgn]["model_mean"][
-                            reference_data_set
-                        ]["total_extent"]["mse"]
-                    )
-                )
-                # Get spread, only if there are multiple realizations
-                if len(metrics["RESULTS"][model][rgn].keys()) > 2:
-                    for r in metrics["RESULTS"][model][rgn]:
-                        if r != "model_mean":
-                            clim_err_x.append(ind[nmod])
-                            clim_err_y.append(
-                                float(
-                                    metrics["RESULTS"][model][rgn][r][
-                                        reference_data_set
-                                    ]["monthly_clim"]["mse"]
-                                )
-                            )
-                            ext_err_y.append(
-                                float(
-                                    metrics["RESULTS"][model][rgn][r][
-                                        reference_data_set
-                                    ]["total_extent"]["mse"]
-                                )
-                            )
+        fig_dir = os.path.join(metrics_output_path, "plot")
+        if not os.path.exists(fig_dir):
+            os.mkdir(fig_dir)
 
-            # plot data
-            if len(model_list) < 4:
-                mark_size = 9
-            elif len(model_list) < 12:
-                mark_size = 3
-            else:
-                mark_size = 1
-            ax7[inds].bar(
-                ind - width / 2.0, mse_clim, width, color="b", label="Ann. Cycle"
-            )
-            ax7[inds].bar(ind, mse_ext, width, color="r", label="Ann. Mean")
-            if len(clim_err_x) > 0:
-                ax7[inds].scatter(
-                    [x - width / 2.0 for x in clim_err_x],
-                    clim_err_y,
-                    marker="D",
-                    s=mark_size,
-                    color="k",
-                )
-                ax7[inds].scatter(
-                    clim_err_x, ext_err_y, marker="D", s=mark_size, color="k"
-                )
-            # xticks
-            if inds == len(sector_list) - 1:
-                ax7[inds].set_xticks(ind + width / 2.0, mlabels, rotation=90, size=7)
-            else:
-                ax7[inds].set_xticks(ind + width / 2.0, labels="")
-            # yticks
-            if len(clim_err_y) > 0:
-                datamax = np.max(
-                    np.concatenate((np.array(clim_err_y), np.array(ext_err_y)))
-                )
-            else:
-                datamax = np.max(
-                    np.concatenate((np.array(mse_clim), np.array(mse_ext)))
-                )
-            ymax = (datamax) * 1.3
-            ax7[inds].set_ylim(0.0, ymax)
-            if ymax < 0.1:
-                ticks = np.linspace(0, 0.1, 6)
-                labels = [str(round(x, 3)) for x in ticks]
-            elif ymax < 1:
-                ticks = np.linspace(0, 1, 5)
-                labels = [str(round(x, 1)) for x in ticks]
-            elif ymax < 4:
-                ticks = np.linspace(0, round(ymax), num=round(ymax / 2) * 2 + 1)
-                labels = [str(round(x, 1)) for x in ticks]
-            elif ymax > 10:
-                ticks = range(0, round(ymax), 5)
-                labels = [str(round(x, 0)) for x in ticks]
-            else:
-                ticks = range(0, round(ymax))
-                labels = [str(round(x, 0)) for x in ticks]
-
-            ax7[inds].set_yticks(ticks, labels, fontsize=8)
-            # labels etc
-            ax7[inds].set_ylabel("10${^1}{^2}$km${^4}$", size=8)
-            ax7[inds].grid(True, linestyle=":")
-            ax7[inds].annotate(
-                sector,
-                (0.35, 0.8),
-                xycoords="axes fraction",
-                size=9,
-            )
-        # Add legend, save figure
-        ax7[0].legend(loc="upper right", fontsize=6)
-        plt.suptitle("Mean Square Error relative to " + reference_data_set, y=0.91)
-        figfile = os.path.join(metrics_output_path, "MSE_bar_chart.png")
-        plt.savefig(figfile)
-        meta.update_plots(
-            "bar_chart", figfile, "regional_bar_chart", "Bar chart of regional MSE"
+        # Make metrics bar chart for all models
+        print("Creating metrics bar chart.")
+        meta = fig.metrics_bar_chart(
+            model_list, metrics, reference_data_set, fig_dir, meta
         )
+
+        # Make annual cycle line plots for all models
+        print("Creating annual cycle figures.")
+        meta = fig.annual_cycle_plots(df, fig_dir, reference_data_set, meta)
+
+        # Make maps
+        print("Creating maps.")
+        if os.path.exists(fname_nh) and os.path.exists(fname_sh):
+            obs_nh = xc.open_dataset(fname_nh)
+            obs_sh = xc.open_dataset(fname_sh)
+        else:
+            obs_nh = None
+            obs_sh = None
+        nc_dir = os.path.join(metrics_output_path, "netcdf/*")
+        count = 0
+        for file in glob.glob(nc_dir):
+            model = os.path.basename(file).split("_")[2]
+            run = os.path.basename(file).split("_")[3]
+            nc_climo = xc.open_dataset(file)
+            if model == reference_data_set:
+                continue
+            try:
+                tmp_model = "_".join([model, run])
+                tmp_title = "{0}-{1} Arctic sea ice".format(yr_range[0], yr_range[1])
+                meta = fig.create_arctic_map(
+                    nc_climo,
+                    obs_nh,
+                    var,
+                    obs_var,
+                    fig_dir,
+                    meta,
+                    tmp_model,
+                    tmp_title,
+                )
+                meta = fig.create_summary_maps_arctic(
+                    nc_climo, var, fig_dir, meta, tmp_model
+                )
+                tmp_title = "{0}-{1} Antarctic sea ice".format(yr_range[0], yr_range[1])
+                meta = fig.create_antarctic_map(
+                    nc_climo,
+                    obs_sh,
+                    var,
+                    obs_var,
+                    fig_dir,
+                    meta,
+                    tmp_model,
+                    tmp_title,
+                )
+                meta = fig.create_summary_maps_antarctic(
+                    nc_climo, var, fig_dir, meta, tmp_model
+                )
+            except Exception as e:
+                print("Error making figures for model", model, "realization", run)
+                print("  ", e)
+
+        # Model Mean maps
+        for model in model_list:
+            count = 0
+            nc_dir = os.path.join(metrics_output_path, "netcdf/*" + model + "_*")
+            for file in glob.glob(nc_dir):
+                nc_climo = xc.open_dataset(file)
+                if count == 0:
+                    nc_climo_mean = nc_climo.copy(deep=True)
+                else:
+                    nc_climo_mean[var] = nc_climo_mean[var] + nc_climo[var]
+            nc_climo_mean[var] = nc_climo_mean[var] / (count + 1)
+            tmp_model = "_".join([model, "model_mean"])
+            tmp_title = "{0}-{1} Arctic sea ice".format(yr_range[0], yr_range[1])
+            meta = fig.create_arctic_map(
+                nc_climo_mean, obs_nh, var, obs_var, fig_dir, meta, tmp_model, tmp_title
+            )
+            tmp_title = "{0}-{1} Antarctic sea ice".format(yr_range[0], yr_range[1])
+            meta = fig.create_antarctic_map(
+                nc_climo_mean, obs_sh, var, obs_var, fig_dir, meta, tmp_model, tmp_title
+            )
+
+            meta = fig.create_summary_maps_arctic(
+                nc_climo_mean, var, fig_dir, meta, tmp_model
+            )
+            meta = fig.create_summary_maps_antarctic(
+                nc_climo_mean, var, fig_dir, meta, tmp_model
+            )
 
     # -----------------
     # Update and write
@@ -663,6 +669,7 @@ if __name__ == "__main__":
         # Skip provenance if there's an issue
         print("Error: Could not get provenance from metrics json for output.json.")
 
+    print("Writing metadata file.")
     meta.update_provenance("modeldata", test_data_path)
     if reference_data_path_nh is not None:
         meta.update_provenance("obsdata_nh", reference_data_path_nh)

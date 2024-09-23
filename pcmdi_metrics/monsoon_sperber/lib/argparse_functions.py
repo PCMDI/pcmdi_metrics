@@ -53,7 +53,10 @@ def AddParserArgument(P):
     P.add_argument(
         "--meyear", dest="meyear", type=int, help="End year for model data set"
     )
-    P.add_argument("--modnames", type=list, default=None, help="List of models")
+    P.add_argument("--modnames", type=str, default=None, help="List of models")
+    P.add_argument(
+        "--list_monsoon_regions", type=str, default=None, help="List of regions"
+    )
     P.add_argument(
         "-r",
         "--realization",
@@ -95,6 +98,23 @@ def AddParserArgument(P):
         default=True,
         help="Option for update existing JSON file: True (i.e., update) (default) / False (i.e., overwrite)",
     )
+    # CMEC
+    P.add_argument(
+        "--cmec",
+        dest="cmec",
+        default=False,
+        action="store_true",
+        help="Use to save CMEC format metrics JSON",
+    )
+    P.add_argument(
+        "--no_cmec",
+        dest="cmec",
+        default=False,
+        action="store_false",
+        help="Do not save CMEC format metrics JSON",
+    )
+    P.set_defaults(cmec=False)
+
     return P
 
 

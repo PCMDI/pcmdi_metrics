@@ -57,7 +57,7 @@ def plot_map(
         projection = "Lambert"
     elif mode in ["NAM"]:
         projection = "Stereo_north"
-    elif mode in ["SAM"]:
+    elif mode in ["SAM", "PSA1", "PSA2"]:
         projection = "Stereo_south"
     else:
         sys.exit("Projection for " + mode + "is not defined.")
