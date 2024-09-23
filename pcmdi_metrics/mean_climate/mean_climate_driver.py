@@ -167,7 +167,9 @@ for var in vars:
     result_dict["Variable"] = dict()
     result_dict["Variable"]["id"] = varname
     if level is not None:
-        result_dict["Variable"]["level"] = level * 100  # hPa to Pa
+        result_dict["Variable"][
+            "level"
+        ] = level  # SZhang: should not "* 100" here  # hPa to Pa
 
     result_dict["References"] = dict()
 
