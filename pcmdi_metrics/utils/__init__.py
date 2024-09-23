@@ -5,7 +5,12 @@ from .custom_season import (
     generate_calendar_months,
     subset_timesteps_in_custom_season,
 )
-from .dates import find_overlapping_dates
+from .dates import (
+    extract_date_components,
+    find_overlapping_dates,
+    regenerate_time_axis,
+    replace_date_pattern,
+)
 from .grid import (
     calculate_area_weights,
     calculate_grid_area,
