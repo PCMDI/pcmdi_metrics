@@ -235,6 +235,33 @@
         "code",
         "research"
       ]
+    },
+    {
+      "login": "bosup",
+      "name": "Bo Dong",
+      "avatar_url": "https://avatars.githubusercontent.com/u/130708142?v=4",
+      "profile": "https://github.com/bosup",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "zhangshixuan1987",
+      "name": "Shixuan Zhang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33647254?v=4",
+      "profile": "https://github.com/zhangshixuan1987",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "kristinchang3",
+      "name": "Kristin Chang",
+      "avatar_url": "https://avatars.githubusercontent.com/u/143142064?v=4",
+      "profile": "https://kristinchang.github.io/portfolio/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
@@ -242,5 +269,6 @@
   "repoType": "github",
   "repoHost": "https://github.com",
   "projectName": "pcmdi_metrics",
-  "projectOwner": "PCMDI"
+  "projectOwner": "PCMDI",
+  "commitType": "docs"
 }
