@@ -1,7 +1,9 @@
+import datetime
 import os
 import re
 from typing import Dict, List, Optional
 
+from pcmdi_metrics.mean_climate.lib import calculate_climatology
 from pcmdi_metrics.mean_climate.lib_unified.lib_unified_dict import (
     load_json_as_dict,
     multi_level_dict,
@@ -9,7 +11,7 @@ from pcmdi_metrics.mean_climate.lib_unified.lib_unified_dict import (
     write_to_json,
 )
 from pcmdi_metrics.mean_climate.lib_unified.lib_unified_rad import derive_rad_var
-from pcmdi_metrics.mean_climate.lib import calculate_climatology
+from pcmdi_metrics.utils import replace_date_pattern
 
 
 def extract_info_from_model_catalogue(
@@ -144,7 +146,6 @@ def get_model_run_data_path(models_dict, var, model, run):
     return model_data_path
 
 
-
 def get_ref_catalogue(ref_catalogue_file_path, ref_data_head=None):
     refs_dict = load_json_as_dict(ref_catalogue_file_path)
     if ref_data_head:
@@ -216,23 +217,38 @@ def get_unique_bases(variables):
 
 
 def get_annual_cycle(var, data_path, out_path):
+    start = "1981-01"
+    end = "2005-12"
+    ver = datetime.datetime.now().strftime("v%Y%m%d")
 
-    start = None
-    end = None
-    ver = None
+    out_path_ver = os.path.join(out_path, ver)
+    os.makedirs(out_path_ver, exist_ok=True)
 
-    print('get_annual_cycle, var:', var)
-    print('data_path:', data_path)
-    print('out_path:', out_path)
+    outfilename_head = (
+        f"{replace_date_pattern(str(os.path.basename(data_path)), '')}".replace(
+            "_.nc", ""
+        ).replace("_*", "")
+    )
+    outfilename_template = (
+        f"{outfilename_head}_%(start-yyyymm)-%(end-yyyymm)_%(season).nc"
+    )
+
+    print("get_annual_cycle, var:", var)
+    print("data_path:", data_path)
+    print("out_path:", out_path)
+    print("outfilename_head:", outfilename_head)
+    print("outfilename_template:", outfilename_template)
 
     d_clim_dict = calculate_climatology(
         var,
         infile=data_path,
-        outpath=out_path,
+        outpath=out_path_ver,
+        outfilename=outfilename_template,
+        outfilename_default_template=False,
         start=start,
         end=end,
-        ver=ver,
-        periodinname=True,
+        ver="",
+        periodinname=False,
     )
 
     return d_clim_dict
@@ -316,12 +332,6 @@ def process_dataset(
     print(
         f"Processing {data_type} dataset - varname: {varname}, data: {data_name}, path: {data_path}"
     )
-
-    # Open dataset here
-    ### ds = xc.open_mfdataset(data_path)
-
-    # Check if dataset is okay ...
-    ### check_monthly_time_axis(ds)
 
     # Calculate the annual cycle and save annual cycle
     if var not in rad_diagnostic_variables:
