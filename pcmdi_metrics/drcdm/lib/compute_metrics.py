@@ -1026,6 +1026,49 @@ def get_pr_q50(
     return result_dict
 
 
+def get_pr_q99p0(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    index = "pr_q99p0"
+    varname = "pr"
+    print("Metric:", index)
+
+    # Need at least 1mm rain
+    ds[varname] = ds[varname].where(ds[varname] >= 1)
+
+    # Get 99.9th percentile daily precipitation
+    PR = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        PR,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    PRq99p0 = xr.Dataset()
+    PRq99p0["ANN"] = S.annual_stats("q99p0")
+    PRq99p0 = update_nc_attrs(PRq99p0, dec_mode, drop_incomplete_djf, annual_strict)
+    result_dict = metrics_json(
+        {index: PRq99p0}, obs_dict={}, region="land", regrid=False
+    )
+
+    if fig_file is not None:
+        PRq99p0["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title("Mean of annual 99.9th percentile daily precipitation")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        PRq99p0.to_netcdf(nc_file, "w")
+
+    del PRq99p0
+    return result_dict
+
+
 def get_pr_q99p9(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
