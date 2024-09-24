@@ -852,50 +852,6 @@ def get_annual_tasmin_ge_XF(
     return result_dict
 
 
-def get_annual_tasmin_ge_70F(
-    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
-):
-    # Get annual percentage of days with daily minimum temperature
-    # greater than or equal to 70F (warm nights)
-    index = "annual_tasmin_ge_70F"
-    varname = "tasmin"
-    print("Metric:", index)
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Tge70 = xr.Dataset()
-    Tge70["ANN"] = S.annual_stats("ge70")
-    Tge70.attrs["units"] = "%"
-    Tge70 = update_nc_attrs(Tge70, dec_mode, drop_incomplete_djf, annual_strict)
-
-    # Compute statistics
-    result_dict = metrics_json({index: Tge70}, obs_dict={}, region="land", regrid=False)
-
-    if fig_file is not None:
-        Tge70["ANN"].mean("time").plot(
-            cmap="RdPu", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
-        )
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Mean percentage of days per year\nwith low temperature >= 70F")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
-
-    if nc_file is not None:
-        nc_file = nc_file.replace("$index", index)
-        Tge70.to_netcdf(nc_file, "w")
-
-    del Tge70
-    return result_dict
-
-
-# TODO: Fill out precipitation metrics
 def get_annualmean_pr(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
@@ -1036,7 +992,7 @@ def get_pr_q99p0(
     # Need at least 1mm rain
     ds[varname] = ds[varname].where(ds[varname] >= 1)
 
-    # Get 99.9th percentile daily precipitation
+    # Get 99th percentile daily precipitation
     PR = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         PR,
