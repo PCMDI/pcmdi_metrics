@@ -726,19 +726,22 @@ def get_annualmean_tasmin(
     )
     Tmin = xr.Dataset()
     Tmin["ANN"] = S.annual_stats("mean")
+    for season in ["DJF", "MAM", "JJA", "SON"]:
+        Tmin[season] = S.seasonal_stats(season, "mean")
     Tmin = update_nc_attrs(Tmin, dec_mode, drop_incomplete_djf, annual_strict)
 
     # Compute statistics
     result_dict = metrics_json({index: Tmin}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
-        Tmin["ANN"].mean("time").plot(cmap="YlGnBu_r", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Average annual mean daily low temperature")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
+        for season in ["ANN", "MAM", "JJA", "SON", "DJF"]:
+            Tmin[season].mean("time").plot(cmap="YlGnBu_r", cbar_kwargs={"label": "F"})
+            fig_file1 = fig_file.replace("$index", "_".join([index, season]))
+            plt.title("Average " + season + " mean daily low temperature")
+            ax = plt.gca()
+            ax.set_facecolor(bgclr)
+            plt.savefig(fig_file1)
+            plt.close()
 
     if nc_file is not None:
         nc_file = nc_file.replace("$index", index)
