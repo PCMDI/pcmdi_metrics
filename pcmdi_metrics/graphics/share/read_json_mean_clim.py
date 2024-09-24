@@ -50,16 +50,14 @@ def read_mean_clim_json_files(
             level = int(dict_temp["Variable"]["level"])
             if level > 1100:
                 print(
-                    "Warning: level = {}hPa in data, I guess this should be Pa".format(
-                        level
-                    )
+                    f"Warning: level = {level} hPa in data, I guess this should be Pa"
                 )
                 level = int(level / 100.0)
-            var += "-" + str(level)  # always hPa
+            var = f"{var}-{str(level)}"  # always hPa
         results_dict[var] = dict_temp
         unit = extract_unit(var, results_dict[var])
         if unit is not None:
-            var_unit = var + " [" + unit + "]"
+            var_unit = f"{var} [{unit}]"
         else:
             var_unit = var
         var_list.append(var)
