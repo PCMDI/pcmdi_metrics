@@ -66,8 +66,8 @@ def get_longitude_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
 
 
 def get_time_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
-    lat_key = get_time_key(ds)
-    return ds[lat_key].attrs["bounds"]
+    time_key = get_time_key(ds)
+    return ds[time_key].attrs["bounds"]
 
 
 def get_latitude_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:

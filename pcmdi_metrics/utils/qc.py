@@ -2,6 +2,8 @@ import cftime
 import numpy as np
 import xarray as xr
 
+from pcmdi_metrics.io import get_time_bounds, get_time_bounds_key
+
 
 def check_daily_time_axis(ds, time_key="time"):
     """
@@ -246,3 +248,59 @@ def is_leap_year(year):
         True if the year is a leap year, False otherwise.
     """
     return cftime.DatetimeGregorian(year, 3, 1).day == 1
+
+
+def check_time_bounds_exist(ds):
+    """
+    Check if time bounds attribution and data exist in the dataset.
+
+    This function attempts to retrieve the time bounds key and data from the
+    given dataset. If either the key or the data is not found, it raises a
+    KeyError with an appropriate message.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset or similar
+        The dataset to check for time bounds.
+
+    Raises
+    ------
+    KeyError
+        If the time bounds attribution is not found in the dataset.
+    KeyError
+        If the time bounds data is not found in the dataset.
+
+    Notes
+    -----
+    This function relies on two helper functions:
+    - `get_time_bounds_key(ds)`: Expected to return the key for time bounds.
+    - `get_time_bounds(ds)`: Expected to return the time bounds data.
+
+    Both helper functions should raise a KeyError if the respective
+    information is not found.
+
+    Examples
+    --------
+    >>> import xarray as xr
+    >>> ds = xr.Dataset(...)  # Create a dataset with time bounds
+    >>> check_time_bounds_exist(ds)
+    # If successful, no exception is raised
+
+    >>> ds_without_bounds = xr.Dataset(...)  # Create a dataset without time bounds
+    >>> check_time_bounds_exist(ds_without_bounds)
+    KeyError: "Time bounds data not found in the dataset."
+
+    >>> ds_without_bounds_with_bounds_attr = xr.Dataset(...)  # Create a dataset without time bounds but with bounds attr
+    >>> check_time_bounds_exist(ds_without_bounds_with_bounds_attr)
+    KeyError: "Time bounds attribution not found in the dataset."
+    """
+
+    try:
+        get_time_bounds_key(ds)
+    except KeyError:
+        raise KeyError("Time bounds attribution not found in the dataset.")
+
+    try:
+        get_time_bounds(ds)
+    except KeyError:
+        raise KeyError("Time bounds data not found in the dataset.")

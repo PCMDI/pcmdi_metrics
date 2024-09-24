@@ -221,6 +221,8 @@ def get_annual_cycle(var, data_path, out_path):
     end = "2005-12"
     ver = datetime.datetime.now().strftime("v%Y%m%d")
 
+    repair_time_axis = True
+
     out_path_ver = os.path.join(out_path, ver)
     os.makedirs(out_path_ver, exist_ok=True)
 
@@ -249,6 +251,7 @@ def get_annual_cycle(var, data_path, out_path):
         end=end,
         ver="",
         periodinname=False,
+        repair_time_axis=repair_time_axis,
     )
 
     return d_clim_dict

@@ -4,9 +4,10 @@ import os
 from pcmdi_metrics.io import select_subset, xcdat_open
 from pcmdi_metrics.utils import (
     check_monthly_time_axis,
+    check_time_bounds_exist,
     extract_date_components,
     find_overlapping_dates,
-    regenerate_monthly_time_axis,
+    regenerate_time_axis,
 )
 
 # import dask
@@ -24,6 +25,7 @@ def calculate_climatology(
     ver: str = None,
     periodinname: bool = None,
     climlist: list = None,
+    repair_time_axis: bool = False,
 ):
     """
     Calculate climatology from a dataset over a specified period.
@@ -56,6 +58,8 @@ def calculate_climatology(
         Flag to include the time period in the output filename (default is None).
     climlist : list of str, optional
         List of climatologies to calculate and save (e.g., ["AC", "DJF", "MAM", "JJA", "SON"], default is all).
+    repair_time_axis : bool, optional
+        If True, regenerate time axis if data has incorrect time axis, default is False
 
     Returns
     -------
@@ -99,7 +103,17 @@ def calculate_climatology(
         check_monthly_time_axis(ds)
     except ValueError:
         print(f"Error: time axis error from {infilename}")
-        ds = regenerate_monthly_time_axis(ds)
+        if repair_time_axis:
+            ds = regenerate_time_axis(ds)
+
+    # check if time bounds data exists
+    try:
+        check_time_bounds_exist(ds)
+    except ValueError:
+        print(f"Error: time bounds missing from {infilename}")
+        if repair_time_axis:
+            ds = ds.bounds.add_missing_bounds(["T"])
+            print("Generated time bounds")
 
     # Determine the output directory, using outpath if provided, else use the directory of outfile
     outdir = outpath or os.path.dirname(outfile)
@@ -123,6 +137,20 @@ def calculate_climatology(
 
         # Update start and end dates strings to those overlaps with the actual dataset
         start_str, end_str = find_overlapping_dates(ds, start_str, end_str)
+
+        # Adjust start_str and end_str to fit calendar year if needed
+        start_yr, start_mo = map(int, start_str.split("-")[:2])
+        end_yr, end_mo = map(int, end_str.split("-")[:2])
+
+        if start_mo != 1:
+            start_mo = 0
+            start_yr += 1
+            start_str = f"{start_yr:04d}-{start_mo:02d}-{start_da:02d}"
+
+        if end_mo != 12:
+            end_mo = 12
+            end_yr -= 1
+            end_str = f"{end_yr:04d}-{end_mo:02d}-{end_da:02d}"
 
         # Subset the dataset to the selected time period
         ds = select_subset(ds, time=(start_str, end_str))
