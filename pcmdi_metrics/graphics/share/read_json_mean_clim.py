@@ -50,7 +50,7 @@ def read_mean_clim_json_files(
             level = int(dict_temp["Variable"]["level"])
             if level > 1100:
                 print(
-                    f"Warning: level = {level} hPa in data, I guess this should be Pa"
+                    f"Warning: level is expected in hPa: level {level} looks like it is Pa, thus converting it to hPa by dividing it by 100."
                 )
                 level = int(level / 100.0)
             var = f"{var}-{str(level)}"  # always hPa
