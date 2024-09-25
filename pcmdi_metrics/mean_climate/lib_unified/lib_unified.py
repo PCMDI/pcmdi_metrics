@@ -53,6 +53,55 @@ def extract_info_from_model_catalogue(
     return variables, models, runs_dict
 
 
+def get_annual_cycle(
+    var,
+    data_path,
+    out_path,
+    start="1981-01",
+    end="2005-12",
+    repair_time_axis=True,
+    overwrite_output_ac=True,
+):
+    ver = datetime.datetime.now().strftime("v%Y%m%d")
+
+    out_path_ver = os.path.join(out_path, ver)
+    os.makedirs(out_path_ver, exist_ok=True)
+
+    outfilename_head = (
+        f"{replace_date_pattern(str(os.path.basename(data_path)), '')}".replace(
+            "_.nc", ""
+        )
+        .replace("_*", "")
+        .replace(".nc", "")
+        .replace("*", "")
+    )
+    outfilename_template = (
+        f"{outfilename_head}_%(start-yyyymm)-%(end-yyyymm)_%(season).nc"
+    )
+
+    print("get_annual_cycle, var:", var)
+    print("data_path:", data_path)
+    print("out_path:", out_path)
+    print("outfilename_head:", outfilename_head)
+    print("outfilename_template:", outfilename_template)
+
+    d_clim_dict = calculate_climatology(
+        var,
+        infile=data_path,
+        outpath=out_path_ver,
+        outfilename=outfilename_template,
+        outfilename_default_template=False,
+        start=start,
+        end=end,
+        ver="",
+        periodinname=False,
+        repair_time_axis=repair_time_axis,
+        overwrite_output=overwrite_output_ac,
+    )
+
+    return d_clim_dict
+
+
 def generate_model_data_path(model_data_path_template, var, model, run):
     return (
         model_data_path_template.replace("%(var)", var)
@@ -216,47 +265,6 @@ def get_unique_bases(variables):
     return result
 
 
-def get_annual_cycle(var, data_path, out_path):
-    start = "1981-01"
-    end = "2005-12"
-    ver = datetime.datetime.now().strftime("v%Y%m%d")
-
-    repair_time_axis = True
-
-    out_path_ver = os.path.join(out_path, ver)
-    os.makedirs(out_path_ver, exist_ok=True)
-
-    outfilename_head = (
-        f"{replace_date_pattern(str(os.path.basename(data_path)), '')}".replace(
-            "_.nc", ""
-        ).replace("_*", "")
-    )
-    outfilename_template = (
-        f"{outfilename_head}_%(start-yyyymm)-%(end-yyyymm)_%(season).nc"
-    )
-
-    print("get_annual_cycle, var:", var)
-    print("data_path:", data_path)
-    print("out_path:", out_path)
-    print("outfilename_head:", outfilename_head)
-    print("outfilename_template:", outfilename_template)
-
-    d_clim_dict = calculate_climatology(
-        var,
-        infile=data_path,
-        outpath=out_path_ver,
-        outfilename=outfilename_template,
-        outfilename_default_template=False,
-        start=start,
-        end=end,
-        ver="",
-        periodinname=False,
-        repair_time_axis=repair_time_axis,
-    )
-
-    return d_clim_dict
-
-
 def calc_metrics(ac_ref, ac_run, in_progress=True):
     if in_progress:
         metrics = None
@@ -293,6 +301,10 @@ def process_dataset(
     common_grid,
     interim_output_path_dict_data,
     data_type="ref",
+    start="1981-01",
+    end="2005-12",
+    repair_time_axis=False,
+    overwrite_output_ac=True,
 ):
     # Sanity checks
     if data_type not in ["ref", "model"]:
@@ -338,7 +350,15 @@ def process_dataset(
 
     # Calculate the annual cycle and save annual cycle
     if var not in rad_diagnostic_variables:
-        ac = get_annual_cycle(varname, data_path, out_path)
+        ac = get_annual_cycle(
+            varname,
+            data_path,
+            out_path,
+            start=start,
+            end=end,
+            repair_time_axis=repair_time_axis,
+            overwrite_output_ac=overwrite_output_ac,
+        )
     else:
         ac = derive_rad_var(
             var,
