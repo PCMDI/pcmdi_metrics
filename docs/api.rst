@@ -6,7 +6,7 @@ API Functions for Developpers
 
 .. currentmodule:: pcmdi_metrics
 
-Below is a list of some API functions that are available in `pcmdi_metrics` for developpers.
+Below is a list of some API functions that are fully available in `pcmdi_metrics (> v3.6)` for developpers.
 
 
 Land-sea mask
