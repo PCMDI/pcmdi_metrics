@@ -6,7 +6,7 @@ API Functions for Developpers
 
 .. currentmodule:: pcmdi_metrics
 
-Below is a list of some API functions that are available in `pcmdi_metrics.` for developpers.
+Below is a list of some API functions that are available in `pcmdi_metrics` for developpers.
 
 
 Land-sea mask
@@ -15,19 +15,19 @@ Land-sea mask
 .. autosummary::
     :toctree: generated/
 
-    pcmdi_metrics.utils.create_land_sea_mask
-    pcmdi_metrics.utils.apply_landmask
-    pcmdi_metrics.utils.apply_oceanmask
+    utils.create_land_sea_mask
+    utils.apply_landmask
+    utils.apply_oceanmask
 
 
-Grid handling and re-gridding (horizontal interpolation)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Grid handling and regridding
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. autosummary::
     :toctree: generated/
 
-    pcmdi_metrics.utils.create_target_grid
-    pcmdi_metrics.utils.regrid
+    utils.create_target_grid
+    utils.regrid
     
 
 Quality control (QC)
@@ -36,8 +36,8 @@ Quality control (QC)
 .. autosummary::
     :toctree: generated/
 
-    pcmdi_metrics.utils.check_daily_time_axis
-    pcmdi_metrics.utils.check_monthly_time_axis
+    utils.check_daily_time_axis
+    utils.check_monthly_time_axis
 
 
 Calendar-related functions
@@ -45,18 +45,8 @@ Calendar-related functions
 .. autosummary::
     :toctree: generated/
 
-    pcmdi_metrics.utils.custom_season_average
-    pcmdi_metrics.utils.custom_season_departure
-
-
-Miscellaneous tools
-~~~~~~~~~~~~~~~~~~~
-.. autosummary::
-    :toctree: generated/
-
-    pcmdi_metrics.utils.sort_human
-    pcmdi_metrics.utils.fill_template
-    pcmdi_metrics.utils.tree
+    utils.custom_season_average
+    utils.custom_season_departure
 
 
 Region handling
@@ -64,8 +54,8 @@ Region handling
 .. autosummary::
     :toctree: generated/
 
-    pcmdi_metrics.io.region_subset
-    pcmdi_metrics.io.region_from_file
+    io.region_subset
+    io.region_from_file
 
 
 Retrieve data from xarray Dataset
@@ -73,18 +63,27 @@ Retrieve data from xarray Dataset
 .. autosummary::
     :toctree: generated/
 
-    pcmdi_metrics.io.get_grid
-    pcmdi_metrics.io.get_axis_list
-    pcmdi_metrics.io.get_data_list
-    pcmdi_metrics.io.get_latitude
-    pcmdi_metrics.io.get_latitude_bounds
-    pcmdi_metrics.io.get_latitude_key
-    pcmdi_metrics.io.get_longitude
-    pcmdi_metrics.io.get_longitude_bounds
-    pcmdi_metrics.io.get_longitude_key
-    pcmdi_metrics.io.get_time
-    pcmdi_metrics.io.get_time_bounds
-    pcmdi_metrics.io.get_time_bounds_key
-    pcmdi_metrics.io.get_time_key
-    pcmdi_metrics.io.select_subset
+    io.get_grid
+    io.get_axis_list
+    io.get_data_list
+    io.get_latitude
+    io.get_latitude_bounds
+    io.get_latitude_key
+    io.get_longitude
+    io.get_longitude_bounds
+    io.get_longitude_key
+    io.get_time
+    io.get_time_bounds
+    io.get_time_bounds_key
+    io.get_time_key
+    io.select_subset
     
+
+Miscellaneous tools
+~~~~~~~~~~~~~~~~~~~
+.. autosummary::
+    :toctree: generated/
+
+    utils.sort_human
+    utils.fill_template
+    utils.tree
