@@ -3,8 +3,7 @@ import regionmask
 
 
 def region_from_file(data, rgn_path, attr, feature):
-    """
-    Return data masked from a feature in the input file.
+    """Return data masked from a feature in the input file.
 
     This function reads a region from a file, creates a mask based on the specified feature,
     and applies the mask to the input data.
