@@ -13,7 +13,7 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('../pcmdi_metrics/utils'))
 
-# import sphinx_autosummary_accessors
+import sphinx_autosummary_accessors
 
 # -- Project information -----------------------------------------------------
 
