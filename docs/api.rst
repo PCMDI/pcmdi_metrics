@@ -4,7 +4,7 @@ API Reference
 API Functions for Developpers
 -----------------------------
 
-Below is a list of some API functions that are available in ``pcmdi_metrics.utils`` for developpers.
+Below is a list of some API functions that are available in ``pcmdi_metrics.` for developpers.
 
 .. autosummary::
     :toctree: generated/
