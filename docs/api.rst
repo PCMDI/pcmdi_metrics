@@ -1,12 +1,12 @@
 API Reference
 =============
 
-API Functions for Developers
------------------------------
+APIs for Developers
+-------------------
 
 .. currentmodule:: pcmdi_metrics
 
-Below is a list of API functions available in `pcmdi_metrics (> v3.6)` for developers.
+Below is a list of APIs available in `pcmdi_metrics (> v3.6)` for developers.
 
 
 Land-sea mask
