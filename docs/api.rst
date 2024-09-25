@@ -11,7 +11,6 @@ Below is a list of some API functions that are fully available in `pcmdi_metrics
 
 Land-sea mask
 ~~~~~~~~~~~~~
-
 .. autosummary::
     :toctree: generated/
 
@@ -20,28 +19,17 @@ Land-sea mask
     utils.apply_oceanmask
 
 
-Grid handling and regridding
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+Grid and regrid
+~~~~~~~~~~~~~~~
 .. autosummary::
     :toctree: generated/
 
     utils.create_target_grid
     utils.regrid
-    
-
-Quality control (QC)
-~~~~~~~~~~~~~~~~~~~~
-
-.. autosummary::
-    :toctree: generated/
-
-    utils.check_daily_time_axis
-    utils.check_monthly_time_axis
 
 
-Calendar-related functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~
+Custom calendar
+~~~~~~~~~~~~~~~
 .. autosummary::
     :toctree: generated/
 
@@ -77,6 +65,15 @@ Retrieve data from xarray Dataset
     io.get_time_bounds_key
     io.get_time_key
     io.select_subset
+
+
+Quality control (QC)
+~~~~~~~~~~~~~~~~~~~~
+.. autosummary::
+    :toctree: generated/
+
+    utils.check_daily_time_axis
+    utils.check_monthly_time_axis
     
 
 Miscellaneous tools
