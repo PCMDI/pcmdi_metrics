@@ -19,6 +19,8 @@ from sphinx.util import logging
 
 LOGGER = logging.getLogger("conf")
 
+import pcmdi_metrics
+
 # -- Project information -----------------------------------------------------
 # General information about the project.
 project = "PCMDI Metrics Package (PMP)"
