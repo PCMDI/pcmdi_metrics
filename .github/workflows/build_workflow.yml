@@ -56,9 +56,10 @@ jobs:
       - name: Set up Conda Environment
         uses: conda-incubator/setup-miniconda@v2
         with:
-          activate-environment: "pcmdi_metrics_dev"
+          activate-environment: "pcmdi_metrics_ci"
           miniforge-variant: Mambaforge
           miniforge-version: latest
+          environment-file: conda-env/ci.yml
           use-mamba: true
           mamba-version: "*"
           channel-priority: strict
@@ -83,11 +84,6 @@ jobs:
           # Increase this value to reset cache if conda/dev.yml has not changed in the workflow
           CACHE_NUMBER: 0
 
-      - name: Update environment
-        run:
-          mamba env update -n pcmdi_metrics_dev -f conda-env/dev.yml
-        if: steps.cache.outputs.cache-hit != 'true'
-
       - name: Install pcmdi_metrics
         # Source: https://github.com/conda/conda-build/issues/4251#issuecomment-1053460542
         run: |
@@ -96,6 +92,10 @@ jobs:
       - name: Run Tests
         run: |
           pytest
+
+      - name: Run Unit Tests
+        run: pytest tests
+        
 
   publish-docs:
     if: ${{ github.event_name == 'push' }}
@@ -138,7 +138,7 @@ jobs:
       - name: Copy Docs and Commit
         run: |
           # gh-pages branch must already exist
-          git clone https://github.com/E3SM-Project/e3sm_diags.git --branch gh-pages --single-branch gh-pages
+          git clone https://github.com/PCMDI/pcmdi_metrics.git --branch gh-pages --single-branch gh-pages
 
           # Make sure we're in the gh-pages directory.
           cd gh-pages
