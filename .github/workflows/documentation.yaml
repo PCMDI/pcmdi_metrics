@@ -15,6 +15,7 @@ jobs:
           activate-environment: "pcmdi_metrics_dev"
           miniforge-variant: Mambaforge
           miniforge-version: latest
+          environment-file: conda-env/ci.yml
           use-mamba: true
           mamba-version: "*"
           channel-priority: strict
