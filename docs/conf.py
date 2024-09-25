@@ -14,7 +14,6 @@ import os
 sys.path.insert(0, os.path.abspath('../pcmdi_metrics/utils'))
 
 import sphinx_autosummary_accessors
-import yaml
 from sphinx.application import Sphinx
 from sphinx.util import logging
 
