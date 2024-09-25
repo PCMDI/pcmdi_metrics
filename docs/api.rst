@@ -57,3 +57,34 @@ Miscellaneous tools
     pcmdi_metrics.utils.sort_human
     pcmdi_metrics.utils.fill_template
     pcmdi_metrics.utils.tree
+
+
+Region handling
+~~~~~~~~~~~~~~~
+.. autosummary::
+    :toctree: generated/
+
+    pcmdi_metrics.io.region_subset
+    pcmdi_metrics.io.region_from_file
+
+
+Retrieve data from xarray Dataset
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. autosummary::
+    :toctree: generated/
+
+    pcmdi_metrics.io.get_grid
+    pcmdi_metrics.io.get_axis_list
+    pcmdi_metrics.io.get_data_list
+    pcmdi_metrics.io.get_latitude
+    pcmdi_metrics.io.get_latitude_bounds
+    pcmdi_metrics.io.get_latitude_key
+    pcmdi_metrics.io.get_longitude
+    pcmdi_metrics.io.get_longitude_bounds
+    pcmdi_metrics.io.get_longitude_key
+    pcmdi_metrics.io.get_time
+    pcmdi_metrics.io.get_time_bounds
+    pcmdi_metrics.io.get_time_bounds_key
+    pcmdi_metrics.io.get_time_key
+    pcmdi_metrics.io.select_subset
+    
