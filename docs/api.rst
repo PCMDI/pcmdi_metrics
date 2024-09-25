@@ -1,12 +1,12 @@
 API Reference
 =============
 
-API Functions for Developpers
+API Functions for Developers
 -----------------------------
 
 .. currentmodule:: pcmdi_metrics
 
-Below is a list of some API functions that are fully available in `pcmdi_metrics (> v3.6)` for developpers.
+Below is a list of API functions available in `pcmdi_metrics (> v3.6)` for developers.
 
 
 Land-sea mask
@@ -28,7 +28,7 @@ Grid and regrid
     utils.regrid
 
 
-Custom calendar
+Custom calendars
 ~~~~~~~~~~~~~~~
 .. autosummary::
     :toctree: generated/
