@@ -45,11 +45,13 @@ dependencies:
     # Documentation
     # ==================
     - sphinx
+    - sphinx-autosummary-accessors
     - sphinx-book-theme
     - sphinx-copybutton
     - sphinx_rtd_theme
     - nbsphinx
     - pandoc
+    - sphinx-design
     - ipython # Required for nbsphinx syntax highlighting
 
 prefix: /opt/miniconda3/envs/pmcdi_metrics_dev
