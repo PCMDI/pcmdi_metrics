@@ -132,8 +132,7 @@ jobs:
 
       - name: Build Sphinx Docs
         run: |
-          cd docs
-          sphinx-multiversion source _build/html
+          sphinx-build docs _build
 
       - name: Copy Docs and Commit
         run: |
