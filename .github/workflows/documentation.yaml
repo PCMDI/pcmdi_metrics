@@ -1,5 +1,5 @@
 name: Docs
-on: [pull_request, workflow_dispatch]
+on: [push, pull_request, workflow_dispatch]
 permissions:
     contents: write
 jobs:
@@ -15,7 +15,7 @@ jobs:
           activate-environment: "pcmdi_metrics_dev"
           miniforge-variant: Mambaforge
           miniforge-version: latest
-          environment-file: conda-env/ci.yml
+          environment-file: conda-env/dev.yml
           use-mamba: true
           mamba-version: "*"
           channel-priority: strict
