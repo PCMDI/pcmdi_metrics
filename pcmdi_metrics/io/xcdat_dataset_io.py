@@ -172,9 +172,8 @@ def get_time_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     str
         The key for the time bounds.
     """
-
-    lat_key = get_time_key(ds)
-    return ds[lat_key].attrs["bounds"]
+    time_key = get_time_key(ds)
+    return ds[time_key].attrs["bounds"]
 
 
 def get_latitude_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
@@ -456,3 +455,63 @@ def get_grid(
     lat_bnds_key = get_latitude_bounds_key(d)
     lon_bnds_key = get_longitude_bounds_key(d)
     return d[[lat_key, lon_key, lat_bnds_key, lon_bnds_key]]
+
+
+def get_calendar(d: Union[xr.Dataset, xr.DataArray]) -> str:
+    """
+    Get the calendar type from an xarray Dataset or DataArray.
+
+    Parameters
+    ----------
+    d : xarray.Dataset or xarray.DataArray
+        The input xarray object containing a time dimension.
+
+    Returns
+    -------
+    str
+        The calendar type as a string (e.g., 'proleptic_gregorian', 'noleap', '360_day').
+
+    Raises
+    ------
+    ValueError
+        If no time dimension is found in the input.
+    AttributeError
+        If the calendar information cannot be extracted from the time dimension.
+
+    Notes
+    -----
+    This function first attempts to retrieve the calendar from the time dimension's
+    encoding. If that fails, it tries to get the calendar from the time dimension's
+    datetime accessor. If both methods fail, it raises an AttributeError.
+
+    Examples
+    --------
+    >>> import xarray as xr
+    >>> import pandas as pd
+    >>> dates = xr.cftime_range('2000-01-01', periods=365)
+    >>> ds = xr.Dataset({'time': dates, 'data': ('time', range(365))})
+    >>> get_calendar(ds)
+    'standard'
+
+    See Also
+    --------
+    get_time : Function to extract the time dimension from a Dataset or DataArray.
+    """
+    time = get_time(d)
+
+    if time is None:
+        raise ValueError("No time dimension found in the input.")
+
+    try:
+        calendar = time.encoding.get("calendar")
+        if calendar is not None:
+            return calendar
+    except AttributeError:
+        pass
+
+    try:
+        return time.dt.calendar
+    except AttributeError:
+        raise AttributeError(
+            "Unable to determine calendar type from the time dimension."
+        )

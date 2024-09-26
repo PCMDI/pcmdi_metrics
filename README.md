@@ -109,6 +109,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.6.1]      | Technical update, additional QC repair functions
 | [v3.6]        | New capability (regional application of precip variability) and technical update
 | [v3.5.2]      | Technical update, QC tools, new modes for modes of variability metrics (PSA1, PSA2)
 | [v3.5.1]      | Technical update
@@ -147,6 +148,7 @@ Release Notes and History
 
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.6.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6.1
 [v3.6]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6
 [v3.5.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5.2
 [v3.5.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5.1
