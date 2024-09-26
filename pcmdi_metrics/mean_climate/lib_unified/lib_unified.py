@@ -3,7 +3,7 @@ import os
 import re
 from typing import Dict, List, Optional
 
-from pcmdi_metrics.mean_climate.lib import calculate_climatology
+from pcmdi_metrics.mean_climate.lib import calculate_climatology, extract_level
 from pcmdi_metrics.mean_climate.lib_unified.lib_unified_dict import (
     load_json_as_dict,
     multi_level_dict,
@@ -99,7 +99,7 @@ def get_annual_cycle(
         overwrite_output=overwrite_output_ac,
     )
 
-    return d_clim_dict
+    return d_clim_dict["AC"]
 
 
 def generate_model_data_path(model_data_path_template, var, model, run):
@@ -272,16 +272,6 @@ def calc_metrics(ac_ref, ac_run, in_progress=True):
     return metrics
 
 
-def extract_level(data, level, in_progress=True):
-    if in_progress:
-        return
-
-    if level is None:
-        return data
-    else:
-        return data[level]
-
-
 def interpolate(data, common_grid, in_progress=True):
     if in_progress or common_grid is None:
         return None
@@ -350,7 +340,7 @@ def process_dataset(
 
     # Calculate the annual cycle and save annual cycle
     if var not in rad_diagnostic_variables:
-        ac = get_annual_cycle(
+        ds_ac = get_annual_cycle(
             varname,
             data_path,
             out_path,
@@ -360,7 +350,7 @@ def process_dataset(
             overwrite_output_ac=overwrite_output_ac,
         )
     else:
-        ac = derive_rad_var(
+        ds_ac = derive_rad_var(
             var,
             encountered_variables,
             data_name,
@@ -372,17 +362,17 @@ def process_dataset(
 
     # Extract level and interpolation
     for level in levels:
-        ac_level = extract_level(ac, level)
-        ac_level_interp = interpolate(ac_level, common_grid)
+        ds_ac_level = extract_level(ds_ac, level)
+        ds_ac_level_interp = interpolate(ds_ac_level, common_grid)
 
         ### implement plot here if necessary
         print("level:", level)
         ### implement save
 
         if data_type == "ref":
-            ac_dict[var][ref][level] = ac_level_interp
+            ac_dict[var][ref][level] = ds_ac_level_interp
         else:
-            ac_dict[var][model][run][level] = ac_level_interp
+            ac_dict[var][model][run][level] = ds_ac_level_interp
 
     return
 

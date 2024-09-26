@@ -1,4 +1,5 @@
 import numpy as np
+import xarray as xr
 import xcdat as xc
 
 from pcmdi_metrics.io import get_latitude, get_longitude, xcdat_open
@@ -85,43 +86,9 @@ def load_and_regrid(
             ds = ds.bounds.add_missing_bounds(["T"])
             print("[WARNING]: bounds.add_missing_bounds conducted for T axis")
 
-    # level - extract a specific level if needed
+    # extract level
     if level is not None:
-        if isinstance(level, int) or isinstance(level, float):
-            pass
-        else:
-            level = float(level)
-
-        # check vertical coordinate first
-        if "plev" in list(ds.coords.keys()):
-            if ds.plev.units == "Pa":
-                level = level * 100  # hPa to Pa
-            try:
-                ds = ds.sel(plev=level)
-            except Exception as ex:
-                print("WARNING: ", ex)
-
-                nearest_level = find_nearest(ds.plev.values, level)
-
-                print("  Given level", level)
-                print("  Selected nearest level from dataset:", nearest_level)
-
-                diff_percentage = abs(nearest_level - level) / level * 100
-                if diff_percentage < 0.1:  # acceptable if differance is less than 0.1%
-                    ds = ds.sel(plev=level, method="nearest")
-                    print("  Difference is in acceptable range.")
-                    pass
-                else:
-                    print("ERROR: Difference between two levels are too big!")
-                    return
-            if debug:
-                print("ds:", ds)
-                print("ds.plev.units:", ds.plev.units)
-        else:
-            print("ERROR: plev is not in the nc file. Check vertical coordinate.")
-            print("  Coordinates keys in the nc file:", list(ds.coords.keys()))
-            print("ERROR: load and regrid can not complete")
-            return
+        ds = extract_level(ds, level, debug=debug)
 
     # axis
     lat = get_latitude(ds)
@@ -171,7 +138,50 @@ def load_and_regrid(
     return ds_regridded
 
 
-def find_nearest(array, value):
-    array = np.asarray(array)
-    idx = (np.abs(array - value)).argmin()
-    return array[idx]
+def extract_level(ds: xr.Dataset, level, debug=False):
+    def find_nearest(array, value):
+        array = np.asarray(array)
+        idx = (np.abs(array - value)).argmin()
+        return array[idx]
+
+    # level - extract a specific level if needed
+    if level is not None:
+        if isinstance(level, int) or isinstance(level, float):
+            pass
+        else:
+            level = float(level)
+
+        # check vertical coordinate first
+        if "plev" in list(ds.coords.keys()):
+            if ds.plev.units == "Pa":
+                level = level * 100  # hPa to Pa
+            try:
+                ds = ds.sel(plev=level)
+            except Exception as ex:
+                print("WARNING: ", ex)
+
+                nearest_level = find_nearest(ds.plev.values, level)
+
+                print("  Given level", level)
+                print("  Selected nearest level from dataset:", nearest_level)
+
+                diff_percentage = abs(nearest_level - level) / level * 100
+                if diff_percentage < 0.1:  # acceptable if differance is less than 0.1%
+                    ds = ds.sel(plev=level, method="nearest")
+                    print("  Difference is in acceptable range.")
+                    pass
+                else:
+                    raise ValueError(
+                        "ERROR: Difference between two levels are too big!"
+                    )
+            if debug:
+                print("ds:", ds)
+                print("ds.plev.units:", ds.plev.units)
+        else:
+            raise ValueError(
+                "ERROR: plev is not in the nc file. Check vertical coordinate.\n"
+                + f"Coordinates keys in the nc file: {list(ds.coords.keys())}\n"
+                + "ERROR: load and regrid can not complete"
+            )
+
+        return ds
