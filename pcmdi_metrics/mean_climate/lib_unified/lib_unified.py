@@ -11,7 +11,7 @@ from pcmdi_metrics.mean_climate.lib_unified.lib_unified_dict import (
     write_to_json,
 )
 from pcmdi_metrics.mean_climate.lib_unified.lib_unified_rad import derive_rad_var
-from pcmdi_metrics.utils import replace_date_pattern
+from pcmdi_metrics.utils import regrid, replace_date_pattern
 
 
 def extract_info_from_model_catalogue(
@@ -272,14 +272,6 @@ def calc_metrics(ac_ref, ac_run, in_progress=True):
     return metrics
 
 
-def interpolate(data, common_grid, in_progress=True):
-    if in_progress or common_grid is None:
-        return None
-
-    # Interpolation
-    ### implement interpolation here
-
-
 def process_dataset(
     var,
     data_name,
@@ -362,11 +354,13 @@ def process_dataset(
 
     # Extract level and interpolation
     for level in levels:
+        print("level:", level)
+
         ds_ac_level = extract_level(ds_ac, level)
-        ds_ac_level_interp = interpolate(ds_ac_level, common_grid)
+        ds_ac_level_interp = regrid(ds_ac_level, var, common_grid)
 
         ### implement plot here if necessary
-        print("level:", level)
+
         ### implement save
 
         if data_type == "ref":
