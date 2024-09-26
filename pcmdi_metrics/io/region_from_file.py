@@ -1,15 +1,52 @@
+from typing import Union
+
 import geopandas as gpd
 import regionmask
+import xarray as xr
 
 
-def region_from_file(data, rgn_path, attr, feature):
-    # Return data masked from a feature in input file.
-    # Arguments:
-    #    data: xcdat dataset
-    #    feature: str, name of region
-    #    rgn_path: str, path to file
-    #    attr: str, attribute name
+def region_from_file(
+    data: Union[xr.Dataset, xr.DataArray], rgn_path: str, attr: str, feature: str
+) -> Union[xr.Dataset, xr.DataArray]:
+    """Return data masked from a feature in the input file.
 
+    This function reads a region from a file, creates a mask based on the specified feature,
+    and applies the mask to the input data.
+
+    Parameters
+    ----------
+    data : xarray.Dataset or xarray.DataArray
+        The input data to be masked. Must have 'lon' and 'lat' coordinates.
+    rgn_path : str
+        Path to the file containing region information.
+    attr : str
+        Attribute name in the region file to use for feature selection.
+    feature : str
+        Name of the region to be selected.
+
+    Returns
+    -------
+    Union[xarray.Dataset, xarray.DataArray]
+        The input data masked to the specified region. The return type matches the input type:
+        - xarray.Dataset if the input was an xarray.Dataset
+        - xarray.DataArray if the input was an xarray.DataArray
+
+    Raises
+    ------
+    Exception
+        If there's an error in creating the region subset from the file or in applying the mask.
+
+    Notes
+    -----
+    This function uses geopandas to read the region file and regionmask to create and apply the mask.
+    The input data must have 'lon' and 'lat' coordinates.
+
+    Examples
+    --------
+    >>> import xarray as xr
+    >>> data = xr.open_dataset('path/to/data.nc')
+    >>> masked_data = region_from_file(data, 'path/to/regions.shp', 'region_name', 'Europe')
+    """
     lon = data["lon"].data
     lat = data["lat"].data
 
