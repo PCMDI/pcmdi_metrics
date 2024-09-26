@@ -36,9 +36,11 @@ def xcdat_open(
     # Open a single netCDF file
     >>> ds = xcdat_open('mydata.nc')
     # Open multiple files
-    >>> ds2 = xcdat_open(['mydata1.nc', 'mydata2.nc']  # Open multipe netCDF files
+    >>> ds = xcdat_open(['mydata1.nc', 'mydata2.nc'])  # Open multipe netCDF files
+    # Open multiple files using a wildcard
+    >>> ds = xcdat_open('mydata*.nc') 
     # Open with specifing the variable 'ts'
-    >>> ds3 = xcdat_open(['mydata1.nc', 'mydata2.nc'], data_var='ts')
+    >>> ds = xcdat_open(['mydata1.nc', 'mydata2.nc'], data_var='ts')
     # Open an xml file
     >>> ds = xcdat_open('mydata.xml')
     """
