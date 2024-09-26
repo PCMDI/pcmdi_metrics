@@ -72,6 +72,7 @@ def derive_rad_var(
     out_path,
     in_progress=True,
     data_type="ref",
+    save_ac_netcdf=True,
 ):
     """
     Derives radiation variables and saves the result to a NetCDF file.
@@ -94,6 +95,8 @@ def derive_rad_var(
         If True, the function returns None and skips processing (default is True).
     data_type : str, optional
         Type of data, either 'ref' or 'model' (default is 'ref').
+    save_ac_netcdf: bool, optional
+        If True, output will be saved as netcdf file(s), default is True
 
     Returns
     -------
@@ -168,7 +171,8 @@ def derive_rad_var(
     ds = xr.Dataset({var: result})
 
     # Write the reference variable to the output file
-    ds.to_netcdf(out_path)
+    if save_ac_netcdf:
+        ds.to_netcdf(out_path)
 
     return ds
 

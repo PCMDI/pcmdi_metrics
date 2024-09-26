@@ -27,6 +27,7 @@ def calculate_climatology(
     climlist: list = None,
     repair_time_axis: bool = False,
     overwrite_output: bool = True,
+    save_ac_netcdf: bool = True,
 ):
     """
     Calculate climatology from a dataset over a specified period.
@@ -63,6 +64,8 @@ def calculate_climatology(
         If True, regenerate time axis if data has incorrect time axis, default is False
     overwrite_output: bool, optional
         If True, output file will be overwritten regardless of its existance
+    save_ac_netcdf: bool, optional
+        If True, output will be saved as netcdf file(s), default is True
 
     Returns
     -------
@@ -222,9 +225,7 @@ def calculate_climatology(
                     if input_is_annual_cycle
                     else ds.temporal.climatology(var, freq="month", weighted=True)
                 )
-
-                # Add the annual cycle climatology to the dictionary
-                ds_clim_dict["AC"] = ds_ac
+                ds_clim_s = ds_ac
 
             # Handle the first season and subsequent seasons
             else:
@@ -243,18 +244,26 @@ def calculate_climatology(
                         },
                     )
 
-                # Add computed climatology to the dictionary
-                ds_clim_dict[s] = ds_clim.isel(time=season_index_dict[s])
+                ds_clim_s = ds_clim.isel(time=season_index_dict[s])
+
+            # Prepare annual or seasonal climatology for the next step
+            ds_clim_s = ds_clim_s.assign_attrs(
+                filename=os.path.basename(outpath_season)
+            )
 
             # Save the climatology file unless it's an annual cycle input and "AC"
-            if s != "AC" or not input_is_annual_cycle:
-                # Save climatology to the output NetCDF file, including global attributes
-                ds_clim_dict[s].to_netcdf(outpath_season)
-                print(
-                    f"Successfully saved climatology for season '{s}' to {outpath_season}"
-                )
-            else:
-                print("Skipping 'AC' as input is already an annual cycle.")
+            if save_ac_netcdf:
+                if s != "AC" or not input_is_annual_cycle:
+                    # Save climatology to the output NetCDF file, including global attributes
+                    ds_clim_s.to_netcdf(outpath_season)
+                    print(
+                        f"Successfully saved climatology for season '{s}' to {outpath_season}"
+                    )
+                else:
+                    print("Skipping 'AC' as input is already an annual cycle.")
+
+            # Add annual or seasonal climatology to the dictionary
+            ds_clim_dict[s] = ds_clim_s
 
     ds.close()
 

@@ -89,6 +89,15 @@ def create_target_grid(
             f"grid_type {grid_type} is undefined. Please use either 'uniform' or 'gaussian'"
         )
 
+    grid = grid.assign_attrs(
+        grid_type=grid_type,
+        grid_resolution=target_grid_resolution,
+        start_lat=start_lat,
+        start_lon=start_lon,
+        end_lat=end_lat,
+        end_lon=end_lon,
+    )
+
     return grid
 
 
@@ -211,5 +220,10 @@ def regrid(
     if fill_zero:
         ds_regridded = ds_regridded.fillna(0)
 
-    ds_regridded = ds_regridded.bounds.add_missing_bounds()  # just in case
+    # Add missing bounds, just in case
+    ds_regridded = ds_regridded.bounds.add_missing_bounds()
+
+    # Copy global attributes from ds1 to ds2
+    ds_regridded = ds_regridded.attrs.update(target_grid.attrs)
+
     return ds_regridded

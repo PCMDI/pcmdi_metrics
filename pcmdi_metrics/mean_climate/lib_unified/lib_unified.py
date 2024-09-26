@@ -3,6 +3,8 @@ import os
 import re
 from typing import Dict, List, Optional
 
+import xarray as xr
+
 from pcmdi_metrics.mean_climate.lib import calculate_climatology, extract_level
 from pcmdi_metrics.mean_climate.lib_unified.lib_unified_dict import (
     load_json_as_dict,
@@ -279,14 +281,18 @@ def process_dataset(
     ac_dict,
     rad_diagnostic_variables,
     encountered_variables,
-    levels,
-    common_grid,
-    interim_output_path_dict_data,
-    data_type="ref",
-    start="1981-01",
-    end="2005-12",
-    repair_time_axis=False,
-    overwrite_output_ac=True,
+    levels: list,
+    common_grid: xr.Dataset = None,
+    interim_output_path_dict_data: dict = None,
+    data_type: str = "ref",
+    start: str = "1981-01",
+    end: str = "2005-12",
+    repair_time_axis: bool = False,
+    overwrite_output_ac: bool = True,
+    save_ac_netcdf: bool = True,
+    save_ac_interp_netcdf: bool = True,
+    plot_gn: bool = True,
+    plot_gr: bool = True,
 ):
     # Sanity checks
     if data_type not in ["ref", "model"]:
@@ -340,6 +346,7 @@ def process_dataset(
             end=end,
             repair_time_axis=repair_time_axis,
             overwrite_output_ac=overwrite_output_ac,
+            save_ac_netcdf=save_ac_netcdf,
         )
     else:
         ds_ac = derive_rad_var(
@@ -350,18 +357,49 @@ def process_dataset(
             data_dict,
             out_path,
             data_type=data_type,
+            save_ac_netcdf=save_ac_netcdf,
         )
 
     # Extract level and interpolation
     for level in levels:
         print("level:", level)
 
-        ds_ac_level = extract_level(ds_ac, level)
-        ds_ac_level_interp = regrid(ds_ac_level, var, common_grid)
+        # Extract level
+        if level is None:
+            ds_ac_level = ds_ac
+        else:
+            ds_ac_level = extract_level(ds_ac, level)
 
-        ### implement plot here if necessary
+        if plot_gn:
+            ### implement plot for native grid
+            print("plot_gn here")
 
-        ### implement save
+        # Interpolation
+        if common_grid is not None:
+            # Prepare for output file name
+            grid_resolution = common_grid.attrs.get("grid_resolution")
+
+            if "path" in ds_ac.attrs:
+                interp_filename_head = str(ds_ac.attrs.get("path"))
+            else:
+                interp_filename_head = str(os.path.basename(data_path)).replace("*", "")
+
+            # Proceed interpolation
+            ds_ac_level_interp = regrid(ds_ac_level, var, common_grid)
+
+            if plot_gr:
+                ### implement plot for regrided grid
+                interp_filename_png = interp_filename_head.replace(
+                    ".nc", f"_interp_{grid_resolution}.png"
+                )
+                print(f"plot_gr here for {interp_filename_png}")
+
+            # Save to netcdf file
+            if save_ac_interp_netcdf:
+                interp_filename_nc = interp_filename_head.replace(
+                    ".nc", f"_interp_{grid_resolution}.nc"
+                )
+                ds_ac_level_interp.to_netcdf(interp_filename_nc)
 
         if data_type == "ref":
             ac_dict[var][ref][level] = ds_ac_level_interp
