@@ -1,8 +1,13 @@
+from typing import Union
+
 import geopandas as gpd
 import regionmask
+import xarray as xr
 
 
-def region_from_file(data, rgn_path, attr, feature):
+def region_from_file(
+    data: Union[xr.Dataset, xr.DataArray], rgn_path: str, attr: str, feature: str
+) -> Union[xr.Dataset, xr.DataArray]:
     """Return data masked from a feature in the input file.
 
     This function reads a region from a file, creates a mask based on the specified feature,
@@ -21,8 +26,10 @@ def region_from_file(data, rgn_path, attr, feature):
 
     Returns
     -------
-    xarray.Dataset or xarray.DataArray
-        The input data masked to the specified region.
+    Union[xarray.Dataset, xarray.DataArray]
+        The input data masked to the specified region. The return type matches the input type:
+        - xarray.Dataset if the input was an xarray.Dataset
+        - xarray.DataArray if the input was an xarray.DataArray
 
     Raises
     ------
