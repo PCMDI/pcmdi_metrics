@@ -139,6 +139,14 @@ def load_and_regrid(
 
 
 def extract_level(ds: xr.Dataset, level, debug=False):
+    """_summary_
+
+    Args:
+        ds (xr.Dataset): _description_
+        level (_type_): level, hPa
+        debug (bool, optional): _description_. Defaults to False.
+    """
+
     def find_nearest(array, value):
         array = np.asarray(array)
         idx = (np.abs(array - value)).argmin()
@@ -153,8 +161,17 @@ def extract_level(ds: xr.Dataset, level, debug=False):
 
         # check vertical coordinate first
         if "plev" in list(ds.coords.keys()):
-            if ds.plev.units == "Pa":
+            units_in_data = None
+            if "units" in ds.plev.attrs:
+                if ds.plev.units == "Pa":
+                    units_in_data = "Pa"
+            else:
+                if max(ds.plev.values) > 10000:
+                    units_in_data = "Pa"
+
+            if units_in_data == "Pa":
                 level = level * 100  # hPa to Pa
+
             try:
                 ds = ds.sel(plev=level)
             except Exception as ex:
@@ -176,7 +193,7 @@ def extract_level(ds: xr.Dataset, level, debug=False):
                     )
             if debug:
                 print("ds:", ds)
-                print("ds.plev.units:", ds.plev.units)
+                # print("ds.plev.units:", ds.plev.units)
         else:
             raise ValueError(
                 "ERROR: plev is not in the nc file. Check vertical coordinate.\n"
