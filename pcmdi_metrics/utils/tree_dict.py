@@ -6,14 +6,16 @@ def tree() -> DefaultDict[Any, Any]:
     """
     Create a nested defaultdict with infinite depth.
 
-    Returns:
+    Returns
+    -------
     - DefaultDict[Any, Any]: A nested defaultdict that can be infinitely nested.
 
-    Note:
+    Note
+    ----
     - This structure allows for arbitrary nesting without explicitly creating intermediate dictionaries.
     - Be cautious with very deep nesting as it may consume significant memory.
 
-    Examples:
+    Examples
     --------
     >>> my_tree = tree()
     >>> my_tree['level1']['level2']['level3'] = 'value'

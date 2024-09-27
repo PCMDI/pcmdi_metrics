@@ -29,7 +29,10 @@ def check_daily_time_axis(ds, time_key="time"):
     Example
     -------
     >>> from pcmdi_metrics.utils import check_daily_time_axis
-    >>> ds = xr.Dataset({"time": xr.cftime_range("2000-01-01", periods=400, freq="D", calendar="gregorian")})  # dummy data to test
+    >>> # generate a dummy daily dataset to test
+    >>> import xarray as xr
+    >>> ds = xr.Dataset({"time": xr.cftime_range("2000-01-01", periods=400, freq="D", calendar="gregorian")})
+    >>> # check axis
     >>> check_daily_time_axis(ds, "time")
     # No output if check passes
     """
@@ -88,10 +91,10 @@ def check_monthly_time_axis(ds: xr.Dataset, time_key: str = "time") -> None:
     Example
     -------
     >>> from pcmdi_metrics.utils import check_monthly_time_axis
+    >>> # generate a dummy monthly dataset to test
     >>> import xarray as xr
-    >>> import pandas as pd
-    >>> dates = pd.date_range('2020-03-01', periods=14, freq='M')
-    >>> ds = xr.Dataset({'time': dates})
+    >>> ds = xr.Dataset({"time": xr.cftime_range("2000-01-01", periods=20, freq="M", calendar="gregorian")})
+    >>> # check axis
     >>> check_monthly_time_axis(ds)
     # No output if check passes
     """
