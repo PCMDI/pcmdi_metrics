@@ -39,6 +39,8 @@ def load_regions_specs() -> dict:
         "NAM": {"domain": {"latitude": (20.0, 90), "longitude": (-180, 180)}},
         "NAO": {"domain": {"latitude": (20.0, 80), "longitude": (-90, 40)}},
         "SAM": {"domain": {"latitude": (-20.0, -90), "longitude": (0, 360)}},
+        "PSA1": {"domain": {"latitude": (-20.0, -90), "longitude": (0, 360)}},
+        "PSA2": {"domain": {"latitude": (-20.0, -90), "longitude": (0, 360)}},
         "PNA": {"domain": {"latitude": (20.0, 85), "longitude": (120, 240)}},
         "NPO": {"domain": {"latitude": (20.0, 85), "longitude": (120, 240)}},
         "PDO": {"domain": {"latitude": (20.0, 70), "longitude": (110, 260)}},
@@ -82,32 +84,52 @@ def load_regions_specs() -> dict:
 def region_subset(
     ds: Union[xr.Dataset, xr.DataArray],
     region: str,
-    data_var: str = "variable",
+    data_var: str = None,
     regions_specs: dict = None,
     debug: bool = False,
 ) -> Union[xr.Dataset, xr.DataArray]:
-    """_summary_
+    """
+    Subset a dataset or data array based on a specified region.
+
+    This function subsets an xarray Dataset or DataArray based on the latitude and longitude
+    coordinates defined for a given region. It handles different longitude conventions
+    and can optionally provide debug information.
 
     Parameters
     ----------
     ds : Union[xr.Dataset, xr.DataArray]
-        _description_
+        The input dataset or data array to be subsetted.
     region : str
-        _description_
+        The name of the region to subset the data to. This should correspond to a key
+        in the regions_specs dictionary.
     data_var : str, optional
-        _description_, by default None
+        The name of the data variable if ds is a DataArray, by default None, which names DataArray as "variable" in the Dataset if DataArray has no name.
     regions_specs : dict, optional
-        _description_, by default None
-    debug: bool, optional
-        Turn on debug print, by default False
+        A dictionary containing the specifications for different regions. If None,
+        it will be loaded from a default source, by default None.
+    debug : bool, optional
+        If True, print debug information during the subsetting process, by default False.
 
     Returns
     -------
     Union[xr.Dataset, xr.DataArray]
-        _description_
+        The subsetted dataset or data array, matching the input type.
+
+    Notes
+    -----
+    This function first converts DataArrays to Datasets for processing, then converts
+    back if necessary. It handles both latitude and longitude subsetting based on the
+    region specifications, and can deal with different longitude conventions (0 to 360
+    vs -180 to 180).
+
     """
     if isinstance(ds, xr.DataArray):
         is_dataArray = True
+        if data_var is None:
+            if ds.name is None:
+                data_var = "variable"
+            else:
+                data_var = ds.name
         ds = da_to_ds(ds, data_var)
     else:
         is_dataArray = False
