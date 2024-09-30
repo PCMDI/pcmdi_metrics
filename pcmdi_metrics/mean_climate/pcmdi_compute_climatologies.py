@@ -84,14 +84,14 @@ for var in varlist:
 
     # calculate climatologies for this variable
     calculate_climatology(
-        var,
-        infile,
-        outfile,
-        outpath,
-        outfilename,
-        start,
-        end,
-        ver,
-        periodinname,
-        climlist,
+        var=var,
+        infile=infile,
+        outfile=outfile,
+        outpath=outpath,
+        outfilename=outfilename,
+        start=start,
+        end=end,
+        ver=ver,
+        periodinname=periodinname,
+        climlist=climlist,
     )
