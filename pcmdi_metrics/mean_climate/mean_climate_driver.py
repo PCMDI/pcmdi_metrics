@@ -244,7 +244,7 @@ for var in vars:
                 all_files = glob.glob(search_path)
                 all_models = [s.split("/")[-1].split(".")[2] for s in all_files]
                 # Remove duplicate elements from a list
-                models = list(set(all_models))
+                models = sorted(list(set(all_models)))
         else:
             # If no wildcard is used, return the provided list
             models = test_data_set
