@@ -7,5 +7,5 @@ Resources
 .. toctree::
    :maxdepth: 1
 
-   utils
+   api
    resources_legacy

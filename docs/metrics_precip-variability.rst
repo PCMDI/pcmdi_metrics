@@ -62,6 +62,11 @@ Options available to set in the parameter file include:
 * **nperseg**: Length of segment in power spectra.
 * **noverlap**: Length of overlap between segments in power spectra.
 * **ref**: Reference data path.
+* **res**: Target resolution in degrees.
+* **regions_specs**: Dictionary containing region bounding box. Uses format {"your region name": {"domain": {"latitude": (min, max), "longitude": (min, max)}}}. Min and max should be replaced with the values that define the region.
+* **region_file**: Path to a shapefile containing vector region outline. Must use with **attr** and **feature** parameters.
+* **attr**: Attribute used to identify region in shapefile (eg, column of attribute table). For example, "COUNTRY" in a shapefile of countries.
+* **feature**: Unique feature value of the region that occurs in the attribute given by "--attr". Must match only one geometry in the shapefile. An example is a feature called "USA" under the attribute "COUNTRY".
 * **cmec**: Set to True to output CMEC formatted JSON.
 
 Metric 

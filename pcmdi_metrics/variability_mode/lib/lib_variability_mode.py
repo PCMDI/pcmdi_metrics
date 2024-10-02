@@ -142,8 +142,8 @@ def subset_time(
         eyear = int(eyear)
 
     # First trimming
-    time1 = f"{syear}-01-01 00:00:00"
-    time2 = f"{eyear}-12-{eday} 23:59:59"
+    time1 = f"{syear:04d}-01-01 00:00:00"
+    time2 = f"{eyear:04d}-12-{eday:02d} 23:59:59"
     ds = select_subset(ds, time=(time1, time2))
 
     # Check available time window and adjust again if needed
@@ -170,8 +170,8 @@ def subset_time(
 
     # Second trimming
     if adjust_time_length:
-        time1 = f"{data_syear}-01-01 00:00:00"
-        time2 = f"{data_eyear}-12-{eday} 23:59:59"
+        time1 = f"{data_syear:04d}-01-01 00:00:00"
+        time2 = f"{data_eyear:04d}-12-{eday:02d} 23:59:59"
         ds = select_subset(ds, time=(time1, time2))
 
     return ds
