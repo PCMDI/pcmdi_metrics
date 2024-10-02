@@ -1111,6 +1111,76 @@ def get_annual_pxx(
     return result_dict
 
 
+def get_wettest_5yr(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    varname = "pr"
+    index = "wettest_5yr"
+    print("Metric:", index)
+
+    # Get annual max precipitation
+    PR = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        PR,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+
+    Pmax = xr.Dataset()
+    Pmax["ANN"] = S.annual_stats("max")
+
+    # Get number of 5 year segments
+    nseg = int(np.floor(len(Pmax.time) / 5))
+    lo = int(len(Pmax.time)) % 5  # leftover
+
+    # Set up empty dataset
+    P5 = xr.zeros_like(Pmax.isel({"time": slice(0, nseg)}))
+    P5["lat"] = Pmax["lat"]
+    P5["lon"] = Pmax["lon"]
+
+    # Will be updated time for 5 year quantity
+    timelist = []
+
+    # Fill dataset
+    for seg in range(0, nseg):
+        start = lo + 5 * seg
+        end = lo + 5 * (seg + 1)
+        myslice = (
+            Pmax["ANN"].isel({"time": slice(start, end)}).max("time").compute().data
+        )
+        mytime = Pmax["time"].isel({"time": start}).data.item()
+        timelist.append(mytime)
+        P5["ANN"].loc[{"time": Pmax["time"][seg]}] = myslice
+
+    P5["time"] = timelist
+    P5.time.attrs["axis"] = "T"
+    P5["time"].encoding["calendar"] = Pmax.time.encoding["calendar"]
+    P5["time"].attrs["standard_name"] = "time"
+    P5.time.encoding["units"] = Pmax.time.encoding["units"]
+    P5 = update_nc_attrs(P5, dec_mode, drop_incomplete_djf, annual_strict)
+    P5 = P5.rename({"ANN": "ANN5"})
+
+    result_dict = metrics_json({index: P5}, obs_dict={}, region="land", regrid=False)
+
+    if fig_file is not None:
+        P5["ANN5"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN5"]))
+        plt.title("Average precipitation on wettest day in 5 years")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        P5.to_netcdf(nc_file, "w")
+
+    del Pmax, P5
+    return result_dict
+
+
 def get_annual_cwd(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):

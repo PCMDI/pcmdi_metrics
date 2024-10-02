@@ -419,6 +419,17 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Wettest day in 5 year range
+                    result_dict = compute_metrics.get_wettest_5yr(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
                     # Consecutive wet days
                     result_dict = compute_metrics.get_annual_cwd(
                         ds,
