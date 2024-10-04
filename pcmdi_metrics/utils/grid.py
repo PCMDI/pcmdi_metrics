@@ -49,11 +49,11 @@ def create_target_grid(
 
     Global uniform grid:
 
-    >>> grid = create_target_grid(-90, 90, 0, 360, target_grid="5x5")
+    >>> grid = create_target_grid(-90, 90, 0, 360, target_grid_resolution="5x5")
 
     Regional uniform grid:
 
-    >>> grid = create_target_grid(30, 50, 100, 150, target_grid="0.5x0.5")
+    >>> grid = create_target_grid(30, 50, 100, 150, target_grid_resolution="0.5x0.5")
     """
     # generate target grid
     res = target_grid_resolution.split("x")
