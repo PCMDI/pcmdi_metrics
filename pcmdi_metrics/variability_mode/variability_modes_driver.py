@@ -83,6 +83,17 @@ from pcmdi_metrics.variability_mode.lib import (
     write_nc_output,
 )
 
+
+def search_paths(paths, index1, index2, case_sensitive=False):
+    def split_string(text):
+        return set(re.split(r"[._ /]", text.lower() if not case_sensitive else text))
+
+    index1 = index1 if case_sensitive else index1.lower()
+    index2 = index2 if case_sensitive else index2.lower()
+
+    return [path for path in paths if {index1, index2}.issubset(split_string(path))]
+
+
 # =================================================
 # Collect user defined options
 # -------------------------------------------------
@@ -553,7 +564,7 @@ for model in models:
 
     model_path_list = sort_human(model_path_list)
 
-    debug_print(f"model_path_list: f{model_path_list}", debug)
+    debug_print(f"model_path_list: {model_path_list}", debug)
 
     # Find where run can be gripped from given filename template for modpath
     if realization == "*":
@@ -569,17 +580,26 @@ for model in models:
             ).split("/")[-1],
         ).index(realization)
 
+        runs = [
+            re.split("[._]", model_path.split("/")[-1])[run_in_modpath]
+            for model_path in model_path_list
+        ]
+
+    else:
+        runs = [realization]
+
+    print("runs:", runs)
+
     # -------------------------------------------------
     # Run
     # -------------------------------------------------
-    for model_path in model_path_list:
-        print("model_path:", model_path)
+    for run in runs:
+        print("run:", runs)
         try:
-            if realization == "*":
-                run = re.split("[._]", model_path.split("/")[-1])[run_in_modpath]
-            else:
-                run = realization
             print(" --- ", run, " ---")
+
+            model_run_path = search_paths(model_path_list, model, run)
+            print("model_run_path:", model_run_path)
 
             if run not in result_dict["RESULTS"][model]:
                 result_dict["RESULTS"][model][run] = {}
@@ -602,7 +622,7 @@ for model in models:
 
             # read data in
             model_timeseries = read_data_in(
-                model_path,
+                model_run_path,
                 var,
                 var,
                 msyear,
