@@ -11,7 +11,6 @@ from .lib_unified import (
     get_ref_catalogue,
     get_ref_data_path,
     get_unique_bases,
-    interpolate,
     process_dataset,
     remove_duplicates,
 )

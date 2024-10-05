@@ -156,13 +156,13 @@ def calculate_climatology(
         end_yr, end_mo = map(int, end_str.split("-")[:2])
 
         if start_mo != 1:
-            start_mo = 0
             start_yr += 1
+            start_mo = 1
             start_str = f"{start_yr:04d}-{start_mo:02d}-{start_da:02d}"
 
         if end_mo != 12:
-            end_mo = 12
             end_yr -= 1
+            end_mo = 12
             end_str = f"{end_yr:04d}-{end_mo:02d}-{end_da:02d}"
 
         # Subset the dataset to the selected time period

@@ -224,6 +224,6 @@ def regrid(
     ds_regridded = ds_regridded.bounds.add_missing_bounds()
 
     # Copy global attributes from ds1 to ds2
-    ds_regridded = ds_regridded.attrs.update(target_grid.attrs)
+    ds_regridded.attrs.update(target_grid.attrs)
 
     return ds_regridded

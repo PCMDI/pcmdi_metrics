@@ -63,6 +63,7 @@ def get_annual_cycle(
     end="2005-12",
     repair_time_axis=True,
     overwrite_output_ac=True,
+    save_ac_netcdf=True,
 ):
     ver = datetime.datetime.now().strftime("v%Y%m%d")
 
@@ -99,6 +100,7 @@ def get_annual_cycle(
         periodinname=False,
         repair_time_axis=repair_time_axis,
         overwrite_output=overwrite_output_ac,
+        save_ac_netcdf=save_ac_netcdf,
     )
 
     return d_clim_dict["AC"]
@@ -337,7 +339,7 @@ def process_dataset(
     )
 
     # Calculate the annual cycle and save annual cycle
-    if var not in rad_diagnostic_variables:
+    if var in data_dict:
         ds_ac = get_annual_cycle(
             varname,
             data_path,
@@ -348,9 +350,9 @@ def process_dataset(
             overwrite_output_ac=overwrite_output_ac,
             save_ac_netcdf=save_ac_netcdf,
         )
-    else:
+    elif var in rad_diagnostic_variables:
         ds_ac = derive_rad_var(
-            var,
+            varname,
             encountered_variables,
             data_name,
             ac_dict,
@@ -359,6 +361,8 @@ def process_dataset(
             data_type=data_type,
             save_ac_netcdf=save_ac_netcdf,
         )
+    else:
+        raise ValueError(f"Cannot find {var} in data collection.")
 
     # Extract level and interpolation
     for level in levels:
@@ -369,6 +373,8 @@ def process_dataset(
             ds_ac_level = ds_ac
         else:
             ds_ac_level = extract_level(ds_ac, level)
+
+        print(f"ds_ac_level[{varname}].shape: {ds_ac_level[varname].shape}")
 
         if plot_gn:
             ### implement plot for native grid
@@ -385,7 +391,11 @@ def process_dataset(
                 interp_filename_head = str(os.path.basename(data_path)).replace("*", "")
 
             # Proceed interpolation
-            ds_ac_level_interp = regrid(ds_ac_level, var, common_grid)
+            print("regrid starts")
+            ds_ac_level_interp = regrid(ds_ac_level, varname, common_grid)
+            print(
+                f"regrid done, ds_ac_level_interp[{varname}].shape: {ds_ac_level_interp[varname].shape}"
+            )
 
             if plot_gr:
                 ### implement plot for regrided grid
