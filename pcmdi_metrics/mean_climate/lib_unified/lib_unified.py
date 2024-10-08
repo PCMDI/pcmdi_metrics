@@ -1,6 +1,6 @@
-import datetime
 import os
 import re
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 import xarray as xr
@@ -67,7 +67,7 @@ def get_annual_cycle(
     ver: str = None,
 ):
     # Set version identifier using the current date if not provided
-    ver = ver or datetime.datetime.now().strftime("v%Y%m%d")
+    ver = ver or datetime.now().strftime("v%Y%m%d")
     print("ver:", ver)
 
     out_path_ver = os.path.join(out_path, ver)
@@ -320,6 +320,9 @@ def process_dataset(
         # Construct paths
         data_path = get_ref_data_path(refs_dict, var, ref)
         out_path = get_interim_out_path(interim_output_path_dict_data, "path_ac", var)
+        out_path_interp = get_interim_out_path(
+            interim_output_path_dict_data, "path_ac_interp", var
+        )
         refs_dict[var][ref]["path_ac"] = out_path
         if "varname" in refs_dict[var][ref]:
             varname = refs_dict[var][ref]["varname"]
@@ -331,7 +334,12 @@ def process_dataset(
         print(f"Processing data for: {model}, {run}")
         # Construct paths
         data_path = get_model_run_data_path(data_dict, var, model, run)
-        out_path = get_interim_out_path(interim_output_path_dict_data, "path_ac", var)
+        out_path = get_interim_out_path(
+            interim_output_path_dict_data, "path_ac_interp", var
+        )
+        out_path_interp = get_interim_out_path(
+            interim_output_path_dict_data, "path_ac", var
+        )
         models_dict[var][model][run]["path_ac"] = out_path
         if "varname" in models_dict[var][model][run]:
             varname = models_dict[var][model][run]["varname"]
@@ -343,7 +351,7 @@ def process_dataset(
     )
 
     # Set version identifier using the current date if not provided
-    version = datetime.datetime.now().strftime("v%Y%m%d")
+    version = datetime.now().strftime("v%Y%m%d")
     print("ver:", version)
 
     # Calculate the annual cycle and save annual cycle
@@ -409,6 +417,15 @@ def process_dataset(
                 f"regrid done, ds_ac_level_interp[{varname}].shape: {ds_ac_level_interp[varname].shape}"
             )
 
+            # Update attrs
+            # Get the current time with UTC timezone
+            current_time_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+            ds_ac_level_interp = ds_ac_level_interp.assign_attrs(
+                current_date=f"{current_time_utc}",
+                history=f"{current_time_utc}; PCMDI Metrics Package (PMP) calculated climatology and interpolated using {os.path.basename(data_path)}",
+            )
+
             if plot_gr:
                 ### implement plot for regrided grid
                 interp_filename_png = interp_filename_head.replace(
@@ -422,7 +439,7 @@ def process_dataset(
                     ".nc", f"_interp_{grid_resolution}.nc"
                 )
                 ds_ac_level_interp.to_netcdf(
-                    os.path.join(out_path, version, interp_filename_nc)
+                    os.path.join(out_path_interp, version, interp_filename_nc)
                 )
 
         if data_type == "ref":

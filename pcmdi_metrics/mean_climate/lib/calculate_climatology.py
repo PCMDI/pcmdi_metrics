@@ -1,5 +1,5 @@
-import datetime
 import os
+from datetime import datetime, timezone
 
 from pcmdi_metrics.io import get_time, select_subset, xcdat_open
 from pcmdi_metrics.utils import (
@@ -93,7 +93,7 @@ def calculate_climatology(
         )
     """
     # Set version identifier using the current date if not provided
-    ver = ver or datetime.datetime.now().strftime("v%Y%m%d")
+    ver = ver or datetime.now().strftime("v%Y%m%d")
     print("ver:", ver)
 
     # Extract the input filename from the full file path
@@ -248,8 +248,14 @@ def calculate_climatology(
                 ds_clim_s = ds_clim.isel(time=season_index_dict[s])
 
             # Prepare annual or seasonal climatology for the next step
+
+            # Get the current time with UTC timezone
+            current_time_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
             ds_clim_s = ds_clim_s.assign_attrs(
-                filename=os.path.basename(outpath_season)
+                current_date=f"{current_time_utc}",
+                history=f"{current_time_utc}; PCMDI Metrics Package (PMP) calculated climatology using {infilename}",
+                filename=os.path.basename(outpath_season),
             )
 
             # Save the climatology file unless it's an annual cycle input and "AC"

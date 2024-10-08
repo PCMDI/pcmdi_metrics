@@ -457,6 +457,45 @@ def get_grid(
     return d[[lat_key, lon_key, lat_bnds_key, lon_bnds_key]]
 
 
+def get_grid_shape(
+    d: Union[xr.Dataset, xr.DataArray],
+) -> tuple:
+    """
+    Get the shape of the grid in terms of longitude and latitude dimensions.
+
+    Parameters
+    ----------
+    d : Union[xr.Dataset, xr.DataArray]
+        Input xarray dataset or data array containing longitude and latitude dimensions.
+
+    Returns
+    -------
+    tuple
+        A tuple representing the size of the longitude and latitude dimensions
+        in the form (longitude_size, latitude_size).
+
+    Notes
+    -----
+    The function retrieves the keys for longitude and latitude using the
+    `get_longitude_key` and `get_latitude_key` functions, then uses these keys to
+    obtain the sizes of the respective dimensions.
+
+    Examples
+    --------
+    >>> ds = xr.Dataset(...)
+    >>> get_grid_shape(ds)
+    (180, 90)
+
+    See Also
+    --------
+    get_longitude_key, get_latitude_key
+    """
+    lon_key = get_longitude_key(d)
+    lat_key = get_latitude_key(d)
+
+    return tuple(d.sizes[dim] for dim in [lon_key, lat_key])
+
+
 def get_calendar(d: Union[xr.Dataset, xr.DataArray]) -> str:
     """
     Get the calendar type from an xarray Dataset or DataArray.

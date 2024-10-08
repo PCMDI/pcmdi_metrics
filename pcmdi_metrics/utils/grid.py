@@ -209,7 +209,7 @@ def regrid(
     target_grid = get_grid(target_grid)  # To remove time dimension if exist
     current_grid = get_grid(ds)
 
-    if current_grid == target_grid:
+    if current_grid.equals(target_grid):
         return ds
 
     # regrid
