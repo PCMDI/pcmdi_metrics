@@ -542,16 +542,13 @@ def get_tasmax_q50(
     # Get annual median maximum daily temperature
     index = "tasmax_q50"
     varname = "tasmax"
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Tmedian = xr.Dataset()
-    Tmedian["ANN"] = S.annual_stats("median")
+    # Set up empty dataset
+    Tmedian = xr.zeros_like(ds)
+    Tmedian["lat"] = ds["lat"]
+    Tmedian["lon"] = ds["lon"]
+    Tmedian = Tmedian.drop_vars("time")
+
+    Tmedian["median"] = ds[varname].median("time")
     Tmedian = update_nc_attrs(Tmedian, dec_mode, drop_incomplete_djf, annual_strict)
 
     # Compute statistics
@@ -560,9 +557,9 @@ def get_tasmax_q50(
     )
 
     if fig_file is not None:
-        Tmedian["ANN"].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Average annual median daily high temperature")
+        Tmedian["median"].plot(cmap="Oranges", cbar_kwargs={"label": "F"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "median"]))
+        plt.title("Time median daily high temperature")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
         plt.savefig(fig_file1)
@@ -583,17 +580,18 @@ def get_tasmax_q99p9(
     index = "tasmax_q99p9"
     print("Metric:", index)
     varname = "tasmax"
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Tq99p9 = xr.Dataset()
-    Tq99p9["ANN"] = S.annual_stats("q99p9")
+
+    # Set up empty dataset
+    Tq99p9 = xr.zeros_like(ds)
+    Tq99p9["lat"] = ds["lat"]
+    Tq99p9["lon"] = ds["lon"]
+    Tq99p9 = Tq99p9.drop_vars("time")
+
+    Tq99p9["q99p9"] = ds[varname].quantile(0.999,dim="time")
     Tq99p9 = update_nc_attrs(Tq99p9, dec_mode, drop_incomplete_djf, annual_strict)
+    result_dict = metrics_json(
+        {index: Tq99p9}, obs_dict={}, region="land", regrid=False
+    )
 
     # Compute statistics
     result_dict = metrics_json(
@@ -601,9 +599,9 @@ def get_tasmax_q99p9(
     )
 
     if fig_file is not None:
-        Tq99p9["ANN"].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Average annual 99.9th percentile daily high temperature")
+        Tq99p9["q99p9"].plot(cmap="Oranges", cbar_kwargs={"label": "F"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "q99p9"]))
+        plt.title("99.9th percentile daily high temperature")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
         plt.savefig(fig_file1)
@@ -953,26 +951,21 @@ def get_pr_q50(
     # Need at least 1mm rain
     ds[varname] = ds[varname].where(ds[varname] >= 1)
 
-    # Get median (q50) precipitation
-    PR = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        PR,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
+    # Set up empty dataset
+    PRq50 = xr.zeros_like(ds)
+    PRq50["lat"] = ds["lat"]
+    PRq50["lon"] = ds["lon"]
+    PRq50 = PRq50.drop_vars("time")
 
-    PRq50 = xr.Dataset()
-    PRq50["ANN"] = S.annual_stats("median")
+    PRq50["median"] = ds[varname].median("time")
     PRq50 = update_nc_attrs(PRq50, dec_mode, drop_incomplete_djf, annual_strict)
 
     result_dict = metrics_json({index: PRq50}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
-        PRq50["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Average annual median daily precipitation")
+        PRq50["median"].plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "median"]))
+        plt.title("Time median daily precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
         plt.savefig(fig_file1)
@@ -996,26 +989,22 @@ def get_pr_q99p0(
     # Need at least 1mm rain
     ds[varname] = ds[varname].where(ds[varname] >= 1)
 
-    # Get 99th percentile daily precipitation
-    PR = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        PR,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    PRq99p0 = xr.Dataset()
-    PRq99p0["ANN"] = S.annual_stats("q99p0")
+    # Set up empty dataset
+    PRq99p0 = xr.zeros_like(ds)
+    PRq99p0["lat"] = ds["lat"]
+    PRq99p0["lon"] = ds["lon"]
+    PRq99p0 = PRq99p0.drop_vars("time")
+
+    PRq99p0["q99p0"] = ds[varname].quantile(0.990,dim="time")
     PRq99p0 = update_nc_attrs(PRq99p0, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: PRq99p0}, obs_dict={}, region="land", regrid=False
     )
 
     if fig_file is not None:
-        PRq99p0["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Mean of annual 99.9th percentile daily precipitation")
+        PRq99p0["q99p0"].plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "q99p0"]))
+        plt.title("99.9th percentile daily precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
         plt.savefig(fig_file1)
@@ -1039,26 +1028,22 @@ def get_pr_q99p9(
     # Need at least 1mm rain
     ds[varname] = ds[varname].where(ds[varname] >= 1)
 
-    # Get 99.9th percentile daily precipitation
-    PR = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        PR,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    PRq99p9 = xr.Dataset()
-    PRq99p9["ANN"] = S.annual_stats("q99p9")
+    # Set up empty dataset
+    PRq99p9 = xr.zeros_like(ds)
+    PRq99p9["lat"] = ds["lat"]
+    PRq99p9["lon"] = ds["lon"]
+    PRq99p9 = PRq99p9.drop_vars("time")
+
+    PRq99p9["q99p9"] = ds[varname].quantile(0.999,dim="time")
     PRq99p9 = update_nc_attrs(PRq99p9, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: PRq99p9}, obs_dict={}, region="land", regrid=False
     )
 
     if fig_file is not None:
-        PRq99p9["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Mean of annual 99.9th percentile daily precipitation")
+        PRq99p9["q99p9"].plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "q99p9"]))
+        plt.title("99.9th percentile daily precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
         plt.savefig(fig_file1)
