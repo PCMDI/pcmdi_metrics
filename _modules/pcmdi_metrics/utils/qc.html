@@ -1,0 +1,713 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pcmdi_metrics.utils.qc &#8212; PMP Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pcmdi_metrics/utils/qc';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/PMPLogo_500x421px_72dpi.png" class="logo__image only-light" alt="PMP Documentation - Home"/>
+    <script>document.write(`<img src="../../../_static/PMPLogo_500x421px_72dpi.png" class="logo__image only-dark" alt="PMP Documentation - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">For users:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../start.html">Getting Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../supporting-data.html">Retrieving data for demos and use of the PMP</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../metrics.html">PMP Metrics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/cloud_feedback/README.md">Cloud Feedbacks</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">Results</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">For developers/contributors:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../resources.html">Resources</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../resources_legacy.html">Legacy archive</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../pmpparser.html">PMPParser</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html">Team</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">GitHub repository</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Community</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">GitHub discussions</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/PCMDI/pcmdi_metrics" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PCMDI/pcmdi_metrics/issues/new?title=Issue%20on%20page%20%2F_modules/pcmdi_metrics/utils/qc.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for pcmdi_metrics.utils.qc</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">cftime</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+
+
+<div class="viewcode-block" id="check_daily_time_axis">
+<a class="viewcode-back" href="../../../generated/pcmdi_metrics.utils.check_daily_time_axis.html#pcmdi_metrics.utils.check_daily_time_axis">[docs]</a>
+<span class="k">def</span> <span class="nf">check_daily_time_axis</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">time_key</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the time axis in an xarray dataset follows a correct daily sequence, considering all CFTime calendars.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds : xarray.Dataset or xarray.DataArray</span>
+<span class="sd">        The dataset or data array containing the time axis to be checked.</span>
+<span class="sd">    time_key : str, optional</span>
+<span class="sd">        The key corresponding to the time dimension in the dataset (default is &#39;time&#39;).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        The function doesn&#39;t return a value if the check passes.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the time axis does not use CFTime objects or does not follow a correct daily sequence.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; from pcmdi_metrics.utils import check_daily_time_axis</span>
+<span class="sd">    &gt;&gt;&gt; # generate a dummy daily dataset to test</span>
+<span class="sd">    &gt;&gt;&gt; import xarray as xr</span>
+<span class="sd">    &gt;&gt;&gt; ds = xr.Dataset({&quot;time&quot;: xr.cftime_range(&quot;2000-01-01&quot;, periods=400, freq=&quot;D&quot;, calendar=&quot;gregorian&quot;)})</span>
+<span class="sd">    &gt;&gt;&gt; # check axis</span>
+<span class="sd">    &gt;&gt;&gt; check_daily_time_axis(ds, &quot;time&quot;)</span>
+<span class="sd">    # No output if check passes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Extract the time values from the dataset</span>
+    <span class="n">time_data</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+    <span class="c1"># Check if the time axis is based on CFTime objects</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">time_data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cftime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The time axis does not use CFTime objects (uses </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">time_data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="si">}</span><span class="s2">).&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Convert time_data into numpy datetime64 for delta comparison</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_data</span><span class="p">)):</span>
+        <span class="c1"># Calculate the difference in days between consecutive time points</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="n">time_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">time_data</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Check if the difference is exactly 1 day (as a timedelta64 object)</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">timedelta64</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;D&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Time axis is not correct! Error at index </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">time_data</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">time_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+    <span class="c1"># If we&#39;ve made it through the loop without raising an error, the check has passed</span>
+
+
+<div class="viewcode-block" id="check_monthly_time_axis">
+<a class="viewcode-back" href="../../../generated/pcmdi_metrics.utils.check_monthly_time_axis.html#pcmdi_metrics.utils.check_monthly_time_axis">[docs]</a>
+<span class="k">def</span> <span class="nf">check_monthly_time_axis</span><span class="p">(</span><span class="n">ds</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">time_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;time&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the time axis of a dataset follows a correct monthly sequence.</span>
+
+<span class="sd">    This function verifies if the months in the dataset&#39;s time dimension</span>
+<span class="sd">    match the expected sequence of months, starting from the first month</span>
+<span class="sd">    in the data and repeating as necessary.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds : xarray.Dataset or xarray.DataArray</span>
+<span class="sd">        The dataset or data array containing the time dimension to check.</span>
+<span class="sd">    time_key : str, optional</span>
+<span class="sd">        The name of the time dimension in the dataset. Default is &quot;time&quot;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">        The function doesn&#39;t return a value if the check passes.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    KeyError</span>
+<span class="sd">        If the specified time_key is not found in the dataset.</span>
+<span class="sd">    AttributeError</span>
+<span class="sd">        If the time dimension doesn&#39;t have a &#39;dt&#39; accessor (i.e., not a datetime type).</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the time axis does not follow the correct monthly sequence.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; from pcmdi_metrics.utils import check_monthly_time_axis</span>
+<span class="sd">    &gt;&gt;&gt; # generate a dummy monthly dataset to test</span>
+<span class="sd">    &gt;&gt;&gt; import xarray as xr</span>
+<span class="sd">    &gt;&gt;&gt; ds = xr.Dataset({&quot;time&quot;: xr.cftime_range(&quot;2000-01-01&quot;, periods=20, freq=&quot;M&quot;, calendar=&quot;gregorian&quot;)})</span>
+<span class="sd">    &gt;&gt;&gt; # check axis</span>
+<span class="sd">    &gt;&gt;&gt; check_monthly_time_axis(ds)</span>
+<span class="sd">    # No output if check passes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">months_data</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Time dimension &#39;</span><span class="si">{</span><span class="n">time_key</span><span class="si">}</span><span class="s2">&#39; not found in the dataset.&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The &#39;</span><span class="si">{</span><span class="n">time_key</span><span class="si">}</span><span class="s2">&#39; dimension does not seem to be a datetime type.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">start_month</span> <span class="o">=</span> <span class="n">months_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">num_time_steps</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">months_data</span><span class="p">)</span>
+    <span class="n">months_expected</span> <span class="o">=</span> <span class="n">repeating_months</span><span class="p">(</span><span class="n">start_month</span><span class="p">,</span> <span class="n">num_time_steps</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">months_data</span> <span class="o">!=</span> <span class="n">months_expected</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;DATA ERROR: time is not correct!</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Months from data: </span><span class="si">{</span><span class="n">months_data</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Months expected: </span><span class="si">{</span><span class="n">months_expected</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+    <span class="c1"># If we&#39;ve made it here without raising an error, the check has passed</span>
+
+
+<span class="k">def</span> <span class="nf">repeating_months</span><span class="p">(</span><span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generate a list of repeating numbers in the range 1 to 12, starting from a given number.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    start : int</span>
+<span class="sd">        The number to start from (must be in the range 1 to 12).</span>
+<span class="sd">    length : int</span>
+<span class="sd">        The total number of elements in the resulting list.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list</span>
+<span class="sd">        A list of numbers repeating from the range 1 to 12.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If the starting number is not in the range 1 to 12.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; repeating_months(3, 20)</span>
+<span class="sd">    [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]</span>
+
+<span class="sd">    &gt;&gt;&gt; repeating_months(1, 5)</span>
+<span class="sd">    [1, 2, 3, 4, 5]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">start</span> <span class="o">&lt;=</span> <span class="mi">12</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Start number must be in the range 1 to 12&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">[(</span><span class="n">start</span> <span class="o">+</span> <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">12</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length</span><span class="p">)]</span>
+
+
+<span class="k">def</span> <span class="nf">last_day_of_month</span><span class="p">(</span><span class="n">year</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">month</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">calendar</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;standard&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the last day of a given month for different calendar types.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    year : int</span>
+<span class="sd">        The year for which the last day of the month is determined.</span>
+<span class="sd">    month : int</span>
+<span class="sd">        The month (1-12) for which the last day is determined.</span>
+<span class="sd">    calendar : str, optional</span>
+<span class="sd">        The type of calendar. Options are &#39;standard&#39;, &#39;gregorian&#39;, &#39;proleptic_gregorian&#39;,</span>
+<span class="sd">        &#39;noleap&#39;, &#39;365_day&#39;, &#39;all_leap&#39;, &#39;366_day&#39;, &#39;360_day&#39;. Default is &#39;standard&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        The last day of the specified month for the given calendar type.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If an unsupported calendar type is provided or the month is invalid.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    &gt;&gt;&gt; last_day_of_month(2024, 2, &#39;gregorian&#39;)  # Leap year in gregorian calendar (should return 29)</span>
+<span class="sd">    29</span>
+
+<span class="sd">    &gt;&gt;&gt; last_day_of_month(2023, 2, &#39;noleap&#39;)  # No leap year in noleap calendar (should return 28)</span>
+<span class="sd">    28</span>
+
+<span class="sd">    &gt;&gt;&gt; last_day_of_month(2023, 2, &#39;360_day&#39;)  # 360-day calendar (should return 30)</span>
+<span class="sd">    30</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Validate inputs</span>
+    <span class="k">if</span> <span class="n">month</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">month</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Month must be in the range 1 to 12.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">calendar</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;standard&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;gregorian&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;proleptic_gregorian&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;noleap&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;365_day&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;all_leap&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;366_day&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;360_day&quot;</span><span class="p">,</span>
+    <span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Unsupported calendar type. Choose from &#39;standard&#39;, &#39;gregorian&#39;, &#39;noleap&#39;, &#39;365_day&#39;, &#39;all_leap&#39;, &#39;366_day&#39;, or &#39;360_day&#39;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">days_in_month</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mi">1</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
+        <span class="mi">3</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
+        <span class="mi">4</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
+        <span class="mi">6</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">7</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
+        <span class="mi">8</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
+        <span class="mi">9</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">10</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
+        <span class="mi">11</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="mi">12</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="c1"># Return last day based on the calendar type</span>
+    <span class="k">if</span> <span class="n">calendar</span> <span class="o">==</span> <span class="s2">&quot;360_day&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">30</span>  <span class="c1"># All months have 30 days in the 360-day calendar</span>
+    <span class="k">if</span> <span class="n">calendar</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;noleap&quot;</span><span class="p">,</span> <span class="s2">&quot;365_day&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">month</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">28</span>
+    <span class="k">if</span> <span class="n">calendar</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;all_leap&quot;</span><span class="p">,</span> <span class="s2">&quot;366_day&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">month</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">29</span>
+    <span class="k">if</span> <span class="n">calendar</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;standard&quot;</span><span class="p">,</span> <span class="s2">&quot;gregorian&quot;</span><span class="p">,</span> <span class="s2">&quot;proleptic_gregorian&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">month</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">29</span> <span class="k">if</span> <span class="n">is_leap_year</span><span class="p">(</span><span class="n">year</span><span class="p">)</span> <span class="k">else</span> <span class="mi">28</span>
+    <span class="k">return</span> <span class="n">days_in_month</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">month</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">is_leap_year</span><span class="p">(</span><span class="n">year</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine if a year is a leap year in the Gregorian calendar.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    year : int</span>
+<span class="sd">        The year to check.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+<span class="sd">        True if the year is a leap year, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">cftime</span><span class="o">.</span><span class="n">DatetimeGregorian</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">day</span> <span class="o">==</span> <span class="mi">1</span>
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By PMP Developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, PMP Developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
