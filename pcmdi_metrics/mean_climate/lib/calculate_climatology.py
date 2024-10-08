@@ -7,6 +7,7 @@ from pcmdi_metrics.utils import (
     check_time_bounds_exist,
     extract_date_components,
     find_overlapping_dates,
+    last_day_of_month,
     regenerate_time_axis,
 )
 
@@ -140,9 +141,7 @@ def calculate_climatology(
         start_da = 1  # Default to the first day of the start month
         end_yr, end_mo = map(int, end.split("-")[:2])
         # Determine the last day of the end month
-        end_da = int(
-            ds.time.dt.days_in_month.sel(time=ds.time.dt.year == end_yr)[end_mo - 1]
-        )
+        end_da = last_day_of_month(end_yr, end_mo)
 
         # Format the start and end dates as strings (YYYY-MM-DD)
         start_str = f"{start_yr:04d}-{start_mo:02d}-{start_da:02d}"
@@ -158,11 +157,13 @@ def calculate_climatology(
         if start_mo != 1:
             start_yr += 1
             start_mo = 1
+            start_da = 1
             start_str = f"{start_yr:04d}-{start_mo:02d}-{start_da:02d}"
 
         if end_mo != 12:
             end_yr -= 1
             end_mo = 12
+            end_da = 31
             end_str = f"{end_yr:04d}-{end_mo:02d}-{end_da:02d}"
 
         # Subset the dataset to the selected time period
