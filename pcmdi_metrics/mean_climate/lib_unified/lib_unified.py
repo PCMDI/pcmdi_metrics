@@ -64,8 +64,11 @@ def get_annual_cycle(
     repair_time_axis=True,
     overwrite_output_ac=True,
     save_ac_netcdf=True,
+    ver: str = None,
 ):
-    ver = datetime.datetime.now().strftime("v%Y%m%d")
+    # Set version identifier using the current date if not provided
+    ver = ver or datetime.datetime.now().strftime("v%Y%m%d")
+    print("ver:", ver)
 
     out_path_ver = os.path.join(out_path, ver)
     os.makedirs(out_path_ver, exist_ok=True)
@@ -295,6 +298,7 @@ def process_dataset(
     save_ac_interp_netcdf: bool = True,
     plot_gn: bool = True,
     plot_gr: bool = True,
+    version: str = None,
 ):
     # Sanity checks
     if data_type not in ["ref", "model"]:
@@ -338,6 +342,10 @@ def process_dataset(
         f"Processing {data_type} dataset - varname: {varname}, data: {data_name}, path: {data_path}"
     )
 
+    # Set version identifier using the current date if not provided
+    version = datetime.datetime.now().strftime("v%Y%m%d")
+    print("ver:", version)
+
     # Calculate the annual cycle and save annual cycle
     if var in data_dict:
         ds_ac = get_annual_cycle(
@@ -349,15 +357,19 @@ def process_dataset(
             repair_time_axis=repair_time_axis,
             overwrite_output_ac=overwrite_output_ac,
             save_ac_netcdf=save_ac_netcdf,
+            ver=version,
         )
     elif var in rad_diagnostic_variables:
+        print(
+            f"Note: {var} has to be derived from other variables -- calling 'derive_rad_var'"
+        )
         ds_ac = derive_rad_var(
             varname,
             encountered_variables,
             data_name,
             ac_dict,
             data_dict,
-            out_path,
+            os.path.join(out_path, version),
             data_type=data_type,
             save_ac_netcdf=save_ac_netcdf,
         )
@@ -385,8 +397,8 @@ def process_dataset(
             # Prepare for output file name
             grid_resolution = common_grid.attrs.get("grid_resolution")
 
-            if "path" in ds_ac.attrs:
-                interp_filename_head = str(ds_ac.attrs.get("path"))
+            if "filename" in ds_ac.attrs:
+                interp_filename_head = str(ds_ac.attrs.get("filename"))
             else:
                 interp_filename_head = str(os.path.basename(data_path)).replace("*", "")
 
@@ -409,7 +421,9 @@ def process_dataset(
                 interp_filename_nc = interp_filename_head.replace(
                     ".nc", f"_interp_{grid_resolution}.nc"
                 )
-                ds_ac_level_interp.to_netcdf(interp_filename_nc)
+                ds_ac_level_interp.to_netcdf(
+                    os.path.join(out_path, version, interp_filename_nc)
+                )
 
         if data_type == "ref":
             ac_dict[var][ref][level] = ds_ac_level_interp
