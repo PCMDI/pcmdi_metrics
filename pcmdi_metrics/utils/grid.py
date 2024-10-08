@@ -207,6 +207,11 @@ def regrid(
     """
 
     target_grid = get_grid(target_grid)  # To remove time dimension if exist
+    current_grid = get_grid(ds)
+
+    if current_grid == target_grid:
+        return ds
+
     # regrid
     if regrid_tool == "regrid2":
         ds_regridded = ds.regridder.horizontal(data_var, target_grid, tool=regrid_tool)
