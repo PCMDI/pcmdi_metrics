@@ -53,7 +53,7 @@ def get_domain_range(mode: str, regions_specs: dict):
 
 
 def read_data_in(
-    path: str,
+    path: Union[str, list],
     var_in_data: str,
     var_to_consider: str,
     syear: Union[str, int, float],

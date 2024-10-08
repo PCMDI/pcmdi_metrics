@@ -1,4 +1,4 @@
-# Conda pcmdi_metrics development environment
+# A conda development environment with all dependencies, including optional and documentation dependencies.
 name: pcmdi_metrics_dev
 channels:
     - conda-forge
@@ -45,11 +45,13 @@ dependencies:
     # Documentation
     # ==================
     - sphinx
+    - sphinx-autosummary-accessors
     - sphinx-book-theme
     - sphinx-copybutton
     - sphinx_rtd_theme
     - nbsphinx
     - pandoc
+    - sphinx-design
     - ipython # Required for nbsphinx syntax highlighting
 
 prefix: /opt/miniconda3/envs/pmcdi_metrics_dev
