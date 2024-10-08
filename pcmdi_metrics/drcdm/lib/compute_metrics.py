@@ -58,7 +58,8 @@ class SeasonalAverager:
 
     def masked_ds(self, ds):
         # Mask land where 0.5<=sftlf<=1
-        return ds.where(self.sftlf >= 0.5).where(self.sftlf <= 1)
+        #return ds.where(self.sftlf >= 0.5).where(self.sftlf <= 1)
+        return ds
 
     def calc_5day_mean(self):
         # Get the 5-day mean dataset
