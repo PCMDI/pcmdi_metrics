@@ -126,6 +126,17 @@ def monsoon_wang_runner(args):
     # FCN TO COMPUTE GLOBAL ANNUAL RANGE AND MONSOON PRECIP INDEX
 
     annrange_obs, mpi_obs = mpd(dobs_orig)
+
+    # create monsoon domain mask based on observations: annual range > 2.5 mm/day
+
+    domain_mask_obs = xr.where(annrange_obs>thr, 1, 0)
+    domain_mask_obs.name = 'mask'
+    #domain_mask_obs.to_netcdf('/home/dong12/PMP_240131/pcmdi_metrics/pcmdi_metrics/monsoon_wang/domain_mask_obs.nc')
+
+    mpi_obs = mpi_obs.where(domain_mask_obs)
+    #sys.exit()
+
+
     #########################################
     # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
     nout = os.path.join(
@@ -231,6 +242,10 @@ def monsoon_wang_runner(args):
 
         annrange_mod, mpi_mod = mpd(d_orig)
 
+        domain_mask_mod = xr.where(annrange_mod>thr, 1, 0)
+        #domain_mask_mod.name = 'mask'
+        mpi_mod = mpi_mod.where(domain_mask_mod)
+
         #print('mod_annrange.dims = ', annrange_mod.dims)
         #print('obs_annrange_dims = ', annrange_obs.dims)
         #print('mod_annrange.coords = ', annrange_mod.coords)
@@ -271,7 +286,7 @@ def monsoon_wang_runner(args):
 
         regions_specs = load_regions_specs()
         #print("regions_specs - ", regions_specs)
-        print("list(regions_specs.keys())",  list(regions_specs.keys()))
+#        print("list(regions_specs.keys())",  list(regions_specs.keys()))
 
         for dom in doms:
             mpi_stats_dic[mod][dom] = {}
@@ -282,7 +297,8 @@ def monsoon_wang_runner(args):
 
             #mpi_obs.to_netcdf("xd_mpi_obs.nc")
 
-            mpi_obs_reg = region_subset(mpi_obs, dom, data_var="pr", regions_specs=regions_specs)
+            mpi_obs_reg = region_subset(mpi_obs, dom)
+            #mpi_obs_reg = region_subset(mpi_obs, dom, data_var="pr", regions_specs=regions_specs)
             #mpi_obs_reg = region_subset(mpi_obs, dom)#, var="pr", regions_specs=regions_specs)
             #mpi_obs_reg = region_subset(mpi_obs, dom, var="pr")#, regions_specs=regions_specs)
             #mpi_obs_reg = region_subset(mpi_obs, regions_specs, region=dom)#, var="pr", regions_specs=regions_specs)
@@ -305,9 +321,13 @@ def monsoon_wang_runner(args):
             da2_flat = mpi_obs_reg.values.ravel()
             #print("da1_flat = ", da1_flat)
             #print("da2_flat = ", da2_flat)
-            cor = np.corrcoef(da1_flat, da2_flat)[0, 1]
+
+            #cor = np.corrcoef(da1_flat, da2_flat)[0, 1]
+            cor = np.ma.corrcoef(np.ma.masked_invalid(da1_flat), np.ma.masked_invalid(da2_flat) )[0, 1]
+
             print("cor = ", cor)
-            #sys.exit()
+
+            sys.exit()
 
             #rms = float(statistics.rms(mpi_mod_reg, mpi_obs_reg, axis="xy"))
             squared_diff = (mpi_mod_reg - mpi_obs_reg) ** 2
@@ -315,7 +335,8 @@ def monsoon_wang_runner(args):
             rms = np.sqrt(mean_squared_error)
 
             rmsn = rms / mpi_obs_reg_sd
-            del(mpi_mod_reg)
+            #del(mpi_mod_reg)
+            #del(mpi_obs_reg)
 
             #  DOMAIN SELECTED FROM GLOBAL ANNUAL RANGE FOR MODS AND OBS
             #annrange_mod_dom = annrange_mod(reg_sel)
@@ -347,12 +368,18 @@ def monsoon_wang_runner(args):
             #g.write(falarmmap, dtype=numpy.int32)
             #g.close()
             ds_out = xr.Dataset({
+                    "obsmap": annrange_obs_dom,
+                    "modmap": annrange_mod_dom,
                     "hitmap": hitmap,
                     "missmap": missmap,
                     "falarmmap": falarmmap
                     })
             ds_out.to_netcdf(fm)
         f.close()
+
+        if np.isnan(cor):
+            sys.exit()
+
 
     #  OUTPUT METRICS TO JSON FILE
     OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), json_filename)
