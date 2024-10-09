@@ -2,22 +2,12 @@ import os
 
 import cartopy.crs as ccrs
 import matplotlib.colors as colors
+import matplotlib.patheffects as pe
 import matplotlib.pyplot as plt
 import numpy as np
 import regionmask
-import xarray as xr
 
 from pcmdi_metrics.sea_ice.lib import sea_ice_lib as lib
-
-
-def replace_nan_zero(da):
-    da_new = xr.where(np.isnan(da), 0, da)
-    return da_new
-
-
-def replace_fill_zero(da, val):
-    da_new = xr.where(da > val, 0, da)
-    return da_new
 
 
 def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
@@ -67,6 +57,36 @@ def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
         ax.coastlines(color=[0.3, 0.3, 0.3])
         ax.set_facecolor([0.55, 0.55, 0.6])
         ax.set_title("Feb\n" + model.replace("_", " "), fontsize=12)
+        ax.annotate(
+            "NA",
+            (0.4, 0.17),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")],
+            fontsize=15,
+        )
+        ax.annotate(
+            "NP",
+            (0.52, 0.88),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")],
+            fontsize=15,
+        )
+        ax.annotate(
+            "CA",
+            (0.54, 0.5),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")],
+            fontsize=15,
+        )
 
         # Model Arctic Sept
         ax = axs[1]
@@ -83,7 +103,6 @@ def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
                 transform=ccrs.PlateCarree(),
                 cmap=cmap,
                 add_colorbar=False,
-                # cbar_kwargs={"label": "ice fraction", "fraction": 0.046, "pad": 0.04},
             )
         )
         arctic_regions.plot_regions(
@@ -96,12 +115,40 @@ def create_summary_maps_arctic(ds, var_ice, metrics_output_path, meta, model):
         ax.coastlines(color=[0.3, 0.3, 0.3])
         ax.set_facecolor([0.55, 0.55, 0.6])
         ax.set_title("Sep\n" + model.replace("_", " "), fontsize=12)
+        ax.annotate(
+            "NA",
+            (0.4, 0.17),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")],
+            fontsize=15,
+        )
+        ax.annotate(
+            "NP",
+            (0.52, 0.88),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")],
+            fontsize=15,
+        )
+        ax.annotate(
+            "CA",
+            (0.54, 0.5),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")],
+            fontsize=15,
+        )
 
-        # plt.suptitle("Arctic", fontsize=30)
         fig_path = os.path.join(
             metrics_output_path, model.replace(" ", "_") + "_Feb_Sep_NH.png"
         )
-        # plt.tight_layout(rect=[0, 0.03, 1, 0.97])
         plt.colorbar(fds, label="ice fraction", ax=axs)
         plt.savefig(fig_path)
         plt.close()
@@ -174,6 +221,36 @@ def create_summary_maps_antarctic(ds, var_ice, metrics_output_path, meta, model)
         ax.coastlines(color=[0.3, 0.3, 0.3])
         ax.set_facecolor([0.55, 0.55, 0.6])
         ax.set_title("Sep\n" + model.replace("_", " "), fontsize=12)
+        ax.annotate(
+            "SP",
+            (0.4, 0.18),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")],
+            fontsize=15,
+        )
+        ax.annotate(
+            "IO",
+            (0.85, 0.69),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")],
+            fontsize=15,
+        )
+        ax.annotate(
+            "SA",
+            (0.4, 0.8),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")],
+            fontsize=15,
+        )
 
         # Model Antarctic Feb
         ax = axs[1]
@@ -202,12 +279,40 @@ def create_summary_maps_antarctic(ds, var_ice, metrics_output_path, meta, model)
         ax.coastlines(color=[0.3, 0.3, 0.3])
         ax.set_facecolor([0.55, 0.55, 0.6])
         ax.set_title("Feb\n" + model.replace("_", " "), fontsize=12)
+        ax.annotate(
+            "SP",
+            (0.4, 0.18),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")],
+            fontsize=15,
+        )
+        ax.annotate(
+            "IO",
+            (0.85, 0.69),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")],
+            fontsize=15,
+        )
+        ax.annotate(
+            "SA",
+            (0.4, 0.8),
+            xycoords="axes fraction",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            color="white",
+            path_effects=[pe.withStroke(linewidth=1.5, foreground="black")],
+            fontsize=15,
+        )
 
-        # plt.suptitle("Arctic", fontsize=30)
         fig_path = os.path.join(
             metrics_output_path, model.replace(" ", "_") + "_Feb_Sep_SH.png"
         )
-        # plt.tight_layout(rect=[0, 0.03, 1, 0.97])
         plt.colorbar(fds, label="ice fraction", ax=axs)
         plt.savefig(fig_path)
         plt.close()
@@ -231,11 +336,6 @@ def create_arctic_map(
     # Load and process data
     xvar = lib.find_lon(ds)
     yvar = lib.find_lat(ds)
-
-    # Some models have NaN values in coordinates
-    # that can't be plotted by pcolormesh
-    # ds[xvar] = replace_nan_zero(ds[xvar])
-    # ds[yvar] = replace_nan_zero(ds[yvar])
 
     # Set up regions
     region_NA = np.array([[-120, 45], [-120, 80], [90, 80], [90, 45]])
@@ -393,11 +493,6 @@ def create_antarctic_map(
     # Load and process data
     xvar = lib.find_lon(ds)
     yvar = lib.find_lat(ds)
-
-    # Some models have NaN values in coordinates
-    # that can't be plotted by pcolormesh
-    # ds[xvar] = replace_nan_zero(ds[xvar])
-    # ds[yvar] = replace_nan_zero(ds[yvar])
 
     # Set up regions
     region_IO = np.array([[20, -90], [90, -90], [90, -55], [20, -55]])
