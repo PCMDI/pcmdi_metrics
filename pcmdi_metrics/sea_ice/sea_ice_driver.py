@@ -315,6 +315,7 @@ if __name__ == "__main__":
             "%(realization)": "*",
         }
         if find_all_realizations:
+            print("finding all realizations")
             test_data_full_path_tmp = os.path.join(test_data_path, filename_template)
             test_data_full_path_tmp = lib.replace_multi(test_data_full_path_tmp, tags)
             ncfiles = glob.glob(test_data_full_path_tmp)
@@ -333,6 +334,7 @@ if __name__ == "__main__":
             list_of_runs = realizations
         else:
             list_of_runs = realizations
+        print(list_of_runs)
 
         # Model grid area
         print(lib.replace_multi(area_template, tags))
@@ -426,6 +428,9 @@ if __name__ == "__main__":
                     print("No sftlf file found for", model, run)
                     if not generate_mask:
                         print("Skipping realization", run)
+                        print(
+                            "To generate land/sea mask on-the-fly, use --generate_mask parameter."
+                        )
                         continue
                     else:
                         # Set flag to generate sftlf after loading data
