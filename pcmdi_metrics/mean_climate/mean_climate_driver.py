@@ -338,12 +338,16 @@ for var in vars:
                                     ds_ref_dict[region] = ds_ref_tmp
                             else:
                                 ds_test_tmp = region_subset(
-                                    ds_test_tmp, regions_specs, region=region
+                                    ds_test_tmp,
+                                    region=region,
+                                    regions_specs=regions_specs,
                                 )
                                 ds_test_dict[region] = ds_test_tmp
                                 if region not in list(ds_ref_dict.keys()):
                                     ds_ref_dict[region] = region_subset(
-                                        ds_ref_tmp, regions_specs, region=region
+                                        ds_ref_tmp,
+                                        region=region,
+                                        regions_specs=regions_specs,
                                     )
                                 print("spatial subset done")
 
