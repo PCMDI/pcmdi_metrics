@@ -255,6 +255,35 @@ def process_by_region(ds, ds_var, ds_area, pole):
     return clims, means
 
 
+def get_area(data, ds_area):
+    xvar = find_lon(data)
+    coord_i, coord_j = get_xy_coords(data, xvar)
+    total_area = (data * ds_area).sum((coord_i, coord_j), skipna=True)
+    if isinstance(total_area.data, dask.array.core.Array):
+        ta_mean = total_area.data.compute().item()
+    else:
+        ta_mean = total_area.data.item()
+    return ta_mean
+
+
+def get_ocean_area_for_regions(ds, ds_var, area_val, pole):
+    # ds should have land/sea mask applied
+    regions_list = ["arctic", "antarctic", "ca", "na", "np", "sa", "sp", "io"]
+    areas = {}
+    # Only want spatial slice
+    if "time" in ds:
+        ds = ds.sel({"time": 0})
+    xvar = find_lon(ds)
+    yvar = find_lat(ds)
+    for region in regions_list:
+        data = choose_region(region, ds, ds_var, xvar, yvar, pole)
+        tmp = get_area(data, area_val)
+        areas[region] = tmp
+        print(tmp)
+        del data
+    return areas
+
+
 def find_lon(ds):
     for key in ds.coords:
         if key in ["lon", "longitude"]:
