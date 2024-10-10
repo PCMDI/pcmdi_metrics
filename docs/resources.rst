@@ -7,7 +7,5 @@ Resources
 .. toctree::
    :maxdepth: 1
 
-   pmp-using-cdp-guide
-   pmpparser
-
-
+   api
+   resources_legacy

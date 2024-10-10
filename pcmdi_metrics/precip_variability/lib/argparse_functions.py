@@ -1,3 +1,6 @@
+import ast
+
+
 def AddParserArgument(P):
     P.add_argument(
         "--mip", type=str, dest="mip", default=None, help="cmip5, cmip6 or other mip"
@@ -58,6 +61,21 @@ def AddParserArgument(P):
         "--ref", type=str, dest="ref", default=None, help="reference data path"
     )
     P.add_argument(
+        "--res",
+        type=int,
+        dest="res",
+        default=2,
+        help="Horizontal resolution [degree] for interpolation (lon, lat)",
+    )
+    P.add_argument(
+        "--regions_specs",
+        type=ast.literal_eval,
+        dest="regions_specs",
+        help="Provide a single custom region",
+        default=None,
+        required=False,
+    )
+    P.add_argument(
         "--cmec",
         dest="cmec",
         default=False,
@@ -70,6 +88,21 @@ def AddParserArgument(P):
         default=False,
         action="store_false",
         help="Do not save CMEC format metrics JSON",
+    )
+    P.add_argument(
+        "--region_file",
+        dest="region_file",
+        help="File containing vector region of interest.",
+        default=None,
+    )
+    P.add_argument(
+        "--feature", dest="feature", help="Feature in vectorized region.", default=None
+    )
+    P.add_argument(
+        "--attr",
+        dest="attr",
+        help="Attribute containing feature in vectorized region.",
+        default=None,
     )
     P.set_defaults(cmec=False)
 

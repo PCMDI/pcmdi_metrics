@@ -33,6 +33,8 @@ def AddParserArgument(P):
         "- NAM: Northern Annular Mode\n"
         "- NAO: Northern Atlantic Oscillation\n"
         "- SAM: Southern Annular Mode\n"
+        "- PSA1: Pacific–South American pattern 1\n"
+        "- PSA2: Pacific–South American pattern 2\n"
         "- PNA: Pacific North American Pattern\n"
         "- PDO: Pacific Decadal Oscillation\n"
         "- NPO: North Pacific Oscillation\n"
@@ -224,6 +226,8 @@ def VariabilityModeCheck(mode, P):
             "NAM",
             "NAO",
             "SAM",
+            "PSA1",
+            "PSA2",
             "PNA",
             "PDO",
             "NPO",

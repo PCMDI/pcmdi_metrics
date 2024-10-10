@@ -113,7 +113,7 @@ if debug:
         json.dump(filenames, f, sort_keys=True, indent=4)
 
 # calculate all feedback components and Klein et al (2013) error metrics:
-fbk_dict, obsc_fbk_dict, err_dict = CloudRadKernel(filenames)
+fbk_dict, obsc_fbk_dict, err_dict = CloudRadKernel(filenames, data_path)
 
 print("calc done")
 
