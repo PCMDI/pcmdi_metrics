@@ -692,6 +692,9 @@ if __name__ == "__main__":
                 meta = fig.create_summary_maps_arctic(
                     nc_climo, var, fig_dir, meta, tmp_model
                 )
+                meta = fig.create_annual_mean_map_arctic(
+                    nc_climo, var, fig_dir, meta, tmp_model
+                )
                 tmp_title = "{0}-{1} Antarctic sea ice".format(yr_range[0], yr_range[1])
                 meta = fig.create_antarctic_map(
                     nc_climo,
@@ -704,6 +707,9 @@ if __name__ == "__main__":
                     tmp_title,
                 )
                 meta = fig.create_summary_maps_antarctic(
+                    nc_climo, var, fig_dir, meta, tmp_model
+                )
+                meta = fig.create_annual_mean_map_antarctic(
                     nc_climo, var, fig_dir, meta, tmp_model
                 )
             except Exception as e:
@@ -735,6 +741,13 @@ if __name__ == "__main__":
                 nc_climo_mean, var, fig_dir, meta, tmp_model
             )
             meta = fig.create_summary_maps_antarctic(
+                nc_climo_mean, var, fig_dir, meta, tmp_model
+            )
+
+            meta = fig.create_annual_mean_map_arctic(
+                nc_climo_mean, var, fig_dir, meta, tmp_model
+            )
+            meta = fig.create_annual_mean_map_antarctic(
                 nc_climo_mean, var, fig_dir, meta, tmp_model
             )
 
