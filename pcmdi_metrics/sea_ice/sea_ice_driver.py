@@ -9,10 +9,11 @@ import xarray
 import xcdat as xc
 
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.io.xcdat_dataset_io import get_latitude_key, get_longitude_key
 from pcmdi_metrics.sea_ice.lib import create_sea_ice_parser
 from pcmdi_metrics.sea_ice.lib import sea_ice_figures as fig
 from pcmdi_metrics.sea_ice.lib import sea_ice_lib as lib
-from pcmdi_metrics.utils import create_land_sea_mask
+from pcmdi_metrics.utils import create_land_sea_mask, fix_tuple
 
 if __name__ == "__main__":
     logging.getLogger("xcdat").setLevel(logging.ERROR)
@@ -26,6 +27,7 @@ if __name__ == "__main__":
     realization = parameter.realization
     var = parameter.var
     filename_template = parameter.filename_template
+    sft_filename_template = parameter.sft_filename_template
     test_data_path = parameter.test_data_path
     model_list = parameter.test_data_set
     reference_data_path_nh = parameter.reference_data_path_nh
@@ -50,6 +52,7 @@ if __name__ == "__main__":
     plot = parameter.plot
     pole = parameter.pole
     to_nc = parameter.netcdf
+    generate_mask = parameter.generate_mask
 
     print("Model list:", model_list)
     model_list.sort()
@@ -71,6 +74,12 @@ if __name__ == "__main__":
         oeyear,
         msg="Error: Obs osyear and oeyear must both be set or both be None (unset).",
     )
+
+    # Fix issues that can come from command line tuples
+    ModUnitsAdjust = fix_tuple(ModUnitsAdjust)
+    AreaUnitsAdjust = fix_tuple(AreaUnitsAdjust)
+    ObsUnitsAdjust = fix_tuple(ObsUnitsAdjust)
+    ObsAreaUnitsAdjust = fix_tuple(ObsAreaUnitsAdjust)
 
     # Initialize output.json file
     meta = lib.MetadataFile(metrics_output_path)
@@ -136,7 +145,7 @@ if __name__ == "__main__":
             + ".nc"
         )
         fname_nh = os.path.join(nc_dir, fname_nh)
-        nc_climo.to_netcdf(fname_nh)
+        nc_climo.to_netcdf(fname_nh, "w")
         del nc_climo
     obs.close()
 
@@ -193,7 +202,7 @@ if __name__ == "__main__":
             + ".nc"
         )
         fname_sh = os.path.join(nc_dir, fname_sh)
-        nc_climo.to_netcdf(fname_sh)
+        nc_climo.to_netcdf(fname_sh, "w")
         del nc_climo
     obs.close()
 
@@ -306,6 +315,7 @@ if __name__ == "__main__":
             "%(realization)": "*",
         }
         if find_all_realizations:
+            print("finding all realizations")
             test_data_full_path_tmp = os.path.join(test_data_path, filename_template)
             test_data_full_path_tmp = lib.replace_multi(test_data_full_path_tmp, tags)
             ncfiles = glob.glob(test_data_full_path_tmp)
@@ -324,6 +334,7 @@ if __name__ == "__main__":
             list_of_runs = realizations
         else:
             list_of_runs = realizations
+        print(list_of_runs)
 
         # Model grid area
         print(lib.replace_multi(area_template, tags))
@@ -376,13 +387,22 @@ if __name__ == "__main__":
                 if (ds[xvar] < -180).any():
                     ds[xvar] = ds[xvar].where(ds[xvar] >= -180, ds[xvar] + 360)
 
+                if ds.time.encoding["calendar"] == "360_day":
+                    day360 = True
+                else:
+                    day360 = False
+
                 # Get time slice if year parameters exist
                 if start_year is not None:
+                    if day360:
+                        final_day = 30
+                    else:
+                        final_day = 31
                     ds = ds.sel(
                         {
                             "time": slice(
                                 "{0}-01-01".format(start_year),
-                                "{0}-12-31".format(end_year),
+                                "{0}-12-{1}".format(end_year, final_day),
                             )
                         }
                     )
@@ -394,8 +414,55 @@ if __name__ == "__main__":
                         str(int(ds.time.dt.year[-1])),
                     ]
 
-                mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
+                # Land/sea mask
+                try:
+                    tags = {
+                        "%(model)": model,
+                        "%(model_version)": model,
+                        "%(realization)": run,
+                    }
+                    sft_filename_list = lib.replace_multi(sft_filename_template, tags)
+                    sft_filename = glob.glob(sft_filename_list)[0]
+                    sft_exists = True
+                except (AttributeError, IndexError):
+                    print("No sftlf file found for", model, run)
+                    if not generate_mask:
+                        print("Skipping realization", run)
+                        print(
+                            "To generate land/sea mask on-the-fly, use --generate_mask parameter."
+                        )
+                        continue
+                    else:
+                        # Set flag to generate sftlf after loading data
+                        sft_exists = False
+                if sft_exists:
+                    sft = lib.load_dataset(sft_filename)
+                    # SFTOF and siconc don't always have same coordinate
+                    # names in CMIP data
+                    ds_lat = get_latitude_key(ds)
+                    ds_lon = get_longitude_key(ds)
+                    sft_lat = get_latitude_key(sft)
+                    sft_lon = get_longitude_key(sft)
+                    sft = sft.rename({sft_lon: ds_lon, sft_lat: ds_lat})
+                if not sft_exists:
+                    mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
+                else:
+                    if "sftlf" in sft.keys():
+                        mask = sft["sftlf"]
+                    elif "sftof" in sft.keys():
+                        # SFTOF uses 100 for ocean, 0 for land
+                        mask = xarray.where(
+                            sft["sftof"] > 0, 1 - sft["sftof"] / 100.0, 1
+                        )
+                    else:
+                        print(
+                            "Invalid land/sea mask. Land/sea mask must contain variable 'sftlf' or 'sftof'"
+                        )
+                        continue
+                    if np.max(mask) > 50:
+                        mask = mask / 100
                 ds[var] = ds[var].where(mask < 1)
+                # area[area_var] = area[area_var] * (1 - mask)
 
                 if to_nc:
                     # Generate netcdf files of climatologies
@@ -403,17 +470,18 @@ if __name__ == "__main__":
                     if not os.path.exists(nc_dir):
                         os.mkdir(nc_dir)
                     nc_climo = lib.get_clim(ds, var, ds=None)
-                    print("Writing climatology netcdf")
                     fname = (
                         "sic_clim_"
                         + "_".join([model, run, yr_range[0], yr_range[1]])
                         + ".nc"
                     )
                     fname = os.path.join(nc_dir, fname)
-                    nc_climo.to_netcdf(fname)
+                    print("Writing climatology netcdf", fname)
+                    nc_climo.to_netcdf(fname, "w")
                     del nc_climo
 
                 # Get regions
+                print("Getting regional areas for run")
                 clims, means = lib.process_by_region(ds, var, area[area_var].data, pole)
 
                 ds.close()
@@ -468,17 +536,30 @@ if __name__ == "__main__":
                     ]
 
                     # Get errors, convert to 1e12 km^-4
-                    mse[model][rgn][run][reference_data_set]["monthly_clim"][
-                        "mse"
-                    ] = str(
-                        lib.mse_t(
-                            real_clim[rgn][run][var] - real_mean[rgn][run],
-                            obs_clims[reference_data_set][rgn][obs_var]
-                            - obs_means[reference_data_set][rgn],
-                            weights=clim_wts,
+                    if day360:
+                        mse[model][rgn][run][reference_data_set]["monthly_clim"][
+                            "mse"
+                        ] = str(
+                            lib.mse_t(
+                                real_clim[rgn][run][var] - real_mean[rgn][run],
+                                obs_clims[reference_data_set][rgn][obs_var]
+                                - obs_means[reference_data_set][rgn],
+                                weights=None,
+                            )
+                            * 1e-12
                         )
-                        * 1e-12
-                    )
+                    else:
+                        mse[model][rgn][run][reference_data_set]["monthly_clim"][
+                            "mse"
+                        ] = str(
+                            lib.mse_t(
+                                real_clim[rgn][run][var] - real_mean[rgn][run],
+                                obs_clims[reference_data_set][rgn][obs_var]
+                                - obs_means[reference_data_set][rgn],
+                                weights=clim_wts,
+                            )
+                            * 1e-12
+                        )
                     mse[model][rgn][run][reference_data_set]["total_extent"][
                         "mse"
                     ] = str(
@@ -611,6 +692,9 @@ if __name__ == "__main__":
                 meta = fig.create_summary_maps_arctic(
                     nc_climo, var, fig_dir, meta, tmp_model
                 )
+                meta = fig.create_annual_mean_map_arctic(
+                    nc_climo, var, fig_dir, meta, tmp_model
+                )
                 tmp_title = "{0}-{1} Antarctic sea ice".format(yr_range[0], yr_range[1])
                 meta = fig.create_antarctic_map(
                     nc_climo,
@@ -623,6 +707,9 @@ if __name__ == "__main__":
                     tmp_title,
                 )
                 meta = fig.create_summary_maps_antarctic(
+                    nc_climo, var, fig_dir, meta, tmp_model
+                )
+                meta = fig.create_annual_mean_map_antarctic(
                     nc_climo, var, fig_dir, meta, tmp_model
                 )
             except Exception as e:
@@ -654,6 +741,13 @@ if __name__ == "__main__":
                 nc_climo_mean, var, fig_dir, meta, tmp_model
             )
             meta = fig.create_summary_maps_antarctic(
+                nc_climo_mean, var, fig_dir, meta, tmp_model
+            )
+
+            meta = fig.create_annual_mean_map_arctic(
+                nc_climo_mean, var, fig_dir, meta, tmp_model
+            )
+            meta = fig.create_annual_mean_map_antarctic(
                 nc_climo_mean, var, fig_dir, meta, tmp_model
             )
 

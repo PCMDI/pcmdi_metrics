@@ -375,13 +375,17 @@ def load_dataset(filepath):
     # Load an xarray dataset from the given filepath.
     # If list of netcdf files, opens mfdataset.
     # If list of xmls, open last file in list.
-    if filepath[-1].endswith(".xml"):
-        # Final item of sorted list would have most recent version date
-        ds = xcdat_openxml.xcdat_openxml(filepath[-1])
-    elif len(filepath) > 1:
-        ds = xc.open_mfdataset(filepath, chunks=None)
+    if isinstance(filepath, list):
+        if filepath[-1].endswith(".xml"):
+            # Final item of sorted list would have most recent version date
+            ds = xcdat_openxml.xcdat_openxml(filepath[-1])
+        else:
+            ds = xc.open_mfdataset(filepath, chunks=None)
     else:
-        ds = xc.open_dataset(filepath[0])
+        if filepath.endswith(".xml"):
+            ds = xcdat_openxml.xcdat_openxml(filepath)
+        else:
+            ds = xc.open_dataset(filepath)
     return ds
 
 
