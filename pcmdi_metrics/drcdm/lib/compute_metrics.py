@@ -1,6 +1,7 @@
 import datetime
 
 import cftime
+import dask
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
@@ -58,7 +59,7 @@ class SeasonalAverager:
 
     def masked_ds(self, ds):
         # Mask land where 0.5<=sftlf<=1
-        #return ds.where(self.sftlf >= 0.5).where(self.sftlf <= 1)
+        # return ds.where(self.sftlf >= 0.5).where(self.sftlf <= 1)
         return ds
 
     def calc_5day_mean(self):
@@ -404,11 +405,22 @@ def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     # Update fill value encoding
     ds[yvar].encoding["_FillValue"] = None
     ds[xvar].encoding["_FillValue"] = None
-    ds.time.encoding["_FillValue"] = None
     ds[yvarbnds].encoding["_FillValue"] = None
     ds[xvarbnds].encoding["_FillValue"] = None
-    ds.time_bnds.encoding["_FillValue"] = None
-    for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
+    if "time" in ds:
+        ds.time.encoding["_FillValue"] = None
+        ds.time_bnds.encoding["_FillValue"] = None
+    for season in [
+        "ANN",
+        "DJF",
+        "MAM",
+        "JJA",
+        "SON",
+        "ANN5",
+        "median",
+        "q99p9",
+        "q99p0",
+    ]:
         if season in ds:
             ds[season].encoding["_FillValue"] = float(1e20)
 
@@ -546,9 +558,9 @@ def get_tasmax_q50(
     Tmedian = xr.zeros_like(ds)
     Tmedian["lat"] = ds["lat"]
     Tmedian["lon"] = ds["lon"]
-    Tmedian = Tmedian.drop_vars("time")
+    Tmedian = Tmedian.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    Tmedian["median"] = ds[varname].median("time")
+    Tmedian["q50"] = ds[varname].median("time")
     Tmedian = update_nc_attrs(Tmedian, dec_mode, drop_incomplete_djf, annual_strict)
 
     # Compute statistics
@@ -557,7 +569,7 @@ def get_tasmax_q50(
     )
 
     if fig_file is not None:
-        Tmedian["median"].plot(cmap="Oranges", cbar_kwargs={"label": "F"})
+        Tmedian["q50"].plot(cmap="Oranges", cbar_kwargs={"label": "F"})
         fig_file1 = fig_file.replace("$index", "_".join([index, "median"]))
         plt.title("Time median daily high temperature")
         ax = plt.gca()
@@ -585,9 +597,12 @@ def get_tasmax_q99p9(
     Tq99p9 = xr.zeros_like(ds)
     Tq99p9["lat"] = ds["lat"]
     Tq99p9["lon"] = ds["lon"]
-    Tq99p9 = Tq99p9.drop_vars("time")
+    Tq99p9 = Tq99p9.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    Tq99p9["q99p9"] = ds[varname].quantile(0.999,dim="time")
+    if isinstance(ds[varname], dask.array.core.Array):
+        Tq99p9["q99p9"] = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
+    else:
+        Tq99p9["q99p9"] = ds[varname].quantile(0.999, dim="time")
     Tq99p9 = update_nc_attrs(Tq99p9, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: Tq99p9}, obs_dict={}, region="land", regrid=False
@@ -955,15 +970,15 @@ def get_pr_q50(
     PRq50 = xr.zeros_like(ds)
     PRq50["lat"] = ds["lat"]
     PRq50["lon"] = ds["lon"]
-    PRq50 = PRq50.drop_vars("time")
+    PRq50 = PRq50.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    PRq50["median"] = ds[varname].median("time")
+    PRq50["q50"] = ds[varname].median("time")
     PRq50 = update_nc_attrs(PRq50, dec_mode, drop_incomplete_djf, annual_strict)
 
     result_dict = metrics_json({index: PRq50}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
-        PRq50["median"].plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
+        PRq50["q50"].plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
         fig_file1 = fig_file.replace("$index", "_".join([index, "median"]))
         plt.title("Time median daily precipitation")
         ax = plt.gca()
@@ -993,9 +1008,12 @@ def get_pr_q99p0(
     PRq99p0 = xr.zeros_like(ds)
     PRq99p0["lat"] = ds["lat"]
     PRq99p0["lon"] = ds["lon"]
-    PRq99p0 = PRq99p0.drop_vars("time")
+    PRq99p0 = PRq99p0.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    PRq99p0["q99p0"] = ds[varname].quantile(0.990,dim="time")
+    if isinstance(ds[varname], dask.array.core.Array):
+        PRq99p0["q99p0"] = ds[varname].chunk({"time": -1}).quantile(0.990, dim="time")
+    else:
+        PRq99p0["q99p0"] = ds[varname].quantile(0.990, dim="time")
     PRq99p0 = update_nc_attrs(PRq99p0, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: PRq99p0}, obs_dict={}, region="land", regrid=False
@@ -1032,9 +1050,12 @@ def get_pr_q99p9(
     PRq99p9 = xr.zeros_like(ds)
     PRq99p9["lat"] = ds["lat"]
     PRq99p9["lon"] = ds["lon"]
-    PRq99p9 = PRq99p9.drop_vars("time")
+    PRq99p9 = PRq99p9.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    PRq99p9["q99p9"] = ds[varname].quantile(0.999,dim="time")
+    if isinstance(ds[varname], dask.array.core.Array):
+        PRq99p9["q99p9"] = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
+    else:
+        PRq99p9["q99p9"] = ds[varname].quantile(0.999, dim="time")
     PRq99p9 = update_nc_attrs(PRq99p9, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: PRq99p9}, obs_dict={}, region="land", regrid=False
