@@ -1,36 +1,57 @@
 import os
+from typing import Optional
 
 import cartopy
 import matplotlib as mpl
 import numpy as np
+import xarray as xr
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from matplotlib import pyplot as plt
 from matplotlib.colors import BoundaryNorm, LinearSegmentedColormap
 
 from pcmdi_metrics.stats import seasonal_mean
 
+from .load_and_regrid import extract_level  # noqa
 
-def load_variable_setting(ds, data_var):
+
+def load_variable_setting(ds, data_var, level):
     var_setting_dict = {
         "pr": {
-            "vmin": 0,
-            "vmax": 20,
-            "levels": np.linspace(0, 20, 21),
-            "colormap": colormap_WhiteBlueGreenYellowRed(),
+            None: {
+                "vmin": 0,
+                "vmax": 20,
+                "levels": np.linspace(0, 20, 21),
+                "colormap": colormap_WhiteBlueGreenYellowRed(),
+                "colormap_ext": "max",
+            }
+        },
+        "ua": {
+            850: {
+                "vmin": -20,
+                "vmax": 20,
+                "levels": np.linspace(-20, 20, 21),
+                "colormap": plt.get_cmap("PiYG_r"),
+            }
         },
     }
+
     if data_var in var_setting_dict:
-        vmin = var_setting_dict[data_var]["vmin"]
-        vmax = var_setting_dict[data_var]["vmax"]
-        levels = var_setting_dict[data_var]["levels"]
-        cmap = var_setting_dict[data_var]["colormap"]
+        vmin = var_setting_dict[data_var][level]["vmin"]
+        vmax = var_setting_dict[data_var][level]["vmax"]
+        levels = var_setting_dict[data_var][level]["levels"]
+        cmap = var_setting_dict[data_var][level]["colormap"]
+        if "colormap_ext" in var_setting_dict[data_var][level]:
+            cmap_ext = var_setting_dict[data_var][level]["colormap_ext"]
+        else:
+            cmap_ext = "both"
     else:
         vmin = float(ds[data_var].min())
         vmax = float(ds[data_var].max())
         levels = np.linspace(vmin, vmax, 20)
         cmap = plt.get_cmap("viridis")
+        cmap_ext = "both"
 
-    return levels, cmap
+    return levels, cmap, cmap_ext
 
 
 def colormap_WhiteBlueGreenYellowRed():
@@ -55,14 +76,20 @@ def colormap_WhiteBlueGreenYellowRed():
 
 
 def plot_climatology_driver(
-    ds, data_var, map_projection="PlateCarree", output_dir=".", output_filename=None
-):
+    ds: xr.Dataset,
+    data_var: str,
+    level: Optional[int] = None,
+    map_projection: str = "PlateCarree",
+    output_dir: str = ".",
+    output_filename: Optional[str] = None,
+) -> None:
     season_to_plot = ["all", "AC", "DJF", "MAM", "JJA", "SON"]
     for season in season_to_plot:
         plot_climatology(
             ds,
             data_var,
-            season,
+            level=level,
+            season_to_plot=season,
             map_projection=map_projection,
             output_dir=output_dir,
             output_filename=output_filename,
@@ -70,51 +97,74 @@ def plot_climatology_driver(
 
 
 def plot_climatology(
-    ds,
-    data_var,
-    season_to_plot="all",
-    map_projection="PlateCarree",
-    output_dir=".",
-    output_filename=None,
-):
-    # Define seasons
+    ds: xr.Dataset,
+    data_var: str,
+    level: Optional[int] = None,
+    season_to_plot: str = "all",
+    map_projection: str = "PlateCarree",
+    output_dir: str = ".",
+    output_filename: Optional[str] = None,
+) -> None:
+    """
+    Plot climatology of a specified variable over defined seasons.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        The dataset containing the variable to plot.
+    data_var : str
+        The name of the variable to plot (e.g., 'pr' for precipitation).
+    level : Optional[int], optional
+        The vertical level to extract from the dataset, if applicable.
+    season_to_plot : str, optional
+        The season to plot ('all', 'AC', 'DJF', 'MAM', 'JJA', 'SON'). Default is 'all'.
+    map_projection : str, optional
+        The map projection to use ('PlateCarree', 'Robinson'). Default is 'PlateCarree'.
+    output_dir : str, optional
+        The directory to save the output plot. Default is the current directory.
+    output_filename : Optional[str], optional
+        The filename for the output plot. If None, a default filename will be generated.
+
+    Raises
+    ------
+    ValueError
+        If `season_to_plot` or `map_projection` is not valid.
+
+    Notes
+    -----
+    The function calculates seasonal means and generates a contour plot for the specified variable.
+    """
+
+    # Define available seasons
+    available_seasons = ["AC", "DJF", "MAM", "JJA", "SON"]
+
+    # Determine seasons to plot
     if season_to_plot.lower() == "all":
-        seasons = ["AC", "DJF", "MAM", "JJA", "SON"]
-    elif season_to_plot.upper() in ["AC", "DJF", "MAM", "JJA", "SON"]:
+        seasons = available_seasons
+    elif season_to_plot.upper() in available_seasons:
         seasons = [season_to_plot.upper()]
     else:
         raise ValueError(
-            f"season_to_plot {season_to_plot} is not valid. Available options are 'all', 'AC', 'DJF', 'MAM', 'JJA', 'SON"
+            f"season_to_plot {season_to_plot} is not valid. Available options are 'all', {', '.join(available_seasons)}"
         )
 
+    # Extract specified level if provided
+    if level is not None:
+        ds = extract_level(ds, level)
+
     # Precalculate seasonal means
-    data_season = {
-        "AC": ds.mean(dim="time"),
-        "DJF": seasonal_mean(ds, "DJF", data_var),
-        "MAM": seasonal_mean(ds, "MAM", data_var),
-        "JJA": seasonal_mean(ds, "JJA", data_var),
-        "SON": seasonal_mean(ds, "SON", data_var),
-    }
+    data_season = extract_seasonal_means(ds, data_var)
 
-    if "long_name" in ds[data_var].attrs:
-        long_name = ds[data_var].attrs["long_name"]
-    else:
-        long_name = None
+    # Retrieve variable attributes
+    long_name = ds[data_var].attrs.get("long_name", None)
+    units = ds[data_var].attrs.get("units", None)
+    period = ds.attrs.get("period", None)
 
-    if "units" in ds[data_var].attrs:
-        units = ds[data_var].attrs["units"]
-    else:
-        units = None
-
-    if "period" in ds.attrs:
-        period = ds.attrs["period"]
-    else:
-        period = None
-
+    # Adjust units for precipitation variable
     if data_var == "pr":
 
         def convert_units(da):
-            return da * 86400
+            return da * 86400  # Convert to mm/day
 
         long_name = "Precipitation"
         units = "mm/day"
@@ -123,24 +173,23 @@ def plot_climatology(
         def convert_units(da):
             return da
 
+    # Prepare variable information string
     var_info_str = ""
-
-    if long_name is not None:
+    if long_name:
         var_info_str += f"Variable: {wrap_text(long_name)}\n"
-
-    if units is not None:
+    if units:
         var_info_str += f"Units: {units}\n"
-
-    if period is not None:
+    if period:
         var_info_str += f"Period: {period}\n"
 
     # Set up figure
     fig = plt.figure(figsize=(11, 9))
-
-    levels, cmap = load_variable_setting(ds, data_var)
+    levels, cmap, cmap_ext = load_variable_setting(ds, data_var, level)
 
     # Use BoundaryNorm for discrete color boundaries
     norm = BoundaryNorm(boundaries=levels, ncolors=cmap.N)
+
+    # Set map projection
     if map_projection == "PlateCarree":
         proj = cartopy.crs.PlateCarree(central_longitude=180)
     elif map_projection == "Robinson":
@@ -162,20 +211,15 @@ def plot_climatology(
     # Loop through subplots
     for season in seasons:
         if season_to_plot.lower() == "all":
-            nrow = 3
-            ncol = 2
+            nrow, ncol = 3, 2
             idx = seasons_dict[season]["panel_index"]
-            info_x = 0.55
-            info_y = 0.75
+            info_x, info_y = 0.55, 0.75
         else:
-            nrow = 1
-            ncol = 1
+            nrow, ncol = 1, 1
             idx = 1
-            info_x = 0.1
-            info_y = 0.8
+            info_x, info_y = 0.1, 0.8
 
         title = seasons_dict[season]["title"]
-
         data = convert_units(data_season[season][data_var])
 
         ax = fig.add_subplot(nrow, ncol, idx, projection=proj)
@@ -185,13 +229,13 @@ def plot_climatology(
             data,
             transform=cartopy.crs.PlateCarree(),
             levels=levels,
-            extend="both",
+            extend=cmap_ext,
             cmap=cmap,
             norm=norm,
         )
         ax.add_feature(cartopy.feature.COASTLINE)
 
-        # lat/lon grid lines
+        # Add latitude/longitude grid lines
         gl = ax.gridlines(
             crs=cartopy.crs.PlateCarree(),
             draw_labels=True,
@@ -202,21 +246,22 @@ def plot_climatology(
         )
         gl.top_labels = False
         gl.left_labels = True
-
         gl.xformatter = LONGITUDE_FORMATTER
         gl.yformatter = LATITUDE_FORMATTER
         gl.xlabel_style = {"size": 10, "color": "gray"}
         gl.ylabel_style = {"size": 10, "color": "gray"}
 
+        # Calculate and format min, max, and mean values
         min_value = float(data.min())
         max_value = float(data.max())
         mean_value = convert_units(
             float(data_season[season].spatial.average(data_var)[data_var])
         )
         mean_max_min_info_str = (
-            f"Mean {mean_value:.3f}    Max {max_value:.3f}    Min {min_value:.3f}"
+            f"Max {max_value:.2f}    Mean {mean_value:.2f}    Min {min_value:.2f}"
         )
 
+        # Add titles and information to the plot
         if season_to_plot == "all":
             ax.text(
                 0.5,
@@ -247,34 +292,36 @@ def plot_climatology(
                 transform=ax.transAxes,
             )
 
-    # Use constrained layout to optimize space
-    plt.subplots_adjust(right=0.9, top=0.85, hspace=0.4)  # , wspace=-0.1)
+    # Optimize layout and add colorbar
+    plt.subplots_adjust(right=0.9, top=0.85, hspace=0.4)
     cbar_ax = fig.add_axes([0.92, 0.15, 0.02, 0.7])
     cbar = fig.colorbar(
-        mpl.cm.ScalarMappable(norm=norm, cmap=cmap), cax=cbar_ax, extend="max"
+        mpl.cm.ScalarMappable(norm=norm, cmap=cmap), cax=cbar_ax, extend=cmap_ext
     )
 
     # Label the colorbar
     cbar.set_label(f"{data_var} ({units})", fontsize=12)
 
-    # Title
-    if season_to_plot.lower() == "all":
-        title_str = f"Climatology: {data_var}"
-    else:
+    # Set title for the entire figure
+    if season_to_plot.lower() != "all":
         title_str = f"{season_to_plot} Climatology: {data_var}"
+    else:
+        title_str = f"Climatology: {data_var}"
 
-    # Add source and period to title if available
+    if level is not None:
+        title_str += f", {level} hPa"
+
     if "source_id" in ds.attrs:
         source_id = ds.attrs["source_id"]
         title_str += f", {source_id}"
 
     plt.suptitle(title_str, fontsize=23, y=0.95)
 
-    # Add additional detailed information
+    # Add additional detailed information if plotting all seasons
     if season_to_plot == "all":
         plt.gcf().text(info_x, info_y, var_info_str, fontsize=13)
 
-    # Define output file name if not given
+    # Define output file name if not provided
     if output_filename is None:
         output_filename = f"{data_var}_{source_id}_{period}_{season_to_plot}.png"
 
@@ -312,3 +359,28 @@ def wrap_text(text, max_length=20):
 
     # Join lines with newline characters
     return "\n".join(lines)
+
+
+def extract_seasonal_means(ds: xr.Dataset, data_var: str) -> dict:
+    """
+    Extract seasonal means for the specified variable from the dataset.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        The dataset containing the variable.
+    data_var : str
+        The name of the variable to extract seasonal means for.
+
+    Returns
+    -------
+    dict
+        A dictionary containing seasonal means for 'AC', 'DJF', 'MAM', 'JJA', and 'SON'.
+    """
+    return {
+        "AC": ds.mean(dim="time"),
+        "DJF": seasonal_mean(ds, "DJF", data_var),
+        "MAM": seasonal_mean(ds, "MAM", data_var),
+        "JJA": seasonal_mean(ds, "JJA", data_var),
+        "SON": seasonal_mean(ds, "SON", data_var),
+    }
