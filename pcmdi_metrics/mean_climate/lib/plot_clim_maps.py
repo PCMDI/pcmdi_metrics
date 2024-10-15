@@ -14,70 +14,6 @@ from pcmdi_metrics.stats import seasonal_mean
 from .load_and_regrid import extract_level  # noqa
 
 
-def load_variable_setting(ds, data_var, level):
-    var_setting_dict = {
-        "pr": {
-            None: {
-                "vmin": 0,
-                "vmax": 20,
-                "levels": np.linspace(0, 20, 21),
-                "colormap": colormap_WhiteBlueGreenYellowRed(),
-                "colormap_ext": "max",
-            }
-        },
-        "ua": {
-            850: {
-                "vmin": -20,
-                "vmax": 20,
-                "levels": np.linspace(-20, 20, 21),
-                "colormap": plt.get_cmap("PiYG_r"),
-            }
-        },
-    }
-
-    in_dict = False
-
-    # Check if the variable and level exist in the settings
-    if data_var in var_setting_dict:
-        if level in var_setting_dict[data_var]:
-            settings = var_setting_dict[data_var][level]
-            levels = settings["levels"]
-            cmap = settings["colormap"]
-            cmap_ext = settings.get("colormap_ext", "both")
-            in_dict = True
-
-    # Use default settings if not found
-    if not in_dict:
-        vmin = float(ds[data_var].min())
-        vmax = float(ds[data_var].max())
-        levels = np.linspace(vmin, vmax, 20)
-        cmap = plt.get_cmap("viridis")
-        cmap_ext = "both"
-
-    return levels, cmap, cmap_ext
-
-
-def colormap_WhiteBlueGreenYellowRed():
-    """
-    Example
-    -------
-    # Create the colormap using LinearSegmentedColormap
-    cmap = colormap_WhiteBlueGreenYellowRed()
-
-    # Display the colormap
-    plt.figure(figsize=(6, 1))
-    plt.imshow([[0, 1]], cmap=cmap)
-    plt.gca().set_visible(False)
-    plt.colorbar(orientation="horizontal")
-    plt.show()
-    """
-    # Define the colors for the colormap
-    colors = ["white", "steelblue", "green", "yellow", "orange", "red", "darkred"]
-    # Create the colormap using LinearSegmentedColormap
-    cmap = LinearSegmentedColormap.from_list("WhiteBlueGreenYellowRed", colors)
-    return cmap
-
-
 def plot_climatology_driver(
     ds: xr.Dataset,
     data_var: str,
@@ -156,7 +92,7 @@ def plot_climatology(
         ds = extract_level(ds, level)
 
     # Precalculate seasonal means
-    data_season = extract_seasonal_means(ds, data_var)
+    data_season = _extract_seasonal_means(ds, data_var)
 
     # Retrieve variable attributes
     long_name = ds[data_var].attrs.get("long_name", None)
@@ -179,7 +115,7 @@ def plot_climatology(
     # Prepare variable information string
     var_info_str = ""
     if long_name:
-        var_info_str += f"Variable: {wrap_text(long_name)}\n"
+        var_info_str += f"Variable: {_wrap_text(long_name)}\n"
     if units:
         var_info_str += f"Units: {units}\n"
     if period:
@@ -187,7 +123,7 @@ def plot_climatology(
 
     # Set up figure
     fig = plt.figure(figsize=(11, 9))
-    levels, cmap, cmap_ext = load_variable_setting(ds, data_var, level)
+    levels, cmap, cmap_ext = _load_variable_setting(ds, data_var, level)
 
     # Use BoundaryNorm for discrete color boundaries
     norm = BoundaryNorm(boundaries=levels, ncolors=cmap.N)
@@ -332,39 +268,28 @@ def plot_climatology(
     plt.savefig(os.path.join(output_dir, output_filename), bbox_inches="tight", dpi=150)
 
 
-def wrap_text(text, max_length=20):
+def _colormap_WhiteBlueGreenYellowRed():
     """
-    Wraps the input text to ensure each line does not exceed the specified max length.
-
-    Parameters
-    ----------
-    text : str
-        The input text string to be wrapped.
-    max_length : int, optional
-        The maximum length of each line (default is 20).
-
-    Returns
-    -------
-    str
-        The text string with line breaks after each segment of the specified length.
-
     Example
     -------
-    >>> text = "This is a long string that needs to be wrapped because it exceeds 20 characters."
-    >>> wrap_text(text)
-    'This is a long string\nthat needs to be wrappe\nd because it exceeds 20\ncharacters.'
+    # Create the colormap using LinearSegmentedColormap
+    cmap = _colormap_WhiteBlueGreenYellowRed()
+
+    # Display the colormap
+    plt.figure(figsize=(6, 1))
+    plt.imshow([[0, 1]], cmap=cmap)
+    plt.gca().set_visible(False)
+    plt.colorbar(orientation="horizontal")
+    plt.show()
     """
-    lines = []
-
-    # Break the string into chunks of max_length
-    for i in range(0, len(text), max_length):
-        lines.append(text[i : i + max_length])
-
-    # Join lines with newline characters
-    return "\n".join(lines)
+    # Define the colors for the colormap
+    colors = ["white", "steelblue", "green", "yellow", "orange", "red", "darkred"]
+    # Create the colormap using LinearSegmentedColormap
+    cmap = LinearSegmentedColormap.from_list("WhiteBlueGreenYellowRed", colors)
+    return cmap
 
 
-def extract_seasonal_means(ds: xr.Dataset, data_var: str) -> dict:
+def _extract_seasonal_means(ds: xr.Dataset, data_var: str) -> dict:
     """
     Extract seasonal means for the specified variable from the dataset.
 
@@ -387,3 +312,78 @@ def extract_seasonal_means(ds: xr.Dataset, data_var: str) -> dict:
         "JJA": seasonal_mean(ds, "JJA", data_var),
         "SON": seasonal_mean(ds, "SON", data_var),
     }
+
+
+def _load_variable_setting(ds, data_var, level):
+    var_setting_dict = {
+        "pr": {
+            None: {
+                "vmin": 0,
+                "vmax": 20,
+                "levels": np.linspace(0, 20, 21),
+                "colormap": _colormap_WhiteBlueGreenYellowRed(),
+                "colormap_ext": "max",
+            }
+        },
+        "ua": {
+            850: {
+                "vmin": -20,
+                "vmax": 20,
+                "levels": np.linspace(-20, 20, 21),
+                "colormap": plt.get_cmap("PiYG_r"),
+            }
+        },
+    }
+
+    in_dict = False
+
+    # Check if the variable and level exist in the settings
+    if data_var in var_setting_dict:
+        if level in var_setting_dict[data_var]:
+            settings = var_setting_dict[data_var][level]
+            levels = settings["levels"]
+            cmap = settings["colormap"]
+            cmap_ext = settings.get("colormap_ext", "both")
+            in_dict = True
+
+    # Use default settings if not found
+    if not in_dict:
+        vmin = float(ds[data_var].min())
+        vmax = float(ds[data_var].max())
+        levels = np.linspace(vmin, vmax, 20)
+        cmap = plt.get_cmap("jet")
+        cmap_ext = "both"
+
+    return levels, cmap, cmap_ext
+
+
+def _wrap_text(text, max_length=20):
+    """
+    Wraps the input text to ensure each line does not exceed the specified max length.
+
+    Parameters
+    ----------
+    text : str
+        The input text string to be wrapped.
+    max_length : int, optional
+        The maximum length of each line (default is 20).
+
+    Returns
+    -------
+    str
+        The text string with line breaks after each segment of the specified length.
+
+    Example
+    -------
+    >>> text = "This is a long string that needs to be wrapped because it exceeds 20 characters."
+    >>> _wrap_text(text)
+    'This is a long string\nthat needs to be wrappe\nd because it exceeds 20\ncharacters.'
+    """
+    lines = []
+
+    # Break the string into chunks of max_length
+    for i in range(0, len(text), max_length):
+        lines.append(text[i : i + max_length])
+
+    # Join lines with newline characters
+    return "\n".join(lines)
