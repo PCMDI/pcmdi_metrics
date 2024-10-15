@@ -22,6 +22,52 @@ def plot_climatology_driver(
     output_dir: str = ".",
     output_filename: Optional[str] = None,
 ) -> None:
+    """
+    Generate climatology plots for a specified variable over different seasons.
+
+    This function iterates over a predefined list of seasons and calls the
+    `plot_climatology` function to create and save climatology plots for
+    the specified data variable from the provided dataset.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        The xarray dataset containing the data variable to be plotted.
+
+    data_var : str
+        The name of the variable in the dataset to plot.
+
+    level : int, optional
+        The vertical level to plot. If None, the function will plot data
+        at all available levels. Default is None.
+
+    map_projection : str, optional
+        The map projection to use for the plots. Default is "PlateCarree".
+
+    output_dir : str, optional
+        The directory where the output plots will be saved. Default is the
+        current directory ("./").
+
+    output_filename : str, optional
+        The base filename for the output plots. If None, a default naming
+        convention will be used based on the variable and season. Default is None.
+
+    Returns
+    -------
+    None
+        This function does not return any value. It generates and saves
+        plots to the specified output directory.
+
+    Notes
+    -----
+    The function supports plotting for the following seasons:
+    - "all" (This will generate 6 image files)
+    - "AC" (Annual Cycle)
+    - "DJF" (December, January, February)
+    - "MAM" (March, April, May)
+    - "JJA" (June, July, August)
+    - "SON" (September, October, November)
+    """
     season_to_plot = ["all", "AC", "DJF", "MAM", "JJA", "SON"]
     for season in season_to_plot:
         plot_climatology(
