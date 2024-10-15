@@ -128,6 +128,13 @@ Release Notes and History
 | [v3.0.2]      | Minor patch and more documentation added
 | [v3.0.1]      | Minor technical patch                 
 | [v3.0.0]      | New metric added: **Cloud feedback metric** by @mzelinka. [**xCDAT**](https://xcdat.readthedocs.io/en/latest/) implemented for mean climate metrics
+
+<details>
+
+  <summary>Click here for older versions</summary>
+
+| <div style="width:300%">[Versions]</div> | Update summary   |
+| ------------- | ------------------------------------- |
 | [v2.5.1]      | Technical update
 | [v2.5.0]      | New metric added: **Precipitation Benchmarking -- distribution**. Graphics updated
 | [v2.4.0]      | New metric added: **AMO** in variability modes
@@ -146,6 +153,7 @@ Release Notes and History
 | [v1.1]        | First public release, emphasizing **climatological statistics**, with development branches for ENSO and regional monsoon precipitation indices
 | [v1.0]        | Prototype version of the PMP
 
+</details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
 [v3.6.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6.1
