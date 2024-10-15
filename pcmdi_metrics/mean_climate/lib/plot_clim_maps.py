@@ -1,23 +1,22 @@
-from matplotlib import pyplot as plt
-from matplotlib import colors
-from matplotlib import colormaps
-import matplotlib as mpl
-import cartopy
-import numpy as np
-import xcdat as xc
-from matplotlib.colors import LinearSegmentedColormap, BoundaryNorm
 import os
+
+import cartopy
+import matplotlib as mpl
+import numpy as np
+from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
+from matplotlib import pyplot as plt
+from matplotlib.colors import BoundaryNorm, LinearSegmentedColormap
+
 from pcmdi_metrics.stats import seasonal_mean
-from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
 
 def load_variable_setting(ds, data_var):
     var_setting_dict = {
-        "pr":{
+        "pr": {
             "vmin": 0,
             "vmax": 20,
             "levels": np.linspace(0, 20, 21),
-            "colormap": colormap_WhiteBlueGreenYellowRed()     
+            "colormap": colormap_WhiteBlueGreenYellowRed(),
         },
     }
     if data_var in var_setting_dict:
@@ -26,11 +25,11 @@ def load_variable_setting(ds, data_var):
         levels = var_setting_dict[data_var]["levels"]
         cmap = var_setting_dict[data_var]["colormap"]
     else:
-        vmin = float(ds[data_var].min()) 
-        vmax = float(ds[data_var].max()) 
+        vmin = float(ds[data_var].min())
+        vmax = float(ds[data_var].max())
         levels = np.linspace(vmin, vmax, 20)
         cmap = "viridis"
-        
+
     return levels, cmap
 
 
@@ -55,21 +54,38 @@ def colormap_WhiteBlueGreenYellowRed():
     return cmap
 
 
-def plot_climatology_driver(ds, data_var, map_projection="PlateCarree", output_dir=".", output_filename=None):
+def plot_climatology_driver(
+    ds, data_var, map_projection="PlateCarree", output_dir=".", output_filename=None
+):
     season_to_plot = ["all", "AC", "DJF", "MAM", "JJA", "SON"]
     for season in season_to_plot:
-        plot_climatology(ds, data_var, season, map_projection=map_projection, output_dir=output_dir, output_filename=output_filename)
+        plot_climatology(
+            ds,
+            data_var,
+            season,
+            map_projection=map_projection,
+            output_dir=output_dir,
+            output_filename=output_filename,
+        )
 
 
-def plot_climatology(ds, data_var, season_to_plot="all", map_projection="PlateCarree", output_dir=".", output_filename=None):
-
+def plot_climatology(
+    ds,
+    data_var,
+    season_to_plot="all",
+    map_projection="PlateCarree",
+    output_dir=".",
+    output_filename=None,
+):
     # Define seasons
     if season_to_plot.lower() == "all":
         seasons = ["AC", "DJF", "MAM", "JJA", "SON"]
     elif season_to_plot.upper() in ["AC", "DJF", "MAM", "JJA", "SON"]:
         seasons = [season_to_plot.upper()]
     else:
-        raise ValueError(f"season_to_plot {season_to_plot} is not valid. Available options are 'all', 'AC', 'DJF', 'MAM', 'JJA', 'SON")
+        raise ValueError(
+            f"season_to_plot {season_to_plot} is not valid. Available options are 'all', 'AC', 'DJF', 'MAM', 'JJA', 'SON"
+        )
 
     # Precalculate seasonal means
     data_season = {
@@ -95,14 +111,17 @@ def plot_climatology(ds, data_var, season_to_plot="all", map_projection="PlateCa
     else:
         period = None
 
-    def convert_units(da):
-        return da
-
     if data_var == "pr":
+
         def convert_units(da):
             return da * 86400
+
         long_name = "Precipitation"
         units = "mm/day"
+    else:
+
+        def convert_units(da):
+            return da
 
     var_info_str = ""
 
@@ -118,7 +137,7 @@ def plot_climatology(ds, data_var, season_to_plot="all", map_projection="PlateCa
     # Set up figure
     fig = plt.figure(figsize=(11, 9))
 
-    levels, cmap = load_variable_setting(data_var)
+    levels, cmap = load_variable_setting(ds, data_var)
 
     # Use BoundaryNorm for discrete color boundaries
     norm = BoundaryNorm(boundaries=levels, ncolors=cmap.N)
@@ -127,8 +146,9 @@ def plot_climatology(ds, data_var, season_to_plot="all", map_projection="PlateCa
     elif map_projection == "Robinson":
         proj = cartopy.crs.Robinson(central_longitude=180)
     else:
-        raise ValueError(f"map_projection {map_projection} is not valid. Available options: 'PlateCarree', 'Robinson'")
-
+        raise ValueError(
+            f"map_projection {map_projection} is not valid. Available options: 'PlateCarree', 'Robinson'"
+        )
 
     # Dictionary of seasons for dynamic plotting
     seasons_dict = {
@@ -141,7 +161,6 @@ def plot_climatology(ds, data_var, season_to_plot="all", map_projection="PlateCa
 
     # Loop through subplots
     for season in seasons:
-
         if season_to_plot.lower() == "all":
             nrow = 3
             ncol = 2
@@ -154,49 +173,89 @@ def plot_climatology(ds, data_var, season_to_plot="all", map_projection="PlateCa
             idx = 1
             info_x = 0.1
             info_y = 0.8
-        
+
         title = seasons_dict[season]["title"]
 
         data = convert_units(data_season[season][data_var])
 
         ax = fig.add_subplot(nrow, ncol, idx, projection=proj)
         ax.contourf(
-            ds.lon, ds.lat, data,
+            ds.lon,
+            ds.lat,
+            data,
             transform=cartopy.crs.PlateCarree(),
-            levels=levels, extend='both', cmap=cmap, norm=norm
+            levels=levels,
+            extend="both",
+            cmap=cmap,
+            norm=norm,
         )
         ax.add_feature(cartopy.feature.COASTLINE)
 
         # lat/lon grid lines
-        gl = ax.gridlines(crs=cartopy.crs.PlateCarree(), draw_labels=True,
-                  linewidth=2, color='gray', alpha=0.5, linestyle=':')
+        gl = ax.gridlines(
+            crs=cartopy.crs.PlateCarree(),
+            draw_labels=True,
+            linewidth=2,
+            color="gray",
+            alpha=0.5,
+            linestyle=":",
+        )
         gl.top_labels = False
         gl.left_labels = True
 
         gl.xformatter = LONGITUDE_FORMATTER
         gl.yformatter = LATITUDE_FORMATTER
-        gl.xlabel_style = {'size': 10, 'color': 'gray'}
-        gl.ylabel_style = {'size': 10, 'color': 'gray'}
+        gl.xlabel_style = {"size": 10, "color": "gray"}
+        gl.ylabel_style = {"size": 10, "color": "gray"}
 
         min_value = float(data.min())
         max_value = float(data.max())
-        mean_value = convert_units(float(data_season[season].spatial.average(data_var)[data_var]))
-        mean_max_min_info_str = f"Mean {mean_value:.3f}    Max {max_value:.3f}    Min {min_value:.3f}"
+        mean_value = convert_units(
+            float(data_season[season].spatial.average(data_var)[data_var])
+        )
+        mean_max_min_info_str = (
+            f"Mean {mean_value:.3f}    Max {max_value:.3f}    Min {min_value:.3f}"
+        )
 
         if season_to_plot == "all":
-            ax.text(0.5, 1.12, title, fontsize=15, horizontalalignment='center', verticalalignment='bottom', transform=ax.transAxes)
-            ax.text(0, 1.01, mean_max_min_info_str, horizontalalignment='left', verticalalignment='bottom', transform=ax.transAxes)
+            ax.text(
+                0.5,
+                1.12,
+                title,
+                fontsize=15,
+                horizontalalignment="center",
+                verticalalignment="bottom",
+                transform=ax.transAxes,
+            )
+            ax.text(
+                0,
+                1.01,
+                mean_max_min_info_str,
+                horizontalalignment="left",
+                verticalalignment="bottom",
+                transform=ax.transAxes,
+            )
         else:
             var_info_str += mean_max_min_info_str
-            ax.text(0, 1.01, var_info_str, fontsize=15, horizontalalignment='left', verticalalignment='bottom', transform=ax.transAxes)
-        
+            ax.text(
+                0,
+                1.01,
+                var_info_str,
+                fontsize=15,
+                horizontalalignment="left",
+                verticalalignment="bottom",
+                transform=ax.transAxes,
+            )
+
     # Use constrained layout to optimize space
-    plt.subplots_adjust(right=0.9, top=0.85, hspace=0.4) #, wspace=-0.1)
+    plt.subplots_adjust(right=0.9, top=0.85, hspace=0.4)  # , wspace=-0.1)
     cbar_ax = fig.add_axes([0.92, 0.15, 0.02, 0.7])
-    cbar = fig.colorbar(mpl.cm.ScalarMappable(norm=norm, cmap=cmap), cax=cbar_ax, extend='max')
+    cbar = fig.colorbar(
+        mpl.cm.ScalarMappable(norm=norm, cmap=cmap), cax=cbar_ax, extend="max"
+    )
 
     # Label the colorbar
-    cbar.set_label(f'{data_var} ({units})', fontsize=12)
+    cbar.set_label(f"{data_var} ({units})", fontsize=12)
 
     # Title
     if season_to_plot.lower() == "all":
@@ -220,20 +279,20 @@ def plot_climatology(ds, data_var, season_to_plot="all", map_projection="PlateCa
         output_filename = f"{data_var}_{source_id}_{period}_{season_to_plot}.png"
 
     # Save and show plot
-    plt.savefig(os.path.join(output_dir, output_filename), bbox_inches='tight', dpi=150)
+    plt.savefig(os.path.join(output_dir, output_filename), bbox_inches="tight", dpi=150)
 
 
 def wrap_text(text, max_length=20):
     """
     Wraps the input text to ensure each line does not exceed the specified max length.
-    
+
     Parameters
     ----------
     text : str
         The input text string to be wrapped.
     max_length : int, optional
         The maximum length of each line (default is 20).
-        
+
     Returns
     -------
     str
@@ -246,10 +305,10 @@ def wrap_text(text, max_length=20):
     'This is a long string\nthat needs to be wrappe\nd because it exceeds 20\ncharacters.'
     """
     lines = []
-    
+
     # Break the string into chunks of max_length
     for i in range(0, len(text), max_length):
-        lines.append(text[i:i+max_length])
-    
+        lines.append(text[i : i + max_length])
+
     # Join lines with newline characters
-    return '\n'.join(lines)
+    return "\n".join(lines)
