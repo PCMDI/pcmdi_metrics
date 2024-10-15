@@ -28,7 +28,7 @@ def load_variable_setting(ds, data_var):
         vmin = float(ds[data_var].min())
         vmax = float(ds[data_var].max())
         levels = np.linspace(vmin, vmax, 20)
-        cmap = "viridis"
+        cmap = plt.get_cmap("viridis")
 
     return levels, cmap
 
