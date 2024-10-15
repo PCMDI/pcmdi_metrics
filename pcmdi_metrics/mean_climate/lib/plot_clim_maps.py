@@ -35,16 +35,19 @@ def load_variable_setting(ds, data_var, level):
         },
     }
 
+    in_dict = False
+
+    # Check if the variable and level exist in the settings
     if data_var in var_setting_dict:
-        vmin = var_setting_dict[data_var][level]["vmin"]
-        vmax = var_setting_dict[data_var][level]["vmax"]
-        levels = var_setting_dict[data_var][level]["levels"]
-        cmap = var_setting_dict[data_var][level]["colormap"]
-        if "colormap_ext" in var_setting_dict[data_var][level]:
-            cmap_ext = var_setting_dict[data_var][level]["colormap_ext"]
-        else:
-            cmap_ext = "both"
-    else:
+        if level in var_setting_dict[data_var]:
+            settings = var_setting_dict[data_var][level]
+            levels = settings["levels"]
+            cmap = settings["colormap"]
+            cmap_ext = settings.get("colormap_ext", "both")
+            in_dict = True
+
+    # Use default settings if not found
+    if not in_dict:
         vmin = float(ds[data_var].min())
         vmax = float(ds[data_var].max())
         levels = np.linspace(vmin, vmax, 20)
