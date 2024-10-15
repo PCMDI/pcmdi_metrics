@@ -19,3 +19,4 @@ from .create_mean_climate_parser import create_mean_climate_parser  # noqa
 from .load_and_regrid import load_and_regrid  # noqa
 from .mean_climate_metrics_to_json import mean_climate_metrics_to_json  # noqa
 from .pmp_parser import PMPParser  # noqa
+from .plot_clim_maps import plot_climatology, plot_climatology_driver
