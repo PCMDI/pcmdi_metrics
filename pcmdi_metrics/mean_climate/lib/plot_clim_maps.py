@@ -2,16 +2,18 @@ import os
 from typing import Optional
 
 import cartopy
+import colorcet as cc
 import matplotlib as mpl
 import numpy as np
 import xarray as xr
 from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from matplotlib import pyplot as plt
-from matplotlib.colors import BoundaryNorm, LinearSegmentedColormap
+from matplotlib.colors import BoundaryNorm
 
 from pcmdi_metrics.stats import seasonal_mean
 
-from .load_and_regrid import extract_level  # noqa
+from .colormap import _colormap_WhiteBlueGreenYellowRed
+from .load_and_regrid import extract_level
 
 
 def plot_climatology_driver(
@@ -153,6 +155,14 @@ def plot_climatology(
 
         long_name = "Precipitation"
         units = "mm/day"
+    elif data_var == "psl":
+        if ds[data_var].max() > 100000:
+
+            def convert_units(da):
+                return da / 100  # Convert to hPa
+
+            long_name = "Sea Level Pressure"
+            units = "hPa"
     else:
 
         def convert_units(da):
@@ -233,8 +243,8 @@ def plot_climatology(
         gl.left_labels = True
         gl.xformatter = LONGITUDE_FORMATTER
         gl.yformatter = LATITUDE_FORMATTER
-        gl.xlabel_style = {"size": 10, "color": "gray"}
-        gl.ylabel_style = {"size": 10, "color": "gray"}
+        gl.xlabel_style = {"size": 9, "color": "gray"}
+        gl.ylabel_style = {"size": 9, "color": "gray"}
 
         # Calculate and format min, max, and mean values
         min_value = float(data.min())
@@ -277,16 +287,40 @@ def plot_climatology(
                 transform=ax.transAxes,
             )
 
+    # Color bar
+    # =========
     # Optimize layout and add colorbar
     plt.subplots_adjust(right=0.9, top=0.85, hspace=0.4)
     cbar_ax = fig.add_axes([0.92, 0.15, 0.02, 0.7])
+
+    # When colorbar is extended, the extended part has the same color as its inner next.
+    # Therefore, remove the outermost tick(s) in such cases.
+    if cmap_ext == "max":
+        ticks = levels[0:-1]
+    elif cmap_ext == "both":
+        ticks = levels[1:-1]
+    else:
+        ticks = levels
+
     cbar = fig.colorbar(
-        mpl.cm.ScalarMappable(norm=norm, cmap=cmap), cax=cbar_ax, extend=cmap_ext
+        mpl.cm.ScalarMappable(norm=norm, cmap=cmap),
+        ticks=ticks,
+        cax=cbar_ax,
+        extend=cmap_ext,
+    )
+
+    cbar.ax.tick_params(
+        length=0,  # Length of the tick lines
+        width=0,  # Width of the tick lines
+        color="black",  # Color of the tick lines
+        direction="out",  # Direction of the tick lines (in, out, or inout)
     )
 
     # Label the colorbar
     cbar.set_label(f"{data_var} ({units})", fontsize=12)
 
+    # Title and text info
+    # ===================
     # Set title for the entire figure
     if season_to_plot.lower() != "all":
         title_str = f"{season_to_plot} Climatology: {data_var}"
@@ -306,33 +340,19 @@ def plot_climatology(
     if season_to_plot == "all":
         plt.gcf().text(info_x, info_y, var_info_str, fontsize=13)
 
+    # Save
+    # ====
     # Define output file name if not provided
     if output_filename is None:
-        output_filename = f"{data_var}_{source_id}_{period}_{season_to_plot}.png"
+        if level is None:
+            output_filename = f"{data_var}_{source_id}_{period}_{season_to_plot}.png"
+        else:
+            output_filename = (
+                f"{data_var}-{level}_{source_id}_{period}_{season_to_plot}.png"
+            )
 
     # Save and show plot
     plt.savefig(os.path.join(output_dir, output_filename), bbox_inches="tight", dpi=150)
-
-
-def _colormap_WhiteBlueGreenYellowRed():
-    """
-    Example
-    -------
-    # Create the colormap using LinearSegmentedColormap
-    cmap = _colormap_WhiteBlueGreenYellowRed()
-
-    # Display the colormap
-    plt.figure(figsize=(6, 1))
-    plt.imshow([[0, 1]], cmap=cmap)
-    plt.gca().set_visible(False)
-    plt.colorbar(orientation="horizontal")
-    plt.show()
-    """
-    # Define the colors for the colormap
-    colors = ["white", "steelblue", "green", "yellow", "orange", "red", "darkred"]
-    # Create the colormap using LinearSegmentedColormap
-    cmap = LinearSegmentedColormap.from_list("WhiteBlueGreenYellowRed", colors)
-    return cmap
 
 
 def _extract_seasonal_means(ds: xr.Dataset, data_var: str) -> dict:
@@ -360,45 +380,200 @@ def _extract_seasonal_means(ds: xr.Dataset, data_var: str) -> dict:
     }
 
 
-def _load_variable_setting(ds, data_var, level):
+def _get_colormap(colormap):
+    if isinstance(colormap, str):
+        if colormap == "WhiteBlueGreenYellowRed":
+            cmap = _colormap_WhiteBlueGreenYellowRed()
+        else:
+            cmap = plt.get_cmap(colormap)
+    else:
+        cmap = colormap
+
+    return cmap
+
+
+def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False):
     var_setting_dict = {
         "pr": {
             None: {
-                "vmin": 0,
-                "vmax": 20,
-                "levels": np.linspace(0, 20, 21),
-                "colormap": _colormap_WhiteBlueGreenYellowRed(),
+                "levels": [0, 0.5] + list(np.arange(1, 18, 1)),
+                "levels_diff": [-5, -2, -1, -0.5, -0.2, 0, 0.2, 0.5, 1, 2, 5],
+                "colormap": "WhiteBlueGreenYellowRed",
+                "colormap_diff": "BrBG",
                 "colormap_ext": "max",
             }
         },
-        "ua": {
-            850: {
-                "vmin": -20,
-                "vmax": 20,
-                "levels": np.linspace(-20, 20, 21),
-                "colormap": plt.get_cmap("PiYG_r"),
+        "prw": {
+            None: {
+                "levels": np.arange(0, 22, 1),
+                "levels_diff": [-10, -5, -2, -1, -0.5, -0.2, 0, 0.2, 0.5, 1, 2, 5, 10],
+                "colormap": "WhiteBlueGreenYellowRed",
+                "colormap_diff": "BrBG",
+                "colormap_ext": "max",
             }
+        },
+        "psl": {
+            None: {
+                "levels": np.arange(980, 1040, 5),
+                "levels_diff": [-10, -5, -2, -1, -0.5, -0.2, 0, 0.2, 0.5, 1, 2, 5, 10],
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "BrBG",
+            }
+        },
+        "rltcre": {
+            None: {
+                "levels": np.linspace(0, 50, 21),
+                "levels_diff": np.linspace(-30, 30, 13),
+                "colormap": "nipy_spectral",
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rlut": {
+            None: {
+                "levels": np.linspace(100, 300, 21),
+                "levels_diff": np.linspace(-30, 30, 13),
+                "colormap": "nipy_spectral",
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rstscre": {
+            None: {
+                "levels": np.linspace(-50, 50, 21),
+                "levels_diff": np.linspace(-30, 30, 13),
+                "colormap": "nipy_spectral",
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rsut": {
+            None: {
+                "levels": np.linspace(0, 300, 16),
+                "levels_diff": np.linspace(-60, 60, 13),
+                "colormap": "nipy_spectral",
+                "colormap_diff": "RdBu_r",
+                "colormap_ext": "max",
+            }
+        },
+        "ta": {
+            200: {
+                "levels": np.arange(-70, -40, 2),
+                "levels_diff": np.linspace(-20, 20, 21),
+                "colormap": "nipy_spectral",
+                "colormap_diff": "jet",
+            },
+            850: {
+                "levels": np.arange(-35, 40, 5),
+                "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
+                "colormap": "nipy_spectral",
+                "colormap_diff": "RdBu_r",
+            },
+        },
+        "tauu": {
+            None: {
+                "levels": np.linspace(-0.1, 0.1, 11),
+                "levels_diff": np.linspace(-0.1, 0.1, 11),
+                "colormap": "PiYG_r",
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "tas": {
+            None: {
+                "levels": np.arange(-40, 45, 5),
+                "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
+                "colormap": "nipy_spectral",
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "ts": {
+            None: {
+                "levels": np.arange(-40, 45, 5),
+                "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
+                "colormap": "nipy_spectral",
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "ua": {
+            200: {
+                "levels": np.arange(-70, 80, 10),
+                "levels_diff": np.linspace(-20, 20, 21),
+                "colormap": "PiYG_r",
+                "colormap_diff": "RdBu_r",
+            },
+            850: {
+                "levels": [
+                    -25,
+                    -20,
+                    -15,
+                    -10,
+                    -8,
+                    -5,
+                    -3,
+                    -1,
+                    1,
+                    3,
+                    5,
+                    8,
+                    10,
+                    15,
+                    20,
+                    25,
+                ],
+                "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
+                "colormap": "PiYG_r",
+                "colormap_diff": "RdBu_r",
+            },
+        },
+        "va": {
+            200: {
+                "levels": np.linspace(-10, 10, 11),
+                "levels_diff": np.linspace(-5, 5, 6),
+                "colormap": "PiYG_r",
+                "colormap_diff": "RdBu_r",
+            },
+            850: {
+                "levels": np.linspace(-10, 10, 11),
+                "levels_diff": np.linspace(-5, 5, 6),
+                "colormap": "PiYG_r",
+                "colormap_diff": "RdBu_r",
+            },
+        },
+        "zg": {
+            500: {
+                "levels": np.linspace(5000, 5800, 11),
+                "levels_diff": np.linspace(-70, 70, 11),
+                "colormap": "nipy_spectral",
+                "colormap_diff": "RdBu_r",
+            },
         },
     }
 
+    # Check if the variable and level exist in the settings
+
     in_dict = False
 
-    # Check if the variable and level exist in the settings
     if data_var in var_setting_dict:
         if level in var_setting_dict[data_var]:
             settings = var_setting_dict[data_var][level]
             levels = settings["levels"]
-            cmap = settings["colormap"]
+            levels_diff = settings["levels_diff"]
+            cmap = _get_colormap(settings["colormap"])
+            cmap_diff = _get_colormap(settings["colormap_diff"])
             cmap_ext = settings.get("colormap_ext", "both")
+            cmap_ext_diff = "both"
             in_dict = True
 
     # Use default settings if not found
     if not in_dict:
         vmin = float(ds[data_var].min())
         vmax = float(ds[data_var].max())
-        levels = np.linspace(vmin, vmax, 20)
+        levels = np.linspace(vmin, vmax, 21)
+        levels_diff = np.linspace(vmin / 2.0, vmax / 2.0, 21)
         cmap = plt.get_cmap("jet")
+        cmap_diff = plt.get_cmap("RdBu_r")
         cmap_ext = "both"
+        cmap_ext_diff = "both"
+
+    if diff:
+        return levels_diff, cmap_diff, cmap_ext_diff
 
     return levels, cmap, cmap_ext
 
