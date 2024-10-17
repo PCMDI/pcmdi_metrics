@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
 
 
-def _colormap_WhiteBlueGreenYellowRed():
+def colormap_WhiteBlueGreenYellowRed():
     """
     Create a custom colormap transitioning from white through blue, green, yellow, to red.
 

@@ -12,75 +12,8 @@ from matplotlib.colors import BoundaryNorm
 
 from pcmdi_metrics.stats import seasonal_mean
 
-from .colormap import _colormap_WhiteBlueGreenYellowRed
+from .colormap import colormap_WhiteBlueGreenYellowRed
 from .load_and_regrid import extract_level
-
-
-def plot_climatology_driver(
-    ds: xr.Dataset,
-    data_var: str,
-    level: Optional[int] = None,
-    map_projection: str = "PlateCarree",
-    output_dir: str = ".",
-    output_filename: Optional[str] = None,
-) -> None:
-    """
-    Generate climatology plots for a specified variable over different seasons.
-
-    This function iterates over a predefined list of seasons and calls the
-    `plot_climatology` function to create and save climatology plots for
-    the specified data variable from the provided dataset.
-
-    Parameters
-    ----------
-    ds : xr.Dataset
-        The xarray dataset containing the data variable to be plotted.
-
-    data_var : str
-        The name of the variable in the dataset to plot.
-
-    level : int, optional
-        The vertical level to plot. If None, the function will plot data
-        at all available levels. Default is None.
-
-    map_projection : str, optional
-        The map projection to use for the plots. Default is "PlateCarree".
-
-    output_dir : str, optional
-        The directory where the output plots will be saved. Default is the
-        current directory ("./").
-
-    output_filename : str, optional
-        The base filename for the output plots. If None, a default naming
-        convention will be used based on the variable and season. Default is None.
-
-    Returns
-    -------
-    None
-        This function does not return any value. It generates and saves
-        plots to the specified output directory.
-
-    Notes
-    -----
-    The function supports plotting for the following seasons:
-    - "all" (This will generate 6 image files)
-    - "AC" (Annual Cycle)
-    - "DJF" (December, January, February)
-    - "MAM" (March, April, May)
-    - "JJA" (June, July, August)
-    - "SON" (September, October, November)
-    """
-    season_to_plot = ["all", "AC", "DJF", "MAM", "JJA", "SON"]
-    for season in season_to_plot:
-        plot_climatology(
-            ds,
-            data_var,
-            level=level,
-            season_to_plot=season,
-            map_projection=map_projection,
-            output_dir=output_dir,
-            output_filename=output_filename,
-        )
 
 
 def plot_climatology(
@@ -91,6 +24,9 @@ def plot_climatology(
     map_projection: str = "PlateCarree",
     output_dir: str = ".",
     output_filename: Optional[str] = None,
+    variable_long_name: Optional[str] = None,
+    units: Optional[str] = None,
+    period: Optional[str] = None,
 ) -> None:
     """
     Plot climatology of a specified variable over defined seasons.
@@ -111,6 +47,15 @@ def plot_climatology(
         The directory to save the output plot. Default is the current directory.
     output_filename : Optional[str], optional
         The filename for the output plot. If None, a default filename will be generated.
+    variable_long_name : str, optional
+        The long name of the variable to use in the plot title. If None, the
+        variable name will be extracted from dataset attributes if exist. Default is None.
+    units : str, optional
+        The units of the variable to use in the plot title. If None, the
+        variable units will be extracted from dataset attributes if exist. Default is None.
+    period : str, optional
+        The period to plot (e.g., '1981-2010'). If None, the
+        period will be extracted from dataset attributes if exist. Default is None.
 
     Raises
     ------
@@ -125,74 +70,49 @@ def plot_climatology(
     # Define available seasons
     available_seasons = ["AC", "DJF", "MAM", "JJA", "SON"]
 
-    # Determine seasons to plot
-    if season_to_plot.lower() == "all":
-        seasons = available_seasons
-    elif season_to_plot.upper() in available_seasons:
-        seasons = [season_to_plot.upper()]
-    else:
-        raise ValueError(
-            f"season_to_plot {season_to_plot} is not valid. Available options are 'all', {', '.join(available_seasons)}"
-        )
+    # Handle seasons input
+    seasons = _validate_season_input(season_to_plot, available_seasons)
 
     # Extract specified level if provided
     if level is not None:
         ds = extract_level(ds, level)
 
+    # Apply unit conversions for specific variables
+    ds[data_var] = _apply_variable_units_conversion(ds, data_var)
+
     # Precalculate seasonal means
     data_season = _extract_seasonal_means(ds, data_var)
 
     # Retrieve variable attributes
-    long_name = ds[data_var].attrs.get("long_name", None)
-    units = ds[data_var].attrs.get("units", None)
-    period = ds.attrs.get("period", None)
-
-    # Adjust units for precipitation variable
-    if data_var == "pr":
-
-        def convert_units(da):
-            return da * 86400  # Convert to mm/day
-
-        long_name = "Precipitation"
-        units = "mm/day"
-    elif data_var == "psl":
-        if ds[data_var].max() > 100000:
-
-            def convert_units(da):
-                return da / 100  # Convert to hPa
-
-            long_name = "Sea Level Pressure"
-            units = "hPa"
-    else:
-
-        def convert_units(da):
-            return da
+    long_name, units, period = _get_variable_attributes(
+        ds, data_var, variable_long_name, units, period
+    )
 
     # Prepare variable information string
     var_info_str = ""
+    separator1 = "\n\n" if season_to_plot == "all" else ", "
+    separator2 = "\n\n" if season_to_plot == "all" else "\n"
     if long_name:
-        var_info_str += f"Variable: {_wrap_text(long_name)}\n"
+        var_info_str += f"Variable: {_wrap_text(long_name)}{separator1}"
     if units:
-        var_info_str += f"Units: {units}\n"
+        var_info_str += f"Units: {units}{separator1}"
     if period:
-        var_info_str += f"Period: {period}\n"
+        var_info_str += f"Period: {period}{separator2}"
 
-    # Set up figure
-    fig = plt.figure(figsize=(11, 9))
-    levels, cmap, cmap_ext = _load_variable_setting(ds, data_var, level)
-
-    # Use BoundaryNorm for discrete color boundaries
-    norm = BoundaryNorm(boundaries=levels, ncolors=cmap.N)
-
-    # Set map projection
-    if map_projection == "PlateCarree":
-        proj = cartopy.crs.PlateCarree(central_longitude=180)
-    elif map_projection == "Robinson":
-        proj = cartopy.crs.Robinson(central_longitude=180)
+    # Set up a figure
+    if season_to_plot.lower() == "all":
+        nrow, ncol = 3, 2
+        info_x, info_y = 0.57, 0.85
+        figsize = (11, 9)
     else:
-        raise ValueError(
-            f"map_projection {map_projection} is not valid. Available options: 'PlateCarree', 'Robinson'"
-        )
+        nrow, ncol = 1, 1
+        idx = 1
+        info_x, info_y = 0.1, 0.8
+        figsize = (9, 6)
+
+    fig, proj, levels, cmap, cmap_ext, norm = _prepare_plotting_settings(
+        ds, data_var, map_projection, level, figsize
+    )
 
     # Dictionary of seasons for dynamic plotting
     seasons_dict = {
@@ -206,16 +126,12 @@ def plot_climatology(
     # Loop through subplots
     for season in seasons:
         if season_to_plot.lower() == "all":
-            nrow, ncol = 3, 2
             idx = seasons_dict[season]["panel_index"]
-            info_x, info_y = 0.55, 0.75
         else:
-            nrow, ncol = 1, 1
             idx = 1
-            info_x, info_y = 0.1, 0.8
 
         title = seasons_dict[season]["title"]
-        data = convert_units(data_season[season][data_var])
+        data = data_season[season][data_var]
 
         ax = fig.add_subplot(nrow, ncol, idx, projection=proj)
         ax.contourf(
@@ -231,27 +147,12 @@ def plot_climatology(
         ax.add_feature(cartopy.feature.COASTLINE)
 
         # Add latitude/longitude grid lines
-        gl = ax.gridlines(
-            crs=cartopy.crs.PlateCarree(),
-            draw_labels=True,
-            linewidth=2,
-            color="gray",
-            alpha=0.5,
-            linestyle=":",
-        )
-        gl.top_labels = False
-        gl.left_labels = True
-        gl.xformatter = LONGITUDE_FORMATTER
-        gl.yformatter = LATITUDE_FORMATTER
-        gl.xlabel_style = {"size": 9, "color": "gray"}
-        gl.ylabel_style = {"size": 9, "color": "gray"}
+        _add_gridlines(ax)
 
         # Calculate and format min, max, and mean values
         min_value = float(data.min())
         max_value = float(data.max())
-        mean_value = convert_units(
-            float(data_season[season].spatial.average(data_var)[data_var])
-        )
+        mean_value = float(data_season[season].spatial.average(data_var)[data_var])
         mean_max_min_info_str = (
             f"Max {max_value:.2f}    Mean {mean_value:.2f}    Min {min_value:.2f}"
         )
@@ -287,40 +188,15 @@ def plot_climatology(
                 transform=ax.transAxes,
             )
 
-    # Color bar
-    # =========
-    # Optimize layout and add colorbar
-    plt.subplots_adjust(right=0.9, top=0.85, hspace=0.4)
-    cbar_ax = fig.add_axes([0.92, 0.15, 0.02, 0.7])
+    # Optimize layout
+    if season_to_plot == "all":
+        plt.subplots_adjust(right=0.9, top=0.85, hspace=0.4)
 
-    # When colorbar is extended, the extended part has the same color as its inner next.
-    # Therefore, remove the outermost tick(s) in such cases.
-    if cmap_ext == "max":
-        ticks = levels[0:-1]
-    elif cmap_ext == "both":
-        ticks = levels[1:-1]
-    else:
-        ticks = levels
+    # Add colorbar
+    _add_colorbar(fig, ax, len(seasons), levels, norm, cmap, cmap_ext, data_var, units)
 
-    cbar = fig.colorbar(
-        mpl.cm.ScalarMappable(norm=norm, cmap=cmap),
-        ticks=ticks,
-        cax=cbar_ax,
-        extend=cmap_ext,
-    )
-
-    cbar.ax.tick_params(
-        length=0,  # Length of the tick lines
-        width=0,  # Width of the tick lines
-        color="black",  # Color of the tick lines
-        direction="out",  # Direction of the tick lines (in, out, or inout)
-    )
-
-    # Label the colorbar
-    cbar.set_label(f"{data_var} ({units})", fontsize=12)
-
-    # Title and text info
-    # ===================
+    # Title and further text info
+    # ===========================
     # Set title for the entire figure
     if season_to_plot.lower() != "all":
         title_str = f"{season_to_plot} Climatology: {data_var}"
@@ -338,10 +214,17 @@ def plot_climatology(
 
     # Add additional detailed information if plotting all seasons
     if season_to_plot == "all":
-        plt.gcf().text(info_x, info_y, var_info_str, fontsize=13)
+        plt.gcf().text(
+            info_x,
+            info_y,
+            var_info_str,
+            fontsize=13,
+            horizontalalignment="left",
+            verticalalignment="top",
+        )
 
-    # Save
-    # ====
+    # Save the plot
+    # =============
     # Define output file name if not provided
     if output_filename is None:
         if level is None:
@@ -353,6 +236,44 @@ def plot_climatology(
 
     # Save and show plot
     plt.savefig(os.path.join(output_dir, output_filename), bbox_inches="tight", dpi=150)
+    print("_apply_variable_units_conversion applied 123")
+
+
+# Helper functions
+def _validate_season_input(season_to_plot, available_seasons):
+    if season_to_plot.lower() == "all":
+        return available_seasons
+    elif season_to_plot.upper() in available_seasons:
+        return [season_to_plot.upper()]
+    else:
+        raise ValueError(
+            f"Invalid season_to_plot '{season_to_plot}'. Choose from 'all', {', '.join(available_seasons)}"
+        )
+
+
+def _apply_variable_units_conversion(ds, data_var):
+    """Apply unit conversion based on the variable type."""
+    if data_var == "pr":
+        conversion_factor = 86400  # Convert kg/m²/s to mm/day
+        ds[data_var].attrs["units"] = "mm/day"
+        ds[data_var].attrs["long_name"] = "Precipitation"
+    elif data_var == "psl" and ds[data_var].max() > 100000:
+        conversion_factor = 0.01  # Convert Pa to hPa
+        ds[data_var].attrs["units"] = "hPa"
+        ds[data_var].attrs["long_name"] = "Sea Level Pressure"
+    else:
+        conversion_factor = 1
+
+    # Store original attributes
+    original_attrs = ds[data_var].attrs
+
+    # Perform the operation
+    ds[data_var] = ds[data_var] * conversion_factor
+
+    # Re-assign the original attributes
+    ds[data_var].attrs = original_attrs
+
+    return ds[data_var]
 
 
 def _extract_seasonal_means(ds: xr.Dataset, data_var: str) -> dict:
@@ -380,10 +301,92 @@ def _extract_seasonal_means(ds: xr.Dataset, data_var: str) -> dict:
     }
 
 
+def _get_variable_attributes(ds, data_var, variable_long_name, units, period):
+    """Retrieve or set default variable attributes for the plot."""
+    long_name = variable_long_name or ds[data_var].attrs.get("long_name", data_var)
+    units = units or ds[data_var].attrs.get("units", "")
+    period = period or ds.attrs.get("period", "")
+    return long_name, units, period
+
+
+def _prepare_plotting_settings(ds, data_var, map_projection, level, figsize):
+    """Set up plot properties such as levels, colormap, and projection."""
+    fig = plt.figure(figsize=figsize)
+    levels, cmap, cmap_ext = _load_variable_setting(ds, data_var, level)
+    norm = BoundaryNorm(boundaries=levels, ncolors=cmap.N)
+
+    if map_projection == "PlateCarree":
+        proj = cartopy.crs.PlateCarree(central_longitude=180)
+    elif map_projection == "Robinson":
+        proj = cartopy.crs.Robinson(central_longitude=180)
+    else:
+        raise ValueError(
+            f"Invalid map_projection '{map_projection}'. Choose 'PlateCarree' or 'Robinson'."
+        )
+
+    return fig, proj, levels, cmap, cmap_ext, norm
+
+
+def _add_gridlines(ax):
+    """Add latitude and longitude gridlines."""
+    gl = ax.gridlines(
+        crs=cartopy.crs.PlateCarree(),
+        draw_labels=True,
+        linewidth=2,
+        color="gray",
+        alpha=0.5,
+        linestyle=":",
+    )
+    gl.top_labels = False
+    gl.left_labels = True
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+    gl.xlabel_style = {"size": 9, "color": "gray"}
+    gl.ylabel_style = {"size": 9, "color": "gray"}
+
+
+def _add_colorbar(fig, ax, num_panels, levels, norm, cmap, cmap_ext, data_var, units):
+    """Add a colorbar to the figure."""
+    if num_panels > 1:
+        cbar_ax = fig.add_axes(
+            [0.92, 0.15, 0.02, 0.7]
+        )  # if multi-panel figure, make a space for colorbar
+        ax = None
+    else:
+        # if single panel figure, attach colorbar to the subplot.
+        cbar_ax = fig.add_axes([ax.get_position().x1+0.01,ax.get_position().y0,0.02,ax.get_position().height])
+
+    # When colorbar is extended, the extended part has the same color as its inner next.
+    # Therefore, remove the outermost tick(s) in such cases.
+    if cmap_ext == "max":
+        ticks = levels[0:-1]
+    elif cmap_ext == "both":
+        ticks = levels[1:-1]
+    else:
+        ticks = levels
+
+    cbar = fig.colorbar(
+        mpl.cm.ScalarMappable(norm=norm, cmap=cmap),
+        ticks=ticks,
+        cax=cbar_ax,
+        extend=cmap_ext,
+    )
+
+    cbar.ax.tick_params(
+        length=0,  # Length of the tick lines
+        width=0,  # Width of the tick lines
+        color="black",  # Color of the tick lines
+        direction="out",  # Direction of the tick lines (in, out, or inout)
+    )
+
+    # Label the colorbar
+    cbar.set_label(f"{data_var} ({units})", fontsize=12)
+
+
 def _get_colormap(colormap):
     if isinstance(colormap, str):
         if colormap == "WhiteBlueGreenYellowRed":
-            cmap = _colormap_WhiteBlueGreenYellowRed()
+            cmap = colormap_WhiteBlueGreenYellowRed()
         else:
             cmap = plt.get_cmap(colormap)
     else:
@@ -424,15 +427,15 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
             None: {
                 "levels": np.linspace(0, 50, 21),
                 "levels_diff": np.linspace(-30, 30, 13),
-                "colormap": "nipy_spectral",
+                "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
         "rlut": {
             None: {
-                "levels": np.linspace(100, 300, 21),
-                "levels_diff": np.linspace(-30, 30, 13),
-                "colormap": "nipy_spectral",
+                "levels": [100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320],
+                "levels_diff": [-50, -40, -30, -20, -10, -5, 5, 10, 20, 30, 40, 50],
+                "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
@@ -440,7 +443,7 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
             None: {
                 "levels": np.linspace(-50, 50, 21),
                 "levels_diff": np.linspace(-30, 30, 13),
-                "colormap": "nipy_spectral",
+                "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
@@ -448,7 +451,7 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
             None: {
                 "levels": np.linspace(0, 300, 16),
                 "levels_diff": np.linspace(-60, 60, 13),
-                "colormap": "nipy_spectral",
+                "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
                 "colormap_ext": "max",
             }
@@ -457,13 +460,13 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
             200: {
                 "levels": np.arange(-70, -40, 2),
                 "levels_diff": np.linspace(-20, 20, 21),
-                "colormap": "nipy_spectral",
+                "colormap": cc.cm.rainbow,
                 "colormap_diff": "jet",
             },
             850: {
                 "levels": np.arange(-35, 40, 5),
                 "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
-                "colormap": "nipy_spectral",
+                "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             },
         },
@@ -479,7 +482,7 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
             None: {
                 "levels": np.arange(-40, 45, 5),
                 "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
-                "colormap": "nipy_spectral",
+                "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
@@ -487,7 +490,7 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
             None: {
                 "levels": np.arange(-40, 45, 5),
                 "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
-                "colormap": "nipy_spectral",
+                "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
         },
@@ -540,7 +543,7 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
             500: {
                 "levels": np.linspace(5000, 5800, 11),
                 "levels_diff": np.linspace(-70, 70, 11),
-                "colormap": "nipy_spectral",
+                "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             },
         },
