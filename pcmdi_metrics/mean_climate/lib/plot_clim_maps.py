@@ -391,18 +391,6 @@ def _add_colorbar(fig, ax, num_panels, levels, norm, cmap, cmap_ext, data_var, u
     cbar.set_label(f"{data_var} ({units})", fontsize=12)
 
 
-def _get_colormap(colormap):
-    if isinstance(colormap, str):
-        if colormap == "WhiteBlueGreenYellowRed":
-            cmap = colormap_WhiteBlueGreenYellowRed()
-        else:
-            cmap = plt.get_cmap(colormap)
-    else:
-        cmap = colormap
-
-    return cmap
-
-
 def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False):
     var_setting_dict = {
         "pr": {
@@ -587,6 +575,18 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
         return levels_diff, cmap_diff, cmap_ext_diff
 
     return levels, cmap, cmap_ext
+
+
+def _get_colormap(colormap):
+    if isinstance(colormap, str):
+        if colormap == "WhiteBlueGreenYellowRed":
+            cmap = colormap_WhiteBlueGreenYellowRed()
+        else:
+            cmap = plt.get_cmap(colormap)
+    else:
+        cmap = colormap
+
+    return cmap
 
 
 def _wrap_text(text, max_length=20):
