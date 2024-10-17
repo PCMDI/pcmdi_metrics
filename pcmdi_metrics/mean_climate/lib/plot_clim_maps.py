@@ -66,7 +66,7 @@ def plot_climatology(
     -----
     The function calculates seasonal means and generates a contour plot for the specified variable.
     """
-    # Create a deep copy of the dataset and assign it back to the same 
+    # Create a deep copy of the dataset and assign it back to the same
     # variable name (ds) to avoid original dataset to be modified
     ds = ds.copy(deep=True)
 
@@ -84,7 +84,7 @@ def plot_climatology(
     ds[data_var] = _apply_variable_units_conversion(ds, data_var)
 
     # Precalculate seasonal means
-    data_season = _extract_seasonal_means(ds, data_var)
+    ds_season_dict = _extract_seasonal_means(ds, data_var)
 
     # Retrieve variable attributes
     long_name, units, period = _get_variable_attributes(
@@ -134,13 +134,13 @@ def plot_climatology(
             idx = 1
 
         title = seasons_dict[season]["title"]
-        data = data_season[season][data_var]
+        ds_season = ds_season_dict[season]
 
         ax = fig.add_subplot(nrow, ncol, idx, projection=proj)
         ax.contourf(
             ds.lon,
             ds.lat,
-            data,
+            ds_season[data_var],
             transform=cartopy.crs.PlateCarree(),
             levels=levels,
             extend=cmap_ext,
@@ -153,9 +153,9 @@ def plot_climatology(
         _add_gridlines(ax)
 
         # Calculate and format min, max, and mean values
-        min_value = float(data.min())
-        max_value = float(data.max())
-        mean_value = float(data_season[season].spatial.average(data_var)[data_var])
+        min_value = float(ds_season[data_var].min())
+        max_value = float(ds_season[data_var].max())
+        mean_value = float(ds_season.spatial.average(data_var)[data_var])
         mean_max_min_info_str = (
             f"Max {max_value:.2f}    Mean {mean_value:.2f}    Min {min_value:.2f}"
         )
@@ -239,7 +239,6 @@ def plot_climatology(
 
     # Save and show plot
     plt.savefig(os.path.join(output_dir, output_filename), bbox_inches="tight", dpi=150)
-    print("_apply_variable_units_conversion applied 123")
 
 
 # Helper functions
@@ -357,7 +356,14 @@ def _add_colorbar(fig, ax, num_panels, levels, norm, cmap, cmap_ext, data_var, u
         ax = None
     else:
         # if single panel figure, attach colorbar to the subplot.
-        cbar_ax = fig.add_axes([ax.get_position().x1+0.01,ax.get_position().y0,0.02,ax.get_position().height])
+        cbar_ax = fig.add_axes(
+            [
+                ax.get_position().x1 + 0.01,
+                ax.get_position().y0,
+                0.02,
+                ax.get_position().height,
+            ]
+        )
 
     # When colorbar is extended, the extended part has the same color as its inner next.
     # Therefore, remove the outermost tick(s) in such cases.
