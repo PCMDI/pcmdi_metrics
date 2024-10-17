@@ -66,6 +66,9 @@ def plot_climatology(
     -----
     The function calculates seasonal means and generates a contour plot for the specified variable.
     """
+    # Create a deep copy of the dataset and assign it back to the same 
+    # variable name (ds) to avoid original dataset to be modified
+    ds = ds.copy(deep=True)
 
     # Define available seasons
     available_seasons = ["AC", "DJF", "MAM", "JJA", "SON"]
