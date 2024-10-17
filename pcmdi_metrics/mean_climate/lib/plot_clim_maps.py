@@ -348,7 +348,7 @@ def _add_colorbar(fig, ax, num_panels, levels, norm, cmap, cmap_ext, data_var, u
     if num_panels > 1:
         # Optimize layout
         plt.subplots_adjust(right=0.9, top=0.85, hspace=0.4)
-        # Add colorbar space        
+        # Add colorbar space
         cbar_ax = fig.add_axes(
             [0.92, 0.15, 0.02, 0.7]
         )  # if multi-panel figure, make a space for colorbar
