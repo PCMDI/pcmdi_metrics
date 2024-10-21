@@ -28,7 +28,7 @@ jobs:
 
   pre-commit-hooks:
     needs: check-jobs-to-skip
-    if: ${{ needs.check-jobs-to-skip.outputs.should_skip != 'true'}} && ${{ github.event.pull_request.draft != true }} || ${{ github.event_name == 'push' }}
+    if: ${{ (needs.check-jobs-to-skip.outputs.should_skip != 'true' || github.event_name == 'push') && github.event.pull_request.draft != true }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -45,7 +45,7 @@ jobs:
 
   build:
     needs: check-jobs-to-skip
-    if: ${{ needs.check-jobs-to-skip.outputs.should_skip != 'true'}} && ${{ github.event.pull_request.draft != true }} || ${{ github.event_name == 'push' }}
+    if: ${{ (needs.check-jobs-to-skip.outputs.should_skip != 'true' || github.event_name == 'push') && github.event.pull_request.draft != true }}
     runs-on: ubuntu-latest
     defaults:
       run:
