@@ -16,6 +16,7 @@ env:
 
 jobs:
   check-jobs-to-skip:
+    if: ${{ github.event.pull_request.draft != true }}
     runs-on: ubuntu-latest
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
