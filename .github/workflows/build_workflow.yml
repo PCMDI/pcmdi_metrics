@@ -6,7 +6,7 @@ on:
 
   pull_request:
     branches: [main]
-    types: [synchronize, ready_for_review]
+    types: [review_requested, ready_for_review]
 
   workflow_dispatch:
 
@@ -16,7 +16,7 @@ env:
 
 jobs:
   check-jobs-to-skip:
-    if: ${{ github.event.pull_request.draft != true && github.event.pull_request.draft != true }}
+    if: ${{ github.event.pull_request.draft != true }}
     runs-on: ubuntu-latest
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
