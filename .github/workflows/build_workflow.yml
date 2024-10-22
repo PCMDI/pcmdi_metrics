@@ -6,6 +6,7 @@ on:
 
   pull_request:
     branches: [main]
+    types: [review_requested, ready_for_review]
 
   workflow_dispatch:
 
@@ -15,6 +16,7 @@ env:
 
 jobs:
   check-jobs-to-skip:
+    if: ${{ github.event.pull_request.draft != true }}
     runs-on: ubuntu-latest
     outputs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
@@ -27,7 +29,7 @@ jobs:
 
   pre-commit-hooks:
     needs: check-jobs-to-skip
-    if: ${{ needs.check-jobs-to-skip.outputs.should_skip != 'true'}} || ${{ github.event_name == 'push' }}
+    if: ${{ (needs.check-jobs-to-skip.outputs.should_skip != 'true' || github.event_name == 'push') && github.event.pull_request.draft != true }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -44,7 +46,7 @@ jobs:
 
   build:
     needs: check-jobs-to-skip
-    if: ${{ needs.check-jobs-to-skip.outputs.should_skip != 'true'}} || ${{ github.event_name == 'push' }}
+    if: ${{ (needs.check-jobs-to-skip.outputs.should_skip != 'true' || github.event_name == 'push') && github.event.pull_request.draft != true }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -98,7 +100,7 @@ jobs:
 
 
   publish-docs:
-    if: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}
+    if: ${{ (github.event_name == 'push' || github.event_name == 'pull_request') && github.event.pull_request.draft != true }}
     runs-on: ubuntu-latest
     defaults:
       run:
