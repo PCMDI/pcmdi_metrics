@@ -118,8 +118,8 @@ Release Notes and History
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
 | [v3.6.1]      | Technical update, additional QC repair functions
-| [v3.6]        | New capability (regional application of precip variability) and technical update
-| [v3.5.2]      | Technical update, QC tools, new modes for modes of variability metrics (PSA1, PSA2)
+| [v3.6]        | New capability (**regional application of precip variability**) and technical update
+| [v3.5.2]      | New capability (**QC**, **new modes for modes of variability metrics: PSA1, PSA2**) and technical update
 | [v3.5.1]      | Technical update
 | [v3.5]        | Technical update: MJO and Monsoon Sperber [xCDAT](https://xcdat.readthedocs.io/en/latest/) conversion
 | [v3.4.1]      | Technical update
