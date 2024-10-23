@@ -224,7 +224,7 @@ def plot_climatology_diff(
                 corr = None
             # Show the numbers
             ax.text(
-                0.99,
+                0.97,
                 -0.04,
                 info_stats,
                 fontsize=8.5,
@@ -239,7 +239,7 @@ def plot_climatology_diff(
     # plt.subplots_adjust(top=0.85)
 
     # Set title for the entire figure
-    title_str = f"Climatology: {data_var_test}"
+    title_str = f"Climatology ({season}): {data_var_test}"
 
     if level is not None:
         title_str += f", {level} hPa"
