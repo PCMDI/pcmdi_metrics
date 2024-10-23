@@ -424,6 +424,7 @@ for var in vars:
                                     season=season,
                                     output_dir=test_clims_plot_dir,
                                     output_filename=output_filename,
+                                    dataname_test=f"{model}_{run}",
                                 )
 
                             # compute metrics

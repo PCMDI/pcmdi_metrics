@@ -54,7 +54,7 @@ def plot_climatology_diff(
     ds_ref[data_var_ref] = _apply_variable_units_conversion(ds_ref, data_var_ref)
 
     ds_test_season = _extract_seasonal_mean(ds_test, data_var_test, season)
-    ds_ref_season = _extract_seasonal_mean(ds_test, data_var_ref, season)
+    ds_ref_season = _extract_seasonal_mean(ds_ref, data_var_ref, season)
 
     # Retrieve variable attributes
     long_name, units, period_test = _get_variable_attributes(
@@ -72,8 +72,9 @@ def plot_climatology_diff(
         var_info_str += f"Variable: {_wrap_text(long_name)}"
     if units:
         var_info_str += f"{separator}Units: {units}"
-    if period:
-        var_info_str += f"{separator}Period: {period}"
+    if period is not None:
+        if len(period) > 0:
+            var_info_str += f"{separator}Period: {period}"
 
     # Set up a figure
     nrow, ncol = 3, 1
@@ -99,11 +100,11 @@ def plot_climatology_diff(
     for idx in [1, 2, 3]:
         if idx in [1, 2]:
             if idx == 1:
-                da_plot = ds_test_season[data_var_test]
+                da_plot = ds_test_season[data_var_test].copy()
                 title = f"(a) {dataname_test.replace('_', ' ')}"
                 data_var = data_var_test
             elif idx == 2:
-                da_plot = ds_ref_season[data_var_ref]
+                da_plot = ds_ref_season[data_var_ref].copy()
                 title = f"(b) {dataname_ref.replace('_', ' ')}"
                 data_var = data_var_ref
             contour_levels_plot = contour_levels
@@ -111,7 +112,9 @@ def plot_climatology_diff(
             cmap_ext_plot = cmap_ext
             norm_plot = norm
         else:
-            da_plot = ds_test_season[data_var_test] - ds_ref_season[data_var_ref]
+            da_plot = (
+                ds_test_season[data_var_test] - ds_ref_season[data_var_ref]
+            ).copy()
             title = "(c) Difference (a - b)"
             data_var = data_var_test
             contour_levels_plot = contour_levels_diff
@@ -185,16 +188,18 @@ def plot_climatology_diff(
         elif idx == 2:
             period = period_ref
 
-        ax.text(
-            1,
-            1,
-            f"Period: {period}",
-            fontsize=7,
-            color="grey",
-            horizontalalignment="right",
-            verticalalignment="bottom",
-            transform=ax.transAxes,
-        )
+        if period is not None:
+            if len(period) > 0:
+                ax.text(
+                    1,
+                    1,
+                    f"Period: {period}",
+                    fontsize=7,
+                    color="grey",
+                    horizontalalignment="right",
+                    verticalalignment="bottom",
+                    transform=ax.transAxes,
+                )
 
         # Add statistics
         if idx == 3:
