@@ -10,10 +10,261 @@ from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from matplotlib import pyplot as plt
 from matplotlib.colors import BoundaryNorm
 
-from pcmdi_metrics.stats import seasonal_mean
+from pcmdi_metrics.stats import cor_xy, mean_xy, rms_xy, seasonal_mean
 
 from .colormap import colormap_WhiteBlueGreenYellowRed
 from .load_and_regrid import extract_level
+
+
+def plot_climatology_diff(
+    ds_test: xr.Dataset,
+    data_var_test: str,
+    ds_ref: xr.Dataset,
+    data_var_ref: str,
+    level: Optional[int] = None,
+    season: str = "AC",
+    map_projection: str = "PlateCarree",
+    output_dir: str = ".",
+    output_filename: Optional[str] = None,
+    dataname_test: Optional[str] = None,
+    dataname_ref: Optional[str] = None,
+    variable_long_name: Optional[str] = None,
+    units: Optional[str] = None,
+    period: Optional[str] = None,
+    figsize: tuple = (5, 10),
+) -> None:
+    if dataname_test is None:
+        dataname_test = _get_source_id(ds_test, "")
+
+    if dataname_ref is None:
+        dataname_ref = _get_source_id(ds_ref, "")
+
+    # Create a deep copy of the dataset and assign it back to the same
+    # variable name to avoid original dataset to be modified
+    ds_test = ds_test.copy(deep=True)
+    ds_ref = ds_ref.copy(deep=True)
+
+    # Extract specified level if provided
+    if level is not None:
+        ds_test = extract_level(ds_test, level)
+        ds_ref = extract_level(ds_ref, level)
+
+    # Apply unit conversions for specific variables
+    ds_test[data_var_test] = _apply_variable_units_conversion(ds_test, data_var_test)
+    ds_ref[data_var_ref] = _apply_variable_units_conversion(ds_ref, data_var_ref)
+
+    ds_test_season = _extract_seasonal_mean(ds_test, data_var_test, season)
+    ds_ref_season = _extract_seasonal_mean(ds_test, data_var_ref, season)
+
+    # Retrieve variable attributes
+    long_name, units, period_test = _get_variable_attributes(
+        ds_test, data_var_test, variable_long_name, units, period
+    )
+
+    long_name, units, period_ref = _get_variable_attributes(
+        ds_ref, data_var_ref, variable_long_name, units, period
+    )
+
+    # Prepare variable information string
+    var_info_str = ""
+    separator = ", "
+    if long_name:
+        var_info_str += f"Variable: {_wrap_text(long_name)}"
+    if units:
+        var_info_str += f"{separator}Units: {units}"
+    if period:
+        var_info_str += f"{separator}Period: {period}"
+
+    # Set up a figure
+    nrow, ncol = 3, 1
+    figsize = (5, 10)
+    fig = plt.figure(figsize=figsize)
+
+    # Optimize layout
+    plt.subplots_adjust(top=0.86)
+
+    contour_levels, cmap, cmap_ext, norm = _prepare_colorbar_settings(
+        ds_test, data_var_test, level
+    )
+
+    (
+        contour_levels_diff,
+        cmap_diff,
+        cmap_diff_ext,
+        norm_diff,
+    ) = _prepare_colorbar_settings(ds_test, data_var_test, level, diff=True)
+
+    proj = _prepare_map_projection_settings(map_projection)
+
+    for idx in [1, 2, 3]:
+        if idx in [1, 2]:
+            if idx == 1:
+                da_plot = ds_test_season[data_var_test]
+                title = f"(a) {dataname_test.replace('_', ' ')}"
+                data_var = data_var_test
+            elif idx == 2:
+                da_plot = ds_ref_season[data_var_ref]
+                title = f"(b) {dataname_ref.replace('_', ' ')}"
+                data_var = data_var_ref
+            contour_levels_plot = contour_levels
+            cmap_plot = cmap
+            cmap_ext_plot = cmap_ext
+            norm_plot = norm
+        else:
+            da_plot = ds_test_season[data_var_test] - ds_ref_season[data_var_ref]
+            title = "(c) Difference (a - b)"
+            data_var = data_var_test
+            contour_levels_plot = contour_levels_diff
+            cmap_plot = cmap_diff
+            cmap_ext_plot = cmap_diff_ext
+            norm_plot = norm_diff
+
+        ax = fig.add_subplot(nrow, ncol, idx, projection=proj)
+        ax.contourf(
+            da_plot.lon,
+            da_plot.lat,
+            da_plot,
+            transform=cartopy.crs.PlateCarree(),
+            levels=contour_levels_plot,
+            extend=cmap_ext_plot,
+            cmap=cmap_plot,
+            norm=norm_plot,
+        )
+        ax.add_feature(cartopy.feature.COASTLINE)
+
+        # Add latitude/longitude grid lines
+        _add_gridlines(ax)
+
+        # Calculate and format min, max, and mean values
+        min_value = float(da_plot.min())
+        max_value = float(da_plot.max())
+        mean_value = float(mean_xy(da_plot))
+        mean_max_min_info_str = (
+            f"Max {max_value:.2f}    Mean {mean_value:.2f}    Min {min_value:.2f}"
+        )
+
+        # Add titles and information to the plot
+        ax.text(
+            0.5,
+            1.12,
+            title,
+            fontsize=11,
+            horizontalalignment="center",
+            verticalalignment="bottom",
+            transform=ax.transAxes,
+        )
+
+        ax.text(
+            0,
+            1.01,
+            _wrap_text(mean_max_min_info_str, max_length=60),
+            fontsize=9,
+            horizontalalignment="left",
+            verticalalignment="bottom",
+            transform=ax.transAxes,
+        )
+
+        # Add colorbar
+        _add_colorbar(
+            fig,
+            ax,
+            1,
+            contour_levels_plot,
+            norm_plot,
+            cmap_plot,
+            cmap_ext_plot,
+            data_var,
+            units,
+            colorbar_tick_label_fontsize=8,
+            colorbar_label_fontsize=10,
+        )
+
+        # Add period
+        if idx == 1:
+            period = period_test
+        elif idx == 2:
+            period = period_ref
+
+        ax.text(
+            1,
+            1,
+            f"Period: {period}",
+            fontsize=7,
+            color="grey",
+            horizontalalignment="right",
+            verticalalignment="bottom",
+            transform=ax.transAxes,
+        )
+
+        # Add statistics
+        if idx == 3:
+            info_stats = ""
+            # RMSE
+            try:
+                rmse = rms_xy(
+                    ds_test_season[data_var_test], ds_ref_season[data_var_ref]
+                )
+                info_stats += f"RMSE {rmse:.2f}"
+            except Exception as e:
+                print(f"Error computing RMSE: {e}")
+                rmse = None
+            # Pattern correlation
+            try:
+                corr = cor_xy(
+                    ds_test_season[data_var_test], ds_ref_season[data_var_ref]
+                )
+                info_stats += f"\nCORR {corr:.2f}"
+            except Exception as e:
+                print(f"Error computing correlation: {e}")
+                corr = None
+            # Show the numbers
+            ax.text(
+                0.99,
+                -0.04,
+                info_stats,
+                fontsize=8.5,
+                horizontalalignment="left",
+                verticalalignment="top",
+                transform=ax.transAxes,
+            )
+
+    # Title and further text info
+    # ---------------------------
+    # Optimize layout
+    # plt.subplots_adjust(top=0.85)
+
+    # Set title for the entire figure
+    title_str = f"Climatology: {data_var_test}"
+
+    if level is not None:
+        title_str += f", {level} hPa"
+
+    plt.suptitle(title_str, fontsize=16, y=0.95)
+
+    # Add additional detailed information if plotting all seasons
+    plt.gcf().text(
+        0.5,
+        0.905,
+        var_info_str,
+        fontsize=9,
+        color="grey",
+        horizontalalignment="center",
+        verticalalignment="bottom",
+    )
+
+    # Save the plot
+    # -------------
+    # Define output file name if not provided
+    if output_filename is None:
+        if level is None:
+            output_filename_head = f"{data_var}"
+        else:
+            output_filename_head = f"{data_var}-{level}"
+
+        output_filename = f"{output_filename_head}_{_split_and_join(dataname_test)}_{period_test}_{season}_vs_{_split_and_join(dataname_ref)}.png"
+
+    # Save and show plot
+    plt.savefig(os.path.join(output_dir, output_filename), bbox_inches="tight", dpi=150)
 
 
 def plot_climatology(
@@ -113,9 +364,13 @@ def plot_climatology(
         info_x, info_y = 0.1, 0.8
         figsize = (9, 6)
 
-    fig, proj, levels, cmap, cmap_ext, norm = _prepare_plotting_settings(
-        ds, data_var, map_projection, level, figsize
+    fig = plt.figure(figsize=figsize)
+
+    contour_levels, cmap, cmap_ext, norm = _prepare_colorbar_settings(
+        ds, data_var, level
     )
+
+    proj = _prepare_map_projection_settings(map_projection)
 
     # Dictionary of seasons for dynamic plotting
     seasons_dict = {
@@ -134,15 +389,15 @@ def plot_climatology(
             idx = 1
 
         title = seasons_dict[season]["title"]
-        ds_season = ds_season_dict[season]
+        da_season = ds_season_dict[season][data_var]
 
         ax = fig.add_subplot(nrow, ncol, idx, projection=proj)
         ax.contourf(
-            ds.lon,
-            ds.lat,
-            ds_season[data_var],
+            da_season.lon,
+            da_season.lat,
+            da_season,
             transform=cartopy.crs.PlateCarree(),
-            levels=levels,
+            levels=contour_levels,
             extend=cmap_ext,
             cmap=cmap,
             norm=norm,
@@ -153,9 +408,9 @@ def plot_climatology(
         _add_gridlines(ax)
 
         # Calculate and format min, max, and mean values
-        min_value = float(ds_season[data_var].min())
-        max_value = float(ds_season[data_var].max())
-        mean_value = float(ds_season.spatial.average(data_var)[data_var])
+        min_value = float(da_season.min())
+        max_value = float(da_season.max())
+        mean_value = float(mean_xy(da_season))
         mean_max_min_info_str = (
             f"Max {max_value:.2f}    Mean {mean_value:.2f}    Min {min_value:.2f}"
         )
@@ -172,30 +427,40 @@ def plot_climatology(
                 transform=ax.transAxes,
             )
             ax.text(
-                0,
+                0.5,
                 1.01,
                 mean_max_min_info_str,
-                horizontalalignment="left",
+                horizontalalignment="center",
                 verticalalignment="bottom",
                 transform=ax.transAxes,
             )
         else:
             var_info_str += mean_max_min_info_str
             ax.text(
-                0,
+                0.5,
                 1.01,
                 var_info_str,
                 fontsize=15,
-                horizontalalignment="left",
+                horizontalalignment="center",
                 verticalalignment="bottom",
                 transform=ax.transAxes,
             )
 
     # Add colorbar
-    _add_colorbar(fig, ax, len(seasons), levels, norm, cmap, cmap_ext, data_var, units)
+    _add_colorbar(
+        fig,
+        ax,
+        len(seasons),
+        contour_levels,
+        norm,
+        cmap,
+        cmap_ext,
+        data_var,
+        units,
+    )
 
     # Title and further text info
-    # ===========================
+    # ---------------------------
     # Set title for the entire figure
     if season_to_plot.lower() != "all":
         title_str = f"{season_to_plot} Climatology: {data_var}"
@@ -205,8 +470,8 @@ def plot_climatology(
     if level is not None:
         title_str += f", {level} hPa"
 
-    if "source_id" in ds.attrs:
-        source_id = ds.attrs["source_id"]
+    source_id = _get_source_id(ds)
+    if source_id:
         title_str += f", {source_id}"
 
     plt.suptitle(title_str, fontsize=23, y=0.95)
@@ -223,7 +488,7 @@ def plot_climatology(
         )
 
     # Save the plot
-    # =============
+    # -------------
     # Define output file name if not provided
     if output_filename is None:
         if level is None:
@@ -237,7 +502,11 @@ def plot_climatology(
     plt.savefig(os.path.join(output_dir, output_filename), bbox_inches="tight", dpi=150)
 
 
+# ================
 # Helper functions
+# ================
+
+
 def _validate_season_input(season_to_plot, available_seasons):
     if season_to_plot.lower() == "all":
         return available_seasons
@@ -274,6 +543,13 @@ def _apply_variable_units_conversion(ds, data_var):
     return ds[data_var]
 
 
+def _extract_seasonal_mean(ds: xr.Dataset, data_var: str, season: str) -> xr.Dataset:
+    if season.upper() == "AC":
+        return ds.mean(dim="time")
+    else:
+        return seasonal_mean(ds, season, data_var)
+
+
 def _extract_seasonal_means(ds: xr.Dataset, data_var: str) -> dict:
     """
     Extract seasonal means for the specified variable from the dataset.
@@ -307,22 +583,31 @@ def _get_variable_attributes(ds, data_var, variable_long_name, units, period):
     return long_name, units, period
 
 
-def _prepare_plotting_settings(ds, data_var, map_projection, level, figsize):
-    """Set up plot properties such as levels, colormap, and projection."""
-    fig = plt.figure(figsize=figsize)
-    levels, cmap, cmap_ext = _load_variable_setting(ds, data_var, level)
-    norm = BoundaryNorm(boundaries=levels, ncolors=cmap.N)
+def _prepare_colorbar_settings(ds, data_var, level, diff=False):
+    """Set up plot properties such as levels, and colormap."""
+    contour_levels, cmap, cmap_ext = _load_variable_setting(
+        ds, data_var, level, diff=diff
+    )
+    norm = BoundaryNorm(boundaries=contour_levels, ncolors=cmap.N)
+    return contour_levels, cmap, cmap_ext, norm
 
+
+def _prepare_map_projection_settings(map_projection, central_longitude=180):
+    """Set up plot projection."""
     if map_projection == "PlateCarree":
-        proj = cartopy.crs.PlateCarree(central_longitude=180)
+        proj = cartopy.crs.PlateCarree(central_longitude=central_longitude)
     elif map_projection == "Robinson":
-        proj = cartopy.crs.Robinson(central_longitude=180)
+        proj = cartopy.crs.Robinson(central_longitude=central_longitude)
     else:
         raise ValueError(
             f"Invalid map_projection '{map_projection}'. Choose 'PlateCarree' or 'Robinson'."
         )
+    return proj
 
-    return fig, proj, levels, cmap, cmap_ext, norm
+
+def _get_source_id(ds, unknown_return=None):
+    """Get the source ID from the dataset."""
+    return ds.attrs.get("source_id", unknown_return)
 
 
 def _add_gridlines(ax):
@@ -330,7 +615,7 @@ def _add_gridlines(ax):
     gl = ax.gridlines(
         crs=cartopy.crs.PlateCarree(),
         draw_labels=True,
-        linewidth=2,
+        linewidth=1,
         color="gray",
         alpha=0.5,
         linestyle=":",
@@ -343,7 +628,19 @@ def _add_gridlines(ax):
     gl.ylabel_style = {"size": 9, "color": "gray"}
 
 
-def _add_colorbar(fig, ax, num_panels, levels, norm, cmap, cmap_ext, data_var, units):
+def _add_colorbar(
+    fig,
+    ax,
+    num_panels,
+    levels,
+    norm,
+    cmap,
+    cmap_ext,
+    data_var,
+    units,
+    colorbar_tick_label_fontsize=10,
+    colorbar_label_fontsize=12,
+):
     """Add a colorbar to the figure."""
     if num_panels > 1:
         # Optimize layout
@@ -385,10 +682,11 @@ def _add_colorbar(fig, ax, num_panels, levels, norm, cmap, cmap_ext, data_var, u
         width=0,  # Width of the tick lines
         color="black",  # Color of the tick lines
         direction="out",  # Direction of the tick lines (in, out, or inout)
+        labelsize=colorbar_tick_label_fontsize,
     )
 
     # Label the colorbar
-    cbar.set_label(f"{data_var} ({units})", fontsize=12)
+    cbar.set_label(f"{data_var} ({units})", fontsize=colorbar_label_fontsize)
 
 
 def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False):
@@ -619,3 +917,31 @@ def _wrap_text(text, max_length=20):
 
     # Join lines with newline characters
     return "\n".join(lines)
+
+
+def _split_and_join(dataname: str) -> str:
+    """
+    Splits the input string by commas, periods, and spaces, then joins the result with underscores.
+
+    Parameters
+    ----------
+    dataname : str
+        The input string to be split and joined.
+
+    Returns
+    -------
+    str
+        The modified string with parts joined by underscores.
+
+    Example
+    -------
+    >>> _split_and_join("A,b c.d")
+    'A_b_c_d'
+    """
+    # Split by comma, period, and space using regex
+    import re
+
+    parts = re.split(r"[ ,\.]+", dataname)
+
+    # Join with underscore
+    return "_".join(parts)

@@ -13,6 +13,7 @@ from pcmdi_metrics.mean_climate.lib import (
     create_mean_climate_parser,
     load_and_regrid,
     mean_climate_metrics_to_json,
+    plot_climatology_diff,
 )
 from pcmdi_metrics.utils import (
     apply_landmask,
@@ -62,6 +63,7 @@ if diagnostics_output_path is None:
     )
 
 diagnostics_output_path = diagnostics_output_path.replace("%(case_id)", case_id)
+graphics_output_path = diagnostics_output_path.replace("diagnostic_results", "graphics")
 
 find_all_realizations = False
 first_realization_only = False
@@ -351,6 +353,7 @@ for var in vars:
                                     )
                                 print("spatial subset done")
 
+                            # Save to netcdf file
                             if save_test_clims and ref == reference_data_set[0]:
                                 test_clims_dir = os.path.join(
                                     diagnostics_output_path,
@@ -393,6 +396,35 @@ for var in vars:
                                     ds_ref_dict[region].to_netcdf(
                                         "_".join([var, "ref", region + ".nc"])
                                     )
+
+                            # plot map
+                            test_clims_plot_dir = os.path.join(
+                                graphics_output_path, var
+                            )
+                            os.makedirs(test_clims_plot_dir, exist_ok=True)
+                            for season in ["AC", "DJF", "MAM", "JJA", "SON"]:
+                                output_filename = "_".join(
+                                    [
+                                        var,
+                                        model,
+                                        run,
+                                        "interpolated",
+                                        regrid_tool,
+                                        region,
+                                        season,
+                                        case_id + ".png",
+                                    ]
+                                )
+                                plot_climatology_diff(
+                                    ds_test_dict[region],
+                                    varname,
+                                    ds_ref_dict[region],
+                                    varname,
+                                    level=level,
+                                    season=season,
+                                    output_dir=test_clims_plot_dir,
+                                    output_filename=output_filename,
+                                )
 
                             # compute metrics
                             print("compute metrics start")
