@@ -1,7 +1,8 @@
 import os
 from typing import Optional
 
-import cartopy
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
 import colorcet as cc
 import matplotlib as mpl
 import numpy as np
@@ -32,6 +33,7 @@ def plot_climatology_diff(
     units: Optional[str] = None,
     period: Optional[str] = None,
     figsize: tuple = (5, 10),
+    fig_title: Optional[str] = None,
 ) -> None:
     if dataname_test is None:
         dataname_test = _get_source_id(ds_test, "")
@@ -46,8 +48,11 @@ def plot_climatology_diff(
 
     # Extract specified level if provided
     if level is not None:
-        ds_test = extract_level(ds_test, level)
-        ds_ref = extract_level(ds_ref, level)
+        level = int(level)
+        if "plev" in list(ds_test.sizes):
+            ds_test = extract_level(ds_test, level)
+        if "plev" in list(ds_ref.sizes):
+            ds_ref = extract_level(ds_ref, level)
 
     # Apply unit conversions for specific variables
     ds_test[data_var_test] = _apply_variable_units_conversion(ds_test, data_var_test)
@@ -123,17 +128,22 @@ def plot_climatology_diff(
             norm_plot = norm_diff
 
         ax = fig.add_subplot(nrow, ncol, idx, projection=proj)
+
+        # Set the global extent to cover the entire globe regardless of region that data exists
+        ax.set_global()
+
         ax.contourf(
             da_plot.lon,
             da_plot.lat,
             da_plot,
-            transform=cartopy.crs.PlateCarree(),
+            transform=ccrs.PlateCarree(),
             levels=contour_levels_plot,
             extend=cmap_ext_plot,
             cmap=cmap_plot,
             norm=norm_plot,
         )
-        ax.add_feature(cartopy.feature.COASTLINE)
+
+        ax.add_feature(cfeature.COASTLINE)
 
         # Add latitude/longitude grid lines
         _add_gridlines(ax)
@@ -239,12 +249,13 @@ def plot_climatology_diff(
     # plt.subplots_adjust(top=0.85)
 
     # Set title for the entire figure
-    title_str = f"Climatology ({season}): {data_var_test}"
+    if fig_title is None:
+        fig_title = f"Climatology ({season}): {data_var_test}"
 
     if level is not None:
-        title_str += f", {level} hPa"
+        fig_title += f", {level} hPa"
 
-    plt.suptitle(title_str, fontsize=16, y=0.95)
+    plt.suptitle(fig_title, fontsize=14, y=0.95)
 
     # Add additional detailed information if plotting all seasons
     plt.gcf().text(
@@ -334,7 +345,9 @@ def plot_climatology(
 
     # Extract specified level if provided
     if level is not None:
-        ds = extract_level(ds, level)
+        level = int(level)
+        if "plev" in list(ds.sizes):
+            ds = extract_level(ds, level)
 
     # Apply unit conversions for specific variables
     ds[data_var] = _apply_variable_units_conversion(ds, data_var)
@@ -397,17 +410,21 @@ def plot_climatology(
         da_season = ds_season_dict[season][data_var]
 
         ax = fig.add_subplot(nrow, ncol, idx, projection=proj)
+
+        # Set the global extent to cover the entire globe regardless of region that data exists
+        ax.set_global()
+
         ax.contourf(
             da_season.lon,
             da_season.lat,
             da_season,
-            transform=cartopy.crs.PlateCarree(),
+            transform=ccrs.PlateCarree(),
             levels=contour_levels,
             extend=cmap_ext,
             cmap=cmap,
             norm=norm,
         )
-        ax.add_feature(cartopy.feature.COASTLINE)
+        ax.add_feature(cfeature.COASTLINE)
 
         # Add latitude/longitude grid lines
         _add_gridlines(ax)
@@ -600,9 +617,9 @@ def _prepare_colorbar_settings(ds, data_var, level, diff=False):
 def _prepare_map_projection_settings(map_projection, central_longitude=180):
     """Set up plot projection."""
     if map_projection == "PlateCarree":
-        proj = cartopy.crs.PlateCarree(central_longitude=central_longitude)
+        proj = ccrs.PlateCarree(central_longitude=central_longitude)
     elif map_projection == "Robinson":
-        proj = cartopy.crs.Robinson(central_longitude=central_longitude)
+        proj = ccrs.Robinson(central_longitude=central_longitude)
     else:
         raise ValueError(
             f"Invalid map_projection '{map_projection}'. Choose 'PlateCarree' or 'Robinson'."
@@ -618,7 +635,7 @@ def _get_source_id(ds, unknown_return=None):
 def _add_gridlines(ax):
     """Add latitude and longitude gridlines."""
     gl = ax.gridlines(
-        crs=cartopy.crs.PlateCarree(),
+        crs=ccrs.PlateCarree(),
         draw_labels=True,
         linewidth=1,
         color="gray",
@@ -840,8 +857,8 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
         },
         "zg": {
             500: {
-                "levels": np.linspace(5000, 5800, 11),
-                "levels_diff": np.linspace(-70, 70, 11),
+                "levels": np.arange(4800, 6000, 100),
+                "levels_diff": np.linspace(-120, 120, 13),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             },

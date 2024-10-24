@@ -207,7 +207,11 @@ for var in vars:
                 regrid_tool=regrid_tool,
                 debug=debug,
             )
-        except Exception:
+            time_dim_sync = False
+        except Exception as e:
+            print(
+                f"ref_data load_and_regrid failed: {e} \nRe-try with decode_times=False"
+            )
             ds_ref = load_and_regrid(
                 data_path=ref_data_full_path,
                 varname=varname,
@@ -217,6 +221,7 @@ for var in vars:
                 regrid_tool=regrid_tool,
                 debug=debug,
             )
+            time_dim_sync = True
 
         print("ref_data load_and_regrid done")
 
@@ -425,30 +430,21 @@ for var in vars:
                                     output_dir=test_clims_plot_dir,
                                     output_filename=output_filename,
                                     dataname_test=f"{model}_{run}",
+                                    fig_title=f"Climatology ({season}, {region}): {varname}",
                                 )
+                                print("plot map done")
 
                             # compute metrics
                             print("compute metrics start")
-                            try:
-                                result_dict["RESULTS"][model][ref][run][
-                                    region
-                                ] = compute_metrics(
-                                    varname,
-                                    ds_test_dict[region],
-                                    ds_ref_dict[region],
-                                    debug=debug,
-                                    time_dim_sync=True,
-                                )
-                            except Exception:
-                                result_dict["RESULTS"][model][ref][run][
-                                    region
-                                ] = compute_metrics(
-                                    varname,
-                                    ds_test_dict[region],
-                                    ds_ref_dict[region],
-                                    debug=debug,
-                                    time_dim_sync=False,
-                                )
+                            result_dict["RESULTS"][model][ref][run][
+                                region
+                            ] = compute_metrics(
+                                varname,
+                                ds_test_dict[region],
+                                ds_ref_dict[region],
+                                debug=debug,
+                                time_dim_sync=time_dim_sync,
+                            )
 
                             # write individual JSON
                             # --- single simulation, obs (need to accumulate later) / single variable
@@ -473,13 +469,14 @@ for var in vars:
                                 cmec_flag=cmec,
                                 debug=debug,
                             )
-
                     except Exception as e:
                         if debug:
                             raise
                         print("error occured for ", model, run)
                         print(e)
 
+                else:
+                    print(f"File does not exist: {test_data_full_path}")
     # ========================================================================
     # Dictionary to JSON: collective JSON at the end of model_realization loop
     # ------------------------------------------------------------------------
