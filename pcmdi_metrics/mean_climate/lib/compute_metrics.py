@@ -1,11 +1,53 @@
+import re
 from collections import OrderedDict
+from typing import Any, Dict, Optional
+
+import xarray as xr
 
 from pcmdi_metrics import stats
 
 
-def compute_metrics(Var, dm, do, debug=False, time_dim_sync=False):
+def compute_metrics(
+    var: str,
+    dm: Optional[xr.Dataset] = None,
+    do: Optional[xr.Dataset] = None,
+    debug: bool = False,
+    time_dim_sync: bool = False,
+) -> Dict[str, Any]:
+    """
+    Compute various climate metrics for a given variable.
+
+    This function calculates a wide range of climate metrics, including RMS errors,
+    correlations, standard deviations, and means for annual, seasonal, and monthly
+    time scales.
+
+    Parameters
+    ----------
+    var : str
+        The variable name to compute metrics for.
+    dm : xr.Dataset, optional
+        The model dataset.
+    do : xr.Dataset, optional
+        The observational dataset.
+    debug : bool, default False
+        If True, print additional debug information.
+    time_dim_sync : bool, default False
+        If True, synchronize the time dimension between model and observational datasets.
+
+    Returns
+    -------
+    Dict[str, Any]
+        A dictionary containing the computed metrics.
+
+    Notes
+    -----
+    If both `dm` and `do` are None, the function returns a dictionary of metric
+    definitions without computing any values.
+    """
     # Var is sometimes sent with level associated
-    var = Var.split("_")[0]
+    var = re.split(r"[_-]", var)[0]
+    print(f"var: {var}")
+
     # Did we send data? Or do we just want the info?
     if dm is None and do is None:
         metrics_defs = OrderedDict()
@@ -24,8 +66,9 @@ def compute_metrics(Var, dm, do, debug=False, time_dim_sync=False):
         metrics_defs["zonal_mean"] = stats.zonal_mean(None, None)
         return metrics_defs
 
-    # cdms.setAutoBounds("on")
-    print("var: ", var)
+    # Copy the dataset to avoid the original being changed
+    dm = dm.copy(deep=True)
+    do = do.copy(deep=True)
 
     # unify time and time bounds between observation and model
     if debug:

@@ -207,7 +207,6 @@ for var in vars:
                 regrid_tool=regrid_tool,
                 debug=debug,
             )
-            time_dim_sync = False
         except Exception as e:
             print(
                 f"ref_data load_and_regrid failed: {e} \nRe-try with decode_times=False"
@@ -221,7 +220,9 @@ for var in vars:
                 regrid_tool=regrid_tool,
                 debug=debug,
             )
-            time_dim_sync = True
+
+        # Make time dimension sync betweeb model and obs as default
+        time_dim_sync = True
 
         print("ref_data load_and_regrid done")
 
