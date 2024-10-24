@@ -79,20 +79,10 @@ from pcmdi_metrics.variability_mode.lib import (
     north_test,
     plot_map,
     read_data_in,
+    search_paths,
     variability_metrics_to_json,
     write_nc_output,
 )
-
-
-def search_paths(paths, index1, index2, case_sensitive=False):
-    def split_string(text):
-        return set(re.split(r"[._ /]", text.lower() if not case_sensitive else text))
-
-    index1 = index1 if case_sensitive else index1.lower()
-    index2 = index2 if case_sensitive else index2.lower()
-
-    return [path for path in paths if {index1, index2}.issubset(split_string(path))]
-
 
 # =================================================
 # Collect user defined options
