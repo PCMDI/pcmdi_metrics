@@ -272,7 +272,7 @@ def get_ocean_area_for_regions(ds, ds_var, area_val, pole):
     areas = {}
     # Only want spatial slice
     if "time" in ds:
-        ds = ds.sel({"time": 0})
+        ds = ds.isel({"time": 0})
     xvar = find_lon(ds)
     yvar = find_lat(ds)
     for region in regions_list:
