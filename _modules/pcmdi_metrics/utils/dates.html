@@ -1,0 +1,727 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>pcmdi_metrics.utils.dates &#8212; PMP Documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+
+    <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/pcmdi_metrics/utils/dates';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../_static/PMPLogo_500x421px_72dpi.png" class="logo__image only-light" alt="PMP Documentation - Home"/>
+    <img src="../../../_static/PMPLogo_500x421px_72dpi.png" class="logo__image only-dark pst-js-only" alt="PMP Documentation - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">For users:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../start.html">Getting Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../supporting-data.html">Retrieving data for demos and use of the PMP</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../metrics.html">PMP Metrics</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/cloud_feedback/README.md">Cloud Feedbacks</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">Results</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">For developers/contributors:</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../resources.html">Resources</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../api.html">API Reference</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../resources_legacy.html">Legacy archive</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../pmpparser.html">PMPParser</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html">Team</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">GitHub repository</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Community</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">GitHub discussions</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/PCMDI/pcmdi_metrics" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/PCMDI/pcmdi_metrics/issues/new?title=Issue%20on%20page%20%2F_modules/pcmdi_metrics/utils/dates.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1></h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for pcmdi_metrics.utils.dates</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+
+<span class="kn">from</span> <span class="nn">pcmdi_metrics.io</span> <span class="kn">import</span> <span class="n">get_calendar</span><span class="p">,</span> <span class="n">get_time_bounds_key</span><span class="p">,</span> <span class="n">get_time_key</span>
+
+
+<span class="k">def</span> <span class="nf">find_overlapping_dates</span><span class="p">(</span><span class="n">ds</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">start_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end_date</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the overlapping period between given dates and a dataset&#39;s time range.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds : xarray.Dataset</span>
+<span class="sd">        The dataset containing a time dimension.</span>
+<span class="sd">    start_date : str</span>
+<span class="sd">        The start date in &#39;YYYY-MM-DD&#39; format.</span>
+<span class="sd">    end_date : str</span>
+<span class="sd">        The end date in &#39;YYYY-MM-DD&#39; format.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple or None</span>
+<span class="sd">        A tuple containing the start and end dates of the overlapping period,</span>
+<span class="sd">        or None if there is no overlap.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function automatically detects the calendar used in the dataset</span>
+<span class="sd">    and applies the appropriate datetime conversion.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import xarray as xr</span>
+<span class="sd">    &gt;&gt;&gt; dates = xr.cftime_range(&#39;2000-01-01&#39;, periods=365)</span>
+<span class="sd">    &gt;&gt;&gt; ds = xr.Dataset({&#39;time&#39;: dates})</span>
+<span class="sd">    &gt;&gt;&gt; find_overlapping_dates(ds, &#39;2000-06-01&#39;, &#39;2001-01-01&#39;)</span>
+<span class="sd">    (&#39;2000-06-01&#39;, &#39;2000-12-30&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Find time key in the dataset</span>
+    <span class="n">time_key</span> <span class="o">=</span> <span class="n">get_time_key</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+    <span class="c1"># Determine the calendar type</span>
+    <span class="n">calendar</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">calendar</span>
+    <span class="n">date_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Function to convert string to appropriate datetime object</span>
+    <span class="k">def</span> <span class="nf">str_to_date</span><span class="p">(</span><span class="n">date_str</span><span class="p">):</span>
+        <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">date_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">date_type</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">day</span><span class="p">,</span> <span class="n">calendar</span><span class="o">=</span><span class="n">calendar</span><span class="p">)</span>
+
+    <span class="c1"># Convert string dates to appropriate datetime objects</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">str_to_date</span><span class="p">(</span><span class="n">start_date</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">str_to_date</span><span class="p">(</span><span class="n">end_date</span><span class="p">)</span>
+
+    <span class="c1"># Get the first and last dates from the dataset</span>
+    <span class="n">ds_start</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">ds_end</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Find the later start date</span>
+    <span class="n">overlap_start</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">ds_start</span><span class="p">)</span>
+
+    <span class="c1"># Find the earlier end date</span>
+    <span class="n">overlap_end</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">ds_end</span><span class="p">)</span>
+
+    <span class="c1"># Check if there&#39;s a valid overlap</span>
+    <span class="k">if</span> <span class="n">overlap_start</span> <span class="o">&lt;=</span> <span class="n">overlap_end</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">date_to_str</span><span class="p">(</span><span class="n">overlap_start</span><span class="p">),</span> <span class="n">date_to_str</span><span class="p">(</span><span class="n">overlap_end</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">def</span> <span class="nf">date_to_str</span><span class="p">(</span><span class="n">date_obj</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a date object to a string in &#39;YYYY-MM-DD&#39; format.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    date_obj : datetime.datetime or cftime.datetime</span>
+<span class="sd">        The date object to convert.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        The date in &#39;YYYY-MM-DD&#39; format.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function handles both standard Python datetime objects</span>
+<span class="sd">    and cftime datetime objects.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from datetime import datetime</span>
+<span class="sd">    &gt;&gt;&gt; date_to_str(datetime(2001, 1, 1))</span>
+<span class="sd">    &#39;2001-01-01&#39;</span>
+<span class="sd">    &gt;&gt;&gt; import cftime</span>
+<span class="sd">    &gt;&gt;&gt; date_to_str(cftime.DatetimeGregorian(2001, 1, 1))</span>
+<span class="sd">    &#39;2001-01-01&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Try to format using strftime (works for most datetime objects)</span>
+        <span class="k">return</span> <span class="n">date_obj</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="c1"># If strftime is not available, construct the string manually</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">date_obj</span><span class="o">.</span><span class="n">year</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">date_obj</span><span class="o">.</span><span class="n">month</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">date_obj</span><span class="o">.</span><span class="n">day</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">extract_date_components</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract year, month, and day from a dataset&#39;s time dimension.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds : xarray.Dataset</span>
+<span class="sd">        The dataset containing a time dimension.</span>
+<span class="sd">    index : int, optional</span>
+<span class="sd">        The index of the time value to extract. Default is 0 (first time value).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple of int</span>
+<span class="sd">        A tuple containing (year, month, day).</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    KeyError</span>
+<span class="sd">        If no time dimension is found in the dataset.</span>
+<span class="sd">    IndexError</span>
+<span class="sd">        If the specified index is out of bounds for the time dimension.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function assumes that the dataset has a time dimension and that the</span>
+<span class="sd">    time values are datetime-like objects with year, month, and day attributes.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import xarray as xr</span>
+<span class="sd">    &gt;&gt;&gt; dates = xr.cftime_range(&#39;2000-01-01&#39;, periods=365)</span>
+<span class="sd">    &gt;&gt;&gt; ds = xr.Dataset({&#39;time&#39;: dates, &#39;data&#39;: (&#39;time&#39;, range(365))})</span>
+<span class="sd">    &gt;&gt;&gt; extract_date(ds)</span>
+<span class="sd">    (2000, 1, 1)</span>
+<span class="sd">    &gt;&gt;&gt; extract_date(ds, index=100)</span>
+<span class="sd">    (2000, 4, 10)</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    get_time_key : Function to find the time dimension key in the dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Find time key in the dataset</span>
+    <span class="n">time_key</span> <span class="o">=</span> <span class="n">get_time_key</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+    <span class="n">date</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">date</span><span class="o">.</span><span class="n">day</span>
+
+
+<span class="k">def</span> <span class="nf">replace_date_pattern</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">replacement</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replace the &#39;YYYYMM-YYYYMM&#39; pattern in a filename with a specified replacement.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        The original filename containing the date pattern.</span>
+<span class="sd">    replacement : str</span>
+<span class="sd">        The string to replace the date pattern with.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        The filename with the date pattern replaced.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; replace_date_pattern(&quot;pr_mon_GPCP-2-3_PCMDI_gn_197901-201907.nc&quot;, &quot;DATE_RANGE&quot;)</span>
+<span class="sd">    &#39;pr_mon_GPCP-2-3_PCMDI_gn_DATE_RANGE.nc&#39;</span>
+
+<span class="sd">    &gt;&gt;&gt; replace_date_pattern(&quot;temp_daily_197001-202012_processed.nc&quot;, &quot;FULL_PERIOD&quot;)</span>
+<span class="sd">    &#39;temp_daily_FULL_PERIOD_processed.nc&#39;</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function assumes that there&#39;s only one occurrence of the &#39;YYYYMM-YYYYMM&#39;</span>
+<span class="sd">    pattern in the filename. If multiple occurrences are possible, consider using</span>
+<span class="sd">    re.sub() instead of re.subn().</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;\d</span><span class="si">{6}</span><span class="s2">-\d</span><span class="si">{6}</span><span class="s2">&quot;</span>
+    <span class="n">new_filename</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">subn</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">replacement</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: No &#39;YYYYMM-YYYYMM&#39; pattern found in </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">n</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Warning: Multiple &#39;YYYYMM-YYYYMM&#39; patterns found in </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_filename</span>
+
+
+<div class="viewcode-block" id="regenerate_time_axis">
+<a class="viewcode-back" href="../../../generated/pcmdi_metrics.utils.regenerate_time_axis.html#pcmdi_metrics.utils.regenerate_time_axis">[docs]</a>
+<span class="k">def</span> <span class="nf">regenerate_time_axis</span><span class="p">(</span>
+    <span class="n">ds</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
+    <span class="n">start_str</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">periods</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">frequency</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;monthly&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Regenerate the time axis and bounds for an xarray Dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ds : xr.Dataset</span>
+<span class="sd">        The input dataset with a time dimension.</span>
+<span class="sd">    start_str : str, optional</span>
+<span class="sd">        The start date in &#39;YYYY-MM-DD&#39; format. If None, it&#39;s extracted from the dataset.</span>
+<span class="sd">    periods : int, optional</span>
+<span class="sd">        The number of time periods. If None, it&#39;s inferred from the dataset.</span>
+<span class="sd">    frequency : {&#39;monthly&#39;, &#39;daily&#39;}, optional</span>
+<span class="sd">        The frequency of the time axis. Default is &#39;monthly&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xr.Dataset</span>
+<span class="sd">        The dataset with regenerated time axis and bounds.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If an unsupported frequency is provided.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function uses `get_time_key`, `get_time_bounds_key`,</span>
+<span class="sd">    and `extract_date_components` functions.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import xarray as xr</span>
+<span class="sd">    &gt;&gt;&gt; dates = xr.cftime_range(&#39;2000-01-01&#39;, periods=12, freq=&#39;MS&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; ds = xr.Dataset({&#39;time&#39;: dates, &#39;data&#39;: (&#39;time&#39;, range(12))})</span>
+<span class="sd">    &gt;&gt;&gt; regenerated_ds = regenerate_time_axis(ds, frequency=&#39;monthly&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(regenerated_ds.time)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Deep copy the dataset</span>
+    <span class="n">ds_new</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Preserve the attributes by manually copying them</span>
+    <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">coords</span><span class="p">:</span>
+        <span class="n">ds_new</span><span class="p">[</span><span class="n">coord</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">coord</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span>
+        <span class="n">ds_new</span><span class="p">[</span><span class="n">coord</span><span class="p">]</span><span class="o">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">coord</span><span class="p">]</span><span class="o">.</span><span class="n">encoding</span>
+
+    <span class="n">time_key</span> <span class="o">=</span> <span class="n">get_time_key</span><span class="p">(</span><span class="n">ds_new</span><span class="p">)</span>
+    <span class="n">time_bnds_key</span> <span class="o">=</span> <span class="n">get_time_bounds_key</span><span class="p">(</span><span class="n">ds_new</span><span class="p">)</span>
+    <span class="n">calendar</span> <span class="o">=</span> <span class="n">get_calendar</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">start_str</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Extract the start year, month, and day from the dataset time coordinate</span>
+        <span class="n">start_yr</span><span class="p">,</span> <span class="n">start_mo</span><span class="p">,</span> <span class="n">start_da</span> <span class="o">=</span> <span class="n">extract_date_components</span><span class="p">(</span><span class="n">ds_new</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">start_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">start_yr</span><span class="si">:</span><span class="s2">04d</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">start_mo</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">start_da</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">if</span> <span class="n">periods</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">periods</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds_new</span><span class="p">[</span><span class="n">time_key</span><span class="p">])</span>
+
+    <span class="n">freq_map</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;monthly&quot;</span><span class="p">:</span> <span class="s2">&quot;MS&quot;</span><span class="p">,</span> <span class="s2">&quot;daily&quot;</span><span class="p">:</span> <span class="s2">&quot;D&quot;</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">frequency</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">freq_map</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unsupported frequency: </span><span class="si">{</span><span class="n">frequency</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="si">}</span><span class="s2">. Supported frequencies are: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">freq_map</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">dates</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">cftime_range</span><span class="p">(</span>
+        <span class="n">start_str</span><span class="p">,</span>
+        <span class="n">freq</span><span class="o">=</span><span class="n">freq_map</span><span class="p">[</span><span class="n">frequency</span><span class="o">.</span><span class="n">lower</span><span class="p">()],</span>
+        <span class="n">periods</span><span class="o">=</span><span class="n">periods</span><span class="p">,</span>
+        <span class="n">calendar</span><span class="o">=</span><span class="n">calendar</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Regenerating time axis and bounds&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Regenerate time axis</span>
+    <span class="n">ds_new</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span><span class="n">dates</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="n">time_key</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">)</span>
+    <span class="n">ds_new</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span><span class="o">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">time_key</span><span class="p">]</span><span class="o">.</span><span class="n">encoding</span>
+
+    <span class="c1"># Regenerate time bounds</span>
+    <span class="n">ds_new</span> <span class="o">=</span> <span class="n">ds_new</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">([</span><span class="n">time_bnds_key</span><span class="p">])</span>
+    <span class="n">ds_new</span> <span class="o">=</span> <span class="n">ds_new</span><span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">add_time_bounds</span><span class="p">(</span><span class="s2">&quot;freq&quot;</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Regenerated time axis and bounds&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ds_new</span></div>
+
+</pre></div>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By PMP Developers
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2024, PMP Developers.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
