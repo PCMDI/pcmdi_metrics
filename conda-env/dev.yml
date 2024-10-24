@@ -29,6 +29,7 @@ dependencies:
     - shapely=2.0.1
     - numdifftools
     - nc-time-axis
+    - colorcet
     # ==================
     # Testing
     # ==================
