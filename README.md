@@ -48,9 +48,17 @@ Documentation
 * [View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
 
 
-**Reference**
+**References**
 
-Lee, J., P. J. Gleckler, M.-S. Ahn, A. Ordonez, P. Ullrich, K. R. Sperber, K. E. Taylor, Y. Y. Planton, E. Guilyardi, P. Durack, C. Bonfils, M. D. Zelinka, L.-W. Chao, B. Dong, C. Doutriaux, C. Zhang, T. Vo, J. Boutte, M. F. Wehner, A. G. Pendergrass, D. Kim, Z. Xue, A. T. Wittenberg, and J. Krasting, 2024: Systematic and Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3. Geoscientific Model Development, 17, 3919–3948, doi: [10.5194/gmd-17-3919-2024](https://doi.org/10.5194/gmd-17-3919-2024)
+Latest: 
+
+* Lee, J., Gleckler, P. J., Ahn, M.-S., Ordonez, A., Ullrich, P. A., Sperber, K. R., Taylor, K. E., Planton, Y. Y., Guilyardi, E., Durack, P., Bonfils, C., Zelinka, M. D., Chao, L.-W., Dong, B., Doutriaux, C., Zhang, C., Vo, T., Boutte, J., Wehner, M. F., Pendergrass, A. G., Kim, D., Xue, Z., Wittenberg, A. T., and Krasting, J.: Systematic and objective evaluation of Earth system models: PCMDI Metrics Package (PMP) version 3, Geosci. Model Dev., 17, 3919–3948, https://doi.org/10.5194/gmd-17-3919-2024, **2024**. 
+
+Earlier versions:
+
+* Gleckler, P. J., Doutriaux, C., Durack, P. J., Taylor, K. E., Zhang, Y., Williams, D. N., Mason, E., and Servonnat, J.: A more powerful reality test for climate models, Eos T. Am. Geophys. Un., 97, https://doi.org/10.1029/2016eo051663, **2016**. 
+
+* Gleckler, P. J., Taylor, K. E., and Doutriaux, C.: Performance metrics for climate models, J. Geophys. Res., 113, D06104, https://doi.org/10.1029/2007jd008972, **2008**. 
 
 
 Contact
@@ -109,7 +117,9 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
-| [v3.5.2]      | Technical update, QC tools, new modes for modes of variability metrics (PSA1, PSA2)
+| [v3.6.1]      | Technical update, additional QC repair functions
+| [v3.6]        | New capability (**regional application of precip variability**) and technical update
+| [v3.5.2]      | New capability (**QC**, **new modes for modes of variability metrics: PSA1, PSA2**) and technical update
 | [v3.5.1]      | Technical update
 | [v3.5]        | Technical update: MJO and Monsoon Sperber [xCDAT](https://xcdat.readthedocs.io/en/latest/) conversion
 | [v3.4.1]      | Technical update
@@ -126,6 +136,13 @@ Release Notes and History
 | [v3.0.2]      | Minor patch and more documentation added
 | [v3.0.1]      | Minor technical patch                 
 | [v3.0.0]      | New metric added: **Cloud feedback metric** by @mzelinka. [**xCDAT**](https://xcdat.readthedocs.io/en/latest/) implemented for mean climate metrics
+
+<details>
+
+  <summary>Click here for older versions</summary>
+
+| <div style="width:300%">[Versions]</div> | Update summary   |
+| ------------- | ------------------------------------- |
 | [v2.5.1]      | Technical update
 | [v2.5.0]      | New metric added: **Precipitation Benchmarking -- distribution**. Graphics updated
 | [v2.4.0]      | New metric added: **AMO** in variability modes
@@ -144,8 +161,11 @@ Release Notes and History
 | [v1.1]        | First public release, emphasizing **climatological statistics**, with development branches for ENSO and regional monsoon precipitation indices
 | [v1.0]        | Prototype version of the PMP
 
+</details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.6.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6.1
+[v3.6]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6
 [v3.5.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5.2
 [v3.5.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5.1
 [v3.5]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5
@@ -181,9 +201,18 @@ Release Notes and History
 [v1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1
 [v1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0
 
+Current Core Team Members at PCMDI/LLNL
+---------------------------------------
+* Jiwoo Lee
+* Ana Ordonez
+* Peter Gleckler
+* Paul Ullrich
+* Bo Dong
+* Kristin Chang
 
-Contributors
-------------
+
+All Contributors
+----------------
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
@@ -221,7 +250,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://sites.google.com/uw.edu/kimresearchgroup"><img src="https://scholar.googleusercontent.com/citations?view_op=view_photo&user=3xLjsIsAAAAJ&citpid=3?s=100" width="100px;" alt="Daehyun Kim"/><br /><sub><b>Daehyun Kim</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=" title="Code">💻</a> <a href="#research" title="Research">🔬</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/bosup"><img src="https://avatars.githubusercontent.com/u/130708142?v=4?s=100" width="100px;" alt="Bo"/><br /><sub><b>Bo Dong</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=bosup" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/bosup"><img src="https://avatars.githubusercontent.com/u/130708142?v=4?s=100" width="100px;" alt="Bo Dong"/><br /><sub><b>Bo Dong</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=bosup" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/zhangshixuan1987"><img src="https://avatars.githubusercontent.com/u/33647254?v=4?s=100" width="100px;" alt="Shixuan Zhang"/><br /><sub><b>Shixuan Zhang</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=zhangshixuan1987" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://kristinchang.github.io/portfolio/"><img src="https://avatars.githubusercontent.com/u/143142064?v=4?s=100" width="100px;" alt="Kristin Chang"/><br /><sub><b>Kristin Chang</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=kristinchang3" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
