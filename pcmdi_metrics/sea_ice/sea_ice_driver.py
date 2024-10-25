@@ -88,7 +88,11 @@ if __name__ == "__main__":
     find_all_realizations, realizations = lib.set_up_realizations(realization)
     print("Find all realizations:", find_all_realizations)
 
-    #### Do Obs part
+    # --------------------------
+    # Process observations first
+    # --------------------------
+    # This section is hard-coded to work with the
+    # OSI-SAF data in obs4mips.
     arctic_clims = {}
     arctic_means = {}
 
@@ -218,7 +222,9 @@ if __name__ == "__main__":
         obs_clims[reference_data_set][item] = arctic_clims[item]
         obs_means[reference_data_set][item] = arctic_means[item]
 
-    #### Do model part
+    # -----------------------------
+    # Model (or non-reference) data
+    # -----------------------------
 
     # Needs to weigh months by length for metrics later
     clim_wts = [31.0, 28.0, 31.0, 30.0, 31.0, 30.0, 31.0, 31.0, 30.0, 31.0, 30.0, 31.0]
@@ -418,6 +424,9 @@ if __name__ == "__main__":
                         str(int(ds.time.dt.year[-1])),
                     ]
 
+                # Update year list info in metrics JSON structure
+                metrics["model_year_range"][model] = yr_range
+
                 # Land/sea mask
                 try:
                     tags = {
@@ -437,7 +446,7 @@ if __name__ == "__main__":
                         )
                         continue
                     else:
-                        # Set flag to generate sftlf after loading data
+                        # Set flag to generate land/sea mask after loading data
                         sft_exists = False
                 if sft_exists:
                     sft = lib.load_dataset(sft_filename)
@@ -466,6 +475,7 @@ if __name__ == "__main__":
                     if np.max(mask) > 50:
                         mask = mask / 100
                 ds[var] = ds[var].where(mask < 1)
+                # TODO: Do any weighing for area grids with fractional land?
                 # area[area_var] = area[area_var] * (1 - mask)
 
                 if to_nc:
@@ -494,6 +504,9 @@ if __name__ == "__main__":
                     real_clim[rgn][run] = clims[rgn]
                     real_mean[rgn][run] = means[rgn]
 
+            # --------------------
+            # Get regional metrics
+            # --------------------
             print("\n-------------------------------------------")
             print("Calculating model regional average metrics \nfor ", model)
             print("--------------------------------------------")
@@ -571,7 +584,9 @@ if __name__ == "__main__":
                         )
                         * 1e-12
                     )
+            # --------------------------
             # Get sector weighted metric
+            # --------------------------
             run_list = [x for x in real_clim["arctic"]]
             wgted_nh_te = 0
             wgted_nh_clim = 0
@@ -651,8 +666,6 @@ if __name__ == "__main__":
                 "sector_mse"
             ] = (wgted_sh_clim / n_sh)
 
-            # Finally, update year list
-            metrics["model_year_range"][model] = [str(start_year), str(end_year)]
         else:
             for rgn in mse[model]:
                 # Set up metrics dictionary
@@ -662,9 +675,9 @@ if __name__ == "__main__":
                 }
                 metrics["model_year_range"][model] = ["", ""]
 
-    # -----------------
-    # Update metrics
-    # -----------------
+    # -------------------
+    # Update metrics JSON
+    # -------------------
     metrics["RESULTS"] = mse
 
     metricsfile = os.path.join(metrics_output_path, "sea_ice_metrics.json")
@@ -684,9 +697,9 @@ if __name__ == "__main__":
         "JSON file containig regional sea ice metrics",
     )
 
-    # -----------------
+    # ----------------------
     # Update supporting data
-    # -----------------
+    # ----------------------
     # Write obs data to dict
     for rgn in df["Reference"]:
         df["Reference"][rgn][reference_data_set].update(
@@ -724,9 +737,9 @@ if __name__ == "__main__":
         "JSON file containig regional sea ice data",
     )
 
-    # ----------------
-    # Make figure
-    # ----------------
+    # ------------
+    # Make figures
+    # ------------
     if plot:
         fig_dir = os.path.join(metrics_output_path, "plot")
         if not os.path.exists(fig_dir):
