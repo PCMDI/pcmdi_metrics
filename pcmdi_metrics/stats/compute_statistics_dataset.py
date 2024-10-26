@@ -47,13 +47,13 @@ def seasonal_mean(d, season, var="variable"):
 
     mo_wts = [31, 31, 28.25, 31, 30, 31, 30, 31, 31, 30, 31, 30]
 
-    if season == "djf":
+    if season.lower() == "djf":
         indx = [11, 0, 1]
-    if season == "mam":
+    if season.lower() == "mam":
         indx = [2, 3, 4]
-    if season == "jja":
+    if season.lower() == "jja":
         indx = [5, 6, 7]
-    if season == "son":
+    if season.lower() == "son":
         indx = [8, 9, 10]
 
     season_num_days = mo_wts[indx[0]] + mo_wts[indx[1]] + mo_wts[indx[2]]
