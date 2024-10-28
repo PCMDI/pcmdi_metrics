@@ -339,7 +339,18 @@ if __name__ == "__main__":
                             nc_base,
                         )
                         metrics_dict["RESULTS"][model][run].update(result_dict)
-
+                    for deg in [32]:
+                        result_dict = compute_metrics.get_annual_tasmax_le_XF(
+                            ds,
+                            sftlf,
+                            deg,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            fig_base,
+                            nc_base,
+                        )
+                        metrics_dict["RESULTS"][model][run].update(result_dict)
                 elif varname == "tasmin":
                     result_dict = compute_metrics.get_annual_tnn(
                         ds,
@@ -419,6 +430,30 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Total annual precip
+                    result_dict = compute_metrics.get_annual_pr_total(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Annual fraction of days ge X inches
+                    for inches in [1, 2, 3, 4]:
+                        result_dict = compute_metrics.get_annual_pr_ge_Xin(
+                            ds,
+                            sftlf,
+                            inches,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            fig_base,
+                            nc_base,
+                        )
+                        metrics_dict["RESULTS"][model][run].update(result_dict)
                     # Wettest day in 5 year range
                     result_dict = compute_metrics.get_wettest_5yr(
                         ds,

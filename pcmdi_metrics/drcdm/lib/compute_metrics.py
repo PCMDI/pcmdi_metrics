@@ -178,6 +178,12 @@ class SeasonalAverager:
                 ds_ann = ds.groupby("time.year").mean(dim="time")
             elif stat == "median":
                 ds_ann = ds.groupby("time.year").median(dim="time")
+            elif stat == "total":
+                ds_ann = ds.groupby("time.year").sum(dim="time")
+            # elif stat.startswith("cdd")':
+            #     num = float(stat.replace("cdd",""))
+            #     ds_difference = (ds - num) # Amount of degrees
+            #     ds_difference = ds_difference.where(ds_difference > 0) #
             elif stat.startswith("q"):
                 num = float(stat.replace("q", "").replace("p", ".")) / 100.0
                 ds_ann = ds.groupby("time.year").quantile(num, dim="time", skipna=True)
@@ -661,7 +667,7 @@ def get_annual_tasmax_ge_XF(
     # Compute statistics
     result_dict = metrics_json({index: TgeX}, obs_dict={}, region="land", regrid=False)
 
-    if fig_file is not None:
+    if fig_file is not None:  # save the figure
         TgeX["ANN"].mean("time").plot(
             cmap="Oranges", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
         )
@@ -681,6 +687,60 @@ def get_annual_tasmax_ge_XF(
         TgeX.to_netcdf(nc_file, "w")
 
     del TgeX
+    return result_dict
+
+
+def get_annual_tasmax_le_XF(
+    ds,
+    sftlf,
+    deg,
+    dec_mode,
+    drop_incomplete_djf,
+    annual_strict,
+    fig_file=None,
+    nc_file=None,
+):
+    # Get annual fraction of days with max temperature less than deg F
+    index = "annual_tasmax_le_{0}F".format(deg)
+    print("Metric:", index)
+    varname = "tasmax"
+
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+
+    TleX = xr.Dataset()
+    print("le{0}".format(deg))
+    TleX["ANN"] = S.annual_stats("le{0}".format(deg))
+    TleX.attrs["units"] = "%"
+    TleX = update_nc_attrs(TleX, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json({index: TleX}, obs_dict={}, region="land", regrid=False)
+
+    if fig_file is not None:  # save the figure
+        TleX["ANN"].mean("time").plot(
+            cmap="Blues", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
+        )
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title(
+            "Mean percentage of days per year\nwith high temperature < {0}F".format(deg)
+        )
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        TleX.to_netcdf(nc_file, "w")
+
+    del TleX
     return result_dict
 
 
@@ -867,6 +927,26 @@ def get_annual_tasmin_ge_XF(
 
     del TgeX
     return result_dict
+
+
+# def get_annual_cdd(
+#     ds, sftlf, deg, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+# ):
+#     # Cumulative number of degrees by which the daily average temperature is > 65F
+#     index = "cdd_{0}".format(deg)
+#     varname = "tasmean" ## it seems we don't have support for tasmean in an extremes space
+#     print("Metric:", index)
+#     TS = TimeSeriesData(ds, varname)
+#     S  = SeasonalAverager(
+#         TS,
+#         sftlf,
+#         dec_mode=dec_mode,
+#         drop_incomplete_djf=drop_incomplete_djf,
+#         annual_strict=annual_strict
+#     )
+
+#     CDD = xr.Dataset()
+#     CDD["ANN"] = S.annual_stats("cdd{0}".format(deg))
 
 
 def get_annualmean_pr(
@@ -1115,6 +1195,101 @@ def get_annual_pxx(
         Pmax.to_netcdf(nc_file, "w")
 
     del Pmax
+    return result_dict
+
+
+def get_annual_pr_total(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    varname = "pr"
+    index = "annual_ptot"
+    print("Metric:", index)
+
+    PR = TimeSeriesData(ds, varname)
+
+    S = SeasonalAverager(
+        PR,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+
+    Ptot = xr.Dataset()
+    Ptot["ANN"] = S.annual_stats("total")
+    Ptot = update_nc_attrs(Ptot, dec_mode, drop_incomplete_djf, annual_strict)
+
+    result_dict = metrics_json({index: Ptot}, obs_dict={}, region="land", regrid=False)
+
+    if fig_file is not None:
+        Ptot["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title("Average annual total daily precipitation")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Ptot.to_netcdf(nc_file, "w")
+
+    del Ptot
+    return result_dict
+
+
+def get_annual_pr_ge_Xin(
+    ds,
+    sftlf,
+    inches,
+    dec_mode,
+    drop_incomplete_djf,
+    annual_strict,
+    fig_file=None,
+    nc_file=None,
+):
+    varname = "pr"
+    index = "annual_pr_ge_{0}in".format(inches)
+
+    print("Metric:", index)
+
+    #
+    PR = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        PR,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+
+    PRgeX = xr.Dataset()
+    PRgeX["ANN"] = S.annual_stats("ge{0}".format(inches))
+
+    PRgeX.attrs["units"] = "%"
+    PRgeX = update_nc_attrs(PRgeX, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json({index: PRgeX}, obs_dict={}, region="land", regrid=False)
+
+    if fig_file is not None:
+        PRgeX["ANN"].mean("time").plot(
+            cmap="RdPu", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
+        )
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title(
+            "Mean percentage of days per year\nwith precip >= {0}in".format(inches)
+        )
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        PRgeX.to_netcdf(nc_file, "w")
+
+    del PRgeX
     return result_dict
 
 
