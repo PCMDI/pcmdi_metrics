@@ -1,7 +1,6 @@
 import datetime
 
 import cftime
-import dask
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
@@ -59,7 +58,7 @@ class SeasonalAverager:
 
     def masked_ds(self, ds):
         # Mask land where 0.5<=sftlf<=1
-        # return ds.where(self.sftlf >= 0.5).where(self.sftlf <= 1)
+        return ds.where(self.sftlf >= 0.5).where(self.sftlf <= 1)
         return ds
 
     def calc_5day_mean(self):
@@ -389,7 +388,10 @@ def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     yvarbnds = yvar + "_bnds"
     ds[yvar].attrs["standard_name"] = "Y"
     ds[xvar].attrs["standard_name"] = "X"
-    bnds_dict = {yvar: "Y", xvar: "X", "time": "T"}
+    if "time" in ds:
+        bnds_dict = {yvar: "Y", xvar: "X", "time": "T"}
+    else:
+        bnds_dict = {yvar: "Y", xvar: "X"}
     for item in bnds_dict:
         if "bounds" in ds[item].attrs:
             bnds_var = ds[item].attrs["bounds"]
@@ -570,7 +572,7 @@ def get_tasmax_q50(
 
     if fig_file is not None:
         Tmedian["q50"].plot(cmap="Oranges", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "median"]))
+        fig_file1 = fig_file.replace("$index", index)
         plt.title("Time median daily high temperature")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -599,10 +601,8 @@ def get_tasmax_q99p9(
     Tq99p9["lon"] = ds["lon"]
     Tq99p9 = Tq99p9.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    if isinstance(ds[varname], dask.array.core.Array):
-        Tq99p9["q99p9"] = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
-    else:
-        Tq99p9["q99p9"] = ds[varname].quantile(0.999, dim="time")
+    # PRISM threw errors if chunk not specified
+    Tq99p9["q99p9"] = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
     Tq99p9 = update_nc_attrs(Tq99p9, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: Tq99p9}, obs_dict={}, region="land", regrid=False
@@ -615,7 +615,7 @@ def get_tasmax_q99p9(
 
     if fig_file is not None:
         Tq99p9["q99p9"].plot(cmap="Oranges", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "q99p9"]))
+        fig_file1 = fig_file.replace("$index", index)
         plt.title("99.9th percentile daily high temperature")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -979,7 +979,7 @@ def get_pr_q50(
 
     if fig_file is not None:
         PRq50["q50"].plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "median"]))
+        fig_file1 = fig_file.replace("$index", index)
         plt.title("Time median daily precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1010,10 +1010,8 @@ def get_pr_q99p0(
     PRq99p0["lon"] = ds["lon"]
     PRq99p0 = PRq99p0.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    if isinstance(ds[varname], dask.array.core.Array):
-        PRq99p0["q99p0"] = ds[varname].chunk({"time": -1}).quantile(0.990, dim="time")
-    else:
-        PRq99p0["q99p0"] = ds[varname].quantile(0.990, dim="time")
+    # PRISM threw errors if chunk not specified
+    PRq99p0["q99p0"] = ds[varname].chunk({"time": -1}).quantile(0.990, dim="time")
     PRq99p0 = update_nc_attrs(PRq99p0, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: PRq99p0}, obs_dict={}, region="land", regrid=False
@@ -1021,7 +1019,7 @@ def get_pr_q99p0(
 
     if fig_file is not None:
         PRq99p0["q99p0"].plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "q99p0"]))
+        fig_file1 = fig_file.replace("$index", index)
         plt.title("99.9th percentile daily precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1052,10 +1050,8 @@ def get_pr_q99p9(
     PRq99p9["lon"] = ds["lon"]
     PRq99p9 = PRq99p9.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    if isinstance(ds[varname], dask.array.core.Array):
-        PRq99p9["q99p9"] = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
-    else:
-        PRq99p9["q99p9"] = ds[varname].quantile(0.999, dim="time")
+    # PRISM threw errors if chunk not specified
+    PRq99p9["q99p9"] = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
     PRq99p9 = update_nc_attrs(PRq99p9, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: PRq99p9}, obs_dict={}, region="land", regrid=False
@@ -1063,7 +1059,7 @@ def get_pr_q99p9(
 
     if fig_file is not None:
         PRq99p9["q99p9"].plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "q99p9"]))
+        fig_file1 = fig_file.replace("$index", index)
         plt.title("99.9th percentile daily precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
