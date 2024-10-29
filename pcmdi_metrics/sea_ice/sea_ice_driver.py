@@ -537,29 +537,20 @@ if __name__ == "__main__":
 
                     # Get errors, convert to 1e12 km^-4
                     if day360:
-                        mse[model][rgn][run][reference_data_set]["monthly_clim"][
-                            "mse"
-                        ] = str(
-                            lib.mse_t(
-                                real_clim[rgn][run][var] - real_mean[rgn][run],
-                                obs_clims[reference_data_set][rgn][obs_var]
-                                - obs_means[reference_data_set][rgn],
-                                weights=None,
-                            )
-                            * 1e-12
-                        )
+                        weights = None
                     else:
-                        mse[model][rgn][run][reference_data_set]["monthly_clim"][
-                            "mse"
-                        ] = str(
-                            lib.mse_t(
-                                real_clim[rgn][run][var] - real_mean[rgn][run],
-                                obs_clims[reference_data_set][rgn][obs_var]
-                                - obs_means[reference_data_set][rgn],
-                                weights=clim_wts,
-                            )
-                            * 1e-12
+                        weights = clim_wts
+                    mse[model][rgn][run][reference_data_set]["monthly_clim"][
+                        "mse"
+                    ] = str(
+                        lib.mse_t(
+                            real_clim[rgn][run][var] - real_mean[rgn][run],
+                            obs_clims[reference_data_set][rgn][obs_var]
+                            - obs_means[reference_data_set][rgn],
+                            weights=weights,
                         )
+                        * 1e-12
+                    )
                     mse[model][rgn][run][reference_data_set]["total_extent"][
                         "mse"
                     ] = str(
@@ -599,7 +590,7 @@ if __name__ == "__main__":
         "metrics",
         metricsfile,
         "metrics_JSON",
-        "JSON file containig regional sea ice metrics",
+        "JSON file containing regional sea ice metrics",
     )
 
     # -----------------
