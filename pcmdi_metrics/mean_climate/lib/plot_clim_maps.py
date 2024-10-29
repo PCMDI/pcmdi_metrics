@@ -74,7 +74,7 @@ def plot_climatology_diff(
     var_info_str = ""
     separator = ", "
     if long_name:
-        var_info_str += f"Variable: {_wrap_text(long_name)}"
+        var_info_str += f"Variable: {long_name}"
     if units:
         var_info_str += f"{separator}Units: {units}"
     if period is not None:
@@ -261,7 +261,7 @@ def plot_climatology_diff(
     plt.gcf().text(
         0.5,
         0.91,
-        var_info_str,
+        _wrap_text(var_info_str, max_length=30),
         fontsize=9,
         color="grey",
         horizontalalignment="center",
@@ -544,6 +544,7 @@ def _apply_variable_units_conversion(ds, data_var):
     """Apply unit conversion based on the variable type."""
     units = ds[data_var].attrs.get("units", "")
     conversion_factor = 1
+    conversion_adjust = 0
 
     if data_var == "pr":
         if units not in ["mm/day", "mm d-1"]:
@@ -555,12 +556,16 @@ def _apply_variable_units_conversion(ds, data_var):
             conversion_factor = 0.01  # Convert Pa to hPa
             ds[data_var].attrs["units"] = "hPa"
             ds[data_var].attrs["long_name"] = "Sea Level Pressure"
+    elif data_var in ["tas", "ts"] and ds[data_var].max() > 250:
+        if units not in ["deg C", "C"]:
+            conversion_adjust = -273.15
+            ds[data_var].attrs["units"] = "deg C"
 
     # Store original attributes
     original_attrs = ds[data_var].attrs
 
     # Perform the operation
-    ds[data_var] = ds[data_var] * conversion_factor
+    ds[data_var] = ds[data_var] * conversion_factor + conversion_adjust
 
     # Re-assign the original attributes
     ds[data_var].attrs = original_attrs
@@ -742,10 +747,26 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "colormap_diff": "BrBG",
             }
         },
+        "rlds": {
+            None: {
+                "levels": np.linspace(80, 500, 21),
+                "levels_diff": np.linspace(-50, 50, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
         "rltcre": {
             None: {
-                "levels": np.linspace(0, 50, 21),
+                "levels": np.arange(0, 70, 5),
                 "levels_diff": np.linspace(-30, 30, 13),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rlus": {
+            None: {
+                "levels": np.linspace(100, 500, 21),
+                "levels_diff": np.linspace(-40, 40, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
@@ -756,6 +777,56 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "levels_diff": [-50, -40, -30, -20, -10, -5, 5, 10, 20, 30, 40, 50],
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
+            }
+        },
+        "rlutcs": {
+            None: {
+                "levels": [100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320],
+                "levels_diff": np.linspace(-40, 40, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rsds": {
+            None: {
+                "levels": np.linspace(50, 300, 26),
+                "levels_diff": np.linspace(-50, 50, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rsdscs": {
+            None: {
+                "levels": np.linspace(0, 400, 21),
+                "levels_diff": np.linspace(-40, 40, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rsdt": {
+            None: {
+                "levels": np.linspace(0, 450, 26),
+                "levels_diff": np.linspace(-1, 1, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rsus": {
+            None: {
+                "levels": np.linspace(0, 300, 16),
+                "levels_diff": np.linspace(-60, 60, 13),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+                "colormap_ext": "max",
+            }
+        },
+        "rsuscs": {
+            None: {
+                "levels": np.linspace(0, 300, 16),
+                "levels_diff": np.linspace(-60, 60, 13),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+                "colormap_ext": "max",
             }
         },
         "rstscre": {
@@ -775,6 +846,15 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "colormap_ext": "max",
             }
         },
+        "sfcWind": {
+            None: {
+                "levels": np.linspace(0, 10, 21),
+                "levels_diff": np.linspace(-6, 6, 13),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+                "colormap_ext": "max",
+            }
+        },
         "ta": {
             200: {
                 "levels": np.arange(-70, -40, 2),
@@ -789,6 +869,14 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "colormap_diff": "RdBu_r",
             },
         },
+        "tas": {
+            None: {
+                "levels": np.arange(-40, 45, 5),
+                "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
         "tauu": {
             None: {
                 "levels": np.linspace(-0.1, 0.1, 11),
@@ -797,11 +885,11 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "colormap_diff": "RdBu_r",
             }
         },
-        "tas": {
+        "tauv": {
             None: {
-                "levels": np.arange(-40, 45, 5),
-                "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
-                "colormap": cc.cm.rainbow,
+                "levels": np.linspace(-0.1, 0.1, 11),
+                "levels_diff": np.linspace(-0.1, 0.1, 11),
+                "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             }
         },
