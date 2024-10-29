@@ -41,6 +41,9 @@ class TimeSeriesData:
         # Use on daily data
         return self.ds[self.ds_var].rolling(time=5).mean()
 
+    # def rolling_5day_sum(self):
+    #     return self.ds[self.ds_var].rolling(time=5).sum()
+
 
 class SeasonalAverager:
     # Make seasonal averages of data in TimeSeriesData class
@@ -66,11 +69,24 @@ class SeasonalAverager:
         # Get the 5-day mean dataset
         self.pentad = self.TSD.rolling_5day()
 
+    # def calc_5day_sum(self):
+    #     # Get the 5-day sum dataset
+    #     self.pentad_sum = self.TSD.rolling_5day_sum()
+
     def fix_time_coord(self, ds):
         cal = self.TSD.calendar
         ds = ds.rename({"year": "time"})
         y_to_cft = [cftime.datetime(y, 1, 1, calendar=cal) for y in ds.time]
         ds["time"] = y_to_cft
+        ds.time.attrs["axis"] = "T"
+        ds["time"].encoding["calendar"] = cal
+        ds["time"].attrs["standard_name"] = "time"
+        ds.time.encoding["units"] = self.TSD.time_units
+        return ds
+
+    def fix_DJF_time_coord(self, ds):
+        # In the rare case where only winter is calculated, there was a problem where the time coordinate had no calendar/units attrs.
+        cal = self.TSD.calendar
         ds.time.attrs["axis"] = "T"
         ds["time"].encoding["calendar"] = cal
         ds["time"].attrs["standard_name"] = "time"
@@ -87,7 +103,8 @@ class SeasonalAverager:
 
         if pentad:
             if self.pentad is None:
-                self.calc_5day_mean()
+                self.calc_5day_mean()  # initializes self.pentad - 5-day mean
+                # self.calc_5day_sum() # initializes self.pentad_sum
             ds = self.pentad
         else:
             ds = self.TSD.return_data_array()
@@ -167,7 +184,6 @@ class SeasonalAverager:
                     .count(dim="time")
                     * 100
                 )
-
         else:
             # Group by date
             if stat == "max":
@@ -180,10 +196,6 @@ class SeasonalAverager:
                 ds_ann = ds.groupby("time.year").median(dim="time")
             elif stat == "total":
                 ds_ann = ds.groupby("time.year").sum(dim="time")
-            # elif stat.startswith("cdd")':
-            #     num = float(stat.replace("cdd",""))
-            #     ds_difference = (ds - num) # Amount of degrees
-            #     ds_difference = ds_difference.where(ds_difference > 0) #
             elif stat.startswith("q"):
                 num = float(stat.replace("q", "").replace("p", ".")) / 100.0
                 ds_ann = ds.groupby("time.year").quantile(num, dim="time", skipna=True)
@@ -201,7 +213,6 @@ class SeasonalAverager:
                     / ds.groupby("time.year").count(dim="time")
                     * 100
                 )
-
         # Need to fix time axis if groupby operation happened
         if "year" in ds_ann.coords:
             ds_ann = self.fix_time_coord(ds_ann)
@@ -383,6 +394,8 @@ class SeasonalAverager:
         # Need to fix time axis if groupby operation happened
         if "year" in ds_stat.coords:
             ds_stat = self.fix_time_coord(ds_stat)
+        else:
+            ds_stat = self.fix_DJF_time_coord(ds_stat)
         return self.masked_ds(ds_stat)
 
 
@@ -397,6 +410,8 @@ def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     ds[xvar].attrs["standard_name"] = "X"
     bnds_dict = {yvar: "Y", xvar: "X", "time": "T"}
     for item in bnds_dict:
+        if item not in ds:
+            continue  # without this line, 'time not in dataset' was an issue for quantile variables
         if "bounds" in ds[item].attrs:
             bnds_var = ds[item].attrs["bounds"]
             if bnds_var not in ds.keys():
@@ -501,7 +516,7 @@ def get_mean_tasmax(
         for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
             Tmean[season].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
             fig_file1 = fig_file.replace("$index", "_".join([index, season]))
-            plt.title("Mean " + season + " daily high temperature")
+            plt.title(f"Average {season} daily high temperature")
             ax = plt.gca()
             ax.set_facecolor(bgclr)
             plt.savefig(fig_file1)
@@ -636,6 +651,92 @@ def get_tasmax_q99p9(
     return result_dict
 
 
+def get_annual_tasmax_5day(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Annual highest maximum temperature averaged over a 5-day period
+
+    index = "annual_5day_tasmax"
+    print("Metric:", index)
+    varname = "tasmax"
+
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    Tmax5day = xr.Dataset()
+    Tmax5day["ANN"] = S.annual_stats("max", pentad=True)
+    Tmax5day = update_nc_attrs(Tmax5day, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json(
+        {index: Tmax5day}, obs_dict={}, region="land", regrid=False
+    )
+
+    if fig_file is not None:
+        Tmax5day["ANN"].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title("Annual maximum 5-day averaged high temperature")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmax5day.to_netcdf(nc_file, "w")
+
+    del Tmax5day
+    return result_dict
+
+
+def get_annual_tasmin_5day(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Annual highest maximum temperature averaged over a 5-day period
+
+    index = "annual_5day_tasmin"
+    print("Metric:", index)
+    varname = "tasmin"
+
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    Tmin5day = xr.Dataset()
+    Tmin5day["ANN"] = S.annual_stats("min", pentad=True)
+    Tmin5day = update_nc_attrs(Tmin5day, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json(
+        {index: Tmin5day}, obs_dict={}, region="land", regrid=False
+    )
+
+    if fig_file is not None:
+        Tmin5day["ANN"].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title("Annual minimum 5-day averaged high temperature")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmin5day.to_netcdf(nc_file, "w")
+
+    del Tmin5day
+    return result_dict
+
+
 def get_annual_tasmax_ge_XF(
     ds,
     sftlf,
@@ -747,7 +848,7 @@ def get_annual_tasmax_le_XF(
 def get_annual_tnn(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
-    # Get annual minimum daily minimum temperature.
+    # Get annual and winter minimum daily minimum temperature.
     index = "annual_tnn"
     print("Metric:", index)
     varname = "tasmin"
@@ -761,19 +862,21 @@ def get_annual_tnn(
     )
     Tmean = xr.Dataset()
     Tmean["ANN"] = S.annual_stats("min")
+    Tmean["DJF"] = S.seasonal_stats("DJF", "min")
     Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
 
     # Compute statistics
     result_dict = metrics_json({index: Tmean}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
-        Tmean["ANN"].mean("time").plot(cmap="YlGnBu_r", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Average annual minimum daily low temperature")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
+        for season in ["ANN", "DJF"]:  # , "DJF"]:
+            Tmean[season].mean("time").plot(cmap="YlGnBu_r", cbar_kwargs={"label": "F"})
+            fig_file1 = fig_file.replace("$index", "_".join([index, season]))
+            plt.title(f"Average {season} minimum daily low temperature")
+            ax = plt.gca()
+            ax.set_facecolor(bgclr)
+            plt.savefig(fig_file1)
+            plt.close()
 
     if nc_file is not None:
         nc_file = nc_file.replace("$index", index)
@@ -1290,6 +1393,50 @@ def get_annual_pr_ge_Xin(
         PRgeX.to_netcdf(nc_file, "w")
 
     del PRgeX
+    return result_dict
+
+
+def get_annual_pr_5day(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Annual highest maximum precipitation over a 5-day period
+    index = "annual_max_5day_total"
+    print("Metric:", index)
+    varname = "pr"
+
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    PRmax5day = xr.Dataset()
+    PRmax5day["ANN"] = (
+        S.annual_stats("max", pentad=True) * 5
+    )  # Multiply by 5 to get the total amount of precipitation over the 5 day period
+    PRmax5day = update_nc_attrs(PRmax5day, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json(
+        {index: PRmax5day}, obs_dict={}, region="land", regrid=False
+    )
+
+    if fig_file is not None:
+        PRmax5day["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title("Annual maximum 5-day total precipitation")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        PRmax5day.to_netcdf(nc_file, "w")
+
+    del PRmax5day
     return result_dict
 
 

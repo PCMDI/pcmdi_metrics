@@ -248,7 +248,6 @@ if __name__ == "__main__":
                             shp_path=shp_path,
                             column=col,
                         )
-
                 # Mask out Antarctica
                 sflat = get_latitude_key(sftlf)
                 sftlf["sftlf"] = sftlf["sftlf"].where(sftlf[sflat] > -60)
@@ -326,6 +325,17 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Get annual-max, 5-day tasmax
+                    results_dict = compute_metrics.get_annual_tasmax_5day(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
                     for deg in [86, 90, 95, 100, 105, 110, 115]:
                         # TODO: figure out how to handle C units
                         result_dict = compute_metrics.get_annual_tasmax_ge_XF(
@@ -353,6 +363,17 @@ if __name__ == "__main__":
                         metrics_dict["RESULTS"][model][run].update(result_dict)
                 elif varname == "tasmin":
                     result_dict = compute_metrics.get_annual_tnn(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Get annual-min, 5-day tasin
+                    results_dict = compute_metrics.get_annual_tasmin_5day(
                         ds,
                         sftlf,
                         dec_mode,
@@ -456,6 +477,17 @@ if __name__ == "__main__":
                         metrics_dict["RESULTS"][model][run].update(result_dict)
                     # Wettest day in 5 year range
                     result_dict = compute_metrics.get_wettest_5yr(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Wettest annual 5-day period
+                    result_dict = compute_metrics.get_annual_pr_5day(
                         ds,
                         sftlf,
                         dec_mode,
