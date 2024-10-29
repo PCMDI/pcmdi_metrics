@@ -132,21 +132,21 @@ if __name__ == "__main__":
         "np": means["np"],
         "na": means["na"],
     }
-    if to_nc:
-        # Generate netcdf files of climatologies
-        nc_dir = os.path.join(metrics_output_path, "netcdf")
-        if not os.path.exists(nc_dir):
-            os.mkdir(nc_dir)
-        nc_climo = lib.get_clim(obs, obs_var, ds=None)
-        print("Writing climatology netcdf")
-        fname_nh = (
-            "sic_clim_"
-            + "_".join([reference_data_set, "nh", str(osyear), str(oeyear)])
-            + ".nc"
-        )
-        fname_nh = os.path.join(nc_dir, fname_nh)
-        nc_climo.to_netcdf(fname_nh, "w")
-        del nc_climo
+
+    # Generate netcdf files of climatologies
+    nc_dir = os.path.join(metrics_output_path, "netcdf")
+    if not os.path.exists(nc_dir):
+        os.mkdir(nc_dir)
+    nc_climo = lib.get_clim(obs, obs_var, ds=None)
+    print("Writing climatology netcdf")
+    fname_nh = (
+        "sic_clim_"
+        + "_".join([reference_data_set, "nh", str(osyear), str(oeyear)])
+        + ".nc"
+    )
+    fname_nh = os.path.join(nc_dir, fname_nh)
+    nc_climo.to_netcdf(fname_nh, "w")
+    del nc_climo
     obs.close()
 
     antarctic_clims = {}
@@ -189,21 +189,21 @@ if __name__ == "__main__":
         "sp": means["sp"],
         "sa": means["sa"],
     }
-    if to_nc:
-        # Generate netcdf files of climatologies
-        nc_dir = os.path.join(metrics_output_path, "netcdf")
-        if not os.path.exists(nc_dir):
-            os.mkdir(nc_dir)
-        nc_climo = lib.get_clim(obs, obs_var, ds=None)
-        print("Writing climatology netcdf")
-        fname_sh = (
-            "sic_clim_"
-            + "_".join([reference_data_set, "sh", str(osyear), str(oeyear)])
-            + ".nc"
-        )
-        fname_sh = os.path.join(nc_dir, fname_sh)
-        nc_climo.to_netcdf(fname_sh, "w")
-        del nc_climo
+
+    # Generate netcdf files of climatologies
+    nc_dir = os.path.join(metrics_output_path, "netcdf")
+    if not os.path.exists(nc_dir):
+        os.mkdir(nc_dir)
+    nc_climo = lib.get_clim(obs, obs_var, ds=None)
+    print("Writing climatology netcdf")
+    fname_sh = (
+        "sic_clim_"
+        + "_".join([reference_data_set, "sh", str(osyear), str(oeyear)])
+        + ".nc"
+    )
+    fname_sh = os.path.join(nc_dir, fname_sh)
+    nc_climo.to_netcdf(fname_sh, "w")
+    del nc_climo
     obs.close()
 
     obs_clims = {reference_data_set: {}}
@@ -464,21 +464,20 @@ if __name__ == "__main__":
                 ds[var] = ds[var].where(mask < 1)
                 # area[area_var] = area[area_var] * (1 - mask)
 
-                if to_nc:
-                    # Generate netcdf files of climatologies
-                    nc_dir = os.path.join(metrics_output_path, "netcdf")
-                    if not os.path.exists(nc_dir):
-                        os.mkdir(nc_dir)
-                    nc_climo = lib.get_clim(ds, var, ds=None)
-                    fname = (
-                        "sic_clim_"
-                        + "_".join([model, run, yr_range[0], yr_range[1]])
-                        + ".nc"
-                    )
-                    fname = os.path.join(nc_dir, fname)
-                    print("Writing climatology netcdf", fname)
-                    nc_climo.to_netcdf(fname, "w")
-                    del nc_climo
+                # Generate netcdf files of climatologies
+                nc_dir = os.path.join(metrics_output_path, "netcdf")
+                if not os.path.exists(nc_dir):
+                    os.mkdir(nc_dir)
+                nc_climo = lib.get_clim(ds, var, ds=None)
+                fname = (
+                    "sic_clim_"
+                    + "_".join([model, run, yr_range[0], yr_range[1]])
+                    + ".nc"
+                )
+                fname = os.path.join(nc_dir, fname)
+                print("Writing climatology netcdf", fname)
+                nc_climo.to_netcdf(fname, "w")
+                del nc_climo
 
                 # Get regions
                 print("Getting regional areas for run")
@@ -741,6 +740,15 @@ if __name__ == "__main__":
             meta = fig.create_annual_mean_map_antarctic(
                 nc_climo_mean, var, fig_dir, meta, tmp_model
             )
+
+    # --------------------------------
+    # Delete netcdf files if unwanted
+    # --------------------------------
+    if not to_nc:
+        nc_dir = os.path.join(metrics_output_path, "netcdf/*" + model + "_*")
+        for file in glob.glob(nc_dir):
+            os.remove(file)
+        os.rmdir(os.path.join(metrics_output_path, "netcdf"))
 
     # -----------------
     # Update and write
