@@ -51,6 +51,7 @@ def load_and_regrid(
                 )
         else:
             ds[varname_in_file] = ds[varname_in_file] * 86400  # Assumed as kg m-2 s-1
+        ds.attrs["units"] = "mm/day"
 
     if calendar_qc:
         # calendar quality check
