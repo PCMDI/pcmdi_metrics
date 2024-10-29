@@ -543,6 +543,7 @@ def _validate_season_input(season_to_plot, available_seasons):
 def _apply_variable_units_conversion(ds, data_var):
     """Apply unit conversion based on the variable type."""
     units = ds[data_var].attrs.get("units", "")
+    conversion_factor = 1
 
     if data_var == "pr":
         if units not in ["mm/day", "mm d-1"]:
@@ -554,8 +555,6 @@ def _apply_variable_units_conversion(ds, data_var):
             conversion_factor = 0.01  # Convert Pa to hPa
             ds[data_var].attrs["units"] = "hPa"
             ds[data_var].attrs["long_name"] = "Sea Level Pressure"
-    else:
-        conversion_factor = 1
 
     # Store original attributes
     original_attrs = ds[data_var].attrs

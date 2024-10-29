@@ -126,7 +126,7 @@ def load_and_regrid(
 
     # preserve units in regridded dataset
     try:
-        units = ds[varname].units
+        units = ds.attrs["units"] or ds[varname].units
     except Exception as e:
         print(e)
         units = ""
