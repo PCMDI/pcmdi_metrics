@@ -431,6 +431,7 @@ for var in vars:
                                     output_dir=test_clims_plot_dir,
                                     output_filename=output_filename,
                                     dataname_test=f"{model}_{run}",
+                                    dataname_ref=ref_dataset_name,
                                     fig_title=f"Climatology ({season}, {region}): {varname}",
                                 )
                                 print("plot map done")

@@ -260,12 +260,12 @@ def plot_climatology_diff(
     # Add additional detailed information if plotting all seasons
     plt.gcf().text(
         0.5,
-        0.905,
+        0.91,
         var_info_str,
         fontsize=9,
         color="grey",
         horizontalalignment="center",
-        verticalalignment="bottom",
+        verticalalignment="center",
     )
 
     # Save the plot
