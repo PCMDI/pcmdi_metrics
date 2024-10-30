@@ -1,5 +1,5 @@
 # Settings for extremes driver
-
+# flake8: noqa
 # These settings are required
 vars = ["pr"]  # Choices are 'pr','tasmax', 'tasmin'
 test_data_set = ["MIROC6"]

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# flake8: noqa
 import glob
 import json
 import os
@@ -462,8 +463,8 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                    # Annual fraction of days ge X inches
-                    for inches in [1, 2, 3, 4]:
+                    # Annual fraction of days ge X inches. 0-> pr_days a
+                    for inches in [0, 1, 2, 3, 4]:
                         result_dict = compute_metrics.get_annual_pr_ge_Xin(
                             ds,
                             sftlf,
