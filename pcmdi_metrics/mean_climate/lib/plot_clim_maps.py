@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Optional, Union
 
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
@@ -719,7 +719,27 @@ def _add_colorbar(
     cbar.set_label(f"{data_var} ({units})", fontsize=colorbar_label_fontsize)
 
 
-def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False):
+def _load_variable_setting(
+    ds: xr.Dataset, data_var: str, level: Union[int, None], diff: bool = False
+):
+    """
+    Load variable settings for visualization.
+
+    This function returns a dictionary containing visualization settings for various
+    climate variables. The settings include color maps, levels for contour plots,
+    and difference plot configurations.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        The input xarray Dataset containing climate variables.
+    data_var : str
+        The name of the data variable to retrieve settings for.
+    level : int or None
+        The vertical level of the data, if applicable. Use None for surface or any 2-dimensional variables.
+    diff : bool, optional
+        Whether to use difference plot settings. Default is False.
+    """
     var_setting_dict = {
         "pr": {
             None: {
@@ -819,6 +839,14 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "colormap_diff": "RdBu_r",
             }
         },
+        "rstscre": {
+            None: {
+                "levels": np.linspace(-50, 50, 21),
+                "levels_diff": np.linspace(-30, 30, 13),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
         "rsus": {
             None: {
                 "levels": np.linspace(0, 300, 16),
@@ -835,14 +863,6 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
                 "colormap_ext": "max",
-            }
-        },
-        "rstscre": {
-            None: {
-                "levels": np.linspace(-50, 50, 21),
-                "levels_diff": np.linspace(-30, 30, 13),
-                "colormap": cc.cm.rainbow,
-                "colormap_diff": "RdBu_r",
             }
         },
         "rsut": {
