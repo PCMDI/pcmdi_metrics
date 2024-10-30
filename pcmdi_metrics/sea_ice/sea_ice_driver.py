@@ -53,6 +53,7 @@ if __name__ == "__main__":
     pole = parameter.pole
     to_nc = parameter.netcdf
     generate_mask = parameter.generate_mask
+    no_mask = parameter.no_mask
 
     print("Model list:", model_list)
     model_list.sort()
@@ -425,16 +426,9 @@ if __name__ == "__main__":
                     sft_filename = glob.glob(sft_filename_list)[0]
                     sft_exists = True
                 except (AttributeError, IndexError):
-                    print("No sftlf file found for", model, run)
-                    if not generate_mask:
-                        print("Skipping realization", run)
-                        print(
-                            "To generate land/sea mask on-the-fly, use --generate_mask parameter."
-                        )
-                        continue
-                    else:
-                        # Set flag to generate sftlf after loading data
-                        sft_exists = False
+                    print("No land/sea mask file found for", model, run)
+                    # Set flag to generate sftlf after loading data
+                    sft_exists = False
                 if sft_exists:
                     sft = lib.load_dataset(sft_filename)
                     # SFTOF and siconc don't always have same coordinate
@@ -444,8 +438,13 @@ if __name__ == "__main__":
                     sft_lat = get_latitude_key(sft)
                     sft_lon = get_longitude_key(sft)
                     sft = sft.rename({sft_lon: ds_lon, sft_lat: ds_lat})
-                if not sft_exists:
+                if ~sft_exists and generate_mask:
+                    print("Creating land/sea mask.")
                     mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
+                elif ~sft_exists and no_mask:
+                    # Make mask with all zeros, effectively no masking.
+                    print("--no_mask is True. No land/sea mask applied.")
+                    mask = xarray.zeros_like(ds[var].isel({"time": 0}))
                 else:
                     if "sftlf" in sft.keys():
                         mask = sft["sftlf"]
@@ -745,10 +744,19 @@ if __name__ == "__main__":
     # Delete netcdf files if unwanted
     # --------------------------------
     if not to_nc:
-        nc_dir = os.path.join(metrics_output_path, "netcdf/*" + model + "_*")
+        print("Cleaning up.")
+        print("Deleting netcdf files.")
+        nc_dir = os.path.join(metrics_output_path, "netcdf/*")
         for file in glob.glob(nc_dir):
             os.remove(file)
-        os.rmdir(os.path.join(metrics_output_path, "netcdf"))
+        try:
+            os.rmdir(os.path.join(metrics_output_path, "netcdf"))
+        except OSError as e:
+            print(
+                "Could not delete netcdf directory ",
+                os.path.join(metrics_output_path, "netcdf"),
+            )
+            print(e)
 
     # -----------------
     # Update and write
