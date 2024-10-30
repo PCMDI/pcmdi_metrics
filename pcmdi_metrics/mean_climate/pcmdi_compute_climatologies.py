@@ -43,6 +43,8 @@ P.add_argument(
     required=False,
 )
 
+P.add_argument("--version", dest="version", default=None, required=False)
+
 args = P.get_parameter()
 
 infile_template = args.infile
@@ -54,6 +56,10 @@ start = args.start
 end = args.end
 periodinname = args.periodinname
 climlist = args.climlist
+ver = args.version
+
+if ver is None:
+    ver = datetime.datetime.now().strftime("v%Y%m%d")
 
 print("start and end are ", start, " ", end)
 print("variable list: ", varlist)
