@@ -43,12 +43,7 @@ P.add_argument(
     required=False,
 )
 
-P.add_argument(
-    "--version",
-    dest="version",
-    default=None,
-    required=False
-)
+P.add_argument("--version", dest="version", default=None, required=False)
 
 args = P.get_parameter()
 
