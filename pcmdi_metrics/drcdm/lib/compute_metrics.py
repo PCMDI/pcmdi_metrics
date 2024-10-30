@@ -531,6 +531,48 @@ def get_mean_tasmax(
     return result_dict
 
 
+def get_mean_tasmean(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Get annual and seasonal mean maximum daily temperature.
+    index = "mean_tasmean"
+    print("Metric:", index)
+    varname = "tas"
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    Tmean = xr.Dataset()
+    Tmean["ANN"] = S.annual_stats("mean")
+    for season in ["DJF", "MAM", "JJA", "SON"]:
+        Tmean[season] = S.seasonal_stats(season, "mean")
+    Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json({index: Tmean}, obs_dict={}, region="land", regrid=False)
+
+    if fig_file is not None:
+        for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
+            Tmean[season].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
+            fig_file1 = fig_file.replace("$index", "_".join([index, season]))
+            plt.title(f"Average {season} daily high temperature")
+            ax = plt.gca()
+            ax.set_facecolor(bgclr)
+            plt.savefig(fig_file1)
+            plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmean.to_netcdf(nc_file, "w")
+
+    del Tmean
+    return result_dict
+
+
 def get_annual_txx(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):

@@ -555,6 +555,19 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
+                elif varname == "tas":  # annual and seasonal tasmean variables
+                    # Mean annual temperature
+                    result_dict = compute_metrics.get_mean_tasmean(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+
                 if run not in metrics_dict["DIMENSIONS"]["realization"]:
                     metrics_dict["DIMENSIONS"]["realization"].append(run)
 
