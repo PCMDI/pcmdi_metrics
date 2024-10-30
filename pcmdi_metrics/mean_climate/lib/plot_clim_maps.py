@@ -170,7 +170,7 @@ def plot_climatology_diff(
         ax.text(
             0,
             1.01,
-            _wrap_text(mean_max_min_info_str, max_length=60),
+            _wrap_text(mean_max_min_info_str, max_length=30),
             fontsize=9,
             horizontalalignment="left",
             verticalalignment="bottom",
@@ -261,7 +261,7 @@ def plot_climatology_diff(
     plt.gcf().text(
         0.5,
         0.91,
-        _wrap_text(var_info_str, max_length=30),
+        _wrap_text(var_info_str, max_length=60),
         fontsize=9,
         color="grey",
         horizontalalignment="center",
@@ -556,9 +556,9 @@ def _apply_variable_units_conversion(ds, data_var):
             conversion_factor = 0.01  # Convert Pa to hPa
             ds[data_var].attrs["units"] = "hPa"
             ds[data_var].attrs["long_name"] = "Sea Level Pressure"
-    elif data_var in ["tas", "ts"] and ds[data_var].max() > 250:
+    elif data_var in ["tas", "ts", "ta"] and ds[data_var].max() > 200:
         if units not in ["deg C", "C"]:
-            conversion_adjust = -273.15
+            conversion_adjust = -273.15  # Convert K to deg C
             ds[data_var].attrs["units"] = "deg C"
 
     # Store original attributes
@@ -811,6 +811,14 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "colormap_diff": "RdBu_r",
             }
         },
+        "rstcre": {
+            None: {
+                "levels": np.arange(-200, 10, 10),
+                "levels_diff": np.linspace(-50, 50, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
         "rsus": {
             None: {
                 "levels": np.linspace(0, 300, 16),
@@ -858,7 +866,7 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
         "ta": {
             200: {
                 "levels": np.arange(-70, -40, 2),
-                "levels_diff": np.linspace(-20, 20, 21),
+                "levels_diff": np.linspace(-10, 10, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "jet",
             },
