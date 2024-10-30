@@ -170,7 +170,7 @@ def plot_climatology_diff(
         ax.text(
             0,
             1.01,
-            _wrap_text(mean_max_min_info_str, max_length=30),
+            _wrap_text(mean_max_min_info_str, max_length=60),
             fontsize=9,
             horizontalalignment="left",
             verticalalignment="bottom",
