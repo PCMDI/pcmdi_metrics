@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Optional, Union
 
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
@@ -74,7 +74,7 @@ def plot_climatology_diff(
     var_info_str = ""
     separator = ", "
     if long_name:
-        var_info_str += f"Variable: {_wrap_text(long_name)}"
+        var_info_str += f"Variable: {long_name}"
     if units:
         var_info_str += f"{separator}Units: {units}"
     if period is not None:
@@ -260,12 +260,12 @@ def plot_climatology_diff(
     # Add additional detailed information if plotting all seasons
     plt.gcf().text(
         0.5,
-        0.905,
-        var_info_str,
+        0.91,
+        _wrap_text(var_info_str, max_length=60),
         fontsize=9,
         color="grey",
         horizontalalignment="center",
-        verticalalignment="bottom",
+        verticalalignment="center",
     )
 
     # Save the plot
@@ -542,22 +542,30 @@ def _validate_season_input(season_to_plot, available_seasons):
 
 def _apply_variable_units_conversion(ds, data_var):
     """Apply unit conversion based on the variable type."""
+    units = ds[data_var].attrs.get("units", "")
+    conversion_factor = 1
+    conversion_adjust = 0
+
     if data_var == "pr":
-        conversion_factor = 86400  # Convert kg/m²/s to mm/day
-        ds[data_var].attrs["units"] = "mm/day"
-        ds[data_var].attrs["long_name"] = "Precipitation"
+        if units not in ["mm/day", "mm d-1"]:
+            conversion_factor = 86400  # Convert kg/m²/s to mm/day
+            ds[data_var].attrs["units"] = "mm/day"
+            ds[data_var].attrs["long_name"] = "Precipitation"
     elif data_var == "psl" and ds[data_var].max() > 100000:
-        conversion_factor = 0.01  # Convert Pa to hPa
-        ds[data_var].attrs["units"] = "hPa"
-        ds[data_var].attrs["long_name"] = "Sea Level Pressure"
-    else:
-        conversion_factor = 1
+        if units not in ["hPa"]:
+            conversion_factor = 0.01  # Convert Pa to hPa
+            ds[data_var].attrs["units"] = "hPa"
+            ds[data_var].attrs["long_name"] = "Sea Level Pressure"
+    elif data_var in ["tas", "ts", "ta"] and ds[data_var].max() > 200:
+        if units not in ["deg C", "C"]:
+            conversion_adjust = -273.15  # Convert K to deg C
+            ds[data_var].attrs["units"] = "deg C"
 
     # Store original attributes
     original_attrs = ds[data_var].attrs
 
     # Perform the operation
-    ds[data_var] = ds[data_var] * conversion_factor
+    ds[data_var] = ds[data_var] * conversion_factor + conversion_adjust
 
     # Re-assign the original attributes
     ds[data_var].attrs = original_attrs
@@ -711,7 +719,27 @@ def _add_colorbar(
     cbar.set_label(f"{data_var} ({units})", fontsize=colorbar_label_fontsize)
 
 
-def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False):
+def _load_variable_setting(
+    ds: xr.Dataset, data_var: str, level: Union[int, None], diff: bool = False
+):
+    """
+    Load variable settings for visualization.
+
+    This function returns a dictionary containing visualization settings for various
+    climate variables. The settings include color maps, levels for contour plots,
+    and difference plot configurations.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        The input xarray Dataset containing climate variables.
+    data_var : str
+        The name of the data variable to retrieve settings for.
+    level : int or None
+        The vertical level of the data, if applicable. Use None for surface or any 2-dimensional variables.
+    diff : bool, optional
+        Whether to use difference plot settings. Default is False.
+    """
     var_setting_dict = {
         "pr": {
             None: {
@@ -739,10 +767,26 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "colormap_diff": "BrBG",
             }
         },
+        "rlds": {
+            None: {
+                "levels": np.linspace(80, 500, 21),
+                "levels_diff": np.linspace(-50, 50, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
         "rltcre": {
             None: {
-                "levels": np.linspace(0, 50, 21),
+                "levels": np.arange(0, 70, 5),
                 "levels_diff": np.linspace(-30, 30, 13),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rlus": {
+            None: {
+                "levels": np.linspace(100, 500, 21),
+                "levels_diff": np.linspace(-40, 40, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
             }
@@ -755,12 +799,70 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "colormap_diff": "RdBu_r",
             }
         },
+        "rlutcs": {
+            None: {
+                "levels": [100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320],
+                "levels_diff": np.linspace(-40, 40, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rsds": {
+            None: {
+                "levels": np.linspace(50, 300, 26),
+                "levels_diff": np.linspace(-50, 50, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rsdscs": {
+            None: {
+                "levels": np.linspace(0, 400, 21),
+                "levels_diff": np.linspace(-40, 40, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rsdt": {
+            None: {
+                "levels": np.linspace(0, 450, 26),
+                "levels_diff": np.linspace(-1, 1, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
+        "rstcre": {
+            None: {
+                "levels": np.arange(-200, 10, 10),
+                "levels_diff": np.linspace(-50, 50, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
         "rstscre": {
             None: {
                 "levels": np.linspace(-50, 50, 21),
                 "levels_diff": np.linspace(-30, 30, 13),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
+            }
+        },
+        "rsus": {
+            None: {
+                "levels": np.linspace(0, 300, 16),
+                "levels_diff": np.linspace(-60, 60, 13),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+                "colormap_ext": "max",
+            }
+        },
+        "rsuscs": {
+            None: {
+                "levels": np.linspace(0, 300, 16),
+                "levels_diff": np.linspace(-60, 60, 13),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+                "colormap_ext": "max",
             }
         },
         "rsut": {
@@ -772,10 +874,19 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "colormap_ext": "max",
             }
         },
+        "sfcWind": {
+            None: {
+                "levels": np.linspace(0, 10, 21),
+                "levels_diff": np.linspace(-6, 6, 13),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+                "colormap_ext": "max",
+            }
+        },
         "ta": {
             200: {
                 "levels": np.arange(-70, -40, 2),
-                "levels_diff": np.linspace(-20, 20, 21),
+                "levels_diff": np.linspace(-10, 10, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "jet",
             },
@@ -786,6 +897,14 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "colormap_diff": "RdBu_r",
             },
         },
+        "tas": {
+            None: {
+                "levels": np.arange(-40, 45, 5),
+                "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
         "tauu": {
             None: {
                 "levels": np.linspace(-0.1, 0.1, 11),
@@ -794,11 +913,11 @@ def _load_variable_setting(ds: xr.Dataset, data_var: str, level: int, diff=False
                 "colormap_diff": "RdBu_r",
             }
         },
-        "tas": {
+        "tauv": {
             None: {
-                "levels": np.arange(-40, 45, 5),
-                "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
-                "colormap": cc.cm.rainbow,
+                "levels": np.linspace(-0.1, 0.1, 11),
+                "levels_diff": np.linspace(-0.1, 0.1, 11),
+                "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             }
         },
