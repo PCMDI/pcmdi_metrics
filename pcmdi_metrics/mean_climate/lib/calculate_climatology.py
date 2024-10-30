@@ -2,7 +2,8 @@ import datetime
 import os
 
 import dask
-import xcdat as xc
+
+from pcmdi_metrics.io import xcdat_open
 
 
 def calculate_climatology(
@@ -26,7 +27,7 @@ def calculate_climatology(
     print("infilename:", infilename)
 
     # open file
-    d = xc.open_mfdataset(infile, data_var=var)
+    d = xcdat_open(infile, data_var=var)
     atts = d.attrs
 
     print("type(d):", type(d))
@@ -106,6 +107,7 @@ def calculate_climatology(
         clims = climlist
 
     for s in clims:
+        # Save to netcdf file
         if periodinname is None:
             addf = (
                 "."
