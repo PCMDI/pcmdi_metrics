@@ -489,6 +489,7 @@ def convert_units(data, units_adjust):
     return data
 
 
+# Max Temperature Metics
 def get_mean_tasmax(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
@@ -496,48 +497,6 @@ def get_mean_tasmax(
     index = "mean_tasmax"
     print("Metric:", index)
     varname = "tasmax"
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Tmean = xr.Dataset()
-    Tmean["ANN"] = S.annual_stats("mean")
-    for season in ["DJF", "MAM", "JJA", "SON"]:
-        Tmean[season] = S.seasonal_stats(season, "mean")
-    Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
-
-    # Compute statistics
-    result_dict = metrics_json({index: Tmean}, obs_dict={}, region="land", regrid=False)
-
-    if fig_file is not None:
-        for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-            Tmean[season].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
-            fig_file1 = fig_file.replace("$index", "_".join([index, season]))
-            plt.title(f"Average {season} daily high temperature")
-            ax = plt.gca()
-            ax.set_facecolor(bgclr)
-            plt.savefig(fig_file1)
-            plt.close()
-
-    if nc_file is not None:
-        nc_file = nc_file.replace("$index", index)
-        Tmean.to_netcdf(nc_file, "w")
-
-    del Tmean
-    return result_dict
-
-
-def get_mean_tasmean(
-    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
-):
-    # Get annual and seasonal mean maximum daily temperature.
-    index = "mean_tasmean"
-    print("Metric:", index)
-    varname = "tas"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         TS,
@@ -737,49 +696,6 @@ def get_annual_tasmax_5day(
     return result_dict
 
 
-def get_annual_tasmin_5day(
-    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
-):
-    # Annual highest maximum temperature averaged over a 5-day period
-
-    index = "annual_5day_tasmin"
-    print("Metric:", index)
-    varname = "tasmin"
-
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Tmin5day = xr.Dataset()
-    Tmin5day["ANN"] = S.annual_stats("min", pentad=True)
-    Tmin5day = update_nc_attrs(Tmin5day, dec_mode, drop_incomplete_djf, annual_strict)
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index: Tmin5day}, obs_dict={}, region="land", regrid=False
-    )
-
-    if fig_file is not None:
-        Tmin5day["ANN"].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title("Annual minimum 5-day averaged high temperature")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
-
-    if nc_file is not None:
-        nc_file = nc_file.replace("$index", index)
-        Tmin5day.to_netcdf(nc_file, "w")
-
-    del Tmin5day
-    return result_dict
-
-
 def get_annual_tasmax_ge_XF(
     ds,
     sftlf,
@@ -888,6 +804,50 @@ def get_annual_tasmax_le_XF(
     return result_dict
 
 
+# Mean Temperature Metrics
+def get_mean_tasmean(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Get annual and seasonal mean maximum daily temperature.
+    index = "mean_tasmean"
+    print("Metric:", index)
+    varname = "tas"
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    Tmean = xr.Dataset()
+    Tmean["ANN"] = S.annual_stats("mean")
+    for season in ["DJF", "MAM", "JJA", "SON"]:
+        Tmean[season] = S.seasonal_stats(season, "mean")
+    Tmean = update_nc_attrs(Tmean, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json({index: Tmean}, obs_dict={}, region="land", regrid=False)
+
+    if fig_file is not None:
+        for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
+            Tmean[season].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
+            fig_file1 = fig_file.replace("$index", "_".join([index, season]))
+            plt.title(f"Average {season} daily high temperature")
+            ax = plt.gca()
+            ax.set_facecolor(bgclr)
+            plt.savefig(fig_file1)
+            plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmean.to_netcdf(nc_file, "w")
+
+    del Tmean
+    return result_dict
+
+
+# Minimum Temperature Metrics
 def get_annual_tnn(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
@@ -1075,24 +1035,93 @@ def get_annual_tasmin_ge_XF(
     return result_dict
 
 
-# def get_annual_cdd(
-#     ds, sftlf, deg, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
-# ):
-#     # Cumulative number of degrees by which the daily average temperature is > 65F
-#     index = "cdd_{0}".format(deg)
-#     varname = "tasmean" ## it seems we don't have support for tasmean in an extremes space
-#     print("Metric:", index)
-#     TS = TimeSeriesData(ds, varname)
-#     S  = SeasonalAverager(
-#         TS,
-#         sftlf,
-#         dec_mode=dec_mode,
-#         drop_incomplete_djf=drop_incomplete_djf,
-#         annual_strict=annual_strict
-#     )
+def get_annual_min_tasmin_5day(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Annual lowest minimum temperature averaged over a 5-day period
 
-#     CDD = xr.Dataset()
-#     CDD["ANN"] = S.annual_stats("cdd{0}".format(deg))
+    index = "annual_min_5day_tasmin"
+    print("Metric:", index)
+    varname = "tasmin"
+
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    Tmin5day = xr.Dataset()
+    Tmin5day["ANN"] = S.annual_stats("min", pentad=True)
+    Tmin5day = update_nc_attrs(Tmin5day, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json(
+        {index: Tmin5day}, obs_dict={}, region="land", regrid=False
+    )
+
+    if fig_file is not None:
+        Tmin5day["ANN"].mean("time").plot(cmap="YlGnBu_r", cbar_kwargs={"label": "F"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title("Annual minimum 5-day averaged low temperature")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmin5day.to_netcdf(nc_file, "w")
+
+    del Tmin5day
+    return result_dict
+
+
+def get_annual_max_tasmin_5day(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Annual highest annual minimum temperature averaged over a 5-day period
+
+    index = "annual_max_5day_tasmin"
+    print("Metric:", index)
+    varname = "tasmin"
+
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    Tmin5day = xr.Dataset()
+    Tmin5day["ANN"] = S.annual_stats("max", pentad=True)
+    Tmin5day = update_nc_attrs(Tmin5day, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json(
+        {index: Tmin5day}, obs_dict={}, region="land", regrid=False
+    )
+
+    if fig_file is not None:
+        Tmin5day["ANN"].mean("time").plot(cmap="jet", cbar_kwargs={"label": "F"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title("Annual maximum 5-day averaged low temperature")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmin5day.to_netcdf(nc_file, "w")
+
+    del Tmin5day
+    return result_dict
+
+
+# Precipitation Metrics
 
 
 def get_annualmean_pr(
@@ -1625,6 +1654,26 @@ def get_annual_cdd(
 
     del Pcdd
     return result_dict
+
+
+# def get_annual_cdd(
+#     ds, sftlf, deg, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+# ):
+#     # Cumulative number of degrees by which the daily average temperature is > 65F
+#     index = "cdd_{0}".format(deg)
+#     varname = "tasmean" ## it seems we don't have support for tasmean in an extremes space
+#     print("Metric:", index)
+#     TS = TimeSeriesData(ds, varname)
+#     S  = SeasonalAverager(
+#         TS,
+#         sftlf,
+#         dec_mode=dec_mode,
+#         drop_incomplete_djf=drop_incomplete_djf,
+#         annual_strict=annual_strict
+#     )
+
+#     CDD = xr.Dataset()
+#     CDD["ANN"] = S.annual_stats("cdd{0}".format(deg))
 
 
 # A couple of statistics that aren't being loaded from mean_climate

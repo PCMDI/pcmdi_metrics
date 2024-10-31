@@ -374,7 +374,18 @@ if __name__ == "__main__":
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
                     # Get annual-min, 5-day tasin
-                    results_dict = compute_metrics.get_annual_tasmin_5day(
+                    results_dict = compute_metrics.get_annual_min_tasmin_5day(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Get annual-max, 5-day tasin
+                    results_dict = compute_metrics.get_annual_max_tasmin_5day(
                         ds,
                         sftlf,
                         dec_mode,
