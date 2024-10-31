@@ -521,7 +521,7 @@ if __name__ == "__main__":
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
                     # Consecutive dry days
-                    result_dict = compute_metrics.get_annual_cdd(
+                    result_dict = compute_metrics.get_annual_consecDD(
                         ds,
                         sftlf,
                         dec_mode,

@@ -1619,7 +1619,7 @@ def get_annual_cwd(
     return result_dict
 
 
-def get_annual_cdd(
+def get_annual_consecDD(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     index = "annual_cdd"
