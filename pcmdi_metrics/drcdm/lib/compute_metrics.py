@@ -197,6 +197,24 @@ class SeasonalAverager:
                 ds_ann = ds.groupby("time.year").median(dim="time")
             elif stat == "total":
                 ds_ann = ds.groupby("time.year").sum(dim="time")
+            elif (
+                stat == "cool_deg_days"
+            ):  # must be a mean daily temperature dataset in F
+                thresh = 65  # Fahrenheit
+                ds_ge_65 = ds - thresh
+                ds_ge_65 = ds_ge_65.where(
+                    ds_ge_65 >= 0
+                )  # don't care if mean tempearture is < 65 F
+                ds_ann = ds_ge_65.groupby("time.year").sum(dim="time")  # annual total
+            elif (
+                stat == "heat_deg_days"
+            ):  # must be a mean daily temperature dataset in F
+                thresh = 65  # Fahrenheit
+                ds_le_65 = thresh - ds
+                ds_le_65 = ds_le_65.where(
+                    ds_le_65 >= 0
+                )  # don't care if mean tempearture is < 65 F
+                ds_ann = ds_le_65.groupby("time.year").sum(dim="time")  # annual total
             elif stat.startswith("q"):
                 num = float(stat.replace("q", "").replace("p", ".")) / 100.0
                 ds_ann = ds.groupby("time.year").quantile(num, dim="time", skipna=True)
@@ -844,6 +862,84 @@ def get_mean_tasmean(
         Tmean.to_netcdf(nc_file, "w")
 
     del Tmean
+    return result_dict
+
+
+def get_annual_cooling_degree_days(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Cumulative number of degrees by which mean temperature exceeds 65 F
+    index = "cool_deg_days"
+    print("Metric:", index)
+    varname = "tas"
+    TS = TimeSeriesData(ds, varname)  # gets the mean temperature dataset
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    cdd = xr.Dataset()
+    cdd["ANN"] = S.annual_stats("cool_deg_days")
+    cdd = update_nc_attrs(cdd, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json({index: cdd}, obs_dict={}, region="land", regrid=False)
+
+    if fig_file is not None:
+        cdd["ANN"].mean("time").plot(cmap="Reds", cbar_kwargs={"label": "F"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title(f"Average annual number of cooling degree days")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        cdd.to_netcdf(nc_file, "w")
+
+    del cdd
+    return result_dict
+
+
+def get_annual_heating_degree_days(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Cumulative number of degrees by which mean temperature exceeds 65 F
+    index = "heat_deg_days"
+    print("Metric:", index)
+    varname = "tas"
+    TS = TimeSeriesData(ds, varname)  # gets the mean temperature dataset
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    hdd = xr.Dataset()
+    hdd["ANN"] = S.annual_stats("heat_deg_days")
+    hdd = update_nc_attrs(hdd, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json({index: hdd}, obs_dict={}, region="land", regrid=False)
+
+    if fig_file is not None:
+        hdd["ANN"].mean("time").plot(cmap="Blues", cbar_kwargs={"label": "F"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title(f"Average annual number of heating degree days")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        hdd.to_netcdf(nc_file, "w")
+
+    del hdd
     return result_dict
 
 
