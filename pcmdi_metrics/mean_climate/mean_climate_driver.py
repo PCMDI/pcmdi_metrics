@@ -13,6 +13,7 @@ from pcmdi_metrics.mean_climate.lib import (
     create_mean_climate_parser,
     load_and_regrid,
     mean_climate_metrics_to_json,
+    plot_climatology_diff,
 )
 from pcmdi_metrics.utils import (
     apply_landmask,
@@ -62,6 +63,7 @@ if diagnostics_output_path is None:
     )
 
 diagnostics_output_path = diagnostics_output_path.replace("%(case_id)", case_id)
+graphics_output_path = diagnostics_output_path.replace("diagnostic_results", "graphics")
 
 find_all_realizations = False
 first_realization_only = False
@@ -205,7 +207,10 @@ for var in vars:
                 regrid_tool=regrid_tool,
                 debug=debug,
             )
-        except Exception:
+        except Exception as e:
+            print(
+                f"ref_data load_and_regrid failed: {e} \nRe-try with decode_times=False"
+            )
             ds_ref = load_and_regrid(
                 data_path=ref_data_full_path,
                 varname=varname,
@@ -215,6 +220,9 @@ for var in vars:
                 regrid_tool=regrid_tool,
                 debug=debug,
             )
+
+        # Make time dimension sync betweeb model and obs as default
+        time_dim_sync = True
 
         print("ref_data load_and_regrid done")
 
@@ -351,6 +359,7 @@ for var in vars:
                                     )
                                 print("spatial subset done")
 
+                            # Save to netcdf file
                             if save_test_clims and ref == reference_data_set[0]:
                                 test_clims_dir = os.path.join(
                                     diagnostics_output_path,
@@ -394,28 +403,50 @@ for var in vars:
                                         "_".join([var, "ref", region + ".nc"])
                                     )
 
+                            # plot map
+                            test_clims_plot_dir = os.path.join(
+                                graphics_output_path, var
+                            )
+                            os.makedirs(test_clims_plot_dir, exist_ok=True)
+                            for season in ["AC", "DJF", "MAM", "JJA", "SON"]:
+                                output_filename = "_".join(
+                                    [
+                                        var,
+                                        model,
+                                        run,
+                                        "interpolated",
+                                        regrid_tool,
+                                        region,
+                                        season,
+                                        case_id + ".png",
+                                    ]
+                                )
+                                plot_climatology_diff(
+                                    ds_test_dict[region],
+                                    varname,
+                                    ds_ref_dict[region],
+                                    varname,
+                                    level=level,
+                                    season=season,
+                                    output_dir=test_clims_plot_dir,
+                                    output_filename=output_filename,
+                                    dataname_test=f"{model}_{run}",
+                                    dataname_ref=ref_dataset_name,
+                                    fig_title=f"Climatology ({season}, {region}): {varname}",
+                                )
+                                print("plot map done")
+
                             # compute metrics
                             print("compute metrics start")
-                            try:
-                                result_dict["RESULTS"][model][ref][run][
-                                    region
-                                ] = compute_metrics(
-                                    varname,
-                                    ds_test_dict[region],
-                                    ds_ref_dict[region],
-                                    debug=debug,
-                                    time_dim_sync=True,
-                                )
-                            except Exception:
-                                result_dict["RESULTS"][model][ref][run][
-                                    region
-                                ] = compute_metrics(
-                                    varname,
-                                    ds_test_dict[region],
-                                    ds_ref_dict[region],
-                                    debug=debug,
-                                    time_dim_sync=False,
-                                )
+                            result_dict["RESULTS"][model][ref][run][
+                                region
+                            ] = compute_metrics(
+                                varname,
+                                ds_test_dict[region],
+                                ds_ref_dict[region],
+                                debug=debug,
+                                time_dim_sync=time_dim_sync,
+                            )
 
                             # write individual JSON
                             # --- single simulation, obs (need to accumulate later) / single variable
@@ -440,13 +471,14 @@ for var in vars:
                                 cmec_flag=cmec,
                                 debug=debug,
                             )
-
                     except Exception as e:
                         if debug:
                             raise
                         print("error occured for ", model, run)
                         print(e)
 
+                else:
+                    print(f"File does not exist: {test_data_full_path}")
     # ========================================================================
     # Dictionary to JSON: collective JSON at the end of model_realization loop
     # ------------------------------------------------------------------------
