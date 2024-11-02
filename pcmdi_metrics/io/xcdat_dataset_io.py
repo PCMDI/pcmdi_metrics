@@ -68,6 +68,10 @@ def get_axis_list(ds: Union[xr.Dataset, xr.DataArray]) -> list[str]:
     -------
     list[str]
         List of coordinate key names.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_axis_list
     """
 
     axes = list(ds.coords.keys())
@@ -87,6 +91,10 @@ def get_data_list(ds: Union[xr.Dataset, xr.DataArray]) -> list[str]:
     -------
     list[str]
         List of data variable names.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_data_list
     """
 
     if isinstance(ds, xr.Dataset):
@@ -108,6 +116,10 @@ def get_time_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     -------
     str
         The key for the time dimension.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_time_key
     """
 
     axis = "T"
@@ -128,6 +140,10 @@ def get_latitude_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     -------
     str
         The key for the latitude dimension.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_latitude_key
     """
 
     axis = "Y"
@@ -148,6 +164,10 @@ def get_longitude_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     -------
     str
         The key for the longitude dimension.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_longitude_key
     """
 
     axis = "X"
@@ -171,6 +191,10 @@ def get_time_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     -------
     str
         The key for the time bounds.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_time_bounds_key
     """
     time_key = get_time_key(ds)
     return ds[time_key].attrs["bounds"]
@@ -189,6 +213,10 @@ def get_latitude_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     -------
     str
         The key for the latitude bounds.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_latitude_bounds_key
     """
 
     lat_key = get_latitude_key(ds)
@@ -208,6 +236,10 @@ def get_longitude_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     -------
     str
         The key for the longitude bounds.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_longitude_bounds_key
     """
 
     lon_key = get_longitude_key(ds)
@@ -230,6 +262,10 @@ def get_time(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
     -------
     xr.DataArray
         The time coordinate data.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_time
     """
 
     time_key = get_time_key(ds)
@@ -250,6 +286,10 @@ def get_longitude(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
     -------
     xr.DataArray
         The longitude coordinate data.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_longitude
     """
 
     lon_key = get_longitude_key(ds)
@@ -270,6 +310,10 @@ def get_latitude(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
     -------
     xr.DataArray
         The latitude coordinate data.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_latitude
     """
 
     lat_key = get_latitude_key(ds)
@@ -293,6 +337,10 @@ def get_time_bounds(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
     -------
     xr.DataArray
         The time bounds data.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_time_bounds
     """
 
     time_bounds_key = get_time_bounds_key(ds)
@@ -313,6 +361,10 @@ def get_longitude_bounds(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
     -------
     xr.DataArray
         The longitude bounds data.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_longitude_bounds
     """
 
     lon_bounds_key = get_longitude_bounds_key(ds)
@@ -333,6 +385,10 @@ def get_latitude_bounds(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
     -------
     xr.DataArray
         The latitude bounds data.
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_latitude_bounds
     """
 
     lat_bounds_key = get_latitude_bounds_key(ds)
@@ -373,6 +429,8 @@ def select_subset(
 
     Examples
     --------
+    >>> from pcmdi_metrics.io import select_subset
+
     >>> import xarray as xr
     >>> import cftime
     >>>
@@ -422,6 +480,10 @@ def da_to_ds(d: Union[xr.Dataset, xr.DataArray], var: str = "variable") -> xr.Da
     ------
     TypeError
         Raised when given input is not xarray based variables
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import da_to_ds
     """
     if isinstance(d, xr.Dataset):
         return d.copy()
@@ -447,6 +509,10 @@ def get_grid(
     -------
     xr.Dataset
         xarray dataset with grid information
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.io import get_grid
     """
     if isinstance(d, xr.DataArray):
         d = da_to_ds(d, d.name)
@@ -486,6 +552,7 @@ def get_calendar(d: Union[xr.Dataset, xr.DataArray]) -> str:
 
     Examples
     --------
+    >>> from pcmdi_metrics.io import get_calendar
     >>> import xarray as xr
     >>> import pandas as pd
     >>> dates = xr.cftime_range('2000-01-01', periods=365)

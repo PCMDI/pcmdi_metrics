@@ -91,37 +91,66 @@ def region_subset(
     """
     Subset a dataset or data array based on a specified region.
 
-    This function subsets an xarray Dataset or DataArray based on the latitude and longitude
-    coordinates defined for a given region. It handles different longitude conventions
-    and can optionally provide debug information.
+    This function subsets an xarray Dataset or DataArray according to latitude and
+    longitude boundaries defined in a specified region. It automatically handles
+    different longitude conventions (0 to 360 vs -180 to 180) and can provide debug
+    information.
 
     Parameters
     ----------
     ds : Union[xr.Dataset, xr.DataArray]
         The input dataset or data array to be subsetted.
     region : str
-        The name of the region to subset the data to. This should correspond to a key
-        in the regions_specs dictionary.
+        The name of the region to subset the data to. This should match a key
+        in the `regions_specs` dictionary.
     data_var : str, optional
-        The name of the data variable if ds is a DataArray, by default None, which names DataArray as "variable" in the Dataset if DataArray has no name.
+        The name of the data variable if `ds` is a DataArray. If None, the DataArray
+        is named "variable" if it has no name, by default None.
     regions_specs : dict, optional
-        A dictionary containing the specifications for different regions. If None,
-        it will be loaded from a default source, by default None.
+        A dictionary containing specifications for different regions. If None,
+        defaults are loaded, by default None.
     debug : bool, optional
-        If True, print debug information during the subsetting process, by default False.
+        If True, prints debug information during the subsetting process, by default False.
 
     Returns
     -------
     Union[xr.Dataset, xr.DataArray]
-        The subsetted dataset or data array, matching the input type.
+        The subsetted dataset or data array, with the type matching the input.
 
     Notes
     -----
-    This function first converts DataArrays to Datasets for processing, then converts
-    back if necessary. It handles both latitude and longitude subsetting based on the
-    region specifications, and can deal with different longitude conventions (0 to 360
-    vs -180 to 180).
+    This function first converts DataArrays to Datasets for processing and converts
+    back if needed. It supports both latitude and longitude subsetting based on the
+    region specifications, with compatibility for different longitude conventions.
 
+    Examples
+    --------
+    Basic usage of `region_subset`:
+
+    >>> import xarray as xr
+    >>> from pcmdi_metrics.io import region_subset
+    >>> ds = xr.open_dataset("sample_dataset.nc")
+    >>> regions_specs = {
+    ...     "North_America": {
+    ...         "domain": {
+    ...             "latitude": [15, 60],
+    ...             "longitude": [-130, -60]
+    ...         }
+    ...     }
+    ... }
+    >>> subset = region_subset(ds, region="North_America", regions_specs=regions_specs)
+    >>> subset
+    <xarray.Dataset>
+    Dimensions: ...
+    Data variables:
+        ...
+
+    With debug information enabled:
+
+    >>> subset = region_subset(ds, region="North_America", regions_specs=regions_specs, debug=True)
+    Converting latitude and longitude to specified region...
+    region_subset, latitude subsetted, ds: <latitude_subset_output>
+    region_subset, longitude subsetted, ds: <longitude_subset_output>
     """
     if isinstance(ds, xr.DataArray):
         is_dataArray = True
@@ -165,7 +194,6 @@ def region_subset(
                     ds = xc.swap_lon_axis(ds, to=(-180, 180))
 
             # proceed subset
-            # ds = select_subset(ds, lon=(min(lon0, lon1), max(lon0, lon1)))
             ds = select_subset(ds, lon=(lon0, lon1))
             if debug:
                 print("region_subset, longitude subsetted, ds:", ds)
