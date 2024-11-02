@@ -1,110 +1,165 @@
 import sys
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import matplotlib
 import matplotlib.collections as collections
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.axes import Axes
+from matplotlib.colorbar import Colorbar
+from matplotlib.figure import Figure
 
 from pcmdi_metrics.graphics import add_logo
 
 
 def portrait_plot(
-    data,
-    xaxis_labels,
-    yaxis_labels,
-    fig=None,
-    ax=None,
-    annotate=False,
-    annotate_data=None,
-    annotate_textcolors=("black", "white"),
-    annotate_textcolors_threshold=(-2, 2),
-    annotate_fontsize=15,
-    annotate_format="{x:.2f}",
-    figsize=(12, 10),
-    vrange=None,
-    xaxis_fontsize=15,
-    yaxis_fontsize=15,
-    xaxis_tick_labels_top_and_bottom=False,
-    xticklabel_rotation=45,
-    inner_line_color="k",
-    inner_line_width=0.5,
-    cmap="RdBu_r",
-    cmap_bounds=None,
-    cbar_label=None,
-    cbar_label_fontsize=15,
-    cbar_tick_fontsize=12,
-    cbar_kw={},
-    colorbar_off=False,
-    missing_color="grey",
-    invert_yaxis=True,
-    box_as_square=False,
-    legend_on=False,
-    legend_labels=None,
-    legend_box_xy=None,
-    legend_box_size=None,
-    legend_lw=1,
-    legend_fontsize=14,
-    logo_rect=None,
-    logo_off=False,
-    debug=False,
-):
+    data: Union[np.ndarray, List[np.ndarray]],
+    xaxis_labels: List[str],
+    yaxis_labels: List[str],
+    fig: Optional[Figure] = None,
+    ax: Optional[Axes] = None,
+    annotate: bool = False,
+    annotate_data: Optional[np.ndarray] = None,
+    annotate_textcolors: Tuple[str, str] = ("black", "white"),
+    annotate_textcolors_threshold: Union[Tuple[float, float], float] = (-2, 2),
+    annotate_fontsize: int = 15,
+    annotate_format: str = "{x:.2f}",
+    figsize: Tuple[int, int] = (12, 10),
+    vrange: Optional[Tuple[float, float]] = None,
+    xaxis_fontsize: int = 15,
+    yaxis_fontsize: int = 15,
+    xaxis_tick_labels_top_and_bottom: bool = False,
+    xticklabel_rotation: Union[int, float] = 45,
+    inner_line_color: str = "k",
+    inner_line_width: float = 0.5,
+    cmap: str = "RdBu_r",
+    cmap_bounds: Optional[List[float]] = None,
+    cbar_label: Optional[str] = None,
+    cbar_label_fontsize: int = 15,
+    cbar_tick_fontsize: int = 12,
+    cbar_kw: Dict[str, Any] = {},
+    colorbar_off: bool = False,
+    missing_color: str = "grey",
+    invert_yaxis: bool = True,
+    box_as_square: bool = False,
+    legend_on: bool = False,
+    legend_labels: Optional[List[str]] = None,
+    legend_box_xy: Optional[Tuple[float, float]] = None,
+    legend_box_size: Optional[float] = None,
+    legend_lw: float = 1,
+    legend_fontsize: int = 14,
+    logo_rect: Optional[List[float]] = None,
+    logo_off: bool = False,
+    debug: bool = False,
+) -> Union[Tuple[Figure, Axes, Colorbar], Tuple[Figure, Axes]]:
     """
-    Parameters
-    ----------
-    - `data`: 2d numpy array, a list of 2d numpy arrays, or a 3d numpy array (i.e. stacked 2d numpy arrays)
-    - `xaxis_labels`: list of strings, labels for xaixs. Number of list element must consistent to x-axis,
-                      or 0 (empty list) to turn off xaxis tick labels
-    - `yaxis_labels`: list of strings, labels for yaxis. Number of list element must consistent to y-axis,
-                      or 0 (empty list) to turn off yaxis tick labels
-    - `fig`: `matplotlib.figure` instance to which the portrait plot is plotted.
-             If not provided, use current axes or create a new one.  Optional.
-    - `ax`: `matplotlib.axes.Axes` instance to which the portrait plot is plotted.
-            If not provided, use current axes or create a new one.  Optional.
-    - `annotate`: bool, default=False, add annotating text if true,
-                  but work only for heatmap style map (i.e., no triangles)
-    - `annotate_data`: 2d numpy array, default=None. If None, the image's data is used.  Optional.
-    - `annotate_textcolors`: Tuple. A pair of colors for annotation text. Default is ("black", "white")
-    - `annotate_textcolors_threshold`: Tuple or float. Value in data units according to which the colors from textcolors are applied. Default=(-2, 2)
-    - `annotate_fontsize`: number (int/float), default=15. Font size for annotation
-    - `annotate_format`: format for annotate value, default="{x:.2f}"
-    - `figsize`: tuple of two numbers (width, height), default=(12, 10), figure size in inches
-    - `vrange`: tuple of two numbers, range of value for colorbar.  Optional.
-    - `xaxis_fontsize`: number, default=15, font size for xaxis tick labels.  Optional.
-    - `yaxis_fontsize`: number, default=15, font size for yaxis tick labels.  Optional.
-    - `xaxis_tick_labels_top_and_bottom`: bool, default=False, if true duplicate xaxis tick label to the other side.  Optional.
-    - `xticklabel_rotation`: int or float, default=45, degree of angle to rotate x-axis tick label.  Optional
-    - `inner_line_color`: string, default="k" (black), color for inner lines (triangle edge lines).  Optional.
-    - `inner_line_width`: float, default=0.5, line width for inner lines (triangle edge lines).  Optional.
-    - `cmap`: string, default="RdBu_r", name of matplotlib colormap.  Optional.
-    - `cmap_bounds`: list of numbers.  If given, discrete colors are applied.  Optional.
-    - `cbar_label`: string, default=None, label for colorbar.  Optional.
-    - `cbar_label_fontsize`: number, default=15, font size for colorbar labels.  Optional.
-    - `cbar_tick_fontsize`: number, default=12, font size for colorbar tick labels.  Optional.
-    - `cbar_kw`: A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
-    - `colorbar_off`: Trun off colorbar if True.  Optional.
-    - `missing_color`: color, default="grey", `matplotlib.axes.Axes.set_facecolor` parameter.  Optional.
-    - `invert_yaxis`: bool, default=True, place y=0 at top on the plot.  Optional.
-    - `box_as_square`: bool, default=False, make each box as square.  Optional.
-    - `legend_on`: bool, default=False, show legend (only for 2 or 4 triangles portrait plot).  Optional.
-    - `legend_labels`: list of strings, legend labels for triangls.  Optional.
-    - `legend_box_xy`: tuple of numbers, position of legend box's upper-left corner.  Optional.
-                       (lower-left if `invert_yaxis=False`), in `axes` coordinate.  Optional.
-    - `legend_box_size`: number, size of legend box.  Optional.
-    - `legend_lw`: number, line width of legend, default=1.  Optional.
-    - `legend_fontsize`: number, font size for legend, default=14.  Optional.
-    - `logo_rect`: sequence of float. The dimensions [left, bottom, width, height] of the the PMP logo.  Optional.
-                   All quantities are in fractions of figure width and height.  Optional
-    - `logo_off`: bool, default=False, turn off PMP logo.  Optional.
-    - `debug`: bool, default=False, if true print more message when running that help debugging.  Optional.
+    Create a portrait plot for visualizing 2D data arrays.
 
-    Return
-    ------
-    - `fig`: matplotlib component for figure
-    - `ax`: matplotlib component for axis
-    - `cbar`: matplotlib component for colorbar (not returned if colorbar_off=True)
+    This function generates a versatile portrait plot that can display data as a heatmap,
+    two-triangle, or four-triangle plot. It supports various customization options for
+    annotations, axes, colorbar, legend, and more.
 
     Author: Jiwoo Lee @ LLNL (2021. 7)
-    Last update: 2022. 10
+    Last update: 2024. 11.
+
+    Parameters:
+    -----------
+    data : np.ndarray or List[np.ndarray]
+        2D numpy array, list of 2D numpy arrays, or 3D numpy array (stacked 2D arrays).
+    xaxis_labels : List[str]
+        Labels for x-axis. Must match the x-axis dimension of data, or be empty to turn off labels.
+    yaxis_labels : List[str]
+        Labels for y-axis. Must match the y-axis dimension of data, or be empty to turn off labels.
+    fig : Optional[Figure]
+        Figure instance to plot on. If None, creates a new figure.
+    ax : Optional[Axes]
+        Axes instance to plot on. If None, uses current axes or creates new ones.
+    annotate : bool
+        If True, adds text annotations to the heatmap (only for non-triangle plots).
+    annotate_data : Optional[np.ndarray]
+        Data to use for annotations. If None, uses the plot data.
+    annotate_textcolors : Tuple[str, str]
+        Colors for annotation text.
+    annotate_textcolors_threshold : Union[Tuple[float, float], float]
+        Threshold values for applying annotation text colors.
+    annotate_fontsize : int
+        Font size for annotations.
+    annotate_format : str
+        Format string for annotation values.
+    figsize : Tuple[int, int]
+        Figure size in inches (width, height).
+    vrange : Optional[Tuple[float, float]]
+        Range of values for colorbar. If None, uses data min and max.
+    xaxis_fontsize : int
+        Font size for x-axis tick labels.
+    yaxis_fontsize : int
+        Font size for y-axis tick labels.
+    xaxis_tick_labels_top_and_bottom : bool
+        If True, displays x-axis tick labels on both top and bottom.
+    xticklabel_rotation : Union[int, float]
+        Rotation angle for x-axis tick labels.
+    inner_line_color : str
+        Color for inner lines in triangle plots.
+    inner_line_width : float
+        Line width for inner lines in triangle plots.
+    cmap : str
+        Colormap name.
+    cmap_bounds : Optional[List[float]]
+        Boundaries for discrete colors. If provided, applies discrete colormap.
+    cbar_label : Optional[str]
+        Label for colorbar.
+    cbar_label_fontsize : int
+        Font size for colorbar label.
+    cbar_tick_fontsize : int
+        Font size for colorbar tick labels.
+    cbar_kw : Dict[str, Any]
+        Additional keyword arguments for colorbar.
+    colorbar_off : bool
+        If True, turns off the colorbar.
+    missing_color : str
+        Color for missing data.
+    invert_yaxis : bool
+        If True, inverts the y-axis (0 at top).
+    box_as_square : bool
+        If True, makes each box square-shaped.
+    legend_on : bool
+        If True, displays a legend (for 2 or 4 triangle plots).
+    legend_labels : Optional[List[str]]
+        Labels for legend items.
+    legend_box_xy : Optional[Tuple[float, float]]
+        Position of legend box's upper-left corner in axes coordinates.
+    legend_box_size : Optional[float]
+        Size of legend box.
+    legend_lw : float
+        Line width for legend.
+    legend_fontsize : int
+        Font size for legend text.
+    logo_rect : Optional[List[float]]
+        Dimensions [left, bottom, width, height] of PMP logo in figure fraction.
+    logo_off : bool
+        If True, turns off the PMP logo.
+    debug : bool
+        If True, prints additional debugging information.
+
+    Returns:
+    --------
+    Union[Tuple[Figure, Axes, Colorbar], Tuple[Figure, Axes]]
+        The figure, axes, and colorbar components (if colorbar is not turned off).
+
+    Notes:
+    ------
+    - The function supports different plot types based on the input data shape:
+      1D array: heatmap, 2D array: two-triangle plot, 3D array: four-triangle plot.
+    - Various customization options allow for flexible and detailed plot configurations.
+
+    Example:
+    --------
+    >>> from pcmdi_metrics.graphics import portrait_plot
+    >>> import numpy as np
+    >>> data = np.random.rand(10, 10)
+    >>> xaxis_labels = [f'X{i}' for i in range(10)]
+    >>> yaxis_labels = [f'Y{i}' for i in range(10)]
+    >>> fig, ax, cbar = portrait_plot(data, xaxis_labels, yaxis_labels, cmap='viridis')
     """
 
     # ----------------
@@ -234,16 +289,6 @@ def portrait_plot(
         # Let the horizontal axes labeling appear on top.
         ax.tick_params(top=True, bottom=False, labeltop=True, labelbottom=False)
 
-    """
-    # Rotate the tick labels and set their alignment.
-    plt.setp(
-        ax.get_xticklabels(),
-        fontsize=xaxis_fontsize,
-        rotation=-30,
-        ha="right",
-        rotation_mode="anchor",
-    )
-    """
     # Rotate and align top ticklabels
     plt.setp(
         [tick.label2 for tick in ax.xaxis.get_major_ticks()],
