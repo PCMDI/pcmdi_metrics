@@ -31,6 +31,7 @@ def find_overlapping_dates(ds: xr.Dataset, start_date: str, end_date: str):
 
     Examples
     --------
+    >>> from pcmdi_metrics.utils import find_overlapping_dates
     >>> import xarray as xr
     >>> dates = xr.cftime_range('2000-01-01', periods=365)
     >>> ds = xr.Dataset({'time': dates})
@@ -136,6 +137,7 @@ def extract_date_components(ds, index=0):
 
     Examples
     --------
+    >>> from pcmdi_metrics.utils import extract_date_components
     >>> import xarray as xr
     >>> dates = xr.cftime_range('2000-01-01', periods=365)
     >>> ds = xr.Dataset({'time': dates, 'data': ('time', range(365))})
@@ -172,6 +174,8 @@ def replace_date_pattern(filename, replacement):
 
     Examples
     --------
+    >>> from pcmdi_metrics.utils import replace_date_pattern
+
     >>> replace_date_pattern("pr_mon_GPCP-2-3_PCMDI_gn_197901-201907.nc", "DATE_RANGE")
     'pr_mon_GPCP-2-3_PCMDI_gn_DATE_RANGE.nc'
 
@@ -232,6 +236,7 @@ def regenerate_time_axis(
 
     Examples
     --------
+    >>> from pcmdi_metrics.utils import regenerate_time_axis
     >>> import xarray as xr
     >>> dates = xr.cftime_range('2000-01-01', periods=12, freq='MS')
     >>> ds = xr.Dataset({'time': dates, 'data': ('time', range(12))})

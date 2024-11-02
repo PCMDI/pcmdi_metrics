@@ -9,22 +9,37 @@ def generate_calendar_months(custom_season, output_type: str = "month_abbreviati
     """
     Generates a list of calendar months corresponding to the given custom season.
 
-    Args:
-        custom_season (str): A string representing a custom season (e.g., "MJJ").
-        output_type (str, optional): default is "month_abbreviations" which returns month abbreviations. If set to "month_numbers", it will return months in numbers.
+    Parameters
+    ----------
+    custom_season : str
+        A string representing a custom season (e.g., "MJJ").
+    output_type : str, optional
+        Specifies the output format. The default is "month_abbreviations",
+        which returns month abbreviations. If set to "month_numbers", it will
+        return months in numbers.
 
-    Returns:
-        list: A list of strings of calendar months corresponding to the given custom season, or a list of numbers
+    Returns
+    -------
+    list
+        A list of strings representing calendar months corresponding to the given
+        custom season, or a list of integers representing month numbers.
 
-    Raises:
-        ValueError: If the length of the custom season is longer than 12 or if the custom season is not found in the months.
-        ValueError: If  `output_type` is not one of "month_abbreviations" or "month_numbers"
+    Raises
+    ------
+    ValueError
+        If the length of the custom season is longer than 12 or if the custom
+        season is not found in the months.
+    ValueError
+        If `output_type` is not one of "month_abbreviations" or "month_numbers".
 
-    Example:
-        >>> generate_calendar_months("MJJ")
-        ['May', 'Jun', 'Jul']
-        >>> generate_calendar_months("MJJ", output_type="month_numbers")
-        [5, 6, 7]
+    Examples
+    --------
+    >>> from pcmdi_metrics.utils import generate_calendar_months
+    >>> generate_calendar_months("MJJ")
+    ['May', 'Jun', 'Jul']
+
+    >>> generate_calendar_months("MJJ", output_type="month_numbers")
+    [5, 6, 7]
     """
     # Define the mapping of month abbreviations to full month names
     months_mapping = [
@@ -119,6 +134,10 @@ def custom_season_average(
     -------
     xr.Dataset
         xarray Dataset that contains timeseries of seasonal mean for each year
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.utils import custom_season_average
     """
     ds_subset = subset_timesteps_in_custom_season(ds, season.upper())
     if method == "xcdat":
@@ -156,6 +175,10 @@ def custom_season_departure(
     -------
     xr.Dataset
         xarray Dataset that contains timeseries of seasonal mean departure for each year
+
+    Usage
+    -----
+    >>> from pcmdi_metrics.utils import custom_season_departure
     """
 
     ds_yearly_means = custom_season_average(ds, data_var, season.upper(), method=method)
