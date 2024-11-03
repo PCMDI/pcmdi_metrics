@@ -253,8 +253,10 @@ def regenerate_time_axis(
         ds_new[coord].encoding = ds[coord].encoding
 
     time_key = get_time_key(ds_new)
-    time_bnds_key = get_time_bounds_key(ds_new)
-    calendar = get_calendar(ds)
+    calendar = get_calendar(ds_new)
+
+    ds_new[time_key].attrs["calendar"] = calendar
+    ds_new[time_key].encoding["calendar"] = calendar
 
     if start_str is None:
         # Extract the start year, month, and day from the dataset time coordinate
@@ -282,9 +284,15 @@ def regenerate_time_axis(
     # Regenerate time axis
     ds_new[time_key] = xr.DataArray(dates, dims=time_key, attrs=ds[time_key].attrs)
     ds_new[time_key].encoding = ds[time_key].encoding
+    ds_new[time_key].attrs["calendar"] = calendar
+    ds_new[time_key].encoding["calendar"] = calendar
 
     # Regenerate time bounds
-    ds_new = ds_new.drop_vars([time_bnds_key])
+    try:
+        time_bnds_key = get_time_bounds_key(ds_new)
+        ds_new = ds_new.drop_vars([time_bnds_key])
+    except KeyError:
+        pass
     ds_new = ds_new.bounds.add_time_bounds("freq", freq="month")
 
     print("Regenerated time axis and bounds")

@@ -524,7 +524,7 @@ def get_grid(
     -------
     xr.Dataset
         xarray dataset with grid information
-        
+
     Examples
     --------
     >>> from pcmdi_metrics.io import get_grid
@@ -589,6 +589,11 @@ def get_calendar(d: Union[xr.Dataset, xr.DataArray]) -> str:
         calendar = time.encoding.get("calendar")
         if calendar is not None:
             return calendar
+    except AttributeError:
+        pass
+
+    try:
+        return time.calendar
     except AttributeError:
         pass
 
