@@ -55,12 +55,14 @@ def portrait_plot(
     """
     Create a portrait plot for visualizing 2D data arrays.
 
+    .. image:: /_static/images/portrait_plot_4_triangles.png
+        :alt: Example portrait plot with four triangles
+        :align: center
+        :width: 600px
+
     This function generates a versatile portrait plot that can display data as a heatmap,
     two-triangle, or four-triangle plot. It supports various customization options for
     annotations, axes, colorbar, legend, and more.
-
-    Author: Jiwoo Lee @ LLNL (2021. 7)
-    Last update: 2024. 11.
 
     Parameters:
     -----------
@@ -152,6 +154,9 @@ def portrait_plot(
       1D array: heatmap, 2D array: two-triangle plot, 3D array: four-triangle plot.
     - Various customization options allow for flexible and detailed plot configurations.
     - Further examples can be found `here <https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/graphics/portrait_plot/README.md>`__.
+
+    Author: Jiwoo Lee @ LLNL (2021. 7)
+    Last update: 2024. 11.
 
     Example:
     --------
