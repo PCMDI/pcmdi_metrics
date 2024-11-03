@@ -69,9 +69,10 @@ def get_axis_list(ds: Union[xr.Dataset, xr.DataArray]) -> list[str]:
     list[str]
         List of coordinate key names.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_axis_list
+    >>> axes = get_axis_list(ds)
     """
 
     axes = list(ds.coords.keys())
@@ -92,9 +93,10 @@ def get_data_list(ds: Union[xr.Dataset, xr.DataArray]) -> list[str]:
     list[str]
         List of data variable names.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_data_list
+    >>> data_list = get_data_list(ds)
     """
 
     if isinstance(ds, xr.Dataset):
@@ -117,9 +119,10 @@ def get_time_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     str
         The key for the time dimension.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_time_key
+    >>> time_key = get_time_key(ds)
     """
 
     axis = "T"
@@ -141,9 +144,10 @@ def get_latitude_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     str
         The key for the latitude dimension.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_latitude_key
+    >>> lat_key = get_latitude_key(ds)
     """
 
     axis = "Y"
@@ -165,9 +169,10 @@ def get_longitude_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     str
         The key for the longitude dimension.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_longitude_key
+    >>> lon_key = get_longitude_key(ds)
     """
 
     axis = "X"
@@ -192,9 +197,10 @@ def get_time_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     str
         The key for the time bounds.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_time_bounds_key
+    >>> bounds_key = get_time_bounds_key(ds)
     """
     time_key = get_time_key(ds)
     return ds[time_key].attrs["bounds"]
@@ -214,9 +220,10 @@ def get_latitude_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     str
         The key for the latitude bounds.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_latitude_bounds_key
+    >>> lat_bounds_key = get_latitude_bounds_key(ds)
     """
 
     lat_key = get_latitude_key(ds)
@@ -237,9 +244,10 @@ def get_longitude_bounds_key(ds: Union[xr.Dataset, xr.DataArray]) -> str:
     str
         The key for the longitude bounds.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_longitude_bounds_key
+    >>> lon_bounds_key = get_longitude_bounds_key(ds)
     """
 
     lon_key = get_longitude_key(ds)
@@ -263,9 +271,10 @@ def get_time(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
     xr.DataArray
         The time coordinate data.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_time
+    >>> time = get_time(ds)
     """
 
     time_key = get_time_key(ds)
@@ -287,9 +296,10 @@ def get_longitude(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
     xr.DataArray
         The longitude coordinate data.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_longitude
+    >>> lon = get_longitude(ds)
     """
 
     lon_key = get_longitude_key(ds)
@@ -311,9 +321,10 @@ def get_latitude(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
     xr.DataArray
         The latitude coordinate data.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_latitude
+    >>> lat = get_latitude(ds)
     """
 
     lat_key = get_latitude_key(ds)
@@ -338,9 +349,10 @@ def get_time_bounds(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
     xr.DataArray
         The time bounds data.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_time_bounds
+    >>> time_bounds = get_time_bounds(ds)
     """
 
     time_bounds_key = get_time_bounds_key(ds)
@@ -362,9 +374,10 @@ def get_longitude_bounds(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
     xr.DataArray
         The longitude bounds data.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_longitude_bounds
+    >>> lon_bounds = get_longitude_bounds(ds)
     """
 
     lon_bounds_key = get_longitude_bounds_key(ds)
@@ -386,9 +399,10 @@ def get_latitude_bounds(ds: Union[xr.Dataset, xr.DataArray]) -> xr.DataArray:
     xr.DataArray
         The latitude bounds data.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_latitude_bounds
+    >>> lat_bounds = get_latitude_bounds(ds)
     """
 
     lat_bounds_key = get_latitude_bounds_key(ds)
@@ -481,9 +495,10 @@ def da_to_ds(d: Union[xr.Dataset, xr.DataArray], var: str = "variable") -> xr.Da
     TypeError
         Raised when given input is not xarray based variables
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.io import da_to_ds
+    >>> ds = da_to_ds(da)
     """
     if isinstance(d, xr.Dataset):
         return d.copy()
@@ -509,10 +524,11 @@ def get_grid(
     -------
     xr.Dataset
         xarray dataset with grid information
-
-    Usage
-    -----
+        
+    Examples
+    --------
     >>> from pcmdi_metrics.io import get_grid
+    >>> grid = get_grid(ds)
     """
     if isinstance(d, xr.DataArray):
         d = da_to_ds(d, d.name)
