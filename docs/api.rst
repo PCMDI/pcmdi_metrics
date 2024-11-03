@@ -43,6 +43,7 @@ Graphics
 
     graphics.parallel_coordinate_plot
     graphics.portrait_plot
+    graphics.TaylorDiagram
 
 
 Grid and regrid

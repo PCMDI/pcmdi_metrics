@@ -111,7 +111,7 @@ def TaylorDiagram(
     Notes
     -----
     This code was adpated from the ILAMB code that was written by Nathan Collier (ORNL)
-    (https://github.com/rubisco-sfa/ILAMB/blob/master/src/ILAMB/Post.py#L80)
+    (https://github.com/rubisco-sfa/ILAMB/blob/6780ef0824a8a245ae60e518d5b5fc25f970f3d6/src/ILAMB/Post.py#L101)
     and revised by Jiwoo Lee (LLNL) to add capabilities and enable additional customizations
     for implementation into PCMDI Metrics Package (PMP).
     The original code was written by Yannick Copin (https://gist.github.com/ycopin/3342888).
@@ -122,6 +122,7 @@ def TaylorDiagram(
     Author: Jiwoo Lee (PCMDI LLNL)
 
     Update history:
+    
     - 2022-03 First implemented
     - 2024-11 Docstring cleaned up
 
@@ -130,20 +131,20 @@ def TaylorDiagram(
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
     >>> from pcmdi_metrics.graphics import TaylorDiagram
-
+    >>> 
     >>> stddev = np.random.uniform(low=1, high=10, size=(10,))  # Generate 10 random numbers between 1 and 10
     >>> corrcoeff = np.random.uniform(low=0.5, high=1, size=(10,))  # Generate 10 random numbers between 0.5 and 1
     >>> refstd = 5
     >>> models = ['model '+str(i) for i in range(1,11)]
-
+    >>> 
     >>> fig = plt.figure(figsize=(5,5))
-
+    >>> 
     >>> fig, ax = TaylorDiagram(stddev, corrcoeff, refstd,
                         fig=fig,
                         labels=models,
                         ref_label='Reference'
                        )
-
+    >>> 
     >>> ax.legend(bbox_to_anchor=(1.05, 0), loc='lower left', ncol=2)
     >>> fig.suptitle('Example Taylor Diagram', fontsize=20)
 
