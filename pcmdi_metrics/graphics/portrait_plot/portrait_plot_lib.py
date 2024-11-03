@@ -151,15 +151,46 @@ def portrait_plot(
     - The function supports different plot types based on the input data shape:
       1D array: heatmap, 2D array: two-triangle plot, 3D array: four-triangle plot.
     - Various customization options allow for flexible and detailed plot configurations.
+    - Further examples can be found [here](https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/graphics/portrait_plot/README.md).
 
     Example:
     --------
+    Example 1: Create a heatmap-style portrait plot
     >>> from pcmdi_metrics.graphics import portrait_plot
     >>> import numpy as np
     >>> data = np.random.rand(10, 10)
     >>> xaxis_labels = [f'X{i}' for i in range(10)]
     >>> yaxis_labels = [f'Y{i}' for i in range(10)]
-    >>> fig, ax, cbar = portrait_plot(data, xaxis_labels, yaxis_labels, cmap='viridis')
+    >>> fig, ax, cbar = portrait_plot(data, xaxis_labels, yaxis_labels, cmap='RdBu_r')
+    
+    .. image:: /_static/images/portrait_plot_1.png
+        :alt: Example portrait plot
+        :align: center
+        :width: 400px
+
+    Example 2: Create a portrait plot with two triangles
+    >>> data1 = np.random.rand(10, 10)
+    >>> data2 = np.random.rand(10, 10)
+    >>> data = [data1, data2]
+    >>> fig, ax, cbar = portrait_plot(data, xaxis_labels, yaxis_labels, cmap='RdBu_r')
+
+    .. image:: /_static/images/portrait_plot_2_triangles.png
+        :alt: Example portrait plot with two triangles
+        :align: center
+        :width: 400px
+
+    Example 3: Create a portrait plot with four triangles
+    >>> data1 = np.random.rand(10, 10)
+    >>> data2 = np.random.rand(10, 10)
+    >>> data3 = np.random.rand(10, 10)
+    >>> data4 = np.random.rand(10, 10)
+    >>> data = [data1, data2, data3, data4]
+    >>> fig, ax, cbar = portrait_plot(data, xaxis_labels, yaxis_labels, cmap='RdBu_r')
+
+    .. image:: /_static/images/portrait_plot_4_triangles.png
+        :alt: Example portrait plot with four triangles
+        :align: center
+        :width: 400px
     """
 
     # ----------------

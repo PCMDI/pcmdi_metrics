@@ -26,6 +26,14 @@ Land-sea mask
     utils.apply_oceanmask
 
 
+Graphics
+~~~~~~~~
+.. autosummary::
+    :toctree: generated/
+
+    graphics.portrait_plot
+
+
 Grid and regrid
 ~~~~~~~~~~~~~~~
 .. autosummary::
