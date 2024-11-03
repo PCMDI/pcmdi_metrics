@@ -194,9 +194,6 @@ def parallel_coordinate_plot(
     - 2024-04 parameters added for arrow and option added for ymax/ymin setting
     - 2024-11 docstring cleaned up
 
-    Further examples can be found `here <https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/graphics/parallel_coordinate_plot#readme>`__.
-
-
     Examples
     --------
     >>> from pcmdi_metrics.graphics import parallel_coordinate_plot
@@ -210,6 +207,8 @@ def parallel_coordinate_plot(
         :alt: Example parallel coordinate plot
         :align: center
         :width: 600px
+
+    Further examples can be found `here <https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/graphics/parallel_coordinate_plot#readme>`__.
     """
 
     params = {

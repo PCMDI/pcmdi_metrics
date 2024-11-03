@@ -153,7 +153,6 @@ def portrait_plot(
     - The function supports different plot types based on the input data shape:
       1D array: heatmap, 2D array: two-triangle plot, 3D array: four-triangle plot.
     - Various customization options allow for flexible and detailed plot configurations.
-    - Further examples can be found `here <https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/graphics/portrait_plot#readme>`__.
 
     Author: Jiwoo Lee @ LLNL (2021. 7)
 
@@ -200,6 +199,8 @@ def portrait_plot(
         :alt: Example portrait plot with four triangles
         :align: center
         :width: 600px
+
+    Further examples can be found `here <https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/graphics/portrait_plot#readme>`__.
     """
 
     # ----------------

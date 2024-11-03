@@ -28,20 +28,13 @@ def TaylorDiagram(
     grid=True,
     debug=False,
 ):
-    """Plot a Taylor diagram
+    """
+    Create a Taylor diagram.
 
-    Jiwoo Lee (PCMDI LLNL) - last update: 2022. 10
-
-    This code was adpated from the ILAMB code that was written by Nathan Collier (ORNL)
-    (https://github.com/rubisco-sfa/ILAMB/blob/master/src/ILAMB/Post.py#L80)
-    and revised by Jiwoo Lee (LLNL) to add capabilities and enable more customizations
-    for implementation into PCMDI Metrics Package (PMP).
-    The original code was written by Yannick Copin (https://gist.github.com/ycopin/3342888)
-
-    Reference for Taylor Diagram:
-    Taylor, K. E. (2001), Summarizing multiple aspects of model performance in a single diagram,
-    J. Geophys. Res., 106(D7), 7183–7192, http://dx.doi.org/10.1029/2000JD900719
-
+    .. image:: /_static/images/taylor_diagram_docstring_example.png
+        :alt: Example Taylor Diagram
+        :align: center
+        :width: 600px
 
     Parameters
     ----------
@@ -108,12 +101,58 @@ def TaylorDiagram(
         default - False
         if true print some interim results for debugging purpose
 
-    Return
-    ------
+    Returns
+    -------
     fig : matplotlib figure
         the matplotlib figure
     ax : matplotlib axis
         the matplotlib axis
+
+    Notes
+    -----
+    This code was adpated from the ILAMB code that was written by Nathan Collier (ORNL)
+    (https://github.com/rubisco-sfa/ILAMB/blob/master/src/ILAMB/Post.py#L80)
+    and revised by Jiwoo Lee (LLNL) to add capabilities and enable additional customizations
+    for implementation into PCMDI Metrics Package (PMP).
+    The original code was written by Yannick Copin (https://gist.github.com/ycopin/3342888).
+
+    Reference for Taylor Diagram: Taylor, K. E. (2001), Summarizing multiple aspects of model performance in a single diagram,
+    J. Geophys. Res., 106(D7), 7183–7192, http://dx.doi.org/10.1029/2000JD900719
+
+    Author: Jiwoo Lee (PCMDI LLNL)
+
+    Update history:
+    - 2022-03 First implemented
+    - 2024-11 Docstring cleaned up
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import matplotlib.pyplot as plt
+    >>> from pcmdi_metrics.graphics import TaylorDiagram
+
+    >>> stddev = np.random.uniform(low=1, high=10, size=(10,))  # Generate 10 random numbers between 1 and 10
+    >>> corrcoeff = np.random.uniform(low=0.5, high=1, size=(10,))  # Generate 10 random numbers between 0.5 and 1
+    >>> refstd = 5
+    >>> models = ['model '+str(i) for i in range(1,11)]
+
+    >>> fig = plt.figure(figsize=(5,5))
+
+    >>> fig, ax = TaylorDiagram(stddev, corrcoeff, refstd,
+                        fig=fig,
+                        labels=models,
+                        ref_label='Reference'
+                       )
+
+    >>> ax.legend(bbox_to_anchor=(1.05, 0), loc='lower left', ncol=2)
+    >>> fig.suptitle('Example Taylor Diagram', fontsize=20)
+
+    .. image:: /_static/images/taylor_diagram_docstring_example.png
+        :alt: Example Taylor Diagram
+        :align: center
+        :width: 600px
+
+    Further examples can be found `here <https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/graphics/taylor_diagram#readme>`__.
     """
     import matplotlib.pyplot as plt
     import mpl_toolkits.axisartist.floating_axes as FA
