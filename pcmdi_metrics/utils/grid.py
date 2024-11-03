@@ -196,8 +196,8 @@ def regrid(
     xr.Dataset
         Regridded dataset.
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.utils import regrid
     """
 
