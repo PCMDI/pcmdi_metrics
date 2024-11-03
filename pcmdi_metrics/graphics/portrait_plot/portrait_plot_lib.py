@@ -64,8 +64,8 @@ def portrait_plot(
     two-triangle, or four-triangle plot. It supports various customization options for
     annotations, axes, colorbar, legend, and more.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     data : np.ndarray or List[np.ndarray]
         2D numpy array, list of 2D numpy arrays, or 3D numpy array (stacked 2D arrays).
     xaxis_labels : List[str]
@@ -143,22 +143,23 @@ def portrait_plot(
     debug : bool
         If True, prints additional debugging information.
 
-    Returns:
-    --------
+    Returns
+    -------
     Union[Tuple[Figure, Axes, Colorbar], Tuple[Figure, Axes]]
         The figure, axes, and colorbar components (if colorbar is not turned off).
 
-    Notes:
-    ------
+    Notes
+    -----
     - The function supports different plot types based on the input data shape:
       1D array: heatmap, 2D array: two-triangle plot, 3D array: four-triangle plot.
     - Various customization options allow for flexible and detailed plot configurations.
-    - Further examples can be found `here <https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/graphics/portrait_plot/README.md>`__.
+    - Further examples can be found `here <https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/graphics/portrait_plot#readme>`__.
 
     Author: Jiwoo Lee @ LLNL (2021. 7)
+
     Last update: 2024. 11.
 
-    Example:
+    Examples
     --------
     Example 1: Create a heatmap-style portrait plot
 

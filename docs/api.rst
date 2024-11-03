@@ -26,11 +26,22 @@ Land-sea mask
     utils.apply_oceanmask
 
 
+Date
+~~~~
+.. autosummary::
+    :toctree: generated/
+
+    utils.date_to_str
+    utils.extract_date_components
+    utils.find_overlapping_dates
+
+
 Graphics
 ~~~~~~~~
 .. autosummary::
     :toctree: generated/
 
+    graphics.parallel_coordinate_plot
     graphics.portrait_plot
 
 
@@ -50,6 +61,7 @@ Custom calendars
 
     utils.custom_season_average
     utils.custom_season_departure
+    utils.replace_date_pattern
 
 
 Region handling

@@ -185,13 +185,17 @@ def parallel_coordinate_plot(
     Author: Jiwoo Lee @ LLNL (2021. 7)
 
     Update history:
-    2021-07 Plotting code created. Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
-    2022-09 violin plots added
-    2023-03 median centered option added
-    2023-04 vertical center option diversified (median, mean, or given number)
-    2024-03 parameter added for violin plot label
-    2024-04 parameters added for arrow and option added for ymax/ymin setting
-    2024-11 docstring cleaned up
+
+    - 2021-07 Plotting code created. Inspired by https://stackoverflow.com/questions/8230638/parallel-coordinates-plot-in-matplotlib
+    - 2022-09 violin plots added
+    - 2023-03 median centered option added
+    - 2023-04 vertical center option diversified (median, mean, or given number)
+    - 2024-03 parameter added for violin plot label
+    - 2024-04 parameters added for arrow and option added for ymax/ymin setting
+    - 2024-11 docstring cleaned up
+
+    Further examples can be found `here <https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/graphics/parallel_coordinate_plot#readme>`__.
+
 
     Examples
     --------
