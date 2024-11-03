@@ -92,6 +92,7 @@ def date_to_str(date_obj):
 
     Examples
     --------
+    >>> from pcmdi_metrics.utils import date_to_str
     >>> from datetime import datetime
     >>> date_to_str(datetime(2001, 1, 1))
     '2001-01-01'
@@ -141,9 +142,9 @@ def extract_date_components(ds, index=0):
     >>> import xarray as xr
     >>> dates = xr.cftime_range('2000-01-01', periods=365)
     >>> ds = xr.Dataset({'time': dates, 'data': ('time', range(365))})
-    >>> extract_date(ds)
+    >>> extract_date_components(ds)
     (2000, 1, 1)
-    >>> extract_date(ds, index=100)
+    >>> extract_date_components(ds, index=100)
     (2000, 4, 10)
 
     See Also
