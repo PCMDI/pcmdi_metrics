@@ -135,8 +135,8 @@ def custom_season_average(
     xr.Dataset
         xarray Dataset that contains timeseries of seasonal mean for each year
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.utils import custom_season_average
     """
     ds_subset = subset_timesteps_in_custom_season(ds, season.upper())
@@ -176,8 +176,8 @@ def custom_season_departure(
     xr.Dataset
         xarray Dataset that contains timeseries of seasonal mean departure for each year
 
-    Usage
-    -----
+    Examples
+    --------
     >>> from pcmdi_metrics.utils import custom_season_departure
     """
 
