@@ -8,22 +8,23 @@ APIs for Developers
 
 Below is a list of APIs available in `pcmdi_metrics (> v3.6.1)` for developers.
 
+
+Custom calendars
+~~~~~~~~~~~~~~~~
+.. autosummary::
+    :toctree: generated/
+
+    utils.custom_season_average
+    utils.custom_season_departure
+    utils.replace_date_pattern
+
+
 Data load
 ~~~~~~~~~
 .. autosummary::
     :toctree: generated/
 
     io.xcdat_open
-
-
-Land-sea mask
-~~~~~~~~~~~~~
-.. autosummary::
-    :toctree: generated/
-
-    utils.create_land_sea_mask
-    utils.apply_landmask
-    utils.apply_oceanmask
 
 
 Date
@@ -34,6 +35,16 @@ Date
     utils.date_to_str
     utils.extract_date_components
     utils.find_overlapping_dates
+
+
+Land-sea mask
+~~~~~~~~~~~~~
+.. autosummary::
+    :toctree: generated/
+
+    utils.create_land_sea_mask
+    utils.apply_landmask
+    utils.apply_oceanmask
 
 
 Graphics
@@ -53,16 +64,6 @@ Grid and regrid
 
     utils.create_target_grid
     utils.regrid
-
-
-Custom calendars
-~~~~~~~~~~~~~~~~
-.. autosummary::
-    :toctree: generated/
-
-    utils.custom_season_average
-    utils.custom_season_departure
-    utils.replace_date_pattern
 
 
 Region handling
