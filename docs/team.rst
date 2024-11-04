@@ -11,7 +11,7 @@ Core Team Members
 * Jiwoo Lee (LLNL)
 * Ana Ordonez (LLNL)
 * Peter Gleckler (LLNL)
-* Yann Planton (Monash University)
+* Yann Planton (CNRS)
 * Paul Ullrich (LLNL)
 * Bo Dong (LLNL)
 * Kristin Chang (LLNL)
