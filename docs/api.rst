@@ -1,12 +1,12 @@
 API Reference
 =============
 
-APIs for Developers
--------------------
+APIs
+----
 
 .. currentmodule:: pcmdi_metrics
 
-Below is a list of APIs available in `pcmdi_metrics (> v3.6.1)` for developers.
+Below is a list of Application Programming Interfaces (APIs) available in `pcmdi_metrics (> v3.6.1)`.
 
 
 Custom calendars
@@ -71,6 +71,7 @@ Region handling
 .. autosummary::
     :toctree: generated/
 
+    io.load_regions_specs
     io.region_subset
     io.region_from_file
 

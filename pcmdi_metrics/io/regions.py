@@ -3,10 +3,49 @@ from typing import Union
 import xarray as xr
 import xcdat as xc
 
-from pcmdi_metrics.io import da_to_ds, get_longitude, select_subset
+from pcmdi_metrics.io import (
+    da_to_ds,
+    get_latitude,
+    get_latitude_key,
+    get_longitude,
+    select_subset,
+)
 
 
 def load_regions_specs() -> dict:
+    """
+    Load predefined geographic region specifications for climate data analysis.
+
+    This function returns a dictionary containing various geographic regions and their
+    specifications, including domains defined by latitude and longitude ranges and, in
+    some cases, specific values representing land or ocean regions. The dictionary
+    includes regions for mean climate analysis, modes of variability, and monsoon domains.
+
+    Returns
+    -------
+    dict
+        A dictionary where each key is a region name (e.g., "global", "NHEX", "CONUS"),
+        and each value is a dictionary specifying the region's domain and, in some cases,
+        a value indicating land (100) or ocean (0).
+
+    Examples
+    --------
+    >>> regions = load_regions_specs()
+    >>> regions["CONUS"]
+    {'domain': {'latitude': (24.7, 49.4), 'longitude': (-124.78, -66.92)}}
+    >>> regions["land"]
+    {'value': 100}
+
+    Notes
+    -----
+    The predefined regions are categorized into:
+    - Mean Climate regions: global, hemispheric, tropical, latitude bands, and specific
+      regions like "CONUS".
+    - Modes of Variability regions: North Atlantic Oscillation (NAO), Pacific Decadal
+      Oscillation (PDO), and others.
+    - Monsoon Domains: various regional monsoon domains like "NAMM" for the North American
+      Monsoon, "SAMM" for the South American Monsoon, etc.
+    """
     regions_specs = {
         # Mean Climate
         "global": {},
@@ -129,16 +168,16 @@ def region_subset(
 
     >>> import xarray as xr
     >>> from pcmdi_metrics.io import region_subset
-    >>> ds = xr.open_dataset("sample_dataset.nc")
+    >>> ds = xr.tutorial.open_dataset("air_temperature")  # https://docs.xarray.dev/en/stable/generated/xarray.tutorial.open_dataset.html
     >>> regions_specs = {
-    ...     "North_America": {
+    ...     "CONUS": {
     ...         "domain": {
-    ...             "latitude": [15, 60],
-    ...             "longitude": [-130, -60]
+    ...             "latitude": (33, 49),
+    ...             "longitude": (225, 300)
     ...         }
     ...     }
     ... }
-    >>> subset = region_subset(ds, region="North_America", regions_specs=regions_specs)
+    >>> subset = region_subset(ds, region="CONUS", regions_specs=regions_specs)
     >>> subset
     <xarray.Dataset>
     Dimensions: ...
@@ -147,7 +186,7 @@ def region_subset(
 
     With debug information enabled:
 
-    >>> subset = region_subset(ds, region="North_America", regions_specs=regions_specs, debug=True)
+    >>> subset = region_subset(ds, region="CONUS", regions_specs=regions_specs, debug=True)
     Converting latitude and longitude to specified region...
     region_subset, latitude subsetted, ds: <latitude_subset_output>
     region_subset, longitude subsetted, ds: <longitude_subset_output>
@@ -170,6 +209,11 @@ def region_subset(
         if "latitude" in regions_specs[region]["domain"]:
             lat0 = regions_specs[region]["domain"]["latitude"][0]
             lat1 = regions_specs[region]["domain"]["latitude"][1]
+            # pre-check latitude order and reverse if it is descending order
+            lat_start_data = get_latitude(ds)[0].values.item()
+            lat_end_data = get_latitude(ds)[-1].values.item()
+            if lat_start_data > lat_end_data:
+                ds = _reverse_lat(ds)
             # proceed subset
             ds = select_subset(ds, lat=(min(lat0, lat1), max(lat0, lat1)))
             if debug:
@@ -203,3 +247,31 @@ def region_subset(
         return ds[data_var]
     else:
         return ds
+
+
+def _reverse_lat(ds: xr.Dataset) -> xr.Dataset:
+    lat_key = get_latitude_key(ds)
+    ds_reversed = _reverse_coord(ds, lat_key)
+    return ds_reversed
+
+
+def _reverse_coord(ds: xr.Dataset, coord_name: str) -> xr.Dataset:
+    """
+    Reverse the order of a specified coordinate in an xarray dataset.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        The input xarray dataset.
+    coord_name : str
+        The name of the coordinate to reverse.
+
+    Returns
+    -------
+    xr.Dataset
+        A new xarray dataset with the specified coordinate reversed.
+    """
+    if coord_name not in ds.coords:
+        raise ValueError(f"Coordinate '{coord_name}' not found in dataset.")
+
+    return ds.isel({coord_name: slice(None, None, -1)})
