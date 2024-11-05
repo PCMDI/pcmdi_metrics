@@ -2,10 +2,10 @@
 # flake8: noqa
 # These settings are required
 vars = ["tas"]  # Choices are 'pr','tasmax', 'tasmin'
-test_data_set = ["MIROC6"]
+test_data_set = ["BCSD"]
 realization = ["r1i1p1f1"]
 test_data_path = "/pscratch/sd/j/jsgoodni/testData/"
-filename_template = "%(variable)_*.nc"
+filename_template = "%(variable)_bcsd*.nc"
 
 metrics_output_path = "/global/homes/j/jsgoodni/pmp_results/drcdm/test/"
 
@@ -40,5 +40,5 @@ regrid = False
 plot = True
 netcdf = True
 generate_sftlf = True
-msyear = 3300
-meyear = 3309
+msyear = 1950
+meyear = 1959

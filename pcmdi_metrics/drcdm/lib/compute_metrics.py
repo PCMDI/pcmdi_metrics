@@ -215,6 +215,15 @@ class SeasonalAverager:
                     ds_le_65 >= 0
                 )  # don't care if mean tempearture is < 65 F
                 ds_ann = ds_le_65.groupby("time.year").sum(dim="time")  # annual total
+            elif (
+                stat == "grow_deg_days"
+            ):  # must be a mean daily temperature dataset in F
+                thresh = 50  # Fahrenheit
+                ds_ge_50 = ds - thresh
+                ds_ge_50 = ds_ge_50.where(
+                    ds_ge_50 >= 0
+                )  # don't care if mean tempearture is < 65 F
+                ds_ann = ds_ge_50.groupby("time.year").sum(dim="time")  # annual total
             elif stat.startswith("q"):
                 num = float(stat.replace("q", "").replace("p", ".")) / 100.0
                 ds_ann = ds.groupby("time.year").quantile(num, dim="time", skipna=True)
@@ -940,6 +949,45 @@ def get_annual_heating_degree_days(
         hdd.to_netcdf(nc_file, "w")
 
     del hdd
+    return result_dict
+
+
+def get_annual_growing_degree_days(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
+):
+    # Cumulative number of degrees by which mean temperature exceeds 65 F
+    index = "growing_deg_days"
+    print("Metric:", index)
+    varname = "tas"
+    TS = TimeSeriesData(ds, varname)  # gets the mean temperature dataset
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
+    gdd = xr.Dataset()
+    gdd["ANN"] = S.annual_stats("grow_deg_days")
+    gdd = update_nc_attrs(gdd, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json({index: gdd}, obs_dict={}, region="land", regrid=False)
+
+    if fig_file is not None:
+        gdd["ANN"].mean("time").plot(cmap="Reds", cbar_kwargs={"label": "F"})
+        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
+        plt.title(f"Average annual number of cooling degree days")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        gdd.to_netcdf(nc_file, "w")
+
+    del gdd
     return result_dict
 
 
