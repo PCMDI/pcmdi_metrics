@@ -122,7 +122,7 @@ def TaylorDiagram(
     Author: Jiwoo Lee (PCMDI LLNL)
 
     Update history:
-    
+
     - 2022-03 First implemented
     - 2024-11 Docstring cleaned up
 
@@ -131,20 +131,20 @@ def TaylorDiagram(
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
     >>> from pcmdi_metrics.graphics import TaylorDiagram
-    >>> 
+    >>>
     >>> stddev = np.random.uniform(low=1, high=10, size=(10,))  # Generate 10 random numbers between 1 and 10
     >>> corrcoeff = np.random.uniform(low=0.5, high=1, size=(10,))  # Generate 10 random numbers between 0.5 and 1
     >>> refstd = 5
     >>> models = ['model '+str(i) for i in range(1,11)]
-    >>> 
+    >>>
     >>> fig = plt.figure(figsize=(5,5))
-    >>> 
+    >>>
     >>> fig, ax = TaylorDiagram(stddev, corrcoeff, refstd,
                         fig=fig,
                         labels=models,
                         ref_label='Reference'
                        )
-    >>> 
+    >>>
     >>> ax.legend(bbox_to_anchor=(1.05, 0), loc='lower left', ncol=2)
     >>> fig.suptitle('Example Taylor Diagram', fontsize=20)
 
