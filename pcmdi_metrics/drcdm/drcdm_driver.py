@@ -93,8 +93,10 @@ if __name__ == "__main__":
         nc_dir = os.path.join(metrics_output_path, "netcdf")
         os.makedirs(nc_dir, exist_ok=True)
     if plots:
-        fig_dir = os.path.join(metrics_output_path, "plots")
-        os.makedirs(fig_dir, exist_ok=True)
+        for s in ["annual", "seasonal", "monthly", "quantile"]:
+            fig_dir = os.path.join(metrics_output_path, "plots")
+            plot_subdir = os.path.join(fig_dir, s)
+            os.makedirs(plot_subdir, exist_ok=True)
 
     # Setting up model realization list
     find_all_realizations, realizations = utilities.set_up_realizations(realization)
@@ -196,6 +198,8 @@ if __name__ == "__main__":
             # not sure what will be the best way to approach this, if we should loop
             # over variables, take in multiple variables at once, etc.
             for varname in variable_list:
+                # Make subdirs?
+
                 # Populate the filename templates to get actual data path
                 if run == reference_data_set:
                     test_data_full_path = reference_data_path
@@ -362,8 +366,19 @@ if __name__ == "__main__":
                             nc_base,
                         )
                         metrics_dict["RESULTS"][model][run].update(result_dict)
+                    for month in range(1, 13):
+                        result_dict = compute_metrics.get_monthly_mean_tasmax(
+                            ds,
+                            sftlf,
+                            month,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            fig_base,
+                            nc_base,
+                        )
                 elif varname == "tasmin":
-                    result_dict = compute_metrics.get_annual_tnn(
+                    result_dict = compute_metrics.get_tnn(
                         ds,
                         sftlf,
                         dec_mode,
@@ -419,7 +434,7 @@ if __name__ == "__main__":
                             nc_base,
                         )
                         metrics_dict["RESULTS"][model][run].update(result_dict)
-                    result_dict = compute_metrics.get_annualmean_tasmin(
+                    result_dict = compute_metrics.get_mean_tasmin(
                         ds,
                         sftlf,
                         dec_mode,
