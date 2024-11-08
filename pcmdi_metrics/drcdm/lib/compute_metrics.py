@@ -754,7 +754,9 @@ def get_monthly_mean_tasmax(
     # Monthly mean tasmax
 
     index = "monthly_mean_tasmax"
+    print("Metric:", index)
     varname = "tasmax"
+
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         TS,
@@ -1220,6 +1222,61 @@ def get_mean_tasmin(
         Tmin.to_netcdf(nc_file, "w")
 
     del Tmin
+    return result_dict
+
+
+def get_monthly_mean_tasmin(
+    ds,
+    sftlf,
+    month,
+    dec_mode,
+    drop_incomplet_djf,
+    annual_strict,
+    fig_file=None,
+    nc_file=None,
+):
+    # Monthly mean tasmax
+
+    index = "monthly_mean_tasmin"
+    print("Metric:", index)
+    varname = "tasmin"
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplet_djf,
+        annual_strict=annual_strict,
+    )
+    Tmin_monmean = xr.Dataset()
+    Tmin_monmean["MON"] = S.monthly_stats(month, "mean")
+    Tmin_monmean = update_nc_attrs(
+        Tmin_monmean, dec_mode, drop_incomplet_djf, annual_strict
+    )
+
+    # Compute statistics
+    result_dict = metrics_json(
+        {index: Tmin_monmean}, obs_dict={}, region="land", regrid=False
+    )
+
+    if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/monthly/").replace(
+            "$index", "_".join([index, S.month_lookup[month]])
+        )
+        Tmin_monmean["MON"].mean("time").plot(
+            cmap="YlGnBu_r", cbar_kwargs={"label": "F"}
+        )
+        plt.title(f"{S.month_lookup[month]} Mean Minimum Temperature")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmin_monmean.to_netcdf(nc_file, "w")
+
+    del Tmin_monmean
     return result_dict
 
 

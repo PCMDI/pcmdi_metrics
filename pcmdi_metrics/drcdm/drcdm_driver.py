@@ -377,6 +377,7 @@ if __name__ == "__main__":
                             fig_base,
                             nc_base,
                         )
+                        metrics_dict["RESULTS"][model][run].update(result_dict)
                 elif varname == "tasmin":
                     result_dict = compute_metrics.get_tnn(
                         ds,
@@ -388,6 +389,19 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Get monthly mean, tasmin
+                    for month in range(1, 13):
+                        result_dict = compute_metrics.get_monthly_mean_tasmin(
+                            ds,
+                            sftlf,
+                            month,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            fig_base,
+                            nc_base,
+                        )
+                        metrics_dict["RESULTS"][model][run].update(result_dict)
                     # Get annual-min, 5-day tasin
                     results_dict = compute_metrics.get_annual_min_tasmin_5day(
                         ds,

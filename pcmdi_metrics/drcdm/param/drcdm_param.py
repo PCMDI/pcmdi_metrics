@@ -1,7 +1,7 @@
 # Settings for extremes driver
 # flake8: noqa
 # These settings are required
-vars = ["pr"]  # Choices are 'pr','tasmax', 'tasmin', "tas"
+vars = ["tasmax", "tasmin", "tas"]  # Choices are 'pr','tasmax', 'tasmin', "tas"
 test_data_set = ["BCSD"]
 realization = ["r1i1p1f1"]
 test_data_path = "/pscratch/sd/j/jsgoodni/testData/"
