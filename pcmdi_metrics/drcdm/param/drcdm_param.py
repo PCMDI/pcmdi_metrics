@@ -1,7 +1,7 @@
 # Settings for extremes driver
 # flake8: noqa
 # These settings are required
-vars = ["tas"]  # Choices are 'pr','tasmax', 'tasmin'
+vars = ["pr"]  # Choices are 'pr','tasmax', 'tasmin', "tas"
 test_data_set = ["BCSD"]
 realization = ["r1i1p1f1"]
 test_data_path = "/pscratch/sd/j/jsgoodni/testData/"
@@ -16,7 +16,7 @@ metrics_output_path = "/global/homes/j/jsgoodni/pmp_results/drcdm/test/"
 
 # Optional settings
 # See the README for more information about these settings
-case_id = "test_pr"
+case_id = "test_tasmax"
 # sftlf_filename_template = '/p/css03/esgf_publish/CMIP6/CMIP/MIROC/MIROC6/piControl/r1i1p1f1/fx/sftlf/gn/v20190311/sftlf_fx_MIROC6_piControl_r1i1p1f1_gn.nc'
 
 ModUnitsAdjust_precip = (
@@ -28,6 +28,8 @@ ModUnitsAdjust_precip = (
 
 ModUnitsAdjust_temperature = (True, "KtoF", 0, "F")
 
+
+#
 if vars[0] == "pr":
     ModUnitsAdjust = ModUnitsAdjust_precip  # precip variable
 else:
@@ -40,5 +42,5 @@ regrid = False
 plot = True
 netcdf = True
 generate_sftlf = True
-msyear = 1950
-meyear = 1959
+msyear = 1960
+meyear = 1970

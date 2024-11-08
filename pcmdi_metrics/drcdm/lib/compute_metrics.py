@@ -60,6 +60,20 @@ class SeasonalAverager:
         self.del0d = datetime.timedelta(days=0)
         self.pentad = None
         self.sftlf = sftlf["sftlf"]
+        self.month_lookup = {
+            1: "JAN",
+            2: "FEB",
+            3: "MAR",
+            4: "APR",
+            5: "MAY",
+            6: "JUNE",
+            7: "JULY",
+            8: "AUG",
+            9: "SEP",
+            10: "OCT",
+            11: "NOV",
+            12: "DEC",
+        }
 
     def masked_ds(self, ds):
         # Mask land where 0.5<=sftlf<=1
@@ -70,15 +84,19 @@ class SeasonalAverager:
         # Get the 5-day mean dataset
         self.pentad = self.TSD.rolling_5day()
 
-    # def calc_5day_sum(self):
-    #     # Get the 5-day sum dataset
-    #     self.pentad_sum = self.TSD.rolling_5day_sum()
-
     def fix_time_coord(self, ds):
         cal = self.TSD.calendar
         ds = ds.rename({"year": "time"})
         y_to_cft = [cftime.datetime(y, 1, 1, calendar=cal) for y in ds.time]
         ds["time"] = y_to_cft
+        ds.time.attrs["axis"] = "T"
+        ds["time"].encoding["calendar"] = cal
+        ds["time"].attrs["standard_name"] = "time"
+        ds.time.encoding["units"] = self.TSD.time_units
+        return ds
+
+    def fix_monthly_time_coord(self, ds):
+        cal = self.TSD.calendar
         ds.time.attrs["axis"] = "T"
         ds["time"].encoding["calendar"] = cal
         ds["time"].attrs["standard_name"] = "time"
@@ -222,7 +240,7 @@ class SeasonalAverager:
                 ds_ge_50 = ds - thresh
                 ds_ge_50 = ds_ge_50.where(
                     ds_ge_50 >= 0
-                )  # don't care if mean tempearture is < 65 F
+                )  # don't care if mean tempearture is < 50 F
                 ds_ann = ds_ge_50.groupby("time.year").sum(dim="time")  # annual total
             elif stat.startswith("q"):
                 num = float(stat.replace("q", "").replace("p", ".")) / 100.0
@@ -241,6 +259,7 @@ class SeasonalAverager:
                     / ds.groupby("time.year").count(dim="time")
                     * 100
                 )
+
         # Need to fix time axis if groupby operation happened
         if "year" in ds_ann.coords:
             ds_ann = self.fix_time_coord(ds_ann)
@@ -426,6 +445,35 @@ class SeasonalAverager:
             ds_stat = self.fix_DJF_time_coord(ds_stat)
         return self.masked_ds(ds_stat)
 
+    def monthly_stats(self, month, stat):
+        # Aquire statistics for a given month
+
+        # Arguments:
+        #     stat: Can be "max", "min", "mean"
+        #     month: [1,2,3,...,12] representing month of the year
+        # Returns:
+        #     ds_ann: Dataset containing annual max or min grid
+        ds = self.TSD.return_data_array()
+
+        if stat == "max":
+            ds_stat = ds.resample(time="1ME").max(dim="time")
+        elif stat == "min":
+            ds_stat = ds.resample(time="1ME").min(dim="time")
+        elif stat == "mean":
+            ds_stat = ds.resample(time="1ME").mean(dim="time")
+        ds_stat = ds_stat.isel(
+            time=(ds_stat.time.dt.month == month)
+        )  # length of N years,
+        ds_stat = self.fix_monthly_time_coord(ds_stat)
+        # Need to fix time axis if groupby operation happened
+
+        # if "year" in ds_stat.coords:
+        #     ds_stat = self.fix_time_coord(ds_stat)
+        # else:
+        #     ds_stat = self.fix_DJF_time_coord(ds_stat)
+
+        return self.masked_ds(ds_stat)
+
 
 def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     # Add bounds and record user settings in attributes
@@ -439,7 +487,7 @@ def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     bnds_dict = {yvar: "Y", xvar: "X", "time": "T"}
     for item in bnds_dict:
         if item not in ds:
-            continue  # without this line, 'time not in dataset' was an issue for quantile variables
+            continue  # without this, 'time not in dataset' was an issue for quantile variables
         if "bounds" in ds[item].attrs:
             bnds_var = ds[item].attrs["bounds"]
             if bnds_var not in ds.keys():
@@ -543,8 +591,15 @@ def get_mean_tasmax(
 
     if fig_file is not None:
         for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
+            if season == "ANN":
+                fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+                    "$index", "_".join([index, season])
+                )
+            else:
+                fig_file1 = fig_file.replace("/plots/", "/plots/seasonal/").replace(
+                    "$index", "_".join([index, season])
+                )
             Tmean[season].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
-            fig_file1 = fig_file.replace("$index", "_".join([index, season]))
             plt.title(f"Average {season} daily high temperature")
             ax = plt.gca()
             ax.set_facecolor(bgclr)
@@ -582,8 +637,10 @@ def get_annual_txx(
     result_dict = metrics_json({index: Tmax}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         Tmax["ANN"].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title("Average annual max daily high temperature")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -619,8 +676,10 @@ def get_tasmax_q50(
     )
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/quantile/").replace(
+            "$index", "_".join([index, "median"])
+        )
         Tmedian["q50"].plot(cmap="Oranges", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "median"]))
         plt.title("Time median daily high temperature")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -664,8 +723,10 @@ def get_tasmax_q99p9(
     )
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/quantile/").replace(
+            "$index", "_".join([index, "q99p9"])
+        )
         Tq99p9["q99p9"].plot(cmap="Oranges", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "q99p9"]))
         plt.title("99.9th percentile daily high temperature")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -677,6 +738,60 @@ def get_tasmax_q99p9(
         Tq99p9.to_netcdf(nc_file, "w")
 
     del Tq99p9
+    return result_dict
+
+
+def get_monthly_mean_tasmax(
+    ds,
+    sftlf,
+    month,
+    dec_mode,
+    drop_incomplet_djf,
+    annual_strict,
+    fig_file=None,
+    nc_file=None,
+):
+    # Monthly mean tasmax
+
+    index = "monthly_mean_tasmax"
+    varname = "tasmax"
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplet_djf,
+        annual_strict=annual_strict,
+    )
+    Tmax_monmean = xr.Dataset()
+    Tmax_monmean["MON"] = S.monthly_stats(month, "mean")
+    Tmax_monmean = update_nc_attrs(
+        Tmax_monmean, dec_mode, drop_incomplet_djf, annual_strict
+    )
+
+    # Compute statistics
+    result_dict = metrics_json(
+        {index: Tmax_monmean}, obs_dict={}, region="land", regrid=False
+    )
+
+    if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/monthly/").replace(
+            "$index", "_".join([index, S.month_lookup[month]])
+        )
+        Tmax_monmean["MON"].mean("time").plot(
+            cmap="Oranges", cbar_kwargs={"label": "F"}
+        )
+        plt.title(f"{S.month_lookup[month]} Mean Maximum Temperature")
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        Tmax_monmean.to_netcdf(nc_file, "w")
+
+    del Tmax_monmean
     return result_dict
 
 
@@ -707,8 +822,10 @@ def get_annual_tasmax_5day(
     )
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         Tmax5day["ANN"].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title("Annual maximum 5-day averaged high temperature")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -755,10 +872,12 @@ def get_annual_tasmax_ge_XF(
     result_dict = metrics_json({index: TgeX}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:  # save the figure
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         TgeX["ANN"].mean("time").plot(
             cmap="Oranges", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
         )
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title(
             "Mean percentage of days per year\nwith high temperature >= {0}F".format(
                 deg
@@ -811,10 +930,12 @@ def get_annual_tasmax_le_XF(
     result_dict = metrics_json({index: TleX}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:  # save the figure
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         TleX["ANN"].mean("time").plot(
             cmap="Blues", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
         )
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title(
             "Mean percentage of days per year\nwith high temperature < {0}F".format(deg)
         )
@@ -858,8 +979,15 @@ def get_mean_tasmean(
 
     if fig_file is not None:
         for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
+            if season == "ANN":
+                fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+                    "$index", "_".join([index, season])
+                )
+            else:
+                fig_file1 = fig_file.replace("/plots/", "/plots/seasonal/").replace(
+                    "$index", "_".join([index, season])
+                )
             Tmean[season].mean("time").plot(cmap="Oranges", cbar_kwargs={"label": "F"})
-            fig_file1 = fig_file.replace("$index", "_".join([index, season]))
             plt.title(f"Average {season} daily high temperature")
             ax = plt.gca()
             ax.set_facecolor(bgclr)
@@ -897,8 +1025,10 @@ def get_annual_cooling_degree_days(
     result_dict = metrics_json({index: cdd}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         cdd["ANN"].mean("time").plot(cmap="Reds", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title(f"Average annual number of cooling degree days")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -936,8 +1066,10 @@ def get_annual_heating_degree_days(
     result_dict = metrics_json({index: hdd}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         hdd["ANN"].mean("time").plot(cmap="Blues", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title(f"Average annual number of heating degree days")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -975,9 +1107,11 @@ def get_annual_growing_degree_days(
     result_dict = metrics_json({index: gdd}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         gdd["ANN"].mean("time").plot(cmap="Reds", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
-        plt.title(f"Average annual number of cooling degree days")
+        plt.title(f"Average annual number of growing degree days")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
         plt.savefig(fig_file1)
@@ -992,11 +1126,11 @@ def get_annual_growing_degree_days(
 
 
 # Minimum Temperature Metrics
-def get_annual_tnn(
+def get_tnn(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Get annual and winter minimum daily minimum temperature.
-    index = "annual_tnn"
+    index = "tnn"
     print("Metric:", index)
     varname = "tasmin"
     TS = TimeSeriesData(ds, varname)
@@ -1017,8 +1151,15 @@ def get_annual_tnn(
 
     if fig_file is not None:
         for season in ["ANN", "DJF"]:  # , "DJF"]:
+            if season == "ANN":
+                fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+                    "$index", "_".join([index, season])
+                )
+            else:
+                fig_file1 = fig_file.replace("/plots/", "/plots/seasonal/").replace(
+                    "$index", "_".join([index, season])
+                )
             Tmean[season].mean("time").plot(cmap="YlGnBu_r", cbar_kwargs={"label": "F"})
-            fig_file1 = fig_file.replace("$index", "_".join([index, season]))
             plt.title(f"Average {season} minimum daily low temperature")
             ax = plt.gca()
             ax.set_facecolor(bgclr)
@@ -1033,11 +1174,11 @@ def get_annual_tnn(
     return result_dict
 
 
-def get_annualmean_tasmin(
+def get_mean_tasmin(
     ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Get annual mean daily minimum temperature.
-    index = "annualmean_tasmin"
+    index = "mean_tasmin"
     print("Metric:", index)
     varname = "tasmin"
     TS = TimeSeriesData(ds, varname)
@@ -1059,8 +1200,15 @@ def get_annualmean_tasmin(
 
     if fig_file is not None:
         for season in ["ANN", "MAM", "JJA", "SON", "DJF"]:
+            if season == "ANN":
+                fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+                    "$index", "_".join([index, season])
+                )
+            else:
+                fig_file1 = fig_file.replace("/plots/", "/plots/seasonal/").replace(
+                    "$index", "_".join([index, season])
+                )
             Tmin[season].mean("time").plot(cmap="YlGnBu_r", cbar_kwargs={"label": "F"})
-            fig_file1 = fig_file.replace("$index", "_".join([index, season]))
             plt.title("Average " + season + " mean daily low temperature")
             ax = plt.gca()
             ax.set_facecolor(bgclr)
@@ -1107,10 +1255,12 @@ def get_annual_tasmin_le_XF(
     result_dict = metrics_json({index: TleX}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         TleX["ANN"].mean("time").plot(
             cmap="RdPu", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
         )
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title(
             "Mean percentage of days per year\nwith low temperature <= {0}F".format(deg)
         )
@@ -1159,10 +1309,12 @@ def get_annual_tasmin_ge_XF(
     result_dict = metrics_json({index: TgeX}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         TgeX["ANN"].mean("time").plot(
             cmap="RdPu", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
         )
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title(
             "Mean percentage of days per year\nwith low temperature >= {0}F".format(deg)
         )
@@ -1206,8 +1358,10 @@ def get_annual_min_tasmin_5day(
     )
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         Tmin5day["ANN"].mean("time").plot(cmap="YlGnBu_r", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title("Annual minimum 5-day averaged low temperature")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1249,8 +1403,10 @@ def get_annual_max_tasmin_5day(
     )
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         Tmin5day["ANN"].mean("time").plot(cmap="jet", cbar_kwargs={"label": "F"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title("Annual maximum 5-day averaged low temperature")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1296,8 +1452,10 @@ def get_annualmean_pr(
     )
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         PRmean["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title("Annual mean daily precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1339,8 +1497,10 @@ def get_seasonalmean_pr(
 
     if fig_file is not None:
         for season in ["DJF", "MAM", "JJA", "SON"]:
+            fig_file1 = fig_file.replace("/plots/", "/plots/seasonal/").replace(
+                "$index", "_".join([index, season])
+            )
             PRmean[season].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-            fig_file1 = fig_file.replace("$index", "_".join([index, season]))
             plt.title(season + " mean daily precipitation")
             ax = plt.gca()
             ax.set_facecolor(bgclr)
@@ -1377,8 +1537,10 @@ def get_pr_q50(
     result_dict = metrics_json({index: PRq50}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/quantile/").replace(
+            "$index", "_".join([index, "median"])
+        )
         PRq50["q50"].plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "median"]))
         plt.title("Time median daily precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1419,8 +1581,10 @@ def get_pr_q99p0(
     )
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/quantile/").replace(
+            "$index", "_".join([index, "q99p0"])
+        )
         PRq99p0["q99p0"].plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "q99p0"]))
         plt.title("99.9th percentile daily precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1461,8 +1625,10 @@ def get_pr_q99p9(
     )
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/quantile/").replace(
+            "$index", "_".join([index, "q99p9"])
+        )
         PRq99p9["q99p9"].plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "q99p9"]))
         plt.title("99.9th percentile daily precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1501,8 +1667,10 @@ def get_annual_pxx(
     result_dict = metrics_json({index: Pmax}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         Pmax["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title("Average annual maximum daily precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1541,8 +1709,10 @@ def get_annual_pr_total(
     result_dict = metrics_json({index: Ptot}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         Ptot["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title("Average annual total daily precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1592,10 +1762,12 @@ def get_annual_pr_ge_Xin(
     result_dict = metrics_json({index: PRgeX}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         PRgeX["ANN"].mean("time").plot(
             cmap="RdPu", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
         )
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title(
             "Mean percentage of days per year\nwith precip >= {0}in".format(inches)
         )
@@ -1640,8 +1812,10 @@ def get_annual_pr_5day(
     )
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         PRmax5day["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title("Annual maximum 5-day total precipitation")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1710,8 +1884,10 @@ def get_wettest_5yr(
     result_dict = metrics_json({index: P5}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN5"])
+        )
         P5["ANN5"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "mm"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN5"]))
         plt.title("Average precipitation on wettest day in 5 years")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1747,8 +1923,10 @@ def get_annual_cwd(
     result_dict = metrics_json({index: Pcwd}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         Pcwd["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "count"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title("Average annual max count of consecutive wet days")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
@@ -1784,8 +1962,10 @@ def get_annual_consecDD(
     result_dict = metrics_json({index: Pcdd}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
         Pcdd["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": "count"})
-        fig_file1 = fig_file.replace("$index", "_".join([index, "ANN"]))
         plt.title("Average annual max count of consecutive dry days")
         ax = plt.gca()
         ax.set_facecolor(bgclr)
