@@ -8,15 +8,15 @@ We provide demo notebooks to help users get started with the PMP.
 Most demos are straightforward examples showing how to apply the PMP to one or more datasets. 
 For more advanced use cases (such as running the PMP across all CMIP models), 
 we include example parameter files based on PCMDI's semi-operational setup for the CMIP database. 
+Overviews for metrics can be found `here <metrics.html>`_. 
 
-To make it easier to run these demos, we recommend cloning the `PMP GitHub repository <https://github.com/PCMDI/pcmdi_metrics>`_.
+To make it easier to run these demos, we recommend cloning the `PMP GitHub repository <https://github.com/PCMDI/pcmdi_metrics>`_, and run them in the environment where PMP is `installed <install.html>`_.
 
 .. code-block::
 
    $ clone https://github.com/PCMDI/pcmdi_metrics.git
    $ cd pcmdi_metrics/doc/jupyter/Demo
 
-Overviews for metrics can be found `here <metrics.html>`_. 
 
 
 .. nbgallery::
