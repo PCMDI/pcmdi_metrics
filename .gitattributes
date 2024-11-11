@@ -1,2 +1,2 @@
-doc/jupyter/* linguist-vendored
-docs/* linguist-vendored
+doc/jupyter/Demo/* linguist-vendored
+docs/examples/* linguist-vendored
