@@ -170,7 +170,7 @@ def plot_climatology_diff(
         ax.text(
             0,
             1.01,
-            _wrap_text(mean_max_min_info_str, max_length=60),
+            _split_text(mean_max_min_info_str, max_length=60),
             fontsize=9,
             horizontalalignment="left",
             verticalalignment="bottom",
@@ -261,7 +261,7 @@ def plot_climatology_diff(
     plt.gcf().text(
         0.5,
         0.91,
-        _wrap_text(var_info_str, max_length=60),
+        _split_text(var_info_str, max_length=60),
         fontsize=9,
         color="grey",
         horizontalalignment="center",
@@ -365,7 +365,7 @@ def plot_climatology(
     separator1 = "\n\n" if season_to_plot == "all" else ", "
     separator2 = "\n\n" if season_to_plot == "all" else "\n"
     if long_name:
-        var_info_str += f"Variable: {_wrap_text(long_name)}{separator1}"
+        var_info_str += f"Variable: {_split_text(long_name)}{separator1}"
     if units:
         var_info_str += f"Units: {units}{separator1}"
     if period:
@@ -1028,9 +1028,9 @@ def _get_colormap(colormap):
     return cmap
 
 
-def _wrap_text(text, max_length=20):
+def _split_text(text, max_length=20, debug=False):
     """
-    Wraps the input text to ensure each line does not exceed the specified max length.
+    Splits text into lines with a maximum length, without breaking words.
 
     Parameters
     ----------
@@ -1046,15 +1046,27 @@ def _wrap_text(text, max_length=20):
 
     Example
     -------
-    >>> text = "This is a long string that needs to be wrapped because it exceeds 20 characters."
-    >>> _wrap_text(text)
-    'This is a long string\nthat needs to be wrappe\nd because it exceeds 20\ncharacters.'
+    >>> text = "This is a long string that needs to be split into lines without breaking words."
+    >>> _split_text(text)
+    'This is a long\nstring that needs\nto be split into\nlines without\nbreaking words.'
     """
+    words = text.split()
     lines = []
+    current_line = ""
 
-    # Break the string into chunks of max_length
-    for i in range(0, len(text), max_length):
-        lines.append(text[i : i + max_length])
+    for word in words:
+        if len(current_line) + len(word) + 1 <= max_length:
+            current_line += word + " "
+        else:
+            lines.append(current_line.strip())
+            current_line = word + " "
+
+    if current_line:
+        lines.append(current_line.strip())
+
+    if debug:
+        for line in lines:
+            print(line)
 
     # Join lines with newline characters
     return "\n".join(lines)
