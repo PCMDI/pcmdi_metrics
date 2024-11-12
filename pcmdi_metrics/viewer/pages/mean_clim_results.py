@@ -1,7 +1,6 @@
 # pages/page2.py
-from dash import dcc, html
+from dash import dcc, html, dash_table
 from dash.dependencies import Input, Output
-from dash import dash_table
 import pandas as pd
 import numpy as np
 import os
