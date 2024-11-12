@@ -117,6 +117,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.7]        | New capability (**figure generation for mean climate**) and technical update
 | [v3.6.1]      | Technical update, additional QC repair functions
 | [v3.6]        | New capability (**regional application of precip variability**) and technical update
 | [v3.5.2]      | New capability (**QC**, **new modes for modes of variability metrics: PSA1, PSA2**) and technical update
@@ -164,6 +165,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.7]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7
 [v3.6.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6.1
 [v3.6]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6
 [v3.5.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5.2
