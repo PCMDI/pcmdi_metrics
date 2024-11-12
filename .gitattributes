@@ -4,3 +4,4 @@ docs/examples/* linguist-vendored
 *.html linguist-detectable=false
 *.css linguist-detectable=false
 *.ipynb linguist-detectable=false
+*.sh linguist-detectable=false
