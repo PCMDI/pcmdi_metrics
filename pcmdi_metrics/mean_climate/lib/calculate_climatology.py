@@ -5,6 +5,8 @@ import dask
 
 from pcmdi_metrics.io import xcdat_open
 
+from .plot_clim_maps import plot_climatology
+
 
 def calculate_climatology(
     var,
@@ -17,6 +19,7 @@ def calculate_climatology(
     ver=None,
     periodinname=None,
     climlist=None,
+    plot=True,
 ):
     if ver is None:
         ver = datetime.datetime.now().strftime("v%Y%m%d")
@@ -133,3 +136,11 @@ def calculate_climatology(
         d_clim_dict[s].to_netcdf(
             out_season
         )  # global attributes are automatically saved as well
+
+        if plot and s == "AC":
+            plot_climatology(
+                d_ac,
+                var,
+                season_to_plot="all",
+                output_filename=out_season.replace(".nc", ".png"),
+            )
