@@ -4,6 +4,9 @@
 Demo notebooks
 **************
 
+Metrics
+~~~~~~~
+
 We provide demo notebooks to help users get started with the PMP. 
 Most demos are straightforward examples showing how to apply the PMP to one or more datasets. 
 For more advanced use cases (such as running the PMP across all CMIP models), 
@@ -16,7 +19,6 @@ To make it easier to run these demos, we recommend cloning the `PMP GitHub repos
 
    $ clone https://github.com/PCMDI/pcmdi_metrics.git
    $ cd pcmdi_metrics/doc/jupyter/Demo
-
 
 
 .. nbgallery::
@@ -35,3 +37,22 @@ To make it easier to run these demos, we recommend cloning the `PMP GitHub repos
    examples/Demo_8_extremes
    examples/Demo_9_seaIceExtent_ivanova
    examples/Demo_9b_seaIce_data_explore
+
+
+Plots
+~~~~~
+
+We also provide demo notebooks showcasing PMP's plotting capabilities, and the `API reference <api.html#graphics>`_ includes detailed information on the available parameters for PMP's plotting functions.
+
+
+.. nbgallery::
+   :caption: Graphics example notebooks:
+
+   examples/portrait_plot_example
+   examples/portrait_plot_mean_clim
+   examples/portrait_plot_mean_clim_multiple_CMIPs
+   examples/parallel_coordinate_plot_example
+   examples/parallel_coordinate_plot_mean_clim
+   examples/parallel_coordinate_plot_mean_clim_multiMIPs
+   examples/taylor_diagram_example
+   examples/taylor_diagram_multiple_CMIPs
