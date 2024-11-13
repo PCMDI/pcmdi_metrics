@@ -11,7 +11,11 @@ if "--enable-devel" in sys.argv:
 else:
     install_dev = False
 
-release_version = "3.7"
+# Read version from _version.py
+version = {}
+with open("pcmdi_metrics/_version.py") as f:
+    exec(f.read(), version)
+    release_version = version["__version__"]
 
 p = subprocess.Popen(
     ("git", "describe", "--tags"),
