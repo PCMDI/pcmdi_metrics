@@ -15,13 +15,17 @@ The notes below provide a brief summary of some of the key aspects of the PMP de
         <iframe src="https://www.youtube.com/embed/STfCq5Biqf0" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
     </div>
 
+References
+----------
+Lee, J., P. J. Gleckler, M.-S. Ahn, A. Ordonez, P. Ullrich, K. R. Sperber, K. E. Taylor, Y. Y. Planton, E. Guilyardi, P. Durack, C. Bonfils, M. D. Zelinka, L.-W. Chao, B. Dong, C. Doutriaux, C. Zhang, T. Vo, J. Boutte, M. F. Wehner, A. G. Pendergrass, D. Kim, Z. Xue, A. T. Wittenberg, and J. Krasting, 2024: Systematic and Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3. Geoscientific Model Development, 17, 3919–3948, https://doi.org/10.5194/gmd-17-3919-2024.
+
+Gleckler et al. (2016), A more powerful reality test for climate models, Eos, 97, `doi:10.1029/2016EO051663 <https://eos.org/science-updates/a-more-powerful-reality-test-for-climate-models>`_.
+
+
 Software framework and dependencies
 -----------------------------------
 
-Most of the PMP is based on `Python 3 <https://www.python.org/>`_ and built upon the Climate Data Analysis Tools (`CDAT <https://cdat.llnl.gov>`_).  
-The key component of CDAT used by the PMP is the Community Data Management System (`CDMS <https://cdms.readthedocs.io/en/latest/manual/cdms_1.html>`_) which provides access to a powerful collection of climate specific utilites, including cdutil, genutil and cdtime.
-To modernize, PMP is in transition to implement Xarray Climate Data Analysis Tools (`xCDAT`_) as its primary building block.
-
+Most of the PMP is based on `Python 3 <https://www.python.org/>`_ and built upon the `Xarray <https://docs.xarray.dev/en/stable/>`_ and the Xarray Climate Data Analysis Tools (`xCDAT`_). 
 
 Input/Output format
 -------------------
