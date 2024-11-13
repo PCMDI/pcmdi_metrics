@@ -25,3 +25,4 @@ from .xcdat_dataset_io import (  # noqa  # isort:skip
     select_subset,
 )
 from .regions import load_regions_specs, region_subset  # noqa
+from .region_from_file import region_from_file

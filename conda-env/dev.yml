@@ -50,6 +50,7 @@ dependencies:
     - sphinx-book-theme
     - sphinx-copybutton
     - sphinx_rtd_theme
+    - furo
     - nbsphinx
     - pandoc
     - sphinx-design
