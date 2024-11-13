@@ -82,7 +82,7 @@ BSD 3-Clause License. See `LICENSE <https://github.com/PCMDI/pcmdi_metrics/blob/
    overview
    start
    metrics
-   metrics-demo
+   demo-notebooks
    Results <https://pcmdi.llnl.gov/research/metrics/>
 
 .. toctree::

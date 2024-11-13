@@ -49,6 +49,9 @@ Land-sea mask
 
 Graphics
 ~~~~~~~~
+
+Example usages of the following plotting functions are available in the `demo notebooks <demo-notebooks.html#plots>`_.
+
 .. autosummary::
     :toctree: generated/
 
