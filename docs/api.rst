@@ -1,3 +1,5 @@
+.. title:: PMP API
+
 API Reference
 =============
 

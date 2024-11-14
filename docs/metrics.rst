@@ -1,3 +1,5 @@
+.. title:: PMP Metrics
+
 .. _metrics:
 
 ***********

@@ -1,3 +1,5 @@
+.. title:: PMP Documentation
+
 .. pcmdi_metrics documentation master file, created by
    sphinx-quickstart on Wed Nov  4 13:15:37 2020.
    You can adapt this file completely to your liking, but it should at least
@@ -21,6 +23,8 @@ regional monsoons, and high frequency characteristics of simulated precipitation
     <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 80%; height: auto; margin-left: auto; margin-right: auto">
         <iframe src="https://www.youtube.com/embed/STfCq5Biqf0" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
     </div>
+    <p style="text-align: center">Video for a brief PMP introduction (2 min 30 sec)</p>
+
 
 
 Getting Started
