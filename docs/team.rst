@@ -1,3 +1,5 @@
+.. title:: PMP Team
+
 .. _team:
 
 
