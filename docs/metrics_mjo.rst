@@ -1,3 +1,6 @@
+.. title:: PMP MJO
+
+
 ********************
 MJO baseline metrics
 ********************

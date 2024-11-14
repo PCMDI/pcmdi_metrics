@@ -1,3 +1,4 @@
+.. title:: PMP Demo Notebooks
 .. _metrics-demo:
 
 **************
