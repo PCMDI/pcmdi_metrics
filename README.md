@@ -8,7 +8,7 @@
 # PCMDI Metrics Package (PMP)
 
 <!-- badges: start -->
-[![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
+[![latest version](https://img.shields.io/conda/vn/conda-forge/pcmdi_metrics.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 [![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/files)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
