@@ -164,6 +164,11 @@ def apply_landmask(
     - If `landfrac` is not provided, it will be generated using the 'create_land_sea_mask' function.
     - The function can handle land fraction data in both percentage (0-100) and fractional (0-1) formats.
 
+    See Also
+    --------
+    create_land_sea_mask : The underlying function used to apply the mask.
+    apply_oceanmask : A sister function used to apply the mask out ocean.
+
     Examples
     --------
     >>> from pcmdi_metrics.utils import apply_landmask

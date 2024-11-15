@@ -143,6 +143,7 @@ def repeating_months(start: int, length: int) -> list:
 
     Example
     -------
+    >>> from pcmdi_metrics.utils import repeating_months
     >>> repeating_months(3, 20)
     [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
@@ -181,6 +182,7 @@ def last_day_of_month(year: int, month: int, calendar: str = "standard") -> int:
 
     Example
     -------
+    >>> from pcmdi_metrics.utils import last_day_of_month
     >>> last_day_of_month(2024, 2, 'gregorian')  # Leap year in gregorian calendar (should return 29)
     29
 

@@ -1,3 +1,6 @@
+.. title:: PMP Mean Climate
+
+
 *****************
 Mean Climate
 *****************
