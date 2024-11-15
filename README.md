@@ -8,8 +8,8 @@
 # PCMDI Metrics Package (PMP)
 
 <!-- badges: start -->
-[![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg&kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
-[![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg&kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/files)
+[![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
+[![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/files)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
 [![License](https://anaconda.org/conda-forge/pcmdi_metrics/badges/license.svg)](https://github.com/PCMDI/pcmdi_metrics/blob/main/LICENSE)
@@ -17,10 +17,10 @@
 [![All Contributors](https://img.shields.io/github/all-contributors/PCMDI/pcmdi_metrics?color=ee8449&style=flat-square)](#contributors)
 
 Conda-forge (CURRENT, recommended):
-[![Download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg&kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
+[![Download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 
 PCMDI Conda Channel (old, deprecated):
-[![Download](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg&kill_cache=1)](https://anaconda.org/pcmdi/pcmdi_metrics)
+[![Download](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg?kill_cache=1)](https://anaconda.org/pcmdi/pcmdi_metrics)
 
 <!-- badges: end -->
 
