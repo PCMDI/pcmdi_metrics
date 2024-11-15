@@ -12,7 +12,7 @@ def create_table(dir_path):
     pattern = r"^[^_]+_([^_]+)_.*\.png$" #regex pattern to extract model name between first and second underscores
     var_folders = [f.name for f in os.scandir(dir_path) if f.is_dir()]
     seasons = {
-        "AC": "_AC_",
+        "ANN": "_AC_",
         "DJF": "_DJF_",
         "JJA": "_JJA_",
         "MAM": "_MAM_",
@@ -30,7 +30,7 @@ def create_table(dir_path):
                     model = match.group(1)
 
                     if model not in image_data: #initialize model entry if it doesn't exist
-                        image_data[model] = {"Variable": var_folder, "AC": None, "DJF": None, "JJA": None, "MAM": None, "SON": None,}
+                        image_data[model] = {"Variable": var_folder, "ANN": None, "DJF": None, "JJA": None, "MAM": None, "SON": None,}
                     
                     for image_type, season in seasons.items():
                         if season in file.name:
@@ -42,7 +42,7 @@ def create_table(dir_path):
             data.append({
                 "Model": model,
                 "Variable": images["Variable"],
-                "AC": images["AC"],
+                "ANN": images["ANN"],
                 "DJF": images["DJF"],
                 "JJA": images["JJA"],
                 "MAM": images["MAM"],
@@ -54,8 +54,8 @@ def create_table(dir_path):
 
 def layout(dir_path):
     df = create_table(dir_path)
-    df = df[['Model', 'Variable', 'AC', 'DJF', 'JJA', 'MAM', 'SON']].sort_values('Model')
-    for col in ['AC', 'DJF', 'JJA', 'MAM', 'SON']:
+    df = df[['Model', 'Variable', 'ANN', 'DJF', 'JJA', 'MAM', 'SON']].sort_values(['Model','Variable'])
+    for col in ['ANN', 'DJF', 'JJA', 'MAM', 'SON']:
         df[col] = df[col].apply(lambda x: f"[{col}]({x})" if x else None)
  
     return html.Div([
@@ -90,8 +90,8 @@ def layout(dir_path):
 
 def callbacks(app, dir_path):
     df = create_table(dir_path)
-    df = df[['Model', 'Variable', 'AC', 'DJF', 'JJA', 'MAM', 'SON']].sort_values('Model')
-    for col in ['AC', 'DJF', 'JJA', 'MAM', 'SON']:
+    df = df[['Model', 'Variable', 'ANN', 'DJF', 'JJA', 'MAM', 'SON']].sort_values(['Model','Variable'])
+    for col in ['ANN', 'DJF', 'JJA', 'MAM', 'SON']:
         df[col] = df[col].apply(lambda x: f"[{col}]({x})" if x else None)
     
     @app.callback(
