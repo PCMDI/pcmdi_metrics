@@ -1,3 +1,5 @@
+.. title:: PMP Extremes
+
 *****************
 Extremes
 *****************
