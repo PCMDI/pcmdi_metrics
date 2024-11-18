@@ -1,3 +1,5 @@
+.. title:: PMP Extremes
+
 *****************
 Extremes
 *****************
@@ -11,11 +13,11 @@ Demo
 =====
 * `PMP demo Jupyter notebook`_
 
-.. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_8_extremes.ipynb
+.. _PMP demo Jupyter notebook: examples/Demo_8_extremes.html
 
 * `Extremes Portrait Plot demo Jupyter notebook`_
 
-.. _Extremes Portrait Plot demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/graphics/portrait_plot/return_value_portrait_plot_demo.ipynb
+.. _Extremes Portrait Plot demo Jupyter notebook: examples/return_value_portrait_plot_demo
 
 Inputs
 ========
