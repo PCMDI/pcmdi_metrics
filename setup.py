@@ -13,9 +13,9 @@ else:
 
 # Read version from _version.py
 version = {}
-with open("pcmdi_metrics/_version.py") as f:
+with open("pcmdi_metrics/version.py") as f:
     exec(f.read(), version)
-    release_version = version["__version__"]
+    release_version = version["version"]
 
 p = subprocess.Popen(
     ("git", "describe", "--tags"),
