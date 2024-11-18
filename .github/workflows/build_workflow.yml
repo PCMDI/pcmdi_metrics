@@ -54,16 +54,15 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Set up Conda Environment
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
-          activate-environment: "pcmdi_metrics_ci"
-          miniforge-variant: Mambaforge
+          miniforge-variant: Miniforge3
           miniforge-version: latest
+          activate-environment: "pcmdi_metrics_ci"
           environment-file: conda-env/ci.yml
-          use-mamba: true
-          mamba-version: "*"
           channel-priority: strict
           auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
 
       # Used for refreshing the cache every 24 hours to avoid inconsistencies of package
       # versions between the CI pipeline and local installations.
@@ -79,7 +78,7 @@ jobs:
           key:
             conda-${{ runner.os }}--${{ runner.arch }}--${{
             steps.get-date.outputs.today }}-${{
-            hashFiles('conda-env/dev.yml') }}-${{ env.CACHE_NUMBER}}
+            hashFiles('conda-env/ci.yml') }}-${{ env.CACHE_NUMBER}}
         env:
           # Increase this value to reset cache if conda/dev.yml has not changed in the workflow
           CACHE_NUMBER: 0
@@ -118,10 +117,10 @@ jobs:
         with:
           path: ~/conda_pkgs_dir
           key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
-            hashFiles('conda-env/ci.yml') }}
+            hashFiles('conda-env/dev.yml') }}
 
       - name: Set up Conda Environment
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: "pcmdi_metrics_dev"
           miniforge-variant: Miniforge3

@@ -54,8 +54,8 @@ Basic Usage Examples
    examples/parallel_coordinate_plot_example
    examples/taylor_diagram_example
 
-Real World Use Cases
-^^^^^^^^^^^^^^^^^^^^
+Practical Use Cases
+^^^^^^^^^^^^^^^^^^^
 
 .. nbgallery::
 
@@ -66,3 +66,4 @@ Real World Use Cases
    examples/taylor_diagram_multiple_CMIPs
    examples/mean_clim_plots_test_model
    examples/variability_modes_plots_all-stats
+   examples/return_value_portrait_plot_demo

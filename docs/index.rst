@@ -81,28 +81,28 @@ BSD 3-Clause License. See `LICENSE <https://github.com/PCMDI/pcmdi_metrics/blob/
 .. toctree::
    :maxdepth: 1
    :hidden:
-   :caption: For users:
+   :caption: For users
 
    overview
    start
    metrics
    demo-notebooks
-   Results <https://pcmdi.llnl.gov/research/metrics/>
 
 .. toctree::
    :maxdepth: 1
    :hidden:
-   :caption: For developers/contributors:
+   :caption: For developers/contributors
 
    api
    contributing
    resources
    team
-   GitHub repository <https://github.com/PCMDI/pcmdi_metrics>
 
 .. toctree::
    :maxdepth: 1
    :hidden:
-   :caption: Community
+   :caption: Links
 
-   GitHub discussions <https://github.com/PCMDI/pcmdi_metrics/discussions>
+   PMP Results <https://pcmdi.llnl.gov/research/metrics/>
+   Source Code <https://github.com/PCMDI/pcmdi_metrics>
+   Discussions <https://github.com/PCMDI/pcmdi_metrics/discussions>
