@@ -51,11 +51,17 @@ body:
           description: |
               Please describe any other information you want to share.
 
-    - type: textarea
-      id: show-versions
+    - type: markdown
       attributes:
-          label: Environment
-          description: |
-              Please share some information about your environment.
-      validations:
-          required: true
+          value: |
+              ### Environment
+              Please share some information about your environment. Include installed dependencies and versions below.
+
+              <details>
+              <summary>Click to expand environment details</summary>
+
+              ```
+              [Place your list of dependencies and their versions here]
+              ```
+
+              </details>
