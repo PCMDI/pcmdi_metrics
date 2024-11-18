@@ -1,3 +1,6 @@
+.. title:: PMP Precip Variability
+
+
 .. _metrics_precip-variability:
 
 *******************************************
@@ -62,6 +65,11 @@ Options available to set in the parameter file include:
 * **nperseg**: Length of segment in power spectra.
 * **noverlap**: Length of overlap between segments in power spectra.
 * **ref**: Reference data path.
+* **res**: Target resolution in degrees.
+* **regions_specs**: Dictionary containing region bounding box. Uses format {"your region name": {"domain": {"latitude": (min, max), "longitude": (min, max)}}}. Min and max should be replaced with the values that define the region.
+* **region_file**: Path to a shapefile containing vector region outline. Must use with **attr** and **feature** parameters.
+* **attr**: Attribute used to identify region in shapefile (eg, column of attribute table). For example, "COUNTRY" in a shapefile of countries.
+* **feature**: Unique feature value of the region that occurs in the attribute given by "--attr". Must match only one geometry in the shapefile. An example is a feature called "USA" under the attribute "COUNTRY".
 * **cmec**: Set to True to output CMEC formatted JSON.
 
 Metric 
@@ -87,6 +95,6 @@ Reference
 Ahn, M.-S., P. J. Gleckler, J. Lee, A. G. Pendergrass, and C. Jakob, 2022: Benchmarking Simulated Precipitation Variability Amplitude across Timescales. Journal of Climate. https://doi.org/10.1175/JCLI-D-21-0542.1
 
 
-.. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_7_precip_variability.ipynb
+.. _PMP demo Jupyter notebook: examples/Demo_7_precip_variability.html
 .. _this link: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/precip_variability/param
 .. _calc_ratio.py: https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/precip_variability/scripts_pcmdi/calc_ratio.py

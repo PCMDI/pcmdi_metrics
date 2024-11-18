@@ -16,6 +16,16 @@ from pcmdi_metrics.io import get_time, select_subset, xcdat_open
 from pcmdi_metrics.utils import apply_landmask, check_monthly_time_axis
 
 
+def search_paths(paths, index1, index2, case_sensitive=False):
+    def split_string(text):
+        return set(re.split(r"[._ /]", text.lower() if not case_sensitive else text))
+
+    index1 = index1 if case_sensitive else index1.lower()
+    index2 = index2 if case_sensitive else index2.lower()
+
+    return [path for path in paths if {index1, index2}.issubset(split_string(path))]
+
+
 def tree():
     warnings.warn(
         "pcmdi_metrics.variability_modes.lib.tree will be deprecated. Please use pcmdi_metrics.utils.tree, instead."
@@ -53,7 +63,7 @@ def get_domain_range(mode: str, regions_specs: dict):
 
 
 def read_data_in(
-    path: str,
+    path: Union[str, list],
     var_in_data: str,
     var_to_consider: str,
     syear: Union[str, int, float],

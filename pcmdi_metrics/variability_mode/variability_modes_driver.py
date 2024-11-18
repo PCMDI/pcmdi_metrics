@@ -79,6 +79,7 @@ from pcmdi_metrics.variability_mode.lib import (
     north_test,
     plot_map,
     read_data_in,
+    search_paths,
     variability_metrics_to_json,
     write_nc_output,
 )
@@ -553,7 +554,7 @@ for model in models:
 
     model_path_list = sort_human(model_path_list)
 
-    debug_print(f"model_path_list: f{model_path_list}", debug)
+    debug_print(f"model_path_list: {model_path_list}", debug)
 
     # Find where run can be gripped from given filename template for modpath
     if realization == "*":
@@ -569,17 +570,26 @@ for model in models:
             ).split("/")[-1],
         ).index(realization)
 
+        runs = [
+            re.split("[._]", model_path.split("/")[-1])[run_in_modpath]
+            for model_path in model_path_list
+        ]
+
+    else:
+        runs = [realization]
+
+    print("runs:", runs)
+
     # -------------------------------------------------
     # Run
     # -------------------------------------------------
-    for model_path in model_path_list:
-        print("model_path:", model_path)
+    for run in runs:
+        print("run:", runs)
         try:
-            if realization == "*":
-                run = re.split("[._]", model_path.split("/")[-1])[run_in_modpath]
-            else:
-                run = realization
             print(" --- ", run, " ---")
+
+            model_run_path = search_paths(model_path_list, model, run)
+            print("model_run_path:", model_run_path)
 
             if run not in result_dict["RESULTS"][model]:
                 result_dict["RESULTS"][model][run] = {}
@@ -602,7 +612,7 @@ for model in models:
 
             # read data in
             model_timeseries = read_data_in(
-                model_path,
+                model_run_path,
                 var,
                 var,
                 msyear,

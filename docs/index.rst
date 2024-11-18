@@ -1,3 +1,5 @@
+.. title:: PMP Documentation
+
 .. pcmdi_metrics documentation master file, created by
    sphinx-quickstart on Wed Nov  4 13:15:37 2020.
    You can adapt this file completely to your liking, but it should at least
@@ -21,6 +23,8 @@ regional monsoons, and high frequency characteristics of simulated precipitation
     <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 80%; height: auto; margin-left: auto; margin-right: auto">
         <iframe src="https://www.youtube.com/embed/STfCq5Biqf0" frameborder="0" allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
     </div>
+    <p style="text-align: center">Video for a brief PMP introduction (2 min 30 sec)</p>
+
 
 
 Getting Started
@@ -77,26 +81,28 @@ BSD 3-Clause License. See `LICENSE <https://github.com/PCMDI/pcmdi_metrics/blob/
 .. toctree::
    :maxdepth: 1
    :hidden:
-   :caption: For users:
+   :caption: For users
 
    overview
    start
    metrics
-   Results <https://pcmdi.llnl.gov/research/metrics/>
+   demo-notebooks
 
 .. toctree::
    :maxdepth: 1
    :hidden:
-   :caption: For developers/contributors:
+   :caption: For developers/contributors
 
+   api
    contributing
    resources
    team
-   GitHub repository <https://github.com/PCMDI/pcmdi_metrics>
 
 .. toctree::
    :maxdepth: 1
    :hidden:
-   :caption: Community
+   :caption: Links
 
-   GitHub discussions <https://github.com/PCMDI/pcmdi_metrics/discussions>
+   PMP Results <https://pcmdi.llnl.gov/research/metrics/>
+   Source Code <https://github.com/PCMDI/pcmdi_metrics>
+   Discussions <https://github.com/PCMDI/pcmdi_metrics/discussions>

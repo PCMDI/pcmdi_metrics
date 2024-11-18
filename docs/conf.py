@@ -13,13 +13,19 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath('../pcmdi_metrics/utils'))
 
-# import sphinx_autosummary_accessors
+import sphinx_autosummary_accessors
+from sphinx.application import Sphinx
+from sphinx.util import logging
+
+LOGGER = logging.getLogger("conf")
+
+import pcmdi_metrics
 
 # -- Project information -----------------------------------------------------
-
-project = 'PCMDI Metrics Package'
-copyright = '2024 PCMDI'
-author = 'PCMDI'
+# General information about the project.
+project = "PCMDI Metrics Package (PMP)"
+copyright = "2024, PMP Developers"
+author = "PMP Developers"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -36,11 +42,22 @@ author = 'PCMDI'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx_rtd_theme', 'sphinx.ext.napoleon']
+#extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode', 'sphinx_rtd_theme', 'sphinx.ext.napoleon']
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
+    "sphinx_autosummary_accessors",
+    "sphinx_copybutton",
+    "sphinx_rtd_theme",
+    "nbsphinx",
+    "sphinx_design",
+]
 
 # autosummary and autodoc configurations
-# autosummary_generate = True
-"""
+autosummary_generate = True
+
 autodoc_member_order = "bysource"
 autodoc_default_options = {
     "members": True,
@@ -48,7 +65,6 @@ autodoc_default_options = {
     "private-members": True,
 }
 autodoc_typehints = "none"
-"""
 
 # Napoleon configurations
 napoleon_google_docstring = False
@@ -57,9 +73,13 @@ napoleon_use_param = False
 napoleon_use_rtype = False
 napoleon_preprocess_types = True
 
+# sphinx-copybutton configurations
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
+
 # Add any paths that contain templates here, relative to this directory.
-# templates_path = ['_templates', sphinx_autosummary_accessors.templates_path]
-templates_path = ['_templates']
+templates_path = ["_templates", sphinx_autosummary_accessors.templates_path]
+# templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -80,7 +100,12 @@ language = "en"
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "demos/1-25-23-cwss-seminar/xsearch-xcdat-example.ipynb",
+]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -94,7 +119,9 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 
-html_theme = "sphinx_book_theme"
+# html_theme = "sphinx_rtd_theme"
+# html_theme = "sphinx_book_theme"
+html_theme = "furo"
 
 # Theme options are theme-specific and customize the look and feel of a
 # theme further.  For a list of options available for each theme, see the
@@ -104,22 +131,30 @@ html_theme = "sphinx_book_theme"
 # https://sphinx-book-theme.readthedocs.io/en/latest/configure.html
 html_logo = "_static/PMPLogo_500x421px_72dpi.png"
 html_title = "PMP Documentation"
-html_theme_options = {
-    "repository_url": "https://github.com/PCMDI/pcmdi_metrics",
-    "repository_branch": "main",
-    "path_to_docs": "docs",
-    "use_edit_page_button": True,
-    "use_repository_button": True,
-    "use_issues_button": True,
-    "use_download_button": True,
-    "use_fullscreen_button": True,
-}
 
-"""
-import sphinx_rtd_theme
-html_theme = "sphinx_rtd_theme"
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-"""
+if html_theme == "sphinx_book_theme":
+    html_theme_options = {
+        "repository_url": "https://github.com/PCMDI/pcmdi_metrics",
+        "repository_branch": "main",
+        "path_to_docs": "docs",
+        "use_edit_page_button": True,
+        "use_repository_button": True,
+        "use_issues_button": True,
+        "use_download_button": True,
+        "use_fullscreen_button": True,
+    }
+    
+elif html_theme == "furo":
+    html_theme_options = {
+        "source_repository": "https://github.com/PCMDI/pcmdi_metrics",
+        "source_branch": "main",
+        "source_directory": "docs/",
+}
+elif html_theme == "sphinx_rtd_theme":
+    import sphinx_rtd_theme
+    html_theme = "sphinx_rtd_theme"
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

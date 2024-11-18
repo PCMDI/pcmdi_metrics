@@ -4,7 +4,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-from pcmdi_metrics.variability_mode.lib import sort_human
+from pcmdi_metrics.utils import sort_human
 
 
 def read_mean_clim_json_files(
@@ -44,11 +44,20 @@ def read_mean_clim_json_files(
             dict_temp = json.load(fj)  # e.g., load contents of precipitation json file
         var = dict_temp["Variable"]["id"]  # e.g., 'pr'
         if "level" in list(dict_temp["Variable"].keys()):
-            var += "-" + str(int(dict_temp["Variable"]["level"] / 100.0))  # Pa to hPa
+            # defaul PCMDI prefers name convention for pressulre level variables with "name"-"pressure(hPa)"
+            # e.g. ua-200, zg-500 etc. In case the user used a pressure in Pa rather than hPa, we add a check
+            # with warning message and convert unit to hPa to be consistent with the default PCMDI setup
+            level = int(dict_temp["Variable"]["level"])
+            if level > 1100:
+                print(
+                    f"Warning: The provided level value {level} appears to be in Pa. It will be automatically converted to hPa by dividing by 100."
+                )
+                level = int(level / 100.0)
+            var = f"{var}-{str(level)}"  # always hPa
         results_dict[var] = dict_temp
         unit = extract_unit(var, results_dict[var])
         if unit is not None:
-            var_unit = var + " [" + unit + "]"
+            var_unit = f"{var} [{unit}]"
         else:
             var_unit = var
         var_list.append(var)

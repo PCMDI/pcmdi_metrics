@@ -1,4 +1,4 @@
-# Conda pcmdi_metrics development environment
+# A conda development environment with all dependencies, including optional and documentation dependencies.
 name: pcmdi_metrics_dev
 channels:
     - conda-forge
@@ -20,7 +20,7 @@ dependencies:
     - eofs=1.4.1
     - seaborn=0.12.2
     - enso_metrics=1.1.1
-    - xcdat>=0.7.0
+    - xcdat>=0.7.2
     - xmltodict=0.13.0
     - setuptools=67.7.2
     - netcdf4>=1.6.3
@@ -29,6 +29,7 @@ dependencies:
     - shapely=2.0.1
     - numdifftools
     - nc-time-axis
+    - colorcet
     # ==================
     # Testing
     # ==================
@@ -45,11 +46,14 @@ dependencies:
     # Documentation
     # ==================
     - sphinx
+    - sphinx-autosummary-accessors
     - sphinx-book-theme
     - sphinx-copybutton
     - sphinx_rtd_theme
+    - furo
     - nbsphinx
     - pandoc
+    - sphinx-design
     - ipython # Required for nbsphinx syntax highlighting
 
 prefix: /opt/miniconda3/envs/pmcdi_metrics_dev

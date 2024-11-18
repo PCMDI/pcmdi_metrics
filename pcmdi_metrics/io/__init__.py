@@ -3,9 +3,11 @@ from .xcdat_openxml import xcdat_open  # noqa  # isort:skip
 from .string_constructor import StringConstructor, fill_template  # noqa  # isort:skip
 from . import base  # noqa
 from .base import MV2Json  # noqa
+
 from .xcdat_dataset_io import (  # noqa  # isort:skip
     da_to_ds,
     get_axis_list,
+    get_calendar,
     get_data_list,
     get_grid,
     get_latitude_bounds_key,
@@ -23,3 +25,4 @@ from .xcdat_dataset_io import (  # noqa  # isort:skip
     select_subset,
 )
 from .regions import load_regions_specs, region_subset  # noqa
+from .region_from_file import region_from_file
