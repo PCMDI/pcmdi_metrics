@@ -45,15 +45,24 @@ Plots
 
 We also provide demo notebooks showcasing PMP's plotting capabilities, and the `API reference <api.html#graphics>`_ includes detailed information on the available parameters for PMP's plotting functions.
 
+Basic Usage Examples
+^^^^^^^^^^^^^^^^^^^^
 
 .. nbgallery::
-   :caption: Graphics example notebooks:
 
    examples/portrait_plot_example
+   examples/parallel_coordinate_plot_example
+   examples/taylor_diagram_example
+
+Real World Use Cases
+^^^^^^^^^^^^^^^^^^^^
+
+.. nbgallery::
+
    examples/portrait_plot_mean_clim
    examples/portrait_plot_mean_clim_multiple_CMIPs
-   examples/parallel_coordinate_plot_example
    examples/parallel_coordinate_plot_mean_clim
    examples/parallel_coordinate_plot_mean_clim_multiMIPs
-   examples/taylor_diagram_example
    examples/taylor_diagram_multiple_CMIPs
+   examples/mean_clim_plots_test_model
+   examples/variability_modes_plots_all-stats
