@@ -189,7 +189,7 @@ def generateProvenance(extra_pairs={}, history=True):
     }
     populate_prov(prov["openGL"]["GLX"]["client"], "glxinfo", pairs, sep=":", index=-1)
 
-    prov["packages"]["PMP"] = pcmdi_metrics.version.__git_tag_describe__
+    prov["packages"]["PMP"] = pcmdi_metrics.version
     prov["packages"][
         "PMPObs"
     ] = "See 'References' key below, for detailed obs provenance information."
