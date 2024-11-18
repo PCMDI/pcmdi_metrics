@@ -21,5 +21,5 @@ References
 ==========
 * Sperber, K.R. and Annamalai, H., 2014. The use of fractional accumulated precipitation for the evaluation of the annual cycle of monsoons. Climate Dynamics, 43, 3219-3244, doi:10.1007/s00382-014-2099-3
 
-.. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_2b_monsoon_sperber.ipynb
+.. _PMP demo Jupyter notebook: examples/Demo_2b_monsoon_sperber.html
 
