@@ -1,3 +1,5 @@
+.. title:: PMP Monsoon
+
 .. _Monsoon-example:
 
 *****************

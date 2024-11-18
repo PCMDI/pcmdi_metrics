@@ -1,3 +1,5 @@
+.. title:: PMP Sub-daily precip
+
 .. _subdaily-precipitation:
 
 ***********************

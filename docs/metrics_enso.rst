@@ -1,3 +1,4 @@
+.. title:: PMP ENSO
 .. _using-the-package:
 
 *****************

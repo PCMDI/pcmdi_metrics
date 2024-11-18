@@ -1,3 +1,5 @@
+.. title:: PMP Installation
+
 .. _install:
 
 **********************

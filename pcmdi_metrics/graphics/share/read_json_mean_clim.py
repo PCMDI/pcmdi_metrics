@@ -4,7 +4,7 @@ import sys
 import numpy as np
 import pandas as pd
 
-from pcmdi_metrics.variability_mode.lib import sort_human
+from pcmdi_metrics.utils import sort_human
 
 
 def read_mean_clim_json_files(

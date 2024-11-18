@@ -1,3 +1,6 @@
+
+.. title:: PMP Modes of Variability
+
 ***********************************
 Extra-tropical modes of variability
 ***********************************
