@@ -120,12 +120,12 @@ jobs:
             hashFiles('conda-env/ci.yml') }}
 
       - name: Set up Conda Environment
-        uses: conda-incubator/setup-miniconda@v2
+        uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: "pcmdi_metrics_dev"
           miniforge-variant: Miniforge3
           miniforge-version: latest
-          environment-file: conda-env/dev.yml
+          environment-file: conda-env/ci.yml
           channel-priority: strict
           auto-update-conda: true
 
