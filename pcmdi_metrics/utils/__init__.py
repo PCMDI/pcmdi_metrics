@@ -6,6 +6,7 @@ from .custom_season import (
     subset_timesteps_in_custom_season,
 )
 from .dates import (
+    date_to_str,
     extract_date_components,
     find_overlapping_dates,
     regenerate_time_axis,

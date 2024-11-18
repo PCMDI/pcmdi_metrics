@@ -11,6 +11,9 @@ from pcmdi_metrics.utils import (
     regenerate_time_axis,
 )
 
+from .plot_clim_maps import plot_climatology
+
+
 # import dask
 
 
@@ -29,6 +32,8 @@ def calculate_climatology(
     repair_time_axis: bool = False,
     overwrite_output: bool = True,
     save_ac_netcdf: bool = True,
+    plot=True,
+
 ):
     """
     Calculate climatology from a dataset over a specified period.
@@ -103,7 +108,9 @@ def calculate_climatology(
     # Open the dataset using xcdat's open_mfdataset function
     ds = xcdat_open(infile, data_var=var)
     print("type(d):", type(ds))
-    print("atts:", ds.attrs)  # Print dataset attributes
+
+    atts = d.attrs
+    print("atts:", atts)  # Print dataset attributes
 
     # Check if dataset time axis is okay
     try:
@@ -272,6 +279,20 @@ def calculate_climatology(
             # Add annual or seasonal climatology to the dictionary
             ds_clim_dict[s] = ds_clim_s
 
-    ds.close()
 
+        print("output file is", out_season)
+        d_clim_dict[s].to_netcdf(
+            out_season
+        )  # global attributes are automatically saved as well
+
+        if plot and s == "AC":
+            plot_climatology(
+                d_ac,
+                var,
+                season_to_plot="all",
+                output_filename=out_season.replace(".nc", ".png"),
+            )
+
+    ds.close()
     return ds_clim_dict  # Return the dictionary of all climatology datasets
+  

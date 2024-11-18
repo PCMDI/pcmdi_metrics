@@ -28,6 +28,7 @@ def sort_human(input_list: list[str]) -> list:
 
     Examples
     --------
+    >>> from pcmdi_metrics.utils import sort_human
     >>> sort_human(['file1', 'file10', 'file2'])
     ['file1', 'file2', 'file10']
 

@@ -29,6 +29,7 @@ dependencies:
     - shapely=2.0.1
     - numdifftools
     - nc-time-axis
+    - colorcet
     # ==================
     # Testing
     # ==================
@@ -49,6 +50,7 @@ dependencies:
     - sphinx-book-theme
     - sphinx-copybutton
     - sphinx_rtd_theme
+    - furo
     - nbsphinx
     - pandoc
     - sphinx-design

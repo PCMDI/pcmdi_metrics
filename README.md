@@ -7,19 +7,22 @@
 
 # PCMDI Metrics Package (PMP)
 
-[![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
-![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg)
+<!-- badges: start -->
+[![latest version](https://img.shields.io/conda/vn/conda-forge/pcmdi_metrics.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
+[![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/files)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
 [![License](https://anaconda.org/conda-forge/pcmdi_metrics/badges/license.svg)](https://github.com/PCMDI/pcmdi_metrics/blob/main/LICENSE)
 [![Formatted with black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![All Contributors](https://img.shields.io/github/all-contributors/PCMDI/pcmdi_metrics?color=ee8449&style=flat-square)](#contributors)
 
-Conda-forge (NEW, recommended):
-[![Download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
+Conda-forge (CURRENT, recommended):
+[![Download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 
-PCMDI Conda Channel (halted):
-[![Download](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
+PCMDI Conda Channel (old, deprecated):
+[![Download](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg?kill_cache=1)](https://anaconda.org/pcmdi/pcmdi_metrics)
+
+<!-- badges: end -->
 
 The PCMDI Metrics Package (PMP) is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons emphasize metrics of large- to global-scale annual cycle, tropical and extra-tropical modes of variability, ENSO, MJO, regional monsoons, high frequency characteristics of simulated precipitation, and cloud feedback.
 
@@ -117,6 +120,8 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.7.1]      | Technical update with documentation improvements
+| [v3.7]        | New capability (**figure generation for mean climate**) and technical update
 | [v3.6.1]      | Technical update, additional QC repair functions
 | [v3.6]        | New capability (**regional application of precip variability**) and technical update
 | [v3.5.2]      | New capability (**QC**, **new modes for modes of variability metrics: PSA1, PSA2**) and technical update
@@ -164,6 +169,8 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.7.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.1
+[v3.7]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7
 [v3.6.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6.1
 [v3.6]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6
 [v3.5.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5.2
