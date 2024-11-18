@@ -1,3 +1,6 @@
+.. title:: PMP MJO
+
+
 ********************
 MJO baseline metrics
 ********************
@@ -53,6 +56,6 @@ References
 .. _1972: https://doi.org/10.1175/1520-0469(1972)029%3C1109:DOGSCC%3E2.0.CO;2
 .. _1994: https://doi.org/10.1175/1520-0493(1994)122%3C0814:OOTDTO%3E2.0.CO;2
 
-.. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_5_mjo_metrics.ipynb
+.. _PMP demo Jupyter notebook: examples/Demo_5_mjo_metrics.html
 .. _Interactive graphics for PMP-calculated MJO Metrics: https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/mjo/bar_chart/mjo_ewr_cmip5and6_overlap_runs_average_v20200720.html
 .. _Description for the results: https://pcmdi.llnl.gov/research/metrics/mjo/

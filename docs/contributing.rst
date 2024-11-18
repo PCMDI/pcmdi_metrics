@@ -1,3 +1,4 @@
+.. title:: PMP Contributing
 .. highlight:: shell
 
 ==================
