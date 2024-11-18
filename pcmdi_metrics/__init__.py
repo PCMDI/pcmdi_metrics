@@ -15,4 +15,5 @@ ch.setFormatter(formatter)
 plog.addHandler(ch)
 plog.setLevel(LOG_LEVEL)
 from . import io
-from ._version import __version__
+from .version import version
+from .version import version as __version__
