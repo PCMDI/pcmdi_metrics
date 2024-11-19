@@ -51,17 +51,18 @@ body:
           description: |
               Please describe any other information you want to share.
 
-    - type: markdown
+    - type: textarea
+      id: show-versions
       attributes:
-          value: |
-              ### Environment
-              Please share some information about your environment. Include installed dependencies and versions below.
+          label: Environment
+          description: |
+              Please share some information about your environment, such as:
 
               <details>
-              <summary>Click to expand environment details</summary>
+              <summary>Click to expand for instructions</summary>
 
-              ```
-              [Place your list of dependencies and their versions here]
-              ```
+              - Python version (e.g., Python 3.9.7)
+              - Operating system (e.g., Ubuntu 20.04)
+              - Relevant dependencies and their versions (e.g., `numpy 1.23.1`, `xarray 0.21.1`)
 
               </details>
