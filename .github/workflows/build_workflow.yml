@@ -63,6 +63,7 @@ jobs:
           channel-priority: strict
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
+          use-mamba: false  # Disable libmamba solver
 
       # Used for refreshing the cache every 24 hours to avoid inconsistencies of package
       # versions between the CI pipeline and local installations.
@@ -128,6 +129,7 @@ jobs:
           environment-file: conda-env/dev.yml
           channel-priority: strict
           auto-update-conda: true
+          use-mamba: false  # Disable libmamba solver
 
       - name: Install pcmdi_metrics
         # Source: https://github.com/conda/conda-build/issues/4251#issuecomment-1053460542
