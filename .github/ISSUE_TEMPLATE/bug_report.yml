@@ -56,13 +56,13 @@ body:
       attributes:
           label: Environment
           description: |
-              Please share some information about your environment, such as:
-
+              Please share some information about your environment. Fill in the details below:
+          value: |
               <details>
-              <summary>Click to expand for instructions</summary>
+              <summary>Click to expand</summary>
+              
+              - **Python version**: e.g., Python 3.9.7
+              - **Operating system**: e.g., Ubuntu 20.04
+              - **Dependencies**: List relevant dependencies and their versions, e.g., `numpy 1.23.1`, `xarray 0.21.1`
 
-              - Python version (e.g., Python 3.9.7)
-              - Operating system (e.g., Ubuntu 20.04)
-              - Relevant dependencies and their versions (e.g., `numpy 1.23.1`, `xarray 0.21.1`)
-
-              </details>
+              </details>             
