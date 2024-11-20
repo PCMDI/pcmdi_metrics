@@ -133,7 +133,9 @@ if __name__ == "__main__":
             ncfiles = glob.glob(test_data_full_path)
             realizations = []
             for ncfile in ncfiles:
-                realizations.append(ncfile.split("/")[-1].split(".")[3])
+                realizations.append(
+                    ncfile.split("/")[-1].split(".")[3]
+                )  # This is heavily relying on naming conventions
             print("=================================")
             print("model, runs:", model, realizations)
             list_of_runs = realizations
@@ -144,6 +146,7 @@ if __name__ == "__main__":
 
         # Loop over realizations
         for run in list_of_runs:
+            # TODO: For some reason if the reference_data_path was not found, the reference data defaulted to the test data - not sure why
             # Finding land/sea mask
             sftlf_exists = True
             if run == reference_data_set:
@@ -198,8 +201,6 @@ if __name__ == "__main__":
             # not sure what will be the best way to approach this, if we should loop
             # over variables, take in multiple variables at once, etc.
             for varname in variable_list:
-                # Make subdirs?
-
                 # Populate the filename templates to get actual data path
                 if run == reference_data_set:
                     test_data_full_path = reference_data_path
@@ -258,7 +259,7 @@ if __name__ == "__main__":
                 sftlf["sftlf"] = sftlf["sftlf"].where(sftlf[sflat] > -60)
 
                 if use_region_mask:
-                    print("Creating dataset mask.")
+                    print("Creating dataset mask")
                     ds = region_utilities.mask_region(
                         ds, region_name, coords=coords, shp_path=shp_path, column=col
                     )
@@ -289,7 +290,20 @@ if __name__ == "__main__":
                     fig_base = None
 
                 # Do metrics calculation
-                if varname == "tasmax":
+
+                if (varname == "tasmax") and (
+                    run == reference_data_set
+                ):  # Get the reference dataset we need for model metrics that require a baseline
+                    result_dict = compute_metrics.get_ref_tasmax_q99p0(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )  # saves a q99 netCDF file for later use
+                elif (varname == "tasmax") and (run != reference_data_set):
                     result_dict = compute_metrics.get_mean_tasmax(
                         ds,
                         sftlf,
@@ -366,18 +380,17 @@ if __name__ == "__main__":
                             nc_base,
                         )
                         metrics_dict["RESULTS"][model][run].update(result_dict)
-                    for month in range(1, 13):
-                        result_dict = compute_metrics.get_monthly_mean_tasmax(
-                            ds,
-                            sftlf,
-                            month,
-                            dec_mode,
-                            drop_incomplete_djf,
-                            annual_strict,
-                            fig_base,
-                            nc_base,
-                        )
-                        metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # get monthly mean tasmax
+                    result_dict = compute_metrics.get_monthly_mean_tasmax(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
                 elif varname == "tasmin":
                     result_dict = compute_metrics.get_tnn(
                         ds,
@@ -390,18 +403,16 @@ if __name__ == "__main__":
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
                     # Get monthly mean, tasmin
-                    for month in range(1, 13):
-                        result_dict = compute_metrics.get_monthly_mean_tasmin(
-                            ds,
-                            sftlf,
-                            month,
-                            dec_mode,
-                            drop_incomplete_djf,
-                            annual_strict,
-                            fig_base,
-                            nc_base,
-                        )
-                        metrics_dict["RESULTS"][model][run].update(result_dict)
+                    result_dict = compute_metrics.get_monthly_mean_tasmin(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
                     # Get annual-min, 5-day tasin
                     results_dict = compute_metrics.get_annual_min_tasmin_5day(
                         ds,
@@ -472,6 +483,17 @@ if __name__ == "__main__":
                     metrics_dict["RESULTS"][model][run].update(result_dict)
                     # Seasonal mean precipitation
                     result_dict = compute_metrics.get_seasonalmean_pr(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Monthly mean precipitation
+                    result_dict = compute_metrics.get_monthly_mean_pr(
                         ds,
                         sftlf,
                         dec_mode,

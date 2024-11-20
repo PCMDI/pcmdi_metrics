@@ -103,7 +103,8 @@ def mask_region(data, name, coords=None, shp_path=None, column=None):
         sys.exit()
 
     try:
-        masked_data = data.where(mask == val)
+        # print(val)
+        masked_data = data.where(mask == val, drop=True)
     except Exception as e:
         print("Error: Masking failed.")
         print("  ", e)
