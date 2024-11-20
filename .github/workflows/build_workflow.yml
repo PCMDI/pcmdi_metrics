@@ -60,10 +60,18 @@ jobs:
           miniforge-version: latest
           activate-environment: "pcmdi_metrics_ci"
           environment-file: conda-env/ci.yml
-          channel-priority: strict
+          channel-priority: flexible
           auto-update-conda: true
           python-version: ${{ matrix.python-version }}
-          use-mamba: false  # Disable libmamba solver
+          use-mamba: false
+          conda-solver: classic
+
+      - name: Verify Conda Environment
+        run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
 
       # Used for refreshing the cache every 24 hours to avoid inconsistencies of package
       # versions between the CI pipeline and local installations.
