@@ -1,9 +1,9 @@
-import xcdat as xc
 from typing import Union
 
 import xarray as xr
+import xcdat as xc
 
-#from pcmdi_metrics.io import da_to_ds, get_longitude, select_subset
+# from pcmdi_metrics.io import da_to_ds, get_longitude, select_subset
 from .xcdat_dataset_io import da_to_ds, get_longitude, select_subset
 
 
@@ -51,7 +51,7 @@ def load_regions_specs():
         # South American Monsoon
         "SAMM": {"domain": {"latitude": (-45.0, 0.0), "longitude": (240.0, 330.0)}},
         # North African Monsoon
-        #"NAFM": {"domain": {"latitude": (0.0, 45.0), "longitude": (310.0, 60.0)}},
+        # "NAFM": {"domain": {"latitude": (0.0, 45.0), "longitude": (310.0, 60.0)}},
         "NAFM": {"domain": {"latitude": (0.0, 45.0), "longitude": (-50, 60.0)}},
         # South African Monsoon
         "SAFM": {"domain": {"latitude": (-45.0, 0.0), "longitude": (0.0, 90.0)}},
@@ -77,7 +77,7 @@ def load_regions_specs():
     return regions_specs
 
 
-#def region_subset(ds, regions_specs, region=None):
+# def region_subset(ds, regions_specs, region=None):
 #    """
 #    d: xarray.Dataset
 #    regions_specs: dict
@@ -131,6 +131,7 @@ def load_regions_specs():
 #                    ds = ds.sel(lon=slice(lon0, lon1))
 #
 #    return ds
+
 
 def region_subset(
     ds: Union[xr.Dataset, xr.DataArray],

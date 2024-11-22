@@ -90,4 +90,9 @@ ENV/
 # Rope project settings
 .ropeproject
 
+# debug_data
+pcmdi_metrics/monsoon_wang/*.nc
+pcmdi_metrics/monsoon_wang/debug_regions_specs.py
+pcmdi_metrics/monsoon_wang/test_param.py
+
 test/

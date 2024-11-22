@@ -1,10 +1,13 @@
-import xcdat as xc
-import xarray as xr
-from pcmdi_metrics.io import load_regions_specs, region_subset
 from typing import Union
-import sys 
-#from pcmdi_metrics.io import da_to_ds, get_longitude, select_subset
-#from .xcdat_dataset_io import da_to_ds
+
+import xarray as xr
+import xcdat as xc
+
+from pcmdi_metrics.io import load_regions_specs, region_subset
+
+# from pcmdi_metrics.io import da_to_ds, get_longitude, select_subset
+# from .xcdat_dataset_io import da_to_ds
+
 
 def da_to_ds(d: Union[xr.Dataset, xr.DataArray], var: str = "variable") -> xr.Dataset:
     """Convert xarray DataArray to Dataset
@@ -36,8 +39,8 @@ def da_to_ds(d: Union[xr.Dataset, xr.DataArray], var: str = "variable") -> xr.Da
         )
 
 
-#xr.show_versions()
-#sys.exit()
+# xr.show_versions()
+# sys.exit()
 
 
 regions_specs = load_regions_specs()
@@ -46,14 +49,12 @@ ds = xc.open_dataset("xd_mpi_obs.nc")
 if isinstance(ds, xr.DataArray):
     is_dataArray = True
     print("True")
-    ds = da_to_ds(ds, data_var)
+    ds = da_to_ds(ds)
     print("da_to_ds converted")
 
 
-ds = ds.drop_vars(['time'])
+ds = ds.drop_vars(["time"])
 ds = xc.swap_lon_axis(ds, to=(-180, 180))
-
-
 
 
 mpi_obs_reg = region_subset(ds, "NAFM", data_var="pr", regions_specs=regions_specs)

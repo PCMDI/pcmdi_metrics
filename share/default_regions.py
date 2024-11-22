@@ -50,7 +50,7 @@ regions_specs = {
     },
     # North African Monsoon
     "NAFM": {
-        #"domain": cdutil.region.domain(latitude=(0.0, 45.0), longitude=(310.0, 60.0))
+        # "domain": cdutil.region.domain(latitude=(0.0, 45.0), longitude=(310.0, 60.0))
         "domain": cdutil.region.domain(latitude=(0.0, 45.0), longitude=(-50, 60.0))
     },
     # South African Monsoon

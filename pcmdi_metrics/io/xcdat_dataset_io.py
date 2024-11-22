@@ -3,7 +3,6 @@ from typing import Union
 import xarray as xr
 import xcdat as xc
 
-
 # Internal function
 
 

@@ -30,7 +30,7 @@ def divide_chunks_advanced(data, n, debug=False):
     day = day.values
     calendar = "gregorian"
     if debug:
-        #print("month = ", month, "day = ", day)
+        # print("month = ", month, "day = ", day)
         print("debug: first day of year is " + str(month) + "/" + str(day))
     if month not in [1, 7] or day != 1:
         sys.exit(

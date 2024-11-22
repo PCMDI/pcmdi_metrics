@@ -1,7 +1,9 @@
-from pcmdi_metrics.utils import create_land_sea_mask
+import os
+
 import xarray as xr
 import xcdat as xc
-import os
+
+from pcmdi_metrics.utils import create_land_sea_mask
 
 demo_dir = "/Users/lee1043/Documents/Research/git/pcmdi_metrics_20230620_pcmdi/pcmdi_metrics/doc/jupyter/Demo/demo_data/"
 demo_file = "CMIP5_demo_data/ts_Amon_ACCESS1-0_historical_r1i1p1_185001-200512.nc"
@@ -15,8 +17,9 @@ mask.plot()
 mask2.plot()
 (mask2 - mask).plot()
 
-from pcmdi_metrics import resources
 import os
+
+from pcmdi_metrics import resources
 
 egg_pth = resources.resource_path()
 source_path = os.path.join(egg_pth, "navy_land.nc")
@@ -25,11 +28,12 @@ ds_navy = xc.open_dataset(source_path)
 
 ds_navy["sftlf"].plot()
 
-import cdms2, cdutil
+import cdms2
+import cdutil
 
 f = cdms2.open(dummy_input)
 
-dc = f('ts')
+dc = f("ts")
 
 mask_cdms = cdutil.generateLandSeaMask(dc)
 
@@ -38,10 +42,8 @@ lon = dc.getLongitude()
 
 
 mask_cdms_da = xr.DataArray(
-    mask_cdms, 
-    coords=[list(lat), list(lon)], 
-    dims=["lat", "lon"], 
-    name=dc.id)
+    mask_cdms, coords=[list(lat), list(lon)], dims=["lat", "lon"], name=dc.id
+)
 
 
 mask_cdms_da.plot()
@@ -53,10 +55,9 @@ mask_cdms_da.plot()
 (mask2 - mask_cdms_da).sum()
 
 #
-#%%time
-#a = mask.to_numpy()
+# %%time
+# a = mask.to_numpy()
 #
 #
-#%%time
-#b = mask.data
-
+# %%time
+# b = mask.data

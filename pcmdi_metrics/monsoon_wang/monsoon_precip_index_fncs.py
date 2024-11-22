@@ -1,9 +1,7 @@
-import MV2
-import numpy as np
-import sys
-import xarray as xr
-from scipy.interpolate import griddata
 from typing import Union
+
+import numpy as np
+import xarray as xr
 
 #  SEASONAL RANGE - USING ANNUAL CYCLE CLIMATOLGIES 0=Jan, 11=Dec
 
@@ -38,10 +36,7 @@ def da_to_ds(d: Union[xr.Dataset, xr.DataArray], var: str = "variable") -> xr.Da
         )
 
 
-
-
 def regrid(da_in, da_grid, data_var="pr"):
-
     ds_in = da_to_ds(da_in, data_var)
     ds_grid = da_to_ds(da_grid, data_var)
 
@@ -57,21 +52,14 @@ def compute_season(data, season_indices, weights):
     for i in season_indices:
         out += data[i] * weights[i]
         N += weights[i]
-    #out = MV2.array(out)
-    #out.id = data.id
-    #out.setAxisList(data.getAxisList()[1:])
     return out / N
 
 
 def mpd(data):
     """Monsoon precipitation intensity and annual range calculation
-
     .. describe:: Input
-
         *  data
-
             * Assumes climatology array with 12 times step first one January
-
     """
     months_length = [
         31.0,
@@ -90,79 +78,18 @@ def mpd(data):
     mjjas = compute_season(data, [4, 5, 6, 7, 8], months_length)
     ndjfm = compute_season(data, [10, 11, 0, 1, 2], months_length)
     ann = compute_season(data, list(range(12)), months_length)
-    #print("mjjas = ", mjjas)
-    #print("data  = ", data)
-    #print("data.dims = ", data.dims)
-    #print("data.coords = ", data.coords)
 
-    #data_map = data.drop("time")
     data_map = data.isel(time=0)
-    #print("data_map =  ", data_map.dims)
 
-    #sys.exit()
-
-    #cc = xr.DataArray(data.values, coords = data.coords, dims = data.dims)
-    #print("cc =  ", cc.dims)
-
-    #annrange = MV2.subtract(mjjas, ndjfm)
     annrange = mjjas - ndjfm
 
-    #print('annrange = ', annrange)
+    da_annrange = xr.DataArray(annrange, coords=data_map.coords, dims=data_map.dims)
+    da_annrange = da_annrange.where(da_annrange.lat >= 0, da_annrange * -1)
 
-
-    #lat = annrange.getAxis(0)
-    #lat = annrange['lat']
-
-
-#    i, e = lat.mapInterval((-91, 0, "con"))
-#    print('i = ', i, '   e = ', e)
-#    if i > e:  # reveresedlats
-#        tmp = i + 1
-#        i = e + 1
-#        e = tmp
-
-    #print('annrange = ', annrange)
-    #print('annrange.shape = ', annrange.shape)
-    #print('lat = ', lat)
-    #print('i = ', i, '   e = ', e)
-
-    #annrange[slice(i, e)] = -annrange[slice(i, e)]
-
-    #annrange = np.absolute(annrange)
-
-    da_annrange = xr.DataArray(annrange, coords = data_map.coords, dims = data_map.dims)
-    da_annrange = da_annrange.where(da_annrange.lat >= 0, da_annrange*-1)
-
-    #print('slice = ', slice(i, e))
-    #print('annrange = ', annrange)
-    #annrange.id = data.id + "_ar"
-    #annrange.longname = "annual range"
-
-#    sys.exit()
-
-    #mpi = np.divide(annrange, ann, where=ann.astype(bool))
     mpi = np.divide(da_annrange.values, ann, where=ann.astype(bool))
 
-    #mpi = MV2.divide(annrange, ann)
-    #mpi.id = data.id + "_int"
-    #mpi.longname = "intensity"
+    da_mpi = xr.DataArray(mpi, coords=data_map.coords, dims=data_map.dims)
 
-    #print('mpi.shape = ', mpi.shape)
-    #print('annrange.shape = ', annrange.shape)
-
-    #da_annrange = xr.DataArray(annrange, coords = data_map.coords, dims = data_map.dims)
-    da_mpi = xr.DataArray(mpi, coords = data_map.coords, dims = data_map.dims)
-
-    #print('da_annrange.dims = ', da_annrange.dims)
-    #print('da_mpi_dims = ', da_mpi.dims)
-    #print('da_annrange.coords = ', da_annrange.coords)
-    #print('da_mpi_coords = ', da_mpi.coords)
-
-    #print("da_mpi = ", da_mpi)
-
-    #sys.exit()
-
-    #return annrange, mpi
     return da_annrange, da_mpi
 
 
@@ -184,62 +111,43 @@ def mpi_skill_scores(annrange_mod_dom, annrange_obs_dom, threshold=2.5 / 86400.0
 
               * threshold in same units as inputs
     """
-    #print('annrange_mod_dom = ', annrange_mod_dom)
-#    print('annrange_mod_dom.shape = ', annrange_mod_dom.shape)
-    #print('threshold = ', threshold)
     mt = np.ma.greater(annrange_mod_dom, threshold)
     ot = np.ma.greater(annrange_obs_dom, threshold)
 
-    #print('mt = ', mt)
-    #print('type mt = ', type(mt))
-    #print('mt.shape = ', mt.shape)
-
     hitmap = mt * ot  # only where both  mt and ot are True
     hit = float(hitmap.sum())
-    #print("hitmap = ", hitmap)
-    #print("hit = ", hit)
 
     xor = np.ma.logical_xor(mt, ot)
     missmap = xor * ot
-    #missed = float(MV2.sum(missmap))
-    #print("xor = ", xor)
-    #print("missmap = ", missmap)
-    #print("missed = ", missed)
     missed = float(missmap.sum())
-    #print("missed = ", missed)
 
     falarmmap = xor * mt
-    #falarm = float(MV2.sum(falarmmap))
-    #print("falarm = ", falarm)
     falarm = float(falarmmap.sum())
-    #print("falarm = ", falarm)
 
     if (hit + missed + falarm) > 0.0:
         score = hit / (hit + missed + falarm)
     else:
         score = 1.0e20
 
-    #hitmap.id = "hit"
-    #missmap.id = "miss"
-    #falarmmap.id = "false_alarm"
+    xr_hitmap = xr.DataArray(
+        hitmap,
+        name="hitmap",
+        coords={"lat": annrange_mod_dom.lat, "lon": annrange_mod_dom.lon},
+        dims=["lat", "lon"],
+    )
 
-    #for a in [hitmap, missmap, falarmmap]:
-    #    a.setAxisList(annrange_mod_dom.getAxisList())
+    xr_missmap = xr.DataArray(
+        missmap,
+        name="missmap",
+        coords={"lat": annrange_mod_dom.lat, "lon": annrange_mod_dom.lon},
+        dims=["lat", "lon"],
+    )
 
+    xr_falarmmap = xr.DataArray(
+        falarmmap,
+        name="falarmmap",
+        coords={"lat": annrange_mod_dom.lat, "lon": annrange_mod_dom.lon},
+        dims=["lat", "lon"],
+    )
 
-    xr_hitmap = xr.DataArray(hitmap, name='hitmap',\
-        coords={ 'lat': annrange_mod_dom.lat, 'lon': annrange_mod_dom.lon},\
-        dims=[ 'lat', 'lon'])
-
-    xr_missmap = xr.DataArray(missmap, name='missmap',\
-        coords={ 'lat': annrange_mod_dom.lat, 'lon': annrange_mod_dom.lon},\
-        dims=[ 'lat', 'lon'])
-
-    xr_falarmmap = xr.DataArray(falarmmap, name='falarmmap',\
-        coords={ 'lat': annrange_mod_dom.lat, 'lon': annrange_mod_dom.lon},\
-        dims=[ 'lat', 'lon'])
-
-
-
-    #return hit, missed, falarm, score, hitmap, missmap, falarmmap
     return hit, missed, falarm, score, xr_hitmap, xr_missmap, xr_falarmmap
