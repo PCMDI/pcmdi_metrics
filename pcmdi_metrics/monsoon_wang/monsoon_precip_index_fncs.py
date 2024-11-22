@@ -185,7 +185,7 @@ def mpi_skill_scores(annrange_mod_dom, annrange_obs_dom, threshold=2.5 / 86400.0
               * threshold in same units as inputs
     """
     #print('annrange_mod_dom = ', annrange_mod_dom)
-    print('annrange_mod_dom.shape = ', annrange_mod_dom.shape)
+#    print('annrange_mod_dom.shape = ', annrange_mod_dom.shape)
     #print('threshold = ', threshold)
     mt = np.ma.greater(annrange_mod_dom, threshold)
     ot = np.ma.greater(annrange_obs_dom, threshold)

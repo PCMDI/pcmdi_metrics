@@ -8,7 +8,7 @@
         "userId": "dong12",
         "osAccess": false,
         "commandLine": "run.py -p test_param.py",
-        "date": "2024-09-11 13:04:18",
+        "date": "2024-09-23 15:39:02",
         "conda": {
             "Version": "23.7.2",
             "buildVersion": "not installed",
@@ -50,1347 +50,1347 @@
     "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference: Gleckler, P. J., C. Doutriaux, P. J. Durack, K. E. Taylor, Y. Zhang, and D. N. Williams, E. Mason, and J. Servonnat (2016), A more powerful reality test for climate models, Eos, 97, doi:10.1029/2016EO051663. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
     "REFERENCE": "The statistics in this file are based on Wang, B., Kim, HJ., Kikuchi, K. et al. Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0",
     "RESULTS": {
+        "IPSL-CM5A-LR": {
+            "AllMW": {
+                "cor": "0.763",
+                "rmsn": "0.685",
+                "threat_score": "0.535"
+            },
+            "AllM": {
+                "cor": "0.767",
+                "rmsn": "0.679",
+                "threat_score": "0.535"
+            },
+            "NAMM": {
+                "cor": "0.661",
+                "rmsn": "0.794",
+                "threat_score": "0.449"
+            },
+            "SAMM": {
+                "cor": "0.739",
+                "rmsn": "0.747",
+                "threat_score": "0.518"
+            },
+            "NAFM": {
+                "cor": "0.776",
+                "rmsn": "0.704",
+                "threat_score": "0.630"
+            },
+            "SAFM": {
+                "cor": "0.894",
+                "rmsn": "0.459",
+                "threat_score": "0.711"
+            },
+            "ASM": {
+                "cor": "0.772",
+                "rmsn": "0.744",
+                "threat_score": "0.521"
+            },
+            "AUSM": {
+                "cor": "0.858",
+                "rmsn": "0.522",
+                "threat_score": "0.533"
+            }
+        },
         "CNRM-CM5": {
             "AllMW": {
                 "cor": "0.863",
-                "rmsn": "0.513",
-                "threat_score": "0.577"
+                "rmsn": "0.515",
+                "threat_score": "0.579"
             },
             "AllM": {
-                "cor": "0.863",
-                "rmsn": "0.512",
-                "threat_score": "0.577"
+                "cor": "0.864",
+                "rmsn": "0.514",
+                "threat_score": "0.579"
             },
             "NAMM": {
-                "cor": "0.886",
-                "rmsn": "0.470",
-                "threat_score": "0.643"
+                "cor": "0.889",
+                "rmsn": "0.462",
+                "threat_score": "0.634"
             },
             "SAMM": {
-                "cor": "0.876",
-                "rmsn": "0.497",
-                "threat_score": "0.487"
+                "cor": "0.880",
+                "rmsn": "0.496",
+                "threat_score": "0.482"
             },
             "NAFM": {
                 "cor": "0.887",
-                "rmsn": "0.555",
-                "threat_score": "0.715"
+                "rmsn": "0.559",
+                "threat_score": "0.723"
             },
             "SAFM": {
                 "cor": "0.923",
-                "rmsn": "0.427",
-                "threat_score": "0.594"
+                "rmsn": "0.433",
+                "threat_score": "0.597"
             },
             "ASM": {
-                "cor": "0.881",
-                "rmsn": "0.502",
-                "threat_score": "0.554"
+                "cor": "0.878",
+                "rmsn": "0.511",
+                "threat_score": "0.549"
             },
             "AUSM": {
-                "cor": "0.927",
-                "rmsn": "0.387",
-                "threat_score": "0.677"
+                "cor": "0.930",
+                "rmsn": "0.384",
+                "threat_score": "0.695"
             }
         },
         "CSIRO-Mk3-6-0": {
             "AllMW": {
-                "cor": "0.808",
-                "rmsn": "0.644",
-                "threat_score": "0.572"
+                "cor": "0.809",
+                "rmsn": "0.649",
+                "threat_score": "0.577"
             },
             "AllM": {
-                "cor": "0.811",
-                "rmsn": "0.641",
-                "threat_score": "0.572"
+                "cor": "0.813",
+                "rmsn": "0.646",
+                "threat_score": "0.577"
             },
             "NAMM": {
-                "cor": "0.802",
-                "rmsn": "0.689",
-                "threat_score": "0.611"
+                "cor": "0.807",
+                "rmsn": "0.692",
+                "threat_score": "0.621"
             },
             "SAMM": {
-                "cor": "0.776",
-                "rmsn": "0.690",
-                "threat_score": "0.587"
+                "cor": "0.780",
+                "rmsn": "0.695",
+                "threat_score": "0.589"
             },
             "NAFM": {
-                "cor": "0.854",
-                "rmsn": "0.545",
-                "threat_score": "0.723"
+                "cor": "0.856",
+                "rmsn": "0.546",
+                "threat_score": "0.722"
             },
             "SAFM": {
-                "cor": "0.831",
-                "rmsn": "0.633",
-                "threat_score": "0.595"
+                "cor": "0.830",
+                "rmsn": "0.646",
+                "threat_score": "0.602"
             },
             "ASM": {
-                "cor": "0.743",
-                "rmsn": "0.769",
+                "cor": "0.744",
+                "rmsn": "0.781",
                 "threat_score": "0.507"
             },
             "AUSM": {
-                "cor": "0.882",
-                "rmsn": "0.519",
-                "threat_score": "0.608"
+                "cor": "0.884",
+                "rmsn": "0.521",
+                "threat_score": "0.616"
             }
         },
         "FGOALS-g2": {
             "AllMW": {
-                "cor": "0.816",
-                "rmsn": "0.583",
-                "threat_score": "0.529"
+                "cor": "0.819",
+                "rmsn": "0.580",
+                "threat_score": "0.533"
             },
             "AllM": {
-                "cor": "0.819",
-                "rmsn": "0.579",
-                "threat_score": "0.529"
+                "cor": "0.823",
+                "rmsn": "0.575",
+                "threat_score": "0.533"
             },
             "NAMM": {
-                "cor": "0.755",
-                "rmsn": "0.677",
-                "threat_score": "0.246"
+                "cor": "0.761",
+                "rmsn": "0.671",
+                "threat_score": "0.257"
             },
             "SAMM": {
-                "cor": "0.817",
-                "rmsn": "0.596",
-                "threat_score": "0.604"
+                "cor": "0.824",
+                "rmsn": "0.588",
+                "threat_score": "0.632"
             },
             "NAFM": {
-                "cor": "0.804",
-                "rmsn": "0.634",
-                "threat_score": "0.582"
+                "cor": "0.808",
+                "rmsn": "0.630",
+                "threat_score": "0.578"
             },
             "SAFM": {
-                "cor": "0.922",
-                "rmsn": "0.455",
-                "threat_score": "0.679"
+                "cor": "0.925",
+                "rmsn": "0.450",
+                "threat_score": "0.669"
             },
             "ASM": {
                 "cor": "0.798",
-                "rmsn": "0.639",
-                "threat_score": "0.529"
+                "rmsn": "0.643",
+                "threat_score": "0.533"
             },
             "AUSM": {
-                "cor": "0.912",
-                "rmsn": "0.416",
-                "threat_score": "0.639"
+                "cor": "0.915",
+                "rmsn": "0.411",
+                "threat_score": "0.634"
             }
         },
         "FIO-ESM": {
             "AllMW": {
-                "cor": "0.789",
+                "cor": "0.792",
                 "rmsn": "0.649",
-                "threat_score": "0.484"
+                "threat_score": "0.489"
             },
             "AllM": {
-                "cor": "0.794",
-                "rmsn": "0.644",
-                "threat_score": "0.484"
+                "cor": "0.796",
+                "rmsn": "0.645",
+                "threat_score": "0.489"
             },
             "NAMM": {
-                "cor": "0.764",
-                "rmsn": "0.653",
-                "threat_score": "0.482"
+                "cor": "0.766",
+                "rmsn": "0.652",
+                "threat_score": "0.489"
             },
             "SAMM": {
-                "cor": "0.861",
-                "rmsn": "0.583",
-                "threat_score": "0.553"
+                "cor": "0.868",
+                "rmsn": "0.580",
+                "threat_score": "0.567"
             },
             "NAFM": {
-                "cor": "0.778",
+                "cor": "0.780",
                 "rmsn": "0.669",
-                "threat_score": "0.594"
+                "threat_score": "0.589"
             },
             "SAFM": {
-                "cor": "0.830",
-                "rmsn": "0.679",
-                "threat_score": "0.486"
+                "cor": "0.831",
+                "rmsn": "0.684",
+                "threat_score": "0.478"
             },
             "ASM": {
-                "cor": "0.762",
-                "rmsn": "0.768",
-                "threat_score": "0.530"
+                "cor": "0.767",
+                "rmsn": "0.771",
+                "threat_score": "0.548"
             },
             "AUSM": {
-                "cor": "0.934",
-                "rmsn": "0.492",
-                "threat_score": "0.552"
+                "cor": "0.936",
+                "rmsn": "0.495",
+                "threat_score": "0.534"
             }
         },
         "GFDL-CM3": {
             "AllMW": {
-                "cor": "0.831",
-                "rmsn": "0.584",
-                "threat_score": "0.575"
+                "cor": "0.832",
+                "rmsn": "0.586",
+                "threat_score": "0.574"
             },
             "AllM": {
-                "cor": "0.833",
-                "rmsn": "0.582",
-                "threat_score": "0.575"
+                "cor": "0.835",
+                "rmsn": "0.583",
+                "threat_score": "0.574"
             },
             "NAMM": {
-                "cor": "0.818",
-                "rmsn": "0.622",
-                "threat_score": "0.511"
+                "cor": "0.819",
+                "rmsn": "0.625",
+                "threat_score": "0.515"
             },
             "SAMM": {
-                "cor": "0.885",
-                "rmsn": "0.509",
-                "threat_score": "0.498"
+                "cor": "0.889",
+                "rmsn": "0.506",
+                "threat_score": "0.505"
             },
             "NAFM": {
-                "cor": "0.856",
-                "rmsn": "0.642",
-                "threat_score": "0.670"
+                "cor": "0.858",
+                "rmsn": "0.643",
+                "threat_score": "0.665"
             },
             "SAFM": {
-                "cor": "0.936",
-                "rmsn": "0.379",
-                "threat_score": "0.689"
+                "cor": "0.937",
+                "rmsn": "0.381",
+                "threat_score": "0.679"
             },
             "ASM": {
-                "cor": "0.837",
-                "rmsn": "0.608",
-                "threat_score": "0.592"
+                "cor": "0.838",
+                "rmsn": "0.613",
+                "threat_score": "0.594"
             },
             "AUSM": {
-                "cor": "0.911",
-                "rmsn": "0.438",
-                "threat_score": "0.680"
+                "cor": "0.913",
+                "rmsn": "0.439",
+                "threat_score": "0.675"
             }
         },
         "GFDL-ESM2G": {
             "AllMW": {
                 "cor": "0.831",
-                "rmsn": "0.600",
-                "threat_score": "0.602"
+                "rmsn": "0.604",
+                "threat_score": "0.596"
             },
             "AllM": {
-                "cor": "0.832",
-                "rmsn": "0.599",
-                "threat_score": "0.602"
+                "cor": "0.833",
+                "rmsn": "0.603",
+                "threat_score": "0.596"
             },
             "NAMM": {
-                "cor": "0.803",
-                "rmsn": "0.627",
-                "threat_score": "0.598"
+                "cor": "0.805",
+                "rmsn": "0.629",
+                "threat_score": "0.593"
             },
             "SAMM": {
-                "cor": "0.851",
-                "rmsn": "0.620",
-                "threat_score": "0.504"
+                "cor": "0.854",
+                "rmsn": "0.626",
+                "threat_score": "0.492"
             },
             "NAFM": {
                 "cor": "0.850",
-                "rmsn": "0.624",
-                "threat_score": "0.621"
+                "rmsn": "0.628",
+                "threat_score": "0.613"
             },
             "SAFM": {
                 "cor": "0.899",
-                "rmsn": "0.507",
-                "threat_score": "0.681"
+                "rmsn": "0.512",
+                "threat_score": "0.669"
             },
             "ASM": {
-                "cor": "0.865",
-                "rmsn": "0.591",
-                "threat_score": "0.668"
+                "cor": "0.868",
+                "rmsn": "0.596",
+                "threat_score": "0.663"
             },
             "AUSM": {
-                "cor": "0.882",
-                "rmsn": "0.560",
-                "threat_score": "0.650"
+                "cor": "0.883",
+                "rmsn": "0.565",
+                "threat_score": "0.655"
             }
         },
         "GFDL-ESM2M": {
             "AllMW": {
-                "cor": "0.809",
-                "rmsn": "0.622",
-                "threat_score": "0.604"
+                "cor": "0.810",
+                "rmsn": "0.625",
+                "threat_score": "0.601"
             },
             "AllM": {
-                "cor": "0.812",
-                "rmsn": "0.620",
-                "threat_score": "0.604"
+                "cor": "0.813",
+                "rmsn": "0.623",
+                "threat_score": "0.601"
             },
             "NAMM": {
-                "cor": "0.781",
-                "rmsn": "0.649",
-                "threat_score": "0.551"
+                "cor": "0.782",
+                "rmsn": "0.651",
+                "threat_score": "0.546"
             },
             "SAMM": {
-                "cor": "0.844",
-                "rmsn": "0.614",
-                "threat_score": "0.502"
+                "cor": "0.847",
+                "rmsn": "0.618",
+                "threat_score": "0.496"
             },
             "NAFM": {
                 "cor": "0.789",
-                "rmsn": "0.748",
-                "threat_score": "0.601"
+                "rmsn": "0.752",
+                "threat_score": "0.599"
             },
             "SAFM": {
-                "cor": "0.914",
-                "rmsn": "0.473",
-                "threat_score": "0.704"
+                "cor": "0.915",
+                "rmsn": "0.478",
+                "threat_score": "0.698"
             },
             "ASM": {
-                "cor": "0.854",
-                "rmsn": "0.578",
-                "threat_score": "0.660"
+                "cor": "0.857",
+                "rmsn": "0.580",
+                "threat_score": "0.661"
             },
             "AUSM": {
-                "cor": "0.909",
-                "rmsn": "0.437",
-                "threat_score": "0.672"
+                "cor": "0.911",
+                "rmsn": "0.438",
+                "threat_score": "0.660"
             }
         },
         "GISS-E2-H": {
             "AllMW": {
                 "cor": "0.785",
-                "rmsn": "0.636",
-                "threat_score": "0.408"
+                "rmsn": "0.638",
+                "threat_score": "0.405"
             },
             "AllM": {
                 "cor": "0.788",
-                "rmsn": "0.633",
-                "threat_score": "0.407"
+                "rmsn": "0.634",
+                "threat_score": "0.404"
             },
             "NAMM": {
-                "cor": "0.696",
-                "rmsn": "0.720",
-                "threat_score": "0.298"
+                "cor": "0.697",
+                "rmsn": "0.721",
+                "threat_score": "0.292"
             },
             "SAMM": {
-                "cor": "0.804",
-                "rmsn": "0.604",
+                "cor": "0.810",
+                "rmsn": "0.597",
                 "threat_score": "0.444"
             },
             "NAFM": {
-                "cor": "0.834",
-                "rmsn": "0.557",
-                "threat_score": "0.495"
+                "cor": "0.833",
+                "rmsn": "0.559",
+                "threat_score": "0.500"
             },
             "SAFM": {
-                "cor": "0.857",
-                "rmsn": "0.555",
-                "threat_score": "0.542"
+                "cor": "0.858",
+                "rmsn": "0.554",
+                "threat_score": "0.533"
             },
             "ASM": {
-                "cor": "0.796",
-                "rmsn": "0.750",
-                "threat_score": "0.427"
+                "cor": "0.793",
+                "rmsn": "0.763",
+                "threat_score": "0.423"
             },
             "AUSM": {
-                "cor": "0.806",
-                "rmsn": "0.685",
-                "threat_score": "0.170"
+                "cor": "0.803",
+                "rmsn": "0.688",
+                "threat_score": "0.172"
             }
         },
         "GISS-E2-R": {
             "AllMW": {
                 "cor": "0.806",
-                "rmsn": "0.599",
-                "threat_score": "0.420"
+                "rmsn": "0.600",
+                "threat_score": "0.422"
             },
             "AllM": {
                 "cor": "0.809",
                 "rmsn": "0.595",
-                "threat_score": "0.420"
+                "threat_score": "0.421"
             },
             "NAMM": {
-                "cor": "0.738",
-                "rmsn": "0.676",
-                "threat_score": "0.267"
+                "cor": "0.739",
+                "rmsn": "0.675",
+                "threat_score": "0.266"
             },
             "SAMM": {
-                "cor": "0.859",
-                "rmsn": "0.524",
-                "threat_score": "0.446"
+                "cor": "0.865",
+                "rmsn": "0.516",
+                "threat_score": "0.458"
             },
             "NAFM": {
-                "cor": "0.818",
-                "rmsn": "0.583",
-                "threat_score": "0.489"
+                "cor": "0.817",
+                "rmsn": "0.584",
+                "threat_score": "0.495"
             },
             "SAFM": {
                 "cor": "0.862",
                 "rmsn": "0.550",
-                "threat_score": "0.498"
+                "threat_score": "0.495"
             },
             "ASM": {
-                "cor": "0.781",
-                "rmsn": "0.737",
-                "threat_score": "0.484"
+                "cor": "0.778",
+                "rmsn": "0.748",
+                "threat_score": "0.483"
             },
             "AUSM": {
                 "cor": "0.845",
-                "rmsn": "0.588",
-                "threat_score": "0.251"
+                "rmsn": "0.587",
+                "threat_score": "0.247"
             }
         },
         "HadCM3": {
             "AllMW": {
                 "cor": "0.852",
-                "rmsn": "0.570",
-                "threat_score": "0.625"
+                "rmsn": "0.575",
+                "threat_score": "0.621"
             },
             "AllM": {
                 "cor": "0.853",
-                "rmsn": "0.574",
-                "threat_score": "0.625"
+                "rmsn": "0.579",
+                "threat_score": "0.621"
             },
             "NAMM": {
-                "cor": "0.860",
-                "rmsn": "0.543",
-                "threat_score": "0.660"
+                "cor": "0.861",
+                "rmsn": "0.545",
+                "threat_score": "0.638"
             },
             "SAMM": {
-                "cor": "0.860",
-                "rmsn": "0.592",
-                "threat_score": "0.706"
+                "cor": "0.861",
+                "rmsn": "0.599",
+                "threat_score": "0.709"
             },
             "NAFM": {
                 "cor": "0.852",
-                "rmsn": "0.577",
-                "threat_score": "0.636"
+                "rmsn": "0.581",
+                "threat_score": "0.630"
             },
             "SAFM": {
-                "cor": "0.850",
-                "rmsn": "0.656",
-                "threat_score": "0.559"
+                "cor": "0.849",
+                "rmsn": "0.665",
+                "threat_score": "0.556"
             },
             "ASM": {
-                "cor": "0.833",
-                "rmsn": "0.635",
-                "threat_score": "0.574"
+                "cor": "0.831",
+                "rmsn": "0.644",
+                "threat_score": "0.566"
             },
             "AUSM": {
-                "cor": "0.899",
-                "rmsn": "0.518",
+                "cor": "0.900",
+                "rmsn": "0.523",
                 "threat_score": "0.660"
             }
         },
         "HadGEM2-AO": {
             "AllMW": {
-                "cor": "0.830",
-                "rmsn": "0.589",
-                "threat_score": "0.593"
+                "cor": "0.829",
+                "rmsn": "0.595",
+                "threat_score": "0.590"
             },
             "AllM": {
-                "cor": "0.832",
-                "rmsn": "0.590",
-                "threat_score": "0.593"
+                "cor": "0.831",
+                "rmsn": "0.595",
+                "threat_score": "0.590"
             },
             "NAMM": {
-                "cor": "0.793",
-                "rmsn": "0.640",
-                "threat_score": "0.637"
+                "cor": "0.790",
+                "rmsn": "0.647",
+                "threat_score": "0.623"
             },
             "SAMM": {
-                "cor": "0.826",
-                "rmsn": "0.584",
-                "threat_score": "0.635"
+                "cor": "0.824",
+                "rmsn": "0.589",
+                "threat_score": "0.642"
             },
             "NAFM": {
                 "cor": "0.802",
-                "rmsn": "0.616",
-                "threat_score": "0.598"
+                "rmsn": "0.617",
+                "threat_score": "0.591"
             },
             "SAFM": {
-                "cor": "0.877",
-                "rmsn": "0.537",
-                "threat_score": "0.614"
+                "cor": "0.874",
+                "rmsn": "0.548",
+                "threat_score": "0.612"
             },
             "ASM": {
-                "cor": "0.854",
-                "rmsn": "0.575",
+                "cor": "0.852",
+                "rmsn": "0.586",
                 "threat_score": "0.551"
             },
             "AUSM": {
                 "cor": "0.893",
-                "rmsn": "0.479",
-                "threat_score": "0.625"
+                "rmsn": "0.483",
+                "threat_score": "0.619"
             }
         },
         "INMCM4": {
             "AllMW": {
                 "cor": "0.763",
-                "rmsn": "0.659",
-                "threat_score": "0.494"
+                "rmsn": "0.660",
+                "threat_score": "0.495"
             },
             "AllM": {
                 "cor": "0.766",
-                "rmsn": "0.657",
-                "threat_score": "0.494"
+                "rmsn": "0.659",
+                "threat_score": "0.495"
             },
             "NAMM": {
-                "cor": "0.607",
-                "rmsn": "0.816",
-                "threat_score": "0.431"
+                "cor": "0.608",
+                "rmsn": "0.817",
+                "threat_score": "0.441"
             },
             "SAMM": {
-                "cor": "0.821",
-                "rmsn": "0.613",
-                "threat_score": "0.519"
+                "cor": "0.823",
+                "rmsn": "0.615",
+                "threat_score": "0.522"
             },
             "NAFM": {
-                "cor": "0.772",
-                "rmsn": "0.665",
-                "threat_score": "0.334"
+                "cor": "0.774",
+                "rmsn": "0.664",
+                "threat_score": "0.328"
             },
             "SAFM": {
-                "cor": "0.880",
-                "rmsn": "0.526",
+                "cor": "0.878",
+                "rmsn": "0.531",
                 "threat_score": "0.575"
             },
             "ASM": {
-                "cor": "0.803",
-                "rmsn": "0.716",
-                "threat_score": "0.606"
+                "cor": "0.805",
+                "rmsn": "0.718",
+                "threat_score": "0.607"
             },
             "AUSM": {
-                "cor": "0.898",
-                "rmsn": "0.462",
-                "threat_score": "0.419"
-            }
-        },
-        "IPSL-CM5A-LR": {
-            "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.703",
-                "threat_score": "0.520"
-            },
-            "AllM": {
-                "cor": "nan",
-                "rmsn": "0.698",
-                "threat_score": "0.520"
-            },
-            "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.833",
+                "cor": "0.899",
+                "rmsn": "0.459",
                 "threat_score": "0.418"
-            },
-            "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.773",
-                "threat_score": "0.521"
-            },
-            "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.717",
-                "threat_score": "0.561"
-            },
-            "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.465",
-                "threat_score": "0.718"
-            },
-            "ASM": {
-                "cor": "nan",
-                "rmsn": "0.787",
-                "threat_score": "0.504"
-            },
-            "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.540",
-                "threat_score": "0.525"
             }
         },
         "IPSL-CM5A-MR": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.699",
-                "threat_score": "0.523"
+                "cor": "0.782",
+                "rmsn": "0.698",
+                "threat_score": "0.527"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.696",
-                "threat_score": "0.523"
+                "cor": "0.786",
+                "rmsn": "0.693",
+                "threat_score": "0.527"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.824",
-                "threat_score": "0.376"
+                "cor": "0.668",
+                "rmsn": "0.814",
+                "threat_score": "0.389"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.798",
+                "cor": "0.767",
+                "rmsn": "0.790",
                 "threat_score": "0.561"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.728",
-                "threat_score": "0.550"
+                "cor": "0.791",
+                "rmsn": "0.732",
+                "threat_score": "0.547"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.505",
-                "threat_score": "0.715"
+                "cor": "0.895",
+                "rmsn": "0.493",
+                "threat_score": "0.728"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.746",
-                "threat_score": "0.514"
+                "cor": "0.803",
+                "rmsn": "0.752",
+                "threat_score": "0.515"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.513",
-                "threat_score": "0.524"
+                "cor": "0.884",
+                "rmsn": "0.511",
+                "threat_score": "0.530"
             }
         },
         "IPSL-CM5B-LR": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.749",
-                "threat_score": "0.507"
+                "cor": "0.752",
+                "rmsn": "0.746",
+                "threat_score": "0.509"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.745",
-                "threat_score": "0.507"
+                "cor": "0.757",
+                "rmsn": "0.739",
+                "threat_score": "0.509"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.769",
-                "threat_score": "0.451"
+                "cor": "0.754",
+                "rmsn": "0.758",
+                "threat_score": "0.463"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.734",
-                "threat_score": "0.486"
+                "cor": "0.762",
+                "rmsn": "0.725",
+                "threat_score": "0.500"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.730",
-                "threat_score": "0.365"
+                "cor": "0.821",
+                "rmsn": "0.731",
+                "threat_score": "0.370"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.518",
-                "threat_score": "0.690"
+                "cor": "0.883",
+                "rmsn": "0.506",
+                "threat_score": "0.685"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.980",
-                "threat_score": "0.492"
+                "cor": "0.595",
+                "rmsn": "0.970",
+                "threat_score": "0.487"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.656",
-                "threat_score": "0.571"
+                "cor": "0.878",
+                "rmsn": "0.649",
+                "threat_score": "0.577"
             }
         },
         "MIROC4h": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.532",
-                "threat_score": "0.528"
+                "cor": "0.863",
+                "rmsn": "0.530",
+                "threat_score": "0.532"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.531",
-                "threat_score": "0.528"
+                "cor": "0.865",
+                "rmsn": "0.529",
+                "threat_score": "0.532"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.785",
-                "threat_score": "0.418"
+                "cor": "0.688",
+                "rmsn": "0.771",
+                "threat_score": "0.426"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.531",
-                "threat_score": "0.604"
+                "cor": "0.878",
+                "rmsn": "0.525",
+                "threat_score": "0.596"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.460",
-                "threat_score": "0.637"
+                "cor": "0.900",
+                "rmsn": "0.463",
+                "threat_score": "0.647"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.553",
-                "threat_score": "0.535"
+                "cor": "0.885",
+                "rmsn": "0.544",
+                "threat_score": "0.539"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.566",
-                "threat_score": "0.523"
+                "cor": "0.872",
+                "rmsn": "0.561",
+                "threat_score": "0.526"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.357",
-                "threat_score": "0.669"
+                "cor": "0.944",
+                "rmsn": "0.361",
+                "threat_score": "0.674"
             }
         },
         "MIROC5": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.567",
-                "threat_score": "0.608"
+                "cor": "0.846",
+                "rmsn": "0.566",
+                "threat_score": "0.614"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.567",
-                "threat_score": "0.608"
+                "cor": "0.847",
+                "rmsn": "0.565",
+                "threat_score": "0.614"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.651",
-                "threat_score": "0.644"
+                "cor": "0.780",
+                "rmsn": "0.645",
+                "threat_score": "0.657"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.713",
-                "threat_score": "0.730"
+                "cor": "0.790",
+                "rmsn": "0.707",
+                "threat_score": "0.732"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.429",
-                "threat_score": "0.757"
+                "cor": "0.907",
+                "rmsn": "0.432",
+                "threat_score": "0.769"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.585",
-                "threat_score": "0.595"
+                "cor": "0.912",
+                "rmsn": "0.576",
+                "threat_score": "0.599"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.692",
-                "threat_score": "0.518"
+                "cor": "0.857",
+                "rmsn": "0.684",
+                "threat_score": "0.525"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.485",
-                "threat_score": "0.644"
+                "cor": "0.896",
+                "rmsn": "0.484",
+                "threat_score": "0.648"
             }
         },
         "MIROC-ESM": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.681",
-                "threat_score": "0.513"
+                "cor": "0.779",
+                "rmsn": "0.674",
+                "threat_score": "0.515"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.681",
-                "threat_score": "0.513"
+                "cor": "0.783",
+                "rmsn": "0.670",
+                "threat_score": "0.515"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.902",
+                "cor": "0.577",
+                "rmsn": "0.873",
                 "threat_score": "0.456"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.636",
+                "cor": "0.874",
+                "rmsn": "0.623",
                 "threat_score": "0.676"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.721",
-                "threat_score": "0.688"
+                "cor": "0.768",
+                "rmsn": "0.715",
+                "threat_score": "0.685"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.652",
-                "threat_score": "0.482"
+                "cor": "0.880",
+                "rmsn": "0.625",
+                "threat_score": "0.477"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.698",
-                "threat_score": "0.444"
+                "cor": "0.801",
+                "rmsn": "0.697",
+                "threat_score": "0.459"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.503",
-                "threat_score": "0.675"
+                "cor": "0.891",
+                "rmsn": "0.493",
+                "threat_score": "0.667"
             }
         },
         "MPI-ESM-LR": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.696",
+                "cor": "0.836",
+                "rmsn": "0.682",
                 "threat_score": "0.565"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.696",
+                "cor": "0.838",
+                "rmsn": "0.680",
                 "threat_score": "0.565"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.510",
-                "threat_score": "0.594"
+                "cor": "0.888",
+                "rmsn": "0.495",
+                "threat_score": "0.592"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.878",
-                "threat_score": "0.605"
+                "cor": "0.796",
+                "rmsn": "0.841",
+                "threat_score": "0.608"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.486",
-                "threat_score": "0.621"
+                "cor": "0.912",
+                "rmsn": "0.481",
+                "threat_score": "0.624"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.544",
-                "threat_score": "0.712"
+                "cor": "0.925",
+                "rmsn": "0.515",
+                "threat_score": "0.710"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.704",
+                "cor": "0.831",
+                "rmsn": "0.720",
                 "threat_score": "0.556"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.530",
-                "threat_score": "0.595"
+                "cor": "0.900",
+                "rmsn": "0.528",
+                "threat_score": "0.592"
             }
         },
         "MPI-ESM-MR": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.668",
+                "cor": "0.846",
+                "rmsn": "0.652",
                 "threat_score": "0.550"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.668",
+                "cor": "0.848",
+                "rmsn": "0.650",
                 "threat_score": "0.550"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.476",
-                "threat_score": "0.534"
+                "cor": "0.903",
+                "rmsn": "0.466",
+                "threat_score": "0.532"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.827",
-                "threat_score": "0.579"
+                "cor": "0.812",
+                "rmsn": "0.792",
+                "threat_score": "0.582"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.500",
-                "threat_score": "0.642"
+                "cor": "0.909",
+                "rmsn": "0.495",
+                "threat_score": "0.645"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.540",
-                "threat_score": "0.710"
+                "cor": "0.940",
+                "rmsn": "0.514",
+                "threat_score": "0.707"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.749",
-                "threat_score": "0.544"
+                "cor": "0.820",
+                "rmsn": "0.729",
+                "threat_score": "0.546"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.564",
-                "threat_score": "0.572"
+                "cor": "0.894",
+                "rmsn": "0.560",
+                "threat_score": "0.569"
             }
         },
         "MRI-CGCM3": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.787",
-                "threat_score": "0.492"
+                "cor": "0.770",
+                "rmsn": "0.758",
+                "threat_score": "0.490"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.787",
-                "threat_score": "0.492"
+                "cor": "0.770",
+                "rmsn": "0.758",
+                "threat_score": "0.490"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "1.019",
+                "cor": "0.678",
+                "rmsn": "0.966",
                 "threat_score": "0.507"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.717",
-                "threat_score": "0.485"
+                "cor": "0.843",
+                "rmsn": "0.683",
+                "threat_score": "0.489"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.632",
-                "threat_score": "0.466"
+                "cor": "0.848",
+                "rmsn": "0.626",
+                "threat_score": "0.469"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.613",
-                "threat_score": "0.636"
+                "cor": "0.899",
+                "rmsn": "0.570",
+                "threat_score": "0.635"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.932",
-                "threat_score": "0.476"
+                "cor": "0.677",
+                "rmsn": "0.894",
+                "threat_score": "0.468"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.653",
-                "threat_score": "0.588"
+                "cor": "0.884",
+                "rmsn": "0.631",
+                "threat_score": "0.586"
             }
         },
         "MRI-ESM1": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.783",
-                "threat_score": "0.490"
+                "cor": "0.771",
+                "rmsn": "0.754",
+                "threat_score": "0.488"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.783",
-                "threat_score": "0.490"
+                "cor": "0.771",
+                "rmsn": "0.754",
+                "threat_score": "0.488"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "1.016",
+                "cor": "0.685",
+                "rmsn": "0.964",
                 "threat_score": "0.516"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.707",
-                "threat_score": "0.494"
+                "cor": "0.851",
+                "rmsn": "0.673",
+                "threat_score": "0.498"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.622",
-                "threat_score": "0.465"
+                "cor": "0.854",
+                "rmsn": "0.615",
+                "threat_score": "0.470"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.622",
+                "cor": "0.893",
+                "rmsn": "0.579",
                 "threat_score": "0.618"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.922",
-                "threat_score": "0.478"
+                "cor": "0.667",
+                "rmsn": "0.885",
+                "threat_score": "0.469"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.633",
-                "threat_score": "0.578"
+                "cor": "0.888",
+                "rmsn": "0.613",
+                "threat_score": "0.576"
             }
         },
         "NorESM1-M": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.730",
-                "threat_score": "0.496"
+                "cor": "0.797",
+                "rmsn": "0.700",
+                "threat_score": "0.499"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.730",
-                "threat_score": "0.496"
+                "cor": "0.797",
+                "rmsn": "0.700",
+                "threat_score": "0.499"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.884",
-                "threat_score": "0.469"
+                "cor": "0.726",
+                "rmsn": "0.834",
+                "threat_score": "0.467"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.682",
+                "cor": "0.885",
+                "rmsn": "0.651",
                 "threat_score": "0.513"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.789",
+                "cor": "0.770",
+                "rmsn": "0.762",
                 "threat_score": "0.570"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.846",
-                "threat_score": "0.481"
+                "cor": "0.819",
+                "rmsn": "0.783",
+                "threat_score": "0.475"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.665",
-                "threat_score": "0.576"
+                "cor": "0.856",
+                "rmsn": "0.636",
+                "threat_score": "0.592"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.499",
-                "threat_score": "0.598"
+                "cor": "0.932",
+                "rmsn": "0.511",
+                "threat_score": "0.595"
             }
         },
         "ACCESS1-0": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.652",
-                "threat_score": "0.590"
+                "cor": "0.832",
+                "rmsn": "0.623",
+                "threat_score": "0.591"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.652",
-                "threat_score": "0.590"
+                "cor": "0.832",
+                "rmsn": "0.623",
+                "threat_score": "0.591"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.813",
-                "threat_score": "0.632"
+                "cor": "0.768",
+                "rmsn": "0.765",
+                "threat_score": "0.637"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.613",
-                "threat_score": "0.655"
+                "cor": "0.872",
+                "rmsn": "0.575",
+                "threat_score": "0.653"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.690",
+                "cor": "0.771",
+                "rmsn": "0.674",
                 "threat_score": "0.490"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.700",
-                "threat_score": "0.667"
+                "cor": "0.862",
+                "rmsn": "0.643",
+                "threat_score": "0.662"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.626",
-                "threat_score": "0.592"
+                "cor": "0.867",
+                "rmsn": "0.599",
+                "threat_score": "0.595"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.542",
-                "threat_score": "0.505"
+                "cor": "0.896",
+                "rmsn": "0.527",
+                "threat_score": "0.506"
             }
         },
         "BCC-CSM1-1-M": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.657",
-                "threat_score": "0.482"
+                "cor": "0.805",
+                "rmsn": "0.627",
+                "threat_score": "0.479"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.657",
-                "threat_score": "0.482"
+                "cor": "0.805",
+                "rmsn": "0.627",
+                "threat_score": "0.479"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.895",
-                "threat_score": "0.295"
+                "cor": "0.635",
+                "rmsn": "0.857",
+                "threat_score": "0.296"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.692",
-                "threat_score": "0.478"
+                "cor": "0.822",
+                "rmsn": "0.636",
+                "threat_score": "0.476"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.489",
-                "threat_score": "0.452"
+                "cor": "0.889",
+                "rmsn": "0.467",
+                "threat_score": "0.454"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.625",
+                "cor": "0.847",
+                "rmsn": "0.560",
                 "threat_score": "0.577"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.806",
-                "threat_score": "0.569"
+                "cor": "0.730",
+                "rmsn": "0.783",
+                "threat_score": "0.555"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.445",
-                "threat_score": "0.583"
+                "cor": "0.909",
+                "rmsn": "0.426",
+                "threat_score": "0.584"
             }
         },
         "BNU-ESM": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.750",
-                "threat_score": "0.538"
+                "cor": "0.783",
+                "rmsn": "0.693",
+                "threat_score": "0.547"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.750",
-                "threat_score": "0.538"
+                "cor": "0.783",
+                "rmsn": "0.693",
+                "threat_score": "0.547"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.769",
-                "threat_score": "0.425"
+                "cor": "0.781",
+                "rmsn": "0.701",
+                "threat_score": "0.429"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.651",
-                "threat_score": "0.575"
+                "cor": "0.878",
+                "rmsn": "0.577",
+                "threat_score": "0.569"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.917",
-                "threat_score": "0.698"
+                "cor": "0.759",
+                "rmsn": "0.843",
+                "threat_score": "0.704"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.696",
+                "cor": "0.856",
+                "rmsn": "0.611",
                 "threat_score": "0.614"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.742",
-                "threat_score": "0.588"
+                "cor": "0.772",
+                "rmsn": "0.759",
+                "threat_score": "0.611"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.535",
-                "threat_score": "0.430"
+                "cor": "0.875",
+                "rmsn": "0.509",
+                "threat_score": "0.434"
             }
         },
         "CanCM4": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.737",
-                "threat_score": "0.552"
+                "cor": "0.800",
+                "rmsn": "0.703",
+                "threat_score": "0.554"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.737",
-                "threat_score": "0.552"
+                "cor": "0.800",
+                "rmsn": "0.703",
+                "threat_score": "0.554"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.897",
-                "threat_score": "0.470"
+                "cor": "0.751",
+                "rmsn": "0.859",
+                "threat_score": "0.474"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.799",
-                "threat_score": "0.475"
+                "cor": "0.840",
+                "rmsn": "0.750",
+                "threat_score": "0.478"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.858",
-                "threat_score": "0.628"
+                "cor": "0.793",
+                "rmsn": "0.819",
+                "threat_score": "0.621"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.511",
+                "cor": "0.924",
+                "rmsn": "0.483",
                 "threat_score": "0.767"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.685",
-                "threat_score": "0.507"
+                "cor": "0.814",
+                "rmsn": "0.669",
+                "threat_score": "0.513"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.449",
-                "threat_score": "0.639"
+                "cor": "0.916",
+                "rmsn": "0.428",
+                "threat_score": "0.644"
             }
         },
         "CanESM2": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.753",
-                "threat_score": "0.543"
+                "cor": "0.793",
+                "rmsn": "0.717",
+                "threat_score": "0.547"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.753",
-                "threat_score": "0.543"
+                "cor": "0.793",
+                "rmsn": "0.717",
+                "threat_score": "0.547"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.850",
-                "threat_score": "0.518"
+                "cor": "0.769",
+                "rmsn": "0.811",
+                "threat_score": "0.522"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.790",
-                "threat_score": "0.476"
+                "cor": "0.845",
+                "rmsn": "0.742",
+                "threat_score": "0.479"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.899",
-                "threat_score": "0.646"
+                "cor": "0.784",
+                "rmsn": "0.859",
+                "threat_score": "0.639"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.484",
+                "cor": "0.931",
+                "rmsn": "0.458",
                 "threat_score": "0.737"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.765",
-                "threat_score": "0.506"
+                "cor": "0.774",
+                "rmsn": "0.737",
+                "threat_score": "0.515"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.445",
-                "threat_score": "0.569"
+                "cor": "0.917",
+                "rmsn": "0.426",
+                "threat_score": "0.574"
             }
         },
         "CCSM4": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.725",
-                "threat_score": "0.551"
+                "cor": "0.785",
+                "rmsn": "0.686",
+                "threat_score": "0.560"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.725",
-                "threat_score": "0.551"
+                "cor": "0.785",
+                "rmsn": "0.686",
+                "threat_score": "0.560"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.888",
-                "threat_score": "0.449"
+                "cor": "0.705",
+                "rmsn": "0.832",
+                "threat_score": "0.450"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.701",
+                "cor": "0.876",
+                "rmsn": "0.660",
                 "threat_score": "0.563"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.849",
-                "threat_score": "0.601"
+                "cor": "0.753",
+                "rmsn": "0.805",
+                "threat_score": "0.603"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.633",
-                "threat_score": "0.714"
+                "cor": "0.882",
+                "rmsn": "0.590",
+                "threat_score": "0.716"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.711",
-                "threat_score": "0.573"
+                "cor": "0.807",
+                "rmsn": "0.672",
+                "threat_score": "0.600"
             },
             "AUSM": {
-                "cor": "nan",
+                "cor": "0.936",
                 "rmsn": "0.378",
-                "threat_score": "0.613"
+                "threat_score": "0.614"
             }
         },
         "CESM1-CAM5": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.685",
-                "threat_score": "0.568"
+                "cor": "0.811",
+                "rmsn": "0.651",
+                "threat_score": "0.575"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.685",
-                "threat_score": "0.568"
+                "cor": "0.811",
+                "rmsn": "0.651",
+                "threat_score": "0.575"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.743",
-                "threat_score": "0.512"
+                "cor": "0.781",
+                "rmsn": "0.701",
+                "threat_score": "0.513"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.530",
-                "threat_score": "0.613"
+                "cor": "0.908",
+                "rmsn": "0.509",
+                "threat_score": "0.615"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.831",
-                "threat_score": "0.608"
+                "cor": "0.754",
+                "rmsn": "0.790",
+                "threat_score": "0.606"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.647",
-                "threat_score": "0.730"
+                "cor": "0.906",
+                "rmsn": "0.603",
+                "threat_score": "0.732"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.683",
-                "threat_score": "0.496"
+                "cor": "0.836",
+                "rmsn": "0.643",
+                "threat_score": "0.522"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.477",
-                "threat_score": "0.632"
+                "cor": "0.921",
+                "rmsn": "0.472",
+                "threat_score": "0.629"
             }
         },
         "CESM1-WACCM": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.866",
-                "threat_score": "0.493"
+                "cor": "0.699",
+                "rmsn": "0.836",
+                "threat_score": "0.497"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.866",
-                "threat_score": "0.493"
+                "cor": "0.699",
+                "rmsn": "0.836",
+                "threat_score": "0.497"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.940",
-                "threat_score": "0.442"
+                "cor": "0.677",
+                "rmsn": "0.903",
+                "threat_score": "0.446"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "0.727",
-                "threat_score": "0.498"
+                "cor": "0.857",
+                "rmsn": "0.692",
+                "threat_score": "0.500"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "1.160",
-                "threat_score": "0.547"
+                "cor": "0.535",
+                "rmsn": "1.121",
+                "threat_score": "0.545"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.707",
+                "cor": "0.878",
+                "rmsn": "0.682",
                 "threat_score": "0.645"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.825",
-                "threat_score": "0.435"
+                "cor": "0.739",
+                "rmsn": "0.794",
+                "threat_score": "0.451"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.442",
+                "cor": "0.912",
+                "rmsn": "0.446",
                 "threat_score": "0.629"
             }
         },
         "CMCC-CESM": {
             "AllMW": {
-                "cor": "nan",
-                "rmsn": "0.909",
-                "threat_score": "0.532"
+                "cor": "0.752",
+                "rmsn": "0.840",
+                "threat_score": "0.536"
             },
             "AllM": {
-                "cor": "nan",
-                "rmsn": "0.909",
-                "threat_score": "0.532"
+                "cor": "0.752",
+                "rmsn": "0.840",
+                "threat_score": "0.536"
             },
             "NAMM": {
-                "cor": "nan",
-                "rmsn": "0.804",
-                "threat_score": "0.452"
+                "cor": "0.803",
+                "rmsn": "0.744",
+                "threat_score": "0.464"
             },
             "SAMM": {
-                "cor": "nan",
-                "rmsn": "1.141",
+                "cor": "0.698",
+                "rmsn": "1.012",
                 "threat_score": "0.674"
             },
             "NAFM": {
-                "cor": "nan",
-                "rmsn": "0.975",
+                "cor": "0.724",
+                "rmsn": "0.867",
                 "threat_score": "0.461"
             },
             "SAFM": {
-                "cor": "nan",
-                "rmsn": "0.897",
-                "threat_score": "0.578"
+                "cor": "0.751",
+                "rmsn": "0.856",
+                "threat_score": "0.586"
             },
             "ASM": {
-                "cor": "nan",
-                "rmsn": "0.975",
-                "threat_score": "0.575"
+                "cor": "0.724",
+                "rmsn": "0.933",
+                "threat_score": "0.574"
             },
             "AUSM": {
-                "cor": "nan",
-                "rmsn": "0.613",
+                "cor": "0.842",
+                "rmsn": "0.604",
                 "threat_score": "0.533"
             }
         }
