@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bokeh Plot</title>
+    <style>
+      html, body {
+        box-sizing: border-box;
+        display: flow-root;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.5.2.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.5.2.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.5.2.min.js"></script>
+    <script type="text/javascript">
+        Bokeh.set_log_level("info");
+    </script>
+  </head>
+  <body>
+    <div id="f3f7aef0-79b6-430f-bb1c-fb179d826628" data-root-id="p1024" style="display: contents;"></div>
+  
+    <script type="application/json" id="ec2fae93-656e-4910-a6b8-5e2d341c7101">
+      {"ad221cf3-5600-4097-aab1-e00bef8d066c":{"version":"3.5.2","title":"Bokeh Application","roots":[{"type":"object","name":"Column","id":"p1024","attributes":{"children":[{"type":"object","name":"MultiChoice","id":"p1022","attributes":{"js_property_callbacks":{"type":"map","entries":[["change:value",[{"type":"object","name":"CustomJS","id":"p1023","attributes":{"args":{"type":"map","entries":[["source",{"type":"object","name":"ColumnDataSource","id":"p1001","attributes":{"selected":{"type":"object","name":"Selection","id":"p1002","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1003"},"data":{"type":"map","entries":[["index",{"type":"ndarray","array":{"type":"bytes","data":"AAAAAAEAAAACAAAAAwAAAAQAAAA="},"shape":[5],"dtype":"int32","order":"little"}],["Name",{"type":"ndarray","array":["Alice","Bob","Charlie","David","Eve"],"shape":[5],"dtype":"object","order":"little"}],["Age",{"type":"ndarray","array":{"type":"bytes","data":"GAAAAB4AAAAjAAAAKAAAAB0AAAA="},"shape":[5],"dtype":"int32","order":"little"}],["Department",{"type":"ndarray","array":["HR","IT","Finance","IT","HR"],"shape":[5],"dtype":"object","order":"little"}]]}}}],["filtered_source",{"type":"object","name":"ColumnDataSource","id":"p1004","attributes":{"selected":{"type":"object","name":"Selection","id":"p1005","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1006"},"data":{"type":"map","entries":[["Name",{"type":"ndarray","array":["Alice","Bob","Charlie","David","Eve"],"shape":[5],"dtype":"object","order":"little"}],["Age",{"type":"ndarray","array":{"type":"bytes","data":"GAAAAB4AAAAjAAAAKAAAAB0AAAA="},"shape":[5],"dtype":"int32","order":"little"}],["Department",{"type":"ndarray","array":["HR","IT","Finance","IT","HR"],"shape":[5],"dtype":"object","order":"little"}]]}}}],["filter_widget",{"id":"p1022"}]]},"code":"\n    const original_data = source.data;\n    const filtered_data = { Name: [], Age: [], Department: [] };\n    const selected_departments = filter_widget.value;\n\n    for (let i = 0; i &lt; original_data.Name.length; i++) {\n        if (selected_departments.length === 0 || selected_departments.includes(original_data.Department[i])) {\n            filtered_data.Name.push(original_data.Name[i]);\n            filtered_data.Age.push(original_data.Age[i]);\n            filtered_data.Department.push(original_data.Department[i]);\n        }\n    }\n\n    filtered_source.data = filtered_data;\n    filtered_source.change.emit();\n    "}}]]]},"title":"Filter by Department","options":["HR","IT","Finance"]}},{"type":"object","name":"DataTable","id":"p1016","attributes":{"height":300,"source":{"id":"p1004"},"view":{"type":"object","name":"CDSView","id":"p1020","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1021"}}},"columns":[{"type":"object","name":"TableColumn","id":"p1007","attributes":{"field":"Name","title":"Name","formatter":{"type":"object","name":"StringFormatter","id":"p1008"},"editor":{"type":"object","name":"StringEditor","id":"p1009"}}},{"type":"object","name":"TableColumn","id":"p1010","attributes":{"field":"Age","title":"Age","formatter":{"type":"object","name":"StringFormatter","id":"p1011"},"editor":{"type":"object","name":"StringEditor","id":"p1012"}}},{"type":"object","name":"TableColumn","id":"p1013","attributes":{"field":"Department","title":"Department","formatter":{"type":"object","name":"StringFormatter","id":"p1014"},"editor":{"type":"object","name":"StringEditor","id":"p1015"}}}]}}]}}]}}
+    </script>
+    <script type="text/javascript">
+      (function() {
+        const fn = function() {
+          Bokeh.safely(function() {
+            (function(root) {
+              function embed_document(root) {
+              const docs_json = document.getElementById('ec2fae93-656e-4910-a6b8-5e2d341c7101').textContent;
+              const render_items = [{"docid":"ad221cf3-5600-4097-aab1-e00bef8d066c","roots":{"p1024":"f3f7aef0-79b6-430f-bb1c-fb179d826628"},"root_ids":["p1024"]}];
+              root.Bokeh.embed.embed_items(docs_json, render_items);
+              }
+              if (root.Bokeh !== undefined) {
+                embed_document(root);
+              } else {
+                let attempts = 0;
+                const timer = setInterval(function(root) {
+                  if (root.Bokeh !== undefined) {
+                    clearInterval(timer);
+                    embed_document(root);
+                  } else {
+                    attempts++;
+                    if (attempts > 100) {
+                      clearInterval(timer);
+                      console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                    }
+                  }
+                }, 10, root)
+              }
+            })(window);
+          });
+        };
+        if (document.readyState != "loading") fn();
+        else document.addEventListener("DOMContentLoaded", fn);
+      })();
+    </script>
+  </body>
+</html>
