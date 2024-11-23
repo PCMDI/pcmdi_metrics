@@ -738,7 +738,7 @@ for mod in models:
                 pass
 
 print("PMPdriver: model loop end")
-print("Process end: %s" % time.ctime())
+print(f"Process end: {time.ctime()}")
 
 # =================================================
 # OUTPUT METRICS TO JSON FILE (for all simulations)
