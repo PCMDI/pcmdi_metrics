@@ -12,13 +12,16 @@ import time
 import shapely  # noqa: F401
 
 # isort: on
-import cdms2
+from os.path import join as OSpath__join
+
+#import cdms2
 from EnsoMetrics.EnsoCollectionsLib import (
     CmipVariables,
     ReferenceObservations,
     defCollection,
 )
 from EnsoMetrics.EnsoComputeMetricsLib import ComputeCollection
+from EnsoPlots.EnsoMetricPlot import main_plotter
 
 from pcmdi_metrics import resources
 from pcmdi_metrics.enso.lib import (
@@ -31,15 +34,9 @@ from pcmdi_metrics.enso.lib import (
 )
 from pcmdi_metrics.utils import StringConstructor, sort_human
 
-from EnsoPlots.EnsoMetricPlot import main_plotter
-
-from os.path import join as OSpath__join
-
-
 # To avoid below error when using multi cores
 # OpenBLAS blas_thread_init: pthread_create failed for thread XX of 96: Resource temporarily unavailable
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
-
 
 
 # =================================================
@@ -128,14 +125,10 @@ print("obs_cmor_path:", obs_cmor_path)
 
 obs_catalogue_json = param.obs_catalogue
 
-
-
 path_in_json = json_path
 path_in_nc = netcdf_path
 pattern = "_".join([mip, exp, mc_name, case_id])
 path_out = fig_path
-
-
 
 # =================================================
 # Prepare loop iteration
@@ -300,7 +293,7 @@ print("PMPdriver: dict_obs readin end")
 # =================================================
 # Loop for Models
 # -------------------------------------------------
-print("Process start: %s" % time.ctime())
+print(f"Process start:{time.ctime()}")
 dict_metric, dict_dive = dict(), dict()
 
 print("models:", models)
@@ -390,8 +383,7 @@ for mod in models:
         if debug:
             print("list_variables:", list_variables)
 
-        #try:
-        if 1:
+        try:
             for var in list_variables:
                 print(" --- var: ", var, " ---")
                 # finding variable name in file
@@ -587,13 +579,12 @@ for mod in models:
             else:
                 obs_interpreter = None
 
+            compute_metrics = True  # developper switch for testing
 
-            compute_metrics = True  # temporary for testing!!
-                         
             if compute_metrics:
                 # Computes the metric collection
                 print("\n### Compute the metric collection ###\n")
-                cdms2.setAutoBounds("on")
+                #cdms2.setAutoBounds("on")
                 dict_metric[mod][run], dict_dive[mod][run] = ComputeCollection(
                     mc_name,
                     dictDatasets,
@@ -602,7 +593,7 @@ for mod in models:
                     netcdf_name=netcdf,
                     debug=debug,
                     obs_interpreter=obs_interpreter,
-                )    
+                )
 
                 if debug:
                     print("file_name:", file_name)
@@ -619,87 +610,133 @@ for mod in models:
                     dict_metric,
                     dict_dive,
                     egg_pth,
-                    outdir(output_type="diagnostics"),
+                    outdir,
                     json_name,
                     mod=mod,
                     run=run,
                 )
             else:
-                print('pass metrics computing')
+                print("pass metrics computing")
 
             #
             # Figure
             #
-            
-            print('figure plotting start')
-            
-            metrics = sorted(defCollection(mc_name)['metrics_list'].keys(), key=lambda v: v.upper())
-            print('metrics:', metrics)
-            
-            filename_js = OSpath__join(outdir(output_type="diagnostics"), json_name + '.json')
-            print('filename_js:', filename_js)
-            #data_json = dict_metric
+
+            print("figure plotting start")
+
+            metrics = sorted(
+                defCollection(mc_name)["metrics_list"].keys(), key=lambda v: v.upper()
+            )
+            print("metrics:", metrics)
+
+            filename_js = OSpath__join(
+                outdir(output_type="diagnostics"), json_name + ".json"
+            )
+            print("filename_js:", filename_js)
+            # data_json = dict_metric
             with open(filename_js) as ff:
-                data_json = json.load(ff)['RESULTS']['model'][mod][run]
-            
+                data_json = json.load(ff)["RESULTS"]["model"][mod][run]
+
             for met in metrics:
-                print('met:', met)
+                print("met:", met)
                 # get NetCDF file name
-                filename_nc = OSpath__join(path_in_nc, pattern + "_" + mod + "_" + run + "_" + met + ".nc")
+                filename_nc = OSpath__join(
+                    path_in_nc, pattern + "_" + mod + "_" + run + "_" + met + ".nc"
+                )
                 print("filename_nc:", filename_nc)
-                # get diagnostic values for the given model and observations
-                if mc_name == "ENSO_tel" and "Map" in met:
-                    dict_dia = data_json["value"][met+"Corr"]["diagnostic"]
-                    diagnostic_values = dict((key1, None) for key1 in dict_dia.keys())
-                    diagnostic_units = ""
-                else:
-                    dict_dia = data_json["value"][met]["diagnostic"]
-                    diagnostic_values = dict((key1, dict_dia[key1]["value"]) for key1 in dict_dia.keys())
-                    diagnostic_units = data_json["metadata"]["metrics"][met]["diagnostic"]["units"]
-                # get metric values computed with the given model and observations
-                if mc_name == "ENSO_tel" and "Map" in met:
-                    list1, list2 = [met+"Corr", met+"Rmse"], ["diagnostic", "metric"]
-                    dict_met = data_json["value"]
-                    metric_values = dict((key1, {mod: [dict_met[su][ty][key1]["value"] for su, ty in zip(list1, list2)]})
-                                        for key1 in dict_met[list1[0]]["metric"].keys())
-                    metric_units = [data_json["metadata"]["metrics"][su]["metric"]["units"] for su in list1]
-                else:
-                    dict_met = data_json["value"][met]["metric"]
-                    metric_values = dict((key1, {mod: dict_met[key1]["value"]}) for key1 in dict_met.keys())
-                    metric_units = data_json["metadata"]["metrics"][met]["metric"]["units"]
-                # figure name
-                figure_name = "_".join([mip, exp, mc_name, mod, run, met])
-                print('figure_name:', figure_name)
-                
-                # this function needs:
-                #      - the name of the metric collection: metric_collection
-                #      - the name of the metric: metric
-                #      - the name of the model: modname (!!!!! this must be the name given when computed because it is the name used
-                #                                              for in the netCDF files and in the json file !!!!!)
-                #      - name of the exp: exp
-                #      - name of the netCDF file name and path: filename_nc
-                #      - a dictionary containing the diagnostic values: diagnostic_values (e.g., {"ERA-Interim": 1, "Tropflux": 1.1,
-                #                                                                                 modname: 1.5})
-                #      - the diagnostic units: diagnostic_units
-                #      - a dictionary containing the metric values: metric_values (e.g., {"ERA-Interim": {modname: 1.5},
-                #                                                                         "Tropflux": {modname: 1.36}})
-                #      - the metric units: metric_units
-                #      - (optional) the path where to save the plots: path_out
-                #      - (optional) the name of the plots: name_png
-                
-                main_plotter(mc_name, met, mod, exp, filename_nc, diagnostic_values,
-                    diagnostic_units, metric_values, metric_units, member=run, path_png=path_out, 
-                    name_png=figure_name)    
+                if os.path.exists(filename_nc):
+                    # get diagnostic values for the given model and observations
+                    if mc_name == "ENSO_tel" and "Map" in met:
+                        dict_dia = data_json["value"][met + "Corr"]["diagnostic"]
+                        diagnostic_values = dict(
+                            (key1, None) for key1 in dict_dia.keys()
+                        )
+                        diagnostic_units = ""
+                    else:
+                        dict_dia = data_json["value"][met]["diagnostic"]
+                        diagnostic_values = dict(
+                            (key1, dict_dia[key1]["value"]) for key1 in dict_dia.keys()
+                        )
+                        diagnostic_units = data_json["metadata"]["metrics"][met][
+                            "diagnostic"
+                        ]["units"]
+                    # get metric values computed with the given model and observations
+                    if mc_name == "ENSO_tel" and "Map" in met:
+                        list1, list2 = [met + "Corr", met + "Rmse"], [
+                            "diagnostic",
+                            "metric",
+                        ]
+                        dict_met = data_json["value"]
+                        metric_values = dict(
+                            (
+                                key1,
+                                {
+                                    mod: [
+                                        dict_met[su][ty][key1]["value"]
+                                        for su, ty in zip(list1, list2)
+                                    ]
+                                },
+                            )
+                            for key1 in dict_met[list1[0]]["metric"].keys()
+                        )
+                        metric_units = [
+                            data_json["metadata"]["metrics"][su]["metric"]["units"]
+                            for su in list1
+                        ]
+                    else:
+                        dict_met = data_json["value"][met]["metric"]
+                        metric_values = dict(
+                            (key1, {mod: dict_met[key1]["value"]})
+                            for key1 in dict_met.keys()
+                        )
+                        metric_units = data_json["metadata"]["metrics"][met]["metric"][
+                            "units"
+                        ]
+                    # figure name
+                    figure_name = "_".join([mip, exp, mc_name, mod, run, met])
+                    print("figure_name:", figure_name)
+                    # this function needs:
+                    #      - the name of the metric collection: metric_collection
+                    #      - the name of the metric: metric
+                    #      - the name of the model: modname (!!!!! this must be the name given when computed because it is the name used
+                    #                                              for in the netCDF files and in the json file !!!!!)
+                    #      - name of the exp: exp
+                    #      - name of the netCDF file name and path: filename_nc
+                    #      - a dictionary containing the diagnostic values: diagnostic_values (e.g., {"ERA-Interim": 1, "Tropflux": 1.1,
+                    #                                                                                 modname: 1.5})
+                    #      - the diagnostic units: diagnostic_units
+                    #      - a dictionary containing the metric values: metric_values (e.g., {"ERA-Interim": {modname: 1.5},
+                    #                                                                         "Tropflux": {modname: 1.36}})
+                    #      - the metric units: metric_units
+                    #      - (optional) the path where to save the plots: path_out
+                    #      - (optional) the name of the plots: name_png
 
-                print('figure plotting done')
+                    main_plotter(
+                        mc_name,
+                        met,
+                        mod,
+                        exp,
+                        filename_nc,
+                        diagnostic_values,
+                        diagnostic_units,
+                        metric_values,
+                        metric_units,
+                        member=run,
+                        path_png=path_out,
+                        name_png=figure_name,
+                    )
 
-        """
+                    print("figure plotting done")
+
+                else:
+                    print("file not found:", filename_nc)
+
         except Exception as e:
             print("failed for ", mod, run)
             print(e)
             if not debug:
                 pass
-        """
+
 print("PMPdriver: model loop end")
 print("Process end: %s" % time.ctime())
 
