@@ -109,51 +109,33 @@ if compare_cmip6:
         library_cmip6 = Metrics(json_list, mip="cmip6")
         
         # construct df from json data
-        records = []
-        all_seasons = ['ANN', 'DJF', 'JJA', 'MAM', 'SON']
-        
-        for season, regions in library_cmip6.df_dict['bias_xy'].items():
-            if not isinstance(regions, dict):
-                continue  # Skip if regions is not a dictionary
-            for region, mips in regions.items():
-                if not isinstance(mips, dict):
-                    continue  # Skip if mips is not a dictionary
-                for mip, models in mips.items():
-                    if not isinstance(models, dict):
-                        continue  # Skip if models is not a dictionary
-                    for model_name, runs in models.items():
-                        if not isinstance(runs, dict):
-                            continue  # Skip if runs is not a dictionary
-                        for run_name, variables in runs.items():
-                            if not isinstance(variables, list):
-                                raise ValueError(f"Expected a list for variables, got {type(variables)}")
-                            for variable in variables:
-                                            file_name = f"{variable}_{model_name}_{run_name}_interpolated_regrid_{region}_{season}_{data_version}.png"
-                                            img_url = f"https://pcmdi.llnl.gov/pmp-preliminary-results/graphics/mean_climate/cmip6/amip/clim/v20241029/{variable}/{file_name}"
+        seasons = ['djf', 'jja', 'mam', 'son']
+        regions = ['global', 'NHEX', 'SHEX', 'TROPICS']
+        region_dfs = []
+        for r in regions:
+            region_df = library_cmip6.df_dict['bias_xy']['djf'][r]
+            region_df = region_df.drop(columns=['mip', 'model_run'])
+            id_vars = ['model', 'run']
+            value_vars = [col for col in region_df.columns if col not in id_vars]
+            region_df = pd.melt(region_df, id_vars = id_vars, value_vars = value_vars, var_name = "Variable", value_name='value').drop(columns=['value'])
+            region_df['Region'] = r
 
-                                            records.append({
-                                                "Model": model_name,
-                                                "Variable": variable,
-                                                "Region": region,
-                                                season: img_url
-                                            })
-        cmip6_df = pd.DataFrame(records)
+            region_dfs.append(region_df)
         
-        # add ANN column
-        for season in all_seasons:
-            if season not in cmip6_df.columns:
-                cmip6_df[season] = cmip6_df.apply(
-                    lambda row: f"https://pcmdi.llnl.gov/pmp-preliminary-results/graphics/mean_climate/cmip6/amip/clim/v20241029/{variable}/{variable}_{model_name}_{run_name}_interpolated_regrid_{region}_{season}_{data_version}.png"
-                    if pd.notna(row['Region']) and pd.notna(row['Model']) and pd.notna(row['Variable'])
-                    else None,
-                    axis=1
-                )
-
-        # reorder columns so seasons are at the end
-        col_order = ['Model', 'Variable', 'Region'] + all_seasons
-        cmip6_df = cmip6_df[col_order]
+         #only working for SON (last in the loop) and ANN ... 
+        season_df = pd.concat(region_dfs).drop_duplicates()
+        img_url = "https://pcmdi.llnl.gov/pmp-preliminary-results/graphics/mean_climate/cmip6/amip/clim/v20241029"
+        for s in seasons:
+            season_df[s.upper()] = season_df.apply(lambda row: f"{img_url}/{row['Variable']}/{row['Variable']}_{row['model']}_{row['run']}f1_interpolated_regrid2_{row['Region']}_{s.upper()}_v20241029.png", axis=1)
+        
+        season_df['ANN'] = season_df.apply(lambda row: f"{img_url}/{row['Variable']}/{row['Variable']}_{row['model']}_{row['run']}f1_interpolated_regrid2_{row['Region']}_AC_v20241029.png", axis=1)
+        season_df = season_df.drop(columns = ['run'])
+        season_df = season_df.rename(columns={'model': 'Model'})
+        
+        cmip6_df = season_df
         
         return cmip6_df
+    
     cmip6_df = create_cmip6_df().sort_values(['Model', 'Variable', 'Region'])
     df = pd.concat([user_df, cmip6_df])
 else:
