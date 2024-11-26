@@ -10,23 +10,23 @@ dependencies:
     # NOTE: If versions are updated, also `additional_dependencies` list for mypy in `.pre-commit-config.yaml`
     - python=3.10.10
     - pip=23.1.2
-    - numpy=1.23.5
-    - cartopy=0.22.0
-    - matplotlib=3.7.1
-    - cdms2=3.1.5
+    - numpy >=2.0.0,<3.0.0
+    - cartopy >=0.22.0
+    - matplotlib >=3.7.1
+    - cdms2 >=3.1.5
     - genutil=8.2.1
     - cdutil=8.2.1
     - cdp=1.7.0
-    - eofs=1.4.1
+    - eofs=2.0.0
     - seaborn=0.12.2
     - enso_metrics=1.1.3
-    - xcdat>=0.7.2
+    - xcdat=0.7.3
     - xmltodict=0.13.0
     - setuptools=67.7.2
     - netcdf4>=1.6.3
-    - regionmask=0.9.0
+    - regionmask=0.12.1
     - rasterio>=1.3.6
-    - shapely=2.0.1
+    - shapely >=2.0.1
     - numdifftools
     - nc-time-axis
     - colorcet
