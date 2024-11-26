@@ -17,6 +17,7 @@ from pcmdi_metrics.monsoon_wang.lib import (
     regrid,
 )
 from pcmdi_metrics.utils import StringConstructor
+from pcmdi_metrics.io import da_to_ds
 
 
 def monsoon_wang_runner(args):
@@ -59,6 +60,7 @@ def monsoon_wang_runner(args):
         domain_mask_obs.name = "mask"
         mpi_obs = mpi_obs.where(domain_mask_obs)
         nout_mpi_obs = os.path.join(outpathdata, "mpi_obs_masked.nc")
+        da_to_ds(mpi_obs).to_netcdf(nout_mpi_obs)
 
     # ########################################
     # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
