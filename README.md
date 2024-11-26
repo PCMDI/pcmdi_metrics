@@ -171,6 +171,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.8]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8
 [v3.7.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.2
 [v3.7.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.1
 [v3.7]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7
