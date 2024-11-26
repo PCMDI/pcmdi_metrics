@@ -10,78 +10,13 @@ import xarray as xr
 import pcmdi_metrics
 from pcmdi_metrics import resources
 from pcmdi_metrics.io import region_subset
-from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
-from pcmdi_metrics.monsoon_wang.lib import mpd, mpi_skill_scores, regrid
+from pcmdi_metrics.monsoon_wang.lib import (
+    create_monsoon_wang_parser,
+    mpd,
+    mpi_skill_scores,
+    regrid,
+)
 from pcmdi_metrics.utils import StringConstructor
-
-
-def create_monsoon_wang_parser():
-    P = PMPParser()
-
-    P.use("--modnames")
-    P.use("--results_dir")
-    P.use("--reference_data_path")
-    P.use("--test_data_path")
-
-    P.add_argument(
-        "--obs_mask",
-        type=str,
-        dest="obs_mask",
-        default=None,
-        help="obs mask pat",
-    )
-    P.add_argument(
-        "--outnj",
-        "--outnamejson",
-        type=str,
-        dest="outnamejson",
-        default="monsoon_wang.json",
-        help="Output path for jsons",
-    )
-    P.add_argument(
-        "-e",
-        "--experiment",
-        type=str,
-        dest="experiment",
-        default="historical",
-        help="AMIP, historical or picontrol",
-    )
-    P.add_argument(
-        "-c", "--MIP", type=str, dest="mip", default="CMIP5", help="put options here"
-    )
-    P.add_argument(
-        "--ovar", dest="obsvar", default="pr", help="Name of variable in obs file"
-    )
-    P.add_argument(
-        "-v",
-        "--var",
-        dest="modvar",
-        default="pr",
-        help="Name of variable in model files",
-    )
-    P.add_argument(
-        "-t",
-        "--threshold",
-        default=2.5 / 86400.0,
-        type=float,
-        help="Threshold for a hit when computing skill score",
-    )
-    P.add_argument(
-        "--cmec",
-        dest="cmec",
-        default=False,
-        action="store_true",
-        help="Use to save CMEC format metrics JSON",
-    )
-    P.add_argument(
-        "--no_cmec",
-        dest="cmec",
-        default=False,
-        action="store_false",
-        help="Do not save CMEC format metrics JSON",
-    )
-    P.set_defaults(cmec=False)
-    return P
 
 
 def monsoon_wang_runner(args):
@@ -164,17 +99,6 @@ def monsoon_wang_runner(args):
     # ########################################
 
     egg_pth = resources.resource_path()
-    globals = {}
-    locals = {}
-    exec(
-        compile(
-            open(os.path.join(egg_pth, "default_regions.py")).read(),
-            os.path.join(egg_pth, "default_regions.py"),
-            "exec",
-        ),
-        globals,
-        locals,
-    )
 
     doms = ["AllMW", "AllM", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
 
@@ -227,8 +151,7 @@ def monsoon_wang_runner(args):
 
             rmsn = rms / mpi_obs_reg_sd
 
-            #  DOMAIN SELECTED FROM GLOBAL ANNUAL RANGE FOR MODS AND OBS
-
+            # DOMAIN SELECTED FROM GLOBAL ANNUAL RANGE FOR MODS AND OBS
             annrange_mod_dom = region_subset(annrange_mod, dom)
             annrange_obs_dom = region_subset(annrange_obs, dom)
 

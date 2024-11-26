@@ -1,39 +1,9 @@
-from typing import Union
-
 import numpy as np
 import xarray as xr
 
+from pcmdi_metrics.io import da_to_ds
+
 #  SEASONAL RANGE - USING ANNUAL CYCLE CLIMATOLGIES 0=Jan, 11=Dec
-
-
-def da_to_ds(d: Union[xr.Dataset, xr.DataArray], var: str = "variable") -> xr.Dataset:
-    """Convert xarray DataArray to Dataset
-
-    Parameters
-    ----------
-    d : Union[xr.Dataset, xr.DataArray]
-        Input dataArray. If dataset is given, no process will be done
-    var : str, optional
-        Name of dataArray, by default "variable"
-
-    Returns
-    -------
-    xr.Dataset
-        xarray Dataset
-
-    Raises
-    ------
-    TypeError
-        Raised when given input is not xarray based variables
-    """
-    if isinstance(d, xr.Dataset):
-        return d.copy()
-    elif isinstance(d, xr.DataArray):
-        return d.to_dataset(name=var).bounds.add_missing_bounds().copy()
-    else:
-        raise TypeError(
-            "Input must be an instance of either xarrary.DataArray or xarrary.Dataset"
-        )
 
 
 def regrid(da_in, da_grid, data_var="pr"):
@@ -55,11 +25,34 @@ def compute_season(data, season_indices, weights):
     return out / N
 
 
-def mpd(data):
-    """Monsoon precipitation intensity and annual range calculation
-    .. describe:: Input
-        *  data
-            * Assumes climatology array with 12 times step first one January
+def mpd(data: xr.DataArray) -> tuple[xr.DataArray, xr.DataArray]:
+    """
+    Monsoon precipitation intensity and annual range calculation.
+
+    Parameters
+    ----------
+    data : xarray.DataArray
+        Assumes climatology array with 12 time steps, the first one being January.
+
+    Returns
+    -------
+    da_annrange : xarray.DataArray
+        The annual range of monsoon precipitation.
+    da_mpi : xarray.DataArray
+        The monsoon precipitation intensity.
+
+    Notes
+    -----
+    This function calculates the monsoon precipitation intensity and annual range
+    by computing the difference between the monsoon season (May to September) and
+    the non-monsoon season (November to March) precipitation, and then normalizing
+    it by the annual precipitation.
+
+    Examples
+    --------
+    >>> import xarray as xr
+    >>> data = xr.DataArray([...], dims=["time", "lat", "lon"])
+    >>> da_annrange, da_mpi = mpd(data)
     """
     months_length = [
         31.0,
@@ -93,23 +86,51 @@ def mpd(data):
     return da_annrange, da_mpi
 
 
-def mpi_skill_scores(annrange_mod_dom, annrange_obs_dom, threshold=2.5 / 86400.0):
-    """Monsoon precipitation index skill score calculation
-    see Wang et al., doi:10.1007/s00382-010-0877-0
+def mpi_skill_scores(
+    annrange_mod_dom: xr.DataArray,
+    annrange_obs_dom: xr.DataArray,
+    threshold: float = 2.5 / 86400.0,
+) -> tuple[float, float, float, float, xr.DataArray, xr.DataArray, xr.DataArray]:
+    """
+    Monsoon precipitation index skill score calculation.
 
-      .. describe:: Input
+    Parameters
+    ----------
+    annrange_mod_dom : xarray.DataArray
+        Model values range (summer - winter).
+    annrange_obs_dom : xarray.DataArray
+        Observations values range (summer - winter).
+    threshold : float, optional
+        Threshold in the same units as inputs, by default 2.5/86400.
 
-          *  annrange_mod_dom
+    Returns
+    -------
+    hit : float
+        Number of hits where both model and observation exceed the threshold.
+    missed : float
+        Number of misses where observation exceeds the threshold but model does not.
+    falarm : float
+        Number of false alarms where model exceeds the threshold but observation does not.
+    score : float
+        Skill score calculated as hit / (hit + missed + falarm).
+    xr_hitmap : xarray.DataArray
+        DataArray of hits.
+    xr_missmap : xarray.DataArray
+        DataArray of misses.
+    xr_falarmmap : xarray.DataArray
+        DataArray of false alarms.
 
-              * Model Values Range (summer - winter)
+    Notes
+    -----
+    This function calculates the monsoon precipitation index skill score as described
+    in Wang et al., doi:10.1007/s00382-010-0877-0.
 
-          *  annrange_obs_dom
-
-              * Observations Values Range (summer - winter)
-
-          *  threshold [default is 2.5/86400.]
-
-              * threshold in same units as inputs
+    Examples
+    --------
+    >>> import xarray as xr
+    >>> annrange_mod_dom = xr.DataArray([...], dims=["lat", "lon"])
+    >>> annrange_obs_dom = xr.DataArray([...], dims=["lat", "lon"])
+    >>> hit, missed, falarm, score, xr_hitmap, xr_missmap, xr_falarmmap = mpi_skill_scores(annrange_mod_dom, annrange_obs_dom)
     """
     mt = np.ma.greater(annrange_mod_dom, threshold)
     ot = np.ma.greater(annrange_obs_dom, threshold)
