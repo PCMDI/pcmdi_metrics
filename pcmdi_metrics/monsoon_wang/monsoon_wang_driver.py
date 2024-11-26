@@ -2,16 +2,18 @@
 
 import collections
 import os
+import sys
 
-import cdms2
-import numpy
-from genutil import statistics
+# import cdms2
+import numpy as np
+import xarray as xr
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
-from pcmdi_metrics.io import StringConstructor
+from pcmdi_metrics.io import load_regions_specs, region_subset
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
-from pcmdi_metrics.monsoon_wang import mpd, mpi_skill_scores
+from pcmdi_metrics.monsoon_wang.lib import mpd, mpi_skill_scores, regrid
+from pcmdi_metrics.utils import StringConstructor
 
 
 def create_monsoon_wang_parser():
@@ -22,6 +24,13 @@ def create_monsoon_wang_parser():
     P.use("--reference_data_path")
     P.use("--test_data_path")
 
+    P.add_argument(
+        "--obs_mask",
+        type=str,
+        dest="obs_mask",
+        default=None,
+        help="obs mask pat",
+    )
     P.add_argument(
         "--outnj",
         "--outnamejson",
@@ -101,19 +110,25 @@ def monsoon_wang_runner(args):
 
     #########################################
     # PMP monthly default PR obs
-    cdms2.axis.longitude_aliases.append("longitude_prclim_mpd")
-    cdms2.axis.latitude_aliases.append("latitude_prclim_mpd")
-    fobs = cdms2.open(args.reference_data_path)
-    dobs_orig = fobs(args.obsvar)
+    # cdms2.axis.longitude_aliases.append("longitude_prclim_mpd")
+    # cdms2.axis.latitude_aliases.append("latitude_prclim_mpd")
+    fobs = xr.open_dataset(args.reference_data_path, decode_times=False)
+    dobs_orig = fobs[args.obsvar]
     fobs.close()
-
-    obsgrid = dobs_orig.getGrid()
 
     ########################################
 
     # FCN TO COMPUTE GLOBAL ANNUAL RANGE AND MONSOON PRECIP INDEX
 
     annrange_obs, mpi_obs = mpd(dobs_orig)
+
+    # create monsoon domain mask based on observations: annual range > 2.5 mm/day
+    if args.obs_mask:
+        domain_mask_obs = xr.where(annrange_obs > thr, 1, 0)
+        domain_mask_obs.name = "mask"
+        mpi_obs = mpi_obs.where(domain_mask_obs)
+        nout_mpi_obs = os.path.join(outpathdata, "mpi_obs_masked.nc")
+
     #########################################
     # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
     nout = os.path.join(
@@ -149,6 +164,7 @@ def monsoon_wang_runner(args):
 
     if len(gmods) == 0:
         raise RuntimeError("No model file found!")
+
     #########################################
 
     egg_pth = resources.resource_path()
@@ -163,6 +179,7 @@ def monsoon_wang_runner(args):
         globals,
         locals,
     )
+
     regions_specs = locals["regions_specs"]
     doms = ["AllMW", "AllM", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
 
@@ -182,37 +199,52 @@ def monsoon_wang_runner(args):
 
         mpi_stats_dic[mod] = {}
 
-        print(
-            "******************************************************************************************"
-        )
-        print(modelFile)
-        f = cdms2.open(modelFile)
-        d_orig = f(var)
+        print("modelFile =  ", modelFile)
+        f = xr.open_dataset(modelFile)
+        d_orig = f[var]
 
         annrange_mod, mpi_mod = mpd(d_orig)
-        annrange_mod = annrange_mod.regrid(
-            obsgrid, regridTool="regrid2", regridMethod="conserve", mkCyclic=True
-        )
-        mpi_mod = mpi_mod.regrid(
-            obsgrid, regridTool="regrid2", regridMethod="conserve", mkCyclic=True
-        )
+
+        domain_mask_mod = xr.where(annrange_mod > thr, 1, 0)
+        mpi_mod = mpi_mod.where(domain_mask_mod)
+
+        lats = annrange_obs.lat[0]
+        latn = annrange_obs.lat[-1]
+        lone = annrange_obs.lon[-1]
+        lonw = annrange_obs.lon[0]
+
+        annrange_obs = regrid(annrange_obs, annrange_mod)
+
+        mpi_obs = regrid(mpi_obs, mpi_mod)
+
+        regions_specs = load_regions_specs()
 
         for dom in doms:
             mpi_stats_dic[mod][dom] = {}
 
-            reg_sel = regions_specs[dom]["domain"]
+            print("dom =  ", dom)
 
-            mpi_obs_reg = mpi_obs(reg_sel)
-            mpi_obs_reg_sd = float(statistics.std(mpi_obs_reg, axis="xy"))
-            mpi_mod_reg = mpi_mod(reg_sel)
+            mpi_obs_reg = region_subset(mpi_obs, dom)
+            mpi_obs_reg_sd = mpi_obs_reg.std(dim=["lat", "lon"])
+            mpi_mod_reg = region_subset(mpi_mod, dom)
 
-            cor = float(statistics.correlation(mpi_mod_reg, mpi_obs_reg, axis="xy"))
-            rms = float(statistics.rms(mpi_mod_reg, mpi_obs_reg, axis="xy"))
+            da1_flat = mpi_mod_reg.values.ravel()
+            da2_flat = mpi_obs_reg.values.ravel()
+
+            cor = np.ma.corrcoef(
+                np.ma.masked_invalid(da1_flat), np.ma.masked_invalid(da2_flat)
+            )[0, 1]
+
+            squared_diff = (mpi_mod_reg - mpi_obs_reg) ** 2
+            mean_squared_error = squared_diff.mean(skipna=True)
+            rms = np.sqrt(mean_squared_error)
+
             rmsn = rms / mpi_obs_reg_sd
 
             #  DOMAIN SELECTED FROM GLOBAL ANNUAL RANGE FOR MODS AND OBS
-            annrange_mod_dom = annrange_mod(reg_sel)
-            annrange_obs_dom = annrange_obs(reg_sel)
+
+            annrange_mod_dom = region_subset(annrange_mod, dom)
+            annrange_obs_dom = region_subset(annrange_obs, dom)
 
             # SKILL SCORES
             #  HIT/(HIT + MISSED + FALSE ALARMS)
@@ -227,14 +259,22 @@ def monsoon_wang_runner(args):
             mpi_stats_dic[mod][dom]["threat_score"] = format(score, sig_digits)
 
             # SAVE ANNRANGE AND HIT MISS AND FALSE ALARM FOR EACH MOD DOM
-            fm = os.path.join(nout, "_".join([mod, dom, "wang-monsoon.nc"]))
-            g = cdms2.open(fm, "w")
-            g.write(annrange_mod_dom)
-            g.write(hitmap, dtype=numpy.int32)
-            g.write(missmap, dtype=numpy.int32)
-            g.write(falarmmap, dtype=numpy.int32)
-            g.close()
+            fm = os.path.join(nout, "_".join([mod, dom, "wang-monsoon_xcdat.nc"]))
+            ds_out = xr.Dataset(
+                {
+                    "obsmap": annrange_obs_dom,
+                    "modmap": annrange_mod_dom,
+                    "hitmap": hitmap,
+                    "missmap": missmap,
+                    "falarmmap": falarmmap,
+                }
+            )
+            ds_out.to_netcdf(fm)
         f.close()
+
+        if np.isnan(cor):
+            print("invalid correlation values")
+            sys.exit()
 
     #  OUTPUT METRICS TO JSON FILE
     OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), json_filename)
