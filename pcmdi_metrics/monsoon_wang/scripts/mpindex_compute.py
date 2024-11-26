@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-from pcmdi_metrics.monsoon_wang import create_monsoon_wang_parser, monsoon_wang_runner
 import warnings
+
+from pcmdi_metrics.monsoon_wang import create_monsoon_wang_parser, monsoon_wang_runner
 
 warnings.warn(
     "mpindex_compute.py is deprecated and will be removed in a future version. "
     "Please use monsoon_wang_driver.py instead.",
-    DeprecationWarning
+    DeprecationWarning,
 )
 
 P = create_monsoon_wang_parser()
