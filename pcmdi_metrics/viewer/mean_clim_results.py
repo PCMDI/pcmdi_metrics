@@ -5,6 +5,7 @@ import pandas as pd
 import argparse
 import os
 import glob
+import json
 
 from pcmdi_metrics.graphics import download_archived_results
 from pcmdi_metrics.graphics import Metrics
@@ -30,6 +31,18 @@ compare_cmip6 = args.compare_cmip6
 if not os.path.isdir(dir_path):
     print(f"Error: The directory '{dir_path}' does not exist.")
     exit(1)
+
+def add_var_long_name(df):
+    with open('./CMIP6_Amon.json', 'r') as file:
+        cmor_table = json.load(file)
+
+    var_to_long_name = {
+        var: details.get('long_name', 'Unknown')
+        for var, details in cmor_table.get('variable_entry', {}).items()
+    }
+
+    df['Description'] = df['Variable'].map(var_to_long_name)
+    return df
 
 def create_user_df(dir_path, season_map=None):
     """
@@ -82,6 +95,7 @@ def create_user_df(dir_path, season_map=None):
 
     df = pd.DataFrame.from_dict(data, orient='index')
     df.reset_index(drop=True, inplace=True)
+    df = add_var_long_name(df)
 
     return df
 
@@ -90,17 +104,18 @@ if compare_cmip6:
     user_df = create_user_df(dir_path, season_map=season_map).sort_values(['Model', 'Variable', 'Region'])
     def create_cmip6_df():
         # download cmip6 data using pmp
-        cmip6_dir = './cmip6_mean_clim_json_files'
-        try:
-            os.mkdir(cmip6_dir)
-        except FileExistsError:
-            raise FileExistsError(f"Error: The directory '{cmip6_dir}' already exists!")
+        cmip6_dir = './pov_cmip6_mean_clim_json_files'
+        os.makedirs(cmip6_dir, exist_ok=True)
+        #try:
+        #    os.mkdir(cmip6_dir)
+        #except FileExistsError:
+        #    raise FileExistsError(f"Error: The directory '{cmip6_dir}' already exists!")
         
         vars = ['pr', 'prw', 'psl', 'rlds', 'rltcre', 'rlus', 'rlut', 'rlutcs', 'rsds', 'rsdscs', 'rsdt', 'rstcre', 'rsut', 'rsutcs', 'sfcWind', 
         'ta-200', 'ta-850', 'tas', 'tauu', 'ts', 'ua-200', 'ua-850', 'va-200', 'va-850', 'zg-500']
         mip = "cmip6"
         exp = "historical"
-        data_version = "v20220928"
+        data_version = "v20230823"
         for var in vars:
             path = "metrics_results/mean_climate/"+mip+"/"+exp+"/"+data_version+"/"+var+"."+mip+"."+exp+".regrid2.2p5x2p5."+data_version+".json"
             download_archived_results(path, cmip6_dir)
@@ -122,13 +137,12 @@ if compare_cmip6:
 
             region_dfs.append(region_df)
         
-         #only working for SON (last in the loop) and ANN ... 
         season_df = pd.concat(region_dfs).drop_duplicates()
         img_url = "https://pcmdi.llnl.gov/pmp-preliminary-results/graphics/mean_climate/cmip6/amip/clim/v20241029"
         for s in seasons:
-            season_df[s.upper()] = season_df.apply(lambda row: f"{img_url}/{row['Variable']}/{row['Variable']}_{row['model']}_{row['run']}f1_interpolated_regrid2_{row['Region']}_{s.upper()}_v20241029.png", axis=1)
+            season_df[s.upper()] = season_df.apply(lambda row: f"{img_url}/{row['Variable']}/{row['Variable']}_{row['model']}_{row['run']}_interpolated_regrid2_{row['Region']}_{s.upper()}_v20241029.png", axis=1)
         
-        season_df['ANN'] = season_df.apply(lambda row: f"{img_url}/{row['Variable']}/{row['Variable']}_{row['model']}_{row['run']}f1_interpolated_regrid2_{row['Region']}_AC_v20241029.png", axis=1)
+        season_df['ANN'] = season_df.apply(lambda row: f"{img_url}/{row['Variable']}/{row['Variable']}_{row['model']}_{row['run']}_interpolated_regrid2_{row['Region']}_AC_v20241029.png", axis=1)
         season_df = season_df.drop(columns = ['run'])
         season_df = season_df.rename(columns={'model': 'Model'})
         
@@ -137,6 +151,7 @@ if compare_cmip6:
         return cmip6_df
     
     cmip6_df = create_cmip6_df().sort_values(['Model', 'Variable', 'Region'])
+    cmip6_df = add_var_long_name(cmip6_df)
     df = pd.concat([user_df, cmip6_df])
 else:
     season_map = {'AC':'ANN'}
@@ -154,16 +169,18 @@ def create_mean_clim_page():
     seasons = ['ANN', 'DJF', 'JJA', 'MAM', 'SON']
     for s in seasons:
         image_templates[f"{s}_template"] = f"""
-        <a href="<%= {s} %>" target="_blank">
+        <a href="<%= {s} %>" target="_blank" style="position: relative;">
             {s}
         </a>
         """
+        
         image_formatters[f"{s}_formatter"] = HTMLTemplateFormatter(template=image_templates[f"{s}_template"])
 
     # Table setup
     columns = [
         TableColumn(field="Model", title="Model"),
         TableColumn(field="Variable", title="Variable"),
+        TableColumn(field="Description", title="Description"),
         TableColumn(field="Region", title="Region"),
         TableColumn(field="ANN", title="ANN", formatter=image_formatters["ANN_formatter"]),
         TableColumn(field="DJF", title="DJF", formatter=image_formatters["DJF_formatter"]),
@@ -172,7 +189,7 @@ def create_mean_clim_page():
         TableColumn(field="SON", title="SON", formatter=image_formatters["SON_formatter"])
     ]
 
-    dtable = DataTable(source=filtered_source, columns=columns, width=1200, height=650)
+    dtable = DataTable(source=filtered_source, columns=columns, width=1450, height=650)
 
     # Filter widgets
     model_dropdown = MultiChoice(
@@ -198,7 +215,7 @@ def create_mean_clim_page():
         args=dict(source=source, filtered_source=filtered_source, model_dropdown=model_dropdown, var_dropdown=var_dropdown, region_dropdown=region_dropdown),
         code="""
         const original_data = source.data;
-        const filtered_data = { Model: [], Variable: [], Region: [], ANN: [], DJF: [], JJA: [], MAM: [], SON: [] };
+        const filtered_data = { Model: [], Variable: [], Description: [], Region: [], ANN: [], DJF: [], JJA: [], MAM: [], SON: [] };
 
         const selected_models = model_dropdown.value;
         const selected_vars = var_dropdown.value;
@@ -212,6 +229,7 @@ def create_mean_clim_page():
             if (in_model && in_var) {
                 filtered_data.Model.push(original_data.Model[i]);
                 filtered_data.Variable.push(original_data.Variable[i]);
+                filtered_data.Description.push(original_data.Description[i]);
                 filtered_data.Region.push(original_data.Region[i]);
                 filtered_data.ANN.push(original_data.ANN[i]);
                 filtered_data.DJF.push(original_data.DJF[i]);
@@ -236,5 +254,5 @@ def create_mean_clim_page():
 layout = create_mean_clim_page()
 
 # Save as HTML file
-output_file("./mean_clim_results_test.html")
+output_file("./mean_clim_results.html")
 save(layout)
