@@ -1,3 +1,6 @@
+.. title:: PMP Precip Variability
+
+
 .. _metrics_precip-variability:
 
 *******************************************
@@ -92,6 +95,6 @@ Reference
 Ahn, M.-S., P. J. Gleckler, J. Lee, A. G. Pendergrass, and C. Jakob, 2022: Benchmarking Simulated Precipitation Variability Amplitude across Timescales. Journal of Climate. https://doi.org/10.1175/JCLI-D-21-0542.1
 
 
-.. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_7_precip_variability.ipynb
+.. _PMP demo Jupyter notebook: examples/Demo_7_precip_variability.html
 .. _this link: https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/precip_variability/param
 .. _calc_ratio.py: https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/precip_variability/scripts_pcmdi/calc_ratio.py
