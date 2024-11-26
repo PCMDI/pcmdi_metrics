@@ -16,3 +16,4 @@ plog.addHandler(ch)
 plog.setLevel(LOG_LEVEL)
 from . import io
 from ._version import __version__
+from ._version import __version__ as version

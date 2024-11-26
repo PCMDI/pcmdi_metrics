@@ -13,7 +13,7 @@ Demo
 =====
 * `PMP demo Jupyter notebook`_
 
-.. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_9_seaIceExtent_ivanova.ipynb
+.. _PMP demo Jupyter notebook: examples/Demo_9_seaIceExtent_ivanova.html
 
 Inputs
 ======

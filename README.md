@@ -8,7 +8,7 @@
 # PCMDI Metrics Package (PMP)
 
 <!-- badges: start -->
-[![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
+[![latest version](https://img.shields.io/conda/vn/conda-forge/pcmdi_metrics.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 [![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/files)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
@@ -120,6 +120,8 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.7.2]      | Technical update
+| [v3.7.1]      | Technical update with documentation improvements
 | [v3.7]        | New capability (**figure generation for mean climate**) and technical update
 | [v3.6.1]      | Technical update, additional QC repair functions
 | [v3.6]        | New capability (**regional application of precip variability**) and technical update
@@ -168,6 +170,8 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.7.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.2
+[v3.7.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.1
 [v3.7]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7
 [v3.6.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6.1
 [v3.6]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6
