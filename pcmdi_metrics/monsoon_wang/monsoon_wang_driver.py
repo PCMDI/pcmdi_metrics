@@ -9,7 +9,7 @@ import xarray as xr
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
-from pcmdi_metrics.io import region_subset
+from pcmdi_metrics.io import da_to_ds, region_subset
 from pcmdi_metrics.monsoon_wang.lib import (
     create_monsoon_wang_parser,
     mpd,
@@ -17,7 +17,6 @@ from pcmdi_metrics.monsoon_wang.lib import (
     regrid,
 )
 from pcmdi_metrics.utils import StringConstructor
-from pcmdi_metrics.io import da_to_ds
 
 
 def monsoon_wang_runner(args):
