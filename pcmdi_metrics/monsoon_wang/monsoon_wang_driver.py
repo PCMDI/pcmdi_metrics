@@ -4,13 +4,12 @@ import collections
 import os
 import sys
 
-# import cdms2
 import numpy as np
 import xarray as xr
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
-from pcmdi_metrics.io import load_regions_specs, region_subset
+from pcmdi_metrics.io import region_subset
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.monsoon_wang.lib import mpd, mpi_skill_scores, regrid
 from pcmdi_metrics.utils import StringConstructor
@@ -86,7 +85,6 @@ def create_monsoon_wang_parser():
 
 
 def monsoon_wang_runner(args):
-    # args = P.parse_args(sys.argv[1:])
     modpath = StringConstructor(args.test_data_path)
     modpath.variable = args.modvar
     outpathdata = args.results_dir
@@ -108,15 +106,13 @@ def monsoon_wang_runner(args):
     # Get flag for CMEC output
     cmec = args.cmec
 
-    #########################################
+    # ########################################
     # PMP monthly default PR obs
-    # cdms2.axis.longitude_aliases.append("longitude_prclim_mpd")
-    # cdms2.axis.latitude_aliases.append("latitude_prclim_mpd")
     fobs = xr.open_dataset(args.reference_data_path, decode_times=False)
     dobs_orig = fobs[args.obsvar]
     fobs.close()
 
-    ########################################
+    # #######################################
 
     # FCN TO COMPUTE GLOBAL ANNUAL RANGE AND MONSOON PRECIP INDEX
 
@@ -129,7 +125,7 @@ def monsoon_wang_runner(args):
         mpi_obs = mpi_obs.where(domain_mask_obs)
         nout_mpi_obs = os.path.join(outpathdata, "mpi_obs_masked.nc")
 
-    #########################################
+    # ########################################
     # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
     nout = os.path.join(
         outpathdata, "_".join([args.experiment, args.mip, "wang-monsoon"])
@@ -165,7 +161,7 @@ def monsoon_wang_runner(args):
     if len(gmods) == 0:
         raise RuntimeError("No model file found!")
 
-    #########################################
+    # ########################################
 
     egg_pth = resources.resource_path()
     globals = {}
@@ -180,7 +176,6 @@ def monsoon_wang_runner(args):
         locals,
     )
 
-    regions_specs = locals["regions_specs"]
     doms = ["AllMW", "AllM", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
 
     mpi_stats_dic = {}
@@ -204,20 +199,11 @@ def monsoon_wang_runner(args):
         d_orig = f[var]
 
         annrange_mod, mpi_mod = mpd(d_orig)
-
         domain_mask_mod = xr.where(annrange_mod > thr, 1, 0)
         mpi_mod = mpi_mod.where(domain_mask_mod)
 
-        lats = annrange_obs.lat[0]
-        latn = annrange_obs.lat[-1]
-        lone = annrange_obs.lon[-1]
-        lonw = annrange_obs.lon[0]
-
         annrange_obs = regrid(annrange_obs, annrange_mod)
-
         mpi_obs = regrid(mpi_obs, mpi_mod)
-
-        regions_specs = load_regions_specs()
 
         for dom in doms:
             mpi_stats_dic[mod][dom] = {}
