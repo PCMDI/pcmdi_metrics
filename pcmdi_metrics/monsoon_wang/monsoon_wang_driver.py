@@ -259,7 +259,7 @@ def monsoon_wang_runner(args):
             mpi_stats_dic[mod][dom]["threat_score"] = format(score, sig_digits)
 
             # SAVE ANNRANGE AND HIT MISS AND FALSE ALARM FOR EACH MOD DOM
-            fm = os.path.join(nout, "_".join([mod, dom, "wang-monsoon_xcdat.nc"]))
+            fm = os.path.join(nout, "_".join([mod, dom, "wang-monsoon.nc"]))
             ds_out = xr.Dataset(
                 {
                     "obsmap": annrange_obs_dom,
@@ -300,3 +300,9 @@ def monsoon_wang_runner(args):
     if cmec:
         print("Writing cmec file")
         OUT.write_cmec(indent=4, separators=(",", ": "))
+
+
+if __name__ == "__main__":
+    P = create_monsoon_wang_parser()
+    args = P.get_parameter(argparse_vals_only=False)
+    monsoon_wang_runner(args)
