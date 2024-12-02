@@ -30,6 +30,7 @@ dependencies:
     - numdifftools
     - nc-time-axis
     - colorcet
+    - cmocean
     # ==================
     # Testing
     # ==================
