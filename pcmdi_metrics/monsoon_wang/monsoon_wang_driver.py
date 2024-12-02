@@ -14,6 +14,7 @@ from pcmdi_metrics.monsoon_wang.lib import (
     create_monsoon_wang_parser,
     mpd,
     mpi_skill_scores,
+    plot_monsoon_wang_maps,
     regrid,
 )
 from pcmdi_metrics.utils import StringConstructor
@@ -162,7 +163,7 @@ def monsoon_wang_runner(args):
                 annrange_mod_dom, annrange_obs_dom, thr
             )
 
-            #  POPULATE DICTIONARY FOR JSON FILES
+            # POPULATE DICTIONARY FOR JSON FILES
             mpi_stats_dic[mod][dom] = {}
             mpi_stats_dic[mod][dom]["cor"] = format(cor, sig_digits)
             mpi_stats_dic[mod][dom]["rmsn"] = format(rmsn, sig_digits)
@@ -180,6 +181,31 @@ def monsoon_wang_runner(args):
                 }
             )
             ds_out.to_netcdf(fm)
+
+            # PLOT FIGURES
+            if dom in ["ASM"]:
+                central_longitude = 180
+            else:
+                central_longitude = 0
+
+            if dom in ["ASM", "AllMW", "NAFM", "NAMM", "AllM"]:
+                legend_loc = "upper left"
+            else:
+                legend_loc = "lower left"
+
+            title = f"{mod}, {dom}"
+
+            save_path = os.path.join(nout, "_".join([mod, dom, "wang-monsoon.png"]))
+
+            plot_monsoon_wang_maps(
+                ds_out,
+                central_longitude=central_longitude,
+                title=title,
+                colormap="Spectral_r",
+                legend_loc=legend_loc,
+                save_path=save_path,
+            )
+
         f.close()
 
         if np.isnan(cor):
@@ -196,6 +222,7 @@ def monsoon_wang_runner(args):
     metrics_dictionary["REFERENCE"] = (
         "The statistics in this file are based on"
         + " Wang, B., Kim, HJ., Kikuchi, K. et al. "
+        + "Diagnostic metrics for evaluation of annual and diurnal cycles. "
         + "Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0"
     )
     metrics_dictionary["RESULTS"] = mpi_stats_dic  # collections.OrderedDict()
