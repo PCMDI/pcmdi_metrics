@@ -120,7 +120,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
-| [v3.8]        | New capability (xCDAT migration completed for **Monsoon Wang** with figure generation), major dependency update (`numpy` >= 2.0)
+| [v3.8]        | New capability (**figure generation for ENSOe**, xCDAT migration completed for **Monsoon Wang** with figure generation), major dependency update (`numpy` >= 2.0)
 | [v3.7.2]      | Technical update
 | [v3.7.1]      | Technical update with documentation improvements
 | [v3.7]        | New capability (**figure generation for mean climate**) and technical update
