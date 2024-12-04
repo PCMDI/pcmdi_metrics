@@ -2,10 +2,10 @@
     "description": "<p>Self contained packages to run PCMDI Metrics</p>",
     "access_right": "open",
     "license": "cc-by",
-    "title": "PCMDI/pcmdi_metrics: PMP Version 3.7.2",
-    "version": "v3.7.2",
+    "title": "PCMDI/pcmdi_metrics: PMP Version 3.8",
+    "version": "v3.8",
     "upload_type": "software",
-    "publication_date": "2024-11-18",
+    "publication_date": "2024-12-04",
     "creators": [
         {
             "name": "Lee, Jiwoo",
@@ -22,46 +22,17 @@
             "affiliation": "Lawrence Livermore National Laboratory"
         },
         {
-            "name": "Ahn, Min-Seop",
-            "affiliation": "Lawrence Livermore National Laboratory",
-            "orcid": "0000-0002-3308-7793"
+            "name": "Dong, Bo",
+            "affiliation": "Lawrence Livermore National Laboratory"
+        },
+        {
+            "name": "Chang, Kristin",
+            "affiliation": "Lawrence Livermore National Laboratory"
         },
         {
             "name": "Ullrich, Paul",
             "affiliation": "UC Davis",
             "orcid": "0000-0003-4118-4590"
         },
-        {
-            "name": "Vo, Tom",
-            "affiliation": "Lawrence Livermore National Laboratory"
-        },
-        {
-            "name": "Boutte, Jason",
-            "affiliation": "Lawrence Livermore National Laboratory"
-        },
-        {
-            "name": "Doutriaux, Charles",
-            "affiliation": "Lawrence Livermore National Laboratory"
-        },
-        {
-            "name": "Durack, Paul",
-            "affiliation": "Lawrence Livermore National Laboratory"
-        },
-        {
-            "name": "Shaheen, Zeshawn",
-            "affiliation": "Lawrence Livermore National Laboratory (Currently at Google LLC)"
-        },
-        {
-            "name": "Muryanto, Lina",
-            "affiliation": "Lawrence Livermore National Laboratory"
-        },
-        {
-            "name": "Painter, Jeffrey",
-            "affiliation": "Lawrence Livermore National Laboratory"
-        },
-        {
-            "name": "Krasting, John",
-            "affiliation": "NOAA Geophysical Fluid Dynamics Laboratory"
-        }
     ]
 }
