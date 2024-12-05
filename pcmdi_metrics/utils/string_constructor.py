@@ -39,9 +39,8 @@ class StringConstructor:
             template = self.template
         # Replace the keywords with their values
         for k in self.keys():
-            if k not in kw:
-                warnings.warn(f"Keyword '{k}' not provided for filling the template.")
-            template = template.replace("%(" + k + ")", kw.get(k, getattr(self, k, "")))
+            if k in kw:
+                template = template.replace("%(" + k + ")", kw.get(k, getattr(self, k, "")))
         return template
 
     def reverse(self, name, debug=False):
