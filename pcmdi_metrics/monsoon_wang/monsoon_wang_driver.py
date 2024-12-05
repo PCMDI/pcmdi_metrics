@@ -24,7 +24,7 @@ def main():
     P = create_monsoon_wang_parser()
     args = P.get_parameter(argparse_vals_only=False)
     monsoon_wang_runner(args)
-    
+
 
 def monsoon_wang_runner(args):
     modpath = StringConstructor(args.test_data_path)
@@ -86,7 +86,7 @@ def monsoon_wang_runner(args):
 
     # ########################################
     # PMP monthly default PR obs
-    
+
     fobs = xr.open_dataset(args.reference_data_path, decode_times=False)
     dobs_orig = fobs[args.obsvar]
     fobs.close()
@@ -101,10 +101,9 @@ def monsoon_wang_runner(args):
         domain_mask_obs = xr.where(annrange_obs > thr, 1, 0)
         domain_mask_obs.name = "mask"
         mpi_obs = mpi_obs.where(domain_mask_obs)
-        
+
         nout_mpi_obs = os.path.join(nout, "mpi_obs_masked.nc")
         da_to_ds(mpi_obs).to_netcdf(nout_mpi_obs)
-    
 
     egg_pth = resources.resource_path()
 

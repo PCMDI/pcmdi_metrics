@@ -1,6 +1,3 @@
-import warnings
-
-
 class StringConstructor:
     """
     This class aims at spotting keywords in a string and replacing them.
@@ -40,7 +37,9 @@ class StringConstructor:
         # Replace the keywords with their values
         for k in self.keys():
             if k in kw:
-                template = template.replace("%(" + k + ")", kw.get(k, getattr(self, k, "")))
+                template = template.replace(
+                    "%(" + k + ")", kw.get(k, getattr(self, k, ""))
+                )
         return template
 
     def reverse(self, name, debug=False):
