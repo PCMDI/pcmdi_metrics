@@ -20,6 +20,12 @@ from pcmdi_metrics.monsoon_wang.lib import (
 from pcmdi_metrics.utils import StringConstructor
 
 
+def main():
+    P = create_monsoon_wang_parser()
+    args = P.get_parameter(argparse_vals_only=False)
+    monsoon_wang_runner(args)
+    
+
 def monsoon_wang_runner(args):
     modpath = StringConstructor(args.test_data_path)
     modpath.variable = args.modvar
@@ -41,26 +47,6 @@ def monsoon_wang_runner(args):
 
     # Get flag for CMEC output
     cmec = args.cmec
-
-    # ########################################
-    # PMP monthly default PR obs
-    fobs = xr.open_dataset(args.reference_data_path, decode_times=False)
-    dobs_orig = fobs[args.obsvar]
-    fobs.close()
-
-    # #######################################
-
-    # FCN TO COMPUTE GLOBAL ANNUAL RANGE AND MONSOON PRECIP INDEX
-
-    annrange_obs, mpi_obs = mpd(dobs_orig)
-
-    # create monsoon domain mask based on observations: annual range > 2.5 mm/day
-    if args.obs_mask:
-        domain_mask_obs = xr.where(annrange_obs > thr, 1, 0)
-        domain_mask_obs.name = "mask"
-        mpi_obs = mpi_obs.where(domain_mask_obs)
-        nout_mpi_obs = os.path.join(outpathdata, "mpi_obs_masked.nc")
-        da_to_ds(mpi_obs).to_netcdf(nout_mpi_obs)
 
     # ########################################
     # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
@@ -99,6 +85,26 @@ def monsoon_wang_runner(args):
         raise RuntimeError("No model file found!")
 
     # ########################################
+    # PMP monthly default PR obs
+    
+    fobs = xr.open_dataset(args.reference_data_path, decode_times=False)
+    dobs_orig = fobs[args.obsvar]
+    fobs.close()
+
+    # #######################################
+    # FCN TO COMPUTE GLOBAL ANNUAL RANGE AND MONSOON PRECIP INDEX
+
+    annrange_obs, mpi_obs = mpd(dobs_orig)
+
+    # create monsoon domain mask based on observations: annual range > 2.5 mm/day
+    if args.obs_mask:
+        domain_mask_obs = xr.where(annrange_obs > thr, 1, 0)
+        domain_mask_obs.name = "mask"
+        mpi_obs = mpi_obs.where(domain_mask_obs)
+        
+        nout_mpi_obs = os.path.join(nout, "mpi_obs_masked.nc")
+        da_to_ds(mpi_obs).to_netcdf(nout_mpi_obs)
+    
 
     egg_pth = resources.resource_path()
 
@@ -240,6 +246,4 @@ def monsoon_wang_runner(args):
 
 
 if __name__ == "__main__":
-    P = create_monsoon_wang_parser()
-    args = P.get_parameter(argparse_vals_only=False)
-    monsoon_wang_runner(args)
+    main()
