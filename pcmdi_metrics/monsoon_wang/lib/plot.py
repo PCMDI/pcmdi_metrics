@@ -4,6 +4,7 @@ import matplotlib.colors as mcolors
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
+from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
 
 def map_plotter(domain, title, ds, save_path=None):
@@ -229,6 +230,17 @@ def plot_map(ds, var, ax, cmap, norm, title=None):
     ax.coastlines()
     if title is not None:
         ax.set_title(title)
+
+    # draw parallels and meridians by adding grid lines
+    gl = ax.gridlines(
+        draw_labels=True, crs=ccrs.PlateCarree(), linestyle="--", color="k"
+    )
+    gl.xformatter = LongitudeFormatter()
+    gl.yformatter = LatitudeFormatter()
+    gl.top_labels = False
+    gl.right_labels = False
+    gl.xlabel_style = {"size": 12}
+    gl.ylabel_style = {"size": 12}
 
 
 def add_monsoon_domain(ds, mask_var_name, ax):
