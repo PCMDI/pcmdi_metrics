@@ -12,9 +12,9 @@ from pcmdi_metrics import resources
 from pcmdi_metrics.io import da_to_ds, region_subset
 from pcmdi_metrics.monsoon_wang.lib import (
     create_monsoon_wang_parser,
+    map_plotter,
     mpd,
     mpi_skill_scores,
-    plot_monsoon_wang_maps,
     regrid,
 )
 from pcmdi_metrics.utils import StringConstructor
@@ -183,31 +183,19 @@ def monsoon_wang_runner(args):
                     "hitmap": hitmap,
                     "missmap": missmap,
                     "falarmmap": falarmmap,
+                    "obsmask": mpi_obs_reg,
+                    "modmask": mpi_mod_reg,
                 }
             )
             ds_out.to_netcdf(fm)
 
             # PLOT FIGURES
-            if dom in ["ASM"]:
-                central_longitude = 180
-            else:
-                central_longitude = 0
-
-            if dom in ["ASM", "AllMW", "NAFM", "NAMM", "AllM"]:
-                legend_loc = "upper left"
-            else:
-                legend_loc = "lower left"
-
             title = f"{mod}, {dom}"
-
             save_path = os.path.join(nout, "_".join([mod, dom, "wang-monsoon.png"]))
-
-            plot_monsoon_wang_maps(
+            map_plotter(
+                dom,
+                title,
                 ds_out,
-                central_longitude=central_longitude,
-                title=title,
-                colormap="Spectral_r",
-                legend_loc=legend_loc,
                 save_path=save_path,
             )
 
