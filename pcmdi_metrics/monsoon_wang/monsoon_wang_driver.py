@@ -107,7 +107,7 @@ def monsoon_wang_runner(args):
 
     egg_pth = resources.resource_path()
 
-    doms = ["AllMW", "AllM", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
+    doms = ["AllMW", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
 
     mpi_stats_dic = {}
     for i, mod in enumerate(gmods):
