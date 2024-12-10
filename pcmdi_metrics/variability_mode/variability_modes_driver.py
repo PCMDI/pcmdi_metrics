@@ -697,21 +697,6 @@ for model in models:
                         model_timeseries_season_regrid, mode, regions_specs, debug=debug
                     )
 
-                    # Matching model's missing value location to that of observation
-                    """
-                    # Save axes for preserving
-                    # axes = model_timeseries_season_regrid_subdomain.getAxisList()
-                    axes = get_axis_list(model_timeseries_season_regrid_subdomain)
-                    # 1) Replace model's masked grid to 0, so theoritically won't affect to result
-                    model_timeseries_season_regrid_subdomain = MV2.array(
-                        model_timeseries_season_regrid_subdomain.filled(0.0)
-                    )
-                    # 2) Give obs's mask to model field, so enable projecField functionality below
-                    model_timeseries_season_regrid_subdomain.mask = eof_obs[season].mask
-                    # Preserve axes
-                    model_timeseries_season_regrid_subdomain.setAxisList(axes)
-                    """
-
                     # CBF PC time series
                     cbf_pc = gain_pseudo_pcs(
                         solver_obs[season],
