@@ -231,14 +231,6 @@ YearCheck(osyear, oeyear, P)
 ObsUnitsAdjust = param.ObsUnitsAdjust
 ModUnitsAdjust = param.ModUnitsAdjust
 
-# lon1_global and lon2_global is for global map plotting
-if mode in ["PDO", "NPGO"]:
-    lon1_global = 0
-    lon2_global = 360
-else:
-    lon1_global = -180
-    lon2_global = 180
-
 # parallel
 parallel = param.parallel
 print("parallel:", parallel)
@@ -484,7 +476,6 @@ if obs_compare:
                 osyear,
                 oeyear,
                 season,
-                # eof_lr_obs[season](longitude=(lon1_global, lon2_global)),
                 eof_lr_obs_season,
                 frac_obs[season],
                 output_img_file_obs + "_teleconnection",
