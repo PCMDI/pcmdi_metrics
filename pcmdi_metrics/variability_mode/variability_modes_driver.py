@@ -25,29 +25,6 @@ Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
 Quantifying the Agreement Between Observed and Simulated Extratropical Modes of
 Interannual Variability. Climate Dynamics.
 https://doi.org/10.1007/s00382-018-4355-4
-
-## Auspices:
-This work was performed under the auspices of the U.S. Department of
-Energy by Lawrence Livermore National Laboratory under Contract
-DE-AC52-07NA27344. Lawrence Livermore National Laboratory is operated by
-Lawrence Livermore National Security, LLC, for the U.S. Department of Energy,
-National Nuclear Security Administration under Contract DE-AC52-07NA27344.
-
-## Disclaimer:
-This document was prepared as an account of work sponsored by an
-agency of the United States government. Neither the United States government
-nor Lawrence Livermore National Security, LLC, nor any of their employees
-makes any warranty, expressed or implied, or assumes any legal liability or
-responsibility for the accuracy, completeness, or usefulness of any
-information, apparatus, product, or process disclosed, or represents that its
-use would not infringe privately owned rights. Reference herein to any specific
-commercial product, process, or service by trade name, trademark, manufacturer,
-or otherwise does not necessarily constitute or imply its endorsement,
-recommendation, or favoring by the United States government or Lawrence
-Livermore National Security, LLC. The views and opinions of authors expressed
-herein do not necessarily state or reflect those of the United States
-government or Lawrence Livermore National Security, LLC, and shall not be used
-for advertising or product endorsement purposes.
 """
 # import shapely  # noqa
 import glob
@@ -137,6 +114,9 @@ print("mode:", mode)
 
 # Variables
 var = param.varModel
+
+# Initialize ref_grid_global
+ref_grid_global = None
 
 # Check dependency for given season option
 seasons = param.seasons
@@ -333,7 +313,8 @@ if obs_compare:
     )
 
     # Get global grid information for later use: regrid
-    ref_grid_global = get_grid(obs_timeseries)
+    if ref_grid_global is None:
+        ref_grid_global = get_grid(obs_timeseries)
 
     # Set dictionary variables to keep information from observation in the memory during the season and model loop
     eof_obs = {}
