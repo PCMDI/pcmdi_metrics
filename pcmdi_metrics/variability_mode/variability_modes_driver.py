@@ -26,7 +26,6 @@ Quantifying the Agreement Between Observed and Simulated Extratropical Modes of
 Interannual Variability. Climate Dynamics.
 https://doi.org/10.1007/s00382-018-4355-4
 """
-# import shapely  # noqa
 import glob
 import json
 import os
