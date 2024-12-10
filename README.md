@@ -275,7 +275,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
 
-## Disclaimer:
+## Disclaimer
 This document was prepared as an account of work sponsored by an
 agency of the United States government. Neither the United States government
 nor Lawrence Livermore National Security, LLC, nor any of their employees
