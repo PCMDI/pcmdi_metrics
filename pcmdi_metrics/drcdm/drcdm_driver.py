@@ -294,15 +294,16 @@ if __name__ == "__main__":
                 if (varname == "tasmax") and (
                     run == reference_data_set
                 ):  # Get the reference dataset we need for model metrics that require a baseline
-                    result_dict = compute_metrics.get_ref_tasmax_q99p0(
+                    (
+                        result_dict,
+                        nc_tmax_ref_file_path,
+                    ) = compute_metrics.get_ref_tasmax_Q(
                         ds,
-                        sftlf,
                         dec_mode,
                         drop_incomplete_djf,
                         annual_strict,
-                        fig_base,
                         nc_base,
-                    )  # saves a q99 netCDF file for later use
+                    )  # saves a quantile tasmax netCDF file for later use
                 elif (varname == "tasmax") and (run != reference_data_set):
                     result_dict = compute_metrics.get_mean_tasmax(
                         ds,
@@ -380,6 +381,22 @@ if __name__ == "__main__":
                             nc_base,
                         )
                         metrics_dict["RESULTS"][model][run].update(result_dict)
+
+                    if reference_data_path is not None:
+                        for quantile in [50, 90, 95, 99]:
+                            result_dict = compute_metrics.get_tmax_days_above_Qth(
+                                ds,
+                                sftlf,
+                                quantile,
+                                nc_tmax_ref_file_path,
+                                dec_mode,
+                                drop_incomplete_djf,
+                                annual_strict,
+                                fig_base,
+                                nc_base,
+                            )
+                            metrics_dict["RESULTS"][model][run].update(result_dict)
+
                     # get monthly mean tasmax
                     result_dict = compute_metrics.get_monthly_mean_tasmax(
                         ds,

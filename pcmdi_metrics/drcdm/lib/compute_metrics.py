@@ -114,11 +114,12 @@ class SeasonalAverager:
         ds.time.encoding["units"] = self.TSD.time_units
         return ds
 
-    def annual_stats(self, stat, pentad=False):
+    def annual_stats(self, stat, ref_da=None, pentad=False):
         # Acquire annual statistics
         # Arguments:
         #     stat: Can be "max", "min"
         #     pentad: True to run on 5-day mean
+        #     ref_da: DataArray containing 2D reference data.
         # Returns:
         #     ds_ann: Dataset containing annual max or min grid
 
@@ -248,7 +249,10 @@ class SeasonalAverager:
                 num = float(stat.replace("q", "").replace("p", ".")) / 100.0
                 ds_ann = ds.groupby("time.year").quantile(num, dim="time", skipna=True)
             elif stat.startswith("ge"):
-                num = int(stat.replace("ge", ""))
+                if ref_da is None:
+                    num = int(stat.replace("ge", ""))
+                else:
+                    num = ref_da
                 ds_ann = (
                     ds.where(ds >= num).groupby("time.year").count(dim="time")
                     / ds.groupby("time.year").count(dim="time")
@@ -1023,19 +1027,68 @@ def get_annual_tasmax_le_XF(
 
 
 # observation variable
-# def get_tmax_days_above_99th(
-#         ds, sftlf, file_name_ref_q99, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
-# ):
-#     # Get annual number of days with maximum temperature greater than the 99th percentile, calculated with reference to the 1976-2005 average
-#     index = "day_ge_q99"
-#     print("Metric:", index)
-#     varname = "tasmax"
+def get_tmax_days_above_Qth(
+    ds,
+    sftlf,
+    quantile,
+    file_name_ref_tmax_quant,
+    dec_mode,
+    drop_incomplete_djf,
+    annual_strict,
+    fig_file=None,
+    nc_file=None,
+):
+    # open the reference dataset
+    ds_reference = xr.open_dataset(file_name_ref_tmax_quant)[str(quantile)]
 
-#     # open the reference dataset
-#     ds_reference = xr.open_dataset(file_name_ref_q99)
+    # Get annual fraction of days with max temperature less than deg F
+    index = f"tmax_days_above_q{quantile}"
+    print("Metric:", index)
+    varname = "tasmax"
 
+    TS = TimeSeriesData(ds, varname)
+    S = SeasonalAverager(
+        TS,
+        sftlf,
+        dec_mode=dec_mode,
+        drop_incomplete_djf=drop_incomplete_djf,
+        annual_strict=annual_strict,
+    )
 
-#     return result_dict
+    TgeQuant = xr.Dataset()
+    TgeQuant["ANN"] = S.annual_stats("ge_q{0}".format(quantile), ref_da=ds_reference)
+    TgeQuant.attrs["units"] = "%"
+    TgeQuant = update_nc_attrs(TgeQuant, dec_mode, drop_incomplete_djf, annual_strict)
+
+    # Compute statistics
+    result_dict = metrics_json(
+        {index: TgeQuant}, obs_dict={}, region="land", regrid=False
+    )
+
+    if fig_file is not None:  # save the figure
+        fig_file1 = fig_file.replace("/plots/", "/plots/annual/").replace(
+            "$index", "_".join([index, "ANN"])
+        )
+        TgeQuant["ANN"].mean("time").plot(
+            cmap="Oranges",
+            vmin=np.nanmin(TgeQuant["ANN"].mean("time").data),
+            vmax=np.nanmax(TgeQuant["ANN"].mean("time").data),
+            cbar_kwargs={"label": "%"},
+        )
+        plt.title(
+            f"Mean percentage of days per year\nwith high temperature >= q{quantile}"
+        )
+        ax = plt.gca()
+        ax.set_facecolor(bgclr)
+        plt.savefig(fig_file1)
+        plt.close()
+
+    if nc_file is not None:
+        nc_file = nc_file.replace("$index", index)
+        TgeQuant.to_netcdf(nc_file, "w")
+
+    del TgeQuant
+    return result_dict
 
 
 # Mean Temperature Metrics
@@ -2193,35 +2246,38 @@ def get_annual_consecDD(
 # Reference Dataset Functions
 
 
-def get_ref_tasmax_q99p0(
-    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
-):
-    index = "ref_tasmax_q99p0"
+def get_ref_tasmax_Q(ds, dec_mode, drop_incomplete_djf, annual_strict, nc_file=None):
     varname = "tasmax"
-    print("Metric:", index)
-
     # Set up empty dataset
-    Tmaxq99p0 = xr.zeros_like(ds)
-    Tmaxq99p0["lat"] = ds["lat"]
-    Tmaxq99p0["lon"] = ds["lon"]
-    Tmaxq99p0 = Tmaxq99p0.drop_vars(["time", "time_bnds", varname], errors="ignore")
+    RefTmaxQ = xr.zeros_like(ds)
+    RefTmaxQ["lat"] = ds["lat"]
+    RefTmaxQ["lon"] = ds["lon"]
+    RefTmaxQ = RefTmaxQ.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    if isinstance(ds[varname], dask.array.core.Array):
-        Tmaxq99p0["q99p0"] = ds[varname].chunk({"time": -1}).quantile(0.990, dim="time")
-    else:
-        Tmaxq99p0["q99p0"] = ds[varname].quantile(0.990, dim="time")
-    Tmaxq99p0 = update_nc_attrs(Tmaxq99p0, dec_mode, drop_incomplete_djf, annual_strict)
+    for quant in [50, 90, 95, 99]:  # which quantiles we need for the reference period
+        indexQ = f"ref_tasmax_q{quant}"
+        print("Metric:", indexQ)
+
+        if isinstance(ds[varname], dask.array.core.Array):
+            RefTmaxQ[str(quant)] = (
+                ds[varname].chunk({"time": -1}).quantile(quant / 100, dim="time")
+            )
+        else:
+            RefTmaxQ[str(quant)] = ds[varname].quantile(quant / 100, dim="time")
+
+    RefTmaxQ = update_nc_attrs(RefTmaxQ, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
-        {index: Tmaxq99p0}, obs_dict={}, region="land", regrid=False
+        {indexQ: RefTmaxQ}, obs_dict={}, region="land", regrid=False
     )
     # We don't want to save a figure, since this is just for reference
 
+    index = "ref_tasmax_quantile"
     if nc_file is not None:
         nc_file = nc_file.replace("$index", index)
-        Tmaxq99p0.to_netcdf(nc_file, "w")
+        RefTmaxQ.to_netcdf(nc_file, "w")
 
-    del Tmaxq99p0
-    return result_dict
+    del RefTmaxQ
+    return result_dict, nc_file
 
 
 # A couple of statistics that aren't being loaded from mean_climate

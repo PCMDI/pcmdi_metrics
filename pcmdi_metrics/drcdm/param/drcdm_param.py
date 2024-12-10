@@ -1,7 +1,7 @@
 # Settings for extremes driver
 # flake8: noqa
 # These settings are required
-vars = ["tasmin"]  # Choices are 'pr','tasmax', 'tasmin', "tas"
+vars = ["tasmax"]  # Choices are 'pr','tasmax', 'tasmin', "tas"
 test_data_set = ["BCSD"]
 realization = ["r1i1p1f1"]
 test_data_path = "/pscratch/sd/j/jsgoodni/testData/"
@@ -16,11 +16,11 @@ metrics_output_path = "/pscratch/sd/j/jsgoodni/pmp_results/drcdm/test/"
 
 # Optional settings
 # See the README for more information about these settings
-case_id = "test_tasmin"
+case_id = "test_tasmax"
 # 1976 - 2005
-# reference_data_path = "/pscratch/sd/j/jsgoodni/testData/tasmax_obs1.nc"
-# reference_data_set = ["GMFD"]
-# reference_filename_template = "%(variable)_obs.nc"
+reference_data_path = "/pscratch/sd/j/jsgoodni/testData/tasmax_obs1.nc"
+reference_data_set = ["GMFD"]
+reference_filename_template = "%(variable)_obs.nc"
 
 shp_path = "/pscratch/sd/j/jsgoodni/shapefiles/cb_2018_us_state_20m.shp"
 attribute = "NAME"
