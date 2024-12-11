@@ -43,6 +43,7 @@ def region_from_file(
 
     Examples
     --------
+    >>> from pcmdi_metrics.io import region_from_file
     >>> import xarray as xr
     >>> data = xr.open_dataset('path/to/data.nc')
     >>> masked_data = region_from_file(data, 'path/to/regions.shp', 'region_name', 'Europe')

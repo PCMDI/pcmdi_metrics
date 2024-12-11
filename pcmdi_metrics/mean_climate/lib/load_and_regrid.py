@@ -1,4 +1,5 @@
 import numpy as np
+import xarray as xr
 import xcdat as xc
 
 from pcmdi_metrics.io import get_latitude, get_longitude, xcdat_open
@@ -12,6 +13,7 @@ def load_and_regrid(
     t_grid=None,
     decode_times=True,
     regrid_tool="regrid2",
+    calendar_qc=False,
     debug=False,
 ):
     """Load data and regrid to target grid
@@ -24,6 +26,7 @@ def load_and_regrid(
         t_grid (xarray.core.dataset.Dataset): target grid to regrid
         decode_times (bool): Default is True. decode_times=False will be removed once obs4MIP written using xcdat
         regrid_tool (str): Name of the regridding tool. See https://xcdat.readthedocs.io/en/stable/generated/xarray.Dataset.regridder.horizontal.html for more info
+        calendar_qc (bool): Turn on QC for calendar. Default is False.
         debug (bool): Default is False. If True, print more info to help debugging process
     """
     if debug:
@@ -48,28 +51,36 @@ def load_and_regrid(
                 )
         else:
             ds[varname_in_file] = ds[varname_in_file] * 86400  # Assumed as kg m-2 s-1
+        ds.attrs["units"] = "mm/day"
 
-    """
-    # calendar quality check
-    if "calendar" in list(ds.time.attrs.keys()):
-        if debug:
-            print('ds.time.attrs["calendar"]:', ds.time.attrs["calendar"])
-        if "calendar" in ds.attrs.keys():
+    if calendar_qc:
+        # calendar quality check
+        if "calendar" in list(ds.time.attrs.keys()):
             if debug:
-                print("ds.calendar:", ds.calendar)
-            if ds.calendar != ds.time.attrs["calendar"]:
-                ds.time.encoding["calendar"] = ds.calendar
-                print('[WARNING]: calendar info mismatch. ds.time.attrs["calendar"] is adjusted to ds.calendar, ', ds.calendar)
-    else:
-        if "calendar" in ds.attrs.keys():
-            ds.time.attrs["calendar"] = ds.calendar
-            print('[WARNING]: calendar info not found for time axis. ds.time.attrs["calendar"] is adjusted to ds.calendar, ', ds.calendar)
+                print('ds.time.attrs["calendar"]:', ds.time.attrs["calendar"])
+            if "calendar" in ds.attrs.keys():
+                if debug:
+                    print("ds.calendar:", ds.calendar)
+                if ds.calendar != ds.time.attrs["calendar"]:
+                    ds.time.encoding["calendar"] = ds.calendar
+                    print(
+                        '[WARNING]: calendar info mismatch. ds.time.attrs["calendar"] is adjusted to ds.calendar, ',
+                        ds.calendar,
+                    )
         else:
-            ds.time.attrs["calendar"] = 'standard'
-            print('[WARNING]: calendar info not found for time axis. ds.time.attrs["calendar"] is adjusted to standard')
-    """
+            if "calendar" in ds.attrs.keys():
+                ds.time.attrs["calendar"] = ds.calendar
+                print(
+                    '[WARNING]: calendar info not found for time axis. ds.time.attrs["calendar"] is adjusted to ds.calendar, ',
+                    ds.calendar,
+                )
+            else:
+                ds.time.attrs["calendar"] = "standard"
+                print(
+                    '[WARNING]: calendar info not found for time axis. ds.time.attrs["calendar"] is adjusted to standard'
+                )
 
-    # time bound check #1 -- add proper time bound info if cdms-generated annual cycle is loaded
+    # time bound check #1 -- add proper time bound info if non-xcdat-generated annual cycle is loaded
     if isinstance(
         ds.time.values[0], np.float64
     ):  # and "units" not in list(ds.time.attrs.keys()):
@@ -85,43 +96,9 @@ def load_and_regrid(
             ds = ds.bounds.add_missing_bounds(["T"])
             print("[WARNING]: bounds.add_missing_bounds conducted for T axis")
 
-    # level - extract a specific level if needed
+    # extract level
     if level is not None:
-        if isinstance(level, int) or isinstance(level, float):
-            pass
-        else:
-            level = float(level)
-
-        # check vertical coordinate first
-        if "plev" in list(ds.coords.keys()):
-            if ds.plev.units == "Pa":
-                level = level * 100  # hPa to Pa
-            try:
-                ds = ds.sel(plev=level)
-            except Exception as ex:
-                print("WARNING: ", ex)
-
-                nearest_level = find_nearest(ds.plev.values, level)
-
-                print("  Given level", level)
-                print("  Selected nearest level from dataset:", nearest_level)
-
-                diff_percentage = abs(nearest_level - level) / level * 100
-                if diff_percentage < 0.1:  # acceptable if differance is less than 0.1%
-                    ds = ds.sel(plev=level, method="nearest")
-                    print("  Difference is in acceptable range.")
-                    pass
-                else:
-                    print("ERROR: Difference between two levels are too big!")
-                    return
-            if debug:
-                print("ds:", ds)
-                print("ds.plev.units:", ds.plev.units)
-        else:
-            print("ERROR: plev is not in the nc file. Check vertical coordinate.")
-            print("  Coordinates keys in the nc file:", list(ds.coords.keys()))
-            print("ERROR: load and regrid can not complete")
-            return
+        ds = extract_level(ds, level, debug=debug)
 
     # axis
     lat = get_latitude(ds)
@@ -149,13 +126,11 @@ def load_and_regrid(
 
     # preserve units in regridded dataset
     try:
-        units = ds[varname].units
+        units = ds.attrs["units"] or ds[varname].units
     except Exception as e:
         print(e)
         units = ""
     print("units:", units)
-
-    ds_regridded[varname] = ds_regridded[varname].assign_attrs({"units": units})
 
     ds_regridded[varname] = ds_regridded[varname].assign_attrs({"units": units})
 
@@ -171,7 +146,67 @@ def load_and_regrid(
     return ds_regridded
 
 
-def find_nearest(array, value):
-    array = np.asarray(array)
-    idx = (np.abs(array - value)).argmin()
-    return array[idx]
+def extract_level(ds: xr.Dataset, level, debug=False):
+    """_summary_
+
+    Args:
+        ds (xr.Dataset): _description_
+        level (_type_): level, hPa
+        debug (bool, optional): _description_. Defaults to False.
+    """
+
+    def find_nearest(array, value):
+        array = np.asarray(array)
+        idx = (np.abs(array - value)).argmin()
+        return array[idx]
+
+    # level - extract a specific level if needed
+    if level is not None:
+        if isinstance(level, int) or isinstance(level, float):
+            pass
+        else:
+            level = float(level)
+
+        # check vertical coordinate first
+        if "plev" in list(ds.coords.keys()):
+            units_in_data = None
+            if "units" in ds.plev.attrs:
+                if ds.plev.units == "Pa":
+                    units_in_data = "Pa"
+            else:
+                if max(ds.plev.values) > 10000:
+                    units_in_data = "Pa"
+
+            if units_in_data == "Pa":
+                level = level * 100  # hPa to Pa
+
+            try:
+                ds = ds.sel(plev=level)
+            except Exception as ex:
+                print("WARNING: ", ex)
+
+                nearest_level = find_nearest(ds.plev.values, level)
+
+                print("  Given level", level)
+                print("  Selected nearest level from dataset:", nearest_level)
+
+                diff_percentage = abs(nearest_level - level) / level * 100
+                if diff_percentage < 0.1:  # acceptable if differance is less than 0.1%
+                    ds = ds.sel(plev=level, method="nearest")
+                    print("  Difference is in acceptable range.")
+                    pass
+                else:
+                    raise ValueError(
+                        "ERROR: Difference between two levels are too big!"
+                    )
+            if debug:
+                print("ds:", ds)
+                # print("ds.plev.units:", ds.plev.units)
+        else:
+            raise ValueError(
+                "ERROR: plev is not in the nc file. Check vertical coordinate.\n"
+                + f"Coordinates keys in the nc file: {list(ds.coords.keys())}\n"
+                + "ERROR: load and regrid can not complete"
+            )
+
+        return ds

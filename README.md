@@ -7,19 +7,22 @@
 
 # PCMDI Metrics Package (PMP)
 
-[![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
-![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg)
+<!-- badges: start -->
+[![latest version](https://img.shields.io/conda/vn/conda-forge/pcmdi_metrics.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
+[![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/files)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
 [![License](https://anaconda.org/conda-forge/pcmdi_metrics/badges/license.svg)](https://github.com/PCMDI/pcmdi_metrics/blob/main/LICENSE)
 [![Formatted with black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![All Contributors](https://img.shields.io/github/all-contributors/PCMDI/pcmdi_metrics?color=ee8449&style=flat-square)](#contributors)
 
-Conda-forge (NEW, recommended):
-[![Download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
+Conda-forge (CURRENT, recommended):
+[![Download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 
-PCMDI Conda Channel (halted):
-[![Download](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
+PCMDI Conda Channel (old, deprecated):
+[![Download](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg?kill_cache=1)](https://anaconda.org/pcmdi/pcmdi_metrics)
+
+<!-- badges: end -->
 
 The PCMDI Metrics Package (PMP) is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons emphasize metrics of large- to global-scale annual cycle, tropical and extra-tropical modes of variability, ENSO, MJO, regional monsoons, high frequency characteristics of simulated precipitation, and cloud feedback.
 
@@ -48,9 +51,17 @@ Documentation
 * [View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
 
 
-**Reference**
+**References**
 
-Lee, J., P. J. Gleckler, M.-S. Ahn, A. Ordonez, P. Ullrich, K. R. Sperber, K. E. Taylor, Y. Y. Planton, E. Guilyardi, P. Durack, C. Bonfils, M. D. Zelinka, L.-W. Chao, B. Dong, C. Doutriaux, C. Zhang, T. Vo, J. Boutte, M. F. Wehner, A. G. Pendergrass, D. Kim, Z. Xue, A. T. Wittenberg, and J. Krasting, 2024: Systematic and Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3. Geoscientific Model Development, 17, 3919–3948, doi: [10.5194/gmd-17-3919-2024](https://doi.org/10.5194/gmd-17-3919-2024)
+Latest: 
+
+* Lee, J., Gleckler, P. J., Ahn, M.-S., Ordonez, A., Ullrich, P. A., Sperber, K. R., Taylor, K. E., Planton, Y. Y., Guilyardi, E., Durack, P., Bonfils, C., Zelinka, M. D., Chao, L.-W., Dong, B., Doutriaux, C., Zhang, C., Vo, T., Boutte, J., Wehner, M. F., Pendergrass, A. G., Kim, D., Xue, Z., Wittenberg, A. T., and Krasting, J.: Systematic and objective evaluation of Earth system models: PCMDI Metrics Package (PMP) version 3, Geosci. Model Dev., 17, 3919–3948, https://doi.org/10.5194/gmd-17-3919-2024, **2024**. 
+
+Earlier versions:
+
+* Gleckler, P. J., Doutriaux, C., Durack, P. J., Taylor, K. E., Zhang, Y., Williams, D. N., Mason, E., and Servonnat, J.: A more powerful reality test for climate models, Eos T. Am. Geophys. Un., 97, https://doi.org/10.1029/2016eo051663, **2016**. 
+
+* Gleckler, P. J., Taylor, K. E., and Doutriaux, C.: Performance metrics for climate models, J. Geophys. Res., 113, D06104, https://doi.org/10.1029/2007jd008972, **2008**. 
 
 
 Contact
@@ -109,9 +120,13 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.8]        | New capability (**figure generation for ENSO**, xCDAT migration completed for **Monsoon Wang** with figure generation), major dependency update (`numpy` >= 2.0)
+| [v3.7.2]      | Technical update
+| [v3.7.1]      | Technical update with documentation improvements
+| [v3.7]        | New capability (**figure generation for mean climate**) and technical update
 | [v3.6.1]      | Technical update, additional QC repair functions
-| [v3.6]        | New capability (regional application of precip variability) and technical update
-| [v3.5.2]      | Technical update, QC tools, new modes for modes of variability metrics (PSA1, PSA2)
+| [v3.6]        | New capability (**regional application of precip variability**) and technical update
+| [v3.5.2]      | New capability (**QC**, **new modes for modes of variability metrics: PSA1, PSA2**) and technical update
 | [v3.5.1]      | Technical update
 | [v3.5]        | Technical update: MJO and Monsoon Sperber [xCDAT](https://xcdat.readthedocs.io/en/latest/) conversion
 | [v3.4.1]      | Technical update
@@ -128,6 +143,13 @@ Release Notes and History
 | [v3.0.2]      | Minor patch and more documentation added
 | [v3.0.1]      | Minor technical patch                 
 | [v3.0.0]      | New metric added: **Cloud feedback metric** by @mzelinka. [**xCDAT**](https://xcdat.readthedocs.io/en/latest/) implemented for mean climate metrics
+
+<details>
+
+  <summary>Click here for older versions</summary>
+
+| <div style="width:300%">[Versions]</div> | Update summary   |
+| ------------- | ------------------------------------- |
 | [v2.5.1]      | Technical update
 | [v2.5.0]      | New metric added: **Precipitation Benchmarking -- distribution**. Graphics updated
 | [v2.4.0]      | New metric added: **AMO** in variability modes
@@ -146,8 +168,13 @@ Release Notes and History
 | [v1.1]        | First public release, emphasizing **climatological statistics**, with development branches for ENSO and regional monsoon precipitation indices
 | [v1.0]        | Prototype version of the PMP
 
+</details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.8]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8
+[v3.7.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.2
+[v3.7.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.1
+[v3.7]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7
 [v3.6.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6.1
 [v3.6]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6
 [v3.5.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5.2
@@ -195,8 +222,8 @@ Current Core Team Members at PCMDI/LLNL
 * Kristin Chang
 
 
-Contributors
-------------
+All Contributors
+----------------
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
