@@ -283,9 +283,8 @@ json_file_org = os.path.join(
 if os.path.isfile(json_file) and os.stat(json_file).st_size > 0:
     copyfile(json_file, json_file_org)
     if update_json:
-        fj = open(json_file)
-        result_dict = json.loads(fj.read())
-        fj.close()
+        with open(json_file) as fj:
+            result_dict = json.load(fj)
 
 if "REF" not in result_dict:
     result_dict["REF"] = {}
