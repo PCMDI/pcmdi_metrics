@@ -27,4 +27,4 @@ results_dir = os.path.join('$OUTPUT_DIR$',case_id, metricsCollection)
 
 json_name = '%(mip)_%(exp)_%(metricsCollection)_%(case_id)_%(model)_%(realization)'
 netcdf_name = json_name
-nc_out = False
+nc_out = True
