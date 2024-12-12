@@ -429,7 +429,11 @@ if __name__ == "__main__":
                     print("No land/sea mask file found for", model, run)
                     # Set flag to generate sftlf after loading data
                     sft_exists = False
-                if sft_exists:
+                if ~sft_exists and no_mask:
+                    # Make mask with all zeros, effectively no masking.
+                    print("--no_mask is True. No land/sea mask applied.")
+                    mask = xarray.zeros_like(ds[var].isel({"time": 0}))
+                elif sft_exists:
                     sft = lib.load_dataset(sft_filename)
                     # SFTOF and siconc don't always have same coordinate
                     # names in CMIP data
@@ -438,14 +442,6 @@ if __name__ == "__main__":
                     sft_lat = get_latitude_key(sft)
                     sft_lon = get_longitude_key(sft)
                     sft = sft.rename({sft_lon: ds_lon, sft_lat: ds_lat})
-                if ~sft_exists and generate_mask:
-                    print("Creating land/sea mask.")
-                    mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
-                elif ~sft_exists and no_mask:
-                    # Make mask with all zeros, effectively no masking.
-                    print("--no_mask is True. No land/sea mask applied.")
-                    mask = xarray.zeros_like(ds[var].isel({"time": 0}))
-                else:
                     if "sftlf" in sft.keys():
                         mask = sft["sftlf"]
                     elif "sftof" in sft.keys():
@@ -460,7 +456,11 @@ if __name__ == "__main__":
                         continue
                     if np.max(mask) > 50:
                         mask = mask / 100
+                else:
+                    print("Creating land/sea mask.")
+                    mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
                 ds[var] = ds[var].where(mask < 1)
+                # Option to weigh sea ice coverage by fraction of cell that is ocean.
                 # area[area_var] = area[area_var] * (1 - mask)
 
                 # Generate netcdf files of climatologies
