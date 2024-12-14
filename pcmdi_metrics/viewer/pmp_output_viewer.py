@@ -50,7 +50,7 @@ def view_pmp_output(
     ----------
     - Function(s) support limited variations of names for each summary:
         - Mean Climate : ['mean_climate', 'mean_clim', 'climate_mean', 'clim_mean']
-        - Modes of Variability: ['modes_of_variability', 'variability_modes', 'modes_of_var', 'var_modes', 'MoV', 'MOV']
+        - Modes of Variability: ['modes_of_variability', 'variability_modes', 'modes_of_var', 'var_modes', 'mov', 'MOV']
     
     """
 
@@ -63,16 +63,71 @@ def view_pmp_output(
     # ----------
     # Create home page
     # ----------
-    home_content = """
+
+    # CSS styles
+    css_styles = """
+    body {
+        font-family: "Roboto", sans-serif;
+        text-align: left;
+        padding: 0;
+        margin: 0;
+    }
+    .banner{
+        # background-color:#3366cc;
+        # background-color: #ffffff;
+        height: 60px;
+        width: 100%
+        }
+    .content{
+        padding-left: 50px;
+    }
+    .content h3{
+        padding-left: 450px;
+    }
+    .content li {
+        padding-left: 500px;
+    }
+    .header{
+        display: flex;
+        align-items: center;
+    }
+    .header img { 
+        width: 300px;
+        height: auto;
+        margin-right: 100px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+
+    }
+    .header h1 {
+        font-family: "Roboto", sans-serif;
+        font-weight: bold;
+        font-size: 2em;
+        color: #000000;
+        margin: 0px;
+    }
+    """
+    home_content = f"""
     <!DOCTYPE html>
     <html>
     <head>
-        <title>PMP Output Viewer PROTOTYPE</title>
+        <title>PMP Output Viewer</title>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet">
+        <style>
+            {css_styles}
+        </style>
     </head>
     <body>
-        <h1>Welcome to the POV PROTOTYPE page</h1>
-        <p>Goal: Generate a PMP output viewer that offers a HTML page showing PMP output image files in an organized way.<p>
-        <br><br><br>
+        <div class="banner"></div>
+        <div class="content">
+            <div class="header">
+                <img src="./PCMDILogoText_1365x520px_300dpi.png" alt="PCMDI_logo">
+                <h1>PMP Output Viewer</h1>
+            </div>
+            <div class="content">
+            <h3>(PROTOTYPE)<h3>
+            <br>
+        </div>
     """
     # Use folder names as headers
     summaries, plot_paths = navigate_graphics_dir(graphics_path=graphics_path, version=version)
@@ -90,15 +145,11 @@ def view_pmp_output(
                         output_file(f"./{summary_name}_{plot_name}_results.html")
                         save(layout)
     
-    """ if 'variability_modes' in summaries:
-        full_paths = []
-        for plot_path in plot_paths:
-            if 'variability_modes' in plot_path:
-                full_path = os.path.join(plot_path, 'ERA5')
-                full_paths.append(full_path)
-        for fp in full_paths:
-            if check_png_files(fp):
-                #    create_mov_page() """ 
+    modes_of_variability = ['modes_of_variability', 'variability_modes', 'modes_of_var', 'var_modes', 'mov', 'MOV']
+    for mov in modes_of_variability:
+        if mov in summaries:
+            summary_name = mov
+
     
     # Add local links for individual pages by plot type
     for summary_name in summaries:
