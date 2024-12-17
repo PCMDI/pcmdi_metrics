@@ -10,6 +10,14 @@ Run the decision relevant metrics driver using the following command:
 drcdm_driver.py -p your_parameter_file.py
 ```
 
+## Inputs
+The Decision Relevant Metrics Driver works on daily gridded climate data. This package expects input netcdf files to be cf-compliant and on regular latitude/longitude grids. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
+
+## Land/Sea mask
+Metrics should only be calculated over land, so users have the option to provide a land/sea mask if the ocean area are not already masked in the input data. If the land/sea mask contains fractional values, land will defined as grid cells where the land area percentage is between 50 and 100. Areas south of 50S will be masked out.
+
+If available, users should provide the land/sea mask that accompanies their datasets. The mask variable in the land/sea mask file must be called "sftlf". If land/sea masks are not provided, there is an option to generate them on-the-fly using pcmdi_utils. If no mask is provided and --generate-sftlf is set to False, no masking will be done by the PMP.
+
 ## Parameters:
 | Parameter   | Definition |
 --------------|-------------
