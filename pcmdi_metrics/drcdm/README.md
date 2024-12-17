@@ -10,7 +10,7 @@ Run the decision relevant metrics driver using the following command:
 drcdm_driver.py -p your_parameter_file.py
 ```
 
-# Parameters:
+## Parameters:
 | Parameter   | Definition |
 --------------|-------------
 | case_id |  (str) Will be appended to the metrics_output_path if present. | 
@@ -34,8 +34,9 @@ drcdm_driver.py -p your_parameter_file.py
 | attribute      | (str) Attribute used to identify region (eg, column of attribute table). For example, "COUNTRY" in a shapefile of countries.  |
 | region_name | (str) Unique feature value of the region that occurs in the attribute given by "--attribute". Must match only one geometry in the shapefile. An example is "NORTH_AMERICA" under the attribute "CONTINENTS". |
 
-# Key information
+## Key information
 
+### Units
 The temperature data must be provided in Fahrenheit. The ModUnitsAdjust parameter can be used to convert either Kelvin or Celsius units to Fahrenheit on-the-fly. See this example:
 
 ```
@@ -45,7 +46,9 @@ ModUnitsAdjust = (True, 'KtoF', 0, 'F')
 # Celsius to Fahrenheit
 ModUnitsAdjust = (True, 'CtoF', 0, 'F')
 ```
+Precipitation units must be provided in mm. ModUnitsAdjust can also be used as documented in the Parameters section to convert units such as kg/m2/s to mm.
 
+### Regions
 The most efficient way to get postprocessed metrics for multiple regions is to run the drcdm driver without any region subsetting (leave shp_path, attribute, and region_name unset). The regions can be applied during postprocessing.
 
 # How to test:
