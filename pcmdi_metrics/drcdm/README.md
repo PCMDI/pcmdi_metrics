@@ -1,5 +1,53 @@
 # Decision Relevant Climate Data Metrics
 
+# How to run:
+Install the PCMDI Metrics Package.
+
+Set up a parameter file with your model information. An example parameter file can be found at param/drcdm_param.py. See the Parameters section below for more information.
+
+Run the decision relevant metrics driver using the following command:
+```
+drcdm_driver.py -p your_parameter_file.py
+```
+
+# Parameters:
+| Parameter   | Definition |
+--------------|-------------
+| case_id |  (str) Will be appended to the metrics_output_path if present. | 
+| model_list | (list) List of model names.  | 
+| realization | (list) List of realizations. | 
+| vars | (list) List of variables: "pr", "tasmax", and/or "tasmin". | 
+| filename_template | (str) The template for the model file name. May contain placeholders %(variable), %(model), %(model_version), or %(realization) | 
+| test_data_path  |  (str) The template for the directory containing the model file. May contain placeholders %(variable), %(model), %(model_version), or %(realization) | 
+| sftlf_filename_template | (str) The template for the model land/sea mask file. May contain placeholders %(model), %(model_version), or %(realization). Takes precedence over --generate_sftlf | 
+| generate_sftlf | (bool) If true, generate a land/sea mask on the fly when the model or reference land/sea mask is not found. If false, no land/sea mask is applied. | 
+| metrics_output_path  | (str) The directory to write output files to. |  
+| plots | (bool) True to save world map figures of mean metrics. |
+| nc_out | (bool) True to save netcdf files (required for postprocessing). |
+| msyear | (int) Start year for model data set. |
+| meyear | (int) End year for model data set. |
+| ModUnitsAdjust | (tuple) Provide information for units conversion. Uses format (flag (bool), operation (str), value (float), new units (str)). Operation can be "add", "subtract", "multiply", or "divide". For example, use (True, 'multiply', 86400, 'mm/day') to convert kg/m2/s to mm/day.|
+| dec_mode | (str) Toggle how season containing December, January, and February is defined. "DJF" or "JFD". Default "DJF". |
+| annual_strict | (bool) This only matters for rolling 5-day metrics. If True, only use data from within a given year in the 5-day means. If False, the rolling mean will include the last 4 days of the prior year. Default False. |
+| drop_incomplete_djf | (bool) If True, don't include data from the first January/February and last December in the analysis. Default False. |
+| shp_path    |  (str) path to shapefile.  |
+| attribute      | (str) Attribute used to identify region (eg, column of attribute table). For example, "COUNTRY" in a shapefile of countries.  |
+| region_name | (str) Unique feature value of the region that occurs in the attribute given by "--attribute". Must match only one geometry in the shapefile. An example is "NORTH_AMERICA" under the attribute "CONTINENTS". |
+
+# Key information
+
+The temperature data must be provided in Fahrenheit. The ModUnitsAdjust parameter can be used to convert either Kelvin or Celsius units to Fahrenheit on-the-fly. See this example:
+
+```
+# Kelvin to Fahrenheit
+ModUnitsAdjust = (True, 'KtoF', 0, 'F')
+
+# Celsius to Fahrenheit
+ModUnitsAdjust = (True, 'CtoF', 0, 'F')
+```
+
+The most efficient way to get postprocessed metrics for multiple regions is to run the drcdm driver without any region subsetting (leave shp_path, attribute, and region_name unset). The regions can be applied during postprocessing.
+
 # How to test:
 Create a conda environment with pcmdi_metrics and xclim
 In the PMP root directory use:
