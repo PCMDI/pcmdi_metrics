@@ -27,22 +27,51 @@ def calc_stats_save_dict(
     debug=False,
 ):
     """
-    NOTE: Calculate statistics and save numbers to dictionary for JSON.
-    Input
-    - mode: [str] name of variability mode
-    - dict_head: [dict] subset of dictionary
-    - eof: [2d field] linear regressed eof pattern (eof domain)
-    - eof_lr: [2d field] linear regressed eof pattern (global)
-    - slope: [2d field] slope from above linear regression (bring it here to calculate rmsc)
-    - pc: [1d field] principle component time series
-    - stdv_pc: [float] standard deviation of principle component time series
-    - frac: [1 number field] fraction of explained variance
-    - eof_obs: [2d field] eof pattern over subdomain from observation
-    - eof_lr_obs: [2d field] eof pattern over globe (linear regressed) from observation
-    - stdv_pc_obs: [float] standard deviation of principle component time series of observation
-    - obs_compare: [bool] calculate statistics against given observation (default=True)
-    - method: [string] 'eof' or 'cbf'
-    - debug: [bool]
+    Calculate statistics and save results to a dictionary for JSON output.
+
+    This function computes various statistics based on the provided model and observational
+    data, and stores the results in a dictionary format suitable for JSON serialization.
+
+    Parameters
+    ----------
+    mode : str
+        The name of the variability mode.
+    dict_head : dict
+        A subset of the dictionary to which results will be added.
+    model_ds : xr.Dataset
+        The dataset containing model data.
+    model_data_var : str
+        The variable name in the model dataset.
+    eof : xr.Dataset
+        The linear regressed EOF pattern for the EOF domain (2D field).
+    eof_lr : xr.Dataset
+        The linear regressed EOF pattern for the global domain (2D field).
+    pc : array-like
+        The principal component time series (1D field).
+    stdv_pc : float
+        The standard deviation of the principal component time series.
+    frac : float
+        The fraction of explained variance.
+    regions_specs : dict, optional
+        Specifications for regions, if applicable. Default is None.
+    obs_ds : xr.Dataset, optional
+        The dataset containing observational data. Default is None.
+    eof_obs : optional
+        The EOF pattern over the subdomain from observations (2D field). Default is None.
+    eof_lr_obs : optional
+        The linear regressed EOF pattern over the globe from observations (2D field). Default is None.
+    stdv_pc_obs : float, optional
+        The standard deviation of the principal component time series of observations. Default is None.
+    obs_compare : bool, optional
+        Whether to calculate statistics against the given observations. Default is True.
+    method : str, optional
+        The method to use, either 'eof' or 'cbf'. Default is 'eof'.
+    debug : bool, optional
+        A flag to enable debugging output. Default is False.
+
+    Returns
+    -------
+    None
     """
 
     # Add to dictionary for json output
