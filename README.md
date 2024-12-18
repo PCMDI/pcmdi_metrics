@@ -40,7 +40,8 @@ The package expects model data to be [CF-compliant](http://cfconventions.org/). 
 Documentation
 -------------
 
-**Getting Started**
+### Getting Started
+
 
 * Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
 
@@ -51,7 +52,7 @@ Documentation
 * [View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
 
 
-**References**
+### References
 
 Latest: 
 
