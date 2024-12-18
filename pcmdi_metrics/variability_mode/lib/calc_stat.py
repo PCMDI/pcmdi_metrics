@@ -60,20 +60,14 @@ def calc_stats_save_dict(
     # Note: '_glo' indicates statistics calculated over global domain
     # . . . . . . . . . . . . . . . . . . . . . . . . .
     if obs_compare:
-        # ref_grid_global = get_grid(eof_lr_obs)
         ref_grid_global = get_grid(obs_ds)
         # Regrid (interpolation, model grid to ref grid)
         debug_print("regrid (global) start", debug)
-        # eof_model_global = eof_lr.regrid(eof_lr,
-        #    ref_grid_global, regridTool="regrid2", mkCyclic=True
-        # )
-        # eof_model_global = regrid(eof_lr, ref_grid_global)
         eof_model_global = regrid(
             model_ds, data_var=model_data_var, target_grid=ref_grid_global
         )[model_data_var]
         debug_print("regrid end", debug)
         # Extract subdomain
-        # eof_model = eof_model_global(region_subdomain)
         eof_model = region_subset(eof_model_global, mode, regions_specs=regions_specs)
 
         # Spatial correlation weighted by area ('generate' option for weights)
@@ -86,9 +80,7 @@ def calc_stats_save_dict(
             # Double check for arbitrary sign control
             if cor < 0:
                 debug_print("eof pattern pcor < 0, flip sign!", debug)
-                # variables_to_flip_sign = [eof, pc, eof_lr, eof_model_global, eof_model]
-                # for variable in variables_to_flip_sign:
-                #    variable *= -1
+
                 eof.values = eof.values * -1
                 pc.values = pc.values * -1
                 eof_lr.values = eof_lr.values * -1
