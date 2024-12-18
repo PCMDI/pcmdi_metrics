@@ -12,28 +12,36 @@ def north_test(
     neigs: int = 10,
     vfscaled: bool = True,
 ) -> None:
-    """Typical errors for eigenvalues.
-    The method of North et al. (1982) is used to compute the typical error for each eigenvalue. It is assumed that the number of times in the input data set is the same as the number of independent realizations. If this assumption is not valid then the result may be inappropriate.
-    Detailed description can be found here:
+    """
+    Compute typical errors for eigenvalues using the method of North et al. (1982).
+
+    This function calculates the typical error for each eigenvalue based on the
+    assumption that the number of time steps in the input dataset is equal to the
+    number of independent realizations. If this assumption is not valid, the results
+    may be inappropriate. For detailed information, refer to the documentation:
     https://ajdawson.github.io/eofs/latest/api/eofs.xarray.html?highlight=north#eofs.xarray.Eof.northTest
 
     Parameters
     ----------
-    solver : An Eof instance.
-        Detailed description for Eof instance:
+    solver : Eof
+        An instance of the Eof class used for the computation.
+        For more details, see:
         https://ajdawson.github.io/eofs/latest/api/eofs.xarray.html?highlight=north#eofs.xarray.Eof
-    outdir : str
-        output directory path, by default current directory
-    output_filename : str
-        output file name, by default "north_test"
+    outdir : str, optional
+        The output directory path. Default is the current directory (".").
+    output_filename : str, optional
+        The name of the output file. Default is "north_test".
     plot_title : str, optional
-        _description_, by default None
+        The title for the plot. Default is None.
     neigs : int, optional
-        _description_, by default 10
+        The number of eigenvalues to consider. Default is 10.
     vfscaled : bool, optional
-        _description_, by default True
-    """
+        A flag indicating whether the eigenvalues should be scaled. Default is True.
 
+    Returns
+    -------
+    None
+    """
     errors = solver.northTest(neigs=neigs, vfscaled=vfscaled)
     fracs = solver.varianceFraction()
 
