@@ -43,8 +43,8 @@ def plot_map(
         End year from analysis
     season : str
         season ("DJF", "MAM", "JJA", "SON", "monthly", or "yearly") that was used for analysis and will be shown in figure title
-    eof_pattern : cdms2.TransientVariable
-        EOF pattern to plot, 2D cdms2 TransientVariable with lat/lon coordinates attached
+    eof_pattern : xr.DataArray
+        EOF pattern of the variability mode, 2D xarray DataArray with lat/lon coordinates attached
     eof_variance_fraction : float
         Fraction of explained variability (0 to 1), which will be shown in the figure as percentage after multiplying 100
     output_file_name : str
@@ -97,7 +97,6 @@ def plot_map(
     else:
         central_longitude = 180
 
-    # Convert cdms variable to xarray
     data_array = eof_pattern
     data_array = data_array.where(data_array != 1e20, np.nan)
 
