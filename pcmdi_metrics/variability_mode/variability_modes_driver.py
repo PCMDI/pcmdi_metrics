@@ -54,6 +54,7 @@ from pcmdi_metrics.variability_mode.lib import (
     linear_regression_on_globe_for_teleconnection,
     north_test,
     plot_map,
+    plot_map_multi_panel,
     read_data_in,
     search_paths,
     variability_metrics_to_json,
@@ -321,6 +322,7 @@ if obs_compare:
     solver_obs = {}
     reverse_sign_obs = {}
     eof_lr_obs = {}
+    eof_lr_obs_domain = {}
     stdv_pc_obs = {}
     obs_timeseries_season_dict = {}
 
@@ -417,6 +419,8 @@ if obs_compare:
         obs_timeseries_season_region = region_subset(
             obs_timeseries_season, mode, regions_specs=regions_specs
         )
+
+        eof_lr_obs_domain[season] = obs_timeseries_season_region["eof_lr"]
         eof_lr_obs[season] = eof_lr_obs_season
         # - - - - - - - - - - - - - - - - - - - - - - - - -
         # Record results
@@ -444,7 +448,7 @@ if obs_compare:
                 osyear,
                 oeyear,
                 season,
-                obs_timeseries_season_region["eof_lr"],
+                eof_lr_obs_domain[season],
                 frac_obs[season],
                 output_img_file_obs,
                 debug=debug,
@@ -455,7 +459,7 @@ if obs_compare:
                 osyear,
                 oeyear,
                 season,
-                eof_lr_obs_season,
+                eof_lr_obs[season],
                 frac_obs[season],
                 output_img_file_obs + "_teleconnection",
                 debug=debug,
@@ -546,7 +550,12 @@ for model in models:
         ]
 
     else:
-        runs = [realization]
+        if isinstance(realization, str):
+            runs = [realization]
+        elif isinstance(realization, list):
+            runs = realization
+        else:
+            raise ValueError("realization must be a string or a list.")
 
     print("runs:", runs)
 
@@ -786,9 +795,10 @@ for model in models:
                             season,
                             model_timeseries_season_subdomain["eof_lr_cbf"],
                             frac_cbf,
-                            output_img_file + "_cbf",
+                            output_file_name=f"{output_img_file}_cbf",
                             debug=debug,
                         )
+                        debug_print(f"plot CBF mode domain for {model} {run} completed", debug)
                         plot_map(
                             mode + "_teleconnection",
                             f"{mip.upper()} {model} ({run}) - CBF",
@@ -797,10 +807,29 @@ for model in models:
                             season,
                             eof_lr_cbf,
                             frac_cbf,
-                            output_img_file + "_cbf_teleconnection",
+                            output_file_name=f"{output_img_file}_cbf_teleconnection",
                             debug=debug,
                         )
-
+                        debug_print(f"plot CBF teleconnection for {model} {run} completed", debug)
+                        plot_map_multi_panel(
+                            mode,
+                            f"{mip.upper()} {model} ({run}) - CBF",
+                            msyear,
+                            meyear,
+                            season,
+                            eof_lr_obs_domain[season],  #  obs mode domain
+                            eof_lr_obs[season],  # obs global
+                            pc_obs[season],  # obs pc
+                            model_timeseries_season_subdomain[
+                                "eof_lr_cbf"
+                            ],  # model mode domain
+                            eof_lr_cbf,  # model global
+                            cbf_pc,  # model pc
+                            frac_cbf,
+                            output_file_name=f"{output_img_file}_cbf_compare_obs",
+                            debug=debug,
+                        )
+                        debug_print(f"plot CBF multiplot for {model} {run} completed", debug)
                     debug_print("cbf pcs end", debug)
 
                 # -------------------------------------------------
@@ -1009,8 +1038,7 @@ for model in models:
             if debug:
                 raise
             else:
-                print("warning: failed for ", model, run, err)
-                pass
+                print("warning: metrics calculation failed for ", model, run, err)
 
 # ========================================================================
 # Dictionary to JSON: collective JSON at the end of model_realization loop
