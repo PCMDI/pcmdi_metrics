@@ -197,7 +197,8 @@ def adjust_units(da: xr.DataArray, adjust_tuple: tuple) -> xr.DataArray:
 
 
 def check_missing_data(da: xr.DataArray):
-    """Sanity check for dataset time steps
+    """
+    Sanity check for dataset time steps
 
     Parameters
     ----------

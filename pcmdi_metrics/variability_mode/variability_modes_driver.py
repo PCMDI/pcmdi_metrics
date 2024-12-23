@@ -25,31 +25,7 @@ Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
 Quantifying the Agreement Between Observed and Simulated Extratropical Modes of
 Interannual Variability. Climate Dynamics.
 https://doi.org/10.1007/s00382-018-4355-4
-
-## Auspices:
-This work was performed under the auspices of the U.S. Department of
-Energy by Lawrence Livermore National Laboratory under Contract
-DE-AC52-07NA27344. Lawrence Livermore National Laboratory is operated by
-Lawrence Livermore National Security, LLC, for the U.S. Department of Energy,
-National Nuclear Security Administration under Contract DE-AC52-07NA27344.
-
-## Disclaimer:
-This document was prepared as an account of work sponsored by an
-agency of the United States government. Neither the United States government
-nor Lawrence Livermore National Security, LLC, nor any of their employees
-makes any warranty, expressed or implied, or assumes any legal liability or
-responsibility for the accuracy, completeness, or usefulness of any
-information, apparatus, product, or process disclosed, or represents that its
-use would not infringe privately owned rights. Reference herein to any specific
-commercial product, process, or service by trade name, trademark, manufacturer,
-or otherwise does not necessarily constitute or imply its endorsement,
-recommendation, or favoring by the United States government or Lawrence
-Livermore National Security, LLC. The views and opinions of authors expressed
-herein do not necessarily state or reflect those of the United States
-government or Lawrence Livermore National Security, LLC, and shall not be used
-for advertising or product endorsement purposes.
 """
-# import shapely  # noqa
 import glob
 import json
 import os
@@ -138,6 +114,9 @@ print("mode:", mode)
 # Variables
 var = param.varModel
 
+# Initialize ref_grid_global
+ref_grid_global = None
+
 # Check dependency for given season option
 seasons = param.seasons
 print("seasons:", seasons)
@@ -187,27 +166,30 @@ elif mode in ["NPGO", "NPO", "PSA1"]:
 elif mode in ["PSA2"]:
     eofn_expected = 3
 else:
-    raise ValueError(
-        f"Mode '{mode}' is not defiend with associated expected EOF number"
+    print(
+        f"Warning: Mode '{mode}' is not defined with an associated expected EOF number"
     )
+    eofn_expected = None
 
 if eofn_obs is None:
     eofn_obs = eofn_expected
 else:
     eofn_obs = int(eofn_obs)
-    if eofn_obs != eofn_expected:
-        raise ValueError(
-            f"Observation EOF number ({eofn_obs}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
-        )
+    if eofn_expected is not None:
+        if eofn_obs != eofn_expected:
+            print(
+                f"Warning: Observation EOF number ({eofn_obs}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
+            )
 
 if eofn_mod is None:
     eofn_mod = eofn_expected
 else:
     eofn_mod = int(eofn_mod)
-    if eofn_mod != eofn_expected:
-        raise ValueError(
-            f"Model EOF number ({eofn_mod}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
-        )
+    if eofn_expected is not None:
+        if eofn_mod != eofn_expected:
+            print(
+                f"Warning: Model EOF number ({eofn_mod}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
+            )
 
 print("eofn_obs:", eofn_obs)
 print("eofn_mod:", eofn_mod)
@@ -230,14 +212,6 @@ YearCheck(osyear, oeyear, P)
 # Units adjustment
 ObsUnitsAdjust = param.ObsUnitsAdjust
 ModUnitsAdjust = param.ModUnitsAdjust
-
-# lon1_global and lon2_global is for global map plotting
-if mode in ["PDO", "NPGO"]:
-    lon1_global = 0
-    lon2_global = 360
-else:
-    lon1_global = -180
-    lon2_global = 180
 
 # parallel
 parallel = param.parallel
@@ -312,9 +286,8 @@ json_file_org = os.path.join(
 if os.path.isfile(json_file) and os.stat(json_file).st_size > 0:
     copyfile(json_file, json_file_org)
     if update_json:
-        fj = open(json_file)
-        result_dict = json.loads(fj.read())
-        fj.close()
+        with open(json_file) as fj:
+            result_dict = json.load(fj)
 
 if "REF" not in result_dict:
     result_dict["REF"] = {}
@@ -341,7 +314,8 @@ if obs_compare:
     )
 
     # Get global grid information for later use: regrid
-    ref_grid_global = get_grid(obs_timeseries)
+    if ref_grid_global is None:
+        ref_grid_global = get_grid(obs_timeseries)
 
     # Set dictionary variables to keep information from observation in the memory during the season and model loop
     eof_obs = {}
@@ -484,7 +458,6 @@ if obs_compare:
                 osyear,
                 oeyear,
                 season,
-                # eof_lr_obs[season](longitude=(lon1_global, lon2_global)),
                 eof_lr_obs_season,
                 frac_obs[season],
                 output_img_file_obs + "_teleconnection",
@@ -697,21 +670,6 @@ for model in models:
                         model_timeseries_season_regrid, mode, regions_specs, debug=debug
                     )
 
-                    # Matching model's missing value location to that of observation
-                    """
-                    # Save axes for preserving
-                    # axes = model_timeseries_season_regrid_subdomain.getAxisList()
-                    axes = get_axis_list(model_timeseries_season_regrid_subdomain)
-                    # 1) Replace model's masked grid to 0, so theoritically won't affect to result
-                    model_timeseries_season_regrid_subdomain = MV2.array(
-                        model_timeseries_season_regrid_subdomain.filled(0.0)
-                    )
-                    # 2) Give obs's mask to model field, so enable projecField functionality below
-                    model_timeseries_season_regrid_subdomain.mask = eof_obs[season].mask
-                    # Preserve axes
-                    model_timeseries_season_regrid_subdomain.setAxisList(axes)
-                    """
-
                     # CBF PC time series
                     cbf_pc = gain_pseudo_pcs(
                         solver_obs[season],
@@ -840,7 +798,6 @@ for model in models:
                             msyear,
                             meyear,
                             season,
-                            # eof_lr_cbf(longitude=(lon1_global, lon2_global)),
                             eof_lr_cbf,
                             frac_cbf,
                             output_img_file + "_cbf_teleconnection",
@@ -1004,7 +961,6 @@ for model in models:
                                 msyear,
                                 meyear,
                                 season,
-                                # eof_lr(longitude=(lon1_global, lon2_global)),
                                 eof_lr,
                                 frac,
                                 f"{output_img_file}_teleconnection",
