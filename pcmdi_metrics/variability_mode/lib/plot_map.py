@@ -1,4 +1,5 @@
 import faulthandler
+import warnings
 
 import cartopy.crs as ccrs
 import matplotlib.path as mpath
@@ -177,7 +178,7 @@ def plot_map_multi_panel(
 
     # Adjust margins
     plt.subplots_adjust(
-        left=0.1, right=0.88, top=0.85, bottom=0.08, wspace=0.2, hspace=0.4
+        left=0.1, right=0.88, top=0.82, bottom=0.06, wspace=0.2, hspace=0.4
     )
 
     # Done, save figure
@@ -294,7 +295,19 @@ def plot_map(
 
 
 def determine_projection(mode: str) -> str:
-    """Determine the projection based on the mode."""
+    """
+    Determine the projection based on the mode.
+
+    Parameters
+    ----------
+    mode : str
+        The mode for which to determine the projection.
+
+    Returns
+    -------
+    str
+        The projection type to use for the specified mode.
+    """
     if "teleconnection" in mode:
         return "Robinson"
     elif mode in ["NAO", "PNA", "NPO", "PDO", "NPGO", "AMO"]:
@@ -304,7 +317,8 @@ def determine_projection(mode: str) -> str:
     elif mode in ["SAM", "PSA1", "PSA2"]:
         return "Stereo_south"
     else:
-        raise ValueError(f"Unknown mode: {mode}")
+        warnings.warn(f"Unknown mode: {mode}, defaulting to PlateCarree")
+        return "PlateCarree"
 
 
 def configure_projection_obj(
