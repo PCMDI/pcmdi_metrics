@@ -54,6 +54,7 @@ from pcmdi_metrics.variability_mode.lib import (
     linear_regression_on_globe_for_teleconnection,
     north_test,
     plot_map,
+    plot_map_multi_panel,
     read_data_in,
     search_paths,
     variability_metrics_to_json,
@@ -191,6 +192,9 @@ else:
                 f"Warning: Model EOF number ({eofn_mod}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
             )
 
+if eofn_expected is None:
+    eofn_expected = eofn_mod
+
 print("eofn_obs:", eofn_obs)
 print("eofn_mod:", eofn_mod)
 
@@ -324,6 +328,7 @@ if obs_compare:
     solver_obs = {}
     reverse_sign_obs = {}
     eof_lr_obs = {}
+    eof_lr_obs_domain = {}
     stdv_pc_obs = {}
     obs_timeseries_season_dict = {}
 
@@ -420,6 +425,8 @@ if obs_compare:
         obs_timeseries_season_region = region_subset(
             obs_timeseries_season, mode, regions_specs=regions_specs
         )
+
+        eof_lr_obs_domain[season] = obs_timeseries_season_region["eof_lr"]
         eof_lr_obs[season] = eof_lr_obs_season
         # - - - - - - - - - - - - - - - - - - - - - - - - -
         # Record results
@@ -447,7 +454,7 @@ if obs_compare:
                 osyear,
                 oeyear,
                 season,
-                obs_timeseries_season_region["eof_lr"],
+                eof_lr_obs_domain[season],
                 frac_obs[season],
                 output_img_file_obs,
                 debug=debug,
@@ -458,7 +465,7 @@ if obs_compare:
                 osyear,
                 oeyear,
                 season,
-                eof_lr_obs_season,
+                eof_lr_obs[season],
                 frac_obs[season],
                 output_img_file_obs + "_teleconnection",
                 debug=debug,
@@ -478,6 +485,7 @@ if obs_compare:
                 frac_obs[season],
                 slope_obs,
                 intercept_obs,
+                identifier=obs_name,
             )
 
         # Save stdv of PC time series in dictionary
@@ -530,7 +538,7 @@ for model in models:
     debug_print(f"model_path_list: {model_path_list}", debug)
 
     # Find where run can be gripped from given filename template for modpath
-    if realization == "*":
+    if "*" in realization:
         run_in_modpath = re.split(
             "[._]",
             fill_template(
@@ -549,7 +557,12 @@ for model in models:
         ]
 
     else:
-        runs = [realization]
+        if isinstance(realization, str):
+            runs = [realization]
+        elif isinstance(realization, list):
+            runs = realization
+        else:
+            raise ValueError("realization must be a string or a list.")
 
     print("runs:", runs)
 
@@ -774,6 +787,7 @@ for model in models:
                             frac_cbf,
                             slope_cbf,
                             intercept_cbf,
+                            identifier=f"{mip.upper()} {model} ({run}), CBF",
                         )
 
                     # Graphics -- plot map image to PNG
@@ -781,6 +795,7 @@ for model in models:
                         dir_paths["graphics"], output_filename
                     )
                     if plot_model:
+                        # Regional map
                         plot_map(
                             mode,
                             f"{mip.upper()} {model} ({run}) - CBF",
@@ -789,9 +804,14 @@ for model in models:
                             season,
                             model_timeseries_season_subdomain["eof_lr_cbf"],
                             frac_cbf,
-                            output_img_file + "_cbf",
+                            output_file_name=f"{output_img_file}_cbf",
                             debug=debug,
                         )
+                        debug_print(
+                            f"plot CBF mode domain for {model} {run} completed", debug
+                        )
+
+                        # Global map
                         plot_map(
                             mode + "_teleconnection",
                             f"{mip.upper()} {model} ({run}) - CBF",
@@ -800,10 +820,37 @@ for model in models:
                             season,
                             eof_lr_cbf,
                             frac_cbf,
-                            output_img_file + "_cbf_teleconnection",
+                            output_file_name=f"{output_img_file}_cbf_teleconnection",
                             debug=debug,
                         )
+                        debug_print(
+                            f"plot CBF teleconnection for {model} {run} completed",
+                            debug,
+                        )
 
+                        # Compare with observation
+                        plot_map_multi_panel(
+                            mode,
+                            f"{mip.upper()} {model} ({run}) - CBF",
+                            msyear,
+                            meyear,
+                            season,
+                            eof_lr_obs_domain[season],  #  obs mode domain
+                            eof_lr_obs[season],  # obs global
+                            pc_obs[season],  # obs pc
+                            model_timeseries_season_subdomain[
+                                "eof_lr_cbf"
+                            ],  # model mode domain
+                            eof_lr_cbf,  # model global
+                            cbf_pc,  # model pc
+                            frac_cbf,
+                            ref_name=obs_name,
+                            output_file_name=f"{output_img_file}_cbf_compare_obs",
+                            debug=debug,
+                        )
+                        debug_print(
+                            f"plot CBF multiplot for {model} {run} completed", debug
+                        )
                     debug_print("cbf pcs end", debug)
 
                 # -------------------------------------------------
@@ -840,7 +887,7 @@ for model in models:
                     tcor_list = []
 
                     for n in range(0, eofn_mod_max):
-                        eofs = "eof" + str(n + 1)
+                        eofs = f"eof{str(n + 1)}"
                         if (
                             eofs
                             not in result_dict["RESULTS"][model][run][
@@ -931,30 +978,41 @@ for model in models:
                         )
                         if nc_out_model:
                             write_nc_output(
-                                output_nc_file, eof_lr, pc, frac, slope, intercept
+                                output_nc_file,
+                                eof_lr,
+                                pc,
+                                frac,
+                                slope,
+                                intercept,
+                                identifier=f"{mip.upper()} {model} ({run}), {eofs.upper()}",
                             )
 
                         # Graphics -- plot map image to PNG
                         output_img_file = os.path.join(
                             dir_paths["graphics"], output_filename
                         )
+
+                        eof_lr_domain = region_subset(
+                            model_timeseries_season,
+                            mode,
+                            data_var="eof_lr",
+                            regions_specs=regions_specs,
+                        )["eof_lr"]
+
                         if plot_model:
+                            # Regional map
                             plot_map(
                                 mode,
                                 f"{mip.upper()} {model} ({run}) - EOF{n + 1}",
                                 msyear,
                                 meyear,
                                 season,
-                                region_subset(
-                                    model_timeseries_season,
-                                    mode,
-                                    data_var="eof_lr",
-                                    regions_specs=regions_specs,
-                                )["eof_lr"],
+                                eof_lr_domain,
                                 frac,
                                 output_img_file,
                                 debug=debug,
                             )
+                            # Global map
                             plot_map(
                                 f"{mode}_teleconnection",
                                 f"{mip.upper()} {model} ({run}) - EOF{n + 1}",
@@ -966,6 +1024,26 @@ for model in models:
                                 f"{output_img_file}_teleconnection",
                                 debug=debug,
                             )
+
+                            if n + 1 == eofn_expected:
+                                # Compare with observation
+                                plot_map_multi_panel(
+                                    mode,
+                                    f"{mip.upper()} {model} ({run}) - EOF{n + 1}",
+                                    msyear,
+                                    meyear,
+                                    season,
+                                    eof_lr_obs_domain[season],  #  obs mode domain
+                                    eof_lr_obs[season],  # obs global
+                                    pc_obs[season],  # obs pc
+                                    eof_lr_domain,  # model mode domain
+                                    eof_lr,  # model global
+                                    pc,  # model pc
+                                    frac,
+                                    ref_name=obs_name,
+                                    output_file_name=f"{output_img_file}_eof{n+1}_compare_obs",
+                                    debug=debug,
+                                )
 
                         # - - - - - - - - - - - - - - - - - - - - - - - - -
                         # EOF swap diagnosis
@@ -1012,8 +1090,7 @@ for model in models:
             if debug:
                 raise
             else:
-                print("warning: failed for ", model, run, err)
-                pass
+                print("warning: metrics calculation failed for ", model, run, err)
 
 # ========================================================================
 # Dictionary to JSON: collective JSON at the end of model_realization loop

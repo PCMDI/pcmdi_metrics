@@ -33,5 +33,5 @@ from .lib_variability_mode import (  # noqa
     variability_metrics_to_json,
     write_nc_output,
 )
-from .plot_map import plot_map  # noqa
+from .plot_map import plot_map, plot_map_multi_panel  # noqa
 from .north_test import north_test
