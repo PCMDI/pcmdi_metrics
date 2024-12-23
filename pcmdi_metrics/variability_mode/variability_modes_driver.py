@@ -166,27 +166,30 @@ elif mode in ["NPGO", "NPO", "PSA1"]:
 elif mode in ["PSA2"]:
     eofn_expected = 3
 else:
-    raise ValueError(
-        f"Mode '{mode}' is not defiend with associated expected EOF number"
+    print(
+        f"Warning: Mode '{mode}' is not defined with an associated expected EOF number"
     )
+    eofn_expected = None
 
 if eofn_obs is None:
     eofn_obs = eofn_expected
 else:
     eofn_obs = int(eofn_obs)
-    if eofn_obs != eofn_expected:
-        raise ValueError(
-            f"Observation EOF number ({eofn_obs}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
-        )
+    if eofn_expected is not None:
+        if eofn_obs != eofn_expected:
+            print(
+                f"Warning: Observation EOF number ({eofn_obs}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
+            )
 
 if eofn_mod is None:
     eofn_mod = eofn_expected
 else:
     eofn_mod = int(eofn_mod)
-    if eofn_mod != eofn_expected:
-        raise ValueError(
-            f"Model EOF number ({eofn_mod}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
-        )
+    if eofn_expected is not None:
+        if eofn_mod != eofn_expected:
+            print(
+                f"Warning: Model EOF number ({eofn_mod}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
+            )
 
 print("eofn_obs:", eofn_obs)
 print("eofn_mod:", eofn_mod)
