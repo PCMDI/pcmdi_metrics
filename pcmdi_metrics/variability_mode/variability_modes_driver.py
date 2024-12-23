@@ -538,7 +538,7 @@ for model in models:
     debug_print(f"model_path_list: {model_path_list}", debug)
 
     # Find where run can be gripped from given filename template for modpath
-    if realization == "*":
+    if "*" in realization:
         run_in_modpath = re.split(
             "[._]",
             fill_template(
