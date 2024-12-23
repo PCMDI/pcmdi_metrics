@@ -33,7 +33,9 @@ def tree():
     return defaultdict(tree)
 
 
-def write_nc_output(output_file_name, eofMap, pc, frac, slopeMap, interceptMap):
+def write_nc_output(
+    output_file_name, eofMap, pc, frac, slopeMap, interceptMap, identifier=None
+):
     # Create a dataset
     ds = xr.Dataset(
         {
@@ -46,6 +48,23 @@ def write_nc_output(output_file_name, eofMap, pc, frac, slopeMap, interceptMap):
             ),  # single number having no axis
         }
     )
+    # Add global attributes
+    ds.attrs[
+        "title"
+    ] = "PCMDI Metrics Package Extratropical Modes of Variability diagnostics"
+    ds.attrs["author"] = "PCMDI"
+    ds.attrs["contact"] = "pcmdi-metrics@llnl.gov"
+    ds.attrs["creation_date"] = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+    ds.attrs[
+        "references"
+    ] = """
+    Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019: Quantifying the Agreement Between Observed and Simulated Extratropical Modes of Interannual Variability. Climate Dynamics, 52, 4057-4089, doi: 10.1007/s00382-018-4355-4,
+    Lee, J., K. Sperber, P. Gleckler, K. Taylor, and C. Bonfils, 2021: Benchmarking performance changes in the simulation of extratropical modes of variability across CMIP generations. Journal of Climate, 34, 6945–6969, doi: 10.1175/JCLI-D-20-0832.1,
+    Lee, J., P. J. Gleckler, M.-S. Ahn, A. Ordonez, P. Ullrich, K. R. Sperber, K. E. Taylor, Y. Y. Planton, E. Guilyardi, P. Durack, C. Bonfils, M. D. Zelinka, L.-W. Chao, B. Dong, C. Doutriaux, C. Zhang, T. Vo, J. Boutte, M. F. Wehner, A. G. Pendergrass, D. Kim, Z. Xue, A. T. Wittenberg, and J. Krasting, 2024: Systematic and Objective Evaluation of Earth System Models: PCMDI Metrics Package (PMP) version 3. Geoscientific Model Development, 17, 3919–3948, doi: 10.5194/gmd-17-3919-2024
+    """
+    if identifier is not None:
+        ds.attrs["identifier"] = identifier
+    # Save the dataset to a netcdf file
     ds.to_netcdf(output_file_name + ".nc")
     ds.close()
 
