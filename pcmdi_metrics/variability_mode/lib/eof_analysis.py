@@ -115,10 +115,14 @@ def eof_analysis_get_variance_mode(
             pc_Nth *= -1.0
 
         # Supplement NetCDF attributes
+        eof_Nth.attrs["variable"] = data_var
+        eof_Nth.attrs["eof_mode"] = n + 1
         frac_Nth.attrs["units"] = "ratio"
         pc_Nth.attrs[
             "comment"
         ] = f"Non-scaled time series for principal component of {eofn}th variance mode"
+        pc_Nth.attrs["variable"] = data_var
+        pc_Nth.attrs["eof_mode"] = n + 1
 
         # append to lists for returning
         eof_list.append(eof_Nth)
@@ -258,6 +262,14 @@ def linear_regression_on_globe_for_teleconnection(
 
     eof_lr = (slope * factor) + intercept
 
+    eof_lr.attrs["variable"] = data_var
+    eof_lr.attrs["description"] = "linear regression on global field for teleconnection"
+    eof_lr.attrs[
+        "comment"
+    ] = "Reconstructed EOF pattern with teleconnection considerations"
+    if "eof_mode" in pc.attrs:
+        eof_lr.attrs["eof_mode"] = pc.attrs["eof_mode"]
+
     debug_print("linear regression done", debug)
 
     return eof_lr, slope, intercept
@@ -346,10 +358,12 @@ def gain_pseudo_pcs(
         pseudo_pcs = solver.projectField(
             field_to_be_projected, neofs=eofn, eofscaling=0
         )
+        pseudo_pcs.attrs["comment"] = "Non-scaled pseudo principal components"
     else:
         pseudo_pcs = solver.projectField(
             field_to_be_projected, neofs=eofn, eofscaling=1
         )
+        pseudo_pcs.attrs["comment"] = "Scaled pseudo principal components"
     # Get CBF PC (pseudo pcs in the code) for given eofs
     pseudo_pcs = pseudo_pcs[:, eofn - 1]
     # Arbitrary sign control, attempt to make all plots have the same sign
