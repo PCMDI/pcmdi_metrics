@@ -48,9 +48,9 @@ def map_plotter(domain, title, ds, save_path=None):
         miss_size = 2
         falarm_size = 1
     else:
-        hit_size = 4
-        miss_size = 6
-        falarm_size = 5
+        hit_size = 2
+        miss_size = 4
+        falarm_size = 3
 
     plot_monsoon_wang_maps(
         ds,
