@@ -1,6 +1,3 @@
-import warnings
-
-
 class StringConstructor:
     """
     This class aims at spotting keywords in a string and replacing them.
@@ -40,7 +37,7 @@ class StringConstructor:
         # Replace the keywords with their values
         for k in self.keys():
             if k not in kw:
-                warnings.warn(f"Keyword '{k}' not provided for filling the template.")
+                pass
             template = template.replace("%(" + k + ")", kw.get(k, getattr(self, k, "")))
         return template
 
