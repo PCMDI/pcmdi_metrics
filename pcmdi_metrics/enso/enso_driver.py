@@ -630,7 +630,7 @@ for mod in models:
             print("metrics:", metrics)
 
             filename_js = OSpath__join(
-                outdir(output_type="diagnostics"), json_name + ".json"
+                outdir(output_type="diagnostic_results"), json_name + ".json"
             )
             print("filename_js:", filename_js)
             # data_json = dict_metric
