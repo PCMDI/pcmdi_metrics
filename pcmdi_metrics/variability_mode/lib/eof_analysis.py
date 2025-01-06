@@ -78,7 +78,6 @@ def eof_analysis_get_variance_mode(
     grid_area = calculate_grid_area(ds)
     area_weights = calculate_area_weights(grid_area)
     da = ds[data_var]
-    debug_print("Lib-EOF: Eof start", debug)
     solver = Eof(da, weights=area_weights)
     debug_print("Lib-EOF: eof", debug)
 
