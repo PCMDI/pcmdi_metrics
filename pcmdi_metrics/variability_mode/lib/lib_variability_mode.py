@@ -94,7 +94,7 @@ def read_data_in(
     debug: bool = False,
 ) -> xr.Dataset:
     # Open data file
-    ds = xcdat_open(path)
+    ds = xcdat_open(path, chunks=None)
 
     # Data QC check -- time axis check
     check_monthly_time_axis(ds)
