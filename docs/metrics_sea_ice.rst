@@ -50,6 +50,9 @@ A `demo parameter file`_ is provided in the sea ice code.
 * **realization**: List of realizations or "*" to use all realizations.
 * **test_data_path**: File path to directory containing model/test data.
 * **filename_template**: File name template for test data, e.g., "%(variable)_SImon_%(model_version)_historical_r1i2p2f1_gr_201001-201112.nc" where "model_version" and "variable" will be analyzed for each of the entries in test_data_set and vars.
+* **sft_filename_template**: File name template for land/sea mask. If sft_filename_template is not provided and no_mask is False, PMP will generate a land/sea mask by default.
+* **generate_mask**: Set to True to use PMP-generated land/sea mask (default False). The sft_filename_template variable takes priority over this option if both are set.
+* **no_mask**: Set to True to skip the use of a land/sea mask (default False). The sft_filename_template variable takes priority over this option if both are set.
 * **var**: Name of model sea ice variable
 * **msyear**: Start year for test data set.
 * **meyear**: End year for test data set.
@@ -70,6 +73,7 @@ A `demo parameter file`_ is provided in the sea ice code.
 * **obs_area_var**: Name of reference area variable, if available. If unavailable, skip and use "obs_cell_area".
 * **obs_cell_area**: For equal area grids, the area of a single grid cell in units of km :sup:`2` . Only required if obs area file is not available.
 * **pole**: Set the maximum latitude for the Central Arctic and Arctic regions to exclude ice over the pole. Default is 90.1 to include all ice.
+* **netcdf**: Set to True to save the netcdf files of sea ice climatologies (default False).
 
 Postprocessing
 ==============
