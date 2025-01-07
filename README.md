@@ -121,6 +121,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.8.1]      | Technical update with new figure (modes of variability multi-panel plot)
 | [v3.8]        | New capability (**figure generation for ENSO**, xCDAT migration completed for **Monsoon Wang** with figure generation), major dependency update (`numpy` >= 2.0)
 | [v3.7.2]      | Technical update
 | [v3.7.1]      | Technical update with documentation improvements
@@ -172,6 +173,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.8.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8.1
 [v3.8]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8
 [v3.7.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.2
 [v3.7.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.1
