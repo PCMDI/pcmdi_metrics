@@ -137,10 +137,31 @@ def calculate_climatology(
             out_season
         )  # global attributes are automatically saved as well
 
+        # Plot climatology
         if plot and s == "AC":
-            plot_climatology(
-                d_ac,
-                var,
-                season_to_plot="all",
-                output_filename=out_season.replace(".nc", ".png"),
-            )
+            # Check if variable is 4D
+            if is_4d_variable(d_ac[var]):
+                # Plot 3 levels (hPa) for 4D variables for quick check
+                levels_to_plot = [200, 500, 850]
+            else:
+                levels_to_plot = [None]
+
+            # Plot climatology for each level
+            for level in levels_to_plot:
+                if level is None:
+                    output_filename = out_season.replace(".nc", ".png")
+                else:
+                    output_filename = out_season.replace(".nc", f".{level}.png")
+
+                # plot climatology for each level
+                plot_climatology(
+                    d_ac,
+                    var,
+                    level=level,
+                    season_to_plot="all",
+                    output_filename=output_filename,
+                )
+
+
+def is_4d_variable(da):
+    return len(da.shape) == 4
