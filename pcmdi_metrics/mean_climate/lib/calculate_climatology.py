@@ -76,8 +76,8 @@ def calculate_climatology(
     # Subset given time period
     d = d.sel(
         time=slice(
-            start_yr_str + "-" + start_mo_str + "-" + start_da_str,
-            end_yr_str + "-" + end_mo_str + "-" + end_da_str,
+            f"{start_yr_str}-{start_mo_str}-{start_da_str}",
+            f"{end_yr_str}-{end_mo_str}-{end_da_str}",
         )
     )
 
@@ -113,17 +113,7 @@ def calculate_climatology(
         # Save to netcdf file
         if periodinname is None:
             addf = (
-                "."
-                + start_yr_str
-                + start_mo_str
-                + "-"
-                + end_yr_str
-                + end_mo_str
-                + "."
-                + s
-                + "."
-                + ver
-                + ".nc"
+                f".{start_yr_str}{start_mo_str}-{end_yr_str}{end_mo_str}.{s}.{ver}.nc"
             )
         if periodinname is not None:
             addf = "." + s + "." + ver + ".nc"
