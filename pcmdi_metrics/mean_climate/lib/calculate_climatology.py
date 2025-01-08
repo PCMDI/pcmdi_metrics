@@ -123,6 +123,7 @@ def calculate_climatology(
         out_season = out.replace(".nc", addf)
 
         print("output file is", out_season)
+
         d_clim_dict[s].to_netcdf(
             out_season
         )  # global attributes are automatically saved as well
