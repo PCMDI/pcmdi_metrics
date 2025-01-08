@@ -142,11 +142,11 @@ def _xcdat_openxml(
 
     if len(ncfile_list) > 1:
         ds = xc.open_mfdataset(
-            ncfile_list, data_var=data_var, decode_times=decode_times, chunks=None
+            ncfile_list, data_var=data_var, decode_times=decode_times, chunks=chunks
         )
     else:
         ds = xc.open_dataset(
-            ncfile_list[0], data_var=data_var, decode_times=decode_times, chunks=None
+            ncfile_list[0], data_var=data_var, decode_times=decode_times, chunks=chunks
         )
 
     return ds
