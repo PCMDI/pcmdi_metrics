@@ -139,8 +139,15 @@ def calculate_climatology(
             # Plot climatology for each level
             for level in levels_to_plot:
                 output_filename = out_season.replace(".nc", ".png")
-                if level is not None and var in output_filename:
-                    output_filename = output_filename.replace(var, f"{var}-{level}.png")
+                if level is not None:
+                    if var in output_filename:
+                        output_filename = output_filename.replace(
+                            var, f"{var}-{level}.png"
+                        )
+                    else:
+                        output_filename = output_filename.replace(
+                            ".png", f"-{level}.png"
+                        )
 
                 # plot climatology for each level
                 plot_climatology(
