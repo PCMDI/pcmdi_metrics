@@ -890,6 +890,12 @@ def _load_variable_setting(
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "jet",
             },
+            500: {
+                "levels": np.linspace(-45, 5, 21),
+                "levels_diff": None,
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            },
             850: {
                 "levels": np.arange(-35, 40, 5),
                 "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
@@ -936,6 +942,12 @@ def _load_variable_setting(
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             },
+            500: {
+                "levels": np.arange(-40, 45, 5),
+                "levels_diff": np.linspace(-20, 20, 21),
+                "colormap": "PiYG_r",
+                "colormap_diff": "RdBu_r",
+            },
             850: {
                 "levels": [
                     -25,
@@ -967,6 +979,12 @@ def _load_variable_setting(
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             },
+            500: {
+                "levels": np.linspace(-10, 10, 11),
+                "levels_diff": np.linspace(-5, 5, 6),
+                "colormap": "PiYG_r",
+                "colormap_diff": "RdBu_r",
+            },
             850: {
                 "levels": np.linspace(-10, 10, 11),
                 "levels_diff": np.linspace(-5, 5, 6),
@@ -984,30 +1002,39 @@ def _load_variable_setting(
         },
     }
 
+    # Initialize
+    levels = None
+    levels_diff = None
+    cmap = None
+    cmap_diff = None
+    cmap_ext = None
+    cmap_ext_diff = None
+
     # Check if the variable and level exist in the settings
-
-    in_dict = False
-
     if data_var in var_setting_dict:
         if level in var_setting_dict[data_var]:
             settings = var_setting_dict[data_var][level]
-            levels = settings["levels"]
-            levels_diff = settings["levels_diff"]
-            cmap = _get_colormap(settings["colormap"])
-            cmap_diff = _get_colormap(settings["colormap_diff"])
+            levels = settings.get("levels", None)
+            levels_diff = settings.get("levels_diff", None)
+            cmap = _get_colormap(settings.get("colormap", None))
+            cmap_diff = _get_colormap(settings.get("colormap_diff", None))
             cmap_ext = settings.get("colormap_ext", "both")
             cmap_ext_diff = "both"
-            in_dict = True
 
     # Use default settings if not found
-    if not in_dict:
-        vmin = float(ds[data_var].min())
-        vmax = float(ds[data_var].max())
+    vmin = float(ds[data_var].min())
+    vmax = float(ds[data_var].max())
+    if levels is None:
         levels = np.linspace(vmin, vmax, 21)
+    if levels_diff is None:
         levels_diff = np.linspace(vmin / 2.0, vmax / 2.0, 21)
+    if cmap is None:
         cmap = plt.get_cmap("jet")
+    if cmap_diff is None:
         cmap_diff = plt.get_cmap("RdBu_r")
+    if cmap_ext is None:
         cmap_ext = "both"
+    if cmap_ext_diff is None:
         cmap_ext_diff = "both"
 
     if diff:

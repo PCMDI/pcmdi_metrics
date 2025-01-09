@@ -120,18 +120,19 @@ def calculate_climatology(
 
         if outfilename is not None:
             out = os.path.join(outdir, outfilename)
-        out_season = out.replace(".nc", addf)
 
-        print("output file is", out_season)
+        out_season = out.replace(".nc", addf)
 
         d_clim_dict[s].to_netcdf(
             out_season
         )  # global attributes are automatically saved as well
 
+        print("output file:", out_season)
+
         # Plot climatology
         if plot and s == "AC":
             # Check if variable is 4D
-            if is_4d_variable(d_ac[var]):
+            if is_4d_variable(d_ac, var):
                 # Plot 3 levels (hPa) for 4D variables for quick check
                 levels_to_plot = [200, 500, 850]
             else:
@@ -139,14 +140,17 @@ def calculate_climatology(
 
             # Plot climatology for each level
             for level in levels_to_plot:
-                output_filename = out_season.replace(".nc", ".png")
+                output_fig_path = out_season.replace(".nc", ".png")
                 if level is not None:
-                    if var in output_filename:
-                        output_filename = output_filename.replace(
-                            var, f"{var}-{level}.png"
+                    if var in output_fig_path:
+                        output_fig_path = os.path.join(
+                            outdir,
+                            output_fig_path.split("/")[-1].replace(
+                                var, f"{var}-{level}"
+                            ),
                         )
                     else:
-                        output_filename = output_filename.replace(
+                        output_fig_path = output_fig_path.replace(
                             ".png", f"-{level}.png"
                         )
 
@@ -156,9 +160,14 @@ def calculate_climatology(
                     var,
                     level=level,
                     season_to_plot="all",
-                    output_filename=output_filename,
+                    output_filename=output_fig_path,
+                    period=f"{start_yr_str}-{end_yr_str}",
                 )
 
+                print("output figure:", output_fig_path)
 
-def is_4d_variable(da):
+
+def is_4d_variable(ds, data_var):
+    da = ds[data_var]
+    print("data_var, da.shape:", data_var, da.shape)
     return len(da.shape) == 4
