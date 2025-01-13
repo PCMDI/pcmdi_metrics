@@ -30,7 +30,6 @@ def calculate_climatology(
     overwrite_output: bool = True,
     save_ac_netcdf: bool = True,
     plot=True,
-
 ):
     """
     Calculate climatology from a dataset over a specified period.
@@ -106,7 +105,7 @@ def calculate_climatology(
     ds = xcdat_open(infile, data_var=var)
     print("type(d):", type(ds))
 
-    atts = d.attrs
+    atts = ds.attrs
     print("atts:", atts)  # Print dataset attributes
 
     # Check if dataset time axis is okay
@@ -276,21 +275,10 @@ def calculate_climatology(
             # Add annual or seasonal climatology to the dictionary
             ds_clim_dict[s] = ds_clim_s
 
-        if outfilename is not None:
-            out = os.path.join(outdir, outfilename)
-
-        out_season = out.replace(".nc", addf)
-
-        d_clim_dict[s].to_netcdf(
-            out_season
-        )  # global attributes are automatically saved as well
-
-        print("output file:", out_season)
-
         # Plot climatology
         if plot and s == "AC":
             # Check if variable is 4D
-            if is_4d_variable(d_ac, var):
+            if is_4d_variable(ds_clim_s, var):
                 # Plot 3 levels (hPa) for 4D variables for quick check
                 levels_to_plot = [200, 500, 850]
             else:
@@ -298,7 +286,7 @@ def calculate_climatology(
 
             # Plot climatology for each level
             for level in levels_to_plot:
-                output_fig_path = out_season.replace(".nc", ".png")
+                output_fig_path = outpath_season.replace(".nc", ".png")
                 if level is not None:
                     if var in output_fig_path:
                         output_fig_path = os.path.join(
@@ -314,18 +302,19 @@ def calculate_climatology(
 
                 # plot climatology for each level
                 plot_climatology(
-                    d_ac,
+                    ds_clim_s,
                     var,
                     level=level,
                     season_to_plot="all",
                     output_filename=output_fig_path,
-                    period=f"{start_yr_str}-{end_yr_str}",
+                    period=f"{start_yr:04d}-{end_yr:04d}",
                 )
 
                 print("output figure:", output_fig_path)
 
     ds.close()
     return ds_clim_dict  # Return the dictionary of all climatology datasets
+
 
 def is_4d_variable(ds, data_var):
     da = ds[data_var]

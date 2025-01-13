@@ -438,6 +438,7 @@ def process_dataset(
                 interp_filename_nc = interp_filename_head.replace(
                     ".nc", f"_interp_{grid_resolution}.nc"
                 )
+                os.makedirs(os.path.join(out_path_interp, version), exist_ok=True)
                 ds_ac_level_interp.to_netcdf(
                     os.path.join(out_path_interp, version, interp_filename_nc)
                 )
