@@ -40,10 +40,10 @@ def create_land_sea_mask(
     -------
     xr.DataArray
         A DataArray of land-sea mask (1 or 0 for land or sea, or True or False for land or sea).
-        
+
     Notes
     -----
-    - The `regionmask` method uses the regionmask package to generate the mask.
+    - The `regionmask` method uses the regionmask package (https://regionmask.readthedocs.io/) to generate the mask.
     - The `pcmdi` method uses the PCMDI method developed by Taylor and Doutriaux (2000) (https://pcmdi.llnl.gov/report/ab58.html).
 
     Examples
