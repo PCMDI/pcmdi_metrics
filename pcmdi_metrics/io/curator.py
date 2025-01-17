@@ -1,10 +1,9 @@
 import glob
 import json
 import os
+import sys
 
-import xcdat
-
-from pcmdi_metrics.io import xcdat_openxml
+from pcmdi_metrics.io import xcdat_open
 
 
 def replace_multi(string, kwdict):
@@ -13,40 +12,6 @@ def replace_multi(string, kwdict):
     for k in kwdict.keys():
         string = string.replace(k, kwdict[k])
     return string
-
-
-def fix_calendar(ds):
-    cal = ds.time.calendar
-    # Add any calendar fixes here
-    cal = cal.replace("-", "_")
-    ds.time.attrs["calendar"] = cal
-    ds = xcdat.decode_time(ds)
-    return ds
-
-
-def load_ds_from_file(infile, load_options={}):
-    # TODO: Figure out how to get this into the open_xcdat function.
-    # https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/io/xcdat_openxml.py#L11
-    # Load an xarray dataset from the given filepath.
-    # If list of netcdf files, opens mfdataset.
-    # If list of xmls, open last file in list.
-    if isinstance(infile, list) or "*" in infile:
-        if infile[-1].endswith(".xml"):
-            # Final item of sorted list would have most recent version date
-            ds = xcdat_openxml.xcdat_openxml(infile[-1])
-        else:
-            try:
-                ds = xcdat.open_mfdataset(infile, **load_options)
-            except ValueError:  # Usually due to calendar issue
-                ds = xcdat.open_mfdataset(infile, decode_times=False, **load_options)
-                ds = fix_calendar(ds)
-    else:  # Single path
-        try:
-            ds = xcdat.open_dataset(infile, **load_options)
-        except ValueError:  # Usually due to calendar issue
-            ds = xcdat.open_dataset(infile, decode_times=False, **load_options)
-            ds = fix_calendar(ds)
-    return ds.bounds.add_missing_bounds()
 
 
 def load_ds_from_catalog(cat_dict, variable, model, run, kwargs={}):
@@ -59,7 +24,7 @@ def load_ds_from_catalog(cat_dict, variable, model, run, kwargs={}):
     }
     filename_template = cat_dict[variable][model][run]["filename_template"]
     filenames = glob.glob(replace_multi(filename_template, tags))
-    ds = load_ds_from_file(filenames, **kwargs)
+    ds = xcdat_open(filenames, **kwargs)
     return ds
 
 
@@ -107,6 +72,12 @@ def realizations_for_model(filename_template, tags):
         return
 
     # First assume that the realizations each have unique directories
+    # Eg
+    # model/
+    #   r1i1p1f1/
+    #        r1i1p1f1.nc
+    #   r2i1p1f1/
+    #        r2i1p1f1.nc
     fsplit = filename_template.split("/")
     if "%(realization)" in fsplit:
         rpos = fsplit.index("%(realization)")
@@ -115,8 +86,12 @@ def realizations_for_model(filename_template, tags):
         ncfiles = glob.glob(os.path.join(filenames, "*"))
         realizations = [x.split("/")[rpos] for x in ncfiles]
     # Otherwise, they are assumed to be saved together
+    # E.g.
+    # model/
+    #   r1i1p1f1.nc
+    #   r2i1p1f1.nc
     else:
-        # How do you deal with wildcard following realization tag?
+        # Note: this logic only works if there are no wildcards in file name
         if "*" not in filename_template:
             # Get the lengths of the str segments surrounding the
             # realization tag, and use those to snip out the realizations
@@ -143,21 +118,34 @@ def realizations_for_model(filename_template, tags):
 def build_catalog_from_template(filename_template, vars_dict):
     # Take the PMP filename template, and return a dictionary
     # that matches the structure of a catalog from JSON.
+    # filename_template is a full file path following PMP template rules
+    # vars_dict must contain entries for
+    # "variables", "models", and "realizations".
+    # Does not fail gracefully if vars_dict is missing entries
+    # or file path is incorrect
     cat_dict = {}
     for varname in vars_dict["variables"]:
         cat_dict[varname] = {}
         for model in vars_dict["models"]:
             cat_dict[varname][model] = {}
-            if vars_dict["realizations"] == "*":
-                tags = {
-                    "%(variable)": varname,
-                    "%(model)": model,
-                    "%(model_version)": model,
-                    "%(realization)": "*",
-                }
-                realization_list = realizations_for_model(filename_template, tags)
-            else:
-                realization_list = vars_dict["realizations"]
+            realization_list = []
+            if vars_dict["realizations"]:
+                if vars_dict["realizations"][0] == "*":
+                    print("finding all realizations")
+                    tags = {
+                        "%(variable)": varname,
+                        "%(model)": model,
+                        "%(model_version)": model,
+                        "%(realization)": "*",
+                    }
+                    print(tags)
+                    realization_list = realizations_for_model(filename_template, tags)
+                    if not realization_list:  # check empty list
+                        print("No realizations found.")
+                        print("File path may not be valid.")
+                        sys.exit()
+                else:
+                    realization_list = vars_dict["realizations"]
             for run in realization_list:
                 tags = {
                     "%(variable)": varname,
