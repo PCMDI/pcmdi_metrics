@@ -10,6 +10,23 @@ Run the decision relevant metrics driver using the following command:
 drcdm_driver.py -p your_parameter_file.py
 ```
 
+### Interquartile range script
+
+After running the drcdm_driver over an ensemble for the variables pr, tasmax, and tasmin, users have the optional to produced an interquartile range table using the script scripts/iqr.py. This script is hard-coded to use the NCA5 CONUS regions.
+
+| Parameter   | Definition |
+--------------|-------------
+| filename_template | (str) The template for the model DRCDM results. May contain placeholder %(variable). A wildcard must be used in place of model name or realization name. | 
+| reference_template | (str) The template for the reference DRCDM results. May contain placeholder %(variable). A wildcard must be used in place of model name or realization name. |
+| output_path | (str) Output directory for iqr.py results (optional). |
+| shapefile_path | (str) Full path to the NCA5 regions shapefile. |
+| obs_name | (str) Name of the reference data, for example, "PRISM". |
+| model_name | (str) Name of the model data, for example, "LOCA2". |
+
+For example, a user's PMP DRCDM model results are stored at /home/userid/LOCA2. They organized by variable, model, and realization, so the  results for GFDL-CM4 r1i1p1f1 precipitation are found at /home/userid/LOCA2/pr/GFDL-CM4/r1i1p1f1. The user's `filename_template` variable would then be formatted as "/home/userid/LOCA2/%(variable)/*/*/".
+
+This script will write JSON files for ensemble mean statistics (relative and absolute differences between ensemble mean and reference dataset) and a csv file containing the values for the interquartile range table.
+
 ## Inputs
 The Decision Relevant Metrics Driver works on daily gridded climate data. This package expects input netcdf files to be cf-compliant and on regular latitude/longitude grids. X and Y dimensions must be named "lon" and "lat", and the time dimension must be named "time". The input variables must be called "tasmax", "tasmin", or "pr". Input files must contain lat, lon, and time bounds.
 
