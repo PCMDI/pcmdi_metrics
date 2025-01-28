@@ -12,6 +12,7 @@ from .dates import (
     regenerate_time_axis,
     replace_date_pattern,
 )
+from .download import download_files_from_github_directory
 from .grid import (
     calculate_area_weights,
     calculate_grid_area,
