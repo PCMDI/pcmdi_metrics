@@ -88,7 +88,11 @@ data_files = (
             "share/DefArgsCIA.json",
             "pcmdi_metrics/precip_distribution/lib/cluster3_pdf.amt_regrid.360x180_IMERG_ALL_90S90N.nc",
             "share/data/navy_land.nc",
-            "share/data/nca5_regions.shp",
+            "share/data/nca5_regions/nca5_regions.cpg",
+            "share/data/nca5_regions/nca5_regions.dbf",
+            "share/data/nca5_regions/nca5_regions.prj",
+            "share/data/nca5_regions/nca5_regions.shp",
+            "share/data/nca5_regions/nca5_regions.shx",
         ),
     ),
 )
