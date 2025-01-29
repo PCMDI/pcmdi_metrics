@@ -217,15 +217,15 @@ Release Notes and History
 [v1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1
 [v1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0
 
-Current Core Team Members at PCMDI/LLNL
----------------------------------------
-* Jiwoo Lee
-* Ana Ordonez
-* Peter Gleckler
-* Paul Ullrich
-* Bo Dong
-* Kristin Chang
-
+Core Development Team
+---------------------
+* [Jiwoo Lee](https://people.llnl.gov/lee1043) ([LLNL](https://www.llnl.gov/), PMP Lead)
+* [Ana Ordonez](https://people.llnl.gov/ordonez4) ([LLNL](https://www.llnl.gov/))
+* [Peter Gleckler](https://pcmdi.llnl.gov/staff/gleckler/) ([LLNL](https://www.llnl.gov/))
+* [Paul Ullrich](https://people.llnl.gov/ullrich4) ([LLNL](https://www.llnl.gov/), [PCMDI](https://pcmdi.llnl.gov/) Project PI)
+* [Bo Dong](https://people.llnl.gov/dong12) ([LLNL](https://www.llnl.gov/))
+* [Kristin Chang](https://people.llnl.gov/chang61) ([LLNL](https://www.llnl.gov/))
+* [Shixuan Zhang](https://www.pnnl.gov/science/staff/staff_info.asp?staff_num=9376) ([PNNL](https://www.pnnl.gov/))
 
 All Contributors
 ----------------
