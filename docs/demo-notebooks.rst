@@ -67,3 +67,11 @@ Practical Use Cases
    examples/mean_clim_plots_test_model
    examples/variability_modes_plots_all-stats
    examples/return_value_portrait_plot_demo
+
+
+Data analysis support
+~~~~~~~~~~~~~~~~~~~~~
+
+.. nbgallery::
+
+   examples/landmask

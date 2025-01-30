@@ -99,7 +99,7 @@ outdir = StringConstructor(
 )
 netcdf_path = outdir(output_type="diagnostic_results")
 fig_path = outdir(output_type="graphics")
-json_path = outdir(output_type="metrics")
+json_path = outdir(output_type="metrics_results")
 json_name_template = param.process_templated_argument("json_name")
 netcdf_name_template = param.process_templated_argument("netcdf_name")
 
@@ -630,7 +630,7 @@ for mod in models:
             print("metrics:", metrics)
 
             filename_js = OSpath__join(
-                outdir(output_type="diagnostics"), json_name + ".json"
+                outdir(output_type="metrics_results"), json_name + ".json"
             )
             print("filename_js:", filename_js)
             # data_json = dict_metric
