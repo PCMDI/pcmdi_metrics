@@ -10,6 +10,7 @@ import xarray as xr
 import xcdat as xc
 from xclim import ensembles
 
+from pcmdi_metrics import resources
 from pcmdi_metrics.io.region_from_file import region_from_file
 
 
@@ -140,7 +141,11 @@ def clean_data(ds_mod, ds_obs, var1):
     return ds_mod, ds_obs
 
 
-def stats_dif(ds, obs, shp):
+def stats_dif(ds, obs, shp=None):
+    if shp is None:
+        egg_pth = resources.resource_path()
+        shp = os.path.join(egg_pth, "nca5_regions.shp")
+
     tmpstats = {}
     region_list = [
         "Northeast",
@@ -213,6 +218,7 @@ if __name__ == "__main__":
         dest="shapefile_path",
         type=str,
         help="Path to regions shapefile",
+        default=None,
     )
     parser.add_argument(
         "--output_path",
