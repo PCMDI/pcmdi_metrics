@@ -24,7 +24,7 @@ import pcmdi_metrics
 # -- Project information -----------------------------------------------------
 # General information about the project.
 project = "PCMDI Metrics Package (PMP)"
-copyright = "2024, PMP Developers"
+copyright = "2025, PMP Developers"
 author = "PMP Developers"
 
 # The version info for the project you're documenting, acts as replacement
