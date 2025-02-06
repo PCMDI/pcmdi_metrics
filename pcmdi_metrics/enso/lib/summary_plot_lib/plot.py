@@ -1009,9 +1009,7 @@ def multiportraitplot(
     )
     cax.text(5.2, 0.55, "further from reference", va="bottom", **dict_txt)
     plt.savefig(name_plot, bbox_inches="tight")
-    plt.savefig(name_plot + ".eps", bbox_inches="tight", format="eps")
-    # plt.close()
-    # return
+    plt.close()
     return fig
 
 
