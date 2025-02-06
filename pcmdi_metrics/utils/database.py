@@ -28,7 +28,7 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
     if metrics is None:
         metrics = ['enso_metric', 'mean_climate', 'mjo', 'variability_modes', 'qbo-mjo']
 
-    subdir_dict = load_subdir_dict()        
+    subdir_dict = load_subdir_dict()
     results_dict = dict()
         
     for metric in metrics:
@@ -61,7 +61,7 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
                     models = tmp_dict["RESULTS"].keys()
                 models = sorted(list(models))
             
-            if debug:        
+            if debug:
                 print(metric, tmp_dict["RESULTS"].keys())
                 print("models:", models)
 
@@ -75,7 +75,7 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
             else:
                 results_dict_i["RESULTS"] = tmp_dict["RESULTS"]
 
-            # Find provenance info                
+            # Find provenance info
             if "provenance" in tmp_dict.keys():
                 results_dict_i["provenance"] = tmp_dict["provenance"]
                 
@@ -105,7 +105,7 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
 
             # Add the content to results dict
             if key == ".":
-                results_dict[metric] = results_dict_i           
+                results_dict[metric] = results_dict_i
             else:
                 results_dict[metric][key] = results_dict_i
 
