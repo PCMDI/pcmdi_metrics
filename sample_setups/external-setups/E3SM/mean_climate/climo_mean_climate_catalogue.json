@@ -1,0 +1,461 @@
+{
+    "pr": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "pr",
+            "var_name": "pr",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.pr.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.pr.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "prw": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "prw",
+            "var_name": "prw",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.prw.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.prw.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "psl": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "psl",
+            "var_name": "psl",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.psl.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.psl.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rlds": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rlds",
+            "var_name": "rlds",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rlds.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rlds.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rldscs": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rldscs",
+            "var_name": "rldscs",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rldscs.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rldscs.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rltcre": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rltcre",
+            "var_name": "rltcre",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rltcre.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rltcre.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rstcre": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rstcre",
+            "var_name": "rstcre",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rstcre.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rstcre.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rsus": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rsus",
+            "var_name": "rsus",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rsus.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rsus.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rsuscs": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rsuscs",
+            "var_name": "rsuscs",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rsuscs.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rsuscs.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rlus": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rlus",
+            "var_name": "rlus",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rlus.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rlus.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rlut": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rlut",
+            "var_name": "rlut",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rlut.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rlut.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rlutcs": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rlutcs",
+            "var_name": "rlutcs",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rlutcs.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rlutcs.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rsds": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rsds",
+            "var_name": "rsds",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rsds.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rsds.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rsdscs": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rsdscs",
+            "var_name": "rsdscs",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rsdscs.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rsdscs.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rsdt": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rsdt",
+            "var_name": "rsdt",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rsdt.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rsdt.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rsut": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rsut",
+            "var_name": "rsut",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rsut.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rsut.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rsutcs": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rsutcs",
+            "var_name": "rsutcs",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rsutcs.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rsutcs.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rtmt": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "rtmt",
+            "var_name": "rtmt",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.rtmt.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.rtmt.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "sfcWind": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "sfcWind",
+            "var_name": "sfcWind",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.sfcWind.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.sfcWind.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "tas": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "tas",
+            "var_name": "tas",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.tas.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.tas.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "tauu": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "tauu",
+            "var_name": "tauu",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.tauu.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.tauu.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "tauv": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "tauv",
+            "var_name": "tauv",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.tauv.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.tauv.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "ts": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "ts",
+            "var_name": "ts",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.ts.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.ts.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "ta": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "ta",
+            "var_name": "ta-850",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.ta.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.ta.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "ua": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "ua",
+            "var_name": "ua-850",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.ua.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.ua.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "va": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "va",
+            "var_name": "va-850",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.va.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.va.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "zg": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "zg",
+            "var_name": "zg-500",
+            "file_path": "climo/e3sm.historical.v3-LR.0051.Amon.zg.198501-201412.AC.v20250131.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.zg.198501-201412.AC.v20250131.nc"
+        }
+    }
+}
