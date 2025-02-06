@@ -61,20 +61,29 @@ def enso_portrait_plot(
         List of observational datasets.
     dict_json_path : dict
         Dictionary containing paths to JSON files with metric data.
-    figure_name : str
-        Name of the output figure file.
+    figure_name : str, optional
+        Name of the output figure file, by default "enso_portrait_plot.png".
+    reduced_set : bool, optional
         If True, use a reduced set of metrics, by default False.
     met_order : list of str, optional
         Custom order for metrics, by default None.
     mod_order : list of str, optional
         Custom order for models, by default None.
     sort_y_names : bool, optional
-        If True, sort y-axis names in alphabetical order across `list_project`, by default False.
+        If True, sort y-axis names in alphabetical order, by default False.
+    show_proj_means : bool, optional
+        If True, show project means, by default False.
+    show_ref_row : bool, optional
+        If True, show reference row, by default False.
+    show_alt_obs_rows : bool, optional
+        If True, show alternative observation rows, by default False.
 
     Returns
     -------
-    None
-        This function does not return any value. It generates and saves a plot.
+    fig : matplotlib.figure.Figure
+        The generated figure.
+    ref_info_dict : dict
+        Dictionary containing reference information.
     """
     # name of metric collections for the plot and new metric names
     metric_names_for_plot, met_names = load_met_names()
@@ -92,7 +101,7 @@ def enso_portrait_plot(
         list_obs = list()
 
     # get data
-    tab_all, x_names, y_names = json_dict_to_numpy_array_list(
+    tab_all, x_names, y_names, ref_info_dict = json_dict_to_numpy_array_list(
         metric_collections,
         list_project,
         list_obs,
@@ -121,7 +130,7 @@ def enso_portrait_plot(
         text = None
 
     levels = list(range(-2, 3))
-    multiportraitplot(
+    fig = multiportraitplot(
         tab_all,
         figure_name,
         x_names,
@@ -137,6 +146,7 @@ def enso_portrait_plot(
         met_names=met_names,
     )
     del levels, numbering, text, title
+    return fig, ref_info_dict
 
 
 # ---------------------------------------------------#
@@ -232,12 +242,16 @@ def json_dict_to_numpy_array_list(
     # read json file
     tab_all, tab_all_act, x_names = list(), list(), list()
     different_ref_keys = list()
+    ref_info_dict = dict()
+
     for mc in metric_collections:
         if debug:
             print("mc:", mc)
         dict1 = dict()
         list_models_all = list()
+        ref_info_dict[mc] = dict()
         for proj in list_project:
+            ref_info_dict[mc][proj] = dict()
             # open and read json file
             data_json = read_data(dict_json_path[proj][mc])
             # read metrics
@@ -263,6 +277,7 @@ def json_dict_to_numpy_array_list(
                             )
                         different_ref_keys.append([ref, ref_key_act])
 
+                    ref_info_dict[mc][proj][met] = ref_key_act
                     # val = data_mod[met]["metric"][ref]["value"]
                     # Below, if any part of the dictionary chain is missing, val will be set to None without raising a KeyError.
                     val = (
@@ -436,7 +451,7 @@ def json_dict_to_numpy_array_list(
     if debug:
         print("len(tab_all):", len(tab_all))
 
-    return tab_all, x_names, y_names
+    return tab_all, x_names, y_names, ref_info_dict
 
 
 def most_similar_string(target, string_list):
@@ -1024,7 +1039,6 @@ def multiportraitplot(
     )
     cax.text(5.2, 0.55, "further from reference", va="bottom", **dict_txt)
     plt.savefig(name_plot, bbox_inches="tight")
-    plt.close()
     return fig
 
 
