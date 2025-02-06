@@ -188,7 +188,7 @@ def json_dict_to_numpy_array_list(
             for mod in list(tmp.keys()):
                 try:
                     dict_members[proj][mod]
-                except:
+                except KeyError:
                     dict_members[proj][mod] = list(tmp[mod].keys())
                 else:
                     dict_members[proj][mod] += list(tmp[mod].keys())
@@ -226,12 +226,12 @@ def json_dict_to_numpy_array_list(
             mem = find_first_member(list_members, mod=mod)
             try:
                 model_by_proj[proj]
-            except:
+            except KeyError:
                 model_by_proj[proj] = {mod: mem}
             else:
                 try:
                     model_by_proj[proj][mod]
-                except:
+                except KeyError:
                     model_by_proj[proj][mod] = mem
                 else:
                     print("this model should not be here")
@@ -290,7 +290,7 @@ def json_dict_to_numpy_array_list(
                         val = 1e20
                     try:
                         dict1[mod]
-                    except:
+                    except KeyError:
                         dict1[mod] = {met: val}
                     else:
                         dict1[mod][met] = val
@@ -325,7 +325,7 @@ def json_dict_to_numpy_array_list(
         for mod in tmp_models:
             try:
                 list(dict1[mod].keys())
-            except:
+            except KeyError:
                 pass
             else:
                 my_metrics += list(dict1[mod].keys())
@@ -382,7 +382,7 @@ def json_dict_to_numpy_array_list(
             for jj, met in enumerate(my_metrics):
                 try:
                     dict1[mod][met]
-                except:
+                except KeyError:
                     tab[ii + plus, jj] = 1e20
                 else:
                     tab[ii + plus, jj] = dict1[mod][met]
@@ -862,8 +862,8 @@ def multiportraitplot(
         dy = 0.5 / (yy2 - yy1)
         try:
             ax.set_title(title[kk], fontdict=fontdict, y=1 + dy, loc="center")
-        except:
-            pass
+        except Exception as e:
+            print(f"An error occurred: {e}")
         # x axis
         ticks = [ii + 0.5 for ii in range(len(x_names[kk]))]
         ax.set_xticks(ticks)
@@ -1092,7 +1092,7 @@ def read_obs(filename_json, obsvation_names, list_met, metric_collection):
                 if "Ssh" not in met:
                     try:
                         tab = data_json["20CRv2"]["r1i1p1"]["value"][met]["metric"]
-                    except:
+                    except KeyError:
                         tab = data_json["20CRv2_20CRv2"]["r1i1p1"]["value"][met][
                             "metric"
                         ]
@@ -1104,7 +1104,7 @@ def read_obs(filename_json, obsvation_names, list_met, metric_collection):
                 else:
                     try:
                         tab = data_json["NCEP2"]["r1i1p1"]["value"][met]["metric"]
-                    except:
+                    except KeyError:
                         tab = data_json["NCEP2_NCEP2"]["r1i1p1"]["value"][met]["metric"]
             elif obs == "ERA-Interim":
                 if "SstMap" in met:
@@ -1118,24 +1118,23 @@ def read_obs(filename_json, obsvation_names, list_met, metric_collection):
                 else:
                     try:
                         tab = data_json["ERA-Interim"]["r1i1p1"]["value"][met]["metric"]
-                    except:
+                    except KeyError:
                         tab = data_json["ERA-Interim_ERA-Interim"]["r1i1p1"]["value"][
                             met
                         ]["metric"]
+
             try:
                 val = tab[ref]["value"]
-            except:
+            except KeyError:
                 val = 1e20
+
             try:
                 dict_out[obs]
-            except:
+            except KeyError:
                 dict_out[obs] = {met: val}
             else:
                 dict_out[obs][met] = val
-            try:
-                del tab
-            except:
-                pass
+
             del ref, val
     return dict_out
 
