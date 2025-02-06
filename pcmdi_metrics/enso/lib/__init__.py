@@ -9,4 +9,5 @@ from .enso_lib import (  # noqa
     tree,
 )
 
-from .summary_plot_lib.EnsoPlotLib import plot_param  # noqa
+from .summary_plot_lib.EnsoPlotLib import plot_param
+from .summary_plot_lib.plot import enso_portrait_plot

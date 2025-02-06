@@ -12,13 +12,24 @@ from .EnsoErrorsWarnings import unknown_key_arg
 #
 def default_arg_values(arg):
     default = {
-        'detrending': False, 'frequency': None, 'metric_computation': 'difference', 'min_time_steps': None,
-        'normalization': False, 'project_interpreter': 'CMIP', 'regridding': False, 'smoothing': False,
-        'treshold_ep_ev': -140, 'time_bounds': None, 'time_bounds_mod': None, 'time_bounds_obs': None,
+        "detrending": False,
+        "frequency": None,
+        "metric_computation": "difference",
+        "min_time_steps": None,
+        "normalization": False,
+        "project_interpreter": "CMIP",
+        "regridding": False,
+        "smoothing": False,
+        "treshold_ep_ev": -140,
+        "time_bounds": None,
+        "time_bounds_mod": None,
+        "time_bounds_obs": None,
     }
     try:
         default[arg]
-    except:
+    except KeyError:
         unknown_key_arg(arg, INSPECTstack())
     return default[arg]
+
+
 # ---------------------------------------------------------------------------------------------------------------------#
