@@ -1,0 +1,461 @@
+{
+    "pr": {
+        "set": "default",
+        "default": "GPCP_v2_3",
+        "GPCP_v2_3": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "GPCP_v2_3",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "pr",
+            "var_name": "pr",
+            "file_path": "climo_ref/obs.historical.GPCP_v2_3.00.Amon.pr.198501-201412.AC.v20250131.nc",
+            "template": "obs.historical.GPCP_v2_3.00.Amon.pr.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "prw": {
+        "set": "default",
+        "default": "ERA5",
+        "ERA5": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ERA5",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "prw",
+            "var_name": "prw",
+            "file_path": "climo_ref/obs.historical.ERA5.00.Amon.prw.198501-201412.AC.v20250131.nc",
+            "template": "obs.historical.ERA5.00.Amon.prw.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "psl": {
+        "set": "default",
+        "default": "ERA5",
+        "ERA5": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ERA5",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "psl",
+            "var_name": "psl",
+            "file_path": "climo_ref/obs.historical.ERA5.00.Amon.psl.198501-201412.AC.v20250131.nc",
+            "template": "obs.historical.ERA5.00.Amon.psl.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "rlds": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rlds",
+            "var_name": "rlds",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rlds.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rlds.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rldscs": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rldscs",
+            "var_name": "rldscs",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rldscs.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rldscs.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rltcre": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rltcre",
+            "var_name": "rltcre",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rltcre.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rltcre.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rstcre": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rstcre",
+            "var_name": "rstcre",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rstcre.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rstcre.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rsus": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rsus",
+            "var_name": "rsus",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rsus.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rsus.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rsuscs": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rsuscs",
+            "var_name": "rsuscs",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rsuscs.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rsuscs.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rlus": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rlus",
+            "var_name": "rlus",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rlus.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rlus.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rlut": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rlut",
+            "var_name": "rlut",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rlut.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rlut.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rlutcs": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rlutcs",
+            "var_name": "rlutcs",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rlutcs.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rlutcs.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rsds": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rsds",
+            "var_name": "rsds",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rsds.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rsds.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rsdscs": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rsdscs",
+            "var_name": "rsdscs",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rsdscs.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rsdscs.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rsdt": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rsdt",
+            "var_name": "rsdt",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rsdt.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rsdt.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rsut": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rsut",
+            "var_name": "rsut",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rsut.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rsut.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rsutcs": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rsutcs",
+            "var_name": "rsutcs",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rsutcs.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rsutcs.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "rtmt": {
+        "set": "default",
+        "default": "ceres_ebaf_v4_1",
+        "ceres_ebaf_v4_1": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ceres_ebaf_v4_1",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "20010101",
+            "yymme": "201412",
+            "var_in_file": "rtmt",
+            "var_name": "rtmt",
+            "file_path": "climo_ref/obs.historical.ceres_ebaf_v4_1.00.Amon.rtmt.20010101-201412.AC.v20250131.nc",
+            "template": "obs.historical.ceres_ebaf_v4_1.00.Amon.rtmt.20010101-201412.AC.v20250131.nc"
+        }
+    },
+    "sfcWind": {
+        "set": "default",
+        "default": "NOAA-20C",
+        "NOAA-20C": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "NOAA-20C",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "sfcWind",
+            "var_name": "sfcWind",
+            "file_path": "climo_ref/obs.historical.NOAA-20C.00.Amon.sfcWind.198501-201412.AC.v20250131.nc",
+            "template": "obs.historical.NOAA-20C.00.Amon.sfcWind.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "tas": {
+        "set": "default",
+        "default": "ERA5",
+        "ERA5": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ERA5",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "tas",
+            "var_name": "tas",
+            "file_path": "climo_ref/obs.historical.ERA5.00.Amon.tas.198501-201412.AC.v20250131.nc",
+            "template": "obs.historical.ERA5.00.Amon.tas.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "tauu": {
+        "set": "default",
+        "default": "ERA5",
+        "ERA5": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ERA5",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "tauu",
+            "var_name": "tauu",
+            "file_path": "climo_ref/obs.historical.ERA5.00.Amon.tauu.198501-201412.AC.v20250131.nc",
+            "template": "obs.historical.ERA5.00.Amon.tauu.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "tauv": {
+        "set": "default",
+        "default": "ERA5",
+        "ERA5": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ERA5",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "tauv",
+            "var_name": "tauv",
+            "file_path": "climo_ref/obs.historical.ERA5.00.Amon.tauv.198501-201412.AC.v20250131.nc",
+            "template": "obs.historical.ERA5.00.Amon.tauv.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "ts": {
+        "set": "default",
+        "default": "ERA5",
+        "ERA5": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ERA5",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "ts",
+            "var_name": "ts",
+            "file_path": "climo_ref/obs.historical.ERA5.00.Amon.ts.198501-201412.AC.v20250131.nc",
+            "template": "obs.historical.ERA5.00.Amon.ts.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "ta": {
+        "set": "default",
+        "default": "ERA5",
+        "ERA5": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ERA5",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "ta",
+            "var_name": "ta-850",
+            "file_path": "climo_ref/obs.historical.ERA5.00.Amon.ta.198501-201412.AC.v20250131.nc",
+            "template": "obs.historical.ERA5.00.Amon.ta.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "ua": {
+        "set": "default",
+        "default": "ERA5",
+        "ERA5": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ERA5",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "ua",
+            "var_name": "ua-850",
+            "file_path": "climo_ref/obs.historical.ERA5.00.Amon.ua.198501-201412.AC.v20250131.nc",
+            "template": "obs.historical.ERA5.00.Amon.ua.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "va": {
+        "set": "default",
+        "default": "ERA5",
+        "ERA5": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ERA5",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "va",
+            "var_name": "va-850",
+            "file_path": "climo_ref/obs.historical.ERA5.00.Amon.va.198501-201412.AC.v20250131.nc",
+            "template": "obs.historical.ERA5.00.Amon.va.198501-201412.AC.v20250131.nc"
+        }
+    },
+    "zg": {
+        "set": "default",
+        "default": "ERA5",
+        "ERA5": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "ERA5",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "198501",
+            "yymme": "201412",
+            "var_in_file": "zg",
+            "var_name": "zg-500",
+            "file_path": "climo_ref/obs.historical.ERA5.00.Amon.zg.198501-201412.AC.v20250131.nc",
+            "template": "obs.historical.ERA5.00.Amon.zg.198501-201412.AC.v20250131.nc"
+        }
+    }
+}
