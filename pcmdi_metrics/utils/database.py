@@ -3,6 +3,7 @@ import re
 import requests
 import json
 
+
 def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=False):
     """
     Retrieves JSON files from the PMP Archive based on specified mip, model, exp, and metrics.
@@ -121,6 +122,7 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
             
     return results_dict
 
+
 def find_pmp_archive_json_urls(metric:str, mip:str, exp:str, version:str=None, search_keys:list=None):
     """
     Find PMP archive JSON URLs based on the provided metric, mip, exp, and optional version and search keys.
@@ -182,6 +184,7 @@ def find_pmp_archive_json_urls(metric:str, mip:str, exp:str, version:str=None, s
         urls_final = urls_interim
                     
     return urls_final
+
 
 def load_version_dict():
     """
@@ -335,6 +338,7 @@ def load_subdir_dict():
     }
     return subdir_dict
 
+
 def find_json_files_in_the_directory(url):
     """
     Find JSON file URLs based on directory URL.
@@ -372,6 +376,7 @@ def find_json_files_in_the_directory(url):
             urls.append(raw_file_url)
         
     return urls
+
 
 def load_json_from_url(url):
     """
@@ -411,3 +416,4 @@ def load_json_from_url(url):
     except json.JSONDecodeError:
         print("Error decoding JSON")
         return None
+    
