@@ -8,17 +8,22 @@ Team
 ****
 
 
-Current LLNL Core Team Members
-------------------------------
 
-* Jiwoo Lee [PMP Lead]
-* Ana Ordonez
-* Peter Gleckler
-* Bo Dong
-* Kristin Chang
-* Paul Ullrich [PCMDI Project PI]
+Core Development Team
+---------------------
+
+* `Jiwoo Lee <https://people.llnl.gov/lee1043>`_ (`LLNL`_, PMP Lead)
+* `Ana Ordonez <https://people.llnl.gov/ordonez4>`_ (`LLNL`_)
+* `Peter Gleckler <https://pcmdi.llnl.gov/staff/gleckler/>`_ (`LLNL`_)
+* `Paul Ullrich <https://people.llnl.gov/ullrich4>`_ (`LLNL`_, `PCMDI <https://pcmdi.llnl.gov/>`_ Project PI)
+* `Bo Dong <https://people.llnl.gov/dong12>`_ (`LLNL`_)
+* `Kristin Chang <https://people.llnl.gov/chang61>`_ (`LLNL`_)
+* `Shixuan Zhang <https://www.pnnl.gov/science/staff/staff_info.asp?staff_num=9376>`_ (`PNNL`_)
 
 Contact: pcmdi-metrics@llnl.gov
+
+.. _LLNL: https://www.llnl.gov/
+.. _PNNL: https://www.pnnl.gov/
 
 
 Key Contributors/Collaborators
@@ -41,14 +46,14 @@ ENSO
 
 Cloud Feedback
 
-* Mark Zelinka (LLNL)
-* Li-Wei Chao (LLNL)
+* Mark Zelinka (`LLNL`_)
+* Li-Wei Chao (`LLNL`_)
 
 
 E3SM Workflow
 
-* Chengzhu (Jill) Zhang
-* Shixuan Zhang (PNNL)
+* Chengzhu (Jill) Zhang (`LLNL`_)
+* Shixuan Zhang (`PNNL`_)
 
 
 

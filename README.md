@@ -217,15 +217,15 @@ Release Notes and History
 [v1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1
 [v1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0
 
-Current Core Team Members at PCMDI/LLNL
----------------------------------------
-* Jiwoo Lee
-* Ana Ordonez
-* Peter Gleckler
-* Paul Ullrich
-* Bo Dong
-* Kristin Chang
-
+Core Development Team
+---------------------
+* [Jiwoo Lee](https://people.llnl.gov/lee1043) ([LLNL](https://www.llnl.gov/), PMP Lead)
+* [Ana Ordonez](https://people.llnl.gov/ordonez4) ([LLNL](https://www.llnl.gov/))
+* [Peter Gleckler](https://pcmdi.llnl.gov/staff/gleckler/) ([LLNL](https://www.llnl.gov/))
+* [Paul Ullrich](https://people.llnl.gov/ullrich4) ([LLNL](https://www.llnl.gov/), [PCMDI](https://pcmdi.llnl.gov/) Project PI)
+* [Bo Dong](https://people.llnl.gov/dong12) ([LLNL](https://www.llnl.gov/))
+* [Kristin Chang](https://people.llnl.gov/chang61) ([LLNL](https://www.llnl.gov/))
+* [Shixuan Zhang](https://www.pnnl.gov/science/staff/staff_info.asp?staff_num=9376) ([PNNL](https://www.pnnl.gov/))
 
 All Contributors
 ----------------
@@ -279,25 +279,3 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
-
-## Disclaimer
-This document was prepared as an account of work sponsored by an
-agency of the United States government. Neither the United States government
-nor Lawrence Livermore National Security, LLC, nor any of their employees
-makes any warranty, expressed or implied, or assumes any legal liability or
-responsibility for the accuracy, completeness, or usefulness of any
-information, apparatus, product, or process disclosed, or represents that its
-use would not infringe privately owned rights. Reference herein to any specific
-commercial product, process, or service by trade name, trademark, manufacturer,
-or otherwise does not necessarily constitute or imply its endorsement,
-recommendation, or favoring by the United States government or Lawrence
-Livermore National Security, LLC. The views and opinions of authors expressed
-herein do not necessarily state or reflect those of the United States
-government or Lawrence Livermore National Security, LLC, and shall not be used
-for advertising or product endorsement purposes.
-
-
-
-
-
-
