@@ -3058,8 +3058,8 @@ def plot_param(metric_collection, metric):
         unique_parts = list(dict.fromkeys(parts))  # Preserves order while removing duplicates
         refname = "_".join(unique_parts)
     """
-    
-    # Assign refname to the output dict    
+
+    # Assign refname to the output dict
     dict_out["metric_reference"] = refname
     # get variable regions
     dict_out["metric_regions"] = dict_MCm["regions"]

@@ -8,10 +8,10 @@
 # ---------------------------------------------------#
 from __future__ import print_function
 
+import difflib
 import json
 import string
 from copy import deepcopy
-import difflib
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm, ListedColormap
@@ -228,7 +228,7 @@ def json_dict_to_numpy_array_list(
             del list_members, mem
         # del dict_members, list_models, list_to_remove
         del list_models, list_to_remove
-        
+
     # read json file
     tab_all, tab_all_act, x_names = list(), list(), list()
     different_ref_keys = list()
@@ -252,13 +252,17 @@ def json_dict_to_numpy_array_list(
                     list_metrics = remove_metrics(list_metrics, mc)
                 for met in list_metrics:
                     ref = get_reference(mc, met)  # e.g., 'GPCPv2.3'
-                    ref_key_list = list(data_mod[met]["metric"])  # e.g., ['GPCP-2-3', and others]
+                    ref_key_list = list(
+                        data_mod[met]["metric"]
+                    )  # e.g., ['GPCP-2-3', and others]
                     ref_key_act = most_similar_string(ref, ref_key_list)
                     if ref != ref_key_act:
                         if debug:
-                            print(f"Note: For metrics collection '{mc}' metric '{met}', reference key in the JSON for the project '{proj}', '{ref_key_act}', is assumed to be same as the predefined reference, '{ref}'.")
+                            print(
+                                f"Note: For metrics collection '{mc}' metric '{met}', reference key in the JSON for the project '{proj}', '{ref_key_act}', is assumed to be same as the predefined reference, '{ref}'."
+                            )
                         different_ref_keys.append([ref, ref_key_act])
-                    
+
                     # val = data_mod[met]["metric"][ref]["value"]
                     # Below, if any part of the dictionary chain is missing, val will be set to None without raising a KeyError.
                     val = (
@@ -278,12 +282,18 @@ def json_dict_to_numpy_array_list(
                     del ref, ref_key_act, val
                 del data_mod, list_metrics
             del data_json, list_models
-            
+
         if len(different_ref_keys) > 0:
-            print(f"Note: The following keys were considered to be the same for {proj}:")
-            unique_different_ref_keys = list(map(list, dict.fromkeys(map(tuple, different_ref_keys))))
+            print(
+                f"Note: The following keys were considered to be the same for {proj}:"
+            )
+            unique_different_ref_keys = list(
+                map(list, dict.fromkeys(map(tuple, different_ref_keys)))
+            )
             for diff_keys in unique_different_ref_keys:
-                print(f"Predefined reference: {diff_keys[0]}, reference key in the JSON: {diff_keys[1]}")
+                print(
+                    f"Predefined reference: {diff_keys[0]}, reference key in the JSON: {diff_keys[1]}"
+                )
 
         # models and metrics
         if sort_y_names:
@@ -292,10 +302,10 @@ def json_dict_to_numpy_array_list(
             )
         else:
             tmp_models = list_models_all
-            
+
         if debug:
             print("tmp_models:", tmp_models)
-        
+
         my_metrics = list()
         for mod in tmp_models:
             try:
@@ -306,7 +316,7 @@ def json_dict_to_numpy_array_list(
                 my_metrics += list(dict1[mod].keys())
 
         my_metrics = sorted(list(set(my_metrics)), key=lambda v: v.upper())
-        
+
         if met_order is not None:
             my_metrics = [met for met in met_order if met in my_metrics]
 
@@ -320,37 +330,39 @@ def json_dict_to_numpy_array_list(
         my_models = list(reversed(my_models))
         del tmp_models
 
-        if debug:        
+        if debug:
             print("my_models:", my_models)
 
         # Additional rows (project multi-model means (e.g., CMIP mean), reference, and alternative observation datasets)
         rows_to_add = list()
         dict_ref_met = dict()
-        
+
         if show_alt_obs_rows and list_obs is not None:
             rows_to_add += list_obs
 
             if len(list_obs) > 0 and "obs2obs" in dict_json_path.keys():
                 # read other observational datasets compared to the reference
-                dict_ref_met = read_obs(dict_json_path["obs2obs"][mc], list_obs, my_metrics, mc)
-            
+                dict_ref_met = read_obs(
+                    dict_json_path["obs2obs"][mc], list_obs, my_metrics, mc
+                )
+
         if show_ref_row:
             rows_to_add += ["reference"]
-            
+
         if show_proj_means:
             rows_to_add += list(reversed(list_project))
-        
+
         plus = len(rows_to_add)
-        
+
         if debug:
             print("rows_to_add:", rows_to_add)
             print("plus:", plus)
-        
+
         # fill array
         tab = NUMPYma__zeros((len(my_models) + plus, len(my_metrics)))
         if debug:
             print("tab.shape:", tab.shape)
-            
+
         for ii, mod in enumerate(my_models):
             for jj, met in enumerate(my_metrics):
                 try:
@@ -416,7 +428,8 @@ def json_dict_to_numpy_array_list(
         if mc == metric_collections[0]:
             y_names = rows_to_add + my_models
             y_names = [
-                "(" + dd + ")" if dd in (list_obs + ["reference"]) else dd for dd in y_names
+                "(" + dd + ")" if dd in (list_obs + ["reference"]) else dd
+                for dd in y_names
             ]
         del dict1, dict_ref_met, my_metrics, my_models, plus, tab, tab_act
 
@@ -427,7 +440,9 @@ def json_dict_to_numpy_array_list(
 
 
 def most_similar_string(target, string_list):
-    return max(string_list, key=lambda s: difflib.SequenceMatcher(None, target, s).ratio())
+    return max(
+        string_list, key=lambda s: difflib.SequenceMatcher(None, target, s).ratio()
+    )
 
 
 def load_met_names():
