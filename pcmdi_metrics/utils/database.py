@@ -1,10 +1,13 @@
+import json
 import os
 import re
+
 import requests
-import json
 
 
-def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=False):
+def database_metrics(
+    mip: str, model: str, exp: str, metrics: list = None, debug: bool = False
+):
     """
     Retrieves JSON files from the PMP Archive based on specified mip, model, exp, and metrics.
 
@@ -27,13 +30,12 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
     """
 
     if metrics is None:
-        metrics = ['enso_metric', 'mean_climate', 'mjo', 'variability_modes', 'qbo-mjo']
+        metrics = ["enso_metric", "mean_climate", "mjo", "variability_modes", "qbo-mjo"]
 
     subdir_dict = load_subdir_dict()
     results_dict = dict()
 
     for metric in metrics:
-
         json_url_list = find_pmp_archive_json_urls(metric, mip, exp)
         subdirs = subdir_dict.get(metric, {}).get(mip, {}).get(exp, ".")
 
@@ -70,7 +72,9 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
             if model is not None:
                 if model in models:
                     if metric == "enso_metric":
-                        results_dict_i["RESULTS"][model] = tmp_dict["RESULTS"]["model"][model]
+                        results_dict_i["RESULTS"][model] = tmp_dict["RESULTS"]["model"][
+                            model
+                        ]
                     else:
                         results_dict_i["RESULTS"][model] = tmp_dict["RESULTS"][model]
             else:
@@ -80,7 +84,13 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
             if "provenance" in tmp_dict.keys():
                 results_dict_i["provenance"] = tmp_dict["provenance"]
 
-            potential_keys_for_reference = ["REFERENCE", "reference", "Reference", "References", "REF"]
+            potential_keys_for_reference = [
+                "REFERENCE",
+                "reference",
+                "Reference",
+                "References",
+                "REF",
+            ]
 
             # Find reference info
             for potential_key in potential_keys_for_reference:
@@ -116,14 +126,18 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
                 print("metric, key, sub_keys:", metric, key, sub_keys)
 
         if debug:
-            print("metric, keys:", metric, keys, '\n')
+            print("metric, keys:", metric, keys, "\n")
 
-        print(f"Found {len(json_url_list)} JSON files for metric '{metric}' and collected info for model '{model}'.")
+        print(
+            f"Found {len(json_url_list)} JSON files for metric '{metric}' and collected info for model '{model}'."
+        )
 
     return results_dict
 
 
-def find_pmp_archive_json_urls(metric:str, mip:str, exp:str, version:str=None, search_keys:list=None):
+def find_pmp_archive_json_urls(
+    metric: str, mip: str, exp: str, version: str = None, search_keys: list = None
+):
     """
     Find PMP archive JSON URLs based on the provided metric, mip, exp, and optional version and search keys.
 
@@ -155,7 +169,9 @@ def find_pmp_archive_json_urls(metric:str, mip:str, exp:str, version:str=None, s
         try:
             version = version_dict[metric][mip][exp]
         except KeyError:
-            raise KeyError(f"Version not found for metric '{metric}', mip '{mip}', and experiment '{exp}'.")
+            raise KeyError(
+                f"Version not found for metric '{metric}', mip '{mip}', and experiment '{exp}'."
+            )
 
     # List of available metrics
     # Available options for metrics: enso_metric, mean_climate, variability_modes, mjo, qbo-mjo
@@ -171,7 +187,9 @@ def find_pmp_archive_json_urls(metric:str, mip:str, exp:str, version:str=None, s
         raise ValueError(f"Metric '{metric}' is not supported.")
 
     for subdir in subdirs:
-        dir_url = os.path.join(github_repo, branch, "metrics_results", metric, mip, exp, version, subdir)
+        dir_url = os.path.join(
+            github_repo, branch, "metrics_results", metric, mip, exp, version, subdir
+        )
         urls = find_json_files_in_the_directory(dir_url)
         urls_interim.extend(urls)
 
@@ -196,54 +214,27 @@ def load_version_dict():
         A dictionary of relevant data versions for each metric and mip.
     """
     version_dict = {
-        "enso_metric":{
-            "cmip5":{
-                "historical": "v20210104"
-            },
-            "cmip6":{
-                "historical": "v20210620"
-            }
+        "enso_metric": {
+            "cmip5": {"historical": "v20210104"},
+            "cmip6": {"historical": "v20210620"},
         },
-        "mean_climate":{
-            "cmip5":{
-                "amip": "v20200429",
-                "historical": "v20220928"
-            },
-            "cmip6":{
-                "amip": "v20210830",
-                "historical": "v20230823"
-            }
+        "mean_climate": {
+            "cmip5": {"amip": "v20200429", "historical": "v20220928"},
+            "cmip6": {"amip": "v20210830", "historical": "v20230823"},
         },
-        "variability_modes":{
-            "cmip3":{
-                "20c3m": "v20210119",
-                "amip": "v20210119"
-            },
-            "cmip5":{
-                "amip": "v20210119",
-                "historical": "v20210119"
-            },
-            "cmip6":{
-                "amip": "v20210119",
-                "historical": "v20220825"
-            }
+        "variability_modes": {
+            "cmip3": {"20c3m": "v20210119", "amip": "v20210119"},
+            "cmip5": {"amip": "v20210119", "historical": "v20210119"},
+            "cmip6": {"amip": "v20210119", "historical": "v20220825"},
         },
-        "mjo":{
-            "cmip5":{
-                "historical": "v20230924"
-            },
-            "cmip6":{
-                "historical": "v20230924"
-            }
+        "mjo": {
+            "cmip5": {"historical": "v20230924"},
+            "cmip6": {"historical": "v20230924"},
         },
-        "qbo-mjo":{
-            "cmip5":{
-                "historical": "v20240422"
-            },
-            "cmip6":{
-                "historical": "v20240422"
-            }
-        }
+        "qbo-mjo": {
+            "cmip5": {"historical": "v20240422"},
+            "cmip6": {"historical": "v20240422"},
+        },
     }
     return version_dict
 
@@ -258,26 +249,16 @@ def load_subdir_dict():
         A dictionary of each metric and mip subdirectory structure.
     """
     subdir_dict = {
-        "enso_metric":{
-            "cmip5":{
-                "historical": ["ENSO_perf", "ENSO_proc", "ENSO_tel"]
-            },
-            "cmip6":{
-                "historical": ["ENSO_perf", "ENSO_proc", "ENSO_tel"]
-            }
+        "enso_metric": {
+            "cmip5": {"historical": ["ENSO_perf", "ENSO_proc", "ENSO_tel"]},
+            "cmip6": {"historical": ["ENSO_perf", "ENSO_proc", "ENSO_tel"]},
         },
-        "mean_climate":{
-            "cmip5":{
-                "amip": ["."],
-                "historical": ["."]
-            },
-            "cmip6":{
-                "amip": ["."],
-                "historical": ["."]
-            }
+        "mean_climate": {
+            "cmip5": {"amip": ["."], "historical": ["."]},
+            "cmip6": {"amip": ["."], "historical": ["."]},
         },
-        "variability_modes":{
-            "cmip3":{
+        "variability_modes": {
+            "cmip3": {
                 "20c3m": [
                     "NAM/NOAA-CIRES_20CR",
                     "NAO/NOAA-CIRES_20CR",
@@ -285,7 +266,7 @@ def load_subdir_dict():
                     "NPO/NOAA-CIRES_20CR",
                     "PDO/HadISSTv1.1",
                     "PNA/NOAA-CIRES_20CR",
-                    "SAM/NOAA-CIRES_20CR"
+                    "SAM/NOAA-CIRES_20CR",
                 ],
                 "amip": [
                     "NAM/NOAA-CIRES_20CR",
@@ -293,17 +274,17 @@ def load_subdir_dict():
                     "NPGO/HadISSTv1.1",
                     "NPO/NOAA-CIRES_20CR",
                     "PNA/NOAA-CIRES_20CR",
-                    "SAM/NOAA-CIRES_20CR"
+                    "SAM/NOAA-CIRES_20CR",
                 ],
             },
-            "cmip5":{
+            "cmip5": {
                 "amip": [
                     "NAM/NOAA-CIRES_20CR",
                     "NAO/NOAA-CIRES_20CR",
                     "NPGO/HadISSTv1.1",
                     "NPO/NOAA-CIRES_20CR",
                     "PNA/NOAA-CIRES_20CR",
-                    "SAM/NOAA-CIRES_20CR"
+                    "SAM/NOAA-CIRES_20CR",
                 ],
                 "historical": [
                     "NAM/NOAA-CIRES_20CR",
@@ -312,17 +293,17 @@ def load_subdir_dict():
                     "NPO/NOAA-CIRES_20CR",
                     "PDO/HadISSTv1.1",
                     "PNA/NOAA-CIRES_20CR",
-                    "SAM/NOAA-CIRES_20CR"
+                    "SAM/NOAA-CIRES_20CR",
                 ],
             },
-            "cmip6":{
+            "cmip6": {
                 "amip": [
                     "NAM/NOAA-CIRES_20CR",
                     "NAO/NOAA-CIRES_20CR",
                     "NPGO/HadISSTv1.1",
                     "NPO/NOAA-CIRES_20CR",
                     "PNA/NOAA-CIRES_20CR",
-                    "SAM/NOAA-CIRES_20CR"
+                    "SAM/NOAA-CIRES_20CR",
                 ],
                 "historical": [
                     "NAM/NOAA-CIRES_20CR",
@@ -331,9 +312,9 @@ def load_subdir_dict():
                     "NPO/NOAA-CIRES_20CR",
                     "PDO/HadISSTv1.1",
                     "PNA/NOAA-CIRES_20CR",
-                    "SAM/NOAA-CIRES_20CR"
+                    "SAM/NOAA-CIRES_20CR",
                 ],
-            }
+            },
         },
     }
     return subdir_dict
