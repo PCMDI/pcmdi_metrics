@@ -212,7 +212,7 @@ def load_version_dict():
             "cmip6":{
                 "amip": "v20210830",
                 "historical": "v20230823"
-            }            
+            }
         },
         "variability_modes":{
             "cmip3":{
@@ -226,7 +226,7 @@ def load_version_dict():
             "cmip6":{
                 "amip": "v20210119",
                 "historical": "v20220825"
-            }            
+            }
         },
         "mjo":{
             "cmip5":{
@@ -274,7 +274,7 @@ def load_subdir_dict():
             "cmip6":{
                 "amip": ["."],
                 "historical": ["."]
-            }            
+            }
         },
         "variability_modes":{
             "cmip3":{
@@ -381,7 +381,7 @@ def find_json_files_in_the_directory(url):
 def load_json_from_url(url):
     """
     Load JSON data from a given URL.
-    
+ 
     Parameters
     ----------
     url : str
