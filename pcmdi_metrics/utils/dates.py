@@ -31,6 +31,7 @@ def find_overlapping_dates(ds: xr.Dataset, start_date: str, end_date: str):
 
     Examples
     --------
+    >>> from pcmdi_metrics.utils import find_overlapping_dates
     >>> import xarray as xr
     >>> dates = xr.cftime_range('2000-01-01', periods=365)
     >>> ds = xr.Dataset({'time': dates})
@@ -91,6 +92,7 @@ def date_to_str(date_obj):
 
     Examples
     --------
+    >>> from pcmdi_metrics.utils import date_to_str
     >>> from datetime import datetime
     >>> date_to_str(datetime(2001, 1, 1))
     '2001-01-01'
@@ -136,12 +138,13 @@ def extract_date_components(ds, index=0):
 
     Examples
     --------
+    >>> from pcmdi_metrics.utils import extract_date_components
     >>> import xarray as xr
     >>> dates = xr.cftime_range('2000-01-01', periods=365)
     >>> ds = xr.Dataset({'time': dates, 'data': ('time', range(365))})
-    >>> extract_date(ds)
+    >>> extract_date_components(ds)
     (2000, 1, 1)
-    >>> extract_date(ds, index=100)
+    >>> extract_date_components(ds, index=100)
     (2000, 4, 10)
 
     See Also
@@ -172,6 +175,8 @@ def replace_date_pattern(filename, replacement):
 
     Examples
     --------
+    >>> from pcmdi_metrics.utils import replace_date_pattern
+
     >>> replace_date_pattern("pr_mon_GPCP-2-3_PCMDI_gn_197901-201907.nc", "DATE_RANGE")
     'pr_mon_GPCP-2-3_PCMDI_gn_DATE_RANGE.nc'
 
@@ -232,6 +237,7 @@ def regenerate_time_axis(
 
     Examples
     --------
+    >>> from pcmdi_metrics.utils import regenerate_time_axis
     >>> import xarray as xr
     >>> dates = xr.cftime_range('2000-01-01', periods=12, freq='MS')
     >>> ds = xr.Dataset({'time': dates, 'data': ('time', range(12))})
@@ -248,8 +254,10 @@ def regenerate_time_axis(
         ds_new[coord].encoding = ds[coord].encoding
 
     time_key = get_time_key(ds_new)
-    time_bnds_key = get_time_bounds_key(ds_new)
-    calendar = get_calendar(ds)
+    calendar = get_calendar(ds_new)
+
+    ds_new[time_key].attrs["calendar"] = calendar
+    ds_new[time_key].encoding["calendar"] = calendar
 
     if start_str is None:
         # Extract the start year, month, and day from the dataset time coordinate
@@ -277,9 +285,15 @@ def regenerate_time_axis(
     # Regenerate time axis
     ds_new[time_key] = xr.DataArray(dates, dims=time_key, attrs=ds[time_key].attrs)
     ds_new[time_key].encoding = ds[time_key].encoding
+    ds_new[time_key].attrs["calendar"] = calendar
+    ds_new[time_key].encoding["calendar"] = calendar
 
     # Regenerate time bounds
-    ds_new = ds_new.drop_vars([time_bnds_key])
+    try:
+        time_bnds_key = get_time_bounds_key(ds_new)
+        ds_new = ds_new.drop_vars([time_bnds_key])
+    except KeyError:
+        pass
     ds_new = ds_new.bounds.add_time_bounds("freq", freq="month")
 
     print("Regenerated time axis and bounds")

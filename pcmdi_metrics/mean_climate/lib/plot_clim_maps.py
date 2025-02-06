@@ -170,7 +170,7 @@ def plot_climatology_diff(
         ax.text(
             0,
             1.01,
-            _wrap_text(mean_max_min_info_str, max_length=60),
+            _split_text(mean_max_min_info_str, max_length=60),
             fontsize=9,
             horizontalalignment="left",
             verticalalignment="bottom",
@@ -261,7 +261,7 @@ def plot_climatology_diff(
     plt.gcf().text(
         0.5,
         0.91,
-        _wrap_text(var_info_str, max_length=60),
+        _split_text(var_info_str, max_length=60),
         fontsize=9,
         color="grey",
         horizontalalignment="center",
@@ -365,7 +365,7 @@ def plot_climatology(
     separator1 = "\n\n" if season_to_plot == "all" else ", "
     separator2 = "\n\n" if season_to_plot == "all" else "\n"
     if long_name:
-        var_info_str += f"Variable: {_wrap_text(long_name)}{separator1}"
+        var_info_str += f"Variable: {_split_text(long_name)}{separator1}"
     if units:
         var_info_str += f"Units: {units}{separator1}"
     if period:
@@ -890,6 +890,12 @@ def _load_variable_setting(
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "jet",
             },
+            500: {
+                "levels": np.linspace(-45, 5, 21),
+                "levels_diff": None,
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            },
             850: {
                 "levels": np.arange(-35, 40, 5),
                 "levels_diff": [-15, -10, -5, -2, -1, -0.5, 0, 0.5, 1, 2, 5, 10, 15],
@@ -936,6 +942,12 @@ def _load_variable_setting(
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             },
+            500: {
+                "levels": np.arange(-40, 45, 5),
+                "levels_diff": np.linspace(-20, 20, 21),
+                "colormap": "PiYG_r",
+                "colormap_diff": "RdBu_r",
+            },
             850: {
                 "levels": [
                     -25,
@@ -967,6 +979,12 @@ def _load_variable_setting(
                 "colormap": "PiYG_r",
                 "colormap_diff": "RdBu_r",
             },
+            500: {
+                "levels": np.linspace(-10, 10, 11),
+                "levels_diff": np.linspace(-5, 5, 6),
+                "colormap": "PiYG_r",
+                "colormap_diff": "RdBu_r",
+            },
             850: {
                 "levels": np.linspace(-10, 10, 11),
                 "levels_diff": np.linspace(-5, 5, 6),
@@ -984,30 +1002,39 @@ def _load_variable_setting(
         },
     }
 
+    # Initialize
+    levels = None
+    levels_diff = None
+    cmap = None
+    cmap_diff = None
+    cmap_ext = None
+    cmap_ext_diff = None
+
     # Check if the variable and level exist in the settings
-
-    in_dict = False
-
     if data_var in var_setting_dict:
         if level in var_setting_dict[data_var]:
             settings = var_setting_dict[data_var][level]
-            levels = settings["levels"]
-            levels_diff = settings["levels_diff"]
-            cmap = _get_colormap(settings["colormap"])
-            cmap_diff = _get_colormap(settings["colormap_diff"])
+            levels = settings.get("levels", None)
+            levels_diff = settings.get("levels_diff", None)
+            cmap = _get_colormap(settings.get("colormap", None))
+            cmap_diff = _get_colormap(settings.get("colormap_diff", None))
             cmap_ext = settings.get("colormap_ext", "both")
             cmap_ext_diff = "both"
-            in_dict = True
 
     # Use default settings if not found
-    if not in_dict:
-        vmin = float(ds[data_var].min())
-        vmax = float(ds[data_var].max())
+    vmin = float(ds[data_var].min())
+    vmax = float(ds[data_var].max())
+    if levels is None:
         levels = np.linspace(vmin, vmax, 21)
+    if levels_diff is None:
         levels_diff = np.linspace(vmin / 2.0, vmax / 2.0, 21)
+    if cmap is None:
         cmap = plt.get_cmap("jet")
+    if cmap_diff is None:
         cmap_diff = plt.get_cmap("RdBu_r")
+    if cmap_ext is None:
         cmap_ext = "both"
+    if cmap_ext_diff is None:
         cmap_ext_diff = "both"
 
     if diff:
@@ -1028,9 +1055,9 @@ def _get_colormap(colormap):
     return cmap
 
 
-def _wrap_text(text, max_length=20):
+def _split_text(text, max_length=20, debug=False):
     """
-    Wraps the input text to ensure each line does not exceed the specified max length.
+    Splits text into lines with a maximum length, without breaking words.
 
     Parameters
     ----------
@@ -1046,15 +1073,27 @@ def _wrap_text(text, max_length=20):
 
     Example
     -------
-    >>> text = "This is a long string that needs to be wrapped because it exceeds 20 characters."
-    >>> _wrap_text(text)
-    'This is a long string\nthat needs to be wrappe\nd because it exceeds 20\ncharacters.'
+    >>> text = "This is a long string that needs to be split into lines without breaking words."
+    >>> _split_text(text)
+    'This is a long\nstring that needs\nto be split into\nlines without\nbreaking words.'
     """
+    words = text.split()
     lines = []
+    current_line = ""
 
-    # Break the string into chunks of max_length
-    for i in range(0, len(text), max_length):
-        lines.append(text[i : i + max_length])
+    for word in words:
+        if len(current_line) + len(word) + 1 <= max_length:
+            current_line += word + " "
+        else:
+            lines.append(current_line.strip())
+            current_line = word + " "
+
+    if current_line:
+        lines.append(current_line.strip())
+
+    if debug:
+        for line in lines:
+            print(line)
 
     # Join lines with newline characters
     return "\n".join(lines)

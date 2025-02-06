@@ -1,0 +1,19 @@
+{
+    "ts": {
+        "set": "alternate1",
+        "alternate1": "HadISST2",
+        "HadISST2": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "HadISST2",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "190001",
+            "yymme": "201412",
+            "var_in_file": "ts",
+            "var_name": "ts",
+            "file_path": "ts_ref/obs.historical.HadISST2.00.Amon.ts.190001-201412.nc",
+            "template": "obs.historical.HadISST2.00.Amon.ts.190001-201412.nc"
+        }
+    }
+}

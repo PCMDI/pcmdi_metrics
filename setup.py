@@ -11,7 +11,11 @@ if "--enable-devel" in sys.argv:
 else:
     install_dev = False
 
-release_version = "3.6.1"
+# Read version from _version.py
+version = {}
+with open("pcmdi_metrics/_version.py") as f:
+    exec(f.read(), version)
+    release_version = version["__version__"]
 
 p = subprocess.Popen(
     ("git", "describe", "--tags"),
@@ -30,6 +34,7 @@ scripts = [
     "pcmdi_metrics/mean_climate/pcmdi_compute_climatologies.py",
     "pcmdi_metrics/mean_climate/mean_climate_driver.py",
     "pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py",
+    "pcmdi_metrics/monsoon_wang/monsoon_wang_driver.py",
     "pcmdi_metrics/monsoon_sperber/driver_monsoon_sperber.py",
     "pcmdi_metrics/mjo/mjo_metrics_driver.py",
     "pcmdi_metrics/variability_mode/variability_modes_driver.py",

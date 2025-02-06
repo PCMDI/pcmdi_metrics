@@ -1,3 +1,6 @@
+
+.. title:: PMP Modes of Variability
+
 ***********************************
 Extra-tropical modes of variability
 ***********************************
@@ -37,6 +40,6 @@ References
 * Lee, J., K. Sperber, P. Gleckler, K. Taylor, and C. Bonfils, 2021: Benchmarking performance changes in the simulation of extratropical modes of variability across CMIP generations. Journal of Climate, 34, 6945–6969, https://doi.org/10.1175/JCLI-D-20-0832.1
 
 
-.. _PMP demo Jupyter notebook: https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/Demo_4_modes_of_variability.ipynb
+.. _PMP demo Jupyter notebook: examples/Demo_4_modes_of_variability.html
 .. _Interactive graphics for PMP-calculated MoV Metrics: https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/variability_modes/portrait_plot/pmp_mov_page_viewer.html
 .. _Description for the results: https://pcmdi.llnl.gov/research/metrics/variability_modes/

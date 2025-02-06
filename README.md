@@ -7,19 +7,22 @@
 
 # PCMDI Metrics Package (PMP)
 
-[![latest version](https://anaconda.org/conda-forge/pcmdi_metrics/badges/version.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
-![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg)
+<!-- badges: start -->
+[![latest version](https://img.shields.io/conda/vn/conda-forge/pcmdi_metrics.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
+[![Last updated](https://anaconda.org/conda-forge/pcmdi_metrics/badges/latest_release_date.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/files)
 ![platforms](https://img.shields.io/badge/platforms-linux%20|%20osx-lightgrey.svg)
 [![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.592790.svg)](https://doi.org/10.5281/zenodo.592790)
 [![License](https://anaconda.org/conda-forge/pcmdi_metrics/badges/license.svg)](https://github.com/PCMDI/pcmdi_metrics/blob/main/LICENSE)
 [![Formatted with black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 [![All Contributors](https://img.shields.io/github/all-contributors/PCMDI/pcmdi_metrics?color=ee8449&style=flat-square)](#contributors)
 
-Conda-forge (NEW, recommended):
-[![Download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/conda-forge/pcmdi_metrics/)
+Conda-forge (CURRENT, recommended):
+[![Download](https://anaconda.org/conda-forge/pcmdi_metrics/badges/downloads.svg?kill_cache=1)](https://anaconda.org/conda-forge/pcmdi_metrics/)
 
-PCMDI Conda Channel (halted):
-[![Download](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg)](https://anaconda.org/pcmdi/pcmdi_metrics)
+PCMDI Conda Channel (old, deprecated):
+[![Download](https://anaconda.org/pcmdi/pcmdi_metrics/badges/downloads.svg?kill_cache=1)](https://anaconda.org/pcmdi/pcmdi_metrics)
+
+<!-- badges: end -->
 
 The PCMDI Metrics Package (PMP) is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  Among other purposes, this enables modeling groups to evaluate changes during the development cycle in the context of the structural error distribution of the multi-model ensemble. Currently, the comparisons emphasize metrics of large- to global-scale annual cycle, tropical and extra-tropical modes of variability, ENSO, MJO, regional monsoons, high frequency characteristics of simulated precipitation, and cloud feedback.
 
@@ -37,7 +40,8 @@ The package expects model data to be [CF-compliant](http://cfconventions.org/). 
 Documentation
 -------------
 
-**Getting Started**
+### Getting Started
+
 
 * Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
 
@@ -48,7 +52,7 @@ Documentation
 * [View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
 
 
-**References**
+### References
 
 Latest: 
 
@@ -117,6 +121,12 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.8.2]      | Technical update
+| [v3.8.1]      | Technical update with new figure (modes of variability multi-panel plot)
+| [v3.8]        | New capability (**figure generation for ENSO**, xCDAT migration completed for **Monsoon Wang** with figure generation), major dependency update (`numpy` >= 2.0)
+| [v3.7.2]      | Technical update
+| [v3.7.1]      | Technical update with documentation improvements
+| [v3.7]        | New capability (**figure generation for mean climate**) and technical update
 | [v3.6.1]      | Technical update, additional QC repair functions
 | [v3.6]        | New capability (**regional application of precip variability**) and technical update
 | [v3.5.2]      | New capability (**QC**, **new modes for modes of variability metrics: PSA1, PSA2**) and technical update
@@ -164,6 +174,12 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.8.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8.2
+[v3.8.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8.1
+[v3.8]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8
+[v3.7.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.2
+[v3.7.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.1
+[v3.7]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7
 [v3.6.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6.1
 [v3.6]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.6
 [v3.5.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.5.2
@@ -201,15 +217,15 @@ Release Notes and History
 [v1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1
 [v1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0
 
-Current Core Team Members at PCMDI/LLNL
----------------------------------------
-* Jiwoo Lee
-* Ana Ordonez
-* Peter Gleckler
-* Paul Ullrich
-* Bo Dong
-* Kristin Chang
-
+Core Development Team
+---------------------
+* [Jiwoo Lee](https://people.llnl.gov/lee1043) ([LLNL](https://www.llnl.gov/), PMP Lead)
+* [Ana Ordonez](https://people.llnl.gov/ordonez4) ([LLNL](https://www.llnl.gov/))
+* [Peter Gleckler](https://pcmdi.llnl.gov/staff/gleckler/) ([LLNL](https://www.llnl.gov/))
+* [Paul Ullrich](https://people.llnl.gov/ullrich4) ([LLNL](https://www.llnl.gov/), [PCMDI](https://pcmdi.llnl.gov/) Project PI)
+* [Bo Dong](https://people.llnl.gov/dong12) ([LLNL](https://www.llnl.gov/))
+* [Kristin Chang](https://people.llnl.gov/chang61) ([LLNL](https://www.llnl.gov/))
+* [Shixuan Zhang](https://www.pnnl.gov/science/staff/staff_info.asp?staff_num=9376) ([PNNL](https://www.pnnl.gov/))
 
 All Contributors
 ----------------
@@ -263,9 +279,3 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
-
-
-
-
-
-
