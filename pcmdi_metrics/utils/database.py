@@ -25,35 +25,35 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
     dict
         A dictionary of JSON files from the PMP Archive database.
     """
-    
+
     if metrics is None:
         metrics = ['enso_metric', 'mean_climate', 'mjo', 'variability_modes', 'qbo-mjo']
 
     subdir_dict = load_subdir_dict()
     results_dict = dict()
-        
+
     for metric in metrics:
-        
+
         json_url_list = find_pmp_archive_json_urls(metric, mip, exp)
         subdirs = subdir_dict.get(metric, {}).get(mip, {}).get(exp, ".")
-        
+
         if debug:
             print(metric, json_url_list, subdirs)
             print(len(json_url_list), len(subdirs))
             print("metric, json_url_list, subdirs:", metric, json_url_list, subdirs)
-            
+
         results_dict[metric] = dict()
-        
+
         keys = list()
-        
+
         for i, url in enumerate(json_url_list):
             tmp_dict = load_json_from_url(url)
-                        
+
             # Initialize a dict
             results_dict_i = dict()
             results_dict_i["RESULTS"] = dict()
             results_dict_i["RESULTS"][model] = None
-            
+
             # Find available models
             if "RESULTS" in tmp_dict.keys():
                 if metric == "enso_metric":
@@ -61,7 +61,7 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
                 else:
                     models = tmp_dict["RESULTS"].keys()
                 models = sorted(list(models))
-            
+
             if debug:
                 print(metric, tmp_dict["RESULTS"].keys())
                 print("models:", models)
@@ -79,9 +79,9 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
             # Find provenance info
             if "provenance" in tmp_dict.keys():
                 results_dict_i["provenance"] = tmp_dict["provenance"]
-                
+
             potential_keys_for_reference = ["REFERENCE", "reference", "Reference", "References", "REF"]
-            
+
             # Find reference info
             for potential_key in potential_keys_for_reference:
                 if potential_key in tmp_dict.keys():
@@ -89,10 +89,10 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
                     break
                 else:
                     results_dict_i["REFERENCE"] = None
-                
+
             # Name the key
             key = os.path.basename(url).replace(".json", "")
-            
+
             # Update the key name if following condition is met
             if len(json_url_list) == len(subdirs):
                 key = subdirs[i]
@@ -114,12 +114,12 @@ def database_metrics(mip:str, model:str, exp:str, metrics:list=None, debug:bool=
             if debug:
                 sub_keys = list(tmp_dict.keys())
                 print("metric, key, sub_keys:", metric, key, sub_keys)
-            
+
         if debug:
             print("metric, keys:", metric, keys, '\n')
-            
+
         print(f"Found {len(json_url_list)} JSON files for metric '{metric}' and collected info for model '{model}'.")
-            
+
     return results_dict
 
 
@@ -147,7 +147,7 @@ def find_pmp_archive_json_urls(metric:str, mip:str, exp:str, version:str=None, s
     """
     version_dict = load_version_dict()
     subdir_dict = load_subdir_dict()
-    
+
     github_repo = "https://github.com/PCMDI/pcmdi_metrics_results_archive"
     branch = "tree/main"
 
@@ -161,12 +161,12 @@ def find_pmp_archive_json_urls(metric:str, mip:str, exp:str, version:str=None, s
     # Available options for metrics: enso_metric, mean_climate, variability_modes, mjo, qbo-mjo
     # will add precip and possibly others later ...
     available_metrics = list(version_dict.keys())
-        
+
     subdirs = subdir_dict.get(metric, {}).get(mip, {}).get(exp, ".")
-    
+
     urls_interim = list()
     urls_final = list()
-    
+
     if metric not in available_metrics:
         raise ValueError(f"Metric '{metric}' is not supported.")
 
@@ -174,7 +174,7 @@ def find_pmp_archive_json_urls(metric:str, mip:str, exp:str, version:str=None, s
         dir_url = os.path.join(github_repo, branch, "metrics_results", metric, mip, exp, version, subdir)
         urls = find_json_files_in_the_directory(dir_url)
         urls_interim.extend(urls)
-            
+
     if search_keys is not None:
         for url in urls_interim:
             for search_key in search_keys:
@@ -182,7 +182,7 @@ def find_pmp_archive_json_urls(metric:str, mip:str, exp:str, version:str=None, s
                     urls_final.append(url)
     else:
         urls_final = urls_interim
-                    
+
     return urls_final
 
 
@@ -244,7 +244,7 @@ def load_version_dict():
                 "historical": "v20240422"
             }
         }
-    }    
+    }
     return version_dict
 
 
@@ -333,7 +333,7 @@ def load_subdir_dict():
                     "PNA/NOAA-CIRES_20CR",
                     "SAM/NOAA-CIRES_20CR"
                 ],
-            }            
+            }
         },
     }
     return subdir_dict
@@ -374,7 +374,7 @@ def find_json_files_in_the_directory(url):
         for match in matches:
             raw_file_url = base_raw_url + match.replace("/blob/", "/")
             urls.append(raw_file_url)
-        
+
     return urls
 
 
@@ -398,17 +398,17 @@ def load_json_from_url(url):
     >>> url = 'https://example.com/path/to/your/file.json'  # Replace with your JSON file URL
     >>> json_data = load_json_from_url(url)
     """
-    
+
     try:
         # Send a GET request to the URL
         response = requests.get(url)
-        
+
         # Check if the request was successful
         response.raise_for_status()
-        
+
         # Load the response content as JSON
         data = response.json()
-        
+
         return data
     except requests.exceptions.RequestException as e:
         print(f"Error fetching the JSON file: {e}")
@@ -416,4 +416,3 @@ def load_json_from_url(url):
     except json.JSONDecodeError:
         print("Error decoding JSON")
         return None
-    
