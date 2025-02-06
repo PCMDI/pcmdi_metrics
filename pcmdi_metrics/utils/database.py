@@ -381,7 +381,7 @@ def find_json_files_in_the_directory(url):
 def load_json_from_url(url):
     """
     Load JSON data from a given URL.
- 
+
     Parameters
     ----------
     url : str
