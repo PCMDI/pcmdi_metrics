@@ -1,0 +1,19 @@
+{
+    "psl": {
+        "set": "historical",
+        "historical": "v3-LR",
+        "v3-LR": {
+            "mip": "e3sm",
+            "exp": "historical",
+            "model": "v3-LR",
+            "realization": "0051",
+            "tableID": "Amon",
+            "yymms": "190001",
+            "yymme": "201412",
+            "var_in_file": "psl",
+            "var_name": "psl",
+            "file_path": "ts/e3sm.historical.v3-LR.0051.Amon.psl.190001-201412.nc",
+            "template": "e3sm.historical.v3-LR.0051.Amon.psl.190001-201412.nc"
+        }
+    }
+}
