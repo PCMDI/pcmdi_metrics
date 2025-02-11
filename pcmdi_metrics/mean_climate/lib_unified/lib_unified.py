@@ -82,7 +82,7 @@ def get_annual_cycle(
         .replace("*", "")
     )
     outfilename_template = (
-        f"{outfilename_head}_%(start-yyyymm)-%(end-yyyymm)_%(season).nc"
+        f"{outfilename_head}_%(start-yyyymm)-%(end-yyyymm)_%(season)_{ver}.nc"
     )
 
     print("get_annual_cycle, var:", var)

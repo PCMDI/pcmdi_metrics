@@ -255,10 +255,12 @@ def calculate_climatology(
             # Get the current time with UTC timezone
             current_time_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+            # Add global attributes
             ds_clim_s = ds_clim_s.assign_attrs(
                 current_date=f"{current_time_utc}",
                 history=f"{current_time_utc}; PCMDI Metrics Package (PMP) calculated climatology using {infilename}",
                 filename=os.path.basename(outpath_season),
+                obs4mips_version=infile
             )
 
             # Save the climatology file unless it's an annual cycle input and "AC"
