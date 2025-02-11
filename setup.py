@@ -46,14 +46,6 @@ scripts = [
     "pcmdi_metrics/cloud_feedback/cloud_feedback_driver.py",
     "pcmdi_metrics/extremes/extremes_driver.py",
     "pcmdi_metrics/sea_ice/sea_ice_driver.py",
-    "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.cpg",
-    "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.dbf",
-    "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.prj",
-    "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.sbn",
-    "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.sbx",
-    "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.shp",
-    "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.shp.xml",
-    "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.shx",
 ]
 
 entry_points = {
@@ -96,6 +88,14 @@ data_files = (
             "share/DefArgsCIA.json",
             "pcmdi_metrics/precip_distribution/lib/cluster3_pdf.amt_regrid.360x180_IMERG_ALL_90S90N.nc",
             "share/data/navy_land.nc",
+            "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.cpg",
+            "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.dbf",
+            "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.prj",
+            "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.sbn",
+            "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.sbx",
+            "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.shp",
+            "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.shp.xml",
+            "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.shx",
         ),
     ),
 )
