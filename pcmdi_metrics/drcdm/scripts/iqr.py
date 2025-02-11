@@ -141,10 +141,15 @@ def clean_data(ds_mod, ds_obs, var1):
     return ds_mod, ds_obs
 
 
-def stats_dif(ds, obs, shp=None):
-    if shp is None:
-        egg_pth = resources.resource_path()
-        shp = os.path.join(egg_pth, "nca5_regions.shp")
+def stats_dif(ds, obs):
+    # To use a different shapefile, users should update variables
+    # 'shp', 'region_list', and 'name' to match their shapefile
+    # Search for other instances of 'region_list' to edit in this script.
+
+    # Load the NCA regions shapefile packaged with the PMP
+    # shp should be the full path to the shapefile
+    egg_pth = resources.resource_path()
+    shp = os.path.join(egg_pth, "cb_2023_us_state_500k_ncaregions_wgs84.shp")
 
     tmpstats = {}
     region_list = [
@@ -159,8 +164,9 @@ def stats_dif(ds, obs, shp=None):
 
     for region in region_list:
         tmpstats[region] = {}
-        ds1 = region_from_file(ds, shp, "NAME", region).compute()
-        obs1 = region_from_file(obs, shp, "NAME", region).compute()
+        name = "NCARegion"  # attribute name for regions in shp
+        ds1 = region_from_file(ds, shp, name, region).compute()
+        obs1 = region_from_file(obs, shp, name, region).compute()
         for varname in ["ANN", "DJF", "MAM", "JJA", "SON", "q50", "q99p9", "q99p0"]:
             if varname in obs1.keys():
                 print(varname)
@@ -214,13 +220,6 @@ if __name__ == "__main__":
         help="Filename template of observation data",
     )
     parser.add_argument(
-        "--shapefile_path",
-        dest="shapefile_path",
-        type=str,
-        help="Path to regions shapefile",
-        default=None,
-    )
-    parser.add_argument(
         "--output_path",
         dest="output_path",
         default=".",
@@ -243,7 +242,6 @@ if __name__ == "__main__":
 
     filename_template = args.filename_template
     reference_template = args.reference_template
-    shapefile_path = args.shapefile_path
     output_path = args.output_path
     obs_name = args.obs_name
     model_name = args.model_name
@@ -338,7 +336,8 @@ if __name__ == "__main__":
                     ]:
                         ens_mean[item] = (ens_mean[item] - 32) * 5 / 9
                         obs2[item] = (obs2[item] - 32) * 5 / 9
-                    tmp = stats_dif(ens_mean, obs2, shapefile_path)
+                    # Regions can be edited in the stats_dif function called below
+                    tmp = stats_dif(ens_mean, obs2)
                     with open(filename_out, "w") as json_out:
                         json.dump(tmp, json_out, indent=4)
             except Exception as e:
@@ -441,6 +440,7 @@ if __name__ == "__main__":
             "ANN",
         ),
     }
+    # If using a different shapefile, edit these regions
     regions_list = [
         "Midwest",
         "Northeast",
