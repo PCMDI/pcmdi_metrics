@@ -1,0 +1,38 @@
+{
+    "mean_climate" : {
+	    "cor_xy"  : {  
+		    "name"   : "Pattern Corr.",
+		    "type"   : "portrait",
+		    "season" : ["djf", "mam", "jja", "son"]
+	    }, 
+	    "rms_xy"  : {  
+		    "name"   : "RMSE Normalized by Median",
+		    "type"   : "portrait",
+		    "season" : ["djf", "mam", "jja", "son"]
+	    },   
+	    "rms_xyt" : {
+		    "name"   : "Spatiotemporal RMSE",
+		    "type"   : "parcoord",
+		    "season" : ["ann"]
+	    }    
+    },
+    "variability_modes" : {
+	    "rms"  : {
+                    "name"   : "RMSE Normalized by Median",
+                    "type"   : ["portrait","parcoord"],
+                    "season" : []
+	    },
+	    "rmsc" : {
+                    "name"   : "CenteredRMSE Normalized by Median",
+                    "type"   : ["portrait","parcoord"],
+                    "season" : []
+	    },
+	    "stdv_pc_ratio_to_obs" : {
+		    "name"   : "Amplitude Ratio to Reference",
+		    "type"   : ["portrait","parcoord"],
+		    "season" : []
+	    }
+
+    }
+}
+
