@@ -826,7 +826,7 @@ def _load_variable_setting(
         "rsdt": {
             None: {
                 "levels": np.linspace(0, 450, 26),
-                #"levels": np.linspace(0, 480, 25),
+                # "levels": np.linspace(0, 480, 25),
                 "levels_diff": np.linspace(-1, 1, 21),
                 "colormap": cc.cm.rainbow,
                 "colormap_diff": "RdBu_r",
