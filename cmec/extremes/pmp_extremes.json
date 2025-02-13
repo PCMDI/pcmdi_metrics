@@ -1,0 +1,36 @@
+{
+    "settings": {
+        "name": "extremes",
+        "driver": "cmec/mean_climate/pmp_extremes_driver.sh",
+        "async": null,
+        "long_name": "PMP extremes metrics",
+        "description": "PMP Extremes metrics for earth system models",
+        "runtime": {"PCMDI Metrics Package": "1.2", "CDAT": "8.2.1"}
+    },
+    "varlist": {
+        "pr": {
+            "long_name": "precipitation_flux",
+            "units": "kg m-2 s-2",
+            "frequency": "day"
+        },
+        "tasmax": {
+            "long_name": "maximum_temperature",
+            "units": "K",
+            "frequency": "day"
+        },
+        "tasmin": {
+            "long_name": "minimum_temperature",
+            "units": "K",
+            "frequency": "day"
+        }
+    },
+    "obslist": {},
+    "default_parameters": {
+        "case_id": "extremes_demo",
+        "model_list": [],
+        "vars": ["pr"],
+        "filename_template": "",
+        "sftlf_filename_template": "",
+        "generate_sftlf": true
+    }
+}
