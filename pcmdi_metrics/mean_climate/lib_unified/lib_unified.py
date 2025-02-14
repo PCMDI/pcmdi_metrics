@@ -207,9 +207,13 @@ def get_ref_catalogue(ref_catalogue_file_path, ref_data_head=None):
     if ref_data_head:
         for var in refs_dict:
             for data in refs_dict[var]:
-                data_path = os.path.join(
-                    ref_data_head, refs_dict[var][data]["template"]
-                )
+                potential_keys = ["template", "obs4MIPs-template"]
+                for potential_key in potential_keys:
+                    if potential_key in refs_dict[var][data].keys():
+                        data_path = os.path.join(
+                            ref_data_head, refs_dict[var][data][potential_key]
+                        )
+                        break
                 refs_dict[var][data].update(
                     {
                         "path": os.path.dirname(data_path),
@@ -427,16 +431,16 @@ def process_dataset(
             )
 
             if plot_gr:
-                ### implement plot for regrided grid
+                ### [TO DO] implement plot for regrided grid
                 interp_filename_png = interp_filename_head.replace(
-                    ".nc", f"_interp_{grid_resolution}.png"
+                    ".nc", f"_{grid_resolution}.png"
                 )
                 print(f"plot_gr here for {interp_filename_png}")
 
             # Save to netcdf file
             if save_ac_interp_netcdf:
                 interp_filename_nc = interp_filename_head.replace(
-                    ".nc", f"_interp_{grid_resolution}.nc"
+                    ".nc", f"_{grid_resolution}.nc"
                 )
                 os.makedirs(os.path.join(out_path_interp, version), exist_ok=True)
                 ds_ac_level_interp.to_netcdf(
