@@ -261,6 +261,7 @@ def calculate_climatology(
                 history=f"{current_time_utc}; PCMDI Metrics Package (PMP) calculated climatology using {infilename}",
                 filename=os.path.basename(outpath_season),
                 obs4mips_version=infile,
+                period=f"{start_yr:04d}{start_mo:02d}-{end_yr:04d}{end_mo:02d}",
             )
 
             # Save the climatology file unless it's an annual cycle input and "AC"

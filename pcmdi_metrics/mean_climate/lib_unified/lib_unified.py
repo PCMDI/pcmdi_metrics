@@ -5,7 +5,12 @@ from typing import Dict, List, Optional
 
 import xarray as xr
 
-from pcmdi_metrics.mean_climate.lib import calculate_climatology, extract_level
+from pcmdi_metrics.mean_climate.lib import (
+    calculate_climatology,
+    extract_level,
+    is_4d_variable,
+    plot_climatology,
+)
 from pcmdi_metrics.mean_climate.lib_unified.lib_unified_dict import (
     load_json_as_dict,
     multi_level_dict,
@@ -388,6 +393,113 @@ def process_dataset(
     else:
         raise ValueError(f"Cannot find {var} in data collection.")
 
+    # Interpolation
+    if common_grid is not None:
+        # Prepare for output file name
+        grid_resolution = common_grid.attrs.get("grid_resolution")
+
+        if "filename" in ds_ac.attrs:
+            interp_filename_head = str(ds_ac.attrs.get("filename"))
+        else:
+            interp_filename_head = str(os.path.basename(data_path)).replace("*", "")
+
+        # Proceed interpolation
+        print("regrid starts")
+        ds_ac_interp = regrid(ds_ac, varname, common_grid)
+        print(
+            f"regrid done, ds_ac_interp[{varname}].shape: {ds_ac_interp[varname].shape}"
+        )
+
+        # Update attrs
+        # Get the current time with UTC timezone
+        current_time_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        ds_ac_interp = ds_ac_interp.assign_attrs(
+            current_date=f"{current_time_utc}",
+            history=f"{current_time_utc}; PCMDI Metrics Package (PMP) calculated climatology and interpolated using {os.path.basename(data_path)}",
+        )
+
+        # Save to netcdf file
+        if save_ac_interp_netcdf:
+            interp_filename_nc = interp_filename_head.replace(
+                ".nc", f"_{grid_resolution}.nc"
+            )
+            os.makedirs(os.path.join(out_path_interp, version), exist_ok=True)
+            ds_ac_interp.to_netcdf(
+                os.path.join(out_path_interp, version, interp_filename_nc)
+            )
+
+    # Extract level and plot climatology
+    # Check if variable is 4D
+    if is_4d_variable(ds_ac_interp, varname):
+        print(f"ds_ac_interp[{varname}] is 4D variable")
+        print("levels:", levels)
+        # Plot 3 levels (hPa) for 4D variables for quick check
+        if len(levels) == 1 and levels[0] is None:
+            print("The list contains exactly one element, and it is None.")
+            levels_to_plot = [200, 500, 850]
+            print("levels_to_plot:", levels_to_plot)
+        else:
+            levels_to_plot = levels
+
+    for level in levels_to_plot:
+        print("level:", level)
+
+        # Extract level
+        if level is None:
+            ds_ac_interp_level = ds_ac_interp
+        else:
+            ds_ac_interp_level = extract_level(ds_ac_interp, level)
+
+        # plot for regrided grid
+        if plot_gr:
+            output_fig_path = os.path.join(
+                out_path_interp,
+                version,
+                (interp_filename_head.replace(".nc", f"_{grid_resolution}.png")),
+            )
+
+            if level is not None:
+                if var in output_fig_path:
+                    output_fig_path = os.path.join(
+                        out_path_interp,
+                        version,
+                        output_fig_path.split("/")[-1].replace(
+                            f"{var}_", f"{var}-{level}_"
+                        ),
+                    )
+                else:
+                    output_fig_path = output_fig_path.replace(".png", f"-{level}.png")
+
+            """
+            interp_filename_png = interp_filename_head.replace(
+                ".nc", f"_{grid_resolution}.png"
+            )
+            print(f"plot_gr here for {interp_filename_png}")
+
+            output_fig_path = os.path.join(
+                out_path_interp, version, interp_filename_png
+            )
+            """
+
+            # plot climatology for each level
+            plot_climatology(
+                ds_ac_interp,
+                var,
+                level=level,
+                season_to_plot="all",
+                output_filename=output_fig_path,
+                period=ds_ac_interp.attrs["period"],
+            )
+
+            print(f"plot_gr fig: {output_fig_path}")
+
+        if data_type == "ref":
+            ac_dict[var][ref][level] = ds_ac_interp_level
+        else:
+            ac_dict[var][model][run][level] = ds_ac_interp_level
+
+    """
     # Extract level and interpolation
     for level in levels:
         print("level:", level)
@@ -451,7 +563,7 @@ def process_dataset(
             ac_dict[var][ref][level] = ds_ac_level_interp
         else:
             ac_dict[var][model][run][level] = ds_ac_level_interp
-
+    """
     return
 
 

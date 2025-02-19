@@ -1,4 +1,4 @@
-from .calculate_climatology import calculate_climatology  # noqa
+from .calculate_climatology import calculate_climatology, is_4d_variable  # noqa
 from .compute_metrics import compute_metrics  # noqa
 from .compute_statistics import (  # noqa
     annual_mean,
