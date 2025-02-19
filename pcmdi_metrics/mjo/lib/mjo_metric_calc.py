@@ -3,6 +3,7 @@ from datetime import datetime
 
 import numpy as np
 import xarray as xr
+from packaging.version import Version
 
 from pcmdi_metrics.io import get_latitude, get_longitude, get_time_key, xcdat_open
 from pcmdi_metrics.mjo.lib import (
@@ -19,6 +20,12 @@ from pcmdi_metrics.utils import adjust_units
 
 from .debug_chk_plot import debug_chk_plot
 from .plot_wavenumber_frequency_power import plot_power
+
+np_ver = Version(np.__version__)
+if np_ver > Version("1.20.0"):
+    np_float = np.float64
+else:
+    np_float = np.float
 
 
 def mjo_metric_ewr_calculation(
@@ -157,7 +164,7 @@ def mjo_metric_ewr_calculation(
     # -----------------------------------------------------------------
 
     # Define array for archiving power from each year segment
-    Power = np.zeros((numYear, NT + 1, NL + 1), np.float)
+    Power = np.zeros((numYear, NT + 1, NL + 1), np_float)
 
     # Year loop for space-time spectrum calculation
     if debug:

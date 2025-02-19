@@ -21,7 +21,6 @@ from .eof_analysis import (  # noqa
     linear_regression,
     linear_regression_on_globe_for_teleconnection,
 )
-from .landmask import data_land_mask_out, estimate_landmask  # noqa
 from .lib_variability_mode import (  # noqa
     search_paths,
     check_start_end_year,
@@ -34,5 +33,5 @@ from .lib_variability_mode import (  # noqa
     variability_metrics_to_json,
     write_nc_output,
 )
-from .plot_map import plot_map  # noqa
+from .plot_map import plot_map, plot_map_multi_panel  # noqa
 from .north_test import north_test

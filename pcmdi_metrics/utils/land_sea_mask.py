@@ -34,12 +34,17 @@ def create_land_sea_mask(
     as_boolean : bool, optional
         Set mask value to True (land) or False (ocean), by default False, thus 1 (land) and 0 (ocean).
     method : str, optional
-        Method to use for creating the mask, either 'regionmask' or 'pcmdi', by default 'regionmask'.
+        Method to use for creating the mask, either `regionmask` or `pcmdi`, by default `regionmask`.
 
     Returns
     -------
     xr.DataArray
         A DataArray of land-sea mask (1 or 0 for land or sea, or True or False for land or sea).
+
+    Notes
+    -----
+    - The `regionmask` method uses the regionmask package (https://regionmask.readthedocs.io/) to generate the mask.
+    - The `pcmdi` method uses the PCMDI method developed by Taylor and Doutriaux (2000) (https://pcmdi.llnl.gov/report/ab58.html).
 
     Examples
     --------
