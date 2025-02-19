@@ -65,7 +65,7 @@ Lawrence Livermore National Laboratory under Contract DE-AC52-07NA27344.
 
 .. _LLNL: https://www.llnl.gov/
 .. _PCMDI: https://pcmdi.llnl.gov/
-.. _RGMA: https://climatemodeling.science.energy.gov/program/regional-global-model-analysis
+.. _RGMA: https://eesm.science.energy.gov/program-area/regional-global-model-analysis
 .. _EESSD: https://science.osti.gov/ber/Research/eessd
 .. _BER: https://science.osti.gov/ber
 .. _Department of Energy: https://www.energy.gov/
