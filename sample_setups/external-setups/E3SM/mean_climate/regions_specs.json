@@ -1,0 +1,263 @@
+{
+    "global": {
+        "domain": { "latitude":[-90.0, 90.0]}
+    },
+    "NH": {
+        "domain": { "latitude":[0.0, 90.0]}
+    },
+    "SH": {
+        "domain": { "latitude":[-90.0, 0]}
+    },
+    "NHEX": {
+        "domain": { "latitude":[30.0, 90.0]}
+    },
+    "SHEX": {
+        "domain": { "latitude":[-90.0, -30.0]}
+    },
+    "TROPICS": {
+        "domain": { "latitude":[-30.0, 30.0]}
+    },
+    "90S50S": {
+        "domain": { "latitude":[-90.0, -50.0]}
+    },
+    "50S20S": {
+        "domain": { "latitude":[-50.0, -20.0]}
+    },
+    "20S20N": {
+        "domain": { "latitude":[-20.0, 20.0]}
+    },
+    "20N50N": {
+        "domain": { "latitude":[20.0, 50.0]}
+    },
+    "50N90N": {
+        "domain": { "latitude":[50.0, 90.0]}
+    },
+    "ocean_NH": {
+        "value":  0.0,
+        "domain": { "latitude":[0.0, 90.0]}
+    },
+    "ocean_SH": {
+        "value":  0.0,
+        "domain": { "latitude":[-90.0, 0.0]}
+    },
+    "land_NH": {
+        "value":   100,
+        "domain": { "latitude":[0.0, 90.0]}
+    },
+    "land_SH": {
+        "value":   100,
+        "domain": { "latitude":[-90.0, 0.0]}
+    },
+    "land_NHEX": {
+        "value": 100,
+        "domain": { "latitude":[30.0, 90.0]}
+    },
+    "land_SHEX": {
+        "value": 100,
+        "domain": { "latitude":[-90.0, -30.0]}
+    },
+    "land_TROPICS": {
+        "value": 100,
+        "domain": { "latitude":[-30.0, 30.0]}
+    },
+    "land": {
+        "value": 100
+    },
+    "ocean_NHEX": {
+        "value": 0,
+        "domain": { "latitude":[30.0, 90.0]}
+    },
+    "ocean_SHEX": {
+        "value": 0,
+        "domain": { "latitude":[-90.0, -30.0]}
+    },
+    "ocean_TROPICS": {
+        "value": 0,
+        "domain": { "latitude":[30.0, 30.0]}
+    },
+    "ocean": {
+        "value": 0
+    },
+    "ocean_50S50N": {
+        "value": 0.0,
+        "domain": { "latitude":[-50.0, 50.0]}
+    },
+    "ocean_50S20S": {
+        "value": 0.0,
+        "domain": { "latitude":[-50.0, -20.0]}
+    },
+    "ocean_20S20N": {
+        "value": 0.0,
+        "domain": { "latitude":[-20.0, 20.0]}
+    },
+    "ocean_20N50N": {
+        "value": 0.0,
+        "domain": { "latitude":[20.0, 50.0]}
+    },
+    "ocean_50N90N": {
+        "value": 0.0,
+        "domain": { "latitude":[50.0, 90.0]}
+    },
+    "ocean_90S50S": {
+        "value": 0.0,
+        "domain": { "latitude":[-90.0, -50.0]}
+    },
+    "NAM": {
+        "domain": { "latitude":[20.0, 90],
+		    "longitude":[-180, 180]}
+    },
+    "NAO": {
+        "domain": { "latitude":[20.0, 80],
+		    "longitude":[-90, 40]}
+    },
+    "SAM": {
+        "domain": { "latitude":[-20.0, -90],
+		    "longitude":[0, 360]}
+    },
+    "PSA1": {
+        "domain": { "latitude":[-20.0, -90],
+		    "longitude":[0, 360]}
+    },
+    "PSA2": {
+        "domain": { "latitude":[-20.0, -90],
+		    "longitude":[0, 360]}
+    },
+    "PNA": {
+        "domain": { "latitude":[20.0, 85],
+		    "longitude":[120, 240]}
+    },
+    "PDO": {
+        "domain": { "latitude":[20.0, 70],
+		    "longitude":[110, 260]}
+    },
+    "AMO": {
+	"domain": { "latitude":[0.0, 70],
+		    "longitude":[-80, 0]}
+    },
+    "AllMW": {
+        "domain": { "latitude":[-40.0, 45.0],
+		    "longitude":[0.0, 360.0]}
+    },
+    "AllM": {
+        "domain": { "latitude":[-45.0, 45.0],
+		    "longitude":[0.0, 360.0]}
+    },
+    "NAMM": {
+        "domain": { "latitude":[0.0, 45.0],
+		    "longitude":[210.0, 310.0]}
+    },
+    "SAMM": {
+        "domain": { "latitude":[-45.0, 0.0],
+		    "longitude":[240.0, 330.0]}
+    },
+    "NAFM": {
+        "domain": { "latitude":[0.0, 45.0],
+		    "longitude":[310.0, 60.0]}
+    },
+    "SAFM": {
+        "domain": { "latitude":[-45.0, 0.0],
+		    "longitude":[0.0, 90.0]}
+    },
+    "ASM": {
+        "domain": { "latitude":[0.0, 45.0],
+		    "longitude":[60.0, 180.0]}
+    },
+    "AUSM": {
+        "domain": { "latitude":[-45.0, 0.0],
+		    "longitude":[90.0, 160.0]}
+    },
+    "AIR": {
+        "domain": { "latitude":[7.0, 25.0],
+		    "longitude":[65.0, 85.0]}
+    },
+    "AUS": {
+        "domain": { "latitude":[-20.0, -10.0],
+		    "longitude":[120.0, 150.0]}
+    },
+    "Sahel": {
+        "domain": { "latitude":[13.0, 18.0],
+		    "longitude":[-10.0, 10.0]}
+    },
+    "GoG": {
+        "domain": { "latitude":[0.0, 5.0],
+		    "longitude":[-10.0, 10.0]}
+    },
+    "NAmo": {
+        "domain": { "latitude":[20.0, 37.0],
+		    "longitude":[-112.0, -103.0]}
+    },
+    "SAmo": {
+        "domain": { "latitude":[-20.0, 2.5],
+		    "longitude":[-65.0, -40.0]}
+    },
+    "Nino34": {
+        "value": 0.0,
+        "domain": { "latitude":[-5.0, 5.0],
+		    "longitude":[190.0, 240.0]}
+    },
+    "Nino3": {
+        "value": 0.0,
+        "domain": { "latitude":[-5.0, 5.0],
+		    "longitude":[210.0, 270.0]}
+    },
+    "Nino4": {
+        "value": 0.0,
+        "domain": { "latitude":[-5.0, 5.0],
+		    "longitude":[160.0, 210.0]}
+    },
+    "ONI": {
+        "value": 0.0,
+        "domain": { "latitude":[-5.0, 5.0],
+		    "longitude":[190.0, 240.0]}
+    },
+    "Nino12": {
+        "value": 0.0,
+        "domain": { "latitude":[-10.0, 0.0],
+		    "longitude":[270.0, 280.0]}
+    },
+    "AMMS": {
+        "value": 0.0,
+        "domain": { "latitude":[-15.0, -5.0],
+		    "longitude":[-20.0, 10.0]}
+    },
+    "AMMN": {
+        "value": 0.0,
+        "domain": { "latitude":[5.0, 15.0],
+		    "longitude":[-50.0, -20.0]}
+    },
+    "ATL3": {
+        "value": 0.0,
+        "domain": { "latitude":[-3.0, 3.0],
+		    "longitude":[-20.0, 0.0]}
+    },
+    "TSA": {
+        "value": 0.0,
+        "domain": { "latitude":[-20.0, 0.0],
+		    "longitude":[-30.0, 10.0]}
+    },
+    "TNA": {
+        "value": 0.0,
+        "domain": { "latitude":[5.5, 23.5],
+		    "longitude":[302.5, 345.0]}
+    },
+    "TIO": {
+        "value": 0.0,
+        "domain": { "latitude":[-15.0, 15.0],
+		    "longitude":[40.0, 115.0]}
+    },
+    "IODE": {
+        "value": 0.0,
+        "domain": { "latitude":[-10.0, 10.0],
+		    "longitude":[50.0, 70.0]}
+    },
+    "IODW": {
+        "value": 0.0,
+        "domain": { "latitude":[-10.0, 0.0],
+		    "longitude":[90.0, 110.0]}
+    },
+    "SOCN": {
+        "value": 0.0,
+        "domain": { "latitude":[-70.0, -50.0],
+		    "longitude":[0.0, 360.0]}
+    }
+}
