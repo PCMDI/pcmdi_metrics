@@ -9,7 +9,7 @@
 PCMDI Metrics Package (PMP)
 ***************************
 
-The Program for Climate Model Diagnosis & Intercomparison (`PCMDI`_) Metrics Package (PMP) is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  
+The Program for Coupled Model Diagnosis & Intercomparison (`PCMDI`_) Metrics Package (PMP) is used to provide "quick-look" objective comparisons of Earth System Models (ESMs) with one another and available observations.  
 Results are produced in the context of all model simulations contributed to CMIP6 and earlier CMIP phases.  
 Currently, the comparisons emphasize metrics of large- to global-scale annual cycle and both tropical 
 and extra-tropical modes of variability. 
@@ -54,7 +54,7 @@ Huge thank you to all of the PMP `contributors`_!
 
 .. _contributors: https://github.com/PCMDI/pcmdi_metrics#contributors
 
-PMP is developed by scientists and developers from the Program for Climate Model Diagnosis and
+PMP is developed by scientists and developers from the Program for Coupled Model Diagnosis and
 Intercomparison (`PCMDI`_) at Lawrence Livermore National Laboratory (`LLNL`_). 
 This work is sponsored by the Regional and Global Model Analysis (`RGMA`_) program of 
 the Earth and Environmental Systems Sciences Division (`EESSD`_) in 
@@ -65,7 +65,7 @@ Lawrence Livermore National Laboratory under Contract DE-AC52-07NA27344.
 
 .. _LLNL: https://www.llnl.gov/
 .. _PCMDI: https://pcmdi.llnl.gov/
-.. _RGMA: https://climatemodeling.science.energy.gov/program/regional-global-model-analysis
+.. _RGMA: https://eesm.science.energy.gov/program-area/regional-global-model-analysis
 .. _EESSD: https://science.osti.gov/ber/Research/eessd
 .. _BER: https://science.osti.gov/ber
 .. _Department of Energy: https://www.energy.gov/
