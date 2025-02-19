@@ -108,7 +108,7 @@ for model in model_list:
 
     if not skip:
         cmd_list.append(
-            "./sea_ice_driver.py -p parameter_file.py --case_id "
+            "./sea_ice_driver.py -p parameter_file_cmip6.py --case_id "
             + model
             + " --test_data_set "
             + model
