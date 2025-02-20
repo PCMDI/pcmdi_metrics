@@ -1,0 +1,19 @@
+{
+    "psl": {
+        "set": "alternate2",
+        "alternate2": "NOAA-20C",
+        "NOAA-20C": {
+            "mip": "obs",
+            "exp": "historical",
+            "model": "NOAA-20C",
+            "realization": "00",
+            "tableID": "Amon",
+            "yymms": "190001",
+            "yymme": "201412",
+            "var_in_file": "psl",
+            "var_name": "psl",
+            "file_path": "ts_ref/obs.historical.NOAA-20C.00.Amon.psl.190001-201412.nc",
+            "template": "obs.historical.NOAA-20C.00.Amon.psl.190001-201412.nc"
+        }
+    }
+}

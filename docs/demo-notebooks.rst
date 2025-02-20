@@ -65,13 +65,15 @@ Practical Use Cases
    examples/parallel_coordinate_plot_mean_clim_multiMIPs
    examples/taylor_diagram_multiple_CMIPs
    examples/mean_clim_plots_test_model
+   examples/enso_portrait_plot
    examples/variability_modes_plots_all-stats
    examples/return_value_portrait_plot_demo
 
 
-Data analysis support
-~~~~~~~~~~~~~~~~~~~~~
+Data analysis and support
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. nbgallery::
 
    examples/landmask
+   examples/pmp_metrics_database
