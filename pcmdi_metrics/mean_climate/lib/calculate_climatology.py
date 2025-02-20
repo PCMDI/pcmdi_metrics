@@ -125,10 +125,6 @@ def calculate_climatology(
             ds = ds.bounds.add_missing_bounds(axes=["T"])
             print("Generated time bounds")
 
-    # make sure that plev bounds data exists
-    if is_4d_variable(ds, var):
-        ds = ds.bounds.add_missing_bounds(axes=["Z"])
-
     # check if the given data is already an annual cycle
     if len(get_time(ds)) == 12:
         input_is_annual_cycle = True
