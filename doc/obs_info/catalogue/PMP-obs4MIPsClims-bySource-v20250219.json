@@ -1,0 +1,878 @@
+{
+    "ERA-INT": {
+        "hfls": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/hfls/gr/v20250113/",
+            "path": "hfls/gr/v20250113/",
+            "filename": "hfls_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "hfls/gr/v20250113/hfls_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "hfss": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/hfss/gr/v20250113/",
+            "path": "hfss/gr/v20250113/",
+            "filename": "hfss_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "hfss/gr/v20250113/hfss_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "hur": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/hur/gr/v20250113/",
+            "path": "hur/gr/v20250113/",
+            "filename": "hur_mon_ERA-INT_PCMDI_gn_198901-200912_AC_interp_2.5x2.5.nc",
+            "template": "hur/gr/v20250113/hur_mon_ERA-INT_PCMDI_gn_198901-200912_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198901-200912"
+        },
+        "hus": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/hus/gr/v20250113/",
+            "path": "hus/gr/v20250113/",
+            "filename": "hus_mon_ERA-INT_PCMDI_gn_198901-200912_AC_interp_2.5x2.5.nc",
+            "template": "hus/gr/v20250113/hus_mon_ERA-INT_PCMDI_gn_198901-200912_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198901-200912"
+        },
+        "pr": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/pr/gr/v20250211/",
+            "path": "pr/gr/v20250211/",
+            "filename": "pr_mon_ERA-INT_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "template": "pr/gr/v20250211/pr_mon_ERA-INT_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "version": "v20250211",
+            "period": "198101-200412"
+        },
+        "psl": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/psl/gr/v20250211/",
+            "path": "psl/gr/v20250211/",
+            "filename": "psl_mon_ERA-INT_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "template": "psl/gr/v20250211/psl_mon_ERA-INT_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "version": "v20250211",
+            "period": "198101-200412"
+        },
+        "rlds": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rlds/gr/v20250113/",
+            "path": "rlds/gr/v20250113/",
+            "filename": "rlds_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rlds/gr/v20250113/rlds_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "rlus": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rlus/gr/v20250113/",
+            "path": "rlus/gr/v20250113/",
+            "filename": "rlus_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rlus/gr/v20250113/rlus_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "rsds": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsds/gr/v20250113/",
+            "path": "rsds/gr/v20250113/",
+            "filename": "rsds_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsds/gr/v20250113/rsds_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "rsus": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsus/gr/v20250113/",
+            "path": "rsus/gr/v20250113/",
+            "filename": "rsus_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsus/gr/v20250113/rsus_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "sfcWind": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/sfcWind/gr/v20250113/",
+            "path": "sfcWind/gr/v20250113/",
+            "filename": "sfcWind_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "sfcWind/gr/v20250113/sfcWind_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "ta": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ta/gr/v20250113/",
+            "path": "ta/gr/v20250113/",
+            "filename": "ta_mon_ERA-INT_PCMDI_gn_198901-200912_AC_interp_2.5x2.5.nc",
+            "template": "ta/gr/v20250113/ta_mon_ERA-INT_PCMDI_gn_198901-200912_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198901-200912"
+        },
+        "tauu": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/tauu/gr/v20250113/",
+            "path": "tauu/gr/v20250113/",
+            "filename": "tauu_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "tauu/gr/v20250113/tauu_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "tauv": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/tauv/gr/v20250113/",
+            "path": "tauv/gr/v20250113/",
+            "filename": "tauv_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "tauv/gr/v20250113/tauv_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "ts": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ts/gr/v20250113/",
+            "path": "ts/gr/v20250113/",
+            "filename": "ts_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "ts/gr/v20250113/ts_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "ua": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ua/gr/v20250113/",
+            "path": "ua/gr/v20250113/",
+            "filename": "ua_mon_ERA-INT_PCMDI_gn_198901-200912_AC_interp_2.5x2.5.nc",
+            "template": "ua/gr/v20250113/ua_mon_ERA-INT_PCMDI_gn_198901-200912_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198901-200912"
+        },
+        "uas": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/uas/gr/v20250113/",
+            "path": "uas/gr/v20250113/",
+            "filename": "uas_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "uas/gr/v20250113/uas_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "va": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/va/gr/v20250113/",
+            "path": "va/gr/v20250113/",
+            "filename": "va_mon_ERA-INT_PCMDI_gn_198901-200912_AC_interp_2.5x2.5.nc",
+            "template": "va/gr/v20250113/va_mon_ERA-INT_PCMDI_gn_198901-200912_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198901-200912"
+        },
+        "vas": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/vas/gr/v20250113/",
+            "path": "vas/gr/v20250113/",
+            "filename": "vas_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "vas/gr/v20250113/vas_mon_ERA-INT_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "zg": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/zg/gr/v20250113/",
+            "path": "zg/gr/v20250113/",
+            "filename": "zg_mon_ERA-INT_PCMDI_gn_198901-200912_AC_interp_2.5x2.5.nc",
+            "template": "zg/gr/v20250113/zg_mon_ERA-INT_PCMDI_gn_198901-200912_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198901-200912"
+        }
+    },
+    "TropFlux-1-0": {
+        "hfls": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/hfls/gr/v20250113/",
+            "path": "hfls/gr/v20250113/",
+            "filename": "hfls_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "hfls/gr/v20250113/hfls_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "hfns": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/hfns/gr/v20250113/",
+            "path": "hfns/gr/v20250113/",
+            "filename": "hfns_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "hfns/gr/v20250113/hfns_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "hfss": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/hfss/gr/v20250113/",
+            "path": "hfss/gr/v20250113/",
+            "filename": "hfss_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "hfss/gr/v20250113/hfss_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "tas": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/tas/gr/v20250113/",
+            "path": "tas/gr/v20250113/",
+            "filename": "tas_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "tas/gr/v20250113/tas_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "tauu": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/tauu/gr/v20250113/",
+            "path": "tauu/gr/v20250113/",
+            "filename": "tauu_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "tauu/gr/v20250113/tauu_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "tauv": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/tauv/gr/v20250113/",
+            "path": "tauv/gr/v20250113/",
+            "filename": "tauv_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "tauv/gr/v20250113/tauv_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        },
+        "ts": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ts/gr/v20250113/",
+            "path": "ts/gr/v20250113/",
+            "filename": "ts_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "ts/gr/v20250113/ts_mon_TropFlux-1-0_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        }
+    },
+    "ERA-40": {
+        "hur": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/hur/gr/v20250113/",
+            "path": "hur/gr/v20250113/",
+            "filename": "hur_mon_ERA-40_PCMDI_gn_198101-200112_AC_interp_2.5x2.5.nc",
+            "template": "hur/gr/v20250113/hur_mon_ERA-40_PCMDI_gn_198101-200112_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-200112"
+        },
+        "hus": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/hus/gr/v20250113/",
+            "path": "hus/gr/v20250113/",
+            "filename": "hus_mon_ERA-40_PCMDI_gn_198101-200112_AC_interp_2.5x2.5.nc",
+            "template": "hus/gr/v20250113/hus_mon_ERA-40_PCMDI_gn_198101-200112_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-200112"
+        },
+        "psl": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/psl/gr/v20250211/",
+            "path": "psl/gr/v20250211/",
+            "filename": "psl_mon_ERA-40_PCMDI_gn_198101-200112_AC_v20250211_interp_2.5x2.5.nc",
+            "template": "psl/gr/v20250211/psl_mon_ERA-40_PCMDI_gn_198101-200112_AC_v20250211_interp_2.5x2.5.nc",
+            "version": "v20250211",
+            "period": "198101-200112"
+        },
+        "ta": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ta/gr/v20250219/",
+            "path": "ta/gr/v20250219/",
+            "filename": "ta_mon_ERA-40_PCMDI_gn_198101-200112_AC_v20250219_2.5x2.5.nc",
+            "template": "ta/gr/v20250219/ta_mon_ERA-40_PCMDI_gn_198101-200112_AC_v20250219_2.5x2.5.nc",
+            "version": "v20250219",
+            "period": "198101-200112"
+        },
+        "tas": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/tas/gr/v20250219/",
+            "path": "tas/gr/v20250219/",
+            "filename": "tas_mon_ERA-40_PCMDI_gn_198101-200112_AC_v20250219_2.5x2.5.nc",
+            "template": "tas/gr/v20250219/tas_mon_ERA-40_PCMDI_gn_198101-200112_AC_v20250219_2.5x2.5.nc",
+            "version": "v20250219",
+            "period": "198101-200112"
+        },
+        "ua": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ua/gr/v20250219/",
+            "path": "ua/gr/v20250219/",
+            "filename": "ua_mon_ERA-40_PCMDI_gn_198101-200112_AC_v20250219_2.5x2.5.nc",
+            "template": "ua/gr/v20250219/ua_mon_ERA-40_PCMDI_gn_198101-200112_AC_v20250219_2.5x2.5.nc",
+            "version": "v20250219",
+            "period": "198101-200112"
+        },
+        "uas": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/uas/gr/v20250113/",
+            "path": "uas/gr/v20250113/",
+            "filename": "uas_mon_ERA-40_PCMDI_gn_198101-200112_AC_interp_2.5x2.5.nc",
+            "template": "uas/gr/v20250113/uas_mon_ERA-40_PCMDI_gn_198101-200112_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-200112"
+        },
+        "va": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/va/gr/v20250219/",
+            "path": "va/gr/v20250219/",
+            "filename": "va_mon_ERA-40_PCMDI_gn_198101-200112_AC_v20250219_2.5x2.5.nc",
+            "template": "va/gr/v20250219/va_mon_ERA-40_PCMDI_gn_198101-200112_AC_v20250219_2.5x2.5.nc",
+            "version": "v20250219",
+            "period": "198101-200112"
+        },
+        "vas": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/vas/gr/v20250113/",
+            "path": "vas/gr/v20250113/",
+            "filename": "vas_mon_ERA-40_PCMDI_gn_198101-200112_AC_interp_2.5x2.5.nc",
+            "template": "vas/gr/v20250113/vas_mon_ERA-40_PCMDI_gn_198101-200112_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-200112"
+        },
+        "zg": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/zg/gr/v20250219/",
+            "path": "zg/gr/v20250219/",
+            "filename": "zg_mon_ERA-40_PCMDI_gn_198101-200112_AC_v20250219_2.5x2.5.nc",
+            "template": "zg/gr/v20250219/zg_mon_ERA-40_PCMDI_gn_198101-200112_AC_v20250219_2.5x2.5.nc",
+            "version": "v20250219",
+            "period": "198101-200112"
+        }
+    },
+    "GPCP-2-3": {
+        "pr": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/pr/gr/v20250211/",
+            "path": "pr/gr/v20250211/",
+            "filename": "pr_mon_GPCP-2-3_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "template": "pr/gr/v20250211/pr_mon_GPCP-2-3_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "version": "v20250211",
+            "period": "198101-200412"
+        }
+    },
+    "GPCP-Monthly-3-2": {
+        "pr": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/pr/gr/v20250211/",
+            "path": "pr/gr/v20250211/",
+            "filename": "pr_mon_GPCP-Monthly-3-2_RSS_gn_198301-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "template": "pr/gr/v20250211/pr_mon_GPCP-Monthly-3-2_RSS_gn_198301-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "version": "v20250211",
+            "period": "198301-200412"
+        }
+    },
+    "IMERG-V07-Final": {
+        "pr": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/pr/gr/v20250211/",
+            "path": "pr/gr/v20250211/",
+            "filename": "pr_mon_IMERG-V07-Final_RSS_gn_200101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "template": "pr/gr/v20250211/pr_mon_IMERG-V07-Final_RSS_gn_200101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "version": "v20250211",
+            "period": "200101-200412"
+        }
+    },
+    "PRISM-M3": {
+        "pr": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/pr/gr/v20250211/",
+            "path": "pr/gr/v20250211/",
+            "filename": "pr_mon_PRISM-M3_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "template": "pr/gr/v20250211/pr_mon_PRISM-M3_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "version": "v20250211",
+            "period": "198101-200412"
+        },
+        "tas": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/tas/gr/v20250113/",
+            "path": "tas/gr/v20250113/",
+            "filename": "tas_mon_PRISM-M3_PCMDI_gn_198101-200512_AC_interp_2.5x2.5.nc",
+            "template": "tas/gr/v20250113/tas_mon_PRISM-M3_PCMDI_gn_198101-200512_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-200512"
+        },
+        "tasmax": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/tasmax/gr/v20250113/",
+            "path": "tasmax/gr/v20250113/",
+            "filename": "tasmax_mon_PRISM-M3_PCMDI_gn_198101-200512_AC_interp_2.5x2.5.nc",
+            "template": "tasmax/gr/v20250113/tasmax_mon_PRISM-M3_PCMDI_gn_198101-200512_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-200512"
+        },
+        "tasmin": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/tasmin/gr/v20250113/",
+            "path": "tasmin/gr/v20250113/",
+            "filename": "tasmin_mon_PRISM-M3_PCMDI_gn_198101-200512_AC_interp_2.5x2.5.nc",
+            "template": "tasmin/gr/v20250113/tasmin_mon_PRISM-M3_PCMDI_gn_198101-200512_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-200512"
+        }
+    },
+    "TRMM-3B43v-7": {
+        "pr": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/pr/gr/v20250211/",
+            "path": "pr/gr/v20250211/",
+            "filename": "pr_mon_TRMM-3B43v-7_PCMDI_gn_199801-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "template": "pr/gr/v20250211/pr_mon_TRMM-3B43v-7_PCMDI_gn_199801-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "version": "v20250211",
+            "period": "199801-200412"
+        }
+    },
+    "REMSS-PRW-v07r01": {
+        "prw": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/prw/gr/v20250113/",
+            "path": "prw/gr/v20250113/",
+            "filename": "prw_mon_REMSS-PRW-v07r01_PCMDI_gn_198801-201312_AC_interp_2.5x2.5.nc",
+            "template": "prw/gr/v20250113/prw_mon_REMSS-PRW-v07r01_PCMDI_gn_198801-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198801-201312"
+        },
+        "sfcWind": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/sfcWind/gr/v20250113/",
+            "path": "sfcWind/gr/v20250113/",
+            "filename": "sfcWind_mon_REMSS-PRW-v07r01_PCMDI_gn_198801-201312_AC_interp_2.5x2.5.nc",
+            "template": "sfcWind/gr/v20250113/sfcWind_mon_REMSS-PRW-v07r01_PCMDI_gn_198801-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198801-201312"
+        }
+    },
+    "20CR-V2": {
+        "psl": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/psl/gr/v20250211/",
+            "path": "psl/gr/v20250211/",
+            "filename": "psl_mon_20CR-V2_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "template": "psl/gr/v20250211/psl_mon_20CR-V2_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "version": "v20250211",
+            "period": "198101-200412"
+        },
+        "ts": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ts/gr/v20250113/",
+            "path": "ts/gr/v20250113/",
+            "filename": "ts_mon_20CR-V2_PCMDI_gn_198101-201212_AC_interp_2.5x2.5.nc",
+            "template": "ts/gr/v20250113/ts_mon_20CR-V2_PCMDI_gn_198101-201212_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201212"
+        }
+    },
+    "20CR": {
+        "psl": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/psl/gr/v20250211/",
+            "path": "psl/gr/v20250211/",
+            "filename": "psl_mon_20CR_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "template": "psl/gr/v20250211/psl_mon_20CR_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "version": "v20250211",
+            "period": "198101-200412"
+        },
+        "ts": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ts/gr/v20250113/",
+            "path": "ts/gr/v20250113/",
+            "filename": "ts_mon_20CR_PCMDI_gn_198101-201212_AC_interp_2.5x2.5.nc",
+            "template": "ts/gr/v20250113/ts_mon_20CR_PCMDI_gn_198101-201212_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201212"
+        }
+    },
+    "ERA-20C": {
+        "psl": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/psl/gr/v20250211/",
+            "path": "psl/gr/v20250211/",
+            "filename": "psl_mon_ERA-20C_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "template": "psl/gr/v20250211/psl_mon_ERA-20C_PCMDI_gn_198101-200412_AC_v20250211_interp_2.5x2.5.nc",
+            "version": "v20250211",
+            "period": "198101-200412"
+        },
+        "ts": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ts/gr/v20250113/",
+            "path": "ts/gr/v20250113/",
+            "filename": "ts_mon_ERA-20C_PCMDI_gn_198101-201012_AC_interp_2.5x2.5.nc",
+            "template": "ts/gr/v20250113/ts_mon_ERA-20C_PCMDI_gn_198101-201012_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201012"
+        }
+    },
+    "ERA-5": {
+        "psl": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/psl/gr/v20250212/",
+            "path": "psl/gr/v20250212/",
+            "filename": "psl_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "template": "psl/gr/v20250212/psl_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "version": "v20250212",
+            "period": "198101-200412"
+        },
+        "ta": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ta/gr/v20250219/",
+            "path": "ta/gr/v20250219/",
+            "filename": "ta_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250219_2.5x2.5.nc",
+            "template": "ta/gr/v20250219/ta_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250219_2.5x2.5.nc",
+            "version": "v20250219",
+            "period": "198101-200412"
+        },
+        "tas": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/tas/gr/v20250212/",
+            "path": "tas/gr/v20250212/",
+            "filename": "tas_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "template": "tas/gr/v20250212/tas_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "version": "v20250212",
+            "period": "198101-200412"
+        },
+        "ts": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ts/gr/v20250212/",
+            "path": "ts/gr/v20250212/",
+            "filename": "ts_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "template": "ts/gr/v20250212/ts_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "version": "v20250212",
+            "period": "198101-200412"
+        },
+        "ua": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ua/gr/v20250212/",
+            "path": "ua/gr/v20250212/",
+            "filename": "ua_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "template": "ua/gr/v20250212/ua_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "version": "v20250212",
+            "period": "198101-200412"
+        },
+        "uas": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/uas/gr/v20250212/",
+            "path": "uas/gr/v20250212/",
+            "filename": "uas_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "template": "uas/gr/v20250212/uas_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "version": "v20250212",
+            "period": "198101-200412"
+        },
+        "va": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/va/gr/v20250212/",
+            "path": "va/gr/v20250212/",
+            "filename": "va_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "template": "va/gr/v20250212/va_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "version": "v20250212",
+            "period": "198101-200412"
+        },
+        "vas": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/vas/gr/v20250212/",
+            "path": "vas/gr/v20250212/",
+            "filename": "vas_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "template": "vas/gr/v20250212/vas_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "version": "v20250212",
+            "period": "198101-200412"
+        },
+        "zg": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/zg/gr/v20250212/",
+            "path": "zg/gr/v20250212/",
+            "filename": "zg_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "template": "zg/gr/v20250212/zg_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
+            "version": "v20250212",
+            "period": "198101-200412"
+        }
+    },
+    "CERES-EBAF-4-1": {
+        "rlds": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rlds/gr/v20250113/",
+            "path": "rlds/gr/v20250113/",
+            "filename": "rlds_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rlds/gr/v20250113/rlds_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rldscs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rldscs/gr/v20250113/",
+            "path": "rldscs/gr/v20250113/",
+            "filename": "rldscs_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rldscs/gr/v20250113/rldscs_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rltcre": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rltcre/gr/v20250113/",
+            "path": "rltcre/gr/v20250113/",
+            "filename": "rltcre_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rltcre/gr/v20250113/rltcre_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rlus": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rlus/gr/v20250113/",
+            "path": "rlus/gr/v20250113/",
+            "filename": "rlus_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rlus/gr/v20250113/rlus_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rlutcs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rlutcs/gr/v20250113/",
+            "path": "rlutcs/gr/v20250113/",
+            "filename": "rlutcs_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rlutcs/gr/v20250113/rlutcs_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsds": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsds/gr/v20250113/",
+            "path": "rsds/gr/v20250113/",
+            "filename": "rsds_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsds/gr/v20250113/rsds_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsdscs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsdscs/gr/v20250113/",
+            "path": "rsdscs/gr/v20250113/",
+            "filename": "rsdscs_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsdscs/gr/v20250113/rsdscs_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsdt": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsdt/gr/v20250113/",
+            "path": "rsdt/gr/v20250113/",
+            "filename": "rsdt_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsdt/gr/v20250113/rsdt_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rstcre": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rstcre/gr/v20250113/",
+            "path": "rstcre/gr/v20250113/",
+            "filename": "rstcre_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rstcre/gr/v20250113/rstcre_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsus": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsus/gr/v20250113/",
+            "path": "rsus/gr/v20250113/",
+            "filename": "rsus_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsus/gr/v20250113/rsus_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsuscs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsuscs/gr/v20250113/",
+            "path": "rsuscs/gr/v20250113/",
+            "filename": "rsuscs_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsuscs/gr/v20250113/rsuscs_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsut": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsut/gr/v20250113/",
+            "path": "rsut/gr/v20250113/",
+            "filename": "rsut_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsut/gr/v20250113/rsut_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsutcs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsutcs/gr/v20250113/",
+            "path": "rsutcs/gr/v20250113/",
+            "filename": "rsutcs_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsutcs/gr/v20250113/rsutcs_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rt": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rt/gr/v20250113/",
+            "path": "rt/gr/v20250113/",
+            "filename": "rt_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rt/gr/v20250113/rt_mon_CERES-EBAF-4-1_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        }
+    },
+    "CERES-EBAF-4-2": {
+        "rlds": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rlds/gr/v20250213/",
+            "path": "rlds/gr/v20250213/",
+            "filename": "rlds_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rlds/gr/v20250213/rlds_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rldscs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rldscs/gr/v20250213/",
+            "path": "rldscs/gr/v20250213/",
+            "filename": "rldscs_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rldscs/gr/v20250213/rldscs_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rltcre": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rltcre/gr/v20250213/",
+            "path": "rltcre/gr/v20250213/",
+            "filename": "rltcre_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rltcre/gr/v20250213/rltcre_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rlus": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rlus/gr/v20250213/",
+            "path": "rlus/gr/v20250213/",
+            "filename": "rlus_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rlus/gr/v20250213/rlus_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rlut": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rlut/gr/v20250213/",
+            "path": "rlut/gr/v20250213/",
+            "filename": "rlut_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rlut/gr/v20250213/rlut_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rlutcs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rlutcs/gr/v20250213/",
+            "path": "rlutcs/gr/v20250213/",
+            "filename": "rlutcs_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rlutcs/gr/v20250213/rlutcs_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rsds": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsds/gr/v20250213/",
+            "path": "rsds/gr/v20250213/",
+            "filename": "rsds_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rsds/gr/v20250213/rsds_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rsdscs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsdscs/gr/v20250213/",
+            "path": "rsdscs/gr/v20250213/",
+            "filename": "rsdscs_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rsdscs/gr/v20250213/rsdscs_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rsdt": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsdt/gr/v20250213/",
+            "path": "rsdt/gr/v20250213/",
+            "filename": "rsdt_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rsdt/gr/v20250213/rsdt_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rstcre": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rstcre/gr/v20250213/",
+            "path": "rstcre/gr/v20250213/",
+            "filename": "rstcre_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rstcre/gr/v20250213/rstcre_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rsus": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsus/gr/v20250213/",
+            "path": "rsus/gr/v20250213/",
+            "filename": "rsus_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rsus/gr/v20250213/rsus_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rsuscs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsuscs/gr/v20250213/",
+            "path": "rsuscs/gr/v20250213/",
+            "filename": "rsuscs_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rsuscs/gr/v20250213/rsuscs_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rsut": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsut/gr/v20250213/",
+            "path": "rsut/gr/v20250213/",
+            "filename": "rsut_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rsut/gr/v20250213/rsut_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rsutcs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsutcs/gr/v20250213/",
+            "path": "rsutcs/gr/v20250213/",
+            "filename": "rsutcs_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rsutcs/gr/v20250213/rsutcs_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        },
+        "rt": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rt/gr/v20250213/",
+            "path": "rt/gr/v20250213/",
+            "filename": "rt_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "template": "rt/gr/v20250213/rt_mon_CERES-EBAF-4-2_RSS_gn_200101-200412_AC_v20250213_2.5x2.5.nc",
+            "version": "v20250213",
+            "period": "200101-200412"
+        }
+    },
+    "CERES-EBAF-4-0": {
+        "rltcre": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rltcre/gr/v20250113/",
+            "path": "rltcre/gr/v20250113/",
+            "filename": "rltcre_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rltcre/gr/v20250113/rltcre_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rlus": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rlus/gr/v20250113/",
+            "path": "rlus/gr/v20250113/",
+            "filename": "rlus_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rlus/gr/v20250113/rlus_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rlut": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rlut/gr/v20250113/",
+            "path": "rlut/gr/v20250113/",
+            "filename": "rlut_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rlut/gr/v20250113/rlut_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rlutcs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rlutcs/gr/v20250113/",
+            "path": "rlutcs/gr/v20250113/",
+            "filename": "rlutcs_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rlutcs/gr/v20250113/rlutcs_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsds": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsds/gr/v20250113/",
+            "path": "rsds/gr/v20250113/",
+            "filename": "rsds_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsds/gr/v20250113/rsds_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsdscs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsdscs/gr/v20250113/",
+            "path": "rsdscs/gr/v20250113/",
+            "filename": "rsdscs_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsdscs/gr/v20250113/rsdscs_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rstcre": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rstcre/gr/v20250113/",
+            "path": "rstcre/gr/v20250113/",
+            "filename": "rstcre_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rstcre/gr/v20250113/rstcre_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsus": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsus/gr/v20250113/",
+            "path": "rsus/gr/v20250113/",
+            "filename": "rsus_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsus/gr/v20250113/rsus_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsuscs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsuscs/gr/v20250113/",
+            "path": "rsuscs/gr/v20250113/",
+            "filename": "rsuscs_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsuscs/gr/v20250113/rsuscs_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsut": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsut/gr/v20250113/",
+            "path": "rsut/gr/v20250113/",
+            "filename": "rsut_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsut/gr/v20250113/rsut_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rsutcs": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rsutcs/gr/v20250113/",
+            "path": "rsutcs/gr/v20250113/",
+            "filename": "rsutcs_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rsutcs/gr/v20250113/rsutcs_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        },
+        "rt": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/rt/gr/v20250113/",
+            "path": "rt/gr/v20250113/",
+            "filename": "rt_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "template": "rt/gr/v20250113/rt_mon_CERES-EBAF-4-0_PCMDI_gn_200101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "200101-201312"
+        }
+    },
+    "HadISST-1-1": {
+        "ts": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ts/gr/v20250113/",
+            "path": "ts/gr/v20250113/",
+            "filename": "ts_mon_HadISST-1-1_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "template": "ts/gr/v20250113/ts_mon_HadISST-1-1_PCMDI_gn_198101-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "198101-201312"
+        }
+    },
+    "AVISO-1-0": {
+        "zos": {
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/zos/gr/v20250113/",
+            "path": "zos/gr/v20250113/",
+            "filename": "zos_mon_AVISO-1-0_PCMDI_gn_199301-201312_AC_interp_2.5x2.5.nc",
+            "template": "zos/gr/v20250113/zos_mon_AVISO-1-0_PCMDI_gn_199301-201312_AC_interp_2.5x2.5.nc",
+            "version": "v20250113",
+            "period": "199301-201312"
+        }
+    }
+}
