@@ -8,3 +8,6 @@ from .enso_lib import (  # noqa
     sort_human,
     tree,
 )
+
+from .summary_plot_lib.EnsoPlotLib import plot_param
+from .summary_plot_lib.plot import enso_portrait_plot

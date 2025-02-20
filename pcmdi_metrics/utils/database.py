@@ -224,7 +224,7 @@ def load_version_dict():
         },
         "variability_modes": {
             "cmip3": {"20c3m": "v20210119", "amip": "v20210119"},
-            "cmip5": {"amip": "v20210119", "historical": "v20210119"},
+            "cmip5": {"amip": "v20210119", "historical": "v20200116"},
             "cmip6": {"amip": "v20210119", "historical": "v20220825"},
         },
         "mjo": {
