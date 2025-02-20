@@ -471,17 +471,6 @@ def process_dataset(
                 else:
                     output_fig_path = output_fig_path.replace(".png", f"-{level}.png")
 
-            """
-            interp_filename_png = interp_filename_head.replace(
-                ".nc", f"_{grid_resolution}.png"
-            )
-            print(f"plot_gr here for {interp_filename_png}")
-
-            output_fig_path = os.path.join(
-                out_path_interp, version, interp_filename_png
-            )
-            """
-
             # plot climatology for each level
             plot_climatology(
                 ds_ac_interp,
@@ -499,71 +488,6 @@ def process_dataset(
         else:
             ac_dict[var][model][run][level] = ds_ac_interp_level
 
-    """
-    # Extract level and interpolation
-    for level in levels:
-        print("level:", level)
-
-        # Extract level
-        if level is None:
-            ds_ac_level = ds_ac
-        else:
-            ds_ac_level = extract_level(ds_ac, level)
-
-        print(f"ds_ac_level[{varname}].shape: {ds_ac_level[varname].shape}")
-
-        if plot_gn:
-            ### implement plot for native grid
-            print("plot_gn here")
-
-        # Interpolation
-        if common_grid is not None:
-            # Prepare for output file name
-            grid_resolution = common_grid.attrs.get("grid_resolution")
-
-            if "filename" in ds_ac.attrs:
-                interp_filename_head = str(ds_ac.attrs.get("filename"))
-            else:
-                interp_filename_head = str(os.path.basename(data_path)).replace("*", "")
-
-            # Proceed interpolation
-            print("regrid starts")
-            ds_ac_level_interp = regrid(ds_ac_level, varname, common_grid)
-            print(
-                f"regrid done, ds_ac_level_interp[{varname}].shape: {ds_ac_level_interp[varname].shape}"
-            )
-
-            # Update attrs
-            # Get the current time with UTC timezone
-            current_time_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-            ds_ac_level_interp = ds_ac_level_interp.assign_attrs(
-                current_date=f"{current_time_utc}",
-                history=f"{current_time_utc}; PCMDI Metrics Package (PMP) calculated climatology and interpolated using {os.path.basename(data_path)}",
-            )
-
-            if plot_gr:
-                ### [TO DO] implement plot for regrided grid
-                interp_filename_png = interp_filename_head.replace(
-                    ".nc", f"_{grid_resolution}.png"
-                )
-                print(f"plot_gr here for {interp_filename_png}")
-
-            # Save to netcdf file
-            if save_ac_interp_netcdf:
-                interp_filename_nc = interp_filename_head.replace(
-                    ".nc", f"_{grid_resolution}.nc"
-                )
-                os.makedirs(os.path.join(out_path_interp, version), exist_ok=True)
-                ds_ac_level_interp.to_netcdf(
-                    os.path.join(out_path_interp, version, interp_filename_nc)
-                )
-
-        if data_type == "ref":
-            ac_dict[var][ref][level] = ds_ac_level_interp
-        else:
-            ac_dict[var][model][run][level] = ds_ac_level_interp
-    """
     return
 
 
