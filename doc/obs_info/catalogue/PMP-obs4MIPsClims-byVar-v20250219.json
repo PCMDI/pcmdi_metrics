@@ -812,11 +812,11 @@
             "period": "198101-200112"
         },
         "ERA-5": {
-            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ua/gr/v20250212/",
-            "path": "ua/gr/v20250212/",
-            "filename": "ua_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
-            "template": "ua/gr/v20250212/ua_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
-            "version": "v20250212",
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/ua/gr/v20250219/",
+            "path": "ua/gr/v20250219/",
+            "filename": "ua_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250219_2.5x2.5.nc",
+            "template": "ua/gr/v20250219/ua_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250219_2.5x2.5.nc",
+            "version": "v20250219",
             "period": "198101-200412"
         },
         "ERA-INT": {
@@ -866,11 +866,11 @@
             "period": "198101-200112"
         },
         "ERA-5": {
-            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/va/gr/v20250212/",
-            "path": "va/gr/v20250212/",
-            "filename": "va_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
-            "template": "va/gr/v20250212/va_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
-            "version": "v20250212",
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/va/gr/v20250219/",
+            "path": "va/gr/v20250219/",
+            "filename": "va_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250219_2.5x2.5.nc",
+            "template": "va/gr/v20250219/va_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250219_2.5x2.5.nc",
+            "version": "v20250219",
             "period": "198101-200412"
         },
         "ERA-INT": {
@@ -920,11 +920,11 @@
             "period": "198101-200112"
         },
         "ERA-5": {
-            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/zg/gr/v20250212/",
-            "path": "zg/gr/v20250212/",
-            "filename": "zg_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
-            "template": "zg/gr/v20250212/zg_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250212_interp_2.5x2.5.nc",
-            "version": "v20250212",
+            "PCMDI-path": "/p/user_pub/pmp/pmp_reference/obs4MIPs_clims/zg/gr/v20250219/",
+            "path": "zg/gr/v20250219/",
+            "filename": "zg_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250219_2.5x2.5.nc",
+            "template": "zg/gr/v20250219/zg_mon_ERA-5_PCMDI_gn_198101-200412_AC_v20250219_2.5x2.5.nc",
+            "version": "v20250219",
             "period": "198101-200412"
         },
         "ERA-INT": {
