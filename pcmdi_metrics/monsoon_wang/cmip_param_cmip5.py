@@ -83,7 +83,7 @@
 # cmip5 models
 # modnames = [ACCESS1-0, BCC-CSM1-1-M, BNU-ESM, CanCM4, CanESM2, CCSM4, CESM1-BGC, CESM1-CAM5, CESM1-FASTCHEM, CESM1-WACCM, CMCC-CESM, CMCC-CM, CMCC-CMS, CNRM-CM5-2, CNRM-CM5, CSIRO-Mk3-6-0, FGOALS-g2, FIO-ESM, GFDL-CM2p1, GFDL-CM3, GFDL-ESM2G, GFDL-ESM2M, GISS-E2-H-CC, GISS-E2-H, GISS-E2-R-CC, GISS-E2-R, HadCM3, HadGEM2-AO, INMCM4, IPSL-CM5A-LR, IPSL-CM5A-MR, IPSL-CM5B-LR, MIROC4h, MIROC5, MIROC-ESM-CHEM, MIROC-ESM, MPI-ESM-LR, MPI-ESM-MR, MPI-ESM-P, MRI-CGCM3, MRI-ESM1, NorESM1-ME, NorESM1-M]
 
-nth = 0
+nth = 54
 
 modnames = [
     "ACCESS1-0",
@@ -197,7 +197,8 @@ modnames = [
 
 # cmip5
 #test_data_path = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/cmip5/historical/v20230323/pr/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200512.AC.v20230323.nc"
-test_data_path = "/p/user_pub/climate_work/lee1043/cdat/pmp/mean_climate/mean_climate_20250109/clims_model_1981-2004/cmip5/historical/v20250109/pr/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200412.AC.v20250109.nc"
+#test_data_path = "/p/user_pub/climate_work/lee1043/cdat/pmp/mean_climate/mean_climate_20250109/clims_model_1981-2004/cmip5/historical/v20250109/pr/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200412.AC.v20250109.nc"
+test_data_path = "/p/user_pub/climate_work/lee1043/cdat/pmp/mean_climate/mean_climate_20250109/clims_model/cmip5/historical/v20250130/pr/cmip5.historical.%(model).r3i1p1.mon.pr.198101-200412.AC.v20250130.nc"
 # cmip6
 #test_data_path = "/p/user_pub/climate_work/lee1043/cdat/pmp/mean_climate/mean_climate_20250109/clims_model_1981-2004/cmip6/historical/v20250109/pr/cmip6.historical.%(model).r1i1p1f1.mon.pr.198101-200412.AC.v20250109.nc"
 

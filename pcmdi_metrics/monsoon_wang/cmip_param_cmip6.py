@@ -12,7 +12,7 @@
 #  trouble model ICON-ESM-LR'
 
 
-nth = 0
+nth = 54
 
 # cmip6 models
 modnames = [
@@ -199,7 +199,8 @@ modnames = [
 #test_data_path = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/cmip5/historical/v20230323/pr/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200512.AC.v20230323.nc"
 #test_data_path = "/p/user_pub/climate_work/lee1043/cdat/pmp/mean_climate/mean_climate_20250109/clims_model_1981-2004/cmip5/historical/v20250109/pr/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200412.AC.v20250109.nc"
 # cmip6
-test_data_path = "/p/user_pub/climate_work/lee1043/cdat/pmp/mean_climate/mean_climate_20250109/clims_model_1981-2004/cmip6/historical/v20250109/pr/cmip6.historical.%(model).r1i1p1f1.mon.pr.198101-200412.AC.v20250109.nc"
+#test_data_path = "/p/user_pub/climate_work/lee1043/cdat/pmp/mean_climate/mean_climate_20250109/clims_model_1981-2004/cmip6/historical/v20250109/pr/cmip6.historical.%(model).r1i1p1f1.mon.pr.198101-200412.AC.v20250109.nc"
+test_data_path = "/p/user_pub/climate_work/lee1043/cdat/pmp/mean_climate/mean_climate_20250109/clims_model/cmip6/historical/v20250130/pr/cmip6.historical.%(model).r1i1p1f1.mon.pr.198101-200412.AC.v20250130.nc"
 
 # ROOT PATH FOR OBSERVATIONS
 # reference_data_path = '$INPUT_DIR$/obs4MIPs_PCMDI_monthly/NOAA-NCEI/GPCP-2-3/mon/pr/gn/v20210727/pr_mon_GPCP-2-3_PCMDI_gn_197901-201907.nc'

@@ -36,7 +36,9 @@ combined_results = combine_results(directory)
 
 #print(json.dumps(combined_results, indent=4))
 
-out_json_file = os.path.join(directory,'combined_results.json')
+#out_json_file = os.path.join(directory,'combined_results.json')
+#out_json_file = 'combined_results_cmip5.json'
+out_json_file = 'combined_results_cmip6.json'
 
 #with open('combined_results.json', 'w') as outfile:
 with open(out_json_file, 'w') as outfile:

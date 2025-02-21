@@ -11,7 +11,7 @@
 
 #  trouble model ICON-ESM-LR'
 
-nth = 0
+nth = 2
 
 # cmip6 models
 modnames = [
@@ -137,6 +137,7 @@ modnames = [
 ]
 
 modnames = ["ACCESS1-0","BCC-CSM1-1"]
+#modnames = ["ACCESS1-0"]
 
 #modnames = ["CMCC-CESM", "CNRM-CM5"]
 #modnames = [
@@ -198,7 +199,9 @@ modnames = ["ACCESS1-0","BCC-CSM1-1"]
 
 # cmip5
 #test_data_path = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP_CLIMS/cmip5/historical/v20230323/pr/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200512.AC.v20230323.nc"
-test_data_path = "/p/user_pub/climate_work/lee1043/cdat/pmp/mean_climate/mean_climate_20250109/clims_model_1981-2004/cmip5/historical/v20250109/pr/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200412.AC.v20250109.nc"
+#test_data_path = "/p/user_pub/climate_work/lee1043/cdat/pmp/mean_climate/mean_climate_20250109/clims_model_1981-2004/cmip5/historical/v20250109/pr/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200412.AC.v20250109.nc"
+
+test_data_path = "/p/user_pub/climate_work/lee1043/cdat/pmp/mean_climate/mean_climate_20250109/clims_model/cmip5/historical/v20250130/pr/cmip5.historical.%(model).r3i1p1.mon.pr.198101-200412.AC.v20250130.nc"
 # cmip6
 #test_data_path = "/p/user_pub/climate_work/lee1043/cdat/pmp/mean_climate/mean_climate_20250109/clims_model_1981-2004/cmip6/historical/v20250109/pr/cmip6.historical.%(model).r1i1p1f1.mon.pr.198101-200412.AC.v20250109.nc"
 
@@ -214,7 +217,7 @@ reference_data_path = "/p/user_pub/climate_work/lee1043/DATA/GPCP_monthly/proces
 # results_dir = '$OUTPUT_DIR$/monsoon_wang'
 #results_dir = "/home/dong12/PMP_240131/pcmdi_metrics/pcmdi_metrics/monsoon_wang/output"
 #results_dir = "/home/dong12/PMP_240131/pcmdi_metrics/pcmdi_metrics/monsoon_wang/CMIP_results"
-results_dir = "/home/dong12/250113/pcmdi_metrics/pcmdi_metrics/monsoon_wang/CMIP_results"
+results_dir = "/home/dong12/250113/pcmdi_metrics/pcmdi_metrics/monsoon_wang/CMIP_results/CMIP5"
 
 # Threshold
 threshold = 2.5 / 86400
