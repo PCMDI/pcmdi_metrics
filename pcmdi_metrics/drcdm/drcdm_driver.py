@@ -285,7 +285,10 @@ if __name__ == "__main__":
                     yrs = [str(int(ds.time.dt.year[0])), str(int(ds.time.dt.year[-1]))]
 
                 if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
+                    units = ds.time.encoding["units"]
                     ds = ds.convert_calendar("noleap")
+                    ds.time.encoding["calendar"] = "noleap"
+                    ds.time.encoding["units"] = units
 
                 ds[varname] = compute_metrics.convert_units(ds[varname], ModUnitsAdjust)
 
