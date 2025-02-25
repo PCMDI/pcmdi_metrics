@@ -10,7 +10,7 @@ Overview
 The El Niño-Southern Oscillation (ENSO) is the dominant mode of 
 interannual variability in the tropical Pacific and has far-reaching 
 impacts on climate around the world. It is therefore key to ensure 
-the correct simulation of ENSO in state-of-the-art climate models. 
+the correct simulation of ENSO in state-of-the-art Earth System models. 
 A community-wide synthesis of metrics to evaluate the performance, 
 teleconnections and processes of ENSO in coupled GCMs have been implemented 
 to PMP as a result of the collaboration with the ENSO Metrics Working Group 
