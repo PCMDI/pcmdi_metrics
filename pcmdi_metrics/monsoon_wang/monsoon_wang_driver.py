@@ -12,11 +12,18 @@ from pcmdi_metrics import resources
 from pcmdi_metrics.io import da_to_ds, region_subset
 from pcmdi_metrics.monsoon_wang.lib import (
     create_monsoon_wang_parser,
+    map_plotter,
     mpd,
     mpi_skill_scores,
     regrid,
 )
 from pcmdi_metrics.utils import StringConstructor
+
+
+def main():
+    P = create_monsoon_wang_parser()
+    args = P.get_parameter(argparse_vals_only=False)
+    monsoon_wang_runner(args)
 
 
 def monsoon_wang_runner(args):
@@ -40,26 +47,6 @@ def monsoon_wang_runner(args):
 
     # Get flag for CMEC output
     cmec = args.cmec
-
-    # ########################################
-    # PMP monthly default PR obs
-    fobs = xr.open_dataset(args.reference_data_path, decode_times=False)
-    dobs_orig = fobs[args.obsvar]
-    fobs.close()
-
-    # #######################################
-
-    # FCN TO COMPUTE GLOBAL ANNUAL RANGE AND MONSOON PRECIP INDEX
-
-    annrange_obs, mpi_obs = mpd(dobs_orig)
-
-    # create monsoon domain mask based on observations: annual range > 2.5 mm/day
-    if args.obs_mask:
-        domain_mask_obs = xr.where(annrange_obs > thr, 1, 0)
-        domain_mask_obs.name = "mask"
-        mpi_obs = mpi_obs.where(domain_mask_obs)
-        nout_mpi_obs = os.path.join(outpathdata, "mpi_obs_masked.nc")
-        da_to_ds(mpi_obs).to_netcdf(nout_mpi_obs)
 
     # ########################################
     # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
@@ -98,10 +85,29 @@ def monsoon_wang_runner(args):
         raise RuntimeError("No model file found!")
 
     # ########################################
+    # PMP monthly default PR obs
+
+    fobs = xr.open_dataset(args.reference_data_path, decode_times=False)
+    dobs_orig = fobs[args.obsvar]
+    fobs.close()
+
+    # #######################################
+    # FCN TO COMPUTE GLOBAL ANNUAL RANGE AND MONSOON PRECIP INDEX
+
+    annrange_obs, mpi_obs = mpd(dobs_orig)
+
+    # create monsoon domain mask based on observations: annual range > 2.5 mm/day
+    if args.obs_mask:
+        domain_mask_obs = xr.where(annrange_obs > thr, 1, 0)
+        domain_mask_obs.name = "mask"
+        mpi_obs = mpi_obs.where(domain_mask_obs)
+
+        nout_mpi_obs = os.path.join(nout, "mpi_obs_masked.nc")
+        da_to_ds(mpi_obs).to_netcdf(nout_mpi_obs)
 
     egg_pth = resources.resource_path()
 
-    doms = ["AllMW", "AllM", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
+    doms = ["AllMW", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
 
     mpi_stats_dic = {}
     for i, mod in enumerate(gmods):
@@ -162,7 +168,7 @@ def monsoon_wang_runner(args):
                 annrange_mod_dom, annrange_obs_dom, thr
             )
 
-            #  POPULATE DICTIONARY FOR JSON FILES
+            # POPULATE DICTIONARY FOR JSON FILES
             mpi_stats_dic[mod][dom] = {}
             mpi_stats_dic[mod][dom]["cor"] = format(cor, sig_digits)
             mpi_stats_dic[mod][dom]["rmsn"] = format(rmsn, sig_digits)
@@ -177,9 +183,22 @@ def monsoon_wang_runner(args):
                     "hitmap": hitmap,
                     "missmap": missmap,
                     "falarmmap": falarmmap,
+                    "obsmask": mpi_obs_reg,
+                    "modmask": mpi_mod_reg,
                 }
             )
             ds_out.to_netcdf(fm)
+
+            # PLOT FIGURES
+            title = f"{mod}, {dom}"
+            save_path = os.path.join(nout, "_".join([mod, dom, "wang-monsoon.png"]))
+            map_plotter(
+                dom,
+                title,
+                ds_out,
+                save_path=save_path,
+            )
+
         f.close()
 
         if np.isnan(cor):
@@ -196,6 +215,7 @@ def monsoon_wang_runner(args):
     metrics_dictionary["REFERENCE"] = (
         "The statistics in this file are based on"
         + " Wang, B., Kim, HJ., Kikuchi, K. et al. "
+        + "Diagnostic metrics for evaluation of annual and diurnal cycles. "
         + "Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0"
     )
     metrics_dictionary["RESULTS"] = mpi_stats_dic  # collections.OrderedDict()
@@ -213,6 +233,4 @@ def monsoon_wang_runner(args):
 
 
 if __name__ == "__main__":
-    P = create_monsoon_wang_parser()
-    args = P.get_parameter(argparse_vals_only=False)
-    monsoon_wang_runner(args)
+    main()

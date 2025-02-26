@@ -83,7 +83,7 @@ def precip_variability_across_timescale(
         lon_range = [-180.0, 180.0]
     else:
         lon_range = [0.0, 360.0]
-    rgtmp = RegridHoriz(f, var, res, regions_specs, lon_range)
+    rgtmp = RegridHoriz(f.compute(), var, res, regions_specs, lon_range)
     if fshp is not None:
         print("Cropping from shapefile")
         rgtmp = region_from_file(rgtmp, fshp, attr, feature)

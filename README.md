@@ -40,7 +40,8 @@ The package expects model data to be [CF-compliant](http://cfconventions.org/). 
 Documentation
 -------------
 
-**Getting Started**
+### Getting Started
+
 
 * Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
 
@@ -51,7 +52,7 @@ Documentation
 * [View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
 
 
-**References**
+### References
 
 Latest: 
 
@@ -120,6 +121,9 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.8.2]      | Technical update
+| [v3.8.1]      | Technical update with new figure (modes of variability multi-panel plot)
+| [v3.8]        | New capability (**figure generation for ENSO**, xCDAT migration completed for **Monsoon Wang** with figure generation), major dependency update (`numpy` >= 2.0)
 | [v3.7.2]      | Technical update
 | [v3.7.1]      | Technical update with documentation improvements
 | [v3.7]        | New capability (**figure generation for mean climate**) and technical update
@@ -170,6 +174,9 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.8.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8.2
+[v3.8.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8.1
+[v3.8]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8
 [v3.7.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.2
 [v3.7.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.1
 [v3.7]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7
@@ -210,15 +217,15 @@ Release Notes and History
 [v1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1
 [v1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0
 
-Current Core Team Members at PCMDI/LLNL
----------------------------------------
-* Jiwoo Lee
-* Ana Ordonez
-* Peter Gleckler
-* Paul Ullrich
-* Bo Dong
-* Kristin Chang
-
+Core Development Team
+---------------------
+* [Jiwoo Lee](https://people.llnl.gov/lee1043) ([LLNL](https://www.llnl.gov/), PMP Lead)
+* [Ana Ordonez](https://people.llnl.gov/ordonez4) ([LLNL](https://www.llnl.gov/))
+* [Peter Gleckler](https://pcmdi.llnl.gov/staff/gleckler/) ([LLNL](https://www.llnl.gov/))
+* [Paul Ullrich](https://people.llnl.gov/ullrich4) ([LLNL](https://www.llnl.gov/), [PCMDI](https://pcmdi.llnl.gov/) Project PI)
+* [Bo Dong](https://people.llnl.gov/dong12) ([LLNL](https://www.llnl.gov/))
+* [Kristin Chang](https://people.llnl.gov/chang61) ([LLNL](https://www.llnl.gov/))
+* [Shixuan Zhang](https://www.pnnl.gov/science/staff/staff_info.asp?staff_num=9376) ([PNNL](https://www.pnnl.gov/))
 
 All Contributors
 ----------------
@@ -272,9 +279,3 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
-
-
-
-
-
-

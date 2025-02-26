@@ -80,7 +80,7 @@ def load_and_regrid(
                     '[WARNING]: calendar info not found for time axis. ds.time.attrs["calendar"] is adjusted to standard'
                 )
 
-    # time bound check #1 -- add proper time bound info if cdms-generated annual cycle is loaded
+    # time bound check #1 -- add proper time bound info if non-xcdat-generated annual cycle is loaded
     if isinstance(
         ds.time.values[0], np.float64
     ):  # and "units" not in list(ds.time.attrs.keys()):

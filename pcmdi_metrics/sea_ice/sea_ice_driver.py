@@ -9,10 +9,11 @@ import xarray
 import xcdat as xc
 
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.io.xcdat_dataset_io import get_latitude_key, get_longitude_key
 from pcmdi_metrics.sea_ice.lib import create_sea_ice_parser
 from pcmdi_metrics.sea_ice.lib import sea_ice_figures as fig
 from pcmdi_metrics.sea_ice.lib import sea_ice_lib as lib
-from pcmdi_metrics.utils import create_land_sea_mask
+from pcmdi_metrics.utils import create_land_sea_mask, fix_tuple
 
 if __name__ == "__main__":
     logging.getLogger("xcdat").setLevel(logging.ERROR)
@@ -26,6 +27,7 @@ if __name__ == "__main__":
     realization = parameter.realization
     var = parameter.var
     filename_template = parameter.filename_template
+    sft_filename_template = parameter.sft_filename_template
     test_data_path = parameter.test_data_path
     model_list = parameter.test_data_set
     reference_data_path_nh = parameter.reference_data_path_nh
@@ -50,6 +52,8 @@ if __name__ == "__main__":
     plot = parameter.plot
     pole = parameter.pole
     to_nc = parameter.netcdf
+    generate_mask = parameter.generate_mask
+    no_mask = parameter.no_mask
 
     print("Model list:", model_list)
     model_list.sort()
@@ -72,6 +76,12 @@ if __name__ == "__main__":
         msg="Error: Obs osyear and oeyear must both be set or both be None (unset).",
     )
 
+    # Fix issues that can come from command line tuples
+    ModUnitsAdjust = fix_tuple(ModUnitsAdjust)
+    AreaUnitsAdjust = fix_tuple(AreaUnitsAdjust)
+    ObsUnitsAdjust = fix_tuple(ObsUnitsAdjust)
+    ObsAreaUnitsAdjust = fix_tuple(ObsAreaUnitsAdjust)
+
     # Initialize output.json file
     meta = lib.MetadataFile(metrics_output_path)
 
@@ -79,7 +89,11 @@ if __name__ == "__main__":
     find_all_realizations, realizations = lib.set_up_realizations(realization)
     print("Find all realizations:", find_all_realizations)
 
-    #### Do Obs part
+    # --------------------------
+    # Process observations first
+    # --------------------------
+    # This section is hard-coded to work with the
+    # OSI-SAF data in obs4mips.
     arctic_clims = {}
     arctic_means = {}
 
@@ -109,7 +123,8 @@ if __name__ == "__main__":
     obs[obs_var] = obs[obs_var].where(mask < 1)
     # Get regions
     clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
-
+    nh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
+    print(nh_obs_area)
     arctic_clims = {
         "arctic": clims["arctic"],
         "ca": clims["ca"],
@@ -123,21 +138,21 @@ if __name__ == "__main__":
         "np": means["np"],
         "na": means["na"],
     }
-    if to_nc:
-        # Generate netcdf files of climatologies
-        nc_dir = os.path.join(metrics_output_path, "netcdf")
-        if not os.path.exists(nc_dir):
-            os.mkdir(nc_dir)
-        nc_climo = lib.get_clim(obs, obs_var, ds=None)
-        print("Writing climatology netcdf")
-        fname_nh = (
-            "sic_clim_"
-            + "_".join([reference_data_set, "nh", str(osyear), str(oeyear)])
-            + ".nc"
-        )
-        fname_nh = os.path.join(nc_dir, fname_nh)
-        nc_climo.to_netcdf(fname_nh)
-        del nc_climo
+
+    # Generate netcdf files of climatologies
+    nc_dir = os.path.join(metrics_output_path, "netcdf")
+    if not os.path.exists(nc_dir):
+        os.mkdir(nc_dir)
+    nc_climo = lib.get_clim(obs, obs_var, ds=None)
+    print("Writing climatology netcdf")
+    fname_nh = (
+        "sic_clim_"
+        + "_".join([reference_data_set, "nh", str(osyear), str(oeyear)])
+        + ".nc"
+    )
+    fname_nh = os.path.join(nc_dir, fname_nh)
+    nc_climo.to_netcdf(fname_nh, "w")
+    del nc_climo
     obs.close()
 
     antarctic_clims = {}
@@ -167,6 +182,8 @@ if __name__ == "__main__":
     mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
     obs[obs_var] = obs[obs_var].where(mask < 1)
     clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
+    sh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
+    print(sh_obs_area)
     antarctic_clims = {
         "antarctic": clims["antarctic"],
         "io": clims["io"],
@@ -180,21 +197,21 @@ if __name__ == "__main__":
         "sp": means["sp"],
         "sa": means["sa"],
     }
-    if to_nc:
-        # Generate netcdf files of climatologies
-        nc_dir = os.path.join(metrics_output_path, "netcdf")
-        if not os.path.exists(nc_dir):
-            os.mkdir(nc_dir)
-        nc_climo = lib.get_clim(obs, obs_var, ds=None)
-        print("Writing climatology netcdf")
-        fname_sh = (
-            "sic_clim_"
-            + "_".join([reference_data_set, "sh", str(osyear), str(oeyear)])
-            + ".nc"
-        )
-        fname_sh = os.path.join(nc_dir, fname_sh)
-        nc_climo.to_netcdf(fname_sh)
-        del nc_climo
+
+    # Generate netcdf files of climatologies
+    nc_dir = os.path.join(metrics_output_path, "netcdf")
+    if not os.path.exists(nc_dir):
+        os.mkdir(nc_dir)
+    nc_climo = lib.get_clim(obs, obs_var, ds=None)
+    print("Writing climatology netcdf")
+    fname_sh = (
+        "sic_clim_"
+        + "_".join([reference_data_set, "sh", str(osyear), str(oeyear)])
+        + ".nc"
+    )
+    fname_sh = os.path.join(nc_dir, fname_sh)
+    nc_climo.to_netcdf(fname_sh, "w")
+    del nc_climo
     obs.close()
 
     obs_clims = {reference_data_set: {}}
@@ -206,13 +223,16 @@ if __name__ == "__main__":
         obs_clims[reference_data_set][item] = arctic_clims[item]
         obs_means[reference_data_set][item] = arctic_means[item]
 
-    #### Do model part
+    # -----------------------------
+    # Model (or non-reference) data
+    # -----------------------------
 
     # Needs to weigh months by length for metrics later
     clim_wts = [31.0, 28.0, 31.0, 30.0, 31.0, 30.0, 31.0, 31.0, 30.0, 31.0, 30.0, 31.0]
     clim_wts = [x / 365 for x in clim_wts]
     # Initialize JSON data
     mse = {}
+    mse_wgt = {}
     df = {
         "Reference": {
             "arctic": {reference_data_set: {}},
@@ -306,6 +326,7 @@ if __name__ == "__main__":
             "%(realization)": "*",
         }
         if find_all_realizations:
+            print("finding all realizations")
             test_data_full_path_tmp = os.path.join(test_data_path, filename_template)
             test_data_full_path_tmp = lib.replace_multi(test_data_full_path_tmp, tags)
             ncfiles = glob.glob(test_data_full_path_tmp)
@@ -324,6 +345,7 @@ if __name__ == "__main__":
             list_of_runs = realizations
         else:
             list_of_runs = realizations
+        print(list_of_runs)
 
         # Model grid area
         print(lib.replace_multi(area_template, tags))
@@ -376,13 +398,22 @@ if __name__ == "__main__":
                 if (ds[xvar] < -180).any():
                     ds[xvar] = ds[xvar].where(ds[xvar] >= -180, ds[xvar] + 360)
 
+                if ds.time.encoding["calendar"] == "360_day":
+                    day360 = True
+                else:
+                    day360 = False
+
                 # Get time slice if year parameters exist
                 if start_year is not None:
+                    if day360:
+                        final_day = 30
+                    else:
+                        final_day = 31
                     ds = ds.sel(
                         {
                             "time": slice(
                                 "{0}-01-01".format(start_year),
-                                "{0}-12-31".format(end_year),
+                                "{0}-12-{1}".format(end_year, final_day),
                             )
                         }
                     )
@@ -394,26 +425,74 @@ if __name__ == "__main__":
                         str(int(ds.time.dt.year[-1])),
                     ]
 
-                mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
-                ds[var] = ds[var].where(mask < 1)
+                # Update year list info in metrics JSON structure
+                metrics["model_year_range"][model] = yr_range
 
-                if to_nc:
-                    # Generate netcdf files of climatologies
-                    nc_dir = os.path.join(metrics_output_path, "netcdf")
-                    if not os.path.exists(nc_dir):
-                        os.mkdir(nc_dir)
-                    nc_climo = lib.get_clim(ds, var, ds=None)
-                    print("Writing climatology netcdf")
-                    fname = (
-                        "sic_clim_"
-                        + "_".join([model, run, yr_range[0], yr_range[1]])
-                        + ".nc"
-                    )
-                    fname = os.path.join(nc_dir, fname)
-                    nc_climo.to_netcdf(fname)
-                    del nc_climo
+                # Land/sea mask
+                try:
+                    tags = {
+                        "%(model)": model,
+                        "%(model_version)": model,
+                        "%(realization)": run,
+                    }
+                    sft_filename_list = lib.replace_multi(sft_filename_template, tags)
+                    sft_filename = glob.glob(sft_filename_list)[0]
+                    sft_exists = True
+                except (AttributeError, IndexError):
+                    print("No land/sea mask file found for", model, run)
+                    # Set flag to generate sftlf after loading data
+                    sft_exists = False
+                if ~sft_exists and no_mask:
+                    # Make mask with all zeros, effectively no masking.
+                    print("--no_mask is True. No land/sea mask applied.")
+                    mask = xarray.zeros_like(ds[var].isel({"time": 0}))
+                elif sft_exists:
+                    sft = lib.load_dataset(sft_filename)
+                    # SFTOF and siconc don't always have same coordinate
+                    # names in CMIP data
+                    ds_lat = get_latitude_key(ds)
+                    ds_lon = get_longitude_key(ds)
+                    sft_lat = get_latitude_key(sft)
+                    sft_lon = get_longitude_key(sft)
+                    sft = sft.rename({sft_lon: ds_lon, sft_lat: ds_lat})
+                    if "sftlf" in sft.keys():
+                        mask = sft["sftlf"]
+                    elif "sftof" in sft.keys():
+                        # SFTOF uses 100 for ocean, 0 for land
+                        mask = xarray.where(
+                            sft["sftof"] > 0, 1 - sft["sftof"] / 100.0, 1
+                        )
+                    else:
+                        print(
+                            "Invalid land/sea mask. Land/sea mask must contain variable 'sftlf' or 'sftof'"
+                        )
+                        continue
+                    if np.max(mask) > 50:
+                        mask = mask / 100
+                else:
+                    print("Creating land/sea mask.")
+                    mask = create_land_sea_mask(ds, lon_key=xvar, lat_key=yvar)
+                ds[var] = ds[var].where(mask < 1)
+                # Option to weigh sea ice coverage by fraction of cell that is ocean.
+                # area[area_var] = area[area_var] * (1 - mask)
+
+                # Generate netcdf files of climatologies
+                nc_dir = os.path.join(metrics_output_path, "netcdf")
+                if not os.path.exists(nc_dir):
+                    os.mkdir(nc_dir)
+                nc_climo = lib.get_clim(ds, var, ds=None)
+                fname = (
+                    "sic_clim_"
+                    + "_".join([model, run, yr_range[0], yr_range[1]])
+                    + ".nc"
+                )
+                fname = os.path.join(nc_dir, fname)
+                print("Writing climatology netcdf", fname)
+                nc_climo.to_netcdf(fname, "w")
+                del nc_climo
 
                 # Get regions
+                print("Getting regional areas for run")
                 clims, means = lib.process_by_region(ds, var, area[area_var].data, pole)
 
                 ds.close()
@@ -422,9 +501,13 @@ if __name__ == "__main__":
                     real_clim[rgn][run] = clims[rgn]
                     real_mean[rgn][run] = means[rgn]
 
+            # --------------------
+            # Get regional metrics
+            # --------------------
             print("\n-------------------------------------------")
             print("Calculating model regional average metrics \nfor ", model)
             print("--------------------------------------------")
+
             for rgn in real_clim:
                 print(rgn)
                 # Get model mean
@@ -454,7 +537,7 @@ if __name__ == "__main__":
                     df[model][rgn][run].update(
                         {
                             "monthly_climatology": [],
-                            "time_mean_extent": str(real_mean[rgn][run] * 1e-6),
+                            "time_mean_extent": real_mean[rgn][run] * 1e-6,
                         }
                     )
                     if isinstance(
@@ -464,32 +547,111 @@ if __name__ == "__main__":
                     else:
                         df_list = list(real_clim[rgn][run][var].data)
                     df[model][rgn][run]["monthly_climatology"] = [
-                        str(x * 1e-6) for x in df_list
+                        x * 1e-6 for x in df_list
                     ]
 
                     # Get errors, convert to 1e12 km^-4
-                    mse[model][rgn][run][reference_data_set]["monthly_clim"][
-                        "mse"
-                    ] = str(
+                    if day360:
+                        weights = None
+                    else:
+                        weights = clim_wts
+                    mse[model][rgn][run][reference_data_set]["monthly_clim"]["mse"] = (
                         lib.mse_t(
                             real_clim[rgn][run][var] - real_mean[rgn][run],
                             obs_clims[reference_data_set][rgn][obs_var]
                             - obs_means[reference_data_set][rgn],
-                            weights=clim_wts,
+                            weights=weights,
                         )
                         * 1e-12
                     )
-                    mse[model][rgn][run][reference_data_set]["total_extent"][
-                        "mse"
-                    ] = str(
+                    mse[model][rgn][run][reference_data_set]["total_extent"]["mse"] = (
                         lib.mse_model(
                             real_mean[rgn][run], obs_means[reference_data_set][rgn]
                         )
                         * 1e-12
                     )
+            # --------------------------
+            # Get sector weighted metric
+            # --------------------------
+            run_list = [x for x in real_clim["arctic"]]
+            wgted_nh_te = 0
+            wgted_nh_clim = 0
+            wgted_sh_te = 0
+            wgted_sh_clim = 0
+            n_nh = len(run_list)
+            n_sh = len(run_list)
+            for r in run_list:
+                # Skip run if regions are missing
+                if ~np.isnan(
+                    mse[model]["arctic"][r][reference_data_set]["total_extent"]["mse"]
+                ):
+                    for rgn in ["ca", "na", "np"]:
+                        # Take the mse for the region and weigh by relative area of sector
+                        wgted_nh_te += (
+                            mse[model][rgn][r][reference_data_set]["total_extent"][
+                                "mse"
+                            ]
+                            * nh_obs_area[rgn]
+                            / nh_obs_area["arctic"]
+                        )
+                        wgted_nh_clim += (
+                            mse[model][rgn][r][reference_data_set]["monthly_clim"][
+                                "mse"
+                            ]
+                            * nh_obs_area[rgn]
+                            / nh_obs_area["arctic"]
+                        )
+                else:
+                    n_nh -= 1
+                if ~np.isnan(
+                    mse[model]["antarctic"][r][reference_data_set]["total_extent"][
+                        "mse"
+                    ]
+                ):
+                    for rgn in ["sa", "io", "sp"]:
+                        wgted_sh_te += (
+                            mse[model][rgn][r][reference_data_set]["total_extent"][
+                                "mse"
+                            ]
+                            * sh_obs_area[rgn]
+                            / sh_obs_area["antarctic"]
+                        )
+                        wgted_sh_clim += (
+                            mse[model][rgn][r][reference_data_set]["monthly_clim"][
+                                "mse"
+                            ]
+                            * sh_obs_area[rgn]
+                            / sh_obs_area["antarctic"]
+                        )
+                else:
+                    n_sh -= 1
+                # Error values for single realization
+                mse[model]["arctic"][r][reference_data_set]["total_extent"][
+                    "sector_mse"
+                ] = wgted_nh_te
+                mse[model]["arctic"][r][reference_data_set]["monthly_clim"][
+                    "sector_mse"
+                ] = wgted_nh_clim
+                mse[model]["antarctic"][r][reference_data_set]["total_extent"][
+                    "sector_mse"
+                ] = wgted_sh_te
+                mse[model]["antarctic"][r][reference_data_set]["monthly_clim"][
+                    "sector_mse"
+                ] = wgted_sh_clim
+            # Error values averaged over all realizations
+            mse[model]["arctic"]["model_mean"][reference_data_set]["total_extent"][
+                "sector_mse"
+            ] = (wgted_nh_te / n_nh)
+            mse[model]["arctic"]["model_mean"][reference_data_set]["monthly_clim"][
+                "sector_mse"
+            ] = (wgted_nh_clim / n_nh)
+            mse[model]["antarctic"]["model_mean"][reference_data_set]["total_extent"][
+                "sector_mse"
+            ] = (wgted_sh_te / n_sh)
+            mse[model]["antarctic"]["model_mean"][reference_data_set]["monthly_clim"][
+                "sector_mse"
+            ] = (wgted_sh_clim / n_sh)
 
-            # Update year list
-            metrics["model_year_range"][model] = [str(start_year), str(end_year)]
         else:
             for rgn in mse[model]:
                 # Set up metrics dictionary
@@ -499,9 +661,9 @@ if __name__ == "__main__":
                 }
                 metrics["model_year_range"][model] = ["", ""]
 
-    # -----------------
-    # Update metrics
-    # -----------------
+    # -------------------
+    # Update metrics JSON
+    # -------------------
     metrics["RESULTS"] = mse
 
     metricsfile = os.path.join(metrics_output_path, "sea_ice_metrics.json")
@@ -518,18 +680,18 @@ if __name__ == "__main__":
         "metrics",
         metricsfile,
         "metrics_JSON",
-        "JSON file containig regional sea ice metrics",
+        "JSON file containing regional sea ice metrics",
     )
 
-    # -----------------
+    # ----------------------
     # Update supporting data
-    # -----------------
+    # ----------------------
     # Write obs data to dict
     for rgn in df["Reference"]:
         df["Reference"][rgn][reference_data_set].update(
             {
                 "monthly_climatology": [],
-                "time_mean_extent": str(obs_means[reference_data_set][rgn] * 1e-6),
+                "time_mean_extent": obs_means[reference_data_set][rgn] * 1e-6,
             }
         )
         if isinstance(
@@ -539,7 +701,7 @@ if __name__ == "__main__":
         else:
             df_list = list(obs_clims[reference_data_set][rgn][obs_var].data)
         df["Reference"][rgn][reference_data_set]["monthly_climatology"] = [
-            str(x * 1e-6) for x in df_list
+            x * 1e-6 for x in df_list
         ]
 
     # Write data to file
@@ -561,9 +723,9 @@ if __name__ == "__main__":
         "JSON file containig regional sea ice data",
     )
 
-    # ----------------
-    # Make figure
-    # ----------------
+    # ------------
+    # Make figures
+    # ------------
     if plot:
         fig_dir = os.path.join(metrics_output_path, "plot")
         if not os.path.exists(fig_dir):
@@ -611,6 +773,9 @@ if __name__ == "__main__":
                 meta = fig.create_summary_maps_arctic(
                     nc_climo, var, fig_dir, meta, tmp_model
                 )
+                meta = fig.create_annual_mean_map_arctic(
+                    nc_climo, var, fig_dir, meta, tmp_model
+                )
                 tmp_title = "{0}-{1} Antarctic sea ice".format(yr_range[0], yr_range[1])
                 meta = fig.create_antarctic_map(
                     nc_climo,
@@ -623,6 +788,9 @@ if __name__ == "__main__":
                     tmp_title,
                 )
                 meta = fig.create_summary_maps_antarctic(
+                    nc_climo, var, fig_dir, meta, tmp_model
+                )
+                meta = fig.create_annual_mean_map_antarctic(
                     nc_climo, var, fig_dir, meta, tmp_model
                 )
             except Exception as e:
@@ -656,6 +824,31 @@ if __name__ == "__main__":
             meta = fig.create_summary_maps_antarctic(
                 nc_climo_mean, var, fig_dir, meta, tmp_model
             )
+
+            meta = fig.create_annual_mean_map_arctic(
+                nc_climo_mean, var, fig_dir, meta, tmp_model
+            )
+            meta = fig.create_annual_mean_map_antarctic(
+                nc_climo_mean, var, fig_dir, meta, tmp_model
+            )
+
+    # --------------------------------
+    # Delete netcdf files if unwanted
+    # --------------------------------
+    if not to_nc:
+        print("Cleaning up.")
+        print("Deleting netcdf files.")
+        nc_dir = os.path.join(metrics_output_path, "netcdf/*")
+        for file in glob.glob(nc_dir):
+            os.remove(file)
+        try:
+            os.rmdir(os.path.join(metrics_output_path, "netcdf"))
+        except OSError as e:
+            print(
+                "Could not delete netcdf directory ",
+                os.path.join(metrics_output_path, "netcdf"),
+            )
+            print(e)
 
     # -----------------
     # Update and write
