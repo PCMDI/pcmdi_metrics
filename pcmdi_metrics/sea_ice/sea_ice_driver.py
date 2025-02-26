@@ -555,9 +555,7 @@ if __name__ == "__main__":
                         weights = None
                     else:
                         weights = clim_wts
-                    mse[model][rgn][run][reference_data_set]["monthly_clim"][
-                        "mse"
-                    ] = str(
+                    mse[model][rgn][run][reference_data_set]["monthly_clim"]["mse"] = (
                         lib.mse_t(
                             real_clim[rgn][run][var] - real_mean[rgn][run],
                             obs_clims[reference_data_set][rgn][obs_var]
@@ -566,9 +564,7 @@ if __name__ == "__main__":
                         )
                         * 1e-12
                     )
-                    mse[model][rgn][run][reference_data_set]["total_extent"][
-                        "mse"
-                    ] = str(
+                    mse[model][rgn][run][reference_data_set]["total_extent"]["mse"] = (
                         lib.mse_model(
                             real_mean[rgn][run], obs_means[reference_data_set][rgn]
                         )
