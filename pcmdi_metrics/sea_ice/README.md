@@ -70,7 +70,7 @@ A [demo parameter file](https://github.com/PCMDI/pcmdi_metrics/blob/405_sic_ao/p
 
 ## Postprocessing
 
-A script is provided to create a multi-model bar chart using results from multiple runs of the sea ice driver. This script can be found in `./scripts/sea_ice_figures.py`. 
+Two postprocessing scripts are provided in `./scripts/sea_ice_figures.py`. The script `sea_ice_figures.py` creates a multi-model bar chart for all sectors using results from a model ensemble. The script `sea_ice_total_errors.py` plots the total errors for the Arctic and Antarctic for a model ensemble.
 
 Example command:
 ```
