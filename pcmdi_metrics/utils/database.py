@@ -6,7 +6,12 @@ import requests
 
 
 def database_metrics(
-    mip: str, model: str, exp: str, metrics: list = None, debug: bool = False, model_member_list_only:bool=False
+    mip: str,
+    model: str,
+    exp: str,
+    metrics: list = None,
+    debug: bool = False,
+    model_member_list_only: bool = False,
 ):
     """
     Retrieves JSON files from the PMP Archive based on specified mip, model, exp, and metrics.
