@@ -6,7 +6,7 @@ import requests
 
 
 def database_metrics(
-    mip: str, model: str, exp: str, metrics: list = None, debug: bool = False
+    mip: str, model: str, exp: str, metrics: list = None, debug: bool = False, model_member_list_only:bool=False
 ):
     """
     Retrieves JSON files from the PMP Archive based on specified mip, model, exp, and metrics.
@@ -23,6 +23,8 @@ def database_metrics(
         List of metrics (e.g., 'enso_metric', 'mean_climate', 'mjo', 'variability_modes', 'qbo-mjo'). Default None retrieves files for all metrics.
     debug : bool, optional
         If true, print more interim outputs for debugging.
+    model_member_list_only : bool=False
+        If true, limits json list to first file containing model details.
     Returns
     -------
     dict
@@ -38,6 +40,9 @@ def database_metrics(
     for metric in metrics:
         json_url_list = find_pmp_archive_json_urls(metric, mip, exp)
         subdirs = subdir_dict.get(metric, {}).get(mip, {}).get(exp, ".")
+
+        if model_member_list_only:
+            json_url_list = json_url_list[0:1]
 
         if debug:
             print(metric, json_url_list, subdirs)
