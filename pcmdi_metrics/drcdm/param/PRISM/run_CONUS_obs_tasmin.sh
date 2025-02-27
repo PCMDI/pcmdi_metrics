@@ -11,4 +11,3 @@ source /global/homes/a/aordonez/miniconda3/etc/profile.d/conda.sh
 conda activate pmp_drcdm
 
 srun time drcdm_driver.py -p /global/homes/a/aordonez/pmp_param/drcdm/obs/PRISM/drcdm_PRISM_tasmin.py
-
