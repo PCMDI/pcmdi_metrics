@@ -85,3 +85,6 @@ Edit the metrics output path in pcmdi_metrics/drcdm/param/drcdm_param.py to be a
 
 To launch a run with the demo parameter file use:
 `drcdm_driver.py -p pcmdi_metrics/drcdm/param/drcdm_param.py`
+
+# For developers
+Some testing and issues have been documented in the original DRCDM PR: https://github.com/PCMDI/pcmdi_metrics/pull/1131
