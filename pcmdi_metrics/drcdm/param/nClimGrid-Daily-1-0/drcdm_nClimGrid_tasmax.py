@@ -7,10 +7,12 @@ realization = ["nClimGrid-Daily-1-0"]
 test_data_path = "/pscratch/sd/a/aordonez/nclim/tasmax/"
 filename_template = "tasmax_day_nClimGrid-Daily-1-0_PCMDI_5km_*.nc"
 
-metrics_output_path = "/pscratch/sd/a/aordonez/pmp_data/drcdm/obs/tasmax/nClimGrid-Daily-1-0/"
+metrics_output_path = (
+    "/pscratch/sd/a/aordonez/pmp_data/drcdm/obs/tasmax/nClimGrid-Daily-1-0/"
+)
 
 
-ModUnitsAdjust=(True, 'KtoF', 0, 'F')
+ModUnitsAdjust = (True, "KtoF", 0, "F")
 dec_mode = "DJF"
 annual_strict = False
 drop_incomplete_djf = False

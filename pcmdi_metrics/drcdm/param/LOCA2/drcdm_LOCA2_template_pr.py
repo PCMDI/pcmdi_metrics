@@ -13,9 +13,9 @@ ModUnitsAdjust = (
     86400.0,
     "mm/day",
 )
-dec_mode = "JFD" # Use JFD to match Tempest Extremes results
-annual_strict = False # This only matters for 5-day values
-drop_incomplete_djf = False # False to match Tempest Extremes
+dec_mode = "JFD"  # Use JFD to match Tempest Extremes results
+annual_strict = False  # This only matters for 5-day values
+drop_incomplete_djf = False  # False to match Tempest Extremes
 regrid = False
 plot = True
 netcdf = True

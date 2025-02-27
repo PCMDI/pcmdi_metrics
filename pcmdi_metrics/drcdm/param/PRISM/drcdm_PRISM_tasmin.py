@@ -10,7 +10,7 @@ filename_template = "tasmin_day_PRISM-M3_PCMDI_gn_*.nc"
 metrics_output_path = "/pscratch/sd/a/aordonez/pmp_data/drcdm/obs/tasmin/PRISM_2025/"
 
 
-ModUnitsAdjust=(True, 'CtoF', 0, 'F')
+ModUnitsAdjust = (True, "CtoF", 0, "F")
 dec_mode = "DJF"
 annual_strict = False
 drop_incomplete_djf = False

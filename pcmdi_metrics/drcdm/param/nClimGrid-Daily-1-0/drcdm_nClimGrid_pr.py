@@ -7,7 +7,9 @@ realization = ["nClimGrid-Daily-1-0"]
 test_data_path = "/pscratch/sd/a/aordonez/nclim/pr/"
 filename_template = "pr_day_nClimGrid-Daily-1-0_PCMDI_5km_*.nc"
 
-metrics_output_path = "/pscratch/sd/a/aordonez/pmp_data/drcdm/obs/pr/nClimGrid-Daily-1-0/"
+metrics_output_path = (
+    "/pscratch/sd/a/aordonez/pmp_data/drcdm/obs/pr/nClimGrid-Daily-1-0/"
+)
 
 ModUnitsAdjust = (
     True,
