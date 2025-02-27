@@ -89,7 +89,11 @@ if __name__ == "__main__":
     find_all_realizations, realizations = lib.set_up_realizations(realization)
     print("Find all realizations:", find_all_realizations)
 
-    #### Do Obs part
+    # --------------------------
+    # Process observations first
+    # --------------------------
+    # This section is hard-coded to work with the
+    # OSI-SAF data in obs4mips.
     arctic_clims = {}
     arctic_means = {}
 
@@ -119,7 +123,8 @@ if __name__ == "__main__":
     obs[obs_var] = obs[obs_var].where(mask < 1)
     # Get regions
     clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
-
+    nh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
+    print(nh_obs_area)
     arctic_clims = {
         "arctic": clims["arctic"],
         "ca": clims["ca"],
@@ -177,6 +182,8 @@ if __name__ == "__main__":
     mask = create_land_sea_mask(obs, lon_key="lon", lat_key="lat")
     obs[obs_var] = obs[obs_var].where(mask < 1)
     clims, means = lib.process_by_region(obs, obs_var, area_val, pole)
+    sh_obs_area = lib.get_ocean_area_for_regions(obs, obs_var, area_val, pole)
+    print(sh_obs_area)
     antarctic_clims = {
         "antarctic": clims["antarctic"],
         "io": clims["io"],
@@ -216,13 +223,16 @@ if __name__ == "__main__":
         obs_clims[reference_data_set][item] = arctic_clims[item]
         obs_means[reference_data_set][item] = arctic_means[item]
 
-    #### Do model part
+    # -----------------------------
+    # Model (or non-reference) data
+    # -----------------------------
 
     # Needs to weigh months by length for metrics later
     clim_wts = [31.0, 28.0, 31.0, 30.0, 31.0, 30.0, 31.0, 31.0, 30.0, 31.0, 30.0, 31.0]
     clim_wts = [x / 365 for x in clim_wts]
     # Initialize JSON data
     mse = {}
+    mse_wgt = {}
     df = {
         "Reference": {
             "arctic": {reference_data_set: {}},
@@ -415,6 +425,9 @@ if __name__ == "__main__":
                         str(int(ds.time.dt.year[-1])),
                     ]
 
+                # Update year list info in metrics JSON structure
+                metrics["model_year_range"][model] = yr_range
+
                 # Land/sea mask
                 try:
                     tags = {
@@ -488,9 +501,13 @@ if __name__ == "__main__":
                     real_clim[rgn][run] = clims[rgn]
                     real_mean[rgn][run] = means[rgn]
 
+            # --------------------
+            # Get regional metrics
+            # --------------------
             print("\n-------------------------------------------")
             print("Calculating model regional average metrics \nfor ", model)
             print("--------------------------------------------")
+
             for rgn in real_clim:
                 print(rgn)
                 # Get model mean
@@ -520,7 +537,7 @@ if __name__ == "__main__":
                     df[model][rgn][run].update(
                         {
                             "monthly_climatology": [],
-                            "time_mean_extent": str(real_mean[rgn][run] * 1e-6),
+                            "time_mean_extent": real_mean[rgn][run] * 1e-6,
                         }
                     )
                     if isinstance(
@@ -530,7 +547,7 @@ if __name__ == "__main__":
                     else:
                         df_list = list(real_clim[rgn][run][var].data)
                     df[model][rgn][run]["monthly_climatology"] = [
-                        str(x * 1e-6) for x in df_list
+                        x * 1e-6 for x in df_list
                     ]
 
                     # Get errors, convert to 1e12 km^-4
@@ -538,9 +555,7 @@ if __name__ == "__main__":
                         weights = None
                     else:
                         weights = clim_wts
-                    mse[model][rgn][run][reference_data_set]["monthly_clim"][
-                        "mse"
-                    ] = str(
+                    mse[model][rgn][run][reference_data_set]["monthly_clim"]["mse"] = (
                         lib.mse_t(
                             real_clim[rgn][run][var] - real_mean[rgn][run],
                             obs_clims[reference_data_set][rgn][obs_var]
@@ -549,17 +564,94 @@ if __name__ == "__main__":
                         )
                         * 1e-12
                     )
-                    mse[model][rgn][run][reference_data_set]["total_extent"][
-                        "mse"
-                    ] = str(
+                    mse[model][rgn][run][reference_data_set]["total_extent"]["mse"] = (
                         lib.mse_model(
                             real_mean[rgn][run], obs_means[reference_data_set][rgn]
                         )
                         * 1e-12
                     )
+            # --------------------------
+            # Get sector weighted metric
+            # --------------------------
+            run_list = [x for x in real_clim["arctic"]]
+            wgted_nh_te = 0
+            wgted_nh_clim = 0
+            wgted_sh_te = 0
+            wgted_sh_clim = 0
+            n_nh = len(run_list)
+            n_sh = len(run_list)
+            for r in run_list:
+                # Skip run if regions are missing
+                if ~np.isnan(
+                    mse[model]["arctic"][r][reference_data_set]["total_extent"]["mse"]
+                ):
+                    for rgn in ["ca", "na", "np"]:
+                        # Take the mse for the region and weigh by relative area of sector
+                        wgted_nh_te += (
+                            mse[model][rgn][r][reference_data_set]["total_extent"][
+                                "mse"
+                            ]
+                            * nh_obs_area[rgn]
+                            / nh_obs_area["arctic"]
+                        )
+                        wgted_nh_clim += (
+                            mse[model][rgn][r][reference_data_set]["monthly_clim"][
+                                "mse"
+                            ]
+                            * nh_obs_area[rgn]
+                            / nh_obs_area["arctic"]
+                        )
+                else:
+                    n_nh -= 1
+                if ~np.isnan(
+                    mse[model]["antarctic"][r][reference_data_set]["total_extent"][
+                        "mse"
+                    ]
+                ):
+                    for rgn in ["sa", "io", "sp"]:
+                        wgted_sh_te += (
+                            mse[model][rgn][r][reference_data_set]["total_extent"][
+                                "mse"
+                            ]
+                            * sh_obs_area[rgn]
+                            / sh_obs_area["antarctic"]
+                        )
+                        wgted_sh_clim += (
+                            mse[model][rgn][r][reference_data_set]["monthly_clim"][
+                                "mse"
+                            ]
+                            * sh_obs_area[rgn]
+                            / sh_obs_area["antarctic"]
+                        )
+                else:
+                    n_sh -= 1
+                # Error values for single realization
+                mse[model]["arctic"][r][reference_data_set]["total_extent"][
+                    "sector_mse"
+                ] = wgted_nh_te
+                mse[model]["arctic"][r][reference_data_set]["monthly_clim"][
+                    "sector_mse"
+                ] = wgted_nh_clim
+                mse[model]["antarctic"][r][reference_data_set]["total_extent"][
+                    "sector_mse"
+                ] = wgted_sh_te
+                mse[model]["antarctic"][r][reference_data_set]["monthly_clim"][
+                    "sector_mse"
+                ] = wgted_sh_clim
+            # Error values averaged over all realizations
+            mse[model]["arctic"]["model_mean"][reference_data_set]["total_extent"][
+                "sector_mse"
+            ] = (wgted_nh_te / n_nh)
+            mse[model]["arctic"]["model_mean"][reference_data_set]["monthly_clim"][
+                "sector_mse"
+            ] = (wgted_nh_clim / n_nh)
+            mse[model]["antarctic"]["model_mean"][reference_data_set]["total_extent"][
+                "sector_mse"
+            ] = (wgted_sh_te / n_sh)
+            mse[model]["antarctic"]["model_mean"][reference_data_set]["monthly_clim"][
+                "sector_mse"
+            ] = (wgted_sh_clim / n_sh)
 
-            # Update year list
-            metrics["model_year_range"][model] = [str(start_year), str(end_year)]
         else:
             for rgn in mse[model]:
                 # Set up metrics dictionary
@@ -569,9 +661,9 @@ if __name__ == "__main__":
                 }
                 metrics["model_year_range"][model] = ["", ""]
 
-    # -----------------
-    # Update metrics
-    # -----------------
+    # -------------------
+    # Update metrics JSON
+    # -------------------
     metrics["RESULTS"] = mse
 
     metricsfile = os.path.join(metrics_output_path, "sea_ice_metrics.json")
@@ -591,15 +683,15 @@ if __name__ == "__main__":
         "JSON file containing regional sea ice metrics",
     )
 
-    # -----------------
+    # ----------------------
     # Update supporting data
-    # -----------------
+    # ----------------------
     # Write obs data to dict
     for rgn in df["Reference"]:
         df["Reference"][rgn][reference_data_set].update(
             {
                 "monthly_climatology": [],
-                "time_mean_extent": str(obs_means[reference_data_set][rgn] * 1e-6),
+                "time_mean_extent": obs_means[reference_data_set][rgn] * 1e-6,
             }
         )
         if isinstance(
@@ -609,7 +701,7 @@ if __name__ == "__main__":
         else:
             df_list = list(obs_clims[reference_data_set][rgn][obs_var].data)
         df["Reference"][rgn][reference_data_set]["monthly_climatology"] = [
-            str(x * 1e-6) for x in df_list
+            x * 1e-6 for x in df_list
         ]
 
     # Write data to file
@@ -631,9 +723,9 @@ if __name__ == "__main__":
         "JSON file containig regional sea ice data",
     )
 
-    # ----------------
-    # Make figure
-    # ----------------
+    # ------------
+    # Make figures
+    # ------------
     if plot:
         fig_dir = os.path.join(metrics_output_path, "plot")
         if not os.path.exists(fig_dir):
