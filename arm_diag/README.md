@@ -30,6 +30,8 @@ edit arm_diag_driver.py for user defined paths
 
 python arm_diag_driver.py
 
+See ARM Diags [README](https://github.com/ARM-DOE/arm-gcm-diagnostics/blob/master/README.rst) for further detail
+
 ## References
 
 Overview of the ARM-Diags:
