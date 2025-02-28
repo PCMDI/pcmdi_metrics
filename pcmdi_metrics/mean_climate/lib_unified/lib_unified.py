@@ -212,6 +212,7 @@ def get_ref_catalogue(ref_catalogue_file_path, ref_data_head=None):
     if ref_data_head:
         for var in refs_dict:
             for data in refs_dict[var]:
+                data_path = ""
                 potential_keys = ["template", "obs4MIPs-template"]
                 for potential_key in potential_keys:
                     if potential_key in refs_dict[var][data].keys():
@@ -328,6 +329,7 @@ def process_dataset(
         print(f"Processing data for: {ref}")
         # Construct paths
         data_path = get_ref_data_path(refs_dict, var, ref)
+        print("jwlee123, ref, data_path:", ref, data_path)
         out_path = get_interim_out_path(interim_output_path_dict_data, "path_ac", var)
         out_path_interp = get_interim_out_path(
             interim_output_path_dict_data, "path_ac_interp", var
@@ -423,7 +425,7 @@ def process_dataset(
         if save_ac_interp_netcdf:
             interp_filename_nc = interp_filename_head.replace(
                 ".nc", f"_{grid_resolution}.nc"
-            )
+            ).replace("_gn_", "_gr_")
             os.makedirs(os.path.join(out_path_interp, version), exist_ok=True)
             ds_ac_interp.to_netcdf(
                 os.path.join(out_path_interp, version, interp_filename_nc)
