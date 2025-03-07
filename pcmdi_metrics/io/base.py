@@ -439,7 +439,7 @@ class Base(cdp.cdp_io.CDPIO, StringConstructor):
 
         # create dimensions
         cmec_data = {"DIMENSIONS": {}, "SCHEMA": {}}
-        cmec_data["DIMENSIONS"] = {"dimensions": {}, "json_structure": []}
+        cmec_data["DIMENSIONS"] = {"json_structure": []}
         cmec_data["SCHEMA"] = {"name": "CMEC", "package": "PMP", "version": "v1"}
 
         # copy other fields except results
@@ -513,7 +513,7 @@ class Base(cdp.cdp_io.CDPIO, StringConstructor):
             return keylist
 
         dimensions = get_dimensions(cmec_data["RESULTS"].copy(), data["json_structure"])
-        cmec_data["DIMENSIONS"]["dimensions"] = dimensions
+        cmec_data["DIMENSIONS"].update(dimensions)
 
         cmec_file_name = file_name.replace(".json", "_cmec.json")
         f_cmec = open(cmec_file_name, "w")
