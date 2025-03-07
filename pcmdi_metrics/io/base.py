@@ -439,7 +439,7 @@ class Base(cdp.cdp_io.CDPIO, StringConstructor):
 
         # create dimensions
         cmec_data = {"DIMENSIONS": {}, "SCHEMA": {}}
-        cmec_data["DIMENSIONS"] = {"dimensions": {}, "json_structure": []}
+        cmec_data["DIMENSIONS"] = {"json_structure": []}
         cmec_data["SCHEMA"] = {"name": "CMEC", "package": "PMP", "version": "v1"}
 
         # copy other fields except results
@@ -470,9 +470,17 @@ class Base(cdp.cdp_io.CDPIO, StringConstructor):
                         # process sub-dictionary
                         tmp_dict = recursive_replace(new_dict[key], extra_fields)
                         new_dict[key] = tmp_dict
-                    # convert string metrics to float
+                    # convert string metrics to float or None
                     if isinstance(new_dict[key], str):
-                        new_dict[key] = float(new_dict[key])
+                        if new_dict[key] == "NaN":
+                            new_dict[key] = None
+                        else:
+                            new_dict[key] = float(new_dict[key])
+                    # convert NaN to None
+                    elif not isinstance(new_dict[key], dict):
+                        if not isinstance(new_dict[key], list):
+                            if numpy.isnan(new_dict[key]):
+                                new_dict[key] = None
             return new_dict
 
         extra_fields = [
@@ -513,7 +521,7 @@ class Base(cdp.cdp_io.CDPIO, StringConstructor):
             return keylist
 
         dimensions = get_dimensions(cmec_data["RESULTS"].copy(), data["json_structure"])
-        cmec_data["DIMENSIONS"]["dimensions"] = dimensions
+        cmec_data["DIMENSIONS"].update(dimensions)
 
         cmec_file_name = file_name.replace(".json", "_cmec.json")
         f_cmec = open(cmec_file_name, "w")
