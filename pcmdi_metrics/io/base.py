@@ -352,6 +352,7 @@ class Base(cdp.cdp_io.CDPIO, StringConstructor):
         include_YAML=False,
         include_history=False,
         include_script=False,
+        include_provenance=True,
         *args,
         **kwargs,
     ):
@@ -389,20 +390,26 @@ class Base(cdp.cdp_io.CDPIO, StringConstructor):
                 f = open(file_name)
                 out_dict = json.load(f)
             else:
-                out_dict = OrderedDict({"provenance": generateProvenance()})
+                if include_provenance:
+                    out_dict = OrderedDict({"provenance": generateProvenance()})
+                else:
+                    out_dict = OrderedDict({"provenance": dict()})
             f = open(file_name, "w")
             update_dict(out_dict, data)
-            if "yaml" in out_dict["provenance"]["conda"]:
-                if include_YAML:
-                    out_dict["YAML"] = out_dict["provenance"]["conda"]["yaml"]
-                del out_dict["provenance"]["conda"]["yaml"]
+            if "conda" in out_dict["provenance"]:
+                if "yaml" in out_dict["provenance"]["conda"]:
+                    if include_YAML:
+                        out_dict["YAML"] = out_dict["provenance"]["conda"]["yaml"]
+                    del out_dict["provenance"]["conda"]["yaml"]
 
             if not include_script:
                 if "script" in out_dict["provenance"].keys():
                     del out_dict["provenance"]["script"]
+
             if not include_history:
                 if "history" in out_dict["provenance"].keys():
                     del out_dict["provenance"]["history"]
+
             json.dump(out_dict, f, cls=CDMSDomainsEncoder, *args, **kwargs)
             f.close()
 
