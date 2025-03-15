@@ -859,10 +859,7 @@ for model in models:
                 # Conventional EOF approach as supplementary
                 # - - - - - - - - - - - - - - - - - - - - - - - - -
                 if ConvEOF:
-                    if eofn_mod > 3:
-                        eofn_mod_max = max(3, eofn_mod)
-                    else:
-                        eofn_mod_max = eofn_mod
+                    eofn_mod_max = eofn_mod
 
                     # EOF analysis
                     debug_print("conventional EOF analysis start", debug)
