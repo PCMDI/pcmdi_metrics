@@ -58,4 +58,4 @@ E3SM Workflow
 PMP framework
 
 * Ana Ordonez (former team member)
-* Charles Doutriaux (former team member)
+* Charles Doutriaux (former team member, `LLNL`_)
