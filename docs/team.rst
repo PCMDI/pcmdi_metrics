@@ -13,7 +13,6 @@ Core Development Team
 ---------------------
 
 * `Jiwoo Lee <https://people.llnl.gov/lee1043>`_ (`LLNL`_, PMP Lead)
-* `Ana Ordonez <https://people.llnl.gov/ordonez4>`_ (`LLNL`_)
 * `Peter Gleckler <https://pcmdi.llnl.gov/staff/gleckler/>`_ (`LLNL`_)
 * `Paul Ullrich <https://people.llnl.gov/ullrich4>`_ (`LLNL`_, `PCMDI <https://pcmdi.llnl.gov/>`_ Project PI)
 * `Bo Dong <https://people.llnl.gov/dong12>`_ (`LLNL`_)
@@ -56,4 +55,7 @@ E3SM Workflow
 * Shixuan Zhang (`PNNL`_)
 
 
+PMP framework
 
+* Ana Ordonez (former team member)
+* Charles Doutriaux (former team member)
