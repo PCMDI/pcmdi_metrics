@@ -11,3 +11,4 @@ from .enso_lib import (  # noqa
 
 from .summary_plot_lib.EnsoPlotLib import plot_param
 from .summary_plot_lib.plot import enso_portrait_plot
+from .summary_plot_lib.plot import json_dict_to_numpy_array_list
