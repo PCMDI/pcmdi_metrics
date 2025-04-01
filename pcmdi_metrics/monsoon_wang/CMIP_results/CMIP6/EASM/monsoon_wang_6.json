@@ -1,0 +1,229 @@
+{
+    "provenance": {
+        "platform": {
+            "OS": "Linux",
+            "Version": "4.18.0-553.27.1.el8_10.x86_64",
+            "Name": "gates.llnl.gov"
+        },
+        "userId": "dong12",
+        "osAccess": false,
+        "commandLine": "real_monsoon_wang_driver.py -p cmip_param_cmip6.py",
+        "date": "2025-02-10 17:32:44",
+        "conda": {
+            "Version": "23.7.2",
+            "buildVersion": "not installed",
+            "PythonVersion": "3.10.12.final.0",
+            "Platform": "linux-64"
+        },
+        "packages": {
+            "python": "3.10.16",
+            "cdat_info": "8.2.1",
+            "cdms": "3.1.5",
+            "cdp": "1.7.0",
+            "cdtime": "3.1.4",
+            "cdutil": "8.2.1",
+            "xarray": "2025.1.1",
+            "esmf": "0.8.8",
+            "esmpy": "8.8.0",
+            "matplotlib": "3.10.0",
+            "numpy": "2.0.2",
+            "scipy": "1.15.1",
+            "xcdat": "0.7.3",
+            "PMP": "3.8.2",
+            "PMPObs": "See 'References' key below, for detailed obs provenance information."
+        },
+        "openGL": {
+            "GLX": {
+                "server": {},
+                "client": {}
+            }
+        }
+    },
+    "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference: Gleckler, P. J., C. Doutriaux, P. J. Durack, K. E. Taylor, Y. Zhang, and D. N. Williams, E. Mason, and J. Servonnat (2016), A more powerful reality test for climate models, Eos, 97, doi:10.1029/2016EO051663. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
+    "REFERENCE": "The statistics in this file are based on Wang, B., Kim, HJ., Kikuchi, K. et al. Diagnostic metrics for evaluation of annual and diurnal cycles. Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0",
+    "RESULTS": {
+        "CanESM5": {
+            "r1i1p1": {
+                "EASM": {
+                    "cor": "0.341",
+                    "rmsn": "1.625",
+                    "threat_score": "0.186"
+                }
+            },
+            "r21i1p1": {
+                "EASM": {
+                    "cor": "0.435",
+                    "rmsn": "1.549",
+                    "threat_score": "0.194"
+                }
+            },
+            "r23i1p1": {
+                "EASM": {
+                    "cor": "0.345",
+                    "rmsn": "1.520",
+                    "threat_score": "0.179"
+                }
+            },
+            "r8i1p1": {
+                "EASM": {
+                    "cor": "0.504",
+                    "rmsn": "1.422",
+                    "threat_score": "0.201"
+                }
+            },
+            "r10i1p1": {
+                "EASM": {
+                    "cor": "0.415",
+                    "rmsn": "1.531",
+                    "threat_score": "0.195"
+                }
+            },
+            "r11i1p1": {
+                "EASM": {
+                    "cor": "0.417",
+                    "rmsn": "1.448",
+                    "threat_score": "0.198"
+                }
+            },
+            "r2i1p1": {
+                "EASM": {
+                    "cor": "0.306",
+                    "rmsn": "1.575",
+                    "threat_score": "0.192"
+                }
+            },
+            "r7i1p1": {
+                "EASM": {
+                    "cor": "0.375",
+                    "rmsn": "1.490",
+                    "threat_score": "0.192"
+                }
+            },
+            "r14i1p1": {
+                "EASM": {
+                    "cor": "0.381",
+                    "rmsn": "1.517",
+                    "threat_score": "0.185"
+                }
+            },
+            "r22i1p1": {
+                "EASM": {
+                    "cor": "0.322",
+                    "rmsn": "1.543",
+                    "threat_score": "0.179"
+                }
+            },
+            "r19i1p1": {
+                "EASM": {
+                    "cor": "0.424",
+                    "rmsn": "1.447",
+                    "threat_score": "0.179"
+                }
+            },
+            "r15i1p1": {
+                "EASM": {
+                    "cor": "0.397",
+                    "rmsn": "1.427",
+                    "threat_score": "0.185"
+                }
+            },
+            "r25i1p1": {
+                "EASM": {
+                    "cor": "0.370",
+                    "rmsn": "1.427",
+                    "threat_score": "0.196"
+                }
+            },
+            "r20i1p1": {
+                "EASM": {
+                    "cor": "0.394",
+                    "rmsn": "1.516",
+                    "threat_score": "0.194"
+                }
+            },
+            "r9i1p1": {
+                "EASM": {
+                    "cor": "0.386",
+                    "rmsn": "1.544",
+                    "threat_score": "0.188"
+                }
+            },
+            "r13i1p1": {
+                "EASM": {
+                    "cor": "0.466",
+                    "rmsn": "1.525",
+                    "threat_score": "0.187"
+                }
+            },
+            "r24i1p1": {
+                "EASM": {
+                    "cor": "0.360",
+                    "rmsn": "1.580",
+                    "threat_score": "0.169"
+                }
+            },
+            "r3i1p1": {
+                "EASM": {
+                    "cor": "0.346",
+                    "rmsn": "1.545",
+                    "threat_score": "0.181"
+                }
+            },
+            "r18i1p1": {
+                "EASM": {
+                    "cor": "0.400",
+                    "rmsn": "1.514",
+                    "threat_score": "0.179"
+                }
+            },
+            "r4i1p1": {
+                "EASM": {
+                    "cor": "0.317",
+                    "rmsn": "1.567",
+                    "threat_score": "0.194"
+                }
+            },
+            "r16i1p1": {
+                "EASM": {
+                    "cor": "0.343",
+                    "rmsn": "1.508",
+                    "threat_score": "0.200"
+                }
+            },
+            "r17i1p1": {
+                "EASM": {
+                    "cor": "0.431",
+                    "rmsn": "1.428",
+                    "threat_score": "0.178"
+                }
+            },
+            "r6i1p1": {
+                "EASM": {
+                    "cor": "0.388",
+                    "rmsn": "1.400",
+                    "threat_score": "0.202"
+                }
+            },
+            "r5i1p1": {
+                "EASM": {
+                    "cor": "0.425",
+                    "rmsn": "1.490",
+                    "threat_score": "0.174"
+                }
+            },
+            "r12i1p1": {
+                "EASM": {
+                    "cor": "0.309",
+                    "rmsn": "1.665",
+                    "threat_score": "0.181"
+                }
+            }
+        }
+    },
+    "json_version": 3.0,
+    "json_structure": [
+        "model",
+        "domain",
+        "statistic"
+    ]
+}

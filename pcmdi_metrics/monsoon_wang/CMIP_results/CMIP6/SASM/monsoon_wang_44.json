@@ -1,0 +1,264 @@
+{
+    "provenance": {
+        "platform": {
+            "OS": "Linux",
+            "Version": "4.18.0-553.27.1.el8_10.x86_64",
+            "Name": "gates.llnl.gov"
+        },
+        "userId": "dong12",
+        "osAccess": false,
+        "commandLine": "real_monsoon_wang_driver.py -p cmip_param_cmip6.py",
+        "date": "2025-03-06 09:44:48",
+        "conda": {
+            "Version": "23.7.2",
+            "buildVersion": "not installed",
+            "PythonVersion": "3.10.12.final.0",
+            "Platform": "linux-64"
+        },
+        "packages": {
+            "python": "3.10.16",
+            "cdat_info": "8.2.1",
+            "cdms": "3.1.5",
+            "cdp": "1.7.0",
+            "cdtime": "3.1.4",
+            "cdutil": "8.2.1",
+            "xarray": "2025.1.1",
+            "esmf": "0.8.8",
+            "esmpy": "8.8.0",
+            "matplotlib": "3.10.0",
+            "numpy": "2.0.2",
+            "scipy": "1.15.1",
+            "xcdat": "0.7.3",
+            "PMP": "3.8.2",
+            "PMPObs": "See 'References' key below, for detailed obs provenance information."
+        },
+        "openGL": {
+            "GLX": {
+                "server": {},
+                "client": {}
+            }
+        }
+    },
+    "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference: Gleckler, P. J., C. Doutriaux, P. J. Durack, K. E. Taylor, Y. Zhang, and D. N. Williams, E. Mason, and J. Servonnat (2016), A more powerful reality test for climate models, Eos, 97, doi:10.1029/2016EO051663. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
+    "REFERENCE": "The statistics in this file are based on Wang, B., Kim, HJ., Kikuchi, K. et al. Diagnostic metrics for evaluation of annual and diurnal cycles. Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0",
+    "RESULTS": {
+        "NorCPM1": {
+            "r5i1p1": {
+                "SASM": {
+                    "cor": "0.440",
+                    "rmsn": "1.628",
+                    "threat_score": "0.654"
+                }
+            },
+            "r12i1p1": {
+                "SASM": {
+                    "cor": "0.365",
+                    "rmsn": "1.722",
+                    "threat_score": "0.651"
+                }
+            },
+            "r3i1p1": {
+                "SASM": {
+                    "cor": "0.456",
+                    "rmsn": "1.596",
+                    "threat_score": "0.671"
+                }
+            },
+            "r20i1p1": {
+                "SASM": {
+                    "cor": "0.439",
+                    "rmsn": "1.668",
+                    "threat_score": "0.648"
+                }
+            },
+            "r25i1p1": {
+                "SASM": {
+                    "cor": "0.315",
+                    "rmsn": "1.734",
+                    "threat_score": "0.643"
+                }
+            },
+            "r21i1p1": {
+                "SASM": {
+                    "cor": "0.490",
+                    "rmsn": "1.680",
+                    "threat_score": "0.680"
+                }
+            },
+            "r7i1p1": {
+                "SASM": {
+                    "cor": "0.410",
+                    "rmsn": "1.791",
+                    "threat_score": "0.673"
+                }
+            },
+            "r11i1p1": {
+                "SASM": {
+                    "cor": "0.538",
+                    "rmsn": "1.577",
+                    "threat_score": "0.656"
+                }
+            },
+            "r26i1p1": {
+                "SASM": {
+                    "cor": "0.497",
+                    "rmsn": "1.608",
+                    "threat_score": "0.678"
+                }
+            },
+            "r10i1p1": {
+                "SASM": {
+                    "cor": "0.412",
+                    "rmsn": "1.852",
+                    "threat_score": "0.662"
+                }
+            },
+            "r30i1p1": {
+                "SASM": {
+                    "cor": "0.459",
+                    "rmsn": "1.768",
+                    "threat_score": "0.659"
+                }
+            },
+            "r24i1p1": {
+                "SASM": {
+                    "cor": "0.535",
+                    "rmsn": "1.648",
+                    "threat_score": "0.662"
+                }
+            },
+            "r18i1p1": {
+                "SASM": {
+                    "cor": "0.314",
+                    "rmsn": "1.883",
+                    "threat_score": "0.680"
+                }
+            },
+            "r15i1p1": {
+                "SASM": {
+                    "cor": "0.318",
+                    "rmsn": "1.737",
+                    "threat_score": "0.662"
+                }
+            },
+            "r29i1p1": {
+                "SASM": {
+                    "cor": "0.358",
+                    "rmsn": "1.835",
+                    "threat_score": "0.650"
+                }
+            },
+            "r22i1p1": {
+                "SASM": {
+                    "cor": "0.398",
+                    "rmsn": "1.679",
+                    "threat_score": "0.673"
+                }
+            },
+            "r13i1p1": {
+                "SASM": {
+                    "cor": "0.507",
+                    "rmsn": "1.650",
+                    "threat_score": "0.676"
+                }
+            },
+            "r27i1p1": {
+                "SASM": {
+                    "cor": "0.457",
+                    "rmsn": "1.706",
+                    "threat_score": "0.672"
+                }
+            },
+            "r17i1p1": {
+                "SASM": {
+                    "cor": "0.470",
+                    "rmsn": "1.750",
+                    "threat_score": "0.675"
+                }
+            },
+            "r28i1p1": {
+                "SASM": {
+                    "cor": "0.360",
+                    "rmsn": "1.781",
+                    "threat_score": "0.665"
+                }
+            },
+            "r23i1p1": {
+                "SASM": {
+                    "cor": "0.395",
+                    "rmsn": "1.920",
+                    "threat_score": "0.665"
+                }
+            },
+            "r4i1p1": {
+                "SASM": {
+                    "cor": "0.318",
+                    "rmsn": "1.833",
+                    "threat_score": "0.675"
+                }
+            },
+            "r16i1p1": {
+                "SASM": {
+                    "cor": "0.454",
+                    "rmsn": "1.780",
+                    "threat_score": "0.678"
+                }
+            },
+            "r19i1p1": {
+                "SASM": {
+                    "cor": "0.480",
+                    "rmsn": "1.704",
+                    "threat_score": "0.665"
+                }
+            },
+            "r14i1p1": {
+                "SASM": {
+                    "cor": "0.448",
+                    "rmsn": "1.786",
+                    "threat_score": "0.676"
+                }
+            },
+            "r8i1p1": {
+                "SASM": {
+                    "cor": "0.368",
+                    "rmsn": "1.842",
+                    "threat_score": "0.672"
+                }
+            },
+            "r1i1p1": {
+                "SASM": {
+                    "cor": "0.458",
+                    "rmsn": "1.736",
+                    "threat_score": "0.670"
+                }
+            },
+            "r2i1p1": {
+                "SASM": {
+                    "cor": "0.389",
+                    "rmsn": "1.783",
+                    "threat_score": "0.677"
+                }
+            },
+            "r9i1p1": {
+                "SASM": {
+                    "cor": "0.428",
+                    "rmsn": "1.691",
+                    "threat_score": "0.665"
+                }
+            },
+            "r6i1p1": {
+                "SASM": {
+                    "cor": "0.450",
+                    "rmsn": "1.752",
+                    "threat_score": "0.670"
+                }
+            }
+        }
+    },
+    "json_version": 3.0,
+    "json_structure": [
+        "model",
+        "domain",
+        "statistic"
+    ]
+}

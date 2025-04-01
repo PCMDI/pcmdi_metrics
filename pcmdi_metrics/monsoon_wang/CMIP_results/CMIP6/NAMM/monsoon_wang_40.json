@@ -1,0 +1,173 @@
+{
+    "provenance": {
+        "platform": {
+            "OS": "Linux",
+            "Version": "4.18.0-553.27.1.el8_10.x86_64",
+            "Name": "gates.llnl.gov"
+        },
+        "userId": "dong12",
+        "osAccess": false,
+        "commandLine": "real_monsoon_wang_driver.py -p cmip_param_cmip6.py",
+        "date": "2025-02-21 17:07:41",
+        "conda": {
+            "Version": "23.7.2",
+            "buildVersion": "not installed",
+            "PythonVersion": "3.10.12.final.0",
+            "Platform": "linux-64"
+        },
+        "packages": {
+            "python": "3.10.16",
+            "cdat_info": "8.2.1",
+            "cdms": "3.1.5",
+            "cdp": "1.7.0",
+            "cdtime": "3.1.4",
+            "cdutil": "8.2.1",
+            "xarray": "2025.1.1",
+            "esmf": "0.8.8",
+            "esmpy": "8.8.0",
+            "matplotlib": "3.10.0",
+            "numpy": "2.0.2",
+            "scipy": "1.15.1",
+            "xcdat": "0.7.3",
+            "PMP": "3.8.2",
+            "PMPObs": "See 'References' key below, for detailed obs provenance information."
+        },
+        "openGL": {
+            "GLX": {
+                "server": {},
+                "client": {}
+            }
+        }
+    },
+    "DISCLAIMER": "USER-NOTICE: The results in this file were produced with the PMP v1.1 (https://github.com/PCMDI/pcmdi_metrics). They are for research purposes only. They are subject to ongoing quality control and change as the PMP software advances, interpolation methods are modified, observational data sets are updated, problems with model data are corrected, etc. Use of these results for research (presentation, publications, etc.) should reference: Gleckler, P. J., C. Doutriaux, P. J. Durack, K. E. Taylor, Y. Zhang, and D. N. Williams, E. Mason, and J. Servonnat (2016), A more powerful reality test for climate models, Eos, 97, doi:10.1029/2016EO051663. If any problems are uncovered in using these results please contact the PMP development team at pcmdi-metrics@llnl.gov\n",
+    "REFERENCE": "The statistics in this file are based on Wang, B., Kim, HJ., Kikuchi, K. et al. Diagnostic metrics for evaluation of annual and diurnal cycles. Clim Dyn (2011) 37: 941. doi:10.1007/s00382-010-0877-0",
+    "RESULTS": {
+        "MIROC6": {
+            "r40i1p1": {
+                "NAMM": {
+                    "cor": "0.374",
+                    "rmsn": "2.619",
+                    "threat_score": "0.601"
+                }
+            },
+            "r43i1p1": {
+                "NAMM": {
+                    "cor": "0.383",
+                    "rmsn": "2.568",
+                    "threat_score": "0.593"
+                }
+            },
+            "r50i1p1": {
+                "NAMM": {
+                    "cor": "0.357",
+                    "rmsn": "2.587",
+                    "threat_score": "0.596"
+                }
+            },
+            "r9i1p1": {
+                "NAMM": {
+                    "cor": "0.309",
+                    "rmsn": "2.614",
+                    "threat_score": "0.590"
+                }
+            },
+            "r10i1p1": {
+                "NAMM": {
+                    "cor": "0.301",
+                    "rmsn": "2.438",
+                    "threat_score": "0.576"
+                }
+            },
+            "r5i1p1": {
+                "NAMM": {
+                    "cor": "0.406",
+                    "rmsn": "2.535",
+                    "threat_score": "0.599"
+                }
+            },
+            "r4i1p1": {
+                "NAMM": {
+                    "cor": "0.373",
+                    "rmsn": "2.543",
+                    "threat_score": "0.609"
+                }
+            },
+            "r19i1p1": {
+                "NAMM": {
+                    "cor": "0.473",
+                    "rmsn": "2.649",
+                    "threat_score": "0.603"
+                }
+            },
+            "r41i1p1": {
+                "NAMM": {
+                    "cor": "0.381",
+                    "rmsn": "2.465",
+                    "threat_score": "0.590"
+                }
+            },
+            "r44i1p1": {
+                "NAMM": {
+                    "cor": "0.381",
+                    "rmsn": "2.329",
+                    "threat_score": "0.580"
+                }
+            },
+            "r26i1p1": {
+                "NAMM": {
+                    "cor": "0.379",
+                    "rmsn": "2.467",
+                    "threat_score": "0.603"
+                }
+            },
+            "r6i1p1": {
+                "NAMM": {
+                    "cor": "0.389",
+                    "rmsn": "2.586",
+                    "threat_score": "0.600"
+                }
+            },
+            "r48i1p1": {
+                "NAMM": {
+                    "cor": "0.439",
+                    "rmsn": "2.602",
+                    "threat_score": "0.598"
+                }
+            },
+            "r23i1p1": {
+                "NAMM": {
+                    "cor": "0.428",
+                    "rmsn": "2.496",
+                    "threat_score": "0.610"
+                }
+            },
+            "r47i1p1": {
+                "NAMM": {
+                    "cor": "0.469",
+                    "rmsn": "2.502",
+                    "threat_score": "0.613"
+                }
+            },
+            "r22i1p1": {
+                "NAMM": {
+                    "cor": "0.324",
+                    "rmsn": "2.636",
+                    "threat_score": "0.597"
+                }
+            },
+            "r1i1p1": {
+                "NAMM": {
+                    "cor": "0.353",
+                    "rmsn": "2.532",
+                    "threat_score": "0.591"
+                }
+            }
+        }
+    },
+    "json_version": 3.0,
+    "json_structure": [
+        "model",
+        "domain",
+        "statistic"
+    ]
+}
