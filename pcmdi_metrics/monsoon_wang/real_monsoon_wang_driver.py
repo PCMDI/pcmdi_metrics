@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 
 import collections
+import glob
 import os
+import re
 import sys
 import warnings
 
@@ -13,7 +15,6 @@ from pcmdi_metrics import resources
 from pcmdi_metrics.io import da_to_ds, region_subset
 from pcmdi_metrics.monsoon_wang.lib import (
     create_monsoon_wang_parser,
-    map_plotter,
     mpd,
     mpi_skill_scores,
     regrid,
@@ -29,12 +30,36 @@ warnings.filterwarnings(
 warnings.filterwarnings(
     "ignore", message="Unable to decode time axis into full numpy.datetime64 objects"
 )
+warnings.filterwarnings(
+    "ignore", message="ESMF installation version .* ESMPy version .*"
+)
+
+
+def rlz_grep(modpath, mod, rlz_str="i1p1"):
+    directory_path = os.path.dirname(modpath)
+    pattern = os.path.join(directory_path, "*." + mod + ".*" + rlz_str + "*AC*.nc")
+    matching_files = glob.glob(pattern)
+    pattern_extract = re.compile(r"r\d+i\d+p\d+")
+    # pattern_extract = re.compile(r'r\d+i\d+p\d+f\d+')
+    rlz_list = [
+        pattern_extract.search(os.path.basename(file)).group()
+        for file in matching_files
+        if pattern_extract.search(os.path.basename(file))
+    ]
+
+    return matching_files, rlz_list
 
 
 def main():
     P = create_monsoon_wang_parser()
     P.add_argument(
         "--nth", type=int, default=0, help="Specify the nth value (default is 0)"
+    )
+    P.add_argument(
+        "--dom_list",
+        type=str,
+        default=["AllM", "NAMM", "SAMM", "NAFM", "SAFM", "SASM", "EASM", "AUSM"],
+        help="list of domains",
     )
     args = P.get_parameter(argparse_vals_only=False)
     monsoon_wang_runner(args)
@@ -102,7 +127,11 @@ def monsoon_wang_runner(args):
     gmods = []  # "Got" these MODS
 
     nth = args.nth
-    for i, mod in enumerate(mods[nth : nth + 4]):  # , start=n):
+    for i, mod in enumerate(mods[nth : nth + 1]):  # , start=n):
+        if nth >= len(mods):
+            print("\n\n  nth >= len(mods) !!!!!!!!")
+            continue
+
         modpath.model = mod
         for k in modpath.keys():
             try:
@@ -145,6 +174,9 @@ def monsoon_wang_runner(args):
 
     doms = ["AllM", "NAMM", "SAMM", "NAFM", "SAFM", "SASM", "EASM", "AUSM"]
 
+    dom_list = args.dom_list
+    doms = dom_list
+
     mpi_stats_dic = {}
     for i, mod in enumerate(gmods):
         modpath.model = mod
@@ -157,130 +189,129 @@ def monsoon_wang_runner(args):
                 setattr(modpath, k, val)
             else:
                 setattr(modpath, k, val[i])
-        modelFile = modpath()
 
         mpi_stats_dic[mod] = {}
 
-        print("modelFile =  ", modelFile)
-        f = xr.open_dataset(modelFile)
-        d_orig = f[var]
+        files, rlz_list = rlz_grep(modpath(), mod, rlz_str="i1p1")
 
-        annrange_mod, mpi_mod = mpd(d_orig)
-        domain_mask_mod = xr.where(annrange_mod > thr, 1, 0)
-        mpi_mod = mpi_mod.where(domain_mask_mod)
+        for modelFile, rlz in zip(files, rlz_list):
+            mpi_stats_dic[mod][rlz] = {}
 
-        try:
-            mpi_mod = mpi_mod.drop_vars("time")
-            annrange_mod = annrange_mod.drop_vars("time")
-        except Exception:
-            pass
+            print("modelFile =  ", modelFile)
+            f = xr.open_dataset(modelFile)
+            d_orig = f[var]
 
-        annrange_obs = regrid(annrange_obs, annrange_mod)
-        mpi_obs = regrid(mpi_obs, mpi_mod)
+            annrange_mod, mpi_mod = mpd(d_orig)
+            domain_mask_mod = xr.where(annrange_mod > thr, 1, 0)
+            mpi_mod = mpi_mod.where(domain_mask_mod)
 
-        for dom in doms:
-            mpi_stats_dic[mod][dom] = {}
+            try:
+                mpi_mod = mpi_mod.drop_vars("time")
+                annrange_mod = annrange_mod.drop_vars("time")
+            except Exception:
+                pass
 
-            print("dom =  ", dom)
+            annrange_obs = regrid(annrange_obs, annrange_mod)
+            mpi_obs = regrid(mpi_obs, mpi_mod)
 
-            initial_vars = set(locals().keys())
+            print("# of non-nans = ", (mpi_mod != 0).sum().values)
 
-            mpi_obs_reg = region_subset(mpi_obs, dom)
-            mpi_obs_reg_sd = mpi_obs_reg.std(dim=["lat", "lon"])
-            mpi_mod_reg = region_subset(mpi_mod, dom)
+            for dom in doms:
+                mpi_stats_dic[mod][rlz][dom] = {}
 
-            da1_flat = mpi_mod_reg.values.ravel()
-            da2_flat = mpi_obs_reg.values.ravel()
+                print("dom =  ", dom)
 
-            cor = np.ma.corrcoef(
-                np.ma.masked_invalid(da1_flat), np.ma.masked_invalid(da2_flat)
-            )[0, 1]
+                mpi_obs_reg = region_subset(mpi_obs, dom)
+                mpi_obs_reg_sd = mpi_obs_reg.std(dim=["lat", "lon"])
+                mpi_mod_reg = region_subset(mpi_mod, dom)
 
-            squared_diff = (mpi_mod_reg - mpi_obs_reg) ** 2
-            mean_squared_error = squared_diff.mean(skipna=True)
-            rms = np.sqrt(mean_squared_error)
+                da1_flat = mpi_mod_reg.values.ravel()
+                da2_flat = mpi_obs_reg.values.ravel()
 
-            rmsn = rms / mpi_obs_reg_sd
+                cor = np.ma.corrcoef(
+                    np.ma.masked_invalid(da1_flat), np.ma.masked_invalid(da2_flat)
+                )[0, 1]
 
-            new_vars = set(locals().keys())
-            newly_created_vars = new_vars - initial_vars
+                squared_diff = (mpi_mod_reg - mpi_obs_reg) ** 2
+                mean_squared_error = squared_diff.mean(skipna=True)
+                rms = np.sqrt(mean_squared_error)
+
+                rmsn = rms / mpi_obs_reg_sd
+
+                for var_tmp in {
+                    "mpi_obs_reg_sd",
+                    "mpi_mod_reg",
+                    "squared_diff",
+                    "rms",
+                    "rmsn",
+                    "da2_flat",
+                    "cor",
+                    "mean_squared_error",
+                    "initial_vars",
+                    "da1_flat",
+                    "mpi_obs_reg",
+                }:
+                    try:
+                        del var_tmp
+                    except Exception:
+                        pass
+
+                # DOMAIN SELECTED FROM GLOBAL ANNUAL RANGE FOR MODS AND OBS
+                annrange_mod_dom = region_subset(annrange_mod, dom)
+                annrange_obs_dom = region_subset(annrange_obs, dom)
+
+                # SKILL SCORES
+                #  HIT/(HIT + MISSED + FALSE ALARMS)
+                (
+                    hit,
+                    missed,
+                    falarm,
+                    score,
+                    hitmap,
+                    missmap,
+                    falarmmap,
+                ) = mpi_skill_scores(annrange_mod_dom, annrange_obs_dom, thr)
+
+                # POPULATE DICTIONARY FOR JSON FILES
+                mpi_stats_dic[mod][rlz][dom]["cor"] = format(cor, sig_digits)
+                mpi_stats_dic[mod][rlz][dom]["rmsn"] = format(rmsn, sig_digits)
+                mpi_stats_dic[mod][rlz][dom]["threat_score"] = format(score, sig_digits)
+
+                # SAVE ANNRANGE AND HIT MISS AND FALSE ALARM FOR EACH MOD DOM
+                fm = os.path.join(nout, "_".join([mod, rlz, dom, "wang-monsoon.nc"]))
+                ds_out = xr.Dataset(
+                    {
+                        "obsmap": annrange_obs_dom,
+                        "modmap": annrange_mod_dom,
+                        "hitmap": hitmap,
+                        "missmap": missmap,
+                        "falarmmap": falarmmap,
+                        "obsmask": mpi_obs_reg,
+                        "modmask": mpi_mod_reg,
+                    }
+                )
+                ds_out.to_netcdf(fm)
+
+            f.close()
+
             for var_tmp in {
-                "mpi_obs_reg_sd",
-                "mpi_mod_reg",
-                "squared_diff",
-                "rms",
-                "rmsn",
-                "da2_flat",
-                "cor",
-                "mean_squared_error",
-                "initial_vars",
-                "da1_flat",
-                "mpi_obs_reg",
+                "d_orig",
+                "annrange_mod",
+                "mpi_mod",
+                "domain_mask_mod",
+                "annrange_obs",
+                "mpi_obs",
             }:
                 try:
                     del var_tmp
                 except Exception:
                     pass
 
-            # DOMAIN SELECTED FROM GLOBAL ANNUAL RANGE FOR MODS AND OBS
-            annrange_mod_dom = region_subset(annrange_mod, dom)
-            annrange_obs_dom = region_subset(annrange_obs, dom)
+            if np.isnan(cor):
+                print("invalid correlation values")
+                sys.exit()
 
-            # SKILL SCORES
-            #  HIT/(HIT + MISSED + FALSE ALARMS)
-            hit, missed, falarm, score, hitmap, missmap, falarmmap = mpi_skill_scores(
-                annrange_mod_dom, annrange_obs_dom, thr
-            )
-
-            # POPULATE DICTIONARY FOR JSON FILES
-            mpi_stats_dic[mod][dom] = {}
-            mpi_stats_dic[mod][dom]["cor"] = format(cor, sig_digits)
-            mpi_stats_dic[mod][dom]["rmsn"] = format(rmsn, sig_digits)
-            mpi_stats_dic[mod][dom]["threat_score"] = format(score, sig_digits)
-
-            # SAVE ANNRANGE AND HIT MISS AND FALSE ALARM FOR EACH MOD DOM
-            fm = os.path.join(nout, "_".join([mod, dom, "wang-monsoon.nc"]))
-            ds_out = xr.Dataset(
-                {
-                    "obsmap": annrange_obs_dom,
-                    "modmap": annrange_mod_dom,
-                    "hitmap": hitmap,
-                    "missmap": missmap,
-                    "falarmmap": falarmmap,
-                    "obsmask": mpi_obs_reg,
-                    "modmask": mpi_mod_reg,
-                }
-            )
-            ds_out.to_netcdf(fm)
-
-            # PLOT FIGURES
-            title = f"{mod}, {dom}"
-            save_path = os.path.join(nout, "_".join([mod, dom, "wang-monsoon.png"]))
-            map_plotter(
-                dom,
-                title,
-                ds_out,
-                save_path=save_path,
-            )
-
-        f.close()
-
-        for var_tmp in {
-            "d_orig",
-            "annrange_mod",
-            "mpi_mod",
-            "domain_mask_mod",
-            "annrange_obs",
-            "mpi_obs",
-        }:
-            try:
-                del var_tmp
-            except Exception:
-                pass
-
-        if np.isnan(cor):
-            print("invalid correlation values")
-            sys.exit()
+    print(mpi_stats_dic)
 
     #  OUTPUT METRICS TO JSON FILE
     OUT = pcmdi_metrics.io.base.Base(os.path.abspath(jout), json_filename)

@@ -1,0 +1,3350 @@
+{
+    "ACCESS-ESM1-5": {
+        "r13i1p1": {
+            "SAFM": {
+                "cor": "0.793",
+                "rmsn": "1.090",
+                "threat_score": "0.410"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.808",
+                "rmsn": "1.037",
+                "threat_score": "0.436"
+            }
+        },
+        "r21i1p1": {
+            "SAFM": {
+                "cor": "0.810",
+                "rmsn": "1.068",
+                "threat_score": "0.413"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.813",
+                "rmsn": "1.045",
+                "threat_score": "0.432"
+            }
+        },
+        "r34i1p1": {
+            "SAFM": {
+                "cor": "0.787",
+                "rmsn": "1.091",
+                "threat_score": "0.418"
+            }
+        },
+        "r18i1p1": {
+            "SAFM": {
+                "cor": "0.797",
+                "rmsn": "1.088",
+                "threat_score": "0.421"
+            }
+        },
+        "r19i1p1": {
+            "SAFM": {
+                "cor": "0.811",
+                "rmsn": "1.111",
+                "threat_score": "0.413"
+            }
+        },
+        "r15i1p1": {
+            "SAFM": {
+                "cor": "0.796",
+                "rmsn": "1.091",
+                "threat_score": "0.426"
+            }
+        },
+        "r36i1p1": {
+            "SAFM": {
+                "cor": "0.791",
+                "rmsn": "1.154",
+                "threat_score": "0.422"
+            }
+        },
+        "r40i1p1": {
+            "SAFM": {
+                "cor": "0.779",
+                "rmsn": "1.084",
+                "threat_score": "0.429"
+            }
+        },
+        "r37i1p1": {
+            "SAFM": {
+                "cor": "0.797",
+                "rmsn": "1.100",
+                "threat_score": "0.430"
+            }
+        },
+        "r16i1p1": {
+            "SAFM": {
+                "cor": "0.781",
+                "rmsn": "1.059",
+                "threat_score": "0.423"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.777",
+                "rmsn": "1.057",
+                "threat_score": "0.432"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.797",
+                "rmsn": "1.121",
+                "threat_score": "0.410"
+            }
+        },
+        "r32i1p1": {
+            "SAFM": {
+                "cor": "0.796",
+                "rmsn": "1.094",
+                "threat_score": "0.431"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.806",
+                "rmsn": "1.078",
+                "threat_score": "0.422"
+            }
+        },
+        "r17i1p1": {
+            "SAFM": {
+                "cor": "0.773",
+                "rmsn": "1.128",
+                "threat_score": "0.420"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.826",
+                "rmsn": "1.067",
+                "threat_score": "0.416"
+            }
+        },
+        "r12i1p1": {
+            "SAFM": {
+                "cor": "0.795",
+                "rmsn": "1.073",
+                "threat_score": "0.417"
+            }
+        },
+        "r39i1p1": {
+            "SAFM": {
+                "cor": "0.811",
+                "rmsn": "1.085",
+                "threat_score": "0.428"
+            }
+        },
+        "r23i1p1": {
+            "SAFM": {
+                "cor": "0.769",
+                "rmsn": "1.076",
+                "threat_score": "0.418"
+            }
+        },
+        "r31i1p1": {
+            "SAFM": {
+                "cor": "0.773",
+                "rmsn": "1.078",
+                "threat_score": "0.410"
+            }
+        },
+        "r35i1p1": {
+            "SAFM": {
+                "cor": "0.811",
+                "rmsn": "1.020",
+                "threat_score": "0.428"
+            }
+        },
+        "r20i1p1": {
+            "SAFM": {
+                "cor": "0.805",
+                "rmsn": "1.044",
+                "threat_score": "0.435"
+            }
+        },
+        "r14i1p1": {
+            "SAFM": {
+                "cor": "0.780",
+                "rmsn": "1.095",
+                "threat_score": "0.416"
+            }
+        },
+        "r25i1p1": {
+            "SAFM": {
+                "cor": "0.792",
+                "rmsn": "1.089",
+                "threat_score": "0.426"
+            }
+        },
+        "r11i1p1": {
+            "SAFM": {
+                "cor": "0.816",
+                "rmsn": "1.056",
+                "threat_score": "0.433"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.791",
+                "rmsn": "1.127",
+                "threat_score": "0.420"
+            }
+        },
+        "r28i1p1": {
+            "SAFM": {
+                "cor": "0.798",
+                "rmsn": "1.024",
+                "threat_score": "0.416"
+            }
+        },
+        "r29i1p1": {
+            "SAFM": {
+                "cor": "0.780",
+                "rmsn": "1.083",
+                "threat_score": "0.415"
+            }
+        },
+        "r26i1p1": {
+            "SAFM": {
+                "cor": "0.802",
+                "rmsn": "1.074",
+                "threat_score": "0.418"
+            }
+        },
+        "r24i1p1": {
+            "SAFM": {
+                "cor": "0.778",
+                "rmsn": "1.068",
+                "threat_score": "0.412"
+            }
+        },
+        "r27i1p1": {
+            "SAFM": {
+                "cor": "0.803",
+                "rmsn": "1.068",
+                "threat_score": "0.423"
+            }
+        },
+        "r33i1p1": {
+            "SAFM": {
+                "cor": "0.804",
+                "rmsn": "1.138",
+                "threat_score": "0.425"
+            }
+        },
+        "r22i1p1": {
+            "SAFM": {
+                "cor": "0.790",
+                "rmsn": "1.072",
+                "threat_score": "0.421"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.779",
+                "rmsn": "1.128",
+                "threat_score": "0.418"
+            }
+        },
+        "r30i1p1": {
+            "SAFM": {
+                "cor": "0.800",
+                "rmsn": "1.066",
+                "threat_score": "0.434"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.790",
+                "rmsn": "1.116",
+                "threat_score": "0.416"
+            }
+        },
+        "r38i1p1": {
+            "SAFM": {
+                "cor": "0.802",
+                "rmsn": "1.006",
+                "threat_score": "0.428"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.783",
+                "rmsn": "1.093",
+                "threat_score": "0.410"
+            }
+        }
+    },
+    "CESM2-FV2": {
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.810",
+                "rmsn": "0.965",
+                "threat_score": "0.452"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.835",
+                "rmsn": "1.012",
+                "threat_score": "0.528"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.818",
+                "rmsn": "0.995",
+                "threat_score": "0.448"
+            }
+        }
+    },
+    "CESM2-WACCM": {
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.859",
+                "rmsn": "0.986",
+                "threat_score": "0.514"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.848",
+                "rmsn": "0.965",
+                "threat_score": "0.517"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.871",
+                "rmsn": "0.890",
+                "threat_score": "0.508"
+            }
+        }
+    },
+    "CMCC-CM2-HR4": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.892",
+                "rmsn": "0.852",
+                "threat_score": "0.463"
+            }
+        }
+    },
+    "CMCC-CM2-SR5": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.884",
+                "rmsn": "0.828",
+                "threat_score": "0.515"
+            }
+        }
+    },
+    "CMCC-ESM2": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.902",
+                "rmsn": "0.811",
+                "threat_score": "0.500"
+            }
+        }
+    },
+    "E3SM-1-0": {
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.833",
+                "rmsn": "0.999",
+                "threat_score": "0.515"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.846",
+                "rmsn": "0.986",
+                "threat_score": "0.509"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.834",
+                "rmsn": "0.922",
+                "threat_score": "0.508"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.836",
+                "rmsn": "0.958",
+                "threat_score": "0.512"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.832",
+                "rmsn": "0.952",
+                "threat_score": "0.519"
+            }
+        }
+    },
+    "E3SM-1-1": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.816",
+                "rmsn": "0.985",
+                "threat_score": "0.475"
+            }
+        }
+    },
+    "E3SM-1-1-ECA": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.817",
+                "rmsn": "0.916",
+                "threat_score": "0.522"
+            }
+        }
+    },
+    "E3SM-2-0": {
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.780",
+                "rmsn": "0.859",
+                "threat_score": "0.481"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.818",
+                "rmsn": "0.845",
+                "threat_score": "0.493"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.805",
+                "rmsn": "0.878",
+                "threat_score": "0.481"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.811",
+                "rmsn": "0.892",
+                "threat_score": "0.498"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.805",
+                "rmsn": "0.860",
+                "threat_score": "0.497"
+            }
+        }
+    },
+    "EC-Earth3": {
+        "r146i1p1": {
+            "SAFM": {
+                "cor": "0.869",
+                "rmsn": "1.063",
+                "threat_score": "0.482"
+            }
+        },
+        "r25i1p1": {
+            "SAFM": {
+                "cor": "0.867",
+                "rmsn": "1.081",
+                "threat_score": "0.478"
+            }
+        },
+        "r126i1p1": {
+            "SAFM": {
+                "cor": "0.880",
+                "rmsn": "1.101",
+                "threat_score": "0.465"
+            }
+        },
+        "r110i1p1": {
+            "SAFM": {
+                "cor": "0.864",
+                "rmsn": "1.070",
+                "threat_score": "0.476"
+            }
+        },
+        "r144i1p1": {
+            "SAFM": {
+                "cor": "0.872",
+                "rmsn": "1.045",
+                "threat_score": "0.499"
+            }
+        },
+        "r16i1p1": {
+            "SAFM": {
+                "cor": "0.890",
+                "rmsn": "1.095",
+                "threat_score": "0.485"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.871",
+                "rmsn": "1.070",
+                "threat_score": "0.478"
+            }
+        },
+        "r142i1p1": {
+            "SAFM": {
+                "cor": "0.879",
+                "rmsn": "1.082",
+                "threat_score": "0.482"
+            }
+        },
+        "r145i1p1": {
+            "SAFM": {
+                "cor": "0.866",
+                "rmsn": "1.089",
+                "threat_score": "0.488"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.874",
+                "rmsn": "1.076",
+                "threat_score": "0.477"
+            }
+        },
+        "r19i1p1": {
+            "SAFM": {
+                "cor": "0.869",
+                "rmsn": "1.083",
+                "threat_score": "0.460"
+            }
+        },
+        "r113i1p1": {
+            "SAFM": {
+                "cor": "0.878",
+                "rmsn": "1.086",
+                "threat_score": "0.487"
+            }
+        },
+        "r105i1p1": {
+            "SAFM": {
+                "cor": "0.878",
+                "rmsn": "1.071",
+                "threat_score": "0.480"
+            }
+        },
+        "r147i1p1": {
+            "SAFM": {
+                "cor": "0.874",
+                "rmsn": "1.063",
+                "threat_score": "0.488"
+            }
+        },
+        "r114i1p1": {
+            "SAFM": {
+                "cor": "0.865",
+                "rmsn": "1.098",
+                "threat_score": "0.470"
+            }
+        },
+        "r11i1p1": {
+            "SAFM": {
+                "cor": "0.856",
+                "rmsn": "1.090",
+                "threat_score": "0.456"
+            }
+        },
+        "r15i1p1": {
+            "SAFM": {
+                "cor": "0.891",
+                "rmsn": "1.036",
+                "threat_score": "0.469"
+            }
+        },
+        "r143i1p1": {
+            "SAFM": {
+                "cor": "0.869",
+                "rmsn": "1.085",
+                "threat_score": "0.467"
+            }
+        },
+        "r130i1p1": {
+            "SAFM": {
+                "cor": "0.879",
+                "rmsn": "1.049",
+                "threat_score": "0.488"
+            }
+        },
+        "r141i1p1": {
+            "SAFM": {
+                "cor": "0.869",
+                "rmsn": "1.070",
+                "threat_score": "0.476"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.880",
+                "rmsn": "1.083",
+                "threat_score": "0.477"
+            }
+        },
+        "r23i1p1": {
+            "SAFM": {
+                "cor": "0.870",
+                "rmsn": "1.085",
+                "threat_score": "0.453"
+            }
+        },
+        "r134i1p1": {
+            "SAFM": {
+                "cor": "0.883",
+                "rmsn": "1.102",
+                "threat_score": "0.470"
+            }
+        },
+        "r21i1p1": {
+            "SAFM": {
+                "cor": "0.872",
+                "rmsn": "1.097",
+                "threat_score": "0.480"
+            }
+        },
+        "r106i1p1": {
+            "SAFM": {
+                "cor": "0.876",
+                "rmsn": "1.044",
+                "threat_score": "0.471"
+            }
+        },
+        "r121i1p1": {
+            "SAFM": {
+                "cor": "0.884",
+                "rmsn": "1.095",
+                "threat_score": "0.487"
+            }
+        },
+        "r131i1p1": {
+            "SAFM": {
+                "cor": "0.880",
+                "rmsn": "1.137",
+                "threat_score": "0.475"
+            }
+        },
+        "r24i1p1": {
+            "SAFM": {
+                "cor": "0.877",
+                "rmsn": "1.087",
+                "threat_score": "0.495"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.872",
+                "rmsn": "1.086",
+                "threat_score": "0.474"
+            }
+        },
+        "r119i1p1": {
+            "SAFM": {
+                "cor": "0.877",
+                "rmsn": "1.129",
+                "threat_score": "0.464"
+            }
+        },
+        "r138i1p1": {
+            "SAFM": {
+                "cor": "0.872",
+                "rmsn": "1.101",
+                "threat_score": "0.477"
+            }
+        },
+        "r132i1p1": {
+            "SAFM": {
+                "cor": "0.863",
+                "rmsn": "1.105",
+                "threat_score": "0.470"
+            }
+        },
+        "r13i1p1": {
+            "SAFM": {
+                "cor": "0.878",
+                "rmsn": "1.138",
+                "threat_score": "0.474"
+            }
+        },
+        "r139i1p1": {
+            "SAFM": {
+                "cor": "0.879",
+                "rmsn": "1.088",
+                "threat_score": "0.475"
+            }
+        },
+        "r116i1p1": {
+            "SAFM": {
+                "cor": "0.884",
+                "rmsn": "1.103",
+                "threat_score": "0.477"
+            }
+        },
+        "r101i1p1": {
+            "SAFM": {
+                "cor": "0.871",
+                "rmsn": "1.062",
+                "threat_score": "0.487"
+            }
+        },
+        "r128i1p1": {
+            "SAFM": {
+                "cor": "0.874",
+                "rmsn": "1.105",
+                "threat_score": "0.483"
+            }
+        },
+        "r148i1p1": {
+            "SAFM": {
+                "cor": "0.880",
+                "rmsn": "1.056",
+                "threat_score": "0.478"
+            }
+        },
+        "r123i1p1": {
+            "SAFM": {
+                "cor": "0.875",
+                "rmsn": "1.103",
+                "threat_score": "0.469"
+            }
+        },
+        "r122i1p1": {
+            "SAFM": {
+                "cor": "0.869",
+                "rmsn": "1.104",
+                "threat_score": "0.472"
+            }
+        },
+        "r137i1p1": {
+            "SAFM": {
+                "cor": "0.879",
+                "rmsn": "1.100",
+                "threat_score": "0.506"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.873",
+                "rmsn": "1.100",
+                "threat_score": "0.477"
+            }
+        },
+        "r17i1p1": {
+            "SAFM": {
+                "cor": "0.831",
+                "rmsn": "1.132",
+                "threat_score": "0.473"
+            }
+        },
+        "r136i1p1": {
+            "SAFM": {
+                "cor": "0.895",
+                "rmsn": "1.107",
+                "threat_score": "0.493"
+            }
+        },
+        "r103i1p1": {
+            "SAFM": {
+                "cor": "0.877",
+                "rmsn": "1.094",
+                "threat_score": "0.467"
+            }
+        },
+        "r140i1p1": {
+            "SAFM": {
+                "cor": "0.891",
+                "rmsn": "1.123",
+                "threat_score": "0.489"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.880",
+                "rmsn": "1.075",
+                "threat_score": "0.479"
+            }
+        },
+        "r22i1p1": {
+            "SAFM": {
+                "cor": "0.896",
+                "rmsn": "1.142",
+                "threat_score": "0.474"
+            }
+        },
+        "r117i1p1": {
+            "SAFM": {
+                "cor": "0.891",
+                "rmsn": "1.060",
+                "threat_score": "0.477"
+            }
+        },
+        "r135i1p1": {
+            "SAFM": {
+                "cor": "0.889",
+                "rmsn": "1.076",
+                "threat_score": "0.484"
+            }
+        },
+        "r124i1p1": {
+            "SAFM": {
+                "cor": "0.890",
+                "rmsn": "1.046",
+                "threat_score": "0.490"
+            }
+        },
+        "r120i1p1": {
+            "SAFM": {
+                "cor": "0.885",
+                "rmsn": "1.115",
+                "threat_score": "0.468"
+            }
+        },
+        "r118i1p1": {
+            "SAFM": {
+                "cor": "0.886",
+                "rmsn": "1.080",
+                "threat_score": "0.455"
+            }
+        },
+        "r149i1p1": {
+            "SAFM": {
+                "cor": "0.898",
+                "rmsn": "1.098",
+                "threat_score": "0.470"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.896",
+                "rmsn": "1.095",
+                "threat_score": "0.494"
+            }
+        },
+        "r109i1p1": {
+            "SAFM": {
+                "cor": "0.874",
+                "rmsn": "1.091",
+                "threat_score": "0.483"
+            }
+        },
+        "r133i1p1": {
+            "SAFM": {
+                "cor": "0.883",
+                "rmsn": "1.103",
+                "threat_score": "0.490"
+            }
+        },
+        "r127i1p1": {
+            "SAFM": {
+                "cor": "0.891",
+                "rmsn": "1.130",
+                "threat_score": "0.487"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.881",
+                "rmsn": "1.113",
+                "threat_score": "0.479"
+            }
+        },
+        "r150i1p1": {
+            "SAFM": {
+                "cor": "0.887",
+                "rmsn": "1.070",
+                "threat_score": "0.473"
+            }
+        },
+        "r115i1p1": {
+            "SAFM": {
+                "cor": "0.891",
+                "rmsn": "1.059",
+                "threat_score": "0.473"
+            }
+        },
+        "r14i1p1": {
+            "SAFM": {
+                "cor": "0.897",
+                "rmsn": "1.143",
+                "threat_score": "0.469"
+            }
+        },
+        "r107i1p1": {
+            "SAFM": {
+                "cor": "0.886",
+                "rmsn": "1.110",
+                "threat_score": "0.483"
+            }
+        },
+        "r112i1p1": {
+            "SAFM": {
+                "cor": "0.884",
+                "rmsn": "1.032",
+                "threat_score": "0.471"
+            }
+        },
+        "r108i1p1": {
+            "SAFM": {
+                "cor": "0.899",
+                "rmsn": "1.089",
+                "threat_score": "0.485"
+            }
+        },
+        "r129i1p1": {
+            "SAFM": {
+                "cor": "0.891",
+                "rmsn": "1.072",
+                "threat_score": "0.493"
+            }
+        },
+        "r104i1p1": {
+            "SAFM": {
+                "cor": "0.885",
+                "rmsn": "1.087",
+                "threat_score": "0.488"
+            }
+        },
+        "r111i1p1": {
+            "SAFM": {
+                "cor": "0.881",
+                "rmsn": "1.075",
+                "threat_score": "0.458"
+            }
+        },
+        "r125i1p1": {
+            "SAFM": {
+                "cor": "0.891",
+                "rmsn": "1.123",
+                "threat_score": "0.474"
+            }
+        },
+        "r102i1p1": {
+            "SAFM": {
+                "cor": "0.894",
+                "rmsn": "1.078",
+                "threat_score": "0.474"
+            }
+        }
+    },
+    "AWI-CM-1-1-MR": {
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.835",
+                "rmsn": "1.212",
+                "threat_score": "0.441"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.845",
+                "rmsn": "1.254",
+                "threat_score": "0.437"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.839",
+                "rmsn": "1.196",
+                "threat_score": "0.413"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.839",
+                "rmsn": "1.230",
+                "threat_score": "0.433"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.831",
+                "rmsn": "1.271",
+                "threat_score": "0.422"
+            }
+        }
+    },
+    "EC-Earth3-AerChem": {
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.870",
+                "rmsn": "0.955",
+                "threat_score": "0.480"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.869",
+                "rmsn": "0.987",
+                "threat_score": "0.472"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.867",
+                "rmsn": "1.002",
+                "threat_score": "0.471"
+            }
+        }
+    },
+    "EC-Earth3-CC": {
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.864",
+                "rmsn": "1.034",
+                "threat_score": "0.487"
+            }
+        },
+        "r12i1p1": {
+            "SAFM": {
+                "cor": "0.875",
+                "rmsn": "1.025",
+                "threat_score": "0.474"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.870",
+                "rmsn": "1.067",
+                "threat_score": "0.472"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.885",
+                "rmsn": "1.077",
+                "threat_score": "0.485"
+            }
+        },
+        "r11i1p1": {
+            "SAFM": {
+                "cor": "0.865",
+                "rmsn": "1.076",
+                "threat_score": "0.454"
+            }
+        },
+        "r13i1p1": {
+            "SAFM": {
+                "cor": "0.879",
+                "rmsn": "1.020",
+                "threat_score": "0.473"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.895",
+                "rmsn": "1.019",
+                "threat_score": "0.486"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.885",
+                "rmsn": "1.034",
+                "threat_score": "0.475"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.884",
+                "rmsn": "1.023",
+                "threat_score": "0.492"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.884",
+                "rmsn": "1.023",
+                "threat_score": "0.497"
+            }
+        }
+    },
+    "EC-Earth3-Veg-LR": {
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.865",
+                "rmsn": "1.000",
+                "threat_score": "0.482"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.868",
+                "rmsn": "1.031",
+                "threat_score": "0.512"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.869",
+                "rmsn": "1.034",
+                "threat_score": "0.485"
+            }
+        }
+    },
+    "EC-Earth3-Veg": {
+        "r13i1p1": {
+            "SAFM": {
+                "cor": "0.867",
+                "rmsn": "1.037",
+                "threat_score": "0.483"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.867",
+                "rmsn": "1.049",
+                "threat_score": "0.459"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.884",
+                "rmsn": "1.063",
+                "threat_score": "0.471"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.882",
+                "rmsn": "1.020",
+                "threat_score": "0.486"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.867",
+                "rmsn": "1.061",
+                "threat_score": "0.463"
+            }
+        },
+        "r12i1p1": {
+            "SAFM": {
+                "cor": "0.887",
+                "rmsn": "1.025",
+                "threat_score": "0.477"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.872",
+                "rmsn": "1.043",
+                "threat_score": "0.474"
+            }
+        },
+        "r14i1p1": {
+            "SAFM": {
+                "cor": "0.896",
+                "rmsn": "0.996",
+                "threat_score": "0.493"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.869",
+                "rmsn": "1.079",
+                "threat_score": "0.474"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.877",
+                "rmsn": "1.030",
+                "threat_score": "0.466"
+            }
+        }
+    },
+    "FGOALS-f3-L": {
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.808",
+                "rmsn": "1.149",
+                "threat_score": "0.346"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.799",
+                "rmsn": "1.126",
+                "threat_score": "0.348"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.780",
+                "rmsn": "1.170",
+                "threat_score": "0.375"
+            }
+        }
+    },
+    "FGOALS-g3": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.816",
+                "rmsn": "1.005",
+                "threat_score": "0.457"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.836",
+                "rmsn": "0.990",
+                "threat_score": "0.446"
+            }
+        }
+    },
+    "FIO-ESM-2-0": {
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.913",
+                "rmsn": "0.900",
+                "threat_score": "0.527"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.910",
+                "rmsn": "0.895",
+                "threat_score": "0.544"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.912",
+                "rmsn": "0.866",
+                "threat_score": "0.551"
+            }
+        }
+    },
+    "GFDL-CM4": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.768",
+                "rmsn": "1.159",
+                "threat_score": "0.454"
+            }
+        }
+    },
+    "GFDL-ESM4": {
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.812",
+                "rmsn": "1.044",
+                "threat_score": "0.440"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.828",
+                "rmsn": "1.022",
+                "threat_score": "0.450"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.777",
+                "rmsn": "1.080",
+                "threat_score": "0.450"
+            }
+        }
+    },
+    "GISS-E2-1-G": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.895",
+                "rmsn": "0.654",
+                "threat_score": "0.377"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.867",
+                "rmsn": "0.674",
+                "threat_score": "0.433"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.887",
+                "rmsn": "0.678",
+                "threat_score": "0.373"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.885",
+                "rmsn": "0.646",
+                "threat_score": "0.392"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.855",
+                "rmsn": "0.671",
+                "threat_score": "0.404"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.889",
+                "rmsn": "0.635",
+                "threat_score": "0.379"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.868",
+                "rmsn": "0.638",
+                "threat_score": "0.364"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.891",
+                "rmsn": "0.637",
+                "threat_score": "0.341"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.873",
+                "rmsn": "0.623",
+                "threat_score": "0.424"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.880",
+                "rmsn": "0.616",
+                "threat_score": "0.393"
+            }
+        },
+        "r101i1p1": {
+            "SAFM": {
+                "cor": "0.885",
+                "rmsn": "0.640",
+                "threat_score": "0.371"
+            }
+        },
+        "r11i1p1": {
+            "SAFM": {
+                "cor": "0.858",
+                "rmsn": "0.664",
+                "threat_score": "0.379"
+            }
+        },
+        "r102i1p1": {
+            "SAFM": {
+                "cor": "0.887",
+                "rmsn": "0.619",
+                "threat_score": "0.381"
+            }
+        }
+    },
+    "AWI-ESM-1-1-LR": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.858",
+                "rmsn": "1.117",
+                "threat_score": "0.428"
+            }
+        }
+    },
+    "GISS-E2-1-H": {
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.831",
+                "rmsn": "0.700",
+                "threat_score": "0.327"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.799",
+                "rmsn": "0.743",
+                "threat_score": "0.378"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.792",
+                "rmsn": "0.721",
+                "threat_score": "0.345"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.804",
+                "rmsn": "0.695",
+                "threat_score": "0.336"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.807",
+                "rmsn": "0.716",
+                "threat_score": "0.348"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.799",
+                "rmsn": "0.750",
+                "threat_score": "0.356"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.807",
+                "rmsn": "0.718",
+                "threat_score": "0.377"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.834",
+                "rmsn": "0.703",
+                "threat_score": "0.316"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.802",
+                "rmsn": "0.739",
+                "threat_score": "0.363"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.836",
+                "rmsn": "0.722",
+                "threat_score": "0.349"
+            }
+        }
+    },
+    "GISS-E2-2-G": {
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.847",
+                "rmsn": "0.869",
+                "threat_score": "0.407"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.861",
+                "rmsn": "0.863",
+                "threat_score": "0.440"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.870",
+                "rmsn": "0.828",
+                "threat_score": "0.454"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.856",
+                "rmsn": "0.860",
+                "threat_score": "0.406"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.859",
+                "rmsn": "0.881",
+                "threat_score": "0.454"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.863",
+                "rmsn": "0.860",
+                "threat_score": "0.447"
+            }
+        }
+    },
+    "GISS-E2-2-H": {
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.825",
+                "rmsn": "0.842",
+                "threat_score": "0.357"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.868",
+                "rmsn": "0.767",
+                "threat_score": "0.351"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.825",
+                "rmsn": "0.826",
+                "threat_score": "0.350"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.803",
+                "rmsn": "0.826",
+                "threat_score": "0.361"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.842",
+                "rmsn": "0.811",
+                "threat_score": "0.337"
+            }
+        }
+    },
+    "GISS-E2-1-G-CC": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.877",
+                "rmsn": "0.631",
+                "threat_score": "0.387"
+            }
+        }
+    },
+    "INM-CM4-8": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.915",
+                "rmsn": "0.584",
+                "threat_score": "0.476"
+            }
+        }
+    },
+    "INM-CM5-0": {
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.905",
+                "rmsn": "0.609",
+                "threat_score": "0.500"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.908",
+                "rmsn": "0.605",
+                "threat_score": "0.514"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.905",
+                "rmsn": "0.587",
+                "threat_score": "0.516"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.917",
+                "rmsn": "0.576",
+                "threat_score": "0.498"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.920",
+                "rmsn": "0.572",
+                "threat_score": "0.507"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.919",
+                "rmsn": "0.563",
+                "threat_score": "0.526"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.906",
+                "rmsn": "0.592",
+                "threat_score": "0.478"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.917",
+                "rmsn": "0.578",
+                "threat_score": "0.516"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.917",
+                "rmsn": "0.576",
+                "threat_score": "0.498"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.912",
+                "rmsn": "0.591",
+                "threat_score": "0.490"
+            }
+        }
+    },
+    "IPSL-CM6A-LR": {
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.914",
+                "rmsn": "0.828",
+                "threat_score": "0.539"
+            }
+        },
+        "r14i1p1": {
+            "SAFM": {
+                "cor": "0.899",
+                "rmsn": "0.903",
+                "threat_score": "0.512"
+            }
+        },
+        "r30i1p1": {
+            "SAFM": {
+                "cor": "0.893",
+                "rmsn": "0.895",
+                "threat_score": "0.510"
+            }
+        },
+        "r33i1p1": {
+            "SAFM": {
+                "cor": "0.908",
+                "rmsn": "0.868",
+                "threat_score": "0.523"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.903",
+                "rmsn": "0.889",
+                "threat_score": "0.520"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.893",
+                "rmsn": "0.919",
+                "threat_score": "0.517"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.901",
+                "rmsn": "0.859",
+                "threat_score": "0.501"
+            }
+        },
+        "r31i1p1": {
+            "SAFM": {
+                "cor": "0.908",
+                "rmsn": "0.841",
+                "threat_score": "0.536"
+            }
+        },
+        "r12i1p1": {
+            "SAFM": {
+                "cor": "0.913",
+                "rmsn": "0.885",
+                "threat_score": "0.530"
+            }
+        },
+        "r27i1p1": {
+            "SAFM": {
+                "cor": "0.895",
+                "rmsn": "0.911",
+                "threat_score": "0.505"
+            }
+        },
+        "r15i1p1": {
+            "SAFM": {
+                "cor": "0.913",
+                "rmsn": "0.870",
+                "threat_score": "0.526"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.900",
+                "rmsn": "0.878",
+                "threat_score": "0.511"
+            }
+        },
+        "r32i1p1": {
+            "SAFM": {
+                "cor": "0.922",
+                "rmsn": "0.888",
+                "threat_score": "0.545"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.909",
+                "rmsn": "0.901",
+                "threat_score": "0.520"
+            }
+        },
+        "r24i1p1": {
+            "SAFM": {
+                "cor": "0.913",
+                "rmsn": "0.836",
+                "threat_score": "0.512"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.907",
+                "rmsn": "0.877",
+                "threat_score": "0.532"
+            }
+        },
+        "r23i1p1": {
+            "SAFM": {
+                "cor": "0.909",
+                "rmsn": "0.901",
+                "threat_score": "0.502"
+            }
+        },
+        "r22i1p1": {
+            "SAFM": {
+                "cor": "0.915",
+                "rmsn": "0.856",
+                "threat_score": "0.543"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.906",
+                "rmsn": "0.905",
+                "threat_score": "0.522"
+            }
+        },
+        "r18i1p1": {
+            "SAFM": {
+                "cor": "0.913",
+                "rmsn": "0.894",
+                "threat_score": "0.521"
+            }
+        },
+        "r20i1p1": {
+            "SAFM": {
+                "cor": "0.898",
+                "rmsn": "0.919",
+                "threat_score": "0.516"
+            }
+        },
+        "r17i1p1": {
+            "SAFM": {
+                "cor": "0.914",
+                "rmsn": "0.896",
+                "threat_score": "0.511"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.911",
+                "rmsn": "0.837",
+                "threat_score": "0.522"
+            }
+        },
+        "r16i1p1": {
+            "SAFM": {
+                "cor": "0.910",
+                "rmsn": "0.901",
+                "threat_score": "0.514"
+            }
+        },
+        "r25i1p1": {
+            "SAFM": {
+                "cor": "0.911",
+                "rmsn": "0.847",
+                "threat_score": "0.514"
+            }
+        },
+        "r13i1p1": {
+            "SAFM": {
+                "cor": "0.907",
+                "rmsn": "0.826",
+                "threat_score": "0.523"
+            }
+        },
+        "r29i1p1": {
+            "SAFM": {
+                "cor": "0.921",
+                "rmsn": "0.891",
+                "threat_score": "0.539"
+            }
+        },
+        "r28i1p1": {
+            "SAFM": {
+                "cor": "0.916",
+                "rmsn": "0.887",
+                "threat_score": "0.511"
+            }
+        },
+        "r21i1p1": {
+            "SAFM": {
+                "cor": "0.917",
+                "rmsn": "0.865",
+                "threat_score": "0.518"
+            }
+        },
+        "r19i1p1": {
+            "SAFM": {
+                "cor": "0.906",
+                "rmsn": "0.889",
+                "threat_score": "0.530"
+            }
+        },
+        "r26i1p1": {
+            "SAFM": {
+                "cor": "0.913",
+                "rmsn": "0.895",
+                "threat_score": "0.520"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.910",
+                "rmsn": "0.852",
+                "threat_score": "0.514"
+            }
+        },
+        "r11i1p1": {
+            "SAFM": {
+                "cor": "0.900",
+                "rmsn": "0.828",
+                "threat_score": "0.520"
+            }
+        }
+    },
+    "IPSL-CM6A-LR-INCA": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.914",
+                "rmsn": "0.885",
+                "threat_score": "0.534"
+            }
+        }
+    },
+    "KIOST-ESM": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.832",
+                "rmsn": "0.714",
+                "threat_score": "0.375"
+            }
+        }
+    },
+    "MIROC6": {
+        "r40i1p1": {
+            "SAFM": {
+                "cor": "0.879",
+                "rmsn": "0.998",
+                "threat_score": "0.508"
+            }
+        },
+        "r43i1p1": {
+            "SAFM": {
+                "cor": "0.892",
+                "rmsn": "0.946",
+                "threat_score": "0.528"
+            }
+        },
+        "r50i1p1": {
+            "SAFM": {
+                "cor": "0.887",
+                "rmsn": "0.954",
+                "threat_score": "0.512"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.893",
+                "rmsn": "0.910",
+                "threat_score": "0.518"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.883",
+                "rmsn": "1.023",
+                "threat_score": "0.508"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.895",
+                "rmsn": "0.959",
+                "threat_score": "0.535"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.884",
+                "rmsn": "0.958",
+                "threat_score": "0.520"
+            }
+        },
+        "r19i1p1": {
+            "SAFM": {
+                "cor": "0.889",
+                "rmsn": "0.943",
+                "threat_score": "0.523"
+            }
+        },
+        "r41i1p1": {
+            "SAFM": {
+                "cor": "0.881",
+                "rmsn": "0.970",
+                "threat_score": "0.526"
+            }
+        },
+        "r44i1p1": {
+            "SAFM": {
+                "cor": "0.887",
+                "rmsn": "0.969",
+                "threat_score": "0.541"
+            }
+        },
+        "r26i1p1": {
+            "SAFM": {
+                "cor": "0.879",
+                "rmsn": "0.959",
+                "threat_score": "0.518"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.901",
+                "rmsn": "0.960",
+                "threat_score": "0.533"
+            }
+        },
+        "r48i1p1": {
+            "SAFM": {
+                "cor": "0.887",
+                "rmsn": "0.902",
+                "threat_score": "0.530"
+            }
+        },
+        "r23i1p1": {
+            "SAFM": {
+                "cor": "0.892",
+                "rmsn": "0.983",
+                "threat_score": "0.518"
+            }
+        },
+        "r47i1p1": {
+            "SAFM": {
+                "cor": "0.889",
+                "rmsn": "0.946",
+                "threat_score": "0.512"
+            }
+        },
+        "r22i1p1": {
+            "SAFM": {
+                "cor": "0.892",
+                "rmsn": "0.914",
+                "threat_score": "0.517"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.889",
+                "rmsn": "0.987",
+                "threat_score": "0.511"
+            }
+        }
+    },
+    "BCC-CSM2-MR": {
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.825",
+                "rmsn": "0.984",
+                "threat_score": "0.442"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.830",
+                "rmsn": "0.971",
+                "threat_score": "0.428"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.841",
+                "rmsn": "0.942",
+                "threat_score": "0.430"
+            }
+        }
+    },
+    "MPI-ESM-1-2-HAM": {
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.807",
+                "rmsn": "1.382",
+                "threat_score": "0.427"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.824",
+                "rmsn": "1.354",
+                "threat_score": "0.437"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.801",
+                "rmsn": "1.383",
+                "threat_score": "0.419"
+            }
+        }
+    },
+    "MPI-ESM1-2-LR": {
+        "r18i1p1": {
+            "SAFM": {
+                "cor": "0.861",
+                "rmsn": "1.244",
+                "threat_score": "0.436"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.834",
+                "rmsn": "1.208",
+                "threat_score": "0.430"
+            }
+        },
+        "r14i1p1": {
+            "SAFM": {
+                "cor": "0.848",
+                "rmsn": "1.257",
+                "threat_score": "0.432"
+            }
+        },
+        "r23i1p1": {
+            "SAFM": {
+                "cor": "0.864",
+                "rmsn": "1.236",
+                "threat_score": "0.433"
+            }
+        },
+        "r24i1p1": {
+            "SAFM": {
+                "cor": "0.859",
+                "rmsn": "1.226",
+                "threat_score": "0.439"
+            }
+        },
+        "r21i1p1": {
+            "SAFM": {
+                "cor": "0.841",
+                "rmsn": "1.244",
+                "threat_score": "0.441"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.849",
+                "rmsn": "1.305",
+                "threat_score": "0.435"
+            }
+        },
+        "r13i1p1": {
+            "SAFM": {
+                "cor": "0.842",
+                "rmsn": "1.283",
+                "threat_score": "0.424"
+            }
+        },
+        "r29i1p1": {
+            "SAFM": {
+                "cor": "0.849",
+                "rmsn": "1.222",
+                "threat_score": "0.439"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.851",
+                "rmsn": "1.198",
+                "threat_score": "0.423"
+            }
+        },
+        "r12i1p1": {
+            "SAFM": {
+                "cor": "0.862",
+                "rmsn": "1.297",
+                "threat_score": "0.430"
+            }
+        },
+        "r28i1p1": {
+            "SAFM": {
+                "cor": "0.856",
+                "rmsn": "1.237",
+                "threat_score": "0.436"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.845",
+                "rmsn": "1.227",
+                "threat_score": "0.426"
+            }
+        },
+        "r22i1p1": {
+            "SAFM": {
+                "cor": "0.860",
+                "rmsn": "1.227",
+                "threat_score": "0.443"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.865",
+                "rmsn": "1.305",
+                "threat_score": "0.433"
+            }
+        },
+        "r11i1p1": {
+            "SAFM": {
+                "cor": "0.871",
+                "rmsn": "1.227",
+                "threat_score": "0.438"
+            }
+        },
+        "r15i1p1": {
+            "SAFM": {
+                "cor": "0.852",
+                "rmsn": "1.269",
+                "threat_score": "0.444"
+            }
+        },
+        "r26i1p1": {
+            "SAFM": {
+                "cor": "0.844",
+                "rmsn": "1.286",
+                "threat_score": "0.447"
+            }
+        },
+        "r19i1p1": {
+            "SAFM": {
+                "cor": "0.852",
+                "rmsn": "1.209",
+                "threat_score": "0.446"
+            }
+        },
+        "r25i1p1": {
+            "SAFM": {
+                "cor": "0.847",
+                "rmsn": "1.254",
+                "threat_score": "0.436"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.856",
+                "rmsn": "1.259",
+                "threat_score": "0.431"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.871",
+                "rmsn": "1.228",
+                "threat_score": "0.437"
+            }
+        },
+        "r20i1p1": {
+            "SAFM": {
+                "cor": "0.843",
+                "rmsn": "1.241",
+                "threat_score": "0.430"
+            }
+        },
+        "r27i1p1": {
+            "SAFM": {
+                "cor": "0.845",
+                "rmsn": "1.261",
+                "threat_score": "0.427"
+            }
+        },
+        "r30i1p1": {
+            "SAFM": {
+                "cor": "0.868",
+                "rmsn": "1.275",
+                "threat_score": "0.427"
+            }
+        },
+        "r17i1p1": {
+            "SAFM": {
+                "cor": "0.852",
+                "rmsn": "1.277",
+                "threat_score": "0.416"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.850",
+                "rmsn": "1.193",
+                "threat_score": "0.446"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.842",
+                "rmsn": "1.275",
+                "threat_score": "0.434"
+            }
+        },
+        "r16i1p1": {
+            "SAFM": {
+                "cor": "0.837",
+                "rmsn": "1.274",
+                "threat_score": "0.438"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.856",
+                "rmsn": "1.264",
+                "threat_score": "0.434"
+            }
+        }
+    },
+    "MPI-ESM1-2-HR": {
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.855",
+                "rmsn": "1.253",
+                "threat_score": "0.427"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.844",
+                "rmsn": "1.271",
+                "threat_score": "0.424"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.837",
+                "rmsn": "1.288",
+                "threat_score": "0.426"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.858",
+                "rmsn": "1.270",
+                "threat_score": "0.427"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.850",
+                "rmsn": "1.278",
+                "threat_score": "0.428"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.850",
+                "rmsn": "1.280",
+                "threat_score": "0.412"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.856",
+                "rmsn": "1.272",
+                "threat_score": "0.418"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.864",
+                "rmsn": "1.236",
+                "threat_score": "0.416"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.857",
+                "rmsn": "1.220",
+                "threat_score": "0.427"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.837",
+                "rmsn": "1.232",
+                "threat_score": "0.411"
+            }
+        }
+    },
+    "NESM3": {
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.803",
+                "rmsn": "1.300",
+                "threat_score": "0.355"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.753",
+                "rmsn": "1.269",
+                "threat_score": "0.359"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.784",
+                "rmsn": "1.312",
+                "threat_score": "0.352"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.797",
+                "rmsn": "1.325",
+                "threat_score": "0.356"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.776",
+                "rmsn": "1.312",
+                "threat_score": "0.350"
+            }
+        }
+    },
+    "NorCPM1": {
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.877",
+                "rmsn": "0.767",
+                "threat_score": "0.510"
+            }
+        },
+        "r12i1p1": {
+            "SAFM": {
+                "cor": "0.868",
+                "rmsn": "0.810",
+                "threat_score": "0.502"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.886",
+                "rmsn": "0.850",
+                "threat_score": "0.489"
+            }
+        },
+        "r20i1p1": {
+            "SAFM": {
+                "cor": "0.854",
+                "rmsn": "0.842",
+                "threat_score": "0.490"
+            }
+        },
+        "r25i1p1": {
+            "SAFM": {
+                "cor": "0.862",
+                "rmsn": "0.764",
+                "threat_score": "0.478"
+            }
+        },
+        "r21i1p1": {
+            "SAFM": {
+                "cor": "0.862",
+                "rmsn": "0.843",
+                "threat_score": "0.496"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.872",
+                "rmsn": "0.785",
+                "threat_score": "0.473"
+            }
+        },
+        "r11i1p1": {
+            "SAFM": {
+                "cor": "0.864",
+                "rmsn": "0.827",
+                "threat_score": "0.487"
+            }
+        },
+        "r26i1p1": {
+            "SAFM": {
+                "cor": "0.856",
+                "rmsn": "0.787",
+                "threat_score": "0.477"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.855",
+                "rmsn": "0.822",
+                "threat_score": "0.472"
+            }
+        },
+        "r30i1p1": {
+            "SAFM": {
+                "cor": "0.872",
+                "rmsn": "0.876",
+                "threat_score": "0.512"
+            }
+        },
+        "r24i1p1": {
+            "SAFM": {
+                "cor": "0.865",
+                "rmsn": "0.849",
+                "threat_score": "0.464"
+            }
+        },
+        "r18i1p1": {
+            "SAFM": {
+                "cor": "0.851",
+                "rmsn": "0.800",
+                "threat_score": "0.473"
+            }
+        },
+        "r15i1p1": {
+            "SAFM": {
+                "cor": "0.852",
+                "rmsn": "0.837",
+                "threat_score": "0.506"
+            }
+        },
+        "r29i1p1": {
+            "SAFM": {
+                "cor": "0.863",
+                "rmsn": "0.876",
+                "threat_score": "0.483"
+            }
+        },
+        "r22i1p1": {
+            "SAFM": {
+                "cor": "0.868",
+                "rmsn": "0.779",
+                "threat_score": "0.500"
+            }
+        },
+        "r13i1p1": {
+            "SAFM": {
+                "cor": "0.855",
+                "rmsn": "0.880",
+                "threat_score": "0.500"
+            }
+        },
+        "r27i1p1": {
+            "SAFM": {
+                "cor": "0.853",
+                "rmsn": "0.840",
+                "threat_score": "0.476"
+            }
+        },
+        "r17i1p1": {
+            "SAFM": {
+                "cor": "0.864",
+                "rmsn": "0.809",
+                "threat_score": "0.478"
+            }
+        },
+        "r28i1p1": {
+            "SAFM": {
+                "cor": "0.854",
+                "rmsn": "0.826",
+                "threat_score": "0.489"
+            }
+        },
+        "r23i1p1": {
+            "SAFM": {
+                "cor": "0.867",
+                "rmsn": "0.804",
+                "threat_score": "0.500"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.861",
+                "rmsn": "0.802",
+                "threat_score": "0.490"
+            }
+        },
+        "r16i1p1": {
+            "SAFM": {
+                "cor": "0.858",
+                "rmsn": "0.833",
+                "threat_score": "0.475"
+            }
+        },
+        "r19i1p1": {
+            "SAFM": {
+                "cor": "0.860",
+                "rmsn": "0.858",
+                "threat_score": "0.514"
+            }
+        },
+        "r14i1p1": {
+            "SAFM": {
+                "cor": "0.875",
+                "rmsn": "0.852",
+                "threat_score": "0.506"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.865",
+                "rmsn": "0.812",
+                "threat_score": "0.476"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.863",
+                "rmsn": "0.866",
+                "threat_score": "0.481"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.854",
+                "rmsn": "0.800",
+                "threat_score": "0.510"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.868",
+                "rmsn": "0.818",
+                "threat_score": "0.494"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.864",
+                "rmsn": "0.824",
+                "threat_score": "0.500"
+            }
+        }
+    },
+    "NorESM2-LM": {
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.925",
+                "rmsn": "1.053",
+                "threat_score": "0.500"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.889",
+                "rmsn": "1.019",
+                "threat_score": "0.525"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.905",
+                "rmsn": "1.056",
+                "threat_score": "0.541"
+            }
+        }
+    },
+    "NorESM2-MM": {
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.883",
+                "rmsn": "1.001",
+                "threat_score": "0.512"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.907",
+                "rmsn": "0.992",
+                "threat_score": "0.559"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.900",
+                "rmsn": "0.992",
+                "threat_score": "0.522"
+            }
+        }
+    },
+    "SAM0-UNICON": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.889",
+                "rmsn": "0.931",
+                "threat_score": "0.463"
+            }
+        }
+    },
+    "TaiESM1": {
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.915",
+                "rmsn": "0.835",
+                "threat_score": "0.495"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.914",
+                "rmsn": "0.820",
+                "threat_score": "0.492"
+            }
+        }
+    },
+    "BCC-ESM1": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.853",
+                "rmsn": "0.835",
+                "threat_score": "0.395"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.866",
+                "rmsn": "0.840",
+                "threat_score": "0.407"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.858",
+                "rmsn": "0.811",
+                "threat_score": "0.409"
+            }
+        }
+    },
+    "CAMS-CSM1-0": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.784",
+                "rmsn": "1.179",
+                "threat_score": "0.410"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.798",
+                "rmsn": "1.169",
+                "threat_score": "0.420"
+            }
+        }
+    },
+    "CanESM5": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.752",
+                "rmsn": "1.216",
+                "threat_score": "0.437"
+            }
+        },
+        "r21i1p1": {
+            "SAFM": {
+                "cor": "0.760",
+                "rmsn": "1.178",
+                "threat_score": "0.459"
+            }
+        },
+        "r23i1p1": {
+            "SAFM": {
+                "cor": "0.768",
+                "rmsn": "1.170",
+                "threat_score": "0.452"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.761",
+                "rmsn": "1.204",
+                "threat_score": "0.459"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.771",
+                "rmsn": "1.160",
+                "threat_score": "0.444"
+            }
+        },
+        "r11i1p1": {
+            "SAFM": {
+                "cor": "0.772",
+                "rmsn": "1.174",
+                "threat_score": "0.456"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.767",
+                "rmsn": "1.202",
+                "threat_score": "0.449"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.793",
+                "rmsn": "1.228",
+                "threat_score": "0.444"
+            }
+        },
+        "r14i1p1": {
+            "SAFM": {
+                "cor": "0.773",
+                "rmsn": "1.167",
+                "threat_score": "0.456"
+            }
+        },
+        "r22i1p1": {
+            "SAFM": {
+                "cor": "0.754",
+                "rmsn": "1.181",
+                "threat_score": "0.442"
+            }
+        },
+        "r19i1p1": {
+            "SAFM": {
+                "cor": "0.762",
+                "rmsn": "1.209",
+                "threat_score": "0.438"
+            }
+        },
+        "r15i1p1": {
+            "SAFM": {
+                "cor": "0.741",
+                "rmsn": "1.180",
+                "threat_score": "0.446"
+            }
+        },
+        "r25i1p1": {
+            "SAFM": {
+                "cor": "0.783",
+                "rmsn": "1.181",
+                "threat_score": "0.444"
+            }
+        },
+        "r20i1p1": {
+            "SAFM": {
+                "cor": "0.762",
+                "rmsn": "1.157",
+                "threat_score": "0.449"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.781",
+                "rmsn": "1.132",
+                "threat_score": "0.464"
+            }
+        },
+        "r13i1p1": {
+            "SAFM": {
+                "cor": "0.778",
+                "rmsn": "1.217",
+                "threat_score": "0.464"
+            }
+        },
+        "r24i1p1": {
+            "SAFM": {
+                "cor": "0.784",
+                "rmsn": "1.159",
+                "threat_score": "0.448"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.766",
+                "rmsn": "1.207",
+                "threat_score": "0.446"
+            }
+        },
+        "r18i1p1": {
+            "SAFM": {
+                "cor": "0.763",
+                "rmsn": "1.175",
+                "threat_score": "0.446"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.753",
+                "rmsn": "1.177",
+                "threat_score": "0.444"
+            }
+        },
+        "r16i1p1": {
+            "SAFM": {
+                "cor": "0.755",
+                "rmsn": "1.199",
+                "threat_score": "0.456"
+            }
+        },
+        "r17i1p1": {
+            "SAFM": {
+                "cor": "0.767",
+                "rmsn": "1.191",
+                "threat_score": "0.441"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.775",
+                "rmsn": "1.166",
+                "threat_score": "0.442"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.769",
+                "rmsn": "1.170",
+                "threat_score": "0.444"
+            }
+        },
+        "r12i1p1": {
+            "SAFM": {
+                "cor": "0.755",
+                "rmsn": "1.201",
+                "threat_score": "0.454"
+            }
+        }
+    },
+    "CanESM5-1": {
+        "r14i1p1": {
+            "SAFM": {
+                "cor": "0.730",
+                "rmsn": "1.266",
+                "threat_score": "0.432"
+            }
+        },
+        "r34i1p1": {
+            "SAFM": {
+                "cor": "0.759",
+                "rmsn": "1.200",
+                "threat_score": "0.439"
+            }
+        },
+        "r49i1p1": {
+            "SAFM": {
+                "cor": "0.756",
+                "rmsn": "1.234",
+                "threat_score": "0.438"
+            }
+        },
+        "r11i1p1": {
+            "SAFM": {
+                "cor": "0.765",
+                "rmsn": "1.201",
+                "threat_score": "0.449"
+            }
+        },
+        "r48i1p1": {
+            "SAFM": {
+                "cor": "0.761",
+                "rmsn": "1.144",
+                "threat_score": "0.456"
+            }
+        },
+        "r46i1p1": {
+            "SAFM": {
+                "cor": "0.750",
+                "rmsn": "1.193",
+                "threat_score": "0.443"
+            }
+        },
+        "r25i1p1": {
+            "SAFM": {
+                "cor": "0.745",
+                "rmsn": "1.167",
+                "threat_score": "0.451"
+            }
+        },
+        "r20i1p1": {
+            "SAFM": {
+                "cor": "0.741",
+                "rmsn": "1.207",
+                "threat_score": "0.459"
+            }
+        },
+        "r22i1p1": {
+            "SAFM": {
+                "cor": "0.758",
+                "rmsn": "1.210",
+                "threat_score": "0.456"
+            }
+        },
+        "r30i1p1": {
+            "SAFM": {
+                "cor": "0.753",
+                "rmsn": "1.182",
+                "threat_score": "0.464"
+            }
+        },
+        "r33i1p1": {
+            "SAFM": {
+                "cor": "0.754",
+                "rmsn": "1.222",
+                "threat_score": "0.456"
+            }
+        },
+        "r38i1p1": {
+            "SAFM": {
+                "cor": "0.757",
+                "rmsn": "1.212",
+                "threat_score": "0.462"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.758",
+                "rmsn": "1.178",
+                "threat_score": "0.469"
+            }
+        },
+        "r31i1p1": {
+            "SAFM": {
+                "cor": "0.750",
+                "rmsn": "1.175",
+                "threat_score": "0.441"
+            }
+        },
+        "r36i1p1": {
+            "SAFM": {
+                "cor": "0.744",
+                "rmsn": "1.220",
+                "threat_score": "0.418"
+            }
+        },
+        "r29i1p1": {
+            "SAFM": {
+                "cor": "0.755",
+                "rmsn": "1.201",
+                "threat_score": "0.467"
+            }
+        },
+        "r37i1p1": {
+            "SAFM": {
+                "cor": "0.767",
+                "rmsn": "1.227",
+                "threat_score": "0.441"
+            }
+        },
+        "r42i1p1": {
+            "SAFM": {
+                "cor": "0.745",
+                "rmsn": "1.177",
+                "threat_score": "0.459"
+            }
+        },
+        "r26i1p1": {
+            "SAFM": {
+                "cor": "0.744",
+                "rmsn": "1.196",
+                "threat_score": "0.446"
+            }
+        },
+        "r43i1p1": {
+            "SAFM": {
+                "cor": "0.773",
+                "rmsn": "1.180",
+                "threat_score": "0.444"
+            }
+        },
+        "r28i1p1": {
+            "SAFM": {
+                "cor": "0.744",
+                "rmsn": "1.177",
+                "threat_score": "0.464"
+            }
+        },
+        "r41i1p1": {
+            "SAFM": {
+                "cor": "0.751",
+                "rmsn": "1.197",
+                "threat_score": "0.422"
+            }
+        },
+        "r18i1p1": {
+            "SAFM": {
+                "cor": "0.766",
+                "rmsn": "1.207",
+                "threat_score": "0.464"
+            }
+        },
+        "r24i1p1": {
+            "SAFM": {
+                "cor": "0.761",
+                "rmsn": "1.193",
+                "threat_score": "0.446"
+            }
+        },
+        "r50i1p1": {
+            "SAFM": {
+                "cor": "0.772",
+                "rmsn": "1.180",
+                "threat_score": "0.464"
+            }
+        },
+        "r32i1p1": {
+            "SAFM": {
+                "cor": "0.746",
+                "rmsn": "1.196",
+                "threat_score": "0.454"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.763",
+                "rmsn": "1.198",
+                "threat_score": "0.446"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.747",
+                "rmsn": "1.189",
+                "threat_score": "0.446"
+            }
+        },
+        "r27i1p1": {
+            "SAFM": {
+                "cor": "0.765",
+                "rmsn": "1.201",
+                "threat_score": "0.451"
+            }
+        },
+        "r35i1p1": {
+            "SAFM": {
+                "cor": "0.736",
+                "rmsn": "1.206",
+                "threat_score": "0.435"
+            }
+        },
+        "r16i1p1": {
+            "SAFM": {
+                "cor": "0.742",
+                "rmsn": "1.214",
+                "threat_score": "0.440"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.746",
+                "rmsn": "1.170",
+                "threat_score": "0.457"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.732",
+                "rmsn": "1.172",
+                "threat_score": "0.432"
+            }
+        },
+        "r44i1p1": {
+            "SAFM": {
+                "cor": "0.768",
+                "rmsn": "1.144",
+                "threat_score": "0.462"
+            }
+        },
+        "r45i1p1": {
+            "SAFM": {
+                "cor": "0.749",
+                "rmsn": "1.250",
+                "threat_score": "0.439"
+            }
+        },
+        "r17i1p1": {
+            "SAFM": {
+                "cor": "0.756",
+                "rmsn": "1.209",
+                "threat_score": "0.459"
+            }
+        },
+        "r19i1p1": {
+            "SAFM": {
+                "cor": "0.777",
+                "rmsn": "1.170",
+                "threat_score": "0.441"
+            }
+        },
+        "r39i1p1": {
+            "SAFM": {
+                "cor": "0.750",
+                "rmsn": "1.233",
+                "threat_score": "0.441"
+            }
+        },
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.732",
+                "rmsn": "1.191",
+                "threat_score": "0.454"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.747",
+                "rmsn": "1.185",
+                "threat_score": "0.451"
+            }
+        },
+        "r13i1p1": {
+            "SAFM": {
+                "cor": "0.766",
+                "rmsn": "1.195",
+                "threat_score": "0.444"
+            }
+        },
+        "r12i1p1": {
+            "SAFM": {
+                "cor": "0.771",
+                "rmsn": "1.176",
+                "threat_score": "0.469"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.764",
+                "rmsn": "1.214",
+                "threat_score": "0.451"
+            }
+        },
+        "r47i1p1": {
+            "SAFM": {
+                "cor": "0.760",
+                "rmsn": "1.188",
+                "threat_score": "0.446"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.733",
+                "rmsn": "1.246",
+                "threat_score": "0.442"
+            }
+        },
+        "r15i1p1": {
+            "SAFM": {
+                "cor": "0.743",
+                "rmsn": "1.175",
+                "threat_score": "0.467"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.754",
+                "rmsn": "1.194",
+                "threat_score": "0.441"
+            }
+        }
+    },
+    "CAS-ESM2-0": {
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.857",
+                "rmsn": "1.124",
+                "threat_score": "0.462"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.870",
+                "rmsn": "1.131",
+                "threat_score": "0.481"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.881",
+                "rmsn": "1.120",
+                "threat_score": "0.486"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.872",
+                "rmsn": "1.142",
+                "threat_score": "0.488"
+            }
+        }
+    },
+    "CESM2": {
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.843",
+                "rmsn": "0.953",
+                "threat_score": "0.511"
+            }
+        },
+        "r11i1p1": {
+            "SAFM": {
+                "cor": "0.856",
+                "rmsn": "0.911",
+                "threat_score": "0.513"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.848",
+                "rmsn": "0.910",
+                "threat_score": "0.496"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.855",
+                "rmsn": "0.904",
+                "threat_score": "0.506"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.863",
+                "rmsn": "0.864",
+                "threat_score": "0.507"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.864",
+                "rmsn": "0.919",
+                "threat_score": "0.499"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.851",
+                "rmsn": "0.934",
+                "threat_score": "0.510"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.853",
+                "rmsn": "0.940",
+                "threat_score": "0.494"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.848",
+                "rmsn": "0.884",
+                "threat_score": "0.482"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.841",
+                "rmsn": "0.912",
+                "threat_score": "0.502"
+            }
+        }
+    },
+    "ACCESS-CM2": {
+        "r9i1p1": {
+            "SAFM": {
+                "cor": "0.821",
+                "rmsn": "0.921",
+                "threat_score": "0.473"
+            }
+        },
+        "r1i1p1": {
+            "SAFM": {
+                "cor": "0.831",
+                "rmsn": "0.951",
+                "threat_score": "0.475"
+            }
+        },
+        "r10i1p1": {
+            "SAFM": {
+                "cor": "0.825",
+                "rmsn": "0.962",
+                "threat_score": "0.452"
+            }
+        },
+        "r6i1p1": {
+            "SAFM": {
+                "cor": "0.808",
+                "rmsn": "0.934",
+                "threat_score": "0.460"
+            }
+        },
+        "r7i1p1": {
+            "SAFM": {
+                "cor": "0.814",
+                "rmsn": "0.961",
+                "threat_score": "0.453"
+            }
+        },
+        "r4i1p1": {
+            "SAFM": {
+                "cor": "0.813",
+                "rmsn": "0.984",
+                "threat_score": "0.470"
+            }
+        },
+        "r3i1p1": {
+            "SAFM": {
+                "cor": "0.820",
+                "rmsn": "0.983",
+                "threat_score": "0.456"
+            }
+        },
+        "r8i1p1": {
+            "SAFM": {
+                "cor": "0.834",
+                "rmsn": "0.889",
+                "threat_score": "0.468"
+            }
+        },
+        "r2i1p1": {
+            "SAFM": {
+                "cor": "0.814",
+                "rmsn": "0.914",
+                "threat_score": "0.465"
+            }
+        },
+        "r5i1p1": {
+            "SAFM": {
+                "cor": "0.836",
+                "rmsn": "0.958",
+                "threat_score": "0.466"
+            }
+        }
+    }
+}
