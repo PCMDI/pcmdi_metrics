@@ -156,9 +156,9 @@ test_data_path = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2/diagnostic_results/CMIP
 reference_data_path = "/p/user_pub/PCMDIobs/obs4MIPs_legacy/PCMDIobs2_clims/atmos/pr/TRMM-3B43v-7/pr_mon_TRMM-3B43v-7_BE_gn_199801-201712.v20200421.AC.nc"
 
 ###
-modnames = ['CanCM4']
-#test_data_path = 'demo_data_tmp/CMIP5_demo_clims/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200512.AC.v20200426.nc'
-#reference_data_path = 'demo_data_tmp/obs4MIPs_PCMDI_monthly/NOAA-NCEI/GPCP-2-3/mon/pr/gn/v20210727/pr_mon_GPCP-2-3_PCMDI_gn_197901-201907.nc'
+modnames = ["CanCM4"]
+# test_data_path = 'demo_data_tmp/CMIP5_demo_clims/cmip5.historical.%(model).r1i1p1.mon.pr.198101-200512.AC.v20200426.nc'
+# reference_data_path = 'demo_data_tmp/obs4MIPs_PCMDI_monthly/NOAA-NCEI/GPCP-2-3/mon/pr/gn/v20210727/pr_mon_GPCP-2-3_PCMDI_gn_197901-201907.nc'
 ###
 
 
