@@ -45,6 +45,7 @@ def rlz_grep(modpath, mod, rlz_str='i1p1'):
 def main():
     P = create_monsoon_wang_parser()
     P.add_argument('--nth', type=int, default=0, help="Specify the nth value (default is 0)")
+    P.add_argument('--dom_list', type=str, default=["AllM", "NAMM", "SAMM", "NAFM", "SAFM", "SASM", "EASM", "AUSM"], help='list of domains')
     args = P.get_parameter(argparse_vals_only=False)
     monsoon_wang_runner(args)
 
@@ -181,6 +182,10 @@ def monsoon_wang_runner(args):
     doms = ["AllM", "NAMM", "SAMM", "NAFM", "SAFM", "SASM", "EASM", "AUSM"]
     #doms = ["NAFM"]
     doms = ["EASM"]
+    doms = ["NAMM"]
+
+    dom_list = args.dom_list
+    doms = dom_list
 
     mpi_stats_dic = {}
     for i, mod in enumerate(gmods):

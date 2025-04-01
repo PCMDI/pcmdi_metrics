@@ -11,8 +11,11 @@
 
 #  trouble model ICON-ESM-LR'
 
+# doms = ["AllM", "NAMM", "SAMM", "NAFM", "SAFM", "SASM", "EASM", "AUSM"]
+#
+dom_list = ['AllM']
 
-nth = 54
+nth = 50
 
 # cmip6 models
 modnames = [
@@ -30,7 +33,7 @@ modnames = [
     "CESM2",
     "CESM2-FV2",
     "CESM2-WACCM",
-    "CIESM",
+#####    "CIESM",
     "CMCC-CM2-HR4",
     "CMCC-CM2-SR5",
     "CMCC-ESM2",
