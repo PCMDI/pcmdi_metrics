@@ -89,10 +89,12 @@ ConvEOF = param.ConvEOF  # Conduct conventional EOF analysis
 EofScaling = param.EofScaling  # If True, consider EOF with unit variance
 RmDomainMean = param.RemoveDomainMean  # If True, remove Domain Mean of each time step
 LandMask = param.landmask  # If True, maskout land region thus consider only over ocean
+provenance = param.provenance
 
 print("EofScaling:", EofScaling)
 print("RmDomainMean:", RmDomainMean)
 print("LandMask:", LandMask)
+print("provenance:", provenance)
 
 nc_out_obs = param.nc_out_obs  # Record NetCDF output
 plot_obs = param.plot_obs  # Generate plots
@@ -1075,6 +1077,7 @@ for model in models:
             # =================================================================
             # Dictionary to JSON: individual JSON during model_realization loop
             # -----------------------------------------------------------------
+            debug_print("json (individual) writing start", debug)
             json_filename_tmp = f"var_mode_{mode}_EOF{eofn_mod}_stat_{mip}_{exp}_{fq}_{realm}_{model}_{run}_{msyear}-{meyear}"
 
             variability_metrics_to_json(
@@ -1084,7 +1087,9 @@ for model in models:
                 model=model,
                 run=run,
                 cmec_flag=cmec,
+                include_provenance=provenance,
             )
+            debug_print("json (individual) writing done", debug)
 
         except Exception as err:
             if debug:
@@ -1096,10 +1101,12 @@ for model in models:
 # Dictionary to JSON: collective JSON at the end of model_realization loop
 # ------------------------------------------------------------------------
 if not parallel and (len(models) > 1):
+    debug_print("json (collective) writing start", debug)
     json_filename_all = f"var_mode_{mode}_EOF{eofn_mod}_stat_{mip}_{exp}_{fq}_{realm}_allModels_allRuns_{msyear}-{meyear}"
     variability_metrics_to_json(
         dir_paths["metrics_results"], json_filename_all, result_dict, cmec_flag=cmec
     )
+    debug_print("json (collective) writing done", debug)
 
 if not debug:
     sys.exit(0)

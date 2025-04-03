@@ -79,6 +79,11 @@ Acknowledgement
 ---------------
 Content in this repository is developed by climate and computer scientists from the Program for Climate Model Diagnosis and Intercomparison ([PCMDI][PCMDI]) at Lawrence Livermore National Laboratory ([LLNL][LLNL]). This work is sponsored by the Regional and Global Model Analysis ([RGMA][RGMA]) program, of the Earth and Environmental Systems Sciences Division ([EESSD][EESSD]) in the Office of Biological and Environmental Research ([BER][BER]) within the [Department of Energy][DOE]'s [Office of Science][OS]. The work is performed under the auspices of the U.S. Department of Energy by Lawrence Livermore National Laboratory under Contract DE-AC52-07NA27344.
 
+LLNL-CODE-2004137 
+
+DOE CODE ID: #153383
+
+
 <p>
     <img src="https://pcmdi.github.io/assets/PCMDI/100px-PCMDI-Logo-NoText-square-png8.png"
          width="65"
@@ -121,6 +126,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.9]        | New capability (**Decision-Relevant metrics, Database access API**) and new demo notebooks
 | [v3.8.2]      | Technical update
 | [v3.8.1]      | Technical update with new figure (modes of variability multi-panel plot)
 | [v3.8]        | New capability (**figure generation for ENSO**, xCDAT migration completed for **Monsoon Wang** with figure generation), major dependency update (`numpy` >= 2.0)
@@ -174,6 +180,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.9]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.9
 [v3.8.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8.2
 [v3.8.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8.1
 [v3.8]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8
@@ -217,15 +224,14 @@ Release Notes and History
 [v1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1
 [v1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0
 
-Current Core Team Members at PCMDI/LLNL
----------------------------------------
-* Jiwoo Lee
-* Ana Ordonez
-* Peter Gleckler
-* Paul Ullrich
-* Bo Dong
-* Kristin Chang
-
+Current Core Development Team
+-----------------------------
+* [Jiwoo Lee](https://people.llnl.gov/lee1043) ([LLNL](https://www.llnl.gov/), PMP Lead)
+* [Peter Gleckler](https://pcmdi.llnl.gov/staff/gleckler/) ([LLNL](https://www.llnl.gov/))
+* [Paul Ullrich](https://people.llnl.gov/ullrich4) ([LLNL](https://www.llnl.gov/), [PCMDI](https://pcmdi.llnl.gov/) Project PI)
+* [Bo Dong](https://people.llnl.gov/dong12) ([LLNL](https://www.llnl.gov/))
+* [Kristin Chang](https://people.llnl.gov/chang61) ([LLNL](https://www.llnl.gov/))
+* [Shixuan Zhang](https://www.pnnl.gov/science/staff/staff_info.asp?staff_num=9376) ([PNNL](https://www.pnnl.gov/))
 
 All Contributors
 ----------------
@@ -279,25 +285,3 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
-
-## Disclaimer
-This document was prepared as an account of work sponsored by an
-agency of the United States government. Neither the United States government
-nor Lawrence Livermore National Security, LLC, nor any of their employees
-makes any warranty, expressed or implied, or assumes any legal liability or
-responsibility for the accuracy, completeness, or usefulness of any
-information, apparatus, product, or process disclosed, or represents that its
-use would not infringe privately owned rights. Reference herein to any specific
-commercial product, process, or service by trade name, trademark, manufacturer,
-or otherwise does not necessarily constitute or imply its endorsement,
-recommendation, or favoring by the United States government or Lawrence
-Livermore National Security, LLC. The views and opinions of authors expressed
-herein do not necessarily state or reflect those of the United States
-government or Lawrence Livermore National Security, LLC, and shall not be used
-for advertising or product endorsement purposes.
-
-
-
-
-
-
