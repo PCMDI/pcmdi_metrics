@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bokeh Plot</title>
+    <style>
+      html, body {
+        box-sizing: border-box;
+        display: flow-root;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.5.2.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.5.2.min.js"></script>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-tables-3.5.2.min.js"></script>
+    <script type="text/javascript">
+        Bokeh.set_log_level("info");
+    </script>
+  </head>
+  <body>
+    <div id="f640979d-3368-4dd2-a7a6-fc7b7e27727a" data-root-id="p1092" style="display: contents;"></div>
+  
+    <script type="application/json" id="f7aadeef-cc08-4363-8456-21436ad16d78">
+      {"01c58c10-6dc8-41e9-addf-e7a1fa7b477c":{"version":"3.5.2","title":"Bokeh Application","roots":[{"type":"object","name":"Column","id":"p1092","attributes":{"children":[{"type":"object","name":"Div","id":"p1090","attributes":{"text":"\n                     &lt;br&gt;\n                     &lt;h1&gt; PMP Mean Climate Portrait Plots &lt;/h1&gt;\n                     &lt;br&gt;\n                     &lt;h2&gt;Filters&lt;/h2&gt;\n    "}},{"type":"object","name":"Row","id":"p1091","attributes":{"children":[{"type":"object","name":"MultiChoice","id":"p1086","attributes":{"js_property_callbacks":{"type":"map","entries":[["change:value",[{"type":"object","name":"CustomJS","id":"p1089","attributes":{"args":{"type":"map","entries":[["source",{"type":"object","name":"ColumnDataSource","id":"p1060","attributes":{"selected":{"type":"object","name":"Selection","id":"p1061","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1062"},"data":{"type":"map","entries":[["Model",{"type":"ndarray","array":["v3-LR.0051","v3-LR.0051","v3-LR.0051","v3-LR.0051"],"shape":[4],"dtype":"object","order":"little"}],["Variable",{"type":"ndarray","array":["rms-xy","rms-xy","rms-xy","rms-xy"],"shape":[4],"dtype":"object","order":"little"}],["Region",{"type":"ndarray","array":["SHEX","global","TROPICS","NHEX"],"shape":[4],"dtype":"object","order":"little"}],["Preview",{"type":"ndarray","array":["/Users/chang61/Documents/PCMDI/PMPviewer_sandbox/mean_clim_portrait/mean_climate/e3sm/amip/v20241101/portrait_4seasons/rms-xy_v3-LR.0051_xx_xx_xx_SHEX_AC_4season.png","/Users/chang61/Documents/PCMDI/PMPviewer_sandbox/mean_clim_portrait/mean_climate/e3sm/amip/v20241101/portrait_4seasons/rms-xy_v3-LR.0051_xx_xx_xx_global_AC_4season.png","/Users/chang61/Documents/PCMDI/PMPviewer_sandbox/mean_clim_portrait/mean_climate/e3sm/amip/v20241101/portrait_4seasons/rms-xy_v3-LR.0051_xx_xx_xx_TROPICS_AC_4season.png","/Users/chang61/Documents/PCMDI/PMPviewer_sandbox/mean_clim_portrait/mean_climate/e3sm/amip/v20241101/portrait_4seasons/rms-xy_v3-LR.0051_xx_xx_xx_NHEX_AC_4season.png"],"shape":[4],"dtype":"object","order":"little"}]]}}}],["filtered_source",{"type":"object","name":"ColumnDataSource","id":"p1063","attributes":{"selected":{"type":"object","name":"Selection","id":"p1064","attributes":{"indices":[],"line_indices":[]}},"selection_policy":{"type":"object","name":"UnionRenderers","id":"p1065"},"data":{"type":"map","entries":[["Model",["v3-LR.0051","v3-LR.0051","v3-LR.0051","v3-LR.0051"]],["Variable",["rms-xy","rms-xy","rms-xy","rms-xy"]],["Region",["SHEX","global","TROPICS","NHEX"]],["Preview",["/Users/chang61/Documents/PCMDI/PMPviewer_sandbox/mean_clim_portrait/mean_climate/e3sm/amip/v20241101/portrait_4seasons/rms-xy_v3-LR.0051_xx_xx_xx_SHEX_AC_4season.png","/Users/chang61/Documents/PCMDI/PMPviewer_sandbox/mean_clim_portrait/mean_climate/e3sm/amip/v20241101/portrait_4seasons/rms-xy_v3-LR.0051_xx_xx_xx_global_AC_4season.png","/Users/chang61/Documents/PCMDI/PMPviewer_sandbox/mean_clim_portrait/mean_climate/e3sm/amip/v20241101/portrait_4seasons/rms-xy_v3-LR.0051_xx_xx_xx_TROPICS_AC_4season.png","/Users/chang61/Documents/PCMDI/PMPviewer_sandbox/mean_clim_portrait/mean_climate/e3sm/amip/v20241101/portrait_4seasons/rms-xy_v3-LR.0051_xx_xx_xx_NHEX_AC_4season.png"]]]}}}],["model_dropdown",{"id":"p1086"}],["var_dropdown",{"type":"object","name":"MultiChoice","id":"p1087","attributes":{"js_property_callbacks":{"type":"map","entries":[["change:value",[{"id":"p1089"}]]]},"title":"Select Variable","options":["rms-xy"]}}],["region_dropdown",{"type":"object","name":"MultiChoice","id":"p1088","attributes":{"js_property_callbacks":{"type":"map","entries":[["change:value",[{"id":"p1089"}]]]},"title":"Select Region","options":["SHEX","global","TROPICS","NHEX"]}}]]},"code":"\n        const original_data = source.data;\n        const filtered_data = { Model: [], Variable: [], Region: [], Preview: []};\n\n        const selected_models = model_dropdown.value;\n        const selected_vars = var_dropdown.value;\n        const selected_regions = region_dropdown.value;\n\n        for (let i = 0; i &lt; original_data.Model.length; i++) {\n        const in_model = selected_models.length === 0 || selected_models.includes(original_data.Model[i]);\n            const in_var = selected_vars.length === 0 || selected_vars.includes(original_data.Variable[i]);\n            const in_region = selected_regions.length === 0 || selected_regions.includes(original_data.Region[i]);\n\n            if (in_model &amp;&amp; in_var &amp;&amp; in_region) {\n                filtered_data.Model.push(original_data.Model[i]);\n                filtered_data.Variable.push(original_data.Variable[i]);\n                filtered_data.Region.push(original_data.Region[i]);\n                filtered_data.Preview.push(original_data.Preview[i]);\n            }\n        }\n\n        filtered_source.data = Object.assign({}, filtered_data);\n        filtered_source.change.emit();\n        "}}]]]},"title":"Select Model","options":["v3-LR.0051"]}},{"id":"p1087"},{"id":"p1088"}]}},{"type":"object","name":"DataTable","id":"p1080","attributes":{"width":1600,"height":1200,"source":{"id":"p1063"},"view":{"type":"object","name":"CDSView","id":"p1084","attributes":{"filter":{"type":"object","name":"AllIndices","id":"p1085"}}},"columns":[{"type":"object","name":"TableColumn","id":"p1068","attributes":{"field":"Model","title":"Model","formatter":{"type":"object","name":"HTMLTemplateFormatter","id":"p1067","attributes":{"template":"&lt;span style=\"font-size:16px;\"&gt; &lt;%= value %&gt; &lt;/span&gt;"}},"editor":{"type":"object","name":"StringEditor","id":"p1070"}}},{"type":"object","name":"TableColumn","id":"p1071","attributes":{"field":"Variable","title":"Variable","formatter":{"id":"p1067"},"editor":{"type":"object","name":"StringEditor","id":"p1073"}}},{"type":"object","name":"TableColumn","id":"p1074","attributes":{"field":"Region","title":"Region","formatter":{"id":"p1067"},"editor":{"type":"object","name":"StringEditor","id":"p1076"}}},{"type":"object","name":"TableColumn","id":"p1077","attributes":{"field":"Preview","title":"Preview","width":700,"formatter":{"type":"object","name":"HTMLTemplateFormatter","id":"p1066","attributes":{"template":"\n        &lt;div style=\"position: relative;\"&gt;\n            &lt;a href=\"&lt;%= Preview %&gt;\" target=\"_blank\"&gt;&lt;img src=\"&lt;%= Preview %&gt;\" alt=\"preview\" height=300&gt;&lt;/a&gt;\n        &lt;/div&gt;\n        "}},"editor":{"type":"object","name":"StringEditor","id":"p1079"}}}],"row_height":320}}]}}]}}
+    </script>
+    <script type="text/javascript">
+      (function() {
+        const fn = function() {
+          Bokeh.safely(function() {
+            (function(root) {
+              function embed_document(root) {
+              const docs_json = document.getElementById('f7aadeef-cc08-4363-8456-21436ad16d78').textContent;
+              const render_items = [{"docid":"01c58c10-6dc8-41e9-addf-e7a1fa7b477c","roots":{"p1092":"f640979d-3368-4dd2-a7a6-fc7b7e27727a"},"root_ids":["p1092"]}];
+              root.Bokeh.embed.embed_items(docs_json, render_items);
+              }
+              if (root.Bokeh !== undefined) {
+                embed_document(root);
+              } else {
+                let attempts = 0;
+                const timer = setInterval(function(root) {
+                  if (root.Bokeh !== undefined) {
+                    clearInterval(timer);
+                    embed_document(root);
+                  } else {
+                    attempts++;
+                    if (attempts > 100) {
+                      clearInterval(timer);
+                      console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                    }
+                  }
+                }, 10, root)
+              }
+            })(window);
+          });
+        };
+        if (document.readyState != "loading") fn();
+        else document.addEventListener("DOMContentLoaded", fn);
+      })();
+    </script>
+  </body>
+</html>
