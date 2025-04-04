@@ -310,7 +310,7 @@ def determine_projection(mode: str) -> str:
     """
     if "teleconnection" in mode:
         return "Robinson"
-    elif mode in ["NAO", "PNA", "NPO", "PDO", "NPGO", "AMO"]:
+    elif mode in ["NAO", "PNA", "NPO", "PDO", "NPGO", "AMO", "EA", "SCA"]:
         return "Lambert"
     elif mode in ["NAM"]:
         return "Stereo_north"

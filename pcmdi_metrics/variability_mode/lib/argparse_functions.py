@@ -29,9 +29,11 @@ def AddParserArgument(P):
         "--variability_mode",
         type=str,
         default="NAO",
-        help="Mode of variability: NAM, NAO, SAM, PNA, PDO, NPO, NPGO, AMO\n"
+        help="Mode of variability: NAM, NAO, EA, SCA, SAM, PNA, PDO, NPO, NPGO, AMO\n"
         "- NAM: Northern Annular Mode\n"
         "- NAO: Northern Atlantic Oscillation\n"
+        "- EA: East Atlantic Pattern\n"
+        "- SCA: Scandinavian Pattern\n"
         "- SAM: Southern Annular Mode\n"
         "- PSA1: Pacific–South American pattern 1\n"
         "- PSA2: Pacific–South American pattern 2\n"
@@ -239,6 +241,8 @@ def VariabilityModeCheck(mode, P):
         if mode.upper() not in [
             "NAM",
             "NAO",
+            "EA",
+            "SCA",
             "SAM",
             "PSA1",
             "PSA2",
