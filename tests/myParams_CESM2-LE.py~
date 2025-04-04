@@ -1,0 +1,84 @@
+import datetime
+import os
+
+# =================================================
+# Background Information
+# -------------------------------------------------
+mip = "cmip6"
+exp = "piControl"
+frequency = "mo"
+realm = "atm"
+
+# =================================================
+# Analysis Options
+# -------------------------------------------------
+variability_mode = "EA"  # Available domains: NAM, NAO, SAM, PNA, PDO
+seasons = ["JFM"] # Available seasons: DJF, MAM, JJA, SON, monthly, yearly
+
+ConvEOF = True  # Calculate conventional EOF for model
+CBF = True  # Calculate Common Basis Function (CBF) for model
+
+# =================================================
+# Miscellaneous
+# -------------------------------------------------
+update_json = False
+debug = True
+
+# =================================================
+# Observation
+# -------------------------------------------------
+reference_data_name = "ERA-5"  #"NOAA-20CR"
+reference_data_path = '/global/cfs/cdirs/m1199/ajonko/ArcticMetrics/OBS_data/psl_mon_ERA-5_PCMDI_gn_197901-202212.nc'
+
+#os.path.join(
+#    "/p/user_pub/PCMDIobs/obs4MIPs/NOAA-ESRL-PSD/20CR/mon/psl/gn/latest",
+#    "psl_mon_20CR_PCMDI_gn_187101-201212.nc"
+#)
+
+varOBS = "psl"
+ObsUnitsAdjust = (True, "divide", 100.0)  # Pa to hPa; or (False, 0, 0)
+
+osyear = 1979
+oeyear = 2022
+eofn_obs = 2
+
+# =================================================
+# Models
+# -------------------------------------------------
+modpath = '/global/cfs/cdirs/m1199/ajonko/ArcticMetrics/CESM2-LE/psl_Amon_CESM2_r*_cf_197001-202412.nc'
+
+modnames = ["CESM2"]
+
+realization = ["r060"]#,"r061","r062","r063","r064","r065","r066","r067","r068","r069","r070","r071","r072","r073","r074","r075","r076","r077","r078","r079","r080","r081","r082","r083","r084","r085","r086","r087","r088","r089","r090","r091","r092","r093","r094","r095","r096","r097","r098","r099","r100"]
+
+varModel = "PSL"
+ModUnitsAdjust = (True, "divide", 100.0)  # Pa to hPa
+
+msyear=1979
+meyear=2022
+eofn_mod = 2
+
+# =================================================
+# Output
+# -------------------------------------------------
+case_id = "CESM2-LE_JFM_EA"
+#    "{:v%Y%m%d}".format(datetime.datetime.now())
+#                       )
+#pmprdir = "/p/user_pub/pmp/pmp_results/pmp_v1.1.2"
+
+#if debug:
+#    pmprdir = "/work/lee1043/temporary/result_test"
+
+results_dir = os.path.join(
+    "/global/cfs/cdirs/m1199/ajonko/ArcticMetrics/analysis/pcmdi_metrics_EA_SCA/EA_SCA_test_output/",
+    "%(case_id)",
+    "%(output_type)",
+)
+
+# Output for obs
+plot_obs = True  # Create map graphics
+nc_out_obs = True  # Write output in NetCDF
+
+# Output for models
+nc_out = True
+plot = True
