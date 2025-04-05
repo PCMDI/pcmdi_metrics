@@ -10,7 +10,7 @@ import xarray as xr
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
-from pcmdi_metrics.io import da_to_ds, region_subset
+from pcmdi_metrics.io import da_to_ds, region_subset, xcdat_open
 from pcmdi_metrics.monsoon_wang.lib import (
     create_monsoon_wang_parser,
     map_plotter,
@@ -123,14 +123,14 @@ def monsoon_wang_runner(args):
     # ########################################
     # PMP monthly default PR obs
 
-    fobs = xr.open_dataset(args.reference_data_path, decode_times=False)
-    dobs_orig = fobs[args.obsvar]
-    fobs.close()
+    ds_obs = xcdat_open(args.reference_data_path, decode_times=False)
+    # dobs_orig = fobs[args.obsvar]
+    # fobs.close()
 
     # #######################################
     # FCN TO COMPUTE GLOBAL ANNUAL RANGE AND MONSOON PRECIP INDEX
 
-    annrange_obs, mpi_obs = mpd(dobs_orig)
+    annrange_obs, mpi_obs = mpd(ds_obs, data_var=args.obsvar)
 
     # create monsoon domain mask based on observations: annual range > 2.5 mm/day
     if args.obs_mask:
@@ -162,10 +162,10 @@ def monsoon_wang_runner(args):
         mpi_stats_dic[mod] = {}
 
         print("modelFile =  ", modelFile)
-        f = xr.open_dataset(modelFile)
-        d_orig = f[var]
+        ds_model = xcdat_open(modelFile)
+        # d_orig = f[var]
 
-        annrange_mod, mpi_mod = mpd(d_orig)
+        annrange_mod, mpi_mod = mpd(ds_model, data_var=var)
         domain_mask_mod = xr.where(annrange_mod > thr, 1, 0)
         mpi_mod = mpi_mod.where(domain_mask_mod)
 
@@ -204,7 +204,7 @@ def monsoon_wang_runner(args):
 
             new_vars = set(locals().keys())
             newly_created_vars = new_vars - initial_vars
-            for var_tmp in {
+            for var_tmp in [
                 "mpi_obs_reg_sd",
                 "mpi_mod_reg",
                 "squared_diff",
@@ -216,7 +216,7 @@ def monsoon_wang_runner(args):
                 "initial_vars",
                 "da1_flat",
                 "mpi_obs_reg",
-            }:
+            ]:
                 try:
                     del var_tmp
                 except Exception:
@@ -263,16 +263,16 @@ def monsoon_wang_runner(args):
                 save_path=save_path,
             )
 
-        f.close()
+        ds_model.close()
 
-        for var_tmp in {
-            "d_orig",
+        for var_tmp in [
+            # "d_orig",
             "annrange_mod",
             "mpi_mod",
             "domain_mask_mod",
             "annrange_obs",
             "mpi_obs",
-        }:
+        ]:
             try:
                 del var_tmp
             except Exception:
