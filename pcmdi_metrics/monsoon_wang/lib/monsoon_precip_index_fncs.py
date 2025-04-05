@@ -1,38 +1,31 @@
 import numpy as np
 import xarray as xr
+import xcdat as xc  # noqa: F401
 
 from pcmdi_metrics.io import da_to_ds
 
 #  SEASONAL RANGE - USING ANNUAL CYCLE CLIMATOLGIES 0=Jan, 11=Dec
 
 
-def regrid(da_in, da_grid, data_var="pr"):
-    ds_in = da_to_ds(da_in, data_var)
-    ds_grid = da_to_ds(da_grid, data_var)
-
-    ds_out = ds_in.regridder.horizontal(data_var, ds_grid, tool="regrid2")
-    da_out = ds_out[data_var]
-
-    return da_out
-
-
-def compute_season(data, season_indices, weights):
-    out = np.ma.zeros(data.shape[1:], dtype=data.dtype)
-    N = 0
-    for i in season_indices:
-        out += data[i] * weights[i]
-        N += weights[i]
-    return out / N
-
-
-def mpd(data: xr.DataArray) -> tuple[xr.DataArray, xr.DataArray]:
+def mpd(
+    ds: xr.Dataset, data_var: str, reference_period: tuple = ('1981-01-01', '2004-12-31')
+) -> tuple[xr.DataArray, xr.DataArray]:
     """
     Monsoon precipitation intensity and annual range calculation.
 
     Parameters
     ----------
-    data : xarray.DataArray
+    ds : xarray.Dataset
+        The input dataset containing the monsoon precipitation data.
         Assumes climatology array with 12 time steps, the first one being January.
+        Otherwise, the annual climatology is computed from the input data.
+    data_var : str
+        The name of the variable in the dataset that contains precipitation data.
+    reference_period : tuple, optional
+        A tuple specifying the reference period for climatology as (start_date, end_date).
+        If None, the full dataset period is used. The dates should be in 'YYYY-MM-DD' format.
+        Only applies when input data is not already calculated annual climatology thus does not have 12 months.
+        Default is ('1981-01-01', '2004-12-31').
 
     Returns
     -------
@@ -51,9 +44,24 @@ def mpd(data: xr.DataArray) -> tuple[xr.DataArray, xr.DataArray]:
     Examples
     --------
     >>> import xarray as xr
-    >>> data = xr.DataArray([...], dims=["time", "lat", "lon"])
-    >>> da_annrange, da_mpi = mpd(data)
+    >>> from pcmdi_metrics.monsoon_wang.lib import mpd
+    >>> ds = xr.open_dataset("path_to_your_dataset.nc")  # Load your dataset here
+    >>> da_annrange, da_mpi = mpd(ds, data_var="pr")
     """
+    data = ds[data_var]  # Extract the specified variable from the dataset
+
+    # Check if the given file has the correct number of time steps (i.e., 12 months), otherwise, calculate annual climatology
+    if data.shape[0] != 12:
+        print("Input data must have 12 time steps (months) for annual climatology.")
+        ds_clim = ds.temporal.climatology(
+            data_var, "month", reference_period=reference_period
+        )
+        data = ds_clim[data_var]  # Reassign data to the climatology if not 12 months
+
+    # Ensure the input data is a DataArray
+    if not isinstance(data, xr.DataArray):
+        raise TypeError("Input data must be an xarray.DataArray.")
+
     months_length = [
         31.0,
         28.0,
@@ -172,3 +180,22 @@ def mpi_skill_scores(
     )
 
     return hit, missed, falarm, score, xr_hitmap, xr_missmap, xr_falarmmap
+
+
+def regrid(da_in, da_grid, data_var="pr"):
+    ds_in = da_to_ds(da_in, data_var)
+    ds_grid = da_to_ds(da_grid, data_var)
+
+    ds_out = ds_in.regridder.horizontal(data_var, ds_grid, tool="regrid2")
+    da_out = ds_out[data_var]
+
+    return da_out
+
+
+def compute_season(data, season_indices, weights):
+    out = np.ma.zeros(data.shape[1:], dtype=data.dtype)
+    N = 0
+    for i in season_indices:
+        out += data[i] * weights[i]
+        N += weights[i]
+    return out / N
