@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import collections
+import datetime
 import os
 import sys
 import warnings
@@ -153,7 +154,18 @@ def monsoon_wang_runner(args):
         mpi_obs = mpi_obs.where(domain_mask_obs)
 
         nout_mpi_obs = os.path.join(nout, "mpi_obs_masked.nc")
-        da_to_ds(mpi_obs).to_netcdf(nout_mpi_obs)
+
+        # Copy global attributes from the original dataset
+        for attr in ds_obs.attrs:
+            if attr not in ["history", "source"]:
+                mpi_obs.attrs[attr] = ds_obs.attrs[attr]
+        # Add new global attributes
+        mpi_obs.attrs[
+            "history"
+        ] = f"Created by PMP on {pcmdi_metrics.__version__} on {datetime.datetime.now()}"
+        mpi_obs.attrs["source"] = f"Created from {args.reference_data_path} by PMP"
+
+        da_to_ds(mpi_obs, var=f"masked_{args.obsvar}").to_netcdf(nout_mpi_obs)
 
     egg_pth = resources.resource_path()
 
