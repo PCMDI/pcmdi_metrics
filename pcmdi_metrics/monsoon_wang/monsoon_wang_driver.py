@@ -266,7 +266,8 @@ def monsoon_wang_runner(args):
                     "modmask": mpi_mod_reg,
                 }
             )
-            ds_out.to_netcdf(fm)
+
+            save_to_netcdf_with_attributes(ds_out, ds_model, modelFile, fm)
 
             # PLOT FIGURES
             title = f"{mod}, {dom}"
