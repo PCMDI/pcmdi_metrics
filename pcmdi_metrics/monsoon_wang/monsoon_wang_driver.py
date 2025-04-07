@@ -136,7 +136,7 @@ def monsoon_wang_runner(args):
     # Open the reference data file
     try:
         ds_obs = xcdat_open(args.reference_data_path)
-    except (ValueError, OSError) as e:
+    except TypeError as e:
         print(
             f"Error opening reference data file with decode_times=True: {e}. Trying with decode_times=False..."
         )
