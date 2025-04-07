@@ -68,7 +68,7 @@ def monsoon_wang_runner(args):
     json_filename = args.outnamejson
 
     if json_filename == "CMIP_MME":
-        json_filename = "/MPI_" + args.mip + "_" + args.experiment
+        json_filename = f"MPI_{args.mip}_{args.experiment}"
 
     # VAR IS FIXED TO BE PRECIP FOR CALCULATING MONSOON PRECIPITATION INDICES
     var = args.modvar
@@ -183,7 +183,7 @@ def monsoon_wang_runner(args):
 
             print("dom =  ", dom)
 
-            initial_vars = set(locals().keys())
+            # initial_vars = set(locals().keys())
 
             mpi_obs_reg = region_subset(mpi_obs, dom)
             mpi_obs_reg_sd = mpi_obs_reg.std(dim=["lat", "lon"])
@@ -202,8 +202,8 @@ def monsoon_wang_runner(args):
 
             rmsn = rms / mpi_obs_reg_sd
 
-            new_vars = set(locals().keys())
-            newly_created_vars = new_vars - initial_vars
+            # new_vars = set(locals().keys())
+            # newly_created_vars = new_vars - initial_vars
             for var_tmp in [
                 "mpi_obs_reg_sd",
                 "mpi_mod_reg",
@@ -213,7 +213,7 @@ def monsoon_wang_runner(args):
                 "da2_flat",
                 "cor",
                 "mean_squared_error",
-                "initial_vars",
+                # "initial_vars",
                 "da1_flat",
                 "mpi_obs_reg",
             ]:
