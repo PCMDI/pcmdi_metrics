@@ -315,6 +315,7 @@ def variability_metrics_to_json(
     model: str = None,
     run: str = None,
     cmec_flag: bool = False,
+    include_provenance: bool = True,
 ):
     # Open JSON
     JSON = pcmdi_metrics.io.base.Base(outdir, json_filename)
@@ -346,6 +347,7 @@ def variability_metrics_to_json(
         sort_keys=True,
         indent=4,
         separators=(",", ": "),
+        include_provenance=include_provenance,
     )
     if cmec_flag:
         print("Writing cmec file")

@@ -201,6 +201,20 @@ def AddParserArgument(P):
         help="Option for update existing JSON file: True (i.e., update) (default) / False (i.e., overwrite)",
     )
     P.add_argument(
+        "--provenance",
+        dest="provenance",
+        action="store_true",
+        default=True,
+        help="Save provenance in output JSON",
+    )
+    P.add_argument(
+        "--no_provenance",
+        dest="provenance",
+        action="store_false",
+        default=False,
+        help="Option to not save provenance in output JSON",
+    )
+    P.add_argument(
         "--cmec",
         dest="cmec",
         action="store_true",
