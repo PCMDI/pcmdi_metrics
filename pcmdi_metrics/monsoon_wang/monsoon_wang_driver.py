@@ -81,13 +81,12 @@ def monsoon_wang_runner(args):
     # ---------------------------------------------
     # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
     # ---------------------------------------------
-    nout = os.path.join(
-        outpathdata, "_".join([args.experiment, args.mip, "wang-monsoon"])
-    )
-    try:
-        os.makedirs(nout)
-    except BaseException:
-        pass
+    nout = outpathdata
+    if not os.path.exists(nout):
+        try:
+            os.makedirs(nout)
+        except BaseException:
+            pass
 
     # SETUP WHERE TO OUTPUT RESULTS (json)
     jout = outpathdata
@@ -95,10 +94,11 @@ def monsoon_wang_runner(args):
     json_filename = get_unique_filename(jout, json_filename)
     print("\n updated json_filename  =  ", json_filename)
 
-    try:
-        os.makedirs(nout)
-    except BaseException:
-        pass
+    if not os.path.exists(jout):
+        try:
+            os.makedirs(jout)
+        except BaseException:
+            pass
 
     gmods = []  # "Got" these MODS
 
@@ -235,7 +235,7 @@ def monsoon_wang_runner(args):
             annrange_obs_dom = region_subset(annrange_obs, dom)
 
             # SKILL SCORES
-            #  HIT/(HIT + MISSED + FALSE ALARMS)
+            # HIT/(HIT + MISSED + FALSE ALARMS)
             hit, missed, falarm, score, hitmap, missmap, falarmmap = mpi_skill_scores(
                 annrange_mod_dom, annrange_obs_dom, thr
             )
