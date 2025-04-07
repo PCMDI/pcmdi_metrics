@@ -78,8 +78,9 @@ def monsoon_wang_runner(args):
     # Get flag for CMEC output
     cmec = args.cmec
 
-    # ########################################
+    # ---------------------------------------------
     # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
+    # ---------------------------------------------
     nout = os.path.join(
         outpathdata, "_".join([args.experiment, args.mip, "wang-monsoon"])
     )
@@ -120,16 +121,29 @@ def monsoon_wang_runner(args):
     if len(gmods) == 0:
         raise RuntimeError("No model file found!")
 
-    # ########################################
+    # --------------------------
     # PMP monthly default PR obs
+    # --------------------------
+    print("obs file:", args.reference_data_path)
 
-    ds_obs = xcdat_open(args.reference_data_path, decode_times=False)
-    # dobs_orig = fobs[args.obsvar]
-    # fobs.close()
+    # Check if the reference data path is provided
+    if not os.path.exists(args.reference_data_path):
+        raise FileNotFoundError(
+            f"Reference data file not found: {args.reference_data_path}"
+        )
 
-    # #######################################
+    # Open the reference data file
+    try:
+        ds_obs = xcdat_open(args.reference_data_path)
+    except (ValueError, OSError) as e:
+        print(
+            f"Error opening reference data file with decode_times=True: {e}. Trying with decode_times=False..."
+        )
+        ds_obs = xcdat_open(args.reference_data_path, decode_times=False)
+
+    # -----------------------------------------------------------
     # FCN TO COMPUTE GLOBAL ANNUAL RANGE AND MONSOON PRECIP INDEX
-
+    # -----------------------------------------------------------
     annrange_obs, mpi_obs = mpd(ds_obs, data_var=args.obsvar)
 
     # create monsoon domain mask based on observations: annual range > 2.5 mm/day
@@ -143,7 +157,8 @@ def monsoon_wang_runner(args):
 
     egg_pth = resources.resource_path()
 
-    doms = ["AllM", "NAMM", "SAMM", "NAFM", "SAFM", "SASM", "EASM", "AUSM"]
+    # doms = ["AllM", "NAMM", "SAMM", "NAFM", "SAFM", "SASM", "EASM", "AUSM"]
+    doms = ["AllM", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
 
     mpi_stats_dic = {}
     for i, mod in enumerate(gmods):
@@ -161,9 +176,8 @@ def monsoon_wang_runner(args):
 
         mpi_stats_dic[mod] = {}
 
-        print("modelFile =  ", modelFile)
+        print("modelFile: ", modelFile)
         ds_model = xcdat_open(modelFile)
-        # d_orig = f[var]
 
         annrange_mod, mpi_mod = mpd(ds_model, data_var=var)
         domain_mask_mod = xr.where(annrange_mod > thr, 1, 0)
@@ -181,9 +195,7 @@ def monsoon_wang_runner(args):
         for dom in doms:
             mpi_stats_dic[mod][dom] = {}
 
-            print("dom =  ", dom)
-
-            # initial_vars = set(locals().keys())
+            print("domain: ", dom)
 
             mpi_obs_reg = region_subset(mpi_obs, dom)
             mpi_obs_reg_sd = mpi_obs_reg.std(dim=["lat", "lon"])
@@ -199,12 +211,9 @@ def monsoon_wang_runner(args):
             squared_diff = (mpi_mod_reg - mpi_obs_reg) ** 2
             mean_squared_error = squared_diff.mean(skipna=True)
             rms = np.sqrt(mean_squared_error)
-
             rmsn = rms / mpi_obs_reg_sd
 
-            # new_vars = set(locals().keys())
-            # newly_created_vars = new_vars - initial_vars
-            for var_tmp in [
+            for var_name in {
                 "mpi_obs_reg_sd",
                 "mpi_mod_reg",
                 "squared_diff",
@@ -213,13 +222,12 @@ def monsoon_wang_runner(args):
                 "da2_flat",
                 "cor",
                 "mean_squared_error",
-                # "initial_vars",
                 "da1_flat",
                 "mpi_obs_reg",
-            ]:
+            }:
                 try:
-                    del var_tmp
-                except Exception:
+                    del globals()[var_name]
+                except KeyError:
                     pass
 
             # DOMAIN SELECTED FROM GLOBAL ANNUAL RANGE FOR MODS AND OBS
@@ -265,17 +273,16 @@ def monsoon_wang_runner(args):
 
         ds_model.close()
 
-        for var_tmp in [
-            # "d_orig",
+        for var_name in {
             "annrange_mod",
             "mpi_mod",
             "domain_mask_mod",
             "annrange_obs",
             "mpi_obs",
-        ]:
+        }:
             try:
-                del var_tmp
-            except Exception:
+                del globals()[var_name]
+            except KeyError:
                 pass
 
         if np.isnan(cor):

@@ -8,7 +8,9 @@ from pcmdi_metrics.io import da_to_ds
 
 
 def mpd(
-    ds: xr.Dataset, data_var: str, reference_period: tuple = ('1981-01-01', '2004-12-31')
+    ds: xr.Dataset,
+    data_var: str,
+    reference_period: tuple = ("1981-01-01", "2004-12-31"),
 ) -> tuple[xr.DataArray, xr.DataArray]:
     """
     Monsoon precipitation intensity and annual range calculation.
@@ -52,11 +54,16 @@ def mpd(
 
     # Check if the given file has the correct number of time steps (i.e., 12 months), otherwise, calculate annual climatology
     if data.shape[0] != 12:
-        print("Input data must have 12 time steps (months) for annual climatology.")
+        print(
+            f"Input data, shaped {data.shape}, must have 12 time steps (months) for annual climatology."
+        )
         ds_clim = ds.temporal.climatology(
             data_var, "month", reference_period=reference_period
         )
         data = ds_clim[data_var]  # Reassign data to the climatology if not 12 months
+        print(
+            f"Annual cycle calculated for the input data for period {reference_period}, data shaped , shaped {data.shape}."
+        )
 
     # Ensure the input data is a DataArray
     if not isinstance(data, xr.DataArray):
