@@ -1,7 +1,10 @@
+import datetime
+
 import numpy as np
 import xarray as xr
 import xcdat as xc  # noqa: F401
 
+import pcmdi_metrics
 from pcmdi_metrics.io import da_to_ds
 
 #  SEASONAL RANGE - USING ANNUAL CYCLE CLIMATOLGIES 0=Jan, 11=Dec
@@ -206,3 +209,31 @@ def compute_season(data, season_indices, weights):
         out += data[i] * weights[i]
         N += weights[i]
     return out / N
+
+
+def save_to_netcdf_with_attributes(ds_new, ds_org, org_path, nout_mpi_obs):
+    """
+    Save the new dataset to a NetCDF file with attributes from the original dataset.
+
+    Parameters
+    ----------
+    ds_new : xarray.Dataset
+        The new dataset to be saved.
+    ds_org : xarray.Dataset
+        The original dataset from which attributes are copied.
+
+    Returns
+    -------
+    None
+    """
+    # Copy global attributes from the original dataset
+    for attr in ds_org.attrs:
+        if attr not in ["history", "source"]:
+            ds_new.attrs[attr] = ds_org.attrs[attr]
+    # Add new global attributes
+    ds_new.attrs[
+        "history"
+    ] = f"Created by PMP on {pcmdi_metrics.__version__} on {datetime.datetime.now()}"
+    ds_new.attrs["source"] = f"Created from {org_path} by PMP"
+    # Save to netcdf
+    ds_new.to_netcdf(nout_mpi_obs)

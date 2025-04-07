@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import collections
-import datetime
 import os
 import sys
 import warnings
@@ -18,6 +17,7 @@ from pcmdi_metrics.monsoon_wang.lib import (
     mpd,
     mpi_skill_scores,
     regrid,
+    save_to_netcdf_with_attributes,
 )
 from pcmdi_metrics.utils import StringConstructor
 
@@ -155,17 +155,12 @@ def monsoon_wang_runner(args):
 
         nout_mpi_obs = os.path.join(nout, "mpi_obs_masked.nc")
 
-        # Copy global attributes from the original dataset
-        for attr in ds_obs.attrs:
-            if attr not in ["history", "source"]:
-                mpi_obs.attrs[attr] = ds_obs.attrs[attr]
-        # Add new global attributes
-        mpi_obs.attrs[
-            "history"
-        ] = f"Created by PMP on {pcmdi_metrics.__version__} on {datetime.datetime.now()}"
-        mpi_obs.attrs["source"] = f"Created from {args.reference_data_path} by PMP"
+        ds_mpi_obs = da_to_ds(mpi_obs, var=f"masked_{args.obsvar}")
 
-        da_to_ds(mpi_obs, var=f"masked_{args.obsvar}").to_netcdf(nout_mpi_obs)
+        # Save to netcdf
+        save_to_netcdf_with_attributes(
+            ds_mpi_obs, ds_obs, args.reference_data_path, nout_mpi_obs
+        )
 
     egg_pth = resources.resource_path()
 
