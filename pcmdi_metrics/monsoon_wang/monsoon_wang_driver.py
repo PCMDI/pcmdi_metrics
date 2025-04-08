@@ -152,12 +152,10 @@ def monsoon_wang_runner(args):
         domain_mask_obs = xr.where(annrange_obs > thr, 1, 0)
         domain_mask_obs.name = "mask"
         mpi_obs = mpi_obs.where(domain_mask_obs)
-
-        nout_mpi_obs = os.path.join(nout, "mpi_obs_masked.nc")
-
         ds_mpi_obs = da_to_ds(mpi_obs, var=f"masked_{args.obsvar}")
 
         # Save to netcdf
+        nout_mpi_obs = os.path.join(nout, "mpi_obs_masked.nc")
         save_to_netcdf_with_attributes(
             ds_mpi_obs, ds_obs, args.reference_data_path, nout_mpi_obs
         )
