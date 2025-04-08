@@ -47,6 +47,7 @@ scripts = [
     "pcmdi_metrics/extremes/extremes_driver.py",
     "pcmdi_metrics/sea_ice/sea_ice_driver.py",
     "pcmdi_metrics/qbo/qbo_mjo_driver.py",
+    "pcmdi_metrics/drcdm/drcdm_driver.py",
 ]
 
 entry_points = {
