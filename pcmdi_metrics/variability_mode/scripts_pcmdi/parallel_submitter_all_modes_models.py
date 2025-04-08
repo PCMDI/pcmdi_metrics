@@ -39,15 +39,15 @@ for mode in modes:
         var = "psl"
         param_file = "myParam_demo_NAM.py"
 
-    if mode in ["SAM"]:
+    if mode in ["SAM", "PSA1", "PSA2"]:
         osyear = 1955
     else:
         osyear = 1900
 
-    if mode in ["NPO", "NPGO", "EA"]:
+    if mode in ["NPO", "NPGO", "EA", "PSA1"]:
         eofn_obs = 2
         eofn_mod = 2
-    elif mode in ["SCA"]:
+    elif mode in ["SCA", "PSA2"]:
         eofn_obs = 3
         eofn_mod = 3
     else:
