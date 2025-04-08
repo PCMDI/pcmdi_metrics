@@ -80,6 +80,12 @@ def AddParserArgument(P):
     )
     P.add_argument("--eofn_mod", type=int, default=None, help="EOF mode from model")
     P.add_argument(
+        "--eofn_mod_max",
+        type=int,
+        default=None,
+        help="Maximun order of EOF mode to calculate from the model for the conventional EOF method",
+    )
+    P.add_argument(
         "--osyear", type=int, default=1900, help="Start year for reference data"
     )
     P.add_argument(

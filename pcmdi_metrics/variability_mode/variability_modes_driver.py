@@ -163,6 +163,7 @@ print("realization: ", realization)
 # EOF ordinal number
 eofn_obs = param.eofn_obs
 eofn_mod = param.eofn_mod
+eofn_mod_max = param.eofn_mod_max
 
 if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
     eofn_expected = 1
@@ -199,8 +200,12 @@ else:
 if eofn_expected is None:
     eofn_expected = eofn_mod
 
+if eofn_mod_max is None:
+    eofn_mod_max = eofn_mod
+
 print("eofn_obs:", eofn_obs)
 print("eofn_mod:", eofn_mod)
+print("eofn_mod_max:", eofn_mod_max)
 
 # case id
 case_id = param.case_id
@@ -861,8 +866,6 @@ for model in models:
                 # Conventional EOF approach as supplementary
                 # - - - - - - - - - - - - - - - - - - - - - - - - -
                 if ConvEOF:
-                    eofn_mod_max = eofn_mod
-
                     # EOF analysis
                     debug_print("conventional EOF analysis start", debug)
                     (
