@@ -33,6 +33,93 @@ def tree():
     return defaultdict(tree)
 
 
+def get_eof_numbers(mode: str, param) -> tuple:
+    """
+    Determine the EOF (Empirical Orthogonal Function) numbers for observations and models.
+
+    Parameters
+    ----------
+    mode : str
+        The climate variability mode. Supported modes include:
+        - "NAM", "NAO", "SAM", "PNA", "PDO", "AMO" (expected EOF number: 1)
+        - "NPGO", "NPO", "PSA1", "EA" (expected EOF number: 2)
+        - "PSA2", "SCA" (expected EOF number: 3)
+        If the mode is not recognized, a warning is issued, and the expected EOF number is set to None.
+    param : object
+        An object containing the following attributes:
+        - eofn_obs : int or None
+            The EOF number for observations. Defaults to the expected EOF number if not provided.
+        - eofn_mod : int or None
+            The EOF number for models. Defaults to the expected EOF number if not provided.
+        - eofn_mod_max : int or None
+            The maximum EOF number for models. Defaults to `eofn_mod` if not provided.
+
+    Returns
+    -------
+    tuple
+        A tuple containing:
+        - eofn_obs : int
+            The EOF number for observations.
+        - eofn_mod : int
+            The EOF number for models.
+        - eofn_mod_max : int
+            The maximum EOF number for models.
+        - eofn_expected : int
+            The expected EOF number for the given mode.
+
+    Notes
+    -----
+    - If the provided `eofn_obs` or `eofn_mod` does not match the expected EOF number for the given mode,
+      a warning is issued.
+    - If the mode is not recognized, the expected EOF number is set to None, and the function attempts to
+      use the provided `eofn_mod` as the fallback expected value.
+    """
+
+    eofn_obs = param.eofn_obs
+    eofn_mod = param.eofn_mod
+    eofn_mod_max = param.eofn_mod_max
+
+    if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
+        eofn_expected = 1
+    elif mode in ["NPGO", "NPO", "PSA1", "EA"]:
+        eofn_expected = 2
+    elif mode in ["PSA2", "SCA"]:
+        eofn_expected = 3
+    else:
+        print(
+            f"Warning: Mode '{mode}' is not defined with an associated expected EOF number"
+        )
+        eofn_expected = None
+
+    if eofn_obs is None:
+        eofn_obs = eofn_expected
+    else:
+        eofn_obs = int(eofn_obs)
+        if eofn_expected is not None:
+            if eofn_obs != eofn_expected:
+                print(
+                    f"Warning: Observation EOF number ({eofn_obs}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
+                )
+
+    if eofn_mod is None:
+        eofn_mod = eofn_expected
+    else:
+        eofn_mod = int(eofn_mod)
+        if eofn_expected is not None:
+            if eofn_mod != eofn_expected:
+                print(
+                    f"Warning: Model EOF number ({eofn_mod}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
+                )
+
+    if eofn_expected is None:
+        eofn_expected = eofn_mod
+
+    if eofn_mod_max is None:
+        eofn_mod_max = eofn_mod
+
+    return eofn_obs, eofn_mod, eofn_mod_max, eofn_expected
+
+
 def write_nc_output(
     output_file_name, eofMap, pc, frac, slopeMap, interceptMap, identifier=None
 ):

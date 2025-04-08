@@ -53,6 +53,7 @@ from pcmdi_metrics.variability_mode.lib import (
     eof_analysis_get_variance_mode,
     gain_pcs_fraction,
     gain_pseudo_pcs,
+    get_eof_numbers,
     linear_regression_on_globe_for_teleconnection,
     north_test,
     plot_map,
@@ -161,51 +162,12 @@ realization = param.realization
 print("realization: ", realization)
 
 # EOF ordinal number
-eofn_obs = param.eofn_obs
-eofn_mod = param.eofn_mod
-eofn_mod_max = param.eofn_mod_max
-
-if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
-    eofn_expected = 1
-elif mode in ["NPGO", "NPO", "PSA1", "EA"]:
-    eofn_expected = 2
-elif mode in ["PSA2", "SCA"]:
-    eofn_expected = 3
-else:
-    print(
-        f"Warning: Mode '{mode}' is not defined with an associated expected EOF number"
-    )
-    eofn_expected = None
-
-if eofn_obs is None:
-    eofn_obs = eofn_expected
-else:
-    eofn_obs = int(eofn_obs)
-    if eofn_expected is not None:
-        if eofn_obs != eofn_expected:
-            print(
-                f"Warning: Observation EOF number ({eofn_obs}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
-            )
-
-if eofn_mod is None:
-    eofn_mod = eofn_expected
-else:
-    eofn_mod = int(eofn_mod)
-    if eofn_expected is not None:
-        if eofn_mod != eofn_expected:
-            print(
-                f"Warning: Model EOF number ({eofn_mod}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
-            )
-
-if eofn_expected is None:
-    eofn_expected = eofn_mod
-
-if eofn_mod_max is None:
-    eofn_mod_max = eofn_mod
+eofn_obs, eofn_mod, eofn_mod_max, eofn_expected = get_eof_numbers(mode, param)
 
 print("eofn_obs:", eofn_obs)
 print("eofn_mod:", eofn_mod)
 print("eofn_mod_max:", eofn_mod_max)
+print("eofn_expected:", eofn_expected)
 
 # case id
 case_id = param.case_id
