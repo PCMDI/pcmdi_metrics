@@ -39,13 +39,15 @@ def main():
                 modes = ["NAM", "NAO", "PNA", "SAM", "NPO"]
                 # modes = ['SAM']
             else:
-                modes = ["NAM", "NAO", "PNA", "SAM", "NPO", "PDO", "NPGO"]
+                modes = ["NAM", "NAO", "PNA", "SAM", "NPO", "PDO", "NPGO", "EA", "SCA"]
                 # modes = ['SAM']
 
             for mode in modes:
                 # eof
-                if mode in ["NPO", "NPGO"]:
+                if mode in ["NPO", "NPGO", "EA"]:
                     eof = "EOF2"
+                elif mode in ["SCA"]:
+                    eof = "EOF3"
                 else:
                     eof = "EOF1"
                 # obs name
