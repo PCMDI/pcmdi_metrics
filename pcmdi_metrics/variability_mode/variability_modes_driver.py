@@ -91,12 +91,12 @@ ConvEOF = param.ConvEOF  # Conduct conventional EOF analysis
 EofScaling = param.EofScaling  # If True, consider EOF with unit variance
 RmDomainMean = param.RemoveDomainMean  # If True, remove Domain Mean of each time step
 LandMask = param.landmask  # If True, maskout land region thus consider only over ocean
-# provenance = param.provenance
+provenance = param.provenance
 
 print("EofScaling:", EofScaling)
 print("RmDomainMean:", RmDomainMean)
 print("LandMask:", LandMask)
-# print("provenance:", provenance)
+print("provenance:", provenance)
 
 nc_out_obs = param.nc_out_obs  # Record NetCDF output
 plot_obs = param.plot_obs  # Generate plots
@@ -1089,7 +1089,7 @@ for model in models:
                 model=model,
                 run=run,
                 cmec_flag=cmec,
-                #                include_provenance=provenance,
+                include_provenance=provenance,
             )
             debug_print("json (individual) writing done", debug)
 
