@@ -3,27 +3,58 @@
 import collections
 import os
 import sys
+import warnings
 
 import numpy as np
 import xarray as xr
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
-from pcmdi_metrics.io import da_to_ds, region_subset
+from pcmdi_metrics.io import da_to_ds, region_subset, xcdat_open
 from pcmdi_metrics.monsoon_wang.lib import (
     create_monsoon_wang_parser,
     map_plotter,
     mpd,
     mpi_skill_scores,
     regrid,
+    save_to_netcdf_with_attributes,
 )
 from pcmdi_metrics.utils import StringConstructor
+
+# Suppress FutureWarnings related to MaskedConstant format strings
+warnings.filterwarnings(
+    "ignore",
+    category=FutureWarning,
+    message=".*Format strings passed to MaskedConstant are ignored.*",
+)
+warnings.filterwarnings(
+    "ignore", message="Unable to decode time axis into full numpy.datetime64 objects"
+)
 
 
 def main():
     P = create_monsoon_wang_parser()
+    P.add_argument(
+        "--nth", type=int, default=0, help="Specify the nth value (default is 0)"
+    )
     args = P.get_parameter(argparse_vals_only=False)
     monsoon_wang_runner(args)
+
+
+def get_unique_filename(directory, filename):
+    # Extract the base name and extension
+    base_name, ext = os.path.splitext(filename)
+
+    # Initialize the counter
+    counter = 0
+
+    # Create a new filename with a suffix if the file exists
+    new_filename = filename
+    while os.path.exists(os.path.join(directory, new_filename)):
+        new_filename = f"{base_name}_{counter}{ext}"
+        counter += 1
+
+    return new_filename
 
 
 def monsoon_wang_runner(args):
@@ -38,7 +69,7 @@ def monsoon_wang_runner(args):
     json_filename = args.outnamejson
 
     if json_filename == "CMIP_MME":
-        json_filename = "/MPI_" + args.mip + "_" + args.experiment
+        json_filename = f"MPI_{args.mip}_{args.experiment}"
 
     # VAR IS FIXED TO BE PRECIP FOR CALCULATING MONSOON PRECIPITATION INDICES
     var = args.modvar
@@ -48,25 +79,32 @@ def monsoon_wang_runner(args):
     # Get flag for CMEC output
     cmec = args.cmec
 
-    # ########################################
+    # ---------------------------------------------
     # SETUP WHERE TO OUTPUT RESULTING DATA (netcdf)
-    nout = os.path.join(
-        outpathdata, "_".join([args.experiment, args.mip, "wang-monsoon"])
-    )
-    try:
-        os.makedirs(nout)
-    except BaseException:
-        pass
+    # ---------------------------------------------
+    nout = outpathdata
+    if not os.path.exists(nout):
+        try:
+            os.makedirs(nout)
+        except BaseException:
+            pass
 
     # SETUP WHERE TO OUTPUT RESULTS (json)
     jout = outpathdata
-    try:
-        os.makedirs(nout)
-    except BaseException:
-        pass
+
+    json_filename = get_unique_filename(jout, json_filename)
+    print("\n updated json_filename  =  ", json_filename)
+
+    if not os.path.exists(jout):
+        try:
+            os.makedirs(jout)
+        except BaseException:
+            pass
 
     gmods = []  # "Got" these MODS
-    for i, mod in enumerate(mods):
+
+    nth = args.nth
+    for i, mod in enumerate(mods[nth : nth + 4]):  # , start=n):
         modpath.model = mod
         for k in modpath.keys():
             try:
@@ -84,30 +122,48 @@ def monsoon_wang_runner(args):
     if len(gmods) == 0:
         raise RuntimeError("No model file found!")
 
-    # ########################################
+    # --------------------------
     # PMP monthly default PR obs
+    # --------------------------
+    print("obs file:", args.reference_data_path)
 
-    fobs = xr.open_dataset(args.reference_data_path, decode_times=False)
-    dobs_orig = fobs[args.obsvar]
-    fobs.close()
+    # Check if the reference data path is provided
+    if not os.path.exists(args.reference_data_path):
+        raise FileNotFoundError(
+            f"Reference data file not found: {args.reference_data_path}"
+        )
 
-    # #######################################
+    # Open the reference data file
+    try:
+        ds_obs = xcdat_open(args.reference_data_path)
+    except TypeError as e:
+        print(
+            f"Error opening reference data file with decode_times=True: {e}. Trying with decode_times=False..."
+        )
+        ds_obs = xcdat_open(args.reference_data_path, decode_times=False)
+
+    # -----------------------------------------------------------
     # FCN TO COMPUTE GLOBAL ANNUAL RANGE AND MONSOON PRECIP INDEX
-
-    annrange_obs, mpi_obs = mpd(dobs_orig)
+    # -----------------------------------------------------------
+    annrange_obs, mpi_obs = mpd(ds_obs, data_var=args.obsvar)
 
     # create monsoon domain mask based on observations: annual range > 2.5 mm/day
     if args.obs_mask:
         domain_mask_obs = xr.where(annrange_obs > thr, 1, 0)
         domain_mask_obs.name = "mask"
         mpi_obs = mpi_obs.where(domain_mask_obs)
+        ds_mpi_obs = da_to_ds(mpi_obs, var=f"masked_{args.obsvar}")
 
+        # Save to netcdf
         nout_mpi_obs = os.path.join(nout, "mpi_obs_masked.nc")
-        da_to_ds(mpi_obs).to_netcdf(nout_mpi_obs)
+        save_to_netcdf_with_attributes(
+            ds_mpi_obs, ds_obs, args.reference_data_path, nout_mpi_obs
+        )
 
     egg_pth = resources.resource_path()
 
-    doms = ["AllMW", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
+    # doms = ["AllM", "NAMM", "SAMM", "NAFM", "SAFM", "SASM", "EASM", "AUSM"]
+    doms = ["AllM", "NAMM", "SAMM", "NAFM", "SAFM", "ASM", "AUSM"]
 
     mpi_stats_dic = {}
     for i, mod in enumerate(gmods):
@@ -125,13 +181,18 @@ def monsoon_wang_runner(args):
 
         mpi_stats_dic[mod] = {}
 
-        print("modelFile =  ", modelFile)
-        f = xr.open_dataset(modelFile)
-        d_orig = f[var]
+        print("modelFile: ", modelFile)
+        ds_model = xcdat_open(modelFile)
 
-        annrange_mod, mpi_mod = mpd(d_orig)
+        annrange_mod, mpi_mod = mpd(ds_model, data_var=var)
         domain_mask_mod = xr.where(annrange_mod > thr, 1, 0)
         mpi_mod = mpi_mod.where(domain_mask_mod)
+
+        try:
+            mpi_mod = mpi_mod.drop_vars("time")
+            annrange_mod = annrange_mod.drop_vars("time")
+        except Exception:
+            pass
 
         annrange_obs = regrid(annrange_obs, annrange_mod)
         mpi_obs = regrid(mpi_obs, mpi_mod)
@@ -139,7 +200,7 @@ def monsoon_wang_runner(args):
         for dom in doms:
             mpi_stats_dic[mod][dom] = {}
 
-            print("dom =  ", dom)
+            print("domain: ", dom)
 
             mpi_obs_reg = region_subset(mpi_obs, dom)
             mpi_obs_reg_sd = mpi_obs_reg.std(dim=["lat", "lon"])
@@ -155,15 +216,31 @@ def monsoon_wang_runner(args):
             squared_diff = (mpi_mod_reg - mpi_obs_reg) ** 2
             mean_squared_error = squared_diff.mean(skipna=True)
             rms = np.sqrt(mean_squared_error)
-
             rmsn = rms / mpi_obs_reg_sd
+
+            for var_name in {
+                "mpi_obs_reg_sd",
+                "mpi_mod_reg",
+                "squared_diff",
+                "rms",
+                "rmsn",
+                "da2_flat",
+                "cor",
+                "mean_squared_error",
+                "da1_flat",
+                "mpi_obs_reg",
+            }:
+                try:
+                    del globals()[var_name]
+                except KeyError:
+                    pass
 
             # DOMAIN SELECTED FROM GLOBAL ANNUAL RANGE FOR MODS AND OBS
             annrange_mod_dom = region_subset(annrange_mod, dom)
             annrange_obs_dom = region_subset(annrange_obs, dom)
 
             # SKILL SCORES
-            #  HIT/(HIT + MISSED + FALSE ALARMS)
+            # HIT/(HIT + MISSED + FALSE ALARMS)
             hit, missed, falarm, score, hitmap, missmap, falarmmap = mpi_skill_scores(
                 annrange_mod_dom, annrange_obs_dom, thr
             )
@@ -187,7 +264,8 @@ def monsoon_wang_runner(args):
                     "modmask": mpi_mod_reg,
                 }
             )
-            ds_out.to_netcdf(fm)
+
+            save_to_netcdf_with_attributes(ds_out, ds_model, modelFile, fm)
 
             # PLOT FIGURES
             title = f"{mod}, {dom}"
@@ -199,7 +277,19 @@ def monsoon_wang_runner(args):
                 save_path=save_path,
             )
 
-        f.close()
+        ds_model.close()
+
+        for var_name in {
+            "annrange_mod",
+            "mpi_mod",
+            "domain_mask_mod",
+            "annrange_obs",
+            "mpi_obs",
+        }:
+            try:
+                del globals()[var_name]
+            except KeyError:
+                pass
 
         if np.isnan(cor):
             print("invalid correlation values")
