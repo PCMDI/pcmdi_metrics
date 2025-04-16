@@ -79,6 +79,11 @@ Acknowledgement
 ---------------
 Content in this repository is developed by climate and computer scientists from the Program for Climate Model Diagnosis and Intercomparison ([PCMDI][PCMDI]) at Lawrence Livermore National Laboratory ([LLNL][LLNL]). This work is sponsored by the Regional and Global Model Analysis ([RGMA][RGMA]) program, of the Earth and Environmental Systems Sciences Division ([EESSD][EESSD]) in the Office of Biological and Environmental Research ([BER][BER]) within the [Department of Energy][DOE]'s [Office of Science][OS]. The work is performed under the auspices of the U.S. Department of Energy by Lawrence Livermore National Laboratory under Contract DE-AC52-07NA27344.
 
+LLNL-CODE-2004137 
+
+DOE CODE ID: #153383
+
+
 <p>
     <img src="https://pcmdi.github.io/assets/PCMDI/100px-PCMDI-Logo-NoText-square-png8.png"
          width="65"
@@ -121,6 +126,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.9.1]      | New capability (**new modes for modes of variability metrics: EA, SCA**) and technical update
 | [v3.9]        | New capability (**Decision-Relevant metrics, Database access API**) and new demo notebooks
 | [v3.8.2]      | Technical update
 | [v3.8.1]      | Technical update with new figure (modes of variability multi-panel plot)
@@ -175,6 +181,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.9.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.9.1
 [v3.9]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.9
 [v3.8.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8.2
 [v3.8.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8.1
@@ -219,10 +226,9 @@ Release Notes and History
 [v1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1
 [v1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0
 
-Core Development Team
----------------------
+Current Core Development Team
+-----------------------------
 * [Jiwoo Lee](https://people.llnl.gov/lee1043) ([LLNL](https://www.llnl.gov/), PMP Lead)
-* [Ana Ordonez](https://people.llnl.gov/ordonez4) ([LLNL](https://www.llnl.gov/))
 * [Peter Gleckler](https://pcmdi.llnl.gov/staff/gleckler/) ([LLNL](https://www.llnl.gov/))
 * [Paul Ullrich](https://people.llnl.gov/ullrich4) ([LLNL](https://www.llnl.gov/), [PCMDI](https://pcmdi.llnl.gov/) Project PI)
 * [Bo Dong](https://people.llnl.gov/dong12) ([LLNL](https://www.llnl.gov/))

@@ -184,6 +184,20 @@ def arbitrary_checking(mode: str, eof_Nth: xr.DataArray) -> bool:
     elif mode in ["NAM", "NAO"]:
         if eof_Nth.sel({lat_key: slice(60, 80)}).mean().item() >= 0:
             reverse_sign = True
+    elif mode == "EA":
+        if (
+            eof_Nth.sel({lat_key: slice(50, 60), lon_key: slice(330, 360)})
+            .mean()
+            .item()
+            <= 0
+        ):
+            reverse_sign = True
+    elif mode == "SCA":
+        if (
+            eof_Nth.sel({lat_key: slice(50, 70), lon_key: slice(10, 40)}).mean().item()
+            <= 0
+        ):
+            reverse_sign = True
     elif mode == "SAM":
         if eof_Nth.sel({lat_key: slice(-60, -90)}).mean().item() >= 0:
             reverse_sign = True
