@@ -11,6 +11,7 @@ body {
     background-color: #daeffe;
     padding: 10px 10px;
     margin-bottom: 2.5%;
+    min-width: 1590px;
 }
 
 .viewer {

@@ -1,32 +1,29 @@
-# - Generate an html file of compiled PMP graphics using Bokeh.
+# - Generate an html file(s) summary of compiled PMP graphics using Bokeh.
 # - Author: Kristin Chang (2024.12)
-# - Last Update: 2025.03
+# - Last Update: 2025.04
 
 import os
-import shutil
 from typing import Optional, Dict, Union
-import glob
+from glob import glob
 import json
-import requests
 import pandas as pd
 import numpy as np
-import re
 from datetime import datetime
 
-from bokeh.models import ColumnDataSource, DataTable, TableColumn, MultiChoice, CustomJS, HTMLTemplateFormatter, Tooltip
-from bokeh.models.dom import HTML
+from bokeh.models import ColumnDataSource, DataTable, TableColumn, MultiChoice, CustomJS, HTMLTemplateFormatter
 from bokeh.models import Div
-from bokeh import events
 from bokeh.layouts import column, row
 from bokeh.io import output_file, save
 
 from pcmdi_metrics.utils import database_metrics, load_json_from_url, find_pmp_archive_json_urls
+from pcmdi_metrics.enso.lib import json_dict_to_numpy_array_list
+from pcmdi_metrics.utils import download_files_from_github
+from pcmdi_metrics.utils.sort_human import sort_human
 
 def view_pmp_output(
         mips: list = ['cmip5', 'cmip6'],
         exps: list = ['historical', 'amip'],
-        metrics: list = ['mean_climate', 'variability_modes', 'enso_metric'],
-        user_model: Dict = {}
+        metrics: list = ['mean_climate', 'variability_modes', 'enso_metric']
 ):
     # ----------
     # Layer 0
@@ -35,7 +32,7 @@ def view_pmp_output(
     # Create Home Page
     todays_date = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
     home_content = f"""
-<!DOCTYPE html>
+    <!DOCTYPE html>
     <html lang="en">
 
     <head>
@@ -52,8 +49,8 @@ def view_pmp_output(
             <div class="viewer">
                 <p>
                     (Prototype) <br>
-                    <b>MIPs:</b> CMIP5, CMIP6 <br>
-                    <b>EXPs:</b> historical, amip <br>
+                    <b>MIPs:</b> {", ".join(mips)} <br>
+                    <b>EXPs:</b> {", ".join(exps)} <br>
                     <b>Created:</b> {todays_date}
                 </p>
                 <img src="./assets/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
@@ -71,11 +68,11 @@ def view_pmp_output(
         viewer_dict = create_viewer_dict(mips=mips, exps=exps, metrics=metrics)
         if 'mean_climate' in metrics:
             mean_clim_dict = viewer_dict['mean_climate']
-            mean_clim_divedown_layout = create_mean_clim_divedown_layout(mean_clim_dict, mips)
+            mean_clim_divedown_layout = create_mean_clim_divedown_layout(mean_clim_dict, mips, exps, todays_date)
             output_file(f"./mean_climate_divedown.html")
             save(mean_clim_divedown_layout)
 
-            mean_clim_portrait_layout = create_mean_clim_portrait_layout(mips, exps)
+            mean_clim_portrait_layout = create_mean_clim_portrait_layout(mips, exps, todays_date)
             output_file(f"./mean_climate_portrait.html")
             save(mean_clim_portrait_layout)
 
@@ -93,7 +90,7 @@ def view_pmp_output(
                 <div class="responsive">
                     <div class="gallery">
                         <a target="_blank" href="./mean_climate_portrait.html">
-                            <img src="/Users/chang61/Documents/PCMDI/PMPviewer_sandbox/mean_climate_portrait_plot_20250213.png" alt="mean_clim_portrait_test_img" width="400" height="348">
+                            <img src="./assets/mean_climate_portrait_plot_20250213.png" alt="mean_clim_portrait_test_img" width="400" height="348">
                         </a>
                         <div class="desc">Mean Climate Portrait Plots</div>
                     </div>
@@ -102,7 +99,7 @@ def view_pmp_output(
             """
         if 'variability_modes' in metrics:
             mov_dict = viewer_dict['variability_modes']
-            variability_modes_layout = create_mov_layout(mov_dict, mips)
+            variability_modes_layout = create_mov_layout(mov_dict, mips, exps, todays_date)
             output_file(f"./variability_modes.html")
             save(variability_modes_layout)
 
@@ -119,10 +116,10 @@ def view_pmp_output(
                 """
 
         if 'enso_metric' in metrics:
-            #enso_dict = viewer_dict['enso_metric']
-            #enso_layout = create_enso_layout(enso_dict, mips)
-            #output_file(f"./enso_metric.html")
-            #save(enso_layout)
+            enso_dict = viewer_dict['enso_metric']
+            enso_layout = create_enso_layout(enso_dict, mips, exps, todays_date)
+            output_file(f"./enso_metric.html")
+            save(enso_layout)
 
             home_content += f"""
             <div class="responsive">
@@ -151,14 +148,14 @@ def view_pmp_output(
 # ----------
 # Layer I Functions
 # ----------
-def create_mean_clim_divedown_layout(mean_climate_dict, mips):
+def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date):
 
     df = create_mean_clim_divedown_df(mean_climate_dict, mips)
     source = ColumnDataSource(data=dict(df))
     filtered_data = df.loc[(df['Region']=='global') & (df['Experiment']=='historical')]
     filtered_source = ColumnDataSource(data=filtered_data.to_dict(orient='list'))
     image_columns = ['ANN', 'DJF', 'MAM', 'JJA', 'SON']
-    dtable = create_bokeh_table(df=df, filtered_source=filtered_source, image_columns=image_columns, season_column_names=True, row_height=45)
+    dtable = create_bokeh_table(df=df, filtered_source=filtered_source, image_columns=image_columns, season_column_names=True)
 
     filter_columns = ['MIP', 'Experiment', 'Model', 'Variable', 'Region']
     filter_widget_dict = create_bokeh_widgets(df, filter_columns)
@@ -208,13 +205,37 @@ def create_mean_clim_divedown_layout(mean_climate_dict, mips):
         """
     )
 
+    banner = Div(
+        text=f"""
+        <title>Mean Climate Dive Down</title>
+        <link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+        <link rel="stylesheet" href="./assets/style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <div class="banner">
+            <div class="viewer">
+                <p>
+                    (Prototype) <br>
+                    <b>MIPs:</b> {", ".join(mips)} <br>
+                    <b>EXPs:</b> {", ".join(exps)} <br>
+                    <b>Created:</b> {todays_date}
+                </p>
+                <img src="./assets/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
+                <h1>VIEWER</h1>
+            </div>
+        </div>
+        """
+    )
+
     title_text = Div(
         text="""
         <link rel='stylesheet' type='text/css' href='./assets/style.css'>
+        <h1 style="padding-left: 20px;">PMP Mean Climate Dive Down Plots</h1>
+        <p style="padding-left: 20px;">PLACEHOLDER TEXT: This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
         <br>
-        <h1>PMP Mean Climate Dive Down Plots</h1>
-        <br>
-        <h2>Filters</h2>
+        <h2 style="padding-left: 20px;">Filters</h2>
         """
     )
 
@@ -224,11 +245,11 @@ def create_mean_clim_divedown_layout(mean_climate_dict, mips):
     var_dropdown.js_on_change('value', dropdown_callback)
     region_dropdown.js_on_change('value', dropdown_callback)
 
-    layout = column(title_text, row(mip_dropdown, exp_dropdown, model_dropdown, var_dropdown, region_dropdown), dtable)
+    layout = column(row(banner), title_text, row(mip_dropdown, exp_dropdown, model_dropdown, var_dropdown, region_dropdown), dtable)
 
     return layout
 
-def create_mean_clim_portrait_layout(mips, exps):
+def create_mean_clim_portrait_layout(mips, exps, todays_date):
     df = create_mean_clim_portrait_df(mips, exps)
     source = ColumnDataSource(data=dict(df))
     filtered_data = df.loc[df['Experiment']=='historical']
@@ -271,12 +292,37 @@ def create_mean_clim_portrait_layout(mips, exps):
         """
     )
 
+    banner = Div(
+        text=f"""
+        <title>Mean Climate Portrait Plot</title>
+        <link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+        <link rel="stylesheet" href="./assets/style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <div class="banner">
+            <div class="viewer">
+                <p>
+                    (Prototype) <br>
+                    <b>MIPs:</b> {", ".join(mips)} <br>
+                    <b>EXPs:</b> {", ".join(exps)} <br>
+                    <b>Created:</b> {todays_date}
+                </p>
+                <img src="./assets/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
+                <h1>VIEWER</h1>
+            </div>
+        </div>
+        """
+    )
+
     title_text = Div(
         text="""
+        <link rel='stylesheet' type='text/css' href='./assets/style.css'>
+        <h1 style="padding-left: 20px;">PMP Mean Climate Portrait Plots</h1>
+        <p style="padding-left: 20px;">PLACEHOLDER TEXT: This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
         <br>
-        <h1>PMP Mean Climate Portrait Plots</h1>
-        <br>
-        <h2>Filters</h2>
+        <h2 style="padding-left: 20px;">Filters</h2>
         """
     )
 
@@ -284,10 +330,10 @@ def create_mean_clim_portrait_layout(mips, exps):
     exp_dropdown.js_on_change('value', dropdown_callback)
     metric_dropdown.js_on_change('value', dropdown_callback)
 
-    layout = column(title_text, row(mip_dropdown, exp_dropdown, metric_dropdown), dtable)
+    layout = column(row(banner), title_text, row(mip_dropdown, exp_dropdown, metric_dropdown), dtable)
     return layout
 
-def create_mov_layout(mov_dict, mips):
+def create_mov_layout(mov_dict, mips, exps, todays_date):
     df = create_mov_df(mov_dict, mips)
     source = ColumnDataSource(data=dict(df))
     filtered_data = df
@@ -340,12 +386,37 @@ def create_mov_layout(mov_dict, mips):
         """
     )
 
+    banner = Div(
+        text=f"""
+        <title>Variability Modes</title>
+        <link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+        <link rel="stylesheet" href="./assets/style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <div class="banner">
+            <div class="viewer">
+                <p>
+                    (Prototype) <br>
+                    <b>MIPs:</b> {", ".join(mips)} <br>
+                    <b>EXPs:</b> {", ".join(exps)} <br>
+                    <b>Created:</b> {todays_date}
+                </p>
+                <img src="./assets/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
+                <h1>VIEWER</h1>
+            </div>
+        </div>
+        """
+    )
+
     title_text = Div(
         text="""
+        <link rel='stylesheet' type='text/css' href='./assets/style.css'>
+        <h1 style="padding-left: 20px;">PMP Extratropical Modes of Variability Plots</h1>
+        <p style="padding-left: 20px;">PLACEHOLDER TEXT: This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
         <br>
-        <h1>PMP Extratropical Modes of Variability Plots</h1>
-        <br>
-        <h2>Filters</h2>
+        <h2 style="padding-left: 20px;">Filters</h2>
         """
     )
 
@@ -355,12 +426,99 @@ def create_mov_layout(mov_dict, mips):
     season_dropdown.js_on_change('value', dropdown_callback)
     method_dropdown.js_on_change('value', dropdown_callback)
 
-    layout = column(title_text, row(mip_dropdown, model_dropdown, mode_dropdown, season_dropdown, method_dropdown), dtable)
+    layout = column(row(banner), title_text, row(mip_dropdown, model_dropdown, mode_dropdown, season_dropdown, method_dropdown), dtable)
     return layout
 
-#def create_enso_layout(enso_dict, mips):
-#    df = create_enso_df(enso_dict, mips)
-#    return layout
+def create_enso_layout(enso_dict, mips, exps, todays_date):
+    df = create_enso_df(enso_dict, mips)
+    source = ColumnDataSource(data=dict(df))
+    filtered_data = df
+    filtered_source = ColumnDataSource(data=filtered_data.to_dict(orient='list'))
+    image_columns = ['Plot']
+
+    dtable = create_bokeh_table(df=df, filtered_source=filtered_source, image_columns=image_columns)
+
+    filter_columns = ['MIP', 'Model', 'Collection', 'Metric']
+    filter_widget_dict = create_bokeh_widgets(df, filter_columns)
+
+    mip_dropdown = filter_widget_dict['dropdown0']
+    model_dropdown = filter_widget_dict['dropdown1']
+    collection_dropdown = filter_widget_dict['dropdown2']
+    metric_dropdown = filter_widget_dict['dropdown3']
+
+    dropdown_callback = CustomJS(
+        args=dict(source=source, filtered_source=filtered_source, mip_dropdown=mip_dropdown, model_dropdown=model_dropdown, collection_dropdown=collection_dropdown, metric_dropdown=metric_dropdown),
+        code="""
+        const original_data = source.data;
+        const filtered_data = { MIP: [], Model: [], Collection: [], Metric: [], Value: [], Plot: [], };
+
+        const selected_mips = mip_dropdown.value;
+        const selected_models = model_dropdown.value;
+        const selected_collections = collection_dropdown.value;
+        const selected_metrics = metric_dropdown.value;
+
+        for (let i = 0; i < original_data.MIP.length; i++) {
+            const in_mip = selected_mips.length === 0 || selected_mips.includes(original_data.MIP[i]);
+            const in_model = selected_models.length === 0 || selected_models.includes(original_data.Model[i]);
+            const in_collection = selected_collections.length === 0 || selected_collections.includes(original_data.Collection[i]);
+            const in_metric = selected_metrics.length === 0 || selected_metrics.includes(original_data.Metric[i]);
+
+            if (in_mip && in_model && in_collection && in_metric) {
+                filtered_data.MIP.push(original_data.MIP[i]);
+                filtered_data.Model.push(original_data.Model[i]);
+                filtered_data.Collection.push(original_data.Collection[i]);
+                filtered_data.Metric.push(original_data.Metric[i]);
+                filtered_data.Value.push(original_data.Value[i]);
+                filtered_data.Plot.push(original_data.Plot[i]);
+            }
+        }
+
+        filtered_source.data = Object.assign({}, filtered_data);
+        filtered_source.change.emit();
+        """
+    )
+
+    banner = Div(
+        text=f"""
+        <title>ENSO</title>
+        <link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
+        <link rel="stylesheet" href="./assets/style.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+        <div class="banner">
+            <div class="viewer">
+                <p>
+                    (Prototype) <br>
+                    <b>MIPs:</b> {", ".join(mips)} <br>
+                    <b>EXPs:</b> {", ".join(exps)} <br>
+                    <b>Created:</b> {todays_date}
+                </p>
+                <img src="./assets/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
+                <h1>VIEWER</h1>
+            </div>
+        </div>
+        """
+    )
+
+    title_text = Div(
+        text="""
+        <link rel='stylesheet' type='text/css' href='./assets/style.css'>
+        <h1 style="padding-left: 20px;">El Niño-Southern Oscillation (ENSO) Plots</h1>
+        <p style="padding-left: 20px;">PLACEHOLDER TEXT: This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
+        <br>
+        <h2 style="padding-left: 20px;">Filters</h2>
+        """
+    )
+
+    mip_dropdown.js_on_change('value', dropdown_callback)
+    model_dropdown.js_on_change('value', dropdown_callback)
+    collection_dropdown.js_on_change('value', dropdown_callback)
+    metric_dropdown.js_on_change('value', dropdown_callback)
+
+    layout = column(row(banner), title_text, row(mip_dropdown, model_dropdown, collection_dropdown, metric_dropdown), dtable)
+    return layout
 
 # ----------
 # Layer II Functions
@@ -372,7 +530,7 @@ def create_bokeh_table(
         image_columns,
         width: Optional[float] = 1600,
         height: Optional[float] = 1200,
-        row_height: Optional[float] = 30,
+        row_height: Optional[float] = 35,
         season_column_names: bool = False,
         display_images: bool = False):
 
@@ -398,7 +556,7 @@ def create_bokeh_table(
     else:
         for col in image_columns:
             image_templates[f"{col}_template"] = f"""
-            <div style="position: relative;">
+            <div style="position: relative; font-size:16px;">
                 <a href="<%= value %>" target="_blank">View Plot</a>
             </div>
             """
@@ -436,14 +594,20 @@ def create_bokeh_table(
                 font-size: 16px;
             }
 
+            :host .slick-header-column:hover {
+                background-color: #daeffe;
+                color: #0066b3;
+                font-size: 16px;
+            }
+
             :host .ui-widget-content.slick-row.even {
                 text-align: left;
-                padding-top: 8px;
+                padding-top: 6px;
             }
 
             :host .ui-widget-content.slick-row.odd {
                 text-align: left;
-                padding-top: 8px;
+                padding-top: 6px;
             }
 
             """
@@ -461,19 +625,43 @@ def create_bokeh_widgets(df, filter_columns):
             filter_widget_dict["dropdown" + str(fc)] = MultiChoice(
                 options=sorted(list(df[filter_column_name].unique())),
                 title="Select " + filter_column_name,
-                value=['global']
+                value=['global'],
+                height=90,
+                width=300,
+                sizing_mode='fixed'
             )
         elif filter_column_name == 'Experiment':
             filter_widget_dict["dropdown" + str(fc)] = MultiChoice(
                 options=sorted(list(df[filter_column_name].unique())),
                 title="Select " + filter_column_name,
-                value=['historical']
+                value=['historical'],
+                height=90,
+                width=300,
+                sizing_mode='fixed'
             )
-        else:
+        elif filter_column_name == 'MIP':
             filter_widget_dict["dropdown" + str(fc)] = MultiChoice(
                 options=sorted(list(df[filter_column_name].unique())),
                 title="Select " + filter_column_name,
-                value=[]
+                value=[],
+                height=90,
+                width=300,
+                sizing_mode='fixed',
+                stylesheets=[
+                    """
+                    :host .bk-input-group{
+                        padding-left: 20px;}
+                    """
+                ]
+            )
+        else:
+            filter_widget_dict["dropdown" + str(fc)] = MultiChoice(
+                options=sorted(list(df[filter_column_name].dropna().unique())),
+                title="Select " + filter_column_name,
+                value=[],
+                height=90,
+                width=300,
+                sizing_mode='fixed'
             )
 
     return filter_widget_dict
@@ -609,10 +797,16 @@ def create_enso_df(enso_dict, mips):
         results_dict[mip] = {}
         results_dict[mip] = database_metrics(mip = mip, model=None, exp='historical', metrics=['enso_metric'])
 
-    cmip5_models = list(results_dict['cmip5']['enso_metric']['ENSO_perf']['RESULTS']['model'].keys())
-    cmip6_models = list(results_dict['cmip6']['enso_metric']['ENSO_perf']['RESULTS']['model'].keys())
+    cmip5_perf_models = list(results_dict['cmip5']['enso_metric']['ENSO_perf']['RESULTS']['model'].keys())
+    cmip6_perf_models = list(results_dict['cmip6']['enso_metric']['ENSO_perf']['RESULTS']['model'].keys())
 
-    perf_cmip5_vars = list(results_dict['cmip5']['enso_metric']['ENSO_tel']['RESULTS']['model']['ACCESS1-0']['r1i1p1']['value'].keys())
+    cmip5_tel_models = list(results_dict['cmip5']['enso_metric']['ENSO_tel']['RESULTS']['model'].keys())
+    cmip6_tel_models = list(results_dict['cmip6']['enso_metric']['ENSO_tel']['RESULTS']['model'].keys())
+
+    cmip5_proc_models = list(results_dict['cmip5']['enso_metric']['ENSO_proc']['RESULTS']['model'].keys())
+    cmip6_proc_models = list(results_dict['cmip6']['enso_metric']['ENSO_proc']['RESULTS']['model'].keys())
+
+    perf_cmip5_vars = list(results_dict['cmip5']['enso_metric']['ENSO_perf']['RESULTS']['model']['ACCESS1-0']['r1i1p1']['value'].keys())
     tel_cmip5_vars = list(results_dict['cmip5']['enso_metric']['ENSO_tel']['RESULTS']['model']['ACCESS1-0']['r1i1p1']['value'].keys())
     proc_cmip5_vars = list(results_dict['cmip5']['enso_metric']['ENSO_proc']['RESULTS']['model']['ACCESS1-0']['r1i1p1']['value'].keys())
 
@@ -620,18 +814,18 @@ def create_enso_df(enso_dict, mips):
     tel_cmip6_vars = list(results_dict['cmip6']['enso_metric']['ENSO_tel']['RESULTS']['model']['ACCESS-CM2']['r1i1p1f1']['value'].keys())
     proc_cmip6_vars = list(results_dict['cmip6']['enso_metric']['ENSO_proc']['RESULTS']['model']['ACCESS-CM2']['r1i1p1f1']['value'].keys())
 
-    cmip5_perf_index = pd.MultiIndex.from_product([['cmip5'], cmip5_models, ['Performance'], perf_cmip5_vars], names=['MIP', 'Model', 'Collection', 'Metric'])
+    cmip5_perf_index = pd.MultiIndex.from_product([['cmip5'], cmip5_perf_models, ['ENSO_perf'], perf_cmip5_vars], names=['MIP', 'Model', 'Collection', 'metric_code'])
     cmip5_perf_df = pd.DataFrame(index=cmip5_perf_index).reset_index()
-    cmip5_tel_index = pd.MultiIndex.from_product([['cmip5'], cmip5_models, ['Teleconnection'], tel_cmip5_vars], names=['MIP', 'Model', 'Collection', 'Metric'])
+    cmip5_tel_index = pd.MultiIndex.from_product([['cmip5'], cmip5_tel_models, ['ENSO_tel'], tel_cmip5_vars], names=['MIP', 'Model', 'Collection', 'metric_code'])
     cmip5_tel_df = pd.DataFrame(index=cmip5_tel_index).reset_index()
-    cmip5_proc_index = pd.MultiIndex.from_product([['cmip5'], cmip5_models, ['Processes'], proc_cmip5_vars], names=['MIP', 'Model', 'Collection', 'Metric'])
+    cmip5_proc_index = pd.MultiIndex.from_product([['cmip5'], cmip5_proc_models, ['ENSO_proc'], proc_cmip5_vars], names=['MIP', 'Model', 'Collection', 'metric_code'])
     cmip5_proc_df = pd.DataFrame(index=cmip5_proc_index).reset_index()
 
-    cmip6_perf_index = pd.MultiIndex.from_product([['cmip6'], cmip6_models, ['Performance'], perf_cmip6_vars], names=['MIP', 'Model', 'Collection', 'Metric'])
+    cmip6_perf_index = pd.MultiIndex.from_product([['cmip6'], cmip6_perf_models, ['ENSO_perf'], perf_cmip6_vars], names=['MIP', 'Model', 'Collection', 'metric_code'])
     cmip6_perf_df = pd.DataFrame(index=cmip6_perf_index).reset_index()
-    cmip6_tel_index = pd.MultiIndex.from_product([['cmip6'], cmip6_models, ['Teleconnection'], tel_cmip6_vars], names=['MIP', 'Model', 'Collection', 'Metric'])
-    cmip6_tel_df = pd.DataFrame(index=cmip5_tel_index).reset_index()
-    cmip6_proc_index = pd.MultiIndex.from_product([['cmip6'], cmip6_models, ['Processes'], proc_cmip6_vars], names=['MIP', 'Model', 'Collection', 'Metric'])
+    cmip6_tel_index = pd.MultiIndex.from_product([['cmip6'], cmip6_tel_models, ['ENSO_tel'], tel_cmip6_vars], names=['MIP', 'Model', 'Collection', 'metric_code'])
+    cmip6_tel_df = pd.DataFrame(index=cmip6_tel_index).reset_index()
+    cmip6_proc_index = pd.MultiIndex.from_product([['cmip6'], cmip6_proc_models, ['ENSO_proc'], proc_cmip6_vars], names=['MIP', 'Model', 'Collection', 'metric_code'])
     cmip6_proc_df = pd.DataFrame(index=cmip6_proc_index).reset_index()
 
     df = pd.concat([cmip5_perf_df, cmip5_tel_df, cmip5_proc_df, cmip6_perf_df, cmip6_tel_df, cmip6_proc_df])
@@ -652,9 +846,51 @@ def create_enso_df(enso_dict, mips):
         "EnsoFbSstThf": "SST-NHF_feedback",
         "EnsodSstOce": "ocean_driven_SST", "EnsodSstOce_1": "ocean_driven_SST", "EnsodSstOce_2": "ocean_driven_SST"}
 
-    df['Metric Name'] = df['Metric'].map(met_names)
+    df['Metric'] = df['metric_code'].map(met_names)
+    df_mapped = df[~df['Metric'].isna()]
 
-    return df
+    ref_info_dict = find_enso_ref()
+
+    df_mapped['Reference'] = df_mapped.apply(
+        lambda row: (
+            ref_info_dict[row['Collection']][row['MIP'].upper()][row['metric_code']]
+            if row['metric_code'] in (ref_info_dict[row['Collection']][row['MIP'].upper()].keys()) else
+            'Tropflux_GPCPv2.3' # NEED TO CONFIRM THIS IS THE ONLY CASE WITH ISSUES (E.G., EnsoPrMapDjfCorr doesn't have a mapping ref in the info dict)
+        ),
+        axis=1
+    )
+
+    df_mapped['first_run'] = df_mapped.apply(
+        lambda row: (
+            sort_human(list(results_dict[row['MIP']]['enso_metric'][row['Collection']]['RESULTS']['model'][row['Model']].keys()))[0]
+        ),
+        axis=1
+    )
+
+    df_mapped['Value'] = df_mapped.apply(
+        lambda row: (
+            round(float(results_dict[row['MIP']]['enso_metric'][row['Collection']]['RESULTS']['model'][row['Model']][row['first_run']]['value'][row['metric_code']]['metric'][row['Reference']]['value']),3)
+            if row['metric_code'] in (results_dict[row['MIP']]['enso_metric'][row['Collection']]['RESULTS']['model'][row['Model']][row['first_run']]['value'].keys()) and results_dict[row['MIP']]['enso_metric'][row['Collection']]['RESULTS']['model'][row['Model']][row['first_run']]['value'][row['metric_code']]['metric'][row['Reference']]['value'] is not None else
+            None
+        ),
+        axis=1
+    )
+
+    url_head = f"https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/enso_metric/dynamic_html/EnsoDiveDown.html?"
+    # example URL input: ?mip=cmip6&model=ACCESS-CM2&exp=historical&run=r1i1p1f1&metric=BiasPrLatRmse&metric_dd=BiasPrLatRmse&MC=ENSO_perf&metric_name=double_ITCZ_bias&avalue=2.086&ver=v20201122
+
+    df_mapped['Plot'] = df_mapped.apply(
+        lambda row: (
+            f"{url_head}mip={row['MIP']}&model={row['Model']}&exp=historical&run=r1i1p1f1&metric={row['metric_code']}&metric_dd={row['metric_code']}&MC={row['Collection']}&metric_name={row['Metric']}&nvalue=&avalue{row['Value']}=&ver=v20201122"
+            if row['MIP'] == 'cmip6' else
+            f"{url_head}mip={row['MIP']}&model={row['Model']}&exp=historical&run=r1i1p1&metric={row['metric_code']}&metric_dd={row['metric_code']}&MC={row['Collection']}&metric_name={row['Metric']}&nvalue=&avalue={row['Value']}&ver=v20201122"
+        ),
+        axis=1
+    )
+
+    df_mapped = df_mapped[['MIP', 'Model', 'Collection', 'Metric', 'Value', 'Plot']]
+
+    return df_mapped
 
 # ----------
 # Layer III Functions
@@ -765,3 +1001,38 @@ def extract_base_var(var_name):
     Pandas dataframe with a new column 'Description'.
     """
     return var_name.split('-')[0]
+
+def find_enso_ref():
+    db_url_head = "https://github.com/PCMDI/pcmdi_metrics_results_archive/tree/main/metrics_results/enso_metric"
+
+    dirs_to_downlaod = [
+        "cmip5/historical/v20210104/ENSO_perf",
+        "cmip5/historical/v20210104/ENSO_tel",
+        "cmip5/historical/v20210104/ENSO_proc",
+        "cmip6/historical/v20210620/ENSO_perf",
+        "cmip6/historical/v20210620/ENSO_tel",
+        "cmip6/historical/v20210620/ENSO_proc",
+        "obs2obs"
+    ]
+
+    path_json = "json_files"
+
+    for directiry in dirs_to_downlaod:
+        github_directory_url = os.path.join(db_url_head, directiry)
+        download_files_from_github(github_directory_url, path_json)
+
+    list_project = ["CMIP5", "CMIP6"]
+    list_obs = ["20CRv2", "NCEP2", "ERA-Interim"]
+
+    metrics_collections = ["ENSO_perf", "ENSO_tel", "ENSO_proc"]
+    mips = ["CMIP5", "CMIP6", "obs2obs"]
+
+    dict_json_path = dict()
+    for mip in mips:
+        dict_json_path[mip] = dict()
+        for metrics_collection in metrics_collections:
+            dict_json_path[mip][metrics_collection] = glob(os.path.join(path_json, f"{mip.lower()}*{metrics_collection}_*.json"))[0]
+
+    ref_info_dict = json_dict_to_numpy_array_list(metric_collections=metrics_collections, list_project=list_project, list_obs=list_obs, dict_json_path=dict_json_path, reduced_set=True, met_order=None, mod_order=None)[-1]
+
+    return ref_info_dict
