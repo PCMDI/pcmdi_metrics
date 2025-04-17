@@ -2,35 +2,47 @@
 # - Author: Kristin Chang (2024.12)
 # - Last Update: 2025.04
 
-import os
-from typing import Optional, Dict, Union
-from glob import glob
 import json
-import pandas as pd
-import numpy as np
+import os
 from datetime import datetime
+from glob import glob
+from typing import Optional
 
-from bokeh.models import ColumnDataSource, DataTable, TableColumn, MultiChoice, CustomJS, HTMLTemplateFormatter
-from bokeh.models import Div
-from bokeh.layouts import column, row
+import numpy as np
+import pandas as pd
 from bokeh.io import output_file, save
+from bokeh.layouts import column, row
+from bokeh.models import (
+    ColumnDataSource,
+    CustomJS,
+    DataTable,
+    Div,
+    HTMLTemplateFormatter,
+    MultiChoice,
+    TableColumn,
+)
 
-from pcmdi_metrics.utils import database_metrics, load_json_from_url, find_pmp_archive_json_urls
 from pcmdi_metrics.enso.lib import json_dict_to_numpy_array_list
-from pcmdi_metrics.utils import download_files_from_github
+from pcmdi_metrics.utils import (
+    database_metrics,
+    download_files_from_github,
+    find_pmp_archive_json_urls,
+    load_json_from_url,
+)
 from pcmdi_metrics.utils.sort_human import sort_human
 
+
 def view_pmp_output(
-        mips: list = ['cmip5', 'cmip6'],
-        exps: list = ['historical', 'amip'],
-        metrics: list = ['mean_climate', 'variability_modes', 'enso_metric']
+    mips: list = ["cmip5", "cmip6"],
+    exps: list = ["historical", "amip"],
+    metrics: list = ["mean_climate", "variability_modes", "enso_metric"],
 ):
     # ----------
     # Layer 0
     # ----------
 
     # Create Home Page
-    todays_date = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+    todays_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     home_content = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -66,17 +78,21 @@ def view_pmp_output(
 
     if mips:
         viewer_dict = create_viewer_dict(mips=mips, exps=exps, metrics=metrics)
-        if 'mean_climate' in metrics:
-            mean_clim_dict = viewer_dict['mean_climate']
-            mean_clim_divedown_layout = create_mean_clim_divedown_layout(mean_clim_dict, mips, exps, todays_date)
-            output_file(f"./mean_climate_divedown.html")
+        if "mean_climate" in metrics:
+            mean_clim_dict = viewer_dict["mean_climate"]
+            mean_clim_divedown_layout = create_mean_clim_divedown_layout(
+                mean_clim_dict, mips, exps, todays_date
+            )
+            output_file("./mean_climate_divedown.html")
             save(mean_clim_divedown_layout)
 
-            mean_clim_portrait_layout = create_mean_clim_portrait_layout(mips, exps, todays_date)
-            output_file(f"./mean_climate_portrait.html")
+            mean_clim_portrait_layout = create_mean_clim_portrait_layout(
+                mips, exps, todays_date
+            )
+            output_file("./mean_climate_portrait.html")
             save(mean_clim_portrait_layout)
 
-            home_content += f"""
+            home_content += """
             <div class="container">
                 <div class="responsive">
                     <div class="gallery">
@@ -97,13 +113,15 @@ def view_pmp_output(
                 </div>
             </div>
             """
-        if 'variability_modes' in metrics:
-            mov_dict = viewer_dict['variability_modes']
-            variability_modes_layout = create_mov_layout(mov_dict, mips, exps, todays_date)
-            output_file(f"./variability_modes.html")
+        if "variability_modes" in metrics:
+            mov_dict = viewer_dict["variability_modes"]
+            variability_modes_layout = create_mov_layout(
+                mov_dict, mips, exps, todays_date
+            )
+            output_file("./variability_modes.html")
             save(variability_modes_layout)
 
-            home_content += f"""
+            home_content += """
             <div class="container">
                 <div class="responsive">
                     <div class="gallery">
@@ -115,13 +133,13 @@ def view_pmp_output(
                 </div>
                 """
 
-        if 'enso_metric' in metrics:
-            enso_dict = viewer_dict['enso_metric']
+        if "enso_metric" in metrics:
+            enso_dict = viewer_dict["enso_metric"]
             enso_layout = create_enso_layout(enso_dict, mips, exps, todays_date)
-            output_file(f"./enso_metric.html")
+            output_file("./enso_metric.html")
             save(enso_layout)
 
-            home_content += f"""
+            home_content += """
             <div class="responsive">
                 <div class="gallery">
                     <a target="_blank" href="./enso_metric.html">
@@ -145,29 +163,44 @@ def view_pmp_output(
     cwd = os.getcwd()
     return print(f"POV created in {cwd}")
 
+
 # ----------
 # Layer I Functions
 # ----------
 def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date):
-
     df = create_mean_clim_divedown_df(mean_climate_dict, mips)
     source = ColumnDataSource(data=dict(df))
-    filtered_data = df.loc[(df['Region']=='global') & (df['Experiment']=='historical')]
-    filtered_source = ColumnDataSource(data=filtered_data.to_dict(orient='list'))
-    image_columns = ['ANN', 'DJF', 'MAM', 'JJA', 'SON']
-    dtable = create_bokeh_table(df=df, filtered_source=filtered_source, image_columns=image_columns, season_column_names=True)
+    filtered_data = df.loc[
+        (df["Region"] == "global") & (df["Experiment"] == "historical")
+    ]
+    filtered_source = ColumnDataSource(data=filtered_data.to_dict(orient="list"))
+    image_columns = ["ANN", "DJF", "MAM", "JJA", "SON"]
+    dtable = create_bokeh_table(
+        df=df,
+        filtered_source=filtered_source,
+        image_columns=image_columns,
+        season_column_names=True,
+    )
 
-    filter_columns = ['MIP', 'Experiment', 'Model', 'Variable', 'Region']
+    filter_columns = ["MIP", "Experiment", "Model", "Variable", "Region"]
     filter_widget_dict = create_bokeh_widgets(df, filter_columns)
 
-    mip_dropdown = filter_widget_dict['dropdown0']
-    exp_dropdown = filter_widget_dict['dropdown1']
-    model_dropdown = filter_widget_dict['dropdown2']
-    var_dropdown = filter_widget_dict['dropdown3']
-    region_dropdown = filter_widget_dict['dropdown4']
+    mip_dropdown = filter_widget_dict["dropdown0"]
+    exp_dropdown = filter_widget_dict["dropdown1"]
+    model_dropdown = filter_widget_dict["dropdown2"]
+    var_dropdown = filter_widget_dict["dropdown3"]
+    region_dropdown = filter_widget_dict["dropdown4"]
 
     dropdown_callback = CustomJS(
-        args=dict(source=source, filtered_source=filtered_source, mip_dropdown=mip_dropdown, exp_dropdown=exp_dropdown, model_dropdown=model_dropdown, var_dropdown=var_dropdown, region_dropdown=region_dropdown),
+        args=dict(
+            source=source,
+            filtered_source=filtered_source,
+            mip_dropdown=mip_dropdown,
+            exp_dropdown=exp_dropdown,
+            model_dropdown=model_dropdown,
+            var_dropdown=var_dropdown,
+            region_dropdown=region_dropdown,
+        ),
         code="""
         const original_data = source.data;
         const filtered_data = { MIP: [], Experiment: [], Model: [], Variable: [], Description: [], Region: [], ANN: [], DJF: [], JJA: [], MAM: [], SON: [] };
@@ -202,7 +235,7 @@ def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date)
 
         filtered_source.data = Object.assign({}, filtered_data);
         filtered_source.change.emit();
-        """
+        """,
     )
 
     banner = Div(
@@ -239,33 +272,47 @@ def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date)
         """
     )
 
-    mip_dropdown.js_on_change('value', dropdown_callback)
-    exp_dropdown.js_on_change('value', dropdown_callback)
-    model_dropdown.js_on_change('value', dropdown_callback)
-    var_dropdown.js_on_change('value', dropdown_callback)
-    region_dropdown.js_on_change('value', dropdown_callback)
+    mip_dropdown.js_on_change("value", dropdown_callback)
+    exp_dropdown.js_on_change("value", dropdown_callback)
+    model_dropdown.js_on_change("value", dropdown_callback)
+    var_dropdown.js_on_change("value", dropdown_callback)
+    region_dropdown.js_on_change("value", dropdown_callback)
 
-    layout = column(row(banner), title_text, row(mip_dropdown, exp_dropdown, model_dropdown, var_dropdown, region_dropdown), dtable)
+    layout = column(
+        row(banner),
+        title_text,
+        row(mip_dropdown, exp_dropdown, model_dropdown, var_dropdown, region_dropdown),
+        dtable,
+    )
 
     return layout
+
 
 def create_mean_clim_portrait_layout(mips, exps, todays_date):
     df = create_mean_clim_portrait_df(mips, exps)
     source = ColumnDataSource(data=dict(df))
-    filtered_data = df.loc[df['Experiment']=='historical']
-    filtered_source = ColumnDataSource(data=filtered_data.to_dict(orient='list'))
-    image_columns = ['Plot']
-    dtable = create_bokeh_table(df=df, filtered_source=filtered_source, image_columns=image_columns)
+    filtered_data = df.loc[df["Experiment"] == "historical"]
+    filtered_source = ColumnDataSource(data=filtered_data.to_dict(orient="list"))
+    image_columns = ["Plot"]
+    dtable = create_bokeh_table(
+        df=df, filtered_source=filtered_source, image_columns=image_columns
+    )
 
-    filter_columns = ['MIP', 'Experiment', 'Metric']
+    filter_columns = ["MIP", "Experiment", "Metric"]
     filter_widget_dict = create_bokeh_widgets(df, filter_columns)
 
-    mip_dropdown = filter_widget_dict['dropdown0']
-    exp_dropdown = filter_widget_dict['dropdown1']
-    metric_dropdown = filter_widget_dict['dropdown2']
+    mip_dropdown = filter_widget_dict["dropdown0"]
+    exp_dropdown = filter_widget_dict["dropdown1"]
+    metric_dropdown = filter_widget_dict["dropdown2"]
 
     dropdown_callback = CustomJS(
-        args=dict(source=source, filtered_source=filtered_source, mip_dropdown=mip_dropdown, exp_dropdown=exp_dropdown, metric_dropdown=metric_dropdown),
+        args=dict(
+            source=source,
+            filtered_source=filtered_source,
+            mip_dropdown=mip_dropdown,
+            exp_dropdown=exp_dropdown,
+            metric_dropdown=metric_dropdown,
+        ),
         code="""
         const original_data = source.data;
         const filtered_data = { MIP: [], Experiment: [], Metric: [], Plot: [], };
@@ -289,7 +336,7 @@ def create_mean_clim_portrait_layout(mips, exps, todays_date):
 
         filtered_source.data = Object.assign({}, filtered_data);
         filtered_source.change.emit();
-        """
+        """,
     )
 
     banner = Div(
@@ -326,32 +373,48 @@ def create_mean_clim_portrait_layout(mips, exps, todays_date):
         """
     )
 
-    mip_dropdown.js_on_change('value', dropdown_callback)
-    exp_dropdown.js_on_change('value', dropdown_callback)
-    metric_dropdown.js_on_change('value', dropdown_callback)
+    mip_dropdown.js_on_change("value", dropdown_callback)
+    exp_dropdown.js_on_change("value", dropdown_callback)
+    metric_dropdown.js_on_change("value", dropdown_callback)
 
-    layout = column(row(banner), title_text, row(mip_dropdown, exp_dropdown, metric_dropdown), dtable)
+    layout = column(
+        row(banner),
+        title_text,
+        row(mip_dropdown, exp_dropdown, metric_dropdown),
+        dtable,
+    )
     return layout
+
 
 def create_mov_layout(mov_dict, mips, exps, todays_date):
     df = create_mov_df(mov_dict, mips)
     source = ColumnDataSource(data=dict(df))
     filtered_data = df
-    filtered_source = ColumnDataSource(data=filtered_data.to_dict(orient='list'))
-    image_columns = ['Plot']
-    dtable = create_bokeh_table(df=df, filtered_source=filtered_source, image_columns=image_columns)
+    filtered_source = ColumnDataSource(data=filtered_data.to_dict(orient="list"))
+    image_columns = ["Plot"]
+    dtable = create_bokeh_table(
+        df=df, filtered_source=filtered_source, image_columns=image_columns
+    )
 
-    filter_columns = ['MIP', 'Model', 'Mode', 'Season', 'Method']
+    filter_columns = ["MIP", "Model", "Mode", "Season", "Method"]
     filter_widget_dict = create_bokeh_widgets(df, filter_columns)
 
-    mip_dropdown = filter_widget_dict['dropdown0']
-    model_dropdown = filter_widget_dict['dropdown1']
-    mode_dropdown = filter_widget_dict['dropdown2']
-    season_dropdown = filter_widget_dict['dropdown3']
-    method_dropdown = filter_widget_dict['dropdown4']
+    mip_dropdown = filter_widget_dict["dropdown0"]
+    model_dropdown = filter_widget_dict["dropdown1"]
+    mode_dropdown = filter_widget_dict["dropdown2"]
+    season_dropdown = filter_widget_dict["dropdown3"]
+    method_dropdown = filter_widget_dict["dropdown4"]
 
     dropdown_callback = CustomJS(
-        args=dict(source=source, filtered_source=filtered_source, mip_dropdown=mip_dropdown, model_dropdown=model_dropdown, mode_dropdown=mode_dropdown, season_dropdown=season_dropdown, method_dropdown=method_dropdown),
+        args=dict(
+            source=source,
+            filtered_source=filtered_source,
+            mip_dropdown=mip_dropdown,
+            model_dropdown=model_dropdown,
+            mode_dropdown=mode_dropdown,
+            season_dropdown=season_dropdown,
+            method_dropdown=method_dropdown,
+        ),
         code="""
         const original_data = source.data;
         const filtered_data = { MIP: [], Model: [], Mode: [], Season: [], Method: [], Variable: [], Reference: [], Plot: [], };
@@ -383,7 +446,7 @@ def create_mov_layout(mov_dict, mips, exps, todays_date):
 
         filtered_source.data = Object.assign({}, filtered_data);
         filtered_source.change.emit();
-        """
+        """,
     )
 
     banner = Div(
@@ -420,34 +483,55 @@ def create_mov_layout(mov_dict, mips, exps, todays_date):
         """
     )
 
-    mip_dropdown.js_on_change('value', dropdown_callback)
-    model_dropdown.js_on_change('value', dropdown_callback)
-    mode_dropdown.js_on_change('value', dropdown_callback)
-    season_dropdown.js_on_change('value', dropdown_callback)
-    method_dropdown.js_on_change('value', dropdown_callback)
+    mip_dropdown.js_on_change("value", dropdown_callback)
+    model_dropdown.js_on_change("value", dropdown_callback)
+    mode_dropdown.js_on_change("value", dropdown_callback)
+    season_dropdown.js_on_change("value", dropdown_callback)
+    method_dropdown.js_on_change("value", dropdown_callback)
 
-    layout = column(row(banner), title_text, row(mip_dropdown, model_dropdown, mode_dropdown, season_dropdown, method_dropdown), dtable)
+    layout = column(
+        row(banner),
+        title_text,
+        row(
+            mip_dropdown,
+            model_dropdown,
+            mode_dropdown,
+            season_dropdown,
+            method_dropdown,
+        ),
+        dtable,
+    )
     return layout
+
 
 def create_enso_layout(enso_dict, mips, exps, todays_date):
     df = create_enso_df(enso_dict, mips)
     source = ColumnDataSource(data=dict(df))
     filtered_data = df
-    filtered_source = ColumnDataSource(data=filtered_data.to_dict(orient='list'))
-    image_columns = ['Plot']
+    filtered_source = ColumnDataSource(data=filtered_data.to_dict(orient="list"))
+    image_columns = ["Plot"]
 
-    dtable = create_bokeh_table(df=df, filtered_source=filtered_source, image_columns=image_columns)
+    dtable = create_bokeh_table(
+        df=df, filtered_source=filtered_source, image_columns=image_columns
+    )
 
-    filter_columns = ['MIP', 'Model', 'Collection', 'Metric']
+    filter_columns = ["MIP", "Model", "Collection", "Metric"]
     filter_widget_dict = create_bokeh_widgets(df, filter_columns)
 
-    mip_dropdown = filter_widget_dict['dropdown0']
-    model_dropdown = filter_widget_dict['dropdown1']
-    collection_dropdown = filter_widget_dict['dropdown2']
-    metric_dropdown = filter_widget_dict['dropdown3']
+    mip_dropdown = filter_widget_dict["dropdown0"]
+    model_dropdown = filter_widget_dict["dropdown1"]
+    collection_dropdown = filter_widget_dict["dropdown2"]
+    metric_dropdown = filter_widget_dict["dropdown3"]
 
     dropdown_callback = CustomJS(
-        args=dict(source=source, filtered_source=filtered_source, mip_dropdown=mip_dropdown, model_dropdown=model_dropdown, collection_dropdown=collection_dropdown, metric_dropdown=metric_dropdown),
+        args=dict(
+            source=source,
+            filtered_source=filtered_source,
+            mip_dropdown=mip_dropdown,
+            model_dropdown=model_dropdown,
+            collection_dropdown=collection_dropdown,
+            metric_dropdown=metric_dropdown,
+        ),
         code="""
         const original_data = source.data;
         const filtered_data = { MIP: [], Model: [], Collection: [], Metric: [], Value: [], Plot: [], };
@@ -475,7 +559,7 @@ def create_enso_layout(enso_dict, mips, exps, todays_date):
 
         filtered_source.data = Object.assign({}, filtered_data);
         filtered_source.change.emit();
-        """
+        """,
     )
 
     banner = Div(
@@ -512,63 +596,86 @@ def create_enso_layout(enso_dict, mips, exps, todays_date):
         """
     )
 
-    mip_dropdown.js_on_change('value', dropdown_callback)
-    model_dropdown.js_on_change('value', dropdown_callback)
-    collection_dropdown.js_on_change('value', dropdown_callback)
-    metric_dropdown.js_on_change('value', dropdown_callback)
+    mip_dropdown.js_on_change("value", dropdown_callback)
+    model_dropdown.js_on_change("value", dropdown_callback)
+    collection_dropdown.js_on_change("value", dropdown_callback)
+    metric_dropdown.js_on_change("value", dropdown_callback)
 
-    layout = column(row(banner), title_text, row(mip_dropdown, model_dropdown, collection_dropdown, metric_dropdown), dtable)
+    layout = column(
+        row(banner),
+        title_text,
+        row(mip_dropdown, model_dropdown, collection_dropdown, metric_dropdown),
+        dtable,
+    )
     return layout
+
 
 # ----------
 # Layer II Functions
 # ----------
 
-def create_bokeh_table(
-        df,
-        filtered_source,
-        image_columns,
-        width: Optional[float] = 1600,
-        height: Optional[float] = 1200,
-        row_height: Optional[float] = 35,
-        season_column_names: bool = False,
-        display_images: bool = False):
 
-    image_templates={}
-    image_formatters={}
+def create_bokeh_table(
+    df,
+    filtered_source,
+    image_columns,
+    width: Optional[float] = 1600,
+    height: Optional[float] = 1200,
+    row_height: Optional[float] = 35,
+    season_column_names: bool = False,
+    display_images: bool = False,
+):
+    image_templates = {}
+    image_formatters = {}
 
     if season_column_names:
         for s in image_columns:
-            image_templates[f"{s}_template"] = f"""
+            image_templates[
+                f"{s}_template"
+            ] = f"""
             <div style="position: relative; font-size:16px;">
                 <a href="<%= {s} %>" target="_blank">{s}</a>
             </div>
             """
-            image_formatters[f"{s}_formatter"] = HTMLTemplateFormatter(template=image_templates[f"{s}_template"])
+            image_formatters[f"{s}_formatter"] = HTMLTemplateFormatter(
+                template=image_templates[f"{s}_template"]
+            )
     elif display_images:
         for s in image_columns:
-            image_templates[f"{s}_template"] = f"""
+            image_templates[
+                f"{s}_template"
+            ] = """
             <div style="position: relative;">
                 <a href="<%= value %>" target="_blank"><img src="<%= value %>" alt="image_preview" height=300></a>
             </div>
             """
-            image_formatters[f"{s}_formatter"] = HTMLTemplateFormatter(template=image_templates[f"{s}_template"])
+            image_formatters[f"{s}_formatter"] = HTMLTemplateFormatter(
+                template=image_templates[f"{s}_template"]
+            )
     else:
         for col in image_columns:
-            image_templates[f"{col}_template"] = f"""
+            image_templates[
+                f"{col}_template"
+            ] = """
             <div style="position: relative; font-size:16px;">
                 <a href="<%= value %>" target="_blank">View Plot</a>
             </div>
             """
-            image_formatters[f"{col}_formatter"] = HTMLTemplateFormatter(template=image_templates[f"{col}_template"])
+            image_formatters[f"{col}_formatter"] = HTMLTemplateFormatter(
+                template=image_templates[f"{col}_template"]
+            )
 
-    text_only_formatter = HTMLTemplateFormatter(template='<span style="font-size:16px;"> <%= value %> </span>')
+    text_only_formatter = HTMLTemplateFormatter(
+        template='<span style="font-size:16px;"> <%= value %> </span>'
+    )
 
     column_names = df.columns.values
     bokeh_columns = []
     for col in column_names:
         if col in image_columns:
-            column = TableColumn(field=col, title=col, formatter=image_formatters[f"{col}_formatter"])
+            column = TableColumn(
+                field=col, title=col, formatter=image_formatters[f"{col}_formatter"]
+            )
             bokeh_columns.append(column)
         else:
             column = TableColumn(field=col, title=col, formatter=text_only_formatter)
@@ -581,7 +688,7 @@ def create_bokeh_table(
         height=height,
         row_height=row_height,
         index_position=None,
-        #css_classes=["custom-table"]
+        # css_classes=["custom-table"]
         stylesheets=[
             """
             :host {
@@ -611,48 +718,49 @@ def create_bokeh_table(
             }
 
             """
-        ]
-        )
+        ],
+    )
 
     return dtable
+
 
 def create_bokeh_widgets(df, filter_columns):
     filter_widget_dict = {}
 
     for fc in range(0, len(filter_columns)):
         filter_column_name = filter_columns[fc]
-        if filter_column_name == 'Region':
+        if filter_column_name == "Region":
             filter_widget_dict["dropdown" + str(fc)] = MultiChoice(
                 options=sorted(list(df[filter_column_name].unique())),
                 title="Select " + filter_column_name,
-                value=['global'],
+                value=["global"],
                 height=90,
                 width=300,
-                sizing_mode='fixed'
+                sizing_mode="fixed",
             )
-        elif filter_column_name == 'Experiment':
+        elif filter_column_name == "Experiment":
             filter_widget_dict["dropdown" + str(fc)] = MultiChoice(
                 options=sorted(list(df[filter_column_name].unique())),
                 title="Select " + filter_column_name,
-                value=['historical'],
+                value=["historical"],
                 height=90,
                 width=300,
-                sizing_mode='fixed'
+                sizing_mode="fixed",
             )
-        elif filter_column_name == 'MIP':
+        elif filter_column_name == "MIP":
             filter_widget_dict["dropdown" + str(fc)] = MultiChoice(
                 options=sorted(list(df[filter_column_name].unique())),
                 title="Select " + filter_column_name,
                 value=[],
                 height=90,
                 width=300,
-                sizing_mode='fixed',
+                sizing_mode="fixed",
                 stylesheets=[
                     """
                     :host .bk-input-group{
                         padding-left: 20px;}
                     """
-                ]
+                ],
             )
         else:
             filter_widget_dict["dropdown" + str(fc)] = MultiChoice(
@@ -661,243 +769,456 @@ def create_bokeh_widgets(df, filter_columns):
                 value=[],
                 height=90,
                 width=300,
-                sizing_mode='fixed'
+                sizing_mode="fixed",
             )
 
     return filter_widget_dict
 
-def create_mean_clim_divedown_df(mean_clim_dict, mips):
-    exps, cmip6_models, cmip5_models, all_models, all_vars, regions, seasons = retrieve_lists(mean_clim_dict, "mean_climate", mips)
 
-    multi_index = pd.MultiIndex.from_product([mips, exps, all_models, all_vars, regions], names=['MIP', 'Experiment', 'Model', 'Variable', 'Region'])
+def create_mean_clim_divedown_df(mean_clim_dict, mips):
+    (
+        exps,
+        cmip6_models,
+        cmip5_models,
+        all_models,
+        all_vars,
+        regions,
+        seasons,
+    ) = retrieve_lists(mean_clim_dict, "mean_climate", mips)
+
+    multi_index = pd.MultiIndex.from_product(
+        [mips, exps, all_models, all_vars, regions],
+        names=["MIP", "Experiment", "Model", "Variable", "Region"],
+    )
     df = pd.DataFrame(index=multi_index).reset_index()
     df = add_var_long_name(df)
-    df = df[['MIP', 'Experiment', 'Model', 'Variable', 'Description', 'Region']]
+    df = df[["MIP", "Experiment", "Model", "Variable", "Description", "Region"]]
 
-    cmip5_df = df.loc[(df['Model'].isin(cmip5_models)) & (df['MIP']=='cmip5')]
-    cmip6_df = df.loc[(df['Model'].isin(cmip6_models)) & (df['MIP']=='cmip6')]
+    cmip5_df = df.loc[(df["Model"].isin(cmip5_models)) & (df["MIP"] == "cmip5")]
+    cmip6_df = df.loc[(df["Model"].isin(cmip6_models)) & (df["MIP"] == "cmip6")]
 
     df = pd.concat([cmip5_df, cmip6_df])
     df.reset_index(drop=True, inplace=True)
 
-    img_url_head = f"https://pcmdi.llnl.gov/pmp-preliminary-results/graphics/mean_climate"
-    # EXAMPLE IMAGE: https://pcmdi.llnl.gov/pmp-preliminary-results/graphics/mean_climate/cmip6/historical/clim/v20210811/ts/global/ts_cmip6_historical_CanESM5_son_global.png
-    seasons = ['ANN', 'DJF', 'MAM', 'JJA', 'SON']
+    img_url_head = (
+        "https://pcmdi.llnl.gov/pmp-preliminary-results/graphics/mean_climate"
+    )
+
+    seasons = ["ANN", "DJF", "MAM", "JJA", "SON"]
     for s in seasons:
         df[s.upper()] = df.apply(
             lambda row: (
-            f"{img_url_head}/{row['MIP']}/{row['Experiment']}/clim/v20210811/{row['Variable']}/{row['Region']}/{row['Variable']}_{row['MIP']}_{row['Experiment']}_{row['Model']}_{s.lower()}_global.png"
-            if row['MIP'] == 'cmip6' else
-            f"{img_url_head}/{row['MIP']}/{row['Experiment']}/clim/v20200505/{row['Variable']}/{row['Variable']}_{row['MIP']}_{row['Experiment']}_{row['Model']}_{s.lower()}.png"
-            if row['MIP'] == 'cmip5' else None
+                f"{img_url_head}/{row['MIP']}/{row['Experiment']}/clim/v20210811/{row['Variable']}/{row['Region']}/{row['Variable']}_{row['MIP']}_{row['Experiment']}_{row['Model']}_{s.lower()}_global.png"
+                if row["MIP"] == "cmip6"
+                else f"{img_url_head}/{row['MIP']}/{row['Experiment']}/clim/v20200505/{row['Variable']}/{row['Variable']}_{row['MIP']}_{row['Experiment']}_{row['Model']}_{s.lower()}.png"
+                if row["MIP"] == "cmip5"
+                else None
             ),
-            axis=1
-            )
+            axis=1,
+        )
 
     return df
+
 
 def create_mean_clim_portrait_df(mips, exps):
-    metrics = ['rms_xy', 'rmsc_xy', 'bias_xy', 'mae_xy', 'cor_xy']
+    metrics = ["rms_xy", "rmsc_xy", "bias_xy", "mae_xy", "cor_xy"]
 
-    multi_index = pd.MultiIndex.from_product([mips, exps, metrics], names=['MIP', 'Experiment', 'Metric'])
+    multi_index = pd.MultiIndex.from_product(
+        [mips, exps, metrics], names=["MIP", "Experiment", "Metric"]
+    )
     df = pd.DataFrame(index=multi_index).reset_index()
-    df = df[['MIP', 'Experiment', 'Metric']]
+    df = df[["MIP", "Experiment", "Metric"]]
 
-    url_head = f"https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/mean_clim/cmip6/historical/v20240430"
-    # example url cmip6: https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/mean_clim/cmip6/historical/v20240430/mean_clim_portrait_plot_4seasons_cmip6_historical_rms_xy_v20240430.html
-    # example url cmip5: https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/mean_clim/cmip6/historical/v20240430/mean_clim_portrait_plot_4seasons_cmip5_historical_rms_xy_v20240430.html
-    df['Plot'] = df.apply(lambda row: f"{url_head}/mean_clim_portrait_plot_4seasons_{row['MIP']}_{row['Experiment']}_{row['Metric']}_v20240430.html", axis=1)
+    url_head = "https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/mean_clim/cmip6/historical/v20240430"
+    df["Plot"] = df.apply(
+        lambda row: f"{url_head}/mean_clim_portrait_plot_4seasons_{row['MIP']}_{row['Experiment']}_{row['Metric']}_v20240430.html",
+        axis=1,
+    )
 
     return df
 
+
 def create_mov_df(mov_dict, mips):
-    exps, cmip6_models, cmip5_models, all_models, modes, regions, all_seasons = retrieve_lists(mov_dict, "variability_modes", mips=mips)
+    (
+        exps,
+        cmip6_models,
+        cmip5_models,
+        all_models,
+        modes,
+        regions,
+        all_seasons,
+    ) = retrieve_lists(mov_dict, "variability_modes", mips=mips)
     seasons = []
     for season in all_seasons:
-        if season != 'ANN':
+        if season != "ANN":
             seasons.append(season)
 
     all_modes = []
     for mode in modes:
-        all_modes.append(mode.split('/')[0])
+        all_modes.append(mode.split("/")[0])
 
-    #metrics = ['rmse', 'rmsc', 'amplitude']
-    methods = ['cbf', 'eof']
+    # metrics = ['rmse', 'rmsc', 'amplitude']
+    methods = ["cbf", "eof"]
 
     results_dict = {}
     for mip in mips:
         results_dict[mip] = {}
-        results_dict[mip] = database_metrics(mip = mip, model=None, exp='historical', metrics=['variability_modes'], model_member_list_only=True)
+        results_dict[mip] = database_metrics(
+            mip=mip,
+            model=None,
+            exp="historical",
+            metrics=["variability_modes"],
+            model_member_list_only=True,
+        )
 
-    multi_index = pd.MultiIndex.from_product([mips, all_models, all_modes, seasons, methods], names=['MIP', 'Model', 'Mode', 'Season', 'Method'])
+    multi_index = pd.MultiIndex.from_product(
+        [mips, all_models, all_modes, seasons, methods],
+        names=["MIP", "Model", "Mode", "Season", "Method"],
+    )
     df = pd.DataFrame(index=multi_index).reset_index()
-    df = df[['MIP', 'Model', 'Mode', 'Season', 'Method']]
+    df = df[["MIP", "Model", "Mode", "Season", "Method"]]
 
-    ts_modes = ['AMO', 'NPGO', 'PDO']
-    monthly_modes = ['NPGO', 'PDO']
-    yearly_modes = ['AMO']
-    df.loc[df['Mode'].isin(monthly_modes), 'Season'] = 'monthly'
-    df.loc[df['Mode'].isin(yearly_modes), 'Season'] = 'yearly'
+    ts_modes = ["AMO", "NPGO", "PDO"]
+    monthly_modes = ["NPGO", "PDO"]
+    yearly_modes = ["AMO"]
+    df.loc[df["Mode"].isin(monthly_modes), "Season"] = "monthly"
+    df.loc[df["Mode"].isin(yearly_modes), "Season"] = "yearly"
     df = df.drop_duplicates()
 
-    df.loc[df['Mode'].isin(ts_modes), 'Variable'] = 'ts'
-    df.loc[~df['Mode'].isin(ts_modes), 'Variable'] = 'psl'
-    df.loc[df['Mode'].isin(ts_modes), 'Reference'] = 'HadISSTv1.1'
-    df.loc[~df['Mode'].isin(ts_modes), 'Reference'] = 'NOAA-CIRES_20CR'
+    df.loc[df["Mode"].isin(ts_modes), "Variable"] = "ts"
+    df.loc[~df["Mode"].isin(ts_modes), "Variable"] = "psl"
+    df.loc[df["Mode"].isin(ts_modes), "Reference"] = "HadISSTv1.1"
+    df.loc[~df["Mode"].isin(ts_modes), "Reference"] = "NOAA-CIRES_20CR"
 
     df.reset_index(drop=True, inplace=True)
 
-    cmip5_df = df.loc[(df['Model'].isin(cmip5_models)) & (df['MIP']=='cmip5')]
-    cmip6_df = df.loc[(df['Model'].isin(cmip6_models)) & (df['MIP']=='cmip6')]
+    cmip5_df = df.loc[(df["Model"].isin(cmip5_models)) & (df["MIP"] == "cmip5")]
+    cmip6_df = df.loc[(df["Model"].isin(cmip6_models)) & (df["MIP"] == "cmip6")]
 
     df = pd.concat([cmip5_df, cmip6_df])
     df.reset_index(drop=True, inplace=True)
 
-    url_head = f"https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/variability_modes/portrait_plot/dive_down.html?"
-    # example url: mip=cmip6&exp=historical&ver=v20220825&mode=SAM&ref=NOAA-CIRES_20CR&var=psl&method=cbf&season=DJF&model=ACCESS-CM2&runs=r1i1p1f1,%20r2i1p1f1,%20r3i1p1f1,%20r4i1p1f1,%20r5i1p1f1&periods=1900-2005,%201900-2005,%201900-2005,%201900-2005,%201900-2005
+    url_head = "https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/variability_modes/portrait_plot/dive_down.html?"
 
-    df['Runs'] = df.apply(
+    df["Runs"] = df.apply(
         lambda row: (
-            ', '.join(list(results_dict[row['MIP']]['variability_modes']['var_mode_NAM_EOF1_stat_cmip6_historical_mo_atm_allModels_allRuns_1900-2005']['RESULTS'][row['Model']].keys()))
-            if row['MIP'] == 'cmip6' and results_dict[row['MIP']]['variability_modes']['var_mode_NAM_EOF1_stat_cmip6_historical_mo_atm_allModels_allRuns_1900-2005']['RESULTS'][row['Model']] is not None else
-            ', '.join(list(results_dict[row['MIP']]['variability_modes']['var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005']['RESULTS'][row['Model']].keys()))
-            if row['MIP'] == 'cmip5' and results_dict[row['MIP']]['variability_modes']['var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005']['RESULTS'][row['Model']] is not None else None
+            ", ".join(
+                list(
+                    results_dict[row["MIP"]]["variability_modes"][
+                        "var_mode_NAM_EOF1_stat_cmip6_historical_mo_atm_allModels_allRuns_1900-2005"
+                    ]["RESULTS"][row["Model"]].keys()
+                )
+            )
+            if row["MIP"] == "cmip6"
+            and results_dict[row["MIP"]]["variability_modes"][
+                "var_mode_NAM_EOF1_stat_cmip6_historical_mo_atm_allModels_allRuns_1900-2005"
+            ]["RESULTS"][row["Model"]]
+            is not None
+            else ", ".join(
+                list(
+                    results_dict[row["MIP"]]["variability_modes"][
+                        "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005"
+                    ]["RESULTS"][row["Model"]].keys()
+                )
+            )
+            if row["MIP"] == "cmip5"
+            and results_dict[row["MIP"]]["variability_modes"][
+                "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005"
+            ]["RESULTS"][row["Model"]]
+            is not None
+            else None
         ),
-        axis=1
+        axis=1,
     )
 
-    df['Periods'] = df.apply(
+    df["Periods"] = df.apply(
         lambda row: (
-            ', '.join(list(['1900-2005'] * len(results_dict[row['MIP']]['variability_modes']['var_mode_NAM_EOF1_stat_cmip6_historical_mo_atm_allModels_allRuns_1900-2005']['RESULTS'][row['Model']].keys())))
-            if row['MIP'] == 'cmip6' and results_dict[row['MIP']]['variability_modes']['var_mode_NAM_EOF1_stat_cmip6_historical_mo_atm_allModels_allRuns_1900-2005']['RESULTS'][row['Model']] is not None else
-            ', '.join(list(['1900-2005'] * len(results_dict[row['MIP']]['variability_modes']['var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005']['RESULTS'][row['Model']].keys())))
-            if row['MIP'] == 'cmip5' and results_dict[row['MIP']]['variability_modes']['var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005']['RESULTS'][row['Model']] is not None else None
+            ", ".join(
+                list(
+                    ["1900-2005"]
+                    * len(
+                        results_dict[row["MIP"]]["variability_modes"][
+                            "var_mode_NAM_EOF1_stat_cmip6_historical_mo_atm_allModels_allRuns_1900-2005"
+                        ]["RESULTS"][row["Model"]].keys()
+                    )
+                )
+            )
+            if row["MIP"] == "cmip6"
+            and results_dict[row["MIP"]]["variability_modes"][
+                "var_mode_NAM_EOF1_stat_cmip6_historical_mo_atm_allModels_allRuns_1900-2005"
+            ]["RESULTS"][row["Model"]]
+            is not None
+            else ", ".join(
+                list(
+                    ["1900-2005"]
+                    * len(
+                        results_dict[row["MIP"]]["variability_modes"][
+                            "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005"
+                        ]["RESULTS"][row["Model"]].keys()
+                    )
+                )
+            )
+            if row["MIP"] == "cmip5"
+            and results_dict[row["MIP"]]["variability_modes"][
+                "var_mode_NAM_EOF1_stat_cmip5_historical_mo_atm_allModels_allRuns_1900-2005"
+            ]["RESULTS"][row["Model"]]
+            is not None
+            else None
         ),
-        axis=1
+        axis=1,
     )
 
-    df['Plot'] = df.apply(
-            lambda row: (
-                f"{url_head}mip={row['MIP']}&exp=historical&ver=v20220825&mode={row['Mode']}&ref={row['Reference']}&var={row['Variable']}&method={row['Method']}&season={row['Season']}&model={row['Model']}&runs={row['Runs']}&periods={row['Periods']}"
-                if row['MIP'] == 'cmip6' else
-                f"{url_head}mip={row['MIP']}&exp=historical&ver=v20200116&mode={row['Mode']}&ref={row['Reference']}&var={row['Variable']}&method={row['Method']}&season={row['Season']}&model={row['Model']}&runs={row['Runs']}&periods={row['Periods']}" if row['MIP'] == 'cmip5' else None
-            ),
-            axis=1
-        )
+    df["Plot"] = df.apply(
+        lambda row: (
+            f"{url_head}mip={row['MIP']}&exp=historical&ver=v20220825&mode={row['Mode']}&ref={row['Reference']}&var={row['Variable']}&method={row['Method']}&season={row['Season']}&model={row['Model']}&runs={row['Runs']}&periods={row['Periods']}"
+            if row["MIP"] == "cmip6"
+            else f"{url_head}mip={row['MIP']}&exp=historical&ver=v20200116&mode={row['Mode']}&ref={row['Reference']}&var={row['Variable']}&method={row['Method']}&season={row['Season']}&model={row['Model']}&runs={row['Runs']}&periods={row['Periods']}"
+            if row["MIP"] == "cmip5"
+            else None
+        ),
+        axis=1,
+    )
 
-    df = df[['MIP', 'Model', 'Mode', 'Season', 'Method', 'Variable', 'Reference', 'Plot']]
+    df = df[
+        ["MIP", "Model", "Mode", "Season", "Method", "Variable", "Reference", "Plot"]
+    ]
 
     return df
 
+
 def create_enso_df(enso_dict, mips):
-    exps, cmip6_models, cmip5_models, all_models, collections, regions, seasons = retrieve_lists(enso_dict, "enso_metric", mips=mips)
+    (
+        exps,
+        cmip6_models,
+        cmip5_models,
+        all_models,
+        collections,
+        regions,
+        seasons,
+    ) = retrieve_lists(enso_dict, "enso_metric", mips=mips)
 
     results_dict = {}
     for mip in mips:
         results_dict[mip] = {}
-        results_dict[mip] = database_metrics(mip = mip, model=None, exp='historical', metrics=['enso_metric'])
+        results_dict[mip] = database_metrics(
+            mip=mip, model=None, exp="historical", metrics=["enso_metric"]
+        )
 
-    cmip5_perf_models = list(results_dict['cmip5']['enso_metric']['ENSO_perf']['RESULTS']['model'].keys())
-    cmip6_perf_models = list(results_dict['cmip6']['enso_metric']['ENSO_perf']['RESULTS']['model'].keys())
+    cmip5_perf_models = list(
+        results_dict["cmip5"]["enso_metric"]["ENSO_perf"]["RESULTS"]["model"].keys()
+    )
+    cmip6_perf_models = list(
+        results_dict["cmip6"]["enso_metric"]["ENSO_perf"]["RESULTS"]["model"].keys()
+    )
 
-    cmip5_tel_models = list(results_dict['cmip5']['enso_metric']['ENSO_tel']['RESULTS']['model'].keys())
-    cmip6_tel_models = list(results_dict['cmip6']['enso_metric']['ENSO_tel']['RESULTS']['model'].keys())
+    cmip5_tel_models = list(
+        results_dict["cmip5"]["enso_metric"]["ENSO_tel"]["RESULTS"]["model"].keys()
+    )
+    cmip6_tel_models = list(
+        results_dict["cmip6"]["enso_metric"]["ENSO_tel"]["RESULTS"]["model"].keys()
+    )
 
-    cmip5_proc_models = list(results_dict['cmip5']['enso_metric']['ENSO_proc']['RESULTS']['model'].keys())
-    cmip6_proc_models = list(results_dict['cmip6']['enso_metric']['ENSO_proc']['RESULTS']['model'].keys())
+    cmip5_proc_models = list(
+        results_dict["cmip5"]["enso_metric"]["ENSO_proc"]["RESULTS"]["model"].keys()
+    )
+    cmip6_proc_models = list(
+        results_dict["cmip6"]["enso_metric"]["ENSO_proc"]["RESULTS"]["model"].keys()
+    )
 
-    perf_cmip5_vars = list(results_dict['cmip5']['enso_metric']['ENSO_perf']['RESULTS']['model']['ACCESS1-0']['r1i1p1']['value'].keys())
-    tel_cmip5_vars = list(results_dict['cmip5']['enso_metric']['ENSO_tel']['RESULTS']['model']['ACCESS1-0']['r1i1p1']['value'].keys())
-    proc_cmip5_vars = list(results_dict['cmip5']['enso_metric']['ENSO_proc']['RESULTS']['model']['ACCESS1-0']['r1i1p1']['value'].keys())
+    perf_cmip5_vars = list(
+        results_dict["cmip5"]["enso_metric"]["ENSO_perf"]["RESULTS"]["model"][
+            "ACCESS1-0"
+        ]["r1i1p1"]["value"].keys()
+    )
+    tel_cmip5_vars = list(
+        results_dict["cmip5"]["enso_metric"]["ENSO_tel"]["RESULTS"]["model"][
+            "ACCESS1-0"
+        ]["r1i1p1"]["value"].keys()
+    )
+    proc_cmip5_vars = list(
+        results_dict["cmip5"]["enso_metric"]["ENSO_proc"]["RESULTS"]["model"][
+            "ACCESS1-0"
+        ]["r1i1p1"]["value"].keys()
+    )
 
-    perf_cmip6_vars = list(results_dict['cmip6']['enso_metric']['ENSO_perf']['RESULTS']['model']['ACCESS-CM2']['r1i1p1f1']['value'].keys())
-    tel_cmip6_vars = list(results_dict['cmip6']['enso_metric']['ENSO_tel']['RESULTS']['model']['ACCESS-CM2']['r1i1p1f1']['value'].keys())
-    proc_cmip6_vars = list(results_dict['cmip6']['enso_metric']['ENSO_proc']['RESULTS']['model']['ACCESS-CM2']['r1i1p1f1']['value'].keys())
+    perf_cmip6_vars = list(
+        results_dict["cmip6"]["enso_metric"]["ENSO_perf"]["RESULTS"]["model"][
+            "ACCESS-CM2"
+        ]["r1i1p1f1"]["value"].keys()
+    )
+    tel_cmip6_vars = list(
+        results_dict["cmip6"]["enso_metric"]["ENSO_tel"]["RESULTS"]["model"][
+            "ACCESS-CM2"
+        ]["r1i1p1f1"]["value"].keys()
+    )
+    proc_cmip6_vars = list(
+        results_dict["cmip6"]["enso_metric"]["ENSO_proc"]["RESULTS"]["model"][
+            "ACCESS-CM2"
+        ]["r1i1p1f1"]["value"].keys()
+    )
 
-    cmip5_perf_index = pd.MultiIndex.from_product([['cmip5'], cmip5_perf_models, ['ENSO_perf'], perf_cmip5_vars], names=['MIP', 'Model', 'Collection', 'metric_code'])
+    cmip5_perf_index = pd.MultiIndex.from_product(
+        [["cmip5"], cmip5_perf_models, ["ENSO_perf"], perf_cmip5_vars],
+        names=["MIP", "Model", "Collection", "metric_code"],
+    )
     cmip5_perf_df = pd.DataFrame(index=cmip5_perf_index).reset_index()
-    cmip5_tel_index = pd.MultiIndex.from_product([['cmip5'], cmip5_tel_models, ['ENSO_tel'], tel_cmip5_vars], names=['MIP', 'Model', 'Collection', 'metric_code'])
+    cmip5_tel_index = pd.MultiIndex.from_product(
+        [["cmip5"], cmip5_tel_models, ["ENSO_tel"], tel_cmip5_vars],
+        names=["MIP", "Model", "Collection", "metric_code"],
+    )
     cmip5_tel_df = pd.DataFrame(index=cmip5_tel_index).reset_index()
-    cmip5_proc_index = pd.MultiIndex.from_product([['cmip5'], cmip5_proc_models, ['ENSO_proc'], proc_cmip5_vars], names=['MIP', 'Model', 'Collection', 'metric_code'])
+    cmip5_proc_index = pd.MultiIndex.from_product(
+        [["cmip5"], cmip5_proc_models, ["ENSO_proc"], proc_cmip5_vars],
+        names=["MIP", "Model", "Collection", "metric_code"],
+    )
     cmip5_proc_df = pd.DataFrame(index=cmip5_proc_index).reset_index()
 
-    cmip6_perf_index = pd.MultiIndex.from_product([['cmip6'], cmip6_perf_models, ['ENSO_perf'], perf_cmip6_vars], names=['MIP', 'Model', 'Collection', 'metric_code'])
+    cmip6_perf_index = pd.MultiIndex.from_product(
+        [["cmip6"], cmip6_perf_models, ["ENSO_perf"], perf_cmip6_vars],
+        names=["MIP", "Model", "Collection", "metric_code"],
+    )
     cmip6_perf_df = pd.DataFrame(index=cmip6_perf_index).reset_index()
-    cmip6_tel_index = pd.MultiIndex.from_product([['cmip6'], cmip6_tel_models, ['ENSO_tel'], tel_cmip6_vars], names=['MIP', 'Model', 'Collection', 'metric_code'])
+    cmip6_tel_index = pd.MultiIndex.from_product(
+        [["cmip6"], cmip6_tel_models, ["ENSO_tel"], tel_cmip6_vars],
+        names=["MIP", "Model", "Collection", "metric_code"],
+    )
     cmip6_tel_df = pd.DataFrame(index=cmip6_tel_index).reset_index()
-    cmip6_proc_index = pd.MultiIndex.from_product([['cmip6'], cmip6_proc_models, ['ENSO_proc'], proc_cmip6_vars], names=['MIP', 'Model', 'Collection', 'metric_code'])
+    cmip6_proc_index = pd.MultiIndex.from_product(
+        [["cmip6"], cmip6_proc_models, ["ENSO_proc"], proc_cmip6_vars],
+        names=["MIP", "Model", "Collection", "metric_code"],
+    )
     cmip6_proc_df = pd.DataFrame(index=cmip6_proc_index).reset_index()
 
-    df = pd.concat([cmip5_perf_df, cmip5_tel_df, cmip5_proc_df, cmip6_perf_df, cmip6_tel_df, cmip6_proc_df])
+    df = pd.concat(
+        [
+            cmip5_perf_df,
+            cmip5_tel_df,
+            cmip5_proc_df,
+            cmip6_perf_df,
+            cmip6_tel_df,
+            cmip6_proc_df,
+        ]
+    )
     df.reset_index(drop=True, inplace=True)
 
     met_names = {
-        "BiasPrLatRmse": "double_ITCZ_bias", "BiasPrLonRmse": "eq_PR_bias",
-        "BiasSstLonRmse": "eq_SST_bias", "BiasTauxLonRmse": "eq_Taux_bias",
-        "SeasonalPrLatRmse": "double_ITCZ_sea_cycle", "SeasonalPrLonRmse": "eq_PR_sea_cycle",
-        "SeasonalSstLonRmse": "eq_SST_sea_cycle", "SeasonalTauxLonRmse": "eq_Taux_sea_cycle",
-        "EnsoSstLonRmse": "ENSO_pattern", "EnsoSstTsRmse": "ENSO_lifecycle",
-        "EnsoAmpl": "ENSO_amplitude", "EnsoSeasonality": "ENSO_seasonality",
-        "EnsoSstSkew": "ENSO_asymmetry", "EnsoDuration": "ENSO_duration",
-        "EnsoSstDiversity": "ENSO_diversity", "EnsoSstDiversity_1": "ENSO_diversity", "EnsoSstDiversity_2": "ENSO_diversity",
-        "EnsoPrMapDjfRmse": "DJF_PR_teleconnection", "EnsoPrMapJjaRmse": "JJA_PR_teleconnection",
-        "EnsoSstMapDjfRmse": "DJF_TS_teleconnection", "EnsoSstMapJjaRmse": "JJA_TS_teleconnection",
-        "EnsoFbSstTaux": "SST-Taux_feedback", "EnsoFbTauxSsh": "Taux-SSH_feedback", "EnsoFbSshSst": "SSH-SST_feedback",
+        "BiasPrLatRmse": "double_ITCZ_bias",
+        "BiasPrLonRmse": "eq_PR_bias",
+        "BiasSstLonRmse": "eq_SST_bias",
+        "BiasTauxLonRmse": "eq_Taux_bias",
+        "SeasonalPrLatRmse": "double_ITCZ_sea_cycle",
+        "SeasonalPrLonRmse": "eq_PR_sea_cycle",
+        "SeasonalSstLonRmse": "eq_SST_sea_cycle",
+        "SeasonalTauxLonRmse": "eq_Taux_sea_cycle",
+        "EnsoSstLonRmse": "ENSO_pattern",
+        "EnsoSstTsRmse": "ENSO_lifecycle",
+        "EnsoAmpl": "ENSO_amplitude",
+        "EnsoSeasonality": "ENSO_seasonality",
+        "EnsoSstSkew": "ENSO_asymmetry",
+        "EnsoDuration": "ENSO_duration",
+        "EnsoSstDiversity": "ENSO_diversity",
+        "EnsoSstDiversity_1": "ENSO_diversity",
+        "EnsoSstDiversity_2": "ENSO_diversity",
+        "EnsoPrMapDjfRmse": "DJF_PR_teleconnection",
+        "EnsoPrMapJjaRmse": "JJA_PR_teleconnection",
+        "EnsoSstMapDjfRmse": "DJF_TS_teleconnection",
+        "EnsoSstMapJjaRmse": "JJA_TS_teleconnection",
+        "EnsoFbSstTaux": "SST-Taux_feedback",
+        "EnsoFbTauxSsh": "Taux-SSH_feedback",
+        "EnsoFbSshSst": "SSH-SST_feedback",
         "EnsoFbSstThf": "SST-NHF_feedback",
-        "EnsodSstOce": "ocean_driven_SST", "EnsodSstOce_1": "ocean_driven_SST", "EnsodSstOce_2": "ocean_driven_SST"}
+        "EnsodSstOce": "ocean_driven_SST",
+        "EnsodSstOce_1": "ocean_driven_SST",
+        "EnsodSstOce_2": "ocean_driven_SST",
+    }
 
-    df['Metric'] = df['metric_code'].map(met_names)
-    df_mapped = df[~df['Metric'].isna()]
+    df["Metric"] = df["metric_code"].map(met_names)
+    df_mapped = df[~df["Metric"].isna()]
 
     ref_info_dict = find_enso_ref()
 
-    df_mapped['Reference'] = df_mapped.apply(
+    df_mapped["Reference"] = df_mapped.apply(
         lambda row: (
-            ref_info_dict[row['Collection']][row['MIP'].upper()][row['metric_code']]
-            if row['metric_code'] in (ref_info_dict[row['Collection']][row['MIP'].upper()].keys()) else
-            'Tropflux_GPCPv2.3' # NEED TO CONFIRM THIS IS THE ONLY CASE WITH ISSUES (E.G., EnsoPrMapDjfCorr doesn't have a mapping ref in the info dict)
+            ref_info_dict[row["Collection"]][row["MIP"].upper()][row["metric_code"]]
+            if row["metric_code"]
+            in (ref_info_dict[row["Collection"]][row["MIP"].upper()].keys())
+            else "Tropflux_GPCPv2.3"  # NEED TO CONFIRM THIS IS THE ONLY CASE WITH ISSUES (E.G., EnsoPrMapDjfCorr doesn't have a mapping ref in the info dict)
         ),
-        axis=1
+        axis=1,
     )
 
-    df_mapped['first_run'] = df_mapped.apply(
+    df_mapped["first_run"] = df_mapped.apply(
         lambda row: (
-            sort_human(list(results_dict[row['MIP']]['enso_metric'][row['Collection']]['RESULTS']['model'][row['Model']].keys()))[0]
+            sort_human(
+                list(
+                    results_dict[row["MIP"]]["enso_metric"][row["Collection"]][
+                        "RESULTS"
+                    ]["model"][row["Model"]].keys()
+                )
+            )[0]
         ),
-        axis=1
+        axis=1,
     )
 
-    df_mapped['Value'] = df_mapped.apply(
+    df_mapped["Value"] = df_mapped.apply(
         lambda row: (
-            round(float(results_dict[row['MIP']]['enso_metric'][row['Collection']]['RESULTS']['model'][row['Model']][row['first_run']]['value'][row['metric_code']]['metric'][row['Reference']]['value']),3)
-            if row['metric_code'] in (results_dict[row['MIP']]['enso_metric'][row['Collection']]['RESULTS']['model'][row['Model']][row['first_run']]['value'].keys()) and results_dict[row['MIP']]['enso_metric'][row['Collection']]['RESULTS']['model'][row['Model']][row['first_run']]['value'][row['metric_code']]['metric'][row['Reference']]['value'] is not None else
-            None
+            round(
+                float(
+                    results_dict[row["MIP"]]["enso_metric"][row["Collection"]][
+                        "RESULTS"
+                    ]["model"][row["Model"]][row["first_run"]]["value"][
+                        row["metric_code"]
+                    ][
+                        "metric"
+                    ][
+                        row["Reference"]
+                    ][
+                        "value"
+                    ]
+                ),
+                3,
+            )
+            if row["metric_code"]
+            in (
+                results_dict[row["MIP"]]["enso_metric"][row["Collection"]]["RESULTS"][
+                    "model"
+                ][row["Model"]][row["first_run"]]["value"].keys()
+            )
+            and results_dict[row["MIP"]]["enso_metric"][row["Collection"]]["RESULTS"][
+                "model"
+            ][row["Model"]][row["first_run"]]["value"][row["metric_code"]]["metric"][
+                row["Reference"]
+            ][
+                "value"
+            ]
+            is not None
+            else None
         ),
-        axis=1
+        axis=1,
     )
 
-    url_head = f"https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/enso_metric/dynamic_html/EnsoDiveDown.html?"
-    # example URL input: ?mip=cmip6&model=ACCESS-CM2&exp=historical&run=r1i1p1f1&metric=BiasPrLatRmse&metric_dd=BiasPrLatRmse&MC=ENSO_perf&metric_name=double_ITCZ_bias&avalue=2.086&ver=v20201122
-
-    df_mapped['Plot'] = df_mapped.apply(
+    url_head = "https://pcmdi.llnl.gov/pmp-preliminary-results/interactive_plot/portrait_plot/enso_metric/dynamic_html/EnsoDiveDown.html?"
+    df_mapped["Plot"] = df_mapped.apply(
         lambda row: (
             f"{url_head}mip={row['MIP']}&model={row['Model']}&exp=historical&run=r1i1p1f1&metric={row['metric_code']}&metric_dd={row['metric_code']}&MC={row['Collection']}&metric_name={row['Metric']}&nvalue=&avalue{row['Value']}=&ver=v20201122"
-            if row['MIP'] == 'cmip6' else
-            f"{url_head}mip={row['MIP']}&model={row['Model']}&exp=historical&run=r1i1p1&metric={row['metric_code']}&metric_dd={row['metric_code']}&MC={row['Collection']}&metric_name={row['Metric']}&nvalue=&avalue={row['Value']}&ver=v20201122"
+            if row["MIP"] == "cmip6"
+            else f"{url_head}mip={row['MIP']}&model={row['Model']}&exp=historical&run=r1i1p1&metric={row['metric_code']}&metric_dd={row['metric_code']}&MC={row['Collection']}&metric_name={row['Metric']}&nvalue=&avalue={row['Value']}&ver=v20201122"
         ),
-        axis=1
+        axis=1,
     )
 
-    df_mapped = df_mapped[['MIP', 'Model', 'Collection', 'Metric', 'Value', 'Plot']]
+    df_mapped = df_mapped[["MIP", "Model", "Collection", "Metric", "Value", "Plot"]]
 
     return df_mapped
+
 
 # ----------
 # Layer III Functions
 # ----------
 
+
 # CREATE DICTIONARY FROM PARAMS
-def create_viewer_dict(metrics, mips, exps): #add version numbers
+def create_viewer_dict(metrics, mips, exps):  # add version numbers
     viewer_dict = {}
 
     for metric in metrics:
@@ -906,10 +1227,14 @@ def create_viewer_dict(metrics, mips, exps): #add version numbers
             viewer_dict[metric][mip] = {}
             for exp in exps:
                 try:
-                    viewer_dict[metric][mip][exp] = find_pmp_archive_json_urls(metric, mip, exp)
-                except: print(f"skipping Failed to fetch URL: {metric}, {mip}, {exp}")
+                    viewer_dict[metric][mip][exp] = find_pmp_archive_json_urls(
+                        metric, mip, exp
+                    )
+                except Exception:
+                    print(f"skipping Failed to fetch URL: {metric}, {mip}, {exp}")
 
     return viewer_dict
+
 
 def retrieve_lists(metrics_dict, metric_name, mips):
     # Get all models
@@ -923,18 +1248,18 @@ def retrieve_lists(metrics_dict, metric_name, mips):
     exps = list(metrics_dict[mips[0]].keys())
 
     for mip in mips:
-        if mip == 'cmip6':
+        if mip == "cmip6":
             for exp in exps:
-                json_data = load_json_from_url(metrics_dict['cmip6'][exp][0])
-                cmip6_models_temp.append(list(json_data['RESULTS'].keys()))
+                json_data = load_json_from_url(metrics_dict["cmip6"][exp][0])
+                cmip6_models_temp.append(list(json_data["RESULTS"].keys()))
             for m6 in cmip6_models_temp:
                 cmip6_models.extend(m6)
             cmip6_models = np.unique(cmip6_models)
             cmip6_models.sort()
-        if mip == 'cmip5':
+        if mip == "cmip5":
             for exp in exps:
-                json_data = load_json_from_url(metrics_dict['cmip5'][exp][0])
-                cmip5_models_temp.append(list(json_data['RESULTS'].keys()))
+                json_data = load_json_from_url(metrics_dict["cmip5"][exp][0])
+                cmip5_models_temp.append(list(json_data["RESULTS"].keys()))
             for m5 in cmip5_models_temp:
                 cmip5_models.extend(m5)
             cmip5_models = np.unique(cmip5_models)
@@ -951,9 +1276,12 @@ def retrieve_lists(metrics_dict, metric_name, mips):
     for mip in list(metrics_dict.keys()):
         for exp in list(metrics_dict[mip].keys()):
             try:
-                results_dict = database_metrics(mip=mip, model=all_models[0], exp=exp, metrics=[metric_name])
+                results_dict = database_metrics(
+                    mip=mip, model=all_models[0], exp=exp, metrics=[metric_name]
+                )
                 vars.append(list(results_dict[metric_name].keys()))
-            except: print(f"skipping Failed to fetch URL: {mip}, {all_models[0]}, {exp}")
+            except Exception:
+                print(f"skipping Failed to fetch URL: {mip}, {all_models[0]}, {exp}")
 
     for v in vars:
         all_vars.extend(v)
@@ -961,8 +1289,8 @@ def retrieve_lists(metrics_dict, metric_name, mips):
     all_vars = np.unique(all_vars)
     all_vars.sort()
 
-    regions = ['global', 'NHEX', 'SHEX', 'TROPICS']
-    seasons = ['ANN', 'DJF', 'MAM', 'JJA', 'SON']
+    regions = ["global", "NHEX", "SHEX", "TROPICS"]
+    seasons = ["ANN", "DJF", "MAM", "JJA", "SON"]
 
     return exps, cmip6_models, cmip5_models, all_models, all_vars, regions, seasons
 
@@ -976,15 +1304,17 @@ def add_var_long_name(df):
     df : pandas dataframe
         dataframe to add the description field to.
     """
-    with open('./assets/CMIP6_Amon.json', 'r') as file:
+    with open("./assets/CMIP6_Amon.json", "r") as file:
         cmor_table = json.load(file)
 
     var_to_long_name = {
-        var: details.get('long_name', 'Unknown')
-        for var, details in cmor_table.get('variable_entry', {}).items()
+        var: details.get("long_name", "Unknown")
+        for var, details in cmor_table.get("variable_entry", {}).items()
     }
 
-    df['Description'] = df['Variable'].apply(lambda var: var_to_long_name.get(extract_base_var(var), 'NaN'))
+    df["Description"] = df["Variable"].apply(
+        lambda var: var_to_long_name.get(extract_base_var(var), "NaN")
+    )
     return df
 
 
@@ -1000,7 +1330,8 @@ def extract_base_var(var_name):
     ----------
     Pandas dataframe with a new column 'Description'.
     """
-    return var_name.split('-')[0]
+    return var_name.split("-")[0]
+
 
 def find_enso_ref():
     db_url_head = "https://github.com/PCMDI/pcmdi_metrics_results_archive/tree/main/metrics_results/enso_metric"
@@ -1012,7 +1343,7 @@ def find_enso_ref():
         "cmip6/historical/v20210620/ENSO_perf",
         "cmip6/historical/v20210620/ENSO_tel",
         "cmip6/historical/v20210620/ENSO_proc",
-        "obs2obs"
+        "obs2obs",
     ]
 
     path_json = "json_files"
@@ -1031,8 +1362,18 @@ def find_enso_ref():
     for mip in mips:
         dict_json_path[mip] = dict()
         for metrics_collection in metrics_collections:
-            dict_json_path[mip][metrics_collection] = glob(os.path.join(path_json, f"{mip.lower()}*{metrics_collection}_*.json"))[0]
+            dict_json_path[mip][metrics_collection] = glob(
+                os.path.join(path_json, f"{mip.lower()}*{metrics_collection}_*.json")
+            )[0]
 
-    ref_info_dict = json_dict_to_numpy_array_list(metric_collections=metrics_collections, list_project=list_project, list_obs=list_obs, dict_json_path=dict_json_path, reduced_set=True, met_order=None, mod_order=None)[-1]
+    ref_info_dict = json_dict_to_numpy_array_list(
+        metric_collections=metrics_collections,
+        list_project=list_project,
+        list_obs=list_obs,
+        dict_json_path=dict_json_path,
+        reduced_set=True,
+        met_order=None,
+        mod_order=None,
+    )[-1]
 
     return ref_info_dict
