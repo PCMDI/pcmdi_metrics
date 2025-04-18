@@ -176,9 +176,9 @@ def view_pmp_output(
     return print(f"POV created in {cwd}")
 
 
-# ----------
+# -----------------
 # Layer I Functions
-# ----------
+# -----------------
 def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date):
     """
     Creates a bokeh layout object for mean climate dive down plots.
@@ -696,11 +696,9 @@ def create_enso_layout(enso_dict, mips, exps, todays_date):
     return layout
 
 
-# ----------
+# ------------------
 # Layer II Functions
-# ----------
-
-
+# ------------------
 def create_bokeh_table(
     df,
     filtered_source,
@@ -1399,11 +1397,9 @@ def create_enso_df(enso_dict, mips):
     return df_mapped
 
 
-# ----------
+# -------------------
 # Layer III Functions
-# ----------
-
-
+# -------------------
 def create_viewer_dict(metrics, mips, exps):  # need to add version numbers
     """
     Constructs a dictionary from input lists.
