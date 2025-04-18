@@ -855,8 +855,7 @@ def create_bokeh_widgets(df, filter_columns):
     """
     filter_widget_dict = {}
 
-    for fc in range(0, len(filter_columns)):
-        filter_column_name = filter_columns[fc]
+    for fc, filter_column_name in enumerate(filter_columns):
         if filter_column_name == "Region":
             filter_widget_dict["dropdown" + str(fc)] = MultiChoice(
                 options=sorted(list(df[filter_column_name].unique())),
