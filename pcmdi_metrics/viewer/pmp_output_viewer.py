@@ -37,11 +37,23 @@ def view_pmp_output(
     exps: list = ["historical", "amip"],
     metrics: list = ["mean_climate", "variability_modes", "enso_metric"],
 ):
-    # ----------
-    # Layer 0
-    # ----------
+    """
+    Writes out bokeh layout objects as HTML files and creates base gallery style HTML file with links to each summary metric page based on mip, exp, and metrics.
 
-    # Create Home Page
+    Parameters
+    ----------
+    mips : list
+        The model intercomparison projects (e.g, ['cmip5', 'cmip6']).
+    exps : list
+        The experiments (e.g., ['historical', 'amip']).
+    metrics : list
+        List of metrics (e.g., ['mean_climate', 'variability_modes', 'enso_metric']).
+
+    Returns
+    ----------
+    html
+        An HTML file containing an image gallery with links to each metric page from the metrics list.
+    """
     todays_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     home_content = f"""
     <!DOCTYPE html>
@@ -168,6 +180,25 @@ def view_pmp_output(
 # Layer I Functions
 # ----------
 def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date):
+    """
+    Creates a bokeh layout object for mean climate dive down plots.
+
+    Parameters
+    ----------
+    mean_climate_dict : dict
+        A dictionary of json URLs for each mip and exp available in the PMP archive for mean climate.
+    mips : list
+        The model intercomparison projects (e.g, ['cmip5', 'cmip6']).
+    exps : list
+        The experiments (e.g., ['historical', 'amip']).
+    todays_date : str
+        The current date and time the script is run (Format: %Y-%m-%d %H:%M:%S).
+
+    Returns
+    ----------
+    bokeh layout
+        Arranged bokeh grid of the custom PMP Viewer banner, title text, multichoice dropdown filter widgets, and data table.
+    """
     df = create_mean_clim_divedown_df(mean_climate_dict, mips)
     source = ColumnDataSource(data=dict(df))
     filtered_data = df.loc[
@@ -289,6 +320,23 @@ def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date)
 
 
 def create_mean_clim_portrait_layout(mips, exps, todays_date):
+    """
+    Creates a bokeh layout object for mean climate portrait plots.
+
+    Parameters
+    ----------
+    mips : list
+        The model intercomparison projects (e.g, ['cmip5', 'cmip6']).
+    exps : list
+        The experiments (e.g., ['historical', 'amip']).
+    todays_date : str
+        The current date and time the script is run (Format: %Y-%m-%d %H:%M:%S).
+
+    Returns
+    ----------
+    bokeh layout
+        Arranged bokeh grid of the custom PMP Viewer banner, title text, multichoice dropdown filter widgets, and data table.
+    """
     df = create_mean_clim_portrait_df(mips, exps)
     source = ColumnDataSource(data=dict(df))
     filtered_data = df.loc[df["Experiment"] == "historical"]
@@ -387,6 +435,25 @@ def create_mean_clim_portrait_layout(mips, exps, todays_date):
 
 
 def create_mov_layout(mov_dict, mips, exps, todays_date):
+    """
+    Creates a bokeh layout object for modes of variability dive down pages.
+
+    Parameters
+    ----------
+    mov_dict : dict
+        A dictionary of json URLs for each mip and exp available in the PMP archive for modes of variability.
+    mips : list
+        The model intercomparison projects (e.g, ['cmip5', 'cmip6']).
+    exps : list
+        The experiments (e.g., ['historical', 'amip']).
+    todays_date : str
+        The current date and time the script is run (Format: %Y-%m-%d %H:%M:%S).
+
+    Returns
+    ----------
+    bokeh layout
+        Arranged bokeh grid of the custom PMP Viewer banner, title text, multichoice dropdown filter widgets, and data table.
+    """
     df = create_mov_df(mov_dict, mips)
     source = ColumnDataSource(data=dict(df))
     filtered_data = df
@@ -505,6 +572,25 @@ def create_mov_layout(mov_dict, mips, exps, todays_date):
 
 
 def create_enso_layout(enso_dict, mips, exps, todays_date):
+    """
+    Creates a bokeh layout object for ENSO dive down pages.
+
+    Parameters
+    ----------
+    enso_dict : dict
+        A dictionary of json URLs for each mip and exp available in the PMP archive for ENSO.
+    mips : list
+        The model intercomparison projects (e.g, ['cmip5', 'cmip6']).
+    exps : list
+        The experiments (e.g., ['historical', 'amip']).
+    todays_date : str
+        The current date and time the script is run (Format: %Y-%m-%d %H:%M:%S).
+
+    Returns
+    ----------
+    bokeh layout
+        Arranged bokeh grid of the custom PMP Viewer banner, title text, multichoice dropdown filter widgets, and data table.
+    """
     df = create_enso_df(enso_dict, mips)
     source = ColumnDataSource(data=dict(df))
     filtered_data = df
@@ -625,6 +711,33 @@ def create_bokeh_table(
     season_column_names: bool = False,
     display_images: bool = False,
 ):
+    """
+    Creates a bokeh data table for the provided dataframe and formats Plot columns.
+
+    Parameters
+    ----------
+    df : Pandas dataframe
+        A dataframe with the columns and values to display in the data table.
+    filtered_source : ColumnDataSource
+        A bokeh ColumnDataSource object with any default filters applied (e.g., Region = 'global').
+    image_columns : list
+        A list of column(s) that contain links to images/plot pages.
+    width : float
+        Desired width of data table.
+    height : float
+        Desired height of table.
+    row_height : float
+        Desired height of each row in the table.
+    season_column_names : bool=False
+        If true, image columns will be formatted for seasons (e.g., values read "DJF", "MAM", etc. instead of "View Plot").
+    display_images : bool=False
+        If true, image column will be formatted to display a thumbnail of the image instead of text.
+
+    Returns
+    ----------
+    bokeh data table
+        A bokeh data table object that can be displayed in a grid layout.
+    """
     image_templates = {}
     image_formatters = {}
 
@@ -725,6 +838,21 @@ def create_bokeh_table(
 
 
 def create_bokeh_widgets(df, filter_columns):
+    """
+    Creates bokeh MultiChoice widgets with dropdown lists for the specified data.
+
+    Parameters
+    ----------
+    df : Pandas dataframe
+        A dataframe with the columns and values to display in the data table.
+    filter_columns : list
+        A list of the columns to create MultiChoice filters for.
+
+    Returns
+    ----------
+    dict
+        A dictionary of a dictionary of bokeh MultiChoice widgets for a bokeh grid layout.
+    """
     filter_widget_dict = {}
 
     for fc in range(0, len(filter_columns)):
@@ -776,6 +904,21 @@ def create_bokeh_widgets(df, filter_columns):
 
 
 def create_mean_clim_divedown_df(mean_clim_dict, mips):
+    """
+    Creates a pandas dataframe with links to each season mean climate dive down image from the PMP Database Archive.
+
+    Parameters
+    ----------
+    mean_clim_dict : dict
+         A dictionary of json URLs for each mip and exp available in the PMP archive for mean climate.
+    mips : list
+        The model intercomparison projects (e.g, ['cmip5', 'cmip6']).
+
+    Returns
+    ----------
+    Pandas dataframe
+        A dataframe of mean climate dive down info and plot links to be converted to a bokeh data table.
+    """
     (
         exps,
         cmip6_models,
@@ -821,6 +964,21 @@ def create_mean_clim_divedown_df(mean_clim_dict, mips):
 
 
 def create_mean_clim_portrait_df(mips, exps):
+    """
+    Creates a pandas dataframe with links to interactive mean climate portrait plots on the PCMDI website.
+
+    Parameters
+    ----------
+    mips : list
+        The model intercomparison projects (e.g, ['cmip5', 'cmip6']).
+    exps : list
+        The experiments (e.g., ['historical', 'amip']).
+
+    Returns
+    ----------
+    Pandas dataframe
+        A dataframe of mean climate portrait plot info and links to be converted to a bokeh data table.
+    """
     metrics = ["rms_xy", "rmsc_xy", "bias_xy", "mae_xy", "cor_xy"]
 
     multi_index = pd.MultiIndex.from_product(
@@ -839,6 +997,21 @@ def create_mean_clim_portrait_df(mips, exps):
 
 
 def create_mov_df(mov_dict, mips):
+    """
+    Creates a pandas dataframe with links to Modes of Variability dynamically generated dive down pages on the PCMDI website.
+
+    Parameters
+    ----------
+    mov_dict : dict
+         A dictionary of json URLs for each mip and exp available in the PMP archive for Modes of Variability.
+    mips : list
+        The model intercomparison projects (e.g, ['cmip5', 'cmip6']).
+
+    Returns
+    ----------
+    Pandas dataframe
+        A dataframe of Modes of Variability dive down info and links to be converted to a bokeh data table.
+    """
     (
         exps,
         cmip6_models,
@@ -987,6 +1160,21 @@ def create_mov_df(mov_dict, mips):
 
 
 def create_enso_df(enso_dict, mips):
+    """
+    Creates a pandas dataframe with links to ENSO dynamically generated dive down pages on the PCMDI website.
+
+    Parameters
+    ----------
+    mov_dict : dict
+         A dictionary of json URLs for each mip and exp available in the PMP archive for ENSO.
+    mips : list
+        The model intercomparison projects (e.g, ['cmip5', 'cmip6']).
+
+    Returns
+    ----------
+    Pandas dataframe
+        A dataframe of ENSO dive down info and links to be converted to a bokeh data table.
+    """
     (
         exps,
         cmip6_models,
@@ -1217,8 +1405,24 @@ def create_enso_df(enso_dict, mips):
 # ----------
 
 
-# CREATE DICTIONARY FROM PARAMS
-def create_viewer_dict(metrics, mips, exps):  # add version numbers
+def create_viewer_dict(metrics, mips, exps):  # need to add version numbers
+    """
+    Constructs a dictionary from input lists.
+
+    Parameters
+    ----------
+    metrics : list
+        List of metrics (e.g., ['mean_climate', 'variability_modes', 'enso_metric']).
+    mips : list
+        The model intercomparison projects (e.g, ['cmip5', 'cmip6']).
+    exps : list
+        The experiments (e.g., ['historical', 'amip']).
+
+    Returns
+    ----------
+    dict
+        A dictionary of URLs to json files saved on the PMP Database Archive.
+    """
     viewer_dict = {}
 
     for metric in metrics:
@@ -1237,6 +1441,21 @@ def create_viewer_dict(metrics, mips, exps):  # add version numbers
 
 
 def retrieve_lists(metrics_dict, metric_name, mips):
+    """
+    Uses PMP Database API to retrieve json data from the PMP database archive.
+
+    Parameters
+    ----------
+    metrics_dict : dict
+        A dictionary containing the json URLs for desired retrieval.
+    metric_name : str
+        Name metric will be given in the dictionary (e.g., "mean_climate", "mov", "enso").
+
+    Returns
+    ----------
+    lists
+        Seven lists based on available data in the PMP Database Archive are returned for easy construction of dataframes for the data table (e.g., exps, cmip6_models, cmip5_models, all_models, all_vars, regions, seasons).
+    """
     # Get all models
     cmip6_models_temp = []
     cmip5_models_temp = []
@@ -1302,7 +1521,12 @@ def add_var_long_name(df):
     Parameters
     ----------
     df : pandas dataframe
-        dataframe to add the description field to.
+        A dataframe to add the description field to.
+
+    Returns
+    ----------
+    pandas dataframe
+        The same dataframe with added "description" column.
     """
     with open("./assets/CMIP6_Amon.json", "r") as file:
         cmor_table = json.load(file)
@@ -1322,18 +1546,32 @@ def extract_base_var(var_name):
     """
     Extracts the base name of the variable.
 
+    Parameters
+    ----------
+    var_name : str
+        A string variable name as it appears in the json dictionary (e.g., 'ua-200').
+
     Example
     ----------
     For variables with different layers, use the base name to match to a name in the AMON table. (e.g., For ua-200 use ua)
 
     Returns
     ----------
-    Pandas dataframe with a new column 'Description'.
+    str
+        The corresponding value as it appears in the AMON table.
     """
     return var_name.split("-")[0]
 
 
 def find_enso_ref():
+    """
+    Uses the PMP ENSO lib API to retrieve the name of the reference dataset for various ENSO metrics.
+
+    Returns
+    ----------
+    dict
+        A dictionary of ENSO reference information downloaded from the PCMDI Archive github.
+    """
     db_url_head = "https://github.com/PCMDI/pcmdi_metrics_results_archive/tree/main/metrics_results/enso_metric"
 
     dirs_to_downlaod = [
