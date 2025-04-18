@@ -297,7 +297,7 @@ def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date)
         text="""
         <link rel='stylesheet' type='text/css' href='./assets/style.css'>
         <h1 style="padding-left: 20px;">PMP Mean Climate Dive Down Plots</h1>
-        <p style="padding-left: 20px;">PLACEHOLDER TEXT: This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
+        <p style="padding-left: 20px;">This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
         <br>
         <h2 style="padding-left: 20px;">Filters</h2>
         """
@@ -415,7 +415,7 @@ def create_mean_clim_portrait_layout(mips, exps, todays_date):
         text="""
         <link rel='stylesheet' type='text/css' href='./assets/style.css'>
         <h1 style="padding-left: 20px;">PMP Mean Climate Portrait Plots</h1>
-        <p style="padding-left: 20px;">PLACEHOLDER TEXT: This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
+        <p style="padding-left: 20px;">This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
         <br>
         <h2 style="padding-left: 20px;">Filters</h2>
         """
@@ -544,7 +544,7 @@ def create_mov_layout(mov_dict, mips, exps, todays_date):
         text="""
         <link rel='stylesheet' type='text/css' href='./assets/style.css'>
         <h1 style="padding-left: 20px;">PMP Extratropical Modes of Variability Plots</h1>
-        <p style="padding-left: 20px;">PLACEHOLDER TEXT: This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
+        <p style="padding-left: 20px;">This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
         <br>
         <h2 style="padding-left: 20px;">Filters</h2>
         """
@@ -676,7 +676,7 @@ def create_enso_layout(enso_dict, mips, exps, todays_date):
         text="""
         <link rel='stylesheet' type='text/css' href='./assets/style.css'>
         <h1 style="padding-left: 20px;">El Niño-Southern Oscillation (ENSO) Plots</h1>
-        <p style="padding-left: 20px;">PLACEHOLDER TEXT: This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
+        <p style="padding-left: 20px;">This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
         <br>
         <h2 style="padding-left: 20px;">Filters</h2>
         """
