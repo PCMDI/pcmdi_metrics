@@ -1,0 +1,94 @@
+body {
+    background-color: white;
+    font-family: "Roboto", sans-serif;
+    display: block;
+    align-items: center;
+    margin: 0;
+    text-align: center;
+}
+
+.banner {
+    background-color: #daeffe;
+    padding: 10px 10px;
+    margin-bottom: 2.5%;
+    min-width: 1590px;
+}
+
+.viewer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.viewer p {
+    font-family: "Roboto", sans-serif;
+    color:#231f20;
+    text-align: left;
+    font-size: 16px;
+    font-weight: normal;
+    width: 30%;
+}
+
+.viewer img{
+    display: block;
+    margin-left: 27%;
+    margin-right:auto;
+    width:8%;
+    padding: 10px 0;
+}
+.viewer h1 {
+    font-family: "Roboto", sans-serif;
+    color: #231f20;
+    text-align: left;
+    font-size: 40px;
+    font-weight: 900;
+    font-style: italic;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.container {
+    background-color: white;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-left: 10%;
+    margin-right: 10%;
+    margin-bottom: 20px;
+}
+
+div.gallery {
+    border: 1.5px solid gray;
+}
+
+div.gallery:hover {
+    border: 3px solid #0066b3;
+}
+
+div.gallery img {
+    max-width: 100%;
+    min-width: 40%;
+}
+
+div.desc {
+    background-color: white;
+    padding: 15px;
+    font-family: "Roboto", sans-serif;
+    text-align: center;
+    font-size: 20px;
+    font-weight:600;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.responsive {
+    padding: 0 8px;
+    float: left;
+    width: 500px;
+}
