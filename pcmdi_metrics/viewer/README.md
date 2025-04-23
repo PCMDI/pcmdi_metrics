@@ -13,8 +13,8 @@ All images and plots included are readily available on the PCMDI website; howeve
 
 Example
 -----------------------------
-The top function in this API is view_pmp_output(). To generate a basic summary page, please use the following:
-`from pmp_output_viewer import view_pmp_output`
+The top function in this API is view_pmp_output(). To generate a basic summary page, please use the following: <br>
+`from pmp_output_viewer import view_pmp_output` <br>
 `view_pmp_output(mips=['cmip5', 'cmip6'], exps=['historical', 'amip'], metrics=['mean_climate', 'variability_modes', 'enso_metric'])`
 
 Current Core Development Team
