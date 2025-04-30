@@ -22,6 +22,7 @@ from bokeh.models import (
     TableColumn,
 )
 
+from pcmdi_metrics import resources
 from pcmdi_metrics.enso.lib import json_dict_to_numpy_array_list
 from pcmdi_metrics.utils import (
     database_metrics,
@@ -32,10 +33,12 @@ from pcmdi_metrics.utils import (
 from pcmdi_metrics.utils.sort_human import sort_human
 
 
-def view_pmp_output(
+def generate_pmp_output_viewer_multimodel(
     mips: list = ["cmip5", "cmip6"],
     exps: list = ["historical", "amip"],
     metrics: list = ["mean_climate", "variability_modes", "enso_metric"],
+    output_dir: Optional[str] = None,
+    assets_path: Optional[str] = None,
 ):
     """
     Writes out bokeh layout objects as HTML files and creates base gallery style HTML file with links to each summary metric page based on mip, exp, and metrics.
@@ -48,12 +51,33 @@ def view_pmp_output(
         The experiments (e.g., ['historical', 'amip']).
     metrics : list
         List of metrics (e.g., ['mean_climate', 'variability_modes', 'enso_metric']).
+    output_dir : str
+        The directory path to save the output HTML files. If None, the files will be saved in the current working directory.
+    assets_path : str
+        The directory path or URL to the assets folder containing the PMP logo and style.css file.
 
     Returns
     ----------
     html
         An HTML file containing an image gallery with links to each metric page from the metrics list.
     """
+    if output_dir is not None:
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+    else:
+        output_dir = os.getcwd()
+
+    if assets_path is None:
+        if os.path.exists(
+            "./assets"
+        ):  # if assets folder is in current working directory (e.g., in a cloned repo)
+            assets_path = "./assets"
+        else:
+            egg_pth = (
+                resources.resource_path()
+            )  # Get assets from env after installation
+            assets_path = os.path.join(egg_pth, "viewer", "assets")
+
     todays_date = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
     home_content = f"""
     <!DOCTYPE html>
@@ -65,7 +89,7 @@ def view_pmp_output(
         <title>PMP Viewer</title>
         <link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-        <link rel="stylesheet" href="./assets/style.css">
+        <link rel="stylesheet" href="{assets_path}/style.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -77,7 +101,7 @@ def view_pmp_output(
                     <b>EXPs:</b> {", ".join(exps)} <br>
                     <b>Created:</b> {todays_date}
                 </p>
-                <img src="./assets/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
+                <img src="{assets_path}/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
                 <h1>VIEWER</h1>
             </div>
         </div>
@@ -93,18 +117,18 @@ def view_pmp_output(
         if "mean_climate" in metrics:
             mean_clim_dict = viewer_dict["mean_climate"]
             mean_clim_divedown_layout = create_mean_clim_divedown_layout(
-                mean_clim_dict, mips, exps, todays_date
+                mean_clim_dict, mips, exps, todays_date, assets_path
             )
-            output_file("./mean_climate_divedown.html")
+            output_file(os.path.join(output_dir, "mean_climate_divedown.html"))
             save(mean_clim_divedown_layout)
 
             mean_clim_portrait_layout = create_mean_clim_portrait_layout(
-                mips, exps, todays_date
+                mips, exps, todays_date, assets_path
             )
-            output_file("./mean_climate_portrait.html")
+            output_file(os.path.join(output_dir, "mean_climate_portrait.html"))
             save(mean_clim_portrait_layout)
 
-            home_content += """
+            home_content += f"""
             <div class="container">
                 <div class="responsive">
                     <div class="gallery">
@@ -118,7 +142,7 @@ def view_pmp_output(
                 <div class="responsive">
                     <div class="gallery">
                         <a target="_blank" href="./mean_climate_portrait.html">
-                            <img src="./assets/mean_climate_portrait_plot_20250213.png" alt="mean_clim_portrait_test_img" width="400" height="348">
+                            <img src="{assets_path}/mean_climate_portrait_plot_20250213.png" alt="mean_clim_portrait_test_img" width="400" height="348">
                         </a>
                         <div class="desc">Mean Climate Portrait Plots</div>
                     </div>
@@ -128,9 +152,9 @@ def view_pmp_output(
         if "variability_modes" in metrics:
             mov_dict = viewer_dict["variability_modes"]
             variability_modes_layout = create_mov_layout(
-                mov_dict, mips, exps, todays_date
+                mov_dict, mips, exps, todays_date, assets_path
             )
-            output_file("./variability_modes.html")
+            output_file(os.path.join(output_dir, "variability_modes.html"))
             save(variability_modes_layout)
 
             home_content += """
@@ -147,15 +171,17 @@ def view_pmp_output(
 
         if "enso_metric" in metrics:
             enso_dict = viewer_dict["enso_metric"]
-            enso_layout = create_enso_layout(enso_dict, mips, exps, todays_date)
-            output_file("./enso_metric.html")
+            enso_layout = create_enso_layout(
+                enso_dict, mips, exps, todays_date, assets_path
+            )
+            output_file(os.path.join(output_dir, "enso_metric.html"))
             save(enso_layout)
 
-            home_content += """
+            home_content += f"""
             <div class="responsive">
                 <div class="gallery">
                     <a target="_blank" href="./enso_metric.html">
-                        <img src="assets/ENSO_ACCESS-CM2_thumbnail.png" alt="enso_test_img" width="auto" height="348">
+                        <img src="{assets_path}/ENSO_ACCESS-CM2_thumbnail.png" alt="enso_test_img" width="auto" height="348">
                     </a>
                     <div class="desc">ENSO Metric Plots</div>
                 </div>
@@ -169,17 +195,19 @@ def view_pmp_output(
     </html>
     """
     # save home page as html
-    with open("pmp_output_viewer.html", "w") as pov_file:
+    viewer_html = os.path.join(output_dir, "pmp_output_viewer.html")
+    with open(viewer_html, "w") as pov_file:
         pov_file.write(home_content)
 
-    cwd = os.getcwd()
-    return print(f"POV created in {cwd}")
+    return print(f"POV created in {output_dir}")
 
 
 # -----------------
 # Layer I Functions
 # -----------------
-def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date):
+def create_mean_clim_divedown_layout(
+    mean_climate_dict, mips, exps, todays_date, assets_path
+):
     """
     Creates a bokeh layout object for mean climate dive down plots.
 
@@ -193,13 +221,15 @@ def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date)
         The experiments (e.g., ['historical', 'amip']).
     todays_date : str
         The current date and time the script is run (Format: %Y-%m-%d %H:%M:%S).
+    assets_path : str
+        The directory path or URL to the assets folder containing the PMP logo and style.css file.
 
     Returns
     ----------
     bokeh layout
         Arranged bokeh grid of the custom PMP Viewer banner, title text, multichoice dropdown filter widgets, and data table.
     """
-    df = create_mean_clim_divedown_df(mean_climate_dict, mips)
+    df = create_mean_clim_divedown_df(mean_climate_dict, mips, assets_path)
     source = ColumnDataSource(data=dict(df))
     filtered_data = df.loc[
         (df["Region"] == "global") & (df["Experiment"] == "historical")
@@ -274,7 +304,7 @@ def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date)
         <title>Mean Climate Dive Down</title>
         <link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-        <link rel="stylesheet" href="./assets/style.css">
+        <link rel="stylesheet" href="{assets_path}/style.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -286,7 +316,7 @@ def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date)
                     <b>EXPs:</b> {", ".join(exps)} <br>
                     <b>Created:</b> {todays_date}
                 </p>
-                <img src="./assets/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
+                <img src="{assets_path}/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
                 <h1>VIEWER</h1>
             </div>
         </div>
@@ -294,8 +324,8 @@ def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date)
     )
 
     title_text = Div(
-        text="""
-        <link rel='stylesheet' type='text/css' href='./assets/style.css'>
+        text=f"""
+        <link rel='stylesheet' type='text/css' href='{assets_path}/style.css'>
         <h1 style="padding-left: 20px;">PMP Mean Climate Dive Down Plots</h1>
         <p style="padding-left: 20px;">This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
         <br>
@@ -319,7 +349,7 @@ def create_mean_clim_divedown_layout(mean_climate_dict, mips, exps, todays_date)
     return layout
 
 
-def create_mean_clim_portrait_layout(mips, exps, todays_date):
+def create_mean_clim_portrait_layout(mips, exps, todays_date, assets_path):
     """
     Creates a bokeh layout object for mean climate portrait plots.
 
@@ -331,6 +361,8 @@ def create_mean_clim_portrait_layout(mips, exps, todays_date):
         The experiments (e.g., ['historical', 'amip']).
     todays_date : str
         The current date and time the script is run (Format: %Y-%m-%d %H:%M:%S).
+    assets_path : str
+        The directory path or URL to the assets folder containing the PMP logo and style.css file.
 
     Returns
     ----------
@@ -392,7 +424,7 @@ def create_mean_clim_portrait_layout(mips, exps, todays_date):
         <title>Mean Climate Portrait Plot</title>
         <link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-        <link rel="stylesheet" href="./assets/style.css">
+        <link rel="stylesheet" href="{assets_path}/style.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -404,7 +436,7 @@ def create_mean_clim_portrait_layout(mips, exps, todays_date):
                     <b>EXPs:</b> {", ".join(exps)} <br>
                     <b>Created:</b> {todays_date}
                 </p>
-                <img src="./assets/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
+                <img src="{assets_path}/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
                 <h1>VIEWER</h1>
             </div>
         </div>
@@ -413,7 +445,7 @@ def create_mean_clim_portrait_layout(mips, exps, todays_date):
 
     title_text = Div(
         text="""
-        <link rel='stylesheet' type='text/css' href='./assets/style.css'>
+        <link rel='stylesheet' type='text/css' href='{assets_path}/style.css'>
         <h1 style="padding-left: 20px;">PMP Mean Climate Portrait Plots</h1>
         <p style="padding-left: 20px;">This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
         <br>
@@ -434,7 +466,7 @@ def create_mean_clim_portrait_layout(mips, exps, todays_date):
     return layout
 
 
-def create_mov_layout(mov_dict, mips, exps, todays_date):
+def create_mov_layout(mov_dict, mips, exps, todays_date, assets_path):
     """
     Creates a bokeh layout object for modes of variability dive down pages.
 
@@ -448,6 +480,8 @@ def create_mov_layout(mov_dict, mips, exps, todays_date):
         The experiments (e.g., ['historical', 'amip']).
     todays_date : str
         The current date and time the script is run (Format: %Y-%m-%d %H:%M:%S).
+    assets_path : str
+        The directory path or URL to the assets folder containing the PMP logo and style.css file.
 
     Returns
     ----------
@@ -521,7 +555,7 @@ def create_mov_layout(mov_dict, mips, exps, todays_date):
         <title>Variability Modes</title>
         <link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-        <link rel="stylesheet" href="./assets/style.css">
+        <link rel="stylesheet" href="{assets_path}/style.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -533,7 +567,7 @@ def create_mov_layout(mov_dict, mips, exps, todays_date):
                     <b>EXPs:</b> {", ".join(exps)} <br>
                     <b>Created:</b> {todays_date}
                 </p>
-                <img src="./assets/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
+                <img src="{assets_path}/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
                 <h1>VIEWER</h1>
             </div>
         </div>
@@ -542,7 +576,7 @@ def create_mov_layout(mov_dict, mips, exps, todays_date):
 
     title_text = Div(
         text="""
-        <link rel='stylesheet' type='text/css' href='./assets/style.css'>
+        <link rel='stylesheet' type='text/css' href='{assets_path}/style.css'>
         <h1 style="padding-left: 20px;">PMP Extratropical Modes of Variability Plots</h1>
         <p style="padding-left: 20px;">This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
         <br>
@@ -571,7 +605,7 @@ def create_mov_layout(mov_dict, mips, exps, todays_date):
     return layout
 
 
-def create_enso_layout(enso_dict, mips, exps, todays_date):
+def create_enso_layout(enso_dict, mips, exps, todays_date, assets_path):
     """
     Creates a bokeh layout object for ENSO dive down pages.
 
@@ -585,6 +619,8 @@ def create_enso_layout(enso_dict, mips, exps, todays_date):
         The experiments (e.g., ['historical', 'amip']).
     todays_date : str
         The current date and time the script is run (Format: %Y-%m-%d %H:%M:%S).
+    assets_path : str
+        The directory path or URL to the assets folder containing the PMP logo and style.css file.
 
     Returns
     ----------
@@ -653,7 +689,7 @@ def create_enso_layout(enso_dict, mips, exps, todays_date):
         <title>ENSO</title>
         <link rel="stylesheet" href="https://cdn.bokeh.org/bokeh/release/bokeh-2.4.3.min.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-        <link rel="stylesheet" href="./assets/style.css">
+        <link rel="stylesheet" href="{assets_path}/style.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
@@ -665,7 +701,7 @@ def create_enso_layout(enso_dict, mips, exps, todays_date):
                     <b>EXPs:</b> {", ".join(exps)} <br>
                     <b>Created:</b> {todays_date}
                 </p>
-                <img src="./assets/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
+                <img src="{assets_path}/PMPLogo_500x421px_72dpi.png" alt="PMP_logo">
                 <h1>VIEWER</h1>
             </div>
         </div>
@@ -674,7 +710,7 @@ def create_enso_layout(enso_dict, mips, exps, todays_date):
 
     title_text = Div(
         text="""
-        <link rel='stylesheet' type='text/css' href='./assets/style.css'>
+        <link rel='stylesheet' type='text/css' href='{assets_path}/style.css'>
         <h1 style="padding-left: 20px;">El Niño-Southern Oscillation (ENSO) Plots</h1>
         <p style="padding-left: 20px;">This webpage is optimized for browsers with over 1200 pixel width screen resolution.</p>
         <br>
@@ -900,7 +936,7 @@ def create_bokeh_widgets(df, filter_columns):
     return filter_widget_dict
 
 
-def create_mean_clim_divedown_df(mean_clim_dict, mips):
+def create_mean_clim_divedown_df(mean_clim_dict, mips, assets_path):
     """
     Creates a pandas dataframe with links to each season mean climate dive down image from the PMP Database Archive.
 
@@ -931,7 +967,7 @@ def create_mean_clim_divedown_df(mean_clim_dict, mips):
         names=["MIP", "Experiment", "Model", "Variable", "Region"],
     )
     df = pd.DataFrame(index=multi_index).reset_index()
-    df = add_var_long_name(df)
+    df = add_var_long_name(df, assets_path)
     df = df[["MIP", "Experiment", "Model", "Variable", "Description", "Region"]]
 
     cmip5_df = df.loc[(df["Model"].isin(cmip5_models)) & (df["MIP"] == "cmip5")]
@@ -1509,7 +1545,7 @@ def retrieve_lists(metrics_dict, metric_name, mips):
     return exps, cmip6_models, cmip5_models, all_models, all_vars, regions, seasons
 
 
-def add_var_long_name(df):
+def add_var_long_name(df, assets_path):
     """
     Uses 'long_name' column in the CMIP6 Amon table to add a variable description to the table.
 
@@ -1517,13 +1553,15 @@ def add_var_long_name(df):
     ----------
     df : pandas dataframe
         A dataframe to add the description field to.
+    assets_path : str
+        The path to the assets directory containing the CMIP6 Amon json file.
 
     Returns
     ----------
     pandas dataframe
         The same dataframe with added "description" column.
     """
-    with open("./assets/CMIP6_Amon.json", "r") as file:
+    with open(f"{assets_path}/CMIP6_Amon.json", "r") as file:
         cmor_table = json.load(file)
 
     var_to_long_name = {
