@@ -14,7 +14,6 @@ import shapely  # noqa: F401
 # isort: on
 from os.path import join as OSpath__join
 
-# import cdms2
 from EnsoMetrics.EnsoCollectionsLib import (
     CmipVariables,
     ReferenceObservations,
@@ -584,7 +583,6 @@ for mod in models:
             if compute_metrics:
                 # Computes the metric collection
                 print("\n### Compute the metric collection ###\n")
-                # cdms2.setAutoBounds("on")
                 dict_metric[mod][run], dict_dive[mod][run] = ComputeCollection(
                     mc_name,
                     dictDatasets,

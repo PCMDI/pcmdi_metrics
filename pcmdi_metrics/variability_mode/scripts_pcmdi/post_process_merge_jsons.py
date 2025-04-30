@@ -37,15 +37,15 @@ def main():
         for exp in exps:
             if exp == "amip":
                 modes = ["NAM", "NAO", "PNA", "SAM", "NPO"]
-                # modes = ['SAM']
             else:
-                modes = ["NAM", "NAO", "PNA", "SAM", "NPO", "PDO", "NPGO"]
-                # modes = ['SAM']
+                modes = ["NAM", "NAO", "PNA", "SAM", "NPO", "PDO", "NPGO", "EA", "SCA"]
 
             for mode in modes:
                 # eof
-                if mode in ["NPO", "NPGO"]:
+                if mode in ["NPO", "NPGO", "EA", "PSA1"]:
                     eof = "EOF2"
+                elif mode in ["SCA", "PSA2"]:
+                    eof = "EOF3"
                 else:
                     eof = "EOF1"
                 # obs name
