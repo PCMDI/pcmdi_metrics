@@ -172,7 +172,7 @@ def generate_pmp_output_viewer_multimodel(
         if "enso_metric" in metrics:
             enso_dict = viewer_dict["enso_metric"]
             enso_layout = create_enso_layout(
-                enso_dict, mips, exps, todays_date, assets_path
+                enso_dict, mips, exps, todays_date, output_dir, assets_path
             )
             output_file(os.path.join(output_dir, "enso_metric.html"))
             save(enso_layout)
@@ -605,7 +605,7 @@ def create_mov_layout(mov_dict, mips, exps, todays_date, assets_path):
     return layout
 
 
-def create_enso_layout(enso_dict, mips, exps, todays_date, assets_path):
+def create_enso_layout(enso_dict, mips, exps, todays_date, output_dir, assets_path):
     """
     Creates a bokeh layout object for ENSO dive down pages.
 
@@ -619,6 +619,8 @@ def create_enso_layout(enso_dict, mips, exps, todays_date, assets_path):
         The experiments (e.g., ['historical', 'amip']).
     todays_date : str
         The current date and time the script is run (Format: %Y-%m-%d %H:%M:%S).
+    output_dir : str
+        The directory path to save the output HTML files. If None, the files will be saved in the current working directory.
     assets_path : str
         The directory path or URL to the assets folder containing the PMP logo and style.css file.
 
@@ -627,7 +629,7 @@ def create_enso_layout(enso_dict, mips, exps, todays_date, assets_path):
     bokeh layout
         Arranged bokeh grid of the custom PMP Viewer banner, title text, multichoice dropdown filter widgets, and data table.
     """
-    df = create_enso_df(enso_dict, mips)
+    df = create_enso_df(enso_dict, mips, output_dir)
     source = ColumnDataSource(data=dict(df))
     filtered_data = df
     filtered_source = ColumnDataSource(data=filtered_data.to_dict(orient="list"))
@@ -1192,7 +1194,7 @@ def create_mov_df(mov_dict, mips):
     return df
 
 
-def create_enso_df(enso_dict, mips):
+def create_enso_df(enso_dict, mips, output_dir):
     """
     Creates a pandas dataframe with links to ENSO dynamically generated dive down pages on the PCMDI website.
 
@@ -1356,7 +1358,7 @@ def create_enso_df(enso_dict, mips):
     df["Metric"] = df["metric_code"].map(met_names)
     df_mapped = df[~df["Metric"].isna()]
 
-    ref_info_dict = find_enso_ref()
+    ref_info_dict = find_enso_ref(output_dir)
 
     df_mapped["Reference"] = df_mapped.apply(
         lambda row: (
@@ -1596,7 +1598,7 @@ def extract_base_var(var_name):
     return var_name.split("-")[0]
 
 
-def find_enso_ref():
+def find_enso_ref(output_dir):
     """
     Uses the PMP ENSO lib API to retrieve the name of the reference dataset for various ENSO metrics.
 
@@ -1617,7 +1619,7 @@ def find_enso_ref():
         "obs2obs",
     ]
 
-    path_json = "json_files"
+    path_json = os.path.join(output_dir, "json_files")
 
     for directiry in dirs_to_downlaod:
         github_directory_url = os.path.join(db_url_head, directiry)
