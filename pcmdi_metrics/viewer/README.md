@@ -13,11 +13,12 @@ All images and plots included are readily available on the PCMDI website; howeve
 
 Example
 -----------------------------
-The top function in this API is view_pmp_output(). To generate a basic summary page, please use the following: <br>
-`from pmp_output_viewer import view_pmp_output` <br>
+The top function in this API is `generate_pmp_output_viewer_multimodel()`. To generate a basic summary page, please use the following: <br>
+`from pmp_output_viewer import generate_pmp_output_viewer_multimodel` <br> or,
+`from pcmdi_metrics.viewer import generate_pmp_output_viewer_multimodel` after installation of PMP. <br>
 `view_pmp_output(mips=['cmip5', 'cmip6'], exps=['historical', 'amip'], metrics=['mean_climate', 'variability_modes', 'enso_metric'])`
 
-Current Core Development Team
+Contributors
 -----------------------------
-* [Jiwoo Lee](https://people.llnl.gov/lee1043) ([LLNL](https://www.llnl.gov/), PMP Lead)
 * [Kristin Chang](https://people.llnl.gov/chang61) ([LLNL](https://www.llnl.gov/))
+* [Jiwoo Lee](https://people.llnl.gov/lee1043) ([LLNL](https://www.llnl.gov/), PMP Lead)
