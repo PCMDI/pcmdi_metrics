@@ -120,3 +120,14 @@ Miscellaneous tools
     utils.sort_human
     utils.fill_template
     utils.tree
+
+
+Viewer
+~~~~~~
+
+Viewer will be available in `pcmdi_metrics (> v3.9.1)`.
+
+.. autosummary::
+    :toctree: generated/
+
+    viewer.generate_pmp_output_viewer_multimodel
