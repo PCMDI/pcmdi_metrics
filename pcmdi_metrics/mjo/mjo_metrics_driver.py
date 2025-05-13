@@ -162,6 +162,11 @@ osyear = param.osyear
 oeyear = param.oeyear
 YearCheck(osyear, oeyear, P)
 
+# seasons
+seasons = param.seasons
+if seasons is None:
+    seasons = ["NDJFMA", "MJJASO"]
+
 # Units
 units = param.units
 #  model
@@ -274,7 +279,7 @@ for model in models:
                 print(" --- ", run, " ---")
                 print(model_path)
 
-                for season in ["NDJFMA", "MJJASO"]:
+                for season in seasons:
                     print(" -- ", season, " --")
                     if model == "obs":
                         result_dict["REF"][reference_data_name][season] = {}

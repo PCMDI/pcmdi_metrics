@@ -7,7 +7,9 @@ import xarray as xr
 from matplotlib.patches import Rectangle
 
 
-def plot_power(d: xr.DataArray, title: str, fout: str, ewr=None):
+def plot_power(
+    d: xr.DataArray, title: str, fout: str, ewr=None, contour_levels: list = None
+):
     x = d["frequency"]
     y = d["zonalwavenumber"]
 
@@ -22,15 +24,8 @@ def plot_power(d: xr.DataArray, title: str, fout: str, ewr=None):
     plt.rc("legend", fontsize=SMALL_SIZE)  # legend fontsize
     plt.rc("figure", titlesize=BIGGER_SIZE)  # fontsize of the figure title
 
-    # plot
-    plt.switch_backend("agg")  # backend plotting
-    plt.figure(figsize=(8, 4))
-    cm = copy.copy(matplotlib.cm.get_cmap("jet"))
-    cs = plt.contourf(
-        x,
-        y,
-        d,
-        levels=[
+    if contour_levels is None:
+        contour_levels = [
             0.002,
             0.004,
             0.006,
@@ -47,7 +42,17 @@ def plot_power(d: xr.DataArray, title: str, fout: str, ewr=None):
             0.028,
             0.03,
             0.032,
-        ],
+        ]
+
+    # plot
+    plt.switch_backend("agg")  # backend plotting
+    plt.figure(figsize=(8, 4))
+    cm = copy.copy(matplotlib.cm.get_cmap("jet"))
+    cs = plt.contourf(
+        x,
+        y,
+        d,
+        levels=contour_levels,
         cmap=cm,
         extend="both",
     )
