@@ -25,6 +25,7 @@ from .lib_variability_mode import (  # noqa
     search_paths,
     check_start_end_year,
     debug_print,
+    get_eof_numbers,
     get_domain_range,
     read_data_in,
     sea_ice_adjust,
@@ -33,5 +34,5 @@ from .lib_variability_mode import (  # noqa
     variability_metrics_to_json,
     write_nc_output,
 )
-from .plot_map import plot_map  # noqa
+from .plot_map import plot_map, plot_map_multi_panel  # noqa
 from .north_test import north_test

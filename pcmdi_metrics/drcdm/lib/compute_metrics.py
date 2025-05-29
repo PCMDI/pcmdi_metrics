@@ -2,7 +2,6 @@
 import datetime
 
 import cftime
-import dask
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
@@ -86,7 +85,7 @@ class SeasonalAverager:
 
     def masked_ds(self, ds):
         # Mask land where 0.5<=sftlf<=1
-        # return ds.where(self.sftlf >= 0.5).where(self.sftlf <= 1)
+        return ds.where(self.sftlf >= 0.5).where(self.sftlf <= 1)
         return ds
 
     def calc_5day_mean(self):
@@ -661,7 +660,10 @@ def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     yvarbnds = yvar + "_bnds"
     ds[yvar].attrs["standard_name"] = "Y"
     ds[xvar].attrs["standard_name"] = "X"
-    bnds_dict = {yvar: "Y", xvar: "X", "time": "T"}
+    if "time" in ds:
+        bnds_dict = {yvar: "Y", xvar: "X", "time": "T"}
+    else:
+        bnds_dict = {yvar: "Y", xvar: "X"}
     for item in bnds_dict:
         if item not in ds:
             continue  # without this, 'time not in dataset' was an issue for quantile variables
@@ -898,10 +900,8 @@ def get_tasmax_q99p9(
     Tq99p9[lon_name] = ds[lon_name]
     Tq99p9 = Tq99p9.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    if isinstance(ds[varname], dask.array.core.Array):
-        Tq99p9["q99p9"] = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
-    else:
-        Tq99p9["q99p9"] = ds[varname].quantile(0.999, dim="time")
+    # PRISM threw errors if chunk not specified
+    Tq99p9["q99p9"] = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
     Tq99p9 = update_nc_attrs(Tq99p9, dec_mode, drop_incomplete_djf, annual_strict)
 
     # Compute statistics
@@ -2260,10 +2260,8 @@ def get_pr_q99p0(
     PRq99p0[lon_name] = ds[lon_name]
     PRq99p0 = PRq99p0.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    if isinstance(ds[varname], dask.array.core.Array):
-        PRq99p0["q99p0"] = ds[varname].chunk({"time": -1}).quantile(0.990, dim="time")
-    else:
-        PRq99p0["q99p0"] = ds[varname].quantile(0.990, dim="time")
+    # PRISM threw errors if chunk not specified
+    PRq99p0["q99p0"] = ds[varname].chunk({"time": -1}).quantile(0.990, dim="time")
     PRq99p0 = update_nc_attrs(PRq99p0, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: PRq99p0}, obs_dict={}, region="land", regrid=False
@@ -2306,10 +2304,8 @@ def get_pr_q99p9(
     PRq99p9[lon_name] = ds[lon_name]
     PRq99p9 = PRq99p9.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    if isinstance(ds[varname], dask.array.core.Array):
-        PRq99p9["q99p9"] = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
-    else:
-        PRq99p9["q99p9"] = ds[varname].quantile(0.999, dim="time")
+    # PRISM threw errors if chunk not specified
+    PRq99p9["q99p9"] = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
     PRq99p9 = update_nc_attrs(PRq99p9, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: PRq99p9}, obs_dict={}, region="land", regrid=False

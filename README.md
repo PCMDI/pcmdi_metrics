@@ -40,7 +40,8 @@ The package expects model data to be [CF-compliant](http://cfconventions.org/). 
 Documentation
 -------------
 
-**Getting Started**
+### Getting Started
+
 
 * Installation requirements and instructions are available on the [Install](http://pcmdi.github.io/pcmdi_metrics/install.html) page
 
@@ -51,7 +52,7 @@ Documentation
 * [View Demo](https://github.com/PCMDI/pcmdi_metrics/blob/main/doc/jupyter/Demo/README.md)
 
 
-**References**
+### References
 
 Latest: 
 
@@ -77,6 +78,11 @@ Some installation support for CMIP participating modeling groups is available: p
 Acknowledgement
 ---------------
 Content in this repository is developed by climate and computer scientists from the Program for Climate Model Diagnosis and Intercomparison ([PCMDI][PCMDI]) at Lawrence Livermore National Laboratory ([LLNL][LLNL]). This work is sponsored by the Regional and Global Model Analysis ([RGMA][RGMA]) program, of the Earth and Environmental Systems Sciences Division ([EESSD][EESSD]) in the Office of Biological and Environmental Research ([BER][BER]) within the [Department of Energy][DOE]'s [Office of Science][OS]. The work is performed under the auspices of the U.S. Department of Energy by Lawrence Livermore National Laboratory under Contract DE-AC52-07NA27344.
+
+LLNL-CODE-2004137 
+
+DOE CODE ID: #153383
+
 
 <p>
     <img src="https://pcmdi.github.io/assets/PCMDI/100px-PCMDI-Logo-NoText-square-png8.png"
@@ -120,6 +126,10 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.9.1]      | New capability (**new modes for modes of variability metrics: EA, SCA**) and technical update
+| [v3.9]        | New capability (**Decision-Relevant metrics, Database access API**) and new demo notebooks
+| [v3.8.2]      | Technical update
+| [v3.8.1]      | Technical update with new figure (modes of variability multi-panel plot)
 | [v3.8]        | New capability (**figure generation for ENSO**, xCDAT migration completed for **Monsoon Wang** with figure generation), major dependency update (`numpy` >= 2.0)
 | [v3.7.2]      | Technical update
 | [v3.7.1]      | Technical update with documentation improvements
@@ -171,6 +181,10 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.9.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.9.1
+[v3.9]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.9
+[v3.8.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8.2
+[v3.8.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8.1
 [v3.8]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.8
 [v3.7.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.2
 [v3.7.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.7.1
@@ -212,15 +226,14 @@ Release Notes and History
 [v1.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.1
 [v1.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v1.0
 
-Current Core Team Members at PCMDI/LLNL
----------------------------------------
-* Jiwoo Lee
-* Ana Ordonez
-* Peter Gleckler
-* Paul Ullrich
-* Bo Dong
-* Kristin Chang
-
+Current Core Development Team
+-----------------------------
+* [Jiwoo Lee](https://people.llnl.gov/lee1043) ([LLNL](https://www.llnl.gov/), PMP Lead)
+* [Peter Gleckler](https://pcmdi.llnl.gov/staff/gleckler/) ([LLNL](https://www.llnl.gov/))
+* [Paul Ullrich](https://people.llnl.gov/ullrich4) ([LLNL](https://www.llnl.gov/), [PCMDI](https://pcmdi.llnl.gov/) Project PI)
+* [Bo Dong](https://people.llnl.gov/dong12) ([LLNL](https://www.llnl.gov/))
+* [Kristin Chang](https://people.llnl.gov/chang61) ([LLNL](https://www.llnl.gov/))
+* [Shixuan Zhang](https://www.pnnl.gov/science/staff/staff_info.asp?staff_num=9376) ([PNNL](https://www.pnnl.gov/))
 
 All Contributors
 ----------------
@@ -264,6 +277,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/bosup"><img src="https://avatars.githubusercontent.com/u/130708142?v=4?s=100" width="100px;" alt="Bo Dong"/><br /><sub><b>Bo Dong</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=bosup" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/zhangshixuan1987"><img src="https://avatars.githubusercontent.com/u/33647254?v=4?s=100" width="100px;" alt="Shixuan Zhang"/><br /><sub><b>Shixuan Zhang</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=zhangshixuan1987" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://kristinchang.github.io/portfolio/"><img src="https://avatars.githubusercontent.com/u/143142064?v=4?s=100" width="100px;" alt="Kristin Chang"/><br /><sub><b>Kristin Chang</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=kristinchang3" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ajonko"><img src="https://avatars.githubusercontent.com/u/13386754?v=4?s=100" width="100px;" alt="Alex Jonko"/><br /><sub><b>Alex Jonko</b></sub></a><br /><a href="https://github.com/PCMDI/pcmdi_metrics/commits?author=ajonko" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
@@ -274,9 +288,3 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification.
-
-
-
-
-
-

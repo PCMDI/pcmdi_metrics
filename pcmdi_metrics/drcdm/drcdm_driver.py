@@ -4,6 +4,7 @@ import glob
 import json
 import os
 
+import xarray
 import xcdat
 
 from pcmdi_metrics.drcdm.lib import (
@@ -152,6 +153,7 @@ if __name__ == "__main__":
             # TODO: For some reason if the reference_data_path was not found, the reference data defaulted to the test data - not sure why
             # Finding land/sea mask
             sftlf_exists = True
+            skip_sftlf = False
             if run == reference_data_set:
                 if reference_sftlf_template is not None and os.path.exists(
                     reference_sftlf_template
@@ -160,7 +162,9 @@ if __name__ == "__main__":
                 else:
                     print("No reference sftlf file template provided.")
                     if not generate_sftlf:
-                        print("Skipping reference data")
+                        print("No land/sea mask applied")
+                        skip_sftlf = True
+                        sftlf_exists = False
                     else:
                         # Set flag to generate sftlf after loading data
                         sftlf_exists = False
@@ -178,8 +182,9 @@ if __name__ == "__main__":
                 except (AttributeError, IndexError):
                     print("No sftlf file found for", model, run)
                     if not generate_sftlf:
-                        print("Skipping realization", run)
-                        continue
+                        print("No land/sea mask applied")
+                        skip_sftlf = True
+                        sftlf_exists = False
                     else:
                         # Set flag to generate sftlf after loading data
                         sftlf_exists = False
@@ -257,6 +262,20 @@ if __name__ == "__main__":
                             shp_path=shp_path,
                             column=col,
                         )
+                elif skip_sftlf:
+                    # Make mask with all ones
+                    sftlf = ds.copy(data=None)
+                    sftlf["sftlf"] = xarray.ones_like(ds[varname].isel({"time": 0}))
+                    if use_region_mask:
+                        print("\nCreating region mask for land/sea mask.")
+                        sftlf = region_utilities.mask_region(
+                            sftlf,
+                            region_name,
+                            coords=coords,
+                            shp_path=shp_path,
+                            column=col,
+                        )
+
                 # Mask out Antarctica
                 sflat = get_latitude_key(sftlf)
                 sftlf["sftlf"] = sftlf["sftlf"].where(sftlf[sflat] > -60)
@@ -275,7 +294,10 @@ if __name__ == "__main__":
                     yrs = [str(int(ds.time.dt.year[0])), str(int(ds.time.dt.year[-1]))]
 
                 if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
+                    units = ds.time.encoding["units"]
                     ds = ds.convert_calendar("noleap")
+                    ds.time.encoding["calendar"] = "noleap"
+                    ds.time.encoding["units"] = units
 
                 ds[varname] = compute_metrics.convert_units(ds[varname], ModUnitsAdjust)
 
@@ -705,46 +727,7 @@ if __name__ == "__main__":
                     # )
                     # metrics_dict["RESULTS"][model][run].update(result_dict)
                     # 99.9 percentile
-                    # Long running, can take 50 min per reals
-                    # result_dict = compute_metrics.get_pr_q99p9(
-                    #     ds,
-                    #     sftlf,
-                    #     dec_mode,
-                    #     drop_incomplete_djf,
-                    #     annual_strict,
-                    #     fig_base,
-                    #     nc_base,
-                    # )
-                    # metrics_dict["RESULTS"][model][run].update(result_dict)
-                    # result_dict = compute_metrics.get_pr_q99p0(
-                    #     ds,
-                    #     sftlf,
-                    #     dec_mode,
-                    #     drop_incomplete_djf,
-                    #     annual_strict,
-                    #     fig_base,
-                    #     nc_base,
-                    # )
-                    # metrics_dict["RESULTS"][model][run].update(result_dict)
-
-                    # if reference_data_path is not None:
-                    #     for quantile in [10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99]:
-                    #         result_dict = compute_metrics.get_pr_days_above_Qth(
-                    #             ds,
-                    #             sftlf,
-                    #             quantile,
-                    #             nc_pr_ref_file_path,
-                    #             dec_mode,
-                    #             drop_incomplete_djf,
-                    #             annual_strict,
-                    #             fig_base,
-                    #             nc_base,
-                    #         )
-                    #         metrics_dict["RESULTS"][model][run].update(result_dict)
-
-                elif varname == "tas":  # annual and seasonal tasmean variables
-                    # Mean annual temperature
-                    result_dict = compute_metrics.get_mean_tasmean(
+                    result_dict = compute_metrics.get_pr_q99p9(
                         ds,
                         sftlf,
                         dec_mode,

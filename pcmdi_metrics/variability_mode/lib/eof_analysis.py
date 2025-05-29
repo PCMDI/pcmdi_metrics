@@ -23,33 +23,50 @@ def eof_analysis_get_variance_mode(
     debug: bool = False,
     EofScaling: bool = False,
     save_multiple_eofs: bool = False,
-):
+) -> tuple:
     """
-    Proceed EOF analysis
-    Input
-    - mode (string): mode of variability is needed for arbitrary sign
-                     control, which is characteristics of EOF analysis
-    - ds (xarray Dataset): that containing a dataArray: time varying 2d array, so 3d array (time, lat, lon)
-    - data_var (string): name of the dataArray
-    - eofn (integer): Target eofs to be return
-    - eofn_max (integer): number of eofs to diagnose (1~N)
-    Output
-      1) When 'save_multiple_eofs = False'
-        - eof_Nth: eof pattern (map) for given eofs as eofn
-        - pc_Nth: corresponding principle component time series
-        - frac_Nth: array but for 1 single number which is float.
-                 Preserve array type for netCDF recording.
-                 fraction of explained variance
-        - reverse_sign_Nth: bool
-        - solver
-      2) When 'save_multiple_eofs = True'
-        - eof_list: list of eof patterns (map) for given eofs as eofn
-        - pc_list: list of corresponding principle component time series
-        - frac_list: list of array but for 1 single number which is float.
-                 Preserve array type for netCDF recording.
-                 fraction of explained variance
-        - reverse_sign_list: list of bool
-        - solver
+    Perform Empirical Orthogonal Function (EOF) analysis.
+
+    Parameters
+    ----------
+    mode : str
+        The mode of variability needed for arbitrary sign control, which is characteristic of EOF analysis.
+    ds : xr.Dataset
+        An xarray Dataset containing a dataArray: a time-varying 2D array, so a 3D array (time, lat, lon).
+    data_var : str
+        The name of the dataArray to analyze.
+    eofn : int
+        The target EOFs to be returned.
+    eofn_max : int, optional
+        The maximum number of EOFs to diagnose (1 to N). Default is None.
+    debug : bool, optional
+        If True, enables debugging output. Default is False.
+    EofScaling : bool, optional
+        If True, applies scaling to the EOFs. Default is False.
+    save_multiple_eofs : bool, optional
+        If True, saves multiple EOFs. Default is False.
+
+    Returns
+    -------
+    eof_Nth : np.ndarray or list of np.ndarray
+        EOF pattern (map) for the given EOFs if `save_multiple_eofs` is False;
+        otherwise, a list of EOF patterns.
+    pc_Nth : np.ndarray or list of np.ndarray
+        Corresponding principal component time series if `save_multiple_eofs` is False;
+        otherwise, a list of principal component time series.
+    frac_Nth : float or list of float
+        Fraction of explained variance as a single float if `save_multiple_eofs` is False;
+        otherwise, a list of floats.
+    reverse_sign_Nth : bool or list of bool
+        Boolean indicating if the sign is reversed for the EOFs if `save_multiple_eofs` is False;
+        otherwise, a list of booleans.
+    solver : object
+        The solver used for the EOF analysis.
+
+    Notes
+    -----
+    The function can return either single EOF results or lists of EOF results based on the
+    `save_multiple_eofs` parameter.
     """
     debug_print("Lib-EOF: eof_analysis_get_variance_mode function starts", debug)
 
@@ -98,10 +115,14 @@ def eof_analysis_get_variance_mode(
             pc_Nth *= -1.0
 
         # Supplement NetCDF attributes
+        eof_Nth.attrs["variable"] = data_var
+        eof_Nth.attrs["eof_mode"] = n + 1
         frac_Nth.attrs["units"] = "ratio"
         pc_Nth.attrs[
             "comment"
         ] = f"Non-scaled time series for principal component of {eofn}th variance mode"
+        pc_Nth.attrs["variable"] = data_var
+        pc_Nth.attrs["eof_mode"] = n + 1
 
         # append to lists for returning
         eof_list.append(eof_Nth)
@@ -121,15 +142,26 @@ def eof_analysis_get_variance_mode(
         return eof_Nth, pc_Nth, frac_Nth, reverse_sign_Nth, solver
 
 
-def arbitrary_checking(mode, eof_Nth):
+def arbitrary_checking(mode: str, eof_Nth: xr.DataArray) -> bool:
     """
-    To keep sign of EOF pattern consistent across observations or models,
-    this function check whether multiplying -1 to EOF pattern and PC is needed or not
-    Input
-    - mode: string, modes of variability. e.g., 'PDO', 'PNA', 'NAM', 'SAM'
-    - eof_Nth: xarray DataArray, eof pattern
-    Ouput
-    - reverse_sign: bool, True or False
+    Check if the sign of the EOF pattern needs to be reversed for consistency.
+
+    This function determines whether multiplying the EOF pattern and its corresponding
+    principal component by -1 is necessary to maintain a consistent sign across
+    observations or models.
+
+    Parameters
+    ----------
+    mode : str
+        The mode of variability, e.g., 'PDO', 'PNA', 'NAM', 'SAM'.
+    eof_Nth : xr.DataArray
+        The EOF pattern to be checked.
+
+    Returns
+    -------
+    reverse_sign : bool
+        True if the sign of the EOF pattern and principal component should be reversed;
+        otherwise, False.
     """
     reverse_sign = False
 
@@ -151,6 +183,20 @@ def arbitrary_checking(mode, eof_Nth):
             reverse_sign = True
     elif mode in ["NAM", "NAO"]:
         if eof_Nth.sel({lat_key: slice(60, 80)}).mean().item() >= 0:
+            reverse_sign = True
+    elif mode == "EA":
+        if (
+            eof_Nth.sel({lat_key: slice(50, 60), lon_key: slice(330, 360)})
+            .mean()
+            .item()
+            <= 0
+        ):
+            reverse_sign = True
+    elif mode == "SCA":
+        if (
+            eof_Nth.sel({lat_key: slice(50, 70), lon_key: slice(10, 40)}).mean().item()
+            <= 0
+        ):
             reverse_sign = True
     elif mode == "SAM":
         if eof_Nth.sel({lat_key: slice(-60, -90)}).mean().item() >= 0:
@@ -185,11 +231,36 @@ def arbitrary_checking(mode, eof_Nth):
 
 def linear_regression_on_globe_for_teleconnection(
     pc, ds, data_var, stdv_pc, RmDomainMean=True, EofScaling=False, debug=False
-):
+) -> xr.DataArray:
     """
-    - Reconstruct EOF fist mode including teleconnection purpose as well
-    - Have confirmed that "eof_lr" is identical to "eof" over EOF domain (i.e., "subdomain")
-    - Note that eof_lr has global field
+    Reconstruct the first mode of EOF with a focus on teleconnection.
+
+    This function performs linear regression on the global field to reconstruct
+    the first mode of EOF, ensuring that the results are consistent with the
+    EOF domain (i.e., subdomain). It has been confirmed that the output
+    "eof_lr" is identical to "eof" over the specified EOF domain.
+
+    Parameters
+    ----------
+    pc : np.ndarray
+        The principal component time series used for reconstruction.
+    ds : xr.Dataset
+        An xarray Dataset containing the data for regression.
+    data_var : str
+        The name of the data variable in the dataset.
+    stdv_pc : float
+        The standard deviation of the principal component.
+    RmDomainMean : bool, optional
+        If True, removes the domain mean from the data. Default is True.
+    EofScaling : bool, optional
+        If True, applies scaling to the EOFs. Default is False.
+    debug : bool, optional
+        If True, enables debugging output. Default is False.
+
+    Returns
+    -------
+    eof_lr : xr.DataArray
+        The reconstructed EOF pattern with teleconnection considerations.
     """
     if debug:
         print("type(pc), type(ds):", type(pc), type(ds))
@@ -205,20 +276,42 @@ def linear_regression_on_globe_for_teleconnection(
 
     eof_lr = (slope * factor) + intercept
 
+    eof_lr.attrs["variable"] = data_var
+    eof_lr.attrs["description"] = "linear regression on global field for teleconnection"
+    eof_lr.attrs[
+        "comment"
+    ] = "Reconstructed EOF pattern with teleconnection considerations"
+    if "eof_mode" in pc.attrs:
+        eof_lr.attrs["eof_mode"] = pc.attrs["eof_mode"]
+
     debug_print("linear regression done", debug)
 
     return eof_lr, slope, intercept
 
 
-def linear_regression(x, y, debug=False):
+def linear_regression(x: xr.DataArray, y: xr.DataArray, debug: bool = False) -> tuple:
     """
-    NOTE: Proceed linear regression
-    Input
-    - x: xr.DataArray, 1d timeseries (time)
-    - y: xr.DataArray, time varying 2d field (time, lat, lon)
-    Output
-    - slope: 2d array, spatial map, linear regression slope on each grid
-    - intercept: 2d array, spatial map, linear regression intercept on each grid
+    Perform linear regression on a time series against a time-varying 2D field.
+
+    This function computes the linear regression slope and intercept for each grid
+    point in the 2D field based on the provided 1D time series.
+
+    Parameters
+    ----------
+    x : xr.DataArray
+        A 1D time series (time) used as the independent variable.
+    y : xr.DataArray
+        A time-varying 2D field (time, lat, lon) used as the dependent variable.
+    debug : bool, optional
+        If True, enables debugging output to display shapes of input arrays.
+        Default is False.
+
+    Returns
+    -------
+    slope : xr.DataArray
+        A 2D array representing the spatial map of linear regression slopes for each grid point.
+    intercept : xr.DataArray
+        A 2D array representing the spatial map of linear regression intercepts for each grid point.
     """
     # get original global dimension
     lat = get_latitude(y)
@@ -247,26 +340,48 @@ def linear_regression(x, y, debug=False):
 def gain_pseudo_pcs(
     solver,
     field_to_be_projected: xr.DataArray,
-    eofn,
-    reverse_sign=False,
-    EofScaling=False,
-):
+    eofn: int,
+    reverse_sign: bool = False,
+    EofScaling: bool = False,
+) -> xr.DataArray:
     """
-    Given a data set, projects it onto the n-th EOF to generate a corresponding set of pseudo-PCs
+    Project a dataset onto the n-th EOF to generate a corresponding set of pseudo-principal components (PCs).
+
+    This function takes a dataset and projects it onto the specified n-th EOF,
+    producing a set of pseudo-PCs that represent the data in the EOF space.
+
+    Parameters
+    ----------
+    solver : object
+        An object that contains the necessary methods or attributes for EOF analysis.
+    field_to_be_projected : xr.DataArray
+        The data field to be projected onto the EOFs.
+    eofn : int
+        The index of the EOF to project onto (1-based index).
+    reverse_sign : bool, optional
+        If True, reverses the sign of the resulting pseudo-PCs. Default is False.
+    EofScaling : bool, optional
+        If True, applies scaling to the EOFs during projection. Default is False.
+
+    Returns
+    -------
+    pseudo_pcs : xr.DataArray
+        The resulting pseudo-principal components after projection onto the n-th EOF.
     """
     if not EofScaling:
         pseudo_pcs = solver.projectField(
             field_to_be_projected, neofs=eofn, eofscaling=0
         )
+        pseudo_pcs.attrs["comment"] = "Non-scaled pseudo principal components"
     else:
         pseudo_pcs = solver.projectField(
             field_to_be_projected, neofs=eofn, eofscaling=1
         )
+        pseudo_pcs.attrs["comment"] = "Scaled pseudo principal components"
     # Get CBF PC (pseudo pcs in the code) for given eofs
     pseudo_pcs = pseudo_pcs[:, eofn - 1]
     # Arbitrary sign control, attempt to make all plots have the same sign
     if reverse_sign:
-        # pseudo_pcs = MV2.multiply(pseudo_pcs, -1.0)
         pseudo_pcs *= -1
     # return result
     return pseudo_pcs
@@ -279,22 +394,34 @@ def gain_pcs_fraction(
     varname_eof_pattern: str,
     pcs: xr.DataArray,
     debug: bool = False,
-):
+) -> xr.DataArray:
     """
-    NOTE: This function is designed for getting fraction of variace obtained by
-          pseudo pcs
-    Input: (dimension x, y, t should be identical for above inputs)
-    - ds_full_field: xarray dataset that includes full_field (t, y, x)
-    - varname_full_field: name of full_field in the dataset
-    - ds_eof_pattern: xarray dataset that includes eof pattern (y, x)
-    - varname_eof_pattern: name of the eof_pattern in the dataset
-    - pcs (t)
-    Output:
-    - fraction: array but for 1 single number which is float.
-                Preserve array type for netCDF recording.
-                fraction of explained variance
-    """
+    Calculate the fraction of variance explained by pseudo-principal components (PCs).
 
+    This function computes the fraction of variance obtained by projecting the full field
+    onto the EOF patterns using the provided pseudo-PCs.
+
+    Parameters
+    ----------
+    ds_full_field : xr.Dataset
+        An xarray dataset that includes the full field data with dimensions (time, y, x).
+    varname_full_field : str
+        The name of the full field variable in the dataset.
+    ds_eof_pattern : xr.Dataset
+        An xarray dataset that includes the EOF pattern with dimensions (y, x).
+    varname_eof_pattern : str
+        The name of the EOF pattern variable in the dataset.
+    pcs : xr.DataArray
+        A 1D array of pseudo-principal components (time).
+    debug : bool, optional
+        If True, enables debugging output. Default is False.
+
+    Returns
+    -------
+    fraction : xr.DataArray
+        A single-element array representing the fraction of explained variance,
+        preserving array type for netCDF recording.
+    """
     full_field = ds_full_field[varname_full_field]
     eof_pattern = ds_eof_pattern[varname_eof_pattern]
 
@@ -371,6 +498,24 @@ def gain_pcs_fraction(
 
 
 def debug_print(string, debug):
+    """
+    Print a debug message with a timestamp if debugging is enabled.
+
+    This function prints the provided debug message along with the current timestamp
+    if the debug flag is set to True.
+
+    Parameters
+    ----------
+    string : str
+        The debug message to be printed.
+    debug : bool
+        A flag indicating whether to print the debug message.
+        If True, the message will be printed; otherwise, it will be suppressed.
+
+    Returns
+    -------
+    None
+    """
     if debug:
         nowtime = strftime("%Y-%m-%d %H:%M:%S", gmtime())
         print("debug: " + nowtime + " " + string)

@@ -16,40 +16,18 @@
 - NPO: North Pacific Oscillation (2nd EOFs of PNA domain)
 - NPGO: North Pacific Gyre Oscillation (2nd EOFs of PDO domain)
 - PSA2: Pacific South America Mode (2nd EOFs of SAM domain)
+- EA: East Atlantic Pattern (2nd EOF of NAO domain)
 
 ## EOF3 based variability modes
 - PSA3: Pacific South America Mode (3rd EOFs of SAM domain)
+- SCA: Scandinavian Pattern (3rd EOF of NAO domain)
 
 ## Reference:
 Lee, J., K. Sperber, P. Gleckler, C. Bonfils, and K. Taylor, 2019:
 Quantifying the Agreement Between Observed and Simulated Extratropical Modes of
 Interannual Variability. Climate Dynamics.
 https://doi.org/10.1007/s00382-018-4355-4
-
-## Auspices:
-This work was performed under the auspices of the U.S. Department of
-Energy by Lawrence Livermore National Laboratory under Contract
-DE-AC52-07NA27344. Lawrence Livermore National Laboratory is operated by
-Lawrence Livermore National Security, LLC, for the U.S. Department of Energy,
-National Nuclear Security Administration under Contract DE-AC52-07NA27344.
-
-## Disclaimer:
-This document was prepared as an account of work sponsored by an
-agency of the United States government. Neither the United States government
-nor Lawrence Livermore National Security, LLC, nor any of their employees
-makes any warranty, expressed or implied, or assumes any legal liability or
-responsibility for the accuracy, completeness, or usefulness of any
-information, apparatus, product, or process disclosed, or represents that its
-use would not infringe privately owned rights. Reference herein to any specific
-commercial product, process, or service by trade name, trademark, manufacturer,
-or otherwise does not necessarily constitute or imply its endorsement,
-recommendation, or favoring by the United States government or Lawrence
-Livermore National Security, LLC. The views and opinions of authors expressed
-herein do not necessarily state or reflect those of the United States
-government or Lawrence Livermore National Security, LLC, and shall not be used
-for advertising or product endorsement purposes.
 """
-# import shapely  # noqa
 import glob
 import json
 import os
@@ -75,9 +53,11 @@ from pcmdi_metrics.variability_mode.lib import (
     eof_analysis_get_variance_mode,
     gain_pcs_fraction,
     gain_pseudo_pcs,
+    get_eof_numbers,
     linear_regression_on_globe_for_teleconnection,
     north_test,
     plot_map,
+    plot_map_multi_panel,
     read_data_in,
     search_paths,
     variability_metrics_to_json,
@@ -112,10 +92,12 @@ ConvEOF = param.ConvEOF  # Conduct conventional EOF analysis
 EofScaling = param.EofScaling  # If True, consider EOF with unit variance
 RmDomainMean = param.RemoveDomainMean  # If True, remove Domain Mean of each time step
 LandMask = param.landmask  # If True, maskout land region thus consider only over ocean
+provenance = param.provenance
 
 print("EofScaling:", EofScaling)
 print("RmDomainMean:", RmDomainMean)
 print("LandMask:", LandMask)
+print("provenance:", provenance)
 
 nc_out_obs = param.nc_out_obs  # Record NetCDF output
 plot_obs = param.plot_obs  # Generate plots
@@ -137,6 +119,9 @@ print("mode:", mode)
 
 # Variables
 var = param.varModel
+
+# Initialize ref_grid_global
+ref_grid_global = None
 
 # Check dependency for given season option
 seasons = param.seasons
@@ -177,40 +162,12 @@ realization = param.realization
 print("realization: ", realization)
 
 # EOF ordinal number
-eofn_obs = param.eofn_obs
-eofn_mod = param.eofn_mod
-
-if mode in ["NAM", "NAO", "SAM", "PNA", "PDO", "AMO"]:
-    eofn_expected = 1
-elif mode in ["NPGO", "NPO", "PSA1"]:
-    eofn_expected = 2
-elif mode in ["PSA2"]:
-    eofn_expected = 3
-else:
-    raise ValueError(
-        f"Mode '{mode}' is not defiend with associated expected EOF number"
-    )
-
-if eofn_obs is None:
-    eofn_obs = eofn_expected
-else:
-    eofn_obs = int(eofn_obs)
-    if eofn_obs != eofn_expected:
-        raise ValueError(
-            f"Observation EOF number ({eofn_obs}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
-        )
-
-if eofn_mod is None:
-    eofn_mod = eofn_expected
-else:
-    eofn_mod = int(eofn_mod)
-    if eofn_mod != eofn_expected:
-        raise ValueError(
-            f"Model EOF number ({eofn_mod}) does not match expected EOF number ({eofn_expected}) for mode {mode}"
-        )
+eofn_obs, eofn_mod, eofn_mod_max, eofn_expected = get_eof_numbers(mode, param)
 
 print("eofn_obs:", eofn_obs)
 print("eofn_mod:", eofn_mod)
+print("eofn_mod_max:", eofn_mod_max)
+print("eofn_expected:", eofn_expected)
 
 # case id
 case_id = param.case_id
@@ -230,14 +187,6 @@ YearCheck(osyear, oeyear, P)
 # Units adjustment
 ObsUnitsAdjust = param.ObsUnitsAdjust
 ModUnitsAdjust = param.ModUnitsAdjust
-
-# lon1_global and lon2_global is for global map plotting
-if mode in ["PDO", "NPGO"]:
-    lon1_global = 0
-    lon2_global = 360
-else:
-    lon1_global = -180
-    lon2_global = 180
 
 # parallel
 parallel = param.parallel
@@ -312,9 +261,8 @@ json_file_org = os.path.join(
 if os.path.isfile(json_file) and os.stat(json_file).st_size > 0:
     copyfile(json_file, json_file_org)
     if update_json:
-        fj = open(json_file)
-        result_dict = json.loads(fj.read())
-        fj.close()
+        with open(json_file) as fj:
+            result_dict = json.load(fj)
 
 if "REF" not in result_dict:
     result_dict["REF"] = {}
@@ -341,7 +289,8 @@ if obs_compare:
     )
 
     # Get global grid information for later use: regrid
-    ref_grid_global = get_grid(obs_timeseries)
+    if ref_grid_global is None:
+        ref_grid_global = get_grid(obs_timeseries)
 
     # Set dictionary variables to keep information from observation in the memory during the season and model loop
     eof_obs = {}
@@ -350,6 +299,7 @@ if obs_compare:
     solver_obs = {}
     reverse_sign_obs = {}
     eof_lr_obs = {}
+    eof_lr_obs_domain = {}
     stdv_pc_obs = {}
     obs_timeseries_season_dict = {}
 
@@ -446,6 +396,8 @@ if obs_compare:
         obs_timeseries_season_region = region_subset(
             obs_timeseries_season, mode, regions_specs=regions_specs
         )
+
+        eof_lr_obs_domain[season] = obs_timeseries_season_region["eof_lr"]
         eof_lr_obs[season] = eof_lr_obs_season
         # - - - - - - - - - - - - - - - - - - - - - - - - -
         # Record results
@@ -473,7 +425,7 @@ if obs_compare:
                 osyear,
                 oeyear,
                 season,
-                obs_timeseries_season_region["eof_lr"],
+                eof_lr_obs_domain[season],
                 frac_obs[season],
                 output_img_file_obs,
                 debug=debug,
@@ -484,8 +436,7 @@ if obs_compare:
                 osyear,
                 oeyear,
                 season,
-                # eof_lr_obs[season](longitude=(lon1_global, lon2_global)),
-                eof_lr_obs_season,
+                eof_lr_obs[season],
                 frac_obs[season],
                 output_img_file_obs + "_teleconnection",
                 debug=debug,
@@ -505,6 +456,7 @@ if obs_compare:
                 frac_obs[season],
                 slope_obs,
                 intercept_obs,
+                identifier=obs_name,
             )
 
         # Save stdv of PC time series in dictionary
@@ -557,7 +509,7 @@ for model in models:
     debug_print(f"model_path_list: {model_path_list}", debug)
 
     # Find where run can be gripped from given filename template for modpath
-    if realization == "*":
+    if "*" in realization:
         run_in_modpath = re.split(
             "[._]",
             fill_template(
@@ -576,7 +528,12 @@ for model in models:
         ]
 
     else:
-        runs = [realization]
+        if isinstance(realization, str):
+            runs = [realization]
+        elif isinstance(realization, list):
+            runs = realization
+        else:
+            raise ValueError("realization must be a string or a list.")
 
     print("runs:", runs)
 
@@ -697,21 +654,6 @@ for model in models:
                         model_timeseries_season_regrid, mode, regions_specs, debug=debug
                     )
 
-                    # Matching model's missing value location to that of observation
-                    """
-                    # Save axes for preserving
-                    # axes = model_timeseries_season_regrid_subdomain.getAxisList()
-                    axes = get_axis_list(model_timeseries_season_regrid_subdomain)
-                    # 1) Replace model's masked grid to 0, so theoritically won't affect to result
-                    model_timeseries_season_regrid_subdomain = MV2.array(
-                        model_timeseries_season_regrid_subdomain.filled(0.0)
-                    )
-                    # 2) Give obs's mask to model field, so enable projecField functionality below
-                    model_timeseries_season_regrid_subdomain.mask = eof_obs[season].mask
-                    # Preserve axes
-                    model_timeseries_season_regrid_subdomain.setAxisList(axes)
-                    """
-
                     # CBF PC time series
                     cbf_pc = gain_pseudo_pcs(
                         solver_obs[season],
@@ -816,6 +758,7 @@ for model in models:
                             frac_cbf,
                             slope_cbf,
                             intercept_cbf,
+                            identifier=f"{mip.upper()} {model} ({run}), CBF",
                         )
 
                     # Graphics -- plot map image to PNG
@@ -823,6 +766,7 @@ for model in models:
                         dir_paths["graphics"], output_filename
                     )
                     if plot_model:
+                        # Regional map
                         plot_map(
                             mode,
                             f"{mip.upper()} {model} ({run}) - CBF",
@@ -831,30 +775,59 @@ for model in models:
                             season,
                             model_timeseries_season_subdomain["eof_lr_cbf"],
                             frac_cbf,
-                            output_img_file + "_cbf",
+                            output_file_name=f"{output_img_file}_cbf",
                             debug=debug,
                         )
+                        debug_print(
+                            f"plot CBF mode domain for {model} {run} completed", debug
+                        )
+
+                        # Global map
                         plot_map(
                             mode + "_teleconnection",
                             f"{mip.upper()} {model} ({run}) - CBF",
                             msyear,
                             meyear,
                             season,
-                            # eof_lr_cbf(longitude=(lon1_global, lon2_global)),
                             eof_lr_cbf,
                             frac_cbf,
-                            output_img_file + "_cbf_teleconnection",
+                            output_file_name=f"{output_img_file}_cbf_teleconnection",
                             debug=debug,
                         )
+                        debug_print(
+                            f"plot CBF teleconnection for {model} {run} completed",
+                            debug,
+                        )
 
+                        # Compare with observation
+                        plot_map_multi_panel(
+                            mode,
+                            f"{mip.upper()} {model} ({run}) - CBF",
+                            msyear,
+                            meyear,
+                            season,
+                            eof_lr_obs_domain[season],  #  obs mode domain
+                            eof_lr_obs[season],  # obs global
+                            pc_obs[season],  # obs pc
+                            model_timeseries_season_subdomain[
+                                "eof_lr_cbf"
+                            ],  # model mode domain
+                            eof_lr_cbf,  # model global
+                            cbf_pc,  # model pc
+                            frac_cbf,
+                            ref_name=obs_name,
+                            output_file_name=f"{output_img_file}_cbf_compare_obs",
+                            debug=debug,
+                        )
+                        debug_print(
+                            f"plot CBF multiplot for {model} {run} completed", debug
+                        )
                     debug_print("cbf pcs end", debug)
 
                 # -------------------------------------------------
                 # Conventional EOF approach as supplementary
                 # - - - - - - - - - - - - - - - - - - - - - - - - -
                 if ConvEOF:
-                    eofn_mod_max = max(3, eofn_mod)
-
                     # EOF analysis
                     debug_print("conventional EOF analysis start", debug)
                     (
@@ -883,7 +856,7 @@ for model in models:
                     tcor_list = []
 
                     for n in range(0, eofn_mod_max):
-                        eofs = "eof" + str(n + 1)
+                        eofs = f"eof{str(n + 1)}"
                         if (
                             eofs
                             not in result_dict["RESULTS"][model][run][
@@ -974,42 +947,72 @@ for model in models:
                         )
                         if nc_out_model:
                             write_nc_output(
-                                output_nc_file, eof_lr, pc, frac, slope, intercept
+                                output_nc_file,
+                                eof_lr,
+                                pc,
+                                frac,
+                                slope,
+                                intercept,
+                                identifier=f"{mip.upper()} {model} ({run}), {eofs.upper()}",
                             )
 
                         # Graphics -- plot map image to PNG
                         output_img_file = os.path.join(
                             dir_paths["graphics"], output_filename
                         )
+
+                        eof_lr_domain = region_subset(
+                            model_timeseries_season,
+                            mode,
+                            data_var="eof_lr",
+                            regions_specs=regions_specs,
+                        )["eof_lr"]
+
                         if plot_model:
+                            # Regional map
                             plot_map(
                                 mode,
                                 f"{mip.upper()} {model} ({run}) - EOF{n + 1}",
                                 msyear,
                                 meyear,
                                 season,
-                                region_subset(
-                                    model_timeseries_season,
-                                    mode,
-                                    data_var="eof_lr",
-                                    regions_specs=regions_specs,
-                                )["eof_lr"],
+                                eof_lr_domain,
                                 frac,
                                 output_img_file,
                                 debug=debug,
                             )
+                            # Global map
                             plot_map(
                                 f"{mode}_teleconnection",
                                 f"{mip.upper()} {model} ({run}) - EOF{n + 1}",
                                 msyear,
                                 meyear,
                                 season,
-                                # eof_lr(longitude=(lon1_global, lon2_global)),
                                 eof_lr,
                                 frac,
                                 f"{output_img_file}_teleconnection",
                                 debug=debug,
                             )
+
+                            if n + 1 == eofn_expected:
+                                # Compare with observation
+                                plot_map_multi_panel(
+                                    mode,
+                                    f"{mip.upper()} {model} ({run}) - EOF{n + 1}",
+                                    msyear,
+                                    meyear,
+                                    season,
+                                    eof_lr_obs_domain[season],  #  obs mode domain
+                                    eof_lr_obs[season],  # obs global
+                                    pc_obs[season],  # obs pc
+                                    eof_lr_domain,  # model mode domain
+                                    eof_lr,  # model global
+                                    pc,  # model pc
+                                    frac,
+                                    ref_name=obs_name,
+                                    output_file_name=f"{output_img_file}_eof{n+1}_compare_obs",
+                                    debug=debug,
+                                )
 
                         # - - - - - - - - - - - - - - - - - - - - - - - - -
                         # EOF swap diagnosis
@@ -1041,6 +1044,7 @@ for model in models:
             # =================================================================
             # Dictionary to JSON: individual JSON during model_realization loop
             # -----------------------------------------------------------------
+            debug_print("json (individual) writing start", debug)
             json_filename_tmp = f"var_mode_{mode}_EOF{eofn_mod}_stat_{mip}_{exp}_{fq}_{realm}_{model}_{run}_{msyear}-{meyear}"
 
             variability_metrics_to_json(
@@ -1050,23 +1054,26 @@ for model in models:
                 model=model,
                 run=run,
                 cmec_flag=cmec,
+                include_provenance=provenance,
             )
+            debug_print("json (individual) writing done", debug)
 
         except Exception as err:
             if debug:
                 raise
             else:
-                print("warning: failed for ", model, run, err)
-                pass
+                print("warning: metrics calculation failed for ", model, run, err)
 
 # ========================================================================
 # Dictionary to JSON: collective JSON at the end of model_realization loop
 # ------------------------------------------------------------------------
 if not parallel and (len(models) > 1):
+    debug_print("json (collective) writing start", debug)
     json_filename_all = f"var_mode_{mode}_EOF{eofn_mod}_stat_{mip}_{exp}_{fq}_{realm}_allModels_allRuns_{msyear}-{meyear}"
     variability_metrics_to_json(
         dir_paths["metrics_results"], json_filename_all, result_dict, cmec_flag=cmec
     )
+    debug_print("json (collective) writing done", debug)
 
 if not debug:
     sys.exit(0)
