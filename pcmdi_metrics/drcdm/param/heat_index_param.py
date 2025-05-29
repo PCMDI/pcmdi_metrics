@@ -1,6 +1,7 @@
 # Settings for extremes driver
 # These settings are required
-vars = ["tasmin", "tasmax"]  # Choices are 'pr','tasmax', 'tasmin', "tas"
+# Variable - Heat Index
+
 test_data_set = ["ACCESS-CM2-LOCA"]
 
 # heat_index_t_var =  ['tasmax'] # dewpoint
@@ -8,12 +9,10 @@ test_data_set = ["ACCESS-CM2-LOCA"]
 realization = ["r1i1p1f1"]
 test_data_path = "/global/cfs/projectdirs/m3522/cmip6/LOCA2/ACCESS-CM2/0p0625deg/r1i1p1f1/historical/%(variable)/"
 filename_template = (
-    "%(variable).ACCESS-CM2.historical.r1i1p1f1.1950-2014.LOCA_16thdeg_v20220413.nc"
+    "%(variable).ACCESS-CM2.historical.r1i1p1f1.1950-2014.LOCA_16thdeg_v20240915.nc"
 )
 # metrics_output_path = "/pscratch/sd/j/jsgoodni/pmp_results/drcdm/LOCA2/"
-metrics_output_path = (
-    "/global/cfs/projectdirs/m2637/jsgoodni/pmp_results/LOCA2/1981-2014/"
-)
+metrics_output_path = "/global/cfs/projectdirs/m2637/jsgoodni/pmp_results/LOCA2/"
 
 # Note: You can use the following placeholders in file templates:
 # %(variable) to substitute variable name from "vars" (except in sftlf filenames)
@@ -62,7 +61,7 @@ regrid = False
 plot = True
 netcdf = True
 generate_sftlf = True
-msyear = 1981
-meyear = 2014
+msyear = 1985
+meyear = 2015
 osyear = 1976
 oeyear = 2005

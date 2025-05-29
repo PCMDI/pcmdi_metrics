@@ -9,3 +9,7 @@ Edit the metrics output path in pcmdi_metrics/drcdm/param/drcdm_param.py to be a
 
 To launch a run with the demo parameter file use:
 `drcdm_driver.py -p pcmdi_metrics/drcdm/param/drcdm_param.py`
+
+# Parameter File 
+Parameters that must be set 
+- Var

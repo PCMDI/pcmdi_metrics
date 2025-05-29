@@ -66,8 +66,15 @@ def mask_region(data, name, coords=None, shp_path=None, column=None):
     # Return data masked from coordinate list or shapefile.
     # Masks a single region
 
-    lon = data["lon"].data
-    lat = data["lat"].data
+    def coord_names(data, possible_names):
+        # Handle coordinate names other than just "lon" or "lat"
+        for coord in possible_names:
+            if coord in list(data.coords):
+                return data[coord].data, coord
+        raise KeyError(f"None of the keys {possible_names} found in the dataset")
+
+    lon, lon_name = coord_names(data, ["longitude", "lon"])
+    lat, lat_name = coord_names(data, ["latitude", "lat"])
 
     # Option 1: Region is defined by coord pairs
     if coords is not None:
@@ -91,6 +98,8 @@ def mask_region(data, name, coords=None, shp_path=None, column=None):
                 print("Column name not provided.")
                 regions = regionmask.from_geopandas(regions_file)
             mask = regions.mask(lon, lat)
+            # Rename the mask coordinates to match that of the original dataset
+            mask = mask.rename({"lon": lon_name, "lat": lat_name})
             # Can't match mask by name, rather index of name
             val = list(regions_file[column]).index(name)
         except Exception as e:
@@ -103,7 +112,6 @@ def mask_region(data, name, coords=None, shp_path=None, column=None):
         sys.exit()
 
     try:
-        # print(val)
         masked_data = data.where(mask == val, drop=True)
     except Exception as e:
         print("Error: Masking failed.")

@@ -33,10 +33,10 @@ def load_dataset(filepath):
             ds = fix_calendar(ds)
     else:
         try:
-            ds = xcdat.open_dataset(filepath[0], chunks={"time": -1})
+            ds = xcdat.open_dataset(filepath[0], chunks={"time": 100})
         except ValueError:
             ds = xcdat.open_dataset(
-                filepath[0], chunks={"time": -1}, decode_times=False
+                filepath[0], chunks={"time": 100}, decode_times=False
             )
             ds = fix_calendar(ds)
     return ds

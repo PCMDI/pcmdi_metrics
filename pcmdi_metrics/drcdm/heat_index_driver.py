@@ -448,7 +448,7 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                    # Get annual-min, 5-day tasmin
+                    # Get annual-min, 5-day tasin
                     results_dict = compute_metrics.get_annual_min_tasmin_5day(
                         ds,
                         sftlf,
@@ -459,7 +459,7 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                    # Get annual-max, 5-day tasmin
+                    # Get annual-max, 5-day tasin
                     results_dict = compute_metrics.get_annual_max_tasmin_5day(
                         ds,
                         sftlf,
@@ -504,37 +504,30 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
+                    (
+                        result_dict,
+                        ds_first_freeze,
+                    ) = compute_metrics.get_first_freeze_date(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
 
-                    first_date_dict = {}
-                    for deg in [28]:
-                        result_dict, ds_out = compute_metrics.get_first_date_belowX(
-                            ds,
-                            sftlf,
-                            deg,  # threshold
-                            dec_mode,
-                            drop_incomplete_djf,
-                            annual_strict,
-                            fig_base,
-                            nc_base,
-                        )
-                        first_date_dict[deg] = ds_out
-                        metrics_dict["RESULTS"][model][run].update(result_dict)
-
-                    last_date_dict = {}
-                    for deg in [28]:
-                        result_dict, ds_out = compute_metrics.get_last_date_belowX(
-                            ds,
-                            sftlf,
-                            deg,
-                            dec_mode,
-                            drop_incomplete_djf,
-                            annual_strict,
-                            fig_base,
-                            nc_base,
-                        )
-                        last_date_dict[deg] = ds_out
-                        metrics_dict["RESULTS"][model][run].update(result_dict)
-
+                    result_dict, ds_last_freeze = compute_metrics.get_last_freeze_date(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
                     if ds_tasmax_for_chill_hours is not None:
                         result_dict = compute_metrics.get_chill_hours(
                             ds,
@@ -548,22 +541,18 @@ if __name__ == "__main__":
                         )
                         metrics_dict["RESULTS"][model][run].update(result_dict)
 
-                    if (len(list(first_date_dict.keys())) != 0) and (
-                        len(list(last_date_dict.keys())) != 0
-                    ):
-                        for deg in [28]:
-                            result_dict = compute_metrics.get_growing_season_length(
-                                first_date_dict[deg],
-                                last_date_dict[deg],
-                                deg,
-                                sftlf,
-                                dec_mode,
-                                drop_incomplete_djf,
-                                annual_strict,
-                                fig_base,
-                                nc_base,
-                            )
-                        metrics_dict["RESULTS"][model][run].update(result_dict)
+                    if (ds_last_freeze is not None) and (ds_first_freeze is not None):
+                        result_dict = compute_metrics.get_growing_season_length(
+                            ds_first_freeze,
+                            ds_last_freeze,
+                            sftlf,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            fig_base,
+                            nc_base,
+                        )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
 
                 elif varname == "pr" and run == reference_data_set:
                     (
