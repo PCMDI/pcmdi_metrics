@@ -68,6 +68,13 @@ def AddParserArgument(P):
         "--meyear", dest="meyear", type=int, help="End year for model data set"
     )
     P.add_argument(
+        "--seasons",
+        type=str,
+        nargs="+",
+        default=None,
+        help="List of seasons. Available: 'DJFMA', 'MJJASO'",
+    )
+    P.add_argument(
         "--modnames",
         type=str,
         nargs="+",
@@ -97,6 +104,7 @@ def AddParserArgument(P):
         "-d",
         "--debug",
         type=bool,
+        dest="debug",
         default=False,
         help="Option for debug: False (defualt) or True",
     )

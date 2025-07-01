@@ -16,6 +16,7 @@ ModUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
 units = 'mm/d'
 msyear = 2000
 meyear = 2002
+seasons = ['DJFMA', 'MJJASO']
 
 # ROOT PATH FOR OBSERVATIONS
 reference_data_name = 'GPCP-IP'
