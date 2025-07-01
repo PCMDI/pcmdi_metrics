@@ -299,8 +299,10 @@ for var in vars:
                         result_dict["RESULTS"][model][ref][run][
                             "InputClimatologyFileName"
                         ] = test_data_full_path.split("/")[-1]
-                        
-                        ds_test = data_qc(f"{model}_{run}", ds_test, ds_ref, var, varname)
+
+                        ds_test = data_qc(
+                            f"{model}_{run}", ds_test, ds_ref, var, varname
+                        )
 
                         # -----------
                         # region loop
