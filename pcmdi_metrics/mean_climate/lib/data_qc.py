@@ -5,7 +5,7 @@ def data_qc(test_data_name, ds_test, ds_ref, var, varname):
     """
     Perform data quality control checks and adjustments on the test dataset.
     This function checks for common issues such as sign conventions in wind stress data.
-    
+
     Parameters
     ----------
     test_data_name : str
@@ -18,12 +18,12 @@ def data_qc(test_data_name, ds_test, ds_ref, var, varname):
         Variable name (e.g., 'tauu' or 'tauv') to be checked.
     varname : str
         Actual variable name in the dataset.
-    
+
     Returns
     -------
     ds_test : xarray.Dataset
         The potentially modified test dataset after quality control checks.
-    
+
     Notes
     -----
     This function currently checks for sign conventions in wind stress data ('tauu' and 'tauv').
