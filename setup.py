@@ -99,6 +99,16 @@ data_files = (
             "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.shx",
         ),
     ),
+    (
+        "share/pmp/viewer/assets",
+        (
+            "pcmdi_metrics/viewer/assets/CMIP6_Amon.json",
+            "pcmdi_metrics/viewer/assets/ENSO_ACCESS-CM2_thumbnail.png",
+            "pcmdi_metrics/viewer/assets/mean_climate_portrait_plot_20250213.png",
+            "pcmdi_metrics/viewer/assets/PMPLogo_500x421px_72dpi.png",
+            "pcmdi_metrics/viewer/assets/style.css",
+        ),
+    ),
 )
 
 setup(
