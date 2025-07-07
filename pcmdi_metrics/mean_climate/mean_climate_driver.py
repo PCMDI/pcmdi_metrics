@@ -230,7 +230,9 @@ for var in vars:
         ds_ref_dict = OrderedDict()
 
         # for record in output json
-        result_dict["References"][ref] = obs_dict[varname][ref] # this should be the name of observation dataset
+        result_dict["References"][ref] = obs_dict[varname][
+            ref
+        ]  # this should be the name of observation dataset
 
         # ----------
         # model loop
