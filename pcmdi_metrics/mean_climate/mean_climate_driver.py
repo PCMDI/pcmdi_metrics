@@ -193,7 +193,7 @@ for var in vars:
         # identify data to load (annual cycle (AC) data is loading in)
         ref_dataset_name = obs_dict[varname][ref]
         ref_data_full_path = os.path.join(
-            reference_data_path, obs_dict[varname][ref_dataset_name]["template"]
+            reference_data_path, obs_dict[varname][ref]["template"]
         )
         print("ref_data_full_path:", ref_data_full_path)
 
@@ -230,7 +230,7 @@ for var in vars:
         ds_ref_dict = OrderedDict()
 
         # for record in output json
-        result_dict["References"][ref] = obs_dict[varname][ref_dataset_name]
+        result_dict["References"][ref] = obs_dict[varname][ref] # this should be the name of observation dataset
 
         # ----------
         # model loop
@@ -436,7 +436,7 @@ for var in vars:
                                     output_dir=test_clims_plot_dir,
                                     output_filename=output_filename,
                                     dataname_test=f"{model}_{run}",
-                                    dataname_ref=ref_dataset_name,
+                                    dataname_ref=ref,
                                     fig_title=f"Climatology ({season}, {region}): {varname}",
                                 )
                                 print("plot map done")
