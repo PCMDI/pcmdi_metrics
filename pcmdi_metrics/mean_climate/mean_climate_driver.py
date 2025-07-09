@@ -180,12 +180,27 @@ for var in vars:
     # observation loop
     # ----------------
     if "all" in reference_data_set:
+        # If "all" is in the reference_data_set, we want to include all available references
+        # e.g., ["default", "alternate1", "alternate2"]
         reference_data_set = [
             x
             for x in list(obs_dict[varname].keys())
             if (x == "default" or "alternate" in x)
         ]
         print("reference_data_set (all): ", reference_data_set)
+
+    if "default" in reference_data_set:
+        # Ensure "default" is a valid key in obs_dict[varname]
+        if "default" not in obs_dict[varname]:
+            available_refs = list(obs_dict[varname].keys())
+            if len(available_refs) == 1:
+                # Assign the only available reference as "default"
+                obs_dict[varname]["default"] = obs_dict[varname][available_refs[0]]
+            else:
+                raise ValueError(
+                    f"'default' reference not found for variable '{varname}', "
+                    f"and multiple references are available: {available_refs}"
+                )
 
     for ref in reference_data_set:
         print("ref:", ref)
