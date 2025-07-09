@@ -3,6 +3,7 @@
 import glob
 import json
 import os
+import pprint
 from collections import OrderedDict
 from re import split
 
@@ -187,6 +188,10 @@ for var in vars:
             for x in list(obs_dict[varname].keys())
             if (x == "default" or "alternate" in x)
         ]
+
+        if not reference_data_set or len(reference_data_set) < 1:
+            reference_data_set = ["default"]
+
         print("reference_data_set (all): ", reference_data_set)
 
     if "default" in reference_data_set:
@@ -195,12 +200,17 @@ for var in vars:
             available_refs = list(obs_dict[varname].keys())
             if len(available_refs) == 1:
                 # Assign the only available reference as "default"
-                obs_dict[varname]["default"] = obs_dict[varname][available_refs[0]]
+                obs_dict[varname]["default"] = available_refs[0]
             else:
                 raise ValueError(
                     f"'default' reference not found for variable '{varname}', "
                     f"and multiple references are available: {available_refs}"
                 )
+
+    # check obs_dict
+    print("obs_dict (for variable):", varname)
+    pprint.pprint(obs_dict[varname])
+    print("obs_dict (for variable) keys:", obs_dict[varname].keys())
 
     for ref in reference_data_set:
         print("ref:", ref)
