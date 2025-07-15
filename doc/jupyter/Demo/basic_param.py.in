@@ -16,7 +16,7 @@ test_data_set = ['ACCESS1-0', 'CanCM4']
 
 
 # VARIABLES TO USE
-vars = ['rlut']
+vars = ['pr']
 
 
 # Observations to use at the moment "default" or "alternate"
@@ -41,7 +41,7 @@ sftlf_filename_template = "sftlf_%(model_version).nc"
 generate_sftlf = True # if land surface type mask cannot be found, generate one
 
 # Region
-regions = {"rlut": ["Global"]}
+regions = {"pr": ["Global"]}
 
 # ROOT PATH FOR MODELS CLIMATOLOGIES
 test_data_path = '$INPUT_DIR$/CMIP5_demo_clims/'

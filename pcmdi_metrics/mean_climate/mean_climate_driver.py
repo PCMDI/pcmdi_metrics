@@ -106,6 +106,7 @@ config_variables = OrderedDict(
         ("regions", regions),
         ("test_data_path", test_data_path),
         ("reference_data_path", reference_data_path),
+        ("custom_observations", custom_obs),
         ("metrics_output_path", metrics_output_path),
         ("diagnostics_output_path", diagnostics_output_path),
         ("debug", debug),
