@@ -202,6 +202,10 @@ for var in vars:
             if len(available_refs) == 1:
                 # Assign the only available reference as "default"
                 obs_dict[varname]["default"] = available_refs[0]
+                print(
+                    "No 'default' reference found, using the only available reference: "
+                    f"{available_refs[0]} for variable '{varname}'"
+                )
             else:
                 raise ValueError(
                     f"'default' reference not found for variable '{varname}', "
