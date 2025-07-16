@@ -41,7 +41,10 @@ sftlf_filename_template = "sftlf_%(model_version).nc"
 generate_sftlf = True # if land surface type mask cannot be found, generate one
 
 # Region
-regions = {"pr": ["Global"]}
+regions = {
+    "pr": ["Global"],
+    "rlut": ["Global"]
+}
 
 # ROOT PATH FOR MODELS CLIMATOLOGIES
 test_data_path = '$INPUT_DIR$/CMIP5_demo_clims/'
