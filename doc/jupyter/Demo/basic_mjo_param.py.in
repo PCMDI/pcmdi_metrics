@@ -32,4 +32,4 @@ results_dir = '$OUTPUT_DIR$/mjo/%(case_id)'
 # MISCELLANEOUS
 nc_out = False
 plot = True  # Create map graphics
-update_json = False
+update_json = True
