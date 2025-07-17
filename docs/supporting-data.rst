@@ -31,9 +31,9 @@ The PMP demo data is used for multiple demos. It is ~300MB. The best way to run 
 
 Reference datasets
 ~~~~~~~~~~~~~~~~~~
-All observational datasets used in the PMP analysis are published through the [ESGF obs4MIPs project](https://esgf-node.llnl.gov/). In addition, several derived climatological products—while not currently available via ESGF—can be accessed directly via download.
+All observational datasets used in the PMP analysis are published through the `ESGF obs4MIPs project <https://esgf-node.llnl.gov/>`_. In addition, several derived climatological products—while not currently available via ESGF—can be accessed directly via download.
 
 To obtain the reference climatologies used in the PMP mean climate metrics, download the list of datasets from:
 https://pcmdi.llnl.gov/pss/pmpdata/PMP_obs4MIPsClims_v20250228.txt
 
-Instructions for downloading and using these reference climatologies are provided in [Demo notebook 1b](http://pcmdi.github.io/pcmdi_metrics/examples/Demo_1b_mean_climate.html).
+Instructions for downloading and using these reference climatologies are provided in `Demo notebook 1b <http://pcmdi.github.io/pcmdi_metrics/examples/Demo_1b_mean_climate.html>`_.
