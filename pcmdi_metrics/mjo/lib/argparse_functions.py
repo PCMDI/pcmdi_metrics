@@ -72,7 +72,7 @@ def AddParserArgument(P):
         type=str,
         nargs="+",
         default=None,
-        help="List of seasons. Available: 'DJFMA', 'MJJASO'",
+        help="List of seasons. Available: 'NDJFMA', 'MJJASO'",
     )
     P.add_argument(
         "--modnames",
