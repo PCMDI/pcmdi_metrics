@@ -11,6 +11,7 @@ from pcmdi_metrics.io import load_regions_specs, region_subset
 from pcmdi_metrics.mean_climate.lib import (
     compute_metrics,
     create_mean_climate_parser,
+    data_qc,
     load_and_regrid,
     mean_climate_metrics_to_json,
     plot_climatology_diff,
@@ -298,6 +299,10 @@ for var in vars:
                         result_dict["RESULTS"][model][ref][run][
                             "InputClimatologyFileName"
                         ] = test_data_full_path.split("/")[-1]
+
+                        ds_test = data_qc(
+                            f"{model}_{run}", ds_test, ds_ref, var, varname
+                        )
 
                         # -----------
                         # region loop

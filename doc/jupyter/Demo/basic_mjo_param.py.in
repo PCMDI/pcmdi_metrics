@@ -16,6 +16,7 @@ ModUnitsAdjust = (True, 'multiply', 86400.0, 'mm d-1')  # kg m-2 s-1 to mm day-1
 units = 'mm/d'
 msyear = 2000
 meyear = 2002
+seasons = ['NDJFMA', 'MJJASO']
 
 # ROOT PATH FOR OBSERVATIONS
 reference_data_name = 'GPCP-IP'
@@ -31,4 +32,4 @@ results_dir = '$OUTPUT_DIR$/mjo/%(case_id)'
 # MISCELLANEOUS
 nc_out = False
 plot = True  # Create map graphics
-update_json = False
+update_json = True
