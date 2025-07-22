@@ -288,7 +288,12 @@ for var in vars:
                 ncfiles = sorted(glob.glob(test_data_full_path))
                 realizations = []
                 for ncfile in ncfiles:
-                    realizations.append(ncfile.split("/")[-1].split(".")[3])
+                    # realization = ncfile.split("/")[-1].split(".")[3]
+                    try:
+                        realization = os.path.basename(ncfile).split(".")[3]
+                    except IndexError:
+                        realization = os.path.basename(ncfile).split("_")[2]
+                    realizations.append(realization)
                 realizations = sort_human(realizations)
                 if first_realization_only:
                     realizations = realizations[0:1]
