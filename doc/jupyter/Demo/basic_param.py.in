@@ -16,7 +16,7 @@ test_data_set = ['ACCESS1-0', 'CanCM4']
 
 
 # VARIABLES TO USE
-vars = ['rlut']
+vars = ['pr']
 
 
 # Observations to use at the moment "default" or "alternate"
@@ -41,13 +41,17 @@ sftlf_filename_template = "sftlf_%(model_version).nc"
 generate_sftlf = True # if land surface type mask cannot be found, generate one
 
 # Region
-regions = {"rlut": ["Global"]}
+regions = {
+    "pr": ["Global"],
+    "rlut": ["Global"]
+}
 
 # ROOT PATH FOR MODELS CLIMATOLOGIES
 test_data_path = '$INPUT_DIR$/CMIP5_demo_clims/'
 # ROOT PATH FOR OBSERVATIONS
 # Note that atm/mo/%(variable)/ac will be added to this
-reference_data_path = '$INPUT_DIR$/obs4MIPs_PCMDI_clims'
+reference_data_path = '$INPUT_DIR$/PMP_obs4MIPsClims'
+custom_observations = '$INPUT_DIR$/PMP_obs4MIPsClims/PMP_obs4MIPsClims_catalogue_byVar_v20250305.json'
 
 # DIRECTORY WHERE TO PUT RESULTS
 metrics_output_path = os.path.join(
