@@ -229,10 +229,9 @@ Release Notes and History
 Current Core Development Team
 -----------------------------
 * [Jiwoo Lee](https://people.llnl.gov/lee1043) ([LLNL](https://www.llnl.gov/), PMP Lead)
+* [Kristin Chang](https://people.llnl.gov/chang61) ([LLNL](https://www.llnl.gov/))
 * [Peter Gleckler](https://pcmdi.llnl.gov/staff/gleckler/) ([LLNL](https://www.llnl.gov/))
 * [Paul Ullrich](https://people.llnl.gov/ullrich4) ([LLNL](https://www.llnl.gov/), [PCMDI](https://pcmdi.llnl.gov/) Project PI)
-* [Bo Dong](https://people.llnl.gov/dong12) ([LLNL](https://www.llnl.gov/))
-* [Kristin Chang](https://people.llnl.gov/chang61) ([LLNL](https://www.llnl.gov/))
 * [Shixuan Zhang](https://www.pnnl.gov/science/staff/staff_info.asp?staff_num=9376) ([PNNL](https://www.pnnl.gov/))
 
 All Contributors
