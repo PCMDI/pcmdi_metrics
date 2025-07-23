@@ -24,6 +24,7 @@ import glob
 import json
 import multiprocessing as mp
 import os
+import pprint
 
 import cdp
 import numpy as np
@@ -51,23 +52,19 @@ def main():
         datanameID = "dailySD"  # Short ID name of output data
         latrange = (param.args.lat1, param.args.lat2)
         lonrange = (param.args.lon1, param.args.lon2)
-        # region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
         if param.args.region_name == "":
             region_name = (
                 f"{latrange[0]:g}_{latrange[1]:g}&{lonrange[0]:g}_{lonrange[1]:g}"
             )
         else:
             region_name = param.args.region_name
-        region = region_name
+        region = f"lat {latrange[0]:g} to {latrange[1]:g} and lon {lonrange[0]:g} to {lonrange[1]:g}"
         print(f"Reading {fnameRoot}")
         try:
-            # f = cdms2.open(fnameRoot)
-            # x = f(datanameID, region)
             ds = xcdat_open(fnameRoot)
 
             lat_key = get_latitude_key(ds)
             lon_key = get_longitude_key(ds)
-            # x = ds[datanameID].sel(latitude=slice(*latrange), longitude=slice(*lonrange))
             x = ds[datanameID].sel(
                 {lat_key: slice(*latrange), lon_key: slice(*lonrange)}
             )
@@ -133,8 +130,6 @@ def main():
     args = P.get_parameter()
     month = args.month
     monthname = monthname_d[month]
-    # startyear = args.firstyear  # noqa: F841
-    # finalyear = args.lastyear  # noqa: F841
     cmec = args.cmec
 
     template = populateStringConstructor(args.filename_template, args)
@@ -185,10 +180,13 @@ def main():
     metrics_dictionary["RESULTS"] = stats_dic
     rgmsk = metrics_dictionary.get("RegionalMasking", {})
     print("REG MASK:", rgmsk)
-    nm = list(res.keys())[0]
-    # region.id = nm
+    nm = list(res.keys())[0]  # region id
     rgmsk[nm] = {"id": nm, "domain": region}
     metrics_dictionary["RegionalMasking"] = rgmsk
+
+    print("Metrics dictionary:")
+    pprint.pprint(metrics_dictionary)
+
     OUT.write(
         metrics_dictionary,
         json_structure=["model", "domain"],
@@ -235,7 +233,7 @@ def compute_area_weighted_rms(x, lat_key="lat", lon_key="lon"):
     # Preserve units if available
     rms.attrs["units"] = x.attrs.get("units", "")
 
-    return rms
+    return float(rms.values)
 
 
 # Good practice to place contents of script under this check
