@@ -23,7 +23,7 @@ import cdms2
 import cdp
 import cdtime
 import genutil
-import MV2
+import numpy as np
 
 from pcmdi_metrics.diurnal.common import (
     INPUT,
@@ -31,11 +31,21 @@ from pcmdi_metrics.diurnal.common import (
     monthname_d,
     populateStringConstructor,
 )
+from pcmdi_metrics.io import (
+    get_calendar,
+    get_latitude,
+    get_latitude_key,
+    get_longitude,
+    get_longitude_key,
+    xcdat_open,
+)
 
 
 def main():
     def compute(params):
         fileName = params.fileName
+        startyear = params.args.firstyear
+        finalyear = params.args.lastyear
         month = params.args.month
         monthname = params.monthname
         varbname = params.varname
@@ -53,36 +63,60 @@ def main():
             dataname = reverted["model"]
         if dataname not in args.skip:
             try:
-                print("Data source:", dataname)
-                print("Opening %s ..." % fileName)
-                f = cdms2.open(fileName)
+                # print("Data source:", dataname)
+                # print("Opening %s ..." % fileName)
+                # f = cdms2.open(fileName)
+                print(f"Data source: {dataname}")
+                print(f"Opening {fileName}")
+                ds = xcdat_open(fileName)
+
+                # Find calendar type of ds
+                cftime_class = get_cftime_class(ds)
 
                 # Composite-mean and composite-s.d diurnal cycle for month and year(s):
                 iYear = 0
-                for year in range(args.firstyear, args.lastyear + 1):
-                    print("Year %s:" % year)
-                    startTime = cdtime.comptime(year, month)
+                # for year in range(args.firstyear, args.lastyear + 1):
+                for year in range(startyear, finalyear + 1):
+                    # print("Year %s:" % year)
+                    print(f"Year {year}:")
+                    # startTime = cdtime.comptime(year, month)
+                    startTime = cftime_class(year, month, 1)
                     # Last possible second to get all tpoints
-                    finishtime = startTime.add(1, cdtime.Month).add(-1, cdtime.Minute)
+                    # finishtime = startTime.add(1, cdtime.Month).add(-1, cdtime.Minute)
+                    finishtime = add_one_month(startTime)
+                    print("Finish time:", finishtime)
                     print(
-                        "Reading %s from %s for time interval %s to %s ..."
-                        % (varbname, fileName, startTime, finishtime)
+                        f"Reading {varbname} from {fileName} for time interval {startTime} to {finishtime}"
                     )
+                    # print(
+                    #    "Reading %s from %s for time interval %s to %s ..."
+                    #    % (varbname, fileName, startTime, finishtime)
+                    # )
                     # Transient variable stores data for current year's month.
-                    tvarb = f(varbname, time=(startTime, finishtime))
+                    # tvarb = f(varbname, time=(startTime, finishtime))
+                    # variable stores data for current year's month.
+                    ds_year = ds.sel(
+                        time=(ds.time >= startTime) & (ds.time < finishtime)
+                    )
                     # *HARD-CODES conversion from kg/m2/sec to mm/day.
-                    tvarb *= 86400
+                    # tvarb *= 86400
+                    tvarb = ds_year[varbname] * 86400
                     print("Shape:", tvarb.shape)
                     # The following tasks need to be done only once, extracting
                     # metadata from first-year file:
-                    if year == args.firstyear:
-                        tc = tvarb.getTime().asComponentTime()
+                    # if year == args.firstyear:
+                    if year == startyear:
+                        # tc = tvarb.getTime().asComponentTime()
+                        tc = tvarb.time.values
                         print("DATA FROM:", tc[0], "to", tc[-1])
-                        day1 = cdtime.comptime(tc[0].year, tc[0].month)
+                        # day1 = cdtime.comptime(tc[0].year, tc[0].month)
                         day1 = tc[0]
-                        firstday = tvarb(time=(day1, day1.add(1.0, cdtime.Day), "con"))
+                        # firstday = tvarb(time=(day1, day1.add(1.0, cdtime.Day), "con"))
+                        firstday = tvarb.sel(
+                            time=(tvarb.time >= day1) & (tvarb.time < add_one_day(day1))
+                        )
                         dimensions = firstday.shape
-                        print("  Shape = ", dimensions)
+                        print("Shape = ", dimensions)
                         # Number of time points in the selected month for one year
                         N = dimensions[0]
                         nlats = dimensions[1]
@@ -90,33 +124,34 @@ def main():
                         deltaH = 24.0 / N
                         dayspermo = tvarb.shape[0] // N
                         print(
-                            "  %d timepoints per day, %d hr intervals between timepoints"
-                            % (N, deltaH)
+                            f"  {N} timepoints per day, {deltaH} hr intervals between timepoints"
                         )
-                        comptime = firstday.getTime()
-                        modellons = tvarb.getLongitude()
-                        modellats = tvarb.getLatitude()
+                        # comptime = firstday.getTime()
+                        comptime = firstday
+                        # modellons = tvarb.getLongitude()
+                        modellons = get_longitude(ds)
+                        # modellats = tvarb.getLatitude()
+                        modellats = get_latitude(ds)
                         # Longitude values are needed later to compute Local Solar
                         # Times.
                         lons = modellons[:]
                         print("  Creating temporary storage and output fields ...")
                         # Sorts tvarb into separate GMTs for one year
-                        tvslice = MV2.zeros((N, dayspermo, nlats, nlons))
+                        tvslice = np.zeros((N, dayspermo, nlats, nlons))
                         # Concatenates tvslice over all years
-                        concatenation = MV2.zeros((N, dayspermo * nYears, nlats, nlons))
-                        LSTs = MV2.zeros((N, nlats, nlons))
+                        concatenation = np.zeros((N, dayspermo * nYears, nlats, nlons))
+                        LSTs = np.zeros((N, nlats, nlons))
                         for iGMT in range(N):
                             hour = iGMT * deltaH + startime
                             print(
-                                "  Computing Local Standard Times for GMT %5.2f ..."
-                                % hour
+                                f"  Computing Local Standard Times for GMT {hour:5.2f} ..."
                             )
                             for j in range(nlats):
                                 for k in range(nlons):
                                     LSTs[iGMT, j, k] = (hour + lons[k] / 15) % 24
                     for iGMT in range(N):
                         hour = iGMT * deltaH + startime
-                        print("  Choosing timepoints with GMT %5.2f ..." % hour)
+                        print(f"  Choosing timepoints with GMT {hour:5.2f} ...")
                         print("days per mo :", dayspermo)
                         # Transient-variable slice: every Nth tpoint gets all of
                         # the current GMT's tpoints for current year:
@@ -125,21 +160,22 @@ def main():
                             iGMT, iYear * dayspermo : (iYear + 1) * dayspermo
                         ] = tvslice[iGMT]
                     iYear += 1
-                f.close()
+                # f.close()
+                ds.close()
 
                 # For each GMT, take mean and standard deviation over all years for
                 # the chosen month:
-                avgvalues = MV2.zeros((N, nlats, nlons))
-                stdvalues = MV2.zeros((N, nlats, nlons))
+                avgvalues = np.zeros((N, nlats, nlons))
+                stdvalues = np.zeros((N, nlats, nlons))
                 for iGMT in range(N):
                     hour = iGMT * deltaH + startime
                     print(
-                        "Computing mean and standard deviation over all GMT %5.2f timepoints ..."
-                        % hour
+                        f"Computing mean and standard deviation over all GMT {hour:5.2f} timepoints ..."
                     )
                     # Assumes first dimension of input ("axis#0") is time
-                    avgvalues[iGMT] = MV2.average(concatenation[iGMT], axis=0)
-                    stdvalues[iGMT] = genutil.statistics.std(concatenation[iGMT])
+                    avgvalues[iGMT] = np.average(concatenation[iGMT], axis=0)
+                    # stdvalues[iGMT] = genutil.statistics.std(concatenation[iGMT])
+                    stdvalues[iGMT] = np.std(concatenation[iGMT], axis=0)
                 avgvalues.id = "diurnalmean"
                 stdvalues.id = "diurnalstd"
                 LSTs.id = "LST"
@@ -235,6 +271,39 @@ def main():
     params = [INPUT(args, name, template) for name in fileList]
     print("PARAMS:", params)
     cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
+
+
+def add_one_month(t):
+    # Add one month manually (cftime has no direct DateOffset)
+    # We'll use the cftime constructor
+    year = t.year + (t.month // 12)
+    month = (t.month % 12) + 1
+    return t.replace(year=year, month=month)
+
+
+def add_one_day(t):
+    return t + datetime.timedelta(days=1)
+
+
+def get_cftime_class(ds):
+    # Find calendar type of ds
+    if not hasattr(ds, "time"):
+        raise ValueError("Dataset does not have a 'time' variable.")
+
+    calendar = get_calendar(ds)
+    print(f"Calendar type: {calendar}")
+
+    # Create the correct cftime class based on calendar
+    cftime_class = cftime.datetime  # Default
+
+    if calendar == "360_day":
+        cftime_class = cftime.Datetime360Day
+    elif calendar == "noleap":
+        cftime_class = cftime.DatetimeNoLeap
+    else:
+        cftime_class = cftime.DatetimeGregorian
+
+    return cftime_class
 
 
 # Good practice to place contents of script under this check
