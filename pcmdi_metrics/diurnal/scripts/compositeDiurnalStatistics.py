@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# Curt Covey July 2017
+# Jiwoo Lee July 2025 Modernized the code to use xarray
+
+
 # /export/covey1/CMIP5/Precipitation/DiurnalCycle/HistoricalRuns/compositeDiurnalStatisticsWrapped.py
 
 # This modifiction of ./compositeDiurnalStatistics.py will have the PMP Parser "wrapped" around it,
