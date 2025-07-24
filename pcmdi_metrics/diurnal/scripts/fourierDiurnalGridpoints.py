@@ -11,7 +11,7 @@
 
 # (from ~/CMIP5/Tides/OtherFields/Models/CMCC-CM_etal/old_fourierDiurnalGridpoints.py)
 # -------------------------------------------------------------------------
-from __future__ import print_function
+# from __future__ import print_function
 
 import glob
 import os
@@ -102,8 +102,7 @@ def main():
 
     N = 8  # Number of timepoints in a 24-hour cycle
     for LSTfile in LSTfiles:
-        print("Reading %s ..." % LSTfile, os.path.basename(LSTfile), file=fasc)
-        print("Reading %s ..." % LSTfile, os.path.basename(LSTfile), file=fasc)
+        print(f"Reading {LSTfile} ... {os.path.basename(LSTfile)}", file=fasc)
         reverted = template_LST.reverse(os.path.basename(LSTfile))
         model = reverted["model"]
         print("====================", file=fasc)
@@ -114,26 +113,16 @@ def main():
         template_std.model = model
         stdfile = template_std()
         print("Reading time series of mean diurnal cycle ...", file=fasc)
-        # f = cdms2.open(LSTfile)
-        # g = cdms2.open(os.path.join(args.modpath, avgfile))
-        # h = cdms2.open(os.path.join(args.modpath, stdfile))
-        # LSTs = f("LST")
+
         ds_f = xcdat_open(LSTfile)
         ds_g = xcdat_open(os.path.join(args.modpath, avgfile))
         ds_h = xcdat_open(os.path.join(args.modpath, stdfile))
         LSTs = ds_f["LST"]
+
         print("Input shapes: ", LSTs.shape, file=fasc)
 
         lat_key = get_latitude_key(LSTs)
         lon_key = get_longitude_key(LSTs)
-
-        # modellats = LSTs.getLatitude()
-        # modellons = LSTs.getLongitude()
-        # modellats = get_latitude(LSTs).values
-        # modellons = get_longitude(LSTs).values
-
-        # latbounds = modellats.getBounds()  # noqa: F841
-        # lonbounds = modellons.getBounds()  # noqa: F841
 
         # Gridpoints selected above may be offset slightly from points in full
         # grid ...
@@ -145,66 +134,24 @@ def main():
         # ... in which case, just pick the closest full-grid point:
         for i in range(nGridPoints):
             print(
-                "   (lat, lon) = (%8.3f, %8.3f)" % (gridptlats[i], gridptlons[i]),
+                f"   (lat, lon) = ({gridptlats[i]:8.3f}, {gridptlons[i]:8.3f})",
                 file=fasc,
             )
             closestlats[i] = gridptlats[i]
             closestlons[i] = gridptlons[i] % 360
             print(
-                "   Closest (lat, lon) for gridpoint = (%8.3f, %8.3f)"
-                % (closestlats[i], closestlons[i]),
+                f"   Closest (lat, lon) for gridpoint = ({closestlats[i]:8.3f}, {closestlons[i]:8.3f})",
                 file=fasc,
             )
             # Time series for selected grid point:
-            """
-            avgvalues[i] = g(
-                "diurnalmean",
-                lat=(closestlats[i], closestlats[i], "cob"),
-                lon=(closestlons[i], closestlons[i], "cob"),
-                squeeze=1,
+            avgvalues[i] = ds_g["diurnalmean"].sel(
+                {lat_key: closestlats[i], lon_key: closestlons[i]}, method="nearest"
             )
-            stdvalues[i] = h(
-                "diurnalstd",
-                lat=(closestlats[i], closestlats[i], "cob"),
-                lon=(closestlons[i], closestlons[i], "cob"),
-                squeeze=1,
+            stdvalues[i] = ds_h["diurnalstd"].sel(
+                {lat_key: closestlats[i], lon_key: closestlons[i]}, method="nearest"
             )
-            pointLSTs[i] = f(
-                "LST",
-                lat=(closestlats[i], closestlats[i], "cob"),
-                lon=(closestlons[i], closestlons[i], "cob"),
-                squeeze=1,
-            )
-            """
-            avgvalues[i] = (
-                ds_g["diurnalmean"]
-                .sel(
-                    {
-                        lat_key: slice(closestlats[i], closestlats[i]),
-                        lon_key: slice(closestlons[i], closestlons[i]),
-                    }
-                )
-                .squeeze()
-            )
-            stdvalues[i] = (
-                ds_h["diurnalstd"]
-                .sel(
-                    {
-                        lat_key: slice(closestlats[i], closestlats[i]),
-                        lon_key: slice(closestlons[i], closestlons[i]),
-                    }
-                )
-                .squeeze()
-            )
-            pointLSTs[i] = (
-                ds_f["LST"]
-                .sel(
-                    {
-                        lat_key: slice(closestlats[i], closestlats[i]),
-                        lon_key: slice(closestlons[i], closestlons[i]),
-                    }
-                )
-                .squeeze()
+            pointLSTs[i] = ds_f["LST"].sel(
+                {lat_key: closestlats[i], lon_key: closestlons[i]}, method="nearest"
             )
             print(" ", file=fasc)
         ds_f.close()
@@ -220,21 +167,20 @@ def main():
         prefix = args.modpath
         for i in range(nGridPoints):
             print(
-                "For gridpoint %d at %5.1f deg latitude, %6.1f deg longitude ..."
-                % (i, gridptlats[i], gridptlons[i]),
+                f"For gridpoint {i} at {gridptlats[i]:5.1f} deg latitude, {gridptlons[i]:6.1f} deg longitude ...",
                 file=fasc,
             )
             print("   Local Solar Times are:", file=fasc)
-            print((prefix + "LST%d = {") % (i + deltaI), file=fasc)
-            print(N * "%5.3f, " % tuple(pointLSTs[i]), end="", file=fasc)
+            print(f"{prefix}LST{i + deltaI} = {{", file=fasc)
+            print(", ".join(f"{v:5.3f}" for v in pointLSTs[i]), end="", file=fasc)
             print("};", file=fasc)
             print("   Mean values for each time-of-day are:", file=fasc)
-            print((prefix + "mean%d = {") % (i + deltaI), file=fasc)
-            print(N * "%5.3f, " % tuple(avgvalues[i]), end="", file=fasc)
+            print(f"{prefix}mean{i + deltaI} = {{", file=fasc)
+            print(", ".join(f"{v:5.3f}" for v in avgvalues[i]), end="", file=fasc)
             print("};", file=fasc)
             print("   Standard deviations for each time-of-day are:", file=fasc)
-            print((prefix + "std%d = {") % (i + deltaI), file=fasc)
-            print(N * "%6.4f, " % tuple(stdvalues[i]), end="", file=fasc)
+            print(f"{prefix}std{i + deltaI} = {{", file=fasc)
+            print(", ".join(f"{v:6.4f}" for v in stdvalues[i]), end="", file=fasc)
             print("};", file=fasc)
             print(" ", file=fasc)
 
@@ -245,24 +191,20 @@ def main():
         # Print Fourier harmonics:
         for i in range(nGridPoints):
             print(
-                "For gridpoint %d at %5.1f deg latitude, %6.1f deg longitude ..."
-                % (i, gridptlats[i], gridptlons[i]),
+                f"For gridpoint {i} at {gridptlats[i]:5.1f} deg latitude, {gridptlons[i]:6.1f} deg longitude ...",
                 file=fasc,
             )
-            print("  Mean value over cycle = %6.2f" % cycmean[i], file=fasc)
+            print(f"  Mean value over cycle = {cycmean[i]:6.2f}", file=fasc)
             print(
-                "  Diurnal     maximum   = %6.2f at %6.2f hr Local Solar Time."
-                % (maxvalue[i, 0], tmax[i, 0] % 24),
-                file=fasc,
-            )
-            print(
-                "  Semidiurnal maximum   = %6.2f at %6.2f hr Local Solar Time."
-                % (maxvalue[i, 1], tmax[i, 1] % 24),
+                f"  Diurnal     maximum   = {maxvalue[i, 0]:6.2f} at {tmax[i, 0] % 24:6.2f} hr Local Solar Time.",
                 file=fasc,
             )
             print(
-                "  Terdiurnal  maximum   = %6.2f at %6.2f hr Local Solar Time."
-                % (maxvalue[i, 2], tmax[i, 2] % 24),
+                f"  Semidiurnal maximum   = {maxvalue[i, 1]:6.2f} at {tmax[i, 1] % 24:6.2f} hr Local Solar Time.",
+                file=fasc,
+            )
+            print(
+                f"  Terdiurnal  maximum   = {maxvalue[i, 2]:6.2f} at {tmax[i, 2] % 24:6.2f} hr Local Solar Time.",
                 file=fasc,
             )
 
