@@ -205,7 +205,7 @@ def compute_area_weighted_rms(
     Parameters:
     ----------
     x : xarray.DataArray
-        The input data array with spatial dimensions (lat, lon).
+        The input data array with spatial dimensions (lat, lon). The input data should have a 'time' or equivalent dimension if `time_average` is True.
     lat_key : str
         The name of the latitude coordinate. Defaults to 'lat'.
     lon_key : str
