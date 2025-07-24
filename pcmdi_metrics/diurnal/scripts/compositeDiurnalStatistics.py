@@ -31,7 +31,15 @@ from pcmdi_metrics.diurnal.common import (
     monthname_d,
     populateStringConstructor,
 )
-from pcmdi_metrics.io import get_calendar, get_latitude, get_longitude, xcdat_open
+from pcmdi_metrics.io import (
+    get_calendar,
+    get_latitude,
+    get_latitude_key,
+    get_longitude,
+    get_longitude_key,
+    get_time_key,
+    xcdat_open,
+)
 
 
 def main():
@@ -61,6 +69,9 @@ def main():
                 ds = xcdat_open(fileName)
                 modellons = get_longitude(ds).values
                 modellats = get_latitude(ds).values
+                lon_key = get_longitude_key(ds)
+                lat_key = get_latitude_key(ds)
+                time_key = get_time_key(ds)
 
                 # Find calendar type of ds
                 cftime_class = get_cftime_class(ds)
@@ -154,13 +165,16 @@ def main():
                 os.makedirs(args.results_dir, exist_ok=True)
 
                 print("netcdf writing starts")
-                axes = {"time": comptime, "lat": modellats, "lon": modellons}
+                required_keys = (time_key, lat_key, lon_key)
+                axes = {time_key: comptime, lat_key: modellats, lon_key: modellons}
                 write_numpy_to_netcdf(
                     avgvalues,
                     axes,
                     os.path.join(args.results_dir, avgoutfile),
                     var_name="diurnalmean",
                     attrs={"units": outunits},
+                    ds_org=ds,
+                    required_keys=required_keys,
                 )
                 print("avgvalues written")
                 write_numpy_to_netcdf(
@@ -169,6 +183,8 @@ def main():
                     os.path.join(args.results_dir, stdoutfile),
                     var_name="diurnalstd",
                     attrs={"units": outunits},
+                    ds_org=ds,
+                    required_keys=required_keys,
                 )
                 print("stdvalues written")
                 write_numpy_to_netcdf(
@@ -177,6 +193,8 @@ def main():
                     os.path.join(args.results_dir, LSToutfile),
                     var_name="LST",
                     attrs={"units": "hr", "long_name": "Local Solar Time"},
+                    ds_org=ds,
+                    required_keys=required_keys,
                 )
                 print("LSTs written")
                 print("netcdf writing done")
@@ -267,7 +285,9 @@ def get_cftime_class(ds):
     return cftime_class
 
 
-def write_numpy_to_netcdf(data, axes, filename, var_name="data", attrs=None):
+def write_numpy_to_netcdf(
+    data, axes, filename, var_name="data", attrs=None, ds_org=None, required_keys=None
+):
     """
     Convert a 3D NumPy array to an xarray.DataArray and write it to a NetCDF file.
 
@@ -276,22 +296,25 @@ def write_numpy_to_netcdf(data, axes, filename, var_name="data", attrs=None):
     data : np.ndarray
         A 3D NumPy array with shape (time, lat, lon).
     axes : dict
-        Dictionary containing 1D arrays for each dimension with keys:
-        - 'time': array-like of shape (time,)
-        - 'lat' : array-like of shape (lat,)
-        - 'lon' : array-like of shape (lon,)
+        Dictionary containing 1D coordinate arrays or xarray.DataArrays with keys:
+        - 'time': shape (time,)
+        - 'lat' : shape (lat,)
+        - 'lon' : shape (lon,)
     filename : str
         Output path to the NetCDF file (e.g., 'output.nc').
     var_name : str, optional
-        Name of the data variable in the NetCDF file (default is 'data').
+        Name of the variable in the NetCDF file (default is 'data').
     attrs : dict, optional
-        Dictionary of attributes (metadata) to attach to the DataArray, e.g.,
-        {'units': 'K', 'long_name': 'air_temperature'}
+        Attributes to attach to the variable (e.g., {'units': 'K', 'long_name': 'Temperature'}).
+    ds_org : xr.Dataset, optional
+        Original dataset to preserve global attributes and bounds variables from.
+    required_keys : tuple of str, optional
+        Keys for the coordinate dimensions. Defaults to ('time', 'lat', 'lon').
 
     Raises
     ------
     ValueError
-        If input array is not 3D or axis lengths don't match data dimensions.
+        If data is not 3D, or if axes are missing or do not match data dimensions.
 
     Examples
     --------
@@ -304,47 +327,56 @@ def write_numpy_to_netcdf(data, axes, filename, var_name="data", attrs=None):
     >>> write_numpy_to_netcdf(data, axes, "output.nc", var_name="temperature",
     ...                        attrs={"units": "K", "long_name": "Air Temperature"})
     """
-    print(f"Writing data to {filename} with variable name '{var_name}'...")
-    print(f"Data shape: {data.shape}")
-
     if data.ndim != 3:
         raise ValueError("Input data must be a 3D NumPy array (time, lat, lon).")
 
-    print("Axes provided:", axes)
+    if required_keys is None:
+        required_keys = ("time", "lat", "lon")
 
-    required_keys = ("lon", "lat", "time")
     if not all(k in axes for k in required_keys):
-        raise ValueError(f"Axes dictionary must contain keys: {required_keys}.")
+        raise ValueError(f"Axes dictionary must contain keys: {required_keys}")
 
-    print("Checking axis lengths...")
-
+    time_key, lat_key, lon_key = required_keys
     time_dim, lat_dim, lon_dim = data.shape
-    if (
-        len(axes["lon"]) != lon_dim
-        or len(axes["lat"]) != lat_dim
-        or len(axes["time"]) != time_dim
-    ):
-        raise ValueError("Axis lengths must match data dimensions (time, lat, lon).")
 
-    print("Axis lengths match data dimensions.")
+    if (
+        len(axes[time_key]) != time_dim
+        or len(axes[lat_key]) != lat_dim
+        or len(axes[lon_key]) != lon_dim
+    ):
+        raise ValueError(
+            f"Axis lengths must match data dimensions ({time_key}, {lat_key}, {lon_key})."
+        )
 
     # Create DataArray
     da = xr.DataArray(
         data,
-        dims=("time", "lat", "lon"),
-        coords={"time": axes["time"], "lat": axes["lat"], "lon": axes["lon"]},
+        dims=required_keys,
+        coords={
+            time_key: axes[time_key],
+            lat_key: axes[lat_key],
+            lon_key: axes[lon_key],
+        },
         name=var_name,
+        attrs=attrs or {},
     )
 
-    print(f"DataArray shape: {da.shape}")
+    ds_new = da.to_dataset()
 
-    # Add attributes if provided
-    if attrs:
-        da.attrs.update(attrs)
+    if ds_org:
+        # Copy global attributes
+        ds_new.attrs = ds_org.attrs.copy()
 
-    # Save to NetCDF
-    da.to_netcdf(path=filename)
-    print(f"Saved DataArray to NetCDF file: {filename}")
+        # Preserve lat/lon bounds variables if available
+        for coord_key in [lat_key, lon_key]:
+            if coord_key in ds_org.coords:
+                bounds_attr = ds_org[coord_key].attrs.get("bounds")
+                if bounds_attr and bounds_attr in ds_org.variables:
+                    ds_new[bounds_attr] = ds_org[bounds_attr]
+
+    # Save to file
+    ds_new.to_netcdf(path=filename)
+    print(f"Saved to NetCDF: {filename}")
 
 
 # Good practice to place contents of script under this check
