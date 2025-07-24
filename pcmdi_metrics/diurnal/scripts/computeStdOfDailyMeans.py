@@ -79,7 +79,6 @@ def main():
                         time=(ds.time >= startTime) & (ds.time < finishtime)
                     )
                     # *HARD-CODES conversion from kg/m2/sec to mm/day.
-                    # tvarb *= 86400
                     tvarb = ds_year[varbname] * 86400
                     # The following tasks need to be done only once, extracting
                     # metadata from first-year file:
