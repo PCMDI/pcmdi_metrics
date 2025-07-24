@@ -5,7 +5,9 @@
 # this script should match the output fields of
 # ./fourierDiurnalAllGrid*.py at the selected gridpoints
 
-#       Curt Covey                                              June 2017
+# Curt Covey, June 2017
+# Jiwoo Lee, July 2025, Modernized the code to use xarray
+
 
 # (from ~/CMIP5/Tides/OtherFields/Models/CMCC-CM_etal/old_fourierDiurnalGridpoints.py)
 # -------------------------------------------------------------------------
@@ -14,11 +16,11 @@ from __future__ import print_function
 import glob
 import os
 
-import cdms2
-import MV2
+import numpy as np
 
 from pcmdi_metrics.diurnal.common import P, monthname_d, populateStringConstructor
 from pcmdi_metrics.diurnal.fourierFFT import fastFT
+from pcmdi_metrics.io import get_latitude_key, get_longitude_key, xcdat_open
 
 
 def main():
@@ -64,9 +66,9 @@ def main():
     args = P.get_parameter()
     month = args.month
     monthname = monthname_d[month]
-    startyear = args.firstyear
-    finalyear = args.lastyear
-    yearrange = "%s-%s" % (startyear, finalyear)  # noqa: F841
+    # startyear = args.firstyear
+    # finalyear = args.lastyear
+    # yearrange = "%s-%s" % (startyear, finalyear)  # noqa: F841
 
     template = populateStringConstructor(args.filename_template, args)
     template.month = monthname
@@ -112,24 +114,34 @@ def main():
         template_std.model = model
         stdfile = template_std()
         print("Reading time series of mean diurnal cycle ...", file=fasc)
-        f = cdms2.open(LSTfile)
-        g = cdms2.open(os.path.join(args.modpath, avgfile))
-        h = cdms2.open(os.path.join(args.modpath, stdfile))
-        LSTs = f("LST")
+        # f = cdms2.open(LSTfile)
+        # g = cdms2.open(os.path.join(args.modpath, avgfile))
+        # h = cdms2.open(os.path.join(args.modpath, stdfile))
+        # LSTs = f("LST")
+        ds_f = xcdat_open(LSTfile)
+        ds_g = xcdat_open(os.path.join(args.modpath, avgfile))
+        ds_h = xcdat_open(os.path.join(args.modpath, stdfile))
+        LSTs = ds_f["LST"]
         print("Input shapes: ", LSTs.shape, file=fasc)
 
-        modellats = LSTs.getLatitude()
-        modellons = LSTs.getLongitude()
-        latbounds = modellats.getBounds()  # noqa: F841
-        lonbounds = modellons.getBounds()  # noqa: F841
+        lat_key = get_latitude_key(LSTs)
+        lon_key = get_longitude_key(LSTs)
+
+        # modellats = LSTs.getLatitude()
+        # modellons = LSTs.getLongitude()
+        # modellats = get_latitude(LSTs).values
+        # modellons = get_longitude(LSTs).values
+
+        # latbounds = modellats.getBounds()  # noqa: F841
+        # lonbounds = modellons.getBounds()  # noqa: F841
 
         # Gridpoints selected above may be offset slightly from points in full
         # grid ...
-        closestlats = MV2.zeros(nGridPoints)
-        closestlons = MV2.zeros(nGridPoints)
-        pointLSTs = MV2.zeros((nGridPoints, N))
-        avgvalues = MV2.zeros((nGridPoints, N))
-        stdvalues = MV2.zeros((nGridPoints, N))
+        closestlats = np.zeros(nGridPoints)
+        closestlons = np.zeros(nGridPoints)
+        pointLSTs = np.zeros((nGridPoints, N))
+        avgvalues = np.zeros((nGridPoints, N))
+        stdvalues = np.zeros((nGridPoints, N))
         # ... in which case, just pick the closest full-grid point:
         for i in range(nGridPoints):
             print(
@@ -144,6 +156,7 @@ def main():
                 file=fasc,
             )
             # Time series for selected grid point:
+            """
             avgvalues[i] = g(
                 "diurnalmean",
                 lat=(closestlats[i], closestlats[i], "cob"),
@@ -162,10 +175,41 @@ def main():
                 lon=(closestlons[i], closestlons[i], "cob"),
                 squeeze=1,
             )
+            """
+            avgvalues[i] = (
+                ds_g["diurnalmean"]
+                .sel(
+                    {
+                        lat_key: slice(closestlats[i], closestlats[i]),
+                        lon_key: slice(closestlons[i], closestlons[i]),
+                    }
+                )
+                .squeeze()
+            )
+            stdvalues[i] = (
+                ds_h["diurnalstd"]
+                .sel(
+                    {
+                        lat_key: slice(closestlats[i], closestlats[i]),
+                        lon_key: slice(closestlons[i], closestlons[i]),
+                    }
+                )
+                .squeeze()
+            )
+            pointLSTs[i] = (
+                ds_f["LST"]
+                .sel(
+                    {
+                        lat_key: slice(closestlats[i], closestlats[i]),
+                        lon_key: slice(closestlons[i], closestlons[i]),
+                    }
+                )
+                .squeeze()
+            )
             print(" ", file=fasc)
-        f.close()
-        g.close()
-        h.close()
+        ds_f.close()
+        ds_g.close()
+        ds_h.close()
         # Print results for input to Mathematica.
         if monthname == "Jan":
             # In printed output, numbers for January data follow 0-5 for July data,
