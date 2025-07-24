@@ -17,7 +17,6 @@
 # Curt Covey (from ./old_std_of_dailymeansWrappedInOut.py) July 2017
 # Jiwoo Lee July 2025 Modernized the code to use xarray
 
-from __future__ import print_function
 
 import collections
 import glob
@@ -36,7 +35,12 @@ from pcmdi_metrics.diurnal.common import (
     monthname_d,
     populateStringConstructor,
 )
-from pcmdi_metrics.io import get_latitude_key, get_longitude_key, xcdat_open
+from pcmdi_metrics.io import (
+    get_latitude_key,
+    get_longitude_key,
+    get_time_key,
+    xcdat_open,
+)
 
 
 def main():
@@ -61,15 +65,12 @@ def main():
         print(f"Reading {fnameRoot}")
         try:
             ds = xcdat_open(fnameRoot)
-
             lat_key = get_latitude_key(ds)
             lon_key = get_longitude_key(ds)
             x = ds[datanameID].sel(
                 {lat_key: slice(*latrange), lon_key: slice(*lonrange)}
             )
-
             units = x.units
-
             print("Shape =", x.shape)
             print("units =", units)
             print("Finding RMS area-average ...")
@@ -195,7 +196,9 @@ def main():
     print("done")
 
 
-def compute_area_weighted_rms(x, lat_key="lat", lon_key="lon"):
+def compute_area_weighted_rms(
+    x, lat_key="lat", lon_key="lon", time_average=False, debug=False
+):
     """
     Compute area-weighted RMS over spatial dimensions of an xarray.DataArray.
 
@@ -204,9 +207,13 @@ def compute_area_weighted_rms(x, lat_key="lat", lon_key="lon"):
     x : xarray.DataArray
         The input data array with spatial dimensions (lat, lon).
     lat_key : str
-        The name of the latitude coordinate.
+        The name of the latitude coordinate. Defaults to 'lat'.
     lon_key : str
-        The name of the longitude coordinate.
+        The name of the longitude coordinate. Defaults to 'lon'.
+    time_average : bool
+        If True, compute the RMS over time-averaged data. Default is False.
+    debug : bool
+        If True, print debug information. Default is False.
 
     Returns:
     -------
@@ -215,6 +222,15 @@ def compute_area_weighted_rms(x, lat_key="lat", lon_key="lon"):
     """
     # Step 1: Square the data
     x_squared = x**2
+
+    if time_average:
+        # If averaging over time, ensure the time dimension is present
+        time_key = get_time_key(x_squared)
+        if time_key not in x_squared.dims:
+            raise ValueError(
+                "Input DataArray must have a 'time' dimension for time averaging."
+            )
+        x_squared = x_squared.mean(dim=time_key)
 
     # Step 2: Compute cosine-based latitude weights
     weights = np.cos(np.deg2rad(x[lat_key]))
@@ -228,6 +244,11 @@ def compute_area_weighted_rms(x, lat_key="lat", lon_key="lon"):
 
     # Preserve units if available
     rms.attrs["units"] = x.attrs.get("units", "")
+
+    if debug:
+        print("RMS shape:", rms.shape)
+        print("RMS units:", rms.attrs.get("units", ""))
+        print("RMS values:", rms.values)
 
     return float(rms.values)
 

@@ -11,7 +11,6 @@
 
 # (from ~/CMIP5/Tides/OtherFields/Models/CMCC-CM_etal/old_fourierDiurnalGridpoints.py)
 # -------------------------------------------------------------------------
-# from __future__ import print_function
 
 import glob
 import os
