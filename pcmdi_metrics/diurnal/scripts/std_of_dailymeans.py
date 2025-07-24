@@ -24,7 +24,6 @@ import glob
 import json
 import multiprocessing as mp
 import os
-import pprint
 
 import cdp
 import numpy as np
@@ -183,9 +182,6 @@ def main():
     nm = list(res.keys())[0]  # region id
     rgmsk[nm] = {"id": nm, "domain": region}
     metrics_dictionary["RegionalMasking"] = rgmsk
-
-    print("Metrics dictionary:")
-    pprint.pprint(metrics_dictionary)
 
     OUT.write(
         metrics_dictionary,
