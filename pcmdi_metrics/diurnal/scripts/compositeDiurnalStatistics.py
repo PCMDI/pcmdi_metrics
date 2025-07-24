@@ -56,57 +56,39 @@ def main():
             dataname = reverted["model"]
         if dataname not in args.skip:
             try:
-                # print("Data source:", dataname)
-                # print("Opening %s ..." % fileName)
-                # f = cdms2.open(fileName)
                 print(f"Data source: {dataname}")
                 print(f"Opening {fileName}")
                 ds = xcdat_open(fileName)
-                modellons = get_longitude(ds)
-                modellats = get_latitude(ds)
+                modellons = get_longitude(ds).values
+                modellats = get_latitude(ds).values
 
                 # Find calendar type of ds
                 cftime_class = get_cftime_class(ds)
 
                 # Composite-mean and composite-s.d diurnal cycle for month and year(s):
                 iYear = 0
-                # for year in range(args.firstyear, args.lastyear + 1):
                 for year in range(startyear, finalyear + 1):
-                    # print("Year %s:" % year)
                     print(f"Year {year}:")
-                    # startTime = cdtime.comptime(year, month)
                     startTime = cftime_class(year, month, 1)
                     # Last possible second to get all tpoints
-                    # finishtime = startTime.add(1, cdtime.Month).add(-1, cdtime.Minute)
                     finishtime = add_one_month(startTime)
                     print("Finish time:", finishtime)
                     print(
                         f"Reading {varbname} from {fileName} for time interval {startTime} to {finishtime}"
                     )
-                    # print(
-                    #    "Reading %s from %s for time interval %s to %s ..."
-                    #    % (varbname, fileName, startTime, finishtime)
-                    # )
-                    # Transient variable stores data for current year's month.
-                    # tvarb = f(varbname, time=(startTime, finishtime))
                     # variable stores data for current year's month.
                     ds_year = ds.sel(
                         time=(ds.time >= startTime) & (ds.time < finishtime)
                     )
                     # *HARD-CODES conversion from kg/m2/sec to mm/day.
-                    # tvarb *= 86400
                     tvarb = ds_year[varbname] * 86400
                     print("Shape:", tvarb.shape)
                     # The following tasks need to be done only once, extracting
                     # metadata from first-year file:
-                    # if year == args.firstyear:
                     if year == startyear:
-                        # tc = tvarb.getTime().asComponentTime()
                         tc = tvarb.time.values
                         print("DATA FROM:", tc[0], "to", tc[-1])
-                        # day1 = cdtime.comptime(tc[0].year, tc[0].month)
                         day1 = tc[0]
-                        # firstday = tvarb(time=(day1, day1.add(1.0, cdtime.Day), "con"))
                         firstday = tvarb.sel(
                             time=(tvarb.time >= day1) & (tvarb.time < add_one_day(day1))
                         )
@@ -121,14 +103,8 @@ def main():
                         print(
                             f"  {N} timepoints per day, {deltaH} hr intervals between timepoints"
                         )
-                        # comptime = firstday.getTime()
                         comptime = firstday.time.values
-                        # modellons = tvarb.getLongitude()
-                        # modellons = get_longitude(ds)
-                        # modellats = tvarb.getLatitude()
-                        # modellats = get_latitude(ds)
-                        # Longitude values are needed later to compute Local Solar
-                        # Times.
+                        # Longitude values are needed later to compute Local Solar Times.
                         lons = modellons[:]
                         print("  Creating temporary storage and output fields ...")
                         # Sorts tvarb into separate GMTs for one year
@@ -155,7 +131,6 @@ def main():
                             iGMT, iYear * dayspermo : (iYear + 1) * dayspermo
                         ] = tvslice[iGMT]
                     iYear += 1
-                # f.close()
                 ds.close()
 
                 # For each GMT, take mean and standard deviation over all years for
@@ -171,66 +146,42 @@ def main():
                     avgvalues[iGMT] = np.average(concatenation[iGMT], axis=0)
                     # stdvalues[iGMT] = genutil.statistics.std(concatenation[iGMT])
                     stdvalues[iGMT] = np.std(concatenation[iGMT], axis=0)
-                """
-                avgvalues.id = "diurnalmean"
-                stdvalues.id = "diurnalstd"
-                LSTs.id = "LST"
-                avgvalues.units = outunits
-                # Standard deviation has same units as mean (not so for
-                # higher-moment stats).
-                stdvalues.units = outunits
-                LSTs.units = "hr"
-                LSTs.longname = "Local Solar Time"
-                avgvalues.setAxis(0, comptime)
-                avgvalues.setAxis(1, modellats)
-                avgvalues.setAxis(2, modellons)
-                stdvalues.setAxis(0, comptime)
-                stdvalues.setAxis(1, modellats)
-                stdvalues.setAxis(2, modellons)
-                LSTs.setAxis(0, comptime)
-                LSTs.setAxis(1, modellats)
-                LSTs.setAxis(2, modellons)
-                """
+
+                # Write output files
                 avgoutfile = f"{varbname}_{dataname}_{monthname}_{args.firstyear}-{args.lastyear}_diurnal_avg.nc"
                 stdoutfile = f"{varbname}_{dataname}_{monthname}_{args.firstyear}-{args.lastyear}_diurnal_std.nc"
                 LSToutfile = f"{varbname}_{dataname}_LocalSolarTimes.nc"
-                # Write output files
                 os.makedirs(args.results_dir, exist_ok=True)
-                """
-                f = cdms2.open(os.path.join(args.results_dir, avgoutfile), "w")
-                g = cdms2.open(os.path.join(args.results_dir, stdoutfile), "w")
-                h = cdms2.open(os.path.join(args.results_dir, LSToutfile), "w")
-                f.write(avgvalues)
-                g.write(stdvalues)
-                h.write(LSTs)
-                f.close()
-                g.close()
-                h.close()
-                """
-                axes = (comptime, modellats, modellons)
+
+                print("netcdf writing starts")
+                axes = {"time": comptime, "lat": modellats, "lon": modellons}
                 write_numpy_to_netcdf(
                     avgvalues,
                     axes,
-                    avgoutfile,
+                    os.path.join(args.results_dir, avgoutfile),
                     var_name="diurnalmean",
                     attrs={"units": outunits},
                 )
+                print("avgvalues written")
                 write_numpy_to_netcdf(
                     stdvalues,
                     axes,
-                    stdoutfile,
+                    os.path.join(args.results_dir, stdoutfile),
                     var_name="diurnalstd",
                     attrs={"units": outunits},
                 )
+                print("stdvalues written")
                 write_numpy_to_netcdf(
                     LSTs,
                     axes,
-                    LSToutfile,
+                    os.path.join(args.results_dir, LSToutfile),
                     var_name="LST",
                     attrs={"units": "hr", "long_name": "Local Solar Time"},
                 )
+                print("LSTs written")
+                print("netcdf writing done")
             except Exception as err:
-                print("Failed for model %s with erro: %s" % (dataname, err))
+                print(f"Failed for model {dataname} with error: {err}")
 
     print("done")
     args = P.get_parameter()
@@ -353,12 +304,19 @@ def write_numpy_to_netcdf(data, axes, filename, var_name="data", attrs=None):
     >>> write_numpy_to_netcdf(data, axes, "output.nc", var_name="temperature",
     ...                        attrs={"units": "K", "long_name": "Air Temperature"})
     """
+    print(f"Writing data to {filename} with variable name '{var_name}'...")
+    print(f"Data shape: {data.shape}")
+
     if data.ndim != 3:
         raise ValueError("Input data must be a 3D NumPy array (time, lat, lon).")
+
+    print("Axes provided:", axes)
 
     required_keys = ("lon", "lat", "time")
     if not all(k in axes for k in required_keys):
         raise ValueError(f"Axes dictionary must contain keys: {required_keys}.")
+
+    print("Checking axis lengths...")
 
     time_dim, lat_dim, lon_dim = data.shape
     if (
@@ -368,6 +326,8 @@ def write_numpy_to_netcdf(data, axes, filename, var_name="data", attrs=None):
     ):
         raise ValueError("Axis lengths must match data dimensions (time, lat, lon).")
 
+    print("Axis lengths match data dimensions.")
+
     # Create DataArray
     da = xr.DataArray(
         data,
@@ -375,6 +335,8 @@ def write_numpy_to_netcdf(data, axes, filename, var_name="data", attrs=None):
         coords={"time": axes["time"], "lat": axes["lat"], "lon": axes["lon"]},
         name=var_name,
     )
+
+    print(f"DataArray shape: {da.shape}")
 
     # Add attributes if provided
     if attrs:
