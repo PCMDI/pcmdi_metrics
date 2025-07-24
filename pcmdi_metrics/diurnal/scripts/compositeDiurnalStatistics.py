@@ -15,15 +15,15 @@
 
 from __future__ import division, print_function
 
+import datetime
 import glob
 import multiprocessing as mp
 import os
 
-import cdms2
 import cdp
-import cdtime
-import genutil
+import cftime
 import numpy as np
+import xarray as xr
 
 from pcmdi_metrics.diurnal.common import (
     INPUT,
@@ -31,14 +31,7 @@ from pcmdi_metrics.diurnal.common import (
     monthname_d,
     populateStringConstructor,
 )
-from pcmdi_metrics.io import (
-    get_calendar,
-    get_latitude,
-    get_latitude_key,
-    get_longitude,
-    get_longitude_key,
-    xcdat_open,
-)
+from pcmdi_metrics.io import get_calendar, get_latitude, get_longitude, xcdat_open
 
 
 def main():
@@ -69,6 +62,8 @@ def main():
                 print(f"Data source: {dataname}")
                 print(f"Opening {fileName}")
                 ds = xcdat_open(fileName)
+                modellons = get_longitude(ds)
+                modellats = get_latitude(ds)
 
                 # Find calendar type of ds
                 cftime_class = get_cftime_class(ds)
@@ -127,11 +122,11 @@ def main():
                             f"  {N} timepoints per day, {deltaH} hr intervals between timepoints"
                         )
                         # comptime = firstday.getTime()
-                        comptime = firstday
+                        comptime = firstday.time.values
                         # modellons = tvarb.getLongitude()
-                        modellons = get_longitude(ds)
+                        # modellons = get_longitude(ds)
                         # modellats = tvarb.getLatitude()
-                        modellats = get_latitude(ds)
+                        # modellats = get_latitude(ds)
                         # Longitude values are needed later to compute Local Solar
                         # Times.
                         lons = modellons[:]
@@ -176,6 +171,7 @@ def main():
                     avgvalues[iGMT] = np.average(concatenation[iGMT], axis=0)
                     # stdvalues[iGMT] = genutil.statistics.std(concatenation[iGMT])
                     stdvalues[iGMT] = np.std(concatenation[iGMT], axis=0)
+                """
                 avgvalues.id = "diurnalmean"
                 stdvalues.id = "diurnalstd"
                 LSTs.id = "LST"
@@ -194,22 +190,13 @@ def main():
                 LSTs.setAxis(0, comptime)
                 LSTs.setAxis(1, modellats)
                 LSTs.setAxis(2, modellons)
-                avgoutfile = ("%s_%s_%s_%s-%s_diurnal_avg.nc") % (
-                    varbname,
-                    dataname,
-                    monthname,
-                    str(args.firstyear),
-                    str(args.lastyear),
-                )
-                stdoutfile = ("%s_%s_%s_%s-%s_diurnal_std.nc") % (
-                    varbname,
-                    dataname,
-                    monthname,
-                    str(args.firstyear),
-                    str(args.lastyear),
-                )
-                LSToutfile = "%s_%s_LocalSolarTimes.nc" % (varbname, dataname)
+                """
+                avgoutfile = f"{varbname}_{dataname}_{monthname}_{args.firstyear}-{args.lastyear}_diurnal_avg.nc"
+                stdoutfile = f"{varbname}_{dataname}_{monthname}_{args.firstyear}-{args.lastyear}_diurnal_std.nc"
+                LSToutfile = f"{varbname}_{dataname}_LocalSolarTimes.nc"
+                # Write output files
                 os.makedirs(args.results_dir, exist_ok=True)
+                """
                 f = cdms2.open(os.path.join(args.results_dir, avgoutfile), "w")
                 g = cdms2.open(os.path.join(args.results_dir, stdoutfile), "w")
                 h = cdms2.open(os.path.join(args.results_dir, LSToutfile), "w")
@@ -219,6 +206,29 @@ def main():
                 f.close()
                 g.close()
                 h.close()
+                """
+                axes = (comptime, modellats, modellons)
+                write_numpy_to_netcdf(
+                    avgvalues,
+                    axes,
+                    avgoutfile,
+                    var_name="diurnalmean",
+                    attrs={"units": outunits},
+                )
+                write_numpy_to_netcdf(
+                    stdvalues,
+                    axes,
+                    stdoutfile,
+                    var_name="diurnalstd",
+                    attrs={"units": outunits},
+                )
+                write_numpy_to_netcdf(
+                    LSTs,
+                    axes,
+                    LSToutfile,
+                    var_name="LST",
+                    attrs={"units": "hr", "long_name": "Local Solar Time"},
+                )
             except Exception as err:
                 print("Failed for model %s with erro: %s" % (dataname, err))
 
@@ -304,6 +314,75 @@ def get_cftime_class(ds):
         cftime_class = cftime.DatetimeGregorian
 
     return cftime_class
+
+
+def write_numpy_to_netcdf(data, axes, filename, var_name="data", attrs=None):
+    """
+    Convert a 3D NumPy array to an xarray.DataArray and write it to a NetCDF file.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        A 3D NumPy array with shape (time, lat, lon).
+    axes : dict
+        Dictionary containing 1D arrays for each dimension with keys:
+        - 'time': array-like of shape (time,)
+        - 'lat' : array-like of shape (lat,)
+        - 'lon' : array-like of shape (lon,)
+    filename : str
+        Output path to the NetCDF file (e.g., 'output.nc').
+    var_name : str, optional
+        Name of the data variable in the NetCDF file (default is 'data').
+    attrs : dict, optional
+        Dictionary of attributes (metadata) to attach to the DataArray, e.g.,
+        {'units': 'K', 'long_name': 'air_temperature'}
+
+    Raises
+    ------
+    ValueError
+        If input array is not 3D or axis lengths don't match data dimensions.
+
+    Examples
+    --------
+    >>> data = np.random.rand(10, 90, 180)
+    >>> axes = {
+    ...     'time': pd.date_range("2024-01-01", periods=10),
+    ...     'lat': np.linspace(-90, 90, 90),
+    ...     'lon': np.linspace(-180, 180, 180)
+    ... }
+    >>> write_numpy_to_netcdf(data, axes, "output.nc", var_name="temperature",
+    ...                        attrs={"units": "K", "long_name": "Air Temperature"})
+    """
+    if data.ndim != 3:
+        raise ValueError("Input data must be a 3D NumPy array (time, lat, lon).")
+
+    required_keys = ("lon", "lat", "time")
+    if not all(k in axes for k in required_keys):
+        raise ValueError(f"Axes dictionary must contain keys: {required_keys}.")
+
+    time_dim, lat_dim, lon_dim = data.shape
+    if (
+        len(axes["lon"]) != lon_dim
+        or len(axes["lat"]) != lat_dim
+        or len(axes["time"]) != time_dim
+    ):
+        raise ValueError("Axis lengths must match data dimensions (time, lat, lon).")
+
+    # Create DataArray
+    da = xr.DataArray(
+        data,
+        dims=("time", "lat", "lon"),
+        coords={"time": axes["time"], "lat": axes["lat"], "lon": axes["lon"]},
+        name=var_name,
+    )
+
+    # Add attributes if provided
+    if attrs:
+        da.attrs.update(attrs)
+
+    # Save to NetCDF
+    da.to_netcdf(path=filename)
+    print(f"Saved DataArray to NetCDF file: {filename}")
 
 
 # Good practice to place contents of script under this check
