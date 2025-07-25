@@ -70,7 +70,7 @@ def main():
             print("Finding RMS area-average ...")
 
             x = compute_area_weighted_rms(
-                x, lat_key=lat_key, lon_key=lon_key, time_average=True, debug=True
+                x, lat_key=lat_key, lon_key=lon_key, time_average=True
             )
             print(
                 f"For {model} in {monthname}, average variance of hourly values = ({x:5.2f} {units})^2"
