@@ -1,4 +1,7 @@
-﻿def fastFT(x, t):
+import numpy
+
+
+def fastFT(x, t):
     """
     Use a Numerical Python function to compute a FAST Fourier transform -- which should give the same result as a simple
     SLOW Fourier integration via the trapezoidal rule.
@@ -17,8 +20,6 @@
                Curt Covey, PCMDI/LLNL November 2016
                  (from ./fourier.py and ./fourierTestFFT.py)
     """
-    import numpy
-
     nGridPoints = len(x)
     X = numpy.fft.ifft(x)
     a = X.real
@@ -59,8 +60,6 @@ def fastAllGridFT(x, t):
 
                 Curt Covey, PCMDI/LLNL                                      December 2016
     """
-    import numpy
-
     print("Creating output arrays ...")
     nx = x.shape[1]
     ny = x.shape[2]
