@@ -20,13 +20,23 @@ import glob
 import json
 import os
 
-import cdutil
 import numpy as np
+import xarray as xr
+import xcdat as xc  # noqa: F401
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
 from pcmdi_metrics.diurnal.common import P, monthname_d, populateStringConstructor
-from pcmdi_metrics.io import get_latitude_key, get_longitude_key, xcdat_open
+from pcmdi_metrics.io import (
+    get_grid,
+    get_latitude,
+    get_latitude_bounds_key,
+    get_latitude_key,
+    get_longitude,
+    get_longitude_bounds_key,
+    get_longitude_key,
+    xcdat_open,
+)
 from pcmdi_metrics.utils import create_land_sea_mask
 
 
@@ -139,7 +149,9 @@ def main():
         Space-averaging is done globally, as well as separately for land and ocean areas.
         """
 
-        glolf = cdutil.averager(sftlf, axis="xy")
+        glolf = spatial_average(sftlf)
+        lat = get_latitude(sftlf)
+        lon = get_longitude(sftlf)
         print("  Global mean land fraction = %5.3f" % glolf)
         outD = {}  # Output dictionary to be returned by this function
         harmonics = [1, 2, 3]
@@ -154,10 +166,10 @@ def main():
 
             print("Area-averaging globally, over land only, and over ocean only ...")
             # Average Cartesian components ...
-            cos_avg_glo = cdutil.averager(cosine, axis="xy")
-            sin_avg_glo = cdutil.averager(sine, axis="xy")
-            cos_avg_lnd = cdutil.averager(cosine * sftlf, axis="xy")
-            sin_avg_lnd = cdutil.averager(sine * sftlf, axis="xy")
+            cos_avg_glo = spatial_average(cosine, lat=lat, lon=lon)
+            sin_avg_glo = spatial_average(sine, lat=lat, lon=lon)
+            cos_avg_lnd = spatial_average(cosine * sftlf.to_numpy(), lat=lat, lon=lon)
+            sin_avg_lnd = spatial_average(sine * sftlf.to_numpy(), lat=lat, lon=lon)
             cos_avg_ocn = cos_avg_glo - cos_avg_lnd
             sin_avg_ocn = sin_avg_glo - sin_avg_lnd
             # ... normalized by land-sea fraction:
@@ -260,46 +272,62 @@ def main():
         try:
             template_tS.model = model
             template_sftlf.model = model
-            # S = cdms2.open(file_S)("S", region)
-            ds_S = xcdat_open(file_S)
-            S = ds_S["S"].sel(
+
+            ds_S = xcdat_open(file_S).bounds.add_missing_bounds()
+            ds_S_region = ds_S.sel(
                 {
                     get_latitude_key(ds_S): slice(latrange[0], latrange[1]),
                     get_longitude_key(ds_S): slice(lonrange[0], lonrange[1]),
                 }
             )
+            S = ds_S_region["S"]
+
             print(f"Reading Phase from {os.path.join(args.modpath, template_tS())} ...")
-            # tS = cdms2.open(os.path.join(args.modpath, template_tS()))("tS", region)
-            ts_S = xcdat_open(os.path.join(args.modpath, template_tS()))
-            tS = ts_S["tS"].sel(
+
+            ts_S = xcdat_open(
+                os.path.join(args.modpath, template_tS())
+            ).bounds.add_missing_bounds()
+            ts_S_region = ts_S.sel(
                 {
                     get_latitude_key(ts_S): slice(latrange[0], latrange[1]),
                     get_longitude_key(ts_S): slice(lonrange[0], lonrange[1]),
                 }
             )
+            tS = ts_S_region["tS"]
+
             print(
                 f"Reading sftlf from {os.path.join(args.modpath, template_sftlf())} ..."
             )
             try:
                 sftlf_fnm = glob.glob(os.path.join(args.modpath, template_sftlf()))[0]
-                # sftlf = cdms2.open(sftlf_fnm)("sftlf", region) / 100.0
                 sftlf_ds = xcdat_open(sftlf_fnm)
-                sftlf = sftlf_ds["sftlf"].sel(
-                    {
-                        get_latitude_key(sftlf_ds): slice(latrange[0], latrange[1]),
-                        get_longitude_key(sftlf_ds): slice(lonrange[0], lonrange[1]),
-                    }
-                )
+                # if max of sftlf is 100, convert to fraction:
+                if sftlf_ds["sftlf"].max() > 100:
+                    print("Converting sftlf to fraction ...")
+                    sftlf = sftlf_ds["sftlf"] / 100.0
+                else:
+                    print("sftlf is already in fraction ...")
+                    sftlf = sftlf_ds["sftlf"]
+
             except BaseException as err:
                 print(f"Failed reading sftlf from file (error was: {err})")
                 print("Creating one for you")
-                # sftlf = cdutil.generateLandSeaMask(S.getGrid())
-                sftlf = create_land_sea_mask(S)
+                sftlf = generate_landsea_mask(ds_S)
+
+            # Select the region of interest
+            sftlf_region = sftlf.sel(
+                {
+                    get_latitude_key(sftlf): slice(latrange[0], latrange[1]),
+                    get_longitude_key(sftlf): slice(lonrange[0], lonrange[1]),
+                }
+            )
 
             if model not in stats_dic:
-                stats_dic[model] = {region_name: spacevavg(S, tS, sftlf, model)}
+                stats_dic[model] = {region_name: spacevavg(S, tS, sftlf_region, model)}
             else:
-                stats_dic[model].update({region_name: spacevavg(S, tS, sftlf, model)})
+                stats_dic[model].update(
+                    {region_name: spacevavg(S, tS, sftlf_region, model)}
+                )
             print(stats_dic)
         except Exception as err:
             print(f"Failed for model {model} with error: {err}")
@@ -321,6 +349,50 @@ def main():
         print("Writing cmec file")
         OUT.write_cmec(indent=4, separators=(",", ": "))
     print("done")
+
+
+def spatial_average(data, lat=None, lon=None):
+    if isinstance(data, xr.DataArray):
+        # if data type is xarray.DataArray, da= data
+        da = data
+    else:
+        # if data type is numpy.ndarray, convert it to xarray.DataArray
+        # This requires lat and lon coordinates
+        if lat is None or lon is None:
+            raise ValueError("lat and lon must be provided for numpy.ndarray input")
+        coords = {lat.name: lat, lon.name: lon}
+        da = xr.DataArray(data, coords=coords, dims=[lat.name, lon.name])
+
+    # if da does not have name, set it to 'data'
+    if da.name is None:
+        da.name = "data"
+    ds = da.to_dataset()
+    ds = ds.bounds.add_missing_bounds()
+    ds_avg = ds.spatial.average(da.name)
+    return ds_avg[da.name]
+
+
+def generate_landsea_mask(ds):
+    """
+    Generate a land-sea mask for the given dataset.
+    """
+    # Ensure the dataset has the correct latitude and longitude keys
+    ds_tmp = ds.copy(deep=True)
+    if get_latitude_key(ds_tmp) != "lat":
+        ds_tmp = ds_tmp.rename({get_latitude_key(ds_tmp): "lat"})
+    if get_longitude_key(ds_tmp) != "lon":
+        ds_tmp = ds_tmp.rename({get_longitude_key(ds_tmp): "lon"})
+    if get_latitude_bounds_key(ds_tmp) != "lat_bounds":
+        ds_tmp = ds_tmp.rename({get_latitude_bounds_key(ds_tmp): "lat_bounds"})
+        ds_tmp["lat"].attrs["bounds"] = "lat_bounds"
+    if get_longitude_bounds_key(ds_tmp) != "lon_bounds":
+        ds_tmp = ds_tmp.rename({get_longitude_bounds_key(ds_tmp): "lon_bounds"})
+        ds_tmp["lon"].attrs["bounds"] = "lon_bounds"
+
+    grid = get_grid(ds_tmp)
+    sftlf = create_land_sea_mask(grid, method="pcmdi")
+
+    return sftlf
 
 
 if __name__ == "__main__":
