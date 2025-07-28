@@ -15,6 +15,7 @@ from shapely.geometry import MultiPolygon, Polygon
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
+from pcmdi_metrics.utils import cdms2_to_xarray, create_land_sea_mask, xarray_to_cdms2
 
 
 # ==================================================================================
@@ -757,7 +758,8 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
     ddom = []
     for d in [pdf, amt]:
-        mask = cdutil.generateLandSeaMask(d[0, 0])
+        # mask = cdutil.generateLandSeaMask(d[0, 0])
+        mask = xarray_to_cdms2(create_land_sea_mask(cdms2_to_xarray(d[0, 0])))
         d, mask2 = genutil.grower(d, mask)
         d_ocean = MV.masked_where(mask2 == 1.0, d)
         d_land = MV.masked_where(mask2 == 0.0, d)

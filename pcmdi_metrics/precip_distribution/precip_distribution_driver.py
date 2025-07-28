@@ -19,6 +19,7 @@ from pcmdi_metrics.precip_distribution.lib import (
     precip_distribution_cum,
     precip_distribution_frq_amt,
 )
+from pcmdi_metrics.utils import xarray_to_cdms2
 
 # Read parameters
 P = PMPParser()
@@ -94,7 +95,11 @@ for iyr in range(syr, eyr + 1):
     )[var]
     # Correct negative precip to 0 (ERA-interim from CREATE-IP and ERA-5 from obs4MIP have negative precip values between -1 and 0)
     do = xr.where((do < 0) & (do > -1), 0, do)
-    do = xr.DataArray.to_cdms2(do) * float(fac)
+    # do = xr.DataArray.to_cdms2(do) * float(fac)
+    do = do * float(fac)
+    print("(before convt) do type:", type(do))
+    do = xarray_to_cdms2(do)
+    print("(after convt) do type:", type(do))
 
     # Regridding
     rgtmp = Regrid(do, res)
