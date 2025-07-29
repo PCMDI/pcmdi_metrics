@@ -12,9 +12,8 @@
 # ---> python std_of_hourlyvaluesWrappedInOut.py -m7
 
 # Curt Covey (from ./old_std_of_hourlyvaluesWrappedInOut.py)		        July 2017
+# Jiwoo Lee July 2025 Modernized the code to use xarray
 
-
-from __future__ import print_function
 
 import collections
 import glob
@@ -22,19 +21,18 @@ import json
 import multiprocessing as mp
 import os
 
-import cdms2
 import cdp
-import cdutil
-import numpy.ma
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
+from pcmdi_metrics.diurnal import compute_area_weighted_rms
 from pcmdi_metrics.diurnal.common import (
     INPUT,
     P,
     monthname_d,
     populateStringConstructor,
 )
+from pcmdi_metrics.io import get_latitude_key, get_longitude_key, xcdat_open
 
 
 def main():
@@ -49,31 +47,37 @@ def main():
         datanameID = "diurnalstd"  # Short ID name of output data
         latrange = (param.args.lat1, param.args.lat2)
         lonrange = (param.args.lon1, param.args.lon2)
-        region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
         if param.args.region_name == "":
-            region_name = "{:g}_{:g}&{:g}_{:g}".format(*(latrange + lonrange))
+            region_name = (
+                f"{latrange[0]:g}_{latrange[1]:g}&{lonrange[0]:g}_{lonrange[1]:g}"
+            )
         else:
             region_name = param.args.region_name
-        print("Reading %s ..." % fnameRoot)
+        region = f"lat {latrange[0]:g} to {latrange[1]:g} and lon {lonrange[0]:g} to {lonrange[1]:g}"
+        print(f"Reading {fnameRoot}")
         reverted = template.reverse(os.path.basename(fnameRoot))
         model = reverted["model"]
         try:
-            f = cdms2.open(fnameRoot)
-            x = f(datanameID, region)
-            units = x.units
-            print("  Shape =", x.shape)
-            print("Finding RMS area-average ...")
-            x = x * x
-            x = cdutil.averager(x, weights="unweighted")
-            x = cdutil.averager(x, axis="xy")
-            x = numpy.ma.sqrt(x)
-            print(
-                "For %8s in %s, average variance of hourly values = (%5.2f %s)^2"
-                % (model, monthname, x, units)
+            ds = xcdat_open(fnameRoot)
+            lat_key = get_latitude_key(ds)
+            lon_key = get_longitude_key(ds)
+            x = ds[datanameID].sel(
+                {lat_key: slice(*latrange), lon_key: slice(*lonrange)}
             )
-            f.close()
+            units = x.units
+            print("Shape =", x.shape)
+            print("units =", units)
+            print("Finding RMS area-average ...")
+
+            x = compute_area_weighted_rms(
+                x, lat_key=lat_key, lon_key=lon_key, time_average=True
+            )
+            print(
+                f"For {model} in {monthname}, average variance of hourly values = ({x:5.2f} {units})^2"
+            )
+            ds.close()
         except Exception as err:
-            print("Failed model %s with error: %s" % (model, err))
+            print(f"Failed for model {model} with error {err}")
             x = 1.0e20
         return model, region, {region_name: x}
 
@@ -121,8 +125,6 @@ def main():
     args = P.get_parameter()
     month = args.month
     monthname = monthname_d[month]
-    startyear = args.firstyear  # noqa: F841
-    finalyear = args.lastyear  # noqa: F841
     cmec = args.cmec
 
     template = populateStringConstructor(args.filename_template, args)
@@ -132,10 +134,8 @@ def main():
 
     print("Specifying latitude / longitude domain of interest ...")
     # TRMM (observed) domain:
-    latrange = (args.lat1, args.lat2)
-    lonrange = (args.lon1, args.lon2)
-
-    region = cdutil.region.domain(latitude=latrange, longitude=lonrange)
+    # latrange = (args.lat1, args.lat2)
+    # lonrange = (args.lon1, args.lon2)
 
     # Amazon basin:
     # latrange = (-15.0,  -5.0)
@@ -185,7 +185,7 @@ def main():
     metrics_dictionary["RESULTS"] = stats_dic
     rgmsk = metrics_dictionary.get("RegionalMasking", {})
     nm = list(res.keys())[0]
-    region.id = nm
+    # region.id = nm
     rgmsk[nm] = {"id": nm, "domain": region}
     metrics_dictionary["RegionalMasking"] = rgmsk
     OUT.write(

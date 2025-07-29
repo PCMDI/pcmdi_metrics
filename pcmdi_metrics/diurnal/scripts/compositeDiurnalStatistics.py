@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+# Curt Covey July 2017
+# Jiwoo Lee July 2025 Modernized the code to use xarray
+
+
 # /export/covey1/CMIP5/Precipitation/DiurnalCycle/HistoricalRuns/compositeDiurnalStatisticsWrapped.py
 
 # This modifiction of ./compositeDiurnalStatistics.py will have the PMP Parser "wrapped" around it,
@@ -15,15 +19,15 @@
 
 from __future__ import division, print_function
 
+import datetime
 import glob
 import multiprocessing as mp
 import os
 
-import cdms2
 import cdp
-import cdtime
-import genutil
-import MV2
+import cftime
+import numpy as np
+import xarray as xr
 
 from pcmdi_metrics.diurnal.common import (
     INPUT,
@@ -31,11 +35,22 @@ from pcmdi_metrics.diurnal.common import (
     monthname_d,
     populateStringConstructor,
 )
+from pcmdi_metrics.io import (
+    get_calendar,
+    get_latitude,
+    get_latitude_key,
+    get_longitude,
+    get_longitude_key,
+    get_time_key,
+    xcdat_open,
+)
 
 
 def main():
     def compute(params):
         fileName = params.fileName
+        startyear = params.args.firstyear
+        finalyear = params.args.lastyear
         month = params.args.month
         monthname = params.monthname
         varbname = params.varname
@@ -53,36 +68,47 @@ def main():
             dataname = reverted["model"]
         if dataname not in args.skip:
             try:
-                print("Data source:", dataname)
-                print("Opening %s ..." % fileName)
-                f = cdms2.open(fileName)
+                print(f"Data source: {dataname}")
+                print(f"Opening {fileName}")
+                ds = xcdat_open(fileName)
+                modellons = get_longitude(ds).values
+                modellats = get_latitude(ds).values
+                lon_key = get_longitude_key(ds)
+                lat_key = get_latitude_key(ds)
+                time_key = get_time_key(ds)
+
+                # Find calendar type of ds
+                cftime_class = get_cftime_class(ds)
 
                 # Composite-mean and composite-s.d diurnal cycle for month and year(s):
                 iYear = 0
-                for year in range(args.firstyear, args.lastyear + 1):
-                    print("Year %s:" % year)
-                    startTime = cdtime.comptime(year, month)
+                for year in range(startyear, finalyear + 1):
+                    print(f"Year {year}:")
+                    startTime = cftime_class(year, month, 1)
                     # Last possible second to get all tpoints
-                    finishtime = startTime.add(1, cdtime.Month).add(-1, cdtime.Minute)
+                    finishtime = add_one_month(startTime)
+                    print("Finish time:", finishtime)
                     print(
-                        "Reading %s from %s for time interval %s to %s ..."
-                        % (varbname, fileName, startTime, finishtime)
+                        f"Reading {varbname} from {fileName} for time interval {startTime} to {finishtime}"
                     )
-                    # Transient variable stores data for current year's month.
-                    tvarb = f(varbname, time=(startTime, finishtime))
+                    # variable stores data for current year's month.
+                    ds_year = ds.sel(
+                        time=(ds.time >= startTime) & (ds.time < finishtime)
+                    )
                     # *HARD-CODES conversion from kg/m2/sec to mm/day.
-                    tvarb *= 86400
+                    tvarb = ds_year[varbname] * 86400
                     print("Shape:", tvarb.shape)
                     # The following tasks need to be done only once, extracting
                     # metadata from first-year file:
-                    if year == args.firstyear:
-                        tc = tvarb.getTime().asComponentTime()
+                    if year == startyear:
+                        tc = tvarb.time.values
                         print("DATA FROM:", tc[0], "to", tc[-1])
-                        day1 = cdtime.comptime(tc[0].year, tc[0].month)
                         day1 = tc[0]
-                        firstday = tvarb(time=(day1, day1.add(1.0, cdtime.Day), "con"))
+                        firstday = tvarb.sel(
+                            time=(tvarb.time >= day1) & (tvarb.time < add_one_day(day1))
+                        )
                         dimensions = firstday.shape
-                        print("  Shape = ", dimensions)
+                        print("Shape = ", dimensions)
                         # Number of time points in the selected month for one year
                         N = dimensions[0]
                         nlats = dimensions[1]
@@ -90,33 +116,28 @@ def main():
                         deltaH = 24.0 / N
                         dayspermo = tvarb.shape[0] // N
                         print(
-                            "  %d timepoints per day, %d hr intervals between timepoints"
-                            % (N, deltaH)
+                            f"  {N} timepoints per day, {deltaH} hr intervals between timepoints"
                         )
-                        comptime = firstday.getTime()
-                        modellons = tvarb.getLongitude()
-                        modellats = tvarb.getLatitude()
-                        # Longitude values are needed later to compute Local Solar
-                        # Times.
+                        comptime = firstday.time.values
+                        # Longitude values are needed later to compute Local Solar Times.
                         lons = modellons[:]
                         print("  Creating temporary storage and output fields ...")
                         # Sorts tvarb into separate GMTs for one year
-                        tvslice = MV2.zeros((N, dayspermo, nlats, nlons))
+                        tvslice = np.zeros((N, dayspermo, nlats, nlons))
                         # Concatenates tvslice over all years
-                        concatenation = MV2.zeros((N, dayspermo * nYears, nlats, nlons))
-                        LSTs = MV2.zeros((N, nlats, nlons))
+                        concatenation = np.zeros((N, dayspermo * nYears, nlats, nlons))
+                        LSTs = np.zeros((N, nlats, nlons))
                         for iGMT in range(N):
                             hour = iGMT * deltaH + startime
                             print(
-                                "  Computing Local Standard Times for GMT %5.2f ..."
-                                % hour
+                                f"  Computing Local Standard Times for GMT {hour:5.2f} ..."
                             )
                             for j in range(nlats):
                                 for k in range(nlons):
                                     LSTs[iGMT, j, k] = (hour + lons[k] / 15) % 24
                     for iGMT in range(N):
                         hour = iGMT * deltaH + startime
-                        print("  Choosing timepoints with GMT %5.2f ..." % hour)
+                        print(f"  Choosing timepoints with GMT {hour:5.2f} ...")
                         print("days per mo :", dayspermo)
                         # Transient-variable slice: every Nth tpoint gets all of
                         # the current GMT's tpoints for current year:
@@ -125,66 +146,64 @@ def main():
                             iGMT, iYear * dayspermo : (iYear + 1) * dayspermo
                         ] = tvslice[iGMT]
                     iYear += 1
-                f.close()
+                ds.close()
 
                 # For each GMT, take mean and standard deviation over all years for
                 # the chosen month:
-                avgvalues = MV2.zeros((N, nlats, nlons))
-                stdvalues = MV2.zeros((N, nlats, nlons))
+                avgvalues = np.zeros((N, nlats, nlons))
+                stdvalues = np.zeros((N, nlats, nlons))
                 for iGMT in range(N):
                     hour = iGMT * deltaH + startime
                     print(
-                        "Computing mean and standard deviation over all GMT %5.2f timepoints ..."
-                        % hour
+                        f"Computing mean and standard deviation over all GMT {hour:5.2f} timepoints ..."
                     )
                     # Assumes first dimension of input ("axis#0") is time
-                    avgvalues[iGMT] = MV2.average(concatenation[iGMT], axis=0)
-                    stdvalues[iGMT] = genutil.statistics.std(concatenation[iGMT])
-                avgvalues.id = "diurnalmean"
-                stdvalues.id = "diurnalstd"
-                LSTs.id = "LST"
-                avgvalues.units = outunits
-                # Standard deviation has same units as mean (not so for
-                # higher-moment stats).
-                stdvalues.units = outunits
-                LSTs.units = "hr"
-                LSTs.longname = "Local Solar Time"
-                avgvalues.setAxis(0, comptime)
-                avgvalues.setAxis(1, modellats)
-                avgvalues.setAxis(2, modellons)
-                stdvalues.setAxis(0, comptime)
-                stdvalues.setAxis(1, modellats)
-                stdvalues.setAxis(2, modellons)
-                LSTs.setAxis(0, comptime)
-                LSTs.setAxis(1, modellats)
-                LSTs.setAxis(2, modellons)
-                avgoutfile = ("%s_%s_%s_%s-%s_diurnal_avg.nc") % (
-                    varbname,
-                    dataname,
-                    monthname,
-                    str(args.firstyear),
-                    str(args.lastyear),
-                )
-                stdoutfile = ("%s_%s_%s_%s-%s_diurnal_std.nc") % (
-                    varbname,
-                    dataname,
-                    monthname,
-                    str(args.firstyear),
-                    str(args.lastyear),
-                )
-                LSToutfile = "%s_%s_LocalSolarTimes.nc" % (varbname, dataname)
+                    avgvalues[iGMT] = np.average(concatenation[iGMT], axis=0)
+                    # stdvalues[iGMT] = genutil.statistics.std(concatenation[iGMT])
+                    stdvalues[iGMT] = np.std(concatenation[iGMT], axis=0)
+
+                # Write output files
+                avgoutfile = f"{varbname}_{dataname}_{monthname}_{args.firstyear}-{args.lastyear}_diurnal_avg.nc"
+                stdoutfile = f"{varbname}_{dataname}_{monthname}_{args.firstyear}-{args.lastyear}_diurnal_std.nc"
+                LSToutfile = f"{varbname}_{dataname}_LocalSolarTimes.nc"
                 os.makedirs(args.results_dir, exist_ok=True)
-                f = cdms2.open(os.path.join(args.results_dir, avgoutfile), "w")
-                g = cdms2.open(os.path.join(args.results_dir, stdoutfile), "w")
-                h = cdms2.open(os.path.join(args.results_dir, LSToutfile), "w")
-                f.write(avgvalues)
-                g.write(stdvalues)
-                h.write(LSTs)
-                f.close()
-                g.close()
-                h.close()
+
+                print("netcdf writing starts")
+                required_keys = (time_key, lat_key, lon_key)
+                axes = {time_key: comptime, lat_key: modellats, lon_key: modellons}
+                write_numpy_to_netcdf(
+                    avgvalues,
+                    axes,
+                    os.path.join(args.results_dir, avgoutfile),
+                    var_name="diurnalmean",
+                    attrs={"units": outunits},
+                    ds_org=ds,
+                    required_keys=required_keys,
+                )
+                print("avgvalues written")
+                write_numpy_to_netcdf(
+                    stdvalues,
+                    axes,
+                    os.path.join(args.results_dir, stdoutfile),
+                    var_name="diurnalstd",
+                    attrs={"units": outunits},
+                    ds_org=ds,
+                    required_keys=required_keys,
+                )
+                print("stdvalues written")
+                write_numpy_to_netcdf(
+                    LSTs,
+                    axes,
+                    os.path.join(args.results_dir, LSToutfile),
+                    var_name="LST",
+                    attrs={"units": "hr", "long_name": "Local Solar Time"},
+                    ds_org=ds,
+                    required_keys=required_keys,
+                )
+                print("LSTs written")
+                print("netcdf writing done")
             except Exception as err:
-                print("Failed for model %s with erro: %s" % (dataname, err))
+                print(f"Failed for model {dataname} with error: {err}")
 
     print("done")
     args = P.get_parameter()
@@ -235,6 +254,133 @@ def main():
     params = [INPUT(args, name, template) for name in fileList]
     print("PARAMS:", params)
     cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
+
+
+def add_one_month(t):
+    # Add one month manually (cftime has no direct DateOffset)
+    # We'll use the cftime constructor
+    year = t.year + (t.month // 12)
+    month = (t.month % 12) + 1
+    return t.replace(year=year, month=month)
+
+
+def add_one_day(t):
+    return t + datetime.timedelta(days=1)
+
+
+def get_cftime_class(ds):
+    # Find calendar type of ds
+    if not hasattr(ds, "time"):
+        raise ValueError("Dataset does not have a 'time' variable.")
+
+    calendar = get_calendar(ds)
+    print(f"Calendar type: {calendar}")
+
+    # Create the correct cftime class based on calendar
+    cftime_class = cftime.datetime  # Default
+
+    if calendar == "360_day":
+        cftime_class = cftime.Datetime360Day
+    elif calendar == "noleap":
+        cftime_class = cftime.DatetimeNoLeap
+    else:
+        cftime_class = cftime.DatetimeGregorian
+
+    return cftime_class
+
+
+def write_numpy_to_netcdf(
+    data, axes, filename, var_name="data", attrs=None, ds_org=None, required_keys=None
+):
+    """
+    Convert a 3D NumPy array to an xarray.DataArray and write it to a NetCDF file.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        A 3D NumPy array with shape (time, lat, lon).
+    axes : dict
+        Dictionary containing 1D coordinate arrays or xarray.DataArrays with keys:
+        - 'time': shape (time,)
+        - 'lat' : shape (lat,)
+        - 'lon' : shape (lon,)
+    filename : str
+        Output path to the NetCDF file (e.g., 'output.nc').
+    var_name : str, optional
+        Name of the variable in the NetCDF file (default is 'data').
+    attrs : dict, optional
+        Attributes to attach to the variable (e.g., {'units': 'K', 'long_name': 'Temperature'}).
+    ds_org : xr.Dataset, optional
+        Original dataset to preserve global attributes and bounds variables from.
+    required_keys : tuple of str, optional
+        Keys for the coordinate dimensions. Defaults to ('time', 'lat', 'lon').
+
+    Raises
+    ------
+    ValueError
+        If data is not 3D, or if axes are missing or do not match data dimensions.
+
+    Examples
+    --------
+    >>> data = np.random.rand(10, 90, 180)
+    >>> axes = {
+    ...     'time': pd.date_range("2024-01-01", periods=10),
+    ...     'lat': np.linspace(-90, 90, 90),
+    ...     'lon': np.linspace(-180, 180, 180)
+    ... }
+    >>> write_numpy_to_netcdf(data, axes, "output.nc", var_name="temperature",
+    ...                        attrs={"units": "K", "long_name": "Air Temperature"})
+    """
+    if data.ndim != 3:
+        raise ValueError("Input data must be a 3D NumPy array (time, lat, lon).")
+
+    if required_keys is None:
+        required_keys = ("time", "lat", "lon")
+
+    if not all(k in axes for k in required_keys):
+        raise ValueError(f"Axes dictionary must contain keys: {required_keys}")
+
+    time_key, lat_key, lon_key = required_keys
+    time_dim, lat_dim, lon_dim = data.shape
+
+    if (
+        len(axes[time_key]) != time_dim
+        or len(axes[lat_key]) != lat_dim
+        or len(axes[lon_key]) != lon_dim
+    ):
+        raise ValueError(
+            f"Axis lengths must match data dimensions ({time_key}, {lat_key}, {lon_key})."
+        )
+
+    # Create DataArray
+    da = xr.DataArray(
+        data,
+        dims=required_keys,
+        coords={
+            time_key: axes[time_key],
+            lat_key: axes[lat_key],
+            lon_key: axes[lon_key],
+        },
+        name=var_name,
+        attrs=attrs or {},
+    )
+
+    ds_new = da.to_dataset()
+
+    if ds_org:
+        # Copy global attributes
+        ds_new.attrs = ds_org.attrs.copy()
+
+        # Preserve lat/lon bounds variables if available
+        for coord_key in [lat_key, lon_key]:
+            if coord_key in ds_org.coords:
+                bounds_attr = ds_org[coord_key].attrs.get("bounds")
+                if bounds_attr and bounds_attr in ds_org.variables:
+                    ds_new[bounds_attr] = ds_org[bounds_attr]
+
+    # Save to file
+    ds_new.to_netcdf(path=filename)
+    print(f"Saved to NetCDF: {filename}")
 
 
 # Good practice to place contents of script under this check
