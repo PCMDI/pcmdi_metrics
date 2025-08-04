@@ -1,6 +1,5 @@
-import genutil
-
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
+from pcmdi_metrics.utils import StringConstructor
 
 monthname_d = {
     1: "Jan",
@@ -28,7 +27,7 @@ class INPUT(object):
 
 
 def populateStringConstructor(template, args):
-    template = genutil.StringConstructor(template)
+    template = StringConstructor(template)
     for k in list(template.keys()):
         if hasattr(args, k):
             setattr(template, k, str(getattr(args, k)))
