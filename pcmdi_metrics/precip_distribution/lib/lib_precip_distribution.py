@@ -15,6 +15,7 @@ from shapely.geometry import MultiPolygon, Polygon
 
 import pcmdi_metrics
 from pcmdi_metrics import resources
+from pcmdi_metrics.io import get_latitude_key, get_longitude_key
 from pcmdi_metrics.utils import cdms2_to_xarray, create_land_sea_mask, xarray_to_cdms2
 
 
@@ -397,10 +398,26 @@ def precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec):
     sdiimmon = MV.array(sdiimmon)
     sdiimmon.setAxisList((axmon, lat, lon))
 
+    # print("ndmmon:", ndmmon)
+    print("ndmmon type:", type(ndmmon))  # <class 'cdms2.tvariable.TransientVariable'>
+    print("ndmmon shape:", ndmmon.shape)  # (17, 90, 180)
+    print(
+        "months:", months
+    )  # ['ANN', 'MAM', 'JJA', 'SON', 'DJF', 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+
+    print("prdyfracmmon type:", type(prdyfracmmon))
+    print("prdyfracmmon shape:", prdyfracmmon.shape)
+
+    print("sdiimmon type:", type(sdiimmon))
+    print("sdiimmon shape:", sdiimmon.shape)
+
     metrics = {"RESULTS": {dat: {}}}
     metrics["RESULTS"][dat]["unevenness"] = MedDomain(ndmmon, months)
+    print("MedDomain for unevenness:", metrics["RESULTS"][dat]["unevenness"])
     metrics["RESULTS"][dat]["prdyfrac"] = MedDomain(prdyfracmmon, months)
+    print("MedDomain for prdyfrac:", metrics["RESULTS"][dat]["prdyfrac"])
     metrics["RESULTS"][dat]["sdii"] = MedDomain(sdiimmon, months)
+    print("MedDomain for sdii:", metrics["RESULTS"][dat]["sdii"])
 
     metrics3C = {"RESULTS": {dat: {}}}
     metrics3C["RESULTS"][dat]["unevenness"] = MedDomain3Clust(ndmmon, months)
@@ -758,11 +775,13 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
     ddom = []
     for d in [pdf, amt]:
-        # mask = cdutil.generateLandSeaMask(d[0, 0])
         mask = xarray_to_cdms2(create_land_sea_mask(cdms2_to_xarray(d[0, 0])))
         d, mask2 = genutil.grower(d, mask)
         d_ocean = MV.masked_where(mask2 == 1.0, d)
         d_land = MV.masked_where(mask2 == 0.0, d)
+
+        print("d.shape:", d.shape)
+        print("type d:", type(d))
 
         for dom in domains:
             if "Ocean" in dom:
@@ -796,6 +815,8 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
     pdfdom.setAxisList((am.getAxis(0), am.getAxis(1), axdom))
     amtdom.setAxisList((am.getAxis(0), am.getAxis(1), axdom))
 
+    print("dat:", dat, "ref:", ref)
+
     if dat == ref:
         pdfdom_ref = pdfdom
         amtdom_ref = amtdom
@@ -809,6 +830,7 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
             + ref
             + ".nc"
         )
+        print("ref_dir:", ref_dir, "file:", file)
         pdfdom_ref = cdms.open(os.path.join(ref_dir, file))["pdf"]
         amtdom_ref = cdms.open(os.path.join(ref_dir, file))["amt"]
 
@@ -1029,11 +1051,11 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
     ddom = []
     for d in [pdf, amt]:
-        d_xr = xr.DataArray.from_cdms2(d[0, 0])
+        d_xr = cdms2_to_xarray(d[0, 0])
         mask_3D = region.mask_3D(d_xr, lon_name="longitude", lat_name="latitude")
-        mask_3D = xr.DataArray.to_cdms2(mask_3D)
+        mask_3D = xarray_to_cdms2(mask_3D)
 
-        mask = cdutil.generateLandSeaMask(d[0, 0])
+        mask = xarray_to_cdms2(create_land_sea_mask(cdms2_to_xarray(d[0, 0])))
         mask_3D, mask2 = genutil.grower(mask_3D, mask)
         mask_3D_ocn = MV.where(mask2 == 0.0, mask_3D, False)
         mask_3D_lnd = MV.where(mask2 == 1.0, mask_3D, False)
@@ -1391,11 +1413,11 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
     ddom = []
     for d in [pdf, amt]:
-        d = xr.DataArray.from_cdms2(d)
+        d = cdms2_to_xarray(d)
         mask_3D = ar6_all_mod_ocn.mask_3D(d, lon_name="longitude", lat_name="latitude")
         weights = np.cos(np.deg2rad(d.latitude))
         am = d.weighted(mask_3D * weights).mean(dim=("latitude", "longitude"))
-        am = xr.DataArray.to_cdms2(am)
+        am = xarray_to_cdms2(am)
 
         ddom.append(am)
 
@@ -1812,10 +1834,27 @@ def MedDomain(d, months):
         "Land_50S30S",
     ]
 
-    mask = cdutil.generateLandSeaMask(d[0])
+    # mask = cdutil.generateLandSeaMask(d[0])
+    """
+    mask = xarray_to_cdms2(create_land_sea_mask(cdms2_to_xarray(d[0])))
     d, mask2 = genutil.grower(d, mask)
     d_ocean = MV.masked_where(mask2 == 1.0, d)
     d_land = MV.masked_where(mask2 == 0.0, d)
+    """
+
+    # Assume d is a list of xarray.DataArray objects
+    # data = cdms2_to_xarray(d[0])
+    data = cdms2_to_xarray(d)
+
+    # Create mask in xarray format: 1.0 for land, 0.0 for ocean
+    mask = create_land_sea_mask(data[0])
+
+    # Broadcast the mask to match the data's shape, if necessary
+    mask_broadcasted = xr.broadcast(data, mask)[1]
+
+    # Apply land and ocean masks using xarray.where
+    d_land = data.where(mask_broadcasted == 1.0)
+    d_ocean = data.where(mask_broadcasted == 0.0)
 
     ddom = {}
     for dom in domains:
@@ -1824,23 +1863,51 @@ def MedDomain(d, months):
         elif "Land" in dom:
             dmask = d_land
         else:
-            dmask = d
-
+            dmask = cdms2_to_xarray(d)
+        """
         dmask = MV.masked_where(~np.isfinite(dmask), dmask)
 
         if "50S50N" in dom:
-            am = genutil.statistics.median(dmask(latitude=(-50, 50)), axis="xy")
+            am = np.median(dmask(latitude=(-50, 50)), axis="xy")
         if "30N50N" in dom:
-            am = genutil.statistics.median(dmask(latitude=(30, 50)), axis="xy")
+            am = np.median(dmask(latitude=(30, 50)), axis="xy")
         if "30S30N" in dom:
-            am = genutil.statistics.median(dmask(latitude=(-30, 30)), axis="xy")
+            am = np.median(dmask(latitude=(-30, 30)), axis="xy")
         if "50S30S" in dom:
-            am = genutil.statistics.median(dmask(latitude=(-50, -30)), axis="xy")
+            am = np.median(dmask(latitude=(-50, -30)), axis="xy")
+        """
+        # Replace non-finite values (NaNs, Infs) with NaN explicitly
+        dmask = dmask.where(np.isfinite(dmask))
+
+        # Latitude slicing based on domain name
+        if "50S50N" in dom:
+            lat_range = slice(-50, 50)
+        elif "30N50N" in dom:
+            lat_range = slice(30, 50)
+        elif "30S30N" in dom:
+            lat_range = slice(-30, 30)
+        elif "50S30S" in dom:
+            lat_range = slice(-50, -30)
+        else:
+            lat_range = slice(None)  # no lat restriction
+
+        # Subset and compute median over spatial dims (assumes dims are 'lat' and 'lon')
+        lat_key = get_latitude_key(dmask)
+        lon_key = get_longitude_key(dmask)
+        # subset = dmask.sel(lat=lat_range)
+        # subset = dmask.sel(lat_key=lat_range)
+        subset = dmask.sel(**{lat_key: lat_range})
+        am = subset.median(dim=[lat_key, lon_key], skipna=True).values.tolist()
+
+        print("subset:", subset)
+        print("subset type:", type(subset))
+        print("am:", am)
 
         ddom[dom] = {"CalendarMonths": {}}
         for im, mon in enumerate(months):
             if mon in ["ANN", "MAM", "JJA", "SON", "DJF"]:
-                ddom[dom][mon] = am.tolist()[0][im]
+                # ddom[dom][mon] = am.tolist()[0][im]
+                ddom[dom][mon] = am[im]
             else:
                 calmon = [
                     "JAN",
@@ -1857,7 +1924,8 @@ def MedDomain(d, months):
                     "DEC",
                 ]
                 imn = calmon.index(mon) + 1
-                ddom[dom]["CalendarMonths"][imn] = am.tolist()[0][im]
+                # ddom[dom]["CalendarMonths"][imn] = am.tolist()[0][im]
+                ddom[dom]["CalendarMonths"][imn] = am[im]
 
     print("Completed domain median")
     return ddom
@@ -1956,11 +2024,12 @@ def MedDomain3Clust(d, months):
     )
     print(region)
 
-    d_xr = xr.DataArray.from_cdms2(d)
+    d_xr = cdms2_to_xarray(d)
     mask_3D = region.mask_3D(d_xr, lon_name="longitude", lat_name="latitude")
-    mask_3D = xr.DataArray.to_cdms2(mask_3D)
+    mask_3D = xarray_to_cdms2(mask_3D)
 
-    mask = cdutil.generateLandSeaMask(d)
+    # mask = cdutil.generateLandSeaMask(d)
+    mask = xarray_to_cdms2(create_land_sea_mask(cdms2_to_xarray(d)))
     mask_3D, mask2 = genutil.grower(mask_3D, mask)
     mask_3D_ocn = MV.where(mask2 == 0.0, mask_3D, False)
     mask_3D_lnd = MV.where(mask2 == 1.0, mask_3D, False)
@@ -1988,19 +2057,32 @@ def MedDomain3Clust(d, months):
 
         dmask = MV.masked_where(~np.isfinite(dmask), dmask)
 
+        print("dom:", dom)
+        print("dmask shape:", dmask.shape)
+        print("dmask type:", type(dmask))
+
+        latrange = None
+
         if "50S50N" in dom:
-            am = genutil.statistics.median(dmask(latitude=(-50, 50)), axis="xy")
+            latrange = (-50, 50)
         if "30N50N" in dom:
-            am = genutil.statistics.median(dmask(latitude=(30, 50)), axis="xy")
+            latrange = (30, 50)
         if "30S30N" in dom:
-            am = genutil.statistics.median(dmask(latitude=(-30, 30)), axis="xy")
+            latrange = (-30, 30)
         if "50S30S" in dom:
-            am = genutil.statistics.median(dmask(latitude=(-50, -30)), axis="xy")
+            latrange = (-50, -30)
+
+        am = np.median(np.array(dmask(latitude=latrange)), axis=(1, 2))
+
+        print("am:", am)
+        print("am shape:", am.shape)
+        print("am type:", type(am))
 
         ddom[dom] = {"CalendarMonths": {}}
         for im, mon in enumerate(months):
             if mon in ["ANN", "MAM", "JJA", "SON", "DJF"]:
-                ddom[dom][mon] = am.tolist()[0][im]
+                # ddom[dom][mon] = am.tolist()[0][im]
+                ddom[dom][mon] = am.tolist()[im]
             else:
                 calmon = [
                     "JAN",
@@ -2017,7 +2099,8 @@ def MedDomain3Clust(d, months):
                     "DEC",
                 ]
                 imn = calmon.index(mon) + 1
-                ddom[dom]["CalendarMonths"][imn] = am.tolist()[0][im]
+                # ddom[dom]["CalendarMonths"][imn] = am.tolist()[0][im]
+                ddom[dom]["CalendarMonths"][imn] = am.tolist()[im]
 
     print("Completed clustering domain median")
     return ddom
@@ -2192,7 +2275,7 @@ def MedDomainAR6(d, months):
         name="AR6 reference regions with modified ocean regions",
     )
 
-    d = xr.DataArray.from_cdms2(d)
+    d = cdms2_to_xarray(d)
     mask_3D = ar6_all_mod_ocn.mask_3D(d, lon_name="longitude", lat_name="latitude")
     am = d.where(mask_3D).median(dim=("latitude", "longitude"))
 
