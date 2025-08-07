@@ -12,7 +12,6 @@ from .lib_precip_distribution import (  # noqa
     MedDomain3Clust,
     MedDomainAR6,
     Regrid_xr,
-    #getDailyCalendarMonth,
     get_daily_calendar_month,
     oneyear,
     precip_distribution_cum,

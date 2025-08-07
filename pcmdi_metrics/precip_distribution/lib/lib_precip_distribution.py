@@ -26,7 +26,7 @@ from pcmdi_metrics.utils import create_land_sea_mask, create_target_grid, regrid
 
 # ==================================================================================
 def precip_distribution_frq_amt(
-    dat, ds_rg, data_var, syr, eyr, res, outdir, ref, refdir, cmec
+    dat, ds_rg, data_var, syr, eyr, res, outdir, ref, refdir, cmec, debug=False
 ):
     """
     - The metric algorithm is based on Dr. Pendergrass's work (https://github.com/apendergrass/rain-metrics-python)
@@ -55,6 +55,8 @@ def precip_distribution_frq_amt(
         reference output directory
     cmec : bool
         flag for CMEC output
+    debug : bool, optional
+        if True, debug mode is enabled (default is False)
     """
 
     # Month separation
@@ -75,16 +77,15 @@ def precip_distribution_frq_amt(
     for im, mon in enumerate(months):
         print("im, mon:", im, mon)
         dmon = get_dmon(drg, mon, syr, eyr)
-
-        # Expected e.g., GPCP-1-3 ANN (731, 90, 180)
-        print("dat, mon, dmon.shape:", dat, mon, dmon.shape)
-
         pdata1 = dmon
 
-        # Expected: <class 'xarray.core.dataarray.DataArray'>
-        print("type of pdata1:", type(pdata1))
-        # Expected e.g., (731, 90, 180)
-        print("shape of pdata1:", pdata1.shape)
+        if debug:
+            # Expected e.g., GPCP-1-3 ANN (731, 90, 180)
+            print("dat, mon, dmon.shape:", dat, mon, dmon.shape)
+            # Expected: <class 'xarray.core.dataarray.DataArray'>
+            print("type of pdata1:", type(pdata1))
+            # Expected e.g., (731, 90, 180)
+            print("shape of pdata1:", pdata1.shape)
 
         # Calculate bin structure
         binl, binr, bincrates = CalcBinStructure(pdata1)
@@ -93,14 +94,15 @@ def precip_distribution_frq_amt(
         print("start MakeDists")
         ppdfmap, pamtmap, bins, ppdfmap_tn = MakeDists(pdata1, binl)
 
-        print("ppdfmap type:", type(ppdfmap))
-        print("ppdfmap shape:", ppdfmap.shape)
-        print("pamtmap type:", type(pamtmap))
-        print("pamtmap shape:", pamtmap.shape)
-        print("bins type:", type(bins))
-        print("bins shape:", bins.shape)
-        print("ppdfmap_tn type:", type(ppdfmap_tn))
-        print("ppdfmap_tn shape:", ppdfmap_tn.shape)
+        if debug:
+            print("ppdfmap type:", type(ppdfmap))
+            print("ppdfmap shape:", ppdfmap.shape)
+            print("pamtmap type:", type(pamtmap))
+            print("pamtmap shape:", pamtmap.shape)
+            print("bins type:", type(bins))
+            print("bins shape:", bins.shape)
+            print("ppdfmap_tn type:", type(ppdfmap_tn))
+            print("ppdfmap_tn shape:", ppdfmap_tn.shape)
 
         print("completed MakeDists")
 
@@ -121,39 +123,7 @@ def precip_distribution_frq_amt(
         print("completed CalcRainMetrics for each grid point")
 
         # Make Spatial pattern of distributions with separated months
-        """
-        if im == 0:
-            pdfmapmon = np.expand_dims(ppdfmap, axis=0)
-            pdfmapmon_tn = np.expand_dims(ppdfmap_tn, axis=0)
-            amtmapmon = np.expand_dims(pamtmap, axis=0)
-        else:
-            pdfmapmon = xr.concat(
-                (pdfmapmon, np.expand_dims(ppdfmap, axis=0)), axis=0
-            )
-            pdfmapmon_tn = xr.concat(
-                (pdfmapmon_tn, np.expand_dims(ppdfmap_tn, axis=0)), axis=0
-            )
-            amtmapmon = xr.concat(
-                (amtmapmon, np.expand_dims(pamtmap, axis=0)), axis=0
-            )
-        """
 
-        """
-        if im == 0:
-            pdfmapmon = ppdfmap.expand_dims(dim={"month": 1})
-            pdfmapmon_tn = ppdfmap_tn.expand_dims(dim={"month": 1})
-            amtmapmon = pamtmap.expand_dims(dim={"month": 1})
-        else:
-            pdfmapmon = xr.concat(
-                [pdfmapmon, ppdfmap.expand_dims(dim={"month": 1})], dim="month"
-            )
-            pdfmapmon_tn = xr.concat(
-                [pdfmapmon_tn, ppdfmap_tn.expand_dims(dim={"month": 1})], dim="month"
-            )
-            amtmapmon = xr.concat(
-                [amtmapmon, pamtmap.expand_dims(dim={"month": 1})], dim="month"
-            )
-        """
         ppdfmap_list.append(ppdfmap)
         ppdfmap_tn_list.append(ppdfmap_tn)
         pamtmap_list.append(pamtmap)
@@ -162,50 +132,29 @@ def precip_distribution_frq_amt(
     pdfmapmon_tn = xr.concat(ppdfmap_tn_list, dim="month")
     amtmapmon = xr.concat(pamtmap_list, dim="month")
 
-    print("pdfpeakmap type:", type(pdfpeakmap))
-    print("pdfpeakmap shape:", pdfpeakmap.shape)
-    print("pdfwidthmap type:", type(pdfwidthmap))
-    print("pdfwidthmap shape:", pdfwidthmap.shape)
-    print("amtpeakmap type:", type(amtpeakmap))
-    print("amtpeakmap shape:", amtpeakmap.shape)
-    print("amtwidthmap type:", type(amtwidthmap))
-    print("amtwidthmap shape:", amtwidthmap.shape)
+    if debug:
+        print("pdfpeakmap type:", type(pdfpeakmap))
+        print("pdfpeakmap shape:", pdfpeakmap.shape)
+        print("pdfwidthmap type:", type(pdfwidthmap))
+        print("pdfwidthmap shape:", pdfwidthmap.shape)
+        print("amtpeakmap type:", type(amtpeakmap))
+        print("amtpeakmap shape:", amtpeakmap.shape)
+        print("amtwidthmap type:", type(amtwidthmap))
+        print("amtwidthmap shape:", amtwidthmap.shape)
 
-    print("pdfmapmon type:", type(pdfmapmon))
-    print("pdfmapmon shape:", pdfmapmon.shape)
-    print("pdfmapmon_tn type:", type(pdfmapmon_tn))
-    print("pdfmapmon_tn shape:", pdfmapmon_tn.shape)
-    print("amtmapmon type:", type(amtmapmon))
-    print("amtmapmon shape:", amtmapmon.shape)
-    print("bins type:", type(bins))
-    print("bins shape:", bins.shape)
-
-    """
-    axmon = cdms.createAxis(range(len(months)), id="month")
-    axbin = cdms.createAxis(range(len(binl)), id="bin")
-    # lat = drg.getLatitude()
-    # lon = drg.getLongitude()
-    """
+        print("pdfmapmon type:", type(pdfmapmon))
+        print("pdfmapmon shape:", pdfmapmon.shape)
+        print("pdfmapmon_tn type:", type(pdfmapmon_tn))
+        print("pdfmapmon_tn shape:", pdfmapmon_tn.shape)
+        print("amtmapmon type:", type(amtmapmon))
+        print("amtmapmon shape:", amtmapmon.shape)
+        print("bins type:", type(bins))
+        print("bins shape:", bins.shape)
 
     axmon = xr.DataArray(months, dims="month", name="month")
     # axbin = xr.DataArray(binl, name="bin")
     lat = get_latitude(drg)
     lon = get_longitude(drg)
-
-    """
-    pdfmapmon.setAxisList((axmon, axbin, lat, lon))
-    pdfmapmon_tn.setAxisList((axmon, axbin, lat, lon))
-    amtmapmon.setAxisList((axmon, axbin, lat, lon))
-
-    pdfpeakmap = MV.array(pdfpeakmap)
-    pdfwidthmap = MV.array(pdfwidthmap)
-    amtpeakmap = MV.array(amtpeakmap)
-    amtwidthmap = MV.array(amtwidthmap)
-    pdfpeakmap.setAxisList((axmon, lat, lon))
-    pdfwidthmap.setAxisList((axmon, lat, lon))
-    amtpeakmap.setAxisList((axmon, lat, lon))
-    amtwidthmap.setAxisList((axmon, lat, lon))
-    """
 
     dims = ["month", "lat", "lon"]
     coords = {"month": axmon, "lat": lat, "lon": lon}
@@ -217,27 +166,6 @@ def precip_distribution_frq_amt(
 
     res_nxny = str(int(360 / res[0])) + "x" + str(int(180 / res[1]))
 
-    """
-    # Write data (nc file for spatial pattern of distributions)
-    outfilename = "dist_frq.amt_regrid." + res_nxny + "_" + dat + ".nc"
-    with cdms.open(
-        os.path.join(outdir(output_type="diagnostic_results"), outfilename), "w"
-    ) as out:
-        out.write(pdfmapmon, id="pdf")
-        out.write(pdfmapmon_tn, id="pdf_tn")
-        out.write(amtmapmon, id="amt")
-        out.write(bins, id="binbounds")
-
-    # Write data (nc file for spatial pattern of metrics)
-    outfilename = "dist_frq.amt_metrics_regrid." + res_nxny + "_" + dat + ".nc"
-    with cdms.open(
-        os.path.join(outdir(output_type="diagnostic_results"), outfilename), "w"
-    ) as out:
-        out.write(pdfpeakmap, id="frqpeak")
-        out.write(pdfwidthmap, id="frqwidth")
-        out.write(amtpeakmap, id="amtpeak")
-        out.write(amtwidthmap, id="amtwidth")
-    """
     # First file: spatial pattern of distributions
     outfilename = f"dist_frq.amt_regrid.{res_nxny}_{dat}.nc"
     outfile_path = os.path.join(outdir(output_type="diagnostic_results"), outfilename)
@@ -391,9 +319,6 @@ def precip_distribution_cum(dat, ds_rg, data_var, cal, syr, eyr, res, outdir, cm
     # Open nc file for writing data of spatial pattern of cumulated fractions with separated month
     outfilename = f"dist_cumfrac_regrid.{res_nxny}_{dat}.nc"
     outfile_path = os.path.join(outdir(output_type="diagnostic_results"), outfilename)
-    # outcumfrac = cdms.open(
-    #    outfile_path, "w"
-    # )
 
     drg = ds_rg[data_var]
     # new dataset
@@ -462,18 +387,6 @@ def precip_distribution_cum(dat, ds_rg, data_var, cal, syr, eyr, res, outdir, cm
         pfracm = np.nanmedian(pfracyr, axis=0)
         missingfrac = np.sum(np.isnan(pfracyr), axis=0) / nyr
         pfracm[np.where(missingfrac > missingthresh)] = np.nan
-        # axbin = cdms.createAxis(range(1, ndymon[im] + 1), id="time")
-        # lat = dmon.getLatitude()
-        # lon = dmon.getLongitude()
-        """
-        lat = get_latitude(dmon)
-        lat_key = get_latitude_key(dmon)
-        lon = get_longitude(dmon)
-        lon_key = get_longitude_key(dmon)
-        """
-        # pfracm = MV.array(pfracm)
-        # pfracm.setAxisList((axbin, lat, lon))
-        # outcumfrac.write(pfracm, id="cumfrac_" + mon)
 
         pfracm = xr.DataArray(
             data=pfracm,
@@ -483,19 +396,6 @@ def precip_distribution_cum(dat, ds_rg, data_var, cal, syr, eyr, res, outdir, cm
         outcumfrac_ds["cumfrac_" + mon] = pfracm
 
         # Make Spatial pattern with separated months
-        """
-        if im == 0:
-            ndmmon = np.expand_dims(ndm, axis=0)
-            prdyfracmmon = np.expand_dims(prdyfracm, axis=0)
-            sdiimmon = np.expand_dims(sdiim, axis=0)
-        else:
-            ndmmon = MV.concatenate((ndmmon, np.expand_dims(ndm, axis=0)), axis=0)
-            prdyfracmmon = MV.concatenate(
-                (prdyfracmmon, np.expand_dims(prdyfracm, axis=0)), axis=0
-            )
-            sdiimmon = MV.concatenate((sdiimmon, np.expand_dims(sdiim, axis=0)), axis=0)
-        """
-
         dims = [lat_key, lon_key]
         coords = {lat_key: lat, lon_key: lon}
 
@@ -514,21 +414,9 @@ def precip_distribution_cum(dat, ds_rg, data_var, cal, syr, eyr, res, outdir, cm
     outcumfrac_ds.to_netcdf(outfile_path)
 
     # Domain median
-    """
-    axmon = cdms.createAxis(range(len(months)), id="time")
-    ndmmon = MV.array(ndmmon)
-    ndmmon.setAxisList((axmon, lat, lon))
-    prdyfracmmon = MV.array(prdyfracmmon)
-    prdyfracmmon.setAxisList((axmon, lat, lon))
-    sdiimmon = MV.array(sdiimmon)
-    sdiimmon.setAxisList((axmon, lat, lon))
-    """
-    # print("ndmmon:", ndmmon)
-    print("ndmmon type:", type(ndmmon))  # <class 'cdms2.tvariable.TransientVariable'>
-    print("ndmmon shape:", ndmmon.shape)  # (17, 90, 180)
-    print(
-        "months:", months
-    )  # ['ANN', 'MAM', 'JJA', 'SON', 'DJF', 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+    print("ndmmon type:", type(ndmmon))
+    print("ndmmon shape:", ndmmon.shape)
+    print("months:", months)
 
     print("prdyfracmmon type:", type(prdyfracmmon))
     print("prdyfracmmon shape:", prdyfracmmon.shape)
@@ -536,21 +424,8 @@ def precip_distribution_cum(dat, ds_rg, data_var, cal, syr, eyr, res, outdir, cm
     print("sdiimmon type:", type(sdiimmon))
     print("sdiimmon shape:", sdiimmon.shape)
 
-    # axmon = cdms.createAxis(range(len(months)), id="month")
-    # ndmmon.setAxisList((axmon, lat, lon))
-    # prdyfracmmon.setAxisList((axmon, lat, lon))
-    # sdiimmon.setAxisList((axmon, lat, lon))
-
     # Write data (nc file for spatial pattern of metrics)
     outfilename = f"dist_cumfrac_metrics_regrid.{res_nxny}_{dat}.nc"
-    """
-    with cdms.open(
-        os.path.join(outdir(output_type="diagnostic_results"), outfilename), "w"
-    ) as out:
-        out.write(ndmmon, id="unevenness")
-        out.write(prdyfracmmon, id="prdyfrac")
-        out.write(sdiimmon, id="sdii")
-    """
     cumfrac_metrics_regrid_ds = xr.Dataset(
         {"unevenness": ndmmon, "prdyfrac": prdyfracmmon, "sdiim": sdiimmon},
     )
@@ -656,7 +531,6 @@ def Regrid_xr(ds, data_var, resdeg):
         grid_type="uniform",
     )
     ds_regrid = regrid(ds, data_var, tgrid)
-    # drg = d.interp(lat=tgrid.getLatitude(), lon=tgrid.getLongitude(), method="linear")
 
     print(
         "Completed regridding (via Regrid_xr) from",
@@ -685,23 +559,11 @@ def get_daily_calendar_month(d, months):
         Subset of the input data containing only the specified months.
     """
     # Convert input month names to numerical values (e.g., 'JAN' -> 1)
+    months = get_all_months()
     month_str_to_int = {
         month: i
         for i, month in enumerate(
-            [
-                "JAN",
-                "FEB",
-                "MAR",
-                "APR",
-                "MAY",
-                "JUN",
-                "JUL",
-                "AUG",
-                "SEP",
-                "OCT",
-                "NOV",
-                "DEC",
-            ],
+            months,
             start=1,
         )
     }
@@ -743,12 +605,19 @@ def get_dmon(drg, mon, syr, eyr):
 
 def get_all_season_and_months():
     """Get all seasons and months."""
-    months = [
+    seasons = [
         "ANN",
         "MAM",
         "JJA",
         "SON",
         "DJF",
+    ]
+    return seasons + get_all_months()
+
+
+def get_all_months():
+    """Get all months."""
+    return [
         "JAN",
         "FEB",
         "MAR",
@@ -762,7 +631,6 @@ def get_all_season_and_months():
         "NOV",
         "DEC",
     ]
-    return months
 
 
 # ==================================================================================
@@ -802,15 +670,6 @@ def CalcBinStructure(pdata1):
         binl = np.exp(binllog) / L * 3600 * 24
         binr = np.exp(binrlog) / L * 3600 * 24
     bincrates = np.append(0, (binl + binr) / 2)  # we'll use this for plotting.
-
-    """
-    axbin = cdms.createAxis(range(len(binl)), id="bin")
-    axbin = np.array(range(len(binl)))
-    binl = np.array(binl)
-    binr = np.array(binr)
-    binl.setAxis(0, axbin)
-    binr.setAxis(0, axbin)
-    """
 
     axbin = np.array(range(len(binl)))
 
@@ -880,24 +739,6 @@ def MakeDists(pdata, binl):
     thisppdfmap[np.isinf(thisppdfmap)] = np.nan
     thisppdfmap_tn[np.isinf(thisppdfmap_tn)] = np.nan
     thispamtmap[np.isinf(thispamtmap)] = np.nan
-
-    """
-    axbin = cdms.createAxis(range(len(binl)), id="bin")
-    #lat = pdata.getLatitude()
-    #lon = pdata.getLongitude()
-    lat = get_latitude(pdata)
-    lon = get_longitude(pdata)
-    thisppdfmap = MV.array(thisppdfmap)
-    thisppdfmap.setAxisList((axbin, lat, lon))
-    thisppdfmap_tn = MV.array(thisppdfmap_tn)
-    thisppdfmap_tn.setAxisList((axbin, lat, lon))
-    thispamtmap = MV.array(thispamtmap)
-    thispamtmap.setAxisList((axbin, lat, lon))
-
-    axbinbound = cdms.createAxis(range(len(thisbin)), id="binbound")
-    thisbin = MV.array(thisbin)
-    thisbin.setAxis(0, axbinbound)
-    """
 
     # Assume binl is a list or 1D array of bin centers
     bin_coord = xr.DataArray(binl, dims="bin", name="bin")
@@ -1043,13 +884,6 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
     mask = create_land_sea_mask(pdf[0, 0])
 
     for d in [pdf, amt]:
-        """
-        #mask = xarray_to_cdms2(create_land_sea_mask(cdms2_to_xarray(d[0, 0])))
-        d, mask2 = genutil.grower(d, mask)
-        d_ocean = MV.masked_where(mask2 == 1.0, d)
-        d_land = MV.masked_where(mask2 == 0.0, d)
-        """
-
         # Ensure mask is broadcast to same shape as d if needed
         mask_broadcasted = mask.broadcast_like(d)
 
@@ -1071,16 +905,6 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
             # dmask = MV.masked_where(~np.isfinite(dmask), dmask)
             dmask = dmask.where(np.isfinite(dmask))
 
-            """
-            if "50S50N" in dom:
-                am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
-            if "30N50N" in dom:
-                am = cdutil.averager(dmask(latitude=(30, 50)), axis="xy")
-            if "30S30N" in dom:
-                am = cdutil.averager(dmask(latitude=(-30, 30)), axis="xy")
-            if "50S30S" in dom:
-                am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy")
-            """
             # Latitude slicing based on domain name
             if "50S50N" in dom:
                 lat_range = slice(-50, 50)
@@ -1113,11 +937,7 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
     pdfdom = ddom[0]
     amtdom = ddom[1]
-    """
-    axdom = cdms.createAxis(range(len(domains)), id="domains")
-    pdfdom.setAxisList((am.getAxis(0), am.getAxis(1), axdom))
-    amtdom.setAxisList((am.getAxis(0), am.getAxis(1), axdom))
-    """
+
     # Create the new domain coordinate
     domain_dim = "domains"
     domain_coords = np.arange(len(domains))  # or list of names if available
@@ -1150,10 +970,7 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
     else:
         file = f"dist_frq.amt_domain_regrid.{pdf.shape[3]}x{pdf.shape[2]}_{ref}.nc"
         print("ref_dir:", ref_dir, "file:", file)
-        """
-        pdfdom_ref = cdms.open(os.path.join(ref_dir, file))["pdf"]
-        amtdom_ref = cdms.open(os.path.join(ref_dir, file))["amt"]
-        """
+
         pdfdom_ref = xcdat_open(os.path.join(ref_dir, file))["pdf"]
         amtdom_ref = xcdat_open(os.path.join(ref_dir, file))["amt"]
 
@@ -1377,7 +1194,8 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
     ddom = []
     for d in [pdf, amt]:
         d_xr = d[0, 0]
-        mask_3D = region.mask_3D(d_xr, lon_name="longitude", lat_name="latitude")
+        # mask_3D = region.mask_3D(d_xr, lon_name="longitude", lat_name="latitude")
+        mask_3D = region.mask_3D(d_xr)
 
         print("mask_3D shape", mask_3D.shape)
         print("mask_3D dims", mask_3D.dims)
@@ -2326,28 +2144,15 @@ def MedDomain(d, months):
         "Land_50S30S",
     ]
 
-    # mask = cdutil.generateLandSeaMask(d[0])
-    """
-    mask = xarray_to_cdms2(create_land_sea_mask(cdms2_to_xarray(d[0])))
-    d, mask2 = genutil.grower(d, mask)
-    d_ocean = MV.masked_where(mask2 == 1.0, d)
-    d_land = MV.masked_where(mask2 == 0.0, d)
-    """
-
-    # Assume d is a list of xarray.DataArray objects
-    # data = cdms2_to_xarray(d[0])
-    # data = cdms2_to_xarray(d)
-    data = d
-
     # Create mask in xarray format: 1.0 for land, 0.0 for ocean
-    mask = create_land_sea_mask(data[0])
+    mask = create_land_sea_mask(d[0])
 
     # Broadcast the mask to match the data's shape, if necessary
-    mask_broadcasted = xr.broadcast(data, mask)[1]
+    mask_broadcasted = xr.broadcast(d, mask)[1]
 
     # Apply land and ocean masks using xarray.where
-    d_land = data.where(mask_broadcasted == 1.0)
-    d_ocean = data.where(mask_broadcasted == 0.0)
+    d_land = d.where(mask_broadcasted == 1.0)
+    d_ocean = d.where(mask_broadcasted == 0.0)
 
     ddom = {}
     for dom in domains:
@@ -2356,20 +2161,8 @@ def MedDomain(d, months):
         elif "Land" in dom:
             dmask = d_land
         else:
-            # dmask = cdms2_to_xarray(d)
             dmask = d
-        """
-        dmask = MV.masked_where(~np.isfinite(dmask), dmask)
 
-        if "50S50N" in dom:
-            am = np.median(dmask(latitude=(-50, 50)), axis="xy")
-        if "30N50N" in dom:
-            am = np.median(dmask(latitude=(30, 50)), axis="xy")
-        if "30S30N" in dom:
-            am = np.median(dmask(latitude=(-30, 30)), axis="xy")
-        if "50S30S" in dom:
-            am = np.median(dmask(latitude=(-50, -30)), axis="xy")
-        """
         # Replace non-finite values (NaNs, Infs) with NaN explicitly
         dmask = dmask.where(np.isfinite(dmask))
 
@@ -2398,25 +2191,10 @@ def MedDomain(d, months):
         ddom[dom] = {"CalendarMonths": {}}
         for im, mon in enumerate(months):
             if mon in ["ANN", "MAM", "JJA", "SON", "DJF"]:
-                # ddom[dom][mon] = am.tolist()[0][im]
                 ddom[dom][mon] = am[im]
             else:
-                calmon = [
-                    "JAN",
-                    "FEB",
-                    "MAR",
-                    "APR",
-                    "MAY",
-                    "JUN",
-                    "JUL",
-                    "AUG",
-                    "SEP",
-                    "OCT",
-                    "NOV",
-                    "DEC",
-                ]
+                calmon = get_all_months()
                 imn = calmon.index(mon) + 1
-                # ddom[dom]["CalendarMonths"][imn] = am.tolist()[0][im]
                 ddom[dom]["CalendarMonths"][imn] = am[im]
 
     print("Completed domain median")
@@ -2496,7 +2274,7 @@ def MedDomain3Clust(d, months):
         shapes = rasterio.features.shapes(np.int32(data))
 
         polygons = []
-        for ish, shape in enumerate(shapes):
+        for shape in shapes:
             for idx, xy in enumerate(shape[0]["coordinates"][0]):
                 lst = list(xy)
                 lst[0] = lst[0]
@@ -2516,15 +2294,8 @@ def MedDomain3Clust(d, months):
     )
     print(region)
 
-    mask_3D = region.mask_3D(d, lon_name="longitude", lat_name="latitude")
-
-    # mask = cdutil.generateLandSeaMask(d)
+    mask_3D = region.mask_3D(d)
     mask = create_land_sea_mask(d)
-    """
-    mask_3D, mask2 = genutil.grower(mask_3D, mask)
-    mask_3D_ocn = MV.where(mask2 == 0.0, mask_3D, False)
-    mask_3D_lnd = MV.where(mask2 == 1.0, mask_3D, False)
-    """
 
     # Ensure mask is broadcast to match mask_3D shape
     mask2 = mask.broadcast_like(mask_3D)
@@ -2543,22 +2314,6 @@ def MedDomain3Clust(d, months):
             mask_3D_tmp = mask_3D_lnd
         else:
             mask_3D_tmp = mask_3D
-
-        """
-        if "HR" in dom:
-            d, mask3 = genutil.grower(d, mask_3D_tmp[0, :, :])
-        elif "MR" in dom:
-            d, mask3 = genutil.grower(d, mask_3D_tmp[1, :, :])
-        elif "LR" in dom:
-            d, mask3 = genutil.grower(d, mask_3D_tmp[2, :, :])
-        else:
-            print("ERROR: HR/MR/LR is not defined")
-            exit()
-
-        dmask = MV.masked_where(~mask3, d)
-
-        dmask = MV.masked_where(~np.isfinite(dmask), dmask)
-        """
 
         # Select correct mask slice based on resolution string
         if "HR" in dom:
@@ -2607,25 +2362,10 @@ def MedDomain3Clust(d, months):
         ddom[dom] = {"CalendarMonths": {}}
         for im, mon in enumerate(months):
             if mon in ["ANN", "MAM", "JJA", "SON", "DJF"]:
-                # ddom[dom][mon] = am.tolist()[0][im]
                 ddom[dom][mon] = am[im]
             else:
-                calmon = [
-                    "JAN",
-                    "FEB",
-                    "MAR",
-                    "APR",
-                    "MAY",
-                    "JUN",
-                    "JUL",
-                    "AUG",
-                    "SEP",
-                    "OCT",
-                    "NOV",
-                    "DEC",
-                ]
+                calmon = get_all_months()
                 imn = calmon.index(mon) + 1
-                # ddom[dom]["CalendarMonths"][imn] = am.tolist()[0][im]
                 ddom[dom]["CalendarMonths"][imn] = am[im]
 
     print("Completed clustering domain median")
@@ -2802,8 +2542,10 @@ def MedDomainAR6(d, months):
     )
 
     # d = cdms2_to_xarray(d)
-    mask_3D = ar6_all_mod_ocn.mask_3D(d, lon_name="longitude", lat_name="latitude")
-    am = d.where(mask_3D).median(dim=("latitude", "longitude"))
+    mask_3D = ar6_all_mod_ocn.mask_3D(d)
+    lat_key = get_latitude_key(d)
+    lon_key = get_longitude_key(d)
+    am = d.where(mask_3D).median(dim=(lat_key, lon_key))
 
     ddom = {}
     for idm, dom in enumerate(abbrevs):
@@ -2812,20 +2554,7 @@ def MedDomainAR6(d, months):
             if mon in ["ANN", "MAM", "JJA", "SON", "DJF"]:
                 ddom[dom][mon] = am[im, idm].values.tolist()
             else:
-                calmon = [
-                    "JAN",
-                    "FEB",
-                    "MAR",
-                    "APR",
-                    "MAY",
-                    "JUN",
-                    "JUL",
-                    "AUG",
-                    "SEP",
-                    "OCT",
-                    "NOV",
-                    "DEC",
-                ]
+                calmon = get_all_months()
                 imn = calmon.index(mon) + 1
                 ddom[dom]["CalendarMonths"][imn] = am[im, idm].values.tolist()
 
