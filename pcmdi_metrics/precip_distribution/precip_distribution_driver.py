@@ -4,14 +4,6 @@ import copy
 import glob
 import os
 
-# isort: off
-import shapely  # noqa: F401
-
-# isort: on
-import sys
-
-import MV2 as MV
-import numpy as np
 import xarray as xr
 
 from pcmdi_metrics.io import StringConstructor, xcdat_open
@@ -22,7 +14,6 @@ from pcmdi_metrics.precip_distribution.lib import (
     precip_distribution_cum,
     precip_distribution_frq_amt,
 )
-from pcmdi_metrics.utils import xarray_to_cdms2
 
 # Read parameters
 P = PMPParser()
@@ -95,22 +86,13 @@ for iyr in range(syr, eyr + 1):
             str(iyr) + "-01-01 00:00:00", str(iyr) + "-12-" + str(ldy) + " 23:59:59"
         )
     )
-    # print("ds", ds)
     do = ds[var]
     # Correct negative precip to 0 (ERA-interim from CREATE-IP and ERA-5 from obs4MIP have negative precip values between -1 and 0)
     do = xr.where((do < 0) & (do > -1), 0, do)
-    # do = xr.DataArray.to_cdms2(do) * float(fac)
     do = do * float(fac)
 
     # Update the DataArray in the Dataset
     ds[var].values = do.values
-
-    # print("(before convt) do type:", type(do))  # <class 'xarray.core.dataarray.DataArray'>
-    # do = xarray_to_cdms2(do)
-    # print("(after convt) do type:", type(do))  # <class 'cdms2.tvariable.TransientVariable'>
-
-    # Regridding
-    # rgtmp = Regrid(do, res)  # do: <class 'cdms2.tvariable.TransientVariable'>, res: e.g., [2, 2] or (2, 2), rgtmp: <class 'cdms2.tvariable.TransientVariable'>
 
     # Regridding with xarray
     rgtmp = Regrid_xr(ds, var, res)
@@ -119,8 +101,6 @@ for iyr in range(syr, eyr + 1):
     if iyr == syr:
         ds_rg = copy.deepcopy(rgtmp)
     else:
-        # drg = MV.concatenate((drg, rgtmp))
-        # drg = np.concatenate((drg, rgtmp))
         ds_rg = xr.concat([ds_rg, rgtmp], dim="time")
 
     print(iyr, ds_rg[var].shape)

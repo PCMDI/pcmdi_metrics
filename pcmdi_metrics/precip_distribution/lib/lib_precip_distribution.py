@@ -2,7 +2,6 @@ import copy
 import os
 import sys
 
-import cdms2 as cdms
 import cftime
 import numpy as np
 import rasterio.features
@@ -212,6 +211,7 @@ def precip_distribution_frq_amt(
         pdfmapmon, amtmapmon, months, bincrates, dat, ref, refdir
     )
 
+    """
     # Write data (nc file for distributions at each domain)
     outfilename = f"dist_frq.amt_domain_regrid.{res_nxny}_{dat}.nc"
     with cdms.open(
@@ -238,12 +238,39 @@ def precip_distribution_frq_amt(
         out.write(pdfdomAR6, id="pdf")
         out.write(amtdomAR6, id="amt")
         out.write(bins, id="binbounds")
+    """
 
-    # Write data (json file for domain metrics)
-    outfilename = f"dist_frq.amt_metrics_domain_regrid.{res_nxny}_{dat}.json"
-    JSON = pcmdi_metrics.io.base.Base(
-        outdir(output_type="metrics_results"), outfilename
+    # Write diagnostic output files
+
+    # Define the output directory
+    output_diag_dir = outdir(output_type="diagnostic_results")
+
+    # --- 1. Write distributions for standard domains ---
+    outfilename = f"dist_frq.amt_domain_regrid.{res_nxny}_{dat}.nc"
+    xr.Dataset({"pdf": pdfdom, "amt": amtdom, "binbounds": bins}).to_netcdf(
+        os.path.join(output_diag_dir, outfilename)
     )
+
+    # --- 2. Write distributions for 3-cluster domains ---
+    outfilename = f"dist_frq.amt_domain3C_regrid.{res_nxny}_{dat}.nc"
+    xr.Dataset({"pdf": pdfdom3C, "amt": amtdom3C, "binbounds": bins}).to_netcdf(
+        os.path.join(output_diag_dir, outfilename)
+    )
+
+    # --- 3. Write distributions for AR6 domains ---
+    outfilename = f"dist_frq.amt_domainAR6_regrid.{res_nxny}_{dat}.nc"
+    xr.Dataset({"pdf": pdfdomAR6, "amt": amtdomAR6, "binbounds": bins}).to_netcdf(
+        os.path.join(output_diag_dir, outfilename)
+    )
+
+    # Write Metrics data
+
+    # Define the output directory
+    output_metrics_dir = outdir(output_type="metrics_results")
+
+    # --- 1. json file for domain metrics
+    outfilename = f"dist_frq.amt_metrics_domain_regrid.{res_nxny}_{dat}.json"
+    JSON = pcmdi_metrics.io.base.Base(output_metrics_dir, outfilename)
     JSON.write(
         metricsdom,
         json_structure=["model + realization", "metrics", "domain", "month"],
@@ -254,11 +281,9 @@ def precip_distribution_frq_amt(
     if cmec:
         JSON.write_cmec(indent=4, separators=(", ", ": "))
 
-    # Write data (json file for domain metrics with 3 clustering regions)
+    # --- 2. json file for domain metrics with 3 clustering regions
     outfilename = f"dist_frq.amt_metrics_domain3C_regrid.{res_nxny}_{dat}.json"
-    JSON = pcmdi_metrics.io.base.Base(
-        outdir(output_type="metrics_results"), outfilename
-    )
+    JSON = pcmdi_metrics.io.base.Base(output_metrics_dir, outfilename)
     JSON.write(
         metricsdom3C,
         json_structure=["model + realization", "metrics", "domain", "month"],
@@ -269,11 +294,9 @@ def precip_distribution_frq_amt(
     if cmec:
         JSON.write_cmec(indent=4, separators=(", ", ": "))
 
-    # Write data (json file for domain metrics with AR6 regions)
+    # --- 3. json file for domain metrics with AR6 regions
     outfilename = f"dist_frq.amt_metrics_domainAR6_regrid.{res_nxny}_{dat}.json"
-    JSON = pcmdi_metrics.io.base.Base(
-        outdir(output_type="metrics_results"), outfilename
-    )
+    JSON = pcmdi_metrics.io.base.Base(output_metrics_dir, outfilename)
     JSON.write(
         metricsdomAR6,
         json_structure=["model + realization", "metrics", "domain", "month"],
