@@ -8,14 +8,17 @@ import os
 import shapely  # noqa: F401
 
 # isort: on
+import sys
+
 import MV2 as MV
+import numpy as np
 import xarray as xr
 
-from pcmdi_metrics.io import StringConstructor
+from pcmdi_metrics.io import StringConstructor, xcdat_open
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.precip_distribution.lib import (
     AddParserArgument,
-    Regrid,
+    Regrid_xr,
     precip_distribution_cum,
     precip_distribution_frq_amt,
 )
@@ -64,8 +67,7 @@ for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
 # It is working for daily average precipitation, in units of mm/day, with dimensions of (time,lat,lon)
 file_list = sorted(glob.glob(os.path.join(modpath, mod)))
 print(file_list)
-# f = xcdat.open_mfdataset(file_list)
-f = xr.open_mfdataset(file_list)
+f = xcdat_open(file_list)
 
 if mip == "obs":
     if file_list[0].split("/")[-1].split("_")[2] == "reanalysis":
@@ -78,7 +80,7 @@ else:
     dat = model + "." + ens
 
 cal = f.time.encoding["calendar"]
-print(dat, cal)
+print(dat, cal)  # e.g., GISS-E2-H.r6i1p1 365_day -- both are strings
 
 if "360" in cal:
     ldy = 30
@@ -88,29 +90,43 @@ else:
 syr = prd[0]
 eyr = prd[1]
 for iyr in range(syr, eyr + 1):
-    do = f.sel(
+    ds = f.sel(
         time=slice(
             str(iyr) + "-01-01 00:00:00", str(iyr) + "-12-" + str(ldy) + " 23:59:59"
         )
-    )[var]
+    )
+    # print("ds", ds)
+    do = ds[var]
     # Correct negative precip to 0 (ERA-interim from CREATE-IP and ERA-5 from obs4MIP have negative precip values between -1 and 0)
     do = xr.where((do < 0) & (do > -1), 0, do)
     # do = xr.DataArray.to_cdms2(do) * float(fac)
     do = do * float(fac)
-    print("(before convt) do type:", type(do))
-    do = xarray_to_cdms2(do)
-    print("(after convt) do type:", type(do))
+
+    # Update the DataArray in the Dataset
+    ds[var].values = do.values
+
+    # print("(before convt) do type:", type(do))  # <class 'xarray.core.dataarray.DataArray'>
+    # do = xarray_to_cdms2(do)
+    # print("(after convt) do type:", type(do))  # <class 'cdms2.tvariable.TransientVariable'>
 
     # Regridding
-    rgtmp = Regrid(do, res)
+    # rgtmp = Regrid(do, res)  # do: <class 'cdms2.tvariable.TransientVariable'>, res: e.g., [2, 2] or (2, 2), rgtmp: <class 'cdms2.tvariable.TransientVariable'>
+
+    # Regridding with xarray
+    rgtmp = Regrid_xr(ds, var, res)
+    # rgtmp_da = rgtmp_xr[var]
+
     if iyr == syr:
-        drg = copy.deepcopy(rgtmp)
+        ds_rg = copy.deepcopy(rgtmp)
     else:
-        drg = MV.concatenate((drg, rgtmp))
-    print(iyr, drg.shape)
+        # drg = MV.concatenate((drg, rgtmp))
+        # drg = np.concatenate((drg, rgtmp))
+        ds_rg = xr.concat([ds_rg, rgtmp], dim="time")
+
+    print(iyr, ds_rg[var].shape)
 
 # Calculate metrics from precipitation frequency and amount distributions
-precip_distribution_frq_amt(dat, drg, syr, eyr, res, outdir, ref, refdir, cmec)
+precip_distribution_frq_amt(dat, ds_rg, var, syr, eyr, res, outdir, ref, refdir, cmec)
 
 # Calculate metrics from precipitation cumulative distributions
-precip_distribution_cum(dat, drg, cal, syr, eyr, res, outdir, cmec)
+precip_distribution_cum(dat, ds_rg, var, cal, syr, eyr, res, outdir, cmec)
