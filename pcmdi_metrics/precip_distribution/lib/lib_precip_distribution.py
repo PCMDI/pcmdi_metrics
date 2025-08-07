@@ -293,7 +293,9 @@ def precip_distribution_frq_amt(
 
 
 # ==================================================================================
-def precip_distribution_cum(dat, ds_rg, data_var, cal, syr, eyr, res, outdir, cmec):
+def precip_distribution_cum(
+    dat, ds_rg, data_var, cal, syr, eyr, res, outdir, cmec, debug=False
+):
     """
     - The metric algorithm is based on Dr. Pendergrass's work (https://github.com/apendergrass/unevenprecip)
     - Pre-processing and post-processing of data are modified for PMP as below:
@@ -360,9 +362,10 @@ def precip_distribution_cum(dat, ds_rg, data_var, cal, syr, eyr, res, outdir, cm
                 thisyear = dmon.sel(time=slice(start_time, end_time))
 
             if thisyear is not None:
-                print("thisyear type:", type(thisyear))
-                print("thisyear shape:", thisyear.shape)
-                print("thisyear dimensions:", thisyear.dims)
+                if debug:
+                    print("thisyear type:", type(thisyear))
+                    print("thisyear shape:", thisyear.shape)
+                    print("thisyear dimensions:", thisyear.dims)
                 print(year, thisyear.shape)
                 pfrac, ndhy, prdyfrac, sdii = oneyear(thisyear, missingthresh)
                 cfy[iyr, :, :] = ndhy
@@ -413,16 +416,14 @@ def precip_distribution_cum(dat, ds_rg, data_var, cal, syr, eyr, res, outdir, cm
 
     outcumfrac_ds.to_netcdf(outfile_path)
 
-    # Domain median
-    print("ndmmon type:", type(ndmmon))
-    print("ndmmon shape:", ndmmon.shape)
-    print("months:", months)
-
-    print("prdyfracmmon type:", type(prdyfracmmon))
-    print("prdyfracmmon shape:", prdyfracmmon.shape)
-
-    print("sdiimmon type:", type(sdiimmon))
-    print("sdiimmon shape:", sdiimmon.shape)
+    if debug:
+        print("ndmmon type:", type(ndmmon))
+        print("ndmmon shape:", ndmmon.shape)
+        print("months:", months)
+        print("prdyfracmmon type:", type(prdyfracmmon))
+        print("prdyfracmmon shape:", prdyfracmmon.shape)
+        print("sdiimmon type:", type(sdiimmon))
+        print("sdiimmon shape:", sdiimmon.shape)
 
     # Write data (nc file for spatial pattern of metrics)
     outfilename = f"dist_cumfrac_metrics_regrid.{res_nxny}_{dat}.nc"
@@ -431,14 +432,11 @@ def precip_distribution_cum(dat, ds_rg, data_var, cal, syr, eyr, res, outdir, cm
     )
     cumfrac_metrics_regrid_ds.to_netcdf(outfilename)
 
-    # Metrics
+    # Domain median
     metrics = {"RESULTS": {dat: {}}}
     metrics["RESULTS"][dat]["unevenness"] = MedDomain(ndmmon, months)
-    print("MedDomain for unevenness:", metrics["RESULTS"][dat]["unevenness"])
     metrics["RESULTS"][dat]["prdyfrac"] = MedDomain(prdyfracmmon, months)
-    print("MedDomain for prdyfrac:", metrics["RESULTS"][dat]["prdyfrac"])
     metrics["RESULTS"][dat]["sdii"] = MedDomain(sdiimmon, months)
-    print("MedDomain for sdii:", metrics["RESULTS"][dat]["sdii"])
 
     metrics3C = {"RESULTS": {dat: {}}}
     metrics3C["RESULTS"][dat]["unevenness"] = MedDomain3Clust(ndmmon, months)
@@ -942,25 +940,15 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
     domain_dim = "domains"
     domain_coords = np.arange(len(domains))  # or list of names if available
 
-    pdfdom = xr.DataArray(
-        pdfdom,
-        dims=(am.dims[0], am.dims[1], domain_dim),
-        coords={
-            am.dims[0]: am.coords[am.dims[0]],
-            am.dims[1]: am.coords[am.dims[1]],
-            domain_dim: domain_coords,
-        },
-    )
+    dims = (am.dims[0], am.dims[1], domain_dim)
+    coords = {
+        am.dims[0]: am.coords[am.dims[0]],
+        am.dims[1]: am.coords[am.dims[1]],
+        domain_dim: domain_coords,
+    }
 
-    amtdom = xr.DataArray(
-        amtdom.data,
-        dims=(am.dims[0], am.dims[1], domain_dim),
-        coords={
-            am.dims[0]: am.coords[am.dims[0]],
-            am.dims[1]: am.coords[am.dims[1]],
-            domain_dim: domain_coords,
-        },
-    )
+    pdfdom = numpy_to_xrda(pdfdom, dims, coords)
+    amtdom = numpy_to_xrda(amtdom.data, dims, coords)
 
     print("dat:", dat, "ref:", ref)
 
@@ -1039,20 +1027,7 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 )
 
             else:
-                calmon = [
-                    "JAN",
-                    "FEB",
-                    "MAR",
-                    "APR",
-                    "MAY",
-                    "JUN",
-                    "JUL",
-                    "AUG",
-                    "SEP",
-                    "OCT",
-                    "NOV",
-                    "DEC",
-                ]
+                calmon = get_all_months()
                 imn = calmon.index(mon) + 1
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(
                     pdfdom[im, :, idm], bincrates
@@ -1091,7 +1066,9 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
 
 # ==================================================================================
-def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
+def CalcMetricsDomain3Clust(
+    pdf, amt, months, bincrates, dat, ref, ref_dir, debug=False
+):
     """
     Input
     - pdf: pdf
@@ -1101,6 +1078,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
     - dat: data name
     - ref: reference data name
     - ref_dir: reference data directory
+    - debug: debug flag
     Output
     - metrics: metrics for each domain
     - pdfdom: pdf for each domain
@@ -1152,7 +1130,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
     regs = ["HR", "MR", "LR"]
     mpolygons = []
     regs_name = []
-    for irg, reg in enumerate(regs):
+    for reg in regs:
         if reg == "HR":
             data = xr.where(cluster == 0, 1, 0)
             regs_name.append("Heavy precipitating region")
@@ -1169,7 +1147,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
         shapes = rasterio.features.shapes(np.int32(data))
 
         polygons = []
-        for ish, shape in enumerate(shapes):
+        for shape in shapes:
             for idx, xy in enumerate(shape[0]["coordinates"][0]):
                 lst = list(xy)
                 lst[0] = lst[0]
@@ -1194,19 +1172,12 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
     ddom = []
     for d in [pdf, amt]:
         d_xr = d[0, 0]
-        # mask_3D = region.mask_3D(d_xr, lon_name="longitude", lat_name="latitude")
         mask_3D = region.mask_3D(d_xr)
 
-        print("mask_3D shape", mask_3D.shape)
-        print("mask_3D dims", mask_3D.dims)
-        print("mask_3D coords", mask_3D.coords)
-
-        # mask = xarray_to_cdms2(create_land_sea_mask(cdms2_to_xarray(d[0, 0])))
-        """
-        mask_3D, mask2 = genutil.grower(mask_3D, mask)
-        mask_3D_ocn = MV.where(mask2 == 0.0, mask_3D, False)
-        mask_3D_lnd = MV.where(mask2 == 1.0, mask_3D, False)
-        """
+        if debug:
+            print("mask_3D shape", mask_3D.shape)
+            print("mask_3D dims", mask_3D.dims)
+            print("mask_3D coords", mask_3D.coords)
 
         # Ensure mask is broadcast to match mask_3D shape
         mask2 = mask.broadcast_like(mask_3D)
@@ -1224,22 +1195,6 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 mask_3D_tmp = mask_3D_lnd
             else:
                 mask_3D_tmp = mask_3D
-
-            """
-            if "HR" in dom:
-                d, mask3 = genutil.grower(d, mask_3D_tmp[0, :, :])
-            elif "MR" in dom:
-                d, mask3 = genutil.grower(d, mask_3D_tmp[1, :, :])
-            elif "LR" in dom:
-                d, mask3 = genutil.grower(d, mask_3D_tmp[2, :, :])
-            else:
-                print("ERROR: HR/MR/LR is not defined")
-                exit()
-
-            dmask = MV.masked_where(~mask3, d)
-
-            dmask = MV.masked_where(~np.isfinite(dmask), dmask)
-            """
 
             # Select correct mask slice based on resolution string
             if "HR" in dom:
@@ -1259,16 +1214,6 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
             dmask = d.where(mask3)  # Masks where mask3 is False
             dmask = dmask.where(np.isfinite(dmask))  # Masks non-finite values
 
-            """
-            if "50S50N" in dom:
-                am = cdutil.averager(dmask(latitude=(-50, 50)), axis="xy")
-            if "30N50N" in dom:
-                am = cdutil.averager(dmask(latitude=(30, 50)), axis="xy")
-            if "30S30N" in dom:
-                am = cdutil.averager(dmask(latitude=(-30, 30)), axis="xy")
-            if "50S30S" in dom:
-                am = cdutil.averager(dmask(latitude=(-50, -30)), axis="xy")
-            """
             # Latitude slicing based on domain name
             if "50S50N" in dom:
                 lat_range = slice(-50, 50)
@@ -1301,35 +1246,21 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
     pdfdom = ddom[0]
     amtdom = ddom[1]
-    """
-    axdom = cdms.createAxis(range(len(domains)), id="domains")
-    pdfdom.setAxisList((am.getAxis(0), am.getAxis(1), axdom))
-    amtdom.setAxisList((am.getAxis(0), am.getAxis(1), axdom))
-    """
 
     # Create the new domain coordinate
     domain_dim = "domains"
     domain_coords = np.arange(len(domains))  # or list of names if available
 
-    pdfdom = xr.DataArray(
-        pdfdom,
-        dims=(am.dims[0], am.dims[1], domain_dim),
-        coords={
-            am.dims[0]: am.coords[am.dims[0]],
-            am.dims[1]: am.coords[am.dims[1]],
-            domain_dim: domain_coords,
-        },
-    )
+    dims = (am.dims[0], am.dims[1], domain_dim)
+    coords = {
+        am.dims[0]: am.coords[am.dims[0]],
+        am.dims[1]: am.coords[am.dims[1]],
+        domain_dim: domain_coords,
+    }
 
-    amtdom = xr.DataArray(
-        amtdom.data,
-        dims=(am.dims[0], am.dims[1], domain_dim),
-        coords={
-            am.dims[0]: am.coords[am.dims[0]],
-            am.dims[1]: am.coords[am.dims[1]],
-            domain_dim: domain_coords,
-        },
-    )
+    # Convert numpy arrays to xarray DataArrays
+    pdfdom = numpy_to_xrda(pdfdom, dims, coords)
+    amtdom = numpy_to_xrda(amtdom.data, dims, coords)
 
     print("dat:", dat, "ref:", ref)
 
@@ -1338,10 +1269,6 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
         amtdom_ref = amtdom
     else:
         file = f"dist_frq.amt_domain3C_regrid.{pdf.shape[3]}x{pdf.shape[2]}_{ref}.nc"
-        """
-        pdfdom_ref = cdms.open(os.path.join(ref_dir, file))["pdf"]
-        amtdom_ref = cdms.open(os.path.join(ref_dir, file))["amt"]
-        """
         pdfdom_ref = xcdat_open(os.path.join(ref_dir, file))["pdf"]
         amtdom_ref = xcdat_open(os.path.join(ref_dir, file))["amt"]
 
@@ -1410,20 +1337,7 @@ def CalcMetricsDomain3Clust(pdf, amt, months, bincrates, dat, ref, ref_dir):
                 )
 
             else:
-                calmon = [
-                    "JAN",
-                    "FEB",
-                    "MAR",
-                    "APR",
-                    "MAY",
-                    "JUN",
-                    "JUL",
-                    "AUG",
-                    "SEP",
-                    "OCT",
-                    "NOV",
-                    "DEC",
-                ]
+                calmon = get_all_months()
                 imn = calmon.index(mon) + 1
                 rainpeak, rainwidth, plotpeak, plotwidth = CalcRainMetrics(
                     pdfdom[im, :, idm], bincrates
@@ -1638,22 +1552,6 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
     ddom = []
     for d in [pdf, amt]:
-        """
-        #d = cdms2_to_xarray(d)
-        mask_3D = ar6_all_mod_ocn.mask_3D(d, lon_name="longitude", lat_name="latitude")
-        #weights = np.cos(np.deg2rad(d.latitude))
-
-        lat = get_latitude(d)
-        # Compute cosine of latitude in radians as weights
-        weights = np.cos(np.deg2rad(lat))
-
-
-        am = d.weighted(mask_3D * weights).mean(dim=("latitude", "longitude"))
-        am = xarray_to_cdms2(am)
-
-        ddom.append(am)
-        """
-
         # Dynamically detect latitude and longitude dimension names
         lat_name = get_latitude_key(d)
         lon_name = get_longitude_key(d)
@@ -1682,11 +1580,6 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
     pdfdom = ddom[0]
     amtdom = ddom[1]
-    """
-    axdom = cdms.createAxis(range(len(abbrevs)), id="domains")
-    pdfdom.setAxisList((pdf.getAxis(0), pdf.getAxis(1), axdom))
-    amtdom.setAxisList((pdf.getAxis(0), pdf.getAxis(1), axdom))
-    """
 
     # Create the new domain coordinate
     domain_dim = "domains"
@@ -1719,10 +1612,6 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
         amtdom_ref = amtdom
     else:
         file = f"dist_frq.amt_domainAR6_regrid.{pdf.shape[3]}x{pdf.shape[2]}_{ref}.nc"
-        """
-        pdfdom_ref = cdms.open(os.path.join(ref_dir, file))["pdf"]
-        amtdom_ref = cdms.open(os.path.join(ref_dir, file))["amt"]
-        """
         pdfdom_ref = xcdat_open(os.path.join(ref_dir, file))["pdf"]
         amtdom_ref = xcdat_open(os.path.join(ref_dir, file))["amt"]
 
@@ -1851,8 +1740,6 @@ def CalcPscore(pdf, pdf_ref):
     Output
     - pscore: Perkins score
     """
-    # pdf = pdf.filled(np.nan)
-    # pdf_ref = pdf_ref.filled(np.nan)
     pdf = pdf.where(np.isfinite(pdf))
     pdf_ref = pdf_ref.where(np.isfinite(pdf_ref))
 
@@ -1880,10 +1767,6 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
     - a80: fraction of amount for upper 80 percentile amount
     - a90: fraction of amount for upper 90 percentile amount
     """
-
-    # pdf = pdf.filled(np.nan)
-    # amt = amt.filled(np.nan)
-    # amt_ref = amt_ref.filled(np.nan)
     pdf = pdf.where(np.isfinite(pdf))
     amt = amt.where(np.isfinite(amt))
     amt_ref = amt_ref.where(np.isfinite(amt_ref))
@@ -1897,7 +1780,6 @@ def CalcP10P90(pdf, amt, amt_ref, bincrates):
     # -----------------------------------------------------
 
     # Cumulative PDF
-    # csum_pdf = np.cumsum(pdf, axis=0)
     pdffrac = pdf / np.sum(pdf, axis=0)
     csum_pdf = np.cumsum(pdffrac, axis=0)
 
@@ -1983,9 +1865,7 @@ def CalcBimodality(pdf, distbin):
     ascend = np.sort(distsmt)
     cumfrac = np.nancumsum(ascend) / np.nansum(ascend)
     ithres = np.argwhere(cumfrac >= 0.1)
-    if np.array(ithres).size == 0:
-        distsmt = distsmt
-    else:
+    if np.array(ithres).size != 0:
         distsmt = np.where(distsmt >= ascend[ithres[0][0]], distsmt, 0)
 
     ## Gradient
@@ -2038,7 +1918,7 @@ def CalcBimodality(pdf, distbin):
 
 
 # ==================================================================================
-def oneyear(thisyear, missingthresh):
+def oneyear(thisyear, missingthresh, debug=False):
     # Given one year of precip data, calculate the number of days for half of precipitation
     # Ignore years with zero precip (by setting them to NaN).
     # thisyear is one year of data, (an np array) with the time variable in the leftmost dimension
@@ -2050,10 +1930,8 @@ def oneyear(thisyear, missingthresh):
     nd = dims[0]
     ndwonan = np.sum(~np.isnan(thisyear), axis=0)
     missingfrac = np.sum(np.isnan(thisyear), axis=0) / nd
-    # ptot = np.sum(thisyear, axis=0)
     ptot = np.nansum(thisyear, axis=0)
     sortandflip = -np.sort(-thisyear, axis=0)
-    # cum_sum = np.cumsum(sortandflip, axis=0)
     cum_sum = np.nancumsum(sortandflip, axis=0)
     ptotnp = np.array(ptot)
     ptotnp[np.where(ptotnp == 0)] = np.nan
@@ -2088,33 +1966,30 @@ def oneyear(thisyear, missingthresh):
     # sdii = ptot/prdays
     sdii = ptot / prdays_gt_1mm  # Zhang et al. (2011)
 
-    print(
-        "missingfrac type:", type(missingfrac)
-    )  # <class 'xarray.core.dataarray.DataArray'>
-    print("missingfrac shape:", missingfrac.shape)  # e.g., (90, 180)
-    print("missingfrac dims:", missingfrac.dims)  # ('lat', 'lon')
+    if debug:
+        print("missingfrac type:", type(missingfrac))  # xarray.DataArray
+        print("missingfrac shape:", missingfrac.shape)  # e.g., (90, 180)
+        print("missingfrac dims:", missingfrac.dims)  # ('lat', 'lon')
 
     ndhy[np.where(missingfrac > missingthresh)] = np.nan
     prdyfrac[np.where(missingfrac > missingthresh)] = np.nan
     sdii[np.where(missingfrac > missingthresh)] = np.nan
 
-    # missingfrac2 = np.tile(missingfrac[np.newaxis, :, :], [nd, 1, 1])
-    # missingfrac2 = missingfrac.expand_dims("time").tile({"time": nd})
     missingfrac2 = np.tile(missingfrac.values[np.newaxis, :, :], (nd, 1, 1))
     pfrac[np.where(missingfrac2 > missingthresh)] = np.nan
-    # pfrac = pfrac.where(missingfrac2 <= missingthresh)
 
-    print("pfrac type:", type(pfrac))
-    print("pfrac shape:", pfrac.shape)
+    if debug:
+        print("pfrac type:", type(pfrac))
+        print("pfrac shape:", pfrac.shape)
 
-    print("ndhy type:", type(ndhy))
-    print("ndhy shape:", ndhy.shape)
+        print("ndhy type:", type(ndhy))
+        print("ndhy shape:", ndhy.shape)
 
-    print("prdyfac type:", type(prdyfrac))
-    print("prdyfac shape:", prdyfrac.shape)
+        print("prdyfac type:", type(prdyfrac))
+        print("prdyfac shape:", prdyfrac.shape)
 
-    print("sdii type:", type(sdii))
-    print("sdii shape:", sdii.shape)
+        print("sdii type:", type(sdii))
+        print("sdii shape:", sdii.shape)
 
     return pfrac, ndhy, prdyfrac, sdii
 
