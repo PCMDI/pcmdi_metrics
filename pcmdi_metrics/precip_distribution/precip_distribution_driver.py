@@ -58,7 +58,7 @@ for output_type in ["graphics", "diagnostic_results", "metrics_results"]:
 # It is working for daily average precipitation, in units of mm/day, with dimensions of (time,lat,lon)
 file_list = sorted(glob.glob(os.path.join(modpath, mod)))
 print(file_list)
-f = xcdat_open(file_list)
+ds_raw = xcdat_open(file_list)
 
 if mip == "obs":
     if file_list[0].split("/")[-1].split("_")[2] == "reanalysis":
@@ -70,7 +70,7 @@ else:
     ens = file_list[0].split("/")[-1].split("_")[4]
     dat = model + "." + ens
 
-cal = get_calendar(f)
+cal = get_calendar(ds_raw)
 print("dat, cal:", dat, cal)  # e.g., GISS-E2-H.r6i1p1 365_day -- both are strings
 
 if "360" in cal:
@@ -81,7 +81,7 @@ else:
 syr = prd[0]
 eyr = prd[1]
 for iyr in range(syr, eyr + 1):
-    ds = f.sel(
+    ds = ds_raw.sel(
         time=slice(
             str(iyr) + "-01-01 00:00:00", str(iyr) + "-12-" + str(ldy) + " 23:59:59"
         )
