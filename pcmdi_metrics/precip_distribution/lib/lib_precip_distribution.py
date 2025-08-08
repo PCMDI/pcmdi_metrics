@@ -839,7 +839,6 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
             # Subset and compute median over spatial dims (assumes dims are 'lat' and 'lon')
             lat_key = get_latitude_key(dmask)
-            # lon_key = get_longitude_key(dmask)
             subset = (
                 dmask.sel(**{lat_key: lat_range})
                 .to_dataset(name="dmask")
@@ -849,7 +848,6 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
 
             ddom.append(am)
 
-    # ddom = MV.reshape(ddom, (-1, len(domains), am.shape[0], am.shape[1]))
     ddom = np.reshape(ddom, (-1, len(domains), am.shape[0], am.shape[1]))
     ddom = np.swapaxes(ddom, 1, 3)
     ddom = np.swapaxes(ddom, 1, 2)
@@ -1151,7 +1149,6 @@ def CalcMetricsDomain3Clust(
 
             # Subset and compute median over spatial dims (assumes dims are 'lat' and 'lon')
             lat_key = get_latitude_key(dmask)
-            # lon_key = get_longitude_key(dmask)
             subset = (
                 dmask.sel(**{lat_key: lat_range})
                 .to_dataset(name="dmask")
