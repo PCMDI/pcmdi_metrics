@@ -2341,7 +2341,6 @@ def MedDomainAR6(d, months):
         name="AR6 reference regions with modified ocean regions",
     )
 
-    # d = cdms2_to_xarray(d)
     mask_3D = ar6_all_mod_ocn.mask_3D(d)
     lat_key = get_latitude_key(d)
     lon_key = get_longitude_key(d)

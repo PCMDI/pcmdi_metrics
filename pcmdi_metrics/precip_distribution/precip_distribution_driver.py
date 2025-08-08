@@ -6,7 +6,7 @@ import os
 
 import xarray as xr
 
-from pcmdi_metrics.io import StringConstructor, xcdat_open
+from pcmdi_metrics.io import StringConstructor, get_calendar, xcdat_open
 from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
 from pcmdi_metrics.precip_distribution.lib import (
     AddParserArgument,
@@ -70,8 +70,8 @@ else:
     ens = file_list[0].split("/")[-1].split("_")[4]
     dat = model + "." + ens
 
-cal = f.time.encoding["calendar"]
-print(dat, cal)  # e.g., GISS-E2-H.r6i1p1 365_day -- both are strings
+cal = get_calendar(f)
+print("dat, cal:", dat, cal)  # e.g., GISS-E2-H.r6i1p1 365_day -- both are strings
 
 if "360" in cal:
     ldy = 30
@@ -94,9 +94,8 @@ for iyr in range(syr, eyr + 1):
     # Update the DataArray in the Dataset
     ds[var].values = do.values
 
-    # Regridding with xarray
+    # Regridding with xcdat
     rgtmp = Regrid_xr(ds, var, res)
-    # rgtmp_da = rgtmp_xr[var]
 
     if iyr == syr:
         ds_rg = copy.deepcopy(rgtmp)
