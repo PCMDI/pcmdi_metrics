@@ -122,7 +122,6 @@ def precip_distribution_frq_amt(
         print("completed CalcRainMetrics for each grid point")
 
         # Make Spatial pattern of distributions with separated months
-
         ppdfmap_list.append(ppdfmap)
         ppdfmap_tn_list.append(ppdfmap_tn)
         pamtmap_list.append(pamtmap)
@@ -151,7 +150,6 @@ def precip_distribution_frq_amt(
         print("bins shape:", bins.shape)
 
     axmon = xr.DataArray(months, dims="month", name="month")
-    # axbin = xr.DataArray(binl, name="bin")
     lat = get_latitude(drg)
     lon = get_longitude(drg)
 
@@ -1163,7 +1161,6 @@ def CalcMetricsDomain3Clust(
 
             ddom.append(am)
 
-    # ddom = MV.reshape(ddom, (-1, len(domains), am.shape[0], am.shape[1]))
     ddom = np.reshape(ddom, (-1, len(domains), am.shape[0], am.shape[1]))
     ddom = np.swapaxes(ddom, 1, 3)
     ddom = np.swapaxes(ddom, 1, 2)
@@ -1775,7 +1772,6 @@ def CalcBimodality(pdf, distbin):
     Output
     - bimod: Bimodality
     """
-    # pdf = pdf.filled(np.nan)
     pdf = pdf.where(np.isfinite(pdf))
 
     binrange = [0.1, 50]  # precipitation bin range for gradient calculation
@@ -1848,7 +1844,6 @@ def oneyear(thisyear, missingthresh, debug=False):
     # Ignore years with zero precip (by setting them to NaN).
     # thisyear is one year of data, (an np array) with the time variable in the leftmost dimension
 
-    # thisyear = thisyear.filled(np.nan)  # np.array(thisyear)
     thisyear = thisyear.where(np.isfinite(thisyear))
 
     dims = thisyear.shape
