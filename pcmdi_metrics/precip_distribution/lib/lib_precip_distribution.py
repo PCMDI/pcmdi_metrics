@@ -167,7 +167,8 @@ def precip_distribution_frq_amt(
 
     # First file: spatial pattern of distributions
     outfilename = f"dist_frq.amt_regrid.{res_nxny}_{dat}.nc"
-    outfile_path = os.path.join(outdir(output_type="diagnostic_results"), outfilename)
+    output_diag_dir = outdir(output_type="diagnostic_results")
+    outfile_path = os.path.join(output_diag_dir, outfilename)
 
     # Create a dataset from the individual DataArrays
     ds_distributions = xr.Dataset(
@@ -184,7 +185,7 @@ def precip_distribution_frq_amt(
 
     # Second file: spatial pattern of metrics
     outfilename = f"dist_frq.amt_metrics_regrid.{res_nxny}_{dat}.nc"
-    outfile_path = os.path.join(outdir(output_type="diagnostic_results"), outfilename)
+    outfile_path = os.path.join(output_diag_dir, outfilename)
 
     # Create a dataset from the individual DataArrays
     ds_metrics = xr.Dataset(
@@ -213,21 +214,16 @@ def precip_distribution_frq_amt(
     )
 
     # Write diagnostic output files
-    # Define the output directory
-    output_diag_dir = outdir(output_type="diagnostic_results")
-
     # --- 1. Write distributions for standard domains ---
     outfilename = f"dist_frq.amt_domain_regrid.{res_nxny}_{dat}.nc"
     xr.Dataset({"pdf": pdfdom, "amt": amtdom, "binbounds": bins}).to_netcdf(
         os.path.join(output_diag_dir, outfilename)
     )
-
     # --- 2. Write distributions for 3-cluster domains ---
     outfilename = f"dist_frq.amt_domain3C_regrid.{res_nxny}_{dat}.nc"
     xr.Dataset({"pdf": pdfdom3C, "amt": amtdom3C, "binbounds": bins}).to_netcdf(
         os.path.join(output_diag_dir, outfilename)
     )
-
     # --- 3. Write distributions for AR6 domains ---
     outfilename = f"dist_frq.amt_domainAR6_regrid.{res_nxny}_{dat}.nc"
     xr.Dataset({"pdf": pdfdomAR6, "amt": amtdomAR6, "binbounds": bins}).to_netcdf(
@@ -237,45 +233,15 @@ def precip_distribution_frq_amt(
     # Write Metrics data
     # Define the output directory
     output_metrics_dir = outdir(output_type="metrics_results")
-
     # --- 1. json file for domain metrics
     outfilename = f"dist_frq.amt_metrics_domain_regrid.{res_nxny}_{dat}.json"
-    JSON = pcmdi_metrics.io.base.Base(output_metrics_dir, outfilename)
-    JSON.write(
-        metricsdom,
-        json_structure=["model + realization", "metrics", "domain", "month"],
-        sort_keys=True,
-        indent=4,
-        separators=(", ", ": "),
-    )
-    if cmec:
-        JSON.write_cmec(indent=4, separators=(", ", ": "))
-
+    write_json(metricsdom, output_metrics_dir, outfilename, cmec=cmec)
     # --- 2. json file for domain metrics with 3 clustering regions
     outfilename = f"dist_frq.amt_metrics_domain3C_regrid.{res_nxny}_{dat}.json"
-    JSON = pcmdi_metrics.io.base.Base(output_metrics_dir, outfilename)
-    JSON.write(
-        metricsdom3C,
-        json_structure=["model + realization", "metrics", "domain", "month"],
-        sort_keys=True,
-        indent=4,
-        separators=(", ", ": "),
-    )
-    if cmec:
-        JSON.write_cmec(indent=4, separators=(", ", ": "))
-
+    write_json(metricsdom3C, output_metrics_dir, outfilename, cmec=cmec)
     # --- 3. json file for domain metrics with AR6 regions
     outfilename = f"dist_frq.amt_metrics_domainAR6_regrid.{res_nxny}_{dat}.json"
-    JSON = pcmdi_metrics.io.base.Base(output_metrics_dir, outfilename)
-    JSON.write(
-        metricsdomAR6,
-        json_structure=["model + realization", "metrics", "domain", "month"],
-        sort_keys=True,
-        indent=4,
-        separators=(", ", ": "),
-    )
-    if cmec:
-        JSON.write_cmec(indent=4, separators=(", ", ": "))
+    write_json(metricsdomAR6, output_metrics_dir, outfilename, cmec=cmec)
 
     print("Completed metrics from precipitation frequency and amount distributions")
 
@@ -441,49 +407,17 @@ def precip_distribution_cum(
     metricsAR6["RESULTS"][dat]["sdii"] = MedDomainAR6(sdiimmon, months)
 
     # Write data (json file for domain median metrics)
+    # Define the output directory
+    output_metrics_dir = outdir(output_type="metrics_results")
+    # --- 1. json file for domain median metrics
     outfilename = f"dist_cumfrac_metrics_domain.median_regrid.{res_nxny}_{dat}.json"
-    JSON = pcmdi_metrics.io.base.Base(
-        outdir(output_type="metrics_results"), outfilename
-    )
-    JSON.write(
-        metrics,
-        json_structure=["model + realization", "metrics", "domain", "month"],
-        sort_keys=True,
-        indent=4,
-        separators=(", ", ": "),
-    )
-    if cmec:
-        JSON.write_cmec(indent=4, separators=(", ", ": "))
-
-    # Write data (json file for domain median metrics with 3 clustering regions)
+    write_json(metrics, output_metrics_dir, outfilename, cmec=cmec)
+    # --- 2. json file for domain median metrics with 3 clustering regions
     outfilename = f"dist_cumfrac_metrics_domain.median.3C_regrid.{res_nxny}_{dat}.json"
-    JSON = pcmdi_metrics.io.base.Base(
-        outdir(output_type="metrics_results"), outfilename
-    )
-    JSON.write(
-        metrics3C,
-        json_structure=["model + realization", "metrics", "domain", "month"],
-        sort_keys=True,
-        indent=4,
-        separators=(", ", ": "),
-    )
-    if cmec:
-        JSON.write_cmec(indent=4, separators=(", ", ": "))
-
-    # Write data (json file for domain median metrics with AR6 regions)
+    write_json(metrics3C, output_metrics_dir, outfilename, cmec=cmec)
+    # --- 3. json file for domain median metrics with AR6 regions
     outfilename = f"dist_cumfrac_metrics_domain.median.AR6_regrid.{res_nxny}_{dat}.json"
-    JSON = pcmdi_metrics.io.base.Base(
-        outdir(output_type="metrics_results"), outfilename
-    )
-    JSON.write(
-        metricsAR6,
-        json_structure=["model + realization", "metrics", "domain", "month"],
-        sort_keys=True,
-        indent=4,
-        separators=(", ", ": "),
-    )
-    if cmec:
-        JSON.write_cmec(indent=4, separators=(", ", ": "))
+    write_json(metricsAR6, output_metrics_dir, outfilename, cmec=cmec)
 
     print("Completed metrics from precipitation cumulative distributions")
 
@@ -2449,3 +2383,32 @@ def numpy_to_xrda(data, dims, coords):
     # Create xarray DataArray
     da = xr.DataArray(data, coords=coords, dims=dims)
     return da
+
+
+# ==================================================================================
+def write_json(data, out_dir, outfilename, cmec=False):
+    """Write data to JSON file.
+
+    Parameters
+    ----------
+    data : dict
+        Dictionary containing the data to be written to JSON.
+        The structure should be compatible with the expected JSON format.
+    out_dir : str
+        Directory where the output JSON file will be saved.
+    outfilename : str
+        Name of the output JSON file.
+    cmec : bool, optional
+        If True, write the data in CMEC format, in addition. By default, False
+    """
+
+    JSON = pcmdi_metrics.io.base.Base(out_dir, outfilename)
+    JSON.write(
+        data,
+        json_structure=["model + realization", "metrics", "domain", "month"],
+        sort_keys=True,
+        indent=4,
+        separators=(", ", ": "),
+    )
+    if cmec:
+        JSON.write_cmec(indent=4, separators=(", ", ": "))
