@@ -2151,9 +2151,10 @@ def MedDomain3Clust(d, months, debug=False):
         subset = dmask.sel(**{lat_key: lat_range})
         am = subset.median(dim=[lat_key, lon_key], skipna=True).values.tolist()
 
-        print("subset:", subset)
-        print("subset type:", type(subset))
-        print("am:", am)
+        if debug:
+            print("subset:", subset)
+            print("subset type:", type(subset))
+            print("am:", am)
 
         ddom[dom] = {"CalendarMonths": {}}
         for im, mon in enumerate(months):
