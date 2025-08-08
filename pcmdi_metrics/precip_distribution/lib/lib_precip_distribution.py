@@ -2,7 +2,7 @@ import copy
 import os
 import sys
 
-import cftime
+import cftime  # noqa: F401
 import numpy as np
 import rasterio.features
 import regionmask
@@ -18,6 +18,7 @@ from pcmdi_metrics.io import (
     get_latitude_key,
     get_longitude,
     get_longitude_key,
+    get_time,
     xcdat_open,
 )
 from pcmdi_metrics.utils import create_land_sea_mask, create_target_grid, regrid
@@ -211,37 +212,7 @@ def precip_distribution_frq_amt(
         pdfmapmon, amtmapmon, months, bincrates, dat, ref, refdir
     )
 
-    """
-    # Write data (nc file for distributions at each domain)
-    outfilename = f"dist_frq.amt_domain_regrid.{res_nxny}_{dat}.nc"
-    with cdms.open(
-        os.path.join(outdir(output_type="diagnostic_results"), outfilename), "w"
-    ) as out:
-        out.write(pdfdom, id="pdf")
-        out.write(amtdom, id="amt")
-        out.write(bins, id="binbounds")
-
-    # Write data (nc file for distributions at each domain with 3 clustering regions)
-    outfilename = f"dist_frq.amt_domain3C_regrid.{res_nxny}_{dat}.nc"
-    with cdms.open(
-        os.path.join(outdir(output_type="diagnostic_results"), outfilename), "w"
-    ) as out:
-        out.write(pdfdom3C, id="pdf")
-        out.write(amtdom3C, id="amt")
-        out.write(bins, id="binbounds")
-
-    # Write data (nc file for distributions at each domain with AR6 regions)
-    outfilename = f"dist_frq.amt_domainAR6_regrid.{res_nxny}_{dat}.nc"
-    with cdms.open(
-        os.path.join(outdir(output_type="diagnostic_results"), outfilename), "w"
-    ) as out:
-        out.write(pdfdomAR6, id="pdf")
-        out.write(amtdomAR6, id="amt")
-        out.write(bins, id="binbounds")
-    """
-
     # Write diagnostic output files
-
     # Define the output directory
     output_diag_dir = outdir(output_type="diagnostic_results")
 
@@ -264,7 +235,6 @@ def precip_distribution_frq_amt(
     )
 
     # Write Metrics data
-
     # Define the output directory
     output_metrics_dir = outdir(output_type="metrics_results")
 
@@ -351,6 +321,8 @@ def precip_distribution_cum(
     lat_key = get_latitude_key(drg)
     lon = get_longitude(drg)
     lon_key = get_longitude_key(drg)
+    time = get_time(drg)
+    time_class = type(time.values[0])
 
     for im, mon in enumerate(months):
         print("im, mon:", im, mon)
@@ -371,12 +343,12 @@ def precip_distribution_cum(
                 if year == eyr:
                     thisyear = None
                 else:
-                    start_time = cftime.DatetimeGregorian(year, 12, 1, 0, 0, 0)
-                    end_time = cftime.DatetimeGregorian(year + 1, 3, 1, 23, 59, 59)
+                    start_time = time_class(year, 12, 1, 0, 0, 0)
+                    end_time = time_class(year + 1, 3, 1, 23, 59, 59)
                     thisyear = dmon.sel(time=slice(start_time, end_time))
             else:
-                start_time = cftime.DatetimeGregorian(year, 1, 1, 0, 0, 0)
-                end_time = cftime.DatetimeGregorian(year, 12, ldy, 23, 59, 59)
+                start_time = time_class(year, 1, 1, 0, 0, 0)
+                end_time = time_class(year, 12, ldy, 23, 59, 59)
                 thisyear = dmon.sel(time=slice(start_time, end_time))
 
             if thisyear is not None:
@@ -549,10 +521,7 @@ def Regrid_xr(ds, data_var, resdeg):
     ds_regrid = regrid(ds, data_var, tgrid)
 
     print(
-        "Completed regridding (via Regrid_xr) from",
-        ds[data_var].shape,
-        "to",
-        ds_regrid[data_var].shape,
+        f"Completed regridding (via Regrid_xr) from {ds[data_var].shape} to {ds_regrid[data_var].shape}"
     )
     return ds_regrid
 
@@ -606,8 +575,9 @@ def get_dmon(drg, mon, syr, eyr):
     elif mon == "SON":
         dmon = get_daily_calendar_month(drg, ["SEP", "OCT", "NOV"])
     elif mon == "DJF":
-        start_time = cftime.DatetimeGregorian(syr, 3, 1, 0, 0, 0)
-        end_time = cftime.DatetimeGregorian(eyr, 11, 30, 23, 59, 59)
+        time_class = type(get_time(drg).values[0])
+        start_time = time_class(syr, 3, 1, 0, 0, 0)
+        end_time = time_class(eyr, 11, 30, 23, 59, 59)
         drg_subset = drg.sel(time=slice(start_time, end_time))
         dmon = get_daily_calendar_month(
             drg_subset,
@@ -977,8 +947,9 @@ def CalcMetricsDomain(pdf, amt, months, bincrates, dat, ref, ref_dir):
         file = f"dist_frq.amt_domain_regrid.{pdf.shape[3]}x{pdf.shape[2]}_{ref}.nc"
         print("ref_dir:", ref_dir, "file:", file)
 
-        pdfdom_ref = xcdat_open(os.path.join(ref_dir, file))["pdf"]
-        amtdom_ref = xcdat_open(os.path.join(ref_dir, file))["amt"]
+        ds_ref = xcdat_open(os.path.join(ref_dir, file))
+        pdfdom_ref = ds_ref["pdf"]
+        amtdom_ref = ds_ref["amt"]
 
     metrics = {}
     metrics["frqpeak"] = {}
