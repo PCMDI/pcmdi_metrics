@@ -1920,12 +1920,13 @@ def oneyear(thisyear, missingthresh, debug=False):
 
 
 # ==================================================================================
-def MedDomain(d, months):
+def MedDomain(d, months, debug=False):
     """
     Domain average
     Input
     - d: cdms variable
     - months: month list of input data
+    - debug: if True, print debug information
     Output
     - ddom: Domain median data (json)
     """
@@ -1984,9 +1985,10 @@ def MedDomain(d, months):
         subset = dmask.sel(**{lat_key: lat_range})
         am = subset.median(dim=[lat_key, lon_key], skipna=True).values.tolist()
 
-        print("subset:", subset)
-        print("subset type:", type(subset))
-        print("am:", am)
+        if debug:
+            print("subset:", subset)
+            print("subset type:", type(subset))
+            print("am:", am)
 
         ddom[dom] = {"CalendarMonths": {}}
         for im, mon in enumerate(months):
@@ -2002,12 +2004,13 @@ def MedDomain(d, months):
 
 
 # ==================================================================================
-def MedDomain3Clust(d, months):
+def MedDomain3Clust(d, months, debug=False):
     """
     Domain average
     Input
     - d: cdms variable
     - months: month list of input data
+    - debug: if True, print debug information
     Output
     - ddom: Domain median data (json)
     """
@@ -2133,9 +2136,10 @@ def MedDomain3Clust(d, months):
         dmask = d.where(mask3)  # Masks where mask3 is False
         dmask = dmask.where(np.isfinite(dmask))  # Masks non-finite values
 
-        print("dom:", dom)
-        print("dmask shape:", dmask.shape)
-        print("dmask type:", type(dmask))
+        if debug:
+            print("dom:", dom)
+            print("dmask shape:", dmask.shape)
+            print("dmask type:", type(dmask))
 
         # Latitude slicing based on domain name
         if "50S50N" in dom:
