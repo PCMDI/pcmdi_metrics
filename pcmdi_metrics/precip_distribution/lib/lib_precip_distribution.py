@@ -308,7 +308,8 @@ def precip_distribution_cum(
 
     # Open nc file for writing data of spatial pattern of cumulated fractions with separated month
     outfilename = f"dist_cumfrac_regrid.{res_nxny}_{dat}.nc"
-    outfile_path = os.path.join(outdir(output_type="diagnostic_results"), outfilename)
+    output_diag_dir = outdir(output_type="diagnostic_results")
+    outfile_path = os.path.join(output_diag_dir, outfilename)
 
     drg = ds_rg[data_var]
     # new dataset
@@ -417,10 +418,11 @@ def precip_distribution_cum(
 
     # Write data (nc file for spatial pattern of metrics)
     outfilename = f"dist_cumfrac_metrics_regrid.{res_nxny}_{dat}.nc"
+    outfile_path = os.path.join(output_diag_dir, outfilename)
     cumfrac_metrics_regrid_ds = xr.Dataset(
         {"unevenness": ndmmon, "prdyfrac": prdyfracmmon, "sdiim": sdiimmon},
     )
-    cumfrac_metrics_regrid_ds.to_netcdf(outfilename)
+    cumfrac_metrics_regrid_ds.to_netcdf(outfile_path)
 
     # Domain median
     metrics = {"RESULTS": {dat: {}}}
