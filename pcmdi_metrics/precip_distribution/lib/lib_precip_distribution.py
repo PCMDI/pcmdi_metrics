@@ -384,7 +384,7 @@ def precip_distribution_cum(
     outfilename = f"dist_cumfrac_metrics_regrid.{res_nxny}_{dat}.nc"
     outfile_path = os.path.join(output_diag_dir, outfilename)
     cumfrac_metrics_regrid_ds = xr.Dataset(
-        {"unevenness": ndmmon, "prdyfrac": prdyfracmmon, "sdiim": sdiimmon},
+        {"unevenness": ndmmon, "prdyfrac": prdyfracmmon, "sdii": sdiimmon},
     )
     cumfrac_metrics_regrid_ds.to_netcdf(outfile_path)
 
