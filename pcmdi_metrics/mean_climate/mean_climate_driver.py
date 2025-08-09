@@ -3,6 +3,7 @@
 import glob
 import json
 import os
+import pprint
 from collections import OrderedDict
 from re import split
 
@@ -105,6 +106,7 @@ config_variables = OrderedDict(
         ("regions", regions),
         ("test_data_path", test_data_path),
         ("reference_data_path", reference_data_path),
+        ("custom_observations", custom_obs),
         ("metrics_output_path", metrics_output_path),
         ("diagnostics_output_path", diagnostics_output_path),
         ("debug", debug),
@@ -180,12 +182,40 @@ for var in vars:
     # observation loop
     # ----------------
     if "all" in reference_data_set:
+        # If "all" is in the reference_data_set, we want to include all available references
+        # e.g., ["default", "alternate1", "alternate2"]
         reference_data_set = [
             x
             for x in list(obs_dict[varname].keys())
             if (x == "default" or "alternate" in x)
         ]
+
+        if not reference_data_set or len(reference_data_set) < 1:
+            reference_data_set = ["default"]
+
         print("reference_data_set (all): ", reference_data_set)
+
+    if "default" in reference_data_set:
+        # Ensure "default" is a valid key in obs_dict[varname]
+        if "default" not in obs_dict[varname]:
+            available_refs = list(obs_dict[varname].keys())
+            if len(available_refs) == 1:
+                # Assign the only available reference as "default"
+                obs_dict[varname]["default"] = available_refs[0]
+                print(
+                    "No 'default' reference found, using the only available reference: "
+                    f"{available_refs[0]} for variable '{varname}'"
+                )
+            else:
+                raise ValueError(
+                    f"'default' reference not found for variable '{varname}', "
+                    f"and multiple references are available: {available_refs}"
+                )
+
+    # check obs_dict
+    print("obs_dict (for variable):", varname)
+    pprint.pprint(obs_dict[varname])
+    print("obs_dict (for variable) keys:", obs_dict[varname].keys())
 
     for ref in reference_data_set:
         print("ref:", ref)
@@ -283,7 +313,12 @@ for var in vars:
                 ncfiles = sorted(glob.glob(test_data_full_path))
                 realizations = []
                 for ncfile in ncfiles:
-                    realizations.append(ncfile.split("/")[-1].split(".")[3])
+                    # realization = ncfile.split("/")[-1].split(".")[3]
+                    try:
+                        realization = os.path.basename(ncfile).split(".")[3]
+                    except IndexError:
+                        realization = os.path.basename(ncfile).split("_")[2]
+                    realizations.append(realization)
                 realizations = sort_human(realizations)
                 if first_realization_only:
                     realizations = realizations[0:1]

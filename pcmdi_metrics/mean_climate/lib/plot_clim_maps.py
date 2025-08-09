@@ -11,6 +11,7 @@ from cartopy.mpl.gridliner import LATITUDE_FORMATTER, LONGITUDE_FORMATTER
 from matplotlib import pyplot as plt
 from matplotlib.colors import BoundaryNorm
 
+from pcmdi_metrics.io import get_latitude_key, get_longitude_key
 from pcmdi_metrics.stats import cor_xy, mean_xy, rms_xy, seasonal_mean
 
 from .colormap import colormap_WhiteBlueGreenYellowRed
@@ -45,6 +46,10 @@ def plot_climatology_diff(
     # variable name to avoid original dataset to be modified
     ds_test = ds_test.copy(deep=True)
     ds_ref = ds_ref.copy(deep=True)
+
+    # Get longitude and latitude keys
+    lon_key = get_longitude_key(ds_test)
+    lat_key = get_latitude_key(ds_test)
 
     # Extract specified level if provided
     if level is not None:
@@ -133,8 +138,8 @@ def plot_climatology_diff(
         ax.set_global()
 
         ax.contourf(
-            da_plot.lon,
-            da_plot.lat,
+            ds_test[lon_key],
+            ds_test[lat_key],
             da_plot,
             transform=ccrs.PlateCarree(),
             levels=contour_levels_plot,
@@ -337,6 +342,9 @@ def plot_climatology(
     # variable name (ds) to avoid original dataset to be modified
     ds = ds.copy(deep=True)
 
+    lon_key = get_longitude_key(ds)
+    lat_key = get_latitude_key(ds)
+
     # Define available seasons
     available_seasons = ["AC", "DJF", "MAM", "JJA", "SON"]
 
@@ -414,9 +422,10 @@ def plot_climatology(
         # Set the global extent to cover the entire globe regardless of region that data exists
         ax.set_global()
 
+        # Plot the data
         ax.contourf(
-            da_season.lon,
-            da_season.lat,
+            da_season[lon_key],
+            da_season[lat_key],
             da_season,
             transform=ccrs.PlateCarree(),
             levels=contour_levels,
