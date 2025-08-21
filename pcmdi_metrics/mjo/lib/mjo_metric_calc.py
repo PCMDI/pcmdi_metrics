@@ -52,6 +52,7 @@ def mjo_metric_ewr_calculation(
         print(f"debug: open file: {inputfile}")
 
     ds = xcdat_open(inputfile)
+    ds = ds.bounds.add_missing_bounds()
 
     lat = get_latitude(ds)
     lon = get_longitude(ds)
@@ -101,6 +102,8 @@ def mjo_metric_ewr_calculation(
     elif season == "MJJASO":
         mon = 5
         numYear = endYear - startYear + 1
+    else:
+        raise ValueError(f"Invalid season: {season}. Choose 'NDJFMA' or 'MJJASO'.")
 
     day = 1
 
