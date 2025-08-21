@@ -51,6 +51,7 @@ def slice_dataset(ds, start_year, end_year):
         end_year + 1, 1, 1, 23, 59, 59, calendar=cal
     ) - datetime.timedelta(days=1)
     ds = ds.sel(time=slice(start_time, end_time))
+
     return ds
 
 

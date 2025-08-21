@@ -300,10 +300,24 @@ def create_extremes_parser():
     )
 
     parser.add_argument(
+        "--compute_tasmean",
+        action="store_true",
+        default=False,
+        help="Use to calculate daily mean temp when tasmax and tasmin are present",
+    )
+
+    parser.add_argument(
         "--plot",
         type=bool,
         default=False,
         help="Option for generate individual plots for models: True (default) / False",
+    )
+
+    parser.add_argument(
+        "--custom_thresholds",
+        type=dict,
+        default=False,
+        help="Optional dictionary containing threshold values",
     )
 
     return parser

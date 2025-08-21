@@ -4,8 +4,10 @@ import glob
 import json
 import os
 
+import dask
 import xarray
 import xcdat
+from pint import UnitRegistry
 
 from pcmdi_metrics.drcdm.lib import (
     compute_metrics,
@@ -16,6 +18,10 @@ from pcmdi_metrics.drcdm.lib import (
 )
 from pcmdi_metrics.io.xcdat_dataset_io import get_latitude_key
 from pcmdi_metrics.utils import create_land_sea_mask
+
+ureg = UnitRegistry()
+Q_ = ureg.Quantity
+
 
 if __name__ == "__main__":
     ##########
@@ -32,17 +38,49 @@ if __name__ == "__main__":
     realization = parameter.realization
     # Expected variables - pr, tasmax, tasmin, tas
     variable_list = parameter.vars
+    # Ordering -> expected order is ['tasmax', 'tasmin', 'tas', 'pr']
+    variable_list = [
+        variable
+        for variable in ["tasmax", "tasmin", "pr", "tas"]
+        if variable in variable_list
+    ]
+    # Tasmax needs to come before tasmin, because one of tasmin datasets relies on stored tasmax
+
     filename_template = parameter.filename_template
     sftlf_filename_template = parameter.sftlf_filename_template
     test_data_path = parameter.test_data_path
     reference_data_path = parameter.reference_data_path
     reference_data_set = parameter.reference_data_set
+    reference_filename_template = parameter.reference_filename_template
     reference_sftlf_template = parameter.reference_sftlf_template
     metrics_output_path = parameter.metrics_output_path
     # Do we require variables to use certain units?
     ModUnitsAdjust = parameter.ModUnitsAdjust
     ObsUnitsAdjust = parameter.ObsUnitsAdjust
-    plots = parameter.plots
+    custom_thresholds = parameter.custom_thresholds
+    default_thresh_dict = {
+        "tasmin_ge": [Q_(val, "degF") for val in [70, 75, 80, 85, 90]],
+        "tasmin_le": [Q_(val, "degF") for val in [0, 32]],
+        "tasmax_ge": [Q_(val, "degF") for val in [86, 90, 95, 100, 105, 110, 115]],
+        "tasmax_le": [Q_(val, "degF") for val in [32]],
+        "growing_season": [Q_(val, "degF") for val in [28, 32, 41]],
+        "pr_ge": [Q_(val, "inches") for val in [0, 1, 2, 3, 4]],
+    }
+
+    if not custom_thresholds:
+        threshold_dict = default_thresh_dict
+    else:
+        threshold_dict = {}
+
+        for key, value in default_thresh_dict.items():
+            if key not in custom_thresholds:
+                print(f"Using default thresholds for {key}")
+                threshold_dict[key] = default_thresh_dict[key]
+            else:  # convert user input to default format
+                thresh_vals = custom_thresholds[key]["values"]
+                units = custom_thresholds[key]["units"]
+                threshold_dict[key] = [Q_(val, units) for val in thresh_vals]
+
     # TODO: Some metrics require a baseline period. Do we use obs for that? Allow two model date ranges?
     msyear = parameter.msyear
     meyear = parameter.meyear
@@ -52,6 +90,7 @@ if __name__ == "__main__":
     # Block extrema related settings
     annual_strict = parameter.annual_strict
     exclude_leap = parameter.exclude_leap
+    compute_tasmean = parameter.compute_tasmean
     dec_mode = parameter.dec_mode
     drop_incomplete_djf = parameter.drop_incomplete_djf
     # Region masking
@@ -61,6 +100,15 @@ if __name__ == "__main__":
     coords = parameter.coords
     nc_out = parameter.netcdf
     plots = parameter.plot
+
+    if compute_tasmean and (
+        ("tasmin" not in variable_list) or ("tasmax" not in variable_list)
+    ):
+        print("Must provide tasmax and tasmin to compute tas")
+        compute_tasmean = False  # Ignoring
+    elif compute_tasmean:
+        if "tas" not in variable_list:
+            variable_list.append("tas")
 
     # Check the region masking parameters, if provided
     use_region_mask, region_name, coords = region_utilities.check_region_params(
@@ -89,15 +137,31 @@ if __name__ == "__main__":
     # Initialize output.json file
     meta = metadata.MetadataFile(metrics_output_path)
 
-    # Initialize other directories
+    # Initialize Output Path for NetCDF Files
     if nc_out:
-        nc_dir = os.path.join(metrics_output_path, "netcdf")
-        os.makedirs(nc_dir, exist_ok=True)
+        for s in ["annual", "seasonal", "monthly", "quantile"]:
+            nc_dir = os.path.join(metrics_output_path, "netcdf")
+            nc_subdir = os.path.join(nc_dir, s)
+            os.makedirs(nc_subdir, exist_ok=True)
+
+            for v in variable_list:
+                var_nc_outdir = os.path.join(nc_subdir, v)
+                os.makedirs(var_nc_outdir, exist_ok=True)
+
+    # Initialize Output path for reference files
+    ref_dir = os.path.join(metrics_output_path, "reference")
+    os.makedirs(ref_dir, exist_ok=True)
+
+    # Initialize Output path for Plots
     if plots:
         for s in ["annual", "seasonal", "monthly", "quantile"]:
             fig_dir = os.path.join(metrics_output_path, "plots")
             plot_subdir = os.path.join(fig_dir, s)
             os.makedirs(plot_subdir, exist_ok=True)
+
+            for v in variable_list:  # Make Subdirectories for each variable
+                var_plot_outdir = os.path.join(plot_subdir, v)
+                os.makedirs(var_plot_outdir, exist_ok=True)
 
     # Setting up model realization list
     find_all_realizations, realizations = utilities.set_up_realizations(realization)
@@ -118,13 +182,17 @@ if __name__ == "__main__":
         annual_strict,
         region_name,
     )
-
     ##############
     # Run Analysis
     ##############
     ds_tasmax_for_chill_hours = None
     ds_last_freeze = None
     ds_first_freeze = None
+    nc_non_zero_pr_ref_file_path = None
+    nc_pr_ref_file_path = None
+    # Koppen Utilites
+    pr_monthly = None
+    tas_monthly = None
 
     # Loop over models
     for model in model_loop_list:
@@ -152,6 +220,7 @@ if __name__ == "__main__":
         for run in list_of_runs:
             # TODO: For some reason if the reference_data_path was not found, the reference data defaulted to the test data - not sure why
             # Finding land/sea mask
+
             sftlf_exists = True
             skip_sftlf = False
             if run == reference_data_set:
@@ -196,11 +265,6 @@ if __name__ == "__main__":
                         sftlf, region_name, coords=coords, shp_path=shp_path, column=col
                     )
 
-            if run == reference_data_set:
-                units_adjust = ObsUnitsAdjust
-            else:
-                units_adjust = ModUnitsAdjust
-
             # Initialize results dictionary for this mode/run
             # Presumably we will be populating this will metrics as we go
             metrics_dict["RESULTS"][model][run] = {}
@@ -208,13 +272,30 @@ if __name__ == "__main__":
             # In extremes we are looping over different variables. I am really
             # not sure what will be the best way to approach this, if we should loop
             # over variables, take in multiple variables at once, etc.
+
             for varname in variable_list:
                 # Populate the filename templates to get actual data path
                 if run == reference_data_set:
-                    test_data_full_path = reference_data_path
+                    units_adjust = ObsUnitsAdjust[varname]
+                    tags = {
+                        "%(variable)": varname,
+                    }
+                    test_data_full_path = os.path.join(
+                        reference_data_path, reference_filename_template
+                    )
+                    test_data_full_path = utilities.replace_multi(
+                        test_data_full_path, tags
+                    )
+                    print(test_data_full_path)
                     start_year = osyear
                     end_year = oeyear
                 else:
+                    if varname != "tas":
+                        units_adjust = ModUnitsAdjust[varname]
+                    else:
+                        units_adjust = ModUnitsAdjust.get(
+                            varname, None
+                        )  # fallback if needed
                     tags = {
                         "%(variable)": varname,
                         "%(model)": model,
@@ -229,84 +310,110 @@ if __name__ == "__main__":
                     )
                     start_year = msyear
                     end_year = meyear
+
                 yrs = [str(start_year), str(end_year)]  # for output file names
-                test_data_full_path = glob.glob(test_data_full_path)
-                test_data_full_path.sort()
-                if len(test_data_full_path) == 0:
-                    print("")
-                    print("-----------------------")
-                    print("Not found: model, run, variable:", model, run, varname)
-                    continue
-                else:
-                    print("")
-                    print("-----------------------")
-                    print("model, run, variable:", model, run, varname)
-                    print("test_data (model in this case) full_path:")
-                    for t in test_data_full_path:
-                        print("  ", t)
+
+                # For all variables (including "tas" if not compute_tasmean), check and load file(s)
+                if not (varname == "tas" and compute_tasmean):
+                    test_data_full_path = glob.glob(test_data_full_path)
+                    test_data_full_path.sort()
+                    if len(test_data_full_path) == 0:
+                        print("")
+                        print("-----------------------")
+                        print("Not found: model, run, variable:", model, run, varname)
+                        continue
+                    else:
+                        print("")
+                        print("-----------------------")
+                        print("model, run, variable:", model, run, varname)
+                        print("test_data (model in this case) full_path:")
+                        for t in test_data_full_path:
+                            print("  ", t)
 
                 # Load and prep data
-                ds = utilities.load_dataset(test_data_full_path)
-
-                if not sftlf_exists and generate_sftlf:
-                    print("Generating land sea mask.")
-                    sft = create_land_sea_mask(ds)
-                    sftlf = ds.copy(data=None)
-                    sftlf["sftlf"] = sft
-                    if use_region_mask:
-                        print("\nCreating region mask for land/sea mask.")
-                        sftlf = region_utilities.mask_region(
-                            sftlf,
-                            region_name,
-                            coords=coords,
-                            shp_path=shp_path,
-                            column=col,
-                        )
-                elif skip_sftlf:
-                    # Make mask with all ones
-                    sftlf = ds.copy(data=None)
-                    sftlf["sftlf"] = xarray.ones_like(ds[varname].isel({"time": 0}))
-                    if use_region_mask:
-                        print("\nCreating region mask for land/sea mask.")
-                        sftlf = region_utilities.mask_region(
-                            sftlf,
-                            region_name,
-                            coords=coords,
-                            shp_path=shp_path,
-                            column=col,
-                        )
-
-                # Mask out Antarctica
-                sflat = get_latitude_key(sftlf)
-                sftlf["sftlf"] = sftlf["sftlf"].where(sftlf[sflat] > -60)
-
-                if use_region_mask:
-                    print("Creating dataset mask")
-                    ds = region_utilities.mask_region(
-                        ds, region_name, coords=coords, shp_path=shp_path, column=col
-                    )
-
-                # Get time slice if year parameters exist
-                if start_year is not None:
-                    ds = utilities.slice_dataset(ds, start_year, end_year)
+                if (varname == "tas") and (compute_tasmean):
+                    ds = da_tas.to_dataset(name="tas")
                 else:
-                    # Get labels for start/end years from dataset
-                    yrs = [str(int(ds.time.dt.year[0])), str(int(ds.time.dt.year[-1]))]
+                    ds = utilities.load_dataset(test_data_full_path)
 
-                if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
-                    units = ds.time.encoding["units"]
-                    ds = ds.convert_calendar("noleap")
-                    ds.time.encoding["calendar"] = "noleap"
-                    ds.time.encoding["units"] = units
+                    if not sftlf_exists and generate_sftlf:
+                        print("Generating land sea mask.")
+                        sft = create_land_sea_mask(ds)
+                        sftlf = ds.copy(data=None)
+                        sftlf["sftlf"] = sft
+                        if use_region_mask:
+                            print("\nCreating region mask for land/sea mask.")
+                            sftlf = region_utilities.mask_region(
+                                sftlf,
+                                region_name,
+                                coords=coords,
+                                shp_path=shp_path,
+                                column=col,
+                            )
+                    elif skip_sftlf:
+                        # Make mask with all ones
+                        sftlf = ds.copy(data=None)
+                        sftlf["sftlf"] = xarray.ones_like(ds[varname].isel({"time": 0}))
+                        if use_region_mask:
+                            print("\nCreating region mask for land/sea mask.")
+                            sftlf = region_utilities.mask_region(
+                                sftlf,
+                                region_name,
+                                coords=coords,
+                                shp_path=shp_path,
+                                column=col,
+                            )
 
-                ds[varname] = compute_metrics.convert_units(ds[varname], ModUnitsAdjust)
+                    # Mask out Antarctica
+                    sflat = get_latitude_key(sftlf)
+                    sftlf["sftlf"] = sftlf["sftlf"].where(sftlf[sflat] > -60)
+
+                    if use_region_mask:
+                        print("Creating dataset mask")
+                        ds = region_utilities.mask_region(
+                            ds,
+                            region_name,
+                            coords=coords,
+                            shp_path=shp_path,
+                            column=col,
+                        )
+
+                    # Get time slice if year parameters exist
+                    if start_year is not None:
+                        ds = utilities.slice_dataset(ds, start_year, end_year)
+                    else:
+                        # Get labels for start/end years from dataset
+                        yrs = [
+                            str(int(ds.time.dt.year[0])),
+                            str(int(ds.time.dt.year[-1])),
+                        ]
+
+                    if ds.time.encoding["calendar"] != "noleap" and exclude_leap:
+                        units = ds.time.encoding["units"]
+                        ds = ds.convert_calendar("noleap")
+                        ds.time.encoding["calendar"] = "noleap"
+                        ds.time.encoding["units"] = units
+
+                    ds[varname] = compute_metrics.convert_units(
+                        ds[varname], units_adjust
+                    )
+                    data_units = ds[varname].attrs["units"]
+
+                if varname == "pr":  # set all precip data < 1mm/day to 0mm/day
+                    ds = compute_metrics.clip_precip(ds)
 
                 # Set up output file names
                 if nc_out:
                     # $index will be replaced with index name in metrics function
                     nc_base = os.path.join(nc_dir, "_".join([model, run, "$index.nc"]))
+                    nc_base_for_qthresh = os.path.join(
+                        ref_dir, "_".join([model, run, "$index.nc"])
+                    )
                 else:
                     nc_base = None
+                    nc_base_for_qthresh = os.path.join(
+                        ref_dir, "_".join([model, run, "$index.nc"])
+                    )
                 if plots:
                     fig_base = os.path.join(
                         fig_dir, "_".join([model, run, "$index.png"])
@@ -326,12 +433,30 @@ if __name__ == "__main__":
                         dec_mode,
                         drop_incomplete_djf,
                         annual_strict,
-                        nc_base,
+                        nc_file=nc_base_for_qthresh,
                     )  # saves a quantile tasmax netCDF file for later use
                 elif (varname == "tasmax") and (run != reference_data_set):
-                    # For computing chill-hours, we need tasmax data. Save tasmax data in a new variable in case we do tasmin as well
-                    ds_tasmax_for_chill_hours = ds
+                    if compute_tasmean:
+                        da_tas = ds[varname].copy(deep=True) / 2
+                        da_tas.attrs = ds[varname].attrs.copy()
 
+                    if (
+                        reference_data_set is None
+                    ):  # compute quantile thresholds using model dataset itself
+                        (
+                            result_dict,
+                            nc_tmax_ref_file_path,
+                        ) = compute_metrics.get_ref_tasmax_Q(
+                            ds,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            nc_file=nc_base_for_qthresh,
+                            start_year=osyear,
+                            end_year=oeyear,
+                        )
+                    # For computing chill-hours, we need tasmax data. Save tasmax data in a new variable in case we do tasmin as well
+                    ds_tasmax_for_chill_hours = ds.copy(deep=True)
                     result_dict = compute_metrics.get_mean_tasmax(
                         ds,
                         sftlf,
@@ -342,26 +467,38 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                    # result_dict = compute_metrics.get_tasmax_q99p9(
-                    #     ds,
-                    #     sftlf,
-                    #     dec_mode,
-                    #     drop_incomplete_djf,
-                    #     annual_strict,
-                    #     fig_base,
-                    #     nc_base,
-                    # )
-                    # metrics_dict["RESULTS"][model][run].update(result_dict)
-                    # result_dict = compute_metrics.get_tasmax_q50(
-                    #     ds,
-                    #     sftlf,
-                    #     dec_mode,
-                    #     drop_incomplete_djf,
-                    #     annual_strict,
-                    #     fig_base,
-                    #     nc_base,
-                    # )
-                    # metrics_dict["RESULTS"][model][run].update(result_dict)
+
+                    # get monthly mean tasmax
+                    result_dict = compute_metrics.get_monthly_mean_tasmax(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    result_dict = compute_metrics.get_tasmax_q99p9(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    result_dict = compute_metrics.get_tasmax_q50(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
                     result_dict = compute_metrics.get_annual_txx(
                         ds,
                         sftlf,
@@ -383,8 +520,8 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                    for deg in [86, 90, 95, 100, 105, 110, 115]:
-                        # TODO: figure out how to handle C units
+
+                    for deg in threshold_dict["tasmax_ge"]:
                         result_dict = compute_metrics.get_annual_tasmax_ge_XF(
                             ds,
                             sftlf,
@@ -396,7 +533,7 @@ if __name__ == "__main__":
                             nc_base,
                         )
                         metrics_dict["RESULTS"][model][run].update(result_dict)
-                    for deg in [32]:
+                    for deg in threshold_dict["tasmax_le"]:
                         result_dict = compute_metrics.get_annual_tasmax_le_XF(
                             ds,
                             sftlf,
@@ -409,36 +546,66 @@ if __name__ == "__main__":
                         )
                         metrics_dict["RESULTS"][model][run].update(result_dict)
 
-                    if reference_data_path is not None:
-                        for quantile in [50, 90, 95, 99]:
-                            result_dict = compute_metrics.get_tmax_days_above_Qth(
-                                ds,
-                                sftlf,
-                                quantile,
-                                nc_tmax_ref_file_path,
-                                dec_mode,
-                                drop_incomplete_djf,
-                                annual_strict,
-                                fig_base,
-                                nc_base,
-                            )
-                            metrics_dict["RESULTS"][model][run].update(result_dict)
-                        for quantile in [1]:
-                            result_dict = compute_metrics.get_tmax_days_below_Qth(
-                                ds,
-                                sftlf,
-                                quantile,
-                                nc_tmax_ref_file_path,
-                                dec_mode,
-                                drop_incomplete_djf,
-                                annual_strict,
-                                fig_base,
-                                nc_base,
-                            )
-                            metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # if reference_data_path is not None:
+                    for quantile in [99]:
+                        result_dict = compute_metrics.get_tmax_days_above_Qth(
+                            ds,
+                            sftlf,
+                            quantile,
+                            nc_tmax_ref_file_path,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            fig_base,
+                            nc_base,
+                        )
+                        metrics_dict["RESULTS"][model][run].update(result_dict)
+                    for quantile in [1]:
+                        result_dict = compute_metrics.get_tmax_days_below_Qth(
+                            ds,
+                            sftlf,
+                            quantile,
+                            nc_tmax_ref_file_path,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            fig_base,
+                            nc_base,
+                        )
+                        metrics_dict["RESULTS"][model][run].update(result_dict)
 
-                    # get monthly mean tasmax
-                    result_dict = compute_metrics.get_monthly_mean_tasmax(
+                elif (varname == "tasmin") and (run == reference_data_set):
+                    (
+                        result_dict,
+                        nc_tmin_ref_file_path,
+                    ) = compute_metrics.get_ref_tasmin_Q(
+                        ds,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        nc_file=nc_base_for_qthresh,
+                    )  # saves a quantile tasmax netCDF file for later use
+                elif (varname == "tasmin") and (run != reference_data_set):
+                    if compute_tasmean:
+                        da_tas += ds[varname].copy(deep=True) / 2
+
+                    if (
+                        reference_data_set is None
+                    ):  # compute quantile thresholds using model dataset itself
+                        (
+                            result_dict,
+                            nc_tmin_ref_file_path,
+                        ) = compute_metrics.get_ref_tasmin_Q(
+                            ds,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            nc_file=nc_base_for_qthresh,
+                            start_year=osyear,
+                            end_year=oeyear,
+                        )
+                    # Annual Minimum Temperature
+                    result_dict = compute_metrics.get_tnn(
                         ds,
                         sftlf,
                         dec_mode,
@@ -448,8 +615,8 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                elif varname == "tasmin":
-                    result_dict = compute_metrics.get_tnn(
+                    # Mean tasmin
+                    result_dict = compute_metrics.get_mean_tasmin(
                         ds,
                         sftlf,
                         dec_mode,
@@ -492,7 +659,8 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                    for deg in [0, 32]:
+
+                    for deg in threshold_dict["tasmin_le"]:
                         result_dict = compute_metrics.get_annual_tasmin_le_XF(
                             ds,
                             sftlf,
@@ -504,7 +672,7 @@ if __name__ == "__main__":
                             nc_base,
                         )
                         metrics_dict["RESULTS"][model][run].update(result_dict)
-                    for deg in [70, 75, 80, 85, 90]:
+                    for deg in threshold_dict["tasmin_ge"]:
                         result_dict = compute_metrics.get_annual_tasmin_ge_XF(
                             ds,
                             sftlf,
@@ -516,19 +684,9 @@ if __name__ == "__main__":
                             nc_base,
                         )
                         metrics_dict["RESULTS"][model][run].update(result_dict)
-                    result_dict = compute_metrics.get_mean_tasmin(
-                        ds,
-                        sftlf,
-                        dec_mode,
-                        drop_incomplete_djf,
-                        annual_strict,
-                        fig_base,
-                        nc_base,
-                    )
-                    metrics_dict["RESULTS"][model][run].update(result_dict)
 
                     first_date_dict = {}
-                    for deg in [28]:
+                    for deg in threshold_dict["growing_season"]:
                         result_dict, ds_out = compute_metrics.get_first_date_belowX(
                             ds,
                             sftlf,
@@ -539,11 +697,11 @@ if __name__ == "__main__":
                             fig_base,
                             nc_base,
                         )
-                        first_date_dict[deg] = ds_out
+                        first_date_dict[deg.magnitude] = ds_out
                         metrics_dict["RESULTS"][model][run].update(result_dict)
 
                     last_date_dict = {}
-                    for deg in [28]:
+                    for deg in threshold_dict["growing_season"]:
                         result_dict, ds_out = compute_metrics.get_last_date_belowX(
                             ds,
                             sftlf,
@@ -554,7 +712,7 @@ if __name__ == "__main__":
                             fig_base,
                             nc_base,
                         )
-                        last_date_dict[deg] = ds_out
+                        last_date_dict[deg.magnitude] = ds_out
                         metrics_dict["RESULTS"][model][run].update(result_dict)
 
                     if ds_tasmax_for_chill_hours is not None:
@@ -573,10 +731,10 @@ if __name__ == "__main__":
                     if (len(list(first_date_dict.keys())) != 0) and (
                         len(list(last_date_dict.keys())) != 0
                     ):
-                        for deg in [28]:
+                        for deg in threshold_dict["growing_season"]:
                             result_dict = compute_metrics.get_growing_season_length(
-                                first_date_dict[deg],
-                                last_date_dict[deg],
+                                first_date_dict[deg.magnitude],
+                                last_date_dict[deg.magnitude],
                                 deg,
                                 sftlf,
                                 dec_mode,
@@ -587,7 +745,47 @@ if __name__ == "__main__":
                             )
                         metrics_dict["RESULTS"][model][run].update(result_dict)
 
+                    # if reference_data_path is not None:
+                    for quantile in [99]:
+                        result_dict = compute_metrics.get_tmin_days_above_Qth(
+                            ds,
+                            sftlf,
+                            quantile,
+                            nc_tmin_ref_file_path,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            fig_base,
+                            nc_base,
+                        )
+                        metrics_dict["RESULTS"][model][run].update(result_dict)
+                    for quantile in [1]:
+                        result_dict = compute_metrics.get_tmin_days_below_Qth(
+                            ds,
+                            sftlf,
+                            quantile,
+                            nc_tmin_ref_file_path,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            fig_base,
+                            nc_base,
+                        )
+                        metrics_dict["RESULTS"][model][run].update(result_dict)
+
                 elif varname == "pr" and run == reference_data_set:
+                    (
+                        result_dict,
+                        nc_non_zero_pr_ref_file_path,
+                    ) = compute_metrics.get_ref_pr_Q(
+                        ds,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        nc_file=nc_base_for_qthresh,
+                        non_zero=True,
+                    )  # saves a quantile precip netCDF file for later use
+
                     (
                         result_dict,
                         nc_pr_ref_file_path,
@@ -597,10 +795,43 @@ if __name__ == "__main__":
                         drop_incomplete_djf,
                         annual_strict,
                         nc_base,
+                        non_zero=False,
                     )  # saves a quantile precip netCDF file for later use
                 elif (varname == "pr") and (run != reference_data_set):
-                    # Annual mean precipitation
-                    result_dict = compute_metrics.get_annualmean_pr(
+                    pr_quant = [75, 95]
+                    if (
+                        reference_data_set is None
+                    ):  # compute quantile thresholds using model dataset itself
+                        (
+                            result_dict,
+                            nc_non_zero_pr_ref_file_path,
+                        ) = compute_metrics.get_ref_pr_Q(
+                            ds,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            nc_file=nc_base_for_qthresh,
+                            non_zero=True,
+                            start_year=osyear,
+                            end_year=oeyear,
+                            quantiles=pr_quant,
+                        )  # saves a quantile precip netCDF file for later use
+
+                        (
+                            result_dict,
+                            nc_pr_ref_file_path,
+                        ) = compute_metrics.get_ref_pr_Q(
+                            ds,
+                            dec_mode,
+                            drop_incomplete_djf,
+                            annual_strict,
+                            nc_file=nc_base_for_qthresh,
+                            start_year=osyear,
+                            end_year=oeyear,
+                            quantiles=pr_quant,
+                        )
+                    # # Annual/Seasonal mean precipitation
+                    result_dict = compute_metrics.get_mean_pr(
                         ds,
                         sftlf,
                         dec_mode,
@@ -610,19 +841,9 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
-                    # Seasonal mean precipitation
-                    result_dict = compute_metrics.get_seasonalmean_pr(
-                        ds,
-                        sftlf,
-                        dec_mode,
-                        drop_incomplete_djf,
-                        annual_strict,
-                        fig_base,
-                        nc_base,
-                    )
-                    metrics_dict["RESULTS"][model][run].update(result_dict)
+
                     # Monthly mean precipitation
-                    result_dict = compute_metrics.get_monthly_mean_pr(
+                    result_dict, nc_monthly_pr_path = compute_metrics.get_monthly_pr(
                         ds,
                         sftlf,
                         dec_mode,
@@ -632,6 +853,7 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
+
                     # Max daily precip
                     result_dict = compute_metrics.get_annual_pxx(
                         ds,
@@ -654,12 +876,13 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
+
                     # Annual fraction of days ge X inches. 0-> pr_days a
-                    for inches in [0, 1, 2, 3, 4]:
-                        result_dict = compute_metrics.get_annual_pr_ge_Xin(
+                    for threshold in threshold_dict["pr_ge"]:
+                        result_dict = compute_metrics.get_annual_pr_ge_X(
                             ds,
                             sftlf,
-                            inches,
+                            threshold,
                             dec_mode,
                             drop_incomplete_djf,
                             annual_strict,
@@ -667,17 +890,19 @@ if __name__ == "__main__":
                             nc_base,
                         )
                         metrics_dict["RESULTS"][model][run].update(result_dict)
+
+                    # TODO: requires 5 years of data
                     # Wettest day in 5 year range
-                    result_dict = compute_metrics.get_wettest_5yr(
-                        ds,
-                        sftlf,
-                        dec_mode,
-                        drop_incomplete_djf,
-                        annual_strict,
-                        fig_base,
-                        nc_base,
-                    )
-                    metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # result_dict = compute_metrics.get_wettest_5yr(
+                    #     ds,
+                    #     sftlf,
+                    #     dec_mode,
+                    #     drop_incomplete_djf,
+                    #     annual_strict,
+                    #     fig_base,
+                    #     nc_base,
+                    # )
+                    # metrics_dict["RESULTS"][model][run].update(result_dict)
                     # Wettest annual N-day period
                     for n in [5, 10, 20, 30]:
                         result_dict = compute_metrics.get_annual_pr_nday(
@@ -713,19 +938,44 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
+                    # Consecutive dry days in JJA
+                    result_dict = compute_metrics.get_JJA_consecDD(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+
                     # Median
                     # This function must come after the consecutive dry days function
                     # Otherwise cdd generates all zeros. Unsure why.
-                    # result_dict = compute_metrics.get_pr_q50(
-                    #     ds,
-                    #     sftlf,
-                    #     dec_mode,
-                    #     drop_incomplete_djf,
-                    #     annual_strict,
-                    #     fig_base,
-                    #     nc_base,
-                    # )
-                    # metrics_dict["RESULTS"][model][run].update(result_dict)
+                    result_dict = compute_metrics.get_pr_q50(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+
+                    # 95 percentile
+                    result_dict = compute_metrics.get_pr_q95p0(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+
                     # 99.9 percentile
                     result_dict = compute_metrics.get_pr_q99p9(
                         ds,
@@ -737,6 +987,79 @@ if __name__ == "__main__":
                         nc_base,
                     )
                     metrics_dict["RESULTS"][model][run].update(result_dict)
+
+                    if nc_pr_ref_file_path != None:
+                        # Number of days above Q quantile in the observational dataset.
+                        for quantile in pr_quant:
+                            result_dict = compute_metrics.get_pr_days_above_Qth(
+                                ds,
+                                sftlf,
+                                quantile,
+                                nc_non_zero_pr_ref_file_path,
+                                dec_mode,
+                                drop_incomplete_djf,
+                                annual_strict,
+                                fig_base,
+                                nc_base,
+                                non_zero=True,
+                            )
+                            metrics_dict["RESULTS"][model][run].update(result_dict)
+
+                            result_dict = compute_metrics.get_pr_days_above_Qth(
+                                ds,
+                                sftlf,
+                                quantile,
+                                nc_pr_ref_file_path,
+                                dec_mode,
+                                drop_incomplete_djf,
+                                annual_strict,
+                                fig_base,
+                                nc_base,
+                                non_zero=False,
+                            )
+                            metrics_dict["RESULTS"][model][run].update(result_dict)
+
+                            result_dict = compute_metrics.get_pr_sum_above_Qth(
+                                ds,
+                                sftlf,
+                                quantile,
+                                nc_non_zero_pr_ref_file_path,
+                                dec_mode,
+                                drop_incomplete_djf,
+                                annual_strict,
+                                fig_base,
+                                nc_base,
+                            )
+                            metrics_dict["RESULTS"][model][run].update(result_dict)
+
+                elif varname == "tas":
+                    # Mean Average Daily Temperature
+                    result_dict = compute_metrics.get_mean_tasmean(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+
+                    # Monthly Mean Temperature
+                    (
+                        result_dict,
+                        nc_monthly_tas_path,
+                    ) = compute_metrics.get_monthly_mean_tas(
+                        ds,
+                        sftlf,
+                        dec_mode,
+                        drop_incomplete_djf,
+                        annual_strict,
+                        fig_base,
+                        nc_base,
+                    )
+                    metrics_dict["RESULTS"][model][run].update(result_dict)
+
                     # Annual number of cooling degree days
                     result_dict = compute_metrics.get_annual_cooling_degree_days(
                         ds,
@@ -792,6 +1115,11 @@ if __name__ == "__main__":
                 "Seasonal metrics for single dataset",
             )
             del metrics_tmp
+
+        if ("tas" in variable_list) and ("pr" in variable_list):
+            compute_metrics.compute_koppen(
+                nc_monthly_tas_path, nc_monthly_pr_path, fig_base
+            )
 
     # Output single file with all models
     model_write_list = model_loop_list.copy()

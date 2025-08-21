@@ -161,6 +161,7 @@ def mean_xy(d, var="variable", weights=None):
     if weights is None:
         weights = d.spatial.get_weights(axis=["X", "Y"])
     stat = d[var].weighted(weights).mean((lat_key, lon_key))
+
     return float(stat)
 
 
