@@ -433,17 +433,19 @@ def process_dataset(
 
     # Extract level and plot climatology
     # Check if variable is 4D
-    levels = [None]
-    if is_4d_variable(ds_ac_interp, varname):
-        print(f"ds_ac_interp[{varname}] is 4D variable")
-        print("levels:", levels)
-        # Plot 3 levels (hPa) for 4D variables for quick check
-        if len(levels) == 1 and levels[0] is None:
-            print("The list contains exactly one element, and it is None.")
-            levels_to_plot = [200, 500, 850]
-            print("levels_to_plot:", levels_to_plot)
-        else:
-            levels_to_plot = levels
+    if levels is None:
+        levels_to_plot = [None]
+    else:
+        if is_4d_variable(ds_ac_interp, varname):
+            print(f"ds_ac_interp[{varname}] is 4D variable")
+            print("levels:", levels)
+            # Plot 3 levels (hPa) for 4D variables for quick check
+            if len(levels) == 1 and levels[0] is None:
+                print("The list contains exactly one element, and it is None.")
+                levels_to_plot = [200, 500, 850]
+                print("levels_to_plot:", levels_to_plot)
+            else:
+                levels_to_plot = levels
 
     for level in levels_to_plot:
         print("level:", level)

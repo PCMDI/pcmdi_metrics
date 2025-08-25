@@ -292,12 +292,11 @@ def calculate_climatology(
 
         # Plot climatology
         if plot and s == "AC":
+            levels_to_plot = [None]
             # Check if variable is 4D
             if is_4d_variable(ds_clim_s, var):
                 # Plot 3 levels (hPa) for 4D variables for quick check
                 levels_to_plot = [200, 500, 850]
-            else:
-                levels_to_plot = [None]
 
             # Plot climatology for each level
             for level in levels_to_plot:
