@@ -108,6 +108,9 @@ def calculate_climatology(
     atts = ds.attrs
     print("atts:", atts)  # Print dataset attributes
 
+    # ---------------
+    # Start Quick QCs
+
     # Check if dataset time axis is okay
     try:
         check_monthly_time_axis(ds)
@@ -124,6 +127,14 @@ def calculate_climatology(
         if repair_time_axis:
             ds = ds.bounds.add_missing_bounds(axes=["T"])
             print("Generated time bounds")
+
+    # Replace negative values to zero in pr field
+    if var == "pr":
+        # change negative values to zero
+        ds[var] = ds[var].where(ds[var] >= 0, 0)
+
+    # Quick QCs Done
+    # --------------
 
     # check if the given data is already an annual cycle
     if len(get_time(ds)) == 12:
