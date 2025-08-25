@@ -433,6 +433,7 @@ def process_dataset(
 
     # Extract level and plot climatology
     # Check if variable is 4D
+    levels = [None]
     if is_4d_variable(ds_ac_interp, varname):
         print(f"ds_ac_interp[{varname}] is 4D variable")
         print("levels:", levels)
