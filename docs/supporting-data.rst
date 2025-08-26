@@ -1,10 +1,12 @@
 .. title:: PMP Support Data
 
 
-********************************************
-Retrieving data for demos and use of the PMP
-********************************************
+***************
+Retrieving data
+***************
 
+Demo data
+~~~~~~~~~
 
 Sample model and observational data are provided via a `jupyter notebook demo <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/Demo_0_download_data.ipynb>`_.  This is the first of multiple PMP demos. It enables a user to download all sample data before running the other demos that provide interactive examples of the different summary statistics provided by the PMP.  More info is available for `preparing to run these notebooks <https://github.com/PCMDI/pcmdi_metrics/blob/master/doc/jupyter/Demo/README.md>`_.  
 
@@ -26,3 +28,12 @@ After you have set the location for the demo_output you can download it by enter
     download_sample_data_files("data_files.txt", demo_data_directory)
 
 The PMP demo data is used for multiple demos. It is ~300MB. The best way to run these demos is via Jupyter notebooks.  Running this initial demo for downloading sample data also on-the-fly creates demo parameter files with the user selection of the demo_data_directory. 
+
+Reference datasets
+~~~~~~~~~~~~~~~~~~
+All observational datasets used in the PMP analysis are published through the `ESGF obs4MIPs project <https://esgf-node.llnl.gov/>`_. In addition, several derived climatological products—while not currently available via ESGF—can be accessed directly via download.
+
+To obtain the reference climatologies used in the PMP mean climate metrics, download the list of datasets from:
+https://pcmdi.llnl.gov/pss/pmpdata/PMP_obs4MIPsClims_v20250228.txt
+
+Instructions for downloading and using these reference climatologies are provided in `Demo notebook 1b <http://pcmdi.github.io/pcmdi_metrics/examples/Demo_1b_mean_climate.html>`_.
