@@ -14,15 +14,12 @@ from subprocess import PIPE, Popen
 import cdp.cdp_io
 import numpy
 import requests
-import xarray as xr
-import xcdat
-import xcdat as xc
 
 import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
 from pcmdi_metrics.io import StringConstructor
 
-logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL) # set up to log errors
+logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)  # set up to log errors
 
 # compatibility check for Python2 (basestring) and Python3 (str)
 try:
@@ -41,8 +38,8 @@ else:
 # Standalone functions
 # ----------
 
-def download_sample_data_files(files_md5, path):
 
+def download_sample_data_files(files_md5, path):
     """Downloads sample data from a list of files"""
     if not os.path.exists(files_md5) or os.path.isdir(files_md5):
         raise RuntimeError("Invalid file type for list of files: %s" % files_md5)
@@ -80,6 +77,7 @@ def download_sample_data_files(files_md5, path):
             else:
                 attempts += 1
     return
+
 
 def populate_prov(prov, cmd, pairs, sep=None, index=1, fill_missing=False):
     try:
@@ -142,9 +140,9 @@ def generateProvenance(extra_pairs={}, history=True):
     pairs = {
         "cdp": "cdp ",
         "cdat_info": "cdat_info ",
-        #"cdms": "cdms2 ",
-        #"cdtime": "cdtime ",
-        #"cdutil": "cdutil ",
+        # "cdms": "cdms2 ",
+        # "cdtime": "cdtime ",
+        # "cdutil": "cdutil ",
         "esmf": "esmf ",
         "esmpy": "esmpy ",
         "matplotlib": "matplotlib-base ",
@@ -223,6 +221,7 @@ def generateProvenance(extra_pairs={}, history=True):
         prov["history"] = session_history
     return prov
 
+
 def update_dict(d, u):
     for k, v in u.items():
         if isinstance(v, Mapping):
@@ -231,6 +230,7 @@ def update_dict(d, u):
         else:
             d[k] = u[k]
     return d
+
 
 def sort_human(input_list):
     lst = copy.copy(input_list)
@@ -244,9 +244,11 @@ def sort_human(input_list):
     lst.sort(key=alphanum)
     return lst
 
+
 # ----------
 # Base
 # ----------
+
 
 class Base(cdp.cdp_io.CDPIO, StringConstructor):
     def __init__(self, root, file_template, file_mask_template=None):
