@@ -362,8 +362,9 @@ def process_dataset(
     )
 
     # Set version identifier using the current date if not provided
-    version = datetime.now().strftime("v%Y%m%d")
-    print("ver:", version)
+    if version is None:
+        version = datetime.now().strftime("v%Y%m%d")
+        print("ver:", version)
 
     # Calculate the annual cycle and save annual cycle
     if var in data_dict:
@@ -446,6 +447,8 @@ def process_dataset(
                 print("levels_to_plot:", levels_to_plot)
             else:
                 levels_to_plot = levels
+        else:
+            levels_to_plot = [None]
 
     for level in levels_to_plot:
         print("level:", level)
