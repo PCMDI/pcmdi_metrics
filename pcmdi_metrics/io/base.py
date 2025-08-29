@@ -27,6 +27,7 @@ try:
 except Exception:
     basestring = str
 
+
 # gather virtual env info
 def _determine_conda():
     """
@@ -53,6 +54,7 @@ CONDA = _determine_conda()
 # ----------
 # Standalone functions
 # ----------
+
 
 def download_sample_data_files(files_md5, path):
     """Downloads sample data from a list of files"""
@@ -454,4 +456,3 @@ class Base(cdp.cdp_io.CDPIO, StringConstructor):
         logging.getLogger("pcmdi_metrics").info(
             "CMEC results saved to a %s file: %s" % ("json", cmec_file_name)
         )
-
