@@ -27,28 +27,12 @@ try:
 except Exception:
     basestring = str
 
-
-def _determine_conda():
-    """
-    Attempt to determine the path to the conda executable
-    """
-    # Begin by checking if user has forced a specific conda executable
-    override_conda_exe = os.environ.get("PCMDI_CONDA_EXE")
-    if override_conda_exe:
-        return override_conda_exe
-
-    # Next check if we are in a conda environment
-    conda_python_exe = os.environ.get("CONDA_PYTHON_EXE", "")
-    if conda_python_exe != "":
-        conda_exe = os.path.join(os.path.dirname(conda_python_exe), "conda")
-    else:
-        # Fall back to assuming conda is in the PATH
-        conda_exe = "conda"
-
-    return conda_exe
-
-
-CONDA = _determine_conda()
+# gather virtual env info
+CONDA = os.environ.get("CONDA_PYTHON_EXE", "")
+if CONDA != "":
+    CONDA = os.path.join(os.path.dirname(CONDA), "conda")
+else:
+    CONDA = "conda"
 
 # ----------
 # Standalone functions
