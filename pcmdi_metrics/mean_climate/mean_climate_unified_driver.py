@@ -68,12 +68,7 @@ models_runs_dict = {
 }
 # optional. If given, prioritized over the model_catalogue.json. If not given, use all runs in model_catalogue.json
 
-
 output_path = "/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/mean_climate_workflow_refactorization/output/json"
-
-regions = ["NHEX", "SHEX"]
-
-target_grid = "2.5x2.5"
 
 ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_v20250825.json"
 model_catalogue_file_path = "model_catalogue.json"
@@ -82,11 +77,12 @@ ref_data_head = "/global/cfs/projectdirs/m4581/obs4MIPs/obs4MIPs_LLNL"  # option
 
 all_ref_variables = True
 
+############################################
 
+regions = ["NHEX", "SHEX"]
+target_grid = "2.5x2.5"
 rad_diagnostic_variables = ["rt", "rst", "rstcre", "rltcre"]
-
 default_regions = ["global", "NHEX", "SHEX", "TROPICS"]
-
 
 ############################################
 
@@ -176,7 +172,7 @@ if all_ref_variables:
 variables_level_dict = get_unique_bases(variables)
 variables_unique = list(variables_level_dict.keys())
 
-"""
+
 #target_ref = None
 #target_ref = "CERES-EBAF-4-2"
 target_ref = "ERA-5"
@@ -184,7 +180,6 @@ target_ref = "ERA-5"
 if target_ref == "ERA-5":
     variables_unique = era5_vars
     refs_dict = grouped_files
-"""
 
 print("variables_unique:", variables_unique)
 print("variables_level_dict:", variables_level_dict)
@@ -326,8 +321,9 @@ def main():
     # variables_unique = ["psl"]
     # variables_unique = ["ta", "ua", "va", "zg"]
     # variables_unique = ["tas", "ta"]
-    # variables_unique = ["ta"]
-    variables_unique.remove("pr")
+    variables_unique = ["ta"]
+    variables_unique = ["ua", "va"]
+    # variables_unique.remove("pr")
 
     for var in variables_unique:
         try:
@@ -340,13 +336,12 @@ def main():
             if var in refs_dict:
                 refs = refs_dict[var].keys()
 
-                """
                 if target_ref is not None:
                     if target_ref in refs:
                         refs = [target_ref]
                     else:
                         refs = []
-                """
+
                 process_references(
                     var,
                     refs,
