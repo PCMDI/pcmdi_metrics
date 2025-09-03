@@ -39,19 +39,29 @@ variables = [
 """
 
 variables = [
-    "ta",
+    "ta-850",
+    "ta-500",
+    "ta-200",
     "tas",
     "tasmax",
     "tasmin",
     "tauu",
     "tauv",
     "ts",
-    "ua",
+    "ua-850",
+    "ua-200",
     "uas",
-    "va",
+    "va-850",
+    "va-200",
     "vas",
     "zg",
     "zos",
+]
+
+variables = [
+    "ta-850",
+    "ta-500",
+    "ta-200",
 ]
 
 model_data_path_template = "/home/data/%(model)/%(var)/%(model)_%(run)_%(var)_blabla.nc"  # optional. If given, prioritized over model_catalogue.json
@@ -75,7 +85,7 @@ model_catalogue_file_path = "model_catalogue.json"
 
 ref_data_head = "/global/cfs/projectdirs/m4581/obs4MIPs/obs4MIPs_LLNL"  # optional, if ref_catalogue file does not include entire directory path
 
-all_ref_variables = True
+all_ref_variables = False
 
 ############################################
 
@@ -161,8 +171,8 @@ common_grid = create_target_grid(target_grid_resolution=target_grid)
 
 
 encountered_variables = set()
-ac_ref_dict = multi_level_dict()
-ac_model_run_dict = multi_level_dict()
+anncyc_ref_dict = multi_level_dict()
+anncyc_model_run_dict = multi_level_dict()
 metrics_dict = multi_level_dict()
 
 
@@ -173,8 +183,8 @@ variables_level_dict = get_unique_bases(variables)
 variables_unique = list(variables_level_dict.keys())
 
 
-#target_ref = None
-#target_ref = "CERES-EBAF-4-2"
+# target_ref = None
+# target_ref = "CERES-EBAF-4-2"
 target_ref = "ERA-5"
 
 if target_ref == "ERA-5":
@@ -203,13 +213,13 @@ def process_references(
 ):
     for ref in refs:
         print(f"=== var, ref: {var}, {ref}")
-        try:
-            # if 1:
+        # try:
+        if 1:
             process_dataset(
                 var,
                 ref,
                 refs_dict,
-                ac_ref_dict,
+                anncyc_ref_dict,
                 rad_diagnostic_variables,
                 encountered_variables,
                 levels,
@@ -223,11 +233,13 @@ def process_references(
                 version=version,
             )
 
+        """
         except Exception as e:
             # Log the error to a file
             logging.error(f"Error for {var} {ref}: {str(e)}")
             print(f"Error logged for {var} {ref}")
             print(f"Error from process_references for {var} {ref}:", e)
+        """
 
 
 def process_models(
@@ -250,7 +262,7 @@ def process_models(
                     var,
                     (model, run),
                     models_dict,
-                    ac_model_run_dict,
+                    anncyc_model_run_dict,
                     rad_diagnostic_variables,
                     encountered_variables,
                     levels,
@@ -262,9 +274,9 @@ def process_models(
                     version=version,
                 )
                 for level in levels:
-                    ac_model_run_level_interp = ac_model_run_dict[var][model][run][
-                        level
-                    ]
+                    anncyc_model_run_level_interp = anncyc_model_run_dict[var][model][
+                        run
+                    ][level]
                     calculate_and_save_metrics(
                         var,
                         model,
@@ -272,8 +284,8 @@ def process_models(
                         level,
                         regions,
                         refs,
-                        ac_ref_dict,
-                        ac_model_run_level_interp,
+                        anncyc_ref_dict,
+                        anncyc_model_run_level_interp,
                         output_path,
                         refs_dict,
                         metrics_dict,
@@ -322,7 +334,7 @@ def main():
     # variables_unique = ["ta", "ua", "va", "zg"]
     # variables_unique = ["tas", "ta"]
     variables_unique = ["ta"]
-    variables_unique = ["ua", "va"]
+    # variables_unique = ["ua", "va"]
     # variables_unique.remove("pr")
 
     for var in variables_unique:
@@ -332,6 +344,9 @@ def main():
             levels = variables_level_dict[var]
 
             print("levels:", levels)
+
+            # import sys
+            # sys.exit("test")
 
             if var in refs_dict:
                 refs = refs_dict[var].keys()

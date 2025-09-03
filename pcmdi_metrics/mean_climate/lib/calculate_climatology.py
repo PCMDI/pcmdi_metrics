@@ -1,6 +1,8 @@
 import os
 from datetime import datetime, timezone
 
+import xarray as xr
+
 from pcmdi_metrics.io import get_time, select_subset, xcdat_open
 from pcmdi_metrics.utils import (
     check_monthly_time_axis,
@@ -17,6 +19,7 @@ from .plot_clim_maps import plot_climatology
 def calculate_climatology(
     var: str,
     infile: str,
+    ds: xr.Dataset = None,
     outfile: str = None,
     outpath: str = None,
     outfilename: str = None,
@@ -44,6 +47,8 @@ def calculate_climatology(
         The variable name for which the climatology is to be calculated.
     infile : str
         The path to the input dataset file(s).
+    ds : xr.Dataset, optional
+        The xarray dataset to use (default is None, in which case ds is opened from infile).
     outfile : str, optional
         The base output file path (default is None).
     outpath : str, optional
@@ -102,8 +107,11 @@ def calculate_climatology(
     print("infilename:", infilename)
 
     # Open the dataset using xcdat's open_mfdataset function
-    ds = xcdat_open(infile, data_var=var)
-    print("type(d):", type(ds))
+    if ds is None:
+        ds = xcdat_open(infile, data_var=var)
+
+    if not isinstance(ds, xr.Dataset):
+        raise ValueError(f"Expected xarray.Dataset, got {type(ds)}")
 
     atts = ds.attrs
     print("atts:", atts)  # Print dataset attributes

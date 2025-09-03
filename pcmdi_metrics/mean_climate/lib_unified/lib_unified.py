@@ -5,9 +5,11 @@ from typing import Dict, List, Optional
 
 import xarray as xr
 
+from pcmdi_metrics.io import xcdat_open
 from pcmdi_metrics.mean_climate.lib import (
     calculate_climatology,
     extract_level,
+    extract_levels,
     is_4d_variable,
     plot_climatology,
 )
@@ -64,12 +66,14 @@ def get_annual_cycle(
     var,
     data_path,
     out_path,
-    start="1981-01",
-    end="2005-12",
-    repair_time_axis=True,
-    overwrite_output_ac=True,
-    save_ac_netcdf=True,
+    levels: list = [None],
+    start: str = "1981-01",
+    end: str = "2005-12",
+    repair_time_axis: bool = True,
+    overwrite_output_ac: bool = True,
+    save_ac_netcdf: bool = True,
     ver: str = None,
+    plot: bool = True,
 ):
     # Set version identifier using the current date if not provided
     ver = ver or datetime.now().strftime("v%Y%m%d")
@@ -96,9 +100,22 @@ def get_annual_cycle(
     print("outfilename_head:", outfilename_head)
     print("outfilename_template:", outfilename_template)
 
+    ds = xcdat_open(data_path, data_var=var)
+
+    if levels == [None]:
+        ds_arg = ds
+    else:
+        if is_4d_variable(ds, var):
+            print(f"ds[{var}] is 4D variable")
+            print("levels:", levels)
+            ds_arg = extract_levels(ds, levels)
+        else:
+            ds_arg = None
+
     d_clim_dict = calculate_climatology(
         var,
         infile=data_path,
+        ds=ds_arg,
         outpath=out_path_ver,
         outfilename=outfilename_template,
         outfilename_default_template=False,
@@ -109,6 +126,7 @@ def get_annual_cycle(
         repair_time_axis=repair_time_axis,
         overwrite_output=overwrite_output_ac,
         save_ac_netcdf=save_ac_netcdf,
+        plot=plot,
     )
 
     return d_clim_dict["AC"]
@@ -185,13 +203,13 @@ def get_model_catalogue(
     return dict(models_dict)
 
 
-def get_interim_out_path(interim_output_path_dict_data, path_key, var):
+def get_interim_out_path(interim_output_path_dict_data, path_key, var) -> str:
     path = interim_output_path_dict_data[path_key].replace("%(var)", var)
     os.makedirs(path, exist_ok=True)
     return path
 
 
-def get_model_run_data_path(models_dict, var, model, run):
+def get_model_run_data_path(models_dict, var, model, run) -> str:
     if (
         "path" in models_dict[var][model][run]
         and "filename" in models_dict[var][model][run]
@@ -207,7 +225,7 @@ def get_model_run_data_path(models_dict, var, model, run):
     return model_data_path
 
 
-def get_ref_catalogue(ref_catalogue_file_path, ref_data_head=None):
+def get_ref_catalogue(ref_catalogue_file_path, ref_data_head=None) -> dict:
     refs_dict = load_json_as_dict(ref_catalogue_file_path)
     if ref_data_head:
         for var in refs_dict:
@@ -329,7 +347,7 @@ def process_dataset(
         print(f"Processing data for: {ref}")
         # Construct paths
         data_path = get_ref_data_path(refs_dict, var, ref)
-        print("jwlee123, ref, data_path:", ref, data_path)
+        print("ref, data_path:", ref, data_path)
         out_path = get_interim_out_path(interim_output_path_dict_data, "path_ac", var)
         out_path_interp = get_interim_out_path(
             interim_output_path_dict_data, "path_ac_interp", var
@@ -372,12 +390,14 @@ def process_dataset(
             varname,
             data_path,
             out_path,
+            levels=levels,
             start=start,
             end=end,
             repair_time_axis=repair_time_axis,
             overwrite_output_ac=overwrite_output_ac,
             save_ac_netcdf=save_ac_netcdf,
             ver=version,
+            plot=plot_gn,
         )
     elif var in rad_diagnostic_variables:
         print(

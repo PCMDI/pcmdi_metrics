@@ -22,18 +22,34 @@ def load_and_regrid(
     calendar_qc=False,
     debug=False,
 ):
-    """Load data and regrid to target grid
+    """
+    Load data and regrid to a target grid.
 
-    Args:
-        data_path (str): full data path for nc or xml file
-        varname (str): variable name
-        varname_in_file (str): variable name if data array named differently
-        level (float): level to extract (unit in hPa)
-        t_grid (xarray.core.dataset.Dataset): target grid to regrid
-        decode_times (bool): Default is True. decode_times=False will be removed once obs4MIP written using xcdat
-        regrid_tool (str): Name of the regridding tool. See https://xcdat.readthedocs.io/en/stable/generated/xarray.Dataset.regridder.horizontal.html for more info
-        calendar_qc (bool): Turn on QC for calendar. Default is False.
-        debug (bool): Default is False. If True, print more info to help debugging process
+    Parameters
+    ----------
+    data_path : str
+        Full path to the NetCDF or XML file.
+    varname : str
+        Variable name to extract from the dataset.
+    varname_in_file : str, optional
+        Variable name in the file if different from `varname`. Default is None.
+    level : float, optional
+        Pressure level to extract (in hPa). Default is None.
+    t_grid : xarray.Dataset
+        Target grid dataset for regridding.
+    decode_times : bool, optional
+        Whether to decode time coordinates. Default is True.
+    regrid_tool : str, optional
+        Name of the regridding tool. See xcdat documentation for options. Default is "regrid2".
+    calendar_qc : bool, optional
+        If True, perform calendar quality control. Default is False.
+    debug : bool, optional
+        If True, print debug information. Default is False.
+
+    Returns
+    -------
+    xarray.Dataset
+        The regridded dataset.
     """
     if debug:
         print("load_and_regrid start")
@@ -41,10 +57,10 @@ def load_and_regrid(
     if varname_in_file is None:
         varname_in_file = varname
 
-    # load data
-    ds = xcdat_open(
-        data_path, data_var=varname_in_file, decode_times=decode_times
-    )  # NOTE: decode_times=False will be removed once obs4MIP written using xcdat
+    # load data -- NOTE: decode_times=False will be removed once obs4MIP written using xcdat
+    ds = xcdat_open(data_path, data_var=varname_in_file, decode_times=decode_times)
+
+    ds = ds.bounds.add_missing_bounds()
 
     # SET CONDITIONAL ON INPUT VARIABLE
     if varname == "pr":
@@ -171,12 +187,27 @@ def load_and_regrid(
 
 
 def extract_level(ds: xr.Dataset, level, debug=False):
-    """Extract a specific pressure level from the dataset.
+    """
+    Extract a specific pressure level from the dataset.
 
-    Args:
-        ds (xr.Dataset): The input dataset.
-        level (float): The pressure level in hPa.
-        debug (bool, optional): Whether to print debug information. Defaults to False.
+    Parameters
+    ----------
+    ds : xr.Dataset
+        The input dataset.
+    level : float
+        The pressure level in hPa.
+    debug : bool, optional
+        If True, print debug information. Default is False.
+
+    Returns
+    -------
+    xr.Dataset
+        The dataset at the specified pressure level.
+
+    Raises
+    ------
+    ValueError
+        If the pressure level coordinate ('plev') is not found or the difference between requested and nearest level is too large.
     """
 
     def find_nearest(array, value):
@@ -234,3 +265,50 @@ def extract_level(ds: xr.Dataset, level, debug=False):
             )
 
         return ds
+
+
+def extract_levels(ds: xr.Dataset, levels, debug=False):
+    """
+    Extract multiple pressure levels from the dataset.
+
+    Parameters
+    ----------
+    ds : xr.Dataset
+        The input dataset.
+    levels : list of float
+        The list of pressure levels in hPa.
+    debug : bool, optional
+        If True, print debug information. Default is False.
+
+    Returns
+    -------
+    xr.Dataset
+        The dataset containing the specified pressure levels.
+    """
+    if not isinstance(levels, (list, tuple)):
+        raise TypeError("levels must be a list or tuple of floats")
+
+    extracted = []
+    for level in levels:
+        try:
+            level_ds = extract_level(ds, level, debug=debug)
+            extracted.append(level_ds)
+        except ValueError as e:
+            if debug:
+                print(f"Skipping level {level}: {e}")
+
+    if not extracted:
+        raise ValueError("No valid levels were extracted.")
+
+    # Combine along the plev dimension if it exists
+    combined = (
+        xr.concat(extracted, dim="plev")
+        if "plev" in extracted[0].coords
+        else xr.merge(extracted)
+    )
+
+    if debug:
+        print(f"Extracted levels: {levels}")
+        print(combined)
+
+    return combined
