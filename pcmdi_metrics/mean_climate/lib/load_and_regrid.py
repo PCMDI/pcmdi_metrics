@@ -171,12 +171,12 @@ def load_and_regrid(
 
 
 def extract_level(ds: xr.Dataset, level, debug=False):
-    """_summary_
+    """Extract a specific pressure level from the dataset.
 
     Args:
-        ds (xr.Dataset): _description_
-        level (_type_): level, hPa
-        debug (bool, optional): _description_. Defaults to False.
+        ds (xr.Dataset): The input dataset.
+        level (float): The pressure level in hPa.
+        debug (bool, optional): Whether to print debug information. Defaults to False.
     """
 
     def find_nearest(array, value):
