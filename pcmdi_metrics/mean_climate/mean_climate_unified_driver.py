@@ -39,29 +39,25 @@ variables = [
 """
 
 variables = [
-    "ta-850",
-    "ta-500",
-    "ta-200",
-    "tas",
-    "tasmax",
-    "tasmin",
-    "tauu",
-    "tauv",
-    "ts",
-    "ua-850",
-    "ua-200",
-    "uas",
-    "va-850",
-    "va-200",
-    "vas",
-    "zg",
-    "zos",
-]
-
-variables = [
-    "ta-850",
-    "ta-500",
-    "ta-200",
+    # "ta-850",
+    # "ta-500",
+    # "ta-200",
+    # "tas",
+    # "tasmax",
+    # "tasmin",
+    # "tauu",
+    # "tauv",
+    # "ts",  # need to recheck!
+    # "ua-850",
+    # "ua-200",
+    # "uas",
+    # "va-850",
+    # "va-200",
+    # "vas",
+    "zg-200",
+    "zg-500",
+    "zg-850",
+    # "zos",
 ]
 
 model_data_path_template = "/home/data/%(model)/%(var)/%(model)_%(run)_%(var)_blabla.nc"  # optional. If given, prioritized over model_catalogue.json
@@ -333,7 +329,7 @@ def main():
     # variables_unique = ["psl"]
     # variables_unique = ["ta", "ua", "va", "zg"]
     # variables_unique = ["tas", "ta"]
-    variables_unique = ["ta"]
+    # variables_unique = ["ta"]
     # variables_unique = ["ua", "va"]
     # variables_unique.remove("pr")
 

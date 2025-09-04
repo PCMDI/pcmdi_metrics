@@ -488,7 +488,11 @@ def process_dataset(
             output_fig_path = os.path.join(
                 out_path_interp,
                 version,
-                (interp_filename_head.replace(".nc", f"_{grid_resolution}.png")),
+                (
+                    interp_filename_head.replace(
+                        ".nc", f"_{grid_resolution}.png"
+                    ).replace("_gn_", "_gr_")
+                ),
             )
 
             if level is not None:

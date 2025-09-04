@@ -319,7 +319,6 @@ def extract_levels(
 
     # Concatenate only the data variables (ignore bounds duplicates)
     varying_vars = [data_var]
-    # static_vars = [v for v in extracted[0].data_vars if "plev" not in extracted[0][v].dims]
     static_vars = [v for v in extracted[0].data_vars if v not in varying_vars]
 
     combined = xr.concat([ds[varying_vars] for ds in extracted], dim="plev")
