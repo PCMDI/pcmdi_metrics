@@ -1,3 +1,4 @@
+import copy
 import os
 from datetime import datetime, timezone
 
@@ -214,6 +215,7 @@ def calculate_climatology(
 
     # Iterate over the selected climatologies and save each to a NetCDF file
     for s in seasons:
+        print(f"Processing climatology for season: {s}")
         if outfilename_default_template:
             # Define the output filename suffix based on the climatology and period (if specified)
             addf = (
@@ -244,12 +246,14 @@ def calculate_climatology(
         if not os.path.isfile(outpath_season) or overwrite_output:
             # Handle the "AC" (Annual Cycle) case
             if s == "AC":
+                print("Calculating Annual Cycle climatology")
                 ds_ac = (
-                    ds
+                    copy.deepcopy(ds)
                     if input_is_annual_cycle
                     else ds.temporal.climatology(var, freq="month", weighted=True)
                 )
                 ds_clim_s = ds_ac
+                print("Done AC climatology")
 
             # Handle the first season and subsequent seasons
             else:
@@ -269,6 +273,9 @@ def calculate_climatology(
                     )
 
                 ds_clim_s = ds_clim.isel(time=season_index_dict[s])
+
+            print("season:", s)
+            print("ds_clim_s[var].shape:", ds_clim_s[var].shape)
 
             # Prepare annual or seasonal climatology for the next step
 

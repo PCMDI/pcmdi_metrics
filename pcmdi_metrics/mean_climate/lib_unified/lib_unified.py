@@ -106,12 +106,15 @@ def get_annual_cycle(
         ds_arg = ds
     else:
         if is_4d_variable(ds, var):
+            ds = ds.bounds.add_missing_bounds(["Z"])
             print(f"ds[{var}] is 4D variable")
             print("levels:", levels)
-            ds_arg = extract_levels(ds, levels)
+            ds_arg = extract_levels(ds, data_var=var, levels=levels)
+            print(f"ds_arg[{var}].shape:", ds_arg[var].shape)
         else:
             ds_arg = None
 
+    print("call calculate_climatology")
     d_clim_dict = calculate_climatology(
         var,
         infile=data_path,
@@ -128,6 +131,7 @@ def get_annual_cycle(
         save_ac_netcdf=save_ac_netcdf,
         plot=plot,
     )
+    print("done calculate_climatology")
 
     return d_clim_dict["AC"]
 
@@ -324,7 +328,7 @@ def process_dataset(
     overwrite_output_ac: bool = True,
     save_ac_netcdf: bool = True,
     save_ac_interp_netcdf: bool = True,
-    plot_gn: bool = True,
+    plot_gn: bool = False,
     plot_gr: bool = True,
     version: str = None,
 ):
@@ -427,7 +431,7 @@ def process_dataset(
             interp_filename_head = str(os.path.basename(data_path)).replace("*", "")
 
         # Proceed interpolation
-        print("regrid starts")
+        print(f"regrid starts, ds_ac[{varname}].shape: {ds_ac[varname].shape}")
         ds_ac_interp = regrid(ds_ac, varname, common_grid)
         print(
             f"regrid done, ds_ac_interp[{varname}].shape: {ds_ac_interp[varname].shape}"

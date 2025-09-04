@@ -62,6 +62,13 @@ def load_and_regrid(
 
     ds = ds.bounds.add_missing_bounds()
 
+    # Check how many coordinates ds has:
+    if len(ds.dims) > 3:
+        import pcmdi_metrics.mean_climate.lib.is_4d_variable as is_4d_variable
+
+        if is_4d_variable(ds, varname_in_file):
+            ds = ds.bounds.add_missing_bounds(["Z"])
+
     # SET CONDITIONAL ON INPUT VARIABLE
     if varname == "pr":
         print("Adjust units for pr")
@@ -267,7 +274,9 @@ def extract_level(ds: xr.Dataset, level, debug=False):
         return ds
 
 
-def extract_levels(ds: xr.Dataset, levels, debug=False):
+def extract_levels(
+    ds: xr.Dataset, data_var: str, levels: list[float], debug=False
+) -> xr.Dataset:
     """
     Extract multiple pressure levels from the dataset.
 
@@ -275,6 +284,8 @@ def extract_levels(ds: xr.Dataset, levels, debug=False):
     ----------
     ds : xr.Dataset
         The input dataset.
+    data_var : str
+        The name of the data variable to extract levels for.
     levels : list of float
         The list of pressure levels in hPa.
     debug : bool, optional
@@ -292,6 +303,12 @@ def extract_levels(ds: xr.Dataset, levels, debug=False):
     for level in levels:
         try:
             level_ds = extract_level(ds, level, debug=debug)
+            # drop plev to avoid conflicts during concat
+            level_ds = level_ds.drop_vars(["plev"])
+            # Add plev back as a coordinate
+            level_ds[data_var] = level_ds[data_var].expand_dims(
+                plev=[level * 100]
+            )  # hPa to Pa
             extracted.append(level_ds)
         except ValueError as e:
             if debug:
@@ -300,15 +317,20 @@ def extract_levels(ds: xr.Dataset, levels, debug=False):
     if not extracted:
         raise ValueError("No valid levels were extracted.")
 
-    # Combine along the plev dimension if it exists
-    combined = (
-        xr.concat(extracted, dim="plev")
-        if "plev" in extracted[0].coords
-        else xr.merge(extracted)
-    )
+    # Concatenate only the data variables (ignore bounds duplicates)
+    varying_vars = [data_var]
+    # static_vars = [v for v in extracted[0].data_vars if "plev" not in extracted[0][v].dims]
+    static_vars = [v for v in extracted[0].data_vars if v not in varying_vars]
+
+    combined = xr.concat([ds[varying_vars] for ds in extracted], dim="plev")
+
+    # Add back static variables (bounds etc.)
+    for v in static_vars:
+        combined[v] = extracted[0][v]
 
     if debug:
         print(f"Extracted levels: {levels}")
+        print(f"Varying vars: {varying_vars}, Static vars: {static_vars}")
         print(combined)
 
     return combined
