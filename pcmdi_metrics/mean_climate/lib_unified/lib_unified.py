@@ -430,7 +430,7 @@ def process_dataset(
         else:
             interp_filename_head = str(os.path.basename(data_path)).replace("*", "")
 
-        # Proceed interpolation
+        # Proceed interpolation using regrid
         print(f"regrid starts, ds_ac[{varname}].shape: {ds_ac[varname].shape}")
         ds_ac_interp = regrid(ds_ac, varname, common_grid)
         print(
