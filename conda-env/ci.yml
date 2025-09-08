@@ -8,7 +8,7 @@ dependencies:
     # Base
     # ==================
     # NOTE: If versions are updated, also `additional_dependencies` list for mypy in `.pre-commit-config.yaml`
-    - python >=3.10.10,<3.12
+    - python >=3.10.10,<3.15
     - pip=23.1.2
     - numpy >=2.0.0,<2.1.0
     - cartopy >=0.22.0
