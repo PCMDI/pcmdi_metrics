@@ -19,7 +19,7 @@ dependencies:
     - cdp=1.7.0
     - eofs=2.0.0
     - seaborn=0.12.2
-    - enso_metrics=1.1.5
+    # - enso_metrics=1.1.5
     - xcdat >=0.7.3
     - xmltodict=0.13.0
     - setuptools=67.7.2
