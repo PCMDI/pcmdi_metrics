@@ -157,9 +157,6 @@ def generateProvenance(extra_pairs={}, history=True):
     pairs = {
         "cdp": "cdp ",
         "cdat_info": "cdat_info ",
-        # "cdms": "cdms2 ",
-        # "cdtime": "cdtime ",
-        # "cdutil": "cdutil ",
         "esmf": "esmf ",
         "esmpy": "esmpy ",
         "matplotlib": "matplotlib-base ",
