@@ -2,11 +2,11 @@
 from __future__ import print_function
 
 import copy
-import distutils.spawn
 import importlib
 import inspect
 import os
 import shlex
+import shutil
 import stat
 import subprocess
 import sys
@@ -75,7 +75,8 @@ def build_command_lines(driver, parameters, matrix):
         cmd = "{} -p {}".format(driver, filename)
         if os.path.exists(driver):
             cmd = "{}/bin/python {}".format(sys.prefix, cmd)
-        elif distutils.spawn.find_executable(driver) is None:
+        # Use shutil.which instead of deprecated distutils.spawn.find_executable
+        elif shutil.which(driver) is None:
             raise RuntimeError(
                 "cannot find driver: '{}', it does not appear to be an executable on your path either".format(
                     driver
