@@ -118,9 +118,9 @@ def eof_analysis_get_variance_mode(
         eof_Nth.attrs["variable"] = data_var
         eof_Nth.attrs["eof_mode"] = n + 1
         frac_Nth.attrs["units"] = "ratio"
-        pc_Nth.attrs[
-            "comment"
-        ] = f"Non-scaled time series for principal component of {eofn}th variance mode"
+        pc_Nth.attrs["comment"] = (
+            f"Non-scaled time series for principal component of {eofn}th variance mode"
+        )
         pc_Nth.attrs["variable"] = data_var
         pc_Nth.attrs["eof_mode"] = n + 1
 
@@ -278,9 +278,9 @@ def linear_regression_on_globe_for_teleconnection(
 
     eof_lr.attrs["variable"] = data_var
     eof_lr.attrs["description"] = "linear regression on global field for teleconnection"
-    eof_lr.attrs[
-        "comment"
-    ] = "Reconstructed EOF pattern with teleconnection considerations"
+    eof_lr.attrs["comment"] = (
+        "Reconstructed EOF pattern with teleconnection considerations"
+    )
     if "eof_mode" in pc.attrs:
         eof_lr.attrs["eof_mode"] = pc.attrs["eof_mode"]
 
