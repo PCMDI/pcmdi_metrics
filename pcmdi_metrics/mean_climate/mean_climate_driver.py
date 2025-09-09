@@ -478,14 +478,14 @@ for var in vars:
 
                             # compute metrics
                             print("compute metrics start")
-                            result_dict["RESULTS"][model][ref][run][
-                                region
-                            ] = compute_metrics(
-                                varname,
-                                ds_test_dict[region],
-                                ds_ref_dict[region],
-                                debug=debug,
-                                time_dim_sync=time_dim_sync,
+                            result_dict["RESULTS"][model][ref][run][region] = (
+                                compute_metrics(
+                                    varname,
+                                    ds_test_dict[region],
+                                    ds_ref_dict[region],
+                                    debug=debug,
+                                    time_dim_sync=time_dim_sync,
+                                )
                             )
 
                             # write individual JSON
