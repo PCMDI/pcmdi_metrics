@@ -13,20 +13,17 @@ dependencies:
     - numpy >=2.0.0,<2.1.0
     - cartopy >=0.22.0
     - matplotlib >=3.7.1
-    - cdms2 >=3.1.5
-    - genutil=8.2.1
-    - cdutil=8.2.1
     - cdp=1.7.0
     - eofs=2.0.0
     - seaborn=0.12.2
-    - enso_metrics=1.1.5
+    # - enso_metrics=1.1.5
     - xcdat >=0.7.3
     - xmltodict=0.13.0
     - setuptools=67.7.2
     - netcdf4>=1.6.3
     - regionmask=0.12.1
     - rasterio>=1.3.6
-    - shapely >=2.0.1
+    - shapely >=2.0.1,<=2.0.6
     - numdifftools
     - nc-time-axis
     - colorcet

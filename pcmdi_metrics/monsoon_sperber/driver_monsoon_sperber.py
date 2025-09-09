@@ -46,7 +46,6 @@ import sys
 from argparse import RawTextHelpFormatter
 from shutil import copyfile
 
-# import matplotlib
 import numpy as np
 import pandas as pd
 import xarray as xr
