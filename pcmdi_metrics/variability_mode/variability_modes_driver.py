@@ -643,10 +643,10 @@ for model in models:
 
                     # QC
                     if var == "ts":
-                        model_timeseries_season_regrid[
-                            var
-                        ] = model_timeseries_season_regrid[var].where(
-                            model_timeseries_season_regrid[var] < 1e10
+                        model_timeseries_season_regrid[var] = (
+                            model_timeseries_season_regrid[var].where(
+                                model_timeseries_season_regrid[var] < 1e10
+                            )
                         )
 
                     # crop to subdomain
@@ -1035,9 +1035,9 @@ for model in models:
                     dict_head["best_matching_model_eofs__rms"] = best_matching_eofs_rms
                     dict_head["best_matching_model_eofs__cor"] = best_matching_eofs_cor
                     if CBF:
-                        dict_head[
-                            "best_matching_model_eofs__tcor_cbf_vs_eof_pc"
-                        ] = best_matching_eofs_tcor
+                        dict_head["best_matching_model_eofs__tcor_cbf_vs_eof_pc"] = (
+                            best_matching_eofs_tcor
+                        )
 
                     debug_print("conventional eof end", debug)
 
