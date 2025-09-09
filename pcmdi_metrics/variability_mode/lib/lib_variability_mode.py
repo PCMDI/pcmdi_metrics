@@ -136,9 +136,9 @@ def write_nc_output(
         }
     )
     # Add global attributes
-    ds.attrs[
-        "title"
-    ] = "PCMDI Metrics Package Extratropical Modes of Variability diagnostics"
+    ds.attrs["title"] = (
+        "PCMDI Metrics Package Extratropical Modes of Variability diagnostics"
+    )
     ds.attrs["author"] = "PCMDI"
     ds.attrs["contact"] = "pcmdi-metrics@llnl.gov"
     ds.attrs["creation_date"] = strftime("%Y-%m-%d %H:%M:%S", gmtime())
