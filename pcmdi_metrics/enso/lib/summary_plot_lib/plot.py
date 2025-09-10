@@ -6,8 +6,6 @@
 # ---------------------------------------------------#
 # Import the right packages
 # ---------------------------------------------------#
-from __future__ import print_function
-
 import difflib
 import json
 import string
