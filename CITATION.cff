@@ -17,12 +17,6 @@ authors:
     given-names: Peter
     affiliation: Lawrence Livermore National Laboratory
     orcid: 'https://orcid.org/0000-0003-2816-6224'
-  - family-names: Ordonez
-    given-names: Ana
-    affiliation: Lawrence Livermore National Laboratory
-  - given-names: Bo
-    family-names: Dong
-    affiliation: Lawrence Livermore National Laboratory
   - affiliation: Lawrence Livermore National Laboratory
     given-names: Kristin
     family-names: Chang
@@ -45,5 +39,5 @@ keywords:
   - climatology
   - climate variability
 license: BSD-3-Clause
-version: '3.9.1'
-date-released: '2025-04-10'
+version: '3.9.2'
+date-released: '2025-09-10'
