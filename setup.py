@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 import subprocess
 import sys
 
@@ -121,4 +119,14 @@ setup(
     scripts=scripts,
     data_files=data_files,
     entry_points=entry_points,
+    python_requires=">=3.10,<3.14",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
+    ],
 )
