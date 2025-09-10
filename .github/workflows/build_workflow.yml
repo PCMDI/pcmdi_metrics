@@ -37,7 +37,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.13'
 
       - name: Install and Run Pre-commit
         uses: pre-commit/action@v3.0.1
@@ -103,6 +103,9 @@ jobs:
   publish-docs:
     if: ${{ github.event_name == 'push' }} ||  ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -127,6 +130,8 @@ jobs:
           channel-priority: strict
           auto-update-conda: true
           use-mamba: false
+          conda-solver: classic
+          python-version: '3.13'
 
       - name: Verify Conda Environment
         run: |
