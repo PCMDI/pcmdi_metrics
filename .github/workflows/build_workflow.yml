@@ -120,7 +120,7 @@ jobs:
       - name: Set up Conda Environment
         uses: conda-incubator/setup-miniconda@v3
         with:
-          activate-environment: "pcmdi_metrics_dev"
+          activate-environment: pcmdi_metrics_dev
           environment-file: conda-env/dev.yml
           channel-priority: strict
           auto-update-conda: true
