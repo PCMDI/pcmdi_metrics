@@ -71,13 +71,15 @@ jobs:
           python-version: ${{ matrix.python-version }}
           use-mamba: false
           conda-solver: classic
-      - name: Cache Conda
+
+      - name: Cache Conda Packages
         uses: actions/cache@v4
         with:
-          path: ${{ env.CONDA }}/envs
-          key: conda-${{ runner.os }}--${{ runner.arch }}--${{ steps.get-date.outputs.today }}-${{ hashFiles('conda-env/ci.yml') }}-${{ env.CACHE_NUMBER}}
+          path: ~/conda_pkgs_dir
+          key: conda-${{ runner.os }}--${{ runner.arch }}--py${{ matrix.python-version }}--${{ steps.get-date.outputs.today }}--${{ hashFiles('conda-env/ci.yml') }}--${{ env.CACHE_NUMBER }}
         env:
           CACHE_NUMBER: 0
+
       - name: Verify Conda Environment
         run: |
           conda info
@@ -123,6 +125,13 @@ jobs:
           channel-priority: strict
           auto-update-conda: true
           use-mamba: false
+
+      - name: Verify Conda Environment
+        run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
 
       - name: Install pcmdi_metrics
         run: |
