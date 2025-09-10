@@ -122,6 +122,8 @@ jobs:
         with:
           activate-environment: pcmdi_metrics_dev
           environment-file: conda-env/dev.yml
+          miniforge-variant: Miniforge3
+          miniforge-version: latest
           channel-priority: strict
           auto-update-conda: true
           use-mamba: false
