@@ -64,7 +64,7 @@ def load_and_regrid(
 
     # Check how many coordinates ds has:
     if len(ds.dims) > 3:
-        import pcmdi_metrics.mean_climate.lib.is_4d_variable as is_4d_variable
+        from pcmdi_metrics.mean_climate.lib import is_4d_variable
 
         if is_4d_variable(ds, varname_in_file):
             ds = ds.bounds.add_missing_bounds(["Z"])
