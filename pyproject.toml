@@ -1,3 +1,119 @@
+###############################################
+# Build system and project metadata (PEP 621) #
+###############################################
+
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+# Use an in-tree backend wrapper so we can run a pre-build step
+build-backend = "backend"
+backend-path = ["_custom_build"]
+
+[project]
+name = "pcmdi_metrics"
+description = "model metrics tools"
+readme = "README.md"
+requires-python = ">=3.10,<3.14"
+license = { file = "LICENSE" }
+authors = [{ name = "PCMDI" }]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: OS Independent",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/PCMDI/pcmdi_metrics"
+
+# Console entry points previously defined in setup.py under entry_points["console_scripts"]
+[project.scripts]
+"compositeDiurnalStatistics.py" = "pcmdi_metrics.diurnal.scripts.compositeDiurnalStatistics:main"
+"computeStdOfDailyMeans.py" = "pcmdi_metrics.diurnal.scripts.computeStdOfDailyMeans:main"
+"fourierDiurnalAllGrid.py" = "pcmdi_metrics.diurnal.scripts.fourierDiurnalAllGrid:main"
+"fourierDiurnalGridpoints.py" = "pcmdi_metrics.diurnal.scripts.fourierDiurnalGridpoints:main"
+"savg_fourier.py" = "pcmdi_metrics.diurnal.scripts.savg_fourier:main"
+"std_of_dailymeans.py" = "pcmdi_metrics.diurnal.scripts.std_of_dailymeans:main"
+"std_of_hourlyvalues.py" = "pcmdi_metrics.diurnal.scripts.std_of_hourlyvalues:main"
+"std_of_meandiurnalcycle.py" = "pcmdi_metrics.diurnal.scripts.std_of_meandiurnalcycle:main"
+
+[tool.setuptools]
+# Plain script files to be installed (setup.py: scripts=[...])
+script-files = [
+  "pcmdi_metrics/mean_climate/pcmdi_compute_climatologies.py",
+  "pcmdi_metrics/mean_climate/mean_climate_driver.py",
+  "pcmdi_metrics/monsoon_wang/scripts/mpindex_compute.py",
+  "pcmdi_metrics/monsoon_wang/monsoon_wang_driver.py",
+  "pcmdi_metrics/monsoon_sperber/driver_monsoon_sperber.py",
+  "pcmdi_metrics/mjo/mjo_metrics_driver.py",
+  "pcmdi_metrics/variability_mode/variability_modes_driver.py",
+  "pcmdi_metrics/enso/enso_driver.py",
+  "pcmdi_metrics/precip_variability/variability_across_timescales_PS_driver.py",
+  "pcmdi_metrics/misc/scripts/parallelize_driver.py",
+  "pcmdi_metrics/misc/scripts/get_pmp_data.py",
+  "pcmdi_metrics/precip_distribution/precip_distribution_driver.py",
+  "pcmdi_metrics/cloud_feedback/cloud_feedback_driver.py",
+  "pcmdi_metrics/extremes/extremes_driver.py",
+  "pcmdi_metrics/sea_ice/sea_ice_driver.py",
+  "pcmdi_metrics/drcdm/drcdm_driver.py",
+]
+
+[tool.setuptools.packages.find]
+include = ["pcmdi_metrics*"]
+exclude = ["cmec", "tests"]
+
+# Files installed to non-package locations (setup.py: data_files)
+[tool.setuptools.data-files]
+"share/pmp/graphics/png" = [
+  "share/pcmdi/PCMDILogo_1588x520px_300dpi.png",
+  "share/pcmdi/PCMDILogo_200x65px_72dpi.png",
+  "share/pcmdi/PCMDILogo_300x98px_72dpi.png",
+  "share/pcmdi/PCMDILogo_400x131px_72dpi.png",
+  "share/pcmdi/PCMDILogo_500x164px_72dpi.png",
+  "share/pcmdi/PCMDILogoText_1365x520px_300dpi.png",
+  "share/pcmdi/PMPLogoText_1359x1146px_300dpi.png",
+  "share/pcmdi/PMPLogo_1359x1146px_300dpi.png",
+  "share/pcmdi/PMPLogo_500x421px_72dpi.png",
+]
+
+"share/pmp" = [
+  "doc/obs_info_dictionary.json",
+  "share/pcmdi_metrics_table",
+  "share/disclaimer.txt",
+  "share/test_data_files.txt",
+  "share/cmip_model_list.json",
+  "share/default_regions.py",
+  "share/DefArgsCIA.json",
+  "pcmdi_metrics/precip_distribution/lib/cluster3_pdf.amt_regrid.360x180_IMERG_ALL_90S90N.nc",
+  "share/data/navy_land.nc",
+  "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.cpg",
+  "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.dbf",
+  "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.prj",
+  "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.sbn",
+  "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.sbx",
+  "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.shp",
+  "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.shp.xml",
+  "share/data/cb_2023_us_state_500k_ncaregions_wgs84/cb_2023_us_state_500k_ncaregions_wgs84.shx",
+]
+
+"share/pmp/viewer/assets" = [
+  "pcmdi_metrics/viewer/assets/CMIP6_Amon.json",
+  "pcmdi_metrics/viewer/assets/ENSO_ACCESS-CM2_thumbnail.png",
+  "pcmdi_metrics/viewer/assets/mean_climate_portrait_plot_20250213.png",
+  "pcmdi_metrics/viewer/assets/PMPLogo_500x421px_72dpi.png",
+  "pcmdi_metrics/viewer/assets/style.css",
+]
+
+[tool.setuptools.dynamic]
+version = { attr = "pcmdi_metrics._version.__version__" }
+
+#########################
+# Lint/Test configuration
+#########################
+
 [tool.black]
 line-length = 88
 target-version = ['py310', 'py311', 'py312', 'py313']
