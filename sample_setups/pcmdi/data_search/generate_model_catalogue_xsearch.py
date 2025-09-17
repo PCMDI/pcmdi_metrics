@@ -5,11 +5,37 @@ from typing import Any
 
 import xsearch as xs
 
+"""
+This code uses xsearch (https://github.com/PCMDI/xsearch) to generate a dictionary of models and their members
+with paths to netcdf files for specified variables, experiment, frequency, and CMIP table.
+The dictionary is saved to a json file.
+
+About xsearch
+-------------
+- xsearch is a software to query CMIP data. It can be used for CMIP data in NERSC.
+- This code is written by Jiwoo Lee (LLNL) in September 2025.
+
+To start in NERSC machine (Perlmutter)
+--------------------------------------
+Prepare environment
+~~~~~~~~~~~~~~~~~~~
+You will need to add export PYTHONPATH='/global/cfs/projectdirs/m4581/xsearch/software/xsearch/' as a part of your .bashrc file in home directory.
+
+> vi ~/.bashrc      # add: export PYTHONPATH='/global/cfs/projectdirs/m4581/xsearch/software/xsearch/'
+> source ~/.bashrc
+
+Installation
+~~~~~~~~~~~~
+> cd /global/cfs/projectdirs/m4581/xsearch/software/xsearch/
+> conda activate [MY_CONDA_ENV_NAME]
+> python setup.py install
+"""
+
 
 def main():
     # User options ------------------------------------------------------------------
-    mip_era = "CMIP6"
-    exp = "historical"
+    mip_eras = ["CMIP6", "CMIP5"]
+    exps = ["historical", "amip"]
     variables = ["psl", "ts"]
     freq = "mon"
     cmipTable = "Amon"
@@ -18,15 +44,17 @@ def main():
     include_lf = True  # include land fraction variable 'sftlf'
     # -------------------------------------------------------------------------------
 
-    generate_model_catalogue_xsearch(
-        mip_era=mip_era,
-        exp=exp,
-        variables=variables,
-        freq=freq,
-        cmipTable=cmipTable,
-        first_member_only=first_member_only,
-        include_lf=include_lf,
-    )
+    for mip_era in mip_eras:
+        for exp in exps:
+            generate_model_catalogue_xsearch(
+                mip_era=mip_era,
+                exp=exp,
+                variables=variables,
+                freq=freq,
+                cmipTable=cmipTable,
+                first_member_only=first_member_only,
+                include_lf=include_lf,
+            )
 
 
 def generate_model_catalogue_xsearch(
@@ -88,6 +116,7 @@ def generate_model_path_dict(
         dpaths = xs.findPaths(exp, variable, freq, cmipTable=cmipTable, mip_era=mip_era)
         models = xs.natural_sort(xs.getGroupValues(dpaths, "model"))
 
+        print("variable:", variable)
         print("exp:", exp)
         print("models:", models)
         print("number of models:", len(models))
