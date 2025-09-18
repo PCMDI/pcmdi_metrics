@@ -1,20 +1,18 @@
 #!/usr/bin/env python
 
 import datetime
-import glob
-import json
 import logging
 import os
 
-from pcmdi_metrics.mean_climate.lib_unified import (
+from pcmdi_metrics.mean_climate.lib_unified import (  # extract_info_from_model_catalogue,
     calculate_and_save_metrics,
-    extract_info_from_model_catalogue,
     get_model_catalogue,
     get_ref_catalogue,
     get_unique_bases,
     multi_level_dict,
     print_dict,
     process_dataset,
+    process_references,
     write_to_json,
 )
 from pcmdi_metrics.utils import create_target_grid
@@ -22,21 +20,6 @@ from pcmdi_metrics.utils import create_target_grid
 # USER SETTING ###########################################
 
 working_dir = "/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/mean_climate_workflow_refactorization/output"
-
-"""
-variables = [
-    "pr", "psl",
-    "ua-200", "ua-850", "va-200", "ta-850",
-    "rsdt", "rsut", "rsutcs", "rlut", "rlutcs",
-    "rstcre", "rltcre", "rt", "rst"
-]  # optional. If given, prioritized over the model_catalogue.json. If not given, use all variables commonly in ref_catalogue.json and model_catalogue.json
-
-#variables = [
-#    "ua-200", "ua-850", "va-200"
-#]
-
-#variables = ["psl"]
-"""
 
 variables = [
     # "ta-850",
@@ -60,33 +43,34 @@ variables = [
     # "zos",
 ]
 
-model_data_path_template = "/home/data/%(model)/%(var)/%(model)_%(run)_%(var)_blabla.nc"  # optional. If given, prioritized over model_catalogue.json
-
-models = [
-    "model-a",
-    "model-b",
-]  # optional. If given, prioritized over the model_catalogue.json. If not given, use all models in model_catalogue.json
-
-models_runs_dict = {
-    "model-a": ["r1", "r2"],
-    "model-b": ["r1", "r2"],
-    "model-c": ["r1", "r2"],
-}
-# optional. If given, prioritized over the model_catalogue.json. If not given, use all runs in model_catalogue.json
-
 output_path = "/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/mean_climate_workflow_refactorization/output/json"
 
-ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_v20250825.json"
-model_catalogue_file_path = "model_catalogue.json"
+# ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_v20250825.json"
+# is_ref_annual_cycle = False
+
+ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/catalogue/PMP_obs4MIPsClims_1980-2014_catalogue_byVar_v20250826.json"
+is_ref_annual_cycle = True
+
+model_catalogue_file_path = "/pscratch/sd/l/lee1043/git/pcmdi_metrics/sample_setups/pcmdi/data_search/models_path_CMIP6_amip_mon.json"
+
+# Read model_catalogue to get models and runs
+models_dict = get_model_catalogue(model_catalogue_file_path)
 
 ref_data_head = "/global/cfs/projectdirs/m4581/obs4MIPs/obs4MIPs_LLNL"  # optional, if ref_catalogue file does not include entire directory path
 
 all_ref_variables = False
 
+regions = ["global"]
+
+target_grid = "2.5x2.5"
+
 ############################################
 
-regions = ["NHEX", "SHEX"]
-target_grid = "2.5x2.5"
+target_ref = None
+# target_ref = "CERES-EBAF-4-2"
+# target_ref = "ERA-5"
+
+
 rad_diagnostic_variables = ["rt", "rst", "rstcre", "rltcre"]
 default_regions = ["global", "NHEX", "SHEX", "TROPICS"]
 
@@ -109,7 +93,7 @@ refs_dict = get_ref_catalogue(ref_catalogue_file_path, ref_data_head)
 if variables is None:
     variables = sorted(list(refs_dict.keys()))
 
-
+"""
 models_dict = get_model_catalogue(
     model_catalogue_file_path,
     variables,
@@ -117,7 +101,6 @@ models_dict = get_model_catalogue(
     models_runs_dict,
     model_data_path_template,
 )
-
 
 era5_files = glob.glob(
     "/global/cfs/projectdirs/m4581/obs4MIPs/obs4MIPs_LLNL/ECMWF/ERA-5/mon/*/gn/latest/*.nc"
@@ -161,7 +144,7 @@ if any(var is None for var in (variables, models, models_runs_dict)):
     variables, models, models_runs_dict = extract_info_from_model_catalogue(
         variables, models, models_runs_dict, refs_dict, models_dict
     )
-
+"""
 
 common_grid = create_target_grid(target_grid_resolution=target_grid)
 
@@ -171,21 +154,18 @@ anncyc_ref_dict = multi_level_dict()
 anncyc_model_run_dict = multi_level_dict()
 metrics_dict = multi_level_dict()
 
-
 if all_ref_variables:
     variables = sorted(list(refs_dict.keys()))
 
 variables_level_dict = get_unique_bases(variables)
 variables_unique = list(variables_level_dict.keys())
 
-
-# target_ref = None
-# target_ref = "CERES-EBAF-4-2"
-target_ref = "ERA-5"
-
+"""
 if target_ref == "ERA-5":
     variables_unique = era5_vars
     refs_dict = grouped_files
+"""
+
 
 print("variables_unique:", variables_unique)
 print("variables_level_dict:", variables_level_dict)
@@ -194,48 +174,6 @@ print("refs_dict:")
 print_dict(refs_dict)
 print("models_dict:")
 print_dict(models_dict)
-
-
-def process_references(
-    var,
-    refs,
-    rad_diagnostic_variables,
-    levels,
-    common_grid,
-    start,
-    end,
-    version,
-    interim_output_path_dict,
-):
-    for ref in refs:
-        print(f"=== var, ref: {var}, {ref}")
-        # try:
-        if 1:
-            process_dataset(
-                var,
-                ref,
-                refs_dict,
-                anncyc_ref_dict,
-                rad_diagnostic_variables,
-                encountered_variables,
-                levels,
-                common_grid,
-                interim_output_path_dict["ref"],
-                data_type="ref",
-                start=start,
-                end=end,
-                repair_time_axis=True,
-                overwrite_output_ac=True,
-                version=version,
-            )
-
-        """
-        except Exception as e:
-            # Log the error to a file
-            logging.error(f"Error for {var} {ref}: {str(e)}")
-            print(f"Error logged for {var} {ref}")
-            print(f"Error from process_references for {var} {ref}:", e)
-        """
 
 
 def process_models(
@@ -314,14 +252,17 @@ def main():
     syear = start.split("-")[0]
     eyear = end.split("-")[0]
 
+    base_ref_ac_path = f"/global/cfs/projectdirs/m4581/PMP/pmp_reference/obs4MIPs_clims_{syear}-{eyear}/%(var)"
+    base_model_ac_path = f"/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/mean_climate_workflow_refactorization/output/clim_models_{syear}-{eyear}/%(var)"
+
     interim_output_path_dict = {
         "ref": {
-            "path_ac": f"/global/cfs/projectdirs/m4581/PMP/pmp_reference/obs4MIPs_clims_{syear}-{eyear}/%(var)/gn",
-            "path_ac_interp": f"/global/cfs/projectdirs/m4581/PMP/pmp_reference/obs4MIPs_clims_{syear}-{eyear}/%(var)/gr",
+            "path_ac": f"{base_ref_ac_path}/gn",
+            "path_ac_interp": f"{base_ref_ac_path}/gr",
         },
         "model": {
-            "path_ac": f"/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/mean_climate_workflow_refactorization/output/clim_models_{syear}-{eyear}/%(var)/gn",
-            "path_ac_interp": f"/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/mean_climate_workflow_refactorization/output/clim_models_{syear}-{eyear}/%(var)/gr",
+            "path_ac": f"{base_model_ac_path}/gn",
+            "path_ac_interp": f"{base_model_ac_path}/gr",
         },
     }
 
@@ -353,17 +294,21 @@ def main():
                     else:
                         refs = []
 
-                process_references(
-                    var,
-                    refs,
-                    rad_diagnostic_variables,
-                    levels,
-                    common_grid,
-                    start,
-                    end,
-                    version,
-                    interim_output_path_dict,
-                )
+                if not is_ref_annual_cycle:
+                    process_references(
+                        var,
+                        refs,
+                        rad_diagnostic_variables,
+                        levels,
+                        common_grid,
+                        start,
+                        end,
+                        version,
+                        interim_output_path_dict,
+                        refs_dict,
+                        anncyc_ref_dict,
+                        encountered_variables,
+                    )
 
                 # process_models(var, models, models_runs_dict, rad_diagnostic_variables, levels, common_grid, refs, start, end, version)
 

@@ -1,7 +1,8 @@
+import logging
 import os
 import re
 from datetime import datetime, timezone
-from typing import Dict, List, Optional
+from typing import Dict
 
 import xarray as xr
 
@@ -21,6 +22,48 @@ from pcmdi_metrics.mean_climate.lib_unified.lib_unified_dict import (
 )
 from pcmdi_metrics.mean_climate.lib_unified.lib_unified_rad import derive_rad_var
 from pcmdi_metrics.utils import regrid, replace_date_pattern
+
+
+def process_references(
+    var,
+    refs,
+    rad_diagnostic_variables,
+    levels,
+    common_grid,
+    start,
+    end,
+    version,
+    interim_output_path_dict,
+    refs_dict,
+    anncyc_ref_dict,
+    encountered_variables,
+):
+    for ref in refs:
+        print(f"=== var, ref: {var}, {ref}")
+        try:
+            process_dataset(
+                var,
+                ref,
+                refs_dict,
+                anncyc_ref_dict,
+                rad_diagnostic_variables,
+                encountered_variables,
+                levels,
+                common_grid,
+                interim_output_path_dict["ref"],
+                data_type="ref",
+                start=start,
+                end=end,
+                repair_time_axis=True,
+                overwrite_output_ac=True,
+                version=version,
+            )
+
+        except Exception as e:
+            # Log the error to a file
+            logging.error(f"Error for {var} {ref}: {str(e)}")
+            print(f"Error logged for {var} {ref}")
+            print(f"Error from process_references for {var} {ref}:", e)
 
 
 def extract_info_from_model_catalogue(
@@ -144,6 +187,7 @@ def generate_model_data_path(model_data_path_template, var, model, run):
     )
 
 
+"""
 def get_model_catalogue(
     model_catalogue_file_path: str,
     variables: Optional[List[str]] = None,
@@ -203,6 +247,19 @@ def get_model_catalogue(
         raise ValueError(
             "Either a valid model catalogue file or complete set of parameters (variables, models, runs_dict, and model_data_path_template) must be provided"
         )
+
+    return dict(models_dict)
+"""
+
+
+def get_model_catalogue(
+    model_catalogue_file_path: str,
+) -> Dict[str, Dict[str, Dict[str, Dict[str, str]]]]:
+    if os.path.isfile(model_catalogue_file_path):
+        # Simply read models_dict from given catalogue JSON
+        models_dict = load_json_as_dict(model_catalogue_file_path)
+    else:
+        raise ValueError("A valid model catalogue file must be provided")
 
     return dict(models_dict)
 
