@@ -66,6 +66,302 @@ def process_references(
             print(f"Error from process_references for {var} {ref}:", e)
 
 
+def process_models(
+    var,
+    models,
+    models_dict,
+    rad_diagnostic_variables,
+    levels,
+    common_grid,
+    refs,
+    start,
+    end,
+    version,
+    interim_output_path_dict,
+    anncyc_model_run_dict,
+    encountered_variables,
+    regions,
+    anncyc_ref_dict,
+    refs_dict,
+    output_path,
+    metrics_dict,
+    is_model_processed=False,
+):
+
+    ac_model_dict = multi_level_dict()
+
+    for model in models:
+        runs = sorted(list(models_dict[model].keys()))
+        for run in runs:
+            try:
+                if not is_model_processed:
+                    ac_model_dict = process_dataset(
+                        var,
+                        (model, run),
+                        models_dict,
+                        anncyc_model_run_dict,
+                        rad_diagnostic_variables,
+                        encountered_variables,
+                        levels,
+                        common_grid,
+                        interim_output_path_dict["model"],
+                        data_type="model",
+                        start=start,
+                        end=end,
+                        version=version,
+                    )
+                else:
+                    print(
+                        f"Skipping process_dataset for {var} {model} {run} since is_model_annual_cycle=True"
+                    )
+                    # ac_model_dict here
+
+                for level in levels:
+                    anncyc_model_run_level_interp = anncyc_model_run_dict[var][model][
+                        run
+                    ][level]
+                    calculate_and_save_metrics(
+                        var,
+                        model,
+                        run,
+                        level,
+                        regions,
+                        refs,
+                        anncyc_ref_dict,
+                        anncyc_model_run_level_interp,
+                        output_path,
+                        refs_dict,
+                        metrics_dict,
+                    )
+            except Exception as e:
+                print(f"Error from process_models for {var} {model} {run}:", e)
+
+    for level in levels:
+        if level is None:
+            var_key = var
+        else:
+            var_key = f"{var}-{level}"
+        write_to_json(
+            metrics_dict[var_key], os.path.join(output_path, f"output_{var_key}.json")
+        )
+
+
+def process_dataset(
+    var,
+    data_name,
+    data_dict,
+    ac_dict,
+    rad_diagnostic_variables,
+    encountered_variables,
+    levels: list,
+    common_grid: xr.Dataset = None,
+    interim_output_path_dict_data: dict = None,
+    data_type: str = "ref",
+    start: str = "1981-01",
+    end: str = "2005-12",
+    repair_time_axis: bool = False,
+    overwrite_output_ac: bool = True,
+    save_ac_netcdf: bool = True,
+    save_ac_interp_netcdf: bool = True,
+    plot_gn: bool = False,
+    plot_gr: bool = True,
+    version: str = None,
+):
+    # Sanity checks
+    if data_type not in ["ref", "model"]:
+        raise ValueError("Invalid data_type. Expected 'ref' or 'model'.")
+    if (data_type == "ref" and not isinstance(data_name, str)) or (
+        data_type == "model"
+        and not (
+            isinstance(data_name, tuple)
+            and all(isinstance(item, str) for item in data_name)
+        )
+    ):
+        raise TypeError("Invalid data_name for the specified data_type.")
+
+    ref, model, run = None, None, None
+    if data_type == "ref":
+        ref = data_name
+        refs_dict = data_dict
+        print(f"Processing data for: {ref}")
+        # Construct paths
+        data_path = get_ref_data_path(refs_dict, var, ref)
+        print("ref, data_path:", ref, data_path)
+        out_path = get_interim_out_path(interim_output_path_dict_data, "path_ac", var)
+        out_path_interp = get_interim_out_path(
+            interim_output_path_dict_data, "path_ac_interp", var
+        )
+        refs_dict[var][ref]["path_ac"] = out_path
+        if "varname" in refs_dict[var][ref]:
+            varname = refs_dict[var][ref]["varname"]
+        else:
+            varname = var
+    else:
+        model, run = data_name
+        models_dict = data_dict
+        print(f"Processing data for: {model}, {run}")
+        # Construct paths
+        data_path = get_model_run_data_path(data_dict, var, model, run)
+        out_path = get_interim_out_path(
+            interim_output_path_dict_data, "path_ac_interp", var
+        )
+        out_path_interp = get_interim_out_path(
+            interim_output_path_dict_data, "path_ac", var
+        )
+        models_dict[var][model][run]["path_ac"] = out_path
+        if "varname" in models_dict[var][model][run]:
+            varname = models_dict[var][model][run]["varname"]
+        else:
+            varname = var
+
+    print(
+        f"Processing {data_type} dataset - varname: {varname}, data: {data_name}, path: {data_path}"
+    )
+
+    # Set version identifier using the current date if not provided
+    if version is None:
+        version = datetime.now().strftime("v%Y%m%d")
+        print("ver:", version)
+
+    # Calculate the annual cycle and save annual cycle
+    if var in data_dict:
+        ds_ac = get_annual_cycle(
+            varname,
+            data_path,
+            out_path,
+            levels=levels,
+            start=start,
+            end=end,
+            repair_time_axis=repair_time_axis,
+            overwrite_output_ac=overwrite_output_ac,
+            save_ac_netcdf=save_ac_netcdf,
+            ver=version,
+            plot=plot_gn,
+        )
+    elif var in rad_diagnostic_variables:
+        print(
+            f"Note: {var} has to be derived from other variables -- calling 'derive_rad_var'"
+        )
+        ds_ac = derive_rad_var(
+            varname,
+            encountered_variables,
+            data_name,
+            ac_dict,
+            data_dict,
+            os.path.join(out_path, version),
+            data_type=data_type,
+            save_ac_netcdf=save_ac_netcdf,
+        )
+    else:
+        raise ValueError(f"Cannot find {var} in data collection.")
+
+    # Interpolation
+    if common_grid is not None:
+        # Prepare for output file name
+        grid_resolution = common_grid.attrs.get("grid_resolution")
+
+        if "filename" in ds_ac.attrs:
+            interp_filename_head = str(ds_ac.attrs.get("filename"))
+        else:
+            interp_filename_head = str(os.path.basename(data_path)).replace("*", "")
+
+        # Proceed interpolation using regrid
+        print(f"regrid starts, ds_ac[{varname}].shape: {ds_ac[varname].shape}")
+        ds_ac_interp = regrid(ds_ac, varname, common_grid)
+        print(
+            f"regrid done, ds_ac_interp[{varname}].shape: {ds_ac_interp[varname].shape}"
+        )
+
+        # Update attrs
+        # Get the current time with UTC timezone
+        current_time_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        ds_ac_interp = ds_ac_interp.assign_attrs(
+            current_date=f"{current_time_utc}",
+            history=f"{current_time_utc}; PCMDI Metrics Package (PMP) calculated climatology and interpolated using {os.path.basename(data_path)}",
+        )
+
+        # Save to netcdf file
+        if save_ac_interp_netcdf:
+            interp_filename_nc = interp_filename_head.replace(
+                ".nc", f"_{grid_resolution}.nc"
+            ).replace("_gn_", "_gr_")
+            os.makedirs(os.path.join(out_path_interp, version), exist_ok=True)
+            ds_ac_interp.to_netcdf(
+                os.path.join(out_path_interp, version, interp_filename_nc)
+            )
+
+    # Extract level and plot climatology
+    # Check if variable is 4D
+    if levels is None:
+        levels_to_plot = [None]
+    else:
+        if is_4d_variable(ds_ac_interp, varname):
+            print(f"ds_ac_interp[{varname}] is 4D variable")
+            print("levels:", levels)
+            # Plot 3 levels (hPa) for 4D variables for quick check
+            if len(levels) == 1 and levels[0] is None:
+                print("The list contains exactly one element, and it is None.")
+                levels_to_plot = [200, 500, 850]
+                print("levels_to_plot:", levels_to_plot)
+            else:
+                levels_to_plot = levels
+        else:
+            levels_to_plot = [None]
+
+    for level in levels_to_plot:
+        print("level:", level)
+
+        # Extract level
+        if level is None:
+            ds_ac_interp_level = ds_ac_interp
+        else:
+            ds_ac_interp_level = extract_level(ds_ac_interp, level)
+
+        # plot for regrided grid
+        if plot_gr:
+            output_fig_path = os.path.join(
+                out_path_interp,
+                version,
+                (
+                    interp_filename_head.replace(
+                        ".nc", f"_{grid_resolution}.png"
+                    ).replace("_gn_", "_gr_")
+                ),
+            )
+
+            if level is not None:
+                if var in output_fig_path:
+                    output_fig_path = os.path.join(
+                        out_path_interp,
+                        version,
+                        output_fig_path.split("/")[-1].replace(
+                            f"{var}_", f"{var}-{level}_"
+                        ),
+                    )
+                else:
+                    output_fig_path = output_fig_path.replace(".png", f"-{level}.png")
+
+            # plot climatology for each level
+            plot_climatology(
+                ds_ac_interp,
+                var,
+                level=level,
+                season_to_plot="all",
+                output_filename=output_fig_path,
+                period=ds_ac_interp.attrs["period"],
+            )
+
+            print(f"plot_gr fig: {output_fig_path}")
+
+        if data_type == "ref":
+            ac_dict[var][ref][level] = ds_ac_interp_level
+        else:
+            ac_dict[var][model][run][level] = ds_ac_interp_level
+
+    return ac_dict
+
+
 def extract_info_from_model_catalogue(
     variables, models, runs_dict, refs_dict, models_dict, debug=False
 ):
@@ -366,222 +662,6 @@ def calc_metrics(ac_ref, ac_run, in_progress=True):
         metrics = None
 
     return metrics
-
-
-def process_dataset(
-    var,
-    data_name,
-    data_dict,
-    ac_dict,
-    rad_diagnostic_variables,
-    encountered_variables,
-    levels: list,
-    common_grid: xr.Dataset = None,
-    interim_output_path_dict_data: dict = None,
-    data_type: str = "ref",
-    start: str = "1981-01",
-    end: str = "2005-12",
-    repair_time_axis: bool = False,
-    overwrite_output_ac: bool = True,
-    save_ac_netcdf: bool = True,
-    save_ac_interp_netcdf: bool = True,
-    plot_gn: bool = False,
-    plot_gr: bool = True,
-    version: str = None,
-):
-    # Sanity checks
-    if data_type not in ["ref", "model"]:
-        raise ValueError("Invalid data_type. Expected 'ref' or 'model'.")
-    if (data_type == "ref" and not isinstance(data_name, str)) or (
-        data_type == "model"
-        and not (
-            isinstance(data_name, tuple)
-            and all(isinstance(item, str) for item in data_name)
-        )
-    ):
-        raise TypeError("Invalid data_name for the specified data_type.")
-
-    ref, model, run = None, None, None
-    if data_type == "ref":
-        ref = data_name
-        refs_dict = data_dict
-        print(f"Processing data for: {ref}")
-        # Construct paths
-        data_path = get_ref_data_path(refs_dict, var, ref)
-        print("ref, data_path:", ref, data_path)
-        out_path = get_interim_out_path(interim_output_path_dict_data, "path_ac", var)
-        out_path_interp = get_interim_out_path(
-            interim_output_path_dict_data, "path_ac_interp", var
-        )
-        refs_dict[var][ref]["path_ac"] = out_path
-        if "varname" in refs_dict[var][ref]:
-            varname = refs_dict[var][ref]["varname"]
-        else:
-            varname = var
-    else:
-        model, run = data_name
-        models_dict = data_dict
-        print(f"Processing data for: {model}, {run}")
-        # Construct paths
-        data_path = get_model_run_data_path(data_dict, var, model, run)
-        out_path = get_interim_out_path(
-            interim_output_path_dict_data, "path_ac_interp", var
-        )
-        out_path_interp = get_interim_out_path(
-            interim_output_path_dict_data, "path_ac", var
-        )
-        models_dict[var][model][run]["path_ac"] = out_path
-        if "varname" in models_dict[var][model][run]:
-            varname = models_dict[var][model][run]["varname"]
-        else:
-            varname = var
-
-    print(
-        f"Processing {data_type} dataset - varname: {varname}, data: {data_name}, path: {data_path}"
-    )
-
-    # Set version identifier using the current date if not provided
-    if version is None:
-        version = datetime.now().strftime("v%Y%m%d")
-        print("ver:", version)
-
-    # Calculate the annual cycle and save annual cycle
-    if var in data_dict:
-        ds_ac = get_annual_cycle(
-            varname,
-            data_path,
-            out_path,
-            levels=levels,
-            start=start,
-            end=end,
-            repair_time_axis=repair_time_axis,
-            overwrite_output_ac=overwrite_output_ac,
-            save_ac_netcdf=save_ac_netcdf,
-            ver=version,
-            plot=plot_gn,
-        )
-    elif var in rad_diagnostic_variables:
-        print(
-            f"Note: {var} has to be derived from other variables -- calling 'derive_rad_var'"
-        )
-        ds_ac = derive_rad_var(
-            varname,
-            encountered_variables,
-            data_name,
-            ac_dict,
-            data_dict,
-            os.path.join(out_path, version),
-            data_type=data_type,
-            save_ac_netcdf=save_ac_netcdf,
-        )
-    else:
-        raise ValueError(f"Cannot find {var} in data collection.")
-
-    # Interpolation
-    if common_grid is not None:
-        # Prepare for output file name
-        grid_resolution = common_grid.attrs.get("grid_resolution")
-
-        if "filename" in ds_ac.attrs:
-            interp_filename_head = str(ds_ac.attrs.get("filename"))
-        else:
-            interp_filename_head = str(os.path.basename(data_path)).replace("*", "")
-
-        # Proceed interpolation using regrid
-        print(f"regrid starts, ds_ac[{varname}].shape: {ds_ac[varname].shape}")
-        ds_ac_interp = regrid(ds_ac, varname, common_grid)
-        print(
-            f"regrid done, ds_ac_interp[{varname}].shape: {ds_ac_interp[varname].shape}"
-        )
-
-        # Update attrs
-        # Get the current time with UTC timezone
-        current_time_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-
-        ds_ac_interp = ds_ac_interp.assign_attrs(
-            current_date=f"{current_time_utc}",
-            history=f"{current_time_utc}; PCMDI Metrics Package (PMP) calculated climatology and interpolated using {os.path.basename(data_path)}",
-        )
-
-        # Save to netcdf file
-        if save_ac_interp_netcdf:
-            interp_filename_nc = interp_filename_head.replace(
-                ".nc", f"_{grid_resolution}.nc"
-            ).replace("_gn_", "_gr_")
-            os.makedirs(os.path.join(out_path_interp, version), exist_ok=True)
-            ds_ac_interp.to_netcdf(
-                os.path.join(out_path_interp, version, interp_filename_nc)
-            )
-
-    # Extract level and plot climatology
-    # Check if variable is 4D
-    if levels is None:
-        levels_to_plot = [None]
-    else:
-        if is_4d_variable(ds_ac_interp, varname):
-            print(f"ds_ac_interp[{varname}] is 4D variable")
-            print("levels:", levels)
-            # Plot 3 levels (hPa) for 4D variables for quick check
-            if len(levels) == 1 and levels[0] is None:
-                print("The list contains exactly one element, and it is None.")
-                levels_to_plot = [200, 500, 850]
-                print("levels_to_plot:", levels_to_plot)
-            else:
-                levels_to_plot = levels
-        else:
-            levels_to_plot = [None]
-
-    for level in levels_to_plot:
-        print("level:", level)
-
-        # Extract level
-        if level is None:
-            ds_ac_interp_level = ds_ac_interp
-        else:
-            ds_ac_interp_level = extract_level(ds_ac_interp, level)
-
-        # plot for regrided grid
-        if plot_gr:
-            output_fig_path = os.path.join(
-                out_path_interp,
-                version,
-                (
-                    interp_filename_head.replace(
-                        ".nc", f"_{grid_resolution}.png"
-                    ).replace("_gn_", "_gr_")
-                ),
-            )
-
-            if level is not None:
-                if var in output_fig_path:
-                    output_fig_path = os.path.join(
-                        out_path_interp,
-                        version,
-                        output_fig_path.split("/")[-1].replace(
-                            f"{var}_", f"{var}-{level}_"
-                        ),
-                    )
-                else:
-                    output_fig_path = output_fig_path.replace(".png", f"-{level}.png")
-
-            # plot climatology for each level
-            plot_climatology(
-                ds_ac_interp,
-                var,
-                level=level,
-                season_to_plot="all",
-                output_filename=output_fig_path,
-                period=ds_ac_interp.attrs["period"],
-            )
-
-            print(f"plot_gr fig: {output_fig_path}")
-
-        if data_type == "ref":
-            ac_dict[var][ref][level] = ds_ac_interp_level
-        else:
-            ac_dict[var][model][run][level] = ds_ac_interp_level
-
-    return
 
 
 def calculate_and_save_metrics(
