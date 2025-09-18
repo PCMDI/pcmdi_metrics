@@ -126,6 +126,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v3.9.3]      | Technical update
 | [v3.9.2]      | Technical update
 | [v3.9.1]      | New capability (**new modes for modes of variability metrics: EA, SCA**) and technical update
 | [v3.9]        | New capability (**Decision-Relevant metrics, Database access API**) and new demo notebooks
@@ -182,6 +183,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v3.9.3]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.9.3
 [v3.9.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.9.2
 [v3.9.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.9.1
 [v3.9]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.9
