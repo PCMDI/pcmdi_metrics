@@ -1,5 +1,4 @@
 from .lib_unified import (
-    calc_metrics,
     calculate_and_save_metrics,
     extract_info_from_model_catalogue,
     extract_level,

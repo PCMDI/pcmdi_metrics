@@ -43,6 +43,13 @@ variables = [
     # "zos",
 ]
 
+variables = ["pr"]
+
+# ---------
+# Reference
+# ---------
+default_ref_only = True  # if True, use only the reference marked as "default" in the ref_catalogue file
+all_ref_variables = False  # if True, use all variables in the ref_catalogue file, otherwise use only those in 'variables' above
 
 # Reference data in raw time series format (not annual cycle)
 # ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_v20250825.json"
@@ -50,13 +57,15 @@ variables = [
 # is_ref_annual_cycle = False
 
 # Reference data in annual cycle format
-ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/catalogue/PMP_obs4MIPsClims_1980-2014_catalogue_byVar_v20250826.json"
+ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/catalogue/PMP_obs4MIPsClims_1980-2014_catalogue_byVar_v20250904.json"
 ref_data_head = (
     "/global/cfs/projectdirs/m4581/PMP/pmp_reference/obs4MIPs_clims_1980-2014"
 )
 is_ref_annual_cycle = True
 
+# -----------
 # Model data
+# -----------
 model_catalogue_file_path = "/pscratch/sd/l/lee1043/git/pcmdi_metrics/sample_setups/pcmdi/data_search/models_path_CMIP6_amip_mon.json"
 is_model_processed = False
 
@@ -64,7 +73,9 @@ is_model_processed = False
 models_dict = get_model_catalogue(model_catalogue_file_path)
 models = sorted(list(models_dict.keys()))
 
-all_ref_variables = False
+# --------------
+# Other settings
+# --------------
 
 regions = ["global"]
 
@@ -91,6 +102,8 @@ version = datetime.datetime.now().strftime("v%Y%m%d")
 version = "v20250825"
 print("version:", version)
 
+first_member_only = True  # if True, use only the first member of each model
+
 ############################################
 
 target_ref = None
@@ -113,6 +126,7 @@ if not regions:
     regions = default_regions
 
 refs_dict = get_ref_catalogue(ref_catalogue_file_path, ref_data_head)
+print("refs_dict keys:", refs_dict.keys())
 
 if variables is None:
     variables = sorted(list(refs_dict.keys()))
@@ -133,8 +147,8 @@ print("variables_level_dict:", variables_level_dict)
 
 print("refs_dict:")
 print_dict(refs_dict)
-print("models_dict:")
-print_dict(models_dict)
+# print("models_dict:")
+# print_dict(models_dict)
 
 interim_output_path_dict = {
     "ref": {
@@ -164,7 +178,8 @@ common_grid = create_target_grid(target_grid_resolution=target_grid)
 # main loop over variables
 # ------------------------
 for var in variables_unique:
-    try:
+    if 1:
+        # try:
         print("var:", var)
         encountered_variables.add(var)
         levels = variables_level_dict[var]
@@ -175,7 +190,17 @@ for var in variables_unique:
         # sys.exit("test")
 
         if var in refs_dict:
-            refs = refs_dict[var].keys()
+            refs = list(refs_dict[var].keys())
+            print("var, refs:", var, refs)
+
+            if "default" in refs:
+                print("default ref:", refs_dict[var]["default"])
+                if default_ref_only:
+                    # Keep only the reference marked as "default"
+                    refs = [refs_dict[var]["default"]]
+                else:
+                    # Keep all references, but remove the "default" label
+                    refs.remove("default")
 
             if target_ref is not None:
                 if target_ref in refs:
@@ -204,7 +229,11 @@ for var in variables_unique:
                 )
                 for ref in refs:
                     ref_data_path = get_ref_data_path(refs_dict, var, ref)
+                    print("ref, ref_data_path:", ref, ref_data_path)
                     anncyc_ref_dict[var][ref] = xcdat_open(ref_data_path)
+
+            models = models[0:1]  # for testing with one model only
+            print("models:", models)
 
             process_models(
                 var,
@@ -225,8 +254,9 @@ for var in variables_unique:
                 refs_dict,
                 output_path,
                 metrics_dict,
+                first_member_only=first_member_only,
                 is_model_processed=is_model_processed,
             )
 
-    except Exception as e:
-        print(f"Error from main for {var}:", e)
+    # except Exception as e:
+    #    print(f"Error from main for {var}:", e)

@@ -1,6 +1,7 @@
 import copy
 import os
 from datetime import datetime, timezone
+from typing import Union
 
 import xarray as xr
 
@@ -19,7 +20,7 @@ from .plot_clim_maps import plot_climatology
 
 def calculate_climatology(
     var: str,
-    infile: str,
+    infile: Union[str, list[str]],
     ds: xr.Dataset = None,
     outfile: str = None,
     outpath: str = None,
@@ -104,7 +105,10 @@ def calculate_climatology(
     print("ver:", ver)
 
     # Extract the input filename from the full file path
-    infilename = os.path.basename(infile)
+    if isinstance(infile, list):
+        infilename = ",".join([os.path.basename(f) for f in infile])
+    else:
+        infilename = os.path.basename(infile)
     print("infilename:", infilename)
 
     # Open the dataset using xcdat's open_mfdataset function

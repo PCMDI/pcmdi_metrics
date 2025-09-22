@@ -9,6 +9,7 @@ import xarray as xr
 from pcmdi_metrics.io import xcdat_open
 from pcmdi_metrics.mean_climate.lib import (
     calculate_climatology,
+    compute_metrics,
     extract_level,
     extract_levels,
     is_4d_variable,
@@ -21,7 +22,7 @@ from pcmdi_metrics.mean_climate.lib_unified.lib_unified_dict import (
     write_to_json,
 )
 from pcmdi_metrics.mean_climate.lib_unified.lib_unified_rad import derive_rad_var
-from pcmdi_metrics.utils import regrid, replace_date_pattern
+from pcmdi_metrics.utils import regrid, replace_date_pattern, sort_human
 
 
 def process_references(
@@ -65,6 +66,8 @@ def process_references(
             print(f"Error logged for {var} {ref}")
             print(f"Error from process_references for {var} {ref}:", e)
 
+    return anncyc_ref_dict
+
 
 def process_models(
     var,
@@ -85,16 +88,25 @@ def process_models(
     refs_dict,
     output_path,
     metrics_dict,
+    first_member_only=False,
     is_model_processed=False,
 ):
 
     ac_model_dict = multi_level_dict()
 
     for model in models:
-        runs = sorted(list(models_dict[model].keys()))
+        runs = sort_human(list(models_dict[model].keys()))
+
+        if first_member_only:
+            runs = runs[0:1]  # use only the first member of each model
+        print("model, runs:", model, runs)
+
         for run in runs:
-            try:
+            # try:
+            if 1:
                 if not is_model_processed:
+                    print(f"=== var, model, run: {var}, {model}, {run}")
+                    print("process_dataset for model starts")
                     ac_model_dict = process_dataset(
                         var,
                         (model, run),
@@ -110,16 +122,23 @@ def process_models(
                         end=end,
                         version=version,
                     )
+                    print("process_dataset for model done")
                 else:
                     print(
                         f"Skipping process_dataset for {var} {model} {run} since is_model_annual_cycle=True"
                     )
-                    # ac_model_dict here
+                    # ac_model_dict here in case its already AC
+                    ac_model_dict = anncyc_model_run_dict[var][model][run]
+
+                # ac_model_dict here
+                print("ac_model_dict:", ac_model_dict)
+                print("ac_model_dict.keys():", ac_model_dict.keys())
 
                 for level in levels:
-                    anncyc_model_run_level_interp = anncyc_model_run_dict[var][model][
-                        run
-                    ][level]
+                    anncyc_model_run_level_interp = ac_model_dict[var][model][run][
+                        level
+                    ]
+                    print("calculate_and_save_metrics for model starts")
                     calculate_and_save_metrics(
                         var,
                         model,
@@ -133,8 +152,9 @@ def process_models(
                         refs_dict,
                         metrics_dict,
                     )
-            except Exception as e:
-                print(f"Error from process_models for {var} {model} {run}:", e)
+                    print("calculate_and_save_metrics for model done")
+            # except Exception as e:
+            #    print(f"Error from process_models for {var} {model} {run}:", e)
 
     for level in levels:
         if level is None:
@@ -196,6 +216,7 @@ def process_dataset(
             varname = refs_dict[var][ref]["varname"]
         else:
             varname = var
+        variables_in_dict = list(refs_dict.keys())
     else:
         model, run = data_name
         models_dict = data_dict
@@ -208,11 +229,18 @@ def process_dataset(
         out_path_interp = get_interim_out_path(
             interim_output_path_dict_data, "path_ac", var
         )
-        models_dict[var][model][run]["path_ac"] = out_path
-        if "varname" in models_dict[var][model][run]:
-            varname = models_dict[var][model][run]["varname"]
+        models_dict[model][run][var]["path_ac"] = out_path
+        if "varname" in models_dict[model][run][var]:
+            varname = models_dict[model][run][var]["varname"]
         else:
             varname = var
+
+        variables_in_dict = set()
+        for model, runs in models_dict.items():
+            for run, vars_dict in runs.items():
+                variables_in_dict.update(vars_dict.keys())
+
+    print("variables_in_dict:", variables_in_dict)
 
     print(
         f"Processing {data_type} dataset - varname: {varname}, data: {data_name}, path: {data_path}"
@@ -224,7 +252,7 @@ def process_dataset(
         print("ver:", version)
 
     # Calculate the annual cycle and save annual cycle
-    if var in data_dict:
+    if var in variables_in_dict:
         ds_ac = get_annual_cycle(
             varname,
             data_path,
@@ -263,7 +291,12 @@ def process_dataset(
         if "filename" in ds_ac.attrs:
             interp_filename_head = str(ds_ac.attrs.get("filename"))
         else:
-            interp_filename_head = str(os.path.basename(data_path)).replace("*", "")
+            if isinstance(data_path, list):
+                interp_filename_head = str(os.path.basename(data_path[0])).replace(
+                    "*", ""
+                )
+            else:
+                interp_filename_head = str(os.path.basename(data_path)).replace("*", "")
 
         # Proceed interpolation using regrid
         print(f"regrid starts, ds_ac[{varname}].shape: {ds_ac[varname].shape}")
@@ -276,9 +309,14 @@ def process_dataset(
         # Get the current time with UTC timezone
         current_time_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
+        if isinstance(data_path, list):
+            data_path_str = ",".join([os.path.basename(f) for f in data_path])
+        else:
+            data_path_str = os.path.basename(data_path)
+
         ds_ac_interp = ds_ac_interp.assign_attrs(
             current_date=f"{current_time_utc}",
-            history=f"{current_time_utc}; PCMDI Metrics Package (PMP) calculated climatology and interpolated using {os.path.basename(data_path)}",
+            history=f"{current_time_utc}; PCMDI Metrics Package (PMP) calculated climatology and interpolated using {data_path_str}",
         )
 
         # Save to netcdf file
@@ -421,8 +459,15 @@ def get_annual_cycle(
     out_path_ver = os.path.join(out_path, ver)
     os.makedirs(out_path_ver, exist_ok=True)
 
+    print("data_path:", data_path)
+
+    if isinstance(data_path, list):
+        data_path_template = data_path[0]
+    else:
+        data_path_template = data_path
+
     outfilename_head = (
-        f"{replace_date_pattern(str(os.path.basename(data_path)), '')}".replace(
+        f"{replace_date_pattern(str(os.path.basename(data_path_template)), '')}".replace(
             "_.nc", ""
         )
         .replace("_*", "")
@@ -568,15 +613,17 @@ def get_interim_out_path(interim_output_path_dict_data, path_key, var) -> str:
 
 def get_model_run_data_path(models_dict, var, model, run) -> str:
     if (
-        "path" in models_dict[var][model][run]
-        and "filename" in models_dict[var][model][run]
+        "path" in models_dict[model][run][var]
+        and "filename" in models_dict[model][run][var]
     ):
         model_data_path = os.path.join(
-            models_dict[var][model][run]["path"],
-            models_dict[var][model][run]["filename"],
+            models_dict[model][run][var]["path"],
+            models_dict[model][run][var]["filename"],
         )
-    elif "template" in models_dict[var][model][run]:
-        model_data_path = models_dict[var][model][run]["template"]
+    elif "path" in models_dict[model][run][var]:
+        model_data_path = models_dict[model][run][var]["path"]
+    elif "template" in models_dict[model][run][var]:
+        model_data_path = models_dict[model][run][var]["template"]
     else:
         raise ValueError(f"No path, filename, or template found for model: {model}")
     return model_data_path
@@ -587,21 +634,26 @@ def get_ref_catalogue(ref_catalogue_file_path, ref_data_head=None) -> dict:
     if ref_data_head:
         for var in refs_dict:
             for data in refs_dict[var]:
-                data_path = ""
-                potential_keys = ["template", "obs4MIPs-template"]
-                for potential_key in potential_keys:
-                    if potential_key in refs_dict[var][data].keys():
-                        data_path = os.path.join(
-                            ref_data_head, refs_dict[var][data][potential_key]
-                        )
-                        break
-                refs_dict[var][data].update(
-                    {
+                if data not in [
+                    "default",
+                    "alternate",
+                    "alternate1",
+                    "alternate2",
+                    "alternate3",
+                ]:
+                    data_path = ""
+                    potential_keys = ["template", "obs4MIPs-template"]
+                    for potential_key in potential_keys:
+                        if potential_key in refs_dict[var][data]:
+                            data_path = os.path.join(
+                                ref_data_head, refs_dict[var][data][potential_key]
+                            )
+                            break
+                    refs_dict[var][data] = {
                         "path": os.path.dirname(data_path),
                         "filename": os.path.basename(data_path),
                         "template": data_path,
                     }
-                )
     return refs_dict
 
 
@@ -657,13 +709,6 @@ def get_unique_bases(variables):
     return result
 
 
-def calc_metrics(ac_ref, ac_run, in_progress=True):
-    if in_progress:
-        metrics = None
-
-    return metrics
-
-
 def calculate_and_save_metrics(
     var,
     model,
@@ -690,9 +735,14 @@ def calculate_and_save_metrics(
         if ref not in ac_ref_dict[var].keys():
             raise KeyError(f"Reference data {ref} is not available for {var}.")
 
+        print("ac_ref_dict[var][ref]:", ac_ref_dict[var][ref])
+        print("ac_model_run_level_interp:", ac_model_run_level_interp)
+
         # Calculate metrics
         for region in regions:
-            metrics = calc_metrics(ac_ref_dict[var][ref], ac_model_run_level_interp)
+            metrics = compute_metrics(
+                var_key, ac_ref_dict[var][ref], ac_model_run_level_interp
+            )
 
             # Save to dict for later use (accumulated dict)
             metrics_dict[var_key]["RESULTS"][model][run][ref][region] = metrics
