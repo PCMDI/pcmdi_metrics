@@ -4,9 +4,11 @@ import datetime
 import logging
 import os
 
+from pcmdi_metrics.io import xcdat_open
 from pcmdi_metrics.mean_climate.lib_unified import (  # extract_info_from_model_catalogue,
     get_model_catalogue,
     get_ref_catalogue,
+    get_ref_data_path,
     get_unique_bases,
     multi_level_dict,
     print_dict,
@@ -41,22 +43,26 @@ variables = [
     # "zos",
 ]
 
-output_path = "/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/mean_climate_workflow_refactorization/output/json"
 
+# Reference data in raw time series format (not annual cycle)
 # ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_v20250825.json"
+# ref_data_head = "/global/cfs/projectdirs/m4581/obs4MIPs/obs4MIPs_LLNL"  # optional, if ref_catalogue file does not include entire directory path
 # is_ref_annual_cycle = False
 
+# Reference data in annual cycle format
 ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/catalogue/PMP_obs4MIPsClims_1980-2014_catalogue_byVar_v20250826.json"
+ref_data_head = (
+    "/global/cfs/projectdirs/m4581/PMP/pmp_reference/obs4MIPs_clims_1980-2014"
+)
 is_ref_annual_cycle = True
 
+# Model data
 model_catalogue_file_path = "/pscratch/sd/l/lee1043/git/pcmdi_metrics/sample_setups/pcmdi/data_search/models_path_CMIP6_amip_mon.json"
 is_model_processed = False
 
 # Read model_catalogue to get models and runs
 models_dict = get_model_catalogue(model_catalogue_file_path)
 models = sorted(list(models_dict.keys()))
-
-ref_data_head = "/global/cfs/projectdirs/m4581/obs4MIPs/obs4MIPs_LLNL"  # optional, if ref_catalogue file does not include entire directory path
 
 all_ref_variables = False
 
@@ -73,8 +79,12 @@ end = "2014-12"
 syear = start.split("-")[0]
 eyear = end.split("-")[0]
 
+# For interim output paths
 base_ref_ac_path = f"/global/cfs/projectdirs/m4581/PMP/pmp_reference/obs4MIPs_clims_{syear}-{eyear}/%(var)"
 base_model_ac_path = f"/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/mean_climate_workflow_refactorization/output/clim_models_{syear}-{eyear}/%(var)"
+
+# For output json files
+output_path = "/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/mean_climate_workflow_refactorization/output/json"
 
 # Set version identifier using the current date if not provided
 version = datetime.datetime.now().strftime("v%Y%m%d")
@@ -106,8 +116,6 @@ refs_dict = get_ref_catalogue(ref_catalogue_file_path, ref_data_head)
 
 if variables is None:
     variables = sorted(list(refs_dict.keys()))
-
-common_grid = create_target_grid(target_grid_resolution=target_grid)
 
 encountered_variables = set()
 anncyc_ref_dict = multi_level_dict()
@@ -147,6 +155,14 @@ interim_output_path_dict = {
 # variables_unique = ["ua", "va"]
 # variables_unique.remove("pr")
 
+# ----------------------
+# grid for interpolation
+# ----------------------
+common_grid = create_target_grid(target_grid_resolution=target_grid)
+
+# ------------------------
+# main loop over variables
+# ------------------------
 for var in variables_unique:
     try:
         print("var:", var)
@@ -168,7 +184,7 @@ for var in variables_unique:
                     refs = []
 
             if not is_ref_annual_cycle:
-                process_references(
+                anncyc_ref_dict = process_references(
                     var,
                     refs,
                     rad_diagnostic_variables,
@@ -186,8 +202,9 @@ for var in variables_unique:
                 print(
                     f"Skipping process_references for {var} since is_ref_annual_cycle=True"
                 )
-                # ref_data_path =
-                # anncyc_ref_dict[var]["ann"] = xcdat_open()
+                for ref in refs:
+                    ref_data_path = get_ref_data_path(refs_dict, var, ref)
+                    anncyc_ref_dict[var][ref] = xcdat_open(ref_data_path)
 
             process_models(
                 var,
