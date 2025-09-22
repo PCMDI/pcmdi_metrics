@@ -89,6 +89,15 @@ def create_target_grid(
             f"grid_type {grid_type} is undefined. Please use either 'uniform' or 'gaussian'"
         )
 
+    grid = grid.assign_attrs(
+        grid_type=grid_type,
+        grid_resolution=target_grid_resolution,
+        start_lat=start_lat,
+        start_lon=start_lon,
+        end_lat=end_lat,
+        end_lon=end_lon,
+    )
+
     return grid
 
 
@@ -172,6 +181,7 @@ def regrid(
     regrid_tool: str = "regrid2",
     regrid_method: str = "bilinear",
     fill_zero: bool = False,
+    debug: bool = True,
 ) -> xr.Dataset:
     """
     Regrid the dataset to a given grid.
@@ -190,6 +200,8 @@ def regrid(
         Regrid method option that is required for xesmf regridder. Default is "bilinear".
     fill_zero : bool, optional
         Fill NaN value with zero if exists. Default is False.
+    debug : bool, optional
+        Print debug information. Default is False.
 
     Returns
     -------
@@ -202,18 +214,68 @@ def regrid(
     """
 
     target_grid = get_grid(target_grid)  # To remove time dimension if exist
+    current_grid = get_grid(ds)
+
+    if current_grid.equals(target_grid):
+        return ds
+
+    # If ds includes dimesnion sized 1, squeeze it out but restore it after regridding
+    original_dims = ds.sizes
+    ds_tmp = ds.squeeze()
+    squeezed_dims = ds_tmp.sizes
+
+    if debug:
+        print(f"Original dimensions: {original_dims}")
+        print("variables in the dataset:", list(ds.variables))
+
+    if debug and original_dims != squeezed_dims:
+        print(f"Squeezed dimensions: {squeezed_dims}")
+        print(
+            f"Squeezed out dimensions with size 1: {set(original_dims) - set(squeezed_dims)}"
+        )
+        print("variables in the squeezed dataset:", list(ds_tmp.variables))
+
     # regrid
+    if debug:
+        print("Start regridding...")
+
     if regrid_tool == "regrid2":
-        ds_regridded = ds.regridder.horizontal(data_var, target_grid, tool=regrid_tool)
+        ds_regridded = ds_tmp.regridder.horizontal(
+            data_var, target_grid, tool=regrid_tool
+        )
     elif regrid_tool in ["esmf", "xesmf"]:
         regrid_tool = "xesmf"
         regrid_method = "bilinear"
-        ds_regridded = ds.regridder.horizontal(
+        ds_regridded = ds_tmp.regridder.horizontal(
             data_var, target_grid, tool=regrid_tool, method=regrid_method
         )
+
+    if debug:
+        print("Regridding done.")
 
     if fill_zero:
         ds_regridded = ds_regridded.fillna(0)
 
-    ds_regridded = ds_regridded.bounds.add_missing_bounds()  # just in case
+    # Add missing bounds, just in case
+    ds_regridded = ds_regridded.bounds.add_missing_bounds()
+
+    # Copy global attributes from ds1 to ds2
+    ds_regridded.attrs.update(target_grid.attrs)
+
+    # Restore original dimensions if needed
+    if "plev" in original_dims and "plev" not in squeezed_dims:
+        ds_regridded = ds_regridded.expand_dims({"plev": original_dims["plev"]})
+        # restore plev coordinate values if exist
+        if "plev" in ds.coords:
+            ds_regridded = ds_regridded.assign_coords(plev=ds.plev)
+            ds_regridded["plev"] = ds.plev
+            ds_regridded["plev"].attrs = ds.plev.attrs
+        # restore plev bounds if exist
+        if "plev_bnds" in ds:
+            ds_regridded["plev_bnds"] = ds.plev_bnds
+
+    if debug:
+        print(f"Regridded dimensions: {ds_regridded.dims}")
+        print("variables in the regridded dataset:", list(ds_regridded.variables))
+
     return ds_regridded

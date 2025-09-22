@@ -1,3 +1,4 @@
+import copy
 import re
 from collections import OrderedDict
 from typing import Any, Dict, Optional
@@ -67,8 +68,8 @@ def compute_metrics(
         return metrics_defs
 
     # Copy the dataset to avoid the original being changed
-    dm = dm.copy(deep=True)
-    do = do.copy(deep=True)
+    dm = copy.deepcopy(dm)
+    do = copy.deepcopy(do)
 
     # unify time and time bounds between observation and model
     if debug:
