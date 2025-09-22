@@ -12,6 +12,8 @@ from .lib_unified import (
     get_ref_data_path,
     get_unique_bases,
     process_dataset,
+    process_models,
+    process_references,
     remove_duplicates,
 )
 from .lib_unified_dict import (
