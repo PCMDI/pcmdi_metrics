@@ -2,6 +2,7 @@ import glob
 import json
 import os
 from typing import Any
+import sys
 
 import xsearch as xs
 
@@ -42,8 +43,20 @@ def main():
 
     first_member_only = False
     include_lf = True  # include land fraction variable 'sftlf'
+    
+    ref_catalogue = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/catalogue/PMP_obs4MIPsClims_catalogue_byVar_v20250709.json"
+    
     # -------------------------------------------------------------------------------
-
+    
+    # Load reference catalogue to get variables
+    if os.path.exists(ref_catalogue):
+        with open(ref_catalogue, "r") as f:
+            ref_cat = json.load(f)
+        ref_variables = list(ref_cat.keys())
+        print("Reference catalogue loaded:", ref_catalogue)
+        print("Variables in the reference catalogue:", ref_variables)
+        variables = ref_variables
+    
     for mip_era in mip_eras:
         for exp in exps:
             generate_model_catalogue_xsearch(
@@ -116,7 +129,9 @@ def generate_model_path_dict(
         dpaths = xs.findPaths(exp, variable, freq, cmipTable=cmipTable, mip_era=mip_era)
         models = xs.natural_sort(xs.getGroupValues(dpaths, "model"))
 
+        print("\nSearching for data with xsearch...")
         print("variable:", variable)
+        print("mip_era:", mip_era)
         print("exp:", exp)
         print("models:", models)
         print("number of models:", len(models))
