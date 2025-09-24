@@ -39,5 +39,5 @@ keywords:
   - climatology
   - climate variability
 license: BSD-3-Clause
-version: '3.9.3'
-date-released: '2025-09-18'
+version: '4.0.0rc1'
+date-released: '2025-09-24'
