@@ -43,13 +43,13 @@ def main():
 
     first_member_only = False
     include_lf = True  # include land fraction variable 'sftlf'
-    
+
     ref_catalogue = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/catalogue/PMP_obs4MIPsClims_catalogue_byVar_v20250709.json"
-    
+
     generate_xmls = False  # if True, generate xml files for the generated json files
     xmls_dir = "/pscratch/sd/l/lee1043/PMP/pmp_input/xml_files"
     # -------------------------------------------------------------------------------
-    
+
     # Load reference catalogue to get variables
     if os.path.exists(ref_catalogue):
         with open(ref_catalogue, "r") as f:
@@ -58,7 +58,7 @@ def main():
         print("Reference catalogue loaded:", ref_catalogue)
         print("Variables in the reference catalogue:", ref_variables)
         variables = ref_variables
-    
+
     for mip_era in mip_eras:
         for exp in exps:
             generate_model_catalogue_xsearch(
@@ -121,8 +121,14 @@ def generate_model_catalogue_xsearch(
 
 
 def generate_model_path_dict(
-    exp, variables, freq, cmipTable=None, mip_era=None, first_member_only=False, 
-    generate_xmls=False, xmls_dir=None,
+    exp,
+    variables,
+    freq,
+    cmipTable=None,
+    mip_era=None,
+    first_member_only=False,
+    generate_xmls=False,
+    xmls_dir=None,
 ) -> dict[Any, Any]:
     """
     Generate a dictionary of models and their members with paths to netcdf files.
@@ -180,11 +186,15 @@ def generate_model_path_dict(
                     ncfiles = xs.natural_sort(glob.glob(os.path.join(dpath, "*.nc")))
 
                     models_dict[model][member][variable]["path"] = ncfiles
-                    
+
                     if generate_xmls:
                         # generate xml file for the variable
-                        xml_filename = f"{mip_era}_{exp}_{model}_{member}_{variable}_{freq}.xml"
-                        xml_filepath = os.path.join(xmls_dir, mip_era, exp, freq, variable, xml_filename)
+                        xml_filename = (
+                            f"{mip_era}_{exp}_{model}_{member}_{variable}_{freq}.xml"
+                        )
+                        xml_filepath = os.path.join(
+                            xmls_dir, mip_era, exp, freq, variable, xml_filename
+                        )
                         os.makedirs(os.path.dirname(xml_filepath), exist_ok=True)
                         if os.path.exists(xml_filepath):
                             subprocess_args = [

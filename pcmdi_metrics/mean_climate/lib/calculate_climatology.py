@@ -5,7 +5,7 @@ from typing import Union
 
 import xarray as xr
 
-from pcmdi_metrics.io import get_time, select_subset, xcdat_open, get_calendar
+from pcmdi_metrics.io import get_calendar, get_time, select_subset, xcdat_open
 from pcmdi_metrics.utils import (
     check_monthly_time_axis,
     check_time_bounds_exist,
@@ -161,7 +161,7 @@ def calculate_climatology(
     outdir = outpath or os.path.dirname(outfile)
     os.makedirs(outdir, exist_ok=True)  # Create the directory if it doesn't exist
     print("outdir:", outdir)
-    
+
     # Get the calendar type from the dataset
     calendar = get_calendar(ds)
     print("calendar:", calendar)
