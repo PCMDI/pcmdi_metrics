@@ -5,7 +5,7 @@ from typing import Union
 
 import xarray as xr
 
-from pcmdi_metrics.io import get_time, select_subset, xcdat_open
+from pcmdi_metrics.io import get_time, select_subset, xcdat_open, get_calendar
 from pcmdi_metrics.utils import (
     check_monthly_time_axis,
     check_time_bounds_exist,
@@ -161,6 +161,10 @@ def calculate_climatology(
     outdir = outpath or os.path.dirname(outfile)
     os.makedirs(outdir, exist_ok=True)  # Create the directory if it doesn't exist
     print("outdir:", outdir)
+    
+    # Get the calendar type from the dataset
+    calendar = get_calendar(ds)
+    print("calendar:", calendar)
 
     # Define the climatology period based on the provided start and end dates, or use the entire time series
     if start is not None and end is not None and not input_is_annual_cycle:
@@ -169,7 +173,7 @@ def calculate_climatology(
         start_da = 1  # Default to the first day of the start month
         end_yr, end_mo = map(int, end.split("-")[:2])
         # Determine the last day of the end month
-        end_da = last_day_of_month(end_yr, end_mo)
+        end_da = last_day_of_month(end_yr, end_mo, calendar)
 
         # Format the start and end dates as strings (YYYY-MM-DD)
         start_str = f"{start_yr:04d}-{start_mo:02d}-{start_da:02d}"
