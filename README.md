@@ -126,6 +126,14 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v4.0.0]      | Newerly support higher Python versions, `>= 3.10, < 3.14`
+
+<details>
+
+  <summary>Click here for older versions</summary>
+
+| <div style="width:300%">[Versions]</div> | Update summary   |
+| ------------- | ------------------------------------- |
 | [v4.0.0rc1]   | Pre-release of development version: Newerly support higher Python versions, `>= 3.10, < 3.14`
 | ------------- | ------------------------------------- |
 | [v3.9.3]      | Technical update
@@ -157,12 +165,6 @@ Release Notes and History
 | [v3.0.2]      | Minor patch and more documentation added
 | [v3.0.1]      | Minor technical patch                 
 | [v3.0.0]      | New metric added: **Cloud feedback metric** by @mzelinka. [**xCDAT**](https://xcdat.readthedocs.io/en/latest/) implemented for mean climate metrics
-
-<details>
-
-  <summary>Click here for older versions</summary>
-
-| <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
 | [v2.5.1]      | Technical update
 | [v2.5.0]      | New metric added: **Precipitation Benchmarking -- distribution**. Graphics updated
@@ -177,6 +179,7 @@ Release Notes and History
 | [v2.1.1]      | Simplified dependent libraries and CI process
 | [v2.1.0]      | [**CMEC**](https://cmec.llnl.gov/) driver interfaced added.
 | [v2.0]        | New capabilities: **ENSO** metrics, demos, and documentations.
+| ------------- | ------------------------------------- |
 | [v1.2]        | Tied to CDAT 8.0. Extensive regression testing added. New metrics: **Diurnal cycle and intermittency of precipitation**, sample **monsoon** metrics.
 | [v1.1.2]      | Now managed through Anaconda, and tied to UV-CDAT 2.10.  Weights on bias statistic added. Extensive provenance information incorporated into json files.
 | [v1.1]        | First public release, emphasizing **climatological statistics**, with development branches for ENSO and regional monsoon precipitation indices
@@ -185,6 +188,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v4.0.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.0
 [v4.0.0rc1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.0rc1
 [v3.9.3]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.9.3
 [v3.9.2]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.9.2
