@@ -1,7 +1,6 @@
 import glob
 import json
 import os
-import subprocess
 from typing import Any
 
 import xsearch as xs
@@ -35,29 +34,39 @@ Installation
 
 def main():
     # User options ------------------------------------------------------------------
-    mip_eras = ["CMIP6", "CMIP5"]
-    exps = ["historical", "amip"]
-    variables = ["psl", "ts"]
+    # mip_eras = ["CMIP6", "CMIP5"]
+    mip_eras = ["CMIP6"]
+    # exps = ["historical", "amip"]
+    exps = ["amip"]
+    # variables = ["psl", "ts"]
+    variables = ["psl"]
     freq = "mon"
     cmipTable = "Amon"
+
+    all_ref_variables = False  # if True, use all variables in the ref_catalogue file, otherwise use only those in 'variables' above
 
     first_member_only = False
     include_lf = True  # include land fraction variable 'sftlf'
 
     ref_catalogue = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/catalogue/PMP_obs4MIPsClims_catalogue_byVar_v20250709.json"
 
-    generate_xmls = False  # if True, generate xml files for the generated json files
+    generate_xmls = True  # if True, generate xml files for the generated json files
     xmls_dir = "/pscratch/sd/l/lee1043/PMP/pmp_input/xml_files"
+    xml_cmds_sh = "generate_xml_cmds.sh"  # save the xml generation commands to a shell script file
     # -------------------------------------------------------------------------------
 
-    # Load reference catalogue to get variables
-    if os.path.exists(ref_catalogue):
-        with open(ref_catalogue, "r") as f:
-            ref_cat = json.load(f)
-        ref_variables = list(ref_cat.keys())
-        print("Reference catalogue loaded:", ref_catalogue)
-        print("Variables in the reference catalogue:", ref_variables)
-        variables = ref_variables
+    if xml_cmds_sh is not None and os.path.exists(xml_cmds_sh):
+        os.remove(xml_cmds_sh)
+
+    if all_ref_variables:
+        # Load reference catalogue to get variables
+        if os.path.exists(ref_catalogue):
+            with open(ref_catalogue, "r") as f:
+                ref_cat = json.load(f)
+            ref_variables = list(ref_cat.keys())
+            print("Reference catalogue loaded:", ref_catalogue)
+            print("Variables in the reference catalogue:", ref_variables)
+            variables = ref_variables
 
     for mip_era in mip_eras:
         for exp in exps:
@@ -71,6 +80,7 @@ def main():
                 include_lf=include_lf,
                 generate_xmls=generate_xmls,
                 xmls_dir=xmls_dir,
+                xml_cmds_sh=xml_cmds_sh,
             )
 
 
@@ -84,6 +94,7 @@ def generate_model_catalogue_xsearch(
     include_lf: bool = True,
     generate_xmls: bool = False,
     xmls_dir: str = None,
+    xml_cmds_sh: str = None,
 ):
     """
     Generate a dictionary of models and their members with paths to netcdf files using xsearch.
@@ -97,6 +108,9 @@ def generate_model_catalogue_xsearch(
         cmipTable=cmipTable,
         mip_era=mip_era,
         first_member_only=first_member_only,
+        generate_xmls=generate_xmls,
+        xmls_dir=xmls_dir,
+        xml_cmds_sh=xml_cmds_sh,
     )
     models_dict_combined = models_dict
 
@@ -110,6 +124,7 @@ def generate_model_catalogue_xsearch(
             first_member_only=first_member_only,
             generate_xmls=generate_xmls,
             xmls_dir=xmls_dir,
+            xml_cmds_sh=xml_cmds_sh,
         )
         models_dict_combined = deep_merge_dicts(models_dict, models_lf_dict)
 
@@ -129,6 +144,7 @@ def generate_model_path_dict(
     first_member_only=False,
     generate_xmls=False,
     xmls_dir=None,
+    xml_cmds_sh=None,
 ) -> dict[Any, Any]:
     """
     Generate a dictionary of models and their members with paths to netcdf files.
@@ -141,7 +157,9 @@ def generate_model_path_dict(
     for variable in variables:
 
         # Search all available models
-        dpaths = xs.findPaths(exp, variable, freq, cmipTable=cmipTable, mip_era=mip_era)
+        dpaths = xs.findPaths(
+            exp, variable, freq, cmipTable=cmipTable, mip_era=mip_era, activity="CMIP"
+        )
         models = xs.natural_sort(xs.getGroupValues(dpaths, "model"))
 
         print("\nSearching for data with xsearch...")
@@ -190,20 +208,22 @@ def generate_model_path_dict(
                     if generate_xmls:
                         # generate xml file for the variable
                         xml_filename = (
-                            f"{mip_era}_{exp}_{model}_{member}_{variable}_{freq}.xml"
+                            f"{mip_era}_{exp}_{model}_{member}_{freq}_{variable}.xml"
                         )
                         xml_filepath = os.path.join(
                             xmls_dir, mip_era, exp, freq, variable, xml_filename
                         )
                         os.makedirs(os.path.dirname(xml_filepath), exist_ok=True)
-                        if os.path.exists(xml_filepath):
-                            subprocess_args = [
-                                "cdscan -x",
-                                xml_filepath,
-                                os.path.join(dpath, "*.nc"),
-                            ]
-                            subprocess.run(subprocess_args)
-                        print(f"XML file generated: {xml_filepath}")
+                        subprocess_args = [
+                            "cdscan",
+                            "-x",
+                            xml_filepath,
+                            os.path.join(dpath, "*.nc"),
+                        ]
+                        # Save the xml generation command to a shell script file
+                        if xml_cmds_sh is not None:
+                            with open(xml_cmds_sh, "a") as f:
+                                f.write(" ".join(subprocess_args) + "\n")
 
     return models_dict
 
