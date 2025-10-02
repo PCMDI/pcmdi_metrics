@@ -159,7 +159,6 @@ def main():
                     )
                     # Assumes first dimension of input ("axis#0") is time
                     avgvalues[iGMT] = np.average(concatenation[iGMT], axis=0)
-                    # stdvalues[iGMT] = genutil.statistics.std(concatenation[iGMT])
                     stdvalues[iGMT] = np.std(concatenation[iGMT], axis=0)
 
                 # Write output files

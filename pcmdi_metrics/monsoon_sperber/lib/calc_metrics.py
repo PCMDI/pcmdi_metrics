@@ -1,4 +1,4 @@
-""" Calculate metrics based on Sperber and Annamalai 2014 Clim. Dyn.,
+"""Calculate metrics based on Sperber and Annamalai 2014 Clim. Dyn.,
 which are:
 - onset pentad index: when fractional accumulation hit 20%
 - decay pentad index: when fractional accumulation hit 80%

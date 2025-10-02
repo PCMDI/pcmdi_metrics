@@ -1,6 +1,4 @@
 # -*- coding:UTF-8 -*-
-from __future__ import print_function
-
 from sys import exit as sys_exit
 
 
