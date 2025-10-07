@@ -1475,7 +1475,11 @@ def CalcMetricsDomainAR6(pdf, amt, months, bincrates, dat, ref, ref_dir):
         lat_name = get_latitude_key(d)
         lon_name = get_longitude_key(d)
 
-        mask_3D = ar6_all_mod_ocn.mask_3D(d, lon_name=lon_name, lat_name=lat_name)
+        # Check regionmask version for correct mask_3D usage
+        if regionmask.__version__ < "0.10.0":
+            mask_3D = ar6_all_mod_ocn.mask_3D(d, lon_name=lon_name, lat_name=lat_name)
+        else:
+            mask_3D = ar6_all_mod_ocn.mask_3D(d)
 
         # Extract latitude coordinate
         lat = d.coords[lat_name]

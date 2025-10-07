@@ -11,8 +11,6 @@
 # This version has the PMP Parser "wrapped" around it, so it can be executed with input parameters in the command line
 # ---> computeStdDailyMeansWrapped.py -i data -m7 --realization="r1i1p1" -t "sample_data_%(variable)_%(model).nc"
 
-from __future__ import print_function
-
 import datetime
 import glob
 import multiprocessing as mp

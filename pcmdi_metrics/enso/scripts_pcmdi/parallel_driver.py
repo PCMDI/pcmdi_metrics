@@ -8,8 +8,6 @@ Usage example:
 ./parallel_driver.py -p my_Param_ENSO.py --mip cmip6 --modnames all --realization all --metricsCollection ENSO_perf
 """
 
-from __future__ import print_function
-
 import glob
 import os
 

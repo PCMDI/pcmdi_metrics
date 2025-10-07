@@ -20,7 +20,7 @@ jobs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
     steps:
       - id: skip_check
-        uses: fkirc/skip-duplicate-actions@master
+        uses: fkirc/skip-duplicate-actions@v5
         with:
           cancel_others: true
           paths_ignore: '["**/README.md", "**/docs/**", "**/ISSUE_TEMPLATE/**", "**/pull_request_template.md", "**/.vscode/**"]'
@@ -32,33 +32,39 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout Code Repository
-        uses: actions/checkout@v3
-        
+        uses: actions/checkout@v4
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.13'
 
       - name: Install and Run Pre-commit
-        uses: pre-commit/action@v3.0.0
+        uses: pre-commit/action@v3.0.1
 
   build:
     needs: check-jobs-to-skip
     if: ${{ needs.check-jobs-to-skip.outputs.should_skip != 'true' }} || ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     defaults:
       run:
         shell: bash -l {0}
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v3
-
+      - uses: actions/checkout@v4
+      - name: Get Date
+        id: get-date
+        run: echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
       - name: Set up Conda Environment
         uses: conda-incubator/setup-miniconda@v3
         with:
           miniforge-variant: Miniforge3
           miniforge-version: latest
-          activate-environment: "pcmdi_metrics_ci"
+          activate-environment: pcmdi_metrics_ci
           environment-file: conda-env/ci.yml
           channel-priority: flexible
           auto-update-conda: true
@@ -66,31 +72,20 @@ jobs:
           use-mamba: false
           conda-solver: classic
 
+      - name: Cache Conda Packages
+        uses: actions/cache@v4
+        with:
+          path: ~/conda_pkgs_dir
+          key: conda-${{ runner.os }}--${{ runner.arch }}--py${{ matrix.python-version }}--${{ steps.get-date.outputs.today }}--${{ hashFiles('conda-env/ci.yml') }}--${{ env.CACHE_NUMBER }}
+        env:
+          CACHE_NUMBER: 0
+
       - name: Verify Conda Environment
         run: |
           conda info
           conda list
           conda config --show-sources
           conda config --show
-
-      # Used for refreshing the cache every 24 hours to avoid inconsistencies of package
-      # versions between the CI pipeline and local installations.
-      - name: Get Date
-        id: get-date
-        run: echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
-        shell: bash
-
-      - name: Cache Conda
-        uses: actions/cache@v3
-        with:
-          path: ${{ env.CONDA }}/envs
-          key:
-            conda-${{ runner.os }}--${{ runner.arch }}--${{
-            steps.get-date.outputs.today }}-${{
-            hashFiles('conda-env/ci.yml') }}-${{ env.CACHE_NUMBER}}
-        env:
-          # Increase this value to reset cache if conda/dev.yml has not changed in the workflow
-          CACHE_NUMBER: 0
 
       - name: Install pcmdi_metrics
         # Source: https://github.com/conda/conda-build/issues/4251#issuecomment-1053460542
@@ -111,48 +106,53 @@ jobs:
     defaults:
       run:
         shell: bash -l {0}
-    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
           fetch-depth: 0
 
       - name: Cache Conda
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         env:
-          # Increase this value to reset cache if conda-env/ci.yml has not changed in the workflow
           CACHE_NUMBER: 0
         with:
           path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
-            hashFiles('conda-env/dev.yml') }}
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{ hashFiles('conda-env/dev.yml') }}
 
       - name: Set up Conda Environment
         uses: conda-incubator/setup-miniconda@v3
         with:
-          activate-environment: "pcmdi_metrics_dev"
+          activate-environment: pcmdi_metrics_dev
+          environment-file: conda-env/dev.yml
           miniforge-variant: Miniforge3
           miniforge-version: latest
-          environment-file: conda-env/dev.yml
           channel-priority: strict
           auto-update-conda: true
-          use-mamba: false  # Disable libmamba solver
+          use-mamba: false
+          conda-solver: classic
+          python-version: '3.13'
+
+      - name: Verify Conda Environment
+        run: |
+          conda info
+          conda list
+          conda config --show-sources
+          conda config --show
 
       - name: Install pcmdi_metrics
-        # Source: https://github.com/conda/conda-build/issues/4251#issuecomment-1053460542
         run: |
-            python -m pip install --no-build-isolation --no-deps -e .
+          python -m pip install --no-build-isolation --no-deps -e .
 
       - name: Sphinx build
         run: |
           sphinx-build docs _build
-          
+
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         with:
-          publish_branch: gh-pages 
+          publish_branch: gh-pages
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: _build/
           force_orphan: true
