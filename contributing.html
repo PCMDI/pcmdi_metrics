@@ -1,0 +1,852 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Resources" href="resources.html" /><link rel="prev" title="pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel" href="generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>PMP Contributing - PMP Documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">PMP Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="_static/PMPLogo_500x421px_72dpi.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">PMP Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">For users</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="start.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Getting Started</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="supporting-data.html">Retrieving data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="metrics.html">PMP Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of PMP Metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/cloud_feedback/README.md">Cloud Feedbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="demo-notebooks.html">Demo notebooks</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Demo notebooks</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_0_download_data.html">0. Prepare Demos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_1a_compute_climatologies.html">1A. Compute Climatologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_1b_mean_climate.html">1B. Mean Climate Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_2a_monsoon_wang.html">2A. Monsoon (Wang)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_2b_monsoon_sperber.html">2B. Monsoon (Sperber)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_3_diurnal_cycle.html">3. Diurnal Cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_4_modes_of_variability.html">4. Modes of Variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_5_mjo_metrics.html">5. MJO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_6_ENSO.html">6. ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_7_precip_variability.html">7. Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_7b_precip_distribution.html">7B. Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_8_extremes.html">8. Extremes Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_9_seaIceExtent_ivanova.html">9A. Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/Demo_9b_seaIce_data_explore.html">9B. Sea Ice Supplementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/portrait_plot_example.html">Portrait Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/parallel_coordinate_plot_example.html">Parallel Coordinate Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/taylor_diagram_example.html">Taylor Diagram: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/portrait_plot_mean_clim.html">Portrait Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/portrait_plot_mean_clim_multiple_CMIPs.html">Portrait Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/parallel_coordinate_plot_mean_clim.html">Parallel Coordinate Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/parallel_coordinate_plot_mean_clim_multiMIPs.html">Parallel Coordinate Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/taylor_diagram_multiple_CMIPs.html">Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/mean_clim_plots_test_model.html">PMP mean climate: Compare user’s model with CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/enso_portrait_plot.html">Portrait Plot: ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/variability_modes_plots_all-stats.html">Visualize PMP Modes of Variability results: CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/return_value_portrait_plot_demo.html">Return Value Portrait Plot Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/landmask.html">Generate land sea mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="examples/pmp_metrics_database.html">Access to online PMP output database</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For developers/contributors</span></p>
+<ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.replace_date_pattern.html">pcmdi_metrics.utils.replace_date_pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.date_to_str.html">pcmdi_metrics.utils.date_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.extract_date_components.html">pcmdi_metrics.utils.extract_date_components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.find_overlapping_dates.html">pcmdi_metrics.utils.find_overlapping_dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.graphics.parallel_coordinate_plot.html">pcmdi_metrics.graphics.parallel_coordinate_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.graphics.portrait_plot.html">pcmdi_metrics.graphics.portrait_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.graphics.TaylorDiagram.html">pcmdi_metrics.graphics.TaylorDiagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.load_regions_specs.html">pcmdi_metrics.io.load_regions_specs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html">pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="resources.html">Resources</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Resources</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="resources_legacy.html">Legacy archive</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Legacy archive</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pmpparser.html">PMPParser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="team.html">Team</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">PMP Results</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">Source Code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">Discussions</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/docs/contributing.rst?plain=true" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div><div class="edit-this-page">
+  <a class="muted-link" href="https://github.com/PCMDI/pcmdi_metrics/edit/main/docs/contributing.rst" title="Edit this page">
+    <svg><use href="#svg-pencil"></use></svg>
+    <span class="visually-hidden">Edit this page</span>
+  </a>
+</div><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="contributing-guide">
+<h1>Contributing Guide<a class="headerlink" href="#contributing-guide" title="Link to this heading"></a></h1>
+<p>Contributions are welcome and greatly appreciated! Every little bit helps, and credit will always be given.</p>
+<section id="types-of-contributions">
+<h2>Types of Contributions<a class="headerlink" href="#types-of-contributions" title="Link to this heading"></a></h2>
+<p>PCMDI Metrics Package (PMP) includes issue templates based on the contribution type: <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/issues/new/choose">https://github.com/PCMDI/pcmdi_metrics/issues/new/choose</a>.
+Note, new contributions must be made under the BSD-3-Clause license.</p>
+<section id="bug-report">
+<h3>Bug Report<a class="headerlink" href="#bug-report" title="Link to this heading"></a></h3>
+<p>Look through the <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/issues">GitHub Issues</a> for bugs to fix. Any unassigned issues tagged with “Type: Bug” is open for implementation.</p>
+</section>
+<section id="feature-request">
+<h3>Feature Request<a class="headerlink" href="#feature-request" title="Link to this heading"></a></h3>
+<p>Look through the <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/issues">GitHub Issues</a> for feature suggestions. Any unassigned issues tagged with “Type: Enhancement” is open for implementation.</p>
+<p>If you are proposing a feature:</p>
+<ul class="simple">
+<li><p>Explain in detail how it would work.</p></li>
+<li><p>Keep the scope as narrow as possible, to make it easier to implement.</p></li>
+<li><p>Remember that this is a open-source project, and that contributions are welcome :)</p></li>
+</ul>
+</section>
+<section id="documentation-update">
+<h3>Documentation Update<a class="headerlink" href="#documentation-update" title="Link to this heading"></a></h3>
+<p>Help improve PMP’s documentation, whether that be the Sphinx documentation or the API docstrings.</p>
+</section>
+<section id="community-discussion">
+<h3>Community Discussion<a class="headerlink" href="#community-discussion" title="Link to this heading"></a></h3>
+<p>Take a look at the <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">GitHub Discussions</a> page to get involved, share ideas, or ask questions.</p>
+</section>
+</section>
+<section id="contributing-metrics">
+<h2>Contributing metrics<a class="headerlink" href="#contributing-metrics" title="Link to this heading"></a></h2>
+<p>Developers working on new metrics to contribute to the PMP are highly encouraged to explore the <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/">PMP source code</a> and examine how existing metrics are structured. Metrics are grouped into <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics">subpackages</a> by topic; for example, the Mean Climate metrics, MJO metrics, and Extremes metrics are different subpackages.</p>
+<p>In general each subpackage contains a driver script, additional library code needed to run the driver script, and example parameter files. Each subpackage must output a JSON file containing metrics and may also produce figures or other data files. New contributions may expand existing metrics subpackages or add a new subpackage.</p>
+<p>Steps to contributing new metrics:</p>
+<ol class="arabic simple">
+<li><p>Open a Feature Request describing the planned metrics.</p></li>
+<li><p>Follow the instructions in <strong>Get Started</strong> and <strong>Pull Request Guidelines</strong> (below) while working on code.</p></li>
+<li><p>Update the <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/tree/main/docs">GitHub.io documentation</a> as needed.</p></li>
+</ol>
+<p>Please keep in mind that:</p>
+<ul class="simple">
+<li><p>It is never too early to open a Feature Request or contact the PMP team with your idea.</p></li>
+<li><p>All metrics code must be in Python, and it is the responsibility of the contributor to deliver Python code. The PMP team has limited bandwidth to assist with code conversion to Python.</p></li>
+<li><p>Current PMP dependencies can be found in <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/conda-env/dev.yml#L6">dev.yml file</a>. Dependencies cannot be added without the approval of the PMP team.</p></li>
+<li><p>Input data sets are expected to follow the <a class="reference external" href="https://cfconventions.org/">CF Metadata Conventions</a> (e.g. CMIP, obs4mips).</p></li>
+<li><p>Providing <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/tree/main/tests">unit tests</a> is highly encouraged.</p></li>
+</ul>
+<p>Quick links to useful code sections:</p>
+<ul class="simple">
+<li><p>See <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/io">pcmdi_metrics/io</a> and <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/utils">pcmdi_metrics/utils</a> to find functions for tasks like land masking, grid subsetting, and more.</p></li>
+<li><p>Graphics code for post-processing metrics is found in <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/tree/main/pcmdi_metrics/graphics">pcmdi_metrics/graphics</a></p></li>
+</ul>
+</section>
+<section id="version-control">
+<h2>Version Control<a class="headerlink" href="#version-control" title="Link to this heading"></a></h2>
+<p>The repository uses branch-based (core team) and fork-based (external collaborators)
+Git workflows with tagged software releases.</p>
+<figure class="align-default">
+<img alt="Git Flow Diagram" src="_images/git-flow.svg" />
+</figure>
+<section id="guidelines">
+<h3>Guidelines<a class="headerlink" href="#guidelines" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">main</span></code> must always be deployable</p></li>
+<li><p>All changes are made through support branches</p></li>
+<li><p>Branch names should follow the pattern “issuenumber_initials_description”</p></li>
+<li><p>Rebase with the latest <code class="docutils literal notranslate"><span class="pre">main</span></code> to avoid/resolve conflicts</p></li>
+<li><p>Make sure pre-commit quality assurance checks pass when committing (enforced in CI/CD build)</p></li>
+<li><p>Open a pull request early for discussion</p></li>
+<li><p>Once the CI/CD build passes and pull request is approved, squash and rebase your commits</p></li>
+<li><p>Merge pull request into <code class="docutils literal notranslate"><span class="pre">main</span></code> and delete the branch</p></li>
+</ol>
+</section>
+<section id="things-to-avoid">
+<h3>Things to Avoid<a class="headerlink" href="#things-to-avoid" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Don’t merge in broken or commented out code</p></li>
+<li><p>Don’t commit directly to <code class="docutils literal notranslate"><span class="pre">main</span></code></p>
+<ul class="simple">
+<li><p>There are branch-protection rules for <code class="docutils literal notranslate"><span class="pre">main</span></code></p></li>
+</ul>
+</li>
+<li><p>Don’t merge with conflicts. Instead, handle conflicts upon rebasing</p></li>
+</ol>
+<p>Source: <a class="reference external" href="https://gist.github.com/jbenet/ee6c9ac48068889b0912">https://gist.github.com/jbenet/ee6c9ac48068889b0912</a></p>
+</section>
+<section id="pre-commit">
+<h3>Pre-commit<a class="headerlink" href="#pre-commit" title="Link to this heading"></a></h3>
+<p>The repository uses the pre-commit package to manage pre-commit hooks.
+These hooks help with quality assurance standards by identifying simple issues
+at the commit level before submitting code reviews.</p>
+<figure class="align-default" id="id3">
+<img alt="Pre-commit Flow Diagram" src="_images/pre-commit-flow.svg" />
+<figcaption>
+<p><span class="caption-text">pre-commit Flow</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="get-started">
+<h2>Get Started<a class="headerlink" href="#get-started" title="Link to this heading"></a></h2>
+<p>Ready to contribute? Here’s how to set up PMP for local development.</p>
+<section id="vs-code-the-editor-of-choice">
+<h3>VS Code, the editor of choice<a class="headerlink" href="#vs-code-the-editor-of-choice" title="Link to this heading"></a></h3>
+<p>We recommend using VS Code as your IDE because it is open-source and has great Python development support.</p>
+<p>Get VS Code here: <a class="reference external" href="https://code.visualstudio.com">https://code.visualstudio.com</a></p>
+<section id="vs-code-setup">
+<h4>VS Code Setup<a class="headerlink" href="#vs-code-setup" title="Link to this heading"></a></h4>
+<p>PMP includes a VS Code workspace file (<code class="docutils literal notranslate"><span class="pre">.vscode/pcmdi_metrics.code-setting</span></code>). This file automatically configures your IDE with the quality assurance tools, code line-length rulers, and more.</p>
+<p>Make sure to follow the <a class="reference internal" href="#local-development"><span class="std std-ref">Local Development</span></a> section below.</p>
+</section>
+<section id="recommended-vs-code-extensions">
+<h4>Recommended VS Code Extensions<a class="headerlink" href="#recommended-vs-code-extensions" title="Link to this heading"></a></h4>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=ms-python.python">Python</a></p></li>
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=ms-python.vscode-pylance">Pylance</a></p></li>
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=njpwerner.autodocstring">Python Docstring Generator</a></p></li>
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=njqdev.vscode-python-typehint">Python Type Hint</a></p></li>
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=aaron-bond.better-comments">Better Comments</a></p></li>
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter">Jupyter</a></p></li>
+<li><p><a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=VisualStudioExptTeam.vscodeintellicode">Visual Studio Intellicode</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+<section id="local-development">
+<span id="id1"></span><h3>Local Development<a class="headerlink" href="#local-development" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p>Download and install Conda</p>
+<blockquote>
+<div><dl>
+<dt>Linux</dt><dd><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+$<span class="w"> </span>bash<span class="w"> </span>./Miniconda3-latest-Linux-x86_64.sh
+Do<span class="w"> </span>you<span class="w"> </span>wish<span class="w"> </span>the<span class="w"> </span>installer<span class="w"> </span>to<span class="w"> </span>initialize<span class="w"> </span>Miniconda3<span class="w"> </span>by<span class="w"> </span>running<span class="w"> </span>conda<span class="w"> </span>init?<span class="w"> </span><span class="o">[</span>yes<span class="p">|</span>no<span class="o">]</span><span class="w"> </span>yes
+</pre></div>
+</div>
+</dd>
+<dt>MacOS</dt><dd><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+$<span class="w"> </span>bash<span class="w"> </span>./Miniconda3-latest-MacOSX-x86_64.sh
+Do<span class="w"> </span>you<span class="w"> </span>wish<span class="w"> </span>the<span class="w"> </span>installer<span class="w"> </span>to<span class="w"> </span>initialize<span class="w"> </span>Miniconda3<span class="w"> </span>by<span class="w"> </span>running<span class="w"> </span>conda<span class="w"> </span>init?<span class="w"> </span><span class="o">[</span>yes<span class="p">|</span>no<span class="o">]</span><span class="w"> </span>yes
+</pre></div>
+</div>
+</dd>
+</dl>
+</div></blockquote>
+</li>
+<li><p>Fork the <code class="docutils literal notranslate"><span class="pre">pcmdi_metrics</span></code> repo on GitHub.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>If you are a maintainer, you can clone and branch directly from the root repository here: <a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">https://github.com/PCMDI/pcmdi_metrics</a></p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Clone your fork locally:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:your_name_here/pcmdi_metrics.git
+</pre></div>
+</div>
+</li>
+<li><p>&lt;OPTIONAL&gt; Open <code class="docutils literal notranslate"><span class="pre">.vscode/pcmdi_metrics.code-settings</span></code> in VS Code</p></li>
+<li><p>Create and activate Conda development environment:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>pcmdi_metrics
+$<span class="w"> </span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>conda-env/dev.yml
+$<span class="w"> </span>conda<span class="w"> </span>activate<span class="w"> </span>pcmdi_metrics_dev
+</pre></div>
+</div>
+</li>
+<li><p>&lt;OPTIONAL&gt; Set VS Code Python interpretor to <code class="docutils literal notranslate"><span class="pre">pcmdi_metrics_dev</span></code></p></li>
+<li><p>Install pre-commit:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pre-commit<span class="w"> </span>install
+pre-commit<span class="w"> </span>installed<span class="w"> </span>at<span class="w"> </span>.git/hooks/pre-commit
+</pre></div>
+</div>
+</li>
+<li><p>Create a branch for local development and make changes:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>&lt;BRANCH-NAME&gt;
+</pre></div>
+</div>
+</li>
+<li><p><cite>&lt;OPTIONAL&gt;</cite> During or after making changes, check for formatting or linting issues using pre-commit:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Step 9 performs this automatically on staged files in a commit</span>
+$<span class="w"> </span>pre-commit<span class="w"> </span>run<span class="w"> </span>--all-files
+
+Trim<span class="w"> </span>Trailing<span class="w"> </span>Whitespace.................................................Passed
+Fix<span class="w"> </span>End<span class="w"> </span>of<span class="w"> </span>Files.........................................................Passed
+Check<span class="w"> </span>Yaml...............................................................Passed
+black....................................................................Passed
+isort....................................................................Passed
+flake8...................................................................Passed
+</pre></div>
+</div>
+</li>
+<li><p>Commit your changes:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>.
+$<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span>&lt;Your<span class="w"> </span>detailed<span class="w"> </span>description<span class="w"> </span>of<span class="w"> </span>your<span class="w"> </span>changes&gt;
+
+Trim<span class="w"> </span>Trailing<span class="w"> </span>Whitespace.................................................Passed
+Fix<span class="w"> </span>End<span class="w"> </span>of<span class="w"> </span>Files.........................................................Passed
+Check<span class="w"> </span>Yaml...............................................................Passed
+black....................................................................Passed
+isort....................................................................Passed
+flake8...................................................................Passed
+</pre></div>
+</div>
+</li>
+<li><p>Make sure pre-commit QA checks pass. Otherwise, fix any caught issues.</p>
+<ul class="simple">
+<li><p>Most of the tools fix issues automatically so you just need to re-stage the files.</p></li>
+<li><p>flake8 and mypy issues must be fixed automatically.</p></li>
+</ul>
+</li>
+<li><p>Push changes:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>&lt;BRANCH-NAME&gt;
+</pre></div>
+</div>
+</li>
+<li><p>Submit a pull request through the GitHub website.</p></li>
+</ol>
+</section>
+</section>
+<section id="pull-request-guidelines">
+<h2>Pull Request Guidelines<a class="headerlink" href="#pull-request-guidelines" title="Link to this heading"></a></h2>
+<p>Before you submit a pull request, check that it meets these guidelines:</p>
+<ol class="arabic simple">
+<li><p>The pull request should include tests for new or modified code.</p></li>
+<li><p>Link issues to pull requests.</p></li>
+<li><p>If the pull request adds functionality, the <a class="reference external" href="http://pcmdi.github.io/pcmdi_metrics/overview.html">docs</a> should be updated.</p></li>
+<li><p>Squash and rebase commits for a clean and navigable Git history.</p></li>
+</ol>
+</section>
+<section id="style-guide">
+<h2>Style Guide<a class="headerlink" href="#style-guide" title="Link to this heading"></a></h2>
+<p>PMP integrates the Black code formatter for code styling. If you want to learn more, please read about it <a class="reference external" href="https://black.readthedocs.io/en/stable/the_black_code_style.html">here</a>.</p>
+<p>PMP also leverages <a class="reference external" href="https://docs.python.org/3.8/library/typing.html">Python Type Annotations</a> to help the project scale.
+<a class="reference external" href="https://mypy.readthedocs.io/en/stable/introduction.html">mypy</a> performs optional static type checking through pre-commit.</p>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
+<p>Testing your local changes are important to ensure long-term maintainability and extensibility of the project.
+Since PMP is an open source library, we aim to avoid as many bugs as possible from reaching the end-user.</p>
+<p>To get started, here are guides on how to write tests using pytest:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.pytest.org/en/latest/">https://docs.pytest.org/en/latest/</a></p></li>
+<li><p><a class="reference external" href="https://docs.python-guide.org/writing/tests/#py-test">https://docs.python-guide.org/writing/tests/#py-test</a></p></li>
+</ul>
+<p>In most cases, if a function is hard to test, it is usually a symptom of being too complex (high cyclomatic-complexity).</p>
+<section id="dos-for-testing">
+<h3>DOs for Testing<a class="headerlink" href="#dos-for-testing" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><em>DO</em> write tests for new or refactored code</p></li>
+<li><p><em>DO</em> try to follow test-driven-development</p></li>
+<li><p><em>DO</em> use the Coverage reports to see lines of code that need to be tested</p></li>
+<li><p><em>DO</em> focus on simplistic, small, reusable modules for unit testing</p></li>
+<li><p><em>DO</em> cover as many edge cases as possible when testing</p></li>
+</ul>
+</section>
+<section id="don-ts-for-testing">
+<h3>DON’Ts for Testing<a class="headerlink" href="#don-ts-for-testing" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><em>DON’T</em> push or merge untested code</p></li>
+<li><p><em>DON’T</em> introduce tests that fail or produce warnings</p></li>
+</ul>
+</section>
+</section>
+<section id="documenting-code">
+<h2>Documenting Code<a class="headerlink" href="#documenting-code" title="Link to this heading"></a></h2>
+<p>If you are using VS code, the <a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=njpwerner.autodocstring">Python Docstring Generator</a> extension can be used to auto-generate a docstring snippet once a function/class has been written.
+If you want the extension to generate docstrings in Sphinx format, you must set the <code class="docutils literal notranslate"><span class="pre">&quot;autoDocstring.docstringFormat&quot;:</span> <span class="pre">&quot;sphinx&quot;</span></code> setting, under File &gt; Preferences &gt; Settings.</p>
+<p>Note that it is best to write the docstrings once you have fully defined the function/class, as then the extension will generate the full docstring.
+If you make any changes to the code once a docstring is generated, you will have to manually go and update the affected docstrings.</p>
+<p>More info on docstrings here: <a class="reference external" href="https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html">https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html</a></p>
+<section id="dos-for-documenting-code">
+<h3>DOs for Documenting Code<a class="headerlink" href="#dos-for-documenting-code" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><em>DO</em> explain <strong>why</strong> something is done, its purpose, and its goal. The code shows <strong>how</strong> it is done, so commenting on this can be redundant.</p></li>
+<li><p><em>DO</em> explain ambiguity or complexities to avoid confusion</p></li>
+<li><p><em>DO</em> embrace documentation as an integral part of the overall development process</p></li>
+<li><p><em>DO</em> treat documenting as code and follow principles such as <em>Don’t Repeat Yourself</em> and <em>Easier to Change</em></p></li>
+</ul>
+</section>
+<section id="don-ts-for-documenting-code">
+<h3>DON’Ts for Documenting Code<a class="headerlink" href="#don-ts-for-documenting-code" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><em>DON’T</em> write comments as a crutch for poor code</p></li>
+<li><p><em>DON’T</em> comment <em>every</em> function, data structure, type declaration</p></li>
+</ul>
+</section>
+</section>
+<section id="developer-tips">
+<h2>Developer Tips<a class="headerlink" href="#developer-tips" title="Link to this heading"></a></h2>
+<ul>
+<li><p>flake8 will warn you if the cyclomatic complexity of a function is too high.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://github.com/PyCQA/mccabe">https://github.com/PyCQA/mccabe</a></p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</section>
+<section id="faqs">
+<h2>FAQs<a class="headerlink" href="#faqs" title="Link to this heading"></a></h2>
+<section id="why-squash-and-rebase-commits">
+<span id="why-squash-and-rebase"></span><h3>Why squash and rebase commits?<a class="headerlink" href="#why-squash-and-rebase-commits" title="Link to this heading"></a></h3>
+<p>Before you merge a support branch back into <code class="docutils literal notranslate"><span class="pre">main</span></code>, the branch is typically squashed down to a single buildable commit, and then rebased on top of the main repo’s <code class="docutils literal notranslate"><span class="pre">main</span></code> branch.</p>
+<p>Why?</p>
+<ul class="simple">
+<li><p>Ensures build passes from the commit</p></li>
+<li><p>Cleans up Git history for easy navigation</p></li>
+<li><p>Makes collaboration and review process more efficient</p></li>
+<li><p>Makes handling conflicts from rebasing simple since you only have to deal with conflicted commits</p></li>
+</ul>
+</section>
+<section id="how-do-i-squash-and-rebase-commits">
+<h3>How do I squash and rebase commits?<a class="headerlink" href="#how-do-i-squash-and-rebase-commits" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Use GitHub’s Squash and Merge feature in the pull request</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>You still need to rebase on the latest <code class="docutils literal notranslate"><span class="pre">main</span></code> if <code class="docutils literal notranslate"><span class="pre">main</span></code> is ahead of your branch.</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Manually squash and rebase</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p><cite>&lt;OPTIONAL if you are forking&gt;</cite> Sync your fork of <code class="docutils literal notranslate"><span class="pre">main</span></code> (aka <code class="docutils literal notranslate"><span class="pre">origin</span></code>) with the root <code class="docutils literal notranslate"><span class="pre">main</span></code> (aka <code class="docutils literal notranslate"><span class="pre">upstream</span></code>)</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>main
+git<span class="w"> </span>rebase<span class="w"> </span>upstream/main
+git<span class="w"> </span>push<span class="w"> </span>-f<span class="w"> </span>origin<span class="w"> </span>main
+</pre></div>
+</div>
+</li>
+<li><p>Get the SHA of the commit OR number of commits to rebase to</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>&lt;branch-name&gt;
+git<span class="w"> </span>log<span class="w"> </span>--graph<span class="w"> </span>--decorate<span class="w"> </span>--pretty<span class="o">=</span>oneline<span class="w"> </span>--abbrev-commit
+</pre></div>
+</div>
+</li>
+<li><p>Squash commits:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>rebase<span class="w"> </span>-i<span class="w"> </span><span class="o">[</span>SHA<span class="o">]</span>
+
+<span class="c1"># OR</span>
+
+git<span class="w"> </span>rebase<span class="w"> </span>-i<span class="w"> </span>HEAD~<span class="o">[</span>NUMBER<span class="w"> </span>OF<span class="w"> </span>COMMITS<span class="o">]</span>
+</pre></div>
+</div>
+</li>
+<li><p>Rebase branch onto <code class="docutils literal notranslate"><span class="pre">main</span></code></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>rebase<span class="w"> </span>main
+git<span class="w"> </span>push<span class="w"> </span>-f<span class="w"> </span>origin<span class="w"> </span>&lt;BRANCH-NAME&gt;
+</pre></div>
+</div>
+</li>
+<li><p>Make sure your squashed commit messages are refined</p></li>
+<li><p>Force push to remote branch</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push<span class="w"> </span>-f<span class="w"> </span>origin<span class="w"> </span>&lt;BRANCH-NAME&gt;
+</pre></div>
+</div>
+</li>
+</ol>
+</div></blockquote>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="resources.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Resources</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, PMP Developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Contributing Guide</a><ul>
+<li><a class="reference internal" href="#types-of-contributions">Types of Contributions</a><ul>
+<li><a class="reference internal" href="#bug-report">Bug Report</a></li>
+<li><a class="reference internal" href="#feature-request">Feature Request</a></li>
+<li><a class="reference internal" href="#documentation-update">Documentation Update</a></li>
+<li><a class="reference internal" href="#community-discussion">Community Discussion</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#contributing-metrics">Contributing metrics</a></li>
+<li><a class="reference internal" href="#version-control">Version Control</a><ul>
+<li><a class="reference internal" href="#guidelines">Guidelines</a></li>
+<li><a class="reference internal" href="#things-to-avoid">Things to Avoid</a></li>
+<li><a class="reference internal" href="#pre-commit">Pre-commit</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#get-started">Get Started</a><ul>
+<li><a class="reference internal" href="#vs-code-the-editor-of-choice">VS Code, the editor of choice</a><ul>
+<li><a class="reference internal" href="#vs-code-setup">VS Code Setup</a></li>
+<li><a class="reference internal" href="#recommended-vs-code-extensions">Recommended VS Code Extensions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#local-development">Local Development</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#pull-request-guidelines">Pull Request Guidelines</a></li>
+<li><a class="reference internal" href="#style-guide">Style Guide</a></li>
+<li><a class="reference internal" href="#testing">Testing</a><ul>
+<li><a class="reference internal" href="#dos-for-testing">DOs for Testing</a></li>
+<li><a class="reference internal" href="#don-ts-for-testing">DON’Ts for Testing</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#documenting-code">Documenting Code</a><ul>
+<li><a class="reference internal" href="#dos-for-documenting-code">DOs for Documenting Code</a></li>
+<li><a class="reference internal" href="#don-ts-for-documenting-code">DON’Ts for Documenting Code</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#developer-tips">Developer Tips</a></li>
+<li><a class="reference internal" href="#faqs">FAQs</a><ul>
+<li><a class="reference internal" href="#why-squash-and-rebase-commits">Why squash and rebase commits?</a></li>
+<li><a class="reference internal" href="#how-do-i-squash-and-rebase-commits">How do I squash and rebase commits?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/jquery.js?v=5d32c60e"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=30646c52"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>
