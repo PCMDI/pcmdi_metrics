@@ -40,13 +40,13 @@ def main():
     exps = ["historical", "amip"]
     # exps = ["amip"]
     # variables = ["psl", "ts"]
-    variables = ["pr"]
-    # freq = "mon"
-    # cmipTable = "Amon"
-    freq = "day"
-    cmipTable = "day"
+    # variables = ["pr"]
+    freq = "mon"
+    cmipTable = "Amon"
+    # freq = "day"
+    # cmipTable = "day"
 
-    all_ref_variables = False  # if True, use all variables in the ref_catalogue file, otherwise use only those in 'variables' above
+    all_ref_variables = True  # if True, use all variables in the ref_catalogue file, otherwise use only those in 'variables' above
 
     first_member_only = False
     include_lf = True  # include land fraction variable 'sftlf'
