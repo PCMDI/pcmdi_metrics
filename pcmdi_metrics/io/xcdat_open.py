@@ -69,11 +69,11 @@ def xcdat_open(
             xc.open_mfdataset, infile, data_var, decode_times, chunks
         )
     else:
-        if infile.split(".")[-1].lower() == "xml":
+        if infile.endswith(".xml"):
             ds = _open_with_fallback(
                 _xcdat_openxml, infile, data_var, decode_times, chunks
             )
-        elif infile.split(".")[-1].lower() == "yml":
+        elif infile.endswith(".yml") or infile.endswith(".yaml"):
             ds = _open_with_fallback(
                 _xcdat_openyml, infile, data_var, decode_times, chunks
             )

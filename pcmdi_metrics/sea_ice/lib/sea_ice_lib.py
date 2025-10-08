@@ -9,7 +9,7 @@ import numpy as np
 import xarray as xr
 import xcdat as xc
 
-from pcmdi_metrics.io import xcdat_dataset_io, xcdat_openxml
+from pcmdi_metrics.io import xcdat_dataset_io, xcdat_open
 
 
 class MetadataFile:
@@ -407,12 +407,12 @@ def load_dataset(filepath):
     if isinstance(filepath, list):
         if filepath[-1].endswith(".xml"):
             # Final item of sorted list would have most recent version date
-            ds = xcdat_openxml.xcdat_openxml(filepath[-1])
+            ds = xcdat_open(filepath[-1])
         else:
             ds = xc.open_mfdataset(filepath, chunks=None)
     else:
         if filepath.endswith(".xml"):
-            ds = xcdat_openxml.xcdat_openxml(filepath)
+            ds = xcdat_open(filepath)
         else:
             ds = xc.open_dataset(filepath)
     return ds
