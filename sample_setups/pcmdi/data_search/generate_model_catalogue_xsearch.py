@@ -34,14 +34,17 @@ Installation
 
 def main():
     # User options ------------------------------------------------------------------
-    # mip_eras = ["CMIP6", "CMIP5"]
-    mip_eras = ["CMIP6"]
-    # exps = ["historical", "amip"]
-    exps = ["amip"]
+    mip_eras = ["CMIP6", "CMIP5"]
+    # mip_eras = ["CMIP6"]
+    # mip_eras = ["CMIP5"]
+    exps = ["historical", "amip"]
+    # exps = ["amip"]
     # variables = ["psl", "ts"]
-    variables = ["psl"]
-    freq = "mon"
-    cmipTable = "Amon"
+    variables = ["pr"]
+    # freq = "mon"
+    # cmipTable = "Amon"
+    freq = "day"
+    cmipTable = "day"
 
     all_ref_variables = False  # if True, use all variables in the ref_catalogue file, otherwise use only those in 'variables' above
 
@@ -50,9 +53,14 @@ def main():
 
     ref_catalogue = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/catalogue/PMP_obs4MIPsClims_catalogue_byVar_v20250709.json"
 
-    generate_xmls = True  # if True, generate xml files for the generated json files
+    # xml options: A shell script to generate xml files using cdscan will be created
+    generate_xmls = False  # if True, generate xml files for the generated json files
     xmls_dir = "/pscratch/sd/l/lee1043/PMP/pmp_input/xml_files"
     xml_cmds_sh = "generate_xml_cmds.sh"  # save the xml generation commands to a shell script file
+
+    # yml options: new recommended method
+    generate_ymls = True  # if True, generate yml files for the generated json files
+    ymls_dir = "/pscratch/sd/l/lee1043/PMP/pmp_input/yml_files"
     # -------------------------------------------------------------------------------
 
     if xml_cmds_sh is not None and os.path.exists(xml_cmds_sh):
@@ -81,6 +89,8 @@ def main():
                 generate_xmls=generate_xmls,
                 xmls_dir=xmls_dir,
                 xml_cmds_sh=xml_cmds_sh,
+                generate_ymls=generate_ymls,
+                ymls_dir=ymls_dir,
             )
 
 
@@ -95,6 +105,8 @@ def generate_model_catalogue_xsearch(
     generate_xmls: bool = False,
     xmls_dir: str = None,
     xml_cmds_sh: str = None,
+    generate_ymls: bool = False,
+    ymls_dir: str = None,
 ):
     """
     Generate a dictionary of models and their members with paths to netcdf files using xsearch.
@@ -111,6 +123,8 @@ def generate_model_catalogue_xsearch(
         generate_xmls=generate_xmls,
         xmls_dir=xmls_dir,
         xml_cmds_sh=xml_cmds_sh,
+        generate_ymls=generate_ymls,
+        ymls_dir=ymls_dir,
     )
     models_dict_combined = models_dict
 
@@ -125,6 +139,8 @@ def generate_model_catalogue_xsearch(
             generate_xmls=generate_xmls,
             xmls_dir=xmls_dir,
             xml_cmds_sh=xml_cmds_sh,
+            generate_ymls=generate_ymls,
+            ymls_dir=ymls_dir,
         )
         models_dict_combined = deep_merge_dicts(models_dict, models_lf_dict)
 
@@ -145,6 +161,8 @@ def generate_model_path_dict(
     generate_xmls=False,
     xmls_dir=None,
     xml_cmds_sh=None,
+    generate_ymls=False,
+    ymls_dir=None,
 ) -> dict[Any, Any]:
     """
     Generate a dictionary of models and their members with paths to netcdf files.
@@ -224,6 +242,21 @@ def generate_model_path_dict(
                         if xml_cmds_sh is not None:
                             with open(xml_cmds_sh, "a") as f:
                                 f.write(" ".join(subprocess_args) + "\n")
+
+                    if generate_ymls:
+                        # generate yml file for the variable
+                        yml_filename = (
+                            f"{mip_era}_{exp}_{model}_{member}_{freq}_{variable}.yml"
+                        )
+                        yml_filepath = os.path.join(
+                            ymls_dir, mip_era, exp, freq, variable, yml_filename
+                        )
+                        os.makedirs(os.path.dirname(yml_filepath), exist_ok=True)
+                        with open(yml_filepath, "w") as f:
+                            f.write(f"directory_path: {dpath}\n")
+                            f.write("netcdf_files:\n")
+                            for ncfile in ncfiles:
+                                f.write(f"  - {os.path.basename(ncfile)}\n")
 
     return models_dict
 
