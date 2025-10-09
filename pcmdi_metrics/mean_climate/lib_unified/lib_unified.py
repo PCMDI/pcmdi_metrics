@@ -1,5 +1,6 @@
 import logging
 import os
+import pprint
 import re
 from datetime import datetime, timezone
 from typing import Dict
@@ -89,7 +90,7 @@ def process_models(
     output_path,
     metrics_dict,
     first_member_only=False,
-    is_model_processed=False,
+    is_model_input_annual_cycle=False,
 ):
 
     ac_model_dict = multi_level_dict()
@@ -104,10 +105,10 @@ def process_models(
         for run in runs:
             # try:
             if 1:
-                if not is_model_processed:
+                if not is_model_input_annual_cycle:
                     print(f"=== var, model, run: {var}, {model}, {run}")
                     print("process_dataset for model starts")
-                    ac_model_dict = process_dataset(
+                    process_dataset(
                         var,
                         (model, run),
                         models_dict,
@@ -125,14 +126,28 @@ def process_models(
                     print("process_dataset for model done")
                 else:
                     print(
-                        f"Skipping process_dataset for {var} {model} {run} since is_model_annual_cycle=True"
+                        f"Skipping process_dataset for {var} {model} {run} since is_model_input_annual_cycle=True"
                     )
-                    # ac_model_dict here in case its already AC
-                    ac_model_dict = anncyc_model_run_dict[var][model][run]
+                    pass
+
+                ac_model_dict = anncyc_model_run_dict[var][model][run]
 
                 # ac_model_dict here
-                print("ac_model_dict:", ac_model_dict)
-                print("ac_model_dict.keys():", ac_model_dict.keys())
+                print(f"!!!!! var, model, run: {var}, {model}, {run}")
+                print("!!!!! ac_model_dict:", ac_model_dict)
+                print("!!!!! ac_model_dict.keys():", ac_model_dict.keys())
+                print("!!!!! ac_model_dict[var].keys():", ac_model_dict[var].keys())
+                print(
+                    "!!!!! ac_model_dict[var][model].keys():",
+                    ac_model_dict[var][model].keys(),
+                )
+                print(
+                    "!!!!! ac_model_dict[var][model][run].keys():",
+                    ac_model_dict[var][model][run].keys(),
+                )
+
+                print("=== FULL STRUCTURE ===")
+                pprint(ac_model_dict)
 
                 for level in levels:
                     anncyc_model_run_level_interp = ac_model_dict[var][model][run][
@@ -397,7 +412,21 @@ def process_dataset(
         else:
             ac_dict[var][model][run][level] = ds_ac_interp_level
 
-    return ac_dict
+        print(f"ac_dict[{var}]:", ac_dict[var])
+        print(f"ac_dict[{var}].keys():", ac_dict[var].keys())
+        if data_type == "ref":
+            print(f"ac_dict[{var}][{ref}]:", ac_dict[var][ref])
+            print(f"ac_dict[{var}][{ref}].keys():", ac_dict[var][ref].keys())
+        else:
+            print(f"ac_dict[{var}][{model}]:", ac_dict[var][model])
+            print(f"ac_dict[{var}][{model}].keys():", ac_dict[var][model].keys())
+            print(f"ac_dict[{var}][{model}][{run}]:", ac_dict[var][model][run])
+            print(
+                f"ac_dict[{var}][{model}][{run}].keys():",
+                ac_dict[var][model][run].keys(),
+            )
+
+    # return ac_dict
 
 
 def extract_info_from_model_catalogue(

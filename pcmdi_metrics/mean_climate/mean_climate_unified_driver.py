@@ -54,29 +54,31 @@ all_ref_variables = False  # if True, use all variables in the ref_catalogue fil
 # Reference data in raw time series format (not annual cycle)
 # ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_v20250825.json"
 # ref_data_head = "/global/cfs/projectdirs/m4581/obs4MIPs/obs4MIPs_LLNL"  # optional, if ref_catalogue file does not include entire directory path
-# is_ref_annual_cycle = False
+# is_ref_input_annual_cycle = False
 
 # Reference data in annual cycle format
 ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/PMP/pmp_reference/catalogue/PMP_obs4MIPsClims_1980-2014_catalogue_byVar_v20250904.json"
 ref_data_head = (
     "/global/cfs/projectdirs/m4581/PMP/pmp_reference/obs4MIPs_clims_1980-2014"
 )
-is_ref_annual_cycle = True
+is_ref_input_annual_cycle = True
 
 # -----------
 # Model data
 # -----------
 model_catalogue_file_path = "/pscratch/sd/l/lee1043/git/pcmdi_metrics/sample_setups/pcmdi/data_search/models_path_CMIP6_amip_mon.json"
-is_model_processed = False
+is_model_input_annual_cycle = False
 
 # Read model_catalogue to get models and runs
 models_dict = get_model_catalogue(model_catalogue_file_path)
 models = sorted(list(models_dict.keys()))
 
+models = models[0:1]  # for testing with one model only
+print("models:", models)
+
 # --------------
 # Other settings
 # --------------
-
 regions = ["global"]
 
 target_grid = "2.5x2.5"
@@ -208,7 +210,7 @@ for var in variables_unique:
                 else:
                     refs = []
 
-            if not is_ref_annual_cycle:
+            if not is_ref_input_annual_cycle:
                 anncyc_ref_dict = process_references(
                     var,
                     refs,
@@ -225,16 +227,14 @@ for var in variables_unique:
                 )
             else:
                 print(
-                    f"Skipping process_references for {var} since is_ref_annual_cycle=True"
+                    f"Skipping process_references for {var} since is_ref_input_annual_cycle=True"
                 )
                 for ref in refs:
                     ref_data_path = get_ref_data_path(refs_dict, var, ref)
                     print("ref, ref_data_path:", ref, ref_data_path)
                     anncyc_ref_dict[var][ref] = xcdat_open(ref_data_path)
 
-            models = models[0:1]  # for testing with one model only
-            print("models:", models)
-
+            print("start processing models...")
             process_models(
                 var,
                 models,
@@ -255,7 +255,7 @@ for var in variables_unique:
                 output_path,
                 metrics_dict,
                 first_member_only=first_member_only,
-                is_model_processed=is_model_processed,
+                is_model_input_annual_cycle=is_model_input_annual_cycle,
             )
 
     # except Exception as e:
