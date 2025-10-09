@@ -643,10 +643,10 @@ for model in models:
 
                     # QC
                     if var == "ts":
-                        model_timeseries_season_regrid[
-                            var
-                        ] = model_timeseries_season_regrid[var].where(
-                            model_timeseries_season_regrid[var] < 1e10
+                        model_timeseries_season_regrid[var] = (
+                            model_timeseries_season_regrid[var].where(
+                                model_timeseries_season_regrid[var] < 1e10
+                            )
                         )
 
                     # crop to subdomain
@@ -936,7 +936,7 @@ for model in models:
                             dict_head["tcor_cbf_vs_eof_pc"] = tc
 
                         # Set output file name for NetCDF and plot images
-                        output_filename = f"{mode}_{var}_EOF{n+1}_{season}_{mip}_{model}_{exp}_{run}_{fq}_{realm}_{msyear}-{meyear}"
+                        output_filename = f"{mode}_{var}_EOF{n + 1}_{season}_{mip}_{model}_{exp}_{run}_{fq}_{realm}_{msyear}-{meyear}"
                         if EofScaling:
                             output_filename += "_EOFscaled"
 
@@ -1010,7 +1010,7 @@ for model in models:
                                     pc,  # model pc
                                     frac,
                                     ref_name=obs_name,
-                                    output_file_name=f"{output_img_file}_eof{n+1}_compare_obs",
+                                    output_file_name=f"{output_img_file}_eof{n + 1}_compare_obs",
                                     debug=debug,
                                 )
 
@@ -1035,9 +1035,9 @@ for model in models:
                     dict_head["best_matching_model_eofs__rms"] = best_matching_eofs_rms
                     dict_head["best_matching_model_eofs__cor"] = best_matching_eofs_cor
                     if CBF:
-                        dict_head[
-                            "best_matching_model_eofs__tcor_cbf_vs_eof_pc"
-                        ] = best_matching_eofs_tcor
+                        dict_head["best_matching_model_eofs__tcor_cbf_vs_eof_pc"] = (
+                            best_matching_eofs_tcor
+                        )
 
                     debug_print("conventional eof end", debug)
 

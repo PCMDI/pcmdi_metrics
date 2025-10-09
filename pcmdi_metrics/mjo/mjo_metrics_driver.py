@@ -162,6 +162,11 @@ osyear = param.osyear
 oeyear = param.oeyear
 YearCheck(osyear, oeyear, P)
 
+# seasons
+seasons = param.seasons
+if seasons is None:
+    seasons = ["NDJFMA", "MJJASO"]
+
 # Units
 units = param.units
 #  model
@@ -261,10 +266,10 @@ for model in models:
                     run = reference_data_name
                 else:
                     if realization in ["all", "All", "ALL", "*"]:
-                        run_index = re.split(". |_", modpath.split("/")[-1]).index(
+                        run_index = re.split(r"[._]", modpath.split("/")[-1]).index(
                             "%(realization)"
                         )
-                        run = re.split(". |_", model_path.split("/")[-1])[run_index]
+                        run = re.split(r"[._]", model_path.split("/")[-1])[run_index]
                     else:
                         run = realization
                     # dict
@@ -274,7 +279,7 @@ for model in models:
                 print(" --- ", run, " ---")
                 print(model_path)
 
-                for season in ["NDJFMA", "MJJASO"]:
+                for season in seasons:
                     print(" -- ", season, " --")
                     if model == "obs":
                         result_dict["REF"][reference_data_name][season] = {}

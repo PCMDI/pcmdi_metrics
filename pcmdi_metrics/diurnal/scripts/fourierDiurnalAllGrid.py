@@ -10,16 +10,21 @@
 
 # -------------------------------------------------------------------------
 
-from __future__ import print_function
-
 import glob
 import os
 
-import cdms2
-import MV2
+import numpy as np
+import xarray as xr
 
 from pcmdi_metrics.diurnal.common import P, monthname_d, populateStringConstructor
 from pcmdi_metrics.diurnal.fourierFFT import fastAllGridFT
+from pcmdi_metrics.io import (
+    get_latitude,
+    get_latitude_key,
+    get_longitude,
+    get_longitude_key,
+    xcdat_open,
+)
 
 
 def main():
@@ -41,7 +46,7 @@ def main():
     monthname = monthname_d[month]
     startyear = args.firstyear
     finalyear = args.lastyear
-    yearrange = "%s-%s" % (startyear, finalyear)
+    yearrange = f"{startyear}-{finalyear}"
 
     template = populateStringConstructor(args.filename_template, args)
     template.month = monthname
@@ -66,19 +71,17 @@ def main():
         template.model = model
         avgfile = template()
         print("Reading time series of mean diurnal cycle ...")
-        f = cdms2.open(LSTfile)
-        g = cdms2.open(os.path.join(args.modpath, avgfile))
-        LSTs = f("LST")
-        avgs = g("diurnalmean")
+        ds_f = xcdat_open(LSTfile)
+        ds_g = xcdat_open(os.path.join(args.modpath, avgfile))
+        LSTs = ds_f["LST"]
+        avgs = ds_g["diurnalmean"]
         print("Input shapes: ", LSTs.shape, avgs.shape)
-
         print("Getting latitude and longitude coordinates.")
         # Any file with grid info will do, so use Local Standard Times file:
-        modellats = LSTs.getLatitude()
-        modellons = LSTs.getLongitude()
-
-        f.close()
-        g.close()
+        modellats = get_latitude(LSTs)
+        modellons = get_longitude(LSTs)
+        lon_key = get_longitude_key(LSTs)
+        lat_key = get_latitude_key(LSTs)
 
         print("Taking fast Fourier transform of the mean diurnal cycle ...")
         cycmean, maxvalue, tmax = fastAllGridFT(avgs, LSTs)
@@ -86,55 +89,68 @@ def main():
         print("    cycmean", cycmean.shape)
         print("    maxvalue", maxvalue.shape)
         print("    tmax", tmax.shape)
+        print("    cycmean type:", type(cycmean))
+        print("    maxvalue type:", type(maxvalue))
+        print("    tmax type:", type(tmax))
 
         print('"Re-decorating" Fourier harmonics with grid info, etc., ...')
-        cycmean = MV2.array(cycmean)
-        maxvalue = MV2.array(maxvalue)
-        tmax = MV2.array(tmax)
+        harmonics = np.arange(3)
 
-        cycmean.setAxis(0, modellats)
-        cycmean.setAxis(1, modellons)
-        cycmean.id = "tmean"
-        cycmean.units = "mm / day"
+        cycmean = xr.DataArray(
+            cycmean,
+            coords={lat_key: modellats, lon_key: modellons},
+            dims=[lat_key, lon_key],
+        )
+        maxvalue = xr.DataArray(
+            maxvalue,
+            coords={"harmonic": harmonics, lat_key: modellats, lon_key: modellons},
+            dims=["harmonic", lat_key, lon_key],
+        )
+        tmax = xr.DataArray(
+            tmax,
+            coords={"harmonic": harmonics, lat_key: modellats, lon_key: modellons},
+            dims=["harmonic", lat_key, lon_key],
+        )
 
-        maxvalue.setAxis(1, modellats)
-        maxvalue.setAxis(2, modellons)
-        maxvalue.id = "S"
-        maxvalue.units = "mm / day"
+        cycmean.name = "tmean"
+        maxvalue.name = "S"
+        tmax.name = "tS"
 
-        tmax.setAxis(1, modellats)
-        tmax.setAxis(2, modellons)
-        tmax.id = "tS"
-        tmax.units = "GMT"
+        cycmean.attrs.update({"units": "mm / day"})
+        maxvalue.attrs.update({"units": "mm / day"})
+        tmax.attrs.update({"units": "GMT"})
+
+        print("  After decorating:")
+        print("    cycmean", cycmean.shape)
+        print("    maxvalue", maxvalue.shape)
+        print("    tmax", tmax.shape)
+        print("    cycmean type:", type(cycmean))
+        print("    maxvalue type:", type(maxvalue))
+        print("    tmax type:", type(tmax))
 
         print("... and writing to netCDF.")
-        f = cdms2.open(
+
+        cycmean.to_netcdf(
             os.path.join(
                 args.results_dir,
                 "pr_" + model + "_" + monthname + "_" + yearrange + "_tmean.nc",
-            ),
-            "w",
+            )
         )
-        g = cdms2.open(
+        maxvalue.to_netcdf(
             os.path.join(
                 args.results_dir,
                 "pr_" + model + "_" + monthname + "_" + yearrange + "_S.nc",
-            ),
-            "w",
+            )
         )
-        h = cdms2.open(
+        tmax.to_netcdf(
             os.path.join(
                 args.results_dir,
                 "pr_" + model + "_" + monthname + "_" + yearrange + "_tS.nc",
-            ),
-            "w",
+            )
         )
-        f.write(cycmean)
-        g.write(maxvalue)
-        h.write(tmax)
-        f.close()
-        g.close()
-        h.close()
+
+        ds_f.close()
+        ds_g.close()
 
 
 if __name__ == "__main__":
