@@ -660,7 +660,9 @@ def _add_gridlines(ax):
         linestyle=":",
     )
     gl.top_labels = False
+    gl.bottom_labels = True
     gl.left_labels = True
+    gl.right_labels = False
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
     gl.xlabel_style = {"size": 9, "color": "gray"}

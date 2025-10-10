@@ -1,13 +1,12 @@
 import logging
 import os
-import pprint
 import re
 from datetime import datetime, timezone
 from typing import Dict
 
 import xarray as xr
 
-from pcmdi_metrics.io import xcdat_open
+from pcmdi_metrics.io import load_regions_specs, region_subset, xcdat_open
 from pcmdi_metrics.mean_climate.lib import (
     calculate_climatology,
     compute_metrics,
@@ -15,6 +14,7 @@ from pcmdi_metrics.mean_climate.lib import (
     extract_levels,
     is_4d_variable,
     plot_climatology,
+    plot_climatology_diff,
 )
 from pcmdi_metrics.mean_climate.lib_unified.lib_unified_dict import (
     load_json_as_dict,
@@ -23,7 +23,7 @@ from pcmdi_metrics.mean_climate.lib_unified.lib_unified_dict import (
     write_to_json,
 )
 from pcmdi_metrics.mean_climate.lib_unified.lib_unified_rad import derive_rad_var
-from pcmdi_metrics.utils import regrid, replace_date_pattern, sort_human
+from pcmdi_metrics.utils import apply_landmask, regrid, replace_date_pattern, sort_human
 
 
 def process_references(
@@ -43,11 +43,11 @@ def process_references(
     for ref in refs:
         print(f"=== var, ref: {var}, {ref}")
         try:
-            process_dataset(
+            ds_ref_level_interp_dict = process_dataset(
                 var,
                 ref,
                 refs_dict,
-                anncyc_ref_dict,
+                # anncyc_ref_dict,
                 rad_diagnostic_variables,
                 encountered_variables,
                 levels,
@@ -60,6 +60,8 @@ def process_references(
                 overwrite_output_ac=True,
                 version=version,
             )
+
+            anncyc_ref_dict[var][ref] = ds_ref_level_interp_dict
 
         except Exception as e:
             # Log the error to a file
@@ -93,8 +95,6 @@ def process_models(
     is_model_input_annual_cycle=False,
 ):
 
-    ac_model_dict = multi_level_dict()
-
     for model in models:
         runs = sort_human(list(models_dict[model].keys()))
 
@@ -103,12 +103,11 @@ def process_models(
         print("model, runs:", model, runs)
 
         for run in runs:
-            # try:
-            if 1:
+            try:
                 if not is_model_input_annual_cycle:
                     print(f"=== var, model, run: {var}, {model}, {run}")
                     print("process_dataset for model starts")
-                    process_dataset(
+                    ac_model_dict = process_dataset(
                         var,
                         (model, run),
                         models_dict,
@@ -129,30 +128,10 @@ def process_models(
                         f"Skipping process_dataset for {var} {model} {run} since is_model_input_annual_cycle=True"
                     )
                     pass
-
-                ac_model_dict = anncyc_model_run_dict[var][model][run]
-
-                # ac_model_dict here
-                print(f"!!!!! var, model, run: {var}, {model}, {run}")
-                print("!!!!! ac_model_dict:", ac_model_dict)
-                print("!!!!! ac_model_dict.keys():", ac_model_dict.keys())
-                print("!!!!! ac_model_dict[var].keys():", ac_model_dict[var].keys())
-                print(
-                    "!!!!! ac_model_dict[var][model].keys():",
-                    ac_model_dict[var][model].keys(),
-                )
-                print(
-                    "!!!!! ac_model_dict[var][model][run].keys():",
-                    ac_model_dict[var][model][run].keys(),
-                )
-
-                print("=== FULL STRUCTURE ===")
-                pprint(ac_model_dict)
+                    # Assume anncyc_model_run_dict is already populated externally
+                    ac_model_dict = anncyc_model_run_dict[var][model][run]
 
                 for level in levels:
-                    anncyc_model_run_level_interp = ac_model_dict[var][model][run][
-                        level
-                    ]
                     print("calculate_and_save_metrics for model starts")
                     calculate_and_save_metrics(
                         var,
@@ -162,14 +141,15 @@ def process_models(
                         regions,
                         refs,
                         anncyc_ref_dict,
-                        anncyc_model_run_level_interp,
+                        ac_model_dict[var][model][run][level],
                         output_path,
                         refs_dict,
                         metrics_dict,
+                        common_grid,
                     )
                     print("calculate_and_save_metrics for model done")
-            # except Exception as e:
-            #    print(f"Error from process_models for {var} {model} {run}:", e)
+            except Exception as e:
+                print(f"Error from process_models for {var} {model} {run}:", e)
 
     for level in levels:
         if level is None:
@@ -251,7 +231,7 @@ def process_dataset(
             varname = var
 
         variables_in_dict = set()
-        for model, runs in models_dict.items():
+        for model_tmp, runs in models_dict.items():
             for run, vars_dict in runs.items():
                 variables_in_dict.update(vars_dict.keys())
 
@@ -362,6 +342,7 @@ def process_dataset(
         else:
             levels_to_plot = [None]
 
+    # Plotting
     for level in levels_to_plot:
         print("level:", level)
 
@@ -407,26 +388,13 @@ def process_dataset(
 
             print(f"plot_gr fig: {output_fig_path}")
 
+        # Save to dict for later use (accumulated dict)
         if data_type == "ref":
             ac_dict[var][ref][level] = ds_ac_interp_level
         else:
             ac_dict[var][model][run][level] = ds_ac_interp_level
 
-        print(f"ac_dict[{var}]:", ac_dict[var])
-        print(f"ac_dict[{var}].keys():", ac_dict[var].keys())
-        if data_type == "ref":
-            print(f"ac_dict[{var}][{ref}]:", ac_dict[var][ref])
-            print(f"ac_dict[{var}][{ref}].keys():", ac_dict[var][ref].keys())
-        else:
-            print(f"ac_dict[{var}][{model}]:", ac_dict[var][model])
-            print(f"ac_dict[{var}][{model}].keys():", ac_dict[var][model].keys())
-            print(f"ac_dict[{var}][{model}][{run}]:", ac_dict[var][model][run])
-            print(
-                f"ac_dict[{var}][{model}][{run}].keys():",
-                ac_dict[var][model][run].keys(),
-            )
-
-    # return ac_dict
+    return ac_dict
 
 
 def extract_info_from_model_catalogue(
@@ -557,71 +525,6 @@ def generate_model_data_path(model_data_path_template, var, model, run):
     )
 
 
-"""
-def get_model_catalogue(
-    model_catalogue_file_path: str,
-    variables: Optional[List[str]] = None,
-    models: Optional[List[str]] = None,
-    runs_dict: Optional[Dict[str, List[str]]] = None,
-    model_data_path_template: Optional[str] = None,
-) -> Dict[str, Dict[str, Dict[str, Dict[str, str]]]]:
-    def update_model_dict(
-        model_dict: Dict,
-        model_data_path_template: str,
-        varname: str,
-        model: str,
-        run: str,
-    ) -> None:
-        data_path = generate_model_data_path(
-            model_data_path_template, varname, model, run
-        )
-        model_dict[var][model][run].update(
-            {
-                "path": os.path.dirname(data_path),
-                "filename": os.path.basename(data_path),
-                "template": data_path,
-                "varname": varname,
-            }
-        )
-
-    if os.path.isfile(model_catalogue_file_path):
-        # Option 1: Simply read models_dict from given catalogue JSON
-        models_dict = load_json_as_dict(model_catalogue_file_path)
-        # After read models_dict from given catalogue JSON and overwrite it using information from given parameter (model_data_path_template) info
-        if model_data_path_template:
-            for var in models_dict:
-                for model in models_dict[var]:
-                    for run in models_dict[var][model]:
-                        update_model_dict(
-                            models_dict, model_data_path_template, var, model, run
-                        )
-    elif all(var is not None for var in (variables, models, runs_dict)):
-        # Option 2: Create models_dict from given parameters (variables, models, runs_dict, and model_data_path_template) info
-        models_dict = multi_level_dict()
-
-        variables_dict = get_unique_bases(variables)
-        variables_unique = list(variables_dict.keys())
-
-        for var in variables_unique:
-            for model in models:
-                runs = runs_dict[model]
-                for run in runs:
-                    update_model_dict(
-                        models_dict,
-                        model_data_path_template,
-                        var,
-                        model,
-                        run,
-                    )
-    else:
-        raise ValueError(
-            "Either a valid model catalogue file or complete set of parameters (variables, models, runs_dict, and model_data_path_template) must be provided"
-        )
-
-    return dict(models_dict)
-"""
-
-
 def get_model_catalogue(
     model_catalogue_file_path: str,
 ) -> Dict[str, Dict[str, Dict[str, Dict[str, str]]]]:
@@ -750,6 +653,7 @@ def calculate_and_save_metrics(
     output_path,
     refs_dict,
     metrics_dict,
+    common_grid,
     debug=False,
 ):
     print("refs:", refs)
@@ -760,6 +664,8 @@ def calculate_and_save_metrics(
     else:
         var_key = f"{var}-{level}"
 
+    sftlf = common_grid["sftlf"]
+
     for ref in refs:
         if ref not in ac_ref_dict[var].keys():
             raise KeyError(f"Reference data {ref} is not available for {var}.")
@@ -767,14 +673,53 @@ def calculate_and_save_metrics(
         print("ac_ref_dict[var][ref]:", ac_ref_dict[var][ref])
         print("ac_model_run_level_interp:", ac_model_run_level_interp)
 
+        regrid_tool = "regrid2"
+        case_id = "test_case"
+        ref_dataset_name = ref
+
         # Calculate metrics
         for region in regions:
-            metrics = compute_metrics(
-                var_key, ac_ref_dict[var][ref], ac_model_run_level_interp
-            )
+            # Region subsetting
+            do = get_region_ds(ac_ref_dict[var][ref], var_key, sftlf, region)
+            dm = get_region_ds(ac_model_run_level_interp, var_key, sftlf, region)
+
+            # Compute metrics
+            metrics = compute_metrics(var_key, dm, do, time_dim_sync=True)
 
             # Save to dict for later use (accumulated dict)
             metrics_dict[var_key]["RESULTS"][model][run][ref][region] = metrics
+
+            # plot map
+            test_clims_plot_dir = os.path.join(output_path, var)
+            os.makedirs(test_clims_plot_dir, exist_ok=True)
+
+            for season in ["AC", "DJF", "MAM", "JJA", "SON"]:
+                output_filename = "_".join(
+                    [
+                        var,
+                        model,
+                        run,
+                        "interpolated",
+                        regrid_tool,
+                        region,
+                        season,
+                        case_id + ".png",
+                    ]
+                )
+                plot_climatology_diff(
+                    dm,
+                    var_key,
+                    do,
+                    var_key,
+                    level=level,
+                    season=season,
+                    output_dir=test_clims_plot_dir,
+                    output_filename=output_filename,
+                    dataname_test=f"{model}_{run}",
+                    dataname_ref=ref_dataset_name,
+                    fig_title=f"Climatology ({season}, {region}): {var_key}",
+                )
+                print("plot map done")
 
     # Dump the dictionary as a JSON file per run
     dict_to_write = multi_level_dict()
@@ -793,6 +738,40 @@ def calculate_and_save_metrics(
         print_dict(dict_to_write)
 
     return
+
+
+def get_region_ds(ds, data_var, sftlf, region, regions_specs=None):
+    # land/sea mask -- conduct masking only for variable data array, not entire data
+    if any(keyword in region.split("_") for keyword in ["land", "ocean"]):
+        ds_tmp = ds.copy(deep=True)
+        if "land" in region.split("_"):
+            ds_tmp[data_var] = apply_landmask(
+                ds[data_var],
+                landfrac=sftlf,
+                keep_over="land",
+            )
+        elif "ocean" in region.split("_"):
+            ds_tmp[data_var] = apply_landmask(
+                ds[data_var],
+                landfrac=sftlf,
+                keep_over="ocean",
+            )
+        print("mask done")
+    else:
+        ds_tmp = ds
+
+    if regions_specs is None or not bool(regions_specs):
+        regions_specs = load_regions_specs()
+
+    # spatial subset
+    if region.lower() in ["global", "land", "ocean"]:
+        return ds_tmp
+    else:
+        return region_subset(
+            ds_tmp,
+            region=region,
+            regions_specs=regions_specs,
+        )
 
 
 def remove_duplicates(tmp: list) -> list:

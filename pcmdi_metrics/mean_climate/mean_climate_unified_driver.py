@@ -15,7 +15,7 @@ from pcmdi_metrics.mean_climate.lib_unified import (  # extract_info_from_model_
     process_models,
     process_references,
 )
-from pcmdi_metrics.utils import create_target_grid
+from pcmdi_metrics.utils import create_land_sea_mask, create_target_grid
 
 # USER SETTING ###########################################
 
@@ -37,19 +37,19 @@ variables = [
     # "va-850",
     # "va-200",
     # "vas",
-    "zg-200",
-    "zg-500",
-    "zg-850",
+    # "zg-200",
+    # "zg-500",
+    # "zg-850",
     # "zos",
 ]
 
-variables = ["pr"]
+# variables = ["pr"]
 
 # ---------
 # Reference
 # ---------
 default_ref_only = True  # if True, use only the reference marked as "default" in the ref_catalogue file
-all_ref_variables = False  # if True, use all variables in the ref_catalogue file, otherwise use only those in 'variables' above
+all_ref_variables = True  # if True, use all variables in the ref_catalogue file, otherwise use only those in 'variables' above
 
 # Reference data in raw time series format (not annual cycle)
 # ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_v20250825.json"
@@ -176,20 +176,22 @@ interim_output_path_dict = {
 # ----------------------
 common_grid = create_target_grid(target_grid_resolution=target_grid)
 
+# generate land sea mask for the target grid
+sft = create_land_sea_mask(common_grid)
+
+# add sft to target grid dataset
+common_grid["sftlf"] = sft
+
 # ------------------------
 # main loop over variables
 # ------------------------
 for var in variables_unique:
-    if 1:
-        # try:
+    try:
         print("var:", var)
         encountered_variables.add(var)
         levels = variables_level_dict[var]
 
         print("levels:", levels)
-
-        # import sys
-        # sys.exit("test")
 
         if var in refs_dict:
             refs = list(refs_dict[var].keys())
@@ -258,5 +260,5 @@ for var in variables_unique:
                 is_model_input_annual_cycle=is_model_input_annual_cycle,
             )
 
-    # except Exception as e:
-    #    print(f"Error from main for {var}:", e)
+    except Exception as e:
+        print(f"Error from main for {var}:", e)
