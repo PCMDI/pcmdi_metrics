@@ -703,13 +703,13 @@ def calculate_and_save_metrics(
             metrics_dict[var_key]["RESULTS"][model][run][ref][region] = metrics
 
             # plot map
-            test_clims_plot_dir = os.path.join(output_path, var)
+            test_clims_plot_dir = os.path.join(output_path, var_key)
             os.makedirs(test_clims_plot_dir, exist_ok=True)
 
             for season in ["AC", "DJF", "MAM", "JJA", "SON"]:
                 output_filename = "_".join(
                     [
-                        var,
+                        var_key,
                         model,
                         run,
                         "interpolated",
