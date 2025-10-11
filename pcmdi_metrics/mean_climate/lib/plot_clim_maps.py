@@ -825,6 +825,14 @@ def _load_variable_setting(
                 "colormap_diff": "RdBu_r",
             }
         },
+        "rldscs": {
+            None: {
+                "levels": np.linspace(80, 500, 21),
+                "levels_diff": np.linspace(-50, 50, 21),
+                "colormap": cc.cm.rainbow,
+                "colormap_diff": "RdBu_r",
+            }
+        },
         "rltcre": {
             None: {
                 "levels": np.arange(0, 70, 5),

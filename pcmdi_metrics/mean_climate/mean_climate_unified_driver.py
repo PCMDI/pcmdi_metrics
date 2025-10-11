@@ -44,6 +44,24 @@ variables = [
     # "zos",
 ]
 
+variables = [
+    "rlds",
+    "rldscs",
+    "rltcre",
+    "rlus",
+    "rlut",
+    "rlutcs",
+    "rsds",
+    "rsdscs",
+    "rsdt",
+    "rstcre",
+    "rsus",
+    "rsuscs",
+    "rsut",
+    "rsutcs",
+    "rt",
+]
+
 # variables = ["pr"]
 
 # ---------
