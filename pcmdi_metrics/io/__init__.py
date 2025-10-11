@@ -1,5 +1,5 @@
 # init for pcmdi_metrics.io
-from .xcdat_openxml import xcdat_open  # noqa  # isort:skip
+from .xcdat_open import xcdat_open  # noqa  # isort:skip
 from .string_constructor import StringConstructor, fill_template  # noqa  # isort:skip
 from . import base  # noqa
 
