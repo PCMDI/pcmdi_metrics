@@ -670,6 +670,9 @@ def calculate_and_save_metrics(
 
     sftlf = common_grid["sftlf"]
 
+    test_clims_plot_dir = os.path.join(output_path, var_key)
+    os.makedirs(test_clims_plot_dir, exist_ok=True)
+
     for ref in refs:
         if ref not in ac_ref_dict[var].keys():
             raise KeyError(f"Reference data {ref} is not available for {var}.")
@@ -696,16 +699,13 @@ def calculate_and_save_metrics(
 
             # Compute metrics
             metrics = compute_metrics(
-                var, dm.squeeze(), do.squeeze(), time_dim_sync=True, debug=True
+                var, dm.squeeze(), do.squeeze(), time_dim_sync=True, debug=debug
             )
 
             # Save to dict for later use (accumulated dict)
             metrics_dict[var_key]["RESULTS"][model][run][ref][region] = metrics
 
             # plot map
-            test_clims_plot_dir = os.path.join(output_path, var_key)
-            os.makedirs(test_clims_plot_dir, exist_ok=True)
-
             for season in ["AC", "DJF", "MAM", "JJA", "SON"]:
                 output_filename = "_".join(
                     [
