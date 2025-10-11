@@ -146,6 +146,7 @@ def process_models(
                         refs_dict,
                         metrics_dict,
                         common_grid,
+                        case_id=version,
                     )
                     print("calculate_and_save_metrics for model done")
             except Exception as e:
@@ -654,6 +655,9 @@ def calculate_and_save_metrics(
     refs_dict,
     metrics_dict,
     common_grid,
+    regrid_tool="regrid2",
+    case_id="test_case",
+    ref_dataset_name=None,
     debug=False,
 ):
     print("refs:", refs)
@@ -670,21 +674,30 @@ def calculate_and_save_metrics(
         if ref not in ac_ref_dict[var].keys():
             raise KeyError(f"Reference data {ref} is not available for {var}.")
 
-        print("ac_ref_dict[var][ref]:", ac_ref_dict[var][ref])
-        print("ac_model_run_level_interp:", ac_model_run_level_interp)
+        # Extract level for ref
+        if level is None:
+            ac_ref_level = ac_ref_dict[var][ref]
+        else:
+            ac_ref_level = extract_level(ac_ref_dict[var][ref], level)
 
-        regrid_tool = "regrid2"
-        case_id = "test_case"
-        ref_dataset_name = ref
+        if debug:
+            print("ac_ref_dict[var][ref]:", ac_ref_dict[var][ref])
+            print("ac_ref_level:", ac_ref_level)
+            print("ac_model_run_level_interp:", ac_model_run_level_interp)
+
+        if ref_dataset_name is None:
+            ref_dataset_name = ref
 
         # Calculate metrics
         for region in regions:
             # Region subsetting
-            do = get_region_ds(ac_ref_dict[var][ref], var_key, sftlf, region)
-            dm = get_region_ds(ac_model_run_level_interp, var_key, sftlf, region)
+            do = get_region_ds(ac_ref_level, var, sftlf, region)
+            dm = get_region_ds(ac_model_run_level_interp, var, sftlf, region)
 
             # Compute metrics
-            metrics = compute_metrics(var_key, dm, do, time_dim_sync=True)
+            metrics = compute_metrics(
+                var, dm.squeeze(), do.squeeze(), time_dim_sync=True, debug=True
+            )
 
             # Save to dict for later use (accumulated dict)
             metrics_dict[var_key]["RESULTS"][model][run][ref][region] = metrics
@@ -708,9 +721,9 @@ def calculate_and_save_metrics(
                 )
                 plot_climatology_diff(
                     dm,
-                    var_key,
+                    var,
                     do,
-                    var_key,
+                    var,
                     level=level,
                     season=season,
                     output_dir=test_clims_plot_dir,

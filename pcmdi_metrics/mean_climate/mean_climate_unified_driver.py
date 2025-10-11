@@ -22,9 +22,10 @@ from pcmdi_metrics.utils import create_land_sea_mask, create_target_grid
 working_dir = "/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/mean_climate_workflow_refactorization/output"
 
 variables = [
-    # "ta-850",
+    "ts",
+    "ta-850",
     # "ta-500",
-    # "ta-200",
+    "ta-200",
     # "tas",
     # "tasmax",
     # "tasmin",
@@ -49,7 +50,7 @@ variables = [
 # Reference
 # ---------
 default_ref_only = True  # if True, use only the reference marked as "default" in the ref_catalogue file
-all_ref_variables = True  # if True, use all variables in the ref_catalogue file, otherwise use only those in 'variables' above
+all_ref_variables = False  # if True, use all variables in the ref_catalogue file, otherwise use only those in 'variables' above
 
 # Reference data in raw time series format (not annual cycle)
 # ref_catalogue_file_path = "/global/cfs/projectdirs/m4581/obs4MIPs/catalogue/obs4MIPs_PCMDI_monthly_byVar_catalogue_v20250825.json"

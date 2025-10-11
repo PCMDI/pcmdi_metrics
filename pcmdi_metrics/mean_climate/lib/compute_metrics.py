@@ -83,17 +83,19 @@ def compute_metrics(
 
         if debug:
             print("time and time bounds synced")
-            print("dm.time: ", dm["time"])
-            print("do.time: ", do["time"])
-
-            dm.to_netcdf("dm.nc")
-            do.to_netcdf("do.nc")
 
     metrics_dictionary = OrderedDict()
 
     # QC for bounds
     dm = dm.bounds.add_missing_bounds()
     do = do.bounds.add_missing_bounds()
+
+    if debug:
+        print("dm.time: ", dm["time"])
+        print("do.time: ", do["time"])
+
+        dm.to_netcdf(f"dm_{var}.nc")
+        do.to_netcdf(f"do_{var}.nc")
 
     float_format = "{:.5e}"
 
