@@ -22,10 +22,10 @@ from pcmdi_metrics.utils import create_land_sea_mask, create_target_grid
 working_dir = "/global/cfs/cdirs/m4581/lee1043/work/cdat/pmp/mean_climate/mean_climate_workflow_refactorization/output"
 
 variables = [
-    "ts",
-    "ta-850",
+    # "ts",
+    # "ta-850",
     # "ta-500",
-    "ta-200",
+    # "ta-200",
     # "tas",
     # "tasmax",
     # "tasmin",
@@ -39,7 +39,7 @@ variables = [
     # "va-200",
     # "vas",
     # "zg-200",
-    # "zg-500",
+    "zg-500",
     # "zg-850",
     # "zos",
 ]
@@ -163,14 +163,6 @@ interim_output_path_dict = {
         "path_ac_interp": f"{base_model_ac_path}/gr",
     },
 }
-
-# variables_unique = ["pr"]
-# variables_unique = ["psl"]
-# variables_unique = ["ta", "ua", "va", "zg"]
-# variables_unique = ["tas", "ta"]
-# variables_unique = ["ta"]
-# variables_unique = ["ua", "va"]
-# variables_unique.remove("pr")
 
 # ----------------------
 # grid for interpolation
