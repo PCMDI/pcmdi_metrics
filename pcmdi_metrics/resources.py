@@ -16,7 +16,7 @@ def resource_path():
         # Use importlib.metadata to locate data-files installed with the
         # distribution
         res_path = str(dist.locate_file("share/pmp"))
-    except Exception:
+    except metadata.PackageNotFoundError:
         res_path = os.path.join(os.getcwd(), "share", "pmp")
 
     # Should never fail this

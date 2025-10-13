@@ -21,7 +21,9 @@ def test_conda_env(tmpdir):
 @mock.patch("importlib.metadata.distribution")
 def test_conda_env_no_exist(distribution, getcwd, tmpdir):
     # Fix issue when tests are ran against an installed package
-    distribution.side_effect = Exception()
+    import importlib.metadata as _md
+
+    distribution.side_effect = _md.PackageNotFoundError
 
     conda_prefix = os.path.join(tmpdir, "conda")
 
