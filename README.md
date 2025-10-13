@@ -126,6 +126,7 @@ Release Notes and History
 
 | <div style="width:300%">[Versions]</div> | Update summary   |
 | ------------- | ------------------------------------- |
+| [v4.0.1]      | Technical update
 | [v4.0.0]      | Newerly support higher Python versions, `>= 3.10, < 3.14`
 
 <details>
@@ -188,6 +189,7 @@ Release Notes and History
 </details>
 
 [Versions]: https://github.com/PCMDI/pcmdi_metrics/releases
+[v4.0.1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.1
 [v4.0.0]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.0
 [v4.0.0rc1]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v4.0.0rc1
 [v3.9.3]: https://github.com/PCMDI/pcmdi_metrics/releases/tag/v3.9.3
