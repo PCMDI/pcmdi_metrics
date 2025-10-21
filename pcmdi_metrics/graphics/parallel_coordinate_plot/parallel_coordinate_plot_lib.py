@@ -330,6 +330,7 @@ def parallel_coordinate_plot(
                         group1_name: violin_colors[0],
                         group2_name: violin_colors[1],
                     },
+                    cut=0,
                 )
 
     # Line or marker
