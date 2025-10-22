@@ -1,0 +1,1130 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../../../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html" /><link rel="search" title="Search" href="../../../search.html" />
+
+    <!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
+        <title>pcmdi_metrics.utils.land_sea_mask - PMP Documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../../../index.html"><div class="brand">PMP Documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../../../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo" src="../../../_static/PMPLogo_500x421px_72dpi.png" alt="Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">PMP Documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../../../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">For users</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../start.html">Getting Started</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Getting Started</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../install.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../supporting-data.html">Retrieving data</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../metrics.html">PMP Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of PMP Metrics</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_mean-clim.html">Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_enso.html">ENSO Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_mov.html">Extra-tropical modes of variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_mjo.html">MJO baseline metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_monsoon.html">Monsoon</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_ext.html">Extremes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_precip-variability.html">Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_precip-distribution.html">Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_subdaily-precipitation.html">Sub-daily precipitation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../metrics_sea_ice.html">Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/blob/main/pcmdi_metrics/cloud_feedback/README.md">Cloud Feedbacks</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../demo-notebooks.html">Demo notebooks</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle navigation of Demo notebooks</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_0_download_data.html">0. Prepare Demos</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_1a_compute_climatologies.html">1A. Compute Climatologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_1b_mean_climate.html">1B. Mean Climate Driver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_2a_monsoon_wang.html">2A. Monsoon (Wang)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_2b_monsoon_sperber.html">2B. Monsoon (Sperber)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_3_diurnal_cycle.html">3. Diurnal Cycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_4_modes_of_variability.html">4. Modes of Variability</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_5_mjo_metrics.html">5. MJO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_6_ENSO.html">6. ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_7_precip_variability.html">7. Precipitation Variability Across Timescales</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_7b_precip_distribution.html">7B. Precipitation Distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_8_extremes.html">8. Extremes Metrics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_9_seaIceExtent_ivanova.html">9A. Sea Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/Demo_9b_seaIce_data_explore.html">9B. Sea Ice Supplementary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/portrait_plot_example.html">Portrait Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/parallel_coordinate_plot_example.html">Parallel Coordinate Plot: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/taylor_diagram_example.html">Taylor Diagram: Usage Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/portrait_plot_mean_clim.html">Portrait Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/portrait_plot_mean_clim_multiple_CMIPs.html">Portrait Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/parallel_coordinate_plot_mean_clim.html">Parallel Coordinate Plot: Mean Climate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/parallel_coordinate_plot_mean_clim_multiMIPs.html">Parallel Coordinate Plot: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/taylor_diagram_multiple_CMIPs.html">Taylor Diagram: Mean Climate, comparing CMIP5 &amp; CMIP6 models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/mean_clim_plots_test_model.html">PMP mean climate: Compare user’s model with CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/enso_portrait_plot.html">Portrait Plot: ENSO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/variability_modes_plots_all-stats.html">Visualize PMP Modes of Variability results: CMIP6</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/return_value_portrait_plot_demo.html">Return Value Portrait Plot Demo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/landmask.html">Generate land sea mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../examples/pmp_metrics_database.html">Access to online PMP output database</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">For developers/contributors</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../api.html">API Reference</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle navigation of API Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.custom_season_average.html">pcmdi_metrics.utils.custom_season_average</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.custom_season_departure.html">pcmdi_metrics.utils.custom_season_departure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.replace_date_pattern.html">pcmdi_metrics.utils.replace_date_pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.xcdat_open.html">pcmdi_metrics.io.xcdat_open</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.date_to_str.html">pcmdi_metrics.utils.date_to_str</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.extract_date_components.html">pcmdi_metrics.utils.extract_date_components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.find_overlapping_dates.html">pcmdi_metrics.utils.find_overlapping_dates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.create_land_sea_mask.html">pcmdi_metrics.utils.create_land_sea_mask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.apply_landmask.html">pcmdi_metrics.utils.apply_landmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.apply_oceanmask.html">pcmdi_metrics.utils.apply_oceanmask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.graphics.parallel_coordinate_plot.html">pcmdi_metrics.graphics.parallel_coordinate_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.graphics.portrait_plot.html">pcmdi_metrics.graphics.portrait_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.graphics.TaylorDiagram.html">pcmdi_metrics.graphics.TaylorDiagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.create_target_grid.html">pcmdi_metrics.utils.create_target_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.regrid.html">pcmdi_metrics.utils.regrid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.load_regions_specs.html">pcmdi_metrics.io.load_regions_specs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.region_subset.html">pcmdi_metrics.io.region_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.region_from_file.html">pcmdi_metrics.io.region_from_file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_grid.html">pcmdi_metrics.io.get_grid</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_axis_list.html">pcmdi_metrics.io.get_axis_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_data_list.html">pcmdi_metrics.io.get_data_list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_latitude.html">pcmdi_metrics.io.get_latitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_latitude_bounds.html">pcmdi_metrics.io.get_latitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_latitude_key.html">pcmdi_metrics.io.get_latitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_longitude.html">pcmdi_metrics.io.get_longitude</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_longitude_bounds.html">pcmdi_metrics.io.get_longitude_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_longitude_key.html">pcmdi_metrics.io.get_longitude_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_time.html">pcmdi_metrics.io.get_time</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_time_bounds.html">pcmdi_metrics.io.get_time_bounds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_time_bounds_key.html">pcmdi_metrics.io.get_time_bounds_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.get_time_key.html">pcmdi_metrics.io.get_time_key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.io.select_subset.html">pcmdi_metrics.io.select_subset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.check_daily_time_axis.html">pcmdi_metrics.utils.check_daily_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.check_monthly_time_axis.html">pcmdi_metrics.utils.check_monthly_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.regenerate_time_axis.html">pcmdi_metrics.utils.regenerate_time_axis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.sort_human.html">pcmdi_metrics.utils.sort_human</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.fill_template.html">pcmdi_metrics.utils.fill_template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.utils.tree.html">pcmdi_metrics.utils.tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../generated/pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel.html">pcmdi_metrics.viewer.generate_pmp_output_viewer_multimodel</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing Guide</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../../../resources.html">Resources</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle navigation of Resources</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../../../resources_legacy.html">Legacy archive</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle navigation of Legacy archive</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../../pmp-using-cdp-guide.html">PMP using CDP Guide</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../pmpparser.html">PMPParser</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../team.html">Team</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://pcmdi.llnl.gov/research/metrics/">PMP Results</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics">Source Code</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/PCMDI/pcmdi_metrics/discussions">Discussions</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Source code for pcmdi_metrics.utils.land_sea_mask</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.ma</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ma</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">regionmask</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xcdat</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xc</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">resources</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pcmdi_metrics.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_grid</span>
+
+
+<div class="viewcode-block" id="create_land_sea_mask">
+<a class="viewcode-back" href="../../../generated/pcmdi_metrics.utils.create_land_sea_mask.html#pcmdi_metrics.utils.create_land_sea_mask">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">create_land_sea_mask</span><span class="p">(</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">],</span>
+    <span class="n">lon_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">lat_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">as_boolean</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;regionmask&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a land-sea mask (1 for land, 0 for sea) for a given xarray Dataset or DataArray.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : Union[xr.Dataset, xr.DataArray]</span>
+<span class="sd">        The Dataset or DataArray object.</span>
+<span class="sd">    lon_key : str, optional</span>
+<span class="sd">        Name of DataArray for longitude, by default None</span>
+<span class="sd">    lat_key : str, optional</span>
+<span class="sd">        Name of DataArray for latitude, by default None</span>
+<span class="sd">    as_boolean : bool, optional</span>
+<span class="sd">        Set mask value to True (land) or False (ocean), by default False, thus 1 (land) and 0 (ocean).</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        Method to use for creating the mask, either `regionmask` or `pcmdi`, by default `regionmask`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xr.DataArray</span>
+<span class="sd">        A DataArray of land-sea mask (1 or 0 for land or sea, or True or False for land or sea).</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - The `regionmask` method uses the regionmask package (https://regionmask.readthedocs.io/) to generate the mask.</span>
+<span class="sd">    - The `pcmdi` method uses the PCMDI method developed by Taylor and Doutriaux (2000) (https://pcmdi.llnl.gov/report/ab58.html).</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from pcmdi_metrics.utils import create_land_sea_mask  # import function</span>
+<span class="sd">    &gt;&gt;&gt; mask = create_land_sea_mask(ds)  #  Generate land-sea mask (land: 1, sea: 0)</span>
+<span class="sd">    &gt;&gt;&gt; mask = create_land_sea_mask(ds, as_boolean=True)  # Generate land-sea mask (land: True, sea: False)</span>
+<span class="sd">    &gt;&gt;&gt; mask = create_land_sea_mask(ds, method=&quot;pcmdi&quot;)  # Use PCMDI method</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Create a land-sea mask</span>
+    <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;regionmask&quot;</span><span class="p">:</span>
+        <span class="c1"># Use regionmask</span>
+        <span class="n">land_mask</span> <span class="o">=</span> <span class="n">regionmask</span><span class="o">.</span><span class="n">defined_regions</span><span class="o">.</span><span class="n">natural_earth_v5_0_0</span><span class="o">.</span><span class="n">land_110</span>
+
+        <span class="c1"># Get the longitude and latitude from the xarray dataset</span>
+        <span class="k">if</span> <span class="n">lon_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lon_key</span> <span class="o">=</span> <span class="n">xc</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">get_dim_keys</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">lat_key</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">lat_key</span> <span class="o">=</span> <span class="n">xc</span><span class="o">.</span><span class="n">axis</span><span class="o">.</span><span class="n">get_dim_keys</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;Y&quot;</span><span class="p">)</span>
+
+        <span class="n">lon</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="n">lon_key</span><span class="p">]</span>
+        <span class="n">lat</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="n">lat_key</span><span class="p">]</span>
+
+        <span class="c1"># Mask the land-sea mask to match the dataset&#39;s coordinates</span>
+        <span class="n">land_sea_mask</span> <span class="o">=</span> <span class="n">land_mask</span><span class="o">.</span><span class="n">mask</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="n">lat</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">as_boolean</span><span class="p">:</span>
+            <span class="c1"># Convert the 0 (land) &amp; nan (ocean) land-sea mask to a boolean mask</span>
+            <span class="n">land_sea_mask</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">land_sea_mask</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Convert the boolean land-sea mask to a 1/0 mask</span>
+            <span class="n">land_sea_mask</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">land_sea_mask</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;pcmdi&quot;</span><span class="p">:</span>
+        <span class="c1"># Use the PCMDI method developed by Taylor and Doutriaux (2000)</span>
+        <span class="n">land_sea_mask</span> <span class="o">=</span> <span class="n">generate_land_sea_mask__pcmdi</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">as_boolean</span><span class="p">:</span>
+            <span class="c1"># Convert the 1/0 land-sea mask to a boolean mask</span>
+            <span class="n">land_sea_mask</span> <span class="o">=</span> <span class="n">land_sea_mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unknown method &#39;</span><span class="si">%s</span><span class="s2">&#39;. Please choose &#39;regionmask&#39; or &#39;pcmdi&#39;&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">land_sea_mask</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_max</span><span class="p">(</span><span class="n">da</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the maximum value in a given xarray DataArray.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    da : xr.DataArray</span>
+<span class="sd">        Input DataArray.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Maximum value in the DataArray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">find_min</span><span class="p">(</span><span class="n">da</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the minimum value in a given xarray DataArray.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    da : xr.DataArray</span>
+<span class="sd">        Input DataArray.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Minimum value in the DataArray.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="apply_landmask">
+<a class="viewcode-back" href="../../../generated/pcmdi_metrics.utils.apply_landmask.html#pcmdi_metrics.utils.apply_landmask">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_landmask</span><span class="p">(</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">],</span>
+    <span class="n">data_var</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">landfrac</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">keep_over</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ocean&quot;</span><span class="p">,</span>
+    <span class="n">land_criteria</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="n">ocean_criteria</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply a land-sea mask to a given DataArray or Dataset.</span>
+
+<span class="sd">    This function applies a land-sea mask to either a DataArray or a variable within a Dataset.</span>
+<span class="sd">    It can keep values over land or ocean based on the specified criteria.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : Union[xr.Dataset, xr.DataArray]</span>
+<span class="sd">        The Dataset or DataArray to which the land-sea mask will be applied.</span>
+<span class="sd">    data_var : str, optional</span>
+<span class="sd">        Name of the DataArray in the Dataset. Required if `obj` is a Dataset.</span>
+<span class="sd">    landfrac : xr.DataArray, optional</span>
+<span class="sd">        Land fraction data array. Values should range from 0 (ocean) to 1 (land).</span>
+<span class="sd">        If None, a land-sea mask will be created automatically.</span>
+<span class="sd">    keep_over : {&#39;land&#39;, &#39;ocean&#39;}, optional</span>
+<span class="sd">        Specifies whether to keep values over &quot;land&quot; or &quot;ocean&quot;. Default is &quot;ocean&quot;.</span>
+<span class="sd">    land_criteria : float, optional</span>
+<span class="sd">        Threshold for considering a grid cell as land. Default is 0.8.</span>
+<span class="sd">    ocean_criteria : float, optional</span>
+<span class="sd">        Threshold for considering a grid cell as ocean. Default is 0.2.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xr.DataArray</span>
+<span class="sd">        DataArray with the land-sea mask applied.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        If `data_var` is not provided when `obj` is a Dataset, or if `keep_over` is invalid.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - If `landfrac` is not provided, it will be generated using the &#39;create_land_sea_mask&#39; function.</span>
+<span class="sd">    - The function can handle land fraction data in both percentage (0-100) and fractional (0-1) formats.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    create_land_sea_mask : The underlying function used to apply the mask.</span>
+<span class="sd">    apply_oceanmask : A sister function used to apply the mask out ocean.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from pcmdi_metrics.utils import apply_landmask</span>
+<span class="sd">    &gt;&gt;&gt; # Keep values over land (mask ocean)</span>
+<span class="sd">    &gt;&gt;&gt; da_land = apply_landmask(da, landfrac=mask, keep_over=&quot;land&quot;)  # when input is DataArray</span>
+<span class="sd">    &gt;&gt;&gt; da_land = apply_landmask(ds, data_var=&quot;ts&quot;, landfrac=mask, keep_over=&quot;land&quot;)  # DataSet</span>
+<span class="sd">    &gt;&gt;&gt; # Keep values over ocean (mask land)</span>
+<span class="sd">    &gt;&gt;&gt; da_ocean = apply_landmask(da, landfrac=mask, keep_over=&quot;ocean&quot;)  # when input is DataArray</span>
+<span class="sd">    &gt;&gt;&gt; da_ocean = apply_landmask(ds, data_var=&quot;ts&quot;, landfrac=mask, keep_over=&quot;ocean&quot;)  # use DataSet</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">):</span>
+        <span class="n">data_array</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">data_var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid value for data_var. Provide name of DataArray.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_array</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="c1"># Validate landfrac</span>
+    <span class="n">generateLandSeaMask</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">where_method</span> <span class="o">=</span> <span class="s2">&quot;xarray&quot;</span>
+    <span class="k">if</span> <span class="n">landfrac</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">generateLandSeaMask</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">data_grid</span> <span class="o">=</span> <span class="n">get_grid</span><span class="p">(</span><span class="n">data_array</span><span class="p">)</span>
+        <span class="n">lf_grid</span> <span class="o">=</span> <span class="n">get_grid</span><span class="p">(</span><span class="n">landfrac</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">data_grid</span><span class="o">.</span><span class="n">identical</span><span class="p">(</span><span class="n">lf_grid</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">data_grid</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">lf_grid</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">data_grid</span><span class="o">.</span><span class="n">sizes</span> <span class="o">==</span> <span class="n">lf_grid</span><span class="o">.</span><span class="n">sizes</span><span class="p">:</span>
+                    <span class="n">where_method</span> <span class="o">=</span> <span class="s2">&quot;numpy&quot;</span>
+
+    <span class="k">if</span> <span class="n">generateLandSeaMask</span><span class="p">:</span>
+        <span class="n">landfrac</span> <span class="o">=</span> <span class="n">create_land_sea_mask</span><span class="p">(</span><span class="n">data_array</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;landfrac is not provided thus generated using the &#39;create_land_sea_mask&#39; function&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Check units of landfrac</span>
+    <span class="n">percentage</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">find_min</span><span class="p">(</span><span class="n">landfrac</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">find_max</span><span class="p">(</span><span class="n">landfrac</span><span class="p">)</span> <span class="o">==</span> <span class="mi">100</span><span class="p">:</span>
+        <span class="n">percentage</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="s2">&quot;units&quot;</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">landfrac</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">landfrac</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;%&quot;</span><span class="p">:</span>
+            <span class="n">percentage</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Convert landfrac to a fraction if it&#39;s in percentage form</span>
+    <span class="k">if</span> <span class="n">percentage</span><span class="p">:</span>
+        <span class="n">landfrac</span> <span class="o">=</span> <span class="n">landfrac</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="o">/</span> <span class="mf">100.0</span>
+
+    <span class="c1"># Validate keep_over parameter</span>
+    <span class="k">if</span> <span class="n">keep_over</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;land&quot;</span><span class="p">,</span> <span class="s2">&quot;ocean&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid value for keep_over. Choose either &#39;land&#39; or &#39;ocean&#39;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Apply land and ocean masks</span>
+    <span class="k">if</span> <span class="n">where_method</span> <span class="o">==</span> <span class="s2">&quot;xarray&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">keep_over</span> <span class="o">==</span> <span class="s2">&quot;land&quot;</span><span class="p">:</span>
+            <span class="n">data_array</span> <span class="o">=</span> <span class="n">data_array</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">landfrac</span> <span class="o">&gt;=</span> <span class="n">land_criteria</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">keep_over</span> <span class="o">==</span> <span class="s2">&quot;ocean&quot;</span><span class="p">:</span>
+            <span class="n">data_array</span> <span class="o">=</span> <span class="n">data_array</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">landfrac</span> <span class="o">&lt;=</span> <span class="n">ocean_criteria</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">where_method</span> <span class="o">==</span> <span class="s2">&quot;numpy&quot;</span><span class="p">:</span>
+        <span class="c1"># Expand data1 to match the shape of landfrac along the time dimension</span>
+        <span class="n">expanded_landfrac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">landfrac</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">expanded_landfrac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span>
+            <span class="n">expanded_landfrac</span><span class="p">,</span> <span class="n">data_array</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span>  <span class="c1"># Repeat along the time dimension</span>
+
+        <span class="c1"># Mask data based on landfrac</span>
+        <span class="k">if</span> <span class="n">keep_over</span> <span class="o">==</span> <span class="s2">&quot;land&quot;</span><span class="p">:</span>
+            <span class="n">data_array</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span>
+                <span class="n">expanded_landfrac</span> <span class="o">&lt;</span> <span class="n">land_criteria</span><span class="p">,</span> <span class="n">data_array</span><span class="o">.</span><span class="n">data</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">keep_over</span> <span class="o">==</span> <span class="s2">&quot;ocean&quot;</span><span class="p">:</span>
+            <span class="n">data_array</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">ma</span><span class="o">.</span><span class="n">masked_where</span><span class="p">(</span>
+                <span class="n">expanded_landfrac</span> <span class="o">&gt;</span> <span class="n">ocean_criteria</span><span class="p">,</span> <span class="n">data_array</span><span class="o">.</span><span class="n">data</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data_array</span></div>
+
+
+
+<div class="viewcode-block" id="apply_oceanmask">
+<a class="viewcode-back" href="../../../generated/pcmdi_metrics.utils.apply_oceanmask.html#pcmdi_metrics.utils.apply_oceanmask">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_oceanmask</span><span class="p">(</span>
+    <span class="n">obj</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">],</span>
+    <span class="n">data_var</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">landfrac</span><span class="p">:</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">land_criteria</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
+    <span class="n">ocean_criteria</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.2</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply an ocean mask to a given DataArray or Dataset.</span>
+
+<span class="sd">    This function is a wrapper around `apply_landmask` that specifically masks land areas,</span>
+<span class="sd">    effectively creating an ocean mask.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    obj : Union[xr.Dataset, xr.DataArray]</span>
+<span class="sd">        The Dataset or DataArray to which the ocean mask will be applied.</span>
+<span class="sd">    data_var : str, optional</span>
+<span class="sd">        Name of the DataArray in the Dataset. Required if `obj` is a Dataset.</span>
+<span class="sd">    landfrac : xr.DataArray, optional</span>
+<span class="sd">        Land fraction data array. Values should range from 0 (ocean) to 1 (land).</span>
+<span class="sd">        If None, a land-sea mask will be created automatically.</span>
+<span class="sd">    land_criteria : float, optional</span>
+<span class="sd">        Threshold for considering a grid cell as land. Default is 0.8.</span>
+<span class="sd">    ocean_criteria : float, optional</span>
+<span class="sd">        Threshold for considering a grid cell as ocean. Default is 0.2.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xr.DataArray</span>
+<span class="sd">        DataArray with the ocean mask applied (land areas masked).</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    apply_landmask : The underlying function used to apply the mask.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from pcmdi_metrics.utils import apply_oceanmask</span>
+<span class="sd">    &gt;&gt;&gt; da_ocean = apply_oceanmask(da, landfrac=mask)</span>
+<span class="sd">    &gt;&gt;&gt; ds_ocean = apply_oceanmask(ds, data_var=&quot;ts&quot;, landfrac=mask)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">masked_data_array</span> <span class="o">=</span> <span class="n">apply_landmask</span><span class="p">(</span>
+        <span class="n">obj</span><span class="p">,</span>
+        <span class="n">data_var</span><span class="o">=</span><span class="n">data_var</span><span class="p">,</span>
+        <span class="n">landfrac</span><span class="o">=</span><span class="n">landfrac</span><span class="p">,</span>
+        <span class="n">keep_over</span><span class="o">=</span><span class="s2">&quot;land&quot;</span><span class="p">,</span>
+        <span class="n">land_criteria</span><span class="o">=</span><span class="n">land_criteria</span><span class="p">,</span>
+        <span class="n">ocean_criteria</span><span class="o">=</span><span class="n">ocean_criteria</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">masked_data_array</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_land_sea_mask__pcmdi</span><span class="p">(</span>
+    <span class="n">target_grid</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">data_var</span><span class="o">=</span><span class="s2">&quot;sftlf&quot;</span><span class="p">,</span>
+    <span class="n">maskname</span><span class="o">=</span><span class="s2">&quot;lsmask&quot;</span><span class="p">,</span>
+    <span class="n">regridTool</span><span class="o">=</span><span class="s2">&quot;regrid2&quot;</span><span class="p">,</span>
+    <span class="n">threshold_1</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">threshold_2</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates a best guess mask on any rectilinear grid, using the method described in `PCMDI&#39;s report #58`_</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    target_grid : xarray.Dataset</span>
+<span class="sd">        Either a xcdat/xarray Dataset with a grid, or a xcdat grid (rectilinear grid only)</span>
+<span class="sd">    source : xarray.Dataset, optional</span>
+<span class="sd">        A xcdat/xarray Dataset that contains a DataArray of a fractional (0.0 to 1.0) land sea mask,</span>
+<span class="sd">        where 1 means all land., by default None</span>
+<span class="sd">    data_var : str, optional</span>
+<span class="sd">        name of DataArray for land sea fraction/mask variable in `source`, by default &quot;sftlf&quot;</span>
+<span class="sd">    maskname : str, optional</span>
+<span class="sd">        Variable name for returning DataArray, by default &quot;lsmask&quot;</span>
+<span class="sd">    regridTool : str, optional</span>
+<span class="sd">        Which xcdat regridder tool to use, by default &quot;regrid2&quot;</span>
+<span class="sd">    threshold_1 : float, optional</span>
+<span class="sd">        Criteria for detecting cells with possible increment see report for detail difference threshold, by default 0.2</span>
+<span class="sd">    threshold_2 : float, optional</span>
+<span class="sd">        Criteria for detecting cells with possible increment see report for detail water/land content threshold, by default 0.3</span>
+<span class="sd">    debug : bool, optional</span>
+<span class="sd">        Switch to print more interim outputs to help debugging, by default False</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    xarray.DataArray</span>
+<span class="sd">        landsea mask on target grid (1: land, 0: water).</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        _description_</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. _PCMDI&#39;s report #58: https://pcmdi.llnl.gov/report/ab58.html</span>
+
+<span class="sd">    History</span>
+<span class="sd">    -------</span>
+<span class="sd">    2023-06 The [original code](https://github.com/CDAT/cdutil/blob/master/cdutil/create_landsea_mask.py) was rewritten using xarray and xcdat by Jiwoo Lee</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">source</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">egg_pth</span> <span class="o">=</span> <span class="n">resources</span><span class="o">.</span><span class="n">resource_path</span><span class="p">()</span>
+        <span class="n">source_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">egg_pth</span><span class="p">,</span> <span class="s2">&quot;navy_land.nc&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">source_path</span><span class="p">):</span>
+            <span class="c1"># pip install process places data files in different place, so checking here as well</span>
+            <span class="n">source_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="s2">&quot;share/pcmdi_metrics&quot;</span><span class="p">,</span> <span class="s2">&quot;navy_land.nc&quot;</span>
+            <span class="p">)</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">xc</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">source_path</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;ERROR: type of source, &quot;</span><span class="p">,</span>
+                <span class="nb">type</span><span class="p">(</span><span class="n">source</span><span class="p">),</span>
+                <span class="s2">&quot; is not acceptable. It should be &lt;xarray.Dataset&gt;&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="c1"># Regrid</span>
+    <span class="k">if</span> <span class="n">target_grid</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">ds</span><span class="p">):</span>
+        <span class="n">ds_regrid</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># testing purpose</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">start_time_r</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">ds_regrid</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">regridder</span><span class="o">.</span><span class="n">horizontal</span><span class="p">(</span><span class="n">data_var</span><span class="p">,</span> <span class="n">target_grid</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="n">regridTool</span><span class="p">)</span>
+        <span class="n">end_time_r</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Elapsed time (regridder.horizontal):&quot;</span><span class="p">,</span>
+                <span class="n">end_time_r</span> <span class="o">-</span> <span class="n">start_time_r</span><span class="p">,</span>
+                <span class="s2">&quot;seconds&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Add missed information during the regrid process</span>
+        <span class="c1"># (this might be a bug... will report it to xcdat team later)</span>
+        <span class="k">if</span> <span class="s2">&quot;axis&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Y&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;axis&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;axis&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;X&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;bounds&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;bounds&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;lat_bnds&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;bounds&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;bounds&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;lon_bnds&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;units&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+            <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degrees_north&quot;</span>
+
+    <span class="c1"># re-generate lat lon bounds (original bounds are 2d arrays where 1d array for each is expected)</span>
+    <span class="n">ds_regrid</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">ds_regrid</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;bounds&quot;</span><span class="p">],</span>
+                <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;bounds&quot;</span><span class="p">],</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">add_bounds</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">bounds</span><span class="o">.</span><span class="n">add_bounds</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># First guess, anything greater than 50% is land to ignore rivers and lakes</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span> <span class="o">+</span> <span class="s2">&quot;_regrid&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span> <span class="o">+</span> <span class="s2">&quot;_firstGuess&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mask</span>
+
+    <span class="c1"># Improve</span>
+    <span class="n">UL</span><span class="p">,</span> <span class="n">UC</span><span class="p">,</span> <span class="n">UR</span><span class="p">,</span> <span class="n">ML</span><span class="p">,</span> <span class="n">MR</span><span class="p">,</span> <span class="n">LL</span><span class="p">,</span> <span class="n">LC</span><span class="p">,</span> <span class="n">LR</span> <span class="o">=</span> <span class="n">_create_surrounds</span><span class="p">(</span>
+        <span class="n">ds_regrid</span><span class="p">,</span> <span class="n">data_var</span><span class="o">=</span><span class="n">data_var</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">debug</span>
+    <span class="p">)</span>
+
+    <span class="n">cont</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">while</span> <span class="n">cont</span><span class="p">:</span>
+        <span class="n">mask_improved</span> <span class="o">=</span> <span class="n">_improve</span><span class="p">(</span>
+            <span class="n">mask</span><span class="p">,</span>
+            <span class="n">ds_regrid</span><span class="p">,</span>
+            <span class="n">UL</span><span class="p">,</span>
+            <span class="n">UC</span><span class="p">,</span>
+            <span class="n">UR</span><span class="p">,</span>
+            <span class="n">ML</span><span class="p">,</span>
+            <span class="n">MR</span><span class="p">,</span>
+            <span class="n">LL</span><span class="p">,</span>
+            <span class="n">LC</span><span class="p">,</span>
+            <span class="n">LR</span><span class="p">,</span>
+            <span class="n">data_var</span><span class="o">=</span><span class="n">data_var</span><span class="p">,</span>
+            <span class="n">threshold_1</span><span class="o">=</span><span class="n">threshold_1</span><span class="p">,</span>
+            <span class="n">threshold_2</span><span class="o">=</span><span class="n">threshold_2</span><span class="p">,</span>
+            <span class="n">regridTool</span><span class="o">=</span><span class="n">regridTool</span><span class="p">,</span>
+            <span class="n">debug</span><span class="o">=</span><span class="n">debug</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mask_improved</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">25</span><span class="p">:</span>
+            <span class="n">cont</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">mask_improved</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;test i:&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">maskname</span><span class="p">)</span>
+
+    <span class="c1"># Reverse the values (0 to 1 and 1 to 0)</span>
+    <span class="c1"># mask = xr.where(mask == 0, 1, 0)</span>
+
+    <span class="k">return</span> <span class="n">mask</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_surrounds</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">data_var</span><span class="o">=</span><span class="s2">&quot;sftlf&quot;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">sh</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">L</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">]</span>
+    <span class="n">bL</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;bounds&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">L_isCircular</span> <span class="o">=</span> <span class="n">_isCircular</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="n">L_modulo</span> <span class="o">=</span> <span class="mi">360</span>
+
+    <span class="k">if</span> <span class="n">_isCircular</span><span class="p">(</span><span class="n">L</span><span class="p">)</span> <span class="ow">and</span> <span class="n">bL</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bL</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="n">L_modulo</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">sh</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">sh</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sh</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">sh</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span>
+        <span class="n">sh</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">sh</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span>
+
+    <span class="n">UL</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+    <span class="n">UC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+    <span class="n">UR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+    <span class="n">ML</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+    <span class="n">MR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+    <span class="n">LL</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+    <span class="n">LC</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+    <span class="n">LR</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">sh</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">L_isCircular</span> <span class="ow">and</span> <span class="n">bL</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bL</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="n">L_modulo</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">UC</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">LC</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">ML</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ML</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">MR</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span>
+        <span class="n">MR</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">UL</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">UL</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">UR</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:]</span>
+        <span class="n">UR</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">LL</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">LL</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">LR</span><span class="p">[:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span>
+        <span class="n">LR</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">UC</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">LC</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ML</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">MR</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">:]</span>
+        <span class="n">UL</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">UR</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">2</span><span class="p">:,</span> <span class="mi">2</span><span class="p">:]</span>
+        <span class="n">LL</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">LR</span><span class="p">[:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:]</span>
+
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Elapsed time (_create_surrounds):&quot;</span><span class="p">,</span> <span class="n">elapsed_time</span><span class="p">,</span> <span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">UL</span><span class="p">,</span> <span class="n">UC</span><span class="p">,</span> <span class="n">UR</span><span class="p">,</span> <span class="n">ML</span><span class="p">,</span> <span class="n">MR</span><span class="p">,</span> <span class="n">LL</span><span class="p">,</span> <span class="n">LC</span><span class="p">,</span> <span class="n">LR</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_isCircular</span><span class="p">(</span><span class="n">lons</span><span class="p">):</span>
+    <span class="n">baxis</span> <span class="o">=</span> <span class="n">lons</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># beginning of axis</span>
+    <span class="n">eaxis</span> <span class="o">=</span> <span class="n">lons</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># end of axis</span>
+    <span class="n">deltaend</span> <span class="o">=</span> <span class="n">lons</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">lons</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># delta between two end points</span>
+    <span class="n">eaxistest</span> <span class="o">=</span> <span class="n">eaxis</span> <span class="o">+</span> <span class="n">deltaend</span> <span class="o">-</span> <span class="n">baxis</span>  <span class="c1"># test end axis</span>
+    <span class="n">tol</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">deltaend</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">eaxistest</span> <span class="o">-</span> <span class="mi">360</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_improve</span><span class="p">(</span>
+    <span class="n">mask</span><span class="p">,</span>
+    <span class="n">ds_regrid</span><span class="p">,</span>
+    <span class="n">UL</span><span class="p">,</span>
+    <span class="n">UC</span><span class="p">,</span>
+    <span class="n">UR</span><span class="p">,</span>
+    <span class="n">ML</span><span class="p">,</span>
+    <span class="n">MR</span><span class="p">,</span>
+    <span class="n">LL</span><span class="p">,</span>
+    <span class="n">LC</span><span class="p">,</span>
+    <span class="n">LR</span><span class="p">,</span>
+    <span class="n">data_var</span><span class="o">=</span><span class="s2">&quot;sftlf&quot;</span><span class="p">,</span>
+    <span class="n">threshold_1</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+    <span class="n">threshold_2</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">regridTool</span><span class="o">=</span><span class="s2">&quot;regrid2&quot;</span><span class="p">,</span>
+    <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="n">ds_mask_approx</span> <span class="o">=</span> <span class="n">_map2four</span><span class="p">(</span>
+        <span class="n">mask</span><span class="p">,</span> <span class="n">ds_regrid</span><span class="p">,</span> <span class="n">data_var</span><span class="o">=</span><span class="n">data_var</span><span class="p">,</span> <span class="n">regridTool</span><span class="o">=</span><span class="n">regridTool</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="n">debug</span>
+    <span class="p">)</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span> <span class="o">-</span> <span class="n">ds_mask_approx</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span>
+
+    <span class="c1"># Land point conversion</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="n">threshold_1</span><span class="p">)</span>  <span class="c1"># xr.DataArray</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">],</span> <span class="n">threshold_2</span><span class="p">)</span>  <span class="c1"># xr.DataArray</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>
+    <span class="n">ds_regrid</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+
+    <span class="c1"># Now figures out local maxima</span>
+    <span class="n">cUL</span><span class="p">,</span> <span class="n">cUC</span><span class="p">,</span> <span class="n">cUR</span><span class="p">,</span> <span class="n">cML</span><span class="p">,</span> <span class="n">cMR</span><span class="p">,</span> <span class="n">cLL</span><span class="p">,</span> <span class="n">cLC</span><span class="p">,</span> <span class="n">cLR</span> <span class="o">=</span> <span class="n">_create_surrounds</span><span class="p">(</span><span class="n">ds_regrid</span><span class="p">,</span> <span class="n">data_var</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">)</span>
+
+    <span class="n">L</span> <span class="o">=</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="s2">&quot;lon&quot;</span><span class="p">]</span>
+    <span class="n">bL</span> <span class="o">=</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">ds_regrid</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;bounds&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">L_modulo</span> <span class="o">=</span> <span class="mi">360</span>
+    <span class="n">L_isCircular</span> <span class="o">=</span> <span class="n">_isCircular</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">L_isCircular</span> <span class="ow">and</span> <span class="n">bL</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bL</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="n">L_modulo</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># elimnitates north and south poles</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># elimnitates north and south poles</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cUL</span><span class="p">,</span> <span class="n">UL</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cUC</span><span class="p">,</span> <span class="n">UC</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cUR</span><span class="p">,</span> <span class="n">UR</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cML</span><span class="p">,</span> <span class="n">ML</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cMR</span><span class="p">,</span> <span class="n">MR</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cLL</span><span class="p">,</span> <span class="n">LL</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cLC</span><span class="p">,</span> <span class="n">LC</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cLR</span><span class="p">,</span> <span class="n">LR</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)))</span>
+    <span class="c1"># Ok now update the mask by setting these points to land</span>
+    <span class="n">mask2</span> <span class="o">=</span> <span class="n">mask</span> <span class="o">*</span> <span class="mf">1.0</span>
+    <span class="k">if</span> <span class="n">_isCircular</span><span class="p">(</span><span class="n">L</span><span class="p">)</span> <span class="ow">and</span> <span class="n">bL</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bL</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="n">L_modulo</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">mask2</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mask2</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">mask</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># ocean point conversion</span>
+    <span class="n">c1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">diff</span><span class="p">,</span> <span class="o">-</span><span class="n">threshold_1</span><span class="p">)</span>
+    <span class="n">c2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">],</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">threshold_2</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>
+    <span class="n">ds_regrid</span><span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+
+    <span class="n">cUL</span><span class="p">,</span> <span class="n">cUC</span><span class="p">,</span> <span class="n">cUR</span><span class="p">,</span> <span class="n">cML</span><span class="p">,</span> <span class="n">cMR</span><span class="p">,</span> <span class="n">cLL</span><span class="p">,</span> <span class="n">cLC</span><span class="p">,</span> <span class="n">cLR</span> <span class="o">=</span> <span class="n">_create_surrounds</span><span class="p">(</span><span class="n">ds_regrid</span><span class="p">,</span> <span class="n">data_var</span><span class="o">=</span><span class="s2">&quot;c&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">L_isCircular</span> <span class="ow">and</span> <span class="n">bL</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bL</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="n">L_modulo</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># elimnitates north and south poles</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># elimnitates north and south poles</span>
+        <span class="n">tmp</span> <span class="o">=</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># Now figures out local maxima</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cUL</span><span class="p">,</span> <span class="n">UL</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cUC</span><span class="p">,</span> <span class="n">UC</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cUR</span><span class="p">,</span> <span class="n">UR</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cML</span><span class="p">,</span> <span class="n">ML</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cMR</span><span class="p">,</span> <span class="n">MR</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cLL</span><span class="p">,</span> <span class="n">LL</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cLC</span><span class="p">,</span> <span class="n">LC</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">logical_and</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">cLR</span><span class="p">,</span> <span class="n">LR</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+    <span class="c1"># Ok now update the mask by setting these points to ocean</span>
+    <span class="k">if</span> <span class="n">L_isCircular</span> <span class="ow">and</span> <span class="n">bL</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">bL</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">%</span> <span class="n">L_modulo</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">mask2</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mask2</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mask2</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">mask2</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Elapsed time (_improve):&quot;</span><span class="p">,</span> <span class="n">elapsed_time</span><span class="p">,</span> <span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mask2</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_map2four</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">ds_regrid</span><span class="p">,</span> <span class="n">data_var</span><span class="o">=</span><span class="s2">&quot;sftlf&quot;</span><span class="p">,</span> <span class="n">regridTool</span><span class="o">=</span><span class="s2">&quot;regrid2&quot;</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;mask.shape:&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ds_regrid[data_var].shape:&quot;</span><span class="p">,</span> <span class="n">ds_regrid</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="n">ds_tmp</span> <span class="o">=</span> <span class="n">ds_regrid</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">ds_tmp</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span> <span class="o">=</span> <span class="n">mask</span>
+
+    <span class="n">start_time_c</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="n">lons</span> <span class="o">=</span> <span class="n">ds_regrid</span><span class="o">.</span><span class="n">lon</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">lats</span> <span class="o">=</span> <span class="n">ds_regrid</span><span class="o">.</span><span class="n">lat</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">lonso</span> <span class="o">=</span> <span class="n">lons</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">lonse</span> <span class="o">=</span> <span class="n">lons</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">latso</span> <span class="o">=</span> <span class="n">lats</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">latse</span> <span class="o">=</span> <span class="n">lats</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">lat_delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">lats</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">lats</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">lats</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+    <span class="n">lon_delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">lons</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">lons</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">lons</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+
+    <span class="n">oo</span> <span class="o">=</span> <span class="n">xc</span><span class="o">.</span><span class="n">create_uniform_grid</span><span class="p">(</span>
+        <span class="n">latso</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">latso</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">lat_delta</span><span class="p">,</span> <span class="n">lonso</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lonso</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">lon_delta</span>
+    <span class="p">)</span>
+    <span class="n">oe</span> <span class="o">=</span> <span class="n">xc</span><span class="o">.</span><span class="n">create_uniform_grid</span><span class="p">(</span>
+        <span class="n">latso</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">latso</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">lat_delta</span><span class="p">,</span> <span class="n">lonse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lonse</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">lon_delta</span>
+    <span class="p">)</span>
+    <span class="n">eo</span> <span class="o">=</span> <span class="n">xc</span><span class="o">.</span><span class="n">create_uniform_grid</span><span class="p">(</span>
+        <span class="n">latse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">latse</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">lat_delta</span><span class="p">,</span> <span class="n">lonso</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lonso</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">lon_delta</span>
+    <span class="p">)</span>
+    <span class="n">ee</span> <span class="o">=</span> <span class="n">xc</span><span class="o">.</span><span class="n">create_uniform_grid</span><span class="p">(</span>
+        <span class="n">latse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">latse</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">lat_delta</span><span class="p">,</span> <span class="n">lonse</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lonse</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">lon_delta</span>
+    <span class="p">)</span>
+
+    <span class="n">end_time_c</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="n">doo</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">regridder</span><span class="o">.</span><span class="n">horizontal</span><span class="p">(</span><span class="n">data_var</span><span class="p">,</span> <span class="n">oo</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="n">regridTool</span><span class="p">)</span>
+    <span class="n">doe</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">regridder</span><span class="o">.</span><span class="n">horizontal</span><span class="p">(</span><span class="n">data_var</span><span class="p">,</span> <span class="n">oe</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="n">regridTool</span><span class="p">)</span>
+    <span class="n">deo</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">regridder</span><span class="o">.</span><span class="n">horizontal</span><span class="p">(</span><span class="n">data_var</span><span class="p">,</span> <span class="n">eo</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="n">regridTool</span><span class="p">)</span>
+    <span class="n">dee</span> <span class="o">=</span> <span class="n">ds_tmp</span><span class="o">.</span><span class="n">regridder</span><span class="o">.</span><span class="n">horizontal</span><span class="p">(</span><span class="n">data_var</span><span class="p">,</span> <span class="n">ee</span><span class="p">,</span> <span class="n">tool</span><span class="o">=</span><span class="n">regridTool</span><span class="p">)</span>
+
+    <span class="n">end_time_r</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;f&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;out.shape:&quot;</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;doo.shape:&quot;</span><span class="p">,</span> <span class="n">doo</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;doe.shape:&quot;</span><span class="p">,</span> <span class="n">doe</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;deo.shape:&quot;</span><span class="p">,</span> <span class="n">deo</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dee.shape:&quot;</span><span class="p">,</span> <span class="n">dee</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="n">out</span><span class="p">[::</span><span class="mi">2</span><span class="p">,</span> <span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">doo</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">out</span><span class="p">[::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">doe</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">deo</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+    <span class="n">out</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">dee</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+    <span class="n">ds_out</span> <span class="o">=</span> <span class="n">ds_regrid</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">ds_out</span><span class="p">[</span><span class="n">data_var</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="s2">&quot;lat&quot;</span><span class="p">,</span> <span class="s2">&quot;lon&quot;</span><span class="p">),</span> <span class="n">out</span><span class="p">)</span>
+
+    <span class="n">end_time_o</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+        <span class="n">elapsed_time</span> <span class="o">=</span> <span class="n">end_time</span> <span class="o">-</span> <span class="n">start_time_c</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Elapsed time (_map2four):&quot;</span><span class="p">,</span> <span class="n">elapsed_time</span><span class="p">,</span> <span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Elapsed time (_map2four, create_uniform_grid):&quot;</span><span class="p">,</span>
+            <span class="n">end_time_c</span> <span class="o">-</span> <span class="n">start_time_c</span><span class="p">,</span>
+            <span class="s2">&quot;seconds&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Elapsed time (_map2four, regridder.horizontal):&quot;</span><span class="p">,</span>
+            <span class="n">end_time_r</span> <span class="o">-</span> <span class="n">end_time_c</span><span class="p">,</span>
+            <span class="s2">&quot;seconds&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Elapsed time (_map2four, out):&quot;</span><span class="p">,</span> <span class="n">end_time_o</span> <span class="o">-</span> <span class="n">end_time_r</span><span class="p">,</span> <span class="s2">&quot;seconds&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ds_out</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, PMP Developers
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../../../_static/jquery.js?v=5d32c60e"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+    <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=30646c52"></script>
+    <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    </body>
+</html>
