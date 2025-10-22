@@ -330,6 +330,7 @@ def parallel_coordinate_plot(
                         group1_name: violin_colors[0],
                         group2_name: violin_colors[1],
                     },
+                    cut=0,
                 )
 
     # Line or marker
@@ -549,6 +550,13 @@ def _data_transform(
     ymeds = np.nanmedian(ys, axis=0)  # median
     ymean = np.nanmean(ys, axis=0)  # mean
 
+    # Convert to float type for further calculations
+    ymaxs = ymaxs.astype(float)
+    ymins = ymins.astype(float)
+    ymeds = ymeds.astype(float)
+    ymean = ymean.astype(float)
+
+    # Adjust vertical axis range to set center as median/mean/given number
     if vertical_center is not None:
         if vertical_center == "median":
             ymids = ymeds
