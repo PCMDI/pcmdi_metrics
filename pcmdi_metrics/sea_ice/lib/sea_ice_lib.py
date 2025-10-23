@@ -405,13 +405,13 @@ def load_dataset(filepath):
     # If list of netcdf files, opens mfdataset.
     # If list of xmls, open last file in list.
     if isinstance(filepath, list):
-        if filepath[-1].endswith(".xml"):
+        if filepath[-1].endswith(".xml") or filepath[-1].endswith(".yml"):
             # Final item of sorted list would have most recent version date
             ds = xcdat_open(filepath[-1])
         else:
             ds = xc.open_mfdataset(filepath, chunks=None)
     else:
-        if filepath.endswith(".xml"):
+        if filepath.endswith(".xml") or filepath.endswith(".yml"):
             ds = xcdat_open(filepath)
         else:
             ds = xc.open_dataset(filepath)
