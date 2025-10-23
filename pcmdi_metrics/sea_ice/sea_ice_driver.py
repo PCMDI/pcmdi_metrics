@@ -8,6 +8,7 @@ import numpy as np
 import xarray
 import xcdat as xc
 
+from pcmdi_metrics.io import xcdat_open
 from pcmdi_metrics.io.base import Base
 from pcmdi_metrics.io.xcdat_dataset_io import get_latitude_key, get_longitude_key
 from pcmdi_metrics.sea_ice.lib import create_sea_ice_parser
@@ -349,7 +350,8 @@ if __name__ == "__main__":
 
         # Model grid area
         print(lib.replace_multi(area_template, tags))
-        area = xc.open_dataset(glob.glob(lib.replace_multi(area_template, tags))[0])
+        # area = xc.open_dataset(glob.glob(lib.replace_multi(area_template, tags))[0])
+        area = xcdat_open(glob.glob(lib.replace_multi(area_template, tags))[0])
         area[area_var] = lib.adjust_units(area[area_var], AreaUnitsAdjust)
 
         if len(list_of_runs) > 0:
