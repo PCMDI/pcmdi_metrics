@@ -42,7 +42,7 @@ from argparse import RawTextHelpFormatter
 from shutil import copyfile
 
 import pcmdi_metrics
-from pcmdi_metrics.mean_climate.lib import pmp_parser
+from pcmdi_metrics.utils import pmp_parser
 from pcmdi_metrics.mjo.lib import (
     AddParserArgument,
     YearCheck,

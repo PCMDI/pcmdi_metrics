@@ -54,7 +54,7 @@ from matplotlib import pyplot as plt
 
 from pcmdi_metrics.io import load_regions_specs, region_subset, xcdat_open
 from pcmdi_metrics.io.base import Base
-from pcmdi_metrics.mean_climate.lib import pmp_parser
+from pcmdi_metrics.utils import pmp_parser
 from pcmdi_metrics.monsoon_sperber.lib import (
     AddParserArgument,
     YearCheck,

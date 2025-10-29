@@ -2,7 +2,7 @@
 import glob
 import os
 
-from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
+from pcmdi_metrics.utils.pmp_parser import PMPParser
 from pcmdi_metrics.precip_variability.lib import (
     AddParserArgument,
     precip_variability_across_timescale,

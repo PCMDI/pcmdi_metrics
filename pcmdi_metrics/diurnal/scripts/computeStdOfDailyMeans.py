@@ -16,7 +16,7 @@ import glob
 import multiprocessing as mp
 import os
 
-import cdp
+from pcmdi_metrics.utils import cdp_run
 import cftime
 import xarray as xr
 
@@ -195,7 +195,7 @@ def main():
     params = [INPUT(args, name, template) for name in fileList]
     print("PARAMS:", params)
 
-    cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
+    cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
 
 
 def add_one_month(t):

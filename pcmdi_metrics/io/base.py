@@ -11,13 +11,12 @@ from collections.abc import Mapping
 from datetime import datetime
 from subprocess import PIPE, Popen
 
-import cdp.cdp_io
 import numpy
 import requests
 
 import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
-from pcmdi_metrics.io import StringConstructor
+from pcmdi_metrics.io import cdp_io, StringConstructor
 
 logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)  # set up to log errors
 
@@ -264,7 +263,7 @@ def sort_human(input_list):
 # ----------
 
 
-class Base(cdp.cdp_io.CDPIO, StringConstructor):
+class Base(cdp_io.CDPIO, StringConstructor):
     def __init__(self, root, file_template, file_mask_template=None):
         StringConstructor.__init__(self, root + "/" + file_template)
         self.root = root

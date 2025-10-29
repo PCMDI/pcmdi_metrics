@@ -31,3 +31,7 @@ from .sort_human import sort_human
 from .string_constructor import StringConstructor, fill_template
 from .tree_dict import tree
 from .xr_to_cdms2 import cdms2_to_xarray, xarray_to_cdms2
+from .cdp_parser import CDPParser
+from .cdp_parameter import CDPParameter
+from .pmp_parser import PMPParser, PMPMetricsParser
+from .pmp_parameter import PMPParameter, PMPMetricsParameter

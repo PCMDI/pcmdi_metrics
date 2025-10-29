@@ -24,7 +24,7 @@ import json
 import multiprocessing as mp
 import os
 
-import cdp
+from pcmdi_metrics.utils import cdp_run
 import numpy as np
 
 import pcmdi_metrics
@@ -167,7 +167,7 @@ def main():
     params = [INPUT(args, name, template) for name in files]
     print("PARAMS:", params)
 
-    results = cdp.cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
+    results = cdp_run.multiprocess(compute, params, num_workers=args.num_workers)
 
     for r in results:
         m, region, res = r

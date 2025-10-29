@@ -1,6 +1,6 @@
 import argparse
 
-from cdp.cdp_parser import CDPParser
+from pcmdi_metrics.utils.cdp_parser import CDPParser
 
 
 def AddParserArgument():

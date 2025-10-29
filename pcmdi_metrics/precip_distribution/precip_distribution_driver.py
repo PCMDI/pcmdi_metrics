@@ -7,7 +7,7 @@ import os
 import xarray as xr
 
 from pcmdi_metrics.io import StringConstructor, get_calendar, xcdat_open
-from pcmdi_metrics.mean_climate.lib.pmp_parser import PMPParser
+from pcmdi_metrics.utils.pmp_parser import PMPParser
 from pcmdi_metrics.precip_distribution.lib import (
     AddParserArgument,
     Regrid_xr,
