@@ -4,7 +4,7 @@ import os
 import pcmdi_metrics.utils as cdp
 from pcmdi_metrics import LOG_LEVEL
 
-from . import StringConstructor
+from .pmp_parameter import StringConstructor
 
 try:
     basestring  # noqa
