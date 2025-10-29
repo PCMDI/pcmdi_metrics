@@ -37,10 +37,9 @@ from argparse import RawTextHelpFormatter
 from shutil import copyfile
 
 from pcmdi_metrics.io import fill_template, get_grid, load_regions_specs, region_subset
-from pcmdi_metrics.utils import pmp_parser
 from pcmdi_metrics.stats import calculate_temporal_correlation as calcTCOR
 from pcmdi_metrics.stats import mean_xy
-from pcmdi_metrics.utils import regrid, sort_human, tree
+from pcmdi_metrics.utils import pmp_parser, regrid, sort_human, tree
 from pcmdi_metrics.variability_mode.lib import (
     AddParserArgument,
     VariabilityModeCheck,

@@ -1,12 +1,8 @@
 import os
 
 import pcmdi_metrics.utils.cdp_parser as cdp
-
 from pcmdi_metrics import resources
-from pcmdi_metrics.utils.pmp_parameter import (
-    PMPMetricsParameter,
-    PMPParameter,
-)
+from pcmdi_metrics.utils.pmp_parameter import PMPMetricsParameter, PMPParameter
 
 try:
     basestring  # noqa

@@ -16,7 +16,7 @@ import requests
 
 import pcmdi_metrics
 from pcmdi_metrics import LOG_LEVEL
-from pcmdi_metrics.io import cdp_io, StringConstructor
+from pcmdi_metrics.io import StringConstructor, cdp_io
 
 logging.getLogger("pcmdi_metrics").setLevel(LOG_LEVEL)  # set up to log errors
 

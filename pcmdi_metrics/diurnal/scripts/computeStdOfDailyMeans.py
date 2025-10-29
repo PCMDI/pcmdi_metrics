@@ -16,7 +16,6 @@ import glob
 import multiprocessing as mp
 import os
 
-from pcmdi_metrics.utils import cdp_run
 import cftime
 import xarray as xr
 
@@ -32,6 +31,7 @@ from pcmdi_metrics.io import (
     get_longitude_key,
     xcdat_open,
 )
+from pcmdi_metrics.utils import cdp_run
 
 
 def main():

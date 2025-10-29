@@ -24,7 +24,6 @@ import json
 import multiprocessing as mp
 import os
 
-from pcmdi_metrics.utils import cdp_run
 import numpy as np
 
 import pcmdi_metrics
@@ -41,6 +40,7 @@ from pcmdi_metrics.io import (
     get_time_key,
     xcdat_open,
 )
+from pcmdi_metrics.utils import cdp_run
 
 
 def main():

@@ -13,6 +13,7 @@ def serial(func, parameters):
         results.append(func(p))
     return results
 
+
 def multiprocess(func, parameters, num_workers=None, context=None):
     """
     Run the function with the parameters in parallel using multiprocessing.
@@ -23,23 +24,23 @@ def multiprocess(func, parameters, num_workers=None, context=None):
     """
     bag = dask.bag.from_sequence(parameters)
 
-    config = {'scheduler': 'processes'}
+    config = {"scheduler": "processes"}
     if context is not None:
-        config['multiprocessing.context'] = context
-    elif hasattr(parameters[0], 'multiprocessing_context'):
-        config['multiprocessing.context'] = \
-            parameters[0].multiprocessing_context
+        config["multiprocessing.context"] = context
+    elif hasattr(parameters[0], "multiprocessing_context"):
+        config["multiprocessing.context"] = parameters[0].multiprocessing_context
 
     with dask.config.set(config):
         if num_workers:
             results = bag.map(func).compute(num_workers=num_workers)
-        elif hasattr(parameters[0], 'num_workers'):
+        elif hasattr(parameters[0], "num_workers"):
             results = bag.map(func).compute(num_workers=parameters[0].num_workers)
         else:
             # num of workers is defaulted to the number of logical processes
             results = bag.map(func).compute()
 
         return results
+
 
 def distribute(func, parameters, scheduler_addr=None):
     """
@@ -48,8 +49,10 @@ def distribute(func, parameters, scheduler_addr=None):
     try:
         if scheduler_addr:
             addr = scheduler_addr
-        elif not hasattr(parameters[0], 'scheduler_addr'):
-            raise RuntimeError('The parameters or distribute() need a scheduler_addr parameter.')
+        elif not hasattr(parameters[0], "scheduler_addr"):
+            raise RuntimeError(
+                "The parameters or distribute() need a scheduler_addr parameter."
+            )
         else:
             addr = parameters[0].scheduler_addr
 
@@ -57,7 +60,7 @@ def distribute(func, parameters, scheduler_addr=None):
         results = client.map(func, parameters)
         client.gather(results)
     except Exception as e:
-        print('Distributed run failed.')
+        print("Distributed run failed.")
         raise e
     finally:
         client.close()
