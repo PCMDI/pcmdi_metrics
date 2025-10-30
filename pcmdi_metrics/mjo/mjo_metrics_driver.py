@@ -42,14 +42,13 @@ from argparse import RawTextHelpFormatter
 from shutil import copyfile
 
 import pcmdi_metrics
-from pcmdi_metrics.mean_climate.lib import pmp_parser
 from pcmdi_metrics.mjo.lib import (
     AddParserArgument,
     YearCheck,
     mjo_metric_ewr_calculation,
     mjo_metrics_to_json,
 )
-from pcmdi_metrics.utils import fill_template, tree
+from pcmdi_metrics.utils import fill_template, pmp_parser, tree
 
 # Must be done before any CDAT library is called.
 # https://github.com/CDAT/cdat/issues/2213
