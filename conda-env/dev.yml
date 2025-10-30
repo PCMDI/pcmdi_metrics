@@ -15,7 +15,7 @@ dependencies:
     - matplotlib >=3.7.1
     - eofs >=2.0.0
     - seaborn >=0.12.2
-    #- enso_metrics >=1.1.5
+    # - enso_metrics >=1.1.5
     - xcdat >=0.10.0
     - xmltodict >=0.13.0
     - setuptools >=67.7.2
