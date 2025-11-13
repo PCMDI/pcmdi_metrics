@@ -6,6 +6,7 @@ Install the PCMDI Metrics Package.
 Set up a parameter file with your model information. An example parameter file can be found at param/drcdm_param.py. See the Parameters section below for more information.
 
 Run the decision relevant metrics driver using the following command:
+
 ```
 drcdm_driver.py -p your_parameter_file.py
 ```
@@ -18,43 +19,68 @@ Metrics should only be calculated over land, so users have the option to provide
 
 If available, users should provide the land/sea mask that accompanies their datasets. The mask variable in the land/sea mask file must be called "sftlf". If land/sea masks are not provided, there is an option to generate them on-the-fly using pcmdi_utils. If no mask is provided and --generate-sftlf is set to False, no masking will be done by the PMP.
 
+## Region Masking
+Users can provide a shapefile, column name, and name to mask data over a desired region using in the parameter file. 
+
+```
+shp_path = "/path/to/shapefile/cb_2018_us_state_20m.shp"
+attribute = "NAME"
+region_name = "California"
+```
+
 ## Parameters:
 | Parameter   | Definition |
 --------------|-------------
 | case_id |  (str) Will be appended to the metrics_output_path if present. | 
-| model_list | (list) List of model names.  | 
-| realization | (list) List of realizations. | 
+| realization | (list) List of model realizations. | 
 | vars | (list) List of variables: "pr", "tasmax", and/or "tasmin". | 
-| filename_template | (str) The template for the model file name. May contain placeholders %(variable), %(model), %(model_version), or %(realization) | 
-| test_data_path  |  (str) The template for the directory containing the model file. May contain placeholders %(variable), %(model), %(model_version), or %(realization) | 
-| sftlf_filename_template | (str) The template for the model land/sea mask file. May contain placeholders %(model), %(model_version), or %(realization). Takes precedence over --generate_sftlf | 
-| generate_sftlf | (bool) If true, generate a land/sea mask on the fly when the model or reference land/sea mask is not found. If false, no land/sea mask is applied. | 
-| metrics_output_path  | (str) The directory to write output files to. |  
-| plots | (bool) True to save world map figures of mean metrics. |
-| nc_out | (bool) True to save netcdf files (required for postprocessing). |
-| msyear | (int) Start year for model data set. |
-| meyear | (int) End year for model data set. |
-| ModUnitsAdjust | (tuple) Provide information for units conversion. Uses format (flag (bool), operation (str), value (float), new units (str)). Operation can be "add", "subtract", "multiply", or "divide". For example, use (True, 'multiply', 86400, 'mm/day') to convert kg/m2/s to mm/day.|
-| dec_mode | (str) Toggle how season containing December, January, and February is defined. "DJF" or "JFD". Default "DJF". |
-| annual_strict | (bool) This only matters for rolling 5-day metrics. If True, only use data from within a given year in the 5-day means. If False, the rolling mean will include the last 4 days of the prior year. Default False. |
-| drop_incomplete_djf | (bool) If True, don't include data from the first January/February and last December in the analysis. Default False. |
+| test_data_set | (list) List of model (or observation) names to be compared to the reference dataset. | 
+| filename_template | (str) The template for the model file name. May contain placeholders %(variable), %(model), %(model_version), or %(realization), or wildcards like "?" or "*" | 
+| test_data_path  | (str) The template for the directory containing the model file. May contain placeholders %(variable), %(model), %(model_version), or %(realization), or wildcards like "?" or "*" | 
+| reference_data_set | (list) List of reference dataset names, e.g. ["Livneh"]
+| reference_filename_template | (str) The template for the reference file name. May contain placeholders %(variable) or wildcards like "?" or "*" | 
+| reference_data_path | (str) The template for the directory containing the reference file. May contain placeholders %(variable) or wildcards like "?" or "*" |
+| sftlf_filename_template | (str) The template for the model land/sea mask file. May contain placeholders %(model), %(model_version), or %(realization), or wildcards like "?" or "*". Takes precedence over --generate_sftlf | 
+| generate_sftlf | (bool) If true, generate a land/sea mask on the fly using natural_earth_v5_0_0.land_110 when no model or reference land/sea mask is found. If false, no land/sea mask is applied. | 
 | shp_path    |  (str) path to shapefile.  |
 | attribute      | (str) Attribute used to identify region (eg, column of attribute table). For example, "COUNTRY" in a shapefile of countries.  |
 | region_name | (str) Unique feature value of the region that occurs in the attribute given by "--attribute". Must match only one geometry in the shapefile. An example is "NORTH_AMERICA" under the attribute "CONTINENTS". |
+| metrics_output_path  | (str) The directory to write output files to. |  
+| plots | (bool) True to save metric maps. |
+| nc_out | (bool) True to save netcdf files (required for postprocessing). |
+| msyear | (int) Start year for model data set. |
+| meyear | (int) End year for model data set. |
+| osyear | (int) Start year of the observation dataset |
+| oeyear | (int) End year of the observation dataset. If no reference dataset is given, osyear and oeyear must be a subset of msyear and meyear. This temporal range will be used as the "Reference" dataset for comparison metrics |
+| ModUnitsAdjust | (dict) Provide information for units conversion for each variable in vars. Uses format {var: (flag (bool), operation (str), value (float), new units (str))}. Operation can be "add", "subtract", "multiply", or "divide". For example, use {"pr": (True, 'multiply', 86400, 'mm/day')} to convert kg/m2/s to mm/day.|
+| ModUnitsAdjust | (dict) Provide information for units conversion for each variable in reference dataset vars. Uses format {var: (flag (bool), operation (str), value (float), new units (str))}. Operation can be "add", "subtract", "multiply", or "divide". For example, use {"pr": (True, 'multiply', 86400, 'mm/day')} to convert kg/m2/s to mm/day.|
+| annual_strict | (bool) This only matters for rolling 5-day metrics. If True, only use data from within a given year in the 5-day means. If False, the rolling mean will include the last 4 days of the prior year. Default False. |
+| custom_thresholds | (dict) Custom values used for threshold metrics. Different units than found in ModUnitsAdjust or ObsUnitsAdjust can be used For example, set {"tasmin_ge", {"values": [70], "units": "degF"}} to calculate the number of days with tasmin greater than or equal to 70 Fahrenheit. Default values can be found in drcdm/param/default_thresholds.txt |
+| include_metrics | (list) List of metrics to calculate. Leave out of param file to compute all metrics. A full metric list can be found in drcdm/param/full_metric_list.txt. You may also set include_metrics to a variable name ("pr", "tasmax", etc.) to run all metrics associated with that variable. The given variable must be within vars parameter. 
+| compute_tasmean | (bool) If true and tasmax and tasmin are provided, calculate daily mean temperature using $tas = \frac{(tasmax + tasmin)}{2}$ and compute mean temperature metrics. 
+
 
 ## Key information
 
 ### Units
-The temperature data must be provided in Fahrenheit. The ModUnitsAdjust parameter can be used to convert either Kelvin or Celsius units to Fahrenheit on-the-fly. See this example:
+The temperature data must be converted to Fahrenheit, Kelvin, or Celcius. The ModUnitsAdjust parameter can be used to convert either Kelvin or Celsius units to Fahrenheit on-the-fly. See this example:
 
 ```
-# Kelvin to Fahrenheit
-ModUnitsAdjust = (True, 'KtoF', 0, 'F')
+ModUnitsAdjust_precip = (True, "multiply", 86400.0 / 25.4, "inches")  # Convert model units from kg/m2/s to mm/day
+ObsUnitsAdjust_precip = (True, "multiply", 1 / 25.4, "inches")
 
-# Celsius to Fahrenheit
-ModUnitsAdjust = (True, 'CtoF', 0, 'F')
+ModUnitsAdjust_temperature = (True, "KtoF", 0, "F")  # Set to False to Leave in K
+ObsUnitsAdjust_temperature = (True, "CtoF", 0, "F")
+
+ModUnitsAdjust = {
+    v: ModUnitsAdjust_precip if "pr" in v else ModUnitsAdjust_temperature for v in vars
+}
+ObsUnitsAdjust = {
+    v: ObsUnitsAdjust_precip if "pr" in v else ObsUnitsAdjust_temperature for v in vars
+}
+
 ```
-Precipitation units must be provided in mm. ModUnitsAdjust can also be used as documented in the Parameters section to convert units such as kg/m2/s to mm.
+Precipitation units must be provided in mm or inches. ModUnitsAdjust can also be used as documented in the Parameters section to convert units such as kg/m2/s to mm.
 
 ### Regions
 The most efficient way to get postprocessed metrics for multiple regions is to run the drcdm driver without any region subsetting (leave shp_path, attribute, and region_name unset). The regions can be applied during postprocessing.

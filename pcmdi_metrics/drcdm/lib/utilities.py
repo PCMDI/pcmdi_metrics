@@ -8,9 +8,12 @@ import xcdat
 
 from pcmdi_metrics.io import xcdat_openxml
 from pcmdi_metrics.io.base import Base
+from pcmdi_metrics.io.xcdat_dataset_io import get_latitude_key, get_longitude_key
 
 
-def load_dataset(filepath):
+def load_dataset(
+    filepath, varname, var_map, use_dask, chunk_lat, chunk_lon, chunk_time
+):
     # Load an xarray dataset from the given filepath.
     # If list of netcdf files, opens mfdataset.
     # If list of xmls, open last file in list.
@@ -25,12 +28,38 @@ def load_dataset(filepath):
     if filepath[-1].endswith(".xml"):
         # Final item of sorted list would have most recent version date
         ds = xcdat_openxml.xcdat_openxml(filepath[-1])
-    elif len(filepath) > 1:
+    elif len(filepath) > 1:  # 3650, "lat": 100, "lon": 100}
         try:
-            ds = xcdat.open_mfdataset(filepath, chunks={"time": -1})
+            ds = xcdat.open_mfdataset(
+                filepath,
+                chunks="auto",
+                combine="by_coords",
+                data_vars="minimal",
+                coords="minimal",
+                compat="override",
+                parallel=use_dask,
+                autoclose=True,
+            )
+            ds = ds.unify_chunks()
         except ValueError:
-            ds = xcdat.open_mfdataset(filepath, chunks={"time": -1}, decode_times=False)
+            ds = xcdat.open_mfdataset(
+                filepath,
+                chunks="auto",
+                combine="by_coords",
+                data_vars="minimal",
+                coords="minimal",
+                compat="override",
+                parallel=use_dask,
+                decode_times=False,
+                autoclose=True,
+            )
             ds = fix_calendar(ds)
+
+        lat_name = get_latitude_key(ds)
+        lon_name = get_longitude_key(ds)
+
+        chunks = {"time": chunk_time, lat_name: chunk_lat, lon_name: chunk_lon}
+        ds = ds.unify_chunks().chunk(chunks)
     else:
         try:
             ds = xcdat.open_dataset(filepath[0], chunks={"time": 100})
@@ -39,6 +68,18 @@ def load_dataset(filepath):
                 filepath[0], chunks={"time": 100}, decode_times=False
             )
             ds = fix_calendar(ds)
+
+    # Fix alternate variable naming
+
+    if varname not in ds.data_vars:
+        for v in var_map[varname]:
+            if v in ds.data_vars:
+                ds = ds.rename({v: varname})
+                print(f"[Renamed Variable] {v} -> {varname}")
+                break
+        else:
+            raise ValueError("Variable not found in dataset")
+
     return ds
 
 

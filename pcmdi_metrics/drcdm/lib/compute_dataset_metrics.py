@@ -1,24 +1,21 @@
 # flake8: noqa
 import datetime
 import operator
-import os
 from itertools import groupby
 
 import cftime
 import dask
-import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import numpy as np
 import pint_xarray
 import xarray as xr
 import xcdat as xc
 import xclim
-from pint import Quantity, Unit, UnitRegistry
+from pint import Unit, UnitRegistry
 
 ureg = UnitRegistry()
 Q_ = ureg.Quantity
 
-from pcmdi_metrics.drcdm.lib import koppen_funcs
 from pcmdi_metrics.io.xcdat_dataset_io import get_latitude_key, get_longitude_key
 from pcmdi_metrics.stats import compute_statistics_dataset as pmp_stats
 
@@ -115,30 +112,11 @@ class SeasonalAverager:
         ds["time"].encoding["calendar"] = cal
         ds["time"].attrs["standard_name"] = "time"
         ds.time.encoding["units"] = self.TSD.time_units
-        return ds
 
-    def fix_time_coord_no_groupby(self, ds):
-        cal = self.TSD.calendar
-        ds.time.attrs["axis"] = "T"
-        ds["time"].encoding["calendar"] = cal
-        ds["time"].attrs["standard_name"] = "time"
-        ds["time"].encoding["units"] = self.TSD.time_units
         return ds
 
     def fix_monthly_time_coord(self, ds):
         cal = self.TSD.calendar
-        ds.time.attrs["axis"] = "T"
-        ds["time"].encoding["calendar"] = cal
-        ds["time"].attrs["standard_name"] = "time"
-        ds.time.encoding["units"] = self.TSD.time_units
-
-        return ds
-
-    def fix_monthly_time_coord2(self, ds):
-        cal = self.TSD.calendar
-        ds = ds.rename({"month": "time"})
-        m_to_cft = [cftime.datetime(1, m, 1, calendar=cal) for m in ds.time]
-        ds["time"] = m_to_cft
         ds.time.attrs["axis"] = "T"
         ds["time"].encoding["calendar"] = cal
         ds["time"].attrs["standard_name"] = "time"
@@ -274,12 +252,13 @@ class SeasonalAverager:
                 ds_ann = ds.groupby("time.year").mean(dim="time")
             elif stat == "median":
                 ds_ann = ds.groupby("time.year").median(dim="time")
-            elif stat == "sum":
+            elif stat == "total":
                 ds_ann = ds.groupby("time.year").sum(dim="time")
             elif (
                 stat == "cool_deg_days"
             ):  # must be a mean daily temperature dataset in F
                 thresh = Q_(65, "degF")
+
                 unit_str = ds.attrs["units"]
                 data_units = Unit(f"deg{unit_str}")
 
@@ -386,12 +365,9 @@ class SeasonalAverager:
             elif stat == "sum_gt_q":
                 if ref_da is None:
                     raise Exception("Must provide observational dataset")
-                ds_ann = (
-                    ds.where(ds >= ref_da).groupby("time.year").sum(dim="time")
-                    / ds.groupby("time.year").sum(dim="time")
-                    * 100
-                )
-
+                ds_ann = ds.where(ds >= ref_da).groupby("time.year").sum(
+                    dim="time"
+                ) / ds.groupby("time.year").sum(dim="time")
             elif stat == "first_date_below":
                 # Assume for now the temperature data is in Fahrenheit
 
@@ -475,7 +451,7 @@ class SeasonalAverager:
                 end_year = ds.time.dt.year.data[-1]
                 time_slice = slice(*(f"{start_year}-07-01", f"{end_year:02}-06-30"))
 
-                ds = ds.copy(deep=True).sel(time=time_slice)
+                ds = ds.copy(deep=True)  # .sel(time=time_slice)
                 ch = 24 * (tref - ds) / (tmax_da - ds)
                 ch = ch.where(ch > 0, 0)
                 ch = ch.where(ch <= 24, 24)
@@ -483,10 +459,10 @@ class SeasonalAverager:
                 k = k.where(k > 0, 0)
                 chill_hours_gt_32 = ch - k
                 chill_hours_gt_32 = chill_hours_gt_32.where(chill_hours_gt_32 >= 0)
-                group_ids = group_by_july_june(chill_hours_gt_32["time"])
-                ds_ann = chill_hours_gt_32.groupby(group_ids).sum(dim="time")
-                ds_ann = ds_ann.rename({"group": "year"})
-                ds_ann = ds_ann.where(ds_ann > 0)
+                # group_ids = group_by_july_june(chill_hours_gt_32["time"])
+                # ds_ann = chill_hours_gt_32.groupby(group_ids).sum(dim="time")
+                # ds_ann = ds_ann.rename({"group": "year"})
+                ds_ann = chill_hours_gt_32.where(chill_hours_gt_32 > 0)
 
         # Need to fix time axis if groupby operation happened
         if "year" in ds_ann.coords:
@@ -513,7 +489,6 @@ class SeasonalAverager:
             "JJA": [6, 7, 8],
             "SON": [9, 10, 11],
         }
-
         ds_stat = ds.isel(time=ds.time.dt.month.isin(months[season]))
 
         if stat == "max":
@@ -522,10 +497,9 @@ class SeasonalAverager:
             ds_stat = ds_stat.groupby("time.year").min(dim="time")
         elif stat == "mean":
             ds_stat = ds_stat.groupby("time.year").mean(dim="time")
+
         elif stat == "median":
             ds_stat = ds_stat.groupby("time.year").median(dim="time")
-        elif stat == "sum":
-            ds_stat = ds_stat.groupby("time.year").sum(dim="time")
 
         if "year" in ds_stat.coords:
             ds_stat = self.fix_time_coord(ds_stat)
@@ -715,16 +689,7 @@ class SeasonalAverager:
 
     #     return self.masked_ds(ds_stat)
 
-    def monthly_stats(
-        self,
-        stat,
-        tmax_da=None,
-        ref_da=None,
-        nTuple=False,
-        pentad=False,
-        n=None,
-        threshold=None,
-    ):
+    def monthly_stats(self, month, stat):
         # Aquire statistics for a given month
 
         # Arguments:
@@ -734,128 +699,66 @@ class SeasonalAverager:
         #     ds_ann: Dataset containing annual max or min grid
 
         ds = self.TSD.return_data_array()
+        year_range = self.TSD.year_range
+        cal = self.TSD.calendar
+        hr = int(ds.time[0].dt.hour)
 
-        # Filter data for the desired month
-        # ds_month = ds.isel(time=(ds.time.dt.month == month))
+        if month < 12:
+            mo_st = month
+            day_st = 1
+            mo_en = month + 1
+            day_en = 1
 
-        # Group by year and compute statistic
-        if stat == "mean":
-            # ds_stat = ds_month.groupby("time.year").mean(dim="time")
-            ds_stat = ds.resample(time="1ME").mean(
-                dim="time"
-            )  # .isel(time = (ds.time.dt.month == month))
-            # ds_stat = ds_stat.sel(time = (ds_stat.time.dt.month == month))
-        elif stat == "min":
-            ds_stat = ds.resample(time="1ME").min(dim="time")
-            # ds_stat = ds_month.groupby("time.year").min(dim="time")
-        elif stat == "max":
-            # ds_stat = ds_month.groupby("time.year").max(dim="time")
-            ds_stat = ds.resample(time="1ME").max(dim="time")
-        elif stat == "sum":
-            ds_stat = ds.resample(time="1ME").sum(dim="time")
-            # ds_stat = ds_month.groupby("time.year").sum(dim="time")
-        elif stat.startswith(
-            "ge"
-        ):  # % of days per year greater than or equal to some value (xarray or float)
-            if ref_da is None:  # discrete temperature value to compare to
-                num = float(stat.replace("ge", ""))
+            date_range = [
+                xr.cftime_range(
+                    start=cftime.datetime(year, mo_st, day_st, hour=hr, calendar=cal)
+                    - self.del0d,
+                    end=cftime.datetime(year, mo_en, day_en, hour=hr, calendar=cal)
+                    - self.del1d,
+                    freq="D",
+                    calendar=cal,
+                )
+                for year in year_range
+            ]
+            date_range = [item for sublist in date_range for item in sublist]
 
-                if num == 0:
-                    # Set the operator (<) to be used later
-                    oper = operator.gt
-                else:
-                    oper = operator.ge
-
-            # else:  # quantile reference dataset
-            #     num = ref_da
-            #     oper = operator.gt
-
-            ds_stat = (
-                ds.where(oper(ds, num)).resample(time="1ME").count(dim="time")
-                / ds.resample(time="1ME").count(dim="time")
-                * 100
-            )
-        elif stat.startswith(
-            "le"
-        ):  # % of days per year greater than or equal to some value (xarray or float)
-            if ref_da is None:  # A single threshold i.e. 90F was given
-                num = float(stat.replace("le", ""))  # Define that number
-            # else:  # quantile reference dataset
-            #     num = ref_da
-            ds_stat = (
-                ds.where(ds <= num).resample(time="1ME").count(dim="time")
-                / ds.resample(time="1ME").count(dim="time")
-                * 100
-            )
         else:
-            raise ValueError("stat must be one of: 'mean', 'min', 'max', 'sum'")
+            mo_st = month
+            day_st = 1
+            mo_en = 1
+            day_en = 1
 
-        # return result
+            date_range = [
+                xr.cftime_range(
+                    start=cftime.datetime(year, mo_st, day_st, hour=hr, calendar=cal)
+                    - self.del0d,
+                    end=cftime.datetime(year + 1, mo_en, day_en, hour=hr, calendar=cal)
+                    - self.del1d,
+                    freq="D",
+                    calendar=cal,
+                )
+                for year in year_range
+            ]
+            date_range = [item for sublist in date_range for item in sublist]
 
-        # if month < 12:
-        #     mo_st = month
-        #     day_st = 1
-        #     mo_en = month + 1
-        #     day_en = 1
-
-        #     date_range = [
-        #         xr.cftime_range(
-        #             start=cftime.datetime(year, mo_st, day_st, hour=hr, calendar=cal)
-        #             - self.del0d,
-        #             end=cftime.datetime(year, mo_en, day_en, hour=hr, calendar=cal)
-        #             - self.del1d,
-        #             freq="D",
-        #             calendar=cal,
-        #         )
-        #         for year in year_range
-        #     ]
-        #     date_range = [item for sublist in date_range for item in sublist]
-
-        # else:
-        #     mo_st = month
-        #     day_st = 1
-        #     mo_en = 1
-        #     day_en = 1
-
-        #     date_range = [
-        #         xr.cftime_range(
-        #             start=cftime.datetime(year, mo_st, day_st, hour=hr, calendar=cal)
-        #             - self.del0d,
-        #             end=cftime.datetime(year + 1, mo_en, day_en, hour=hr, calendar=cal)
-        #             - self.del1d,
-        #             freq="D",
-        #             calendar=cal,
-        #         )
-        #         for year in year_range
-        #     ]
-        #     date_range = [item for sublist in date_range for item in sublist]
-
-        # ds = ds.isel(time = (ds.time.dt.month == month))
-
-        # if stat == "max":
-        #     ds_stat = (
-        #         ds # .sel(time=date_range, method="nearest")
-        #         .groupby("time.year")
-        #         .max(dim="time")
-        #     )
-        # elif stat == "min":
-        #     ds_stat = (
-        #         ds # .sel(time=date_range, method="nearest")
-        #         .groupby("time.year")
-        #         .min(dim="time")
-        #     )
-        # elif stat == "mean":
-        #     ds_stat = (
-        #         ds # .sel(time=date_range, method="nearest")
-        #         .groupby("time.year")
-        #         .mean(dim="time")
-        #     )
-        # elif stat == "sum":
-        #     ds_stat = (
-        #         ds # .sel(time=date_range, method="nearest")
-        #         .groupby("time.year")
-        #         .sum(dim="time")
-        #     )
+        if stat == "max":
+            ds_stat = (
+                ds.sel(time=date_range, method="nearest")
+                .groupby("time.year")
+                .max(dim="time")
+            )
+        elif stat == "min":
+            ds_stat = (
+                ds.sel(time=date_range, method="nearest")
+                .groupby("time.year")
+                .min(dim="time")
+            )
+        elif stat == "mean":
+            ds_stat = (
+                ds.sel(time=date_range, method="nearest")
+                .groupby("time.year")
+                .mean(dim="time")
+            )
 
         # print(ds_stat.time.dt.month)
 
@@ -863,10 +766,8 @@ class SeasonalAverager:
 
         if "year" in ds_stat.coords:
             ds_stat = self.fix_time_coord(ds_stat)
-        else:
-            ds_stat = self.fix_time_coord_no_groupby(ds_stat)
 
-        return self.masked_ds(ds_stat.copy(deep=True))
+        return self.masked_ds(ds_stat)
 
 
 def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
@@ -874,12 +775,10 @@ def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     # Use this function for any general dataset updates.
     xvar = get_longitude_key(ds)
     yvar = get_latitude_key(ds)
-
     xvarbnds = xvar + "_bnds"
     yvarbnds = yvar + "_bnds"
     ds[yvar].attrs["standard_name"] = "Y"
     ds[xvar].attrs["standard_name"] = "X"
-
     if "time" in ds:
         bnds_dict = {yvar: "Y", xvar: "X", "time": "T"}
     else:
@@ -907,7 +806,6 @@ def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
         ds.time.encoding["_FillValue"] = None
         if "time_bnds" in ds:
             ds.time_bnds.encoding["_FillValue"] = None
-
     for season in [
         "ANN",
         "JAN",
@@ -941,23 +839,12 @@ def update_nc_attrs(ds, dec_mode, drop_incomplete_djf, annual_strict):
     return ds
 
 
-def create_nc_outpath(nc_template, freq, varname, metric):
-    nc_template = nc_template.replace("$freq", freq)
-    nc_template = nc_template.replace("$varname", varname)
-    nc_template = nc_template.replace("$metric", metric)
-
-    # print(f"Outpath {nc_template}")
-
-    return nc_template
-
-
 def convert_units(data, units_adjust):
     # Convert the units of the input data
     # units_adjust is a tuple of form
     # (flag (bool), operation (str), value (float), units (str)).
     # For example, (True, "multiply", 86400., "mm/day")
     # If flag is False, data is returned unaltered.
-
     if bool(units_adjust[0]):
         op_dict = {
             "add": "+",
@@ -995,18 +882,11 @@ def convert_units(data, units_adjust):
 
 # Max Temperature Metics
 def get_mean_tasmax(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Get annual and seasonal mean maximum daily temperature.
     index = f"mean_tasmax"
-    # print("Metric:", index)
+    print("Metric:", index)
     varname = "tasmax"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -1045,24 +925,20 @@ def get_mean_tasmax(
             plt.title(f"Average {season} daily high temperature")
             ax = plt.gca()
             ax.set_facecolor(bgclr)
-            # print(ds[varname].attrs["units"])
-            # print(fig_file1)
             plt.savefig(fig_file1)
             plt.close()
 
     if nc_file is not None:
         out_means = []
         for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-            if mode == "timeseries":
-                out_means.append(Tmean[season])
-            else:
-                out_means.append(Tmean[season].mean(dim="time"))
+            out_means.append(Tmean[season].mean(dim="time"))
         da_out = xr.concat(out_means, dim="season")
         da_out = da_out.assign_coords(
             season=("season", ["ANN", "DJF", "MAM", "JJA", "SON"])
         )
-
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
 
         da_out.to_dataset(name=varname).to_netcdf(nc_file, "w")
         del da_out
@@ -1072,18 +948,11 @@ def get_mean_tasmax(
 
 
 def get_annual_txx(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Get annual max of maximum daily temperature.
     index = "annual_txx"
-    # print("Metric:", index)
+    print("Metric:", index)
     varname = "tasmax"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -1114,92 +983,17 @@ def get_annual_txx(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        if mode == "climatology":
-            Tmax.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            Tmax.to_netcdf(nc_file)
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        Tmax.mean(dim="time").to_netcdf(nc_file, "w")
 
     del Tmax
     return result_dict
 
 
-def get_monthly_txx(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
-):
-    # Monthly max tasmax
-
-    index_base = "monthly_txx"
-    varname = "tasmax"
-    # print(f"Metric: : {index_base}")
-
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Tmax_monmax = xr.Dataset()
-    Tmax_monmax[varname] = S.monthly_stats("max")
-    Tmax_monmax = update_nc_attrs(
-        Tmax_monmax, dec_mode, drop_incomplete_djf, annual_strict
-    )
-
-    if fig_file is not None:
-        for month in range(1, 13):
-            index = index_base.replace("monthly", S.month_lookup[month])
-            fig_file1 = fig_file.replace(
-                "/plots/", f"/plots/monthly/{varname}/"
-            ).replace("$index", index)
-            Tmax_monmax[varname].isel(time=(Tmax_monmax.time.dt.month == month)).mean(
-                "time"
-            ).plot(cmap="Oranges", cbar_kwargs={"label": ds[varname].attrs["units"]})
-            plt.title(f"{S.month_lookup[month]} Maximum Temperature")
-            ax = plt.gca()
-            ax.set_facecolor(bgclr)
-            plt.savefig(fig_file1)
-            plt.close()
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index_base: Tmax_monmax}, obs_dict={}, region="land", regrid=False
-    )
-
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "monthly", varname, index_base)
-        Tmax_monmax[varname].attrs["units"] = ds[varname].attrs["units"]
-
-        if mode == "climatology":
-            Tmax_monmax = S.fix_monthly_time_coord2(
-                Tmax_monmax.groupby("time.month").mean()
-            )
-            Tmax_monmax.to_netcdf(nc_file, "w")
-        else:
-            Tmax_monmax.to_netcdf(nc_file, "w")
-
-    del Tmax_monmax
-    return result_dict
-
-
 def get_tasmax_q50(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Get annual median maximum daily temperature
     index = "tasmax_q50"
@@ -1213,7 +1007,7 @@ def get_tasmax_q50(
     Tmedian[lon_name] = ds[lon_name]
     Tmedian = Tmedian.drop_vars(["time", "time_bnds", varname], errors="ignore")
     if isinstance(ds[varname], dask.array.core.Array):
-        Tmedian["q50"] = ds[varname].median("time")  # .chunk({"time": -1})
+        Tmedian["q50"] = ds[varname].chunk({"time": -1}).median("time")
     else:
         Tmedian["q50"] = ds[varname].median("time")
     Tmedian = update_nc_attrs(Tmedian, dec_mode, drop_incomplete_djf, annual_strict)
@@ -1237,9 +1031,9 @@ def get_tasmax_q50(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
-        if "quantization_info" in Tmedian:
-            del Tmedian["quantization_info"]
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/quantile/{varname}/").replace(
+            "$index", index
+        )
         Tmedian.to_netcdf(nc_file, "w")
 
     del Tmedian
@@ -1247,18 +1041,11 @@ def get_tasmax_q50(
 
 
 def get_tasmax_q99p9(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Get annual 99.9 percentile maximum daily temperature.
     index = "tasmax_q99p9"
-    # print("Metric:", index)
+    print("Metric:", index)
     varname = "tasmax"
     lat_name = get_latitude_key(ds)
     lon_name = get_longitude_key(ds)
@@ -1270,9 +1057,9 @@ def get_tasmax_q99p9(
 
     # PRISM threw errors if chunk not specified
     if isinstance(ds[varname], dask.array.core.Array):
-        q99p9 = ds[varname].quantile(0.999, dim="time")  # .chunk({"time": -1})
+        q99p9 = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
     else:
-        q99p9 = ds[varname].quantile(0.999, dim="time")  # .chunk({"time": -1})
+        q99p9 = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
 
     Tq99p9["q99p9"] = q99p9
     Tq99p9 = update_nc_attrs(Tq99p9, dec_mode, drop_incomplete_djf, annual_strict)
@@ -1296,9 +1083,9 @@ def get_tasmax_q99p9(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
-        if "quantization_info" in Tq99p9:
-            del Tq99p9["quantization_info"]
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/quantile/{varname}/").replace(
+            "$index", index
+        )
         Tq99p9.to_netcdf(nc_file, "w")
 
     del Tq99p9
@@ -1313,13 +1100,11 @@ def get_monthly_mean_tasmax(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
     # Monthly mean tasmax
 
     index_base = "monthly_mean_tasmax"
     varname = "tasmax"
-    # print(f"Metric: : {index_base}")
 
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -1330,7 +1115,12 @@ def get_monthly_mean_tasmax(
         annual_strict=annual_strict,
     )
     Tmax_monmean = xr.Dataset()
-    Tmax_monmean[varname] = S.monthly_stats("mean")
+
+    for month in range(1, 13):
+        index = index_base.replace("monthly", S.month_lookup[month])
+        print("Metric:", index)
+        Tmax_monmean[S.month_lookup[month]] = S.monthly_stats(month, "mean")
+
     Tmax_monmean = update_nc_attrs(
         Tmax_monmean, dec_mode, drop_incomplete_djf, annual_strict
     )
@@ -1341,9 +1131,9 @@ def get_monthly_mean_tasmax(
             fig_file1 = fig_file.replace(
                 "/plots/", f"/plots/monthly/{varname}/"
             ).replace("$index", index)
-            Tmax_monmean[varname].isel(time=(Tmax_monmean.time.dt.month == month)).mean(
-                "time"
-            ).plot(cmap="Oranges", cbar_kwargs={"label": ds[varname].attrs["units"]})
+            Tmax_monmean[S.month_lookup[month]].mean("time").plot(
+                cmap="Oranges", cbar_kwargs={"label": ds[varname].attrs["units"]}
+            )
             plt.title(f"{S.month_lookup[month]} Mean Maximum Temperature")
             ax = plt.gca()
             ax.set_facecolor(bgclr)
@@ -1356,35 +1146,35 @@ def get_monthly_mean_tasmax(
     )
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "monthly", varname, index_base)
-        Tmax_monmean[varname].attrs["units"] = ds[varname].attrs["units"]
+        names = []
+        means = []
+        for month in range(1, 13):
+            month_name = S.month_lookup[month]
+            mean_val = Tmax_monmean[month_name].mean(dim="time")
 
-        if mode == "climatology":
-            Tmax_monmean = S.fix_monthly_time_coord2(
-                Tmax_monmean.groupby("time.month").mean()
-            )
-            Tmax_monmean.to_netcdf(nc_file, "w")
-        else:
-            Tmax_monmean.to_netcdf(nc_file, "w")
+            means.append(mean_val)
+            names.append(month_name)
+
+        da_mean = xr.concat(means, dim="month")
+        da_mean = da_mean.assign_coords(month=("month", names))
+
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/monthly/{varname}/").replace(
+            "$index", index_base
+        )
+        da_mean.to_dataset(name=varname).to_netcdf(nc_file, "w")
+        del da_mean
 
     del Tmax_monmean
     return result_dict
 
 
 def get_annual_tasmax_5day(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Annual highest maximum temperature averaged over a 5-day period
 
-    index = "annual_5day_max_tasmax"
-    # print("Metric:", index)
+    index = "annual_5day_tasmax"
+    print("Metric:", index)
     varname = "tasmax"
 
     TS = TimeSeriesData(ds, varname)
@@ -1418,12 +1208,10 @@ def get_annual_tasmax_5day(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        if mode == "climatology":
-            Tmax5day.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            Tmax5day.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        Tmax5day.mean(dim="time").to_netcdf(nc_file, "w")
 
     del Tmax5day
     return result_dict
@@ -1438,7 +1226,6 @@ def get_annual_tasmax_ge_XF(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
     # Get annual fraction of days with max temperature greater than or equal to deg F
     varname = "tasmax"
@@ -1447,7 +1234,7 @@ def get_annual_tasmax_ge_XF(
     data_units = Unit(f"deg{unit_str}")  # Assumes degrees "K", "F", or "C"
 
     index = "annual_tasmax_ge_{0}{1}".format(deg.magnitude, out_unit_str)
-    # print("Metric:", index)
+    print("Metric:", index)
     threshold_pint_converted = deg.to(data_units)
 
     TS = TimeSeriesData(ds, varname)
@@ -1484,161 +1271,12 @@ def get_annual_tasmax_ge_XF(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        if mode == "climatology":
-            TgeX.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            TgeX.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        TgeX.mean(dim="time").to_netcdf(nc_file, "w")
 
     del TgeX
-    return result_dict
-
-
-def get_annual_tasmax_ge_XF(
-    ds,
-    sftlf,
-    deg,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
-):
-    # Get annual fraction of days with max temperature greater than or equal to deg F
-    varname = "tasmax"
-    unit_str = ds[varname].attrs["units"]
-    out_unit_str = f"{deg.units:~}".lstrip("°")
-    data_units = Unit(f"deg{unit_str}")  # Assumes degrees "K", "F", or "C"
-
-    index = "annual_tasmax_ge_{0}{1}".format(deg.magnitude, out_unit_str)
-    # print("Metric:", index)
-    threshold_pint_converted = deg.to(data_units)
-
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    TgeX = xr.Dataset()
-    TgeX["ANN"] = S.annual_stats("ge{0}".format(threshold_pint_converted.magnitude))
-    TgeX.attrs["units"] = "%"
-    TgeX = update_nc_attrs(TgeX, dec_mode, drop_incomplete_djf, annual_strict)
-
-    # Compute statistics
-    result_dict = metrics_json({index: TgeX}, obs_dict={}, region="land", regrid=False)
-
-    if fig_file is not None:  # save the figure
-        fig_file1 = fig_file.replace("/plots/", f"/plots/annual/{varname}/").replace(
-            "$index", "_".join([index, "ANN"])
-        )
-        TgeX["ANN"].mean("time").plot(
-            cmap="Oranges", vmin=0, vmax=100, cbar_kwargs={"label": "%"}
-        )
-        plt.title(
-            "Mean percentage of days per year\nwith high temperature >= {0}{1}".format(
-                deg.magnitude, out_unit_str
-            )
-        )
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
-
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        if mode == "climatology":
-            TgeX.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            TgeX.to_netcdf(nc_file, "w")
-
-    del TgeX
-    return result_dict
-
-
-def get_monthly_tasmax_ge_XF(
-    ds,
-    sftlf,
-    deg,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
-):
-    # Monthly mean tasmax
-
-    varname = "tasmax"
-
-    unit_str = ds[varname].attrs["units"]
-    out_unit_str = f"{deg.units:~}".lstrip("°")
-    data_units = Unit(f"deg{unit_str}")  # Assumes degrees "K", "F", or "C"
-
-    index_base = "monthly_tasmax_ge_{0}{1}".format(deg.magnitude, out_unit_str)
-    # print("Metric:", index)
-    threshold_pint_converted = deg.to(data_units)
-    # print(f"Metric: : {index_base}")
-
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Tmax_mon_geX = xr.Dataset()
-    Tmax_mon_geX[varname] = S.monthly_stats(
-        "ge{0}".format(threshold_pint_converted.magnitude)
-    )
-    Tmax_mon_geX = update_nc_attrs(
-        Tmax_mon_geX, dec_mode, drop_incomplete_djf, annual_strict
-    )
-
-    if fig_file is not None:
-        for month in range(1, 13):
-            index = index_base.replace("monthly", S.month_lookup[month])
-            fig_file1 = fig_file.replace(
-                "/plots/", f"/plots/monthly/{varname}/"
-            ).replace("$index", index)
-            Tmax_mon_geX[varname].isel(time=(Tmax_mon_geX.time.dt.month == month)).mean(
-                "time"
-            ).plot(cmap="Oranges", vmin=0, vmax=100, cbar_kwargs={"label": "%"})
-
-            plt.title(
-                "Mean percentage of {0} days\nwith high temperature >= {1}{2}".format(
-                    S.month_lookup[month], deg.magnitude, out_unit_str
-                )
-            )
-            ax = plt.gca()
-            ax.set_facecolor(bgclr)
-            plt.savefig(fig_file1)
-            plt.close()
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index_base: Tmax_mon_geX}, obs_dict={}, region="land", regrid=False
-    )
-
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "monthly", varname, index_base)
-        Tmax_mon_geX[varname].attrs["units"] = ds[varname].attrs["units"]
-
-        if mode == "climatology":
-            Tmax_mon_geX = S.fix_monthly_time_coord2(
-                Tmax_mon_geX.groupby("time.month").mean()
-            )
-            Tmax_mon_geX.to_netcdf(nc_file, "w")
-        else:
-            Tmax_mon_geX.to_netcdf(nc_file, "w")
-
-    del Tmax_mon_geX
     return result_dict
 
 
@@ -1651,7 +1289,6 @@ def get_annual_tasmax_le_XF(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
     # Get annual fraction of days with max temperature less than threshold
     varname = "tasmax"
@@ -1660,7 +1297,7 @@ def get_annual_tasmax_le_XF(
     data_units = Unit(f"deg{unit_str}")  # Assumes degrees "K", "F", or "C"
 
     index = "annual_tasmax_le_{0}{1}".format(deg.magnitude, out_unit_str)
-    # print("Metric:", index)
+    print("Metric:", index)
     threshold_pint_converted = deg.to(data_units)
 
     TS = TimeSeriesData(ds, varname)
@@ -1698,12 +1335,10 @@ def get_annual_tasmax_le_XF(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        if mode == "climatology":
-            TleX.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            TleX.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        TleX.mean(dim="time").to_netcdf(nc_file, "w")
 
     del TleX
     return result_dict
@@ -1720,22 +1355,17 @@ def get_tmax_days_above_Qth(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
-    if isinstance(quantile, Quantity):
-        quantile = quantile.magnitude
     # open the reference dataset
     ds_reference = xr.open_dataset(file_name_ref_tmax_quant)[f"q{quantile}_ANN"]
 
     # Get annual fraction of days with max temperature less than deg F
     index = f"tmax_days_above_q{quantile}"
-    # print("Metric:", index)
+    print("Metric:", index)
     varname = "tasmax"
-
     # Rechunk Dask Arrays
-    # if isinstance(ds[varname], dask.array.core.Array):
-    #     ds[varname] = ds[varname] # .chunk({"time": -1})
-
+    if isinstance(ds[varname], dask.array.core.Array):
+        ds[varname] = ds[varname].chunk({"time": -1})
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         TS,
@@ -1774,12 +1404,10 @@ def get_tmax_days_above_Qth(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
-
-        if mode == "climatology":
-            TgeQuant.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            TgeQuant.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/quantile/{varname}/").replace(
+            "$index", index
+        )
+        TgeQuant.mean(dim="time").to_netcdf(nc_file, "w")
 
     del TgeQuant
     return result_dict
@@ -1795,22 +1423,18 @@ def get_tmax_days_below_Qth(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
-    if isinstance(quantile, Quantity):
-        quantile = quantile.magnitude
-
     # open the reference dataset
     ds_reference = xr.open_dataset(file_name_ref_tmax_quant)[f"q{quantile}_ANN"]
 
     # Get annual fraction of days with max temperature less than deg F
     index = f"tmax_days_below_q{quantile}"
-    # print("Metric:", index)
+    print("Metric:", index)
     varname = "tasmax"
 
     # Rechunk Dask Arrays
-    # if isinstance(ds[varname], dask.array.core.Array):
-    #     ds[varname] = ds[varname].chunk({"time": -1})
+    if isinstance(ds[varname], dask.array.core.Array):
+        ds[varname] = ds[varname].chunk({"time": -1})
 
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -1850,12 +1474,10 @@ def get_tmax_days_below_Qth(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
-
-        if mode == "climatology":
-            TleQuant.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            TleQuant.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/quantile/{varname}/").replace(
+            "$index", index
+        )
+        TleQuant.mean(dim="time").to_netcdf(nc_file, "w")
 
     del TleQuant
     return result_dict
@@ -1863,18 +1485,11 @@ def get_tmax_days_below_Qth(
 
 # Mean Temperature Metics
 def get_mean_tasmean(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Get annual and seasonal mean maximum daily temperature.
-    index = f"mean_tas"
-    # print("Metric:", index)
+    index = f"mean_tasmean"
+    print("Metric:", index)
     varname = "tas"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -1919,16 +1534,18 @@ def get_mean_tasmean(
     if nc_file is not None:
         out_means = []
         for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-            if mode == "climatology":
-                out_means.append(Tmean[season].mean(dim="time"))
-            else:
-                out_means.append(Tmean[season])
+            # if season == "DJF":
+            #     out_means.append(ds.isel(time = ds.time.dt.month.isin([12,1,2])).mean(dim = "time")[varname])
+            # else:
+            out_means.append(Tmean[season].mean(dim="time"))
 
         da_out = xr.concat(out_means, dim="season")
         da_out = da_out.assign_coords(
             season=("season", ["ANN", "DJF", "MAM", "JJA", "SON"])
         )
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
 
         da_out.to_dataset(name=varname).to_netcdf(nc_file, "w")
         del da_out
@@ -1937,84 +1554,12 @@ def get_mean_tasmean(
     return result_dict
 
 
-def get_monthly_mean_tas(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
-):
-    # Monthly mean tas
-
-    index_base = "monthly_mean_tas"
-    varname = "tas"
-
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Tas_monmean = xr.Dataset()
-    Tas_monmean[varname] = S.monthly_stats("mean")
-    Tas_monmean = update_nc_attrs(
-        Tas_monmean, dec_mode, drop_incomplete_djf, annual_strict
-    )
-
-    if fig_file is not None:
-        for month in range(1, 13):
-            index = index_base.replace("monthly", S.month_lookup[month])
-            fig_file1 = fig_file.replace(
-                "/plots/", f"/plots/monthly/{varname}/"
-            ).replace("$index", index)
-            Tas_monmean[varname].isel(time=(Tas_monmean.time.dt.month == month)).mean(
-                "time"
-            ).plot(cmap="Oranges", cbar_kwargs={"label": ds[varname].attrs["units"]})
-            plt.title(f"{S.month_lookup[month]} Mean Temperature")
-            ax = plt.gca()
-            ax.set_facecolor(bgclr)
-            plt.savefig(fig_file1)
-            plt.close()
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index_base: Tas_monmean}, obs_dict={}, region="land", regrid=False
-    )
-
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "monthly", varname, index_base)
-
-        Tas_monmean[varname].attrs["units"] = ds[varname].attrs["units"]
-        if mode == "climatology":
-            Tas_monmean = S.fix_monthly_time_coord2(
-                Tas_monmean.groupby("time.month").mean()
-            )
-            Tas_monmean.to_netcdf(nc_file, "w")
-        else:
-            Tas_monmean.to_netcdf(nc_file, "w")
-
-    del Tas_monmean
-    return result_dict, nc_file
-
-
 def get_annual_cooling_degree_days(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Cumulative number of degrees by which mean temperature exceeds 65 F
-    index = "annual_cooling_deg_days"
-    # print("Metric:", index)
+    index = "cool_deg_days"
+    print("Metric:", index)
     varname = "tas"
     TS = TimeSeriesData(ds, varname)  # gets the mean temperature dataset
     S = SeasonalAverager(
@@ -2043,30 +1588,19 @@ def get_annual_cooling_degree_days(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        if mode == "climatology":
-            cdd.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            cdd.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("$index", index)
+        cdd.mean(dim="time").to_netcdf(nc_file, "w")
 
     del cdd
     return result_dict
 
 
 def get_annual_heating_degree_days(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Cumulative number of degrees by which mean temperature exceeds 65 F
-    index = "annual_heating_deg_days"
-    # print("Metric:", index)
+    index = "heat_deg_days"
+    print("Metric:", index)
     varname = "tas"
 
     TS = TimeSeriesData(ds, varname)  # gets the mean temperature dataset
@@ -2096,29 +1630,19 @@ def get_annual_heating_degree_days(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        if mode == "climatology":
-            hdd.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            hdd.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("$index", index)
+        hdd.mean(dim="time").to_netcdf(nc_file, "w")
 
     del hdd
     return result_dict
 
 
 def get_annual_growing_degree_days(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Cumulative number of degrees by which mean temperature exceeds 65 F
-    index = "annual_growing_deg_days"
-    # print("Metric:", index)
+    index = "growing_deg_days"
+    print("Metric:", index)
     varname = "tas"
     TS = TimeSeriesData(ds, varname)  # gets the mean temperature dataset
     S = SeasonalAverager(
@@ -2147,11 +1671,8 @@ def get_annual_growing_degree_days(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        if mode == "climatology":
-            gdd.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            gdd.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("$index", index)
+        gdd.mean(dim="time").to_netcdf(nc_file, "w")
 
     del gdd
     return result_dict
@@ -2159,18 +1680,11 @@ def get_annual_growing_degree_days(
 
 # Minimum Temperature Metrics
 def get_tnn(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Get annual and winter minimum daily minimum temperature.
-    index = "annual_tnn"
-    # print("Metric:", index)
+    index = "tnn"
+    print("Metric:", index)
     varname = "tasmin"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -2208,12 +1722,10 @@ def get_tnn(
             plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        if mode == "climatology":
-            Tmean.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            Tmean.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        Tmean.mean(dim="time").to_netcdf(nc_file, "w")
 
     del Tmean
     return result_dict
@@ -2221,18 +1733,11 @@ def get_tnn(
 
 # Min Temperature Metics
 def get_mean_tasmin(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Get annual and seasonal mean maximum daily temperature.
     index = f"mean_tasmin"
-    # print("Metric:", index)
+    print("Metric:", index)
     varname = "tasmin"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -2273,20 +1778,19 @@ def get_mean_tasmin(
             ax.set_facecolor(bgclr)
             plt.savefig(fig_file1)
             plt.close()
+
     if nc_file is not None:
-        # print('saving file')
         out_means = []
         for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-            if mode == "climatology":
-                out_means.append(Tmean[season].mean(dim="time"))
-            else:
-                out_means.append(Tmean[season])
+            out_means.append(Tmean[season].mean(dim="time"))
 
         da_out = xr.concat(out_means, dim="season")
         da_out = da_out.assign_coords(
             season=("season", ["ANN", "DJF", "MAM", "JJA", "SON"])
         )
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
 
         da_out.to_dataset(name=varname).to_netcdf(nc_file, "w")
         del da_out
@@ -2303,13 +1807,11 @@ def get_monthly_mean_tasmin(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
-    # Monthly mean tasmin
+    # Monthly mean tasmax
 
     index_base = "monthly_mean_tasmin"
     varname = "tasmin"
-    # print(index_base)
 
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -2320,7 +1822,12 @@ def get_monthly_mean_tasmin(
         annual_strict=annual_strict,
     )
     Tmin_monmean = xr.Dataset()
-    Tmin_monmean[varname] = S.monthly_stats("mean")
+
+    for month in range(1, 13):
+        index = index_base.replace("monthly", S.month_lookup[month])
+        print("Metric:", index)
+        Tmin_monmean[S.month_lookup[month]] = S.monthly_stats(month, "mean")
+
     Tmin_monmean = update_nc_attrs(
         Tmin_monmean, dec_mode, drop_incomplete_djf, annual_strict
     )
@@ -2331,9 +1838,9 @@ def get_monthly_mean_tasmin(
             fig_file1 = fig_file.replace(
                 "/plots/", f"/plots/monthly/{varname}/"
             ).replace("$index", index)
-            Tmin_monmean[varname].isel(time=(Tmin_monmean.time.dt.month == month)).mean(
-                "time"
-            ).plot(cmap="Blues", cbar_kwargs={"label": ds[varname].attrs["units"]})
+            Tmin_monmean[S.month_lookup[month]].mean("time").plot(
+                cmap="YlGnBu_r", cbar_kwargs={"label": ds[varname].attrs["units"]}
+            )
             plt.title(f"{S.month_lookup[month]} Mean Minimum Temperature")
             ax = plt.gca()
             ax.set_facecolor(bgclr)
@@ -2346,84 +1853,25 @@ def get_monthly_mean_tasmin(
     )
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "monthly", varname, index_base)
+        names = []
+        means = []
+        for month in range(1, 13):
+            month_name = S.month_lookup[month]
+            mean_val = Tmin_monmean[month_name].mean(dim="time")
 
-        Tmin_monmean[varname].attrs["units"] = ds[varname].attrs["units"]
-        if mode == "climatology":
-            Tmin_monmean = S.fix_monthly_time_coord2(
-                Tmin_monmean.groupby("time.month").mean()
-            )
-            Tmin_monmean.to_netcdf(nc_file, "w")
-        else:
-            Tmin_monmean.to_netcdf(nc_file, "w")
+            means.append(mean_val)
+            names.append(month_name)
+
+        da_mean = xr.concat(means, dim="month")
+        da_mean = da_mean.assign_coords(month=("month", names))
+
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/monthly/{varname}/").replace(
+            "$index", index_base
+        )
+        da_mean.to_dataset(name=varname).to_netcdf(nc_file, "w")
+        del da_mean
 
     del Tmin_monmean
-    return result_dict
-
-
-def get_monthly_tnn(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
-):
-    # Monthly mean tasmin
-
-    index_base = "monthly_tnn"
-    varname = "tasmin"
-    # print(index_base)
-
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Tmin_monmin = xr.Dataset()
-    Tmin_monmin[varname] = S.monthly_stats("min")
-    Tmin_monmin = update_nc_attrs(
-        Tmin_monmin, dec_mode, drop_incomplete_djf, annual_strict
-    )
-
-    if fig_file is not None:
-        for month in range(1, 13):
-            index = index_base.replace("monthly", S.month_lookup[month])
-            fig_file1 = fig_file.replace(
-                "/plots/", f"/plots/monthly/{varname}/"
-            ).replace("$index", index)
-            Tmin_monmin[varname].isel(time=(Tmin_monmin.time.dt.month == month)).mean(
-                "time"
-            ).plot(cmap="Blues", cbar_kwargs={"label": ds[varname].attrs["units"]})
-            plt.title(f"{S.month_lookup[month]} Minimum Temperature")
-            ax = plt.gca()
-            ax.set_facecolor(bgclr)
-            plt.savefig(fig_file1)
-            plt.close()
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index_base: Tmin_monmin}, obs_dict={}, region="land", regrid=False
-    )
-
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "monthly", varname, index_base)
-
-        Tmin_monmin[varname].attrs["units"] = ds[varname].attrs["units"]
-        if mode == "climatology":
-            Tmin_monmin = S.fix_monthly_time_coord2(
-                Tmin_monmin.groupby("time.month").mean()
-            )
-            Tmin_monmin.to_netcdf(nc_file, "w")
-        else:
-            Tmin_monmin.to_netcdf(nc_file, "w")
-
-    del Tmin_monmin
     return result_dict
 
 
@@ -2436,7 +1884,6 @@ def get_annual_tasmin_le_XF(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
     # Get annual percentage of days with daily minimum temperature less than or
     # equal to deg F.
@@ -2446,7 +1893,7 @@ def get_annual_tasmin_le_XF(
     data_units = Unit(f"deg{unit_str}")  # Assumes degrees "K", "F", or "C"
 
     index = "annual_tasmin_le_{0}{1}".format(deg.magnitude, out_unit_str)
-    # print("Metric:", index)
+    print("Metric:", index)
     threshold_pint_converted = deg.to(data_units)
 
     TS = TimeSeriesData(ds, varname)
@@ -2483,94 +1930,12 @@ def get_annual_tasmin_le_XF(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        if mode == "climatology":
-            TleX.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            TleX.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        TleX.mean(dim="time").to_netcdf(nc_file, "w")
 
     del TleX
-    return result_dict
-
-
-def get_monthly_tasmin_le_XF(
-    ds,
-    sftlf,
-    deg,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
-):
-    # Monthly mean tasmax
-
-    varname = "tasmin"
-
-    unit_str = ds[varname].attrs["units"]
-    out_unit_str = f"{deg.units:~}".lstrip("°")
-    data_units = Unit(f"deg{unit_str}")  # Assumes degrees "K", "F", or "C"
-
-    index_base = "monthly_tasmin_ge_{0}{1}".format(deg.magnitude, out_unit_str)
-    # print("Metric:", index)
-    threshold_pint_converted = deg.to(data_units)
-    # print(f"Metric: : {index_base}")
-
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Tmin_mon_geX = xr.Dataset()
-    Tmin_mon_geX[varname] = S.monthly_stats(
-        "le{0}".format(threshold_pint_converted.magnitude)
-    )
-    Tmin_mon_geX = update_nc_attrs(
-        Tmin_mon_geX, dec_mode, drop_incomplete_djf, annual_strict
-    )
-
-    if fig_file is not None:
-        for month in range(1, 13):
-            index = index_base.replace("monthly", S.month_lookup[month])
-            fig_file1 = fig_file.replace(
-                "/plots/", f"/plots/monthly/{varname}/"
-            ).replace("$index", index)
-            Tmin_mon_geX[varname].isel(time=(Tmin_mon_geX.time.dt.month == month)).mean(
-                "time"
-            ).plot(cmap="Blues", vmin=0, vmax=100, cbar_kwargs={"label": "%"})
-
-            plt.title(
-                "Mean percentage of {0} days\nwith low temperature <= {1}{2}".format(
-                    S.month_lookup[month], deg.magnitude, out_unit_str
-                )
-            )
-            ax = plt.gca()
-            ax.set_facecolor(bgclr)
-            plt.savefig(fig_file1)
-            plt.close()
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index_base: Tmin_mon_geX}, obs_dict={}, region="land", regrid=False
-    )
-
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "monthly", varname, index_base)
-        Tmin_mon_geX[varname].attrs["units"] = ds[varname].attrs["units"]
-
-        if mode == "climatology":
-            Tmin_mon_geX = S.fix_monthly_time_coord2(
-                Tmin_mon_geX.groupby("time.month").mean()
-            )
-            Tmin_mon_geX.to_netcdf(nc_file, "w")
-        else:
-            Tmin_mon_geX.to_netcdf(nc_file, "w")
-
-    del Tmin_mon_geX
     return result_dict
 
 
@@ -2583,7 +1948,6 @@ def get_annual_tasmin_ge_XF(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
     # Get annual percentage of days with daily minimum temperature
     # greater than or equal to deg F (warm nights)
@@ -2593,7 +1957,7 @@ def get_annual_tasmin_ge_XF(
     data_units = Unit(f"deg{unit_str}")  # Assumes degrees "K", "F", or "C"
 
     index = "annual_tasmin_ge_{0}{1}".format(deg.magnitude, out_unit_str)
-    # print("Metric:", index)
+    print("Metric:", index)
     threshold_pint_converted = deg.to(data_units)
 
     TS = TimeSeriesData(ds, varname)
@@ -2630,30 +1994,22 @@ def get_annual_tasmin_ge_XF(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        if mode == "climatology":
-            TgeX.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            TgeX.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        TgeX.mean(dim="time").to_netcdf(nc_file, "w")
 
     del TgeX
     return result_dict
 
 
 def get_annual_min_tasmin_5day(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Annual lowest minimum temperature averaged over a 5-day period
 
-    index = "annual_5day_min_tasmin"
-    # print("Metric:", index)
+    index = "annual_min_5day_tasmin"
+    print("Metric:", index)
     varname = "tasmin"
 
     TS = TimeSeriesData(ds, varname)
@@ -2687,29 +2043,22 @@ def get_annual_min_tasmin_5day(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        if mode == "climatology":
-            Tmin5day.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            Tmin5day.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        Tmin5day.mean(dim="time").to_netcdf(nc_file, "w")
 
     del Tmin5day
     return result_dict
 
 
 def get_annual_max_tasmin_5day(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Annual highest annual minimum temperature averaged over a 5-day period
-    index = "annual_5day_max_tasmin"
+
+    index = "annual_max_5day_tasmin"
+    print("Metric:", index)
     varname = "tasmin"
 
     TS = TimeSeriesData(ds, varname)
@@ -2743,12 +2092,10 @@ def get_annual_max_tasmin_5day(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        if mode == "climatology":
-            Tmin5day.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            Tmin5day.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        Tmin5day.mean(dim="time").to_netcdf(nc_file, "w")
 
     del Tmin5day
     return result_dict
@@ -2763,7 +2110,6 @@ def get_first_date_belowX(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
     varname = "tasmin"
     unit_str = ds[varname].attrs["units"]
@@ -2774,9 +2120,12 @@ def get_first_date_belowX(
     freeze = Q_(32, "degF").to(data_units)
     tolerance = 1e-6
 
-    index = f"first_date_below_{threshold.magnitude}{out_unit_str}"
+    if abs(threshold_pint_converted.magnitude - freeze.magnitude) < tolerance:
+        index = "first_freeze_date"
+    else:
+        index = f"first_date_below_{threshold.magnitude}{out_unit_str}"
 
-    # print("Metric:", index)
+    print("Metric:", index)
 
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -2819,12 +2168,10 @@ def get_first_date_belowX(
                 "_FillValue": None,  # Disable _FillValue if not needed
             }
         }
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        if mode == "climatology":
-            FirstFreeze.mean(dim="time").to_netcdf(nc_file, "w", encoding=encoding)
-        else:
-            FirstFreeze.to_netcdf(nc_file, "w", encoding=encoding)
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        FirstFreeze.mean(dim="time").to_netcdf(nc_file, "w", encoding=encoding)
 
     return result_dict, FirstFreeze["ANN"]
 
@@ -2838,7 +2185,6 @@ def get_last_date_belowX(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
     varname = "tasmin"
     unit_str = ds[varname].attrs["units"]
@@ -2846,9 +2192,15 @@ def get_last_date_belowX(
     data_units = Unit(f"deg{unit_str}")  # Assumes degrees "K", "F", or "C"
 
     threshold_pint_converted = threshold.to(data_units)
-    index = f"last_date_below_{threshold.magnitude}{out_unit_str}"
+    freeze = Q_(32, "degF").to(data_units)
+    tolerance = 1e-6
 
-    # print("Metric:", index)
+    if abs(threshold_pint_converted.magnitude - freeze.magnitude) < tolerance:
+        index = "last_freeze_date"
+    else:
+        index = f"last_date_below_{threshold.magnitude}{out_unit_str}"
+
+    print("Metric:", index)
 
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -2891,12 +2243,10 @@ def get_last_date_belowX(
                 "_FillValue": None,  # Disable _FillValue if not needed
             }
         }
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        if mode == "climatology":
-            LastFreeze.mean(dim="time").to_netcdf(nc_file, "w", encoding=encoding)
-        else:
-            LastFreeze.to_netcdf(nc_file, "w", encoding=encoding)
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        LastFreeze.mean(dim="time").to_netcdf(nc_file, "w", encoding=encoding)
 
     return result_dict, LastFreeze["ANN"]
 
@@ -2911,12 +2261,10 @@ def get_growing_season_length(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
     out_unit_str = f"{threshold.units:~}".lstrip("°")
     index = f"growing_season_{threshold.magnitude}{out_unit_str}"
-    varname = "tasmin"
-    # print("Metric:", index)
+    print("Metric:", index)
 
     nov_to_august_length = 273  # number of days (assumes no leap)
 
@@ -2945,12 +2293,8 @@ def get_growing_season_length(
                 "dtype": "int64",  # Ensure the data type matches your variable
             }
         }
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        if mode == "climatology":
-            gsl.mean(dim="time").to_netcdf(nc_file, "w", encoding=encoding)
-        else:
-            gsl["ANN"] = gsl["ANN"].astype("float32")
-            gsl.to_netcdf(nc_file, "w", encoding=encoding)
+        nc_file = nc_file.replace("$index", index)
+        gsl.mean(dim="time").to_netcdf(nc_file, "w", encoding=encoding)
 
     del gsl
     return result_dict
@@ -2966,21 +2310,17 @@ def get_tmin_days_above_Qth(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
-    if isinstance(quantile, Quantity):
-        quantile = quantile.magnitude
-
     # open the reference dataset
-    ds_reference = xr.open_dataset(file_name_ref_tmin_quant)[f"q{quantile}_ANN"]
+    ds_reference = xr.open_dataset(file_name_ref_tmin_quant)[f"q{quantile}"]
 
     # Get annual fraction of days with max temperature less than deg F
     index = f"tmin_days_above_q{quantile}"
-    # print("Metric:", index)
+    print("Metric:", index)
     varname = "tasmin"
     # Rechunk Dask Arrays
-    # if isinstance(ds[varname], dask.array.core.Array):
-    #     ds[varname] = ds[varname].chunk({"time": -1})
+    if isinstance(ds[varname], dask.array.core.Array):
+        ds[varname] = ds[varname].chunk({"time": -1})
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
         TS,
@@ -3019,11 +2359,10 @@ def get_tmin_days_above_Qth(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
-        if mode == "climatology":
-            TgeQuant.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            TgeQuant.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/quantile/{varname}/").replace(
+            "$index", index
+        )
+        TgeQuant.mean(dim="time").to_netcdf(nc_file, "w")
 
     del TgeQuant
     return result_dict
@@ -3037,24 +2376,20 @@ def get_tmin_days_below_Qth(
     dec_mode,
     drop_incomplete_djf,
     annual_strict,
-    # season="ANN",
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
-    if isinstance(quantile, Quantity):  # convert to just the value if a pint.Quantity
-        quantile = quantile.magnitude
     # open the reference dataset
-    ds_reference = xr.open_dataset(file_name_ref_tmin_quant)[f"q{quantile}_ANN"]
+    ds_reference = xr.open_dataset(file_name_ref_tmin_quant)[f"q{quantile}"]
 
     # Get annual fraction of days with max temperature less than deg F
     index = f"tmin_days_below_q{quantile}"
-    # print("Metric:", index)
+    print("Metric:", index)
     varname = "tasmin"
 
     # Rechunk Dask Arrays
-    # if isinstance(ds[varname], dask.array.core.Array):
-    #     ds[varname] = ds[varname].chunk({"time": -1})
+    if isinstance(ds[varname], dask.array.core.Array):
+        ds[varname] = ds[varname].chunk({"time": -1})
 
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -3094,11 +2429,10 @@ def get_tmin_days_below_Qth(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
-        if mode == "climatology":
-            TleQuant.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            TleQuant.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/quantile/{varname}/").replace(
+            "$index", index
+        )
+        TleQuant.mean(dim="time").to_netcdf(nc_file, "w")
 
     del TleQuant
     return result_dict
@@ -3113,13 +2447,12 @@ def get_chill_hours(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
     """Number of hours per year with temperature between 32F and 45F. Estimated using Baldocchi and Wong (2008)"""
 
     varname = "tasmin"
     index = "chill_hours"
-    # print("Metric:", index)
+    print("Metric:", index)
 
     TMIN = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -3135,60 +2468,52 @@ def get_chill_hours(
         tmax_da=ds_tasmax["tasmax"],
         pentad=False,
     )
-    ChillHours = update_nc_attrs(
-        ChillHours, dec_mode, drop_incomplete_djf, annual_strict
-    )
-    # Compute statistics
-    result_dict = metrics_json(
-        {index: ChillHours}, obs_dict={}, region="land", regrid=False
-    )
 
-    if fig_file is not None:
-        fig_file1 = fig_file.replace("/plots/", f"/plots/annual/{varname}/").replace(
-            "$index", "_".join([index, "ANN"])
-        )
-        ChillHours["ANN"].mean("time").plot(
-            cmap="jet_r", cbar_kwargs={"label": "hours"}
-        )
-        plt.title("Cumulative Hours between 32F and 45F")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
+    return ChillHours
 
-    if nc_file is not None:
-        encoding = {
-            "ANN": {
-                "_FillValue": None,  # Disable _FillValue if not needed
-                "dtype": "int64",  # Ensure the data type matches your variable
-            }
-        }
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        if mode == "climatology":
-            ChillHours = ChillHours.mean(dim="time")
-            ChillHours.to_netcdf(nc_file, "w", encoding=encoding)
-        else:
-            ChillHours["ANN"] = ChillHours["ANN"].astype("float32")
-            ChillHours.to_netcdf(nc_file, "w", encoding=encoding)
+    # ChillHours = update_nc_attrs(
+    #     ChillHours, dec_mode, drop_incomplete_djf, annual_strict
+    # )
 
-    del ChillHours
-    return result_dict
+    # # Compute statistics
+    # result_dict = metrics_json(
+    #     {index: ChillHours}, obs_dict={}, region="land", regrid=False
+    # )
+
+    # # if fig_file is not None:
+    # #     fig_file1 = fig_file.replace("/plots/", f"/plots/annual/{varname}/").replace(
+    # #         "$index", "_".join([index, "ANN"])
+    # #     )
+    # #     ChillHours["ANN"].mean("time").plot(
+    # #         cmap="jet_r", cbar_kwargs={"label": "hours"}
+    # #     )
+    # #     plt.title("Cumulative Hours between 32F and 45F")
+    # #     ax = plt.gca()
+    # #     ax.set_facecolor(bgclr)
+    # #     plt.savefig(fig_file1)
+    # #     plt.close()
+
+    # if nc_file is not None:
+    #     encoding = {
+    #         "ANN": {
+    #             "_FillValue": None,  # Disable _FillValue if not needed
+    #             "dtype": "int64",  # Ensure the data type matches your variable
+    #         }
+    #     }
+    #     nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace("$index", index)
+    #     ChillHours.mean(dim="time").to_netcdf(nc_file, "w", encoding=encoding)
+
+    # del ChillHours
+    # return result_dict
 
 
 # Precipitation Metrics
-def get_total_pr(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+def get_mean_pr(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # Get annual and seasonal mean maximum daily temperature.
-    index = f"total_pr"
-    # print("Metric:", index)
+    index = f"mean_pr"
+    print("Metric:", index)
     varname = "pr"
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -3199,12 +2524,12 @@ def get_total_pr(
         annual_strict=annual_strict,
     )
     PRmean = xr.Dataset()
-    seasons = ["ANN", "DJF", "MAM", "JJA", "SON"]
-    for season in seasons:  # , "DJF", "MAM", "JJA", "SON"]:
+
+    for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
         if season == "ANN":
-            PRmean[season] = S.annual_stats("sum")
+            PRmean["ANN"] = S.annual_stats("mean")
         else:
-            PRmean[season] = S.seasonal_stats(season, "sum")
+            PRmean[season] = S.seasonal_stats(season, "mean")
 
     PRmean = update_nc_attrs(PRmean, dec_mode, drop_incomplete_djf, annual_strict)
     # Compute statistics
@@ -3213,7 +2538,7 @@ def get_total_pr(
     )
 
     if fig_file is not None:
-        for season in seasons:
+        for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
             if season == "ANN":
                 fig_file1 = fig_file.replace(
                     "/plots/", f"/plots/annual/{varname}/"
@@ -3225,7 +2550,7 @@ def get_total_pr(
             PRmean[season].mean("time").plot(
                 cmap="BuPu", cbar_kwargs={"label": ds[varname].attrs["units"]}
             )
-            plt.title(f"Average {season} Precipitation")
+            plt.title(f"Average {season} Daily Precipitation")
             ax = plt.gca()
             ax.set_facecolor(bgclr)
             plt.savefig(fig_file1)
@@ -3233,15 +2558,20 @@ def get_total_pr(
 
     if nc_file is not None:
         out_means = []
-        for season in seasons:
-            if mode == "climatology":
-                out_means.append(PRmean[season].mean(dim="time"))
-            else:
-                out_means.append(PRmean[season])
+        for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
+            out_means.append(PRmean[season].mean(dim="time"))
 
         da_out = xr.concat(out_means, dim="season")
-        da_out = da_out.assign_coords(season=("season", seasons))
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
+        da_out = da_out.assign_coords(
+            season=("season", ["ANN", "DJF", "MAM", "JJA", "SON"])
+        )
+
+        # if season == "ANN":
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        # else:
+        #     nc_file = nc_file.replace("/netcdf/", f"/netcdf/seasonal/{varname}/").replace("$index", index)
 
         da_out.to_dataset(name=varname).to_netcdf(nc_file, "w")
         del da_out
@@ -3250,7 +2580,7 @@ def get_total_pr(
     return result_dict
 
 
-def get_monthly_pr(
+def get_monthly_mean_pr(
     ds,
     sftlf,
     dec_mode,
@@ -3258,11 +2588,10 @@ def get_monthly_pr(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
-    # Monthly precipitation
+    # Monthly mean precipitation
 
-    index_base = "monthly_pr"
+    index_base = "monthly_mean_pr"
     varname = "pr"
 
     TS = TimeSeriesData(ds, varname)
@@ -3274,7 +2603,12 @@ def get_monthly_pr(
         annual_strict=annual_strict,
     )
     PRmonmean = xr.Dataset()
-    PRmonmean[varname] = S.monthly_stats("sum")
+
+    for month in range(1, 13):
+        index = index_base.replace("monthly", S.month_lookup[month])
+        print("Metric:", index)
+        PRmonmean[S.month_lookup[month]] = S.monthly_stats(month, "mean")
+
     PRmonmean = update_nc_attrs(PRmonmean, dec_mode, drop_incomplete_djf, annual_strict)
 
     if fig_file is not None:
@@ -3283,9 +2617,9 @@ def get_monthly_pr(
             fig_file1 = fig_file.replace(
                 "/plots/", f"/plots/monthly/{varname}/"
             ).replace("$index", index)
-            PRmonmean[varname].isel(time=(PRmonmean.time.dt.month == month)).mean(
-                "time"
-            ).plot(cmap="BuPu", cbar_kwargs={"label": ds[varname].attrs["units"]})
+            PRmonmean[S.month_lookup[month]].mean("time").plot(
+                cmap="BuPu", cbar_kwargs={"label": ds[varname].attrs["units"]}
+            )
             plt.title(f"{S.month_lookup[month]} Mean Precipitation")
             ax = plt.gca()
             ax.set_facecolor(bgclr)
@@ -3298,36 +2632,35 @@ def get_monthly_pr(
     )
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "monthly", varname, index_base)
-        PRmonmean[varname].attrs["units"] = ds[varname].attrs["units"]
+        names = []
+        means = []
+        for month in range(1, 13):
+            month_name = S.month_lookup[month]
+            mean_val = PRmonmean[month_name].mean(dim="time")
 
-        if mode == "climatology":
-            PRmonmean = S.fix_monthly_time_coord2(
-                PRmonmean.groupby("time.month").mean()
-            )
-            PRmonmean.to_netcdf(nc_file, "w")
-        else:
-            PRmonmean.to_netcdf(nc_file, "w")
+            means.append(mean_val)
+            names.append(month_name)
+
+        da_mean = xr.concat(means, dim="month")
+        da_mean = da_mean.assign_coords(month=("month", names))
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/monthly/{varname}/").replace(
+            "$index", index_base
+        )
+        da_mean.to_dataset(name=varname).to_netcdf(nc_file, "w")
+        del da_mean
 
     del PRmonmean
-    return result_dict, nc_file
+    return result_dict
 
 
 def get_pr_q50(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     index = "pr_q50"
     varname = "pr"
     lat_name = get_latitude_key(ds)
     lon_name = get_longitude_key(ds)
-    # print("Metric:", index)
+    print("Metric:", index)
 
     # Need at least 1mm rain
     # ds[varname] = ds[varname].where(ds[varname] >= 1)
@@ -3339,7 +2672,7 @@ def get_pr_q50(
     PRq50 = PRq50.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
     if isinstance(ds[varname], dask.array.core.Array):
-        PRq50["q50"] = ds[varname].median("time")  # .chunk({"time": -1})
+        PRq50["q50"] = ds[varname].chunk({"time": -1}).median("time")
     else:
         PRq50["q50"] = ds[varname].median("time")
 
@@ -3359,8 +2692,9 @@ def get_pr_q50(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
-
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/quantile/{varname}/").replace(
+            "$index", index
+        )
         PRq50.to_netcdf(nc_file, "w")
 
     del PRq50
@@ -3368,18 +2702,11 @@ def get_pr_q50(
 
 
 def get_pr_q95p0(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     index = "pr_q95p0"
     varname = "pr"
-    # print("Metric:", index)
+    print("Metric:", index)
     lat_name = get_latitude_key(ds)
     lon_name = get_longitude_key(ds)
 
@@ -3393,7 +2720,7 @@ def get_pr_q95p0(
     PRq95p0 = PRq95p0.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
     # PRISM threw errors if chunk not specified
-    PRq95p0["q95p0"] = ds[varname].quantile(0.950, dim="time")  # .chunk({"time": -1})
+    PRq95p0["q95p0"] = ds[varname].chunk({"time": -1}).quantile(0.950, dim="time")
     PRq95p0 = update_nc_attrs(PRq95p0, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: PRq95p0}, obs_dict={}, region="land", regrid=False
@@ -3413,71 +2740,9 @@ def get_pr_q95p0(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
-        PRq95p0.to_netcdf(nc_file, "w")
-
-    del PRq95p0
-    return result_dict
-
-
-def get_seasonal_pr_q95p0(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
-):
-    index = "seasonal_pr_q95p0"
-    varname = "pr"
-    # print("Metric:", index)
-    lat_name = get_latitude_key(ds)
-    lon_name = get_longitude_key(ds)
-
-    season_dict = {
-        "ANN": range(1, 13),
-        "DJF": [12, 1, 2],
-        "MAM": [3, 4, 5],
-        "JJA": [6, 7, 8],
-        "SON": [9, 10, 11],
-    }
-
-    # Need at least 1mm rain
-    # ds[varname] = ds[varname].where(ds[varname] >= 1)
-
-    # Set up empty dataset
-    PRq95p0 = xr.zeros_like(ds)
-    PRq95p0[lat_name] = ds[lat_name]
-    PRq95p0[lon_name] = ds[lon_name]
-    PRq95p0 = PRq95p0.drop_vars(["time", "time_bnds", varname], errors="ignore")
-
-    for season in season_dict.keys():
-        months = season_dict[season]
-
-    # PRISM threw errors if chunk not specified
-    PRq95p0["q95p0"] = ds[varname].quantile(0.950, dim="time")  # .chunk({"time": -1})
-    PRq95p0 = update_nc_attrs(PRq95p0, dec_mode, drop_incomplete_djf, annual_strict)
-    result_dict = metrics_json(
-        {index: PRq95p0}, obs_dict={}, region="land", regrid=False
-    )
-
-    if fig_file is not None:
-        fig_file1 = fig_file.replace("/plots/", f"/plots/quantile/{varname}/").replace(
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/quantile/{varname}/").replace(
             "$index", index
         )
-        PRq95p0["q95p0"].plot(
-            cmap="BuPu", cbar_kwargs={"label": ds[varname].attrs["units"]}
-        )
-        plt.title("95th Percentile Daily precipitation")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
-
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
         PRq95p0.to_netcdf(nc_file, "w")
 
     del PRq95p0
@@ -3485,18 +2750,11 @@ def get_seasonal_pr_q95p0(
 
 
 def get_pr_q99p0(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     index = "pr_q99p0"
     varname = "pr"
-    # print("Metric:", index)
+    print("Metric:", index)
     lat_name = get_latitude_key(ds)
     lon_name = get_longitude_key(ds)
 
@@ -3510,7 +2768,7 @@ def get_pr_q99p0(
     PRq99p0 = PRq99p0.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
     # PRISM threw errors if chunk not specified
-    PRq99p0["q99p0"] = ds[varname].quantile(0.990, dim="time")  # .chunk({"time": -1})
+    PRq99p0["q99p0"] = ds[varname].chunk({"time": -1}).quantile(0.990, dim="time")
     PRq99p0 = update_nc_attrs(PRq99p0, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: PRq99p0}, obs_dict={}, region="land", regrid=False
@@ -3530,7 +2788,9 @@ def get_pr_q99p0(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/quantile/{varname}/").replace(
+            "$index", index
+        )
         PRq99p0.to_netcdf(nc_file, "w")
 
     del PRq99p0
@@ -3538,18 +2798,11 @@ def get_pr_q99p0(
 
 
 def get_pr_q99p9(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     index = "pr_q99p9"
     varname = "pr"
-    # print("Metric:", index)
+    print("Metric:", index)
     lat_name = get_latitude_key(ds)
     lon_name = get_longitude_key(ds)
 
@@ -3563,7 +2816,7 @@ def get_pr_q99p9(
     PRq99p9 = PRq99p9.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
     # PRISM threw errors if chunk not specified
-    PRq99p9["q99p9"] = ds[varname].quantile(0.999, dim="time")  # .chunk({"time": -1})
+    PRq99p9["q99p9"] = ds[varname].chunk({"time": -1}).quantile(0.999, dim="time")
     PRq99p9 = update_nc_attrs(PRq99p9, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {index: PRq99p9}, obs_dict={}, region="land", regrid=False
@@ -3583,7 +2836,9 @@ def get_pr_q99p9(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/quantile/{varname}/").replace(
+            "$index", index
+        )
         PRq99p9.to_netcdf(nc_file, "w")
 
     del PRq99p9
@@ -3591,18 +2846,11 @@ def get_pr_q99p9(
 
 
 def get_annual_pxx(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     varname = "pr"
     index = "annual_pxx"
-    # print("Metric:", index)
+    print("Metric:", index)
 
     # Get annual max precipitation
     PR = TimeSeriesData(ds, varname)
@@ -3618,45 +2866,35 @@ def get_annual_pxx(
     Pmax["ANN"] = S.annual_stats("max")
     Pmax = update_nc_attrs(Pmax, dec_mode, drop_incomplete_djf, annual_strict)
 
-    result_dict = metrics_json({index: Pmax}, obs_dict={}, region="land", regrid=False)
+    return Pmax
 
-    if fig_file is not None:
-        fig_file1 = fig_file.replace("/plots/", f"/plots/annual/{varname}/").replace(
-            "$index", "_".join([index, "ANN"])
-        )
-        Pmax["ANN"].mean("time").plot(
-            cmap="BuPu", cbar_kwargs={"label": ds[varname].attrs["units"]}
-        )
-        plt.title("Average annual maximum daily precipitation")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
+    # result_dict = metrics_json({index: Pmax}, obs_dict={}, region="land", regrid=False)
 
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        if mode == "climatology":
-            Pmax.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            Pmax.to_netcdf(nc_file, "w")
+    # if fig_file is not None:
+    #     fig_file1 = fig_file.replace("/plots/", f"/plots/annual/{varname}/").replace(
+    #         "$index", "_".join([index, "ANN"])
+    #     )
+    #     Pmax["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": ds[varname].attrs["units"]})
+    #     plt.title("Average annual maximum daily precipitation")
+    #     ax = plt.gca()
+    #     ax.set_facecolor(bgclr)
+    #     plt.savefig(fig_file1)
+    #     plt.close()
 
-    del Pmax
-    return result_dict
+    # if nc_file is not None:
+    #     nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace("$index", index)
+    #     Pmax.mean(dim="time").to_netcdf(nc_file, "w")
+
+    # del Pmax
+    # return result_dict
 
 
-def get_mean_pr(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+def get_annual_pr_total(
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     varname = "pr"
-    index = "mean_pr"
-    # print("Metric:", index)
+    index = "annual_ptot"
+    print("Metric:", index)
 
     PR = TimeSeriesData(ds, varname)
 
@@ -3669,34 +2907,30 @@ def get_mean_pr(
     )
 
     Ptot = xr.Dataset()
-    Ptot["ANN"] = S.annual_stats("mean")
+    Ptot["ANN"] = S.annual_stats("total")
     Ptot = update_nc_attrs(Ptot, dec_mode, drop_incomplete_djf, annual_strict)
 
-    result_dict = metrics_json({index: Ptot}, obs_dict={}, region="land", regrid=False)
+    return Ptot
 
-    if fig_file is not None:
-        fig_file1 = fig_file.replace("/plots/", f"/plots/annual/{varname}/").replace(
-            "$index", "_".join([index, "ANN"])
-        )
-        Ptot["ANN"].mean("time").plot(
-            cmap="BuPu", cbar_kwargs={"label": ds[varname].attrs["units"]}
-        )
-        plt.title("Average Daily Precipitation")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
+    # result_dict = metrics_json({index: Ptot}, obs_dict={}, region="land", regrid=False)
 
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
+    # if fig_file is not None:
+    #     fig_file1 = fig_file.replace("/plots/", f"/plots/annual/{varname}/").replace(
+    #         "$index", "_".join([index, "ANN"])
+    #     )
+    #     Ptot["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": ds[varname].attrs["units"]})
+    #     plt.title("Average annual total daily precipitation")
+    #     ax = plt.gca()
+    #     ax.set_facecolor(bgclr)
+    #     plt.savefig(fig_file1)
+    #     plt.close()
 
-        if mode == "climatology":
-            Ptot.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            Ptot.to_netcdf(nc_file, "w")
+    # if nc_file is not None:
+    #     nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace("$index", index)
+    #     Ptot.mean(dim="time").to_netcdf(nc_file, "w")
 
-    del Ptot
-    return result_dict
+    # del Ptot
+    # return result_dict
 
 
 def get_annual_pr_ge_X(
@@ -3708,7 +2942,6 @@ def get_annual_pr_ge_X(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
     varname = "pr"
     unit_str = ds[varname].attrs["units"]
@@ -3716,7 +2949,7 @@ def get_annual_pr_ge_X(
     data_units = Unit(f"{unit_str}")  # Assumes degrees "K", "F", or "C"
 
     index = "annual_pr_ge_{0}{1}".format(threshold.magnitude, out_unit_str)
-    # print("Metric:", index)
+    print("Metric:", index)
     threshold_pint_converted = threshold.to(data_units)
 
     PR = TimeSeriesData(ds, varname)
@@ -3755,11 +2988,10 @@ def get_annual_pr_ge_X(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        if mode == "climatology":
-            PRgeX.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            PRgeX.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        PRgeX.mean(dim="time").to_netcdf(nc_file, "w")
 
     del PRgeX
     return result_dict
@@ -3775,14 +3007,10 @@ def get_pr_days_above_Qth(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
     non_zero=False,
 ):
-    if isinstance(quantile, Quantity):
-        quantile = quantile.magnitude
-
     # open the reference dataset
-    ds_reference = xr.open_dataset(file_name_ref_pr_quant)[f"q{quantile}_ANN"].copy(
+    ds_reference = xr.open_dataset(file_name_ref_pr_quant)[f"q{quantile}"].copy(
         deep=True
     )
 
@@ -3791,12 +3019,12 @@ def get_pr_days_above_Qth(
         index = f"pr_days_above_non_zero_q{quantile}"
     else:
         index = f"pr_days_above_q{quantile}"
-    # print("Metric:", index)
+    print("Metric:", index)
     varname = "pr"
 
     # Rechunk Dask Arrays
-    # if isinstance(ds[varname], dask.array.core.Array):
-    #     ds[varname] = ds[varname].chunk({"time": -1})
+    if isinstance(ds[varname], dask.array.core.Array):
+        ds[varname] = ds[varname].chunk({"time": -1})
 
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -3839,11 +3067,10 @@ def get_pr_days_above_Qth(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
-        if mode == "climatology":
-            PRgeQuant.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            PRgeQuant.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/quantile/{varname}/").replace(
+            "$index", index
+        )
+        PRgeQuant.mean(dim="time").to_netcdf(nc_file, "w")
 
     del PRgeQuant
     return result_dict
@@ -3859,24 +3086,22 @@ def get_pr_sum_above_Qth(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
-    # Will always be the quantile including zero precipitation (TODO:?)
-    if isinstance(quantile, Quantity):
-        quantile = quantile.magnitude
+    # Will always be the quantile including zero precipitation
+
     # open the reference dataset
-    ds_reference = xr.open_dataset(file_name_ref_pr_quant)[f"q{quantile}_ANN"].copy(
+    ds_reference = xr.open_dataset(file_name_ref_pr_quant)[f"q{quantile}"].copy(
         deep=True
     )
 
     # Get annual fraction of days with precip > observations quanitle
     index = f"pr_sum_above_q{quantile}"
-    # print("Metric:", index)
+    print("Metric:", index)
     varname = "pr"
 
     # Rechunk Dask Arrays
-    # if isinstance(ds[varname], dask.array.core.Array):
-    #     ds[varname] = ds[varname].chunk({"time": -1})
+    if isinstance(ds[varname], dask.array.core.Array):
+        ds[varname] = ds[varname].chunk({"time": -1})
 
     TS = TimeSeriesData(ds, varname)
     S = SeasonalAverager(
@@ -3907,7 +3132,7 @@ def get_pr_sum_above_Qth(
             cmap="Blues",
             vmin=np.nanmin(PRSUMgeQuant["ANN"].mean("time").data),
             vmax=np.nanmax(PRSUMgeQuant["ANN"].mean("time").data),
-            cbar_kwargs={"label": "%"},
+            cbar_kwargs={"label": ds[varname].attrs["units"]},
         )
         plt.title(
             f"Percent of Total Precipitation per year on Days\nwith precipitation >= q{quantile}"
@@ -3918,11 +3143,10 @@ def get_pr_sum_above_Qth(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "quantile", varname, index)
-        if mode == "climatology":
-            PRSUMgeQuant.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            PRSUMgeQuant.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/quantile/{varname}/").replace(
+            "$index", index
+        )
+        PRSUMgeQuant.mean(dim="time").to_netcdf(nc_file, "w")
 
     del PRSUMgeQuant
     return result_dict
@@ -3937,12 +3161,10 @@ def get_annual_pr_nday(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
 ):
     # Annual highest maximum precipitation over a 5-day period
-    # index = f"annual_max_precip_{n}day_total"
-    index = f"annual_max_{n}day_pr"
-    # print("Metric:", index)
+    index = f"annual_max_precip_{n}day_total"
+    print("Metric:", index)
     varname = "pr"
 
     TS = TimeSeriesData(ds, varname)
@@ -3959,48 +3181,37 @@ def get_annual_pr_nday(
     )  # Multiply by n to get the total amount of precipitation over the n day period
     PRmaxNday = update_nc_attrs(PRmaxNday, dec_mode, drop_incomplete_djf, annual_strict)
 
-    # Compute statistics
-    result_dict = metrics_json(
-        {index: PRmaxNday}, obs_dict={}, region="land", regrid=False
-    )
+    return PRmaxNday
+    # # Compute statistics
+    # result_dict = metrics_json(
+    #     {index: PRmaxNday}, obs_dict={}, region="land", regrid=False
+    # )
 
-    if fig_file is not None:
-        fig_file1 = fig_file.replace("/plots/", f"/plots/annual/{varname}/").replace(
-            "$index", "_".join([index, "ANN"])
-        )
-        PRmaxNday["ANN"].mean("time").plot(
-            cmap="BuPu", cbar_kwargs={"label": ds[varname].attrs["units"]}
-        )
-        plt.title(f"Annual maximum {n}-day total precipitation")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
+    # if fig_file is not None:
+    #     fig_file1 = fig_file.replace("/plots/", f"/plots/annual/{varname}/").replace(
+    #         "$index", "_".join([index, "ANN"])
+    #     )
+    #     PRmaxNday["ANN"].mean("time").plot(cmap="BuPu", cbar_kwargs={"label": ds[varname].attrs["units"]})
+    #     plt.title(f"Annual maximum {n}-day total precipitation")
+    #     ax = plt.gca()
+    #     ax.set_facecolor(bgclr)
+    #     plt.savefig(fig_file1)
+    #     plt.close()
 
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        if mode == "climatology":
-            PRmaxNday.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            PRmaxNday.to_netcdf(nc_file, "w")
+    # if nc_file is not None:
+    #     nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace("$index", index)
+    #     PRmaxNday.mean(dim="time").to_netcdf(nc_file, "w")
 
-    del PRmaxNday
-    return result_dict
+    # del PRmaxNday
+    # return result_dict
 
 
 def get_wettest_5yr(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     varname = "pr"
-    index = "wettest_5yr_total"
-    # print("Metric:", index)
+    index = "wettest_5yr"
+    print("Metric:", index)
 
     # Get annual max precipitation
     PR = TimeSeriesData(ds, varname)
@@ -4021,12 +3232,8 @@ def get_wettest_5yr(
 
     # Set up empty dataset
     P5 = xr.zeros_like(Pmax.isel({"time": slice(0, nseg)}))
-
-    lat_name = get_latitude_key(P5)
-    lon_name = get_longitude_key(P5)
-
-    P5[lat_name] = Pmax[lat_name]
-    P5[lon_name] = Pmax[lon_name]
+    P5["lat"] = Pmax["lat"]
+    P5["lon"] = Pmax["lon"]
 
     # Will be updated time for 5 year quantity
     timelist = []
@@ -4066,13 +3273,13 @@ def get_wettest_5yr(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        if mode == "climatology":
-            P5.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            P5.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        P5.mean(dim="time").to_netcdf(nc_file, "w")
+        del P5
 
-    del Pmax, P5
+    del Pmax
     return result_dict
 
 
@@ -4084,13 +3291,12 @@ def get_annual_cwd(
     annual_strict,
     fig_file=None,
     nc_file=None,
-    mode="climatology",
     thresh=0.254,
 ):
     varname = "pr"
     unit_str = ds[varname].attrs["units"]
     index = "annual_cwd"
-    # print("Metric:", index)
+    print("Metric:", index)
 
     # Attach units with Pint if not already present
     pr_units = Q_(ds[varname].data, unit_str)
@@ -4143,30 +3349,22 @@ def get_annual_cwd(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        if mode == "climatology":
-            Pcwd.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            Pcwd.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        Pcwd.mean(dim="time").to_netcdf(nc_file, "w")
 
     del Pcwd
     return result_dict
 
 
 def get_annual_consecDD(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     varname = "pr"
     unit_str = ds[varname].attrs["units"]
     index = "annual_cdd"
-    # print("Metric:", index)
+    print("Metric:", index)
 
     # Attach units with Pint if not already present
     pr_units = Q_(ds[varname].data, unit_str)
@@ -4189,48 +3387,41 @@ def get_annual_consecDD(
     Pcdd.time.encoding["calendar"] = ds.time.encoding["calendar"]
 
     Pcdd = update_nc_attrs(Pcdd, dec_mode, drop_incomplete_djf, True)
-    result_dict = metrics_json({index: Pcdd}, obs_dict={}, region="land", regrid=False)
 
-    if fig_file is not None:
-        fig_file1 = fig_file.replace("/plots/", f"/plots/annual/pr/").replace(
-            "$index", "_".join([index, "ANN"])
-        )
-        Pcdd["ANN"].mean("time").plot(cmap="YlOrRd", cbar_kwargs={"label": "count"})
-        plt.title("Average annual max count of consecutive dry days")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
+    return Pcdd
 
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        if mode == "climatology":
-            Pcdd.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            Pcdd.to_netcdf(nc_file, "w")
+    # result_dict = metrics_json({index: Pcdd}, obs_dict={}, region="land", regrid=False)
 
-    del Pcdd
-    return result_dict
+    # if fig_file is not None:
+    #     fig_file1 = fig_file.replace("/plots/", f"/plots/annual/pr/").replace(
+    #         "$index", "_".join([index, "ANN"])
+    #     )
+    #     Pcdd["ANN"].mean("time").plot(cmap="YlOrRd", cbar_kwargs={"label": "count"})
+    #     plt.title("Average annual max count of consecutive dry days")
+    #     ax = plt.gca()
+    #     ax.set_facecolor(bgclr)
+    #     plt.savefig(fig_file1)
+    #     plt.close()
+
+    # if nc_file is not None:
+    #     nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace("$index", index)
+    #     Pcdd.mean(dim="time").to_netcdf(nc_file, "w")
+
+    # del Pcdd
+    # return result_dict
 
 
 def get_JJA_consecDD(
-    ds,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
+    ds, sftlf, dec_mode, drop_incomplete_djf, annual_strict, fig_file=None, nc_file=None
 ):
     # index = "JJA_cdd"
     # varname = "pr"
-    # # print("Metric:", index)
+    # print("Metric:", index)
 
     varname = "pr"
     unit_str = ds[varname].attrs["units"]
-    index = "annual_JJA_cdd"
-    # print("Metric:", index)
+    index = "JJA_cdd"
+    print("Metric:", index)
 
     # Attach units with Pint if not already present
     pr_units = Q_(ds[varname].data, unit_str)
@@ -4263,7 +3454,7 @@ def get_JJA_consecDD(
     result_dict = metrics_json({index: Pcdd}, obs_dict={}, region="land", regrid=False)
 
     if fig_file is not None:
-        fig_file1 = fig_file.replace("/plots/", f"/plots/seasonal/pr/").replace(
+        fig_file1 = fig_file.replace("/plots/", f"/plots/annual/pr/").replace(
             "$index", "_".join([index, "ANN"])
         )
         Pcdd["JJA"].mean("time").plot(cmap="YlOrBr", cbar_kwargs={"label": "count"})
@@ -4274,11 +3465,10 @@ def get_JJA_consecDD(
         plt.close()
 
     if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "seasonal", varname, index)
-        if mode == "climatology":
-            Pcdd.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            Pcdd.to_netcdf(nc_file, "w")
+        nc_file = nc_file.replace("/netcdf/", f"/netcdf/annual/{varname}/").replace(
+            "$index", index
+        )
+        Pcdd.to_netcdf(nc_file, "w")
 
     del Pcdd
     return result_dict
@@ -4287,19 +3477,15 @@ def get_JJA_consecDD(
 # Reference Dataset Functions
 def get_ref_tasmax_Q(
     ds,
-    sftlf,
     dec_mode,
     drop_incomplete_djf,
     annual_strict,
     nc_file=None,
-    mode="climatology",
     quantiles=[1, 99],
     start_year=None,
     end_year=None,
 ):
     varname = "tasmax"
-    if isinstance(quantiles[0], Quantity):
-        quantiles = [val.magnitude for val in quantiles]
 
     season_dict = {
         "ANN": range(1, 13),
@@ -4316,50 +3502,39 @@ def get_ref_tasmax_Q(
 
     # Set up empty dataset
     RefTmaxQ = xr.zeros_like(ds)
-    lat_name = get_latitude_key(ds)
-    lon_name = get_longitude_key(ds)
-
-    RefTmaxQ[lat_name] = ds[lat_name]
-    RefTmaxQ[lon_name] = ds[lon_name]
-
+    RefTmaxQ["lat"] = ds["lat"]
+    RefTmaxQ["lon"] = ds["lon"]
     RefTmaxQ = RefTmaxQ.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
     for season, months in season_dict.items():
         for quant in quantiles:  # which quantiles we need for the reference period
-            indexQ = f"ref_tasmax_q{quant}"  # _{season}"
-            # print("Metric:", indexQ)
+            indexQ = f"ref_tasmax_q{quant}_{season}"
+            print("Metric:", indexQ)
 
             if isinstance(ds[varname], dask.array.core.Array):
                 RefTmaxQ[f"q{quant}_{season}"] = (
                     ds[varname]
                     .isel(time=ds.time.dt.month.isin(months))
+                    .chunk({"time": -1})
                     .quantile(quant / 100, dim="time")
-                    .where(sftlf.sftlf >= 0.5)
-                    .where(sftlf.sftlf <= 1)
-                )  # .chunk({"time": -1})
+                )
             else:
                 RefTmaxQ[f"q{quant}_{season}"] = (
                     ds[varname]
                     .isel(time=ds.time.dt.month.isin(months))
-                    # .chunk({"time": -1})
+                    .chunk({"time": -1})
                     .quantile(quant / 100, dim="time")
-                    .where(sftlf.sftlf >= 0.5)
-                    .where(sftlf.sftlf <= 1)
                 )
 
     RefTmaxQ = update_nc_attrs(RefTmaxQ, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {indexQ: RefTmaxQ}, obs_dict={}, region="land", regrid=False
     )
-
     # We don't want to save a figure, since this is just for reference
 
     index = "ref_tasmax_quantile"
-
     if nc_file is not None:
         nc_file = nc_file.replace("$index", index)
-        if "quantization_info" in RefTmaxQ:
-            del RefTmaxQ["quantization_info"]
         RefTmaxQ.to_netcdf(nc_file, "w")
 
     del RefTmaxQ
@@ -4368,82 +3543,48 @@ def get_ref_tasmax_Q(
 
 def get_ref_tasmin_Q(
     ds,
-    sftlf,
     dec_mode,
     drop_incomplete_djf,
     annual_strict,
     nc_file=None,
-    mode="climatology",
     quantiles=[1, 99],
     start_year=None,
     end_year=None,
 ):
     varname = "tasmin"
-    if isinstance(quantiles[0], Quantity):
-        quantiles = [val.magnitude for val in quantiles]
-
-    season_dict = {
-        "ANN": range(1, 13),
-        "DJF": [12, 1, 2],
-        "MAM": [3, 4, 5],
-        "JJA": [6, 7, 8],
-        "SON": [9, 10, 11],
-    }
 
     if (start_year is not None) and (end_year is not None):
-        print(start_year)
-        print(end_year)
-
         ds = ds.isel(
             time=((ds.time.dt.year >= start_year) & (ds.time.dt.year <= end_year))
         )
 
     # Set up empty dataset
     RefTminQ = xr.zeros_like(ds)
-
-    lat_name = get_latitude_key(ds)
-    lon_name = get_longitude_key(ds)
-
-    RefTminQ[lat_name] = ds[lat_name]
-    RefTminQ[lon_name] = ds[lon_name]
+    RefTminQ["lat"] = ds["lat"]
+    RefTminQ["lon"] = ds["lon"]
     RefTminQ = RefTminQ.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    for season, months in season_dict.items():
-        for quant in quantiles:  # which quantiles we need for the reference period
-            indexQ = f"ref_tasmin_q{quant}_{season}"
-            # print("Metric:", indexQ)
+    for quant in quantiles:  # which quantiles we need for the reference period
+        indexQ = f"ref_tasmin_q{quant}"
+        print("Metric:", indexQ)
 
-            if isinstance(ds[varname], dask.array.core.Array):
-                RefTminQ[f"q{quant}_{season}"] = (
-                    ds[varname]
-                    .isel(time=ds.time.dt.month.isin(months))
-                    # .chunk({"time": -1})
-                    .quantile(quant / 100, dim="time")
-                    .where(sftlf.sftlf >= 0.5)
-                    .where(sftlf.sftlf <= 1)
-                )
-            else:
-                RefTminQ[f"q{quant}_{season}"] = (
-                    ds[varname]
-                    .isel(time=ds.time.dt.month.isin(months))
-                    # .chunk({"time": -1})
-                    .quantile(quant / 100, dim="time")
-                    .where(sftlf.sftlf >= 0.5)
-                    .where(sftlf.sftlf <= 1)
-                )
+        if isinstance(ds[varname], dask.array.core.Array):
+            RefTminQ[f"q{quant}"] = (
+                ds[varname].chunk({"time": -1}).quantile(quant / 100, dim="time")
+            )
+        else:
+            RefTminQ[f"q{quant}"] = (
+                ds[varname].chunk({"time": -1}).quantile(quant / 100, dim="time")
+            )
     RefTminQ = update_nc_attrs(RefTminQ, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {indexQ: RefTminQ}, obs_dict={}, region="land", regrid=False
     )
-
     # We don't want to save a figure, since this is just for reference
+
     index = "ref_tasmin_quantile"
     if nc_file is not None:
         nc_file = nc_file.replace("$index", index)
-
-        if "quantization_info" in RefTminQ:
-            del RefTminQ["quantization_info"]
-
         RefTminQ.to_netcdf(nc_file, "w")
 
     del RefTminQ
@@ -4452,81 +3593,53 @@ def get_ref_tasmin_Q(
 
 def get_ref_pr_Q(
     ds,
-    sftlf,
     dec_mode,
     drop_incomplete_djf,
     annual_strict,
     nc_file=None,
-    mode="climatology",
     quantiles=[10, 20, 30, 40, 50, 60, 70, 80, 90, 95, 99],
     non_zero=False,
     start_year=None,
     end_year=None,
 ):
     varname = "pr"
-    if isinstance(quantiles[0], Quantity):
-        quantiles = [val.magnitude for val in quantiles]
 
     if (start_year is not None) and (end_year is not None):
         ds = ds.isel(
             time=((ds.time.dt.year >= start_year) & (ds.time.dt.year <= end_year))
         )
 
-    season_dict = {
-        # "ANN": range(1, 13),
-        "DJF": [12, 1, 2],
-        "MAM": [3, 4, 5],
-        "JJA": [6, 7, 8],
-        "SON": [9, 10, 11],
-    }
     # Set up empty dataset
     if non_zero:
         pr_arr = ds.copy(deep=True)["pr"].where(ds["pr"] > 0)
     else:
         pr_arr = ds.copy(deep=True)["pr"]
-
-    RefPRQ = xr.zeros_like(ds["pr"]).to_dataset(
-        name="pr"
-    )  # case with > 1 variable in dataset
-    lat_name = get_latitude_key(ds)
-    lon_name = get_longitude_key(ds)
-
-    RefPRQ[lat_name] = ds[lat_name]
-    RefPRQ[lon_name] = ds[lon_name]
-
+    RefPRQ = xr.zeros_like(ds)
+    RefPRQ["lat"] = ds["lat"]
+    RefPRQ["lon"] = ds["lon"]
     RefPRQ = RefPRQ.drop_vars(["time", "time_bnds", varname], errors="ignore")
 
-    for season, months in season_dict.items():
-        for quant in quantiles:  # which quantiles we need for the reference period
-            if non_zero:
-                indexQ = f"ref_pr_non_zero_q{quant}"
-            else:
-                indexQ = f"ref_pr_q{quant}"
-            # print("Metric:", indexQ)
+    for quant in quantiles:  # which quantiles we need for the reference period
+        if non_zero:
+            indexQ = f"ref_pr_non_zero_q{quant}"
+        else:
+            indexQ = f"ref_pr_q{quant}"
+        print("Metric:", indexQ)
 
-            if isinstance(
-                pr_arr, dask.array.core.Array
-            ):  # When run in parallel, it won't automatically be dask...
-                RefPRQ[f"q{quant}_{season}"] = (
-                    pr_arr.isel(time=ds.time.dt.month.isin(months))
-                    # .chunk({"time": -1})
-                    .quantile(quant / 100, dim="time")
-                    .where(sftlf.sftlf >= 0.5)
-                    .where(sftlf.sftlf <= 1)
-                )
-            else:
-                RefPRQ[f"q{quant}_{season}"] = (
-                    pr_arr.isel(time=ds.time.dt.month.isin(months))
-                    # .chunk({"time": -1})
-                    .quantile(quant / 100, dim="time")
-                    .where(sftlf.sftlf >= 0.5)
-                    .where(sftlf.sftlf <= 1)
-                )
+        if isinstance(
+            pr_arr, dask.array.core.Array
+        ):  # When run in parallel, it won't automatically be dask...
+            RefPRQ[f"q{quant}"] = pr_arr.chunk({"time": -1}).quantile(
+                quant / 100, dim="time"
+            )
+        else:
+            RefPRQ[f"q{quant}"] = pr_arr.chunk({"time": -1}).quantile(
+                quant / 100, dim="time"
+            )  # .chunk({"time":-1})
     RefPRQ = update_nc_attrs(RefPRQ, dec_mode, drop_incomplete_djf, annual_strict)
     result_dict = metrics_json(
         {indexQ: RefPRQ}, obs_dict={}, region="land", regrid=False
     )
-
     # We don't want to save a figure, since this is just for reference
 
     index = "ref_pr_quantile"
@@ -4539,426 +3652,6 @@ def get_ref_pr_Q(
 
     del RefPRQ
     return result_dict, nc_file
-
-
-def get_mean_var(
-    ds,
-    varname,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
-):
-    if varname not in ds:
-        raise ValueError(f"Variable name: {varname} not found in Dataset")
-
-    # Get annual and seasonal mean maximum daily temperature.
-    index = f"mean_{varname}"
-
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    meanVar = xr.Dataset()
-
-    for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-        if season == "ANN":
-            meanVar["ANN"] = S.annual_stats("mean")
-        else:
-            meanVar[season] = S.seasonal_stats(season, "mean")
-
-    meanVar = update_nc_attrs(meanVar, dec_mode, drop_incomplete_djf, annual_strict)
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index: meanVar}, obs_dict={}, region="land", regrid=False
-    )
-
-    if fig_file is not None:
-        for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-            if season == "ANN":
-                fig_file1 = fig_file.replace(
-                    "/plots/", f"/plots/annual/{varname}/"
-                ).replace("$index", "_".join([index, season]))
-            else:
-                fig_file1 = fig_file.replace(
-                    "/plots/", f"/plots/seasonal/{varname}/"
-                ).replace("$index", "_".join([index, season]))
-            meanVar[season].mean("time").plot(
-                cbar_kwargs={"label": ds[varname].attrs["units"]}
-            )
-            plt.title(f"Average {season} daily {varname}")
-            ax = plt.gca()
-            ax.set_facecolor(bgclr)
-            # print(ds[varname].attrs["units"])
-            # print(fig_file1)
-            plt.savefig(fig_file1)
-            plt.close()
-
-    if nc_file is not None:
-        out_means = []
-        for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-            if mode == "timeseries":
-                out_means.append(meanVar[season])
-            else:
-                out_means.append(meanVar[season].mean(dim="time"))
-        da_out = xr.concat(out_means, dim="season")
-        da_out = da_out.assign_coords(
-            season=("season", ["ANN", "DJF", "MAM", "JJA", "SON"])
-        )
-
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-        print(nc_file)
-
-        da_out.to_dataset(name=varname).to_netcdf(nc_file, "w")
-        del da_out
-
-    del meanVar
-    return result_dict
-
-
-def get_total_var(
-    ds,
-    varname,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
-):
-    if varname not in ds:
-        raise ValueError(f"Variable name: {varname} not found in Dataset")
-
-    # Get annual and seasonal mean maximum daily temperature.
-    index = f"total_{varname}"
-
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    totVar = xr.Dataset()
-
-    for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-        if season == "ANN":
-            totVar["ANN"] = S.annual_stats("sum")
-        else:
-            totVar[season] = S.seasonal_stats(season, "sum")
-
-    totVar = update_nc_attrs(totVar, dec_mode, drop_incomplete_djf, annual_strict)
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index: totVar}, obs_dict={}, region="land", regrid=False
-    )
-
-    if fig_file is not None:
-        for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-            if season == "ANN":
-                fig_file1 = fig_file.replace(
-                    "/plots/", f"/plots/annual/{varname}/"
-                ).replace("$index", "_".join([index, season]))
-            else:
-                fig_file1 = fig_file.replace(
-                    "/plots/", f"/plots/seasonal/{varname}/"
-                ).replace("$index", "_".join([index, season]))
-            totVar[season].mean("time").plot(
-                cbar_kwargs={"label": ds[varname].attrs["units"]}
-            )
-            plt.title(f"Total {season} {varname}")
-            ax = plt.gca()
-            ax.set_facecolor(bgclr)
-            # print(ds[varname].attrs["units"])
-            # print(fig_file1)
-            plt.savefig(fig_file1)
-            plt.close()
-
-    if nc_file is not None:
-        out_sums = []
-        for season in ["ANN", "DJF", "MAM", "JJA", "SON"]:
-            if mode == "timeseries":
-                out_sums.append(totVar[season])
-            else:
-                out_sums.append(totVar[season].mean(dim="time"))
-        da_out = xr.concat(out_sums, dim="season")
-        da_out = da_out.assign_coords(
-            season=("season", ["ANN", "DJF", "MAM", "JJA", "SON"])
-        )
-
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        da_out.to_dataset(name=varname).to_netcdf(nc_file, "w")
-        del da_out
-
-    del totVar
-    return result_dict
-
-
-def get_monthly_mean_var(
-    ds,
-    varname,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
-):
-    # Monthly mean tasmax
-
-    index_base = f"monthly_mean_{varname}"
-    # print(f"Metric: : {index_base}")
-
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Var_monmean = xr.Dataset()
-    Var_monmean[varname] = S.monthly_stats("mean")
-    Var_monmean = update_nc_attrs(
-        Var_monmean, dec_mode, drop_incomplete_djf, annual_strict
-    )
-
-    if fig_file is not None:
-        for month in range(1, 13):
-            index = index_base.replace("monthly", S.month_lookup[month])
-            fig_file1 = fig_file.replace(
-                "/plots/", f"/plots/monthly/{varname}/"
-            ).replace("$index", index)
-            Var_monmean[varname].isel(time=(Var_monmean.time.dt.month == month)).mean(
-                "time"
-            ).plot(cbar_kwargs={"label": ds[varname].attrs["units"]})
-            plt.title(f"{S.month_lookup[month]} Mean {varname}")
-            ax = plt.gca()
-            ax.set_facecolor(bgclr)
-            plt.savefig(fig_file1)
-            plt.close()
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index_base: Var_monmean}, obs_dict={}, region="land", regrid=False
-    )
-
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "monthly", varname, index_base)
-        Var_monmean[varname].attrs["units"] = ds[varname].attrs["units"]
-
-        if mode == "climatology":
-            Var_monmean = S.fix_monthly_time_coord2(
-                Var_monmean.groupby("time.month").mean()
-            )
-            Var_monmean.to_netcdf(nc_file, "w")
-        else:
-            Var_monmean.to_netcdf(nc_file, "w")
-
-    del Var_monmean
-    return result_dict
-
-
-def get_monthly_total_var(
-    ds,
-    varname,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
-):
-    # Monthly mean tasmax
-
-    index_base = f"monthly_total_{varname}"
-    # print(f"Metric: : {index_base}")
-
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Var_montotal = xr.Dataset()
-    Var_montotal[varname] = S.monthly_stats("sum")
-    Var_montotal = update_nc_attrs(
-        Var_montotal, dec_mode, drop_incomplete_djf, annual_strict
-    )
-
-    if fig_file is not None:
-        for month in range(1, 13):
-            index = index_base.replace("monthly", S.month_lookup[month])
-            fig_file1 = fig_file.replace(
-                "/plots/", f"/plots/monthly/{varname}/"
-            ).replace("$index", index)
-            Var_montotal[varname].isel(time=(Var_montotal.time.dt.month == month)).mean(
-                "time"
-            ).plot(cbar_kwargs={"label": ds[varname].attrs["units"]})
-            plt.title(f"{S.month_lookup[month]} Total {varname}")
-            ax = plt.gca()
-            ax.set_facecolor(bgclr)
-            plt.savefig(fig_file1)
-            plt.close()
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index_base: Var_montotal}, obs_dict={}, region="land", regrid=False
-    )
-
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "monthly", varname, index_base)
-        Var_montotal[varname].attrs["units"] = ds[varname].attrs["units"]
-
-        if mode == "climatology":
-            Var_montotal = S.fix_monthly_time_coord2(
-                Var_montotal.groupby("time.month").mean()
-            )
-            Var_montotal.to_netcdf(nc_file, "w")
-        else:
-            Var_montotal.to_netcdf(nc_file, "w")
-
-    del Var_montotal
-    return result_dict
-
-
-def get_annual_max_var(
-    ds,
-    varname,
-    sftlf,
-    dec_mode,
-    drop_incomplete_djf,
-    annual_strict,
-    fig_file=None,
-    nc_file=None,
-    mode="climatology",
-):
-    # Get annual max of maximum daily temperature.
-    index = f"annual_max_{varname}"
-    TS = TimeSeriesData(ds, varname)
-    S = SeasonalAverager(
-        TS,
-        sftlf,
-        dec_mode=dec_mode,
-        drop_incomplete_djf=drop_incomplete_djf,
-        annual_strict=annual_strict,
-    )
-    Var_max = xr.Dataset()
-    Var_max["ANN"] = S.annual_stats("max")
-    Var_max = update_nc_attrs(Var_max, dec_mode, drop_incomplete_djf, annual_strict)
-
-    # Compute statistics
-    result_dict = metrics_json(
-        {index: Var_max}, obs_dict={}, region="land", regrid=False
-    )
-
-    if fig_file is not None:
-        fig_file1 = fig_file.replace("/plots/", f"/plots/annual/{varname}/").replace(
-            "$index", "_".join([index, "ANN"])
-        )
-        Var_max["ANN"].mean("time").plot(
-            cmap="Oranges", cbar_kwargs={"label": ds[varname].attrs["units"]}
-        )
-        plt.title(f"Average annual max {varname}")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1)
-        plt.close()
-
-    if nc_file is not None:
-        nc_file = create_nc_outpath(nc_file, "annual", varname, index)
-
-        if mode == "climatology":
-            Var_max.mean(dim="time").to_netcdf(nc_file, "w")
-        else:
-            Var_max.to_netcdf(nc_file)
-
-    del Var_max
-    return result_dict
-
-
-def compute_koppen(
-    tas_file_path, pr_file_path, fig_file, tas_var="tas", pr_var="pr", mode="timeseries"
-):
-    from itertools import groupby
-
-    import matplotlib.lines as mlines
-    import numpy as np
-    from matplotlib.legend_handler import HandlerBase
-
-    tas_monthly_mean = xr.open_dataset(tas_file_path)
-    pr_monthly_mean = xr.open_dataset(pr_file_path)
-
-    if mode == "timeseries":
-        tas_monthly_mean = tas_monthly_mean.groupby("time.month").mean()
-        pr_monthly_mean = pr_monthly_mean.groupby("time.month").mean()
-
-    climate_index, cmap, filtered_labels, filtered_colors = koppen_funcs.koppen(
-        tas_monthly_mean, pr_monthly_mean, tas_var=tas_var, pr_var=pr_var
-    )
-
-    if fig_file is not None:
-        index = "koppen"
-        fig_file1 = fig_file.replace("/plots/", f"/plots/annual/").replace(
-            "$index", index
-        )
-
-        # # print(fig_file1)
-
-        x = climate_index["lon"].values
-        y = climate_index["lat"].values
-
-        width = x.max() - x.min()
-        height = y.max() - y.min()
-        aspect = width / height
-
-        # Set a base height, and scale width accordingly
-        base_height = 8
-        fig_width = base_height * aspect
-
-        _, ax = plt.subplots(figsize=(fig_width, base_height))
-
-        climate_index.plot(ax=ax, cmap=cmap, add_colorbar=False)
-        handles = [
-            mpatches.Patch(
-                facecolor=filtered_colors[i],
-                label=filtered_labels[i],
-                edgecolor="black",
-                linewidth=1.5,
-            )
-            for i in range(len(filtered_labels))
-        ]
-        lgd = legend_by_letter(
-            handles,
-            filtered_labels,
-            ax=ax,
-            loc="upper center",
-            bbox_to_anchor=(0.5, -0.1),
-            title="Climate Category",
-        )
-
-        # climate_index, cmap, filtered_labels, filtered_colors = koppen(tas_monthly_mean, pr_monthly_mean, tas_var = "tas", pr_var = "pr")
-        plt.title("Koppen Climate Classification")
-        ax = plt.gca()
-        ax.set_facecolor(bgclr)
-        plt.savefig(fig_file1, bbox_inches="tight")
-        plt.close()
 
 
 def clip_precip(ds):
@@ -4982,6 +3675,7 @@ def clip_precip(ds):
 
 # A couple of statistics that aren't being loaded from mean_climate
 def mean_xy(data, varname):
+    # print(data)
     # Spatial mean of single dataset
     if "time" in data.coords:
         mean_xy = float(
@@ -5062,7 +3756,6 @@ def init_metrics_dict(
 
 
 def metrics_json(data_dict, obs_dict={}, region="land", regrid=True):
-    return {}
     # Format, calculate, and return the global mean value over land
     # for all datasets in the input dictionary
     # Arguments:
@@ -5170,60 +3863,3 @@ def metrics_json(data_dict, obs_dict={}, region="land", regrid=True):
                     met_dict[m][region][item].pop(season)
 
     return met_dict
-
-
-def legend_by_letter(
-    handles, labels, ax=None, max_rows=4, preserve_order=False, **legend_kw
-):
-    from itertools import groupby
-
-    import matplotlib.lines as mlines
-    import numpy as np
-    from matplotlib.legend_handler import HandlerBase
-
-    if ax is None:
-        ax = plt.gca()
-
-    items = list(zip(handles, labels))
-    if not preserve_order:
-        items.sort(key=lambda h1: h1[1].casefold())
-
-    def blank_handle():
-        return mlines.Line2D(
-            [], [], linestyle="none", marker=None, linewidth=0, alpha=0
-        )
-
-    columns = []
-    col = []
-    prev_letter = None
-
-    for h, lbl in items:
-        first = (lbl or "")[:1].upper()
-        if prev_letter is not None and first != prev_letter and col:
-            while len(col) < max_rows:
-                col.append((blank_handle(), "\u200b"))
-            columns.append(col)
-            col = []
-
-        col.append((h, lbl))
-
-        if len(col) == max_rows:
-            columns.append(col)
-            col = []
-
-        prev_letter = first
-
-    if col:
-        while len(col) < max_rows:
-            col.append((blank_handle(), "\u200b"))
-        columns.append(col)
-
-    ncol = len(columns)
-
-    ordered = [item for column in columns for item in column]
-    new_handles, new_labels = zip(*ordered)
-    ncol = len(columns)
-    defaults = dict(ncol=ncol)
-    defaults.update(legend_kw)
-
-    return ax.legend(new_handles, new_labels, **defaults)

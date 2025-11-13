@@ -205,25 +205,21 @@ def temperate(tas, pr, desert_tf, tas_var="tas", pr_var="pr"):
     temp_cond = (min_temp > 0) & (min_temp < 18) & (max_temp > 10)  # All in Celsius
     thresh_10_sum = (tas[tas_var] > 10).sum(dim="month")
 
+    # print(pr.month.values)
+    # print(standard_month_names([6, 7, 8]))
+    # print(pr[pr_var].isel(month=pr.month.isin([6, 7, 8]))) ### month=pr.month.isin(standard_month_names([6, 7, 8]))))
+
     wettest_month_summer = (
-        pr[pr_var]
-        .isel(month=pr.month.isin(standard_month_names([6, 7, 8])))
-        .max(dim="month")
+        pr[pr_var].isel(month=pr.month.isin([6, 7, 8])).max(dim="month")
     )
     driest_month_winter = (
-        pr[pr_var]
-        .isel(month=pr.month.isin(standard_month_names([1, 2, 12])))
-        .min(dim="month")
+        pr[pr_var].isel(month=pr.month.isin([6, 7, 8])).min(dim="month")
     )
     wettest_month_winter = (
-        pr[pr_var]
-        .isel(month=pr.month.isin(standard_month_names([1, 2, 12])))
-        .max(dim="month")
+        pr[pr_var].isel(month=pr.month.isin([6, 7, 8])).max(dim="month")
     )
     driest_month_summer = (
-        pr[pr_var]
-        .isel(month=pr.month.isin(standard_month_names([6, 7, 8])))
-        .min(dim="month")
+        pr[pr_var].isel(month=pr.month.isin([6, 7, 8])).min(dim="month")
     )
 
     # Humid Subtropical
@@ -314,24 +310,16 @@ def continental(tas, pr, desert_tf, tas_var="tas", pr_var="pr"):
     thresh_10_sum = (tas[tas_var] > 10).sum(dim="month")
 
     wettest_month_summer = (
-        pr[pr_var]
-        .isel(month=pr.month.isin(standard_month_names([6, 7, 8])))
-        .max(dim="month")
+        pr[pr_var].isel(month=pr.month.isin([6, 7, 8])).max(dim="month")
     )
     driest_month_winter = (
-        pr[pr_var]
-        .isel(month=pr.month.isin(standard_month_names([1, 2, 12])))
-        .min(dim="month")
+        pr[pr_var].isel(month=pr.month.isin([1, 2, 12])).min(dim="month")
     )
     wettest_month_winter = (
-        pr[pr_var]
-        .isel(month=pr.month.isin(standard_month_names([1, 2, 12])))
-        .max(dim="month")
+        pr[pr_var].isel(month=pr.month.isin([1, 2, 12])).max(dim="month")
     )
     driest_month_summer = (
-        pr[pr_var]
-        .isel(month=pr.month.isin(standard_month_names([6, 7, 8])))
-        .min(dim="month")
+        pr[pr_var].isel(month=pr.month.isin([6, 7, 8])).min(dim="month")
     )
 
     # Hot Humid Subtropical
@@ -457,6 +445,9 @@ def koppen(tas, pr, tas_var="tas", pr_var="pr"):
     """
     Returns climate classification indices and corresponding colormap
     """
+    if "month" not in tas.coords:
+        tas = tas.groupby("time.month").mean()
+        pr = pr.groupby("time.month").mean()
 
     climate_cat = xr.zeros_like(tas[tas_var].isel(month=0)).drop_vars("month")
 

@@ -76,6 +76,10 @@ def mask_region(data, name, coords=None, shp_path=None, column=None):
     lon, lon_name = coord_names(data, ["longitude", "lon"])
     lat, lat_name = coord_names(data, ["latitude", "lat"])
 
+    # print(lat_name)
+
+    data = data.rename({lat_name: "lat", lon_name: "lon"})
+
     # Option 1: Region is defined by coord pairs
     if coords is not None:
         try:
@@ -113,9 +117,12 @@ def mask_region(data, name, coords=None, shp_path=None, column=None):
 
     try:
         masked_data = data.where(mask == val, drop=True)
+        masked_data = masked_data.rename({"lat": lat_name, "lon": lon_name})
     except Exception as e:
         print("Error: Masking failed.")
         print("  ", e)
         sys.exit()
+
+    del data
 
     return masked_data

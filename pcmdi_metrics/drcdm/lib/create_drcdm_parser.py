@@ -48,7 +48,13 @@ def create_extremes_parser():
         help="Path for the reference sftlf file",
         required=False,
     )
-
+    parser.add_argument(
+        "--reference_filename_template",
+        default=None,
+        dest="reference_filename_template",
+        help="template for reference dataset",
+        required=False,
+    )
     parser.add_argument(
         "-t",
         "--test_data_set",
@@ -251,6 +257,13 @@ def create_extremes_parser():
         required=False,
     )
     parser.add_argument(
+        "--mode",
+        type=str,
+        default="climatology",
+        help="timeseries or climatology. Will return the mean across the period if mode = climatology",
+    )
+
+    parser.add_argument(
         "--osyear", dest="osyear", type=int, help="Start year for reference data set"
     )
     parser.add_argument(
@@ -318,6 +331,129 @@ def create_extremes_parser():
         type=dict,
         default=False,
         help="Optional dictionary containing threshold values",
+    )
+
+    parser.add_argument(
+        "--exclude_metrics",
+        type=list,
+        default=[],
+        help="list of metric names to exclude",
+    )
+
+    var_metric_dict = {
+        "tasmax": [
+            # "ref_q_tasmax",
+            "mean_tasmax",
+            "monthly_txx",
+            "monthly_mean_tasmax",
+            "monthly_tasmax_ge",
+            "tasmax_q99p9",
+            "tasmax_q50",
+            "annual_txx",
+            "annual_5day_max_tasmax",
+            "annual_tasmax_ge",
+            "annual_tasmax_le",
+            # "tmax_days_above_q",
+            # "tmax_days_below_q",
+        ],
+        "tasmin": [
+            # "ref_q_tasmin",
+            "annual_tnn",
+            "mean_tasmin",
+            "monthly_mean_tasmin",
+            "monthly_tasmin_le",
+            "monthly_tnn",
+            "annual_5day_min_tasmin",
+            "annual_5day_max_tasmin",
+            "annual_tasmin_le",
+            "annual_tasmin_ge",
+            "first_date_below",
+            "last_date_below",
+            "chill_hours",
+            "growing_season",
+            # "tmin_days_above_q",
+            # "tmin_days_below_q",
+        ],
+        "pr": [
+            # "ref_pr_Q",
+            "total_pr",
+            "mean_pr",
+            "monthly_pr",
+            "annual_pxx",
+            "annual_pr_ge",
+            "wettest_5yr_total",
+            "annual_max_nday_pr",
+            "annual_cwd",
+            "annual_cdd",
+            "annual_JJA_cdd",
+            "pr_q50",
+            "pr_q95",
+            "pr_q99p9",
+            # "pr_days_above_non_zero_q",
+            # "pr_days_above_q",
+            # "pr_sum_above_q",
+        ],
+        "tas": [
+            "mean_tas",
+            "monthly_mean_tas",
+            "annual_cooling_deg_days",
+            "annual_heating_deg_days",
+            "annual_growing_deg_days",
+        ],
+        "other": [
+            "mean",
+            "total",
+            "monthly_mean",
+            "monthly_total",
+            "annual_max",
+        ],
+    }
+
+    parser.add_argument(
+        "--include_metrics",
+        default=[item for sublist in var_metric_dict.values() for item in sublist],
+        help="names of metrics to include",
+    )
+
+    parser.add_argument(
+        "--var_metric_map",
+        default=var_metric_dict,
+        help="dictionary that maps variable names to associated metrics",
+    )
+
+    parser.add_argument(
+        "--anom",
+        default=False,
+        help="calculate raw values (False) or anomalies relative to osyear/oeyear (True)",
+    )
+
+    parser.add_argument(
+        "--varname_mapper",
+        default={
+            "tasmax": ["tmax"],
+            "tasmin": ["tmin"],
+            "pr": ["prcp"],
+            "tas": ["tasmean", "tmean", "tmp2m-hgt-an-gauss", "tavg"],
+        },
+        help="alternative variable names in the dataset",
+    )
+
+    parser.add_argument(
+        "--use_dask",
+        type=bool,
+        default=False,
+        help="Use dask for computation. Must run ./start_dask.sh prior to DRCDP",
+    )
+
+    parser.add_argument(
+        "--chunk_time", type=int, default=3650, help="Chunk size in time dimension"
+    )
+
+    parser.add_argument(
+        "--chunk_lat", type=int, default=125, help="Chunk size in lat dimension"
+    )
+    parser.add_argument(
+        "--chunk_lon", type=int, default=125, help="Chunk size in lon dimension"
     )
 
     return parser

@@ -1,22 +1,15 @@
 # Settings for extremes driver
 # These settings are required
-vars = ["pr", "tasmax", "tasmin"]  # Choices are 'pr','tasmax', 'tasmin', "tas"
-test_data_set = ["MIROC6", "ACCESS-CM2", "GFDL-CM4", "EC-Earth3"]
-
-# heat_index_t_var =  ['tasmax'] # dewpoint
-# heat_index_td_var =  ['tasmax']
+vars = ["tasmax", "tasmin", "pr", "tas"]  # Choices are 'pr','tasmax', 'tasmin', "tas"
+test_data_set = ["ACCESS-CM2"]  # ["MIROC6", "ACCESS-CM2", "GFDL-CM4", "EC-Earth3"]
 realization = ["r1i1p1f1"]
-# test_data_path = "/pscratch/sd/j/jsgoodni/testData/"
-# test_data_path = "/global/cfs/projectdirs/m3522/datalake/LOCA2/ACCESS-CM2/0p0625deg/r1i1p1f1/historical/%(variable)/"
-# 0413 # 0519
 test_data_path = "/global/cfs/projectdirs/m3522/datalake/LOCA2/%(model)/0p0625deg/r1i1p1f1/historical/%(variable)/"
 filename_template = (
     "%(variable).%(model).historical.r1i1p1f1.1950-2014.LOCA_16thdeg_v2022????.nc"
 )
+
 # metrics_output_path = "/pscratch/sd/j/jsgoodni/pmp_results/drcdm/LOCA2/"
-metrics_output_path = (
-    "/pscratch/sd/j/jsgoodni/pmp_results/drcdm/LOCA2/MultipleModelTest_TX/"
-)
+metrics_output_path = "/pscratch/sd/j/jsgoodni/pmp_results/drcdm/LOCA2/RefTest_CA/"
 
 # Note: You can use the following placeholders in file templates:
 # %(variable) to substitute variable name from "vars" (except in sftlf filenames)
@@ -26,19 +19,19 @@ metrics_output_path = (
 # Optional settings
 # See the README for more information about these settings
 # case_id = "test_pr"
-# 1976 - 2005
-# reference_data_path = "/pscratch/sd/j/jsgoodni/testData/"
-# reference_data_set = ["Livneh"]
+
+reference_data_path = "/pscratch/sd/j/jsgoodni/testData/"
+reference_data_set = ["Livneh"]
 reference_filename_template = (
-    None  # "%(variable).Livneh.historical.r1i1p1f1.1950-2014.v20250602.nc"
+    "%(variable).Livneh.historical.r1i1p1f1.1950-2014.v20250602.nc"
 )
 
 # Heat Index Section
 # Sub-daily (ideally hourly) data must be provided to ensure proper max heat index calculation
 
-shp_path = "/pscratch/sd/j/jsgoodni/shapefiles/cb_2018_us_state_20m.shp"
-attribute = "NAME"
-region_name = "Texas"  # Region name within the shapefile
+# shp_path = "/pscratch/sd/j/jsgoodni/shapefiles/cb_2018_us_state_20m.shp"
+# attribute = "NAME"
+# region_name = "California"  # Region name within the shapefile
 # coords = ['latitude', 'longitude']
 # sftlf_filename_template = '/p/css03/esgf_publish/CMIP6/CMIP/MIROC/MIROC6/piControl/r1i1p1f1/fx/sftlf/gn/v20190311/sftlf_fx_MIROC6_piControl_r1i1p1f1_gn.nc'
 
@@ -48,7 +41,7 @@ ModUnitsAdjust_precip = (
     86400.0 / 25.4,
     "inches",
 )  # Convert model units from kg/m2/s to mm/day
-ObsUnitsAdjust_precip = (True, "multiply", 86400.0 / 25.4, "inches")
+ObsUnitsAdjust_precip = (True, "multiply", 1 / 25.4, "inches")
 
 ModUnitsAdjust_temperature = (True, "KtoF", 0, "F")  # Set to False to Leave in K
 ObsUnitsAdjust_temperature = (True, "CtoF", 0, "F")
@@ -61,13 +54,28 @@ ObsUnitsAdjust = {
 }
 
 custom_thresholds = {  # accepted units - degF, degC, degK (temp), mm, inches (precip)
-    "tasmin_ge": {"values": [60, 70, 80], "units": "degF"},
-    "tasmin_le": {"values": [0, 32, 45], "units": "degF"},
-    "tasmax_ge": {"values": [85, 90, 95, 100], "units": "degF"},
+    "tasmin_ge": {"values": [70], "units": "degF"},
+    "tasmin_le": {"values": [32], "units": "degF"},
+    "tasmax_ge": {"values": [85], "units": "degF"},
     "tasmax_le": {"values": [45], "units": "degF"},
-    "growing_season": {"values": [32], "units": "degF"},
-    "pr_ge": {"values": [1, 2, 3, 4], "units": "inches"},
+    "growing_season": {
+        "values": [32],
+        "units": "degF",
+    },  # also used for first/last day below X
+    "pr_ge": {"values": [0.5], "units": "inches"},
+    "pr_ge_quant": {"values": [99], "units": "%"},
+    "tasmax_ge_quant": {"values": [99], "units": "%"},
+    "tasmax_le_quant": {"values": [1], "units": "%"},
+    "tasmin_ge_quant": {"values": [99], "units": "%"},
+    "tasmin_le_quant": {"values": [1], "units": "%"},
 }
+
+include_metrics = [
+    "monthly_mean_tasmax",
+    "monthly_mean_tasmin",
+    "monthly_mean_tas",
+    "monthly_pr",
+]  # Exclude parameter to run all metrics
 
 dec_mode = "DJF"
 annual_strict = False
@@ -80,5 +88,5 @@ netcdf = True
 generate_sftlf = True
 msyear = 2000
 meyear = 2010
-osyear = 2000  # if no obs files provided, needs to be a subset of model year range
-oeyear = 2010
+osyear = 1976  # if no obs files provided, needs to be a subset of model year range
+oeyear = 2005
